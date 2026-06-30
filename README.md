@@ -144,7 +144,7 @@ development *of the framework itself*.
 ## Repository layout
 
 ```
-FRAMEWORK.md / FRAMEWORK.ru.md   ⭐ the self-extracting core (EN / RU), generated
+FRAMEWORK.md                     ⭐ the self-extracting core (English; unpacks into any language), generated
 framework/                       the canonical universal templates (the payload)
 tools/                           build-framework.mjs · readme-pdf.mjs · commit.mjs
 README.md / README.pdf           this front door (EN+RU) and its rendered copy
@@ -165,7 +165,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
-[![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](FRAMEWORK.ru.md)
+[![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](FRAMEWORK.md)
 
 **KAIF — фундаментальная методология и фреймворк работы для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 Положите его в любой когнитивный проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
@@ -173,8 +173,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 визионером, агент — исполнителем; KAIF — методология, их связывающая, с полным жизненным циклом:
 развёртывание → обновление → форк → удаление.
 
-> 📦 Весь фреймворк — это один файл: **[`FRAMEWORK.ru.md`](FRAMEWORK.ru.md)** — самораспаковывающееся ядро
-> (английский оригинал: [`FRAMEWORK.md`](FRAMEWORK.md)).
+> 📦 Весь фреймворк — это один файл: **[`FRAMEWORK.md`](FRAMEWORK.md)** (на английском) — самораспаковывающееся
+> ядро. При распаковке агент развернёт его на нужном вам языке; отдельной русской версии ядра не требуется.
 
 ---
 
@@ -290,8 +290,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ## Для ИИ-агентов
 
-Если вы — ИИ-агент: прочитайте **[`FRAMEWORK.ru.md`](FRAMEWORK.ru.md)** (или оригинал
-[`FRAMEWORK.md`](FRAMEWORK.md)) целиком, затем следуйте разделу *«Распаковка — по шагам»*. Всё нужное —
+Если вы — ИИ-агент: прочитайте **[`FRAMEWORK.md`](FRAMEWORK.md)** целиком, затем следуйте разделу
+*«Распаковка — по шагам»*. Всё нужное —
 внутри этого одного документа.
 
 ## Этот репозиторий фрактален (самообвязка)
@@ -308,7 +308,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 ## Структура репозитория
 
 ```
-FRAMEWORK.md / FRAMEWORK.ru.md   ⭐ самораспаковывающееся ядро (EN / RU), генерируется
+FRAMEWORK.md                     ⭐ самораспаковывающееся ядро (английский; распаковывается в любой язык)
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
 tools/                           build-framework.mjs · readme-pdf.mjs · commit.mjs
 README.md / README.pdf           этот «парадный вход» (EN+RU) и его рендер-копия

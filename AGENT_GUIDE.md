@@ -71,8 +71,7 @@
 
 ```
 KAIF/
-├── FRAMEWORK.md              ← ⭐ GENERATED self-extracting core (do NOT hand-edit)
-├── FRAMEWORK.ru.md           ← Russian translation of the core
+├── FRAMEWORK.md              ← ⭐ GENERATED self-extracting core (English; unpacks into any language)
 ├── README.md                 ← EN (primary) + RU, the front door
 ├── README.pdf                ← rendered README (generated, gitignored)
 ├── LICENSE                   ← MIT
@@ -103,8 +102,9 @@ KAIF/
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `FRAMEWORK.md` генерируется из него.
 
 **Языки — две аудитории, два языка:**
-- **Публичная полезная нагрузка** (`framework/`, `FRAMEWORK.md`) — на **английском** (язык сообщества),
-  с `FRAMEWORK.ru.md` и русской половиной README как русской копией.
+- **Публичная полезная нагрузка** (`framework/`, `FRAMEWORK.md`) — **единственный** источник, на
+  **английском** (язык сообщества). Многоязычность — при распаковке: агент разворачивает ядро в
+  запрошенный язык (отдельных переводов ядра не держим). Русская половина README — для читателей-людей.
 - **Локальная обвязка для dogfooding** (этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`,
   `BUG_FIXING_FRAMEWORK.md`, `CLAUDE.md`, `.claude/skills/`, `plans/`, `bugs/`, `interviews/` и любые
   `plans/homework_*.md`) ведётся на **русском** — рабочем языке владельца. Корневые универсальные файлы —

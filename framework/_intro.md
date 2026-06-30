@@ -15,7 +15,7 @@
 
 > **Author:** Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник
 > **License:** MIT · **Repository:** https://github.com/MikalaiKryvusha/KAIF
-> 🇬🇧 English (primary) · 🇷🇺 Русский: see `FRAMEWORK.ru.md`
+> 🇬🇧 English — the single source · 🌍 unpacks into any language you ask for (see §1, Localized deployment)
 
 ---
 
@@ -82,7 +82,9 @@ The framework's **sources are written in English** (the shared community languag
 reading its own project in its own language. So **deployment is localized**: when unpacking, the agent
 **asks the owner for their preferred working language** (default: English) and writes the *deployed*
 wrapper — the four guidance docs, the skills, and the `plans/`/`bugs/`/`interviews/` documents — in
-that language. The framework unpacks *from its English sources into the developer's chosen language*.
+that language. There is a **single** `FRAMEWORK.md` (English) — KAIF does **not** maintain translated copies of the
+core; multilingual support happens **at unpack time**: the agent reads the one English source and writes
+the deployed wrapper in the requested language.
 
 - **Localize:** all prose, headings, list items, table text, and each skill's `description:` field
   (including its trigger phrases — so the agent matches commands in the owner's language).

@@ -19,8 +19,7 @@ KAIF/
 │   ├── STATUS.md                 # guidance-doc template (generic)
 │   └── skills/<name>/SKILL.md    # the 12 skill templates (generic, command placeholders)
 │
-├── FRAMEWORK.md                  # ⭐ GENERATED self-extracting core (payload templates embedded inline)
-├── FRAMEWORK.ru.md               # Russian translation of FRAMEWORK.md
+├── FRAMEWORK.md                  # ⭐ GENERATED self-extracting core (English; unpacks into any language)
 │
 │  ── FRONT DOOR ──
 ├── README.md                     # EN (primary) + RU
