@@ -7,8 +7,9 @@
 [![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kaif--фреймворк-для-ии-агента-на-русском)
 
 **A context-resilient, autonomy-disciplined operating framework for AI coding agents.**
-Drop it into any software project to turn your AI coding agent (Claude — or any agent) into a
-disciplined, autonomous teammate that never starts from zero.
+Drop it into any project — in any domain — to turn your AI agent (Claude or any other) into a
+disciplined, autonomous teammate that never starts from zero. The human stays the visionary; the agent
+executes. KAIF is the methodology binding them — with a full lifecycle: deploy → update → fork → remove.
 
 > 🇬🇧 English (primary) below · 🇷🇺 [Русская версия ниже](#kaif--фреймворк-для-ии-агента-на-русском)
 > 📦 The whole framework is one file: **[`FRAMEWORK.md`](FRAMEWORK.md)** — a self-extracting core.
@@ -101,6 +102,21 @@ your-project/
 | `/propose-idea` | Propose a feature for your approval. |
 | `/interview` | Ask you closed A/B/C questions on a fateful decision. |
 | `/release` | Publish a release to GitHub (with confirmation; never autonomously). |
+| `/kaif-version` · `/kaif-update` | Report the deployed version; respectfully update & migrate from origin. |
+| `/kaif-fork` · `/kaif-switch-origin` | Snapshot KAIF to your own repo; or switch tracking back to origin. |
+| `/kaif-remove` | Respectfully remove KAIF — partial (keep artifacts) or full; your project stays intact. |
+
+## Lifecycle, any domain, any agent
+
+- **A lifecycle, not a one-shot install.** KAIF is versioned (`vX.Y.Z (DATE)`), recorded in
+  `.kaif/kaif.json`. It can **update & migrate** from origin respectfully, **fork** into your own repo to
+  evolve independently, switch back, and be **respectfully removed** — keeping your bug reports,
+  interviews, and ideas, or fully, leaving your own project untouched. Backed by `npm run kaif:*` handles.
+- **Any domain, not just code.** A *sphere* (programming, science, design, business, …) tailors the
+  terminology at deploy time via per-sphere term libraries — so KAIF fits research, design, PM, finance,
+  writing, and more.
+- **Any agent, not just Claude.** Adapters wire KAIF into each system's conventions (Claude Code, OpenAI
+  Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code, …), always with a universal `AGENTS.md` fallback.
 
 ## Four ideas hold it together
 
@@ -152,8 +168,10 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](FRAMEWORK.ru.md)
 
 **Фреймворк работы для ИИ-агентов-программистов: устойчивость к потере контекста и дисциплина автономности.**
-Положите его в любой программный проект — и ваш ИИ-агент (Claude или любой другой) превратится в
-дисциплинированного автономного напарника, который никогда не начинает с нуля.
+Положите его в любой проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
+дисциплинированного автономного напарника, который никогда не начинает с нуля. Человек остаётся
+визионером, агент — исполнителем; KAIF — методология, их связывающая, с полным жизненным циклом:
+развёртывание → обновление → форк → удаление.
 
 > 📦 Весь фреймворк — это один файл: **[`FRAMEWORK.ru.md`](FRAMEWORK.ru.md)** — самораспаковывающееся ядро
 > (английский оригинал: [`FRAMEWORK.md`](FRAMEWORK.md)).
@@ -247,6 +265,21 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 | `/propose-idea` | Предложить фичу на ваше одобрение. |
 | `/interview` | Задать вам закрытые вопросы A/B/C по судьбоносному решению. |
 | `/release` | Выпустить релиз в GitHub (с подтверждением; никогда автономно). |
+| `/kaif-version` · `/kaif-update` | Показать версию; уважительно обновиться и мигрировать из origin. |
+| `/kaif-fork` · `/kaif-switch-origin` | Слепок KAIF в свой репозиторий; или переключиться обратно на origin. |
+| `/kaif-remove` | Уважительно удалить KAIF — частично (с сохранением артефактов) или полностью. |
+
+## Жизненный цикл, любая сфера, любой агент
+
+- **Жизненный цикл, а не разовая установка.** KAIF версионируется (`vX.Y.Z (ДАТА)`) и фиксируется в
+  `.kaif/kaif.json`. Он умеет **уважительно обновляться и мигрировать** из origin, делать **форк** в ваш
+  репозиторий для независимой эволюции, переключаться обратно и **уважительно удаляться** — с сохранением
+  ваших баг-репортов, интервью и идей, или полностью, не трогая ваш проект. Через «ручки» `npm run kaif:*`.
+- **Любая сфера, не только код.** *Сфера* (программирование, наука, дизайн, бизнес, …) настраивает
+  терминологию при развёртывании через библиотеки терминов — KAIF подходит для исследований, дизайна,
+  проджект-менеджмента, финансов, писательства и прочего.
+- **Любой агент, не только Claude.** Адаптеры подключают KAIF к соглашениям каждой системы (Claude Code,
+  OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code, …), всегда с запасным `AGENTS.md`.
 
 ## Четыре идеи, на которых всё держится
 
