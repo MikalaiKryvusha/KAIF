@@ -1,0 +1,22 @@
+{
+  "name": "kaif",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "KAIF — Krinik AI Framework. A context-resilient, autonomy-disciplined operating framework for AI coding agents.",
+  "license": "MIT",
+  "author": "Mikalai Kryvusha (KOT KRINIK)",
+  "repository": "https://github.com/MikalaiKryvusha/KAIF",
+  "scripts": {
+    "build": "node tools/build-framework.mjs",
+    "test": "node tools/check-framework.mjs",
+    "pdf": "node tools/readme-pdf.mjs",
+    "kaif:check": "node tools/check-framework.mjs",
+    "kaif:version": "node tools/kaif.mjs version",
+    "kaif:update": "node tools/kaif.mjs update",
+    "kaif:fork": "node tools/kaif.mjs fork",
+    "kaif:switch-origin": "node tools/kaif.mjs switch-origin",
+    "kaif:remove": "node tools/kaif.mjs remove",
+    "kaif:remove-all": "node tools/kaif.mjs remove-all"
+  }
+}

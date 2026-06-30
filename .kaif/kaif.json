@@ -1,0 +1,9 @@
+{
+  "framework": "KAIF",
+  "version": "1.0.0",
+  "released": "2026-06-30",
+  "origin": "https://github.com/MikalaiKryvusha/KAIF",
+  "tracking": "origin",
+  "sphere": "meta/framework",
+  "agent": "claude-code"
+}

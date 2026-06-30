@@ -3,9 +3,9 @@
 
 ### The self-extracting core · v1.0.0 (2026-06-30)
 
-> **A context-resilient, autonomy-disciplined operating framework for AI coding agents.**
-> Turn any AI coding agent (Claude or otherwise) into a disciplined, autonomous, context-resilient
-> teammate on any software project.
+> **A context-resilient, autonomy-disciplined operating framework for the human–AI tandem.**
+> Turn any AI agent (Claude or otherwise) into a disciplined, autonomous, context-resilient teammate on
+> any project, in any domain — with a full lifecycle: deploy → update from origin → fork → respectfully remove.
 
 > **Author:** Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник
 > **License:** MIT · **Repository:** https://github.com/MikalaiKryvusha/KAIF
@@ -17,7 +17,8 @@
 
 This is a **self-extracting document**. It is, at once:
 
-1. **A complete description** of the KAIF framework — its philosophy, structure, conventions, and skills.
+1. **A complete description** of the KAIF framework — its philosophy, structure, conventions, skills,
+   lifecycle, spheres, and adapters.
 2. **An installer.** Hand this single file to an AI agent and say *"unpack the KAIF framework into this
    project per FRAMEWORK.md"* — the agent reads it and writes out the entire structure (guidance docs,
    directory conventions, and slash-skills), customized to the project.
@@ -39,8 +40,11 @@ itself** — as a small set of markdown files, directory conventions, and repeat
 result: any fresh session resumes instantly with full context, works autonomously within clear bounds,
 and accumulates knowledge instead of evaporating it.
 
-It is not code. It is **process, captured as files an agent reads.** It works with any language, any
-stack, any project.
+It is not code. It is **process, captured as files an agent reads** — a methodology for the human–AI
+tandem, in the spirit of Agile/Kanban/Scrum but for an AI executor. It works with any language, any
+stack, **any domain** (not only programming — see §12 Spheres) and **any agent system** (see §13
+Adapters), and it has a **lifecycle** (§11): versioned, updatable from origin, forkable, and respectfully
+removable.
 
 ---
 
@@ -57,12 +61,12 @@ stack, any project.
 4. From then on, drive your agent with the skills: `/resume` to start a session, `/pause` to wrap up,
    `/autoloop` (or `/dayloop` / `/nightloop`) to grind the backlog autonomously, and the rest as needed.
 
-See **Part VIII — For the human: quick start** for the full walkthrough.
+See **§9 — For the human: quick start** for the full walkthrough.
 
 ### If you are an AI agent
 
 1. Read this entire document.
-2. Follow **Part VII — Unpacking** step by step. Inspect the target project, then write out the structure
+2. Follow **§8 — Unpacking** step by step. Inspect the target project, then write out the structure
    from the templates embedded here, replacing every `<PLACEHOLDER>` with the project's real values.
 3. Commit, and report to the human what you created and what still needs their input.
 
@@ -71,7 +75,7 @@ See **Part VIII — For the human: quick start** for the full walkthrough.
 The framework's **sources are written in English** (the shared community language). But a team works best
 reading its own project in its own language. So **deployment is localized**: when unpacking, the agent
 **asks the owner for their preferred working language** (default: English) and writes the *deployed*
-wrapper — the four guidance docs, the twelve skills, and the `plans/`/`bugs/`/`interviews/` documents — in
+wrapper — the four guidance docs, the skills, and the `plans/`/`bugs/`/`interviews/` documents — in
 that language. The framework unpacks *from its English sources into the developer's chosen language*.
 
 - **Localize:** all prose, headings, list items, table text, and each skill's `description:` field
@@ -100,7 +104,17 @@ your project.
 
 ## 2. Philosophy — why this framework exists
 
-Four ideas hold the whole thing together:
+**The human–AI compact: visionary + executor.** With capable agentic AI, the human steps out of the role
+of hands-on implementer and into the role of **high-level visionary and fairway-keeper** — seeing the end
+goal, the meaning, the shape of the result. The AI agent is the **executor**: fast, precise, tireless,
+consistent — where humans err in details, forget, and lose the thread. AI, in turn, is weak at forming
+high-level meaning and vision — exactly the human's strength. KAIF is the **interface between these two
+nodes**: it binds human-visionary and AI-executor into one super-effective union and steers their work
+toward the human's vision. Like Agile or Scrum for human teams, KAIF is a reusable methodology for the
+human–AI tandem — so you don't re-teach the collaboration from scratch on every project; you deploy KAIF
+and start.
+
+Underneath that compact, four mechanisms hold it together:
 
 **1. Externalized memory.** The agent's working state lives in files, not in the conversation. Four
 documents carry it: `AGENT_GUIDE.md` (the canon — rules, map, commands), `STATUS.md` (the living state —
@@ -145,24 +159,22 @@ Unpacking the framework into a project produces this layout:
 ├── bugs/                       # one NN_*.md per bug (symptom/repro/forensics/root cause/fix), DONE-tagged
 ├── interviews/                 # interview_NNN_*.md — A/B/C questions for the human on owner-level decisions
 │
+├── .kaif/kaif.json             # deploy marker: version · release date · origin · tracking · sphere · agent
+├── package.json                # KAIF adds kaif:* npm handles here (respectfully; removed on uninstall)
+│
 └── .claude/
-    └── skills/                 # the repeatable rituals (slash-skills)
-        ├── resume/SKILL.md         # start a session — read docs, pick the main thing, begin
-        ├── pause/SKILL.md          # end a session — update STATUS/README, build, commit, push
-        ├── autoloop/SKILL.md       # autonomous series over a task pool (self-restarting)
-        ├── dayloop/SKILL.md        # continuous autonomous work while the human is busy
-        ├── nightloop/SKILL.md      # autonomous work until a wake time / the human returns
-        ├── refresh-context/SKILL.md# re-read docs, rebuild the backlog
-        ├── check-backlog/SKILL.md  # revise the backlog, tag finished work DONE
-        ├── report-bug/SKILL.md     # file a bug document
-        ├── bug-research/SKILL.md   # deep investigation without coding (after 3 failed attempts)
-        ├── propose-idea/SKILL.md   # propose a feature (needs human approval)
-        ├── interview/SKILL.md      # ask the human owner-level questions
-        └── release/SKILL.md        # ship a release to GitHub
+    └── skills/                 # the repeatable rituals (slash-skills) — 17 in all
+        ├── resume · pause                            # session start / end
+        ├── autoloop · dayloop · nightloop            # autonomous work loops
+        ├── refresh-context · check-backlog           # context & backlog hygiene
+        ├── report-bug · bug-research · propose-idea   # knowledge capture
+        ├── interview · release                       # ask the owner · ship a release
+        └── kaif-version · kaif-update · kaif-fork · kaif-switch-origin · kaif-remove  # KAIF lifecycle
 ```
 
-Plus one wiring step: the agent's auto-loaded context file (`CLAUDE.md` for Claude Code, or `AGENTS.md`
-for some agents) is pointed at `AGENT_GUIDE.md` so every session reads the canon.
+Plus the wiring: the agent's auto-loaded context file (`CLAUDE.md` for Claude Code, or `AGENTS.md` for
+other agents — see §13) is pointed at `AGENT_GUIDE.md` so every session reads the canon; a small `kaif`
+tool backs the `kaif:*` npm handles (§11); and `.kaif/kaif.json` records the deployment.
 
 > **Note on skills directory.** The skills above use the Claude Code convention
 > (`.claude/skills/<name>/SKILL.md`, with YAML frontmatter `name` + `description`). For a different agent,
@@ -752,6 +764,11 @@ During unpacking, copy each skill verbatim, replacing the command placeholders
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
 | `interview` | human | Ask the owner closed A/B/C questions on a fateful decision. |
 | `release` | shipping | Publish a release to GitHub (with confirmation; never autonomously). |
+| `kaif-version` | lifecycle | Report the deployed KAIF version; check origin for a newer release. |
+| `kaif-update` | lifecycle | Respectful migration update from origin, preserving customizations & artifacts. |
+| `kaif-fork` | lifecycle | Snapshot KAIF into the user's own repo and track it. |
+| `kaif-switch-origin` | lifecycle | Return tracking to the official origin (respectful migration). |
+| `kaif-remove` | lifecycle | Respectfully remove KAIF — partial (keep artifacts) or full. |
 
 ### `.claude/skills/resume/SKILL.md`
 
@@ -1652,6 +1669,237 @@ Report to the human: the version, the release link, what was attached. Done.
 - Don't release in autonomous mode — only on the human's explicit request.
 ``````
 
+### `.claude/skills/kaif-fork/SKILL.md`
+
+> **FILE: `.claude/skills/kaif-fork/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: kaif-fork
+description: Snapshot this project's evolved KAIF into the user's own GitHub repository and switch version tracking to that fork — so the user develops and versions their own evolution of KAIF independently of the origin. Use when the human says "fork KAIF", "make my own KAIF", "snapshot the framework to my repo", "track my own KAIF", "сделай свой слепок KAIF", "форкни фреймворк под себя".
+---
+
+# /kaif-fork — snapshot KAIF into the user's own repo & track it
+
+After living in a project, KAIF often evolves far from origin — locally improved, adapted, extended. At
+some point the user wants to **own that evolution**: keep developing and versioning *their* KAIF in
+*their* repo, no longer bound to the origin's release cadence. This skill does that in one move.
+
+## Procedure
+
+1. **Gather the current KAIF.** Identify everything that constitutes the deployed framework in this
+   project (the core/wrapper: guidance docs, `.claude/skills/` or the agent's equivalent, the `kaif/`
+   tools, `.kaif/kaif.json`) — **not** the user's project files and **not** the content artifacts
+   (those stay in the project).
+
+2. **Create the user's KAIF repo.** With the human's confirmation, create a new GitHub repo under their
+   account (e.g. `gh repo create <user>/<their-kaif-name> --public`). Put the snapshot of the framework
+   there as its own self-contained KAIF (carry over `FRAMEWORK.md`/`framework/`, tools, README, LICENSE,
+   versioning). This becomes the user's origin.
+
+3. **Switch tracking.** Update `.kaif/kaif.json` in the project: set `origin` to the user's new repo and
+   `tracking: "fork"`. From now on `/kaif-version` and `/kaif-update` follow the user's fork.
+
+4. **Seed the fork's versioning.** Start the fork's `version.json` from the current version (note it
+   descends from origin vX.Y.Z) with today's release date. The fork evolves on its own semver line.
+
+5. **Report & commit.** Tell the human the fork repo URL and that tracking now points to it. Commit the
+   `.kaif/kaif.json` change in the project.
+
+## Notes
+- This is a branching of lineage: the user's KAIF may diverge from and even surpass the origin.
+- To return to the official origin later, use `/kaif-switch-origin` (with a respectful migration).
+- Respect attribution: a fork still carries the MIT license and credits KAIF's origin author; the user
+  adds themselves as the fork's maintainer.
+``````
+
+### `.claude/skills/kaif-remove/SKILL.md`
+
+> **FILE: `.claude/skills/kaif-remove/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: kaif-remove
+description: Respectfully remove KAIF from the project. Default — surgical removal of the framework core/wrapper while KEEPING the content artifacts (bugs, interviews, ideas, homework). Full mode (--all) also removes the artifacts. Either way the user's own project stays whole and working. Use when the human says "remove KAIF", "uninstall the framework", "remove KAIF but keep my bug reports", "fully remove KAIF", "удали KAIF", "убери фреймворк, артефакты оставь", "выжги KAIF полностью".
+---
+
+# /kaif-remove — respectful removal of KAIF (partial or full)
+
+Cleanly take KAIF out of a project. The guiding word is **respectful**: the user's own project remains
+intact and working — we only remove what KAIF added, surgically.
+
+## Two modes
+
+- **Partial (default)** — remove the framework **core/wrapper** but **keep the content artifacts**:
+  `bugs/`, `interviews/`, `plans/ideas/`, homework, and any other knowledge the work produced. The
+  agent's accumulated knowledge survives; only the KAIF machinery leaves.
+- **Full (`--all` / "полностью")** — remove the core/wrapper **and** the content artifacts. KAIF is
+  burned out of the project's history as if it had never been there — leaving only the user's project.
+
+## Procedure
+
+1. **Confirm the mode** with the human (partial vs full) and that they want removal. This is
+   destructive-ish — confirm explicitly.
+
+2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
+   - **Core/wrapper (removed in both modes):** the guidance docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
+     `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`), the deployed skills (`.claude/skills/` or the agent's
+     equivalent), the `kaif/` tools, `FRAMEWORK.md`/`framework/` if present, `.kaif/`, and the KAIF
+     additions to the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`).
+   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `plans/ideas/`,
+     `plans/homework_*`, etc.
+   - **NEVER touched:** the user's own project files and directories.
+
+3. **Un-wire the npm handles.** Remove the `kaif:*` scripts that KAIF added to the project's
+   `package.json` (the block KAIF inserted), leaving the user's own scripts untouched. (`npm run` is no
+   longer cluttered with KAIF handles.)
+
+4. **Remove** the identified items per mode. In partial mode, leave a short note (e.g. keep `bugs/` with
+   its README) so the artifacts remain self-explanatory without KAIF.
+
+5. **Verify the project still works** (its own build/tests) and **report**: what was removed, what was
+   kept, and confirm the project is intact. Commit `chore: remove KAIF (partial|full) — project preserved`.
+
+## Notes
+- Default to **partial** unless the human explicitly asks for full — losing accumulated knowledge
+  (bug forensics, decisions) is rarely what they want.
+- Respect git history: removal is a normal commit; the user can still see KAIF in past history unless
+  they choose to rewrite it (we don't rewrite history without an explicit request).
+``````
+
+### `.claude/skills/kaif-switch-origin/SKILL.md`
+
+> **FILE: `.claude/skills/kaif-switch-origin/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: kaif-switch-origin
+description: Switch this project's KAIF tracking from the user's fork back to the official origin (Mikalai Kryvusha's repo), performing a respectful migration that preserves the project and its content artifacts. Use when the human says "switch back to official KAIF", "track the origin again", "return to upstream KAIF", "вернись на официальный KAIF", "переключись обратно на origin".
+---
+
+# /kaif-switch-origin — return tracking to the official origin
+
+The inverse of `/kaif-fork`. A project that was tracking the user's own KAIF fork can return to the
+official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfully.
+
+## Procedure
+
+1. **Read `.kaif/kaif.json`** — confirm `tracking: "fork"` and note the current (fork) version.
+2. **Confirm with the human** — switching lineages can be significant if the fork diverged a lot. Make
+   sure they want the official origin's evolution, not their fork's.
+3. **Respectful migration to origin:** fetch the official origin's current `FRAMEWORK.md`; diff against
+   the deployed (fork-derived) wrapper; apply the same careful 3-way merge as `/kaif-update` — preserve
+   local customizations where possible, surface conflicts, **never** touch content artifacts or the
+   user's project files.
+4. **Switch tracking:** set `origin` back to `https://github.com/MikalaiKryvusha/KAIF` and
+   `tracking: "origin"` in `.kaif/kaif.json`; stamp the origin version + date.
+5. **Validate, report, commit:** `npm run kaif:check`; summarize what reconciled and any conflicts left;
+   commit `chore: switch KAIF tracking to origin vX.Y.Z (DATE)`.
+
+## Notes
+- If the fork had valuable improvements, consider contributing them upstream (a PR to the origin) before
+  switching, so they aren't lost.
+- As always: respectful — the project stays whole and working throughout.
+``````
+
+### `.claude/skills/kaif-update/SKILL.md`
+
+> **FILE: `.claude/skills/kaif-update/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: kaif-update
+description: Respectfully update & migrate the KAIF framework deployed in this project to a newer version from the origin repository, preserving local customizations and all content artifacts. Use when the human accepts an update offer, or says "update KAIF", "migrate to the new framework version", "respectful update", "обнови KAIF", "проведи миграцию фреймворка".
+---
+
+# /kaif-update — respectful migration update from origin
+
+A newer KAIF version exists upstream (see `/kaif-version`). This skill brings the project's framework up
+to it **respectfully**: it never breaks the user's project, preserves their local customizations, and
+keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
+
+> ⚠️ This changes the framework wrapper. Confirm with the human before applying. Commit first so the
+> update is a clean, revertable diff.
+
+## Procedure
+
+1. **Pre-flight.** Read `.kaif/kaif.json` (current version, `origin`, `tracking`). If `tracking` is
+   `fork`, confirm the human really wants to pull from the official origin (usually they'd update from
+   their fork instead). Ensure the working tree is clean (commit/stash first).
+
+2. **Fetch the target version** from `origin`: the new `FRAMEWORK.md` (and/or the release asset). The
+   self-extracting `FRAMEWORK.md` is the single source of truth for what the new version contains.
+
+3. **Diff old → new.** Compare the new framework's guidance docs, skills, and conventions against what's
+   deployed. Classify each change: (a) pure framework upgrade (safe to apply), (b) touches a file the
+   user customized (needs a careful 3-way merge), (c) new capability (add).
+
+4. **Migrate respectfully:**
+   - Apply framework-owned upgrades (skills, guidance-doc templates) — re-derive the deployed wrapper
+     from the new `FRAMEWORK.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
+   - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
+     overwrite; surface conflicts to the human, don't guess.
+   - **Never touch content artifacts** (`bugs/`, `interviews/`, `plans/ideas/`, homework) or the user's
+     own project files. Only the KAIF wrapper/core is migrated.
+   - Refresh the npm `kaif:*` handles if the new version changed them.
+
+5. **Stamp the new version** in `.kaif/kaif.json` (version, released date). Run `npm run kaif:check`
+   (the validator) to confirm the result is well-formed.
+
+6. **Report & commit.** Summarize what changed, what was merged, any conflicts left for the human.
+   Commit `chore: update KAIF to vX.Y.Z (DATE)`.
+
+## Notes
+- The guiding word is **respectful**: the project must stay whole and working at every step.
+- If the migration is large or risky, do it on a branch / behind a clean commit so it's easy to revert.
+- A heavily diverged project may be better served by a fork (`/kaif-fork`) than by tracking origin.
+``````
+
+### `.claude/skills/kaif-version/SKILL.md`
+
+> **FILE: `.claude/skills/kaif-version/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: kaif-version
+description: Report the KAIF version deployed in this project and check the origin repository for a newer release. Reads the .kaif/kaif.json marker (version, release date, origin, tracking mode). Use when the human says "what KAIF version", "check for KAIF updates", "is there a new framework version", "kaif version", "проверь версию KAIF", "есть ли обновление фреймворка".
+---
+
+# /kaif-version — report the deployed KAIF version & check origin for updates
+
+KAIF is deployed (injected) into a project with a specific version. This skill tells the human which
+version is in the project and whether a newer one exists upstream.
+
+## What to do
+
+1. **Read the local marker** `.kaif/kaif.json`:
+   ```json
+   { "framework": "KAIF", "version": "X.Y.Z", "released": "YYYY-MM-DD",
+     "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin", "sphere": "...", "agent": "..." }
+   ```
+   Report: current version + release date, the `tracking` mode (`origin` or `fork`), the sphere and agent.
+   (Equivalent quick command: `npm run kaif:version`.)
+
+2. **Check the origin for a newer release.** Query the latest release/tag of the `origin` repo, e.g.:
+   ```bash
+   gh release view --repo MikalaiKryvusha/KAIF --json tagName,publishedAt 2>/dev/null \
+     || gh api repos/MikalaiKryvusha/KAIF/releases/latest --jq '.tag_name + " " + .published_at'
+   ```
+   Compare semantic versions (`MAJOR.MINOR.PATCH`).
+
+3. **Report to the human:**
+   - If up to date → say so.
+   - If a newer version exists → say which, and offer: *"I see a newer KAIF version (vX.Y.Z, DATE). Want me
+     to run a respectful update & migration for this project?"* → if yes, hand off to `/kaif-update`.
+   - If `tracking` is `fork` → note that this project follows the user's own KAIF fork, not the official
+     origin; origin updates are informational only (see `/kaif-switch-origin` to return to official).
+
+## Notes
+- If `.kaif/kaif.json` is missing, KAIF may not be deployed here (or the marker was lost) — say so and
+  point to `FRAMEWORK.md` for (re)deployment.
+- Read-only skill: it never changes the project. Updates go through `/kaif-update`.
+``````
+
 
 ---
 
@@ -1701,6 +1949,10 @@ human's project, NOT into the framework's own repository. Derive everything from
   on, write **every wrapper document you create (Steps 3–6) in that language**, per *"Localized
   deployment"* in Part 1 — localize prose and each skill's `description:`; keep code, commands, paths, and
   the skills' `name:` ids canonical.
+- **Determine the project's sphere** (§12) — programming, science, design, business, … — by inspection
+  and/or asking; you'll adapt the deployed terminology to it.
+- **Determine the target agent system** (§13) — Claude Code, Codex, Copilot, Cursor, … (default: Claude
+  Code) — to wire context and skills into its conventions.
 
 **Step 2 — Create the directories.**
 ```
@@ -1716,9 +1968,10 @@ with the project's real values discovered in Step 1:
 - `STATUS.md` — seed it with the project's CURRENT real state (from Step 1): what's done, where we are,
   an autonomous backlog pool, and a "where to continue" checklist.
 
-**Step 4 — Write the twelve skills** (from §6), one `.claude/skills/<name>/SKILL.md` each, verbatim except
-the command placeholders (`<BUILD_COMMAND>`, `<COMMIT_COMMAND>`, `<TEST_HARNESS>`) which you replace with
-the project's real commands. Keep the YAML frontmatter and the trigger phrases.
+**Step 4 — Write the skills** (from §6 — all of them, including the five `kaif-*` lifecycle skills), one
+`.claude/skills/<name>/SKILL.md` each, verbatim except the command placeholders (`<BUILD_COMMAND>`,
+`<COMMIT_COMMAND>`, `<TEST_HARNESS>`) which you replace with the project's real commands. Keep the YAML
+frontmatter and the trigger phrases. (For a non-Claude agent, place skill content per the adapter, §13.)
 
 **Step 5 — Seed `plans/`.**
 - `master_plan.md` — the roadmap. If the project has a goal/vision doc, distill it; otherwise draft a
@@ -1731,10 +1984,16 @@ the project's real commands. Keep the YAML frontmatter and the trigger phrases.
   Debug by `BUG_FIXING_FRAMEWORK.md`. The skills in `.claude/skills/` are your rituals."* Don't duplicate
   the canon — point at it.
 
-**Step 7 — Commit and report.**
-- `git add -A && git commit -m "chore: deploy KAIF AI agent framework"` (with the Co-Authored-By trailer).
-- Report to the human: the structure you created, which `TODO` placeholders still need their input, and
-  offer to run `/interview` to close the owner-level questions (brand, license, vision, priorities).
+**Step 7 — Wire the KAIF lifecycle (§11).** Write `.kaif/kaif.json` (version, released date, `origin`,
+`tracking: "origin"`, plus the `sphere` and `agent` you determined). Respectfully add the `kaif:*` handles
+to the project's `package.json` (create it if absent), backed by a small `kaif` tool, without disturbing
+existing scripts. For a non-Claude agent, apply the matching adapter (§13) and generate the universal
+`AGENTS.md` fallback pointing at `AGENT_GUIDE.md`.
+
+**Step 8 — Commit and report.**
+- `git add -A && git commit -m "chore: deploy KAIF"` (with the Co-Authored-By trailer).
+- Report to the human: the structure you created; the language, sphere, and agent chosen; which `TODO`
+  placeholders still need input; and offer `/interview` to close the owner-level questions.
 
 After unpacking, the project is framework-wrapped. The human drives it with `/resume`, `/pause`, the loop
 skills, and the rest.
@@ -1780,6 +2039,68 @@ When unpacking, replace these throughout the guidance docs and skills:
 
 For owner-level unknowns (brand spelling, license choice, target platforms, vision), don't guess — leave a
 `TODO` and close it with `/interview`.
+
+---
+
+## 11. Versioning & the KAIF lifecycle
+
+KAIF is **versioned** and has a full lifecycle in a project — not just a one-shot install.
+
+**Version stamp.** Versions are semantic + date-stamped: `vMAJOR.MINOR.PATCH (YYYY-MM-DD)`. On deploy the
+agent writes `.kaif/kaif.json`, recording the version, release date, `origin` repo, `tracking` mode
+(`origin` or `fork`), the project's `sphere`, and the `agent` system:
+
+```json
+{ "framework": "KAIF", "version": "1.0.0", "released": "2026-06-30",
+  "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin",
+  "sphere": "programming", "agent": "claude-code" }
+```
+
+So the agent always knows which KAIF the project runs and where it came from.
+
+**npm handles.** On deploy, KAIF respectfully adds `kaif:*` scripts to the project's `package.json`
+(creating one if absent), backed by a small `kaif` tool — without disturbing existing scripts:
+`kaif:version`, `kaif:check`, `kaif:update`, `kaif:fork`, `kaif:switch-origin`, `kaif:remove`,
+`kaif:remove-all`. Removing KAIF removes these handles.
+
+**Lifecycle skills** (the five `kaif-*` skills):
+
+- **`/kaif-version`** — report the deployed version; check `origin` for a newer release.
+- **`/kaif-update`** — **respectful migration update** from origin. When a newer version appears, the
+  agent offers it (*"I see a newer KAIF — run a respectful update & migration?"*); on yes it migrates the
+  core, **preserving local customizations and all content artifacts**, never breaking the project.
+- **`/kaif-fork`** — snapshot this project's evolved KAIF into the user's **own** repo and switch
+  `tracking` to it, so they version their own evolution independently of origin.
+- **`/kaif-switch-origin`** — return tracking to the official origin (with a respectful migration).
+- **`/kaif-remove`** — **respectful removal**: partial (default — remove the core/wrapper, **keep** the
+  content artifacts: bugs, interviews, ideas, homework) or full (`--all` — remove artifacts too). Either
+  way the user's own project stays whole and working; KAIF leaves no damage.
+
+Origin = the canonical KAIF (`MikalaiKryvusha/KAIF`), its "DNA." Track it for the project's life, or fork
+and evolve your own — KAIF supports both, and switching between them, always respectfully.
+
+## 12. Spheres — adapting to any domain
+
+KAIF is not only for programming. The same method serves mathematics, science, medicine, design,
+education, project management, finance, writing, and more. At deploy, the agent determines the project's
+**sphere** (inspect + ask), records it in `.kaif/kaif.json`, and adapts the deployed wrapper's
+terminology to that domain — what `bugs/`, "release", "build", and "test" *mean* there — using a **sphere
+library** (a concise term glossary + an entity mapping + a brief thesis intro to the domain). The repo
+ships a reference sphere (`programming`) plus examples (`science`, `design`, `business`) and a `_template`
+for authoring any other **on demand** — so KAIF adapts to *your* sphere even if no prebuilt library
+exists. If the sphere is unknown, KAIF falls back to neutral wording and still works. Catalog:
+`framework/spheres/`.
+
+## 13. Adapters — running on any agent system
+
+KAIF's substance is **agent-agnostic**; only the *wiring* differs per system — (1) where the agent reads
+project context, and (2) where it discovers commands/skills. At deploy, the agent determines the target
+system, records it in `.kaif/kaif.json`, and uses the matching **adapter** to place `AGENT_GUIDE.md` and
+translate the skills into that system's format — always generating a universal `AGENTS.md` fallback that
+points at `AGENT_GUIDE.md`. Reference adapter: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority
+systems with adapters: **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code**; others
+(Devin, OpenCode, Aider, Junie) via the `AGENTS.md` fallback or authored from `_template`. Catalog:
+`framework/adapters/`.
 
 ---
 

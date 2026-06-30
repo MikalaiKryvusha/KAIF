@@ -17,6 +17,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const FW = join(ROOT, 'framework');
@@ -95,3 +96,10 @@ out = out.replace('{{EMBED_SKILLS}}', embedSkills());
 
 writeFileSync(join(ROOT, 'FRAMEWORK.md'), out);
 console.log(`✅ FRAMEWORK.md generated — ${out.split('\n').length} lines, v${version()} (${released()})`);
+
+// Self-check the generated installer (idea 01): fail loudly if it is malformed.
+try {
+  execSync('node ' + JSON.stringify(join(ROOT, 'tools', 'check-framework.mjs')), { stdio: 'inherit' });
+} catch {
+  process.exit(1);
+}
