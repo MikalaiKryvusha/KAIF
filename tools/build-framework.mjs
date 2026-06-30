@@ -31,10 +31,15 @@ function version() {
   if (existsSync(vf)) {
     try {
       const v = JSON.parse(readFileSync(vf, 'utf8'));
-      return `${v.major}.${v.minor}`;
+      return `${v.major}.${v.minor}.${v.patch ?? 0}`;
     } catch { /* fall through */ }
   }
-  return '1.0';
+  return '1.0.0';
+}
+
+// Release date (YYYY-MM-DD) from version.json — KAIF stamps each version with its release date.
+function released() {
+  try { return JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8')).released || ''; } catch { return ''; }
 }
 
 // Embed one template file as a labelled fenced block, telling the agent which
@@ -76,7 +81,7 @@ out = '<!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.
       'tools/build-framework.mjs. Edit the sources and re-run the tool. -->\n' + out;
 
 // {{VERSION}}
-out = out.replaceAll('{{VERSION}}', version());
+out = out.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
 
 // {{EMBED:framework/...}}
 out = out.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => {
@@ -89,4 +94,4 @@ out = out.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => {
 out = out.replace('{{EMBED_SKILLS}}', embedSkills());
 
 writeFileSync(join(ROOT, 'FRAMEWORK.md'), out);
-console.log(`✅ FRAMEWORK.md generated — ${out.split('\n').length} lines, v${version()}`);
+console.log(`✅ FRAMEWORK.md generated — ${out.split('\n').length} lines, v${version()} (${released()})`);

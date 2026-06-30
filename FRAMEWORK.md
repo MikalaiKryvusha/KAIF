@@ -1,14 +1,14 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by tools/build-framework.mjs. Edit the sources and re-run the tool. -->
-# KRINIKS — AI Agent Framework
+# KAIF — Krinik AI Framework
 
-### The self-extracting core · v1.0
+### The self-extracting core · v1.0.0 (2026-06-30)
 
 > **A context-resilient, autonomy-disciplined operating framework for AI coding agents.**
 > Turn any AI coding agent (Claude or otherwise) into a disciplined, autonomous, context-resilient
 > teammate on any software project.
 
 > **Author:** Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник
-> **License:** MIT · **Repository:** https://github.com/MikalaiKryvusha/kriniks_ai_agent_framework
+> **License:** MIT · **Repository:** https://github.com/MikalaiKryvusha/KAIF
 > 🇬🇧 English (primary) · 🇷🇺 Русский: see `FRAMEWORK.ru.md`
 
 ---
@@ -17,8 +17,8 @@
 
 This is a **self-extracting document**. It is, at once:
 
-1. **A complete description** of the KRINIKS framework — its philosophy, structure, conventions, and skills.
-2. **An installer.** Hand this single file to an AI agent and say *"unpack the KRINIKS framework into this
+1. **A complete description** of the KAIF framework — its philosophy, structure, conventions, and skills.
+2. **An installer.** Hand this single file to an AI agent and say *"unpack the KAIF framework into this
    project per FRAMEWORK.md"* — the agent reads it and writes out the entire structure (guidance docs,
    directory conventions, and slash-skills), customized to the project.
 
@@ -34,7 +34,7 @@ AI coding agents are powerful but suffer two chronic failures:
 - **They drift.** Left autonomous, an agent either stalls (over-engineering a misunderstood task) or
   oversteps (making brand/architecture decisions that weren't its to make).
 
-KRINIKS fixes both by **externalizing the agent's working memory and discipline into the repository
+KAIF fixes both by **externalizing the agent's working memory and discipline into the repository
 itself** — as a small set of markdown files, directory conventions, and repeatable slash-skills. The
 result: any fresh session resumes instantly with full context, works autonomously within clear bounds,
 and accumulates knowledge instead of evaporating it.
@@ -50,7 +50,7 @@ stack, any project.
 
 1. Download `FRAMEWORK.md` into the root of your project (or clone this repository alongside it).
 2. Open your AI coding agent in the project and tell it:
-   > *"Read FRAMEWORK.md and unpack the KRINIKS framework into this project."*
+   > *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
 3. The agent will inspect your project, create the structure, and fill in the project-specific details
    (build command, architecture, etc.). It will **ask your preferred working language** (default English)
    and may ask a few owner-level questions (brand, license) via a short interview document — answer them.
@@ -85,7 +85,7 @@ that language. The framework unpacks *from its English sources into the develope
 
 ### ⚠️ The fractal caveat — read this before unpacking
 
-This framework is **dogfooded**: the repository you may be looking at (`kriniks_ai_agent_framework`)
+This framework is **dogfooded**: the repository you may be looking at (`KAIF`)
 *uses the framework on itself*. Its own root contains an `AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/`,
 `plans/`, `bugs/`, and `interviews/` — but those describe **the development of the framework itself**, not
 your project.
@@ -1732,7 +1732,7 @@ the project's real commands. Keep the YAML frontmatter and the trigger phrases.
   the canon — point at it.
 
 **Step 7 — Commit and report.**
-- `git add -A && git commit -m "chore: deploy KRINIKS AI agent framework"` (with the Co-Authored-By trailer).
+- `git add -A && git commit -m "chore: deploy KAIF AI agent framework"` (with the Co-Authored-By trailer).
 - Report to the human: the structure you created, which `TODO` placeholders still need their input, and
   offer to run `/interview` to close the owner-level questions (brand, license, vision, priorities).
 
@@ -1745,7 +1745,7 @@ skills, and the rest.
 
 **Install (once):**
 1. Put `FRAMEWORK.md` in your project root (download it, or `git clone` this repo alongside).
-2. In your agent, say: *"Read FRAMEWORK.md and unpack the KRINIKS framework into this project."*
+2. In your agent, say: *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
 3. Tell the agent your **preferred working language** (default English) and answer the few owner-level
    questions it raises (it files them as an interview document).
 

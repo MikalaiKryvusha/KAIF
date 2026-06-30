@@ -1,16 +1,16 @@
-# KRINIKS — AI Agent Framework
+# KAIF — Krinik AI Framework
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/kriniks_ai_agent_framework/releases)
+[![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](FRAMEWORK.md)
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](FRAMEWORK.md)
-[![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kriniks--фреймворк-для-ии-агента-на-русском)
+[![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kaif--фреймворк-для-ии-агента-на-русском)
 
 **A context-resilient, autonomy-disciplined operating framework for AI coding agents.**
 Drop it into any software project to turn your AI coding agent (Claude — or any agent) into a
 disciplined, autonomous teammate that never starts from zero.
 
-> 🇬🇧 English (primary) below · 🇷🇺 [Русская версия ниже](#kriniks--фреймворк-для-ии-агента-на-русском)
+> 🇬🇧 English (primary) below · 🇷🇺 [Русская версия ниже](#kaif--фреймворк-для-ии-агента-на-русском)
 > 📦 The whole framework is one file: **[`FRAMEWORK.md`](FRAMEWORK.md)** — a self-extracting core.
 
 ---
@@ -24,7 +24,7 @@ AI coding agents are powerful but suffer two chronic failures:
 - **They drift.** Left autonomous, an agent either stalls (over-engineering a misunderstood task) or
   oversteps (making brand/architecture decisions that weren't its to make).
 
-**KRINIKS** fixes both by **externalizing the agent's working memory and discipline into the repository
+**KAIF** fixes both by **externalizing the agent's working memory and discipline into the repository
 itself** — a small set of markdown files, directory conventions, and repeatable slash-skills. The result:
 any fresh session resumes instantly with full context, works autonomously within clear bounds, and
 accumulates knowledge instead of evaporating it.
@@ -39,7 +39,7 @@ software together — a standalone by-product of that collaboration, generalized
    You (human)                         Your AI agent
    ───────────                         ─────────────
 1. Drop FRAMEWORK.md into your repo
-2. "Unpack the KRINIKS framework"  ─▶  reads FRAMEWORK.md, inspects your project,
+2. "Unpack the KAIF framework"  ─▶  reads FRAMEWORK.md, inspects your project,
                                         writes out the structure, customizes it
 3. /resume · /pause · /autoloop ···  ─▶ works like a disciplined, autonomous teammate
 ```
@@ -57,10 +57,10 @@ working wrapper.)*
 1. **Get the framework.** Download **[`FRAMEWORK.md`](FRAMEWORK.md)** into your project's root — or clone
    this repo alongside your project:
    ```bash
-   git clone https://github.com/MikalaiKryvusha/kriniks_ai_agent_framework.git
+   git clone https://github.com/MikalaiKryvusha/KAIF.git
    ```
 2. **Ask your agent to unpack it.** In your AI coding agent, open your project and say:
-   > *"Read FRAMEWORK.md and unpack the KRINIKS framework into this project."*
+   > *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
 
    The agent inspects your project, creates the structure, fills in the project-specific details (build
    command, architecture, etc.), asks your **preferred working language** (default English), and may ask a
@@ -145,10 +145,10 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 ---
 ---
 
-# KRINIKS — Фреймворк для ИИ-агента (на русском)
+# KAIF — Фреймворк для ИИ-агента (на русском)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/kriniks_ai_agent_framework/releases)
+[![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](FRAMEWORK.ru.md)
 
 **Фреймворк работы для ИИ-агентов-программистов: устойчивость к потере контекста и дисциплина автономности.**
@@ -169,7 +169,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 - **Их «уводит».** Будучи автономным, агент либо застревает (переусложняя неверно понятую задачу), либо
   превышает полномочия (принимая решения о бренде/архитектуре, которые принимать был не вправе).
 
-**KRINIKS** лечит и то и другое, **вынося рабочую память и дисциплину агента в сам репозиторий** — в виде
+**KAIF** лечит и то и другое, **вынося рабочую память и дисциплину агента в сам репозиторий** — в виде
 небольшого набора markdown-файлов, соглашений о директориях и повторяемых /слеш-навыков. Итог: любая
 новая сессия мгновенно включается в работу с полным контекстом, работает автономно в чётких границах и
 накапливает знания, а не испаряет их.
@@ -185,7 +185,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
    Вы (человек)                         Ваш ИИ-агент
    ────────────                         ────────────
 1. Кладёте FRAMEWORK.md в свой репозиторий
-2. «Распакуй фреймворк KRINIKS»        ─▶  читает FRAMEWORK.md, изучает проект,
+2. «Распакуй фреймворк KAIF»        ─▶  читает FRAMEWORK.md, изучает проект,
                                          разворачивает структуру, настраивает её
 3. /resume · /pause · /autoloop ···  ─▶ работает как дисциплинированный автономный напарник
 ```
@@ -206,7 +206,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
    git clone https://github.com/MikalaiKryvusha/KAIF.git
    ```
 2. **Попросите агента распаковать.** В своём ИИ-агенте откройте проект и скажите:
-   > *«Прочитай FRAMEWORK.md и распакуй фреймворк KRINIKS в этот проект.»*
+   > *«Прочитай FRAMEWORK.md и распакуй фреймворк KAIF в этот проект.»*
 
    Агент изучит проект, создаст структуру, заполнит специфику проекта (команда сборки, архитектура и т.д.)
    спросит ваш **предпочитаемый рабочий естественный язык, накотором вы разговариваете в повседневной жизни** (по умолчанию английский) и может задать несколько вопросов

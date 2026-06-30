@@ -1,7 +1,7 @@
-# kriniks_ai_agent_framework — руководство для AI-агента
+# KAIF — руководство для AI-агента
 
 Этот файл AI-агент читает перед каждой задачей. Это **канон** работы над **этим проектом**
-— над самим KRINIKS AI Agent Framework.
+— над самим Krinik AI Framework (KAIF).
 
 > 🧠 **ГЛАВНЫЙ ПРИНЦИП — ПРОСТОТА (читай `PHILOSOPHY.md`).** Если что-то занимает много времени — это не
 > сложная задача и не баг инструментов: ты ДЕЛАЕШЬ СЛИШКОМ СЛОЖНО, потому что не ПОНЯЛ задачу. KISS +
@@ -48,8 +48,8 @@
 
 | Поле | Значение |
 |-------|-------|
-| **Название / бренд** | KRINIKS AI Agent Framework (`kriniks_ai_agent_framework`) |
-| **Репозиторий GitHub** | https://github.com/MikalaiKryvusha/kriniks_ai_agent_framework |
+| **Название / бренд** | **Krinik AI Framework (KAIF)** · рус. «Криник АИ Фреймворк (КАИФ)» |
+| **Репозиторий GitHub** | https://github.com/MikalaiKryvusha/KAIF |
 | **Локальная папка проекта** | `/Users/kryvusha/ai_sandbox/kriniks_ai_agent_framework` |
 | **Автор / владелец** | Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник |
 | **Лицензия** | MIT |
@@ -70,7 +70,7 @@
 ## Архитектура — карта репозитория
 
 ```
-kriniks_ai_agent_framework/
+KAIF/
 ├── FRAMEWORK.md              ← ⭐ GENERATED self-extracting core (do NOT hand-edit)
 ├── FRAMEWORK.ru.md           ← Russian translation of the core
 ├── README.md                 ← EN (primary) + RU, the front door

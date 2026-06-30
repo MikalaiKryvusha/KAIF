@@ -1,1 +1,9 @@
-{ "major": 1, "minor": 0, "build": 1 }
+{
+  "name": "KAIF",
+  "major": 1,
+  "minor": 0,
+  "patch": 0,
+  "released": "2026-06-30",
+  "origin": "https://github.com/MikalaiKryvusha/KAIF",
+  "build": 1
+}
