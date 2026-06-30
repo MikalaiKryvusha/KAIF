@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+tools/node_modules/
+package-lock.json
+tools/package-lock.json
+
+# OS
+.DS_Store
+
+# Logs / temp / scratch
+*.log
+scratchpad/
+
+# Note: README.pdf and FRAMEWORK.md are committed deliverables (generated, but tracked).

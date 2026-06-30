@@ -1,0 +1,14 @@
+{
+  "name": "kriniks-ai-agent-framework-tools",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Build tooling for the KRINIKS AI Agent Framework (FRAMEWORK.md assembly, README.pdf rendering, commit helper).",
+  "scripts": {
+    "build": "node build-framework.mjs",
+    "pdf": "node readme-pdf.mjs"
+  },
+  "devDependencies": {
+    "md-to-pdf": "^5.2.4"
+  }
+}
