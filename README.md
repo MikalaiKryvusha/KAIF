@@ -6,8 +6,8 @@
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](FRAMEWORK.md)
 [![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kaif--фреймворк-для-ии-агента-на-русском)
 
-**A context-resilient, autonomy-disciplined operating framework for AI coding agents.**
-Drop it into any project — in any domain — to turn your AI agent (Claude or any other) into a
+**A context-resilient, fundamental methodology — an autonomy-disciplined operating framework for AI agents.**
+Drop it into any cognitive project — in any domain — to turn your AI agent (Claude or any other) into a
 disciplined, autonomous teammate that never starts from zero. The human stays the visionary; the agent
 executes. KAIF is the methodology binding them — with a full lifecycle: deploy → update → fork → remove.
 
@@ -167,8 +167,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 [![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](FRAMEWORK.ru.md)
 
-**Фреймворк работы для ИИ-агентов-программистов: устойчивость к потере контекста и дисциплина автономности.**
-Положите его в любой проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
+**KAIF — фундаментальная методология и фреймворк работы для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
+Положите его в любой когнитивный проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
 дисциплинированного автономного напарника, который никогда не начинает с нуля. Человек остаётся
 визионером, агент — исполнителем; KAIF — методология, их связывающая, с полным жизненным циклом:
 развёртывание → обновление → форк → удаление.
