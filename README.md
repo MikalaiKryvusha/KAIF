@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="KAIF.jpg" alt="KAIF — Krinik AI Framework" width="640">
+</p>
+
 # KAIF — Krinik AI Framework
 
 <p align="center">
@@ -17,7 +21,7 @@ Drop it into any cognitive project — in any domain — to turn your AI agent (
 disciplined, autonomous teammate that never starts from zero. The human stays the visionary; the agent
 executes. KAIF is the methodology binding them — with a full lifecycle: deploy → update → fork → remove.
 
-> 🇬🇧 English (primary) below · [Русская версия ниже](#kaif--фреймворк-для-ии-агента-на-русском)
+> 🇬🇧 English (primary) below.
 > 📦 The whole framework is one file: **[`KAIF.md`](KAIF.md)** — a self-extracting core.
 
 ---
@@ -66,19 +70,34 @@ working wrapper.)*
    ```bash
    git clone https://github.com/MikalaiKryvusha/KAIF.git
    ```
-2. **Ask your agent to unpack it.** The initiator command names two parameters — your **working language**
-   (so the agent knows which language to unpack the English sources into) and your **target agent system**
-   (so it knows how to translate the skills). Both have defaults; state them to be explicit:
+
+2. **Write `GOAL.md` first — recommended, but optional.** A short document *you* write: what you want, what
+   the end result should be, for whom. If it's there at deploy time, the agent orients the whole
+   deployment (sphere, terminology, `MASTER_PLAN.md`) around it. **This step is desirable but not
+   required** — you can skip it and add `GOAL.md` later (the agent will create a template and, once you
+   fill it, re-derive the plan with `/revision`). Doing it up front just saves rework. See
+   [`GOAL.md` — your vision](#goalmd--your-vision-worth-writing-first) below.
+
+3. **Ask your agent to unpack it.** The initiator command names two parameters:
+   - **Working language** — the language to unpack the English sources into (default: English).
+   - **Target agent system** — how to translate the skills (default: Claude Code; also Codex, Copilot,
+     Cursor, Windsurf, Cline, Roo Code, …).
+
+   Both have defaults, so the shortest form works:
+   > *"Read KAIF.md and unpack the KAIF framework into this project."*
+
+   …and the explicit form states the two variables:
    > *"Read KAIF.md and unpack the KAIF framework into this project. Working language: English. Agent
    > system: Claude Code."*
 
    The agent inspects your project, creates the structure, fills in the project-specific details, and may
    ask a few owner-level questions (brand, license) via a short interview document — answer them.
-3. **Mind your AI system's power (see below).** Strong model with a large context → one-command unpack.
+
+4. **Mind your AI system's power (see below).** Strong model with a large context → one-command unpack.
    Small-context / local model → ask for the **respectful staged flow**.
-4. **Write `GOAL.md` first if you can (see below).**
+
 5. **Drive it with skills:** `/resume` · `/pause` · `/autoloop` · `/dayloop` · `/nightloop` ·
-   `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/release`.
+   `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
 
 ### Strong vs. small-context AI systems
 
@@ -91,8 +110,12 @@ your agent's cognitive power and context window:
   model. A single big unpack command is **risky and will likely fail** (it runs out of context). Instead
   ask the agent to use KAIF's **respectful staged flow**: atomic steps that each need only a little in
   context — processing one embedded file at a time, persisting progress to disk, possibly across several
-  messages or even **several separate chats**. Just say: *"Unpack KAIF using the respectful staged flow for
-  a small-context model."* The method is documented inside `KAIF.md` (§8).
+  messages or even **several separate chats**. Launch it with:
+  > *"Read KAIF.md and unpack KAIF into this project using the respectful staged flow for a small-context
+  > model — work in atomic steps, one embedded file at a time, and keep progress in `KAIF_DEPLOYMENT_PLAN.md`."*
+
+  The staged method (raw structure → study the project into `KAIF_DEPLOYMENT_PLAN.md` → adapt) is
+  documented inside `KAIF.md` (§8).
 
 ### `GOAL.md` — your vision, worth writing first
 
@@ -107,6 +130,7 @@ is generated for you if it's missing); the agent reads it on deploy and builds y
 
 ```
 your-project/
+│
 │  ── KEY DOCUMENTS ──
 ├── AGENT_GUIDE.md                        # THE canon — read before every task
 ├── PHILOSOPHY.md                         # how the agent thinks: KISS + Occam + the principle set
@@ -117,9 +141,16 @@ your-project/
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md     # external map: dirs/files/links
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md  # internal map: abstractions & how they interact
 ├── KAIF_FRAMEWORK.md                     # "KAIF, deployed here" — written after injection
+│
 │  ── KNOWLEDGE DIRECTORIES (each with its own README) ──
-├── plans/  ideas/  bugs/  researches/  interviews/  homeworks/
-└── .claude/skills/                       # the 18 repeatable rituals (below)
+├── plans/                                # detailed step plans implementing the roadmap
+├── ideas/                                # feature/improvement proposals (mostly yours)
+├── bugs/                                 # one doc per defect (symptom → forensics → fix)
+├── researches/                           # notes on the big, hard questions
+├── interviews/                           # owner-level decisions — you answer in the document
+├── homeworks/                            # tasks only a human can do (physical/offline)
+│
+└── .claude/skills/                       # the 19 repeatable rituals (below)
 ```
 
 ## The documents & directories — who writes what
@@ -158,7 +189,7 @@ maintains, which **you (the owner)** author, and which the agent creates for **y
 
 ## The skills
 
-Eighteen repeatable rituals — the verbs of working on a project:
+Nineteen repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
@@ -174,10 +205,13 @@ Eighteen repeatable rituals — the verbs of working on a project:
 | `/propose-idea` | Propose a feature for your approval. |
 | `/interview` | Ask you closed A/B/C/D questions on a fateful decision. |
 | `/revision` | (Re)derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
+| `/help-kaif` | Explain KAIF to you in chat — a structured user manual (what it is, and how to use it). |
 | `/release` | Publish a release to GitHub (with confirmation; never autonomously). |
-| `/kaif-version` · `/kaif-update` | Report the deployed version; respectfully update & migrate from origin. |
-| `/kaif-fork` · `/kaif-switch-origin` | Snapshot KAIF to your own repo; or switch tracking back to origin. |
-| `/kaif-remove` | Respectfully remove KAIF — it **asks you** partial (keep artifacts) or full; your project stays intact. |
+| `/kaif-version` | Report the deployed KAIF version; check origin for a newer release. |
+| `/kaif-update` | Respectfully update & migrate from origin, preserving customizations & artifacts. |
+| `/kaif-fork` | Snapshot KAIF into your own repo and track it (evolve your own line). |
+| `/kaif-switch-origin` | Switch tracking back to the official origin (respectful migration). |
+| `/kaif-remove` | Respectfully remove KAIF — it **asks you** partial vs full. E.g. *"remove KAIF but keep my artifacts"* (partial) or *"fully remove KAIF"* (full). Your project stays intact. |
 
 ## Lifecycle, any domain, any agent
 
@@ -191,6 +225,20 @@ Eighteen repeatable rituals — the verbs of working on a project:
   writing, and more.
 - **Any agent, not just Claude.** Adapters wire KAIF into each system's conventions (Claude Code, OpenAI
   Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code, …), always with a universal `AGENTS.md` fallback.
+
+### The `npm run kaif:*` handles
+
+On deploy, KAIF adds these handles to your `package.json` (removed cleanly on uninstall):
+
+| Command | What it does |
+|---------|--------------|
+| `npm run kaif:version` | Show the deployed KAIF version and how to check origin for updates. |
+| `npm run kaif:check` | Validate the framework (same as `npm test`). |
+| `npm run kaif:update` | Point you to the respectful update & migration from origin (`/kaif-update`). |
+| `npm run kaif:fork` | Point you to forking KAIF into your own repo (`/kaif-fork`). |
+| `npm run kaif:switch-origin` | Point you to switching tracking back to origin (`/kaif-switch-origin`). |
+| `npm run kaif:remove` | Point you to partial removal — keep artifacts (`/kaif-remove`). |
+| `npm run kaif:remove-all` | Point you to full removal — core + artifacts (`/kaif-remove`, full). |
 
 ## Four ideas hold it together
 
@@ -240,6 +288,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.1-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](KAIF.md)
+[![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
+[![Языки](https://img.shields.io/badge/Доки-EN%20%7C%20RU-blue.svg)](#kaif--krinik-ai-framework)
 
 **KAIF — фундаментальная методология и фреймворк работы для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 Положите его в любой когнитивный проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
@@ -248,7 +298,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 развёртывание → обновление → форк → удаление.
 
 > 📦 Весь фреймворк — это один файл: **[`KAIF.md`](KAIF.md)** (на английском) — самораспаковывающееся
-> ядро. При распаковке агент развернёт его на нужном вам языке; отдельной русской версии ядра не требуется.
+> ядро. При распаковке агент развернёт его на нужном вам языке.
 
 ---
 
@@ -297,19 +347,34 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
    ```bash
    git clone https://github.com/MikalaiKryvusha/KAIF.git
    ```
-2. **Попросите агента распаковать.** Команда-инициатор называет два параметра — ваш **рабочий язык** (чтобы
-   агент понимал, в какой язык распаковывать английские исходники) и вашу **целевую ИИ-агентскую систему**
-   (чтобы понимал, как транслировать навыки). У обоих есть дефолты; укажите их явно:
+
+2. **Сначала оформите `GOAL.md` — желательно, но не обязательно.** Короткий документ, который пишете *вы*:
+   что вы хотите, что должно получиться в итоге и для кого. Если он есть на момент развёртывания, агент
+   ориентирует всё развёртывание (сферу, терминологию, `MASTER_PLAN.md`) на него. **Шаг желательный, но не
+   обязательный** — его можно пропустить и оформить `GOAL.md` позже (агент создаст шаблон, а после
+   заполнения перевыведет план через `/revision`). Оформление заранее просто экономит переделку. См.
+   [`GOAL.md` — ваше видение](#goalmd--ваше-видение-лучше-оформить-заранее) ниже.
+
+3. **Попросите агента распаковать.** Команда-инициатор называет два параметра:
+   - **Рабочий язык** — в какой язык распаковывать английские исходники (по умолчанию английский).
+   - **Целевая ИИ-агентская система** — как транслировать навыки (по умолчанию Claude Code; также Codex,
+     Copilot, Cursor, Windsurf, Cline, Roo Code, …).
+
+   У обоих есть дефолты, поэтому работает короткая форма:
+   > *«Прочитай KAIF.md и распакуй фреймворк KAIF в этот проект.»*
+
+   …а явная форма называет обе переменные:
    > *«Прочитай KAIF.md и распакуй фреймворк KAIF в этот проект. Рабочий язык: русский. Агентская система:
    > Claude Code.»*
 
    Агент изучит проект, создаст структуру, заполнит специфику проекта и может задать несколько вопросов
    уровня владельца (бренд, лицензия) через короткий документ-интервью — ответьте на них.
-3. **Учтите мощность вашей ИИ-системы (см. ниже).** Сильная модель с большим контекстом → распаковка одной
+
+4. **Учтите мощность вашей ИИ-системы (см. ниже).** Сильная модель с большим контекстом → распаковка одной
    командой. Слабая/локальная модель с малым контекстом → попросите **уважительный поэтапный флоу**.
-4. **По возможности сначала оформите `GOAL.md` (см. ниже).**
+
 5. **Управляйте навыками:** `/resume` · `/pause` · `/autoloop` · `/dayloop` · `/nightloop` · `/report-bug`
-   · `/propose-idea` · `/interview` · `/revision` · `/release`.
+   · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
 
 ### Сильные и слабые (малоконтекстные) ИИ-системы
 
@@ -321,10 +386,13 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 - **Слабая / малоконтекстная модель** — например, локальные модели на геймерских видеокартах с малой VRAM
   или любая короткоконтекстная модель. Одна большая команда распаковки **рискованна и, скорее всего,
   провалится** (не хватит контекста). Вместо этого попросите агента использовать **уважительный поэтапный
-  флоу** KAIF: атомарные шаги, каждому нужно держать в контексте лишь немного — обрабатывая по одному
-  встроенному файлу за раз, сохраняя прогресс на диск, возможно, за несколько сообщений или даже **несколько
-  отдельных чатов**. Просто скажите: *«Распакуй KAIF уважительным поэтапным флоу для малоконтекстной
-  модели.»* Метод описан внутри `KAIF.md` (§8).
+  флоу** KAIF. Запустите его так:
+  > *«Прочитай KAIF.md и распакуй KAIF в этот проект уважительным поэтапным флоу для малоконтекстной модели
+  > — работай атомарными шагами, по одному встроенному файлу за раз, и веди прогресс в
+  > `KAIF_DEPLOYMENT_PLAN.md`.»*
+
+  Поэтапный метод (сырая структура → изучение проекта в `KAIF_DEPLOYMENT_PLAN.md` → адаптация) описан
+  внутри `KAIF.md` (§8).
 
 ### `GOAL.md` — ваше видение, лучше оформить заранее
 
@@ -340,6 +408,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ```
 ваш-проект/
+│
 │  ── КЛЮЧЕВЫЕ ДОКУМЕНТЫ ──
 ├── AGENT_GUIDE.md                        # КАНОН — читать перед каждой задачей
 ├── PHILOSOPHY.md                         # как агент мыслит: KISS + Оккам + набор принципов
@@ -350,9 +419,16 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md     # внешняя карта: директории/файлы/связи
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md  # внутренняя карта: абстракции и их взаимодействия
 ├── KAIF_FRAMEWORK.md                     # «KAIF, развёрнутый здесь» — пишется после инжекции
+│
 │  ── ДИРЕКТОРИИ ЗНАНИЙ (в каждой свой README) ──
-├── plans/  ideas/  bugs/  researches/  interviews/  homeworks/
-└── .claude/skills/                       # 18 повторяемых ритуалов (ниже)
+├── plans/                                # детальные пошаговые планы под генплан
+├── ideas/                                # идеи и предложения (в основном ваши)
+├── bugs/                                 # по документу на дефект (симптом → форензика → фикс)
+├── researches/                           # конспекты по масштабным трудным вопросам
+├── interviews/                           # решения уровня владельца — вы отвечаете в документе
+├── homeworks/                            # задания, которые может сделать только человек (физика/офлайн)
+│
+└── .claude/skills/                       # 19 повторяемых ритуалов (ниже)
 ```
 
 ## Документы и директории — кто что пишет
@@ -391,7 +467,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ## Навыки
 
-Восемнадцать повторяемых ритуалов — глаголы работы над проектом:
+Девятнадцать повторяемых ритуалов — глаголы работы над проектом:
 
 | Навык | Назначение |
 |-------|------------|
@@ -407,10 +483,13 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 | `/propose-idea` | Предложить фичу на ваше одобрение. |
 | `/interview` | Задать вам закрытые вопросы A/B/C/D по судьбоносному решению. |
 | `/revision` | (Пере)разработать `MASTER_PLAN.md` из `GOAL.md` и текущего состояния. |
+| `/help-kaif` | Рассказать вам про KAIF в чате — структурный мануал (что это и как пользоваться). |
 | `/release` | Выпустить релиз в GitHub (с подтверждением; никогда автономно). |
-| `/kaif-version` · `/kaif-update` | Показать версию; уважительно обновиться и мигрировать из origin. |
-| `/kaif-fork` · `/kaif-switch-origin` | Слепок KAIF в свой репозиторий; или переключиться обратно на origin. |
-| `/kaif-remove` | Уважительно удалить KAIF — **спрашивает вас**: частично (с сохранением артефактов) или полностью. |
+| `/kaif-version` | Показать развёрнутую версию KAIF; проверить origin на новый релиз. |
+| `/kaif-update` | Уважительно обновиться и мигрировать из origin, сохранив кастомизации и артефакты. |
+| `/kaif-fork` | Сделать слепок KAIF в свой репозиторий и вести его (своя линия эволюции). |
+| `/kaif-switch-origin` | Переключить tracking обратно на официальный origin (уважительная миграция). |
+| `/kaif-remove` | Уважительно удалить KAIF — **спрашивает вас**: частично или полностью. Напр. *«удали KAIF, но оставь артефакты»* (частично) или *«выжги KAIF полностью»* (полностью). Ваш проект остаётся цел. |
 
 ## Жизненный цикл, любая сфера, любой агент
 
@@ -424,6 +503,20 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
   проджект-менеджмента, финансов, писательства и прочего.
 - **Любой агент, не только Claude.** Адаптеры подключают KAIF к соглашениям каждой системы (Claude Code,
   OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code, …), всегда с запасным `AGENTS.md`.
+
+### «Ручки» `npm run kaif:*`
+
+При развёртывании KAIF добавляет эти «ручки» в ваш `package.json` (при удалении — аккуратно убирает):
+
+| Команда | Что делает |
+|---------|------------|
+| `npm run kaif:version` | Показать развёрнутую версию KAIF и как проверить обновления в origin. |
+| `npm run kaif:check` | Проверить фреймворк (то же, что `npm test`). |
+| `npm run kaif:update` | Направить на уважительное обновление и миграцию из origin (`/kaif-update`). |
+| `npm run kaif:fork` | Направить на форк KAIF в ваш репозиторий (`/kaif-fork`). |
+| `npm run kaif:switch-origin` | Направить на переключение tracking обратно на origin (`/kaif-switch-origin`). |
+| `npm run kaif:remove` | Направить на частичное удаление — с сохранением артефактов (`/kaif-remove`). |
+| `npm run kaif:remove-all` | Направить на полное удаление — ядро + артефакты (`/kaif-remove`, полное). |
 
 ## Четыре идеи, на которых всё держится
 

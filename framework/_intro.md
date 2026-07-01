@@ -62,8 +62,6 @@ When the human triggers unpacking, two parameters shape the deployment. If they 
   trigger phrases — so the agent matches commands in the owner's language).
 - **Keep canonical (never translate):** code, shell commands, file paths, URLs, identifiers, the skills'
   `name:` field (the `/command` ids), and the `Co-Authored-By` trailer.
-- **Country-flag emoji:** don't use them for languages. The one exception is 🇬🇧 for English; every other
-  language is written by name ("Russian", "Spanish", …), no flag.
 
 ### ⚠️ The fractal caveat — read before unpacking
 KAIF is **dogfooded**: the KAIF repository *uses the framework on itself*. Its own root holds an
@@ -112,7 +110,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-└── .claude/skills/     # the repeatable rituals (slash-skills) — 18 in all (or the agent's equivalent)
+└── .claude/skills/     # the repeatable rituals (slash-skills) — 19 in all (or the agent's equivalent)
 ```
 
 Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for others — §14) points at
@@ -202,6 +200,7 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
 | `interview` | human | Ask the owner closed A/B/C/D questions on a fateful decision. |
 | `revision` | planning | (Re)derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
+| `help-kaif` | help | Explain KAIF to the operator in chat — a structured user manual (how to use it). |
 | `release` | shipping | Publish a release to GitHub (with confirmation; never autonomously). |
 | `kaif-version` | lifecycle | Report the deployed KAIF version; check origin for a newer release. |
 | `kaif-update` | lifecycle | Respectful migration update from origin, preserving customizations & artifacts. |
@@ -332,7 +331,7 @@ has to re-translate the already-deployed wrapper into the project's meaning (ext
 up front. A template is created for you if it's missing.
 
 **Daily driving:** `/resume` (start) · `/pause` (wrap up) · `/autoloop` · `/dayloop` · `/nightloop`
-(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/release`.
+(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
 
 ---
 

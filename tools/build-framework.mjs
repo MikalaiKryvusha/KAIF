@@ -78,7 +78,8 @@ const DOC_TARGETS = {
 function embedSkills() {
   const dir = join(FW, 'skills');
   const order = ['resume', 'pause', 'autoloop', 'dayloop', 'nightloop', 'refresh-context',
-                 'check-backlog', 'report-bug', 'bug-research', 'propose-idea', 'interview', 'revision', 'release'];
+                 'check-backlog', 'report-bug', 'bug-research', 'propose-idea', 'interview', 'revision',
+                 'help-kaif', 'release'];
   const names = readdirSync(dir).filter((n) => existsSync(join(dir, n, 'SKILL.md')));
   names.sort((a, b) => ((order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999)));
   const note = "replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands";

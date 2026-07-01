@@ -48,3 +48,8 @@
 - `04_extended_KAIF.md`
 - `GOAL.md`
 - `05_structured_KAIF.md` 
+
+---
+
+## ✅ STATUS: DONE (2026-07-02)
+Жизненный цикл/origin реализованы: `.kaif/kaif.json`, навыки `kaif-*`, `tools/kaif.mjs`, `npm run kaif:*`. Реализовано в 1.0.

@@ -56,8 +56,6 @@ When the human triggers unpacking, two parameters shape the deployment. If they 
   trigger phrases — so the agent matches commands in the owner's language).
 - **Keep canonical (never translate):** code, shell commands, file paths, URLs, identifiers, the skills'
   `name:` field (the `/command` ids), and the `Co-Authored-By` trailer.
-- **Country-flag emoji:** don't use them for languages. The one exception is 🇬🇧 for English; every other
-  language is written by name ("Russian", "Spanish", …), no flag.
 
 ### ⚠️ The fractal caveat — read before unpacking
 KAIF is **dogfooded**: the KAIF repository *uses the framework on itself*. Its own root holds an
@@ -106,7 +104,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-└── .claude/skills/     # the repeatable rituals (slash-skills) — 18 in all (or the agent's equivalent)
+└── .claude/skills/     # the repeatable rituals (slash-skills) — 19 in all (or the agent's equivalent)
 ```
 
 Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for others — §14) points at
@@ -1160,6 +1158,7 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
 | `interview` | human | Ask the owner closed A/B/C/D questions on a fateful decision. |
 | `revision` | planning | (Re)derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
+| `help-kaif` | help | Explain KAIF to the operator in chat — a structured user manual (how to use it). |
 | `release` | shipping | Publish a release to GitHub (with confirmation; never autonomously). |
 | `kaif-version` | lifecycle | Report the deployed KAIF version; check origin for a newer release. |
 | `kaif-update` | lifecycle | Respectful migration update from origin, preserving customizations & artifacts. |
@@ -2036,6 +2035,66 @@ to fill it, and pause. The master plan is derived from the goal, never guessed i
   Keep it flowing that way — don't let the plan drift from the goal.
 ``````
 
+### `.claude/skills/help-kaif/SKILL.md`
+
+> **FILE: `.claude/skills/help-kaif/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: help-kaif
+description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it: the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
+---
+
+# /help-kaif — explain KAIF to the operator, in chat
+
+Deliver a **user manual for KAIF directly in the chat**, in the operator's working language. This is a
+teaching moment for the human running the project — it produces **no file changes**, just a clear,
+well-structured explanation they can read and act on.
+
+## Framing (important)
+- KAIF is **already deployed** in this project. Do **not** talk about unpacking/installation — that's done.
+  Speak as "here's how to *use* what's already here."
+- Keep "what KAIF is" to a **couple of sentences**. Spend the bulk of the answer on **how to use it**:
+  structure, conventions, documents, directories, and skills.
+- Write in the operator's working language. Keep `/command` names and file names canonical.
+- Base it on the deployed reality of *this* project (read `KAIF_FRAMEWORK.md`, `AGENT_GUIDE.md`, the
+  directory READMEs) — not a generic pitch. Adapt terminology to the project's sphere.
+
+## What to output (structure the chat message like this)
+
+1. **What KAIF is (2–3 sentences).** A context-resilient, autonomy-disciplined method for the human–AI
+   tandem: the human is the visionary, the agent the executor, and the project's memory/discipline live in
+   files in the repo so no session starts from zero. One line on why it's useful here.
+
+2. **The key documents — what to read/keep, and who owns each.** Briefly, as a list:
+   `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `BUG_FIXING_FRAMEWORK.md`,
+   **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (living state), `MASTER_PLAN.md`
+   (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
+
+3. **The directories — where knowledge lives, and where the owner acts.** `plans/`, `ideas/` (mostly
+   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
+   the DONE-tag convention in one line.
+
+4. **The skills — the commands you type.** List them grouped, each with a one-line purpose: session
+   (`/resume`, `/pause`), autonomy (`/autoloop`, `/dayloop`, `/nightloop`), hygiene (`/refresh-context`,
+   `/check-backlog`), knowledge (`/report-bug`, `/bug-research`, `/propose-idea`), owner (`/interview`),
+   planning (`/revision`), help (`/help-kaif`), shipping (`/release`), and the lifecycle (`/kaif-version`,
+   `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`, `/kaif-remove`).
+
+5. **How a normal workflow looks.** A short example: *"`/resume` to start → I work and keep `STATUS.md`
+   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to wrap up."* Note the human's
+   role (visionary: `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
+
+6. **Where to go deeper.** Point to `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
+
+## Notes
+- This is a **read-and-explain** skill — don't edit files, don't deploy, don't change state.
+- Keep it scannable: short sections, lists over paragraphs. The goal is that the operator finishes reading
+  and knows exactly which document to open and which command to type next.
+- If the operator asked about one specific part ("how do interviews work?"), answer that focused, then
+  offer the full manual.
+``````
+
 ### `.claude/skills/release/SKILL.md`
 
 > **FILE: `.claude/skills/release/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
@@ -2488,7 +2547,7 @@ has to re-translate the already-deployed wrapper into the project's meaning (ext
 up front. A template is created for you if it's missing.
 
 **Daily driving:** `/resume` (start) · `/pause` (wrap up) · `/autoloop` · `/dayloop` · `/nightloop`
-(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/release`.
+(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
 
 ---
 
