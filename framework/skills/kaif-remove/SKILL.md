@@ -10,24 +10,36 @@ intact and working — we only remove what KAIF added, surgically.
 
 ## Two modes
 
-- **Partial (default)** — remove the framework **core/wrapper** but **keep the content artifacts**:
-  `bugs/`, `interviews/`, `ideas/`, homework, and any other knowledge the work produced. The
-  agent's accumulated knowledge survives; only the KAIF machinery leaves.
-- **Full (`--all` / "полностью")** — remove the core/wrapper **and** the content artifacts. KAIF is
-  burned out of the project's history as if it had never been there — leaving only the user's project.
+- **Partial** — remove the framework **core/wrapper** but **keep the content artifacts**:
+  `bugs/`, `interviews/`, `ideas/`, `researches/`, `homeworks/`, and any other knowledge the work produced.
+  The agent's accumulated knowledge survives; only the KAIF machinery leaves.
+- **Full** — remove the core/wrapper **and** the content artifacts. KAIF is burned out of the project's
+  history as if it had never been there — leaving only the user's project.
 
 ## Procedure
 
-1. **Confirm the mode** with the human (partial vs full) and that they want removal. This is
-   destructive-ish — confirm explicitly.
+1. **MANDATORY — ask the owner, in natural language, WHICH removal to run, and wait for an explicit,
+   unambiguous answer.** This is destructive; never assume a mode. Ask plainly, e.g.:
+
+   > *"Removing KAIF. Which do you want — **partial** (remove the framework, but KEEP your content
+   > artifacts: bugs, interviews, ideas, research, homework) or **full** (remove KAIF AND those artifacts)?
+   > The rest of your project stays untouched either way. Please answer in words."*
+
+   - Proceed **only** on a clear, unambiguous natural-language answer that names one mode.
+   - If the answer is vague, ambiguous, or conditional ("maybe", "whatever's cleaner", "up to you", silence)
+     — do **not** guess and do **not** default. Ask again, restating the two options, until the owner gives
+     an explicit choice.
+   - A `--all` flag or an explicit phrase like "full removal" / "выжги полностью" counts as an explicit
+     answer for **full**; "keep my artifacts" / "частично" counts as **partial**. Anything else → re-ask.
 
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
-   - **Core/wrapper (removed in both modes):** the guidance docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
-     `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`), the deployed skills (`.claude/skills/` or the agent's
-     equivalent), the `kaif/` tools, `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF
-     additions to the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`).
+   - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
+     `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`, `GOAL.md`, `MASTER_PLAN.md`, the two maps, `KAIF_FRAMEWORK.md`),
+     the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
+     `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
+     (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
-     `plans/homework_*`, etc.
+     `researches/`, `homeworks/`, `plans/`, etc.
    - **NEVER touched:** the user's own project files and directories.
 
 3. **Un-wire the npm handles.** Remove the `kaif:*` scripts that KAIF added to the project's
@@ -41,7 +53,8 @@ intact and working — we only remove what KAIF added, surgically.
    kept, and confirm the project is intact. Commit `chore: remove KAIF (partial|full) — project preserved`.
 
 ## Notes
-- Default to **partial** unless the human explicitly asks for full — losing accumulated knowledge
-  (bug forensics, decisions) is rarely what they want.
+- **Never default the mode** — always get the owner's explicit natural-language choice first (Step 1). If
+  you must nudge, note that **partial** is the safer/gentler option (accumulated knowledge — bug forensics,
+  decisions, research — survives), but the owner decides.
 - Respect git history: removal is a normal commit; the user can still see KAIF in past history unless
   they choose to rewrite it (we don't rewrite history without an explicit request).

@@ -52,9 +52,10 @@ If it shapes brand/architecture/UX for the long term — interview.
   ## QUESTIONS
 
   ### Q1. <question>
-  - **A) (recommended)** <option + why>
+  - **A) (recommended)** <the option distilled through PHILOSOPHY.md — simplest/most effective — + why>
   - **B)** <option>
-  - **C)** <option, if any>
+  - **C)** <option>
+  - **D) your own answer** — <the owner writes their own here>
 
   **Answer:**
 
@@ -65,11 +66,16 @@ If it shapes brand/architecture/UX for the long term — interview.
   ```
 
 ### Step 3. Rules for good questions
-- **Closed** A/B/C options — not open "what's best?".
-- **Recommendation first**, marked `(recommended)` — the owner always has a fast default.
-- Each option with a short "why" / trade-off.
+- **Closed** options **A/B/C/D** — not an open "what's best?".
+- **Option A is always the recommendation**, marked `(recommended)`, and is **distilled through
+  `PHILOSOPHY.md`** — run the choice through the principle set (simplicity/KISS + Occam first, then Pareto,
+  best-practices, second-order thinking, …). In the vast majority of cases A is the simplest, clearest, most
+  useful, effective, and fastest way to what the owner wants. Put it first.
+- **Option D is always "your own answer"** — a slot for the owner to write their own choice if none of
+  A/B/C fits.
+- **B and C** are the serious alternatives, each with a short "why" / trade-off.
 - Group: 1–5 questions per interview, no more.
-- Don't ask what's already decided in `plans/` or past interviews.
+- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the

@@ -52,19 +52,33 @@ function embedFile(relPath, destLabel, note) {
   return header + FENCE + 'md\n' + content + FENCE + '\n';
 }
 
-// Destination label + guidance note for each guidance-doc template.
+// Destination label + guidance note for each embedded template (key docs + directory READMEs).
 const DOC_TARGETS = {
+  // Guidance docs
   'framework/AGENT_GUIDE.md':          ['AGENT_GUIDE.md',          "project root — replace every `<PLACEHOLDER>` with the project's real values"],
   'framework/PHILOSOPHY.md':           ['PHILOSOPHY.md',           'project root — universal, write verbatim'],
   'framework/BUG_FIXING_FRAMEWORK.md': ['BUG_FIXING_FRAMEWORK.md', 'project root — universal, write verbatim'],
   'framework/STATUS.md':               ['STATUS.md',               "project root — seed with the project's current real state"],
+  // Key docs added in 1.1
+  'framework/GOAL.md':                 ['GOAL.md',                 'project root — owner-filled; if empty, seed this template and ask the owner'],
+  'framework/MASTER_PLAN.md':          ['MASTER_PLAN.md',          'project root — derive from GOAL.md (skill: /revision)'],
+  'framework/PROJECT_STRUCTURE_EXTERNAL_MAP.md':    ['PROJECT_STRUCTURE_EXTERNAL_MAP.md',    'project root — the external map, from your inspection'],
+  'framework/PROJECT_ARCHITECTURE_INTERNAL_MAP.md': ['PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'project root — the internal map, adapted to the sphere'],
+  'framework/KAIF_FRAMEWORK.md':       ['KAIF_FRAMEWORK.md',       'project root — write AFTER a successful injection (see §10)'],
+  // Directory READMEs
+  'framework/readmes/plans.md':        ['plans/README.md',        'create the directory and drop this README'],
+  'framework/readmes/ideas.md':        ['ideas/README.md',        'create the directory and drop this README'],
+  'framework/readmes/bugs.md':         ['bugs/README.md',         'create the directory and drop this README'],
+  'framework/readmes/researches.md':   ['researches/README.md',   'create the directory and drop this README'],
+  'framework/readmes/interviews.md':   ['interviews/README.md',   'create the directory and drop this README'],
+  'framework/readmes/homeworks.md':    ['homeworks/README.md',    'create the directory and drop this README'],
 };
 
-// Embed all twelve skills in a sensible, documented order.
+// Embed all skills in a sensible, documented order.
 function embedSkills() {
   const dir = join(FW, 'skills');
   const order = ['resume', 'pause', 'autoloop', 'dayloop', 'nightloop', 'refresh-context',
-                 'check-backlog', 'report-bug', 'bug-research', 'propose-idea', 'interview', 'release'];
+                 'check-backlog', 'report-bug', 'bug-research', 'propose-idea', 'interview', 'revision', 'release'];
   const names = readdirSync(dir).filter((n) => existsSync(join(dir, n, 'SKILL.md')));
   names.sort((a, b) => ((order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999)));
   const note = "replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands";

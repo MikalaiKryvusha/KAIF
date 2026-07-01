@@ -1,195 +1,131 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by tools/build-framework.mjs. Edit the sources and re-run the tool. -->
-# KAIF — Krinik AI Framework
+# KAIF — Krinik AI Framework · the self-extracting core · v1.1
 
-### The self-extracting core · v1.1 (2026-07-01)
-
-> **A context-resilient, autonomy-disciplined operating framework for the human–AI tandem.**
-> Turn any AI agent (Claude or otherwise) into a disciplined, autonomous, context-resilient teammate on
-> any project, in any domain — with a full lifecycle: deploy → update from origin → fork → respectfully remove.
-
-> **Author:** Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник
-> **License:** MIT · **Repository:** https://github.com/MikalaiKryvusha/KAIF
-> 🇬🇧 English — the single source · 🌍 unpacks into any language you ask for (see §1, Localized deployment)
+> **You are reading an installer.** This document describes the KAIF framework **and** unpacks it into a
+> project. If you are an AI agent asked to *"unpack KAIF"* — your job is in **§8**. Read this document,
+> then follow §8 stage by stage. Everything needed is embedded here; you need nothing else.
+>
+> **Author:** Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник · **License:** MIT ·
+> **Repo:** https://github.com/MikalaiKryvusha/KAIF
+> 🇬🇧 English — the single source · unpacks into any working language you ask for (see §1).
 
 ---
 
-## 0. What this document is
+## 0. What KAIF is — in three lines
 
-This is a **self-extracting document**. It is, at once:
+KAIF is a **context-resilient, autonomy-disciplined operating framework for the human–AI tandem**: the
+human is the visionary, the agent is the executor, and KAIF is the interface between them. It externalizes
+the agent's working memory and discipline into the repository — a small set of markdown documents,
+directory conventions, and repeatable slash-skills — so a fresh session resumes with full context, works
+autonomously within clear bounds, and accumulates knowledge instead of losing it. It is **not code**; it is
+*process captured as files an agent reads*. (The full pitch for humans lives in `README.md` — this
+document stays lean so it doesn't crowd the agent's attention during unpacking.)
 
-1. **A complete description** of the KAIF framework — its philosophy, structure, conventions, skills,
-   lifecycle, spheres, and adapters.
-2. **An installer.** Hand this single file to an AI agent and say *"unpack the KAIF framework into this
-   project per KAIF.md"* — the agent reads it and writes out the entire structure (guidance docs,
-   directory conventions, and slash-skills), customized to the project.
-
-Everything the agent needs to recreate the framework is **inside this one document** — the templates are
-embedded inline. You don't need anything else.
-
-### The problem it solves
-
-AI coding agents are powerful but suffer two chronic failures:
-
-- **They forget.** Context is lost between sessions. Every new session starts from zero: re-discovering
-  the architecture, the decisions, the half-finished work, the bug it was chasing yesterday.
-- **They drift.** Left autonomous, an agent either stalls (over-engineering a misunderstood task) or
-  oversteps (making brand/architecture decisions that weren't its to make).
-
-KAIF fixes both by **externalizing the agent's working memory and discipline into the repository
-itself** — as a small set of markdown files, directory conventions, and repeatable slash-skills. The
-result: any fresh session resumes instantly with full context, works autonomously within clear bounds,
-and accumulates knowledge instead of evaporating it.
-
-It is not code. It is **process, captured as files an agent reads** — a methodology for the human–AI
-tandem, in the spirit of Agile/Kanban/Scrum but for an AI executor. It works with any language, any
-stack, **any domain** (not only programming — see §12 Spheres) and **any agent system** (see §13
-Adapters), and it has a **lifecycle** (§11): versioned, updatable from origin, forkable, and respectfully
-removable.
+It fits **any domain** (§13 Spheres), runs on **any agent system** (§14 Adapters), and has a full
+**lifecycle** (§12): deploy → update from origin → fork → respectfully remove.
 
 ---
 
 ## 1. How to use this document
 
-### If you are a human (the project owner)
-
-1. Download `KAIF.md` into the root of your project (or clone this repository alongside it).
-2. Open your AI coding agent in the project and tell it:
-   > *"Read KAIF.md and unpack the KAIF framework into this project."*
-3. The agent will inspect your project, create the structure, and fill in the project-specific details
-   (build command, architecture, etc.). It will **ask your preferred working language** (default English)
-   and may ask a few owner-level questions (brand, license) via a short interview document — answer them.
-4. From then on, drive your agent with the skills: `/resume` to start a session, `/pause` to wrap up,
-   `/autoloop` (or `/dayloop` / `/nightloop`) to grind the backlog autonomously, and the rest as needed.
-
-See **§9 — For the human: quick start** for the full walkthrough.
+### If you are the human (owner)
+Put `KAIF.md` in your project root and tell your agent: *"Read KAIF.md and unpack the KAIF framework into
+this project."* See **§9** for the full quick start (including choosing your language and agent system, and
+why `GOAL.md` is worth writing first).
 
 ### If you are an AI agent
-
-1. Read this entire document.
-2. Follow **§8 — Unpacking** step by step. Inspect the target project, then write out the structure
-   from the templates embedded here, replacing every `<PLACEHOLDER>` with the project's real values.
+1. Read this document.
+2. Go to **§8 — Unpacking** and follow it **stage by stage**. Pick the **fast path** (strong model, large
+   context) or the **respectful staged flow** (small-context / local model) — §8 tells you how to choose.
 3. Commit, and report to the human what you created and what still needs their input.
 
-### 🌍 Localized deployment — the developer's working language
+### The initiator command — language & agent system
+When the human triggers unpacking, two parameters shape the deployment. If they aren't stated, **ask**:
 
-The framework's **sources are written in English** (the shared community language). But a team works best
-reading its own project in its own language. So **deployment is localized**: when unpacking, the agent
-**asks the owner for their preferred working language** (default: English) and writes the *deployed*
-wrapper — the four guidance docs, the skills, and the `plans/`/`bugs/`/`interviews/` documents — in
-that language. There is a **single** `KAIF.md` (English) — KAIF does **not** maintain translated copies of the
-core; multilingual support happens **at unpack time**: the agent reads the one English source and writes
-the deployed wrapper in the requested language.
+- **Working language** (default: English) — the natural language the docs and skills are written in. KAIF's
+  sources are English; on deploy you translate the *deployed wrapper* into this language.
+- **Target agent system** (default: Claude Code) — which agent will run the project (Claude Code, Codex,
+  Copilot, Cursor, Windsurf, Cline, Roo Code, …). This decides where context lives and how the `.SKILLS`
+  are translated into that system's format (see §14 Adapters).
 
-- **Localize:** all prose, headings, list items, table text, and each skill's `description:` field
-  (including its trigger phrases — so the agent matches commands in the owner's language).
+> A complete initiator command looks like: *"Read KAIF.md and unpack KAIF into this project. Working
+> language: Russian. Agent system: Claude Code."*
+
+### Localized deployment — what to translate and what to keep
+- **Localize:** all prose, headings, list/table text, and each skill's `description:` field (including its
+  trigger phrases — so the agent matches commands in the owner's language).
 - **Keep canonical (never translate):** code, shell commands, file paths, URLs, identifiers, the skills'
-  `name:` field (the `/command` ids like `resume`, `pause`), and the `Co-Authored-By` trailer.
+  `name:` field (the `/command` ids), and the `Co-Authored-By` trailer.
+- **Country-flag emoji:** don't use them for languages. The one exception is 🇬🇧 for English; every other
+  language is written by name ("Russian", "Spanish", …), no flag.
 
-> This repository is itself the living example: its public payload (`framework/`, `KAIF.md`) is
-> English, while its own working wrapper is in **Russian** — the language its owner works in. Your
-> deployment picks whatever language suits *you*.
-
-### ⚠️ The fractal caveat — read this before unpacking
-
-This framework is **dogfooded**: the repository you may be looking at (`KAIF`)
-*uses the framework on itself*. Its own root contains an `AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/`,
-`plans/`, `bugs/`, and `interviews/` — but those describe **the development of the framework itself**, not
-your project.
-
-> **When unpacking into a user's project, derive everything from THIS document (`KAIF.md`) only.**
-> Do NOT copy the framework repository's own root `AGENT_GUIDE.md` / `STATUS.md` / etc. — they are the
-> framework's self-application and are about building the framework, not about your project. The embedded
-> templates in this document are the canonical, generic source. (This is the resolution of the recursion:
-> the self-extracting document is the single source of truth for deployment.)
+### ⚠️ The fractal caveat — read before unpacking
+KAIF is **dogfooded**: the KAIF repository *uses the framework on itself*. Its own root holds an
+`AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/`, `plans/`, etc. — but those describe **building the
+framework**, not your project. **When unpacking into a user's project, derive everything from THIS document
+only.** The embedded templates below are the canonical, generic source.
 
 ---
 
-## 2. Philosophy — why this framework exists
+## 2. Philosophy — the short version
 
-**The human–AI compact: visionary + executor.** With capable agentic AI, the human steps out of the role
-of hands-on implementer and into the role of **high-level visionary and fairway-keeper** — seeing the end
-goal, the meaning, the shape of the result. The AI agent is the **executor**: fast, precise, tireless,
-consistent — where humans err in details, forget, and lose the thread. AI, in turn, is weak at forming
-high-level meaning and vision — exactly the human's strength. KAIF is the **interface between these two
-nodes**: it binds human-visionary and AI-executor into one super-effective union and steers their work
-toward the human's vision. Like Agile or Scrum for human teams, KAIF is a reusable methodology for the
-human–AI tandem — so you don't re-teach the collaboration from scratch on every project; you deploy KAIF
-and start.
-
-Underneath that compact, four mechanisms hold it together:
-
-**1. Externalized memory.** The agent's working state lives in files, not in the conversation. Four
-documents carry it: `AGENT_GUIDE.md` (the canon — rules, map, commands), `STATUS.md` (the living state —
-what's done, where we are, what's next), `PHILOSOPHY.md` (how to think), `BUG_FIXING_FRAMEWORK.md` (how to
-debug). A new session reads these and is immediately productive. The agent **maintains them** as it works —
-they are living documents, not write-once files.
-
-**2. Knowledge that accumulates.** Bugs, decisions, and proposals don't vanish into chat history. Each
-bug becomes a document in `bugs/` (symptom → forensics → root cause → fix). Each owner decision becomes an
-`interviews/` document. Each agent idea becomes a `ideas/` document. The repository becomes a
-growing knowledge base about *how this project is built and why*.
-
-**3. Bounded autonomy.** The agent is trusted to work alone for hours — but it knows exactly which
-decisions are its own (anything cheap to reverse) and which belong to the human (brand, UX, architecture —
-anything that shapes the product long-term). The latter are escalated through `interviews/`, not guessed.
-The loop skills (`autoloop`/`dayloop`/`nightloop`) encode this: grind autonomously, escalate the
-fateful, never go interactive when the human is away.
-
-**4. Simplicity above cleverness.** The prime directive (`PHILOSOPHY.md`): if something is taking too
-long, the task isn't hard — you misunderstood it and are over-complicating. Stuck = re-understand and
-simplify, never escalate complexity. KISS + Occam's Razor, enforced by a hard 3-attempts rule before
-switching from poking to research.
+The human–AI compact: **human = visionary + fairway-keeper; agent = executor.** Four mechanisms hold it
+together: **externalized memory** (state lives in files, not chat), **knowledge that accumulates** (bugs,
+decisions, research, ideas become durable documents), **bounded autonomy** (the agent grinds alone and
+escalates only owner-level decisions), and **simplicity above cleverness** (KISS + Occam: a stall means you
+misunderstood the task, not that it's hard). The full treatment — including the wider principle set
+(Pareto, Murphy, Eisenhower, DRY, second-order thinking, and more) — is embedded as `PHILOSOPHY.md` in §4.
 
 ---
 
-## 3. The structure at a glance
+## 3. The structure it unpacks
 
-Unpacking the framework into a project produces this layout:
+Unpacking produces this layout (all wrapper docs written in the owner's language):
 
 ```
 <project root>/
-├── AGENT_GUIDE.md              # THE canon — read before every task (rules, map, commands, conventions)
-├── PHILOSOPHY.md               # how the agent thinks: KISS + Occam (the simplicity principle)
-├── BUG_FIXING_FRAMEWORK.md     # how the agent debugs: the fix→build→test loop, the 3-attempts rule
-├── STATUS.md                   # the living state — updated after every significant task
+│  ── KEY DOCUMENTS (root) ──
+├── AGENT_GUIDE.md                       # THE canon — read before every task
+├── PHILOSOPHY.md                        # how the agent thinks (KISS + Occam + the principle set)
+├── BUG_FIXING_FRAMEWORK.md              # how the agent debugs
+├── GOAL.md                              # the vision — owner-filled (what we want in the end)
+├── STATUS.md                            # the living state — updated after every significant task
+├── MASTER_PLAN.md                       # the phased roadmap from current state → GOAL
+├── PROJECT_STRUCTURE_EXTERNAL_MAP.md    # external map: dirs/files/links
+├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md # internal map: abstractions & how they interact
+├── KAIF_FRAMEWORK.md                    # written AFTER injection: "KAIF, deployed here" (see §8/§10)
 │
-├── plans/                      # strategy & knowledge
-│   ├── MASTER_PLAN.md          #   the roadmap and phases (where we're going)
-│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md          #   the architecture map (how it's built)
-│   └── ideas/                  #   agent/human feature proposals — NN_*.md, DONE-tagged when shipped
+│  ── KNOWLEDGE DIRECTORIES (each gets its own README.md) ──
+├── plans/         # detailed step plans (implementing MASTER_PLAN steps)
+├── ideas/         # feature/improvement proposals (mostly owner-authored)
+├── bugs/          # one doc per defect (symptom → forensics → root cause → fix)
+├── researches/    # knowledge base for the big, hard questions
+├── interviews/    # A/B/C/D questions for the owner on owner-level decisions
+├── homeworks/     # tasks from the agent to the human (things only a human can do)
 │
-├── bugs/                       # one NN_*.md per bug (symptom/repro/forensics/root cause/fix), DONE-tagged
-├── interviews/                 # interview_NNN_*.md — A/B/C questions for the human on owner-level decisions
-│
-├── .kaif/kaif.json             # deploy marker: version · release date · origin · tracking · sphere · agent
-├── package.json                # KAIF adds kaif:* npm handles here (respectfully; removed on uninstall)
-│
-└── .claude/
-    └── skills/                 # the repeatable rituals (slash-skills) — 17 in all
-        ├── resume · pause                            # session start / end
-        ├── autoloop · dayloop · nightloop            # autonomous work loops
-        ├── refresh-context · check-backlog           # context & backlog hygiene
-        ├── report-bug · bug-research · propose-idea   # knowledge capture
-        ├── interview · release                       # ask the owner · ship a release
-        └── kaif-version · kaif-update · kaif-fork · kaif-switch-origin · kaif-remove  # KAIF lifecycle
+│  ── WIRING ──
+├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
+├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
+└── .claude/skills/     # the repeatable rituals (slash-skills) — 18 in all (or the agent's equivalent)
 ```
 
-Plus the wiring: the agent's auto-loaded context file (`CLAUDE.md` for Claude Code, or `AGENTS.md` for
-other agents — see §13) is pointed at `AGENT_GUIDE.md` so every session reads the canon; a small `kaif`
-tool backs the `kaif:*` npm handles (§11); and `.kaif/kaif.json` records the deployment.
+Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for others — §14) points at
+`AGENT_GUIDE.md`; and `KAIF.md` itself is **removed after a successful injection** (§10), replaced by
+`KAIF_FRAMEWORK.md`.
 
-> **Note on skills directory.** The skills above use the Claude Code convention
-> (`.claude/skills/<name>/SKILL.md`, with YAML frontmatter `name` + `description`). For a different agent,
-> place the same SKILL.md content wherever that agent discovers commands, or simply keep them as
-> documents the human invokes by name — the *content* is what matters, not the path.
+> **Skills directory note.** The skills use the Claude Code convention
+> (`.claude/skills/<name>/SKILL.md`, YAML frontmatter `name` + `description`). For another agent, place the
+> same content where that agent discovers commands (§14) — the *content* matters, not the path.
 
 ---
 
-## 4. The four guidance documents
+## 4. The key documents
 
-These four files are the agent's brain on disk. Each template below is generic: replace every
-`<PLACEHOLDER>` with the project's real value during unpacking. `PHILOSOPHY.md` and
-`BUG_FIXING_FRAMEWORK.md` are universal — copy them verbatim.
+The agent's brain on disk. Each template below is generic: replace every `<PLACEHOLDER>` with the project's
+real value during unpacking. `PHILOSOPHY.md` and `BUG_FIXING_FRAMEWORK.md` are universal — copy verbatim.
+`GOAL.md` is **owner-filled** (if empty, seed the template and ask the owner). `MASTER_PLAN.md` and the two
+maps are authored from your inspection of the project. `KAIF_FRAMEWORK.md` is written **after** injection
+(§10).
 
 > **FILE: `AGENT_GUIDE.md`** — project root — replace every `<PLACEHOLDER>` with the project's real values
 
@@ -704,6 +640,54 @@ This both helps the ecosystem and documents why you worked around it.
 ``````
 
 
+> **FILE: `GOAL.md`** — project root — owner-filled; if empty, seed this template and ask the owner
+
+``````md
+# <PROJECT_NAME> — GOAL (the vision)
+
+> **Who fills this in:** the human owner (visionary). **Language:** the owner's working language.
+> **When:** ideally *before* deploying KAIF — the agent orients its whole deployment (master plan,
+> sphere, terminology) around this document. If it's missing at deploy time, KAIF still works, but the
+> agent will have to translate the deployed wrapper into the project's meaning later — extra work. Better
+> to write it up front.
+>
+> This is a **living reference**, not a task — never DONE-tagged. Update it whenever the vision sharpens.
+
+---
+
+## What I want — in one paragraph
+
+`<In plain language: what should exist when this project is "done"? What is the end result? For whom, and
+what does it let them do? Write as the visionary, not the implementer — the *what* and the *why*, not the
+*how*. A few honest sentences beat a polished spec.>`
+
+## Why it matters / the problem it solves
+
+`<What pain or opportunity is behind this? What's wrong with the world today that this fixes?>`
+
+## What success looks like
+
+`<Concrete signs the goal is reached — the observable end state. "A user can …", "The result is …".
+Bullet the few things that would make you say "yes, that's it.">`
+
+## Boundaries — what this is NOT
+
+`<Explicitly out of scope. Naming non-goals prevents drift as much as naming goals.>`
+
+## Constraints & preferences (optional)
+
+`<Hard constraints (platform, budget, deadline, tech you must/can't use) and soft preferences (taste,
+style, tone). Anything the agent should honor without being told twice.>`
+
+---
+
+> **How to use this (for the agent):** read `GOAL.md` first; let it steer the sphere, terminology, and the
+> `MASTER_PLAN.md` you derive from it (skill: `/revision`). Do not invent vision here — if the goal is
+> unclear or empty, ask the owner to fill it (or raise an `/interview`). This document belongs to the
+> human.
+``````
+
+
 > **FILE: `STATUS.md`** — project root — seed with the project's current real state
 
 ``````md
@@ -780,47 +764,387 @@ that a fresh session understands what already exists and works. Example:>`
 ``````
 
 
+> **FILE: `MASTER_PLAN.md`** — project root — derive from GOAL.md (skill: /revision)
+
+``````md
+# <PROJECT_NAME> — MASTER PLAN
+
+> The roadmap: how we get from the project's **current state** to the vision in `GOAL.md`. A high-level,
+> stepwise decomposition — phases and milestones, not day-to-day tasks (those live in `plans/`). Derived
+> from `GOAL.md` by the agent at deploy and refreshed with `/revision` as the goal or the state changes.
+>
+> This is a **living reference**, not a task — never DONE-tagged.
+
+---
+
+## Vision (one line)
+
+`<Distilled from GOAL.md — the north star in a single sentence.>`
+
+## Guiding principles
+
+`<The few decisions/values that shape every choice: e.g. "simplicity over features", "ship weekly",
+"offline-first". Reference PHILOSOPHY.md — these are its application to THIS project.>`
+
+## From here to there — the phased path
+
+`<Break the journey into phases. Each phase is a coherent milestone that moves the project meaningfully
+closer to GOAL.md. Keep it high-level; detailed step plans go in plans/NN_*.md.>`
+
+### Phase 0 — <foundation / current state>
+- **Goal of the phase:** `<what "done" means for this phase>`
+- **Steps:** `<the few big moves>`
+- **Status:** `<✅ / 🔧 / 🔲>`
+
+### Phase 1 — <name>
+- **Goal of the phase:** `<...>`
+- **Steps:** `<...>`
+- **Status:** `<...>`
+
+### Phase N — <the goal is reached>
+- `<...>`
+
+## Decision log
+
+`<Dated, one line each: significant decisions and why — so a future session doesn't relitigate them.>`
+
+| Date | Decision | Why |
+|------|----------|-----|
+| `<YYYY-MM-DD>` | `<what was decided>` | `<the reason>` |
+
+---
+
+> **Maintenance:** keep this in sync with reality. When `GOAL.md` or the project's state shifts materially,
+> run `/revision` to re-derive the phases. The per-step detail plans that implement each phase live in
+> `plans/`.
+``````
+
+
+> **FILE: `PROJECT_STRUCTURE_EXTERNAL_MAP.md`** — project root — the external map, from your inspection
+
+``````md
+# <PROJECT_NAME> — External structure map
+
+> **The EXTERNAL map: what the project looks like from the outside** — its directories, files, and the
+> cross-references and dependencies between them. This is the "where things live" map a fresh session
+> reads to navigate. Its companion is `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` (the *internal* logical
+> architecture — the abstractions and how they interact).
+>
+> Adapt the vocabulary to the project's **sphere**: for software — directories, files, modules; for a
+> research/writing/business project — sections, documents, datasets, artifacts. Keep it in sync with the
+> real tree. **Living reference — never DONE-tagged.**
+
+---
+
+## The tree
+
+```
+<project root>/
+├── <dir>/            # <what lives here>
+│   └── <file>        # <role>
+├── <file>            # <role>
+└── ...
+```
+
+## What each part is
+
+| Path | What it is | Depends on / references |
+|------|-----------|-------------------------|
+| `<path>` | `<one-line role>` | `<other paths it links to / relies on>` |
+
+## Cross-references & dependency rules
+
+`<The rules of who may reference/depend on whom — e.g. "docs link down, never up", "feature dirs don't
+cross-reference each other", "generated files derive from sources in X". State the invariants so the agent
+doesn't violate the structure.>`
+
+## Entry points
+
+`<Where a newcomer (human or agent) should start reading/looking, in order.>`
+
+---
+
+> Keep this map honest: when you add, move, or rename a file/directory, update the tree and the table in
+> the same change. The *internal* logic (abstractions, data/interaction flows) belongs in
+> `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`.
+``````
+
+
+> **FILE: `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`** — project root — the internal map, adapted to the sphere
+
+``````md
+# <PROJECT_NAME> — Internal architecture map
+
+> **The INTERNAL map: the project's logical architecture** — the abstraction objects the project's sphere
+> works in, their essence, and how they interact. Where `PROJECT_STRUCTURE_EXTERNAL_MAP.md` says *where
+> things live*, this says *how the system thinks*. A fresh session reads this to understand the model, not
+> just the file layout.
+>
+> **Adapt the abstractions to the sphere:**
+> - *Programming* — modules, interfaces, objects, data structures, data flows, state, protocols.
+> - *Science* — hypotheses, variables, models, datasets, methods, inference chains.
+> - *Sociology* — subjects, objects, institutions, roles, the relations between them.
+> - *Business* — actors, processes, value flows, resources, constraints.
+> - …and so on for any sphere. If unsure, describe the domain's nouns and the verbs that connect them.
+>
+> **Living reference — never DONE-tagged.**
+
+---
+
+## The core abstractions
+
+| Abstraction | What it *is* (essence) | Responsibility |
+|-------------|------------------------|----------------|
+| `<name>` | `<what concept it represents>` | `<what it owns / does>` |
+
+## How they interact
+
+`<Describe the interactions between the abstractions: who calls/produces/consumes/governs whom. A flow or
+sequence in prose or a simple diagram. For software: data/control flow. For other spheres: the flow of
+influence, information, or value.>`
+
+```
+<A> ──produces──▶ <B> ──consumed by──▶ <C>
+```
+
+## Invariants & rules of the model
+
+`<The logical rules that must always hold — the "laws" of this architecture. Violating them is a bug even
+if the code/text runs.>`
+
+## Key decisions embedded in the architecture
+
+`<Why the model is shaped this way — the trade-offs chosen. Ties back to MASTER_PLAN.md's decision log.>`
+
+---
+
+> Keep this in sync with the real logic as it evolves. When you introduce or retire an abstraction, or
+> change how they interact, update this map in the same change. File/directory placement belongs in
+> `PROJECT_STRUCTURE_EXTERNAL_MAP.md`.
+``````
+
+
+> **FILE: `KAIF_FRAMEWORK.md`** — project root — write AFTER a successful injection (see §10)
+
+``````md
+# KAIF in <PROJECT_NAME> — the framework, deployed
+
+> **What this document is.** A high-level description of the **KAIF framework as deployed and used in this
+> project** — think of it as the project's "technologies & frameworks" page, on which KAIF is now one of
+> the technologies. It is written by the agent **after a successful KAIF injection** (the self-extracting
+> core `KAIF.md` is removed once this exists — see the KAIF lifecycle). From here on, work in this project
+> is organized *through* KAIF, and this file is the human-facing summary of that.
+>
+> Written in the owner's working language. **Living reference — never DONE-tagged.** Keep the version line
+> current.
+
+---
+
+## What KAIF is
+
+KAIF (Krinik AI Framework) is a **context-resilient, autonomy-disciplined operating framework for the
+human–AI tandem**. It externalizes the agent's working memory and discipline into this repository — a small
+set of markdown documents, directory conventions, and repeatable slash-skills — so any fresh agent session
+resumes with full context, works autonomously within clear bounds, and accumulates knowledge instead of
+losing it. It is not code; it is *process captured as files an agent reads*.
+
+## Why it's here — what it gives this project
+
+- **No cold starts.** A new session reads `AGENT_GUIDE.md` + `STATUS.md` and is productive immediately.
+- **Knowledge that survives.** Bugs, decisions, research, and ideas become durable documents, not lost chat.
+- **Bounded autonomy.** The agent grinds the backlog alone and escalates only owner-level decisions.
+- **A shared method.** Human = visionary (`GOAL.md`), agent = executor; KAIF is the interface between them.
+
+## How it works here — the moving parts
+
+| Piece | Role in this project |
+|-------|----------------------|
+| `AGENT_GUIDE.md` | The canon the agent reads before every task. |
+| `PHILOSOPHY.md` | How the agent thinks (KISS + Occam + the wider principle set). |
+| `BUG_FIXING_FRAMEWORK.md` | How the agent debugs. |
+| `GOAL.md` / `MASTER_PLAN.md` | The vision, and the phased path to it. |
+| `STATUS.md` | The living state — updated after every significant task. |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | The knowledge directories (each has its own README). |
+| `.claude/skills/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
+| `.kaif/kaif.json` | The deploy marker: version, sphere, agent, tracking. |
+
+## Deployment record
+
+| Field | Value |
+|-------|-------|
+| **KAIF version** | `<X.Y>` |
+| **Injected on** | `<YYYY-MM-DD>` |
+| **How injection went** | `<one or two lines: fast single-command unpack, or staged/respectful flow; anything notable>` |
+| **Sphere** | `<programming / science / design / business / …>` |
+| **Agent system** | `<claude-code / codex / cursor / …>` |
+| **Working language** | `<the owner's language>` |
+| **Tracking** | `<origin / fork>` — `<origin repo URL>` |
+
+## Living with KAIF (lifecycle)
+
+`/kaif-version` (check for updates) · `/kaif-update` (respectful migration from origin) · `/kaif-fork`
+(evolve your own) · `/kaif-switch-origin` · `/kaif-remove` (partial keeps your artifacts, or full — always
+respectful). Backed by `npm run kaif:*` handles.
+
+---
+
+## A note from the author
+
+> KAIF was conceived and built out of necessity by **Krinik (Mikalai Kryvusha / Николай Кривуша)** during
+> vibe-coding sessions with Claude on a software product, at the end of a hot June 2026, in Minsk.
+> **KAIF's birthday is 30 June 2026.**
+
+*(Original wording, Russian — canonical:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+``````
+
+
 ---
 
 ## 5. The knowledge directories
 
-### `plans/` — strategy & knowledge
+Six directories accumulate the project's knowledge. **Each gets a short `README.md`** (embedded below)
+stating its purpose and the conventions for both the owner and the agent. Create the directory and drop its
+README during unpacking.
 
-- **`MASTER_PLAN.md`** — the project's roadmap: vision, principles, tech stack, the phased plan
-  (Phase 0…N with milestones), and a decision log. This is "where we're going." Created by inspecting the
-  project and interviewing the owner about vision.
-- **`PROJECT_STRUCTURE_EXTERNAL_MAP.md`** — the architecture map: modules/components, what each is responsible for, the
-  dependency rules between them, and the data-flow diagram. This is "how it's built." Kept in sync with
-  the real code; a fresh session reads it to navigate.
-- **`ideas/`** — feature proposals, one `NN_<name>.md` each (see `/propose-idea`). DONE-tagged when shipped.
-- Reference docs (`MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `GOAL.md`, worklogs, `homework_*.md`) are **living
-  references, not closable tasks** — never DONE-tagged.
+- **`plans/`** — detailed step plans implementing `MASTER_PLAN.md`'s phases. `NN_<name>.md`; DONE-tagged when closed.
+- **`ideas/`** — feature/improvement proposals, mostly owner-authored. `NN_<name>.md`; DONE-tagged when shipped.
+- **`bugs/`** — one `NN_<name>.md` per defect; DONE-tagged when fixed & verified.
+- **`researches/`** — durable research notes for large, hard questions. Living references — not DONE-tagged.
+- **`interviews/`** — `interview_NNN_<topic>.md`: owner-level decisions, A/B/C/D with a recommendation first.
+- **`homeworks/`** — `NN_<name>.md`: tasks the agent hands to the human (physical/offline/account-only work).
 
-### `bugs/` — one document per defect
+> **FILE: `plans/README.md`** — create the directory and drop this README
 
-Every bug — even a small one — gets a `bugs/NN_<name>.md` (see `/report-bug`): symptom, deterministic
-repro, forensics, root cause/hypotheses, fix plan, links. While open, no `DONE` tag. When fixed and
-verified, `git mv` it to `NN_DONE_<name>.md` and append a `## ✅ STATUS: DONE (date)` section. This is the
-agent's own bug backlog — nothing is lost, and any bug can be picked up cold by a future session.
+``````md
+# `plans/` — detailed step plans
 
-### `interviews/` — owner-level decisions
+Detailed plans for individual pieces of work: single steps of the master plan, specific features, ideas,
+bugs, research efforts, procedures. The **`MASTER_PLAN.md`** (project root) is the high-level roadmap;
+`plans/` holds the zoomed-in plans that implement its steps. One `NN_<name>.md` per plan.
 
-`interview_NNN_<topic>.md` (see `/interview`): closed A/B/C questions with a recommendation first,
-answered by the human **directly in the document**. Used only for decisions the agent must not make alone
-(UI/UX, serious technical forks, brand/vision/priorities). The async, document-based format keeps the
-agent unblocked: it files the questions, pauses, and the human answers when convenient.
+**For the human (owner):** you don't have to write here — plans are usually the agent's. You may drop a
+plan if you want to steer *how* something is done. Read them to see the agent's intended approach before it
+executes.
+
+**For the AI agent:** before non-trivial work, write a short plan here and follow it. Number files
+(`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
+``````
+
+
+> **FILE: `ideas/README.md`** — create the directory and drop this README
+
+``````md
+# `ideas/` — feature & improvement proposals
+
+Detailed ideas of *what* to build — usually a narrow slice of the project, described well enough for the
+agent to implement from. Most often authored by the **human**, but the agent proposes ideas too. One
+`NN_<name>.md` per idea.
+
+**For the human (owner):** this is your main authoring directory. Drop an idea here describing what you
+want; the agent will tidy it into a clean structured form and implement from it. An idea is a piece of
+product **vision** — the agent implements it only after you approve.
+
+**For the AI agent:** read owner ideas, fix typos, restructure minimally for clarity, then implement. When
+*you* have a worthwhile idea, file it here with status "❓ awaiting owner approval" (skill: `/propose-idea`)
+and do **not** implement until approved. After implementing an idea, write the status and date back into
+its file and `DONE`-tag it (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+
+> **FILE: `bugs/README.md`** — create the directory and drop this README
+
+``````md
+# `bugs/` — defects, difficulties, breakages
+
+One document per defect: symptom, deterministic repro, forensics, root cause / hypotheses, fix history,
+status. The agent's own durable bug backlog — nothing is lost, and any bug can be picked up cold by a
+future session. One `NN_<name>.md` per bug.
+
+**For the human (owner):** you may file a bug here in plain words (what's wrong, how to reproduce); the
+agent will structure it. Browse this directory to see known defects and their status.
+
+**For the AI agent:** when you hit a defect during work/testing, file it here by the canon (skill:
+`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. While open, no `DONE` tag. When fixed
+**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
+failed blind fix attempts, stop and switch to research (`/bug-research`).
+``````
+
+
+> **FILE: `researches/README.md`** — create the directory and drop this README
+
+``````md
+# `researches/` — knowledge base for the big, hard questions
+
+Notes and distilled findings on large, difficult questions — research write-ups, accumulated know-how,
+important reference information that took real effort to gather and shouldn't evaporate. One
+`NN_<name>.md` per research topic.
+
+**For the human (owner):** a place to find the deep background behind decisions — why an approach was
+chosen, what was learned about a hard problem. You may seed a topic you want investigated.
+
+**For the AI agent:** when a question is large enough that its findings deserve to outlive the current
+task, write a research note here (raw sources → analysis → conclusions/hypotheses). Link to it from the
+bug/plan/idea that motivated it (DRY — don't re-research). A research note is a **living reference**, not a
+closable task — do not `DONE`-tag it; keep updating it as understanding grows.
+``````
+
+
+> **FILE: `interviews/README.md`** — create the directory and drop this README
+
+``````md
+# `interviews/` — owner-level decisions
+
+Interviews the agent runs with the human to settle decisions it must **not** make alone — UI/UX, serious
+technical forks, brand/vision/priorities. Closed A/B/C/D questions with a recommendation first, answered by
+the human **directly in the document**. One `interview_NNN_<topic>.md` each.
+
+**For the human (owner):** when the agent files an interview, it's waiting on **you**. Fill the
+"**Answer:**" fields right in the document (pick A/B/C, or write your own in D). This is where your fateful
+decisions are captured and preserved.
+
+**For the AI agent:** file an interview only for genuinely owner-level forks (skill: `/interview`). Options
+are **A/B/C/D**: **A** is always the choice distilled through `PHILOSOPHY.md` (simplest/most effective) and
+marked **(recommended)**; **D** is always "your own answer" for the owner. Do the groundwork first, keep it
+to 1–5 questions, then pause and let the owner answer. Everything cheap to reverse — decide yourself.
+``````
+
+
+> **FILE: `homeworks/README.md`** — create the directory and drop this README
+
+``````md
+# `homeworks/` — tasks from the agent to the human
+
+Tasks the agent asks the **human** to do — things it cannot do itself because of its digital, bodyless
+nature: test on real hardware, act in the physical world, use an account/credential only the human has,
+make a purchase, observe something offline. Each doc describes the task with concrete steps for the human,
+and collects the human's observations and results back. One `NN_<name>.md` each.
+
+**For the human (owner):** when the agent files a homework, it needs a hand in the physical/offline world.
+Follow the steps and write what you observed back into the document — the agent reads your notes and
+continues.
+
+**For the AI agent:** when you're blocked on something only a human-with-a-body can do, don't stall — write
+a homework here with clear, minimal, numbered steps and a place for the human's results, then continue with
+other work. When the human reports back, incorporate the results and `DONE`-tag the file
+(`git mv NN_x.md NN_DONE_x.md`).
+``````
+
 
 ---
 
 ## 6. The skills
 
-The skills are the framework's repeatable rituals — the verbs of working on a project. Each is a
-`.claude/skills/<name>/SKILL.md` file with YAML frontmatter (`name`, `description`). The `description`
-is what the agent matches against to trigger the skill; keep the trigger phrases (including the
-owner's language) intact.
-
-During unpacking, copy each skill verbatim, replacing the command placeholders
-(`<BUILD_COMMAND>`, `<COMMIT_COMMAND>`, `<TEST_HARNESS>`) with the project's real commands.
+The framework's repeatable rituals — the verbs of working on a project. Each is a
+`.claude/skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`); the `description` is what
+the agent matches to trigger the skill — keep the trigger phrases (in the owner's language) intact. During
+unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMAND>`, `<COMMIT_COMMAND>`,
+`<TEST_HARNESS>`) with the project's real commands.
 
 | Skill | When | Purpose |
 |-------|------|---------|
@@ -829,18 +1153,19 @@ During unpacking, copy each skill verbatim, replacing the command placeholders
 | `autoloop` | autonomy | Grind a pool of autonomous tasks in a self-restarting series. |
 | `dayloop` | autonomy | Continuous autonomous work while the human is busy (no time stop). |
 | `nightloop` | autonomy | Autonomous work until a wake time / the human returns. |
-| `refresh-context` | hygiene | Re-read the master plan, map, and guidance; rebuild the backlog. |
-| `check-backlog` | hygiene | Walk `bugs/`+`plans/`, tag finished work DONE, return the open list. |
+| `refresh-context` | hygiene | Re-read the master plan, maps, and guidance; rebuild the backlog. |
+| `check-backlog` | hygiene | Walk the knowledge dirs, tag finished work DONE, return the open list. |
 | `report-bug` | knowledge | File a bug document by the canon. |
 | `bug-research` | knowledge | Deep investigation without coding, after 3 failed fix attempts. |
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
-| `interview` | human | Ask the owner closed A/B/C questions on a fateful decision. |
+| `interview` | human | Ask the owner closed A/B/C/D questions on a fateful decision. |
+| `revision` | planning | (Re)derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
 | `release` | shipping | Publish a release to GitHub (with confirmation; never autonomously). |
 | `kaif-version` | lifecycle | Report the deployed KAIF version; check origin for a newer release. |
 | `kaif-update` | lifecycle | Respectful migration update from origin, preserving customizations & artifacts. |
 | `kaif-fork` | lifecycle | Snapshot KAIF into the user's own repo and track it. |
 | `kaif-switch-origin` | lifecycle | Return tracking to the official origin (respectful migration). |
-| `kaif-remove` | lifecycle | Respectfully remove KAIF — partial (keep artifacts) or full. |
+| `kaif-remove` | lifecycle | Respectfully remove KAIF — partial (keep artifacts) or full; **always asks the owner which**. |
 
 ### `.claude/skills/resume/SKILL.md`
 
@@ -1614,9 +1939,10 @@ If it shapes brand/architecture/UX for the long term — interview.
   ## QUESTIONS
 
   ### Q1. <question>
-  - **A) (recommended)** <option + why>
+  - **A) (recommended)** <the option distilled through PHILOSOPHY.md — simplest/most effective — + why>
   - **B)** <option>
-  - **C)** <option, if any>
+  - **C)** <option>
+  - **D) your own answer** — <the owner writes their own here>
 
   **Answer:**
 
@@ -1627,11 +1953,16 @@ If it shapes brand/architecture/UX for the long term — interview.
   ```
 
 ### Step 3. Rules for good questions
-- **Closed** A/B/C options — not open "what's best?".
-- **Recommendation first**, marked `(recommended)` — the owner always has a fast default.
-- Each option with a short "why" / trade-off.
+- **Closed** options **A/B/C/D** — not an open "what's best?".
+- **Option A is always the recommendation**, marked `(recommended)`, and is **distilled through
+  `PHILOSOPHY.md`** — run the choice through the principle set (simplicity/KISS + Occam first, then Pareto,
+  best-practices, second-order thinking, …). In the vast majority of cases A is the simplest, clearest, most
+  useful, effective, and fastest way to what the owner wants. Put it first.
+- **Option D is always "your own answer"** — a slot for the owner to write their own choice if none of
+  A/B/C fits.
+- **B and C** are the serious alternatives, each with a short "why" / trade-off.
 - Group: 1–5 questions per interview, no more.
-- Don't ask what's already decided in `plans/` or past interviews.
+- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
@@ -1653,6 +1984,56 @@ Sequence:
 - Style and language — match the owner's.
 - Past interviews are the reference for tone and structure.
 - The skill's goal — minimize bothering the owner, but do NOT make their fateful decisions for them.
+``````
+
+### `.claude/skills/revision/SKILL.md`
+
+> **FILE: `.claude/skills/revision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: revision
+description: (Re)derive the project's MASTER_PLAN.md from GOAL.md and the current state — the high-level, stepwise roadmap from where the project is now to the vision. Run it at deploy (right after GOAL.md is filled) and whenever GOAL.md or the project's state shifts materially. Use when the human says "revise the master plan", "re-derive the roadmap", "update the plan from the goal", "revision", "пересмотри мастер-план", "перестрой план от цели", "ревизия плана".
+---
+
+# /revision — derive the master plan from the vision
+
+This skill turns `GOAL.md` (the vision) into `MASTER_PLAN.md` (the phased path from the current state to
+that vision). It is the bridge between *what the owner wants* and *how the project gets there*.
+
+## When to call
+
+- **At deploy**, right after `GOAL.md` is filled — to produce the first `MASTER_PLAN.md`.
+- **When `GOAL.md` changes** — the vision sharpened or shifted; the roadmap must follow.
+- **When the project's state changes materially** — a phase is done, a fork was taken, priorities moved.
+- On explicit request from the owner.
+
+If `GOAL.md` is missing or empty, do **not** invent a vision — seed the `GOAL.md` template, ask the owner
+to fill it, and pause. The master plan is derived from the goal, never guessed in its place.
+
+## Procedure
+
+1. **Read the vision.** Read `GOAL.md` end to end: the desired end result, why it matters, what success
+   looks like, the boundaries and constraints. This is the destination.
+2. **Read the current state.** Read `STATUS.md`, the maps (`PROJECT_STRUCTURE_EXTERNAL_MAP.md`,
+   `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`), and skim the project itself. This is the starting point.
+3. **Decompose the journey into phases.** Break the path from *here* → *GOAL* into a handful of coherent
+   phases (milestones), each moving the project meaningfully closer. High-level only — the day-to-day
+   detail lives in `plans/NN_*.md`, not here. Think by `PHILOSOPHY.md`: Pareto (the vital few phases that
+   move the outcome), second-order thinking (consequences of each phase), simplicity (fewest phases that
+   get there).
+4. **Write/refresh `MASTER_PLAN.md`.** Fill the vision line, guiding principles, the phased path (goal +
+   steps + status per phase), and the decision log. If it already exists, **update in place** — preserve
+   the decision log and completed phases; re-derive only what the new goal/state changed.
+5. **Escalate the forks.** If deriving the plan surfaces an owner-level decision (a serious technical fork,
+   a scope/priority choice), don't bake in a guess — raise it via `/interview` and note it in the plan.
+6. **Sync & report.** Update `STATUS.md` if the phases changed the "where we are / what's next". Report to
+   the owner: the phases you derived and any interview you filed.
+
+## Notes
+- `MASTER_PLAN.md` is a **living reference**, not a task — never DONE-tag it.
+- The relationship is one-directional: `GOAL.md` drives `MASTER_PLAN.md`, which drives `plans/NN_*.md`.
+  Keep it flowing that way — don't let the plan drift from the goal.
 ``````
 
 ### `.claude/skills/release/SKILL.md`
@@ -1802,24 +2183,36 @@ intact and working — we only remove what KAIF added, surgically.
 
 ## Two modes
 
-- **Partial (default)** — remove the framework **core/wrapper** but **keep the content artifacts**:
-  `bugs/`, `interviews/`, `ideas/`, homework, and any other knowledge the work produced. The
-  agent's accumulated knowledge survives; only the KAIF machinery leaves.
-- **Full (`--all` / "полностью")** — remove the core/wrapper **and** the content artifacts. KAIF is
-  burned out of the project's history as if it had never been there — leaving only the user's project.
+- **Partial** — remove the framework **core/wrapper** but **keep the content artifacts**:
+  `bugs/`, `interviews/`, `ideas/`, `researches/`, `homeworks/`, and any other knowledge the work produced.
+  The agent's accumulated knowledge survives; only the KAIF machinery leaves.
+- **Full** — remove the core/wrapper **and** the content artifacts. KAIF is burned out of the project's
+  history as if it had never been there — leaving only the user's project.
 
 ## Procedure
 
-1. **Confirm the mode** with the human (partial vs full) and that they want removal. This is
-   destructive-ish — confirm explicitly.
+1. **MANDATORY — ask the owner, in natural language, WHICH removal to run, and wait for an explicit,
+   unambiguous answer.** This is destructive; never assume a mode. Ask plainly, e.g.:
+
+   > *"Removing KAIF. Which do you want — **partial** (remove the framework, but KEEP your content
+   > artifacts: bugs, interviews, ideas, research, homework) or **full** (remove KAIF AND those artifacts)?
+   > The rest of your project stays untouched either way. Please answer in words."*
+
+   - Proceed **only** on a clear, unambiguous natural-language answer that names one mode.
+   - If the answer is vague, ambiguous, or conditional ("maybe", "whatever's cleaner", "up to you", silence)
+     — do **not** guess and do **not** default. Ask again, restating the two options, until the owner gives
+     an explicit choice.
+   - A `--all` flag or an explicit phrase like "full removal" / "выжги полностью" counts as an explicit
+     answer for **full**; "keep my artifacts" / "частично" counts as **partial**. Anything else → re-ask.
 
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
-   - **Core/wrapper (removed in both modes):** the guidance docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
-     `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`), the deployed skills (`.claude/skills/` or the agent's
-     equivalent), the `kaif/` tools, `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF
-     additions to the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`).
+   - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
+     `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`, `GOAL.md`, `MASTER_PLAN.md`, the two maps, `KAIF_FRAMEWORK.md`),
+     the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
+     `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
+     (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
-     `plans/homework_*`, etc.
+     `researches/`, `homeworks/`, `plans/`, etc.
    - **NEVER touched:** the user's own project files and directories.
 
 3. **Un-wire the npm handles.** Remove the `kaif:*` scripts that KAIF added to the project's
@@ -1833,8 +2226,9 @@ intact and working — we only remove what KAIF added, surgically.
    kept, and confirm the project is intact. Commit `chore: remove KAIF (partial|full) — project preserved`.
 
 ## Notes
-- Default to **partial** unless the human explicitly asks for full — losing accumulated knowledge
-  (bug forensics, decisions) is rarely what they want.
+- **Never default the mode** — always get the owner's explicit natural-language choice first (Step 1). If
+  you must nudge, note that **partial** is the safer/gentler option (accumulated knowledge — bug forensics,
+  decisions, research — survives), but the owner decides.
 - Respect git history: removal is a normal commit; the user can still see KAIF in past history unless
   they choose to rewrite it (we don't rewrite history without an explicit request).
 ``````
@@ -1977,98 +2371,103 @@ version is in the project and whether a newer one exists upstream.
 
 ## 7. Conventions (cross-cutting rules)
 
-These rules apply to all work and are referenced throughout the guidance docs and skills.
-
-- **The DONE tag.** Closed `bugs/` and `ideas/` files get `DONE` inserted after their number via
-  `git mv` (`13_x.md` → `13_DONE_x.md`), plus an appended status section. The file listing alone then
-  shows what's open vs. closed. Reference docs are never tagged. (Skill: `/check-backlog`.)
-- **Commits.** `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line. End every message with a
-  `Co-Authored-By:` trailer naming the agent. Commit small and often — progress is never lost to a crash
-  or a context reset.
-- **Git workflow.** A simple, effective default (used by this framework's own project): work only in
-  `main`, no feature branches; to undo, use git history (`git revert`, `git checkout <hash> -- file`).
-  Pick what fits and state it in `AGENT_GUIDE.md` so the agent doesn't improvise.
-- **Comment the code.** Comment non-trivial blocks, modules, and important lines — what they do, why, and
-  what they connect to. This is for traceability across context-losing sessions.
-- **Narrate progress.** Write short natural-language updates in the chat so the human can glance in and
-  follow along — even (especially) during autonomous loops.
-- **Read fresh logs.** Always check the current time and the log's timestamp before reading — never act on
-  stale logs.
-- **Absolute dates.** Convert relative dates ("today", "yesterday") to absolute ones in any persisted
-  document — a future session has no idea when "today" was.
-- **Build your own harness.** Invest in tooling that lets the agent run, observe, and drive the software
-  without a human, and verify objectively (not by eye). Every time you do something manually, ask whether
-  it should become a one-step command — then add it and document it in `AGENT_GUIDE.md`.
-- **Living docs.** Improve `AGENT_GUIDE.md` / `STATUS.md` whenever it would make future autonomous work
-  more effective. The agent steers and tunes itself for the next session.
+- **The DONE tag.** Closed `bugs/`, `ideas/`, `plans/`, and `homeworks/` files get `DONE` inserted after
+  their number via `git mv` (`13_x.md` → `13_DONE_x.md`), plus an appended status section. `GOAL.md`,
+  `MASTER_PLAN.md`, the maps, and `researches/` notes are **living references** — never DONE-tagged. (Skill:
+  `/check-backlog`.)
+- **Commits.** `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line, ending with a `Co-Authored-By:`
+  trailer naming the agent. Commit small and often — progress is never lost to a crash or context reset.
+- **Git workflow.** Simple default (this framework's own): work only in `main`, no feature branches; undo
+  via git history. State the chosen policy in `AGENT_GUIDE.md`.
+- **Comment the code; narrate progress; read fresh logs; use absolute dates; build your own harness;** keep
+  the living docs (`AGENT_GUIDE.md`/`STATUS.md`/the maps) accurate as you work.
 
 ---
 
 ## 8. UNPACKING — step by step (for the AI agent)
 
-> Goal: deploy the framework into the **current target project**, customized to it. Work in order, narrate
-> in the chat. This is a one-time bootstrap; afterwards the project is driven by the skills.
+> Goal: deploy KAIF into the **current target project**, customized to it. Narrate in the chat as you go.
+> This is a one-time bootstrap; afterward the project is driven by the skills.
 
-**Step 0 — Confirm the target & read the fractal caveat (§1).** Make sure you are unpacking into the
-human's project, NOT into the framework's own repository. Derive everything from THIS document only.
+### Choose your path — strong model vs. small context
 
-**Step 1 — Inspect the target project & choose the working language.** Before writing anything:
-- Read the README, the package manifests / build files, and the directory tree.
-- Determine: the project name, the build command, the test command / how to run it, the architecture
-  (modules/components), the git remote, and the language(s) used.
-- Skim `git log` to learn the recent state. Note what already exists vs. what's planned.
-- **Ask the owner their preferred working language** for the project's docs (default: English). From here
-  on, write **every wrapper document you create (Steps 3–6) in that language**, per *"Localized
-  deployment"* in Part 1 — localize prose and each skill's `description:`; keep code, commands, paths, and
-  the skills' `name:` ids canonical.
-- **Determine the project's sphere** (§12) — programming, science, design, business, … — by inspection
-  and/or asking; you'll adapt the deployed terminology to it.
-- **Determine the target agent system** (§13) — Claude Code, Codex, Copilot, Cursor, … (default: Claude
-  Code) — to wire context and skills into its conventions.
+**Read this first.** Unpacking a whole framework *and* studying a whole project at once is heavy. Which
+path you take depends on your context window:
 
-**Step 2 — Create the directories.**
-```
-plans/  ideas/  bugs/  interviews/  .claude/skills/
-```
+- **Fast path — strong model, large context** (e.g. Claude Opus/Sonnet, GPT-class, Gemini with large
+  context — cloud models with big windows). You can hold KAIF + the project at once. Do all stages below in
+  one session.
+- **Respectful staged flow — small context** (e.g. local models on gaming GPUs with limited VRAM, or any
+  short-context model). Doing it in one shot is **risky and will likely fail** — you'll drown in context.
+  Instead run the stages as **atomic steps**, each needing only a little in context at once — possibly
+  across several messages, or even **several separate chats**. Never load the whole document and the whole
+  project together. Process **one embedded `FILE:` block at a time**; between steps, persist progress to
+  disk (Stage 2 uses a running file, `KAIF_DEPLOYMENT_PLAN.md`) so a later step — or a fresh chat — resumes
+  from where you left off.
 
-**Step 3 — Write the four guidance documents** (from the templates in §4), replacing every `<PLACEHOLDER>`
-with the project's real values discovered in Step 1:
-- `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md` — universal; write verbatim.
-- `AGENT_GUIDE.md` — fill in identity, goal, architecture map, build command, test harness, git workflow,
-  tools, code style. For owner-level unknowns (brand spelling, license), leave a clearly-marked `TODO` and
-  raise them in Step 7.
-- `STATUS.md` — seed it with the project's CURRENT real state (from Step 1): what's done, where we are,
-  an autonomous backlog pool, and a "where to continue" checklist.
+Both paths run the **same stages**; they differ only in how much you attempt per step.
 
-**Step 4 — Write the skills** (from §6 — all of them, including the five `kaif-*` lifecycle skills), one
-`.claude/skills/<name>/SKILL.md` each, verbatim except the command placeholders (`<BUILD_COMMAND>`,
-`<COMMIT_COMMAND>`, `<TEST_HARNESS>`) which you replace with the project's real commands. Keep the YAML
-frontmatter and the trigger phrases. (For a non-Claude agent, place skill content per the adapter, §13.)
+### Stage 0 — Confirm the target & parameters
+Confirm you are unpacking into the **human's project**, not the KAIF repo (§1 fractal caveat). Confirm the
+**working language** and **target agent system** (ask if not given — §1). Note the project's likely
+**sphere** (§13) — you'll confirm it in Stage 2.
 
-**Step 5 — Seed `plans/`.**
-- `MASTER_PLAN.md` — the roadmap. If the project has a goal/vision doc, distill it; otherwise draft a
-  skeleton (vision, principles, phases) and flag it for the owner.
-- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — the architecture map, from your Step 1 inspection.
+### Stage 1 — Raw structure (NO project context needed)
+Write out the framework's skeleton **from the templates embedded in this document**, *without reading the
+target project yet*. This is deliberately context-light: it only needs KAIF.md, not the project.
+- Create the directories: `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ .claude/skills/` and each
+  directory's `README.md` (from §5).
+- Write the key documents that are **universal or template-shaped**: `PHILOSOPHY.md` and
+  `BUG_FIXING_FRAMEWORK.md` verbatim; and the skeletons of `AGENT_GUIDE.md`, `STATUS.md`, `GOAL.md`,
+  `MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` with their
+  `<PLACEHOLDER>`s still in place (you'll fill them in Stage 3).
+- Write the skills (§6), replacing only the command placeholders you already know; leave the rest as TODO.
+- On the small-context path: do this **one FILE: block at a time**, committing after each, and stop here for
+  this session if needed. The skeleton is valid on its own.
 
-**Step 6 — Wire the auto-loaded context file.** Create or update the file your agent reads automatically:
-- Claude Code: `CLAUDE.md` (or `.claude/CLAUDE.md`). Some agents: `AGENTS.md`.
-- Add a top section: *"Before every task, read `AGENT_GUIDE.md` and `STATUS.md`. Think by `PHILOSOPHY.md`.
-  Debug by `BUG_FIXING_FRAMEWORK.md`. The skills in `.claude/skills/` are your rituals."* Don't duplicate
-  the canon — point at it.
+### Stage 2 — Study the project & build `KAIF_DEPLOYMENT_PLAN.md`
+Now study the target project **gradually**, writing what you learn into a temporary key file,
+**`KAIF_DEPLOYMENT_PLAN.md`** (create it in the project root). This file is your running deployment
+notebook — append to it as you learn, so you never need the whole project in context at once.
+Record, incrementally:
+- **What the project is:** name, purpose, README summary, build command, test/run command, git remote.
+- **Its sphere** (§13) and the terminology to adapt (what "bug", "release", "build", "test" mean here).
+- **Its architecture:** the modules/components (for the external & internal maps).
+- **For each KAIF module/doc:** how best to adapt it to this project — the concrete values that will replace
+  each `<PLACEHOLDER>`, the sphere wording, any owner-level unknowns to raise via `/interview`.
+- If `GOAL.md` already exists and is filled — read it and orient the whole plan around its vision.
 
-**Step 7 — Wire the KAIF lifecycle (§11).** Write `.kaif/kaif.json` (version, released date, `origin`,
-`tracking: "origin"`, plus the `sphere` and `agent` you determined). Respectfully add the `kaif:*` handles
-to the project's `package.json` (create it if absent), backed by a small `kaif` tool, without disturbing
-existing scripts. For a non-Claude agent, apply the matching adapter (§13) and generate the universal
-`AGENTS.md` fallback pointing at `AGENT_GUIDE.md`.
+On the small-context path, Stage 2 can span many atomic steps (or chats): read one part of the project,
+append findings to `KAIF_DEPLOYMENT_PLAN.md`, stop; resume later. The plan file is the hand-off.
 
-**Step 8 — Commit and report.**
-- `git add -A && git commit -m "chore: deploy KAIF"` (with the Co-Authored-By trailer).
-- Report to the human: the structure you created; the language, sphere, and agent chosen; which `TODO`
-  placeholders still need input; and offer `/interview` to close the owner-level questions.
+### Stage 3 — Adapt the raw modules to the project
+Using `KAIF_DEPLOYMENT_PLAN.md` as the source of truth, go back through the Stage-1 skeleton and **adapt it**,
+one file at a time:
+- Fill every `<PLACEHOLDER>` in `AGENT_GUIDE.md`, `STATUS.md`, the maps, and the skills with real values.
+- Seed `MASTER_PLAN.md` from `GOAL.md` (skill: `/revision`); if `GOAL.md` is empty, seed its template and
+  ask the owner to fill it (note that a later `/revision` will then re-derive the master plan).
+- Apply the sphere wording (§13) and the agent-system adapter (§14); generate the universal `AGENTS.md`
+  fallback pointing at `AGENT_GUIDE.md`.
+- Wire the lifecycle: write `.kaif/kaif.json` (version, released, `origin`, `tracking: "origin"`, `sphere`,
+  `agent`); respectfully add the `kaif:*` handles to `package.json` (create it if absent), backed by a small
+  `kaif` tool, without disturbing existing scripts.
+- Point the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`) at `AGENT_GUIDE.md` — don't duplicate the
+  canon, reference it.
 
-After unpacking, the project is framework-wrapped. The human drives it with `/resume`, `/pause`, the loop
-skills, and the rest.
+### Stage 4 — Finish injection: remove `KAIF.md`, write `KAIF_FRAMEWORK.md`, commit
+Once the structure is deployed and adapted:
+- **Write `KAIF_FRAMEWORK.md`** (from the template in §4) — the high-level "KAIF, deployed here" document:
+  what KAIF is, why it's here, how it works in this project, and the deployment record (version, date, how
+  injection went, sphere, agent, language, tracking). Include the author's note at its end.
+- **Remove the self-extracting core `KAIF.md`** — its job is done; from now the project is described by
+  `KAIF_FRAMEWORK.md` and driven by the skills. Delete `KAIF_DEPLOYMENT_PLAN.md` too, or archive it under
+  `researches/` if it holds useful findings.
+- **Commit** `chore: deploy KAIF` (with the Co-Authored-By trailer) and **report** to the human: the
+  structure created; the language/sphere/agent chosen; which `TODO`s still need input; and offer
+  `/interview` to close owner-level questions, and `/revision` if `GOAL.md` was just filled.
+
+After unpacking, the project is framework-wrapped: drive it with `/resume`, `/pause`, the loop skills, and
+the rest.
 
 ---
 
@@ -2076,27 +2475,36 @@ skills, and the rest.
 
 **Install (once):**
 1. Put `KAIF.md` in your project root (download it, or `git clone` this repo alongside).
-2. In your agent, say: *"Read KAIF.md and unpack the KAIF framework into this project."*
-3. Tell the agent your **preferred working language** (default English) and answer the few owner-level
-   questions it raises (it files them as an interview document).
+2. In your agent, say: *"Read KAIF.md and unpack the KAIF framework into this project."* Tell it your
+   **working language** (default English) and **agent system** (default Claude Code). If your agent is a
+   **small-context / local model**, ask it to use the **respectful staged flow** (§8) — don't attempt a
+   one-shot unpack, it will likely run out of context.
+3. Answer the few owner-level questions it raises (it files them as an interview document).
 
-**Daily driving (the skills you'll actually type):**
-- `/resume` — start of a work session: the agent reads the state and proposes the next move.
-- `/pause` — end of a session: the agent records state, builds, commits, and pushes.
-- `/autoloop` — *"work on your own over the backlog."* For when you step away.
-- `/dayloop` — *"work continuously, I'm busy."* No time limit; stops when you write.
-- `/nightloop` — *"work overnight."* Stops at a wake time or when you write.
-- `/report-bug`, `/propose-idea`, `/interview`, `/release` — as the names suggest.
+**`GOAL.md` — write it first if you can.** `GOAL.md` is your one-paragraph vision: *what you want, what the
+end result is, for whom.* If it exists at deploy time, the agent orients the whole deployment — sphere,
+terminology, and `MASTER_PLAN.md` — around it. It's not mandatory: you can add it later, but then the agent
+has to re-translate the already-deployed wrapper into the project's meaning (extra work). Better to write it
+up front. A template is created for you if it's missing.
 
-**What you'll get:** an agent that never starts from zero, that you can leave running for hours, that
-escalates the decisions that are genuinely yours, and that leaves behind a repository documenting how and
-why your project is built — readable by you and by the next agent session alike.
+**Daily driving:** `/resume` (start) · `/pause` (wrap up) · `/autoloop` · `/dayloop` · `/nightloop`
+(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/release`.
 
 ---
 
-## 10. Placeholder reference
+## 10. After injection — the core is removed
 
-When unpacking, replace these throughout the guidance docs and skills:
+KAIF's install is **self-cleaning**. When Stage 4 completes, the self-extracting core `KAIF.md` is
+**deleted** and replaced by `KAIF_FRAMEWORK.md` — a project-level document (like a README listing the
+project's technologies and frameworks, on which KAIF is now one of them). From then on, work is organized
+*through* KAIF via the skills, and `KAIF_FRAMEWORK.md` is the human-facing summary of that. (The framework's
+own repository is the one exception — it keeps `KAIF.md`, because that file *is* its product.)
+
+---
+
+## 11. Placeholder reference
+
+Replace these throughout the guidance docs and skills during unpacking:
 
 | Placeholder | Meaning |
 |-------------|---------|
@@ -2109,70 +2517,60 @@ When unpacking, replace these throughout the guidance docs and skills:
 | `<COMMIT_COMMAND>` | The commit/push flow (a tool, or `git add -A && git commit … && git push`). |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
 
-For owner-level unknowns (brand spelling, license choice, target platforms, vision), don't guess — leave a
-`TODO` and close it with `/interview`.
+For owner-level unknowns (brand spelling, license, target platforms, vision), don't guess — leave a `TODO`
+and close it with `/interview`.
 
 ---
 
-## 11. Versioning & the KAIF lifecycle
+## 12. Versioning & the KAIF lifecycle
 
-KAIF is **versioned** and has a full lifecycle in a project — not just a one-shot install.
-
-**Version stamp.** Versions are semantic + date-stamped: `vMAJOR.MINOR.PATCH (YYYY-MM-DD)`. On deploy the
-agent writes `.kaif/kaif.json`, recording the version, release date, `origin` repo, `tracking` mode
-(`origin` or `fork`), the project's `sphere`, and the `agent` system:
+**Version stamp.** KAIF versions are **two-digit semver — `MAJOR.MINOR`** (e.g. `1.1`). The release *name*
+carries only these two digits; the **release date lives in the release description**, not the name. Any KAIF
+document that states the current version writes only `MAJOR.MINOR`. On deploy the agent writes
+`.kaif/kaif.json`:
 
 ```json
-{ "framework": "KAIF", "version": "1.0.0", "released": "2026-06-30",
+{ "framework": "KAIF", "version": "1.1", "released": "2026-07-01",
   "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin",
   "sphere": "programming", "agent": "claude-code" }
 ```
 
-So the agent always knows which KAIF the project runs and where it came from.
+**npm handles.** On deploy, KAIF respectfully adds `kaif:*` scripts to `package.json` (creating one if
+absent), backed by a small `kaif` tool, without disturbing existing scripts: `kaif:version`, `kaif:check`,
+`kaif:update`, `kaif:fork`, `kaif:switch-origin`, `kaif:remove`, `kaif:remove-all`. Removal removes them.
 
-**npm handles.** On deploy, KAIF respectfully adds `kaif:*` scripts to the project's `package.json`
-(creating one if absent), backed by a small `kaif` tool — without disturbing existing scripts:
-`kaif:version`, `kaif:check`, `kaif:update`, `kaif:fork`, `kaif:switch-origin`, `kaif:remove`,
-`kaif:remove-all`. Removing KAIF removes these handles.
-
-**Lifecycle skills** (the five `kaif-*` skills):
-
+**Lifecycle skills:**
 - **`/kaif-version`** — report the deployed version; check `origin` for a newer release.
-- **`/kaif-update`** — **respectful migration update** from origin. When a newer version appears, the
-  agent offers it (*"I see a newer KAIF — run a respectful update & migration?"*); on yes it migrates the
-  core, **preserving local customizations and all content artifacts**, never breaking the project.
-- **`/kaif-fork`** — snapshot this project's evolved KAIF into the user's **own** repo and switch
-  `tracking` to it, so they version their own evolution independently of origin.
-- **`/kaif-switch-origin`** — return tracking to the official origin (with a respectful migration).
-- **`/kaif-remove`** — **respectful removal**: partial (default — remove the core/wrapper, **keep** the
-  content artifacts: bugs, interviews, ideas, homework) or full (`--all` — remove artifacts too). Either
-  way the user's own project stays whole and working; KAIF leaves no damage.
+- **`/kaif-update`** — **respectful migration update** from origin, preserving local customizations and all
+  content artifacts, never breaking the project.
+- **`/kaif-fork`** — snapshot this project's evolved KAIF into the user's **own** repo and track it.
+- **`/kaif-switch-origin`** — return tracking to the official origin (respectful migration).
+- **`/kaif-remove`** — **respectful removal**: the agent first **asks the owner, in natural language, which
+  removal to run** — *partial* (keep the content artifacts: bugs, interviews, ideas, research, homework) or
+  *full* (remove them too) — and proceeds only on an explicit, unambiguous answer. Either way the user's own
+  project stays whole.
 
-Origin = the canonical KAIF (`MikalaiKryvusha/KAIF`), its "DNA." Track it for the project's life, or fork
-and evolve your own — KAIF supports both, and switching between them, always respectfully.
+Origin = the canonical KAIF (`MikalaiKryvusha/KAIF`), its "DNA." Track it, or fork and evolve your own —
+KAIF supports both, and switching between them, always respectfully.
 
-## 12. Spheres — adapting to any domain
+## 13. Spheres — adapting to any domain
 
-KAIF is not only for programming. The same method serves mathematics, science, medicine, design,
-education, project management, finance, writing, and more. At deploy, the agent determines the project's
-**sphere** (inspect + ask), records it in `.kaif/kaif.json`, and adapts the deployed wrapper's
-terminology to that domain — what `bugs/`, "release", "build", and "test" *mean* there — using a **sphere
-library** (a concise term glossary + an entity mapping + a brief thesis intro to the domain). The repo
-ships a reference sphere (`programming`) plus examples (`science`, `design`, `business`) and a `_template`
-for authoring any other **on demand** — so KAIF adapts to *your* sphere even if no prebuilt library
-exists. If the sphere is unknown, KAIF falls back to neutral wording and still works. Catalog:
-`framework/spheres/`.
+KAIF is not only for programming. At deploy, the agent determines the project's **sphere** (inspect + ask),
+records it in `.kaif/kaif.json`, and adapts the deployed wrapper's terminology to that domain — what
+`bugs/`, "release", "build", "test", and the *internal map's* abstractions *mean* there — using a **sphere
+library** (a term glossary + entity mapping + a brief intro to the domain). The repo ships a reference
+sphere (`programming`) plus examples (`science`, `design`, `business`) and a `_template` for authoring any
+other on demand. Unknown sphere → neutral wording, still works. Catalog: `framework/spheres/`.
 
-## 13. Adapters — running on any agent system
+## 14. Adapters — running on any agent system
 
 KAIF's substance is **agent-agnostic**; only the *wiring* differs per system — (1) where the agent reads
 project context, and (2) where it discovers commands/skills. At deploy, the agent determines the target
 system, records it in `.kaif/kaif.json`, and uses the matching **adapter** to place `AGENT_GUIDE.md` and
-translate the skills into that system's format — always generating a universal `AGENTS.md` fallback that
-points at `AGENT_GUIDE.md`. Reference adapter: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority
-systems with adapters: **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code**; others
-(Devin, OpenCode, Aider, Junie) via the `AGENTS.md` fallback or authored from `_template`. Catalog:
-`framework/adapters/`.
+translate the skills into that system's format — always generating a universal `AGENTS.md` fallback pointing
+at `AGENT_GUIDE.md`. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority systems:
+**OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code**; others via the `AGENTS.md` fallback or
+authored from `_template`. Catalog: `framework/adapters/`.
 
 ---
 
@@ -2180,6 +2578,5 @@ systems with adapters: **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, 
 
 MIT License — © 2026 **Mikalai Kryvusha (KOT KRINIK)** · Николай Кривуша aka Кот Криник.
 
-You are free to use, copy, modify, and distribute this framework. Apply it to any project — including, as
-this repository demonstrates, the framework's own project (the fractal principle: the framework is
-organized and wrapped by itself).
+Use, copy, modify, and distribute freely — apply it to any project, including, as this repository shows, the
+framework's own (the fractal principle: the framework is organized and wrapped by itself).
