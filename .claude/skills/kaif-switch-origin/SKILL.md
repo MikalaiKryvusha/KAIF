@@ -20,7 +20,7 @@ official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfu
 4. **Switch tracking:** set `origin` back to `https://github.com/MikalaiKryvusha/KAIF` and
    `tracking: "origin"` in `.kaif/kaif.json`; stamp the origin version + date.
 5. **Validate, report, commit:** `npm run kaif:check`; summarize what reconciled and any conflicts left;
-   commit `chore: switch KAIF tracking to origin vX.Y.Z (DATE)`.
+   commit `chore: switch KAIF tracking to origin vX.Y (DATE)`.
 
 ## Notes
 - If the fork had valuable improvements, consider contributing them upstream (a PR to the origin) before

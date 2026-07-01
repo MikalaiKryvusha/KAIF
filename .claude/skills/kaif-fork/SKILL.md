@@ -25,7 +25,7 @@ some point the user wants to **own that evolution**: keep developing and version
    `tracking: "fork"`. From now on `/kaif-version` and `/kaif-update` follow the user's fork.
 
 4. **Seed the fork's versioning.** Start the fork's `version.json` from the current version (note it
-   descends from origin vX.Y.Z) with today's release date. The fork evolves on its own semver line.
+   descends from origin vX.Y) with today's release date. The fork evolves on its own semver line.
 
 5. **Report & commit.** Tell the human the fork repo URL and that tracking now points to it. Commit the
    `.kaif/kaif.json` change in the project.

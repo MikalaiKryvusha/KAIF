@@ -38,7 +38,7 @@ keeps every content artifact (`bugs/`, `interviews/`, `ideas/`, homework).
    (the validator) to confirm the result is well-formed.
 
 6. **Report & commit.** Summarize what changed, what was merged, any conflicts left for the human.
-   Commit `chore: update KAIF to vX.Y.Z (DATE)`.
+   Commit `chore: update KAIF to vX.Y (DATE)`.
 
 ## Notes
 - The guiding word is **respectful**: the project must stay whole and working at every step.

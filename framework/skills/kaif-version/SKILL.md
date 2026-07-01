@@ -12,7 +12,7 @@ version is in the project and whether a newer one exists upstream.
 
 1. **Read the local marker** `.kaif/kaif.json`:
    ```json
-   { "framework": "KAIF", "version": "X.Y.Z", "released": "YYYY-MM-DD",
+   { "framework": "KAIF", "version": "X.Y", "released": "YYYY-MM-DD",
      "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin", "sphere": "...", "agent": "..." }
    ```
    Report: current version + release date, the `tracking` mode (`origin` or `fork`), the sphere and agent.
@@ -23,11 +23,11 @@ version is in the project and whether a newer one exists upstream.
    gh release view --repo MikalaiKryvusha/KAIF --json tagName,publishedAt 2>/dev/null \
      || gh api repos/MikalaiKryvusha/KAIF/releases/latest --jq '.tag_name + " " + .published_at'
    ```
-   Compare semantic versions (`MAJOR.MINOR.PATCH`).
+   Compare semantic versions (`MAJOR.MINOR`).
 
 3. **Report to the human:**
    - If up to date → say so.
-   - If a newer version exists → say which, and offer: *"I see a newer KAIF version (vX.Y.Z, DATE). Want me
+   - If a newer version exists → say which, and offer: *"I see a newer KAIF version (vX.Y, DATE). Want me
      to run a respectful update & migration for this project?"* → if yes, hand off to `/kaif-update`.
    - If `tracking` is `fork` → note that this project follows the user's own KAIF fork, not the official
      origin; origin updates are informational only (see `/kaif-switch-origin` to return to official).

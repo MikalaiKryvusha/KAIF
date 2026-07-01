@@ -2154,7 +2154,7 @@ some point the user wants to **own that evolution**: keep developing and version
    `tracking: "fork"`. From now on `/kaif-version` and `/kaif-update` follow the user's fork.
 
 4. **Seed the fork's versioning.** Start the fork's `version.json` from the current version (note it
-   descends from origin vX.Y.Z) with today's release date. The fork evolves on its own semver line.
+   descends from origin vX.Y) with today's release date. The fork evolves on its own semver line.
 
 5. **Report & commit.** Tell the human the fork repo URL and that tracking now points to it. Commit the
    `.kaif/kaif.json` change in the project.
@@ -2260,7 +2260,7 @@ official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfu
 4. **Switch tracking:** set `origin` back to `https://github.com/MikalaiKryvusha/KAIF` and
    `tracking: "origin"` in `.kaif/kaif.json`; stamp the origin version + date.
 5. **Validate, report, commit:** `npm run kaif:check`; summarize what reconciled and any conflicts left;
-   commit `chore: switch KAIF tracking to origin vX.Y.Z (DATE)`.
+   commit `chore: switch KAIF tracking to origin vX.Y (DATE)`.
 
 ## Notes
 - If the fork had valuable improvements, consider contributing them upstream (a PR to the origin) before
@@ -2313,7 +2313,7 @@ keeps every content artifact (`bugs/`, `interviews/`, `ideas/`, homework).
    (the validator) to confirm the result is well-formed.
 
 6. **Report & commit.** Summarize what changed, what was merged, any conflicts left for the human.
-   Commit `chore: update KAIF to vX.Y.Z (DATE)`.
+   Commit `chore: update KAIF to vX.Y (DATE)`.
 
 ## Notes
 - The guiding word is **respectful**: the project must stay whole and working at every step.
@@ -2340,7 +2340,7 @@ version is in the project and whether a newer one exists upstream.
 
 1. **Read the local marker** `.kaif/kaif.json`:
    ```json
-   { "framework": "KAIF", "version": "X.Y.Z", "released": "YYYY-MM-DD",
+   { "framework": "KAIF", "version": "X.Y", "released": "YYYY-MM-DD",
      "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin", "sphere": "...", "agent": "..." }
    ```
    Report: current version + release date, the `tracking` mode (`origin` or `fork`), the sphere and agent.
@@ -2351,11 +2351,11 @@ version is in the project and whether a newer one exists upstream.
    gh release view --repo MikalaiKryvusha/KAIF --json tagName,publishedAt 2>/dev/null \
      || gh api repos/MikalaiKryvusha/KAIF/releases/latest --jq '.tag_name + " " + .published_at'
    ```
-   Compare semantic versions (`MAJOR.MINOR.PATCH`).
+   Compare semantic versions (`MAJOR.MINOR`).
 
 3. **Report to the human:**
    - If up to date → say so.
-   - If a newer version exists → say which, and offer: *"I see a newer KAIF version (vX.Y.Z, DATE). Want me
+   - If a newer version exists → say which, and offer: *"I see a newer KAIF version (vX.Y, DATE). Want me
      to run a respectful update & migration for this project?"* → if yes, hand off to `/kaif-update`.
    - If `tracking` is `fork` → note that this project follows the user's own KAIF fork, not the official
      origin; origin updates are informational only (see `/kaif-switch-origin` to return to official).

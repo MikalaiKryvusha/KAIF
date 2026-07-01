@@ -32,5 +32,5 @@ debugs, and documents. Verification is concrete (builds compile, tests pass, the
 
 - Emphasize the **harness** principle (`BUG_FIXING_FRAMEWORK.md`): build instrumentation to reproduce and
   verify objectively; the 3-attempts rule before switching to research.
-- All twelve base skills apply directly; `/release` maps to GitHub Releases.
+- All eighteen base skills apply directly; `/release` maps to GitHub Releases.
 - This is the default sphere if a project is clearly software and no other sphere is specified.
