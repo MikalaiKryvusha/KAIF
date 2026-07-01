@@ -1,8 +1,8 @@
 <!--
-  This file is the narrative spine of FRAMEWORK.md.
-  FRAMEWORK.md is GENERATED from this file by tools/build-framework.mjs:
+  This file is the narrative spine of KAIF.md.
+  KAIF.md is GENERATED from this file by tools/build-framework.mjs:
   the {{EMBED:...}} and {{EMBED_SKILLS}} markers below are replaced with the
-  actual template files from framework/. Do NOT edit FRAMEWORK.md by hand —
+  actual template files from framework/. Do NOT edit KAIF.md by hand —
   edit this file (or the templates) and re-run the build tool.
 -->
 # KAIF — Krinik AI Framework
@@ -26,7 +26,7 @@ This is a **self-extracting document**. It is, at once:
 1. **A complete description** of the KAIF framework — its philosophy, structure, conventions, skills,
    lifecycle, spheres, and adapters.
 2. **An installer.** Hand this single file to an AI agent and say *"unpack the KAIF framework into this
-   project per FRAMEWORK.md"* — the agent reads it and writes out the entire structure (guidance docs,
+   project per KAIF.md"* — the agent reads it and writes out the entire structure (guidance docs,
    directory conventions, and slash-skills), customized to the project.
 
 Everything the agent needs to recreate the framework is **inside this one document** — the templates are
@@ -58,9 +58,9 @@ removable.
 
 ### If you are a human (the project owner)
 
-1. Download `FRAMEWORK.md` into the root of your project (or clone this repository alongside it).
+1. Download `KAIF.md` into the root of your project (or clone this repository alongside it).
 2. Open your AI coding agent in the project and tell it:
-   > *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
+   > *"Read KAIF.md and unpack the KAIF framework into this project."*
 3. The agent will inspect your project, create the structure, and fill in the project-specific details
    (build command, architecture, etc.). It will **ask your preferred working language** (default English)
    and may ask a few owner-level questions (brand, license) via a short interview document — answer them.
@@ -82,7 +82,7 @@ The framework's **sources are written in English** (the shared community languag
 reading its own project in its own language. So **deployment is localized**: when unpacking, the agent
 **asks the owner for their preferred working language** (default: English) and writes the *deployed*
 wrapper — the four guidance docs, the skills, and the `plans/`/`bugs/`/`interviews/` documents — in
-that language. There is a **single** `FRAMEWORK.md` (English) — KAIF does **not** maintain translated copies of the
+that language. There is a **single** `KAIF.md` (English) — KAIF does **not** maintain translated copies of the
 core; multilingual support happens **at unpack time**: the agent reads the one English source and writes
 the deployed wrapper in the requested language.
 
@@ -91,7 +91,7 @@ the deployed wrapper in the requested language.
 - **Keep canonical (never translate):** code, shell commands, file paths, URLs, identifiers, the skills'
   `name:` field (the `/command` ids like `resume`, `pause`), and the `Co-Authored-By` trailer.
 
-> This repository is itself the living example: its public payload (`framework/`, `FRAMEWORK.md`) is
+> This repository is itself the living example: its public payload (`framework/`, `KAIF.md`) is
 > English, while its own working wrapper is in **Russian** — the language its owner works in. Your
 > deployment picks whatever language suits *you*.
 
@@ -102,7 +102,7 @@ This framework is **dogfooded**: the repository you may be looking at (`KAIF`)
 `plans/`, `bugs/`, and `interviews/` — but those describe **the development of the framework itself**, not
 your project.
 
-> **When unpacking into a user's project, derive everything from THIS document (`FRAMEWORK.md`) only.**
+> **When unpacking into a user's project, derive everything from THIS document (`KAIF.md`) only.**
 > Do NOT copy the framework repository's own root `AGENT_GUIDE.md` / `STATUS.md` / etc. — they are the
 > framework's self-application and are about building the framework, not about your project. The embedded
 > templates in this document are the canonical, generic source. (This is the resolution of the recursion:
@@ -371,8 +371,8 @@ skills, and the rest.
 ## 9. For the human — quick start
 
 **Install (once):**
-1. Put `FRAMEWORK.md` in your project root (download it, or `git clone` this repo alongside).
-2. In your agent, say: *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
+1. Put `KAIF.md` in your project root (download it, or `git clone` this repo alongside).
+2. In your agent, say: *"Read KAIF.md and unpack the KAIF framework into this project."*
 3. Tell the agent your **preferred working language** (default English) and answer the few owner-level
    questions it raises (it files them as an interview document).
 

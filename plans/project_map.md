@@ -12,14 +12,14 @@ KAIF/
 │
 │  ── PAYLOAD (что разворачивается в пользовательские проекты) ──
 ├── framework/
-│   ├── _intro.md                 # narrative spine of FRAMEWORK.md, with {{VERSION}}, {{EMBED:…}}, {{EMBED_SKILLS}}
+│   ├── _intro.md                 # narrative spine of KAIF.md, with {{VERSION}}, {{EMBED:…}}, {{EMBED_SKILLS}}
 │   ├── AGENT_GUIDE.md            # guidance-doc template (generic, <PLACEHOLDERS>)
 │   ├── PHILOSOPHY.md             # guidance-doc template (universal)
 │   ├── BUG_FIXING_FRAMEWORK.md   # guidance-doc template (universal)
 │   ├── STATUS.md                 # guidance-doc template (generic)
 │   └── skills/<name>/SKILL.md    # the 12 skill templates (generic, command placeholders)
 │
-├── FRAMEWORK.md                  # ⭐ GENERATED self-extracting core (English; unpacks into any language)
+├── KAIF.md                  # ⭐ GENERATED self-extracting core (English; unpacks into any language)
 │
 │  ── FRONT DOOR ──
 ├── README.md                     # EN (primary) + RU
@@ -31,7 +31,7 @@ KAIF/
 │
 │  ── TOOLS ──
 ├── tools/
-│   ├── build-framework.mjs       # framework/ → FRAMEWORK.md
+│   ├── build-framework.mjs       # framework/ → KAIF.md
 │   ├── readme-pdf.mjs            # README.md → README.pdf
 │   ├── commit.mjs               # bump build, commit, push
 │   └── package.json             # dev deps (md-to-pdf for the PDF)
@@ -59,7 +59,7 @@ KAIF/
 framework/_intro.md  ──┐
 framework/AGENT_GUIDE.md │
 framework/PHILOSOPHY.md  │   tools/build-framework.mjs
-framework/BUG_FIXING…md  ├──────────────────────────────▶  FRAMEWORK.md
+framework/BUG_FIXING…md  ├──────────────────────────────▶  KAIF.md
 framework/STATUS.md      │   (replaces {{VERSION}},          (self-extracting core,
 framework/skills/**      │    {{EMBED:…}}, {{EMBED_SKILLS}})  16 embedded FILE: blocks)
                        ──┘
@@ -76,7 +76,7 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 
 ## Два слоя (не путайте их)
 
-1. **Полезная нагрузка** = `framework/` (исходник) → `FRAMEWORK.md` (сгенерировано). Именно это разворачивается на стороне.
+1. **Полезная нагрузка** = `framework/` (исходник) → `KAIF.md` (сгенерировано). Именно это разворачивается на стороне.
 2. **Обвязка** = корневые `AGENT_GUIDE.md`/`STATUS.md`/`PHILOSOPHY.md`/`BUG_FIXING_FRAMEWORK.md` +
    `.claude/skills/` + `plans/`/`bugs/`/`interviews/` + `CLAUDE.md`. Это фреймворк, применённый к
    *этому* проекту.

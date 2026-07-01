@@ -27,7 +27,7 @@ bilingual, keep both languages in sync. Don't invent — reflect only what is ac
 ## Step 3. (Re)build / regenerate artifacts
 
 `<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
-own project: `node tools/build-framework.mjs` regenerates FRAMEWORK.md, and `node tools/readme-pdf.mjs`
+own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
 regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
 
 ## Step 4. Commit and push

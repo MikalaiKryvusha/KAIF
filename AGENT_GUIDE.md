@@ -12,13 +12,13 @@
 >
 > 1. **Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:
 >    - `framework/` — канонические универсальные шаблоны (четыре руководящих документа + двенадцать навыков).
->    - `FRAMEWORK.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
+>    - `KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
 >      `tools/build-framework.mjs`. Это единственный источник истины для развёртывания.
 > 2. **Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):
 >    - этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`,
 >      `.claude/skills/`, `plans/`, `bugs/`, `interviews/`.
 >
-> ⚠️ **Когда кто-то разворачивает фреймворк в СВОЁМ проекте, он использует только `FRAMEWORK.md` — а НЕ
+> ⚠️ **Когда кто-то разворачивает фреймворк в СВОЁМ проекте, он использует только `KAIF.md` — а НЕ
 > файлы обвязки этого репозитория.** Не давай обвязке протечь в полезную нагрузку. Если ты улучшаешь навык
 > или руководящий документ *как шаблон* — правь его в `framework/` и пересобирай; если ты улучшаешь то, как
 > ведётся *этот проект* — правь корневую обвязку. Обычно нужно, чтобы оба слоя двигались вместе — держи их
@@ -62,7 +62,7 @@
 Дистиллировать рабочий фреймворк для AI-агента, родившийся в совместной работе Криника и Claude, в **универсальный,
 самораспаковывающийся фреймворк**, который любой разработчик может встроить в любой программный проект,
 чтобы превратить своего AI-агента для кодинга в дисциплинированного, автономного, устойчивого к потере
-контекста напарника. Главный артефакт — `FRAMEWORK.md`: один документ, который одновременно описывает
+контекста напарника. Главный артефакт — `KAIF.md`: один документ, который одновременно описывает
 фреймворк и распаковывает его. Полное видение: `goal.md`.
 
 ---
@@ -71,7 +71,7 @@
 
 ```
 KAIF/
-├── FRAMEWORK.md              ← ⭐ GENERATED self-extracting core (English; unpacks into any language)
+├── KAIF.md              ← ⭐ GENERATED self-extracting core (English; unpacks into any language)
 ├── README.md                 ← EN (primary) + RU, the front door
 ├── README.pdf                ← rendered README (generated, gitignored)
 ├── LICENSE                   ← MIT
@@ -79,7 +79,7 @@ KAIF/
 ├── version.json              ← { major, minor, build }
 │
 ├── framework/                ← THE PAYLOAD (canonical universal templates)
-│   ├── _intro.md             ←   narrative spine of FRAMEWORK.md (with {{EMBED}} markers)
+│   ├── _intro.md             ←   narrative spine of KAIF.md (with {{EMBED}} markers)
 │   ├── AGENT_GUIDE.md        ←   guidance-doc templates (generic, placeholders)
 │   ├── PHILOSOPHY.md
 │   ├── BUG_FIXING_FRAMEWORK.md
@@ -87,7 +87,7 @@ KAIF/
 │   └── skills/<name>/SKILL.md ←  the twelve skill templates
 │
 ├── tools/
-│   ├── build-framework.mjs   ←   assembles FRAMEWORK.md from framework/
+│   ├── build-framework.mjs   ←   assembles KAIF.md from framework/
 │   ├── readme-pdf.mjs        ←   renders README.md → README.pdf
 │   └── commit.mjs            ←   bump build, commit, push
 │
@@ -99,10 +99,10 @@ KAIF/
     └── CLAUDE.md              ←   points the agent at this guide
 ```
 
-**ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `FRAMEWORK.md` генерируется из него.
+**ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
 
 **Языки — две аудитории, два языка:**
-- **Публичная полезная нагрузка** (`framework/`, `FRAMEWORK.md`) — **единственный** источник, на
+- **Публичная полезная нагрузка** (`framework/`, `KAIF.md`) — **единственный** источник, на
   **английском** (язык сообщества). Многоязычность — при распаковке: агент разворачивает ядро в
   запрошенный язык (отдельных переводов ядра не держим). Русская половина README — для читателей-людей.
 - **Локальная обвязка для dogfooding** (этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`,
@@ -118,18 +118,18 @@ KAIF/
 ## Сборка (регенерация артефактов)
 
 ```bash
-node tools/build-framework.mjs     # regenerate FRAMEWORK.md from framework/_intro.md + framework/*
+node tools/build-framework.mjs     # regenerate KAIF.md from framework/_intro.md + framework/*
 node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 ```
 
-> **Никогда не правь `FRAMEWORK.md` вручную.** Правь `framework/_intro.md` (повествование) или шаблоны
+> **Никогда не правь `KAIF.md` вручную.** Правь `framework/_intro.md` (повествование) или шаблоны
 > `framework/*`, затем заново запусти `build-framework.mjs`. Сборка и есть «тест»: она должна пройти
 > успешно, а встроенные блоки — оставаться сбалансированными.
 
 ## «Тестирование» этого проекта
 
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто; (2) встроенные
-блоки `FILE:` в `FRAMEWORK.md` сбалансированы и полны (4 документа + 12 навыков = 16); (3) ссылки на
+блоки `FILE:` в `KAIF.md` сбалансированы и полны (4 документа + 12 навыков = 16); (3) ссылки на
 файлы/навыки/пути в документах разрешаются; (4) английский и русский README остаются синхронными; (5) PDF
 рендерится.
 
@@ -161,7 +161,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 
 | Команда | Что делает |
 |---------|--------------|
-| `node tools/build-framework.mjs` | Регенерирует `FRAMEWORK.md` из `framework/`. |
+| `node tools/build-framework.mjs` | Регенерирует `KAIF.md` из `framework/`. |
 | `node tools/readme-pdf.mjs` | Рендерит `README.md` → `README.pdf` (нужен `md-to-pdf`; `npm i` в `tools/`). |
 | `node tools/commit.mjs "<msg>"` | Инкрементирует номер сборки, коммитит, пушит. |
 
@@ -199,7 +199,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 - Фреймворк должен оставаться **универсальным** — абстрагируйся от исходного проекта и от автора. Исходный
   проект — лишь исток и может приводиться как пример, но фреймворк применим к любому проекту.
 - Сохраняй реальное свойство **самораспаковки**: всё необходимое для развёртывания должно жить внутри
-  `FRAMEWORK.md`.
+  `KAIF.md`.
 - Поддерживай **два языка**: английский (основной) и русский (переводная копия). Держи их синхронными.
 - Этот проект обёрнут сам собой — но развёртывание в пользовательские проекты управляется ТОЛЬКО
-  `FRAMEWORK.md`.
+  `KAIF.md`.

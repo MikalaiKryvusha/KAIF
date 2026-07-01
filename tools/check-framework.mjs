@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // tools/check-framework.mjs — KAIF self-check (idea 01).
-// Validates the generated FRAMEWORK.md so a silent breakage never ships a broken installer.
+// Validates the generated KAIF.md so a silent breakage never ships a broken installer.
 // Atomic: run any time via `npm test` (or `npm run kaif:check`); also invoked at the end of the build.
 //
 // Checks:
 //   1. The number of embedded `> **FILE:` blocks == (guidance docs in framework/) + (skills in framework/skills/).
 //   2. The 6-backtick fences are balanced, one pair per embedded block.
 //   3. No unreplaced build markers ({{...}}) remain.
-//   4. Every skill in framework/skills/ is embedded in FRAMEWORK.md.
+//   4. Every skill in framework/skills/ is embedded in KAIF.md.
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,9 +15,9 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 
-const fwPath = join(ROOT, 'FRAMEWORK.md');
+const fwPath = join(ROOT, 'KAIF.md');
 if (!existsSync(fwPath)) {
-  console.error('❌ FRAMEWORK.md not found — run `node tools/build-framework.mjs` first.');
+  console.error('❌ KAIF.md not found — run `node tools/build-framework.mjs` first.');
   process.exit(1);
 }
 const fw = readFileSync(fwPath, 'utf8');
@@ -48,7 +48,7 @@ if (markers) errors.push(`unreplaced build markers: ${[...new Set(markers)].join
 
 // 4. every skill embedded
 for (const s of skills) {
-  if (!fw.includes(`.claude/skills/${s}/SKILL.md`)) errors.push(`skill not embedded in FRAMEWORK.md: ${s}`);
+  if (!fw.includes(`.claude/skills/${s}/SKILL.md`)) errors.push(`skill not embedded in KAIF.md: ${s}`);
 }
 
 if (errors.length) {

@@ -15,11 +15,12 @@ if (!msg) {
   process.exit(1);
 }
 
-// Bump build number (keep version.json readable, one line).
+// Bump the internal build counter, preserving every other field of version.json.
+// (The version shown anywhere is major.minor only — `build` is an internal counter.)
 const vf = join(ROOT, 'version.json');
 const v = JSON.parse(readFileSync(vf, 'utf8'));
 v.build = (v.build || 0) + 1;
-writeFileSync(vf, `{ "major": ${v.major}, "minor": ${v.minor}, "build": ${v.build} }\n`);
+writeFileSync(vf, JSON.stringify(v, null, 2) + '\n');
 
 const trailer = 'Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>';
 const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });

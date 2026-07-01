@@ -13,14 +13,14 @@ const cmd = (process.argv[2] || 'version').toLowerCase();
 
 const readJson = (p) => { try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; } };
 const marker = () => readJson(join(ROOT, '.kaif', 'kaif.json'));
-const ver = () => { const v = readJson(join(ROOT, 'version.json')); return v ? `${v.major}.${v.minor}.${v.patch ?? 0}` : null; };
+const ver = () => { const v = readJson(join(ROOT, 'version.json')); return v ? `${v.major}.${v.minor}` : null; };
 
 function guide(skill, what) {
   console.log(`KAIF lifecycle — ${what}.`);
   console.log('This is a project-specific, respectful operation. Run it through the agent skill:');
   console.log(`   /${skill}`);
   console.log('The skill performs the step by step, preserving your project and its content artifacts.');
-  console.log(`(See .claude/skills/${skill}/SKILL.md, or the matching section of FRAMEWORK.md.)`);
+  console.log(`(See .claude/skills/${skill}/SKILL.md, or the matching section of KAIF.md.)`);
 }
 
 switch (cmd) {

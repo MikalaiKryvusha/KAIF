@@ -34,5 +34,5 @@ version is in the project and whether a newer one exists upstream.
 
 ## Notes
 - If `.kaif/kaif.json` is missing, KAIF may not be deployed here (or the marker was lost) — say so and
-  point to `FRAMEWORK.md` for (re)deployment.
+  point to `KAIF.md` for (re)deployment.
 - Read-only skill: it never changes the project. Updates go through `/kaif-update`.

@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 // tools/build-framework.mjs
 // ---------------------------------------------------------------------------
-// Assembles the self-extracting core FRAMEWORK.md from:
+// Assembles the self-extracting core KAIF.md from:
 //   - framework/_intro.md   (the narrative spine, with {{...}} markers)
 //   - framework/*.md         (the four guidance-doc templates)
 //   - framework/skills/**    (the twelve skill templates)
 //
 // Single source of truth: the templates live ONCE in framework/. This tool
-// inlines them into FRAMEWORK.md so the document is genuinely self-extracting
+// inlines them into KAIF.md so the document is genuinely self-extracting
 // (everything needed to recreate the structure is inside one file). This is
 // itself an example of the framework's "build your own tooling" principle.
 //
 // Usage:  node tools/build-framework.mjs
-// Re-run after editing framework/_intro.md or any template. Never hand-edit FRAMEWORK.md.
+// Re-run after editing framework/_intro.md or any template. Never hand-edit KAIF.md.
 // ---------------------------------------------------------------------------
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
@@ -26,16 +26,17 @@ const FW = join(ROOT, 'framework');
 // 3-backtick code fences (and nested examples), so nothing leaks out.
 const FENCE = '``````';
 
-// Read the project version (X.Y) from version.json, defaulting to 1.0.
+// Read the project version (X.Y — major.minor only) from version.json, defaulting to 1.0.
+// KAIF versions are two-digit semver (see idea 05 / plan 06): no patch, no date in the name.
 function version() {
   const vf = join(ROOT, 'version.json');
   if (existsSync(vf)) {
     try {
       const v = JSON.parse(readFileSync(vf, 'utf8'));
-      return `${v.major}.${v.minor}.${v.patch ?? 0}`;
+      return `${v.major}.${v.minor}`;
     } catch { /* fall through */ }
   }
-  return '1.0.0';
+  return '1.0';
 }
 
 // Release date (YYYY-MM-DD) from version.json — KAIF stamps each version with its release date.
@@ -94,8 +95,8 @@ out = out.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => {
 // {{EMBED_SKILLS}}
 out = out.replace('{{EMBED_SKILLS}}', embedSkills());
 
-writeFileSync(join(ROOT, 'FRAMEWORK.md'), out);
-console.log(`✅ FRAMEWORK.md generated — ${out.split('\n').length} lines, v${version()} (${released()})`);
+writeFileSync(join(ROOT, 'KAIF.md'), out);
+console.log(`✅ KAIF.md generated — ${out.split('\n').length} lines, v${version()} (${released()})`);
 
 // Self-check the generated installer (idea 01): fail loudly if it is malformed.
 try {

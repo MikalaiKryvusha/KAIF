@@ -7,9 +7,9 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
-[![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](FRAMEWORK.md)
-[![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](FRAMEWORK.md)
+[![Version](https://img.shields.io/badge/Version-1.1-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](KAIF.md)
+[![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
 [![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kaif--фреймворк-для-ии-агента-на-русском)
 
 **A context-resilient, fundamental methodology — an autonomy-disciplined operating framework for AI agents.**
@@ -18,7 +18,7 @@ disciplined, autonomous teammate that never starts from zero. The human stays th
 executes. KAIF is the methodology binding them — with a full lifecycle: deploy → update → fork → remove.
 
 > 🇬🇧 English (primary) below · 🇷🇺 [Русская версия ниже](#kaif--фреймворк-для-ии-агента-на-русском)
-> 📦 The whole framework is one file: **[`FRAMEWORK.md`](FRAMEWORK.md)** — a self-extracting core.
+> 📦 The whole framework is one file: **[`KAIF.md`](KAIF.md)** — a self-extracting core.
 
 ---
 
@@ -45,8 +45,8 @@ software together — a standalone by-product of that collaboration, generalized
 ```
    You (human)                         Your AI agent
    ───────────                         ─────────────
-1. Drop FRAMEWORK.md into your repo
-2. "Unpack the KAIF framework"  ─▶  reads FRAMEWORK.md, inspects your project,
+1. Drop KAIF.md into your repo
+2. "Unpack the KAIF framework"  ─▶  reads KAIF.md, inspects your project,
                                         writes out the structure, customizes it
 3. /resume · /pause · /autoloop ···  ─▶ works like a disciplined, autonomous teammate
 ```
@@ -61,13 +61,13 @@ working wrapper.)*
 
 ## Quick start (for the human)
 
-1. **Get the framework.** Download **[`FRAMEWORK.md`](FRAMEWORK.md)** into your project's root — or clone
+1. **Get the framework.** Download **[`KAIF.md`](KAIF.md)** into your project's root — or clone
    this repo alongside your project:
    ```bash
    git clone https://github.com/MikalaiKryvusha/KAIF.git
    ```
 2. **Ask your agent to unpack it.** In your AI coding agent, open your project and say:
-   > *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
+   > *"Read KAIF.md and unpack the KAIF framework into this project."*
 
    The agent inspects your project, creates the structure, fills in the project-specific details (build
    command, architecture, etc.), asks your **preferred working language** (default English), and may ask a
@@ -133,7 +133,7 @@ your-project/
 
 ## For AI agents
 
-If you are an AI agent: read **[`FRAMEWORK.md`](FRAMEWORK.md)** end to end, then follow its
+If you are an AI agent: read **[`KAIF.md`](KAIF.md)** end to end, then follow its
 *"Unpacking — step by step"* section. Everything you need is inside that one document.
 
 ## This repository is fractal (dogfooding)
@@ -142,15 +142,15 @@ This repo *is* the framework **and** is *wrapped by* the framework — it uses i
 real `AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/`, `plans/`, `bugs/`, `interviews/` describing the
 development *of the framework itself*.
 
-> ⚠️ **When you deploy the framework into your project, derive everything from `FRAMEWORK.md` only** —
+> ⚠️ **When you deploy the framework into your project, derive everything from `KAIF.md` only** —
 > not from this repo's own wrapper files (they're about building the framework, not your project).
-> `FRAMEWORK.md` is the single source of truth for deployment. It is **generated** from `framework/` by
+> `KAIF.md` is the single source of truth for deployment. It is **generated** from `framework/` by
 > `node tools/build-framework.mjs` — never hand-edit it.
 
 ## Repository layout
 
 ```
-FRAMEWORK.md                     ⭐ the self-extracting core (English; unpacks into any language), generated
+KAIF.md                     ⭐ the self-extracting core (English; unpacks into any language), generated
 framework/                       the canonical universal templates (the payload)
 tools/                           build-framework.mjs · readme-pdf.mjs · commit.mjs
 README.md / README.pdf           this front door (EN+RU) and its rendered copy
@@ -170,8 +170,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 # KAIF — Фреймворк для ИИ-агента (на русском)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
-[![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](FRAMEWORK.md)
+[![Version](https://img.shields.io/badge/Version-1.1-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](KAIF.md)
 
 **KAIF — фундаментальная методология и фреймворк работы для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 Положите его в любой когнитивный проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
@@ -179,7 +179,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 визионером, агент — исполнителем; KAIF — методология, их связывающая, с полным жизненным циклом:
 развёртывание → обновление → форк → удаление.
 
-> 📦 Весь фреймворк — это один файл: **[`FRAMEWORK.md`](FRAMEWORK.md)** (на английском) — самораспаковывающееся
+> 📦 Весь фреймворк — это один файл: **[`KAIF.md`](KAIF.md)** (на английском) — самораспаковывающееся
 > ядро. При распаковке агент развернёт его на нужном вам языке; отдельной русской версии ядра не требуется.
 
 ---
@@ -208,8 +208,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 ```
    Вы (человек)                         Ваш ИИ-агент
    ────────────                         ────────────
-1. Кладёте FRAMEWORK.md в свой репозиторий
-2. «Распакуй фреймворк KAIF»        ─▶  читает FRAMEWORK.md, изучает проект,
+1. Кладёте KAIF.md в свой репозиторий
+2. «Распакуй фреймворк KAIF»        ─▶  читает KAIF.md, изучает проект,
                                          разворачивает структуру, настраивает её
 3. /resume · /pause · /autoloop ···  ─▶ работает как дисциплинированный автономный напарник
 ```
@@ -224,13 +224,13 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ## Быстрый старт (для человека)
 
-1. **Возьмите фреймворк.** Скачайте **[`FRAMEWORK.md`](FRAMEWORK.md)** в корень своего проекта — или
+1. **Возьмите фреймворк.** Скачайте **[`KAIF.md`](KAIF.md)** в корень своего проекта — или
    склонируйте этот репозиторий рядом:
    ```bash
    git clone https://github.com/MikalaiKryvusha/KAIF.git
    ```
 2. **Попросите агента распаковать.** В своём ИИ-агенте откройте проект и скажите:
-   > *«Прочитай FRAMEWORK.md и распакуй фреймворк KAIF в этот проект.»*
+   > *«Прочитай KAIF.md и распакуй фреймворк KAIF в этот проект.»*
 
    Агент изучит проект, создаст структуру, заполнит специфику проекта (команда сборки, архитектура и т.д.)
    спросит ваш **предпочитаемый рабочий естественный язык, накотором вы разговариваете в повседневной жизни** (по умолчанию английский) и может задать несколько вопросов
@@ -296,7 +296,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ## Для ИИ-агентов
 
-Если вы — ИИ-агент: прочитайте **[`FRAMEWORK.md`](FRAMEWORK.md)** целиком, затем следуйте разделу
+Если вы — ИИ-агент: прочитайте **[`KAIF.md`](KAIF.md)** целиком, затем следуйте разделу
 *«Распаковка — по шагам»*. Всё нужное —
 внутри этого одного документа.
 
@@ -306,15 +306,15 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 настоящие `AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/`, `plans/`, `bugs/`, `interviews/`, описывающие
 разработку *самого фреймворка*.
 
-> ⚠️ **Разворачивая фреймворк в свой проект, берите всё ТОЛЬКО из `FRAMEWORK.md`** — а не из собственных
-> обвязочных файлов этого репозитория (они про разработку фреймворка, а не вашего проекта). `FRAMEWORK.md` —
+> ⚠️ **Разворачивая фреймворк в свой проект, берите всё ТОЛЬКО из `KAIF.md`** — а не из собственных
+> обвязочных файлов этого репозитория (они про разработку фреймворка, а не вашего проекта). `KAIF.md` —
 > единственный источник истины для развёртывания. Он **генерируется** из `framework/` командой
 > `node tools/build-framework.mjs` — никогда не правьте его руками.
 
 ## Структура репозитория
 
 ```
-FRAMEWORK.md                     ⭐ самораспаковывающееся ядро (английский; распаковывается в любой язык)
+KAIF.md                     ⭐ самораспаковывающееся ядро (английский; распаковывается в любой язык)
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
 tools/                           build-framework.mjs · readme-pdf.mjs · commit.mjs
 README.md / README.pdf           этот «парадный вход» (EN+RU) и его рендер-копия

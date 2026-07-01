@@ -18,8 +18,8 @@ keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
    `fork`, confirm the human really wants to pull from the official origin (usually they'd update from
    their fork instead). Ensure the working tree is clean (commit/stash first).
 
-2. **Fetch the target version** from `origin`: the new `FRAMEWORK.md` (and/or the release asset). The
-   self-extracting `FRAMEWORK.md` is the single source of truth for what the new version contains.
+2. **Fetch the target version** from `origin`: the new `KAIF.md` (and/or the release asset). The
+   self-extracting `KAIF.md` is the single source of truth for what the new version contains.
 
 3. **Diff old → new.** Compare the new framework's guidance docs, skills, and conventions against what's
    deployed. Classify each change: (a) pure framework upgrade (safe to apply), (b) touches a file the
@@ -27,7 +27,7 @@ keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
 
 4. **Migrate respectfully:**
    - Apply framework-owned upgrades (skills, guidance-doc templates) — re-derive the deployed wrapper
-     from the new `FRAMEWORK.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
+     from the new `KAIF.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
    - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
      overwrite; surface conflicts to the human, don't guess.
    - **Never touch content artifacts** (`bugs/`, `interviews/`, `plans/ideas/`, homework) or the user's

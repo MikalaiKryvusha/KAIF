@@ -18,7 +18,7 @@ some point the user wants to **own that evolution**: keep developing and version
 
 2. **Create the user's KAIF repo.** With the human's confirmation, create a new GitHub repo under their
    account (e.g. `gh repo create <user>/<their-kaif-name> --public`). Put the snapshot of the framework
-   there as its own self-contained KAIF (carry over `FRAMEWORK.md`/`framework/`, tools, README, LICENSE,
+   there as its own self-contained KAIF (carry over `KAIF.md`/`framework/`, tools, README, LICENSE,
    versioning). This becomes the user's origin.
 
 3. **Switch tracking.** Update `.kaif/kaif.json` in the project: set `origin` to the user's new repo and

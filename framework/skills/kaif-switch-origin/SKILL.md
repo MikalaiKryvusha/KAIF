@@ -13,7 +13,7 @@ official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfu
 1. **Read `.kaif/kaif.json`** — confirm `tracking: "fork"` and note the current (fork) version.
 2. **Confirm with the human** — switching lineages can be significant if the fork diverged a lot. Make
    sure they want the official origin's evolution, not their fork's.
-3. **Respectful migration to origin:** fetch the official origin's current `FRAMEWORK.md`; diff against
+3. **Respectful migration to origin:** fetch the official origin's current `KAIF.md`; diff against
    the deployed (fork-derived) wrapper; apply the same careful 3-way merge as `/kaif-update` — preserve
    local customizations where possible, surface conflicts, **never** touch content artifacts or the
    user's project files.

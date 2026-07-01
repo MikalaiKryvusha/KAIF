@@ -1,7 +1,7 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by tools/build-framework.mjs. Edit the sources and re-run the tool. -->
 # KAIF — Krinik AI Framework
 
-### The self-extracting core · v1.0.0 (2026-06-30)
+### The self-extracting core · v1.1 (2026-07-01)
 
 > **A context-resilient, autonomy-disciplined operating framework for the human–AI tandem.**
 > Turn any AI agent (Claude or otherwise) into a disciplined, autonomous, context-resilient teammate on
@@ -20,7 +20,7 @@ This is a **self-extracting document**. It is, at once:
 1. **A complete description** of the KAIF framework — its philosophy, structure, conventions, skills,
    lifecycle, spheres, and adapters.
 2. **An installer.** Hand this single file to an AI agent and say *"unpack the KAIF framework into this
-   project per FRAMEWORK.md"* — the agent reads it and writes out the entire structure (guidance docs,
+   project per KAIF.md"* — the agent reads it and writes out the entire structure (guidance docs,
    directory conventions, and slash-skills), customized to the project.
 
 Everything the agent needs to recreate the framework is **inside this one document** — the templates are
@@ -52,9 +52,9 @@ removable.
 
 ### If you are a human (the project owner)
 
-1. Download `FRAMEWORK.md` into the root of your project (or clone this repository alongside it).
+1. Download `KAIF.md` into the root of your project (or clone this repository alongside it).
 2. Open your AI coding agent in the project and tell it:
-   > *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
+   > *"Read KAIF.md and unpack the KAIF framework into this project."*
 3. The agent will inspect your project, create the structure, and fill in the project-specific details
    (build command, architecture, etc.). It will **ask your preferred working language** (default English)
    and may ask a few owner-level questions (brand, license) via a short interview document — answer them.
@@ -76,7 +76,7 @@ The framework's **sources are written in English** (the shared community languag
 reading its own project in its own language. So **deployment is localized**: when unpacking, the agent
 **asks the owner for their preferred working language** (default: English) and writes the *deployed*
 wrapper — the four guidance docs, the skills, and the `plans/`/`bugs/`/`interviews/` documents — in
-that language. There is a **single** `FRAMEWORK.md` (English) — KAIF does **not** maintain translated copies of the
+that language. There is a **single** `KAIF.md` (English) — KAIF does **not** maintain translated copies of the
 core; multilingual support happens **at unpack time**: the agent reads the one English source and writes
 the deployed wrapper in the requested language.
 
@@ -85,7 +85,7 @@ the deployed wrapper in the requested language.
 - **Keep canonical (never translate):** code, shell commands, file paths, URLs, identifiers, the skills'
   `name:` field (the `/command` ids like `resume`, `pause`), and the `Co-Authored-By` trailer.
 
-> This repository is itself the living example: its public payload (`framework/`, `FRAMEWORK.md`) is
+> This repository is itself the living example: its public payload (`framework/`, `KAIF.md`) is
 > English, while its own working wrapper is in **Russian** — the language its owner works in. Your
 > deployment picks whatever language suits *you*.
 
@@ -96,7 +96,7 @@ This framework is **dogfooded**: the repository you may be looking at (`KAIF`)
 `plans/`, `bugs/`, and `interviews/` — but those describe **the development of the framework itself**, not
 your project.
 
-> **When unpacking into a user's project, derive everything from THIS document (`FRAMEWORK.md`) only.**
+> **When unpacking into a user's project, derive everything from THIS document (`KAIF.md`) only.**
 > Do NOT copy the framework repository's own root `AGENT_GUIDE.md` / `STATUS.md` / etc. — they are the
 > framework's self-application and are about building the framework, not about your project. The embedded
 > templates in this document are the canonical, generic source. (This is the resolution of the recursion:
@@ -862,7 +862,7 @@ bilingual, keep both languages in sync. Don't invent — reflect only what is ac
 ## Step 3. (Re)build / regenerate artifacts
 
 `<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
-own project: `node tools/build-framework.mjs` regenerates FRAMEWORK.md, and `node tools/readme-pdf.mjs`
+own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
 regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
 
 ## Step 4. Commit and push
@@ -1696,7 +1696,7 @@ some point the user wants to **own that evolution**: keep developing and version
 
 2. **Create the user's KAIF repo.** With the human's confirmation, create a new GitHub repo under their
    account (e.g. `gh repo create <user>/<their-kaif-name> --public`). Put the snapshot of the framework
-   there as its own self-contained KAIF (carry over `FRAMEWORK.md`/`framework/`, tools, README, LICENSE,
+   there as its own self-contained KAIF (carry over `KAIF.md`/`framework/`, tools, README, LICENSE,
    versioning). This becomes the user's origin.
 
 3. **Switch tracking.** Update `.kaif/kaif.json` in the project: set `origin` to the user's new repo and
@@ -1746,7 +1746,7 @@ intact and working — we only remove what KAIF added, surgically.
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
    - **Core/wrapper (removed in both modes):** the guidance docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
      `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`), the deployed skills (`.claude/skills/` or the agent's
-     equivalent), the `kaif/` tools, `FRAMEWORK.md`/`framework/` if present, `.kaif/`, and the KAIF
+     equivalent), the `kaif/` tools, `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF
      additions to the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `plans/ideas/`,
      `plans/homework_*`, etc.
@@ -1789,7 +1789,7 @@ official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfu
 1. **Read `.kaif/kaif.json`** — confirm `tracking: "fork"` and note the current (fork) version.
 2. **Confirm with the human** — switching lineages can be significant if the fork diverged a lot. Make
    sure they want the official origin's evolution, not their fork's.
-3. **Respectful migration to origin:** fetch the official origin's current `FRAMEWORK.md`; diff against
+3. **Respectful migration to origin:** fetch the official origin's current `KAIF.md`; diff against
    the deployed (fork-derived) wrapper; apply the same careful 3-way merge as `/kaif-update` — preserve
    local customizations where possible, surface conflicts, **never** touch content artifacts or the
    user's project files.
@@ -1829,8 +1829,8 @@ keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
    `fork`, confirm the human really wants to pull from the official origin (usually they'd update from
    their fork instead). Ensure the working tree is clean (commit/stash first).
 
-2. **Fetch the target version** from `origin`: the new `FRAMEWORK.md` (and/or the release asset). The
-   self-extracting `FRAMEWORK.md` is the single source of truth for what the new version contains.
+2. **Fetch the target version** from `origin`: the new `KAIF.md` (and/or the release asset). The
+   self-extracting `KAIF.md` is the single source of truth for what the new version contains.
 
 3. **Diff old → new.** Compare the new framework's guidance docs, skills, and conventions against what's
    deployed. Classify each change: (a) pure framework upgrade (safe to apply), (b) touches a file the
@@ -1838,7 +1838,7 @@ keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
 
 4. **Migrate respectfully:**
    - Apply framework-owned upgrades (skills, guidance-doc templates) — re-derive the deployed wrapper
-     from the new `FRAMEWORK.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
+     from the new `KAIF.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
    - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
      overwrite; surface conflicts to the human, don't guess.
    - **Never touch content artifacts** (`bugs/`, `interviews/`, `plans/ideas/`, homework) or the user's
@@ -1898,7 +1898,7 @@ version is in the project and whether a newer one exists upstream.
 
 ## Notes
 - If `.kaif/kaif.json` is missing, KAIF may not be deployed here (or the marker was lost) — say so and
-  point to `FRAMEWORK.md` for (re)deployment.
+  point to `KAIF.md` for (re)deployment.
 - Read-only skill: it never changes the project. Updates go through `/kaif-update`.
 ``````
 
@@ -2005,8 +2005,8 @@ skills, and the rest.
 ## 9. For the human — quick start
 
 **Install (once):**
-1. Put `FRAMEWORK.md` in your project root (download it, or `git clone` this repo alongside).
-2. In your agent, say: *"Read FRAMEWORK.md and unpack the KAIF framework into this project."*
+1. Put `KAIF.md` in your project root (download it, or `git clone` this repo alongside).
+2. In your agent, say: *"Read KAIF.md and unpack the KAIF framework into this project."*
 3. Tell the agent your **preferred working language** (default English) and answer the few owner-level
    questions it raises (it files them as an interview document).
 
