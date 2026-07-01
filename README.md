@@ -1,5 +1,11 @@
 # KAIF — Krinik AI Framework
 
+<p align="center">
+  <a href="#kaif--krinik-ai-framework"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
+  &nbsp;
+  <a href="#kaif--фреймворк-для-ии-агента-на-русском"><img src="https://img.shields.io/badge/Русский-C0392B?style=for-the-badge" alt="Русский"></a>
+</p>
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](FRAMEWORK.md)
