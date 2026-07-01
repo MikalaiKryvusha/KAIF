@@ -126,7 +126,7 @@ they are living documents, not write-once files.
 
 **2. Knowledge that accumulates.** Bugs, decisions, and proposals don't vanish into chat history. Each
 bug becomes a document in `bugs/` (symptom → forensics → root cause → fix). Each owner decision becomes an
-`interviews/` document. Each agent idea becomes a `plans/ideas/` document. The repository becomes a
+`interviews/` document. Each agent idea becomes a `ideas/` document. The repository becomes a
 growing knowledge base about *how this project is built and why*.
 
 **3. Bounded autonomy.** The agent is trusted to work alone for hours — but it knows exactly which
@@ -154,8 +154,8 @@ Unpacking the framework into a project produces this layout:
 ├── STATUS.md                   # the living state — updated after every significant task
 │
 ├── plans/                      # strategy & knowledge
-│   ├── master_plan.md          #   the roadmap and phases (where we're going)
-│   ├── project_map.md          #   the architecture map (how it's built)
+│   ├── MASTER_PLAN.md          #   the roadmap and phases (where we're going)
+│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md          #   the architecture map (how it's built)
 │   └── ideas/                  #   agent/human feature proposals — NN_*.md, DONE-tagged when shipped
 │
 ├── bugs/                       # one NN_*.md per bug (symptom/repro/forensics/root cause/fix), DONE-tagged
@@ -268,7 +268,7 @@ relies entirely on this document to get to work.
 ## Architecture — the map
 
 `<HIGH-LEVEL MODULE/COMPONENT MAP. The directory layout, the modules, and the dependency rules between
-them. Keep this in sync with plans/project_map.md (the detailed map). Example:>`
+them. Keep this in sync with PROJECT_STRUCTURE_EXTERNAL_MAP.md (the detailed map). Example:>`
 
 ```
 <module-a>      ← entry point / app
@@ -278,7 +278,7 @@ them. Keep this in sync with plans/project_map.md (the detailed map). Example:>`
 
 **RULE:** `<state the key architectural invariant, e.g. "feature modules don't depend on each other">`.
 
-Full file map and data flows live in `plans/project_map.md`.
+Full file map and data flows live in `PROJECT_STRUCTURE_EXTERNAL_MAP.md`.
 
 ---
 
@@ -354,7 +354,7 @@ filename after the number when a file's task is completed and verified:**
 
 ```
 bugs/04_modal.md                →  bugs/04_DONE_modal.md
-plans/ideas/07_dev_menu.md      →  plans/ideas/07_DONE_dev_menu.md
+ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
 ```
 
 **Rule (do this every time you work with bug/idea files):**
@@ -372,7 +372,7 @@ by the canon, per `BUG_FIXING_FRAMEWORK.md`. The agent keeps its own bug backlog
 nothing lost.
 
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
-human's vision — file it as an md in `plans/ideas/` with status "❓ awaiting human approval." An
+human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
 agent's idea is a contribution to the product VISION → implement ONLY after the human approves.
 
 ---
@@ -469,6 +469,76 @@ In practice:
 - First state the task in one or two plain sentences. If you can't, you don't understand it yet.
 - Look for the built-in, out-of-the-box way in the library/platform *before* writing your own mechanism.
 - If you're writing something clever, ask: "how would a simple person, or an off-the-shelf tool, do this?"
+
+---
+
+## The wider principle set — how the agent reasons
+
+Simplicity (KISS + Occam) is the **prime directive** above. The principles below are the supporting mental
+models the agent reasons by — they refine *what* is worth doing, *in what order*, and *how* to weigh a
+decision. When any of them conflicts with the prime directive, the prime directive wins.
+
+### Pareto — the 80/20 law
+Roughly 80% of the value comes from 20% of the effort. Aim to deliver the most useful result for the least
+optimal spend of time, effort, and resources. Find the vital few things that move the outcome and do those
+first; don't polish the trivial many. "Good and shipped" beats "perfect and late."
+
+### Murphy's Law — anything unforeseen tends to happen
+If a risk isn't accounted for, it has a good chance of being exactly what bites you. You can't defend
+against every risk in the universe, so tier them: **(a)** the highest risks — take seriously and build
+defenses; **(b)** lower-but-plausible risks — list them and describe the contingency if they fire;
+**(c)** the least likely, most trivial risks — just list them so we remember they exist. Naming a risk is
+already half of managing it.
+
+### Best practices — someone has almost certainly solved this before
+Almost any task — or one cognitively/methodologically like it — has been solved before us. There is
+usually accumulated, empirically-proven wisdom on how it *should* and *should not* be done to reach the
+result fastest and best. Look for the established pattern first; adopt it unless there's a concrete reason
+not to. This is Occam applied to method: don't invent where a proven path exists.
+
+### The Eisenhower Matrix — grooming and choosing tasks
+When grooming the backlog and planning the work front, classify tasks by **urgent × important**:
+*important + urgent* → do now; *important + not urgent* → schedule; *urgent + not important* → delegate or
+minimize; *neither* → drop. Pick work by this matrix so effort lands on what actually matters, not just on
+what shouts loudest.
+
+### Hanlon's Razor — don't assume malice
+If something is not as it should be, it is overwhelmingly more likely to be simple oversight, mistake, or
+shortsightedness than deliberate ill intent. Debug the state of the world, not the motives — assume a
+mistake and look for it, don't construct a conspiracy.
+
+### DRY — Don't Repeat Yourself
+Do a thing once, well, in one place — then reuse and reference it, don't copy it. One canonical source of
+truth per fact; duplication drifts out of sync and doubles the maintenance. (This framework itself is
+built this way: the templates live once in `framework/` and are inlined into the core, never duplicated by
+hand.)
+
+### Descartes' Square — a decision tool for hard forks
+When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
+this? What happens if I DON'T? What will NOT happen if I do? What will NOT happen if I don't?** Answering
+all four surfaces consequences a single "pros and cons" pass misses, and usually makes the decision clear.
+
+### Assume the obvious — horses, not zebras
+The simplest, most obvious explanation is most likely the correct one — assume and test it *first*. Hear
+hoofbeats → think horses, not zebras: horses are everywhere, zebras also make hoofbeats but are vanishingly
+rare. Chase the common cause before the exotic one. (This is Occam wearing work clothes.)
+
+### Second-order thinking — consequences of the consequences
+Think beyond the direct effect to the effects it sets in motion (the second derivative). Direct
+consequences often look harmless while the processes they trigger carry enormous risk or leverage. Physics:
+acceleration often matters more than speed. Chess: the weak player asks "what can I win *right now*?"
+(tactics); the strong player asks "if I do this → how does the opponent reply → what position do we reach
+in 3–5 moves → whose is better long-term?" (strategy). Strategy wins the long game; chasing tactical wins
+almost always ends in a long-term collapse.
+
+### Karma — what you give is what you get
+"Good" and "bad" are the base evaluative categories intelligent beings use to steer behavior — the compass
+between the desirable and the harmful. Good: acts that bring benefit, help, honesty, care, respect. Bad:
+acts that cause harm — deceit, theft, violence. The principle: what you put out comes back. Do good → get
+good; do harm → get harm; do no harm → receive no harm; do no good → receive no good. So decide what you
+want to receive, and act (or refrain) accordingly — by your deeds it returns to you. In practice: build
+honestly, don't cut corners that hurt the human or the next agent session, leave the repository better than
+you found it.
 
 ---
 
@@ -716,14 +786,14 @@ that a fresh session understands what already exists and works. Example:>`
 
 ### `plans/` — strategy & knowledge
 
-- **`master_plan.md`** — the project's roadmap: vision, principles, tech stack, the phased plan
+- **`MASTER_PLAN.md`** — the project's roadmap: vision, principles, tech stack, the phased plan
   (Phase 0…N with milestones), and a decision log. This is "where we're going." Created by inspecting the
   project and interviewing the owner about vision.
-- **`project_map.md`** — the architecture map: modules/components, what each is responsible for, the
+- **`PROJECT_STRUCTURE_EXTERNAL_MAP.md`** — the architecture map: modules/components, what each is responsible for, the
   dependency rules between them, and the data-flow diagram. This is "how it's built." Kept in sync with
   the real code; a fresh session reads it to navigate.
 - **`ideas/`** — feature proposals, one `NN_<name>.md` each (see `/propose-idea`). DONE-tagged when shipped.
-- Reference docs (`master_plan.md`, `project_map.md`, `goal.md`, worklogs, `homework_*.md`) are **living
+- Reference docs (`MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `GOAL.md`, worklogs, `homework_*.md`) are **living
   references, not closable tasks** — never DONE-tagged.
 
 ### `bugs/` — one document per defect
@@ -791,9 +861,9 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 Read at once:
 
 - `STATUS.md` — current state, what's in progress, the "where to continue" checklist
-- `plans/master_plan.md` — the long-term plan and phases
+- `MASTER_PLAN.md` — the long-term plan and phases
 - `AGENT_GUIDE.md` — the rules for working on this project (mandatory)
-- `plans/project_map.md` — architecture: modules, files, data flow
+- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — architecture: modules, files, data flow
 
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
@@ -807,7 +877,7 @@ Pick a single direction for this session. Priority (descending):
 1. **Open bugs with real symptoms** — if `STATUS.md` lists an open bug with reproducible symptoms, it's
    priority #1. Work by `BUG_FIXING_FRAMEWORK.md`.
 2. **Next item from the `STATUS.md` "where to continue" checklist** — if bugs are clear.
-3. **Next phase from `master_plan.md`** — if the checklist is empty/done.
+3. **Next phase from `MASTER_PLAN.md`** — if the checklist is empty/done.
 
 Before starting, **tell the human in one paragraph**: what you read and the current status; what you
 picked as the main thing and why; what you're about to do right now.
@@ -939,7 +1009,7 @@ without those resources.
 ## Step 0. Setup (once at the start)
 
 1. Read: `STATUS.md` (the "🤖 Autonomous backlog pool" section), `PHILOSOPHY.md`, `AGENT_GUIDE.md`,
-   `BUG_FIXING_FRAMEWORK.md`, the relevant `plans/ideas/*` and `bugs/*`.
+   `BUG_FIXING_FRAMEWORK.md`, the relevant `ideas/*` and `bugs/*`.
 2. Check the environment is ready (build toolchain, devices/services — see `AGENT_GUIDE.md`).
 3. Assemble/refresh the working pool list from STATUS. Tell the human in one paragraph: what's in the
    pool, which task you start with, and why.
@@ -957,7 +1027,7 @@ without those resources.
 7. **Fix cycle** on a bug: fix → build → test → logs (fresh by timestamp). The **3-attempts** rule →
    `/bug-research` (no code) → then fix.
 8. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
-   `plans/ideas/*`; update `STATUS.md`.
+   `ideas/*`; update `STATUS.md`.
 9. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
    with the Co-Authored-By trailer).
 10. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
@@ -1025,7 +1095,7 @@ when the current one is exhausted (see step 7).
 
 1. **Check stop conditions** (above). If stop — go to "Finishing".
 2. **Pick ANY backlog task** — scale unlimited (a big one is fine). Sources: `STATUS.md` → "where to
-   continue" / active items, `bugs/` (open), `plans/ideas/` (open), loose ends. Priority: finish started
+   continue" / active items, `bugs/` (open), `ideas/` (open), loose ends. Priority: finish started
    > bugs/polish > new ideas.
    - **Make decisions yourself** (technical, implementation, approach) — don't wait for the human.
    - **ONLY brand/UX/architecture-defining decisions** (shape the product long-term, not yours to make
@@ -1061,7 +1131,7 @@ when the current one is exhausted (see step 7).
 
 ## Backlog empty / nothing to do
 
-If no open tasks remain in `bugs/` and `plans/ideas/` (all DONE or awaiting the human) — **still don't
+If no open tasks remain in `bugs/` and `ideas/` (all DONE or awaiting the human) — **still don't
 pause and don't wait**, keep working:
 - Polish/refactor/tests/docs per `PHILOSOPHY.md` (KISS) — acceptable work.
 - Form and record in `STATUS.md` proposals of new tasks/ideas for the human.
@@ -1172,8 +1242,8 @@ restores it quickly and forms a current backlog.
 ## What to do
 
 1. **Re-read strategy & map:**
-   - `plans/master_plan.md` — the master plan and phases (where we're going).
-   - `plans/project_map.md` — the map of modules/files and data flows (how it's built).
+   - `MASTER_PLAN.md` — the master plan and phases (where we're going).
+   - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — the map of modules/files and data flows (how it's built).
 
 2. **Re-read the KEY guidance docs:**
    - `AGENT_GUIDE.md` — the rules (git workflow, style, tools, build).
@@ -1183,7 +1253,7 @@ restores it quickly and forms a current backlog.
 
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
-   - `ls plans/ideas/` — take everything NOT tagged `DONE` (open ideas/features).
+   - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
    - Glance at `plans/homework_*.md` and `interviews/` — what's waiting on the human (don't take into
      work, but know it).
    - Form the current open-task list (briefly, e.g. in a TodoWrite list).
@@ -1206,7 +1276,7 @@ restores it quickly and forms a current backlog.
 ``````md
 ---
 name: check-backlog
-description: Revise the backlog — walk bugs/ and plans/ (including plans/ideas/), find everything WITHOUT a DONE tag in the filename as open tasks and collect a current list, and for the ones that are actually finished, tag the file DONE in its name (git mv) and append a status section inside the document. Called by the human ("check the backlog", "revise the backlog", "mark done things DONE", "what's left", "проверь беклог", "пометь сделанное DONE") AND by the agent periodically in autonomous loops and at refresh-context, so the backlog doesn't rot and closed work is tagged.
+description: Revise the backlog — walk bugs/ and plans/ (including ideas/), find everything WITHOUT a DONE tag in the filename as open tasks and collect a current list, and for the ones that are actually finished, tag the file DONE in its name (git mv) and append a status section inside the document. Called by the human ("check the backlog", "revise the backlog", "mark done things DONE", "what's left", "проверь беклог", "пометь сделанное DONE") AND by the agent periodically in autonomous loops and at refresh-context, so the backlog doesn't rot and closed work is tagged.
 ---
 
 # /check-backlog — backlog revision (bugs/ and plans/) and DONE tagging
@@ -1221,8 +1291,8 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 
 1. **Collect all backlog files:**
    - `ls bugs/` — all bug docs.
-   - `ls plans/` and `ls plans/ideas/` — ideas/features and worklogs/plans.
-   - ⚠️ `plans/` contains REFERENCE docs (not tasks): `master_plan.md`, `project_map.md`, `goal.md`,
+   - `ls plans/` and `ls ideas/` — ideas/features and worklogs/plans.
+   - ⚠️ `plans/` contains REFERENCE docs (not tasks): `MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `GOAL.md`,
      `context.md`, etc. — do NOT tag these DONE; they're living references, not closable tasks. Only tag
      concrete bugs/ideas/features/tasks.
 
@@ -1418,19 +1488,19 @@ coding pass. Do NOT start fixing within this skill — it ends with a ready know
 ``````md
 ---
 name: propose-idea
-description: Propose an idea/feature/improvement that aligns with the project's master plan and the human's vision, filed as a separate md in plans/ideas/ by the accepted rules. An idea born from the agent is an element of the product VISION, so it REQUIRES the human's approval (the agent does NOT implement it until approved). Invoked by the agent when a worthwhile idea arises (including in autoloops) AND by the human ("propose an idea", "file an idea", "propose-idea", "предложи идею", "оформи идею").
+description: Propose an idea/feature/improvement that aligns with the project's master plan and the human's vision, filed as a separate md in ideas/ by the accepted rules. An idea born from the agent is an element of the product VISION, so it REQUIRES the human's approval (the agent does NOT implement it until approved). Invoked by the agent when a worthwhile idea arises (including in autoloops) AND by the human ("propose an idea", "file an idea", "propose-idea", "предложи идею", "оформи идею").
 ---
 
-# /propose-idea — file an idea in plans/ideas/ (for the human's approval)
+# /propose-idea — file an idea in ideas/ (for the human's approval)
 
 When the agent gets a worthwhile idea (a feature, a UX/architecture improvement, a tool), it files it as
-a SEPARATE md in `plans/ideas/` by the same rules as existing ideas. **An agent's idea is a contribution
+a SEPARATE md in `ideas/` by the same rules as existing ideas. **An agent's idea is a contribution
 to the product VISION, and the vision belongs to the owner (the human).** So such an idea is created with
 status "awaiting approval" and is **NOT implemented until the human approves it**.
 
 ## When to call
 
-- An idea arises that moves the project toward the goals in `master_plan.md`/`PHILOSOPHY.md` and doesn't
+- An idea arises that moves the project toward the goals in `MASTER_PLAN.md`/`PHILOSOPHY.md` and doesn't
   contradict the human's vision.
 - NOT for small technical decisions within an already-approved task (decide those yourself and just do them).
 - NOT for questions needing the human's INPUT on work already in progress — that's `/interview` (a
@@ -1439,12 +1509,12 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 ## What to do
 
-1. **Check against the vision BEFORE filing.** Read (or recall) `plans/master_plan.md`, `PHILOSOPHY.md`
+1. **Check against the vision BEFORE filing.** Read (or recall) `MASTER_PLAN.md`, `PHILOSOPHY.md`
    (KISS) and decisions in `interviews/`. The idea must align. If it contradicts / leads astray /
    over-complicates without need — don't propose it (or reframe it simpler).
 
-2. **Determine the next number.** `ls plans/ideas/` → max `NN` + 1. Name:
-   `plans/ideas/NN_<short_english_name>.md` (like neighbors; NO `DONE` tag).
+2. **Determine the next number.** `ls ideas/` → max `NN` + 1. Name:
+   `ideas/NN_<short_english_name>.md` (like neighbors; NO `DONE` tag).
 
 3. **Write the document by the canon** (structure like existing ideas):
    ```
@@ -1482,7 +1552,7 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 ## Notes
 - An idea is a PROPOSAL, not permission to act. Discipline: the product vision is shaped by the human.
 - Better to gather a few small ideas meaningfully than to breed near-duplicates. Check existing open
-  ideas (`ls plans/ideas/`) so you don't duplicate.
+  ideas (`ls ideas/`) so you don't duplicate.
 ``````
 
 ### `.claude/skills/interview/SKILL.md`
@@ -1624,7 +1694,7 @@ If the tree is dirty — commit/sort it out first (`/pause` or your commit tool)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If bilingual, keep
 both languages in sync. Don't invent — reflect only what's actually done and verified (cross-check
-`STATUS.md` and the closed `bugs/`/`plans/ideas/` `*_DONE_*`).
+`STATUS.md` and the closed `bugs/`/`ideas/` `*_DONE_*`).
 
 ## Step 3. Regenerate rendered docs
 
@@ -1733,7 +1803,7 @@ intact and working — we only remove what KAIF added, surgically.
 ## Two modes
 
 - **Partial (default)** — remove the framework **core/wrapper** but **keep the content artifacts**:
-  `bugs/`, `interviews/`, `plans/ideas/`, homework, and any other knowledge the work produced. The
+  `bugs/`, `interviews/`, `ideas/`, homework, and any other knowledge the work produced. The
   agent's accumulated knowledge survives; only the KAIF machinery leaves.
 - **Full (`--all` / "полностью")** — remove the core/wrapper **and** the content artifacts. KAIF is
   burned out of the project's history as if it had never been there — leaving only the user's project.
@@ -1748,7 +1818,7 @@ intact and working — we only remove what KAIF added, surgically.
      `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`), the deployed skills (`.claude/skills/` or the agent's
      equivalent), the `kaif/` tools, `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF
      additions to the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`).
-   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `plans/ideas/`,
+   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
      `plans/homework_*`, etc.
    - **NEVER touched:** the user's own project files and directories.
 
@@ -1818,7 +1888,7 @@ description: Respectfully update & migrate the KAIF framework deployed in this p
 
 A newer KAIF version exists upstream (see `/kaif-version`). This skill brings the project's framework up
 to it **respectfully**: it never breaks the user's project, preserves their local customizations, and
-keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
+keeps every content artifact (`bugs/`, `interviews/`, `ideas/`, homework).
 
 > ⚠️ This changes the framework wrapper. Confirm with the human before applying. Commit first so the
 > update is a clean, revertable diff.
@@ -1841,7 +1911,7 @@ keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
      from the new `KAIF.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
    - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
      overwrite; surface conflicts to the human, don't guess.
-   - **Never touch content artifacts** (`bugs/`, `interviews/`, `plans/ideas/`, homework) or the user's
+   - **Never touch content artifacts** (`bugs/`, `interviews/`, `ideas/`, homework) or the user's
      own project files. Only the KAIF wrapper/core is migrated.
    - Refresh the npm `kaif:*` handles if the new version changed them.
 
@@ -1909,7 +1979,7 @@ version is in the project and whether a newer one exists upstream.
 
 These rules apply to all work and are referenced throughout the guidance docs and skills.
 
-- **The DONE tag.** Closed `bugs/` and `plans/ideas/` files get `DONE` inserted after their number via
+- **The DONE tag.** Closed `bugs/` and `ideas/` files get `DONE` inserted after their number via
   `git mv` (`13_x.md` → `13_DONE_x.md`), plus an appended status section. The file listing alone then
   shows what's open vs. closed. Reference docs are never tagged. (Skill: `/check-backlog`.)
 - **Commits.** `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line. End every message with a
@@ -1958,7 +2028,7 @@ human's project, NOT into the framework's own repository. Derive everything from
 
 **Step 2 — Create the directories.**
 ```
-plans/  plans/ideas/  bugs/  interviews/  .claude/skills/
+plans/  ideas/  bugs/  interviews/  .claude/skills/
 ```
 
 **Step 3 — Write the four guidance documents** (from the templates in §4), replacing every `<PLACEHOLDER>`
@@ -1976,9 +2046,9 @@ with the project's real values discovered in Step 1:
 frontmatter and the trigger phrases. (For a non-Claude agent, place skill content per the adapter, §13.)
 
 **Step 5 — Seed `plans/`.**
-- `master_plan.md` — the roadmap. If the project has a goal/vision doc, distill it; otherwise draft a
+- `MASTER_PLAN.md` — the roadmap. If the project has a goal/vision doc, distill it; otherwise draft a
   skeleton (vision, principles, phases) and flag it for the owner.
-- `project_map.md` — the architecture map, from your Step 1 inspection.
+- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — the architecture map, from your Step 1 inspection.
 
 **Step 6 — Wire the auto-loaded context file.** Create or update the file your agent reads automatically:
 - Claude Code: `CLAUDE.md` (or `.claude/CLAUDE.md`). Some agents: `AGENTS.md`.

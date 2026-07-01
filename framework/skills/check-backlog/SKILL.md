@@ -1,6 +1,6 @@
 ---
 name: check-backlog
-description: Revise the backlog — walk bugs/ and plans/ (including plans/ideas/), find everything WITHOUT a DONE tag in the filename as open tasks and collect a current list, and for the ones that are actually finished, tag the file DONE in its name (git mv) and append a status section inside the document. Called by the human ("check the backlog", "revise the backlog", "mark done things DONE", "what's left", "проверь беклог", "пометь сделанное DONE") AND by the agent periodically in autonomous loops and at refresh-context, so the backlog doesn't rot and closed work is tagged.
+description: Revise the backlog — walk bugs/ and plans/ (including ideas/), find everything WITHOUT a DONE tag in the filename as open tasks and collect a current list, and for the ones that are actually finished, tag the file DONE in its name (git mv) and append a status section inside the document. Called by the human ("check the backlog", "revise the backlog", "mark done things DONE", "what's left", "проверь беклог", "пометь сделанное DONE") AND by the agent periodically in autonomous loops and at refresh-context, so the backlog doesn't rot and closed work is tagged.
 ---
 
 # /check-backlog — backlog revision (bugs/ and plans/) and DONE tagging
@@ -15,8 +15,8 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 
 1. **Collect all backlog files:**
    - `ls bugs/` — all bug docs.
-   - `ls plans/` and `ls plans/ideas/` — ideas/features and worklogs/plans.
-   - ⚠️ `plans/` contains REFERENCE docs (not tasks): `master_plan.md`, `project_map.md`, `goal.md`,
+   - `ls plans/` and `ls ideas/` — ideas/features and worklogs/plans.
+   - ⚠️ `plans/` contains REFERENCE docs (not tasks): `MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `GOAL.md`,
      `context.md`, etc. — do NOT tag these DONE; they're living references, not closable tasks. Only tag
      concrete bugs/ideas/features/tasks.
 

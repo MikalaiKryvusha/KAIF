@@ -1,18 +1,18 @@
 ---
 name: propose-idea
-description: Propose an idea/feature/improvement that aligns with the project's master plan and the human's vision, filed as a separate md in plans/ideas/ by the accepted rules. An idea born from the agent is an element of the product VISION, so it REQUIRES the human's approval (the agent does NOT implement it until approved). Invoked by the agent when a worthwhile idea arises (including in autoloops) AND by the human ("propose an idea", "file an idea", "propose-idea", "предложи идею", "оформи идею").
+description: Propose an idea/feature/improvement that aligns with the project's master plan and the human's vision, filed as a separate md in ideas/ by the accepted rules. An idea born from the agent is an element of the product VISION, so it REQUIRES the human's approval (the agent does NOT implement it until approved). Invoked by the agent when a worthwhile idea arises (including in autoloops) AND by the human ("propose an idea", "file an idea", "propose-idea", "предложи идею", "оформи идею").
 ---
 
-# /propose-idea — file an idea in plans/ideas/ (for the human's approval)
+# /propose-idea — file an idea in ideas/ (for the human's approval)
 
 When the agent gets a worthwhile idea (a feature, a UX/architecture improvement, a tool), it files it as
-a SEPARATE md in `plans/ideas/` by the same rules as existing ideas. **An agent's idea is a contribution
+a SEPARATE md in `ideas/` by the same rules as existing ideas. **An agent's idea is a contribution
 to the product VISION, and the vision belongs to the owner (the human).** So such an idea is created with
 status "awaiting approval" and is **NOT implemented until the human approves it**.
 
 ## When to call
 
-- An idea arises that moves the project toward the goals in `master_plan.md`/`PHILOSOPHY.md` and doesn't
+- An idea arises that moves the project toward the goals in `MASTER_PLAN.md`/`PHILOSOPHY.md` and doesn't
   contradict the human's vision.
 - NOT for small technical decisions within an already-approved task (decide those yourself and just do them).
 - NOT for questions needing the human's INPUT on work already in progress — that's `/interview` (a
@@ -21,12 +21,12 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 ## What to do
 
-1. **Check against the vision BEFORE filing.** Read (or recall) `plans/master_plan.md`, `PHILOSOPHY.md`
+1. **Check against the vision BEFORE filing.** Read (or recall) `MASTER_PLAN.md`, `PHILOSOPHY.md`
    (KISS) and decisions in `interviews/`. The idea must align. If it contradicts / leads astray /
    over-complicates without need — don't propose it (or reframe it simpler).
 
-2. **Determine the next number.** `ls plans/ideas/` → max `NN` + 1. Name:
-   `plans/ideas/NN_<short_english_name>.md` (like neighbors; NO `DONE` tag).
+2. **Determine the next number.** `ls ideas/` → max `NN` + 1. Name:
+   `ideas/NN_<short_english_name>.md` (like neighbors; NO `DONE` tag).
 
 3. **Write the document by the canon** (structure like existing ideas):
    ```
@@ -64,4 +64,4 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 ## Notes
 - An idea is a PROPOSAL, not permission to act. Discipline: the product vision is shaped by the human.
 - Better to gather a few small ideas meaningfully than to breed near-duplicates. Check existing open
-  ideas (`ls plans/ideas/`) so you don't duplicate.
+  ideas (`ls ideas/`) so you don't duplicate.

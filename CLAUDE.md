@@ -9,9 +9,14 @@
 2. Прочитай **`STATUS.md`** — текущее состояние и где продолжить.
 3. Мысли по **`PHILOSOPHY.md`** (KISS + Оккам). Отлаживай по **`BUG_FIXING_FRAMEWORK.md`**.
 
+Ключевые документы в корне: `AGENT_GUIDE.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`,
+`GOAL.md`, `MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`,
+`KAIF_FRAMEWORK.md`. Директории знаний (в каждой свой README): `plans/`, `ideas/`, `bugs/`, `researches/`,
+`interviews/`, `homeworks/`.
+
 Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/autoloop`, `/dayloop`,
 `/nightloop`, `/refresh-context`, `/check-backlog`, `/report-bug`, `/bug-research`, `/propose-idea`,
-`/interview`, `/release`).
+`/interview`, `/revision`, `/release` + жизненный цикл `/kaif-*`).
 
 ⚠️ **Критическое правило:** самораспаковывающееся ядро `KAIF.md` **генерируется** — никогда не правь
 его вручную. Правь `framework/_intro.md` или шаблоны `framework/*`, затем запусти

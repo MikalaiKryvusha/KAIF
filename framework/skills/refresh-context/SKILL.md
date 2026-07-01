@@ -11,8 +11,8 @@ restores it quickly and forms a current backlog.
 ## What to do
 
 1. **Re-read strategy & map:**
-   - `plans/master_plan.md` — the master plan and phases (where we're going).
-   - `plans/project_map.md` — the map of modules/files and data flows (how it's built).
+   - `MASTER_PLAN.md` — the master plan and phases (where we're going).
+   - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — the map of modules/files and data flows (how it's built).
 
 2. **Re-read the KEY guidance docs:**
    - `AGENT_GUIDE.md` — the rules (git workflow, style, tools, build).
@@ -22,7 +22,7 @@ restores it quickly and forms a current backlog.
 
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
-   - `ls plans/ideas/` — take everything NOT tagged `DONE` (open ideas/features).
+   - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
    - Glance at `plans/homework_*.md` and `interviews/` — what's waiting on the human (don't take into
      work, but know it).
    - Form the current open-task list (briefly, e.g. in a TodoWrite list).

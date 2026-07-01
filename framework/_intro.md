@@ -132,7 +132,7 @@ they are living documents, not write-once files.
 
 **2. Knowledge that accumulates.** Bugs, decisions, and proposals don't vanish into chat history. Each
 bug becomes a document in `bugs/` (symptom → forensics → root cause → fix). Each owner decision becomes an
-`interviews/` document. Each agent idea becomes a `plans/ideas/` document. The repository becomes a
+`interviews/` document. Each agent idea becomes a `ideas/` document. The repository becomes a
 growing knowledge base about *how this project is built and why*.
 
 **3. Bounded autonomy.** The agent is trusted to work alone for hours — but it knows exactly which
@@ -160,8 +160,8 @@ Unpacking the framework into a project produces this layout:
 ├── STATUS.md                   # the living state — updated after every significant task
 │
 ├── plans/                      # strategy & knowledge
-│   ├── master_plan.md          #   the roadmap and phases (where we're going)
-│   ├── project_map.md          #   the architecture map (how it's built)
+│   ├── MASTER_PLAN.md          #   the roadmap and phases (where we're going)
+│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md          #   the architecture map (how it's built)
 │   └── ideas/                  #   agent/human feature proposals — NN_*.md, DONE-tagged when shipped
 │
 ├── bugs/                       # one NN_*.md per bug (symptom/repro/forensics/root cause/fix), DONE-tagged
@@ -211,14 +211,14 @@ These four files are the agent's brain on disk. Each template below is generic: 
 
 ### `plans/` — strategy & knowledge
 
-- **`master_plan.md`** — the project's roadmap: vision, principles, tech stack, the phased plan
+- **`MASTER_PLAN.md`** — the project's roadmap: vision, principles, tech stack, the phased plan
   (Phase 0…N with milestones), and a decision log. This is "where we're going." Created by inspecting the
   project and interviewing the owner about vision.
-- **`project_map.md`** — the architecture map: modules/components, what each is responsible for, the
+- **`PROJECT_STRUCTURE_EXTERNAL_MAP.md`** — the architecture map: modules/components, what each is responsible for, the
   dependency rules between them, and the data-flow diagram. This is "how it's built." Kept in sync with
   the real code; a fresh session reads it to navigate.
 - **`ideas/`** — feature proposals, one `NN_<name>.md` each (see `/propose-idea`). DONE-tagged when shipped.
-- Reference docs (`master_plan.md`, `project_map.md`, `goal.md`, worklogs, `homework_*.md`) are **living
+- Reference docs (`MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `GOAL.md`, worklogs, `homework_*.md`) are **living
   references, not closable tasks** — never DONE-tagged.
 
 ### `bugs/` — one document per defect
@@ -275,7 +275,7 @@ During unpacking, copy each skill verbatim, replacing the command placeholders
 
 These rules apply to all work and are referenced throughout the guidance docs and skills.
 
-- **The DONE tag.** Closed `bugs/` and `plans/ideas/` files get `DONE` inserted after their number via
+- **The DONE tag.** Closed `bugs/` and `ideas/` files get `DONE` inserted after their number via
   `git mv` (`13_x.md` → `13_DONE_x.md`), plus an appended status section. The file listing alone then
   shows what's open vs. closed. Reference docs are never tagged. (Skill: `/check-backlog`.)
 - **Commits.** `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line. End every message with a
@@ -324,7 +324,7 @@ human's project, NOT into the framework's own repository. Derive everything from
 
 **Step 2 — Create the directories.**
 ```
-plans/  plans/ideas/  bugs/  interviews/  .claude/skills/
+plans/  ideas/  bugs/  interviews/  .claude/skills/
 ```
 
 **Step 3 — Write the four guidance documents** (from the templates in §4), replacing every `<PLACEHOLDER>`
@@ -342,9 +342,9 @@ with the project's real values discovered in Step 1:
 frontmatter and the trigger phrases. (For a non-Claude agent, place skill content per the adapter, §13.)
 
 **Step 5 — Seed `plans/`.**
-- `master_plan.md` — the roadmap. If the project has a goal/vision doc, distill it; otherwise draft a
+- `MASTER_PLAN.md` — the roadmap. If the project has a goal/vision doc, distill it; otherwise draft a
   skeleton (vision, principles, phases) and flag it for the owner.
-- `project_map.md` — the architecture map, from your Step 1 inspection.
+- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — the architecture map, from your Step 1 inspection.
 
 **Step 6 — Wire the auto-loaded context file.** Create or update the file your agent reads automatically:
 - Claude Code: `CLAUDE.md` (or `.claude/CLAUDE.md`). Some agents: `AGENTS.md`.

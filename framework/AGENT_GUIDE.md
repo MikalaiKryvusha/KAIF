@@ -72,7 +72,7 @@ relies entirely on this document to get to work.
 ## Architecture — the map
 
 `<HIGH-LEVEL MODULE/COMPONENT MAP. The directory layout, the modules, and the dependency rules between
-them. Keep this in sync with plans/project_map.md (the detailed map). Example:>`
+them. Keep this in sync with PROJECT_STRUCTURE_EXTERNAL_MAP.md (the detailed map). Example:>`
 
 ```
 <module-a>      ← entry point / app
@@ -82,7 +82,7 @@ them. Keep this in sync with plans/project_map.md (the detailed map). Example:>`
 
 **RULE:** `<state the key architectural invariant, e.g. "feature modules don't depend on each other">`.
 
-Full file map and data flows live in `plans/project_map.md`.
+Full file map and data flows live in `PROJECT_STRUCTURE_EXTERNAL_MAP.md`.
 
 ---
 
@@ -158,7 +158,7 @@ filename after the number when a file's task is completed and verified:**
 
 ```
 bugs/04_modal.md                →  bugs/04_DONE_modal.md
-plans/ideas/07_dev_menu.md      →  plans/ideas/07_DONE_dev_menu.md
+ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
 ```
 
 **Rule (do this every time you work with bug/idea files):**
@@ -176,7 +176,7 @@ by the canon, per `BUG_FIXING_FRAMEWORK.md`. The agent keeps its own bug backlog
 nothing lost.
 
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
-human's vision — file it as an md in `plans/ideas/` with status "❓ awaiting human approval." An
+human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
 agent's idea is a contribution to the product VISION → implement ONLY after the human approves.
 
 ---

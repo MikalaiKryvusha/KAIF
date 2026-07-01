@@ -32,7 +32,7 @@
 1. Read STATUS.md                 # current state of the framework project
 2. git status                     # what changed, what's uncommitted
 3. git log --oneline -5           # where we are in history
-4. Read the relevant plan         # plans/master_plan.md, plans/project_map.md
+4. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md
 5. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
 6. Comment your code/tools; keep docs accurate
 7. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
@@ -63,7 +63,7 @@
 самораспаковывающийся фреймворк**, который любой разработчик может встроить в любой программный проект,
 чтобы превратить своего AI-агента для кодинга в дисциплинированного, автономного, устойчивого к потере
 контекста напарника. Главный артефакт — `KAIF.md`: один документ, который одновременно описывает
-фреймворк и распаковывает его. Полное видение: `goal.md`.
+фреймворк и распаковывает его. Полное видение: `GOAL.md`.
 
 ---
 
@@ -71,32 +71,34 @@
 
 ```
 KAIF/
-├── KAIF.md              ← ⭐ GENERATED self-extracting core (English; unpacks into any language)
-├── README.md                 ← EN (primary) + RU, the front door
-├── README.pdf                ← rendered README (generated, gitignored)
-├── LICENSE                   ← MIT
-├── goal.md                   ← the original vision (source of truth for intent)
-├── version.json              ← { major, minor, build }
+├── KAIF.md                          ← ⭐ GENERATED self-extracting core (EN; unpacks into any language)
+├── README.md / README.pdf           ← EN (primary) + RU front door (+ rendered copy, gitignored)
+├── LICENSE                          ← MIT
+├── version.json                     ← { major, minor, released, origin, build } — version = major.minor
 │
-├── framework/                ← THE PAYLOAD (canonical universal templates)
-│   ├── _intro.md             ←   narrative spine of KAIF.md (with {{EMBED}} markers)
-│   ├── AGENT_GUIDE.md        ←   guidance-doc templates (generic, placeholders)
-│   ├── PHILOSOPHY.md
-│   ├── BUG_FIXING_FRAMEWORK.md
-│   ├── STATUS.md
-│   └── skills/<name>/SKILL.md ←  the twelve skill templates
+│  ── KEY DOCS (root; dogfooding wrapper = the framework applied to THIS project) ──
+├── KAIF_FRAMEWORK.md                ← high-level "KAIF, deployed here" (post-injection doc)
+├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  STATUS.md
+├── GOAL.md                          ← the vision (owner-filled)
+├── MASTER_PLAN.md                   ← the phased roadmap from state → GOAL
+├── PROJECT_STRUCTURE_EXTERNAL_MAP.md   ← external map (dirs/files/links)
+├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md ← internal map (abstractions & interactions)
 │
-├── tools/
-│   ├── build-framework.mjs   ←   assembles KAIF.md from framework/
-│   ├── readme-pdf.mjs        ←   renders README.md → README.pdf
-│   └── commit.mjs            ←   bump build, commit, push
+│  ── KNOWLEDGE DIRECTORIES (each has its own README.md) ──
+├── plans/  ideas/  bugs/  researches/  interviews/  homeworks/
+├── .claude/skills/                  ← this project's own skill instance (placeholders filled)
+├── .kaif/kaif.json  CLAUDE.md       ← deploy marker · auto-loaded context → AGENT_GUIDE.md
 │
-└── (dogfooding wrapper — the framework applied to this project)
-    ├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  STATUS.md
-    ├── .claude/skills/        ←   this project's own skill instance (placeholders filled)
-    ├── plans/  (master_plan.md, project_map.md, ideas/)
-    ├── bugs/   interviews/
-    └── CLAUDE.md              ←   points the agent at this guide
+│  ── THE PAYLOAD (canonical universal templates → generate KAIF.md) ──
+├── framework/
+│   ├── _intro.md                    ← narrative spine of KAIF.md (with {{EMBED}} markers)
+│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md GOAL.md MASTER_PLAN.md
+│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md  KAIF_FRAMEWORK.md
+│   ├── readmes/<dir>.md             ← the six directory-README templates
+│   ├── skills/<name>/SKILL.md       ← the 18 skill templates
+│   ├── spheres/  adapters/          ← sphere term libraries · agent-system adapters
+│
+└── tools/  (build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -106,12 +108,13 @@ KAIF/
   **английском** (язык сообщества). Многоязычность — при распаковке: агент разворачивает ядро в
   запрошенный язык (отдельных переводов ядра не держим). Русская половина README — для читателей-людей.
 - **Локальная обвязка для dogfooding** (этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`,
-  `BUG_FIXING_FRAMEWORK.md`, `CLAUDE.md`, `.claude/skills/`, `plans/`, `bugs/`, `interviews/` и любые
-  `plans/homework_*.md`) ведётся на **русском** — рабочем языке владельца. Корневые универсальные файлы —
+  `BUG_FIXING_FRAMEWORK.md`, `GOAL.md`, `MASTER_PLAN.md`, карты, `KAIF_FRAMEWORK.md`, `CLAUDE.md`,
+  `.claude/skills/`, `plans/`, `ideas/`, `bugs/`, `researches/`, `interviews/`, `homeworks/`) ведётся на
+  **русском** — рабочем языке владельца. Корневые универсальные файлы —
   русские переводы шаблонов из `framework/` (с заполненными плейсхолдерами). Держи их *содержание*
   синхронным с английской полезной нагрузкой, даже если язык у них разный.
 
-Подробная карта: `plans/project_map.md`.
+Подробная карта: `PROJECT_STRUCTURE_EXTERNAL_MAP.md`.
 
 ---
 
@@ -169,7 +172,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 
 ## Беклог и тег DONE
 
-В закрытые файлы `bugs/` и `plans/ideas/` после их номера вставляется `DONE` (`git mv 03_x.md
+В закрытые файлы `bugs/` и `ideas/` после их номера вставляется `DONE` (`git mv 03_x.md
 03_DONE_x.md`) плюс добавляется секция статуса. Справочные документы в `plans/` тегом не помечаются.
 Навыки: `/check-backlog` (ревизия), `/report-bug` (завести дефект/проблему процесса), `/propose-idea`
 (предложить улучшение фреймворка — нужно одобрение владельца).

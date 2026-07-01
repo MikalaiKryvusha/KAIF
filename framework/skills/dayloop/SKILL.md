@@ -33,7 +33,7 @@ when the current one is exhausted (see step 7).
 
 1. **Check stop conditions** (above). If stop — go to "Finishing".
 2. **Pick ANY backlog task** — scale unlimited (a big one is fine). Sources: `STATUS.md` → "where to
-   continue" / active items, `bugs/` (open), `plans/ideas/` (open), loose ends. Priority: finish started
+   continue" / active items, `bugs/` (open), `ideas/` (open), loose ends. Priority: finish started
    > bugs/polish > new ideas.
    - **Make decisions yourself** (technical, implementation, approach) — don't wait for the human.
    - **ONLY brand/UX/architecture-defining decisions** (shape the product long-term, not yours to make
@@ -69,7 +69,7 @@ when the current one is exhausted (see step 7).
 
 ## Backlog empty / nothing to do
 
-If no open tasks remain in `bugs/` and `plans/ideas/` (all DONE or awaiting the human) — **still don't
+If no open tasks remain in `bugs/` and `ideas/` (all DONE or awaiting the human) — **still don't
 pause and don't wait**, keep working:
 - Polish/refactor/tests/docs per `PHILOSOPHY.md` (KISS) — acceptable work.
 - Form and record in `STATUS.md` proposals of new tasks/ideas for the human.

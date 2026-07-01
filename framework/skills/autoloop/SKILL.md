@@ -44,7 +44,7 @@ without those resources.
 ## Step 0. Setup (once at the start)
 
 1. Read: `STATUS.md` (the "🤖 Autonomous backlog pool" section), `PHILOSOPHY.md`, `AGENT_GUIDE.md`,
-   `BUG_FIXING_FRAMEWORK.md`, the relevant `plans/ideas/*` and `bugs/*`.
+   `BUG_FIXING_FRAMEWORK.md`, the relevant `ideas/*` and `bugs/*`.
 2. Check the environment is ready (build toolchain, devices/services — see `AGENT_GUIDE.md`).
 3. Assemble/refresh the working pool list from STATUS. Tell the human in one paragraph: what's in the
    pool, which task you start with, and why.
@@ -62,7 +62,7 @@ without those resources.
 7. **Fix cycle** on a bug: fix → build → test → logs (fresh by timestamp). The **3-attempts** rule →
    `/bug-research` (no code) → then fix.
 8. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
-   `plans/ideas/*`; update `STATUS.md`.
+   `ideas/*`; update `STATUS.md`.
 9. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
    with the Co-Authored-By trailer).
 10. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.

@@ -7,7 +7,7 @@ description: Respectfully update & migrate the KAIF framework deployed in this p
 
 A newer KAIF version exists upstream (see `/kaif-version`). This skill brings the project's framework up
 to it **respectfully**: it never breaks the user's project, preserves their local customizations, and
-keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
+keeps every content artifact (`bugs/`, `interviews/`, `ideas/`, homework).
 
 > ⚠️ This changes the framework wrapper. Confirm with the human before applying. Commit first so the
 > update is a clean, revertable diff.
@@ -30,7 +30,7 @@ keeps every content artifact (`bugs/`, `interviews/`, `plans/ideas/`, homework).
      from the new `KAIF.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
    - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
      overwrite; surface conflicts to the human, don't guess.
-   - **Never touch content artifacts** (`bugs/`, `interviews/`, `plans/ideas/`, homework) or the user's
+   - **Never touch content artifacts** (`bugs/`, `interviews/`, `ideas/`, homework) or the user's
      own project files. Only the KAIF wrapper/core is migrated.
    - Refresh the npm `kaif:*` handles if the new version changed them.
 

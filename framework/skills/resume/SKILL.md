@@ -12,9 +12,9 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 Read at once:
 
 - `STATUS.md` — current state, what's in progress, the "where to continue" checklist
-- `plans/master_plan.md` — the long-term plan and phases
+- `MASTER_PLAN.md` — the long-term plan and phases
 - `AGENT_GUIDE.md` — the rules for working on this project (mandatory)
-- `plans/project_map.md` — architecture: modules, files, data flow
+- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — architecture: modules, files, data flow
 
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
@@ -28,7 +28,7 @@ Pick a single direction for this session. Priority (descending):
 1. **Open bugs with real symptoms** — if `STATUS.md` lists an open bug with reproducible symptoms, it's
    priority #1. Work by `BUG_FIXING_FRAMEWORK.md`.
 2. **Next item from the `STATUS.md` "where to continue" checklist** — if bugs are clear.
-3. **Next phase from `master_plan.md`** — if the checklist is empty/done.
+3. **Next phase from `MASTER_PLAN.md`** — if the checklist is empty/done.
 
 Before starting, **tell the human in one paragraph**: what you read and the current status; what you
 picked as the main thing and why; what you're about to do right now.

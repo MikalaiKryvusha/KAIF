@@ -11,7 +11,7 @@ intact and working — we only remove what KAIF added, surgically.
 ## Two modes
 
 - **Partial (default)** — remove the framework **core/wrapper** but **keep the content artifacts**:
-  `bugs/`, `interviews/`, `plans/ideas/`, homework, and any other knowledge the work produced. The
+  `bugs/`, `interviews/`, `ideas/`, homework, and any other knowledge the work produced. The
   agent's accumulated knowledge survives; only the KAIF machinery leaves.
 - **Full (`--all` / "полностью")** — remove the core/wrapper **and** the content artifacts. KAIF is
   burned out of the project's history as if it had never been there — leaving only the user's project.
@@ -26,7 +26,7 @@ intact and working — we only remove what KAIF added, surgically.
      `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`), the deployed skills (`.claude/skills/` or the agent's
      equivalent), the `kaif/` tools, `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF
      additions to the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`).
-   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `plans/ideas/`,
+   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
      `plans/homework_*`, etc.
    - **NEVER touched:** the user's own project files and directories.
 

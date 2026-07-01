@@ -32,7 +32,7 @@ If the tree is dirty — commit/sort it out first (`/pause` or your commit tool)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If bilingual, keep
 both languages in sync. Don't invent — reflect only what's actually done and verified (cross-check
-`STATUS.md` and the closed `bugs/`/`plans/ideas/` `*_DONE_*`).
+`STATUS.md` and the closed `bugs/`/`ideas/` `*_DONE_*`).
 
 ## Step 3. Regenerate rendered docs
 
