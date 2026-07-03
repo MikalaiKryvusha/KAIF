@@ -1,8 +1,8 @@
 {
   "name": "KAIF",
   "major": 1,
-  "minor": 1,
-  "released": "2026-07-01",
+  "minor": 2,
+  "released": "2026-07-03",
   "origin": "https://github.com/MikalaiKryvusha/KAIF",
-  "build": 3
+  "build": 4
 }

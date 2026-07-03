@@ -11,7 +11,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.1-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.2-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](KAIF.md)
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
 [![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kaif--фреймворк-для-ии-агента-на-русском)
@@ -78,15 +78,17 @@ working wrapper.)*
    fill it, re-derive the plan with `/revision`). Doing it up front just saves rework. See
    [`GOAL.md` — your vision](#goalmd--your-vision-worth-writing-first) below.
 
-3. **Ask your agent to unpack it.** The initiator command names two parameters:
+3. **Ask your agent to unpack it.** The initiator command names three parameters:
    - **Working language** — the language to unpack the English sources into (default: English).
-   - **Target agent system** — how to translate the skills (default: Claude Code; also Codex, Copilot,
-     Cursor, Windsurf, Cline, Roo Code, …).
+   - **Target agent system** — how to translate the skills (default: Claude Code; also **Zoo Code**
+     (ex-Roo Code), Codex, Copilot, Cursor, Windsurf, Cline, …).
+   - **Install mode** — standard (default) or **anonymous**: KAIF deploys fully, but the author is
+     scrubbed and the origin unbound — no trace of where the framework came from.
 
-   Both have defaults, so the shortest form works:
+   All have defaults, so the shortest form works:
    > *"Read KAIF.md and unpack the KAIF framework into this project."*
 
-   …and the explicit form states the two variables:
+   …and the explicit form states the variables:
    > *"Read KAIF.md and unpack the KAIF framework into this project. Working language: English. Agent
    > system: Claude Code."*
 
@@ -97,7 +99,8 @@ working wrapper.)*
    Small-context / local model → ask for the **respectful staged flow**.
 
 5. **Drive it with skills:** `/resume` · `/pause` · `/autoloop` · `/dayloop` · `/nightloop` ·
-   `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
+   `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/fix-vision` · `/what-next` ·
+   `/help-kaif` · `/release`.
 
 ### Strong vs. small-context AI systems
 
@@ -116,6 +119,12 @@ your agent's cognitive power and context window:
 
   The staged method (raw structure → study the project into `KAIF_DEPLOYMENT_PLAN.md` → adapt) is
   documented inside `KAIF.md` (§8).
+
+  **Since 1.2 the raw structure lands mechanically.** `KAIF.md` embeds a tiny unpacker script
+  (`kaif-unpack.mjs`): with Node.js available, the agent writes that one file and runs one command — every
+  file appears at its exact canonical path, is validated for completeness (`--check`), and for Zoo Code the
+  skills are translated into `.roo/commands/` automatically (`--agent zoo-code`). Model strength stops
+  mattering for the structure's correctness.
 
 ### `GOAL.md` — your vision, worth writing first
 
@@ -150,7 +159,8 @@ your-project/
 ├── interviews/                           # owner-level decisions — you answer in the document
 ├── homeworks/                            # tasks only a human can do (physical/offline)
 │
-└── .claude/skills/                       # the 19 repeatable rituals (below)
+├── .claude/skills/                       # the 21 repeatable rituals (below)
+└── kaif-unpack.mjs                       # transient mechanical unpacker (deleted after injection)
 ```
 
 ## The documents & directories — who writes what
@@ -189,7 +199,7 @@ maintains, which **you (the owner)** author, and which the agent creates for **y
 
 ## The skills
 
-Nineteen repeatable rituals — the verbs of working on a project:
+Twenty-one repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
@@ -205,6 +215,8 @@ Nineteen repeatable rituals — the verbs of working on a project:
 | `/propose-idea` | Propose a feature for your approval. |
 | `/interview` | Ask you closed A/B/C/D questions on a fateful decision. |
 | `/revision` | (Re)derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
+| `/fix-vision` | Capture your latest visionary chat messages into the project's docs (GOAL, plan, owner notes). |
+| `/what-next` | "What's next?" — propose the highest-value next steps toward your vision. |
 | `/help-kaif` | Explain KAIF to you in chat — a structured user manual (what it is, and how to use it). |
 | `/release` | Publish a release to GitHub (with confirmation; never autonomously). |
 | `/kaif-version` | Report the deployed KAIF version; check origin for a newer release. |
@@ -223,8 +235,12 @@ Nineteen repeatable rituals — the verbs of working on a project:
 - **Any domain, not just code.** A *sphere* (programming, science, design, business, …) tailors the
   terminology at deploy time via per-sphere term libraries — so KAIF fits research, design, PM, finance,
   writing, and more.
-- **Any agent, not just Claude.** Adapters wire KAIF into each system's conventions (Claude Code, OpenAI
-  Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code, …), always with a universal `AGENTS.md` fallback.
+- **Any agent, not just Claude.** Adapters wire KAIF into each system's conventions (Claude Code,
+  **Zoo Code** (the ex-Roo Code fork — first-class, mechanically translated), OpenAI Codex, GitHub Copilot,
+  Cursor, Windsurf, Cline, …), always with a universal `AGENTS.md` fallback.
+- **Anonymous install.** Say *"install mode: anonymous"* — KAIF deploys fully but scrubs all author
+  mentions and unbinds the origin (`tracking: "anonymous"`): afterwards it is impossible to establish
+  where the framework came from.
 
 ### The `npm run kaif:*` handles
 
@@ -286,7 +302,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 # КАИФ — Криник АИ Фреймворк
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.1-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.2-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](KAIF.md)
 [![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
 [![Языки](https://img.shields.io/badge/Доки-EN%20%7C%20RU-blue.svg)](#kaif--krinik-ai-framework)
@@ -355,15 +371,17 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
    заполнения перевыведет план через `/revision`). Оформление заранее просто экономит переделку. См.
    [`GOAL.md` — ваше видение](#goalmd--ваше-видение-лучше-оформить-заранее) ниже.
 
-3. **Попросите агента распаковать.** Команда-инициатор называет два параметра:
+3. **Попросите агента распаковать.** Команда-инициатор называет три параметра:
    - **Рабочий язык** — в какой язык распаковывать английские исходники (по умолчанию английский).
-   - **Целевая ИИ-агентская система** — как транслировать навыки (по умолчанию Claude Code; также Codex,
-     Copilot, Cursor, Windsurf, Cline, Roo Code, …).
+   - **Целевая ИИ-агентская система** — как транслировать навыки (по умолчанию Claude Code; также
+     **Zoo Code** (экс-Roo Code), Codex, Copilot, Cursor, Windsurf, Cline, …).
+   - **Режим установки** — обычный (по умолчанию) или **анонимный**: KAIF разворачивается полноценно, но
+     автор вычищается, а привязка к origin разрывается — никаких следов, откуда пришёл фреймворк.
 
-   У обоих есть дефолты, поэтому работает короткая форма:
+   У всех есть дефолты, поэтому работает короткая форма:
    > *«Прочитай KAIF.md и распакуй фреймворк KAIF в этот проект.»*
 
-   …а явная форма называет обе переменные:
+   …а явная форма называет переменные:
    > *«Прочитай KAIF.md и распакуй фреймворк KAIF в этот проект. Рабочий язык: русский. Агентская система:
    > Claude Code.»*
 
@@ -374,7 +392,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
    командой. Слабая/локальная модель с малым контекстом → попросите **уважительный поэтапный флоу**.
 
 5. **Управляйте навыками:** `/resume` · `/pause` · `/autoloop` · `/dayloop` · `/nightloop` · `/report-bug`
-   · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
+   · `/propose-idea` · `/interview` · `/revision` · `/fix-vision` · `/what-next` · `/help-kaif` · `/release`.
 
 ### Сильные и слабые (малоконтекстные) ИИ-системы
 
@@ -393,6 +411,12 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
   Поэтапный метод (сырая структура → изучение проекта в `KAIF_DEPLOYMENT_PLAN.md` → адаптация) описан
   внутри `KAIF.md` (§8).
+
+  **С версии 1.2 сырая структура разворачивается механически.** В `KAIF.md` встроен маленький
+  скрипт-распаковщик (`kaif-unpack.mjs`): при наличии Node.js агент записывает один файл и запускает одну
+  команду — каждый файл появляется по своему точному каноническому пути, полнота валидируется (`--check`),
+  а для Zoo Code навыки автоматически транслируются в `.roo/commands/` (`--agent zoo-code`). Сила модели
+  перестаёт влиять на корректность структуры.
 
 ### `GOAL.md` — ваше видение, лучше оформить заранее
 
@@ -428,7 +452,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 ├── interviews/                           # решения уровня владельца — вы отвечаете в документе
 ├── homeworks/                            # задания, которые может сделать только человек (физика/офлайн)
 │
-└── .claude/skills/                       # 19 повторяемых ритуалов (ниже)
+├── .claude/skills/                       # 21 повторяемый ритуал (ниже)
+└── kaif-unpack.mjs                       # временный механический распаковщик (удаляется после инжекции)
 ```
 
 ## Документы и директории — кто что пишет
@@ -467,7 +492,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ## Навыки
 
-Девятнадцать повторяемых ритуалов — глаголы работы над проектом:
+Двадцать один повторяемый ритуал — глаголы работы над проектом:
 
 | Навык | Назначение |
 |-------|------------|
@@ -483,6 +508,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 | `/propose-idea` | Предложить фичу на ваше одобрение. |
 | `/interview` | Задать вам закрытые вопросы A/B/C/D по судьбоносному решению. |
 | `/revision` | (Пере)разработать `MASTER_PLAN.md` из `GOAL.md` и текущего состояния. |
+| `/fix-vision` | Зафиксировать ваши последние визионерские сообщения из чата в документах проекта (GOAL, план, заметки владельца). |
+| `/what-next` | «Что дальше?» — предложить следующие шаги наибольшей ценности к вашему видению. |
 | `/help-kaif` | Рассказать вам про KAIF в чате — структурный мануал (что это и как пользоваться). |
 | `/release` | Выпустить релиз в GitHub (с подтверждением; никогда автономно). |
 | `/kaif-version` | Показать развёрнутую версию KAIF; проверить origin на новый релиз. |
@@ -502,7 +529,11 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
   терминологию при развёртывании через библиотеки терминов — KAIF подходит для исследований, дизайна,
   проджект-менеджмента, финансов, писательства и прочего.
 - **Любой агент, не только Claude.** Адаптеры подключают KAIF к соглашениям каждой системы (Claude Code,
-  OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code, …), всегда с запасным `AGENTS.md`.
+  **Zoo Code** (форк экс-Roo Code — первоклассная цель, механическая трансляция), OpenAI Codex, GitHub
+  Copilot, Cursor, Windsurf, Cline, …), всегда с запасным `AGENTS.md`.
+- **Анонимная установка.** Скажите *«режим установки: анонимный»* — KAIF развернётся полноценно, но все
+  упоминания автора будут вычищены, а привязка к origin разорвана (`tracking: "anonymous"`): установить,
+  откуда пришёл фреймворк, будет невозможно.
 
 ### «Ручки» `npm run kaif:*`
 
