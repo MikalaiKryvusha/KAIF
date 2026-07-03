@@ -45,15 +45,19 @@ function released() {
 }
 
 // Embed one template file as a labelled fenced block, telling the agent which
-// file to create in the target project and how to treat it.
+// file to create in the target project and how to treat it. The fence language
+// follows the file extension (markdown templates vs. the .mjs unpacker script).
 function embedFile(relPath, destLabel, note) {
   const content = readFileSync(join(ROOT, relPath), 'utf8').replace(/\s+$/, '') + '\n';
   const header = `> **FILE: \`${destLabel}\`**${note ? ' — ' + note : ''}\n\n`;
-  return header + FENCE + 'md\n' + content + FENCE + '\n';
+  const lang = relPath.endsWith('.mjs') ? 'js' : 'md';
+  return header + FENCE + lang + '\n' + content + FENCE + '\n';
 }
 
 // Destination label + guidance note for each embedded template (key docs + directory READMEs).
 const DOC_TARGETS = {
+  // The mechanical unpacker (bug 01): the ONE file an agent writes by hand, then runs.
+  'framework/kaif-unpack.mjs':         ['kaif-unpack.mjs',         'project root — write this ONE file verbatim FIRST, then run `node kaif-unpack.mjs KAIF.md` (deleted after injection, together with KAIF.md)'],
   // Guidance docs
   'framework/AGENT_GUIDE.md':          ['AGENT_GUIDE.md',          "project root — replace every `<PLACEHOLDER>` with the project's real values"],
   'framework/PHILOSOPHY.md':           ['PHILOSOPHY.md',           'project root — universal, write verbatim'],
@@ -79,7 +83,7 @@ function embedSkills() {
   const dir = join(FW, 'skills');
   const order = ['resume', 'pause', 'autoloop', 'dayloop', 'nightloop', 'refresh-context',
                  'check-backlog', 'report-bug', 'bug-research', 'propose-idea', 'interview', 'revision',
-                 'help-kaif', 'release'];
+                 'fix-vision', 'what-next', 'help-kaif', 'release'];
   const names = readdirSync(dir).filter((n) => existsSync(join(dir, n, 'SKILL.md')));
   names.sort((a, b) => ((order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999)));
   const note = "replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands";

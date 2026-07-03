@@ -35,12 +35,14 @@ const skillsDir = join(ROOT, 'framework', 'skills');
 const skills = existsSync(skillsDir)
   ? readdirSync(skillsDir).filter((n) => existsSync(join(skillsDir, n, 'SKILL.md')))
   : [];
-const expected = docs.length + readmes.length + skills.length;
+// Embedded tool files (the mechanical unpacker, added in 1.2).
+const tools = ['kaif-unpack.mjs'].filter((t) => existsSync(join(ROOT, 'framework', t)));
+const expected = docs.length + readmes.length + skills.length + tools.length;
 
 // 1. FILE blocks
 const fileBlocks = (fw.match(/^> \*\*FILE:/gm) || []).length;
 if (fileBlocks !== expected) {
-  errors.push(`embedded FILE blocks: found ${fileBlocks}, expected ${expected} (${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills)`);
+  errors.push(`embedded FILE blocks: found ${fileBlocks}, expected ${expected} (${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${tools.length} tools)`);
 }
 
 // 2. 6-backtick fences balanced, one pair per block
@@ -67,4 +69,4 @@ if (errors.length) {
   for (const e of errors) console.error('   - ' + e);
   process.exit(1);
 }
-console.log(`✅ check-framework OK — ${fileBlocks} embedded files (${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills), fences balanced, no stray markers`);
+console.log(`✅ check-framework OK — ${fileBlocks} embedded files (${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${tools.length} tools), fences balanced, no stray markers`);

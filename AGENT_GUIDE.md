@@ -11,7 +11,7 @@
 > фреймворком* (он применяет себя к себе, dogfooding). Поэтому здесь два слоя, и путать их нельзя:
 >
 > 1. **Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:
->    - `framework/` — канонические универсальные шаблоны (девять ключевых документов, шесть README директорий и девятнадцать навыков).
+>    - `framework/` — канонические универсальные шаблоны (девять ключевых документов, шесть README директорий, двадцать один навык и скрипт-распаковщик).
 >    - `KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
 >      `tools/build-framework.mjs`. Это единственный источник истины для развёртывания.
 > 2. **Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):
@@ -95,8 +95,9 @@ KAIF/
 │   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md GOAL.md MASTER_PLAN.md
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md  KAIF_FRAMEWORK.md
 │   ├── readmes/<dir>.md             ← the six directory-README templates
-│   ├── skills/<name>/SKILL.md       ← the 18 skill templates
-│   ├── spheres/  adapters/          ← sphere term libraries · agent-system adapters
+│   ├── skills/<name>/SKILL.md       ← the 21 skill templates
+│   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded into KAIF.md as a FILE: block)
+│   ├── spheres/  adapters/          ← sphere term libraries · agent-system adapters (Zoo Code = priority #1)
 │
 └── tools/  (build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
@@ -132,7 +133,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 ## «Тестирование» этого проекта
 
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто; (2) встроенные
-блоки `FILE:` в `KAIF.md` сбалансированы и полны (динамический подсчёт: 9 ключевых документов + 6 README + 19 навыков = 34); (3) ссылки на
+блоки `FILE:` в `KAIF.md` сбалансированы и полны (динамический подсчёт: 9 ключевых документов + 6 README + 21 навык + 1 распаковщик = 37); (3) ссылки на
 файлы/навыки/пути в документах разрешаются; (4) английский и русский README остаются синхронными; (5) PDF
 рендерится.
 

@@ -1,23 +1,28 @@
 # Adapter: OpenAI Codex
 
-> Verify against current Codex docs — conventions evolve.
+> ✅ Verified against the official Codex docs on 2026-07-03
+> (https://developers.openai.com/codex/skills · https://developers.openai.com/codex/guides/agents-md).
 
 ## Context file
-`AGENTS.md` at the repo root (Codex reads `AGENTS.md` for project instructions; nested `AGENTS.md` scope
-to subtrees).
+`AGENTS.md` — native and primary: global `~/.codex/AGENTS.md`, then a walk from the git repo root down
+to cwd (all found files concatenate; closer = higher priority; combined cap 32 KiB by default).
 → KAIF writes `AGENTS.md` pointing at `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`,
 `BUG_FIXING_FRAMEWORK.md`, and summarizing the workflow + skills.
 
 ## Commands / skills
-No slash-skill mechanism equivalent to Claude Code. Keep KAIF skills as named docs in
-`kaif-skills/<name>.md` (or a section in `AGENTS.md`) and instruct the human to invoke them by name
-("run the resume skill"). The skill *content* is unchanged.
+Codex has **native skills** following the Agent Skills open standard (agentskills.io): a directory per
+skill with `SKILL.md` (frontmatter `name` + `description` — both **required**) under **`.agents/skills/`**
+(project) or `~/.agents/skills/` (user). Legacy `~/.codex/prompts/*.md` custom prompts are deprecated.
+
+**Mechanical translation from a KAIF skill:** copy `.claude/skills/<name>/` → `.agents/skills/<name>/`
+unchanged (KAIF skills already carry `name` + `description`).
 
 ## Notes / gotchas
-- `AGENTS.md` is becoming a cross-tool standard — this adapter doubles as the universal fallback.
-- Keep instructions concise and high-signal; point at the guidance docs rather than duplicating them.
+- Invocation: `/skills` picker, `$skill-name` inline, or implicit matching on `description`.
+- Keep `AGENTS.md` concise — the 32 KiB combined cap is real; point at the guidance docs, don't inline them.
 
 ## Deploy checklist
 - [ ] `AGENTS.md` → points at `AGENT_GUIDE.md` + workflow + skills list
-- [ ] skills kept as `kaif-skills/<name>.md` (invoked by name)
+- [ ] every KAIF skill → `.agents/skills/<name>/SKILL.md` (copied as-is)
+- [ ] validate: skill count on disk == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "openai-codex"`

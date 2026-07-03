@@ -39,17 +39,21 @@ why `GOAL.md` is worth writing first).
    context) or the **respectful staged flow** (small-context / local model) — §8 tells you how to choose.
 3. Commit, and report to the human what you created and what still needs their input.
 
-### The initiator command — language & agent system
-When the human triggers unpacking, two parameters shape the deployment. If they aren't stated, **ask**:
+### The initiator command — language, agent system & install mode
+When the human triggers unpacking, three parameters shape the deployment. If the first two aren't
+stated, **ask**; the third defaults silently to *standard*:
 
 - **Working language** (default: English) — the natural language the docs and skills are written in. KAIF's
   sources are English; on deploy you translate the *deployed wrapper* into this language.
-- **Target agent system** (default: Claude Code) — which agent will run the project (Claude Code, Codex,
-  Copilot, Cursor, Windsurf, Cline, Roo Code, …). This decides where context lives and how the `.SKILLS`
-  are translated into that system's format (see §14 Adapters).
+- **Target agent system** (default: Claude Code) — which agent will run the project (Claude Code,
+  Zoo Code, Codex, Copilot, Cursor, Windsurf, Cline, …). This decides where context lives and how the
+  skills are translated into that system's format (see §14 Adapters).
+- **Install mode** (default: standard) — `standard` (tracks the KAIF origin for updates) or
+  **`anonymous`** (unbinds and forgets the origin and the author — see "Anonymous install" in §8).
 
 > A complete initiator command looks like: *"Read KAIF.md and unpack KAIF into this project. Working
-> language: Russian. Agent system: Claude Code."*
+> language: Russian. Agent system: Zoo Code."* — add *"Install mode: anonymous."* for an anonymous
+> install.
 
 ### Localized deployment — what to translate and what to keep
 - **Localize:** all prose, headings, list/table text, and each skill's `description:` field (including its
@@ -104,7 +108,8 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-└── .claude/skills/     # the repeatable rituals (slash-skills) — 19 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — 21 in all (or the agent's equivalent)
+└── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
 Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for others — §14) points at
@@ -1158,6 +1163,8 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
 | `interview` | human | Ask the owner closed A/B/C/D questions on a fateful decision. |
 | `revision` | planning | (Re)derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
+| `fix-vision` | human | Capture the owner's latest visionary chat messages into the KAIF docs. |
+| `what-next` | planning | "What's next?" — propose the highest-value next steps toward the vision. |
 | `help-kaif` | help | Explain KAIF to the operator in chat — a structured user manual (how to use it). |
 | `release` | shipping | Publish a release to GitHub (with confirmation; never autonomously). |
 | `kaif-version` | lifecycle | Report the deployed KAIF version; check origin for a newer release. |
@@ -1960,7 +1967,9 @@ If it shapes brand/architecture/UX for the long term — interview.
 - **Option D is always "your own answer"** — a slot for the owner to write their own choice if none of
   A/B/C fits.
 - **B and C** are the serious alternatives, each with a short "why" / trade-off.
-- Group: 1–5 questions per interview, no more.
+- Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
+  pad, but don't starve the interview either: a cramped interview that misses what the agent actually
+  needed to clarify is worse than a few extra questions.
 - Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
 
 ### Step 4. Ask the owner — via the document
@@ -2033,6 +2042,91 @@ to fill it, and pause. The master plan is derived from the goal, never guessed i
 - `MASTER_PLAN.md` is a **living reference**, not a task — never DONE-tag it.
 - The relationship is one-directional: `GOAL.md` drives `MASTER_PLAN.md`, which drives `plans/NN_*.md`.
   Keep it flowing that way — don't let the plan drift from the goal.
+``````
+
+### `.claude/skills/fix-vision/SKILL.md`
+
+> **FILE: `.claude/skills/fix-vision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: fix-vision
+description: Capture the owner's latest VISIONARY chat messages — vision corrections, priorities, brand and direction given while the agent worked — and fix them into the project's KAIF documents (GOAL.md, MASTER_PLAN.md, the owner's notes in AGENT_GUIDE.md). Use when the human says "fix the vision", "capture my vision", "зафиксируй видение", "обнови видение из чата", OR when the agent notices vision-level guidance accumulating in the chat that is not yet reflected in the docs.
+---
+
+# /fix-vision — fix the owner's vision from the chat into the docs
+
+If the owner wrote into the chat during working sessions — corrected the agent, set priorities, refined
+what the product should be — that is **vision entering through the side door**. Chat evaporates; the
+KAIF documents do not. This skill moves the vision from the chat into the framework.
+
+## Procedure
+
+### Step 1. Collect
+Re-read the **owner's messages** in the current session (plus, where available, recent traces: the
+session notes in `STATUS.md`, `interviews/`, recent commit messages) and extract the statements that are
+**vision-level** — about what the product should be, priorities, brand, values, working style — as
+opposed to one-off task instructions.
+
+### Step 2. Distill
+Turn each into a short principle **in the owner's voice**. Keep the owner's wording where it carries
+meaning; never paraphrase the intent away. Convert relative dates to absolute.
+
+### Step 3. Fix into the documents
+- **`GOAL.md`** — changes to the vision itself (what we want in the end, for whom).
+- **`MASTER_PLAN.md`** — changes of priorities/scope; if the shift is big, re-derive via `/revision`.
+- **`AGENT_GUIDE.md` → "Notes from the owner"** — durable working-style directives.
+- The agent system's persistent memory, if it has one — a pointer, not a copy (DRY).
+
+### Step 4. De-duplicate & report
+Update existing records instead of appending duplicates; delete captures that the owner has since
+overridden. Then report in chat: what was captured, where it landed, and anything ambiguous — ask, or
+open an `/interview` for fateful forks.
+
+## Rules
+- The vision belongs to the owner: capture faithfully, **never invent or extrapolate** it.
+- This is a hygiene skill — cheap to run; prefer running it at `/pause` if the owner wrote a lot.
+``````
+
+### `.claude/skills/what-next/SKILL.md`
+
+> **FILE: `.claude/skills/what-next/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: what-next
+description: Propose the next steps when the owner asks "what's next?" — a value-ranked plan of what to do right now toward the owner's vision, derived from GOAL.md, MASTER_PLAN.md, STATUS.md and the open backlog. Use when the human says "what's next", "what now", "what should we do next", "что дальше", "предложи следующие шаги" — especially to pull the agent out of a stalled state where it stopped without proposing anything.
+---
+
+# /what-next — propose the highest-value next steps
+
+Sometimes the agent stops and proposes nothing. This skill is the one-command answer to the owner's
+simple question — **"what's next?"** — a plan of next steps ranked by value toward the owner's vision.
+
+## Procedure
+
+### Step 1. Re-orient (cheap, no deep dive)
+Read `GOAL.md` (the vision), `MASTER_PLAN.md` (the phase we're in), `STATUS.md` (where we are), and walk
+the open backlog: `bugs/`, `ideas/`, `plans/`, `homeworks/` without the `DONE` tag, plus unanswered
+`interviews/`.
+
+### Step 2. Rank by value
+Order candidate steps by **value toward the vision** per `PHILOSOPHY.md`: Pareto (the vital few that
+move the result), the Eisenhower matrix (important × urgent), second-order effects (what unblocks the
+most future work). Note the rough effort of each.
+
+### Step 3. Answer in chat
+1. **The ONE next step** — highest value, and *why it is next* (tie it to GOAL/MASTER_PLAN).
+2. **2–4 runner-ups** — one line each, with value/effort.
+3. **Blocked on the owner** — open interviews/homework, if any.
+
+### Step 4. Offer to start
+Offer to begin the top step immediately; on the owner's confirmation (or in an autonomous loop) — start.
+
+## Rules
+- Never answer "nothing to do": an empty backlog means propose `/check-backlog` or `/refresh-context`,
+  quality/debt work, or an `/interview` to refill the vision.
+- Be concrete: steps with names and files, not generalities.
 ``````
 
 ### `.claude/skills/help-kaif/SKILL.md`
@@ -2462,7 +2556,8 @@ path you take depends on your context window:
   across several messages, or even **several separate chats**. Never load the whole document and the whole
   project together. Process **one embedded `FILE:` block at a time**; between steps, persist progress to
   disk (Stage 2 uses a running file, `KAIF_DEPLOYMENT_PLAN.md`) so a later step — or a fresh chat — resumes
-  from where you left off.
+  from where you left off. Good news: with Node.js available, Stage 1 collapses to **one command** via the
+  embedded unpacker script (§8) — small context stops being a correctness risk for the structure.
 
 Both paths run the **same stages**; they differ only in how much you attempt per step.
 
@@ -2471,23 +2566,155 @@ Confirm you are unpacking into the **human's project**, not the KAIF repo (§1 f
 **working language** and **target agent system** (ask if not given — §1). Note the project's likely
 **sphere** (§13) — you'll confirm it in Stage 2.
 
-### Stage 1 — Raw structure (NO project context needed)
-Write out the framework's skeleton **from the templates embedded in this document**, *without reading the
-target project yet*. This is deliberately context-light: it only needs KAIF.md, not the project.
-- Create the directories: `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ .claude/skills/` and each
-  directory's `README.md` (from §5).
-- Write the key documents that are **universal or template-shaped**: `PHILOSOPHY.md` and
-  `BUG_FIXING_FRAMEWORK.md` verbatim; and the skeletons of `AGENT_GUIDE.md`, `STATUS.md`, `GOAL.md`,
-  `MASTER_PLAN.md`, `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` with their
-  `<PLACEHOLDER>`s still in place (you'll fill them in Stage 3).
-- Write the skills (§6), replacing only the command placeholders you already know; leave the rest as TODO.
-- On the small-context path: do this **one FILE: block at a time**, committing after each, and stop here for
-  this session if needed. The skeleton is valid on its own.
+### Stage 1 — Raw structure, MECHANICALLY (NO project context needed)
+Writing out the skeleton is **not creative work — it is mechanical extraction**. Every file's exact
+canonical path and exact content are already embedded in this document as `FILE:` blocks. Do not
+paraphrase, do not rename, do not skip. **THE `FILE:` LABEL IS LAW**: the file is created at *exactly*
+that path with *exactly* that content — a "sensible" name you invent is a deployment defect.
+
+**Preferred path — the unpacker script (any model strength; requires Node.js).** Right below is a
+`FILE: kaif-unpack.mjs` block. Write that ONE small file to disk verbatim, then run:
+
+```bash
+node kaif-unpack.mjs KAIF.md                    # extracts EVERY FILE: block to its exact path
+node kaif-unpack.mjs KAIF.md --check            # validates: non-zero exit = incomplete
+node kaif-unpack.mjs KAIF.md --agent zoo-code   # + translate all skills to .roo/commands/ (Zoo/Roo Code)
+node kaif-unpack.mjs KAIF.md --anonymous        # anonymous install: skips the origin-tied skills
+```
+
+The script never touches existing non-empty files, prints what it wrote, and validates the full manifest
+at the end. This makes Stage 1 deterministic even for the smallest local model — the model's only job is
+to copy one block and run one command.
+
+> **FILE: `kaif-unpack.mjs`** — project root — write this ONE file verbatim FIRST, then run `node kaif-unpack.mjs KAIF.md` (deleted after injection, together with KAIF.md)
+
+``````js
+#!/usr/bin/env node
+// kaif-unpack.mjs — KAIF mechanical unpacker (ships embedded inside KAIF.md).
+// Unpacking the framework skeleton is NOT creative work: every file's exact
+// canonical path and exact content are already in KAIF.md as FILE: blocks.
+// This script extracts them verbatim — no interpretation, no renaming, no
+// skipping — and validates completeness, so a model of ANY strength (including
+// small-context local LLMs) gets a 100%-correct Stage-1 structure.
+//
+// Usage:
+//   node kaif-unpack.mjs [KAIF.md]                 # unpack all FILE: blocks + validate
+//   node kaif-unpack.mjs [KAIF.md] --check         # validate only (no writes)
+//   node kaif-unpack.mjs [KAIF.md] --agent zoo-code # + translate skills to .roo/commands/
+//   node kaif-unpack.mjs [KAIF.md] --anonymous     # anonymous install: skip origin-tied skills
+//   --force                                        # overwrite existing non-empty files
+//
+// Exit code 0 = the manifest is 100% satisfied; non-zero = incomplete (fix and re-run).
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
+import { dirname } from 'node:path';
+
+const args = process.argv.slice(2);
+const has = (f) => args.includes(f);
+const val = (f) => { const i = args.indexOf(f); return i >= 0 && args[i + 1] ? args[i + 1] : null; };
+const SOURCE = args.find((a) => !a.startsWith('--') && a.endsWith('.md')) || 'KAIF.md';
+const CHECK_ONLY = has('--check');
+const FORCE = has('--force');
+const ANON = has('--anonymous');
+const AGENT = (val('--agent') || '').toLowerCase();
+
+// Skills that bind the project to the KAIF origin — omitted on anonymous installs.
+const ORIGIN_TIED = ['kaif-update', 'kaif-switch-origin', 'kaif-fork'];
+
+// FILE: blocks are wrapped in 6-backtick fences by the KAIF build (built here,
+// not written literally, so this script can itself live inside such a fence).
+const FENCE = '`'.repeat(6);
+
+if (!existsSync(SOURCE)) { console.error(`✖ source not found: ${SOURCE}`); process.exit(1); }
+const text = readFileSync(SOURCE, 'utf8');
+
+// Parse every embedded file: `> **FILE: \`path\`** …` + blank line + fenced block.
+const blockRe = new RegExp(
+  '^> \\*\\*FILE: `([^`]+)`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n([\\s\\S]*?)\\n' + FENCE + '\\s*$',
+  'gm'
+);
+const manifest = []; // [{ path, content }]
+for (let m; (m = blockRe.exec(text)); ) manifest.push({ path: m[1], content: m[2] + '\n' });
+if (manifest.length === 0) { console.error('✖ no FILE: blocks found — is this the KAIF.md core?'); process.exit(1); }
+
+const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
+const skipped = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
+const okOnDisk = (p) => existsSync(p) && statSync(p).size > 0;
+
+// --- write phase (unless --check) ------------------------------------------
+if (!CHECK_ONLY) {
+  for (const { path, content } of manifest) {
+    if (skipped(path)) { console.log(`⊘ anonymous mode — skipped ${path}`); continue; }
+    if (okOnDisk(path) && !FORCE) { console.log(`= kept existing ${path}`); continue; }
+    mkdirSync(dirname(path) || '.', { recursive: true });
+    writeFileSync(path, content);
+    console.log(`+ wrote ${path}`);
+  }
+
+  // Zoo Code (ex-Roo Code) — mechanical skill translation, verified 2026-07-03:
+  // .claude/skills/<name>/SKILL.md → .roo/commands/<name>.md (drop `name:`, keep
+  // `description:` + body; the filename carries the command name), plus AGENTS.md
+  // and .roo/rules/kaif.md so the key docs are auto-loaded.
+  if (AGENT === 'zoo-code' || AGENT === 'roo-code') {
+    mkdirSync('.roo/commands', { recursive: true });
+    mkdirSync('.roo/rules', { recursive: true });
+    for (const { path, content } of manifest) {
+      const name = skillName(path);
+      if (!name || skipped(path)) continue;
+      const cmd = `.roo/commands/${name}.md`;
+      if (okOnDisk(cmd) && !FORCE) { console.log(`= kept existing ${cmd}`); continue; }
+      writeFileSync(cmd, content.replace(/^name:[^\n]*\n/m, ''));
+      console.log(`+ wrote ${cmd}`);
+    }
+    if (!okOnDisk('AGENTS.md')) writeFileSync('AGENTS.md',
+      '# Agent rules\n\nThis project is KAIF-wrapped. Before every task read `AGENT_GUIDE.md` (the canon), ' +
+      '`STATUS.md` (current state), and think per `PHILOSOPHY.md`; debug per `BUG_FIXING_FRAMEWORK.md`.\n');
+    if (!okOnDisk('.roo/rules/kaif.md')) writeFileSync('.roo/rules/kaif.md',
+      '# KAIF\n\nRead `AGENT_GUIDE.md` before every task; keep `STATUS.md` current. ' +
+      'Skills live in `.roo/commands/` (one `/command` per KAIF skill).\n');
+  }
+}
+
+// --- validation phase (always runs) -----------------------------------------
+let missing = 0;
+for (const { path } of manifest) {
+  if (skipped(path)) continue;
+  if (!okOnDisk(path)) { console.error(`✖ MISSING or empty: ${path}`); missing++; }
+}
+if (AGENT === 'zoo-code' || AGENT === 'roo-code') {
+  for (const { path } of manifest) {
+    const name = skillName(path);
+    if (name && !skipped(path) && !okOnDisk(`.roo/commands/${name}.md`)) {
+      console.error(`✖ MISSING command: .roo/commands/${name}.md`); missing++;
+    }
+  }
+}
+const total = manifest.filter((f) => !skipped(f.path)).length;
+if (missing) {
+  console.error(`✖ INCOMPLETE: ${missing} of ${total} manifest entries missing — create them and re-run --check until 0.`);
+  process.exit(1);
+}
+console.log(`✅ manifest satisfied: ${total} files present${ANON ? ' (anonymous mode)' : ''}${AGENT ? ` · agent: ${AGENT}` : ''}`);
+``````
+
+
+**Fallback path — manual (no Node.js available).** Process the embedded blocks **one `FILE:` block at a
+time**: create the file at the exact labelled path, copy the content verbatim, commit, move to the next.
+On the small-context path stop for the session whenever needed — the skeleton is valid on its own.
+
+### Stage 1.5 — VALIDATE (mandatory, both paths)
+The manifest = **every `FILE:` label in this document** (see also the §3 tree). Compare the disk against
+it: every path must exist and be non-empty. Anything missing or empty → create it now, then validate
+again — **repeat until 100%**, only then proceed. With Node: `node kaif-unpack.mjs KAIF.md --check` until
+exit code 0. Without Node: list the `FILE:` labels, check each path off one by one. A deployment that
+skips validation is not a deployment — it's a guess.
 
 ### Stage 2 — Study the project & build `KAIF_DEPLOYMENT_PLAN.md`
 Now study the target project **gradually**, writing what you learn into a temporary key file,
 **`KAIF_DEPLOYMENT_PLAN.md`** (create it in the project root). This file is your running deployment
 notebook — append to it as you learn, so you never need the whole project in context at once.
+⚠️ This plan is a **strict step-by-step contract, not loose recommendations**: every step you write into
+it MUST be executed and validated, and whatever validation finds unfinished MUST be finished. Check
+steps off in the file as you complete them.
 Record, incrementally:
 - **What the project is:** name, purpose, README summary, build command, test/run command, git remote.
 - **Its sphere** (§13) and the terminology to adapt (what "bug", "release", "build", "test" mean here).
@@ -2528,6 +2755,25 @@ Once the structure is deployed and adapted:
 After unpacking, the project is framework-wrapped: drive it with `/resume`, `/pause`, the loop skills, and
 the rest.
 
+### Anonymous install — unbind and forget the origin & the author
+If the initiator command says **install mode: anonymous**, KAIF deploys fully — same structure, same
+skills, same discipline — but severed from its origin. Apply, on top of the normal stages:
+
+- **Scrub the author.** The deployed wrapper must contain **no mention of KAIF's author**: no names, no
+  nicknames, no links to the author's GitHub or repositories. Do not expand the KAIF acronym; call the
+  framework simply "KAIF, an operating framework for AI agents". Do not include the author's note in
+  `KAIF_FRAMEWORK.md` (Stage 4).
+- **Sever the origin.** `.kaif/kaif.json` gets `"tracking": "anonymous"` and **no `origin` field**. Do
+  not deploy the origin-tied lifecycle skills — `kaif-update`, `kaif-switch-origin`, `kaif-fork` (the
+  unpacker's `--anonymous` flag skips them mechanically); `kaif-version` reports the local version only.
+  Skip the `kaif:update` / `kaif:fork` / `kaif:switch-origin` npm handles likewise.
+- **Validate anonymity** at Stage 1.5/4: search the deployed files for the author's name, nicknames, and
+  origin URL — the result must be empty. After a successful anonymous injection it must be impossible to
+  establish the author's identity from the deployed project.
+
+The owner's project, the owner's rules: anonymity is a first-class, respectful install mode — not a
+degraded one.
+
 ---
 
 ## 9. For the human — quick start
@@ -2535,10 +2781,14 @@ the rest.
 **Install (once):**
 1. Put `KAIF.md` in your project root (download it, or `git clone` this repo alongside).
 2. In your agent, say: *"Read KAIF.md and unpack the KAIF framework into this project."* Tell it your
-   **working language** (default English) and **agent system** (default Claude Code). If your agent is a
-   **small-context / local model**, ask it to use the **respectful staged flow** (§8) — don't attempt a
-   one-shot unpack, it will likely run out of context.
-3. Answer the few owner-level questions it raises (it files them as an interview document).
+   **working language** (default English) and **agent system** (default Claude Code; Zoo Code is
+   first-class). If your agent is a **small-context / local model**, ask it to use the **respectful
+   staged flow** (§8) — don't attempt a one-shot unpack, it will likely run out of context. With Node.js
+   installed, the structure lands **mechanically** via the embedded unpacker script (§8) — the agent's
+   strength stops mattering for correctness.
+3. Optionally add *"Install mode: anonymous"* — KAIF then deploys with the origin and author scrubbed
+   (see §8).
+4. Answer the few owner-level questions it raises (it files them as an interview document).
 
 **`GOAL.md` — write it first if you can.** `GOAL.md` is your one-paragraph vision: *what you want, what the
 end result is, for whom.* If it exists at deploy time, the agent orients the whole deployment — sphere,
@@ -2547,7 +2797,8 @@ has to re-translate the already-deployed wrapper into the project's meaning (ext
 up front. A template is created for you if it's missing.
 
 **Daily driving:** `/resume` (start) · `/pause` (wrap up) · `/autoloop` · `/dayloop` · `/nightloop`
-(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/help-kaif` · `/release`.
+(autonomous work) · `/report-bug` · `/propose-idea` · `/interview` · `/revision` · `/fix-vision` ·
+`/what-next` · `/help-kaif` · `/release`.
 
 ---
 
@@ -2594,6 +2845,9 @@ document that states the current version writes only `MAJOR.MINOR`. On deploy th
   "sphere": "programming", "agent": "claude-code" }
 ```
 
+`tracking` is `"origin"` (default), `"fork"` (after `/kaif-fork`), or `"anonymous"` (anonymous install —
+then the `origin` field is omitted entirely and the origin-tied skills are not deployed; see §8).
+
 **npm handles.** On deploy, KAIF respectfully adds `kaif:*` scripts to `package.json` (creating one if
 absent), backed by a small `kaif` tool, without disturbing existing scripts: `kaif:version`, `kaif:check`,
 `kaif:update`, `kaif:fork`, `kaif:switch-origin`, `kaif:remove`, `kaif:remove-all`. Removal removes them.
@@ -2627,9 +2881,13 @@ KAIF's substance is **agent-agnostic**; only the *wiring* differs per system —
 project context, and (2) where it discovers commands/skills. At deploy, the agent determines the target
 system, records it in `.kaif/kaif.json`, and uses the matching **adapter** to place `AGENT_GUIDE.md` and
 translate the skills into that system's format — always generating a universal `AGENTS.md` fallback pointing
-at `AGENT_GUIDE.md`. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority systems:
-**OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline, Roo Code**; others via the `AGENTS.md` fallback or
-authored from `_template`. Catalog: `framework/adapters/`.
+at `AGENT_GUIDE.md`. Skill translation is **mechanical, not creative** (verified 2026-07-03): the ecosystem
+has converged on `AGENTS.md` for auto-context (native in Zoo Code, Codex, Copilot, Cursor, Cline, …) and on
+the Agent Skills standard (`SKILL.md`) for commands — Cursor, Cline and OpenCode even read `.claude/skills/`
+as-is. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority system #1: **Zoo Code**
+(successor of Roo Code; `.roo/commands/<name>.md`, translated mechanically by the unpacker's
+`--agent zoo-code` flag — §8); then **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline**; others via
+the `AGENTS.md` fallback or authored from `_template`. Catalog: `framework/adapters/`.
 
 ---
 

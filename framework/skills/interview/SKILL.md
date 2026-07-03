@@ -74,7 +74,9 @@ If it shapes brand/architecture/UX for the long term — interview.
 - **Option D is always "your own answer"** — a slot for the owner to write their own choice if none of
   A/B/C fits.
 - **B and C** are the serious alternatives, each with a short "why" / trade-off.
-- Group: 1–5 questions per interview, no more.
+- Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
+  pad, but don't starve the interview either: a cramped interview that misses what the agent actually
+  needed to clarify is worse than a few extra questions.
 - Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
 
 ### Step 4. Ask the owner — via the document

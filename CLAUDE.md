@@ -16,7 +16,7 @@
 
 Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/autoloop`, `/dayloop`,
 `/nightloop`, `/refresh-context`, `/check-backlog`, `/report-bug`, `/bug-research`, `/propose-idea`,
-`/interview`, `/revision`, `/release` + жизненный цикл `/kaif-*`).
+`/interview`, `/revision`, `/fix-vision`, `/what-next`, `/help-kaif`, `/release` + жизненный цикл `/kaif-*`).
 
 ⚠️ **Критическое правило:** самораспаковывающееся ядро `KAIF.md` **генерируется** — никогда не правь
 его вручную. Правь `framework/_intro.md` или шаблоны `framework/*`, затем запусти
