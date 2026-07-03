@@ -22,7 +22,7 @@ const v = JSON.parse(readFileSync(vf, 'utf8'));
 v.build = (v.build || 0) + 1;
 writeFileSync(vf, JSON.stringify(v, null, 2) + '\n');
 
-const trailer = 'Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>';
+const trailer = 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>';
 const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
 
 run('git add -A');

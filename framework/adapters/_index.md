@@ -18,18 +18,20 @@ pointing at `AGENT_GUIDE.md` is always generated as a cross-tool fallback.
 
 | System | Context file convention | Commands / skills convention |
 |--------|-------------------------|------------------------------|
+| **Zoo Code** ⭐ (priority #1; ex-Roo Code) | `.roo/rules/` + **`AGENTS.md` (native)** | `.roo/commands/<name>.md` (slash commands) |
 | **Claude Code** (reference) | `CLAUDE.md` | `.claude/skills/<name>/SKILL.md` (slash skills) |
-| **OpenAI Codex** | `AGENTS.md` | skills as documented procedures in `AGENTS.md` / prompt docs |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | `.github/prompts/*.prompt.md` (prompt files) |
-| **Cursor** | `.cursor/rules/*.mdc` (+ `AGENTS.md`) | rules + saved prompts; skills as named docs |
-| **Windsurf** | `.windsurf/rules/` (`.windsurfrules`) | `.windsurf/workflows/*` |
-| **Cline** | `.clinerules/` (+ `AGENTS.md`) | Cline Workflows; skills as named docs |
-| **Roo Code** | `.roo/rules/` | custom modes (`.roomodes`) + rules |
-| Devin · OpenCode · Aider · Junie | `AGENTS.md` fallback | named docs the human invokes |
+| **OpenAI Codex** | `AGENTS.md` (native) | `.agents/skills/<name>/SKILL.md` (Agent Skills standard) |
+| **GitHub Copilot** | `.github/copilot-instructions.md` + `AGENTS.md` | `.github/prompts/*.prompt.md` (prompt files) |
+| **Cursor** | `.cursor/rules/*.mdc` + `AGENTS.md` | `.cursor/skills/`, `.agents/skills/` — **reads `.claude/skills/` as-is** |
+| **Windsurf/Cascade** | `.devin/rules/` (legacy `.windsurf/rules/`) + `AGENTS.md` | `.windsurf/workflows/*` (manual `/name`) |
+| **Cline** | `.clinerules/` + `AGENTS.md` | Skills (≥3.48): `.cline/skills/`, also reads `.claude/skills/` |
+| Roo Code (archived) | = Zoo Code (byte-compatible) | = Zoo Code |
+| Devin · OpenCode · Aider · Junie | `AGENTS.md` fallback | Skills standard (Devin/OpenCode) or named docs |
 
-> Priority for first-class adapters (per the owner): **OpenAI Codex → GitHub Copilot → Cursor → Windsurf
-> → Cline → Roo Code**, then Devin, OpenCode, Aider, Junie. Conventions evolve fast — an adapter must be
-> checked against the system's current documentation before relying on it.
+> Priority for first-class adapters (per the owner): **Zoo Code first**, then OpenAI Codex → GitHub
+> Copilot → Cursor → Windsurf → Cline, then Devin, OpenCode, Aider, Junie. Conventions evolve fast — an
+> adapter must be checked against the system's current documentation before relying on it (verified set:
+> 2026-07-03, see `researches/01_agent_skill_formats.md` in the KAIF repo).
 
 ## Adapter method (how to author/apply one)
 

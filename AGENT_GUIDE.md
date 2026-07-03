@@ -148,7 +148,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 
 Стиль: `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + одна строка. Каждое сообщение завершай строкой:
 ```
-Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 ```
 `node tools/commit.mjs "<msg>"` инкрементирует `version.json.build`, коммитит и пушит.
 
