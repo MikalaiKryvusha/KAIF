@@ -2,19 +2,21 @@
   <img src="KAIF.jpg" alt="KAIF — Krinik AI Framework" width="640">
 </p>
 
+<a id="english"></a>
+
 # KAIF — Krinik AI Framework
 
 <p align="center">
-  <a href="#kaif--krinik-ai-framework"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
+  <a href="#english"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
   &nbsp;
-  <a href="#kaif--фреймворк-для-ии-агента-на-русском"><img src="https://img.shields.io/badge/Русский-C0392B?style=for-the-badge" alt="Русский"></a>
+  <a href="#russian"><img src="https://img.shields.io/badge/Русский-C0392B?style=for-the-badge" alt="Русский"></a>
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.2-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](KAIF.md)
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
-[![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#kaif--фреймворк-для-ии-агента-на-русском)
+[![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#russian)
 
 **KAIF — Krinik AI Framework — a context-resilient, fundamental strategic-operational methodological framework for AI agents: resilience to context loss and discipline of autonomy.**
 Drop it into any cognitive project — in any domain — to turn your AI agent (Claude or any other) into a
@@ -76,7 +78,7 @@ working wrapper.)*
    deployment (sphere, terminology, `MASTER_PLAN.md`) around it. **This step is desirable but not
    required** — you can skip it and add `GOAL.md` later (the agent will create a template and, once you
    fill it, re-derive the plan with `/revision`). Doing it up front just saves rework. See
-   [`GOAL.md` — your vision](#goalmd--your-vision-worth-writing-first) below.
+   [`GOAL.md` — your vision](#goal-en) below.
 
 3. **Ask your agent to unpack it.** The initiator command names three parameters:
    - **Working language** — the language to unpack the English sources into (default: English).
@@ -125,6 +127,8 @@ your agent's cognitive power and context window:
   file appears at its exact canonical path, is validated for completeness (`--check`), and for Zoo Code the
   skills are translated into `.roo/commands/` automatically (`--agent zoo-code`). Model strength stops
   mattering for the structure's correctness.
+
+<a id="goal-en"></a>
 
 ### `GOAL.md` — your vision, worth writing first
 
@@ -299,13 +303,15 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 ---
 ---
 
+<a id="russian"></a>
+
 # КАИФ — Криник АИ Фреймворк
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.2-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](KAIF.md)
 [![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
-[![Языки](https://img.shields.io/badge/Доки-EN%20%7C%20RU-blue.svg)](#kaif--krinik-ai-framework)
+[![Языки](https://img.shields.io/badge/Доки-EN%20%7C%20RU-blue.svg)](#english)
 
 **КАИФ — Криник АИ Фреймворк — контекстоустойчивый фундаментальный стратегическо-операционный методологический фреймворк для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 Положите его в любой когнитивный проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
@@ -369,7 +375,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
    ориентирует всё развёртывание (сферу, терминологию, `MASTER_PLAN.md`) на него. **Шаг желательный, но не
    обязательный** — его можно пропустить и оформить `GOAL.md` позже (агент создаст шаблон, а после
    заполнения перевыведет план через `/revision`). Оформление заранее просто экономит переделку. См.
-   [`GOAL.md` — ваше видение](#goalmd--ваше-видение-лучше-оформить-заранее) ниже.
+   [`GOAL.md` — ваше видение](#goal-ru) ниже.
 
 3. **Попросите агента распаковать.** Команда-инициатор называет три параметра:
    - **Рабочий язык** — в какой язык распаковывать английские исходники (по умолчанию английский).
@@ -417,6 +423,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
   команду — каждый файл появляется по своему точному каноническому пути, полнота валидируется (`--check`),
   а для Zoo Code навыки автоматически транслируются в `.roo/commands/` (`--agent zoo-code`). Сила модели
   перестаёт влиять на корректность структуры.
+
+<a id="goal-ru"></a>
 
 ### `GOAL.md` — ваше видение, лучше оформить заранее
 
