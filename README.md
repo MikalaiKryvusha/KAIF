@@ -13,8 +13,9 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.3-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](KAIF.md)
+[![Slim variant](https://img.shields.io/badge/Also-Slim%20(1%20file)-FFB300.svg)](KAIF-SLIM.md)
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
 [![Languages](https://img.shields.io/badge/Docs-EN%20%7C%20RU-blue.svg)](#russian)
 
@@ -25,6 +26,8 @@ executes. KAIF is the methodology binding them — with a full lifecycle: deploy
 
 > 🇬🇧 English (primary) below.
 > 📦 The whole framework is one file: **[`KAIF.md`](KAIF.md)** — a self-extracting core.
+> 🪶 In a hurry, or a small project? **[`KAIF-SLIM.md`](KAIF-SLIM.md)** — the Slim variant: one file that
+> *is* the framework in place, no unpacking (see [Slim KAIF](#slim-en)).
 
 ---
 
@@ -56,6 +59,32 @@ software together — a standalone by-product of that collaboration, generalized
                                         writes out the structure, customizes it
 3. /resume · /pause · /autoloop ···  ─▶ works like a disciplined, autonomous teammate
 ```
+
+<a id="slim-en"></a>
+
+## Slim KAIF — the one-file variant, zero deploy
+
+**New in 1.3.** Not every project needs the full unpack — deploying `KAIF.md` (studying your project,
+writing out ~40 files, adapting each) is itself real cognitive work that costs the agent time and tokens.
+For small projects that just want to run *the KAIF way* from day one, there's a lighter door:
+
+> 🪶 **[`KAIF-SLIM.md`](KAIF-SLIM.md) is a single file that *is* the framework in place.** You don't unpack
+> it and you don't pay a bootstrap: drop it in your project root, write a short `GOAL.md` next to it, and
+> tell your agent *"Read KAIF-SLIM.md and work by it."* That's the whole setup.
+
+Slim keeps the **essence** — externalized memory (`STATUS.md`), knowledge that accumulates (`bugs/`,
+`ideas/`, `plans/`, created on demand), bounded autonomy, KISS + Occam, and the core rituals (resume,
+pause, autonomous loop, report-bug, propose-idea, interview) as plain behaviors — and drops the heavy
+machinery (the architecture maps, installable slash-skills, spheres, agent adapters, anonymous install, and
+the full deploy → update → fork → remove lifecycle). When a project outgrows Slim, **graduate to the full
+[`KAIF.md`](KAIF.md)**: ask your agent to unpack it and it builds the full structure around your existing
+`GOAL.md`/`STATUS.md` — nothing you did under Slim is wasted.
+
+| | **Slim** (`KAIF-SLIM.md`) | **Full** (`KAIF.md`) |
+|---|---|---|
+| Adopt by | copying one file — no unpacking | unpacking a self-extracting core (~40 files) |
+| Best for | small projects, quick start, minimal cost | real projects wanting the full method & lifecycle |
+| You get | STATUS/GOAL, on-demand knowledge dirs, rituals-as-behaviors | + maps, interviews, homeworks, installable skills, spheres, adapters, lifecycle |
 
 ## Your language, your project
 
@@ -288,6 +317,7 @@ development *of the framework itself*.
 
 ```
 KAIF.md                          ⭐ the self-extracting core (English; unpacks into any language), generated
+KAIF-SLIM.md                     🪶 the Slim variant — one file that IS the framework in place, generated
 framework/                       the canonical universal templates (the payload)
 tools/                           build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs
 README.md / README.pdf           this front door (EN+RU) and its rendered copy
@@ -308,8 +338,9 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 # КАИФ — Криник АИ Фреймворк
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.3-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](KAIF.md)
+[![Slim-вариант](https://img.shields.io/badge/Ещё-Slim%20(1%20файл)-FFB300.svg)](KAIF-SLIM.md)
 [![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
 [![Языки](https://img.shields.io/badge/Доки-EN%20%7C%20RU-blue.svg)](#english)
 
@@ -321,6 +352,8 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 > 📦 Весь фреймворк — это один файл: **[`KAIF.md`](KAIF.md)** (на английском) — самораспаковывающееся
 > ядро. При распаковке агент развернёт его на нужном вам языке.
+> 🪶 Спешите или проект небольшой? **[`KAIF-SLIM.md`](KAIF-SLIM.md)** — Slim-вариант: один файл, который
+> *и есть* фреймворк на месте, без распаковки (см. [Slim KAIF](#slim-ru)).
 
 ---
 
@@ -353,6 +386,33 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
                                          разворачивает структуру, настраивает её
 3. /resume · /pause · /autoloop ···  ─▶ работает как дисциплинированный автономный напарник
 ```
+
+<a id="slim-ru"></a>
+
+## Slim KAIF — вариант «один файл», без развёртывания
+
+**Новое в 1.3.** Не каждому проекту нужна полная распаковка — развернуть `KAIF.md` (изучить проект,
+выписать ~40 файлов, адаптировать каждый) само по себе реальная когнитивная работа, которая стоит агенту
+времени и токенов. Для небольших проектов, которые просто хотят работать *по-KAIF* с первого дня, есть
+дверь полегче:
+
+> 🪶 **[`KAIF-SLIM.md`](KAIF-SLIM.md) — это один файл, который *и есть* фреймворк на месте.** Его не
+> распаковывают и за него не платят бутстрапом: положите в корень проекта, рядом напишите короткий
+> `GOAL.md` и скажите агенту *«Прочитай KAIF-SLIM.md и работай по нему».* Это вся настройка.
+
+Slim сохраняет **суть** — вынесенную память (`STATUS.md`), накопление знаний (`bugs/`, `ideas/`, `plans/`,
+создаются по мере надобности), ограниченную автономность, KISS + Оккам и ключевые ритуалы (resume, pause,
+автономный цикл, report-bug, propose-idea, interview) как обычное поведение — и отбрасывает тяжёлую
+машинерию (карты архитектуры, устанавливаемые слеш-навыки, сферы, адаптеры агентов, анонимную установку и
+полный цикл развёртывание → обновление → форк → удаление). Когда проект перерастёт Slim — **переходите на
+полный [`KAIF.md`](KAIF.md)**: попросите агента распаковать его, и он выстроит полную структуру вокруг ваших
+уже существующих `GOAL.md`/`STATUS.md` — ничего из сделанного под Slim не пропадёт.
+
+| | **Slim** (`KAIF-SLIM.md`) | **Полный** (`KAIF.md`) |
+|---|---|---|
+| Как принять | копированием одного файла — без распаковки | распаковкой самораспаковывающегося ядра (~40 файлов) |
+| Для кого | небольшие проекты, быстрый старт, минимум затрат | реальные проекты, которым нужен полный метод и цикл |
+| Что получаете | STATUS/GOAL, директории знаний по требованию, ритуалы-как-поведение | + карты, интервью, homeworks, устанавливаемые навыки, сферы, адаптеры, жизненный цикл |
 
 ## Ваш язык — ваш проект
 
@@ -585,6 +645,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ```
 KAIF.md                          ⭐ самораспаковывающееся ядро (английский; распаковывается в любой язык)
+KAIF-SLIM.md                     🪶 Slim-вариант — один файл, который И ЕСТЬ фреймворк на месте
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
 tools/                           build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs
 README.md / README.pdf           этот «парадный вход» (EN+RU) и его рендер-копия

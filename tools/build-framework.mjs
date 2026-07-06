@@ -11,6 +11,9 @@
 // (everything needed to recreate the structure is inside one file). This is
 // itself an example of the framework's "build your own tooling" principle.
 //
+// It also emits the SECOND artifact — KAIF-SLIM.md (idea 07): the one-file Slim
+// variant that IS the framework in place (no unpacking). Source: framework/KAIF-SLIM.md.
+//
 // Usage:  node tools/build-framework.mjs
 // Re-run after editing framework/_intro.md or any template. Never hand-edit KAIF.md.
 // ---------------------------------------------------------------------------
@@ -116,6 +119,18 @@ out = out.replace('{{EMBED_SKILLS}}', embedSkills());
 
 writeFileSync(join(ROOT, 'KAIF.md'), out);
 console.log(`✅ KAIF.md generated — ${out.split('\n').length} lines, v${version()} (${released()})`);
+
+// --- Slim KAIF (idea 07) ----------------------------------------------------
+// The Slim variant is a SECOND artifact: one file that IS the framework in place
+// (no unpacking). It is self-contained prose — no {{EMBED}} markers — so the build
+// only strips the authoring comment, stamps the version, and copies it to the root.
+let slim = readFileSync(join(FW, 'KAIF-SLIM.md'), 'utf8');
+slim = slim.replace(/^<!--[\s\S]*?-->\n/, '');
+slim = '<!-- GENERATED FILE — do not edit by hand. Built from framework/KAIF-SLIM.md by ' +
+       'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + slim;
+slim = slim.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
+writeFileSync(join(ROOT, 'KAIF-SLIM.md'), slim);
+console.log(`✅ KAIF-SLIM.md generated — ${slim.split('\n').length} lines, v${version()} (${released()})`);
 
 // Self-check the generated installer (idea 01): fail loudly if it is malformed.
 try {
