@@ -1422,6 +1422,11 @@ confirmations, don't schedule big "wake up later" gaps. The only stop is a stop 
 **short** `ScheduleWakeup` (≈60s) is NOT a pause — it's the loop's heartbeat to continue in a new turn
 when the current one is exhausted (see step 7).
 
+> ⛔ **"Context overflow / filling up", "turn exhausted", "tired", "risk of hitting the limit" are NOT
+> stop conditions and NOT a reason to announce a pause or cut the turn short.** Context management is the
+> harness's job (it summarizes and continues on its own). Do NOT assess "how much context is left" and do
+> NOT end the turn yourself. Grind to the limit — until a real stop condition above fires.
+
 ## 🔁 The cycle (one iteration)
 
 1. **Check stop conditions** (above). If stop — go to "Finishing".
@@ -1442,12 +1447,14 @@ when the current one is exhausted (see step 7).
    minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
 7. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
-   no time checks.
-   - **Loop heartbeat (`ScheduleWakeup`):** when the current TURN is exhausted (context filled / turn
-     naturally ended) but work remains and no stop condition fired — call `ScheduleWakeup` with the same
-     `/dayloop` input and a **minimal** interval (≈60s) so the cycle resumes immediately in a new turn.
-     This is NOT a pause — it's how the loop survives the turn boundary and keeps grinding.
-   - Do NOT use `ScheduleWakeup` as a pause/wait: no big "wait an hour" intervals, no time-gating.
+   no time checks. **Don't assess how much context is left and don't end the turn yourself** — the
+   harness does that.
+   - **Loop heartbeat (`ScheduleWakeup`):** this is a *mechanical fallback* for when the harness ITSELF
+     ends the turn (not you). If that happens while work remains and no stop condition fired — on resume
+     call `ScheduleWakeup` with the same `/dayloop` input and a **minimal** interval (≈60s) so the cycle
+     resumes immediately in a new turn. This is NOT a pause — it's how the loop survives the turn boundary.
+   - Do NOT call `ScheduleWakeup` preemptively "because context is filling up", and do NOT use it as a
+     pause/wait: no big "wait an hour" intervals, no time-gating.
 
 ## ⚙️ Practice
 
@@ -1514,6 +1521,11 @@ Stop the loop ONLY if one of:
 
 Until one fires — don't stop, don't wait for confirmations, work.
 
+> ⛔ **"Context overflow / filling up", "turn exhausted", "tired", "risk of hitting the limit" are NOT
+> stop conditions and NOT a reason to announce a pause or cut the turn short.** Context management is the
+> harness's job (it summarizes and continues on its own). Do NOT assess how much context is left and do
+> NOT end the turn yourself. Grind until morning — until a real stop condition above fires.
+
 ## 🔁 The cycle (one iteration)
 
 1. **Check stop conditions** (above). If stop — go to "Finishing".
@@ -1526,9 +1538,11 @@ Until one fires — don't stop, don't wait for confirmations, work.
 4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way.
 5. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
-7. **Self-restart**: call `ScheduleWakeup` with a short listen and the same `/nightloop` input, so the
-   cycle continues in the next iteration if the current turn is exhausted. If there's work left in the
-   turn — just continue the next iteration in the same turn.
+7. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
+   turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
+   `ScheduleWakeup` (same `/nightloop` input, short listen) is a *mechanical fallback* for when the
+   harness ITSELF ends the turn: then the cycle resumes in a new turn. Don't call it preemptively
+   "because context is filling up".
 
 ## ⚙️ Practice
 

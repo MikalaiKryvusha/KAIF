@@ -26,6 +26,11 @@ Stop the loop ONLY if one of:
 
 Until one fires — don't stop, don't wait for confirmations, work.
 
+> ⛔ **"Context overflow / filling up", "turn exhausted", "tired", "risk of hitting the limit" are NOT
+> stop conditions and NOT a reason to announce a pause or cut the turn short.** Context management is the
+> harness's job (it summarizes and continues on its own). Do NOT assess how much context is left and do
+> NOT end the turn yourself. Grind until morning — until a real stop condition above fires.
+
 ## 🔁 The cycle (one iteration)
 
 1. **Check stop conditions** (above). If stop — go to "Finishing".
@@ -38,9 +43,11 @@ Until one fires — don't stop, don't wait for confirmations, work.
 4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way.
 5. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
-7. **Self-restart**: call `ScheduleWakeup` with a short listen and the same `/nightloop` input, so the
-   cycle continues in the next iteration if the current turn is exhausted. If there's work left in the
-   turn — just continue the next iteration in the same turn.
+7. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
+   turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
+   `ScheduleWakeup` (same `/nightloop` input, short listen) is a *mechanical fallback* for when the
+   harness ITSELF ends the turn: then the cycle resumes in a new turn. Don't call it preemptively
+   "because context is filling up".
 
 ## ⚙️ Practice
 

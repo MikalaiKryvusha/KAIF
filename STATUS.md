@@ -124,3 +124,7 @@ https://github.com/MikalaiKryvusha/KAIF/releases/tag/v1.3 (приложены `K
 
 - `bugs/01_poor_kaif_deploy_on_local_llms.md` — 🔧 фикс отгружен в 1.2, ждёт полевой проверки
   (homework 01).
+- `bugs/02_loops_self_stop_on_context_overflow.md` — 🔧 фикс отгружен (2026-07-07): `dayloop`/`nightloop`
+  сами обрывали ход на «переполнении контекста». Убран триггер «контекст заполнен» из шага 7, добавлен
+  гард `autoloop` (контекст/лимиты — забота харнесса, не стоп-условие) в оба слоя; `KAIF.md` пересобран.
+  Ждёт полевой проверки в реальном `/dayloop`.
