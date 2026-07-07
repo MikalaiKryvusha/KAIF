@@ -106,6 +106,10 @@ https://github.com/MikalaiKryvusha/KAIF/releases/tag/v1.3 (приложены `K
 
 ## ❓ Ожидает владельца
 
+- ❓ ожидает ревью владельца: **идея 08** (`ideas/08_competitor_research_and_pareto_vision.md`) —
+  лёгкая разведка конкурентов (EGC + аналоги) без глубокого research-навыка → видение по Парето 80/20.
+
+
 - `homeworks/01_test_kaif_deploy_on_zoo_code.md` — полевая проверка деплоя 1.2 на слабой локальной ЛЛМ в
   Zoo Code (после успеха `bugs/01` помечается DONE).
 
