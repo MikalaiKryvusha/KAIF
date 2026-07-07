@@ -128,13 +128,18 @@ https://github.com/MikalaiKryvusha/KAIF/releases/tag/v1.3 (приложены `K
 
 ## ❓ Ожидает владельца
 
-- ❓ ожидает ревью владельца: **Парето-идеи из разведки** (`researches/02_competitor_landscape.md`, идея 08):
-  - **идея 09** (`ideas/09_experience_memory_decision_log.md`) — Decision Log / память об опыте (рынок
-    подтвердил: у EGC/agentmemory/Claude Flow есть). Самый дешёвый высокоценный шаг.
+- ❓ ожидает ревью владельца — **Парето-идеи из разведки** (`researches/02_competitor_landscape.md`, идея 08):
   - **идея 10** (`ideas/10_optional_enforcement_hooks.md`) — опциональные хуки-энфорсеры несущих правил
     (бьёт в корень `bugs/01`/`bugs/02`; EGC-guardian как прецедент). Главный пробел по надёжности.
   - **идея 11** (`ideas/11_progressive_context_loading.md`) — ленивая загрузка контекста (роутер, в духе
     Trellis; усиливает главный тезис KAIF).
+
+## 🛠 В работе
+
+- **Идея 09 одобрена → «ОПЫТ» (`EXPERIENCE.md`)**. План: `plans/10_experience_memory.md`. Растущий MD
+  накопленного опыта агента (греп-дружелюбный формат + облако тегов), встройка во все ключевые документы,
+  навык `/experience` (capture+recall), автоведение в циклах, усиление карты (blast-radius). Ждёт «go»
+  на реализацию (план готов) — версия-кандидат 1.4.
 
 
 - `homeworks/01_test_kaif_deploy_on_zoo_code.md` — полевая проверка деплоя 1.2 на слабой локальной ЛЛМ в
