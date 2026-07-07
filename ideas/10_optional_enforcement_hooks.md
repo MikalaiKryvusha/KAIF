@@ -1,7 +1,7 @@
 # Idea 10 — Опциональные хуки-энфорсеры несущих правил (адаптер под хост)
 
 > Source: AI agent (Парето-вывод разведки конкурентов), 2026-07-08.
-> Status: ❓ AWAITING HUMAN APPROVAL — идея агента = элемент видения; не реализуется без одобрения.
+> Status: ✅ APPROVED (2026-07-08) — в работе; план реализации: `plans/11_enforcement_hooks.md`.
 > Origin: `researches/02_competitor_landscape.md` §3, пункт 1 (одобренная идея 08).
 
 ## Essence

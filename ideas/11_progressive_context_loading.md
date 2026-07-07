@@ -1,7 +1,7 @@
 # Idea 11 — Прогрессивная (ленивая) загрузка контекста
 
 > Source: AI agent (Парето-вывод разведки конкурентов), 2026-07-08.
-> Status: ❓ AWAITING HUMAN APPROVAL — идея агента = элемент видения; не реализуется без одобрения.
+> Status: ✅ APPROVED (2026-07-08) — в работе; план реализации: `plans/12_progressive_context_loading.md`.
 > Origin: `researches/02_competitor_landscape.md` §3, пункт 3 (одобренная идея 08).
 
 ## Essence
