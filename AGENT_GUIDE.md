@@ -30,17 +30,41 @@
 
 ```
 1. Read STATUS.md                 # current state of the framework project
-2. git status                     # what changed, what's uncommitted
-3. git log --oneline -5           # where we are in history
-4. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md
-5. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
-6. Comment your code/tools; keep docs accurate
-7. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
-8. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md and improve them
-9. Narrate in the chat what you're doing
+2. Recall EXPERIENCE.md           # grep by task tags — don't repeat known dead ends (skill: /experience)
+3. git status                     # what changed, what's uncommitted
+4. git log --oneline -5           # where we are in history
+5. Load only the relevant slice   # use the Context router below — read the required minimum + task-type docs
+6. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md
+7. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
+8. Comment your code/tools; keep docs accurate
+9. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
+10. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
+11. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md and improve them
+12. Narrate in the chat what you're doing
 ```
 
 → **`STATUS.md`** — главный файл состояния. Обновляй его после каждой значимой задачи.
+
+### Контекст-роутер (ленивая загрузка) — читай только нужный срез
+
+Не читай всё «на всякий случай» — так забивается тот самый контекст, который бережём. Всегда читай
+**обязательный минимум**, затем — документы под тип задачи; остальное дочитывай по необходимости.
+
+| Тип задачи | Читать (сверх обязательного минимума) |
+|---|---|
+| **Обязательный минимум (всегда)** | `STATUS.md` · `PHILOSOPHY.md` · этот роутер · `EXPERIENCE.md` (грепом по тегам) |
+| Правка шаблона (payload) | `AGENT_GUIDE.md` (слои) · инвариант пересборки · релевантный `framework/*` |
+| Баг | `BUG_FIXING_FRAMEWORK.md` · `bugs/<этот>` · карта (blast radius) |
+| Идея/фича | `ideas/<эта>` · `MASTER_PLAN.md` · релевантный `plans/<этот>` |
+| Развёртывание/распаковка | `KAIF.md` §8 · манифест распаковщика |
+
+### Опыт — `EXPERIENCE.md`
+
+Растущий греп-дружелюбный журнал уроков (вынесенная память о том, что работает, а что нет). **Вспоминай**
+релевантные записи перед задачей (грепом по тегам); **фиксируй** короткий урок после значимого успеха/провала
+— в циклах делай и то, и другое без напоминаний. Навык `/experience`. Граница: `bugs/` = по документу на
+дефект; `EXPERIENCE.md` = короткие межзадачные уроки уровня подхода (включая успехи). Тегом `DONE` не
+помечается. Перед правкой кода — сверься с `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` и оцени blast radius.
 
 ---
 

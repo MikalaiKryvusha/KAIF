@@ -128,15 +128,22 @@ https://github.com/MikalaiKryvusha/KAIF/releases/tag/v1.3 (приложены `K
 
 ## ❓ Ожидает владельца
 
-## 🛠 В работе — релиз-кандидат 1.4 (идеи 09+10+11 одобрены, реализуем вместе)
+## 🛠 Реализовано — ждёт релиза 1.4 (идеи 09+10+11)
 
-- **Идея 09 → «ОПЫТ» (`EXPERIENCE.md`)** · план `plans/10_experience_memory.md`. Растущий MD накопленного
-  опыта агента (греп-дружелюбный формат + облако тегов), встройка во все ключевые документы, навык
-  `/experience` (capture+recall), автоведение в циклах, усиление карты (blast-radius).
-- **Идея 10 → опциональные хуки-энфорсеры** · план `plans/11_enforcement_hooks.md`. Механический энфорс
-  4 несущих правил через хуки хоста (Zoo Code → Claude Code); бьёт в корень `bugs/01`/`bugs/02`.
-- **Идея 11 → ленивая загрузка контекста** · план `plans/12_progressive_context_loading.md`. Роутер
-  «тип задачи → минимальный срез документов» в `AGENT_GUIDE.md`.
+Все три идеи реализованы в **обоих слоях** (полезная нагрузка `framework/` + обвязка), `KAIF.md` пересобран
+(**39 блоков**: 10 доков + 6 README + 22 навыка + 1 распаковщик):
+- **Идея 09 → «ОПЫТ» (`EXPERIENCE.md`)** · `plans/10_experience_memory.md`. Новый ключевой документ (греп-
+  дружелюбный формат + облако тегов), навык `/experience` (capture+recall), встройка recall/capture в
+  чек-лист `AGENT_GUIDE`, `PHILOSOPHY` (принцип «Учись один раз»), `BUG_FIXING`, циклы, `resume`,
+  `refresh-context`, `CLAUDE.md`, карты; усиление blast-radius. Корневой `EXPERIENCE.md` засеян (dogfooding).
+- **Идея 10 → опциональные хуки-энфорсеры** · `plans/11_enforcement_hooks.md`. Секция «Hooks (optional
+  enforcement)» в адаптерах `zoo-code`/`claude-code` + §14 ядра; 4 несущих правила, энфорс опционален.
+- **Идея 11 → ленивая загрузка контекста** · `plans/12_progressive_context_loading.md`. Контекст-роутер
+  «тип задачи → минимальный срез» в `AGENT_GUIDE` (оба слоя).
+
+**Осталось для релиза 1.4 (owner-gated `/release`):** bump версии → 1.4, README EN+RU (бейдж, секция
+«Experience», таблица навыков 21→22, структура репо), PDF, тег + GitHub Release. Затем DONE-теги идеям
+09/10/11 и планам 10/11/12.
 
 
 - `homeworks/01_test_kaif_deploy_on_zoo_code.md` — полевая проверка деплоя 1.2 на слабой локальной ЛЛМ в

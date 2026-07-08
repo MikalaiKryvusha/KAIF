@@ -44,6 +44,7 @@ KAIF/
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
 ├── KAIF_FRAMEWORK.md                       # «KAIF, развёрнутый здесь»
 ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
+├── EXPERIENCE.md                           # накопленный опыт агента (греп-дружелив; навык /experience)
 ├── GOAL.md                                 # видение (заполняет владелец)
 ├── MASTER_PLAN.md                          # пошаговый генплан от состояния к GOAL
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md       # (этот файл)
