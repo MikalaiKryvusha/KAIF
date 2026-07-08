@@ -14,9 +14,13 @@ show the error, do NOT continue blindly.
 > = a public tag and Release, unpleasant to roll back. **In autonomous mode (`/autoloop`/loops) do NOT
 > publish a release.**
 
-## Step 0. Decide the bump type
+## Step 0. Decide the bump type and the codename
 
 Confirm with the human (or confirm the default): patch / minor / major. State the current → new version.
+
+**Every release gets a short codename** (a memorable one- or two-word name for the theme, e.g. *Anonymous*,
+*Slim*, *Savvied*). Ask the human for it (or propose one and confirm). The codename drives the release
+**title** and headline — see Step 6.
 
 ## Step 1. Pre-check the environment (don't release on a dirty/broken tree)
 
@@ -54,13 +58,25 @@ Commit the README/docs updates so the `release: X.Y` commit is a clean version b
 ## Step 6. Publish (after the human's confirmation)
 
 `<Run your release flow. If you have a release tool (e.g. tools/release.mjs that bumps the version,
-builds, renames the artifact, commits "release: X.Y", tags vX.Y, pushes, and runs gh release create with
-auto-notes), run it. Otherwise, do it explicitly:>`
+builds, renames the artifact, commits "release: X.Y", tags vX.Y, pushes, and runs gh release create),
+run it. Otherwise, do it explicitly:>`
 ```bash
 # bump version (in version.json or your manifest), then:
 git commit -am "release: X.Y" && git tag vX.Y && git push && git push --tags
-gh release create vX.Y --title "vX.Y" --generate-notes <ARTIFACT(S) if any>
+gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTES.md> <ARTIFACT(S) if any>
 ```
+
+> 📛 **Release title — FIXED FORMAT (CANON):** `<PROJECT> X.Y — <Codename>` — the project name, the
+> `major.minor` version, an em dash `—`, then the Step-0 codename. Examples: `KAIF 1.2 — Anonymous KAIF`,
+> `KAIF 1.3 — Slim KAIF`, `KAIF 1.4 — Savvied KAIF`. **Not** `vX.Y`, no guillemets, no quotes. Keep it
+> consistent with every prior release (check `gh release list`).
+>
+> 📝 **Release notes — detailed and BILINGUAL (do NOT `--generate-notes`).** Write real notes and mirror
+> **every language the README ships in**, with in-page language anchors/toggles, matching the house style
+> of previous releases (check the last release's body with `gh release view <prev> --json body -q .body`
+> and follow its shape). Structure per language: a header line (release date · place), a one-paragraph
+> "what this release is", a short "what KAIF is" paragraph, the attached artifacts, a **✨ What's new**
+> section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
 
 ## Step 7. Verify and report
 
