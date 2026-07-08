@@ -50,3 +50,7 @@
 2. Какой хост энфорсить первым — **Zoo Code** (приоритет №1) или Claude Code (богаче hooks)?
 3. Финальный список несущих правил под энфорс — согласовать (мой черновик: rebuild-after-edit,
    no-context-self-stop, status-before-pause, no-rename-on-deploy).
+
+## ✅ STATUS: DONE — отгружено в v1.4 «Savvied KAIF» (2026-07-08)
+
+Реализовано: секция «Hooks (optional enforcement)» в адаптерах zoo-code/claude-code + §14 ядра; 4 несущих правила, энфорс опционален. План: plans/11_DONE_enforcement_hooks.md.

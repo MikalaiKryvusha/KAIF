@@ -49,3 +49,7 @@
 - Роутер в `AGENT_GUIDE.md` vs отдельный `CONTEXT_ROUTER.md` — предлагаю **в AGENT_GUIDE** (KISS), вынести,
   только если разрастётся.
 - Точный состав обязательного минимума — черновик выше; подтвердить.
+
+## ✅ STATUS: DONE — отгружено в v1.4 «Savvied KAIF» (2026-07-08)
+
+Выполнено и отгружено в v1.4. Идея: ideas/11_DONE_progressive_context_loading.md.
