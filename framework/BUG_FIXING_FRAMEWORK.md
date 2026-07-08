@@ -34,6 +34,10 @@ To fix a bug, the agent must:
 - For effective fixing you MUST reflect and write down your knowledge about working on this bug into a
   dedicated document about *this specific* fixing work. Such ruminations should and must be kept as
   separate markdown documents in the `bugs/` directory.
+- Once the bug is understood or fixed (and always after the three-attempts stop), **capture the reusable
+  lesson** in `EXPERIENCE.md` (skill: `/experience`) — the approach-level takeaway ("X failed because R;
+  Y worked"), not the defect detail (that stays in the `bugs/` document). This is how a later session
+  avoids re-walking the same dead end.
 - To be able to interact with the program under test, you can and should **install or build extra
   tooling** that lets the agent observe and drive the software: see its output, inspect its state,
   reproduce the defect deterministically, and exercise it without a human. Invest in that instrumentation

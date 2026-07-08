@@ -98,6 +98,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── BUG_FIXING_FRAMEWORK.md              # how the agent debugs
 ├── GOAL.md                              # the vision — owner-filled (what we want in the end)
 ├── STATUS.md                            # the living state — updated after every significant task
+├── EXPERIENCE.md                        # the agent's growing log of lessons (grep-friendly; skill: /experience)
 ├── MASTER_PLAN.md                       # the phased roadmap from current state → GOAL
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md    # external map: dirs/files/links
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md # internal map: abstractions & how they interact
@@ -114,7 +115,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 21 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — 22 in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -134,7 +135,9 @@ The agent's brain on disk. Each template below is generic: replace every `<PLACE
 real value during unpacking. `PHILOSOPHY.md` and `BUG_FIXING_FRAMEWORK.md` are universal — copy verbatim.
 `GOAL.md` is **owner-filled** (if empty, seed the template and ask the owner). `MASTER_PLAN.md` and the two
 maps are authored from your inspection of the project. `KAIF_FRAMEWORK.md` is written **after** injection
-(§10).
+(§10). `EXPERIENCE.md` starts as the seed template below and **grows on its own** — the agent appends a
+lesson after every meaningful success or failure and consults it (grep by tag) before starting a task, so
+experience survives context resets. It is a **living reference — never DONE-tagged.**
 
 {{EMBED:framework/AGENT_GUIDE.md}}
 
@@ -145,6 +148,8 @@ maps are authored from your inspection of the project. `KAIF_FRAMEWORK.md` is wr
 {{EMBED:framework/GOAL.md}}
 
 {{EMBED:framework/STATUS.md}}
+
+{{EMBED:framework/EXPERIENCE.md}}
 
 {{EMBED:framework/MASTER_PLAN.md}}
 
@@ -200,6 +205,7 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 | `nightloop` | autonomy | Autonomous work until a wake time / the human returns. |
 | `refresh-context` | hygiene | Re-read the master plan, maps, and guidance; rebuild the backlog. |
 | `check-backlog` | hygiene | Walk the knowledge dirs, tag finished work DONE, return the open list. |
+| `experience` | knowledge | Capture a lesson into `EXPERIENCE.md`, or recall relevant lessons before a task. |
 | `report-bug` | knowledge | File a bug document by the canon. |
 | `bug-research` | knowledge | Deep investigation without coding, after 3 failed fix attempts. |
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
@@ -476,6 +482,13 @@ as-is. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority sy
 (successor of Roo Code; `.roo/commands/<name>.md`, translated mechanically by the unpacker's
 `--agent zoo-code` flag — §8); then **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline**; others via
 the `AGENTS.md` fallback or authored from `_template`. Catalog: `framework/adapters/`.
+
+**Optional enforcement (hooks).** KAIF's discipline lives in prose, which a weak — or even a strong — model
+can *choose* to ignore (the root of `bugs/01` and `bugs/02`). Where the host offers hooks (Claude Code
+`settings.json` hooks; Zoo Code allow/deny + auto-approve gates), an adapter can make a **few load-bearing
+rules mechanical** — e.g. rebuild-after-editing-a-template, don't-self-stop-a-loop-on-context,
+update-STATUS-before-pause, don't-rename-canonical-files. Enforcement is **optional and additive**: with no
+hooks, everything still runs on prose. Keep the enforced set short; details per host in `framework/adapters/`.
 
 ---
 

@@ -19,6 +19,7 @@ restores it quickly and forms a current backlog.
    - `STATUS.md` — current state, what's in progress, "where to continue", "awaiting human review".
    - `BUG_FIXING_FRAMEWORK.md` — how to fix bugs.
    - `PHILOSOPHY.md` — the simplicity principle (KISS + Occam).
+   - `EXPERIENCE.md` — recall accumulated lessons (grep by the current task's tags) before diving back in.
 
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).

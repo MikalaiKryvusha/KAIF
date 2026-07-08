@@ -92,6 +92,14 @@ truth per fact; duplication drifts out of sync and doubles the maintenance. (Thi
 built this way: the templates live once in `framework/` and are inlined into the core, never duplicated by
 hand.)
 
+### Learn once — accumulated experience
+A mistake made and recorded is tuition paid; making it twice is tuition wasted. The agent works across
+sessions that lose context, so memory of *what works and what doesn't* must live on disk, not in the chat.
+Before a task, recall the relevant lessons (`EXPERIENCE.md`, grep by tag); after a meaningful success or
+failure, capture the reusable takeaway. Don't blindly retry an approach a past entry says already failed —
+go the other way, or note why this time differs. (Skill: `/experience`. This is DRY applied to *effort*:
+solve a class of problem once, then reference the lesson.)
+
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
 this? What happens if I DON'T? What will NOT happen if I do? What will NOT happen if I don't?** Answering

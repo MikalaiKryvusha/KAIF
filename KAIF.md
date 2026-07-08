@@ -92,6 +92,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── BUG_FIXING_FRAMEWORK.md              # how the agent debugs
 ├── GOAL.md                              # the vision — owner-filled (what we want in the end)
 ├── STATUS.md                            # the living state — updated after every significant task
+├── EXPERIENCE.md                        # the agent's growing log of lessons (grep-friendly; skill: /experience)
 ├── MASTER_PLAN.md                       # the phased roadmap from current state → GOAL
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md    # external map: dirs/files/links
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md # internal map: abstractions & how they interact
@@ -108,7 +109,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 21 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — 22 in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -128,7 +129,9 @@ The agent's brain on disk. Each template below is generic: replace every `<PLACE
 real value during unpacking. `PHILOSOPHY.md` and `BUG_FIXING_FRAMEWORK.md` are universal — copy verbatim.
 `GOAL.md` is **owner-filled** (if empty, seed the template and ask the owner). `MASTER_PLAN.md` and the two
 maps are authored from your inspection of the project. `KAIF_FRAMEWORK.md` is written **after** injection
-(§10).
+(§10). `EXPERIENCE.md` starts as the seed template below and **grows on its own** — the agent appends a
+lesson after every meaningful success or failure and consults it (grep by tag) before starting a task, so
+experience survives context resets. It is a **living reference — never DONE-tagged.**
 
 > **FILE: `AGENT_GUIDE.md`** — project root — replace every `<PLACEHOLDER>` with the project's real values
 
@@ -156,29 +159,57 @@ relies entirely on this document to get to work.
 
 ```
 1. Read STATUS.md                 # current state: what's done, where we are, what's next
-2. git status                     # what changed, what's uncommitted
-3. git log --oneline -5           # where we are in history
-4. Read MEMORY.md (if present)    # user profile, key decisions
-5. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
-6. Run the build (if touching code)   # <BUILD_COMMAND>
-7. Use the test harness           # <TEST_HARNESS> — drive/observe the software without a human
-8. Comment the code               # comment blocks, classes, modules, important lines
-9. Reflect on bugs in bugs/       # one md per bug; follow BUG_FIXING_FRAMEWORK.md
-10. Periodically re-read the key guidance docs:
+2. Recall experience              # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience)
+3. git status                     # what changed, what's uncommitted
+4. git log --oneline -5           # where we are in history
+5. Read MEMORY.md (if present)    # user profile, key decisions
+6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
+7. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
+8. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
+9. Run the build (if touching code)   # <BUILD_COMMAND>
+10. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
+11. Comment the code              # comment blocks, classes, modules, important lines
+12. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
+13. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
+14. Periodically re-read the key guidance docs:
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
-11. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
+15. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
     human can glance over and follow along.
-12. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
+16. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
     clean structured format for AI consumption. After implementing from such a document, write the
     status and the implementation date back into it.
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
+
+### Context router (progressive loading) — read only the slice you need
+
+Don't read every document "just in case" — that fills the context you're trying to protect. Read the
+**required minimum** always, then only the documents for the task type; fetch more on demand.
+
+| Task type          | Read (minimum on top of the required minimum)                         |
+|--------------------|-----------------------------------------------------------------------|
+| **Required minimum (always)** | `STATUS.md` · `PHILOSOPHY.md` (the principle set) · this router · `EXPERIENCE.md` (grep by tag) |
+| Bug                | `BUG_FIXING_FRAMEWORK.md` · `bugs/<this>` · the map (blast radius)     |
+| Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
+| Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
+| Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
+
+Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
+whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Experience log — `EXPERIENCE.md`
+
+`EXPERIENCE.md` is the agent's growing, grep-friendly log of lessons (externalized memory of what works and
+what doesn't). **Recall** relevant entries before a task (grep by tag); **capture** a short lesson after any
+meaningful success or failure — in loops, do both without waiting for the human. Skill: `/experience`.
+Boundary: `bugs/` = one doc per defect; `EXPERIENCE.md` = short cross-task, approach-level lessons (incl.
+successes). Living reference — never DONE-tagged.
 
 ---
 
@@ -452,6 +483,14 @@ truth per fact; duplication drifts out of sync and doubles the maintenance. (Thi
 built this way: the templates live once in `framework/` and are inlined into the core, never duplicated by
 hand.)
 
+### Learn once — accumulated experience
+A mistake made and recorded is tuition paid; making it twice is tuition wasted. The agent works across
+sessions that lose context, so memory of *what works and what doesn't* must live on disk, not in the chat.
+Before a task, recall the relevant lessons (`EXPERIENCE.md`, grep by tag); after a meaningful success or
+failure, capture the reusable takeaway. Don't blindly retry an approach a past entry says already failed —
+go the other way, or note why this time differs. (Skill: `/experience`. This is DRY applied to *effort*:
+solve a class of problem once, then reference the lesson.)
+
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
 this? What happens if I DON'T? What will NOT happen if I do? What will NOT happen if I don't?** Answering
@@ -561,6 +600,10 @@ To fix a bug, the agent must:
 - For effective fixing you MUST reflect and write down your knowledge about working on this bug into a
   dedicated document about *this specific* fixing work. Such ruminations should and must be kept as
   separate markdown documents in the `bugs/` directory.
+- Once the bug is understood or fixed (and always after the three-attempts stop), **capture the reusable
+  lesson** in `EXPERIENCE.md` (skill: `/experience`) — the approach-level takeaway ("X failed because R;
+  Y worked"), not the defect detail (that stays in the `bugs/` document). This is how a later session
+  avoids re-walking the same dead end.
 - To be able to interact with the program under test, you can and should **install or build extra
   tooling** that lets the agent observe and drive the software: see its output, inspect its state,
   reproduce the defect deterministically, and exercise it without a human. Invest in that instrumentation
@@ -764,6 +807,46 @@ that a fresh session understands what already exists and works. Example:>`
 
 `<Pull from bugs/ (non-DONE). One line each with status and a pointer. Example:>`
 - 🔴 `bugs/NN_<name>.md` — `<symptom, one line>`
+``````
+
+
+> **FILE: `EXPERIENCE.md`** — project root — seed this template; the agent grows it (skill: /experience)
+
+``````md
+# EXPERIENCE — the agent's accumulated experience
+
+> The agent's growing log of lessons. **Externalized memory of *what works and what doesn't*** — so a
+> fresh, context-less session (or an autonomous loop) never repeats a dead end. Consult it BEFORE a task;
+> append to it AFTER a meaningful attempt (success **or** failure). Grep, don't scroll.
+>
+> **Search it from the console:**
+> `grep '#loop' EXPERIENCE.md` · `grep '❌' -A4 EXPERIENCE.md` · `grep 'EXP-0007' EXPERIENCE.md`
+>
+> **Entry format (keep it short and grep-friendly).** Newest on top. Every entry starts with a stable id,
+> an ISO date, an outcome marker (`✅` / `❌` / `❌→✅`), and inline `#tags`:
+>
+> ```
+> ### EXP-0001 · 2026-01-01 · ✅ · #tag #area
+> **Context:** one line — what was being done.
+> **Tried / did:** the approach, briefly.
+> **Result:** ✅/❌ — what happened.
+> **Lesson:** the reusable takeaway (the reason this entry exists).   → link: bugs/NN · ideas/NN · plans/NN
+> ```
+>
+> Skill: `/experience` (capture a lesson · recall relevant lessons). Keep the tag cloud below current.
+
+## 🏷 Tag cloud — keep updated when you add an entry
+
+`(empty — grows as experience accumulates; e.g. #loop(2) #context(1) #build(1))`
+
+## Entries
+
+### EXP-0001 · 2026-01-01 · ✅ · #example #meta
+**Context:** first task after KAIF was deployed into this project (example entry — replace with real ones).
+**Tried / did:** wrote the first real lesson here in the canonical format.
+**Result:** ✅ — the experience log is live and greppable.
+**Lesson:** capture lessons at the level of *approach* (what worked / what to avoid), not defect detail
+(that lives in `bugs/`); one short entry beats a long story.   → link: (none)
 ``````
 
 
@@ -1158,6 +1241,7 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 | `nightloop` | autonomy | Autonomous work until a wake time / the human returns. |
 | `refresh-context` | hygiene | Re-read the master plan, maps, and guidance; rebuild the backlog. |
 | `check-backlog` | hygiene | Walk the knowledge dirs, tag finished work DONE, return the open list. |
+| `experience` | knowledge | Capture a lesson into `EXPERIENCE.md`, or recall relevant lessons before a task. |
 | `report-bug` | knowledge | File a bug document by the canon. |
 | `bug-research` | knowledge | Deep investigation without coding, after 3 failed fix attempts. |
 | `propose-idea` | knowledge | Propose a feature/improvement for the human's approval. |
@@ -1195,6 +1279,8 @@ Read at once:
 - `MASTER_PLAN.md` — the long-term plan and phases
 - `AGENT_GUIDE.md` — the rules for working on this project (mandatory)
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — architecture: modules, files, data flow
+
+- `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
 
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
@@ -1340,7 +1426,8 @@ without those resources.
 ## Step 0. Setup (once at the start)
 
 1. Read: `STATUS.md` (the "🤖 Autonomous backlog pool" section), `PHILOSOPHY.md`, `AGENT_GUIDE.md`,
-   `BUG_FIXING_FRAMEWORK.md`, the relevant `ideas/*` and `bugs/*`.
+   `BUG_FIXING_FRAMEWORK.md`, `EXPERIENCE.md` (recall lessons — grep by tag), the relevant `ideas/*`
+   and `bugs/*`.
 2. Check the environment is ready (build toolchain, devices/services — see `AGENT_GUIDE.md`).
 3. Assemble/refresh the working pool list from STATUS. Tell the human in one paragraph: what's in the
    pool, which task you start with, and why.
@@ -1358,7 +1445,8 @@ without those resources.
 7. **Fix cycle** on a bug: fix → build → test → logs (fresh by timestamp). The **3-attempts** rule →
    `/bug-research` (no code) → then fix.
 8. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
-   `ideas/*`; update `STATUS.md`.
+   `ideas/*`; update `STATUS.md`. After a meaningful success or failure, append the approach-level lesson
+   to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human.
 9. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
    with the Co-Authored-By trailer).
 10. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
@@ -1442,7 +1530,8 @@ when the current one is exhausted (see step 7).
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
    then ADD a command to the harness so next time it's one step.
-4. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way.
+4. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
 5. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
    minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
@@ -1535,7 +1624,8 @@ Until one fires — don't stop, don't wait for confirmations, work.
    - Tasks needing human actions (real hardware, external accounts) — file homework in `plans/homework_*.md`.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. High-level harness commands first; if missing, do it low-level then ADD the command.
-4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way.
+4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
 5. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
 7. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
@@ -1595,6 +1685,7 @@ restores it quickly and forms a current backlog.
    - `STATUS.md` — current state, what's in progress, "where to continue", "awaiting human review".
    - `BUG_FIXING_FRAMEWORK.md` — how to fix bugs.
    - `PHILOSOPHY.md` — the simplicity principle (KISS + Occam).
+   - `EXPERIENCE.md` — recall accumulated lessons (grep by the current task's tags) before diving back in.
 
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
@@ -1676,6 +1767,70 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 - Reference docs in `plans/` are never DONE-tagged.
 - In autoloops and at `/refresh-context`, call this once every few iterations, not every iteration.
 - If human-level questions surface — file in `interviews/` + mark `STATUS.md`, don't decide blindly.
+``````
+
+### `.claude/skills/experience/SKILL.md`
+
+> **FILE: `.claude/skills/experience/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: experience
+description: Work with the agent's accumulated experience log (EXPERIENCE.md) — either CAPTURE a fresh lesson ("let's add this to experience", "log this", "remember this lesson", "add to experience") or RECALL relevant past lessons before a task ("recount your experience", "what do we know about this", "check your experience", "recall lessons"). EXPERIENCE.md is externalized memory of what works and what doesn't, so a context-less session or an autonomous loop never repeats a dead end. Invoked by the human with those phrases AND by the agent itself — recall at the start of a task, capture after any meaningful success or failure.
+---
+
+# /experience — the agent's accumulated experience (EXPERIENCE.md)
+
+`EXPERIENCE.md` (project root) is the agent's **growing log of lessons** — externalized memory of *what
+works and what doesn't*. It survives context resets: a fresh session or an autonomous loop consults it and
+avoids repeating dead ends. It is a **living reference — never DONE-tagged**. Plain markdown, searched with
+grep — no database, no vectors.
+
+This skill has two modes. Match the human's phrasing (or your own need) to one.
+
+## Mode A — CAPTURE a lesson ("add this to experience")
+
+Trigger: the human says "let's add this to experience" / "log this lesson" / "remember this", OR you just
+finished something with a reusable takeaway (a success worth repeating, a failure worth avoiding, a
+non-obvious gotcha). **Capture proactively — don't wait to be asked.**
+
+1. **Distill the lesson** to its reusable core — the *approach-level* takeaway, not defect detail
+   (defect detail belongs in `bugs/`; `EXPERIENCE.md` is "what to do / not do next time").
+2. **Write one entry** at the **top** of the `## Entries` section, in the canonical format:
+   ```
+   ### EXP-NNNN · <ISO date> · <✅|❌|❌→✅> · #tag #area
+   **Context:** one line.
+   **Tried / did:** briefly.
+   **Result:** ✅/❌ — what happened.
+   **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
+   ```
+   - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
+   - Pick 1–3 short `#tags` — reuse existing tags where possible (grep the file to see them).
+   - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
+3. **Update the 🏷 tag cloud** at the top: bump/append `#tag(count)` for the tags you used.
+4. Keep it truthful — record what actually happened, including failures.
+
+## Mode B — RECALL lessons ("recount your experience")
+
+Trigger: the human says "recount your experience" / "what do we know about X" / "check your experience",
+OR you are **starting a task** and want to avoid known dead ends. **Recall at the start of a task by
+default** — it's cheap and prevents repeated mistakes.
+
+1. **Grep** `EXPERIENCE.md` by the task's tags/keywords: `grep -i '#loop\|context' EXPERIENCE.md`, or scan
+   the tag cloud for relevant tags, then pull those entries.
+2. **Summarize** the relevant lessons in 1–5 lines: what was tried, what worked, what to avoid — and let
+   that steer the approach BEFORE writing code. If a past entry says an approach failed, don't blindly
+   retry it; go the other way (or note why this time differs).
+3. If nothing relevant exists, say so briefly and proceed.
+
+## Notes
+
+- **Boundary with `bugs/`:** `bugs/` = one document per defect (symptom → forensics → fix). `EXPERIENCE.md`
+  = short, cross-task lessons at the level of approach — including successes. Link, don't duplicate.
+- **Autonomy:** in loops (`/autoloop`, `/dayloop`, `/nightloop`) and on `/resume` / `/refresh-context`,
+  recall at the start and capture after meaningful outcomes — without waiting for the human.
+- **Hygiene:** keep entries short; periodically merge/prune tags and stale entries (like grooming a backlog)
+  so the tag cloud stays honest and the file stays greppable.
 ``````
 
 ### `.claude/skills/report-bug/SKILL.md`
@@ -2902,6 +3057,13 @@ as-is. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority sy
 (successor of Roo Code; `.roo/commands/<name>.md`, translated mechanically by the unpacker's
 `--agent zoo-code` flag — §8); then **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline**; others via
 the `AGENTS.md` fallback or authored from `_template`. Catalog: `framework/adapters/`.
+
+**Optional enforcement (hooks).** KAIF's discipline lives in prose, which a weak — or even a strong — model
+can *choose* to ignore (the root of `bugs/01` and `bugs/02`). Where the host offers hooks (Claude Code
+`settings.json` hooks; Zoo Code allow/deny + auto-approve gates), an adapter can make a **few load-bearing
+rules mechanical** — e.g. rebuild-after-editing-a-template, don't-self-stop-a-loop-on-context,
+update-STATUS-before-pause, don't-rename-canonical-files. Enforcement is **optional and additive**: with no
+hooks, everything still runs on prose. Keep the enforced set short; details per host in `framework/adapters/`.
 
 ---
 

@@ -16,6 +16,8 @@ Read at once:
 - `AGENT_GUIDE.md` — the rules for working on this project (mandatory)
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — architecture: modules, files, data flow
 
+- `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
+
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
 - `BUG_FIXING_FRAMEWORK.md` — if a bug fix is likely

@@ -40,7 +40,8 @@ Until one fires — don't stop, don't wait for confirmations, work.
    - Tasks needing human actions (real hardware, external accounts) — file homework in `plans/homework_*.md`.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. High-level harness commands first; if missing, do it low-level then ADD the command.
-4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way.
+4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
 5. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
 7. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same

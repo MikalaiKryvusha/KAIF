@@ -49,7 +49,8 @@ when the current one is exhausted (see step 7).
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
    then ADD a command to the harness so next time it's one step.
-4. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way.
+4. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
 5. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
    minutes. `<COMMIT_COMMAND>`.
 6. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.

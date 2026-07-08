@@ -36,9 +36,24 @@ built-in commands cannot be overridden.
 - Frequent host for **local LLMs** (Ollama/LM Studio backends): small default context windows silently
   truncate — always deploy via the mechanical unpacker + staged flow, never a one-shot unpack.
 
+## Hooks (optional enforcement)
+
+KAIF's discipline lives in prose, which a model can *choose* to ignore (root of `bugs/01`, `bugs/02`). Where
+the host offers hooks, KAIF can make a **few load-bearing rules mechanical** — enforcement is **optional**
+and additive; with no hooks everything still works on prose.
+- Zoo Code (ex-Roo Code) enforcement surfaces: **command validation / allow-&-deny lists** for terminal
+  commands, and **auto-approve** gates in settings — use them to block unsafe shell actions and to require
+  a rebuild/status step, rather than trusting the model to remember.
+- Load-bearing rules worth enforcing (keep the list short): `rebuild-after-edit` (re-generate the core after
+  editing a template), `no-context-self-stop` (don't end an autonomous loop on "context full" — `bugs/02`),
+  `status-before-pause` (update `STATUS.md` before finishing), `no-rename-on-deploy` (canonical filenames
+  are law — `bugs/01`).
+- Where a rule can't be hook-enforced on this host, fall back to reinforced prose in `.roo/rules/kaif.md`.
+
 ## Deploy checklist
 - [ ] `AGENTS.md` → points at `AGENT_GUIDE.md` (native pickup)
 - [ ] `.roo/rules/kaif.md` → names the key docs
 - [ ] every KAIF skill → `.roo/commands/<name>.md` (frontmatter: `description` only)
 - [ ] validate: command count on disk == KAIF skill count (no silent skips)
+- [ ] (optional) enforcement: allow/deny lists + auto-approve gates for the load-bearing rules above
 - [ ] `.kaif/kaif.json` → `agent: "zoo-code"`

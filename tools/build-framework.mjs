@@ -66,6 +66,8 @@ const DOC_TARGETS = {
   'framework/PHILOSOPHY.md':           ['PHILOSOPHY.md',           'project root — universal, write verbatim'],
   'framework/BUG_FIXING_FRAMEWORK.md': ['BUG_FIXING_FRAMEWORK.md', 'project root — universal, write verbatim'],
   'framework/STATUS.md':               ['STATUS.md',               "project root — seed with the project's current real state"],
+  // Experience log added in 1.4 (grows on its own; living reference)
+  'framework/EXPERIENCE.md':           ['EXPERIENCE.md',           'project root — seed this template; the agent grows it (skill: /experience)'],
   // Key docs added in 1.1
   'framework/GOAL.md':                 ['GOAL.md',                 'project root — owner-filled; if empty, seed this template and ask the owner'],
   'framework/MASTER_PLAN.md':          ['MASTER_PLAN.md',          'project root — derive from GOAL.md (skill: /revision)'],
@@ -85,8 +87,8 @@ const DOC_TARGETS = {
 function embedSkills() {
   const dir = join(FW, 'skills');
   const order = ['resume', 'pause', 'autoloop', 'dayloop', 'nightloop', 'refresh-context',
-                 'check-backlog', 'report-bug', 'bug-research', 'propose-idea', 'interview', 'revision',
-                 'fix-vision', 'what-next', 'help-kaif', 'release'];
+                 'check-backlog', 'experience', 'report-bug', 'bug-research', 'propose-idea', 'interview',
+                 'revision', 'fix-vision', 'what-next', 'help-kaif', 'release'];
   const names = readdirSync(dir).filter((n) => existsSync(join(dir, n, 'SKILL.md')));
   names.sort((a, b) => ((order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999)));
   const note = "replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands";

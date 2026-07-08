@@ -21,29 +21,57 @@ relies entirely on this document to get to work.
 
 ```
 1. Read STATUS.md                 # current state: what's done, where we are, what's next
-2. git status                     # what changed, what's uncommitted
-3. git log --oneline -5           # where we are in history
-4. Read MEMORY.md (if present)    # user profile, key decisions
-5. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
-6. Run the build (if touching code)   # <BUILD_COMMAND>
-7. Use the test harness           # <TEST_HARNESS> — drive/observe the software without a human
-8. Comment the code               # comment blocks, classes, modules, important lines
-9. Reflect on bugs in bugs/       # one md per bug; follow BUG_FIXING_FRAMEWORK.md
-10. Periodically re-read the key guidance docs:
+2. Recall experience              # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience)
+3. git status                     # what changed, what's uncommitted
+4. git log --oneline -5           # where we are in history
+5. Read MEMORY.md (if present)    # user profile, key decisions
+6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
+7. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
+8. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
+9. Run the build (if touching code)   # <BUILD_COMMAND>
+10. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
+11. Comment the code              # comment blocks, classes, modules, important lines
+12. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
+13. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
+14. Periodically re-read the key guidance docs:
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
-11. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
+15. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
     human can glance over and follow along.
-12. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
+16. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
     clean structured format for AI consumption. After implementing from such a document, write the
     status and the implementation date back into it.
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
+
+### Context router (progressive loading) — read only the slice you need
+
+Don't read every document "just in case" — that fills the context you're trying to protect. Read the
+**required minimum** always, then only the documents for the task type; fetch more on demand.
+
+| Task type          | Read (minimum on top of the required minimum)                         |
+|--------------------|-----------------------------------------------------------------------|
+| **Required minimum (always)** | `STATUS.md` · `PHILOSOPHY.md` (the principle set) · this router · `EXPERIENCE.md` (grep by tag) |
+| Bug                | `BUG_FIXING_FRAMEWORK.md` · `bugs/<this>` · the map (blast radius)     |
+| Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
+| Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
+| Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
+
+Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
+whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Experience log — `EXPERIENCE.md`
+
+`EXPERIENCE.md` is the agent's growing, grep-friendly log of lessons (externalized memory of what works and
+what doesn't). **Recall** relevant entries before a task (grep by tag); **capture** a short lesson after any
+meaningful success or failure — in loops, do both without waiting for the human. Skill: `/experience`.
+Boundary: `bugs/` = one doc per defect; `EXPERIENCE.md` = short cross-task, approach-level lessons (incl.
+successes). Living reference — never DONE-tagged.
 
 ---
 
