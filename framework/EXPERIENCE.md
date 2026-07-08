@@ -4,8 +4,9 @@
 > fresh, context-less session (or an autonomous loop) never repeats a dead end. Consult it BEFORE a task;
 > append to it AFTER a meaningful attempt (success **or** failure). Grep, don't scroll.
 >
-> **Search it from the console:**
-> `grep '#loop' EXPERIENCE.md` · `grep '❌' -A4 EXPERIENCE.md` · `grep 'EXP-0007' EXPERIENCE.md`
+> **Tags live inline on every entry** (not in a central list) — so one grep finds the experiences directly:
+> `grep '#loop' EXPERIENCE.md` · `grep -i '#context\|#build' EXPERIENCE.md` · `grep '❌' -A4 EXPERIENCE.md`
+> · `grep 'EXP-0007' EXPERIENCE.md`. Reuse an existing tag where one fits (grep to see what's in use).
 >
 > **Entry format (keep it short and grep-friendly).** Newest on top. Every entry starts with a stable id,
 > an ISO date, an outcome marker (`✅` / `❌` / `❌→✅`), and inline `#tags`:
@@ -18,11 +19,7 @@
 > **Lesson:** the reusable takeaway (the reason this entry exists).   → link: bugs/NN · ideas/NN · plans/NN
 > ```
 >
-> Skill: `/experience` (capture a lesson · recall relevant lessons). Keep the tag cloud below current.
-
-## 🏷 Tag cloud — keep updated when you add an entry
-
-`(empty — grows as experience accumulates; e.g. #loop(2) #context(1) #build(1))`
+> Skill: `/experience` (capture a lesson · recall relevant lessons).
 
 ## Entries
 

@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by tools/build-framework.mjs. Edit the sources and re-run the tool. -->
-# KAIF — Krinik AI Framework · the self-extracting core · v1.3
+# KAIF — Krinik AI Framework · the self-extracting core · v1.4
 
 > **You are reading an installer.** This document describes the KAIF framework **and** unpacks it into a
 > project. If you are an AI agent asked to *"unpack KAIF"* — your job is in **§8**. Read this document,
@@ -819,8 +819,9 @@ that a fresh session understands what already exists and works. Example:>`
 > fresh, context-less session (or an autonomous loop) never repeats a dead end. Consult it BEFORE a task;
 > append to it AFTER a meaningful attempt (success **or** failure). Grep, don't scroll.
 >
-> **Search it from the console:**
-> `grep '#loop' EXPERIENCE.md` · `grep '❌' -A4 EXPERIENCE.md` · `grep 'EXP-0007' EXPERIENCE.md`
+> **Tags live inline on every entry** (not in a central list) — so one grep finds the experiences directly:
+> `grep '#loop' EXPERIENCE.md` · `grep -i '#context\|#build' EXPERIENCE.md` · `grep '❌' -A4 EXPERIENCE.md`
+> · `grep 'EXP-0007' EXPERIENCE.md`. Reuse an existing tag where one fits (grep to see what's in use).
 >
 > **Entry format (keep it short and grep-friendly).** Newest on top. Every entry starts with a stable id,
 > an ISO date, an outcome marker (`✅` / `❌` / `❌→✅`), and inline `#tags`:
@@ -833,11 +834,7 @@ that a fresh session understands what already exists and works. Example:>`
 > **Lesson:** the reusable takeaway (the reason this entry exists).   → link: bugs/NN · ideas/NN · plans/NN
 > ```
 >
-> Skill: `/experience` (capture a lesson · recall relevant lessons). Keep the tag cloud below current.
-
-## 🏷 Tag cloud — keep updated when you add an entry
-
-`(empty — grows as experience accumulates; e.g. #loop(2) #context(1) #build(1))`
+> Skill: `/experience` (capture a lesson · recall relevant lessons).
 
 ## Entries
 
@@ -1805,10 +1802,10 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
-   - Pick 1–3 short `#tags` — reuse existing tags where possible (grep the file to see them).
+   - Pick 1–3 short `#tags` **inline on the entry** (there is no central tag cloud) — reuse an existing tag
+     where one fits (grep the file to see what's in use), so `grep '#tag'` collects related experiences.
    - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
-3. **Update the 🏷 tag cloud** at the top: bump/append `#tag(count)` for the tags you used.
-4. Keep it truthful — record what actually happened, including failures.
+3. Keep it truthful — record what actually happened, including failures.
 
 ## Mode B — RECALL lessons ("recount your experience")
 
@@ -1816,8 +1813,8 @@ Trigger: the human says "recount your experience" / "what do we know about X" / 
 OR you are **starting a task** and want to avoid known dead ends. **Recall at the start of a task by
 default** — it's cheap and prevents repeated mistakes.
 
-1. **Grep** `EXPERIENCE.md` by the task's tags/keywords: `grep -i '#loop\|context' EXPERIENCE.md`, or scan
-   the tag cloud for relevant tags, then pull those entries.
+1. **Grep** `EXPERIENCE.md` by the task's tags/keywords: `grep -i '#loop\|context' EXPERIENCE.md`
+   (`-A4` to include the entry body), then read the matched entries.
 2. **Summarize** the relevant lessons in 1–5 lines: what was tried, what worked, what to avoid — and let
    that steer the approach BEFORE writing code. If a past entry says an approach failed, don't blindly
    retry it; go the other way (or note why this time differs).
@@ -1829,8 +1826,8 @@ default** — it's cheap and prevents repeated mistakes.
   = short, cross-task lessons at the level of approach — including successes. Link, don't duplicate.
 - **Autonomy:** in loops (`/autoloop`, `/dayloop`, `/nightloop`) and on `/resume` / `/refresh-context`,
   recall at the start and capture after meaningful outcomes — without waiting for the human.
-- **Hygiene:** keep entries short; periodically merge/prune tags and stale entries (like grooming a backlog)
-  so the tag cloud stays honest and the file stays greppable.
+- **Hygiene:** keep entries short; reuse tag names consistently (grep before inventing a near-duplicate tag)
+  and periodically prune stale entries (like grooming a backlog) so the file stays greppable.
 ``````
 
 ### `.claude/skills/report-bug/SKILL.md`
@@ -3009,7 +3006,7 @@ document that states the current version writes only `MAJOR.MINOR`. On deploy th
 `.kaif/kaif.json`:
 
 ```json
-{ "framework": "KAIF", "version": "1.3", "released": "2026-07-06",
+{ "framework": "KAIF", "version": "1.4", "released": "2026-07-08",
   "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin",
   "sphere": "programming", "agent": "claude-code" }
 ```

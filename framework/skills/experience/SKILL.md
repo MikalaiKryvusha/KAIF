@@ -29,10 +29,10 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
-   - Pick 1–3 short `#tags` — reuse existing tags where possible (grep the file to see them).
+   - Pick 1–3 short `#tags` **inline on the entry** (there is no central tag cloud) — reuse an existing tag
+     where one fits (grep the file to see what's in use), so `grep '#tag'` collects related experiences.
    - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
-3. **Update the 🏷 tag cloud** at the top: bump/append `#tag(count)` for the tags you used.
-4. Keep it truthful — record what actually happened, including failures.
+3. Keep it truthful — record what actually happened, including failures.
 
 ## Mode B — RECALL lessons ("recount your experience")
 
@@ -40,8 +40,8 @@ Trigger: the human says "recount your experience" / "what do we know about X" / 
 OR you are **starting a task** and want to avoid known dead ends. **Recall at the start of a task by
 default** — it's cheap and prevents repeated mistakes.
 
-1. **Grep** `EXPERIENCE.md` by the task's tags/keywords: `grep -i '#loop\|context' EXPERIENCE.md`, or scan
-   the tag cloud for relevant tags, then pull those entries.
+1. **Grep** `EXPERIENCE.md` by the task's tags/keywords: `grep -i '#loop\|context' EXPERIENCE.md`
+   (`-A4` to include the entry body), then read the matched entries.
 2. **Summarize** the relevant lessons in 1–5 lines: what was tried, what worked, what to avoid — and let
    that steer the approach BEFORE writing code. If a past entry says an approach failed, don't blindly
    retry it; go the other way (or note why this time differs).
@@ -53,5 +53,5 @@ default** — it's cheap and prevents repeated mistakes.
   = short, cross-task lessons at the level of approach — including successes. Link, don't duplicate.
 - **Autonomy:** in loops (`/autoloop`, `/dayloop`, `/nightloop`) and on `/resume` / `/refresh-context`,
   recall at the start and capture after meaningful outcomes — without waiting for the human.
-- **Hygiene:** keep entries short; periodically merge/prune tags and stale entries (like grooming a backlog)
-  so the tag cloud stays honest and the file stays greppable.
+- **Hygiene:** keep entries short; reuse tag names consistently (grep before inventing a near-duplicate tag)
+  and periodically prune stale entries (like grooming a backlog) so the file stays greppable.

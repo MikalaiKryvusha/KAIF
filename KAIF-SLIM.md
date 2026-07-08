@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/KAIF-SLIM.md by tools/build-framework.mjs. Edit the source and re-run the tool. -->
-# KAIF — Slim · one file, no unpacking · v1.3
+# KAIF — Slim · one file, no unpacking · v1.4
 
 > **You are reading the whole framework.** This single file *is* KAIF in its Slim form. Unlike the full
 > `KAIF.md` (a self-extracting installer that unpacks ~40 files), Slim KAIF is **not deployed** — you drop

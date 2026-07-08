@@ -133,7 +133,7 @@ https://github.com/MikalaiKryvusha/KAIF/releases/tag/v1.3 (приложены `K
 Все три идеи реализованы в **обоих слоях** (полезная нагрузка `framework/` + обвязка), `KAIF.md` пересобран
 (**39 блоков**: 10 доков + 6 README + 22 навыка + 1 распаковщик):
 - **Идея 09 → «ОПЫТ» (`EXPERIENCE.md`)** · `plans/10_experience_memory.md`. Новый ключевой документ (греп-
-  дружелюбный формат + облако тегов), навык `/experience` (capture+recall), встройка recall/capture в
+  дружелюбный формат, теги инлайн на каждой записи — без общего облака), навык `/experience` (capture+recall), встройка recall/capture в
   чек-лист `AGENT_GUIDE`, `PHILOSOPHY` (принцип «Учись один раз»), `BUG_FIXING`, циклы, `resume`,
   `refresh-context`, `CLAUDE.md`, карты; усиление blast-radius. Корневой `EXPERIENCE.md` засеян (dogfooding).
 - **Идея 10 → опциональные хуки-энфорсеры** · `plans/11_enforcement_hooks.md`. Секция «Hooks (optional

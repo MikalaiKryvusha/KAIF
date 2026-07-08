@@ -13,7 +13,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.3-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.4-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Self-extracting](https://img.shields.io/badge/Core-Self--extracting-3DDC84.svg)](KAIF.md)
 [![Slim variant](https://img.shields.io/badge/Also-Slim%20(1%20file)-FFB300.svg)](KAIF-SLIM.md)
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
@@ -179,6 +179,7 @@ your-project/
 ├── BUG_FIXING_FRAMEWORK.md               # how the agent debugs: fix→build→test, the 3-attempts rule
 ├── GOAL.md                               # the vision — you fill this in
 ├── STATUS.md                             # the living state — updated after every significant task
+├── EXPERIENCE.md                         # the agent's growing, grep-friendly log of lessons (skill: /experience)
 ├── MASTER_PLAN.md                        # the phased roadmap from current state → GOAL
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md     # external map: dirs/files/links
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md  # internal map: abstractions & how they interact
@@ -192,7 +193,7 @@ your-project/
 ├── interviews/                           # owner-level decisions — you answer in the document
 ├── homeworks/                            # tasks only a human can do (physical/offline)
 │
-├── .claude/skills/                       # the 21 repeatable rituals (below)
+├── .claude/skills/                       # the 22 repeatable rituals (below)
 └── kaif-unpack.mjs                       # transient mechanical unpacker (deleted after injection)
 ```
 
@@ -210,6 +211,7 @@ maintains, which **you (the owner)** author, and which the agent creates for **y
 | `BUG_FIXING_FRAMEWORK.md` | How the agent debugs | Universal — agent copies verbatim |
 | **`GOAL.md`** | The vision: what you want in the end | **You (owner)** — the one doc you should fill |
 | `STATUS.md` | The living state — what's done, where we are, next | Agent maintains after every task |
+| `EXPERIENCE.md` | The agent's grep-friendly log of lessons (what works/doesn't) | Agent grows it on its own (`/experience`) |
 | `MASTER_PLAN.md` | The phased roadmap from state → GOAL | Agent derives from `GOAL.md` (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | External map: dirs/files/links | Agent maintains |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Internal map: abstractions & interactions | Agent maintains |
@@ -232,7 +234,7 @@ maintains, which **you (the owner)** author, and which the agent creates for **y
 
 ## The skills
 
-Twenty-one repeatable rituals — the verbs of working on a project:
+Twenty-two repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
@@ -243,6 +245,7 @@ Twenty-one repeatable rituals — the verbs of working on a project:
 | `/nightloop` | Autonomous work until a wake time / you return. |
 | `/refresh-context` | Re-read the plan, maps & guidance; rebuild the backlog. |
 | `/check-backlog` | Tag finished work `DONE`; return the open list. |
+| `/experience` | Capture a lesson into `EXPERIENCE.md`, or recall relevant lessons before a task. |
 | `/report-bug` | File a bug document by the canon. |
 | `/bug-research` | Deep investigation (no coding) after 3 failed fix attempts. |
 | `/propose-idea` | Propose a feature for your approval. |
@@ -338,7 +341,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 # КАИФ — Криник АИ Фреймворк
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.3-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.4-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Самораспаковывающийся](https://img.shields.io/badge/Ядро-Самораспаковывающееся-3DDC84.svg)](KAIF.md)
 [![Slim-вариант](https://img.shields.io/badge/Ещё-Slim%20(1%20файл)-FFB300.svg)](KAIF-SLIM.md)
 [![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
@@ -507,6 +510,7 @@ Slim сохраняет **суть** — вынесенную память (`STA
 ├── BUG_FIXING_FRAMEWORK.md               # как агент чинит баги: цикл фикс→сборка→тест, правило 3 попыток
 ├── GOAL.md                               # видение — заполняете вы
 ├── STATUS.md                             # живое состояние — обновляется после каждой значимой задачи
+├── EXPERIENCE.md                         # растущий греп-дружелюбный журнал уроков агента (навык /experience)
 ├── MASTER_PLAN.md                        # пошаговый генплан от состояния → к GOAL
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md     # внешняя карта: директории/файлы/связи
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md  # внутренняя карта: абстракции и их взаимодействия
@@ -520,7 +524,7 @@ Slim сохраняет **суть** — вынесенную память (`STA
 ├── interviews/                           # решения уровня владельца — вы отвечаете в документе
 ├── homeworks/                            # задания, которые может сделать только человек (физика/офлайн)
 │
-├── .claude/skills/                       # 21 повторяемый ритуал (ниже)
+├── .claude/skills/                       # 22 повторяемых ритуала (ниже)
 └── kaif-unpack.mjs                       # временный механический распаковщик (удаляется после инжекции)
 ```
 
@@ -538,6 +542,7 @@ Slim сохраняет **суть** — вынесенную память (`STA
 | `BUG_FIXING_FRAMEWORK.md` | Как агент чинит баги | Универсальный — агент копирует дословно |
 | **`GOAL.md`** | Видение: чего вы хотите в итоге | **Вы (владелец)** — единственный документ, который стоит заполнить |
 | `STATUS.md` | Живое состояние — что сделано, где мы, что дальше | Агент ведёт после каждой задачи |
+| `EXPERIENCE.md` | Греп-дружелюбный журнал уроков агента (что работает/нет) | Агент растит сам (`/experience`) |
 | `MASTER_PLAN.md` | Пошаговый генплан от состояния → к GOAL | Агент выводит из `GOAL.md` (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | Внешняя карта: директории/файлы/связи | Агент ведёт |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внутренняя карта: абстракции и взаимодействия | Агент ведёт |
@@ -560,7 +565,7 @@ Slim сохраняет **суть** — вынесенную память (`STA
 
 ## Навыки
 
-Двадцать один повторяемый ритуал — глаголы работы над проектом:
+Двадцать два повторяемых ритуала — глаголы работы над проектом:
 
 | Навык | Назначение |
 |-------|------------|
@@ -571,6 +576,7 @@ Slim сохраняет **суть** — вынесенную память (`STA
 | `/nightloop` | Автономная работа до времени пробуждения / вашего возвращения. |
 | `/refresh-context` | Перечитать план, карты и руководства; пересобрать беклог. |
 | `/check-backlog` | Пометить сделанное `DONE`; вернуть список открытого. |
+| `/experience` | Зафиксировать урок в `EXPERIENCE.md` или вспомнить релевантные уроки перед задачей. |
 | `/report-bug` | Завести баг-документ по канону. |
 | `/bug-research` | Глубокое исследование (без кода) после 3 неудачных попыток фикса. |
 | `/propose-idea` | Предложить фичу на ваше одобрение. |
