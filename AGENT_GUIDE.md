@@ -74,7 +74,7 @@
 |-------|-------|
 | **Название / бренд** | **Krinik AI Framework (KAIF)** · рус. «Криник АИ Фреймворк (КАИФ)» |
 | **Репозиторий GitHub** | https://github.com/MikalaiKryvusha/KAIF |
-| **Локальная папка проекта** | `/Users/kryvusha/ai_sandbox/kriniks_ai_agent_framework` |
+| **Локальная папка проекта** | `d:\work\ai_sandbox\KAIF` (Windows; с 2026-07-16, ранее — macOS `/Users/kryvusha/ai_sandbox/kriniks_ai_agent_framework`) |
 | **Автор / владелец** | Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник |
 | **Лицензия** | MIT |
 | **Языки** | Английский (основной) + русский (переводная копия) |
