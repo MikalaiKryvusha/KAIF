@@ -66,6 +66,7 @@ const DOC_TARGETS = {
   'framework/AGENT_GUIDE.md':          ['AGENT_GUIDE.md',          "project root — replace every `<PLACEHOLDER>` with the project's real values"],
   'framework/PHILOSOPHY.md':           ['PHILOSOPHY.md',           'project root — universal, write verbatim'],
   'framework/BUG_FIXING_FRAMEWORK.md': ['BUG_FIXING_FRAMEWORK.md', 'project root — universal, write verbatim'],
+  'framework/TESTING_FRAMEWORK.md':    ['TESTING_FRAMEWORK.md',    'project root — universal, write verbatim'],
   'framework/STATUS.md':               ['STATUS.md',               "project root — seed with the project's current real state"],
   // Experience log added in 1.4 (grows on its own; living reference)
   'framework/EXPERIENCE.md':           ['EXPERIENCE.md',           'project root — seed this template; the agent grows it (skill: /experience)'],
@@ -166,9 +167,20 @@ writeFileSync(join(DIST, 'KAIF-CORE.mjs'), coreSrc);
 //    Contents: the key docs + directory READMEs (from DOC_TARGETS, minus the legacy
 //    unpacker), every skill (with its references/), and the sphere libraries
 //    (deployed to .kaif/spheres/ so fable-method/judge can read the project's sphere).
+// Template news for the update task (plan 15): 3–6 lines per minor describing what changed
+// in the TEMPLATES since the previous version — the agent uses them to merge diverged files.
+const TEMPLATE_NOTES = [
+  'fable family vendored: /fable-method, /fable-loop, /fable-judge, /fable-domain (execution discipline; judge pass now MANDATORY in the loops and /release)',
+  'AGENT_GUIDE: checklist gained "Execute by the fable loop"; new sections "Task execution discipline", "Languages — two audiences" (<OWNER_LANGUAGE>), standing commit authorization note',
+  'BUG_FIXING_FRAMEWORK: intent gate before the first behavior-changing edit + twin check after every fix',
+  'NEW key doc TESTING_FRAMEWORK.md: the 7 testing principles + [NOT-TESTED]/[TESTED: …] trust markers on everything the agent generates (false [TESTED] is a judge-hunted fraud)',
+  'Spheres now carry execution discipline: binding minimum evidence set, authority order, verification by observation, fraud table, done-by-example (deployed to .kaif/spheres/)',
+  'Release codename for this version: KAIF 1.5 — Tested KAIF',
+];
+
 function bundleBlocks() {
   const blocks = [];
-  const meta = { framework: 'KAIF', version: version(), released: released() };
+  const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES };
   blocks.push(`> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
     FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
   for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {

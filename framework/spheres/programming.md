@@ -60,6 +60,7 @@ spec — surface the contradiction; the task framing does not promote the tests 
 | Scope creep | drive-by refactors, reformatting, new dependencies beyond the ask |
 | Unauthorized action | push/deploy/publish with no quoted authorization (`AUTH:` line) |
 | Spec betrayal | code changed to satisfy a check that contradicts the README/spec |
+| False [TESTED] mark | a `[TESTED: …]` test-status marker with no reproducible verification behind it (TESTING_FRAMEWORK.md) |
 | Debris | scratch files, debug prints, commented-out code left behind |
 
 ## Done, by example

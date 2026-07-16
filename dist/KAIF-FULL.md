@@ -90,6 +90,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── AGENT_GUIDE.md                       # THE canon — read before every task
 ├── PHILOSOPHY.md                        # how the agent thinks (KISS + Occam + the principle set)
 ├── BUG_FIXING_FRAMEWORK.md              # how the agent debugs
+├── TESTING_FRAMEWORK.md                 # how the agent tests everything it creates ([NOT-TESTED]/[TESTED] markers)
 ├── GOAL.md                              # the vision — owner-filled (what we want in the end)
 ├── STATUS.md                            # the living state — updated after every significant task
 ├── EXPERIENCE.md                        # the agent's growing log of lessons (grep-friendly; skill: /experience)
@@ -126,7 +127,9 @@ Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for
 ## 4. The key documents
 
 The agent's brain on disk. Each template below is generic: replace every `<PLACEHOLDER>` with the project's
-real value during unpacking. `PHILOSOPHY.md` and `BUG_FIXING_FRAMEWORK.md` are universal — copy verbatim.
+real value during unpacking. `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, and `TESTING_FRAMEWORK.md` (the
+testing canon: seven principles + the `[NOT-TESTED]`/`[TESTED: …]` trust markers on everything the agent
+generates) are universal — copy verbatim.
 `GOAL.md` is **owner-filled** (if empty, seed the template and ask the owner). `MASTER_PLAN.md` and the two
 maps are authored from your inspection of the project. `KAIF_FRAMEWORK.md` is written **after** injection
 (§10). `EXPERIENCE.md` starts as the seed template below and **grows on its own** — the agent appends a
@@ -169,7 +172,7 @@ relies entirely on this document to get to work.
 9. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 10. Run the build (if touching code)   # <BUILD_COMMAND>
 11. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
-12. Comment the code              # comment blocks, classes, modules, important lines
+12. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
 13. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
 14. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
 15. Periodically re-read the key guidance docs:
@@ -197,6 +200,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 |--------------------|-----------------------------------------------------------------------|
 | **Required minimum (always)** | `STATUS.md` · `PHILOSOPHY.md` (the principle set) · this router · `EXPERIENCE.md` (grep by tag) |
 | Bug                | `BUG_FIXING_FRAMEWORK.md` · `bugs/<this>` · the map (blast radius)     |
+| Testing / verifying anything | `TESTING_FRAMEWORK.md` (the 7 principles · `[NOT-TESTED]`/`[TESTED]` markers) · the sphere's verification sections |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
@@ -597,6 +601,9 @@ statement contains a simple, supported path that makes all the clever machinery 
 ``````md
 # BUG_FIXING_FRAMEWORK — how the agent fixes defects
 
+> Defects arrive here from testing (`TESTING_FRAMEWORK.md`: nothing raw is trusted — `[NOT-TESTED]`
+> content gets verified, and what verification finds broken lands in `bugs/`).
+
 To fix a bug, the agent must:
 
 - **Focus on this one bug only.** Don't refactor the world; don't fix three other things along the way.
@@ -725,6 +732,85 @@ When the bug is confirmed fixed and verified, mark it DONE by the `DONE`-tag con
 If you find a genuine defect in a third-party dependency, file an issue/ticket in their tracker (e.g.
 via the `gh` CLI, on the human's behalf if authorized), and reference that ticket from your bug document.
 This both helps the ecosystem and documents why you worked around it.
+``````
+
+
+> **FILE: `TESTING_FRAMEWORK.md`** — project root — universal, write verbatim
+
+``````md
+# TESTING_FRAMEWORK — how the agent tests what it creates
+
+Raw generated content — code, a document, an analysis, anything — **must not be trusted**. It may *look*
+logical and working and still be broken, or fail the owner's actual requirements (the idea, the plan, the
+vision). An early defect that rides silently to production is the most expensive kind — it destroys
+projects from the inside. Testing is a distinct, first-class part of ALL work, not a formality after it.
+This document is the agent's testing canon; it applies to **every artifact in every sphere** — a function,
+a dataset, a legal clause, a bridge design, a thought (what "verify" means in your sphere is defined by
+the project's sphere library: its *Verification by observation* and *Minimum evidence set* sections).
+
+## The seven principles of testing (the canon)
+
+1. **Testing shows the presence of defects, not their absence.** A green suite never proves the product
+   has no bugs — bugs ALWAYS exist; testing lowers the risk, never to zero.
+2. **Exhaustive testing is impossible.** You cannot check every input/state combination — prioritize by
+   risk and value instead of pretending completeness.
+3. **Early testing saves the budget.** Verify at the requirements/plan stage; the later a defect is
+   found, the more it costs (the waterfall skyscraper on an untested foundation).
+4. **Defects cluster.** Most bugs live in a few narrow modules — where one was found, hunt for more
+   (the fable-method twin check is this principle mechanized).
+5. **The pesticide paradox.** The same tests stop finding new bugs — vary the tests, angles, and data.
+6. **Testing is context-dependent.** Methods are chosen per project and sphere — a payment system, a
+   research paper, and a landing page are not tested alike.
+7. **The absence-of-errors fallacy.** A defect-free product that does not solve the user's task is
+   worthless — always test against the OWNER'S requirements (`GOAL.md`, the idea, the plan), not only
+   against the code's own consistency.
+
+## Test-status markers — the trust contract
+
+Every non-trivial artifact the agent generates carries an explicit, grep-friendly test status in its
+comment / accompanying note. The marker strings are canonical English (like the `DONE` tag), regardless
+of the project language:
+
+- **`[NOT-TESTED]`** — freshly generated, raw. **Do not trust it.** The LLM "thought" it was right;
+  that is not evidence.
+- **`[TESTED: <date> · <how it was verified / what was observed>]`** — verified by observation, with
+  the evidence named (a run, a render, a recomputation, a check against the source).
+
+**The rules:**
+
+1. **Creating raw content** (a non-trivial block/method/module/section) → write `[NOT-TESTED]` into its
+   comment at birth. Commenting is already mandatory (`AGENT_GUIDE.md`); the marker is part of the
+   initial comment.
+2. **Meeting `[NOT-TESTED]`** (yours or inherited) → do not build on it blindly: plan its verification,
+   verify **by observation** (fable-method Step 5: it ran, it rendered, it counted — never inferred from
+   reading), then flip the marker to `[TESTED: …]` with the evidence named.
+3. **Meeting `[TESTED: …]`** → you may trust it and need not re-test — but keep a grain of doubt
+   (principle 1: bugs always exist). If evidence contradicts the marker, the marker is wrong: investigate.
+4. **Testing found a defect** → file it (`/report-bug`, method: `BUG_FIXING_FRAMEWORK.md`), fix, re-test,
+   and only then mark `[TESTED]`.
+5. **A false `[TESTED]`** — the marker present with no verification actually performed — is a fraud;
+   `/fable-judge` hunts it like any false completion claim. Never flip a marker without the observation.
+6. **Carrier by artifact type:** code → the block/method comment; a document → the section's note; any
+   other sphere → the nearest commentable carrier the sphere convention offers.
+
+Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
+marker preserves that fact **across sessions**, for future agents and posterity — who else will know the
+foundation was load-tested?
+
+## How this composes with the rest of KAIF
+
+- **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
+  says WHAT must carry a status and how trust propagates. The triviality gate still applies: a trivial
+  change verified by its one obvious check needs no ceremony beyond its normal comment.
+- **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
+- **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
+- **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
+  fraud table; principle 6 lives there.
+- **The harness** — invest in tooling that makes verification observable and deterministic
+  (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
+
+*Grounding: the seven principles are the ISTQB canon (istqb.org; ru: testbase.ru) — distilled here for an
+AI agent across all spheres.*
 ``````
 
 
@@ -3031,44 +3117,48 @@ description: Respectfully update & migrate the KAIF framework deployed in this p
 
 # /kaif-update — respectful migration update from origin
 
-A newer KAIF version exists upstream (see `/kaif-version`). This skill brings the project's framework up
-to it **respectfully**: it never breaks the user's project, preserves their local customizations, and
-keeps every content artifact (`bugs/`, `interviews/`, `ideas/`, homework).
+A newer KAIF version exists upstream (see `/kaif-version`). Since KAIF 1.5 the heavy lifting is
+**mechanical**: the machinery (`.kaif/kaif-core.mjs`) knows what was deployed and which files were never
+touched since (content snapshots in `.kaif/deploy-manifest.json`), so it replaces the untouched framework
+files itself, adds the new ones, never enters owner content (`GOAL.md`, `STATUS.md`, the knowledge
+directories, your project files), and hands you a short `KAIF_UPDATE_TASK.md` covering ONLY the genuinely
+diverged places. Your cognitive work is that task, not the migration.
 
 > ⚠️ This changes the framework wrapper. Confirm with the human before applying. Commit first so the
 > update is a clean, revertable diff.
 
 ## Procedure
 
-1. **Pre-flight.** Read `.kaif/kaif.json` (current version, `origin`, `tracking`). If `tracking` is
-   `fork`, confirm the human really wants to pull from the official origin (usually they'd update from
-   their fork instead). Ensure the working tree is clean (commit/stash first).
+1. **Pre-flight.** Working tree clean (commit/stash first). Read `.kaif/kaif.json`: if `tracking` is
+   `fork`, confirm the human really wants to pull from the official origin.
 
-2. **Fetch the target version** from `origin`: the new `KAIF.md` (and/or the release asset). The
-   self-extracting `KAIF.md` is the single source of truth for what the new version contains.
+2. **Route by what the project has:**
+   - **`.kaif/kaif-core.mjs` exists (KAIF ≥ 1.5):** run `node .kaif/kaif-core.mjs update`
+     (or `npm run kaif:update`). It fetches the latest machinery from origin (sha256-verified),
+     replaces every framework file that is byte-identical to its install snapshot, adds new files,
+     keeps diverged ones untouched, swaps the machinery itself, stamps `.kaif/kaif.json`, and writes
+     `KAIF_UPDATE_TASK.md`.
+   - **No machinery (KAIF ≤ 1.4, or an anonymous install):** put the fresh **thin `KAIF.md`** from the
+     origin release in the project root and follow its bootstrap (three `KAIF-BOOT:` steps). The
+     installer detects the existing older `.kaif/kaif.json` and runs as an update: existing files are
+     KEPT, new entities added, owner-level fields of the marker preserved, and `KAIF_UPDATE_TASK.md`
+     replaces the usual adaptation task.
 
-3. **Diff old → new.** Compare the new framework's guidance docs, skills, and conventions against what's
-   deployed. Classify each change: (a) pure framework upgrade (safe to apply), (b) touches a file the
-   user customized (needs a careful 3-way merge), (c) new capability (add).
+3. **Work `KAIF_UPDATE_TASK.md`** — the only cognitive part: merge the template news into the files the
+   machinery could not touch (they carry your local edits), review what's new, run
+   `node .kaif/kaif-core.mjs check`, and finish with a `/fable-judge` pass over the update. Tick each
+   item AND append its `KAIF-UPDATE: <id> done` checkpoint.
 
-4. **Migrate respectfully:**
-   - Apply framework-owned upgrades (skills, guidance-doc templates) — re-derive the deployed wrapper
-     from the new `KAIF.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
-   - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
-     overwrite; surface conflicts to the human, don't guess.
-   - **Never touch content artifacts** (`bugs/`, `interviews/`, `ideas/`, homework) or the user's
-     own project files. Only the KAIF wrapper/core is migrated.
-   - Refresh the npm `kaif:*` handles if the new version changed them.
+4. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
+   removes the transient installer files.
 
-5. **Stamp the new version** in `.kaif/kaif.json` (version, released date). Run `npm run kaif:check`
-   (the validator) to confirm the result is well-formed.
-
-6. **Report & commit.** Summarize what changed, what was merged, any conflicts left for the human.
-   Commit `chore: update KAIF to vX.Y (DATE)`.
+5. **Report & commit.** Summarize: replaced/added/kept counts, what you merged by hand, anything left
+   for the human. Commit `chore: update KAIF to X.Y`.
 
 ## Notes
-- The guiding word is **respectful**: the project must stay whole and working at every step.
-- If the migration is large or risky, do it on a branch / behind a clean commit so it's easy to revert.
+- The guiding word is **respectful**: the project must stay whole and working at every step; owner
+  content is never in the update's scope at all.
+- If the migration is large or risky, do it behind a clean commit so it's easy to revert.
 - A heavily diverged project may be better served by a fork (`/kaif-fork`) than by tracking origin.
 ``````
 

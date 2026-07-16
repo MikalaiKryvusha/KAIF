@@ -23,9 +23,10 @@ if (!existsSync(fwPath)) {
 const fw = readFileSync(fwPath, 'utf8');
 
 // Expected embedded files = key-doc templates + directory-README templates + skill templates.
-const docNames = ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'STATUS.md',
-                  'EXPERIENCE.md', 'GOAL.md', 'MASTER_PLAN.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
-                  'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
+const docNames = ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'TESTING_FRAMEWORK.md',
+                  'STATUS.md', 'EXPERIENCE.md', 'GOAL.md', 'MASTER_PLAN.md',
+                  'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md',
+                  'KAIF_FRAMEWORK.md'];
 const docs = docNames.filter((d) => existsSync(join(ROOT, 'framework', d)));
 const readmesDir = join(ROOT, 'framework', 'readmes');
 const readmes = existsSync(readmesDir)

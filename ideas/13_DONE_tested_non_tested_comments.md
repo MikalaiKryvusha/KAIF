@@ -26,3 +26,13 @@
 
 - Релиз KAIF 1.5 переименовываем в  "KAIF 1.5 — Tested KAIF" без кавычек
 
+
+---
+
+## ✅ STATUS: DONE (2026-07-16)
+
+Реализовано в рамках KAIF 1.5 по плану `plans/14_testing_framework.md`: новый ключевой документ
+`TESTING_FRAMEWORK.md` (EN payload + RU обвязка; 7 принципов ISTQB, универсальность по сферам),
+конвенция маркеров `[NOT-TESTED]`/`[TESTED: дата · как]` вшита в чек-листы/роутеры/BUG_FIXING обоих
+слоёв, ложный TESTED — фрод для /fable-judge (строка в сфере programming). Ядро KAIF.md — 44 блока,
+бандл — 134. Кодовое имя релиза: KAIF 1.5 — Tested KAIF.

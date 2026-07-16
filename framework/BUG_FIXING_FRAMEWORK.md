@@ -1,5 +1,8 @@
 # BUG_FIXING_FRAMEWORK — how the agent fixes defects
 
+> Defects arrive here from testing (`TESTING_FRAMEWORK.md`: nothing raw is trusted — `[NOT-TESTED]`
+> content gets verified, and what verification finds broken lands in `bugs/`).
+
 To fix a bug, the agent must:
 
 - **Focus on this one bug only.** Don't refactor the world; don't fix three other things along the way.

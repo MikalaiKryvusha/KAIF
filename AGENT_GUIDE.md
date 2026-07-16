@@ -37,7 +37,7 @@
 6. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
 7. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md
 8. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
-9. Comment your code/tools; keep docs accurate
+9. Comment your code/tools; keep docs accurate   # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAMEWORK.md)
 10. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
 11. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
 12. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md and improve them
@@ -56,6 +56,7 @@
 | **Обязательный минимум (всегда)** | `STATUS.md` · `PHILOSOPHY.md` · этот роутер · `EXPERIENCE.md` (грепом по тегам) |
 | Правка шаблона (payload) | `AGENT_GUIDE.md` (слои) · инвариант пересборки · релевантный `framework/*` |
 | Баг | `BUG_FIXING_FRAMEWORK.md` · `bugs/<этот>` · карта (blast radius) |
+| Тестирование/проверка чего угодно | `TESTING_FRAMEWORK.md` (7 принципов · маркеры `[NOT-TESTED]`/`[TESTED]`) · секции верификации сферы |
 | Идея/фича | `ideas/<эта>` · `MASTER_PLAN.md` · релевантный `plans/<этот>` |
 | Развёртывание/распаковка | `KAIF.md` §8 · манифест распаковщика |
 

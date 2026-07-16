@@ -26,6 +26,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, unlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 // ---------------------------------------------------------------------------- CLI
 const args = process.argv.slice(2);
@@ -34,12 +35,14 @@ const val = (f) => { const i = args.indexOf(f); return i >= 0 && args[i + 1] ? a
 const has = (f) => args.includes(f);
 
 const BUNDLE = val('--bundle') || '.kaif/install/KAIF-CORE-BUNDLE.md';
-const LANG = (val('--lang') || 'en').toLowerCase();
+// LANG/AGENTS are `let`: `update` inherits them from the project's .kaif/kaif.json
+// unless explicitly overridden on the CLI.
+let LANG = (val('--lang') || 'en').toLowerCase();
 const MODE = (val('--mode') || 'standard').toLowerCase();
 const ANON = MODE === 'anonymous';
 const FORCE = has('--force');
 const ALL_AGENTS = ['claude-code', 'codex', 'grok-build', 'cline', 'zoo-code'];
-const AGENTS = (val('--agents') || ALL_AGENTS.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
+let AGENTS = (val('--agents') || ALL_AGENTS.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
 
 const ORIGIN = 'https://github.com/MikalaiKryvusha/KAIF';
 // Skills skipped on anonymous installs. kaif-version included since 1.5: its template
@@ -61,9 +64,20 @@ const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>'
                       '<LICENSE>', '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>',
                       '<OWNER_LANGUAGE>'];
 
+// Docs seeded/owned by the OWNER after deploy — an update never touches them and never
+// even lists them as "diverged" (their divergence is the whole point of their existence).
+const OWNER_SEEDED = ['GOAL.md', 'STATUS.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
+  'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
+// Where update fetches the fresh machinery from (mirrors KAIF-LOADER.mjs).
+const SOURCES = { release: `${ORIGIN}/releases/latest/download`,
+                  main: 'https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/dist' };
+const UPDATE_TASK = 'KAIF_UPDATE_TASK.md';
+
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 const okOnDisk = (p) => existsSync(p) && statSync(p).size > 0;
+const sha256 = (data) => createHash('sha256').update(data).digest('hex');
+const fileSha = (p) => sha256(readFileSync(p));
 const sh = (cmd) => { try { return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; } };
 // JSON reader tolerant of a UTF-8 BOM (Windows tools like PowerShell 5 write one).
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
@@ -246,12 +260,138 @@ function writeAdaptationTask(unresolved, translated, meta) {
   return items.map(([id]) => id);
 }
 
+// The cognitive task after an UPDATE: only the genuinely diverged places + what's new.
+// Same forced-checkpoint discipline as the adaptation task.
+function writeUpdateTask(diverged, meta, contextLine) {
+  const items = [];
+  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.join(' · ')}`]);
+  items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
+  items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
+  items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real), then run `node .kaif/kaif-core.mjs update-verify`.']);
+  const news = (meta.templateNotes || []).map((n) => `- ${n}`).join('\n') || '- (no template notes shipped with this version)';
+  writeFileSync(UPDATE_TASK, [
+    `# KAIF update task — finish the update to ${meta.version}`,
+    '',
+    `> ${contextLine}.`,
+    '> For each finished item: tick its checkbox AND append its checkpoint line at the bottom, verbatim.',
+    '> Then run `node .kaif/kaif-core.mjs update-verify` (it greps the checkpoints; missing = not done).',
+    '',
+    ...items.map(([id, text]) => `- [ ] **${id}** — ${text}\n  Checkpoint when done: \`KAIF-UPDATE: ${id} done\``),
+    '',
+    "## What's new in the templates",
+    '',
+    news,
+    '',
+    '## Checkpoints (append below as you finish items)',
+    '',
+  ].join('\n'));
+  log(`+ wrote ${UPDATE_TASK} (${items.length} items${diverged.length ? `, ${diverged.length} diverged files` : ''})`);
+}
+
+// Fetch one artifact for `update` (URL or local dir), mirroring the loader.
+async function fetchArtifact(base, name) {
+  if (!/^https?:\/\//.test(base)) {
+    const p = join(base, name);
+    if (!existsSync(p)) die(`not found in source: ${p}`);
+    return readFileSync(p);
+  }
+  const res = await fetch(`${base}/${name}`, { redirect: 'follow' });
+  if (!res.ok) die(`download failed (${res.status}) — ${base}/${name}`);
+  return Buffer.from(await res.arrayBuffer());
+}
+
+// ---------------------------------------------------------------------------- update (idea 14 / plan 15)
+// Mechanical respectful update: untouched framework files are replaced with the new
+// templates; diverged ones are kept and handed to the agent; owner content is never
+// in scope at all. Requires the deploy manifest with `shas` (installs since 1.5).
+async function cmdUpdate() {
+  if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
+  const cur = readJson(KAIF_JSON);
+  if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap');
+  if (!val('--lang') && cur.language) LANG = String(cur.language).toLowerCase();
+  if (!val('--agents') && Array.isArray(cur.agents) && cur.agents.length) AGENTS = cur.agents;
+  const base = val('--source') || SOURCES[(val('--channel') || 'release').toLowerCase()] || SOURCES.release;
+  log(`update: checking ${base}`);
+  const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8'));
+  if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
+  log(`update: ${cur.version} → ${man.version}`);
+
+  // fetch + verify the machinery pair
+  mkdirSync('.kaif/install', { recursive: true });
+  const bufs = {};
+  for (const name of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md']) {
+    bufs[name] = await fetchArtifact(base, name);
+    const got = sha256(bufs[name]);
+    if (got !== man.sha256[name]) die(`sha256 mismatch for ${name}: expected ${man.sha256[name]}, got ${got}`);
+  }
+  const bundlePath = '.kaif/install/KAIF-CORE-BUNDLE.md';
+  writeFileSync(bundlePath, bufs['KAIF-CORE-BUNDLE.md']);
+
+  // classify against the install-time snapshots
+  const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
+  const oldShas = old.shas || {};
+  const { files, meta } = parseBundle(bundlePath);
+  const { deploy } = applyLanguage(files);           // LANG defaults handled below
+  const values = detectValues();
+  const unresolved = new Set();
+  const diverged = [];
+  let replaced = 0, added = 0, kept = 0;
+  for (const f of deploy) {
+    if (isSkippedAnon(f.path)) continue;
+    if (OWNER_SEEDED.includes(f.path)) { kept++; continue; }              // owner's — never in scope
+    const content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
+    if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
+    if (oldShas[f.path] && fileSha(f.path) === oldShas[f.path]) {
+      writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++;
+    } else { diverged.push(f.path); kept++; }
+  }
+  // agent-system artifacts: same classification via the copies' snapshots
+  const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
+  const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
+  deployAgentSystems(skillFiles, refFiles); // writeIfNew semantics: new appear; existing kept (their canonical .claude source got classified above)
+
+  // swap the core itself + refresh manifests
+  writeFileSync('.kaif/kaif-core.mjs', bufs['KAIF-CORE.mjs']);
+  log('↻ replaced .kaif/kaif-core.mjs (the machinery itself)');
+  const deployedPaths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
+  const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
+  const shas = {};
+  for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas }, null, 2) + '\n');
+  writeFileSync(KAIF_JSON, JSON.stringify({ ...cur, version: man.version, released: man.released }, null, 2) + '\n');
+
+  writeUpdateTask(diverged, { ...meta, version: man.version }, `mechanical pass done: ${replaced} replaced, ${added} added, ${kept} kept (owner/diverged)`);
+  log(`\n✅ KAIF updated mechanically to ${man.version} — finish ${UPDATE_TASK}, then: node .kaif/kaif-core.mjs update-verify`);
+}
+
+function cmdUpdateVerify() {
+  if (!okOnDisk(UPDATE_TASK)) die(`${UPDATE_TASK} not found — nothing to verify (or already cleaned)`);
+  const task = readFileSync(UPDATE_TASK, 'utf8');
+  let missing = 0;
+  for (const id of [...new Set([...task.matchAll(/`KAIF-UPDATE: ([a-z-]+) done`/g)].map((m) => m[1]))])
+    if (!new RegExp(`^KAIF-UPDATE: ${id} done$`, 'm').test(task)) { console.error(`✖ checkpoint missing: KAIF-UPDATE: ${id} done`); missing++; }
+  if (/^- \[ \]/m.test(task)) { console.error('✖ unticked checkboxes remain in the update task'); missing++; }
+  if (missing) die(`update-verify FAILED: ${missing} issues — finish them and re-run`);
+  for (const p of [UPDATE_TASK, 'KAIF.md', 'KAIF-LOADER.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
+  if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
+  log('✅ update-verify passed — the update is complete and self-cleaned. Commit: chore: update KAIF');
+}
+
 // ---------------------------------------------------------------------------- commands
 function cmdInstall() {
   const { files, meta } = parseBundle(BUNDLE);
   const { deploy, translated, aliased } = applyLanguage(files);
   const values = detectValues();
   const unresolved = new Set();
+
+  // Legacy detection: an existing deploy marker of an OLDER version means this is an
+  // update-by-bootstrap (idea 14), not a fresh install — existing files are kept (below),
+  // new 1.5 entities are added, and the final task becomes an update merge, not adaptation.
+  let legacyOld = null;
+  if (okOnDisk(KAIF_JSON)) {
+    try { const old = readJson(KAIF_JSON); if (old.version !== meta.version) legacyOld = old; } catch { /* treat as fresh */ }
+    if (legacyOld) log(`⟳ existing KAIF ${legacyOld.version || '?'} detected — running as an UPDATE to ${meta.version} (existing files are kept, new ones added)`);
+  }
 
   // 1) write every deployable file (placeholder-filling the text ones; anonymizing on --mode anonymous)
   for (const f of deploy) {
@@ -266,11 +406,17 @@ function cmdInstall() {
   const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
   deployAgentSystems(skillFiles, refFiles);
 
-  // 3) wiring: deploy marker + npm handles (respectful: existing scripts untouched)
+  // 3) wiring: deploy marker + npm handles (respectful: existing scripts untouched).
+  //    On a legacy update the old marker's owner-level fields (sphere, language, tracking)
+  //    survive; only version/released/agents move forward.
   mkdirSync('.kaif', { recursive: true });
   const marker = { framework: 'KAIF', version: meta.version, released: meta.released,
                    ...(ANON ? { tracking: 'anonymous' } : { origin: ORIGIN, tracking: 'origin' }),
-                   sphere: 'TODO', agents: AGENTS, language: LANG };
+                   sphere: 'TODO', agents: AGENTS, language: LANG,
+                   ...(legacyOld ? { sphere: legacyOld.sphere || 'TODO',
+                                     language: legacyOld.language || LANG,
+                                     ...(legacyOld.tracking ? { tracking: legacyOld.tracking } : {}),
+                                     ...(legacyOld.origin ? { origin: legacyOld.origin } : {}) } : {}) };
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   log(`+ wrote ${KAIF_JSON}`);
   // Respectful wiring: NEVER clobber an existing package.json we cannot parse —
@@ -286,28 +432,38 @@ function cmdInstall() {
   if (pkg) {
     pkg.name = pkg.name || values['<PROJECT_NAME>'].toLowerCase().replace(/[^a-z0-9-]+/g, '-');
     pkg.scripts = pkg.scripts || {};
-    const handles = { 'kaif:version': 'node .kaif/kaif-core.mjs version', 'kaif:check': 'node .kaif/kaif-core.mjs check' };
+    const handles = { 'kaif:version': 'node .kaif/kaif-core.mjs version', 'kaif:check': 'node .kaif/kaif-core.mjs check',
+                      'kaif:update': 'node .kaif/kaif-core.mjs update' };
     for (const [k, v] of Object.entries(handles)) if (!pkg.scripts[k]) pkg.scripts[k] = v;
     writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
     log('+ wired kaif:* handles into package.json');
   }
 
-  // 4) persist the deploy manifest so `check` outlives the bundle's cleanup
+  // 4) persist the deploy manifest so `check` outlives the bundle's cleanup.
+  //    `shas` snapshots what is ON DISK right after install — `update` later tells
+  //    "untouched since install" (disk sha == snapshot → safe mechanical replace)
+  //    from "diverged" (agent/owner edited → hands off, cognitive merge).
   const deployedPaths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths }, null, 2) + '\n');
+  const shas = {};
+  for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas }, null, 2) + '\n');
 
-  // 5) the final cognitive task for the agent
-  writeAdaptationTask(unresolved, translated, meta);
+  // 5) the final cognitive task for the agent: fresh install → adaptation;
+  //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
+  //    with the thin KAIF.md) → an UPDATE task instead (existing files were kept).
+  if (legacyOld) writeUpdateTask([], meta, `legacy update ${legacyOld.version || '?'} → ${meta.version}: pre-1.5 project has no content snapshots, so every kept framework file may carry local edits — merge the 1.5 template news below into them pointwise`);
+  else writeAdaptationTask(unresolved, translated, meta);
 
-  // 6) validate what we just did
-  const bad = validate(deploy, skillFiles);
+  // 6) validate what we just did (the required task file depends on the mode)
+  const bad = validate(deploy, skillFiles, legacyOld ? UPDATE_TASK : TASK_FILE);
   if (bad) die(`install INCOMPLETE: ${bad} artifacts missing — re-run, or fix and \`check\``);
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translated ? ` · ${translated} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
-  log(`➡ ONE cognitive step remains — open ${TASK_FILE} and work it, then run: node .kaif/kaif-core.mjs verify-final`);
+  if (legacyOld) log(`➡ ONE cognitive step remains — open ${UPDATE_TASK} and work it, then run: node .kaif/kaif-core.mjs update-verify`);
+  else log(`➡ ONE cognitive step remains — open ${TASK_FILE} and work it, then run: node .kaif/kaif-core.mjs verify-final`);
 }
 
-function validate(deploy, skillFiles) {
+function validate(deploy, skillFiles, taskFile = TASK_FILE) {
   let missing = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
@@ -315,7 +471,7 @@ function validate(deploy, skillFiles) {
   }
   for (const p of expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path))))
     if (!okOnDisk(p)) { console.error(`✖ MISSING agent artifact: ${p}`); missing++; }
-  for (const p of [KAIF_JSON, TASK_FILE]) if (!okOnDisk(p)) { console.error(`✖ MISSING: ${p}`); missing++; }
+  for (const p of [KAIF_JSON, taskFile]) if (!okOnDisk(p)) { console.error(`✖ MISSING: ${p}`); missing++; }
   return missing;
 }
 
@@ -398,5 +554,6 @@ function cmdVersion() {
   log(`KAIF ${j.version} (released ${j.released}) · tracking: ${j.tracking} · lang: ${j.language} · agents: ${(j.agents || []).join(',')}`);
 }
 
-({ install: cmdInstall, check: cmdCheck, 'verify-final': cmdVerifyFinal, version: cmdVersion }[CMD] ||
-  (() => die(`unknown command: ${CMD} (install | check | verify-final | version)`)))();
+await ({ install: cmdInstall, check: cmdCheck, 'verify-final': cmdVerifyFinal, version: cmdVersion,
+         update: cmdUpdate, 'update-verify': cmdUpdateVerify }[CMD] ||
+  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | version)`)))();

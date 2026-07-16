@@ -5,42 +5,46 @@ description: Respectfully update & migrate the KAIF framework deployed in this p
 
 # /kaif-update — respectful migration update from origin
 
-A newer KAIF version exists upstream (see `/kaif-version`). This skill brings the project's framework up
-to it **respectfully**: it never breaks the user's project, preserves their local customizations, and
-keeps every content artifact (`bugs/`, `interviews/`, `ideas/`, homework).
+A newer KAIF version exists upstream (see `/kaif-version`). Since KAIF 1.5 the heavy lifting is
+**mechanical**: the machinery (`.kaif/kaif-core.mjs`) knows what was deployed and which files were never
+touched since (content snapshots in `.kaif/deploy-manifest.json`), so it replaces the untouched framework
+files itself, adds the new ones, never enters owner content (`GOAL.md`, `STATUS.md`, the knowledge
+directories, your project files), and hands you a short `KAIF_UPDATE_TASK.md` covering ONLY the genuinely
+diverged places. Your cognitive work is that task, not the migration.
 
 > ⚠️ This changes the framework wrapper. Confirm with the human before applying. Commit first so the
 > update is a clean, revertable diff.
 
 ## Procedure
 
-1. **Pre-flight.** Read `.kaif/kaif.json` (current version, `origin`, `tracking`). If `tracking` is
-   `fork`, confirm the human really wants to pull from the official origin (usually they'd update from
-   their fork instead). Ensure the working tree is clean (commit/stash first).
+1. **Pre-flight.** Working tree clean (commit/stash first). Read `.kaif/kaif.json`: if `tracking` is
+   `fork`, confirm the human really wants to pull from the official origin.
 
-2. **Fetch the target version** from `origin`: the new `KAIF.md` (and/or the release asset). The
-   self-extracting `KAIF.md` is the single source of truth for what the new version contains.
+2. **Route by what the project has:**
+   - **`.kaif/kaif-core.mjs` exists (KAIF ≥ 1.5):** run `node .kaif/kaif-core.mjs update`
+     (or `npm run kaif:update`). It fetches the latest machinery from origin (sha256-verified),
+     replaces every framework file that is byte-identical to its install snapshot, adds new files,
+     keeps diverged ones untouched, swaps the machinery itself, stamps `.kaif/kaif.json`, and writes
+     `KAIF_UPDATE_TASK.md`.
+   - **No machinery (KAIF ≤ 1.4, or an anonymous install):** put the fresh **thin `KAIF.md`** from the
+     origin release in the project root and follow its bootstrap (three `KAIF-BOOT:` steps). The
+     installer detects the existing older `.kaif/kaif.json` and runs as an update: existing files are
+     KEPT, new entities added, owner-level fields of the marker preserved, and `KAIF_UPDATE_TASK.md`
+     replaces the usual adaptation task.
 
-3. **Diff old → new.** Compare the new framework's guidance docs, skills, and conventions against what's
-   deployed. Classify each change: (a) pure framework upgrade (safe to apply), (b) touches a file the
-   user customized (needs a careful 3-way merge), (c) new capability (add).
+3. **Work `KAIF_UPDATE_TASK.md`** — the only cognitive part: merge the template news into the files the
+   machinery could not touch (they carry your local edits), review what's new, run
+   `node .kaif/kaif-core.mjs check`, and finish with a `/fable-judge` pass over the update. Tick each
+   item AND append its `KAIF-UPDATE: <id> done` checkpoint.
 
-4. **Migrate respectfully:**
-   - Apply framework-owned upgrades (skills, guidance-doc templates) — re-derive the deployed wrapper
-     from the new `KAIF.md`, in the project's working language and sphere (see `.kaif/kaif.json`).
-   - **Preserve the user's customizations** — where they edited a guidance doc, merge rather than
-     overwrite; surface conflicts to the human, don't guess.
-   - **Never touch content artifacts** (`bugs/`, `interviews/`, `ideas/`, homework) or the user's
-     own project files. Only the KAIF wrapper/core is migrated.
-   - Refresh the npm `kaif:*` handles if the new version changed them.
+4. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
+   removes the transient installer files.
 
-5. **Stamp the new version** in `.kaif/kaif.json` (version, released date). Run `npm run kaif:check`
-   (the validator) to confirm the result is well-formed.
-
-6. **Report & commit.** Summarize what changed, what was merged, any conflicts left for the human.
-   Commit `chore: update KAIF to vX.Y (DATE)`.
+5. **Report & commit.** Summarize: replaced/added/kept counts, what you merged by hand, anything left
+   for the human. Commit `chore: update KAIF to X.Y`.
 
 ## Notes
-- The guiding word is **respectful**: the project must stay whole and working at every step.
-- If the migration is large or risky, do it on a branch / behind a clean commit so it's easy to revert.
+- The guiding word is **respectful**: the project must stay whole and working at every step; owner
+  content is never in the update's scope at all.
+- If the migration is large or risky, do it behind a clean commit so it's easy to revert.
 - A heavily diverged project may be better served by a fork (`/kaif-fork`) than by tracking origin.

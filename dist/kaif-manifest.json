@@ -3,7 +3,7 @@
   "version": "1.4",
   "released": "2026-07-08",
   "sha256": {
-    "KAIF-CORE.mjs": "f024cec0e409d7c9714c4b7bb7906f466f83a7c3b6bd34170332adb78caa9d77",
-    "KAIF-CORE-BUNDLE.md": "ac83958473ffe7ccdd05e17c7e0fd36d379869e6d195009cd3abe0c6ba999fb7"
+    "KAIF-CORE.mjs": "bb7d9f606e73760c95b50c87e02a56703c9919b754a0686899b7effc6c1ccead",
+    "KAIF-CORE-BUNDLE.md": "0e81b26058623583f770b042a1295fdf370c696709b1148c07af34bcab2f736b"
   }
 }
