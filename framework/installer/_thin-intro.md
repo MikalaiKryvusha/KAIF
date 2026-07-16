@@ -59,6 +59,10 @@ node KAIF-LOADER.mjs --lang <code> --mode <standard|anonymous>
 The loader fetches the machinery from the origin (sha256-verified), and the machinery deploys KAIF
 mechanically. On exit code 0 print: `KAIF-BOOT: loader exit 0`. On failure: show the error, fix the
 environment (network? Node version?), retry; after 3 failed attempts stop and hand back to the owner.
+NEVER bypass the checksum gate. If you see `sha256 mismatch` on `--channel main` (a dev-only channel:
+the raw CDN caches files independently and can serve a temporarily skewed set right after a push),
+follow the error's hint — retry later or pin `--source` to a full commit SHA. The default release
+channel is immutable and has no such skew.
 
 **Then — your one cognitive task.** The machinery leaves `KAIF_ADAPTATION_TASK.md` in the root: a short
 checklist (study the project, fill what only understanding can fill) where every item carries a forced

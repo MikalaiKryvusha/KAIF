@@ -54,6 +54,10 @@ node KAIF-LOADER.mjs --lang <code> --mode <standard|anonymous>
 The loader fetches the machinery from the origin (sha256-verified), and the machinery deploys KAIF
 mechanically. On exit code 0 print: `KAIF-BOOT: loader exit 0`. On failure: show the error, fix the
 environment (network? Node version?), retry; after 3 failed attempts stop and hand back to the owner.
+NEVER bypass the checksum gate. If you see `sha256 mismatch` on `--channel main` (a dev-only channel:
+the raw CDN caches files independently and can serve a temporarily skewed set right after a push),
+follow the error's hint — retry later or pin `--source` to a full commit SHA. The default release
+channel is immutable and has no such skew.
 
 **Then — your one cognitive task.** The machinery leaves `KAIF_ADAPTATION_TASK.md` in the root: a short
 checklist (study the project, fill what only understanding can fill) where every item carries a forced
@@ -126,7 +130,11 @@ for (const name of ARTIFACTS) {
   const want = manifest.sha256 && manifest.sha256[name];
   if (!want) die(`manifest carries no sha256 for ${name}`);
   const got = sha256(buf);
-  if (got !== want) die(`sha256 mismatch for ${name}: expected ${want}, got ${got} — refusing to run it`);
+  if (got !== want) die(`sha256 mismatch for ${name}: expected ${want}, got ${got} — refusing to run it.\n` +
+    `  Most likely cause on --channel main: the GitHub raw CDN caches files independently, so right after\n` +
+    `  a push the set can be temporarily skewed (bug 04). FIX: retry in a few minutes, or pin an immutable\n` +
+    `  source to a commit:  node KAIF-LOADER.mjs --source ${SOURCES.main.replace('/main/', '/<full-commit-sha>/')} [your flags]\n` +
+    `  NEVER bypass the checksum — this gate is what keeps a broken set from being installed.`);
   const dest = name === 'KAIF-CORE.mjs' ? CORE_DEST : join(INSTALL_DIR, name);
   writeFileSync(dest, buf);
   log(`+ ${dest} (${buf.length} bytes, sha256 ok)`);

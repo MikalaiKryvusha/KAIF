@@ -61,7 +61,11 @@ for (const name of ARTIFACTS) {
   const want = manifest.sha256 && manifest.sha256[name];
   if (!want) die(`manifest carries no sha256 for ${name}`);
   const got = sha256(buf);
-  if (got !== want) die(`sha256 mismatch for ${name}: expected ${want}, got ${got} — refusing to run it`);
+  if (got !== want) die(`sha256 mismatch for ${name}: expected ${want}, got ${got} — refusing to run it.\n` +
+    `  Most likely cause on --channel main: the GitHub raw CDN caches files independently, so right after\n` +
+    `  a push the set can be temporarily skewed (bug 04). FIX: retry in a few minutes, or pin an immutable\n` +
+    `  source to a commit:  node KAIF-LOADER.mjs --source ${SOURCES.main.replace('/main/', '/<full-commit-sha>/')} [your flags]\n` +
+    `  NEVER bypass the checksum — this gate is what keeps a broken set from being installed.`);
   const dest = name === 'KAIF-CORE.mjs' ? CORE_DEST : join(INSTALL_DIR, name);
   writeFileSync(dest, buf);
   log(`+ ${dest} (${buf.length} bytes, sha256 ok)`);
