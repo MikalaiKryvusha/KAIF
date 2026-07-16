@@ -58,6 +58,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 (evolve your own) · `/kaif-switch-origin` · `/kaif-remove` (partial keeps your artifacts, or full — always
 respectful). Backed by `npm run kaif:*` handles.
 
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
 ---
 
 ## A note from the author
@@ -71,3 +72,4 @@ respectful). Backed by `npm run kaif:*` handles.
 > KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
 > работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
 > г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->

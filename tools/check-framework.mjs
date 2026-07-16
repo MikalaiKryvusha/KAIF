@@ -64,9 +64,42 @@ for (const r of readmes) {
   if (!fw.includes(`${r}/README.md`)) errors.push(`directory README not embedded in KAIF.md: ${r}/README.md`);
 }
 
+// 6. dist/ — the Thin-KAIF install artifacts (1.5+). Validated when present (the build
+//    always emits them; a checkout missing dist/ predates 1.5 and skips cleanly).
+const distDir = join(ROOT, 'dist');
+let distNote = '';
+if (existsSync(distDir)) {
+  const { createHash } = await import('node:crypto');
+  const dread = (n) => readFileSync(join(distDir, n), 'utf8');
+  const dsha = (n) => createHash('sha256').update(readFileSync(join(distDir, n))).digest('hex');
+  for (const n of ['KAIF.md', 'KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md', 'kaif-manifest.json', 'KAIF-FULL.md'])
+    if (!existsSync(join(distDir, n))) errors.push(`dist artifact missing: dist/${n}`);
+  if (!errors.some((e) => e.startsWith('dist artifact'))) {
+    const thin = dread('KAIF.md');
+    const thinBlocks = (thin.match(/^> \*\*FILE:/gm) || []).length;
+    if (thinBlocks !== 1) errors.push(`thin dist/KAIF.md must embed exactly 1 FILE block (the loader), found ${thinBlocks}`);
+    if (thin.match(/\{\{[^}]+\}\}/)) errors.push('unreplaced build markers in dist/KAIF.md');
+    const bundle = dread('KAIF-CORE-BUNDLE.md');
+    const bundleBlocks = (bundle.match(/^> \*\*FILE:/gm) || []).length;
+    // manifest block + (docs − unpacker) + readmes + skills + skill references + spheres
+    const refs = skills.reduce((a, n) => {
+      const rd = join(skillsDir, n, 'references');
+      return a + (existsSync(rd) ? readdirSync(rd).filter((f) => f.endsWith('.md')).length : 0);
+    }, 0);
+    const spheres = readdirSync(join(ROOT, 'framework', 'spheres')).filter((f) => f.endsWith('.md')).length;
+    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres;
+    if (bundleBlocks !== wantBundle)
+      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres)`);
+    const man = JSON.parse(dread('kaif-manifest.json'));
+    for (const n of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md'])
+      if (man.sha256[n] !== dsha(n)) errors.push(`kaif-manifest.json sha256 stale for ${n} — re-run the build`);
+    distNote = ` · dist OK (bundle ${bundleBlocks} blocks, sha256 fresh)`;
+  }
+}
+
 if (errors.length) {
   console.error('❌ check-framework FAILED:');
   for (const e of errors) console.error('   - ' + e);
   process.exit(1);
 }
-console.log(`✅ check-framework OK — ${fileBlocks} embedded files (${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${tools.length} tools), fences balanced, no stray markers`);
+console.log(`✅ check-framework OK — ${fileBlocks} embedded files (${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${tools.length} tools), fences balanced, no stray markers${distNote}`);

@@ -17,10 +17,11 @@
 // Usage:  node tools/build-framework.mjs
 // Re-run after editing framework/_intro.md or any template. Never hand-edit KAIF.md.
 // ---------------------------------------------------------------------------
-import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const FW = join(ROOT, 'framework');
@@ -135,6 +136,75 @@ slim = '<!-- GENERATED FILE — do not edit by hand. Built from framework/KAIF-S
 slim = slim.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
 writeFileSync(join(ROOT, 'KAIF-SLIM.md'), slim);
 console.log(`✅ KAIF-SLIM.md generated — ${slim.split('\n').length} lines, v${version()} (${released()})`);
+
+// --- Thin KAIF (1.5) + installer machinery → dist/ ---------------------------
+// Four artifacts of the "Thin KAIF" install path (plan 13, Phase 2). Until the 1.5
+// release the root KAIF.md stays the classic full core; dist/ carries the new path:
+//   dist/KAIF.md              — the thin entry point (bootstrap + embedded loader)
+//   dist/KAIF-CORE.mjs        — the heavy installer machinery (fetched by the loader)
+//   dist/KAIF-CORE-BUNDLE.md  — every deployable file as FILE: blocks + a manifest block
+//   dist/kaif-manifest.json   — version + sha256 of the two fetched artifacts
+//   dist/KAIF-FULL.md         — the classic self-contained core (offline fallback asset)
+const DIST = join(ROOT, 'dist');
+mkdirSync(DIST, { recursive: true });
+
+// 1) thin KAIF.md from the bootstrap narrative (embeds the loader verbatim)
+let thin = readFileSync(join(FW, 'installer', '_thin-intro.md'), 'utf8');
+thin = thin.replace(/^<!--[\s\S]*?-->\r?\n/, '');
+thin = '<!-- GENERATED FILE — do not edit by hand. Built from framework/installer/_thin-intro.md by ' +
+       'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + thin;
+thin = thin.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
+thin = thin.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => embedFile(p.trim(), 'KAIF-LOADER.mjs',
+  'project root — write this ONE file verbatim, then run it (removed again by verify-final)'));
+writeFileSync(join(DIST, 'KAIF.md'), thin);
+
+// 2) the core machinery, copied verbatim (it reads version data from the bundle manifest)
+const coreSrc = readFileSync(join(FW, 'installer', 'KAIF-CORE.mjs'), 'utf8');
+writeFileSync(join(DIST, 'KAIF-CORE.mjs'), coreSrc);
+
+// 3) the bundle: manifest block + every deployable file as a FILE: block.
+//    Contents: the key docs + directory READMEs (from DOC_TARGETS, minus the legacy
+//    unpacker), every skill (with its references/), and the sphere libraries
+//    (deployed to .kaif/spheres/ so fable-method/judge can read the project's sphere).
+function bundleBlocks() {
+  const blocks = [];
+  const meta = { framework: 'KAIF', version: version(), released: released() };
+  blocks.push(`> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
+    FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
+  for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {
+    if (src === 'framework/kaif-unpack.mjs') continue; // legacy unpacker: lives only in the full core
+    blocks.push(embedFile(src, dest, note));
+  }
+  const skillsDir = join(FW, 'skills');
+  for (const n of readdirSync(skillsDir)) {
+    if (!existsSync(join(skillsDir, n, 'SKILL.md'))) continue;
+    blocks.push(embedFile(`framework/skills/${n}/SKILL.md`, `.claude/skills/${n}/SKILL.md`,
+      "replace the command placeholders with the project's real commands"));
+    const refDir = join(skillsDir, n, 'references');
+    if (existsSync(refDir)) for (const r of readdirSync(refDir).filter((f) => f.endsWith('.md')))
+      blocks.push(embedFile(`framework/skills/${n}/references/${r}`, `.claude/skills/${n}/references/${r}`, 'verbatim'));
+  }
+  for (const s of readdirSync(join(FW, 'spheres')).filter((f) => f.endsWith('.md')))
+    blocks.push(embedFile(`framework/spheres/${s}`, `.kaif/spheres/${s}`, 'sphere library — verbatim'));
+  return blocks;
+}
+const bundleHeader = '<!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; ' +
+  'fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->\n# KAIF-CORE-BUNDLE · v' +
+  version() + ` (${released()})\n\n`;
+const bundleBody = bundleBlocks();
+writeFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), bundleHeader + bundleBody.join('\n'));
+
+// 4) the loader's integrity manifest (sha256 over the two fetched artifacts)
+const sha256 = (p) => createHash('sha256').update(readFileSync(join(DIST, p))).digest('hex');
+writeFileSync(join(DIST, 'kaif-manifest.json'), JSON.stringify({
+  framework: 'KAIF', version: version(), released: released(),
+  sha256: { 'KAIF-CORE.mjs': sha256('KAIF-CORE.mjs'), 'KAIF-CORE-BUNDLE.md': sha256('KAIF-CORE-BUNDLE.md') },
+}, null, 2) + '\n');
+
+// 5) the offline fallback: the classic full core under its release-asset name
+writeFileSync(join(DIST, 'KAIF-FULL.md'), out);
+console.log(`✅ dist/ generated — thin KAIF.md (${thin.split('\n').length} lines) · KAIF-CORE.mjs · ` +
+  `KAIF-CORE-BUNDLE.md (${bundleBody.length} file blocks) · kaif-manifest.json · KAIF-FULL.md`);
 
 // Self-check the generated installer (idea 01): fail loudly if it is malformed.
 try {
