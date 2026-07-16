@@ -234,9 +234,9 @@ function writeAdaptationTask(unresolved, translated, meta) {
   const items = [];
   items.push(['study', 'Study the project gradually and record findings (what it is, build/test commands, architecture) — this replaces the old KAIF_DEPLOYMENT_PLAN.md.']);
   if (unresolved.size) items.push(['placeholders', `Fill the remaining placeholders everywhere they occur (grep each): ${[...unresolved].join(' ')}`]);
-  items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection.']);
+  items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection. Keep them SHORT; write in 2-3 small edits, not one giant write.']);
   items.push(['goal-plan', 'If GOAL.md is empty, seed it and ask the owner; derive MASTER_PLAN.md from GOAL.md (skill: /revision).']);
-  items.push(['sphere', 'Confirm the project\'s sphere: pick a library from .kaif/spheres/ (or author one from _template.md), apply its terminology where the docs need it, record `sphere` in .kaif/kaif.json.']);
+  items.push(['sphere', 'Record the project\'s sphere in .kaif/kaif.json (e.g. "sphere": "programming"). A matching library already ships in .kaif/spheres/ — do NOT author a new document unless no library fits (then start from _template.md).']);
   if (needTranslate) items.push(['language', `Translate the owner-facing docs (GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs) into "${LANG}" — no bundled template for this language yet. Keep agent-only docs in English.`]);
   items.push(['kaif-framework', 'Write KAIF_FRAMEWORK.md from its template: "KAIF, deployed here" + the deployment record (version, date, language, sphere, agents, mode).']);
   items.push(['verify', 'Run `node .kaif/kaif-core.mjs verify-final` — it checks these checkpoints and self-cleans the installer. Then commit `chore: deploy KAIF`.']);
@@ -247,6 +247,11 @@ function writeAdaptationTask(unresolved, translated, meta) {
     '> Machinery has deployed everything mechanical. What remains is understanding — yours.',
     `> For each finished item: tick its checkbox AND append its checkpoint line at the bottom, verbatim.`,
     `> Then run \`node .kaif/kaif-core.mjs verify-final\` (it greps the checkpoints; missing = not done).`,
+    '>',
+    '> Working rules for THIS task (they exist because weak models break here): write files in SMALL',
+    '> pieces (a short skeleton first, then extend) — never one giant write; in every file-writing tool',
+    '> call, pass the file PATH as its own parameter (never glue "path:" into the content text); edit',
+    '> only the files an item names.',
     '',
     ...items.map(([id, text]) => `- [ ] **${id}** — ${text}\n  Checkpoint when done: \`KAIF-ADAPT: ${id} done\``),
     '',
