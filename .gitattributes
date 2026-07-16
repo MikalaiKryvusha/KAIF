@@ -1,0 +1,9 @@
+# KAIF — checkout line endings pinned to LF on every platform (bug 03 class):
+# the build tools, the FILE:-block format, and dist/ sha256 sums in kaif-manifest.json
+# all assume LF; a CRLF working tree must never appear regardless of core.autocrlf.
+* text=auto eol=lf
+
+# Binaries — never converted.
+*.png binary
+*.jpg binary
+*.pdf binary
