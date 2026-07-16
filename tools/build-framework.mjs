@@ -17,7 +17,7 @@
 // Usage:  node tools/build-framework.mjs
 // Re-run after editing framework/_intro.md or any template. Never hand-edit KAIF.md.
 // ---------------------------------------------------------------------------
-import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
@@ -186,6 +186,22 @@ function bundleBlocks() {
   }
   for (const s of readdirSync(join(FW, 'spheres')).filter((f) => f.endsWith('.md')))
     blocks.push(embedFile(`framework/spheres/${s}`, `.kaif/spheres/${s}`, 'sphere library — verbatim'));
+  // language packs: owner-facing doc overrides + skill trigger aliases per language.
+  // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
+  // override their destination paths; others are ignored.
+  const langRoot = join(FW, 'templates', 'languages');
+  if (existsSync(langRoot)) {
+    const walk = (dir, rel) => {
+      for (const n of readdirSync(dir)) {
+        const p = join(dir, n);
+        const r = rel ? `${rel}/${n}` : n;
+        if (statSync(p).isDirectory()) { walk(p, r); continue; }
+        blocks.push(embedFile(`framework/templates/languages/${r}`, `templates/languages/${r}`,
+          'language pack — data for KAIF-CORE, applied only for the chosen --lang'));
+      }
+    };
+    walk(langRoot, '');
+  }
   return blocks;
 }
 const bundleHeader = '<!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; ' +

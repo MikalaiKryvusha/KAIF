@@ -420,6 +420,7 @@ Replace these throughout the guidance docs and skills during unpacking:
 | `<TEST_HARNESS>` | How the agent runs/observes/drives the software without a human. |
 | `<COMMIT_COMMAND>` | The commit/push flow (a tool, or `git add -A && git commit … && git push`). |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
+| `<OWNER_LANGUAGE>` | The owner's working language (the AGENT_GUIDE language-policy note). |
 
 For owner-level unknowns (brand spelling, license, target platforms, vision), don't guess — leave a `TODO`
 and close it with `/interview`.

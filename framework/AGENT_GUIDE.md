@@ -79,6 +79,14 @@ These three skills are vendored verbatim from [fable-method](https://github.com/
 (Sahir619, MIT) — see their headers for the sync ritual; the project's sphere library plays the role of
 their domain adapters.
 
+### Languages — two audiences, two languages
+
+Agent-internal documents (this guide, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`,
+`EXPERIENCE.md`, the maps, working notes in `plans/`/`bugs/`/`researches/`, the skills) are written and
+maintained in **English** — the language models read most reliably. Owner-facing documents (`GOAL.md`,
+`KAIF_FRAMEWORK.md`, the directory READMEs) and every chat report to the owner are in
+**<OWNER_LANGUAGE>**. Keep this split as you create new documents.
+
 ### Experience log — `EXPERIENCE.md`
 
 `EXPERIENCE.md` is the agent's growing, grep-friendly log of lessons (externalized memory of what works and

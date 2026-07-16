@@ -58,7 +58,8 @@ const FENCE = '`'.repeat(6);
 // The 8 canonical deploy-time placeholders (KAIF.md §11). CORE fills what it can
 // detect mechanically; the rest lands in the adaptation task for the agent.
 const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_PATH>',
-                      '<LICENSE>', '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>'];
+                      '<LICENSE>', '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>',
+                      '<OWNER_LANGUAGE>'];
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
@@ -88,18 +89,31 @@ const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [
 const isSkippedAnon = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 
 // Language templates live in the bundle under templates/languages/<lang>/<dest-path>.
-// For the chosen language they OVERRIDE the English default at <dest-path>. (Phase 3
-// ships the translations; the mechanism is live now — with none present, en is used.)
+// For the chosen language they OVERRIDE the English default at <dest-path> (owner-facing
+// docs: GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs). A special member,
+// templates/languages/<lang>/skill-triggers.json, maps skill → localized trigger aliases:
+// the machinery appends them to each skill's `description:` line so the agent keeps
+// matching commands in the owner's language while the skills stay English.
 function applyLanguage(files) {
   const prefix = `templates/languages/${LANG}/`;
   const overrides = new Map();
-  for (const f of files) if (f.path.startsWith(prefix)) overrides.set(f.path.slice(prefix.length), f.content);
+  let triggers = null;
+  for (const f of files) {
+    if (!f.path.startsWith(prefix)) continue;
+    if (f.path === prefix + 'skill-triggers.json') { try { triggers = JSON.parse(f.content); } catch { die(`bad JSON in ${f.path}`); } }
+    else overrides.set(f.path.slice(prefix.length), f.content);
+  }
   const out = [];
   for (const f of files) {
     if (f.path.startsWith('templates/languages/')) continue;          // templates are inputs, not outputs
-    out.push(overrides.has(f.path) ? { path: f.path, content: overrides.get(f.path) } : f);
+    let entry = overrides.has(f.path) ? { path: f.path, content: overrides.get(f.path) } : { ...f };
+    const skill = skillName(entry.path);
+    if (skill && triggers && triggers[skill])
+      entry.content = entry.content.replace(/^(description:[^\n]*?)(\s*)$/m,
+        (_, d) => `${d.replace(/\s+$/, '')} Trigger aliases (${LANG}): ${triggers[skill]}`);
+    out.push(entry);
   }
-  return { deploy: out, translated: overrides.size };
+  return { deploy: out, translated: overrides.size, aliased: triggers ? Object.keys(triggers).length : 0 };
 }
 
 // ---------------------------------------------------------------------------- placeholder autofill
@@ -122,6 +136,7 @@ function detectValues() {
     '<TEST_HARNESS>': pkg && pkg.scripts && pkg.scripts.test ? 'npm test' : null,
     '<COMMIT_COMMAND>': 'git add -A && git commit -m "<msg>" && git push',
     '<YOUR AGENT/MODEL>': null, // depends on the running agent — always the agent's to fill
+    '<OWNER_LANGUAGE>': LANG,   // the language-policy note in AGENT_GUIDE (idea 12: two audiences, two languages)
   };
 }
 
@@ -231,7 +246,7 @@ function writeAdaptationTask(unresolved, translated, meta) {
 // ---------------------------------------------------------------------------- commands
 function cmdInstall() {
   const { files, meta } = parseBundle(BUNDLE);
-  const { deploy, translated } = applyLanguage(files);
+  const { deploy, translated, aliased } = applyLanguage(files);
   const values = detectValues();
   const unresolved = new Set();
 
@@ -285,7 +300,7 @@ function cmdInstall() {
   // 6) validate what we just did
   const bad = validate(deploy, skillFiles);
   if (bad) die(`install INCOMPLETE: ${bad} artifacts missing — re-run, or fix and \`check\``);
-  log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translated ? ' · templated' : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
+  log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translated ? ` · ${translated} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
   log(`➡ ONE cognitive step remains — open ${TASK_FILE} and work it, then run: node .kaif/kaif-core.mjs verify-final`);
 }
 
