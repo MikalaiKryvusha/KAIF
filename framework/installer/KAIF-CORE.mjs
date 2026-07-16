@@ -340,6 +340,7 @@ async function cmdUpdate() {
     if (isSkippedAnon(f.path)) continue;
     if (OWNER_SEEDED.includes(f.path)) { kept++; continue; }              // owner's — never in scope
     const content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
+    f.content = content; // derived surfaces (system skill copies) must inherit the filled text (bug 05)
     if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
     if (oldShas[f.path] && fileSha(f.path) === oldShas[f.path]) {
       writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++;
@@ -393,11 +394,15 @@ function cmdInstall() {
     if (legacyOld) log(`⟳ existing KAIF ${legacyOld.version || '?'} detected — running as an UPDATE to ${meta.version} (existing files are kept, new ones added)`);
   }
 
-  // 1) write every deployable file (placeholder-filling the text ones; anonymizing on --mode anonymous)
+  // 1) write every deployable file (placeholder-filling the text ones; anonymizing on --mode anonymous).
+  //    The filled/anonymized content is written BACK into the deploy entry so every derived
+  //    surface (the .roo/.agents/.grok/.cline skill copies) inherits it — deriving copies from
+  //    the raw template shipped placeholders to the other agent systems (bug 05, field-caught).
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) { log(`⊘ anonymous — skipped ${f.path}`); continue; }
     let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
     if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
+    f.content = content;
     writeIfNew(f.path, content);
   }
 
