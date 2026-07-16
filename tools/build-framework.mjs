@@ -52,7 +52,10 @@ function released() {
 // file to create in the target project and how to treat it. The fence language
 // follows the file extension (markdown templates vs. the .mjs unpacker script).
 function embedFile(relPath, destLabel, note) {
-  const content = readFileSync(join(ROOT, relPath), 'utf8').replace(/\s+$/, '') + '\n';
+  // \r\n → \n: source files may sit CRLF in old checkouts; every generated artifact must be
+  // pure LF so its bytes (and the sha256 in kaif-manifest.json) match the committed blob and
+  // what raw.githubusercontent serves (bug 04 — the real root cause).
+  const content = readFileSync(join(ROOT, relPath), 'utf8').replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
   const header = `> **FILE: \`${destLabel}\`**${note ? ' — ' + note : ''}\n\n`;
   const lang = relPath.endsWith('.mjs') ? 'js' : 'md';
   return header + FENCE + lang + '\n' + content + FENCE + '\n';
@@ -101,7 +104,7 @@ function embedSkills() {
 }
 
 // --- assemble ---------------------------------------------------------------
-let out = readFileSync(join(FW, '_intro.md'), 'utf8');
+let out = readFileSync(join(FW, '_intro.md'), 'utf8').replace(/\r\n/g, '\n');
 
 // Drop the authoring comment at the top of _intro.md; replace with a "generated" banner.
 // (\r?\n — the working tree may be CRLF on Windows checkouts; the regex must strip the comment
@@ -130,8 +133,8 @@ console.log(`✅ KAIF.md generated — ${out.split('\n').length} lines, v${versi
 // The Slim variant is a SECOND artifact: one file that IS the framework in place
 // (no unpacking). It is self-contained prose — no {{EMBED}} markers — so the build
 // only strips the authoring comment, stamps the version, and copies it to the root.
-let slim = readFileSync(join(FW, 'KAIF-SLIM.md'), 'utf8');
-slim = slim.replace(/^<!--[\s\S]*?-->\r?\n/, '');   // \r?\n: tolerate CRLF checkouts (see above)
+let slim = readFileSync(join(FW, 'KAIF-SLIM.md'), 'utf8').replace(/\r\n/g, '\n');
+slim = slim.replace(/^<!--[\s\S]*?-->\n/, '');
 slim = '<!-- GENERATED FILE — do not edit by hand. Built from framework/KAIF-SLIM.md by ' +
        'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + slim;
 slim = slim.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
@@ -150,8 +153,8 @@ const DIST = join(ROOT, 'dist');
 mkdirSync(DIST, { recursive: true });
 
 // 1) thin KAIF.md from the bootstrap narrative (embeds the loader verbatim)
-let thin = readFileSync(join(FW, 'installer', '_thin-intro.md'), 'utf8');
-thin = thin.replace(/^<!--[\s\S]*?-->\r?\n/, '');
+let thin = readFileSync(join(FW, 'installer', '_thin-intro.md'), 'utf8').replace(/\r\n/g, '\n');
+thin = thin.replace(/^<!--[\s\S]*?-->\n/, '');
 thin = '<!-- GENERATED FILE — do not edit by hand. Built from framework/installer/_thin-intro.md by ' +
        'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + thin;
 thin = thin.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
@@ -159,8 +162,8 @@ thin = thin.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => embedFile(p.trim(), 'KAI
   'project root — write this ONE file verbatim, then run it (removed again by verify-final)'));
 writeFileSync(join(DIST, 'KAIF.md'), thin);
 
-// 2) the core machinery, copied verbatim (it reads version data from the bundle manifest)
-const coreSrc = readFileSync(join(FW, 'installer', 'KAIF-CORE.mjs'), 'utf8');
+// 2) the core machinery, copied verbatim (LF-normalized; it reads version data from the bundle manifest)
+const coreSrc = readFileSync(join(FW, 'installer', 'KAIF-CORE.mjs'), 'utf8').replace(/\r\n/g, '\n');
 writeFileSync(join(DIST, 'KAIF-CORE.mjs'), coreSrc);
 
 // 3) the bundle: manifest block + every deployable file as a FILE: block.
