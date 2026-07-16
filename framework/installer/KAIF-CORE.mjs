@@ -536,6 +536,32 @@ function cmdVerifyFinal() {
   }
   if (missing) die(`verify-final FAILED: ${missing} issues — finish them and re-run`);
 
+  // Re-sync the per-system skill copies from the canonical .claude/skills/ — the agent's
+  // cognitive fills (adaptation) land in the canon only; machinery propagates them so no
+  // copy is ever edited by hand (closes the empty-project tail of bug 05).
+  if (existsSync('.claude/skills')) {
+    const agents = okOnDisk(KAIF_JSON) ? (readJson(KAIF_JSON).agents || []) : [];
+    const canon = [];
+    for (const n of readdirSync('.claude/skills')) {
+      const p = `.claude/skills/${n}/SKILL.md`;
+      if (okOnDisk(p)) canon.push({ path: p, content: readFileSync(p, 'utf8') });
+      const rd = `.claude/skills/${n}/references`;
+      if (existsSync(rd)) for (const r of readdirSync(rd).filter((f) => f.endsWith('.md')))
+        canon.push({ path: `${rd}/${r}`, content: readFileSync(`${rd}/${r}`, 'utf8') });
+    }
+    const copies = { codex: '.agents/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+    let synced = 0;
+    for (const [sys, base] of Object.entries(copies)) {
+      if (!agents.includes(sys)) continue;
+      for (const f of canon) { writeFileSync(f.path.replace('.claude/skills', base), f.content); synced++; }
+    }
+    if (agents.includes('zoo-code')) for (const f of canon) {
+      const n = skillName(f.path);
+      if (n) { writeFileSync(`.roo/commands/${n}.md`, f.content.replace(/^name:[^\n]*\n/m, '')); synced++; }
+    }
+    if (synced) log(`↻ re-synced ${synced} system skill copies from the canon`);
+  }
+
   // self-clean: the install is done; the project is driven by the skills from here on.
   for (const p of ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE]) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
   if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
