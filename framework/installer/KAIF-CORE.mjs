@@ -95,12 +95,15 @@ const isSkippedAnon = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 // the machinery appends them to each skill's `description:` line so the agent keeps
 // matching commands in the owner's language while the skills stay English.
 function applyLanguage(files) {
-  const prefix = `templates/languages/${LANG}/`;
+  // Case-insensitive prefix match: --lang is normalized to lowercase, but pack
+  // directories may carry canonical casing (zh-Hans). Verified by the zh sandbox.
+  const prefix = `templates/languages/${LANG}/`.toLowerCase();
   const overrides = new Map();
   let triggers = null;
   for (const f of files) {
-    if (!f.path.startsWith(prefix)) continue;
-    if (f.path === prefix + 'skill-triggers.json') { try { triggers = JSON.parse(f.content); } catch { die(`bad JSON in ${f.path}`); } }
+    const lower = f.path.toLowerCase();
+    if (!lower.startsWith(prefix)) continue;
+    if (lower === prefix + 'skill-triggers.json') { try { triggers = JSON.parse(f.content); } catch { die(`bad JSON in ${f.path}`); } }
     else overrides.set(f.path.slice(prefix.length), f.content);
   }
   const out = [];

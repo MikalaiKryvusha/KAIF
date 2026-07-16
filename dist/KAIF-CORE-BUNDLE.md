@@ -3551,6 +3551,1950 @@ sphere names — the link plus the access date. A claim with no source is memory
 or cut it. Prebuilt spheres in this repo are maintained with the framework itself.>`
 ``````
 
+> **FILE: `templates/languages/ar/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — العيوب والصعوبات والأعطال
+
+وثيقة واحدة لكل عيب: العَرَض، إعادة إنتاج حتمية، التحقيق الجنائي، السبب الجذري / الفرضيات، تاريخ
+الإصلاح، الحالة. قائمة أخطاء الوكيل الدائمة — لا يضيع شيء، وأي خطأ يمكن أن تلتقطه جلسة مستقبلية من
+الصفر. ملف `NN_<name>.md` واحد لكل خطأ.
+
+**للإنسان (المالك):** يمكنك تسجيل خطأ هنا بكلمات بسيطة (ما الخلل، كيف يُعاد إنتاجه)؛ وسيتولى الوكيل
+هيكلته. تصفَّح هذا المجلد لترى العيوب المعروفة وحالتها.
+
+**لوكيل الذكاء الاصطناعي:** حين تصطدم بعيب أثناء العمل/الاختبار، سجّله هنا وفق القانون (المهارة:
+`/report-bug`؛ المنهج: `BUG_FIXING_FRAMEWORK.md`) — حتى الصغير منها. ما دام مفتوحًا فلا وسم `DONE`.
+وعند إصلاحه **والتحقق منه**: `git mv NN_x.md NN_DONE_x.md` وأضف قسم `## ✅ STATUS: DONE (التاريخ)`.
+بعد 3 محاولات إصلاح عمياء فاشلة، توقف وانتقل إلى البحث (`/bug-research`).
+``````
+
+> **FILE: `templates/languages/ar/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL (الرؤية)
+
+> **من يملؤه:** المالك البشري (صاحب الرؤية). **اللغة:** لغة عمل المالك.
+> **متى:** يُفضَّل *قبل* نشر KAIF — فالوكيل يوجّه النشر بأكمله (الخطة الرئيسية، المجال، المصطلحات)
+> حول هذه الوثيقة. إن غابت وقت النشر فسيعمل KAIF رغم ذلك، لكن الوكيل سيضطر لاحقًا إلى إعادة تفسير
+> الغلاف المنشور وفق معنى المشروع — عمل إضافي. الأفضل كتابتها مسبقًا.
+>
+> هذه **مرجع حيّ** وليست مهمة — لا تُوسم أبدًا بـ `DONE`. حدِّثها كلما اتضحت الرؤية.
+
+---
+
+## ما أريده — في فقرة واحدة
+
+`<بلغة بسيطة: ما الذي يجب أن يوجد عندما يكون هذا المشروع "منجزًا"؟ ما النتيجة النهائية؟ لمن، وماذا
+تتيح لهم أن يفعلوا؟ اكتب بصفتك صاحب رؤية لا منفّذًا — "ماذا" و"لماذا"، لا "كيف". بضع جمل صادقة خير
+من مواصفات مصقولة.>`
+
+## لماذا يهمّ / ما المشكلة التي يحلّها
+
+`<ما الألم أو الفرصة وراء ذلك؟ ما الخطأ في عالم اليوم الذي يصلحه هذا؟>`
+
+## كيف يبدو النجاح
+
+`<علامات ملموسة على بلوغ الهدف — الحالة النهائية القابلة للملاحظة. "يستطيع المستخدم …"، "النتيجة هي …".
+اذكر الأشياء القليلة التي ستجعلك تقول: "نعم، هذا هو".>`
+
+## الحدود — ما الذي ليس هذا إياه
+
+`<خارج النطاق صراحةً. تسمية اللاأهداف تمنع الانحراف بقدر ما تمنعه تسمية الأهداف.>`
+
+## القيود والتفضيلات (اختياري)
+
+`<قيود صارمة (المنصة، الميزانية، الموعد، تقنيات إلزامية/محظورة) وتفضيلات مرنة (الذوق، الأسلوب،
+النبرة). كل ما يجب على الوكيل احترامه دون تكرار.>`
+
+---
+
+> **كيفية الاستخدام (للوكيل):** اقرأ `GOAL.md` أولًا؛ دعه يوجّه المجال والمصطلحات و`MASTER_PLAN.md`
+> الذي تشتقّه منه (المهارة: `/revision`). لا تخترع رؤية هنا — إن كان الهدف غامضًا أو فارغًا فاطلب من
+> المالك ملأه (أو افتح `/interview`). هذه الوثيقة ملك للإنسان.
+``````
+
+> **FILE: `templates/languages/ar/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — مهام من الوكيل إلى الإنسان
+
+مهام يطلب الوكيل من **الإنسان** إنجازها — أشياء لا يستطيع فعلها بنفسه بحكم طبيعته الرقمية عديمة
+الجسد: الاختبار على عتاد حقيقي، التصرف في العالم المادي، استخدام حساب/اعتماد لا يملكه إلا الإنسان،
+إجراء شراء، ملاحظة شيء دون اتصال. تصف كل وثيقة المهمة بخطوات ملموسة للإنسان، وتجمع ملاحظاته ونتائجه
+مرة أخرى. ملف `NN_<name>.md` لكل مهمة.
+
+**للإنسان (المالك):** حين يسجّل الوكيل واجبًا (homework) فهو بحاجة إلى يد في العالم المادي/غير
+المتصل. اتبع الخطوات واكتب ما لاحظته في الوثيقة — يقرأ الوكيل ملاحظاتك ويكمل.
+
+**لوكيل الذكاء الاصطناعي:** حين تُحاصَر بشيء لا يقدر عليه إلا إنسان ذو جسد، لا تتوقف — اكتب هنا
+واجبًا بخطوات واضحة مرقّمة في حدها الأدنى ومكانٍ لنتائج الإنسان، ثم واصل عملًا آخر. وعندما يبلّغ
+الإنسان، أدرج النتائج ووسم الملف بـ `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/ar/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — مقترحات الميزات والتحسينات
+
+أفكار مفصّلة حول *ما* يُبنى — عادةً شريحة ضيقة من المشروع، موصوفة بما يكفي ليكون بوسع الوكيل التنفيذ
+منها. يكتبها غالبًا **الإنسان**، لكن الوكيل يقترح أفكارًا أيضًا. ملف `NN_<name>.md` واحد لكل فكرة.
+
+**للإنسان (المالك):** هذا مجلد تأليفك الرئيسي. ضع هنا فكرة تصف ما تريد؛ سيرتّبها الوكيل في شكل منظم
+نظيف وينفّذ منها. الفكرة جزء من **رؤية** المنتج — لا ينفّذها الوكيل إلا بعد موافقتك.
+
+**لوكيل الذكاء الاصطناعي:** اقرأ أفكار المالك، صحّح الأخطاء المطبعية، وأعد الهيكلة بأدنى قدر من أجل
+الوضوح، ثم نفّذ. وحين تكون *لديك* فكرة تستحق، سجّلها هنا بحالة «❓ في انتظار موافقة المالك» (المهارة:
+`/propose-idea`) و**لا** تنفّذها قبل الموافقة. بعد تنفيذ فكرة، اكتب الحالة والتاريخ في ملفها ووسمه بـ
+`DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/ar/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — قرارات مستوى المالك
+
+مقابلات يجريها الوكيل مع الإنسان لحسم قرارات **لا** يجوز له اتخاذها وحده — واجهة/تجربة المستخدم،
+مفترقات تقنية جدية، العلامة/الرؤية/الأولويات. أسئلة مغلقة A/B/C/D والتوصية أولًا، يجيب عنها الإنسان
+**مباشرة في الوثيقة**. ملف `interview_NNN_<topic>.md` لكل مقابلة.
+
+**للإنسان (المالك):** حين يسجّل الوكيل مقابلة فهي تنتظرك **أنت**. املأ حقول «**الإجابة:**» مباشرة في
+الوثيقة (اختر A/B/C، أو اكتب إجابتك في D). هنا تُلتقط قراراتك المصيرية وتُحفظ.
+
+**لوكيل الذكاء الاصطناعي:** لا تسجّل مقابلة إلا لمفترقات هي حقًا من مستوى المالك (المهارة:
+`/interview`). الخيارات **A/B/C/D**: **A** دائمًا هو الخيار المقطَّر عبر `PHILOSOPHY.md`
+(الأبسط/الأنجع) وموسوم **(موصى به)**؛ و**D** دائمًا «إجابة المالك الخاصة». أنجز العمل التمهيدي أولًا،
+والتزم بـ 1–5 أسئلة، ثم توقف ودَع المالك يجيب. وكل ما كان رخيص التراجع — قرّره بنفسك.
+``````
+
+> **FILE: `templates/languages/ar/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# KAIF في <PROJECT_NAME> — الإطار المنشور
+
+> **ما هذه الوثيقة.** وصف رفيع المستوى لـ**إطار KAIF كما هو منشور ومستخدم في هذا المشروع** — اعتبرها
+> صفحة "التقنيات والأُطر" الخاصة بالمشروع، وقد صار KAIF الآن إحدى تقنياته. يكتبها الوكيل **بعد نجاح
+> حقن KAIF** (يُحذف النواة ذاتية الاستخراج بمجرد وجود هذه الوثيقة — انظر دورة حياة KAIF). من الآن
+> فصاعدًا يُنظَّم العمل في هذا المشروع *عبر* KAIF، وهذا الملف هو خلاصته الموجهة للبشر.
+>
+> مكتوبة بلغة عمل المالك. **مرجع حيّ — لا يُوسم أبدًا بـ `DONE`.** حافظ على تحديث سطر الإصدار.
+
+---
+
+## ما هو KAIF
+
+KAIF (Krinik AI Framework) هو **إطار تشغيلي مقاوم لفقدان السياق ومنضبط الاستقلالية للثنائي
+الإنسان–الذكاء الاصطناعي**. يُخرِج ذاكرة عمل الوكيل وانضباطه إلى هذا المستودع — مجموعة صغيرة من وثائق
+markdown واصطلاحات المجلدات ومهارات شرطة مائلة قابلة للتكرار — بحيث تستأنف أي جلسة وكيل جديدة بسياق
+كامل، وتعمل باستقلالية ضمن حدود واضحة، وتراكم المعرفة بدل فقدانها. إنه ليس شيفرة؛ إنه *عملية مدوَّنة
+على هيئة ملفات يقرؤها وكيل*.
+
+## لماذا هو هنا — ما الذي يمنحه لهذا المشروع
+
+- **لا انطلاقات باردة.** تقرأ الجلسة الجديدة `AGENT_GUIDE.md` + `STATUS.md` فتصبح منتجة فورًا.
+- **معرفة تبقى.** تتحول الأخطاء والقرارات والأبحاث والأفكار إلى وثائق دائمة، لا إلى دردشة ضائعة.
+- **استقلالية محدودة.** يطحن الوكيل قائمة الأعمال وحده ولا يصعّد إلا قرارات مستوى المالك.
+- **منهج مشترك.** الإنسان = صاحب الرؤية (`GOAL.md`)، الوكيل = المنفّذ؛ وKAIF هو الواجهة بينهما.
+
+## كيف يعمل هنا — الأجزاء المتحركة
+
+| الجزء | دوره في هذا المشروع |
+|-------|----------------------|
+| `AGENT_GUIDE.md` | القانون الذي يقرؤه الوكيل قبل كل مهمة. |
+| `PHILOSOPHY.md` | كيف يفكر الوكيل (KISS + أوكام + مجموعة المبادئ الموسعة). |
+| `BUG_FIXING_FRAMEWORK.md` | كيف يصحّح الوكيل الأخطاء. |
+| `GOAL.md` / `MASTER_PLAN.md` | الرؤية، والطريق المرحلي إليها. |
+| `STATUS.md` | الحالة الحية — تُحدَّث بعد كل مهمة مهمة. |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | الخريطتان الخارجية والداخلية. |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | مجلدات المعرفة (لكلٍّ منها README خاص). |
+| `.claude/skills/` (أو مكافئه في نظام وكيلك) | الطقوس القابلة للتكرار (`/resume`، `/pause`، الحلقات، …). |
+| `.kaif/kaif.json` | علامة النشر: الإصدار، المجال، الوكيل، التتبع. |
+
+## سجلّ النشر
+
+| الحقل | القيمة |
+|-------|--------|
+| **إصدار KAIF** | `<X.Y>` |
+| **تاريخ الحقن** | `<YYYY-MM-DD>` |
+| **كيف جرى الحقن** | `<سطر أو سطران: فكّ ميكانيكي سريع، أو تدفق مرحلي محترم؛ وأي شيء جدير بالذكر>` |
+| **المجال** | `<programming / science / design / business / …>` |
+| **أنظمة الوكيل** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **لغة العمل** | `<لغة المالك>` |
+| **التتبع** | `<origin / fork>` — `<رابط مستودع origin>` |
+
+## العيش مع KAIF (دورة الحياة)
+
+`/kaif-version` (فحص التحديثات) · `/kaif-update` (ترحيل محترم من origin) · `/kaif-fork`
+(طوّر نسختك الخاصة) · `/kaif-switch-origin` · `/kaif-remove` (الجزئي يحتفظ بمنتجاتك، أو الكامل —
+باحترام دائمًا). مدعوم بمقابض npm `kaif:*`.
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## كلمة من المؤلف
+
+> ابتكر **Krinik (Mikalai Kryvusha / Николай Кривуша)** إطار KAIF وبناه بدافع الضرورة أثناء جلسات
+> vibe-coding مع Claude حول منتج برمجي، في أواخر يونيو الحار من عام 2026، في مينسك. **عيد ميلاد KAIF
+> هو 30 يونيو 2026.**
+
+*(النص الأصلي بالروسية — المعتمد:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/ar/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — خطط مفصّلة خطوة بخطوة
+
+خطط مفصّلة لأجزاء عمل بعينها: خطوات مفردة من الخطة الرئيسية، ميزات، أفكار، أخطاء، أبحاث، إجراءات.
+**`MASTER_PLAN.md`** (جذر المشروع) هو خارطة الطريق رفيعة المستوى؛ بينما يحوي `plans/` الخطط المقرَّبة
+التي تنفّذ خطواتها. ملف `NN_<name>.md` واحد لكل خطة.
+
+**للإنسان (المالك):** لست مضطرًا للكتابة هنا — فالخطط عادةً من شأن الوكيل. يمكنك وضع خطة إن أردت توجيه
+*كيفية* إنجاز شيء ما. اقرأها لترى نهج الوكيل المزمع قبل التنفيذ.
+
+**لوكيل الذكاء الاصطناعي:** قبل أي عمل غير بديهي، اكتب هنا خطة قصيرة واتبعها. رقّم الملفات
+(`NN_<name>.md`). الخطة المكتملة والمتحقَّق منها تحصل على وسم `DONE` في اسمها
+(`git mv NN_x.md NN_DONE_x.md`) مع قسم حالة. المواد المرجعية (ليست مهمة قابلة للإغلاق) لا تُوسم بـ DONE.
+``````
+
+> **FILE: `templates/languages/ar/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — قاعدة معرفة للمسائل الكبيرة الصعبة
+
+ملاحظات واستنتاجات مقطَّرة حول المسائل الكبيرة والمعقدة: تحليلات الأبحاث، الخبرة المتراكمة، معلومات
+مرجعية مهمة اكتُسبت بجهد حقيقي ولا يجوز أن تتبخر. ملف `NN_<name>.md` واحد لكل موضوع بحث.
+
+**للإنسان (المالك):** المكان الذي تجد فيه الخلفية العميقة للقرارات — لماذا اختير نهج ما، وما الذي
+تبيّن حول مشكلة صعبة. يمكنك أيضًا تحديد موضوع تريد بحثه.
+
+**لوكيل الذكاء الاصطناعي:** حين تكون المسألة كبيرة بما يكفي لتعيش استنتاجاتها بعد المهمة الحالية —
+اكتب هنا ملاحظة (مصادر خام ← تحليل ← استنتاجات/فرضيات). أشِر إليها من الخطأ/الخطة/الفكرة التي ولّدت
+البحث (DRY — لا تعِد البحث). ملاحظة البحث **مرجع حيّ** وليست مهمة قابلة للإغلاق: لا تُوسم بـ `DONE`
+وتُحدَّث كلما نما الفهم.
+``````
+
+> **FILE: `templates/languages/ar/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "«واصل», «تابع العمل», «استأنف», «أين توقفنا؟»",
+  "pause": "«توقف», «خذ استراحة», «أنهِ الجلسة», «احفظ التقدم», «ثبّت الحالة»",
+  "autoloop": "«اعمل وحدك», «الطيار الآلي», «اطحن قائمة الأعمال», «شغّل الحلقة المستقلة»",
+  "dayloop": "«حلقة النهار», «اعمل وحدك، أنا مشغول»",
+  "nightloop": "«حلقة الليل», «اعمل حتى الصباح»",
+  "refresh-context": "«أنعش السياق», «أعد قراءة الوثائق», «أعد بناء قائمة الأعمال»",
+  "check-backlog": "«افحص قائمة الأعمال», «ماذا تبقى؟», «ضع DONE على المنجز»",
+  "experience": "«تذكّر الخبرة», «راجع الخبرة», «دوّن الدرس»",
+  "report-bug": "«سجّل الخطأ», «أبلغ عن هذا الخطأ», «دوّن هذا الخطأ»",
+  "bug-research": "«ابحث في الخطأ», «اعثر على السبب», «كفى محاولات عمياء»",
+  "propose-idea": "«اقترح فكرة», «سجّل الفكرة»",
+  "interview": "«أجرِ مقابلة», «اسألني عن المفترق», «مقابلة»",
+  "revision": "«راجع الخطة الرئيسية», «أعد بناء الخطة من الهدف»",
+  "fix-vision": "«ثبّت الرؤية», «حدّث الرؤية من الدردشة»",
+  "what-next": "«ماذا بعد؟», «والآن؟», «اقترح الخطوات التالية»",
+  "help-kaif": "«حدّثني عن KAIF», «كيف أستخدم KAIF», «مساعدة KAIF»",
+  "release": "«أصدر نسخة», «انشر إصدارًا جديدًا», «اشحنه»",
+  "kaif-version": "«إصدار KAIF», «هل يوجد تحديث للإطار؟»",
+  "kaif-update": "«حدّث KAIF», «رحّل الإطار»",
+  "kaif-fork": "«اعمل لي fork من KAIF», «اصنع KAIF خاصًا بي»",
+  "kaif-switch-origin": "«عد إلى KAIF الرسمي», «ارجع إلى origin»",
+  "kaif-remove": "«أزل KAIF», «انزع الإطار»",
+  "fable-method": "«بطريقة Fable», «طبّق منهج fable», «حُلّها كما يفعل Fable»",
+  "fable-loop": "«شغّل حلقة fable», «افعلها كما كان Fable سيفعل»",
+  "fable-judge": "«احكم على العمل», «تحقق مما فعله», «هل نجح فعلًا؟»",
+  "fable-domain": "«اصنع مهارة لهذا القطاع», «أضف مجالًا إلى منهج fable»"
+}
+``````
+
+> **FILE: `templates/languages/de/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — Defekte, Schwierigkeiten, Brüche
+
+Ein Dokument pro Defekt: Symptom, deterministische Reproduktion, Forensik, Grundursache / Hypothesen,
+Fix-Historie, Status. Das eigene dauerhafte Bug-Backlog des Agenten — nichts geht verloren, und jeder Bug
+kann von einer zukünftigen Sitzung kalt aufgenommen werden. Ein `NN_<name>.md` pro Bug.
+
+**Für den Menschen (Eigentümer):** Sie können hier einen Bug in einfachen Worten anlegen (was falsch ist,
+wie man es reproduziert); der Agent strukturiert ihn. Durchstöbern Sie dieses Verzeichnis, um bekannte
+Defekte und ihren Status zu sehen.
+
+**Für den KI-Agenten:** Wenn du bei der Arbeit/beim Testen auf einen Defekt stößt, lege ihn hier nach dem
+Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kleine. Solange offen, kein
+`DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
+`## ✅ STATUS: DONE (Datum)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
+zur Recherche (`/bug-research`).
+``````
+
+> **FILE: `templates/languages/de/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL (die Vision)
+
+> **Wer füllt das aus:** der menschliche Eigentümer (der Visionär). **Sprache:** die Arbeitssprache des Eigentümers.
+> **Wann:** idealerweise *vor* dem Deployment von KAIF — der Agent richtet das gesamte Deployment
+> (Masterplan, Sphäre, Terminologie) an diesem Dokument aus. Fehlt es zum Deploy-Zeitpunkt, funktioniert
+> KAIF trotzdem, aber der Agent muss die bereits ausgerollte Hülle später auf den Sinn des Projekts
+> umdeuten — Zusatzarbeit. Besser vorher schreiben.
+>
+> Dies ist eine **lebende Referenz**, keine Aufgabe — nie mit `DONE` markiert. Aktualisieren Sie sie,
+> wann immer sich die Vision schärft.
+
+---
+
+## Was ich will — in einem Absatz
+
+`<In einfacher Sprache: Was soll existieren, wenn dieses Projekt „fertig" ist? Was ist das Endergebnis?
+Für wen, und was ermöglicht es ihnen? Schreiben Sie als Visionär, nicht als Implementierer — das *Was* und
+das *Warum*, nicht das *Wie*. Ein paar ehrliche Sätze schlagen eine polierte Spezifikation.>`
+
+## Warum es wichtig ist / welches Problem es löst
+
+`<Welcher Schmerz oder welche Chance steckt dahinter? Was ist heute falsch an der Welt, das dies behebt?>`
+
+## Wie Erfolg aussieht
+
+`<Konkrete Zeichen, dass das Ziel erreicht ist — der beobachtbare Endzustand. „Ein Nutzer kann …",
+„Das Ergebnis ist …". Listen Sie die wenigen Dinge auf, bei denen Sie sagen würden: „Ja, das ist es.">`
+
+## Grenzen — was das NICHT ist
+
+`<Explizit außerhalb des Umfangs. Nicht-Ziele zu benennen verhindert Abdrift genauso wie Ziele zu benennen.>`
+
+## Einschränkungen und Präferenzen (optional)
+
+`<Harte Einschränkungen (Plattform, Budget, Frist, vorgeschriebene/verbotene Technologien) und weiche
+Präferenzen (Geschmack, Stil, Ton). Alles, was der Agent respektieren soll, ohne es zweimal gesagt zu
+bekommen.>`
+
+---
+
+> **Wie man das benutzt (für den Agenten):** Lies `GOAL.md` zuerst; lass es die Sphäre, die Terminologie
+> und den daraus abgeleiteten `MASTER_PLAN.md` steuern (Skill: `/revision`). Erfinde hier keine Vision —
+> ist das Ziel unklar oder leer, bitte den Eigentümer, es auszufüllen (oder eröffne ein `/interview`).
+> Dieses Dokument gehört dem Menschen.
+``````
+
+> **FILE: `templates/languages/de/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — Aufgaben vom Agenten an den Menschen
+
+Aufgaben, um die der Agent den **Menschen** bittet — Dinge, die er wegen seiner digitalen, körperlosen
+Natur nicht selbst tun kann: auf echter Hardware testen, in der physischen Welt handeln, ein
+Konto/Credential nutzen, das nur der Mensch hat, einen Kauf tätigen, etwas offline beobachten. Jedes
+Dokument beschreibt die Aufgabe mit konkreten Schritten für den Menschen und sammelt dessen Beobachtungen
+und Ergebnisse zurück. Je ein `NN_<name>.md`.
+
+**Für den Menschen (Eigentümer):** Wenn der Agent ein Homework anlegt, braucht er eine Hand in der
+physischen/offline Welt. Folgen Sie den Schritten und schreiben Sie Ihre Beobachtungen ins Dokument
+zurück — der Agent liest Ihre Notizen und macht weiter.
+
+**Für den KI-Agenten:** Wenn du an etwas blockiert bist, das nur ein Mensch-mit-Körper tun kann, bleib
+nicht stecken — schreibe hier ein Homework mit klaren, minimalen, nummerierten Schritten und einem Platz
+für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Wenn der Mensch berichtet, arbeite
+die Ergebnisse ein und markiere die Datei mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/de/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — Feature- und Verbesserungsvorschläge
+
+Detaillierte Ideen, *was* gebaut werden soll — meist ein schmaler Ausschnitt des Projekts, gut genug
+beschrieben, damit der Agent daraus implementieren kann. Meist vom **Menschen** verfasst, aber auch der
+Agent schlägt Ideen vor. Ein `NN_<name>.md` pro Idee.
+
+**Für den Menschen (Eigentümer):** Dies ist Ihr Haupt-Autorenverzeichnis. Legen Sie hier eine Idee ab, die
+beschreibt, was Sie wollen; der Agent bringt sie in eine saubere, strukturierte Form und implementiert
+daraus. Eine Idee ist ein Stück Produkt-**Vision** — der Agent implementiert sie erst nach Ihrer Freigabe.
+
+**Für den KI-Agenten:** Lies die Ideen des Eigentümers, korrigiere Tippfehler, strukturiere minimal für
+Klarheit um, dann implementiere. Wenn *du* eine lohnende Idee hast, lege sie hier mit dem Status
+„❓ wartet auf Freigabe des Eigentümers" ab (Skill: `/propose-idea`) und implementiere sie **nicht** vor der
+Freigabe. Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
+mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/de/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — Entscheidungen auf Eigentümer-Ebene
+
+Interviews, die der Agent mit dem Menschen führt, um Entscheidungen zu klären, die er **nicht** allein
+treffen darf — UI/UX, ernste technische Weggabelungen, Marke/Vision/Prioritäten. Geschlossene
+A/B/C/D-Fragen mit der Empfehlung zuerst, beantwortet vom Menschen **direkt im Dokument**. Je ein
+`interview_NNN_<thema>.md`.
+
+**Für den Menschen (Eigentümer):** Wenn der Agent ein Interview anlegt, wartet es auf **Sie**. Füllen Sie
+die „**Antwort:**"-Felder direkt im Dokument aus (wählen Sie A/B/C oder schreiben Sie Ihre eigene in D).
+Hier werden Ihre schicksalhaften Entscheidungen festgehalten und bewahrt.
+
+**Für den KI-Agenten:** Lege ein Interview nur für echte Weggabelungen auf Eigentümer-Ebene an (Skill:
+`/interview`). Die Optionen sind **A/B/C/D**: **A** ist immer die durch `PHILOSOPHY.md` destillierte Wahl
+(am einfachsten/wirksamsten) und mit **(empfohlen)** markiert; **D** ist immer „Ihre eigene Antwort" für
+den Eigentümer. Mach zuerst die Vorarbeit, bleib bei 1–5 Fragen, dann pausiere und lass den Eigentümer
+antworten. Alles, was billig rückgängig zu machen ist — entscheide selbst.
+``````
+
+> **FILE: `templates/languages/de/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# KAIF in <PROJECT_NAME> — das Framework, deployt
+
+> **Was dieses Dokument ist.** Eine hochrangige Beschreibung des **KAIF-Frameworks, wie es in diesem
+> Projekt deployt und genutzt wird** — denken Sie an die „Technologien & Frameworks"-Seite des Projekts,
+> auf der KAIF nun eine der Technologien ist. Es wird vom Agenten **nach einer erfolgreichen
+> KAIF-Injektion** geschrieben (der selbstextrahierende Kern wird entfernt, sobald dieses Dokument
+> existiert — siehe KAIF-Lebenszyklus). Von da an ist die Arbeit in diesem Projekt *durch* KAIF
+> organisiert, und diese Datei ist die menschenlesbare Zusammenfassung davon.
+>
+> Geschrieben in der Arbeitssprache des Eigentümers. **Lebende Referenz — nie mit `DONE` markiert.**
+> Halten Sie die Versionszeile aktuell.
+
+---
+
+## Was KAIF ist
+
+KAIF (Krinik AI Framework) ist ein **kontextverlust-resistentes, autonomie-diszipliniertes
+Betriebsframework für das Mensch–KI-Tandem**. Es externalisiert das Arbeitsgedächtnis und die Disziplin
+des Agenten in dieses Repository — ein kleines Set aus Markdown-Dokumenten, Verzeichniskonventionen und
+wiederholbaren Slash-Skills — sodass jede frische Agentensitzung mit vollem Kontext weitermacht, autonom
+in klaren Grenzen arbeitet und Wissen ansammelt, statt es zu verlieren. Es ist kein Code; es ist
+*Prozess, festgehalten als Dateien, die ein Agent liest*.
+
+## Warum es hier ist — was es diesem Projekt gibt
+
+- **Keine Kaltstarts.** Eine neue Sitzung liest `AGENT_GUIDE.md` + `STATUS.md` und ist sofort produktiv.
+- **Wissen, das überlebt.** Bugs, Entscheidungen, Recherchen und Ideen werden dauerhafte Dokumente, kein verlorener Chat.
+- **Begrenzte Autonomie.** Der Agent arbeitet das Backlog allein ab und eskaliert nur Eigentümer-Entscheidungen.
+- **Eine gemeinsame Methode.** Mensch = Visionär (`GOAL.md`), Agent = Ausführender; KAIF ist die Schnittstelle dazwischen.
+
+## Wie es hier funktioniert — die beweglichen Teile
+
+| Teil | Rolle in diesem Projekt |
+|------|-------------------------|
+| `AGENT_GUIDE.md` | Der Kanon, den der Agent vor jeder Aufgabe liest. |
+| `PHILOSOPHY.md` | Wie der Agent denkt (KISS + Ockham + das erweiterte Prinzipienset). |
+| `BUG_FIXING_FRAMEWORK.md` | Wie der Agent debuggt. |
+| `GOAL.md` / `MASTER_PLAN.md` | Die Vision und der phasenweise Weg dorthin. |
+| `STATUS.md` | Der lebende Zustand — nach jeder bedeutenden Aufgabe aktualisiert. |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Die externe und interne Karte. |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Die Wissensverzeichnisse (jedes mit eigenem README). |
+| `.claude/skills/` (oder das Äquivalent Ihres Agentensystems) | Die wiederholbaren Rituale (`/resume`, `/pause`, Loops, …). |
+| `.kaif/kaif.json` | Der Deploy-Marker: Version, Sphäre, Agent, Tracking. |
+
+## Deployment-Protokoll
+
+| Feld | Wert |
+|------|------|
+| **KAIF-Version** | `<X.Y>` |
+| **Injiziert am** | `<JJJJ-MM-TT>` |
+| **Wie die Injektion lief** | `<ein bis zwei Zeilen: schnelles mechanisches Entpacken oder respektvoller Stufenfluss; alles Bemerkenswerte>` |
+| **Sphäre** | `<programming / science / design / business / …>` |
+| **Agentensysteme** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **Arbeitssprache** | `<die Sprache des Eigentümers>` |
+| **Tracking** | `<origin / fork>` — `<URL des Origin-Repos>` |
+
+## Leben mit KAIF (Lebenszyklus)
+
+`/kaif-version` (nach Updates schauen) · `/kaif-update` (respektvolle Migration vom Origin) ·
+`/kaif-fork` (das eigene weiterentwickeln) · `/kaif-switch-origin` · `/kaif-remove` (teilweise behält
+Ihre Artefakte, oder vollständig — immer respektvoll). Gestützt auf die npm-Handles `kaif:*`.
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## Eine Notiz des Autors
+
+> KAIF wurde aus Notwendigkeit erdacht und gebaut von **Krinik (Mikalai Kryvusha / Николай Кривуша)**
+> während Vibe-Coding-Sessions mit Claude an einem Softwareprodukt, Ende eines heißen Juni 2026, in Minsk.
+> **KAIFs Geburtstag ist der 30. Juni 2026.**
+
+*(Originaltext, Russisch — kanonisch:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/de/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — detaillierte Schritt-für-Schritt-Pläne
+
+Detaillierte Pläne für einzelne Arbeitsstücke: einzelne Schritte des Masterplans, Features, Ideen, Bugs,
+Recherchen, Prozeduren. Der **`MASTER_PLAN.md`** (Projektwurzel) ist die hochrangige Roadmap; `plans/`
+enthält die herangezoomten Pläne, die ihre Schritte umsetzen. Ein `NN_<name>.md` pro Plan.
+
+**Für den Menschen (Eigentümer):** Sie müssen hier nicht schreiben — Pläne stammen meist vom Agenten. Sie
+können einen Plan ablegen, wenn Sie steuern wollen, *wie* etwas getan wird. Lesen Sie sie, um den
+beabsichtigten Ansatz des Agenten vor der Ausführung zu sehen.
+
+**Für den KI-Agenten:** Schreibe vor nicht-trivialer Arbeit hier einen kurzen Plan und folge ihm.
+Nummeriere die Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
+Dateinamen (`git mv NN_x.md NN_DONE_x.md`) plus einen Statusabschnitt. Referenzmaterial (keine schließbare
+Aufgabe) wird nicht mit DONE markiert.
+``````
+
+> **FILE: `templates/languages/de/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — Wissensbasis für die großen, schweren Fragen
+
+Notizen und destillierte Schlussfolgerungen zu großen, komplexen Fragen: Recherche-Auswertungen,
+gesammelte Erfahrung, wichtige Referenzinformationen, die mit echter Arbeit gewonnen wurden und nicht
+verdunsten dürfen. Ein `NN_<name>.md` pro Recherchethema.
+
+**Für den Menschen (Eigentümer):** der Ort, an dem Sie den tiefen Hintergrund von Entscheidungen finden —
+warum ein Ansatz gewählt wurde, was sich zu einem schwierigen Problem herausgestellt hat. Sie können ein
+Thema benennen, das untersucht werden soll.
+
+**Für den KI-Agenten:** Wenn eine Frage groß genug ist, dass ihre Schlussfolgerungen die aktuelle Aufgabe
+überleben — schreibe hier eine Notiz (Rohquellen → Analyse → Schlussfolgerungen/Hypothesen). Verweise
+darauf aus dem Bug/Plan/der Idee, die die Recherche ausgelöst haben (DRY — nicht neu recherchieren). Eine
+Recherche-Notiz ist eine **lebende Referenz**, keine schließbare Aufgabe: nie mit `DONE` markiert,
+aktualisiert, während das Verständnis wächst.
+``````
+
+> **FILE: `templates/languages/de/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "«mach weiter», «weiter geht's», «nimm die Arbeit wieder auf», «wo waren wir stehengeblieben?»",
+  "pause": "«Pause», «lass uns pausieren», «schließ die Sitzung ab», «sichere den Fortschritt», «halte den Status fest»",
+  "autoloop": "«arbeite selbstständig», «Autopilot», «arbeite das Backlog ab», «starte die autonome Schleife»",
+  "dayloop": "«Tagesschleife», «arbeite allein, ich bin beschäftigt»",
+  "nightloop": "«Nachtschleife», «arbeite bis zum Morgen»",
+  "refresh-context": "«frische den Kontext auf», «lies die Dokumente neu», «bau das Backlog neu auf»",
+  "check-backlog": "«prüfe das Backlog», «was ist noch offen?», «markiere Erledigtes mit DONE»",
+  "experience": "«erinnere dich an die Erfahrung», «schau in die Erfahrung», «notiere die Lektion»",
+  "report-bug": "«leg den Bug an», «melde diesen Bug», «notiere diesen Bug»",
+  "bug-research": "«untersuche den Bug», «finde die Ursache», «hör auf, blind zu probieren»",
+  "propose-idea": "«schlag eine Idee vor», «leg die Idee an»",
+  "interview": "«führe ein Interview», «stell mir die Fragen zur Weggabelung», «Interview»",
+  "revision": "«überarbeite den Masterplan», «bau den Plan vom Ziel her neu auf»",
+  "fix-vision": "«halte die Vision fest», «aktualisiere die Vision aus dem Chat»",
+  "what-next": "«was kommt als Nächstes?», «was jetzt?», «schlag die nächsten Schritte vor»",
+  "help-kaif": "«erzähl mir von KAIF», «wie benutzt man KAIF», «KAIF-Hilfe»",
+  "release": "«mach ein Release», «veröffentliche eine neue Version», «ship it»",
+  "kaif-version": "«KAIF-Version», «gibt es ein Framework-Update?»",
+  "kaif-update": "«aktualisiere KAIF», «migriere das Framework»",
+  "kaif-fork": "«forke KAIF für mich», «mach mein eigenes KAIF»",
+  "kaif-switch-origin": "«geh zurück zum offiziellen KAIF», «wechsle zurück zum Origin»",
+  "kaif-remove": "«entferne KAIF», «nimm das Framework raus»",
+  "fable-method": "«nach der Fable-Methode», «wende die Fable-Methode an», «löse es wie Fable»",
+  "fable-loop": "«fahr die Fable-Schleife», «mach es, wie Fable es täte»",
+  "fable-judge": "«beurteile die Arbeit», «prüfe, was er getan hat», «hat das wirklich funktioniert?»",
+  "fable-domain": "«bau einen Skill für die Branche», «füge der Fable-Methode eine Domäne hinzu»"
+}
+``````
+
+> **FILE: `templates/languages/es/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — defectos, dificultades, roturas
+
+Un documento por defecto: síntoma, reproducción determinista, forense, causa raíz / hipótesis, historial
+de corrección, estado. El backlog duradero de bugs del propio agente — nada se pierde, y cualquier bug
+puede ser retomado en frío por una sesión futura. Un `NN_<nombre>.md` por bug.
+
+**Para el humano (propietario):** puede registrar un bug aquí con palabras llanas (qué está mal, cómo
+reproducirlo); el agente lo estructurará. Explore este directorio para ver los defectos conocidos y su
+estado.
+
+**Para el agente de IA:** cuando choque con un defecto durante el trabajo/las pruebas, regístrelo aquí
+según el canon (habilidad: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — incluso los pequeños.
+Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
+`git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha)`. Tras 3 intentos ciegos
+fallidos de corrección, pare y pase a investigación (`/bug-research`).
+``````
+
+> **FILE: `templates/languages/es/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL (la visión)
+
+> **Quién lo rellena:** el humano propietario (el visionario). **Idioma:** el idioma de trabajo del propietario.
+> **Cuándo:** idealmente *antes* de desplegar KAIF — el agente orienta todo el despliegue (plan maestro,
+> esfera, terminología) alrededor de este documento. Si falta en el momento del despliegue, KAIF funciona
+> igualmente, pero el agente tendrá que reinterpretar después la envoltura ya desplegada según el sentido
+> del proyecto — trabajo extra. Mejor escribirlo de antemano.
+>
+> Esto es una **referencia viva**, no una tarea — nunca se marca con `DONE`. Actualícelo cada vez que la
+> visión se aclare.
+
+---
+
+## Lo que quiero — en un párrafo
+
+`<En lenguaje llano: ¿qué debe existir cuando este proyecto esté "terminado"? ¿Cuál es el resultado final?
+¿Para quién, y qué les permite hacer? Escriba como visionario, no como implementador — el *qué* y el
+*porqué*, no el *cómo*. Unas pocas frases honestas valen más que una especificación pulida.>`
+
+## Por qué importa / el problema que resuelve
+
+`<¿Qué dolor u oportunidad hay detrás? ¿Qué está mal en el mundo de hoy que esto arregla?>`
+
+## Cómo se ve el éxito
+
+`<Señales concretas de que la meta se alcanzó — el estado final observable. "Un usuario puede …",
+"El resultado es …". Liste las pocas cosas que le harían decir "sí, es esto".>`
+
+## Límites — lo que esto NO es
+
+`<Explícitamente fuera de alcance. Nombrar las no-metas evita la deriva tanto como nombrar las metas.>`
+
+## Restricciones y preferencias (opcional)
+
+`<Restricciones duras (plataforma, presupuesto, plazo, tecnología obligatoria/prohibida) y preferencias
+blandas (gusto, estilo, tono). Todo lo que el agente deba respetar sin que se lo repitan.>`
+
+---
+
+> **Cómo usar esto (para el agente):** lea `GOAL.md` primero; deje que dirija la esfera, la terminología y
+> el `MASTER_PLAN.md` que deriva de él (habilidad: `/revision`). No invente visión aquí — si la meta es
+> confusa o está vacía, pida al propietario que la rellene (o abra un `/interview`). Este documento
+> pertenece al humano.
+``````
+
+> **FILE: `templates/languages/es/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — tareas del agente para el humano
+
+Tareas que el agente pide hacer al **humano** — cosas que no puede hacer él mismo por su naturaleza
+digital e incorpórea: probar en hardware real, actuar en el mundo físico, usar una cuenta/credencial que
+solo tiene el humano, hacer una compra, observar algo offline. Cada documento describe la tarea con pasos
+concretos para el humano, y recoge de vuelta sus observaciones y resultados. Un `NN_<nombre>.md` cada una.
+
+**Para el humano (propietario):** cuando el agente registra un homework, necesita una mano en el mundo
+físico/offline. Siga los pasos y escriba lo que observó de vuelta en el documento — el agente lee sus
+notas y continúa.
+
+**Para el agente de IA:** cuando esté bloqueado por algo que solo puede hacer un humano-con-cuerpo, no se
+atasque — escriba aquí un homework con pasos claros, mínimos y numerados y un lugar para los resultados del
+humano, y luego continúe con otro trabajo. Cuando el humano informe, incorpore los resultados y etiquete el
+archivo con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/es/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — propuestas de features y mejoras
+
+Ideas detalladas de *qué* construir — normalmente un corte estrecho del proyecto, descrito lo bastante bien
+para que el agente pueda implementarlo. Las escribe casi siempre el **humano**, pero el agente también
+propone ideas. Un `NN_<nombre>.md` por idea.
+
+**Para el humano (propietario):** este es su directorio principal de autoría. Deje aquí una idea
+describiendo lo que quiere; el agente la ordenará en una forma limpia y estructurada y la implementará.
+Una idea es una pieza de la **visión** del producto — el agente la implementa solo después de su aprobación.
+
+**Para el agente de IA:** lea las ideas del propietario, corrija erratas, reestructure mínimamente para la
+claridad, y luego implemente. Cuando *usted* tenga una idea que valga la pena, regístrela aquí con el
+estado "❓ a la espera de la aprobación del propietario" (habilidad: `/propose-idea`) y **no** la implemente
+hasta que se apruebe. Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
+con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/es/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — decisiones del nivel del propietario
+
+Entrevistas que el agente realiza al humano para cerrar decisiones que **no** debe tomar solo — UI/UX,
+bifurcaciones técnicas serias, marca/visión/prioridades. Preguntas cerradas A/B/C/D con la recomendación
+primero, respondidas por el humano **directamente en el documento**. Un `interview_NNN_<tema>.md` cada una.
+
+**Para el humano (propietario):** cuando el agente registra una entrevista, está esperándole a **usted**.
+Rellene los campos "**Respuesta:**" directamente en el documento (elija A/B/C, o escriba la suya en D).
+Aquí se capturan y conservan sus decisiones cruciales.
+
+**Para el agente de IA:** registre una entrevista solo para bifurcaciones genuinamente del nivel del
+propietario (habilidad: `/interview`). Las opciones son **A/B/C/D**: **A** es siempre la elección destilada
+a través de `PHILOSOPHY.md` (la más simple/eficaz) y marcada **(recomendada)**; **D** es siempre "su propia
+respuesta" para el propietario. Haga primero el trabajo de base, manténgase en 1–5 preguntas, luego pause y
+deje que el propietario responda. Todo lo barato de revertir — decídalo usted mismo.
+``````
+
+> **FILE: `templates/languages/es/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# KAIF en <PROJECT_NAME> — el framework, desplegado
+
+> **Qué es este documento.** Una descripción de alto nivel del **framework KAIF tal como está desplegado y
+> en uso en este proyecto** — piense en él como la página de "tecnologías y frameworks" del proyecto, en la
+> que KAIF es ahora una de las tecnologías. Lo escribe el agente **después de una inyección exitosa de
+> KAIF** (el núcleo autoextraíble se elimina en cuanto esto existe — vea el ciclo de vida de KAIF). Desde
+> entonces el trabajo en este proyecto se organiza *a través de* KAIF, y este archivo es su resumen para
+> humanos.
+>
+> Escrito en el idioma de trabajo del propietario. **Referencia viva — nunca se marca con `DONE`.**
+> Mantenga actualizada la línea de versión.
+
+---
+
+## Qué es KAIF
+
+KAIF (Krinik AI Framework) es un **framework operativo resistente a la pérdida de contexto y con autonomía
+disciplinada para el tándem humano–IA**. Externaliza la memoria de trabajo y la disciplina del agente en
+este repositorio — un pequeño conjunto de documentos markdown, convenciones de directorios y habilidades
+slash repetibles — de modo que cualquier sesión nueva del agente se reanuda con contexto completo, trabaja
+de forma autónoma dentro de límites claros y acumula conocimiento en lugar de perderlo. No es código; es
+*proceso capturado como archivos que un agente lee*.
+
+## Por qué está aquí — lo que aporta a este proyecto
+
+- **Sin arranques en frío.** Una sesión nueva lee `AGENT_GUIDE.md` + `STATUS.md` y es productiva de inmediato.
+- **Conocimiento que sobrevive.** Bugs, decisiones, investigación e ideas se vuelven documentos duraderos, no chat perdido.
+- **Autonomía acotada.** El agente muele el backlog solo y escala únicamente las decisiones del propietario.
+- **Un método compartido.** Humano = visionario (`GOAL.md`), agente = ejecutor; KAIF es la interfaz entre ambos.
+
+## Cómo funciona aquí — las piezas móviles
+
+| Pieza | Rol en este proyecto |
+|-------|----------------------|
+| `AGENT_GUIDE.md` | El canon que el agente lee antes de cada tarea. |
+| `PHILOSOPHY.md` | Cómo piensa el agente (KISS + Occam + el conjunto ampliado de principios). |
+| `BUG_FIXING_FRAMEWORK.md` | Cómo depura el agente. |
+| `GOAL.md` / `MASTER_PLAN.md` | La visión, y el camino por fases hacia ella. |
+| `STATUS.md` | El estado vivo — actualizado tras cada tarea significativa. |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Los mapas externo e interno. |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Los directorios de conocimiento (cada uno con su README). |
+| `.claude/skills/` (o el equivalente de su sistema de agente) | Los rituales repetibles (`/resume`, `/pause`, ciclos, …). |
+| `.kaif/kaif.json` | El marcador de despliegue: versión, esfera, agente, tracking. |
+
+## Registro del despliegue
+
+| Campo | Valor |
+|-------|-------|
+| **Versión de KAIF** | `<X.Y>` |
+| **Inyectado el** | `<AAAA-MM-DD>` |
+| **Cómo fue la inyección** | `<una o dos líneas: desempaquetado mecánico rápido, o flujo respetuoso por etapas; cualquier cosa notable>` |
+| **Esfera** | `<programming / science / design / business / …>` |
+| **Sistemas de agente** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **Idioma de trabajo** | `<el idioma del propietario>` |
+| **Tracking** | `<origin / fork>` — `<URL del repo origin>` |
+
+## Vivir con KAIF (ciclo de vida)
+
+`/kaif-version` (buscar actualizaciones) · `/kaif-update` (migración respetuosa desde origin) ·
+`/kaif-fork` (evolucionar el suyo propio) · `/kaif-switch-origin` · `/kaif-remove` (el parcial conserva
+sus artefactos, o completo — siempre respetuoso). Respaldado por los handles npm `kaif:*`.
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## Una nota del autor
+
+> KAIF fue concebido y construido por necesidad por **Krinik (Mikalai Kryvusha / Николай Кривуша)** durante
+> sesiones de vibe-coding con Claude sobre un producto de software, a finales de un caluroso junio de 2026,
+> en Minsk. **El cumpleaños de KAIF es el 30 de junio de 2026.**
+
+*(Texto original, en ruso — canónico:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/es/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — planes detallados paso a paso
+
+Planes detallados de piezas de trabajo concretas: pasos individuales del plan maestro, features, ideas,
+bugs, investigaciones, procedimientos. El **`MASTER_PLAN.md`** (raíz del proyecto) es la hoja de ruta de
+alto nivel; `plans/` contiene los planes ampliados que implementan sus pasos. Un `NN_<nombre>.md` por plan.
+
+**Para el humano (propietario):** no tiene que escribir aquí — los planes suelen ser del agente. Puede
+dejar un plan si quiere dirigir *cómo* se hace algo. Léalos para ver el enfoque previsto del agente antes
+de que lo ejecute.
+
+**Para el agente de IA:** antes de un trabajo no trivial, escriba aquí un plan corto y sígalo. Numere los
+archivos (`NN_<nombre>.md`). Un plan terminado y verificado recibe la etiqueta `DONE` en su nombre
+(`git mv NN_x.md NN_DONE_x.md`) más una sección de estado. El material de referencia (no una tarea
+cerrable) no se etiqueta con DONE.
+``````
+
+> **FILE: `templates/languages/es/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — base de conocimiento para las cuestiones grandes y difíciles
+
+Apuntes y conclusiones destiladas sobre cuestiones grandes y complejas: análisis de investigaciones,
+experiencia acumulada, información de referencia importante obtenida con trabajo real y que no debe
+evaporarse. Un `NN_<nombre>.md` por tema de investigación.
+
+**Para el humano (propietario):** el lugar donde encontrar el trasfondo profundo de las decisiones — por
+qué se eligió un enfoque, qué se descubrió sobre un problema difícil. Puede señalar un tema que quiera
+investigar.
+
+**Para el agente de IA:** cuando una cuestión sea lo bastante grande como para que sus conclusiones
+sobrevivan a la tarea actual — escriba aquí un apunte (fuentes crudas → análisis → conclusiones/hipótesis).
+Refiérase a él desde el bug/plan/idea que originó la investigación (DRY — no re-investigue). Un apunte de
+investigación es una **referencia viva**, no una tarea cerrable: no se etiqueta con `DONE` y se actualiza a
+medida que crece la comprensión.
+``````
+
+> **FILE: `templates/languages/es/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "«continúa», «continuemos», «retoma», «¿dónde nos quedamos?»",
+  "pause": "«pausa», «hagamos una pausa», «cierra la sesión», «guarda el progreso», «fija el estado»",
+  "autoloop": "«trabaja solo», «piloto automático», «muele el backlog», «lanza el ciclo autónomo»",
+  "dayloop": "«ciclo diurno», «trabaja solo, estoy ocupado»",
+  "nightloop": "«ciclo nocturno», «trabaja hasta la mañana»",
+  "refresh-context": "«refresca el contexto», «relee los documentos», «rearma el backlog»",
+  "check-backlog": "«revisa el backlog», «¿qué queda?», «marca lo hecho con DONE»",
+  "experience": "«recuerda la experiencia», «consulta la experiencia», «apunta la lección»",
+  "report-bug": "«registra el bug», «reporta este bug», «anota este bug»",
+  "bug-research": "«investiga el bug», «encuentra la causa», «deja de probar a ciegas»",
+  "propose-idea": "«propón una idea», «registra la idea»",
+  "interview": "«hazme una entrevista», «pregúntame sobre la bifurcación», «entrevista»",
+  "revision": "«revisa el plan maestro», «reconstruye el plan desde la meta»",
+  "fix-vision": "«fija la visión», «actualiza la visión desde el chat»",
+  "what-next": "«¿qué sigue?», «¿y ahora qué?», «propón los próximos pasos»",
+  "help-kaif": "«cuéntame sobre KAIF», «cómo usar KAIF», «ayuda de KAIF»",
+  "release": "«haz un release», «publica una nueva versión», «lánzalo»",
+  "kaif-version": "«versión de KAIF», «¿hay actualización del framework?»",
+  "kaif-update": "«actualiza KAIF», «migra el framework»",
+  "kaif-fork": "«haz un fork de KAIF para mí», «haz mi propio KAIF»",
+  "kaif-switch-origin": "«vuelve al KAIF oficial», «vuelve a origin»",
+  "kaif-remove": "«elimina KAIF», «quita el framework»",
+  "fable-method": "«según el método Fable», «aplica el método fable», «resuélvelo como Fable»",
+  "fable-loop": "«corre el ciclo fable», «hazlo como lo haría Fable»",
+  "fable-judge": "«juzga el trabajo», «verifica lo que hizo», «¿de verdad funcionó?»",
+  "fable-domain": "«haz una habilidad para el sector», «añade un dominio al método fable»"
+}
+``````
+
+> **FILE: `templates/languages/fr/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — défauts, difficultés, casses
+
+Un document par défaut : symptôme, reproduction déterministe, forensique, cause racine / hypothèses,
+historique de correction, statut. Le backlog durable de bugs de l'agent lui-même — rien ne se perd, et
+n'importe quel bug peut être repris à froid par une session future. Un `NN_<nom>.md` par bug.
+
+**Pour l'humain (propriétaire) :** vous pouvez déposer un bug ici en mots simples (ce qui ne va pas,
+comment le reproduire) ; l'agent le structurera. Parcourez ce répertoire pour voir les défauts connus et
+leur statut.
+
+**Pour l'agent IA :** quand vous heurtez un défaut pendant le travail/les tests, déposez-le ici selon le
+canon (compétence : `/report-bug` ; méthode : `BUG_FIXING_FRAMEWORK.md`) — même les petits. Tant qu'il est
+ouvert, pas d'étiquette `DONE`. Une fois corrigé **et vérifié**, `git mv NN_x.md NN_DONE_x.md` et ajoutez
+une section `## ✅ STATUS: DONE (date)`. Après 3 tentatives aveugles de correction échouées, arrêtez et
+passez à la recherche (`/bug-research`).
+``````
+
+> **FILE: `templates/languages/fr/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL (la vision)
+
+> **Qui le remplit :** l'humain propriétaire (le visionnaire). **Langue :** la langue de travail du propriétaire.
+> **Quand :** idéalement *avant* de déployer KAIF — l'agent oriente tout le déploiement (plan directeur,
+> sphère, terminologie) autour de ce document. S'il manque au moment du déploiement, KAIF fonctionne quand
+> même, mais l'agent devra réinterpréter plus tard l'enveloppe déjà déployée selon le sens du projet — du
+> travail en plus. Mieux vaut l'écrire d'avance.
+>
+> Ceci est une **référence vivante**, pas une tâche — jamais marquée `DONE`. Mettez-la à jour chaque fois
+> que la vision se précise.
+
+---
+
+## Ce que je veux — en un paragraphe
+
+`<En langage simple : que doit-il exister quand ce projet sera « terminé » ? Quel est le résultat final ?
+Pour qui, et que leur permet-il de faire ? Écrivez en visionnaire, pas en implémenteur — le *quoi* et le
+*pourquoi*, pas le *comment*. Quelques phrases honnêtes valent mieux qu'une spécification léchée.>`
+
+## Pourquoi c'est important / le problème résolu
+
+`<Quelle douleur ou opportunité y a-t-il derrière ? Qu'est-ce qui ne va pas dans le monde d'aujourd'hui que
+ceci corrige ?>`
+
+## À quoi ressemble le succès
+
+`<Des signes concrets que le but est atteint — l'état final observable. « Un utilisateur peut … »,
+« Le résultat est … ». Listez les quelques éléments qui vous feraient dire « oui, c'est ça ».>`
+
+## Limites — ce que ce n'est PAS
+
+`<Explicitement hors périmètre. Nommer les non-buts empêche la dérive autant que nommer les buts.>`
+
+## Contraintes et préférences (optionnel)
+
+`<Contraintes dures (plateforme, budget, délai, technologies imposées/interdites) et préférences douces
+(goût, style, ton). Tout ce que l'agent doit respecter sans qu'on le lui répète.>`
+
+---
+
+> **Comment l'utiliser (pour l'agent) :** lisez `GOAL.md` en premier ; laissez-le guider la sphère, la
+> terminologie et le `MASTER_PLAN.md` que vous en dérivez (compétence : `/revision`). N'inventez pas de
+> vision ici — si le but est flou ou vide, demandez au propriétaire de le remplir (ou ouvrez un
+> `/interview`). Ce document appartient à l'humain.
+``````
+
+> **FILE: `templates/languages/fr/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — tâches de l'agent pour l'humain
+
+Tâches que l'agent demande à l'**humain** — ce qu'il ne peut pas faire lui-même du fait de sa nature
+numérique et sans corps : tester sur du vrai matériel, agir dans le monde physique, utiliser un
+compte/identifiant que seul l'humain possède, faire un achat, observer quelque chose hors ligne. Chaque
+document décrit la tâche avec des étapes concrètes pour l'humain, et recueille en retour ses observations
+et résultats. Un `NN_<nom>.md` chacune.
+
+**Pour l'humain (propriétaire) :** quand l'agent dépose un homework, il a besoin d'un coup de main dans le
+monde physique/hors ligne. Suivez les étapes et écrivez ce que vous avez observé dans le document —
+l'agent lit vos notes et continue.
+
+**Pour l'agent IA :** quand vous êtes bloqué sur quelque chose que seul un humain-avec-un-corps peut faire,
+ne calez pas — écrivez ici un homework avec des étapes claires, minimales et numérotées et une place pour
+les résultats de l'humain, puis continuez avec un autre travail. Quand l'humain rapporte, intégrez les
+résultats et étiquetez le fichier `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/fr/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — propositions de fonctionnalités et d'améliorations
+
+Idées détaillées de *quoi* construire — en général une tranche étroite du projet, décrite assez bien pour
+que l'agent puisse l'implémenter. Le plus souvent écrites par l'**humain**, mais l'agent propose aussi des
+idées. Un `NN_<nom>.md` par idée.
+
+**Pour l'humain (propriétaire) :** c'est votre principal répertoire d'écriture. Déposez-y une idée
+décrivant ce que vous voulez ; l'agent la mettra au propre dans une forme structurée et l'implémentera.
+Une idée est un morceau de la **vision** du produit — l'agent ne l'implémente qu'après votre approbation.
+
+**Pour l'agent IA :** lisez les idées du propriétaire, corrigez les coquilles, restructurez au minimum pour
+la clarté, puis implémentez. Quand *vous* avez une idée qui en vaut la peine, déposez-la ici avec le statut
+« ❓ en attente de l'approbation du propriétaire » (compétence : `/propose-idea`) et ne l'implémentez
+**pas** avant approbation. Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
+et étiquetez-le `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/fr/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — décisions du niveau du propriétaire
+
+Interviews que l'agent mène auprès de l'humain pour trancher des décisions qu'il ne doit **pas** prendre
+seul — UI/UX, bifurcations techniques sérieuses, marque/vision/priorités. Questions fermées A/B/C/D avec la
+recommandation en premier, auxquelles l'humain répond **directement dans le document**. Un
+`interview_NNN_<sujet>.md` chacune.
+
+**Pour l'humain (propriétaire) :** quand l'agent dépose une interview, elle attend **vous**. Remplissez les
+champs « **Réponse :** » directement dans le document (choisissez A/B/C, ou écrivez la vôtre en D). C'est
+ici que vos décisions décisives sont capturées et conservées.
+
+**Pour l'agent IA :** ne déposez une interview que pour de véritables bifurcations du niveau du
+propriétaire (compétence : `/interview`). Les options sont **A/B/C/D** : **A** est toujours le choix
+distillé à travers `PHILOSOPHY.md` (le plus simple/efficace) et marqué **(recommandé)** ; **D** est
+toujours « votre propre réponse » pour le propriétaire. Faites d'abord le travail de fond, tenez-vous à
+1–5 questions, puis mettez en pause et laissez le propriétaire répondre. Tout ce qui est bon marché à
+annuler — décidez vous-même.
+``````
+
+> **FILE: `templates/languages/fr/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# KAIF dans <PROJECT_NAME> — le framework, déployé
+
+> **Ce qu'est ce document.** Une description de haut niveau du **framework KAIF tel que déployé et utilisé
+> dans ce projet** — voyez-le comme la page « technologies et frameworks » du projet, sur laquelle KAIF est
+> désormais l'une des technologies. Il est écrit par l'agent **après une injection réussie de KAIF** (le
+> noyau auto-extractible est supprimé dès que ce document existe — voir le cycle de vie de KAIF). À partir
+> de là, le travail dans ce projet s'organise *à travers* KAIF, et ce fichier en est le résumé pour les
+> humains.
+>
+> Rédigé dans la langue de travail du propriétaire. **Référence vivante — jamais marquée `DONE`.** Gardez
+> la ligne de version à jour.
+
+---
+
+## Ce qu'est KAIF
+
+KAIF (Krinik AI Framework) est un **framework opérationnel résistant à la perte de contexte et à
+l'autonomie disciplinée pour le tandem humain–IA**. Il externalise la mémoire de travail et la discipline
+de l'agent dans ce dépôt — un petit ensemble de documents markdown, de conventions de répertoires et de
+compétences slash répétables — de sorte que toute nouvelle session de l'agent reprend avec un contexte
+complet, travaille de façon autonome dans des limites claires et accumule la connaissance au lieu de la
+perdre. Ce n'est pas du code ; c'est *un processus capturé sous forme de fichiers qu'un agent lit*.
+
+## Pourquoi il est là — ce qu'il apporte à ce projet
+
+- **Pas de démarrage à froid.** Une nouvelle session lit `AGENT_GUIDE.md` + `STATUS.md` et est productive immédiatement.
+- **Une connaissance qui survit.** Bugs, décisions, recherches et idées deviennent des documents durables, pas du chat perdu.
+- **Une autonomie bornée.** L'agent abat le backlog seul et n'escalade que les décisions du propriétaire.
+- **Une méthode partagée.** Humain = visionnaire (`GOAL.md`), agent = exécutant ; KAIF est l'interface entre les deux.
+
+## Comment ça marche ici — les pièces mobiles
+
+| Pièce | Rôle dans ce projet |
+|-------|---------------------|
+| `AGENT_GUIDE.md` | Le canon que l'agent lit avant chaque tâche. |
+| `PHILOSOPHY.md` | Comment l'agent pense (KISS + Occam + l'ensemble élargi de principes). |
+| `BUG_FIXING_FRAMEWORK.md` | Comment l'agent débogue. |
+| `GOAL.md` / `MASTER_PLAN.md` | La vision, et le chemin par phases vers elle. |
+| `STATUS.md` | L'état vivant — mis à jour après chaque tâche significative. |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Les cartes externe et interne. |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Les répertoires de connaissance (chacun avec son README). |
+| `.claude/skills/` (ou l'équivalent de votre système d'agent) | Les rituels répétables (`/resume`, `/pause`, boucles, …). |
+| `.kaif/kaif.json` | Le marqueur de déploiement : version, sphère, agent, tracking. |
+
+## Journal de déploiement
+
+| Champ | Valeur |
+|-------|--------|
+| **Version de KAIF** | `<X.Y>` |
+| **Injecté le** | `<AAAA-MM-JJ>` |
+| **Comment s'est passée l'injection** | `<une ou deux lignes : dépaquetage mécanique rapide, ou flux respectueux par étapes ; tout élément notable>` |
+| **Sphère** | `<programming / science / design / business / …>` |
+| **Systèmes d'agent** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **Langue de travail** | `<la langue du propriétaire>` |
+| **Tracking** | `<origin / fork>` — `<URL du dépôt origin>` |
+
+## Vivre avec KAIF (cycle de vie)
+
+`/kaif-version` (vérifier les mises à jour) · `/kaif-update` (migration respectueuse depuis l'origin) ·
+`/kaif-fork` (faire évoluer le vôtre) · `/kaif-switch-origin` · `/kaif-remove` (le partiel garde vos
+artefacts, ou complet — toujours respectueux). Appuyé par les handles npm `kaif:*`.
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## Une note de l'auteur
+
+> KAIF a été conçu et construit par nécessité par **Krinik (Mikalai Kryvusha / Николай Кривуша)** lors de
+> sessions de vibe-coding avec Claude sur un produit logiciel, à la fin d'un chaud mois de juin 2026, à
+> Minsk. **L'anniversaire de KAIF est le 30 juin 2026.**
+
+*(Texte original, en russe — canonique :)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/fr/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — plans détaillés pas à pas
+
+Plans détaillés de morceaux de travail précis : étapes individuelles du plan directeur, fonctionnalités,
+idées, bugs, recherches, procédures. Le **`MASTER_PLAN.md`** (racine du projet) est la feuille de route de
+haut niveau ; `plans/` contient les plans rapprochés qui implémentent ses étapes. Un `NN_<nom>.md` par plan.
+
+**Pour l'humain (propriétaire) :** vous n'êtes pas obligé d'écrire ici — les plans sont en général ceux de
+l'agent. Vous pouvez déposer un plan si vous voulez orienter *comment* quelque chose est fait. Lisez-les
+pour voir l'approche prévue par l'agent avant qu'il l'exécute.
+
+**Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Numérotez les
+fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
+(`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
+fermable) n'est pas étiqueté DONE.
+``````
+
+> **FILE: `templates/languages/fr/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — base de connaissance pour les grandes questions difficiles
+
+Notes et conclusions distillées sur les grandes questions complexes : analyses de recherches, expérience
+accumulée, informations de référence importantes obtenues par un vrai travail et qui ne doivent pas
+s'évaporer. Un `NN_<nom>.md` par sujet de recherche.
+
+**Pour l'humain (propriétaire) :** l'endroit où trouver l'arrière-plan profond des décisions — pourquoi une
+approche a été choisie, ce qui a été découvert sur un problème difficile. Vous pouvez indiquer un sujet que
+vous voulez faire étudier.
+
+**Pour l'agent IA :** quand une question est assez grande pour que ses conclusions survivent à la tâche en
+cours — écrivez ici une note (sources brutes → analyse → conclusions/hypothèses). Référencez-la depuis le
+bug/plan/idée qui a engendré la recherche (DRY — ne re-cherchez pas). Une note de recherche est une
+**référence vivante**, pas une tâche fermable : jamais étiquetée `DONE`, mise à jour à mesure que la
+compréhension grandit.
+``````
+
+> **FILE: `templates/languages/fr/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "« continue », « reprenons », « reprends », « où en étions-nous ? »",
+  "pause": "« pause », « faisons une pause », « clôture la session », « sauvegarde la progression », « fige le statut »",
+  "autoloop": "« travaille seul », « pilote automatique », « abats le backlog », « lance la boucle autonome »",
+  "dayloop": "« boucle de jour », « travaille seul, je suis occupé »",
+  "nightloop": "« boucle de nuit », « travaille jusqu'au matin »",
+  "refresh-context": "« rafraîchis le contexte », « relis les documents », « reconstruis le backlog »",
+  "check-backlog": "« vérifie le backlog », « que reste-t-il ? », « marque le terminé en DONE »",
+  "experience": "« rappelle l'expérience », « consulte l'expérience », « note la leçon »",
+  "report-bug": "« enregistre le bug », « signale ce bug », « note ce bug »",
+  "bug-research": "« enquête sur le bug », « trouve la cause », « arrête d'essayer à l'aveugle »",
+  "propose-idea": "« propose une idée », « dépose l'idée »",
+  "interview": "« fais-moi une interview », « pose-moi les questions de la bifurcation », « interview »",
+  "revision": "« révise le plan directeur », « reconstruis le plan depuis le but »",
+  "fix-vision": "« fige la vision », « mets à jour la vision depuis le chat »",
+  "what-next": "« et ensuite ? », « quoi maintenant ? », « propose les prochaines étapes »",
+  "help-kaif": "« parle-moi de KAIF », « comment utiliser KAIF », « aide KAIF »",
+  "release": "« fais une release », « publie une nouvelle version », « expédie »",
+  "kaif-version": "« version de KAIF », « y a-t-il une mise à jour du framework ? »",
+  "kaif-update": "« mets à jour KAIF », « migre le framework »",
+  "kaif-fork": "« forke KAIF pour moi », « fais mon propre KAIF »",
+  "kaif-switch-origin": "« reviens au KAIF officiel », « rebranche sur l'origin »",
+  "kaif-remove": "« supprime KAIF », « retire le framework »",
+  "fable-method": "« selon la méthode Fable », « applique la méthode fable », « résous ça comme Fable »",
+  "fable-loop": "« lance la boucle fable », « fais comme Fable le ferait »",
+  "fable-judge": "« juge le travail », « vérifie ce qu'il a fait », « ça a vraiment marché ? »",
+  "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »"
+}
+``````
+
+> **FILE: `templates/languages/hi/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — दोष, कठिनाइयाँ, टूट-फूट
+
+प्रति दोष एक दस्तावेज़: लक्षण, नियतात्मक पुनरुत्पादन, फोरेंसिक, मूल कारण / परिकल्पनाएँ, सुधार इतिहास,
+स्थिति। एजेंट का अपना टिकाऊ बग-बैकलॉग — कुछ भी खोता नहीं, और कोई भी बग भविष्य के सत्र द्वारा शून्य से
+उठाया जा सकता है। प्रति बग एक `NN_<naam>.md`।
+
+**मानव (स्वामी) के लिए:** आप यहाँ सरल शब्दों में बग दर्ज कर सकते हैं (क्या गलत है, कैसे दोहराएँ);
+एजेंट उसे संरचित करेगा। ज्ञात दोष और उनकी स्थिति देखने के लिए इस डायरेक्टरी को देखें।
+
+**AI एजेंट के लिए:** काम/परीक्षण के दौरान दोष मिलने पर उसे कैनन के अनुसार यहाँ दर्ज करें (स्किल:
+`/report-bug`; विधि: `BUG_FIXING_FRAMEWORK.md`) — छोटे दोष भी। खुला रहते हुए `DONE` टैग नहीं। ठीक
+**और सत्यापित** होने पर `git mv NN_x.md NN_DONE_x.md` करें और `## ✅ STATUS: DONE (तिथि)` खंड जोड़ें।
+3 असफल अंधे सुधार-प्रयासों के बाद रुकें और शोध पर जाएँ (`/bug-research`)।
+``````
+
+> **FILE: `templates/languages/hi/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL (विज़न)
+
+> **कौन भरता है:** मानव स्वामी (विज़नरी)। **भाषा:** स्वामी की कार्यभाषा।
+> **कब:** आदर्श रूप से KAIF को डिप्लॉय करने से *पहले* — एजेंट पूरे डिप्लॉयमेंट (मास्टर प्लान, क्षेत्र,
+> शब्दावली) की दिशा इसी दस्तावेज़ के इर्द-गिर्द तय करता है। यदि डिप्लॉय के समय यह न हो, तो KAIF फिर भी
+> काम करता है, लेकिन एजेंट को बाद में पहले से डिप्लॉय हुए ढाँचे को परियोजना के अर्थ के अनुसार दोबारा
+> समझना पड़ेगा — अतिरिक्त काम। पहले से लिख लेना बेहतर है।
+>
+> यह एक **जीवित संदर्भ** है, कोई कार्य नहीं — इसे कभी `DONE` टैग नहीं मिलता। जब भी विज़न स्पष्ट हो,
+> इसे अपडेट करें।
+
+---
+
+## मैं क्या चाहता/चाहती हूँ — एक अनुच्छेद में
+
+`<सरल भाषा में: जब यह परियोजना "पूरी" हो, तो क्या मौजूद होना चाहिए? अंतिम परिणाम क्या है? किसके लिए,
+और वह उन्हें क्या करने देता है? विज़नरी की तरह लिखें, कार्यान्वयनकर्ता की तरह नहीं — *क्या* और *क्यों*,
+न कि *कैसे*। कुछ ईमानदार वाक्य किसी चमकदार स्पेसिफिकेशन से बेहतर हैं।>`
+
+## यह क्यों मायने रखता है / यह कौन-सी समस्या हल करता है
+
+`<इसके पीछे कौन-सा दर्द या अवसर है? आज की दुनिया में क्या गलत है जिसे यह ठीक करता है?>`
+
+## सफलता कैसी दिखती है
+
+`<लक्ष्य पूरा होने के ठोस संकेत — अवलोकनीय अंतिम स्थिति। "उपयोगकर्ता … कर सकता है", "परिणाम … है"।
+वे थोड़ी-सी चीज़ें सूचीबद्ध करें जिन्हें देखकर आप कहेंगे "हाँ, यही है"।>`
+
+## सीमाएँ — यह क्या NAHI है
+
+`<स्पष्ट रूप से दायरे से बाहर। गैर-लक्ष्यों का नाम लेना उतना ही भटकाव रोकता है जितना लक्ष्यों का।>`
+
+## बाधाएँ और प्राथमिकताएँ (वैकल्पिक)
+
+`<कठोर बाधाएँ (प्लेटफ़ॉर्म, बजट, समय-सीमा, अनिवार्य/वर्जित तकनीक) और नरम प्राथमिकताएँ (रुचि, शैली,
+लहजा)। वह सब कुछ जिसका एजेंट को बिना दोहराए सम्मान करना चाहिए।>`
+
+---
+
+> **इसका उपयोग कैसे करें (एजेंट के लिए):** पहले `GOAL.md` पढ़ें; इसे क्षेत्र, शब्दावली और इससे व्युत्पन्न
+> `MASTER_PLAN.md` का मार्गदर्शन करने दें (स्किल: `/revision`)। यहाँ विज़न न गढ़ें — यदि लक्ष्य अस्पष्ट
+> या खाली है, तो स्वामी से भरने को कहें (या `/interview` खोलें)। यह दस्तावेज़ मनुष्य का है।
+``````
+
+> **FILE: `templates/languages/hi/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — एजेंट की ओर से मानव के लिए कार्य
+
+वे कार्य जो एजेंट **मानव** से करने का अनुरोध करता है — जो वह अपनी डिजिटल, देहहीन प्रकृति के कारण स्वयं
+नहीं कर सकता: वास्तविक हार्डवेयर पर परीक्षण, भौतिक दुनिया में कार्य, केवल मानव के पास मौजूद
+खाते/क्रेडेंशियल का उपयोग, खरीदारी, ऑफ़लाइन अवलोकन। प्रत्येक दस्तावेज़ मानव के लिए ठोस चरणों में कार्य
+का वर्णन करता है और उसके अवलोकन व परिणाम वापस एकत्र करता है। प्रत्येक के लिए एक `NN_<naam>.md`।
+
+**मानव (स्वामी) के लिए:** जब एजेंट homework दर्ज करे, तो उसे भौतिक/ऑफ़लाइन दुनिया में मदद चाहिए।
+चरणों का पालन करें और जो देखा उसे दस्तावेज़ में वापस लिखें — एजेंट आपके नोट पढ़कर आगे बढ़ेगा।
+
+**AI एजेंट के लिए:** जब आप ऐसी चीज़ पर अटकें जो केवल शरीरधारी मानव कर सकता है, तो ठहरें नहीं — यहाँ
+स्पष्ट, न्यूनतम, क्रमांकित चरणों और मानव के परिणामों के लिए जगह के साथ homework लिखें, फिर दूसरा काम
+जारी रखें। मानव के बताने पर परिणाम शामिल करें और फ़ाइल को `DONE` टैग दें
+(`git mv NN_x.md NN_DONE_x.md`)।
+``````
+
+> **FILE: `templates/languages/hi/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — फ़ीचर और सुधार प्रस्ताव
+
+*क्या* बनाना है, इसके विस्तृत विचार — आमतौर पर परियोजना का एक संकीर्ण हिस्सा, इतनी अच्छी तरह वर्णित कि
+एजेंट उससे कार्यान्वयन कर सके। अधिकतर **मानव** लिखता है, पर एजेंट भी विचार प्रस्तावित करता है।
+प्रति विचार एक `NN_<naam>.md`।
+
+**मानव (स्वामी) के लिए:** यह आपकी मुख्य लेखन डायरेक्टरी है। यहाँ अपनी इच्छा का वर्णन करता विचार रखें;
+एजेंट उसे साफ़ संरचित रूप में सँवारेगा और लागू करेगा। विचार उत्पाद **विज़न** का हिस्सा है — एजेंट इसे
+केवल आपकी स्वीकृति के बाद लागू करता है।
+
+**AI एजेंट के लिए:** स्वामी के विचार पढ़ें, वर्तनी सुधारें, स्पष्टता के लिए न्यूनतम पुनर्संरचना करें, फिर
+लागू करें। जब *आपके* पास कोई सार्थक विचार हो, तो उसे यहाँ "❓ स्वामी की स्वीकृति की प्रतीक्षा" स्थिति के
+साथ दर्ज करें (स्किल: `/propose-idea`) और स्वीकृति तक **लागू न करें**। विचार लागू करने के बाद, स्थिति और
+तिथि उसकी फ़ाइल में लिखें और `DONE` टैग दें (`git mv NN_x.md NN_DONE_x.md`)।
+``````
+
+> **FILE: `templates/languages/hi/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — स्वामी-स्तर के निर्णय
+
+एजेंट द्वारा मानव से किए जाने वाले साक्षात्कार, उन निर्णयों को तय करने के लिए जो उसे **अकेले नहीं** लेने
+चाहिए — UI/UX, गंभीर तकनीकी दोराहे, ब्रांड/विज़न/प्राथमिकताएँ। बंद A/B/C/D प्रश्न, अनुशंसा सबसे पहले,
+मानव **सीधे दस्तावेज़ में** उत्तर देता है। प्रत्येक के लिए एक `interview_NNN_<vishay>.md`।
+
+**मानव (स्वामी) के लिए:** जब एजेंट साक्षात्कार दर्ज करे, तो वह **आपकी** प्रतीक्षा में है। दस्तावेज़ में
+"**उत्तर:**" फ़ील्ड सीधे भरें (A/B/C चुनें, या D में अपना लिखें)। आपके निर्णायक फ़ैसले यहाँ दर्ज और
+संरक्षित होते हैं।
+
+**AI एजेंट के लिए:** केवल सचमुच स्वामी-स्तर के दोराहों के लिए साक्षात्कार दर्ज करें (स्किल:
+`/interview`)। विकल्प **A/B/C/D** हैं: **A** हमेशा `PHILOSOPHY.md` से आसुत विकल्प (सबसे सरल/प्रभावी)
+और **(अनुशंसित)** चिह्नित; **D** हमेशा स्वामी का "अपना उत्तर"। पहले आधार-कार्य करें, 1–5 प्रश्न रखें,
+फिर रुकें और स्वामी को उत्तर देने दें। जो कुछ भी सस्ते में पलटा जा सकता है — स्वयं तय करें।
+``````
+
+> **FILE: `templates/languages/hi/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> में KAIF — डिप्लॉय किया गया फ्रेमवर्क
+
+> **यह दस्तावेज़ क्या है।** **इस परियोजना में डिप्लॉय और उपयोग हो रहे KAIF फ्रेमवर्क** का उच्च-स्तरीय
+> विवरण — इसे परियोजना का "तकनीकें और फ्रेमवर्क" पृष्ठ समझें, जिस पर KAIF अब तकनीकों में से एक है।
+> इसे एजेंट **KAIF के सफल इंजेक्शन के बाद** लिखता है (यह दस्तावेज़ बनते ही स्व-निष्कर्षण कोर हटा दिया
+> जाता है — KAIF जीवनचक्र देखें)। इसके बाद इस परियोजना का काम KAIF *के माध्यम से* संगठित होता है,
+> और यह फ़ाइल उसका मानव-मुखी सार है।
+>
+> स्वामी की कार्यभाषा में लिखा गया। **जीवित संदर्भ — कभी `DONE` टैग नहीं।** संस्करण पंक्ति को ताज़ा रखें।
+
+---
+
+## KAIF क्या है
+
+KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प्रति प्रतिरोधी, अनुशासित स्वायत्तता वाला मानव–AI जोड़ी के
+लिए परिचालन फ्रेमवर्क** है। यह एजेंट की कार्यशील स्मृति और अनुशासन को इस रिपॉज़िटरी में बाहरी रूप देता
+है — मार्कडाउन दस्तावेज़ों का एक छोटा सेट, डायरेक्टरी परंपराएँ और दोहराने योग्य स्लैश-स्किल्स — ताकि
+एजेंट का हर नया सत्र पूर्ण संदर्भ के साथ फिर से शुरू हो, स्पष्ट सीमाओं में स्वायत्त रूप से काम करे, और
+ज्ञान खोने की बजाय संचित करे। यह कोड नहीं है; यह *एजेंट द्वारा पढ़ी जाने वाली फ़ाइलों के रूप में दर्ज
+प्रक्रिया* है।
+
+## यह यहाँ क्यों है — यह इस परियोजना को क्या देता है
+
+- **कोई कोल्ड स्टार्ट नहीं।** नया सत्र `AGENT_GUIDE.md` + `STATUS.md` पढ़ता है और तुरंत उत्पादक हो जाता है।
+- **ज्ञान जो बचा रहता है।** बग, निर्णय, शोध और विचार टिकाऊ दस्तावेज़ बन जाते हैं, खोई हुई चैट नहीं।
+- **सीमित स्वायत्तता।** एजेंट अकेले बैकलॉग निपटाता है और केवल स्वामी-स्तर के निर्णय ऊपर भेजता है।
+- **साझा पद्धति।** मानव = विज़नरी (`GOAL.md`), एजेंट = निष्पादक; KAIF दोनों के बीच का इंटरफ़ेस है।
+
+## यह यहाँ कैसे काम करता है — चलायमान हिस्से
+
+| हिस्सा | इस परियोजना में भूमिका |
+|--------|------------------------|
+| `AGENT_GUIDE.md` | वह कैनन जिसे एजेंट हर कार्य से पहले पढ़ता है। |
+| `PHILOSOPHY.md` | एजेंट कैसे सोचता है (KISS + ओकम + विस्तारित सिद्धांत सेट)। |
+| `BUG_FIXING_FRAMEWORK.md` | एजेंट कैसे डिबग करता है। |
+| `GOAL.md` / `MASTER_PLAN.md` | विज़न, और उस तक चरणबद्ध रास्ता। |
+| `STATUS.md` | जीवित स्थिति — हर महत्वपूर्ण कार्य के बाद अपडेट। |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | बाहरी और आंतरिक नक्शे। |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | ज्ञान डायरेक्टरियाँ (हर एक का अपना README)। |
+| `.claude/skills/` (या आपके एजेंट सिस्टम का समकक्ष) | दोहराने योग्य अनुष्ठान (`/resume`, `/pause`, लूप, …)। |
+| `.kaif/kaif.json` | डिप्लॉय मार्कर: संस्करण, क्षेत्र, एजेंट, ट्रैकिंग। |
+
+## डिप्लॉयमेंट रिकॉर्ड
+
+| फ़ील्ड | मान |
+|--------|-----|
+| **KAIF संस्करण** | `<X.Y>` |
+| **इंजेक्ट किया गया** | `<YYYY-MM-DD>` |
+| **इंजेक्शन कैसा रहा** | `<एक-दो पंक्तियाँ: तेज़ यांत्रिक अनपैकिंग, या सम्मानजनक चरणबद्ध प्रवाह; कुछ भी उल्लेखनीय>` |
+| **क्षेत्र** | `<programming / science / design / business / …>` |
+| **एजेंट सिस्टम** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **कार्यभाषा** | `<स्वामी की भाषा>` |
+| **ट्रैकिंग** | `<origin / fork>` — `<origin रिपॉज़िटरी URL>` |
+
+## KAIF के साथ जीवन (जीवनचक्र)
+
+`/kaif-version` (अपडेट जाँचें) · `/kaif-update` (origin से सम्मानजनक माइग्रेशन) · `/kaif-fork`
+(अपना विकसित करें) · `/kaif-switch-origin` · `/kaif-remove` (आंशिक आपकी कलाकृतियाँ रखता है, या पूर्ण —
+हमेशा सम्मानजनक)। npm हैंडल `kaif:*` द्वारा समर्थित।
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## लेखक की ओर से एक नोट
+
+> KAIF को आवश्यकता के चलते **Krinik (Mikalai Kryvusha / Николай Кривуша)** ने गढ़ा और बनाया —
+> 2026 के गर्म जून के अंत में, मिन्स्क में, एक सॉफ़्टवेयर उत्पाद पर Claude के साथ vibe-coding सत्रों के
+> दौरान। **KAIF का जन्मदिन 30 जून 2026 है।**
+
+*(मूल पाठ, रूसी — विहित:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/hi/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — विस्तृत चरण-दर-चरण योजनाएँ
+
+काम के अलग-अलग हिस्सों की विस्तृत योजनाएँ: मास्टर प्लान के व्यक्तिगत चरण, फ़ीचर, विचार, बग, शोध,
+प्रक्रियाएँ। **`MASTER_PLAN.md`** (परियोजना रूट) उच्च-स्तरीय रोडमैप है; `plans/` में उसके चरणों को लागू
+करने वाली विस्तृत योजनाएँ रहती हैं। प्रति योजना एक `NN_<naam>.md`।
+
+**मानव (स्वामी) के लिए:** आपको यहाँ लिखना ज़रूरी नहीं — योजनाएँ आमतौर पर एजेंट की होती हैं। यदि आप
+बताना चाहते हैं कि कुछ *कैसे* किया जाए, तो योजना रख सकते हैं। निष्पादन से पहले एजेंट का इरादा देखने के
+लिए इन्हें पढ़ें।
+
+**AI एजेंट के लिए:** गैर-तुच्छ काम से पहले यहाँ एक छोटी योजना लिखें और उसका पालन करें। फ़ाइलों को
+क्रमांकित करें (`NN_<naam>.md`)। पूर्ण और सत्यापित योजना के नाम में `DONE` टैग जोड़ें
+(`git mv NN_x.md NN_DONE_x.md`) और स्थिति खंड जोड़ें। संदर्भ सामग्री (बंद करने योग्य कार्य नहीं) को
+DONE टैग नहीं मिलता।
+``````
+
+> **FILE: `templates/languages/hi/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — बड़े कठिन प्रश्नों का ज्ञान-आधार
+
+बड़े, जटिल प्रश्नों पर नोट्स और आसुत निष्कर्ष: शोध-विश्लेषण, संचित अनुभव, वास्तविक श्रम से प्राप्त
+महत्वपूर्ण संदर्भ जानकारी जो वाष्पित नहीं होनी चाहिए। प्रति शोध-विषय एक `NN_<naam>.md`।
+
+**मानव (स्वामी) के लिए:** निर्णयों की गहरी पृष्ठभूमि खोजने की जगह — कोई दृष्टिकोण क्यों चुना गया, किसी
+कठिन समस्या पर क्या पता चला। आप कोई विषय भी बता सकते हैं जिस पर शोध चाहते हैं।
+
+**AI एजेंट के लिए:** जब कोई प्रश्न इतना बड़ा हो कि उसके निष्कर्ष वर्तमान कार्य से आगे जिएँ — यहाँ नोट
+लिखें (कच्चे स्रोत → विश्लेषण → निष्कर्ष/परिकल्पनाएँ)। जिस बग/योजना/विचार ने शोध को जन्म दिया, उससे
+इसका संदर्भ दें (DRY — दोबारा शोध न करें)। शोध-नोट **जीवित संदर्भ** है, बंद करने योग्य कार्य नहीं:
+`DONE` टैग नहीं मिलता, समझ बढ़ने के साथ अपडेट होता है।
+``````
+
+> **FILE: `templates/languages/hi/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "\"जारी रखो\", \"आगे बढ़ो\", \"काम फिर शुरू करो\", \"हम कहाँ रुके थे?\"",
+  "pause": "\"रुको\", \"पॉज़ करो\", \"सत्र समेटो\", \"प्रगति सहेजो\", \"स्थिति दर्ज करो\"",
+  "autoloop": "\"खुद काम करो\", \"ऑटोपायलट\", \"बैकलॉग निपटाओ\", \"स्वायत्त लूप चलाओ\"",
+  "dayloop": "\"दिन का लूप\", \"खुद काम करो, मैं व्यस्त हूँ\"",
+  "nightloop": "\"रात का लूप\", \"सुबह तक काम करो\"",
+  "refresh-context": "\"संदर्भ ताज़ा करो\", \"दस्तावेज़ दोबारा पढ़ो\", \"बैकलॉग फिर बनाओ\"",
+  "check-backlog": "\"बैकलॉग जाँचो\", \"क्या बचा है?\", \"पूरे हुए पर DONE लगाओ\"",
+  "experience": "\"अनुभव याद करो\", \"अनुभव देखो\", \"सबक़ दर्ज करो\"",
+  "report-bug": "\"बग दर्ज करो\", \"यह बग रिपोर्ट करो\", \"यह बग लिखो\"",
+  "bug-research": "\"बग की जाँच करो\", \"कारण खोजो\", \"अंधाधुंध कोशिशें बंद करो\"",
+  "propose-idea": "\"कोई विचार सुझाओ\", \"विचार दर्ज करो\"",
+  "interview": "\"साक्षात्कार लो\", \"इस दोराहे पर सवाल पूछो\", \"इंटरव्यू\"",
+  "revision": "\"मास्टर प्लान की समीक्षा करो\", \"लक्ष्य से योजना फिर बनाओ\"",
+  "fix-vision": "\"विज़न दर्ज करो\", \"चैट से विज़न अपडेट करो\"",
+  "what-next": "\"आगे क्या?\", \"अब क्या?\", \"अगले कदम सुझाओ\"",
+  "help-kaif": "\"KAIF के बारे में बताओ\", \"KAIF कैसे इस्तेमाल करें\", \"KAIF सहायता\"",
+  "release": "\"रिलीज़ करो\", \"नया संस्करण प्रकाशित करो\", \"शिप करो\"",
+  "kaif-version": "\"KAIF संस्करण\", \"फ्रेमवर्क का अपडेट है क्या?\"",
+  "kaif-update": "\"KAIF अपडेट करो\", \"फ्रेमवर्क माइग्रेट करो\"",
+  "kaif-fork": "\"मेरे लिए KAIF फ़ोर्क करो\", \"मेरा अपना KAIF बनाओ\"",
+  "kaif-switch-origin": "\"आधिकारिक KAIF पर लौटो\", \"origin पर वापस जाओ\"",
+  "kaif-remove": "\"KAIF हटाओ\", \"फ्रेमवर्क निकालो\"",
+  "fable-method": "\"Fable विधि से\", \"fable विधि लागू करो\", \"Fable की तरह हल करो\"",
+  "fable-loop": "\"fable लूप चलाओ\", \"जैसे Fable करता वैसे करो\"",
+  "fable-judge": "\"काम को परखो\", \"जो किया उसकी जाँच करो\", \"सचमुच काम किया?\"",
+  "fable-domain": "\"इस क्षेत्र के लिए स्किल बनाओ\", \"fable विधि में डोमेन जोड़ो\""
+}
+``````
+
+> **FILE: `templates/languages/ja/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — 欠陥、困難、破損
+
+欠陥ごとに 1 文書：症状、決定論的な再現、フォレンジック、根本原因／仮説、修正履歴、ステータス。
+エージェント自身の永続的なバグバックログ — 何も失われず、どのバグも将来のセッションがゼロから
+引き継げます。バグごとに 1 つの `NN_<名前>.md`。
+
+**人間（オーナー）へ：** 平易な言葉でここにバグを登録できます（何が悪いか、どう再現するか）。
+エージェントが構造化します。既知の欠陥とそのステータスはこのディレクトリで確認できます。
+
+**AI エージェントへ：** 作業／テスト中に欠陥に当たったら、規範に従ってここに登録すること
+（スキル: `/report-bug`。方法: `BUG_FIXING_FRAMEWORK.md`）— 小さなものでも。オープンな間は
+`DONE` タグなし。修正**かつ検証**されたら、`git mv NN_x.md NN_DONE_x.md` し、
+`## ✅ STATUS: DONE (日付)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
+切り替える（`/bug-research`）。
+``````
+
+> **FILE: `templates/languages/ja/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL（ビジョン）
+
+> **記入者:** 人間のオーナー（ビジョナリー）。**言語:** オーナーの作業言語。
+> **記入時期:** 理想的には KAIF をデプロイする*前* — エージェントはこの文書を軸にデプロイ全体
+> （マスタープラン、領域、用語）の方向を定めます。デプロイ時に無くても KAIF は機能しますが、
+> エージェントは後から、既にデプロイされたラッパーをプロジェクトの意味に合わせて解釈し直す
+> ことになります — 余計な作業です。先に書いておくのが得策です。
+>
+> これは**生きたリファレンス**であり、タスクではありません — `DONE` タグは付けません。ビジョンが
+> 明確になるたびに更新してください。
+
+---
+
+## 私が望むもの — 一段落で
+
+`<平易な言葉で：このプロジェクトが「完成」したとき、何が存在しているべきか？最終成果は何か？
+誰のためで、その人たちに何を可能にするのか？実装者ではなくビジョナリーとして書く — 「何を」
+「なぜ」であって「どうやって」ではない。磨き上げた仕様書より、正直な数文のほうが価値がある。>`
+
+## なぜ重要か / 解決する問題
+
+`<背後にある痛みや機会は何か？今日の世界の何が間違っていて、これが直すのか？>`
+
+## 成功はどう見えるか
+
+`<目標達成の具体的な兆候 — 観察可能な最終状態。「ユーザーは～できる」「結果は～である」。
+「そう、これだ」と言える数少ない事柄を箇条書きに。>`
+
+## 境界 — これは何では「ない」か
+
+`<明示的にスコープ外のもの。非目標を名指しすることは、目標を名指しするのと同じくらい
+逸脱を防ぐ。>`
+
+## 制約と好み（任意）
+
+`<ハードな制約（プラットフォーム、予算、期限、必須／禁止の技術）とソフトな好み（趣味、
+スタイル、トーン）。二度言われなくてもエージェントが尊重すべきことすべて。>`
+
+---
+
+> **使い方（エージェント向け）:** まず `GOAL.md` を読むこと。領域、用語、そしてそこから導出する
+> `MASTER_PLAN.md` の指針とすること（スキル: `/revision`）。ここでビジョンを発明しないこと —
+> 目標が不明瞭または空なら、オーナーに記入を依頼する（または `/interview` を起こす）。この文書は
+> 人間のものです。
+``````
+
+> **FILE: `templates/languages/ja/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — エージェントから人間への宿題
+
+エージェントが**人間**に頼むタスク — デジタルで身体を持たない性質ゆえに自分ではできないこと：
+実機でのテスト、物理世界での行動、人間だけが持つアカウント／認証情報の使用、購入、オフラインでの
+観察。各文書は人間向けの具体的なステップでタスクを記述し、人間の観察と結果を回収します。
+それぞれ 1 つの `NN_<名前>.md`。
+
+**人間（オーナー）へ：** エージェントが homework を登録したら、物理／オフライン世界での手助けが
+必要です。ステップに従い、観察したことを文書に書き戻してください — エージェントがあなたのメモを
+読んで続行します。
+
+**AI エージェントへ：** 身体を持つ人間にしかできないことでブロックされたら、停滞しないこと —
+明確で最小限の番号付きステップと、人間の結果を書く場所を備えた homework をここに書き、その後は
+他の作業を続けること。人間が報告したら、結果を取り込み、ファイルに `DONE` タグを付ける
+（`git mv NN_x.md NN_DONE_x.md`）。
+``````
+
+> **FILE: `templates/languages/ja/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — 機能と改善の提案
+
+*何を*作るかの詳細なアイデア — 通常はプロジェクトの狭い一断面で、エージェントが実装できる程度に
+記述されたもの。多くは**人間**が書きますが、エージェントもアイデアを提案します。アイデアごとに
+1 つの `NN_<名前>.md`。
+
+**人間（オーナー）へ：** ここはあなたの主要な執筆ディレクトリです。望むものを記述したアイデアを
+置いてください。エージェントがそれを整った構造に整理し、実装します。アイデアはプロダクトの
+**ビジョン**の一部です — エージェントはあなたの承認後にのみ実装します。
+
+**AI エージェントへ：** オーナーのアイデアを読み、誤字を直し、明瞭さのために最小限に再構成し、
+実装すること。*自分に*価値あるアイデアがあるときは、「❓ オーナーの承認待ち」ステータスでここに
+登録し（スキル: `/propose-idea`）、承認まで**実装しない**こと。アイデアを実装したら、ステータスと
+日付をそのファイルに書き戻し、`DONE` タグを付ける（`git mv NN_x.md NN_DONE_x.md`）。
+``````
+
+> **FILE: `templates/languages/ja/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — オーナーレベルの決定
+
+エージェントが単独で下しては**ならない**決定 — UI/UX、重大な技術的分岐、ブランド／ビジョン／
+優先順位 — を確定するために、エージェントが人間に行うインタビュー。推奨を先頭にした A/B/C/D の
+クローズド質問で、人間が**文書の中で直接**回答します。それぞれ 1 つの
+`interview_NNN_<トピック>.md`。
+
+**人間（オーナー）へ：** エージェントがインタビューを登録したら、それは**あなた**を待っています。
+文書内の「**回答:**」欄を直接埋めてください（A/B/C を選ぶか、D に自分の答えを書く）。あなたの
+運命的な決定はここに記録され保存されます。
+
+**AI エージェントへ：** 本当にオーナーレベルの分岐に対してのみインタビューを登録すること
+（スキル: `/interview`）。選択肢は **A/B/C/D**：**A** は常に `PHILOSOPHY.md` を通して蒸留された
+選択（最もシンプル／効果的）で **（推奨）** と記す。**D** は常にオーナーの「自由回答」。まず
+下調べを済ませ、質問は 1～5 個に保ち、それから一時停止してオーナーに答えてもらう。巻き戻しが
+安いものはすべて — 自分で決めること。
+``````
+
+> **FILE: `templates/languages/ja/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> における KAIF — デプロイ済みフレームワーク
+
+> **この文書について。** **このプロジェクトにデプロイされ使用されている KAIF フレームワーク**の
+> 高レベルな説明 — プロジェクトの「技術とフレームワーク」ページと考えてください。KAIF は今や
+> その技術の一つです。エージェントが **KAIF の注入成功後**に書きます（この文書が存在した時点で
+> 自己展開コアは削除されます — KAIF のライフサイクル参照）。以後、このプロジェクトの作業は KAIF
+> を*通して*組織され、このファイルはその人間向けサマリーです。
+>
+> オーナーの作業言語で記述。**生きたリファレンス — `DONE` タグは付けない。** バージョン行を
+> 最新に保つこと。
+
+---
+
+## KAIF とは
+
+KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を規律づける、人間と AI のタンデムの
+ための運用フレームワーク**です。エージェントのワーキングメモリと規律をこのリポジトリに外部化
+します — 少数の markdown 文書、ディレクトリ規約、繰り返し可能なスラッシュスキル — それにより、
+どの新しいエージェントセッションも完全なコンテキストで再開し、明確な境界の中で自律的に働き、
+知識を失わずに蓄積します。これはコードではありません。*エージェントが読むファイルとして
+記録されたプロセス*です。
+
+## なぜここにあるか — このプロジェクトに与えるもの
+
+- **コールドスタートなし。** 新セッションは `AGENT_GUIDE.md` + `STATUS.md` を読み、即座に生産的になる。
+- **生き残る知識。** バグ、決定、調査、アイデアが失われるチャットではなく永続文書になる。
+- **境界のある自律。** エージェントは一人でバックログを消化し、オーナーレベルの決定のみをエスカレーションする。
+- **共有された方法。** 人間 = ビジョナリー（`GOAL.md`）、エージェント = 実行者。KAIF は両者のインターフェース。
+
+## ここでの仕組み — 構成要素
+
+| 部品 | このプロジェクトでの役割 |
+|------|--------------------------|
+| `AGENT_GUIDE.md` | エージェントが各タスクの前に読む規範。 |
+| `PHILOSOPHY.md` | エージェントの思考法（KISS + オッカム + 拡張原則セット）。 |
+| `BUG_FIXING_FRAMEWORK.md` | エージェントのデバッグ法。 |
+| `GOAL.md` / `MASTER_PLAN.md` | ビジョンと、そこへ至る段階的な道筋。 |
+| `STATUS.md` | 生きた状態 — 重要なタスクごとに更新。 |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部マップと内部マップ。 |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | 知識ディレクトリ（各自の README 付き）。 |
+| `.claude/skills/`（またはご使用のエージェントシステムの同等物） | 繰り返し可能な儀式（`/resume`、`/pause`、ループ等）。 |
+| `.kaif/kaif.json` | デプロイマーカー：バージョン、領域、エージェント、トラッキング。 |
+
+## デプロイ記録
+
+| 項目 | 値 |
+|------|----|
+| **KAIF バージョン** | `<X.Y>` |
+| **注入日** | `<YYYY-MM-DD>` |
+| **注入の経過** | `<1～2行：高速な機械的展開、または段階的で丁寧なフロー。特筆事項があれば>` |
+| **領域** | `<programming / science / design / business / …>` |
+| **エージェントシステム** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **作業言語** | `<オーナーの言語>` |
+| **トラッキング** | `<origin / fork>` — `<origin リポジトリの URL>` |
+
+## KAIF と生きる（ライフサイクル）
+
+`/kaif-version`（更新の確認）· `/kaif-update`（origin からの丁寧な移行）· `/kaif-fork`
+（自分のものとして進化させる）· `/kaif-switch-origin` · `/kaif-remove`（部分削除はあなたの
+成果物を保持、または完全削除 — 常に丁寧に）。npm ハンドル `kaif:*` が支えます。
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## 作者からのノート
+
+> KAIF は **Krinik（Mikalai Kryvusha / Николай Кривуша）**が必要に迫られて構想・構築しました。
+> 2026 年の暑い 6 月末、ミンスクで、あるソフトウェア製品をめぐる Claude との vibe-coding セッション
+> の中で生まれました。**KAIF の誕生日は 2026 年 6 月 30 日です。**
+
+*(原文、ロシア語 — 正典:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/ja/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — 詳細なステップバイステップの計画
+
+個々の作業のための詳細な計画：マスタープランの個別ステップ、機能、アイデア、バグ、調査、手順。
+**`MASTER_PLAN.md`**（プロジェクトルート）が高レベルのロードマップで、`plans/` にはそのステップを
+実装するズームインした計画が入ります。計画ごとに 1 つの `NN_<名前>.md`。
+
+**人間（オーナー）へ：** ここに書く必要はありません — 計画は通常エージェントのものです。何かを
+*どのように*行うかを指示したいときは計画を置いても構いません。実行前にエージェントの意図する
+アプローチを見るために読んでください。
+
+**AI エージェントへ：** 非自明な作業の前に、ここに短い計画を書いてそれに従うこと。ファイルには
+番号を付ける（`NN_<名前>.md`）。完了し検証済みの計画はファイル名に `DONE` タグを入れ
+（`git mv NN_x.md NN_DONE_x.md`）、ステータスセクションを追記する。参照資料（クローズできる
+タスクではないもの）には DONE タグを付けない。
+``````
+
+> **FILE: `templates/languages/ja/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — 大きく難しい問いのための知識ベース
+
+大きく複雑な問いに関するノートと蒸留された結論：調査の分析、蓄積された経験、実際の労力で得られ、
+蒸発させてはならない重要な参照情報。調査テーマごとに 1 つの `NN_<名前>.md`。
+
+**人間（オーナー）へ：** 決定の深い背景を見つける場所です — なぜそのアプローチが選ばれたのか、
+難しい問題について何が判明したのか。調査してほしいテーマを指定することもできます。
+
+**AI エージェントへ：** 問いが、その結論が現在のタスクを超えて生き残るほど大きいときは — ここに
+ノートを書くこと（生のソース → 分析 → 結論／仮説）。調査を生んだバグ／計画／アイデアからそれを
+参照すること（DRY — 再調査しない）。調査ノートは**生きたリファレンス**であり、クローズできる
+タスクではありません：`DONE` タグは付けず、理解が深まるにつれ更新します。
+``````
+
+> **FILE: `templates/languages/ja/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "「続けて」「再開して」「どこまでやった？」「続きから」",
+  "pause": "「一時停止」「セッションを締めて」「進捗を保存して」「状態を固定して」",
+  "autoloop": "「自分で作業して」「オートパイロット」「バックログを消化して」「自律ループを開始」",
+  "dayloop": "「昼ループ」「忙しいから自分で作業して」",
+  "nightloop": "「夜ループ」「朝まで作業して」",
+  "refresh-context": "「コンテキストを更新して」「ドキュメントを読み直して」「バックログを組み直して」",
+  "check-backlog": "「バックログを確認して」「何が残ってる？」「終わったものに DONE を付けて」",
+  "experience": "「経験を思い出して」「経験を確認して」「教訓を書き足して」",
+  "report-bug": "「バグを登録して」「このバグを報告して」「このバグをメモして」",
+  "bug-research": "「バグを調査して」「原因を突き止めて」「当てずっぽうはやめて」",
+  "propose-idea": "「アイデアを提案して」「アイデアを登録して」",
+  "interview": "「インタビューして」「分岐について質問して」「インタビュー」",
+  "revision": "「マスタープランを見直して」「ゴールから計画を組み直して」",
+  "fix-vision": "「ビジョンを固定して」「チャットからビジョンを更新して」",
+  "what-next": "「次は何？」「これからどうする？」「次のステップを提案して」",
+  "help-kaif": "「KAIF について教えて」「KAIF の使い方」「KAIF ヘルプ」",
+  "release": "「リリースして」「新バージョンを公開して」「出荷して」",
+  "kaif-version": "「KAIF のバージョン」「フレームワークの更新はある？」",
+  "kaif-update": "「KAIF を更新して」「フレームワークを移行して」",
+  "kaif-fork": "「KAIF を自分用にフォークして」「自分の KAIF を作って」",
+  "kaif-switch-origin": "「公式の KAIF に戻して」「origin に戻して」",
+  "kaif-remove": "「KAIF を削除して」「フレームワークを外して」",
+  "fable-method": "「Fable メソッドで」「fable メソッドを適用して」「Fable のように解決して」",
+  "fable-loop": "「fable ループを回して」「Fable がやるようにやって」",
+  "fable-judge": "「作業をジャッジして」「やったことを検証して」「本当に動いた？」",
+  "fable-domain": "「この業界向けのスキルを作って」「fable メソッドにドメインを追加して」"
+}
+``````
+
+> **FILE: `templates/languages/pt/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` — defeitos, dificuldades, quebras
+
+Um documento por defeito: sintoma, reprodução determinística, forense, causa raiz / hipóteses, histórico
+de correção, status. O backlog durável de bugs do próprio agente — nada se perde, e qualquer bug pode ser
+retomado a frio por uma sessão futura. Um `NN_<nome>.md` por bug.
+
+**Para o humano (proprietário):** você pode registrar um bug aqui em palavras simples (o que está errado,
+como reproduzir); o agente o estruturará. Navegue neste diretório para ver os defeitos conhecidos e seu
+status.
+
+**Para o agente de IA:** quando encontrar um defeito durante o trabalho/testes, registre-o aqui segundo o
+cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesmo os pequenos. Enquanto aberto,
+sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
+`## ✅ STATUS: DONE (data)`. Após 3 tentativas cegas falhadas de correção, pare e mude para pesquisa
+(`/bug-research`).
+``````
+
+> **FILE: `templates/languages/pt/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL (a visão)
+
+> **Quem preenche:** o humano proprietário (o visionário). **Idioma:** o idioma de trabalho do proprietário.
+> **Quando:** idealmente *antes* de implantar o KAIF — o agente orienta toda a implantação (plano mestre,
+> esfera, terminologia) em torno deste documento. Se estiver ausente no momento da implantação, o KAIF
+> funciona mesmo assim, mas o agente terá de reinterpretar depois o invólucro já implantado segundo o
+> sentido do projeto — trabalho extra. Melhor escrevê-lo antes.
+>
+> Esta é uma **referência viva**, não uma tarefa — nunca é marcada com `DONE`. Atualize-a sempre que a
+> visão se tornar mais nítida.
+
+---
+
+## O que eu quero — em um parágrafo
+
+`<Em linguagem simples: o que deve existir quando este projeto estiver "pronto"? Qual é o resultado final?
+Para quem, e o que lhes permite fazer? Escreva como visionário, não como implementador — o *quê* e o
+*porquê*, não o *como*. Algumas frases honestas valem mais do que uma especificação polida.>`
+
+## Por que importa / o problema que resolve
+
+`<Que dor ou oportunidade está por trás disto? O que está errado no mundo de hoje que isto conserta?>`
+
+## Como é o sucesso
+
+`<Sinais concretos de que a meta foi alcançada — o estado final observável. "Um usuário pode …",
+"O resultado é …". Liste as poucas coisas que fariam você dizer "sim, é isso".>`
+
+## Limites — o que isto NÃO é
+
+`<Explicitamente fora do escopo. Nomear as não-metas evita o desvio tanto quanto nomear as metas.>`
+
+## Restrições e preferências (opcional)
+
+`<Restrições rígidas (plataforma, orçamento, prazo, tecnologia obrigatória/proibida) e preferências suaves
+(gosto, estilo, tom). Tudo o que o agente deve respeitar sem que seja repetido.>`
+
+---
+
+> **Como usar isto (para o agente):** leia o `GOAL.md` primeiro; deixe-o guiar a esfera, a terminologia e
+> o `MASTER_PLAN.md` que você deriva dele (habilidade: `/revision`). Não invente visão aqui — se a meta
+> estiver confusa ou vazia, peça ao proprietário que a preencha (ou abra um `/interview`). Este documento
+> pertence ao humano.
+``````
+
+> **FILE: `templates/languages/pt/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` — tarefas do agente para o humano
+
+Tarefas que o agente pede ao **humano** — coisas que não pode fazer sozinho por sua natureza digital e
+incorpórea: testar em hardware real, agir no mundo físico, usar uma conta/credencial que só o humano tem,
+fazer uma compra, observar algo offline. Cada documento descreve a tarefa com passos concretos para o
+humano, e recolhe de volta suas observações e resultados. Um `NN_<nome>.md` cada.
+
+**Para o humano (proprietário):** quando o agente registra um homework, ele precisa de uma mão no mundo
+físico/offline. Siga os passos e escreva o que observou de volta no documento — o agente lê suas notas e
+continua.
+
+**Para o agente de IA:** quando estiver bloqueado em algo que só um humano-com-corpo pode fazer, não trave
+— escreva aqui um homework com passos claros, mínimos e numerados e um lugar para os resultados do humano,
+depois continue com outro trabalho. Quando o humano reportar, incorpore os resultados e marque o arquivo
+com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/pt/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` — propostas de features e melhorias
+
+Ideias detalhadas do *que* construir — normalmente uma fatia estreita do projeto, descrita bem o suficiente
+para o agente implementar. Na maioria das vezes escritas pelo **humano**, mas o agente também propõe
+ideias. Um `NN_<nome>.md` por ideia.
+
+**Para o humano (proprietário):** este é o seu principal diretório de autoria. Deixe aqui uma ideia
+descrevendo o que quer; o agente vai organizá-la em uma forma limpa e estruturada e implementá-la. Uma
+ideia é uma peça da **visão** do produto — o agente só a implementa após a sua aprovação.
+
+**Para o agente de IA:** leia as ideias do proprietário, corrija erros de digitação, reestruture
+minimamente para clareza e depois implemente. Quando *você* tiver uma ideia que valha a pena, registre-a
+aqui com o status "❓ aguardando aprovação do proprietário" (habilidade: `/propose-idea`) e **não**
+implemente até que seja aprovada. Após implementar uma ideia, escreva o status e a data no arquivo e
+marque-o com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+``````
+
+> **FILE: `templates/languages/pt/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` — decisões do nível do proprietário
+
+Entrevistas que o agente conduz com o humano para fechar decisões que ele **não** deve tomar sozinho —
+UI/UX, bifurcações técnicas sérias, marca/visão/prioridades. Perguntas fechadas A/B/C/D com a recomendação
+primeiro, respondidas pelo humano **diretamente no documento**. Um `interview_NNN_<tema>.md` cada.
+
+**Para o humano (proprietário):** quando o agente registra uma entrevista, ela está esperando por **você**.
+Preencha os campos "**Resposta:**" diretamente no documento (escolha A/B/C, ou escreva a sua em D). Aqui
+são capturadas e preservadas as suas decisões cruciais.
+
+**Para o agente de IA:** registre uma entrevista apenas para bifurcações genuinamente do nível do
+proprietário (habilidade: `/interview`). As opções são **A/B/C/D**: **A** é sempre a escolha destilada
+através do `PHILOSOPHY.md` (a mais simples/eficaz) e marcada **(recomendada)**; **D** é sempre "a sua
+própria resposta" para o proprietário. Faça primeiro o trabalho de base, mantenha 1–5 perguntas, depois
+pause e deixe o proprietário responder. Tudo o que for barato de reverter — decida você mesmo.
+``````
+
+> **FILE: `templates/languages/pt/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# KAIF em <PROJECT_NAME> — o framework, implantado
+
+> **O que é este documento.** Uma descrição de alto nível do **framework KAIF tal como implantado e usado
+> neste projeto** — pense nele como a página de "tecnologias e frameworks" do projeto, na qual o KAIF é
+> agora uma das tecnologias. É escrito pelo agente **após uma injeção bem-sucedida do KAIF** (o núcleo
+> autoextraível é removido assim que este documento existe — veja o ciclo de vida do KAIF). A partir daí, o
+> trabalho neste projeto é organizado *através do* KAIF, e este arquivo é o seu resumo para humanos.
+>
+> Escrito no idioma de trabalho do proprietário. **Referência viva — nunca marcada com `DONE`.** Mantenha
+> a linha de versão atualizada.
+
+---
+
+## O que é o KAIF
+
+KAIF (Krinik AI Framework) é um **framework operacional resistente à perda de contexto e com autonomia
+disciplinada para o tandem humano–IA**. Ele externaliza a memória de trabalho e a disciplina do agente
+neste repositório — um pequeno conjunto de documentos markdown, convenções de diretórios e habilidades
+slash repetíveis — de modo que qualquer sessão nova do agente retoma com contexto completo, trabalha de
+forma autônoma dentro de limites claros e acumula conhecimento em vez de perdê-lo. Não é código; é
+*processo capturado como arquivos que um agente lê*.
+
+## Por que está aqui — o que dá a este projeto
+
+- **Sem partidas a frio.** Uma sessão nova lê `AGENT_GUIDE.md` + `STATUS.md` e é produtiva imediatamente.
+- **Conhecimento que sobrevive.** Bugs, decisões, pesquisas e ideias tornam-se documentos duráveis, não chat perdido.
+- **Autonomia delimitada.** O agente mói o backlog sozinho e escala apenas as decisões do proprietário.
+- **Um método compartilhado.** Humano = visionário (`GOAL.md`), agente = executor; o KAIF é a interface entre eles.
+
+## Como funciona aqui — as peças móveis
+
+| Peça | Papel neste projeto |
+|------|---------------------|
+| `AGENT_GUIDE.md` | O cânone que o agente lê antes de cada tarefa. |
+| `PHILOSOPHY.md` | Como o agente pensa (KISS + Occam + o conjunto ampliado de princípios). |
+| `BUG_FIXING_FRAMEWORK.md` | Como o agente depura. |
+| `GOAL.md` / `MASTER_PLAN.md` | A visão, e o caminho em fases até ela. |
+| `STATUS.md` | O estado vivo — atualizado após cada tarefa significativa. |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Os mapas externo e interno. |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Os diretórios de conhecimento (cada um com seu README). |
+| `.claude/skills/` (ou o equivalente do seu sistema de agente) | Os rituais repetíveis (`/resume`, `/pause`, ciclos, …). |
+| `.kaif/kaif.json` | O marcador de implantação: versão, esfera, agente, tracking. |
+
+## Registro da implantação
+
+| Campo | Valor |
+|-------|-------|
+| **Versão do KAIF** | `<X.Y>` |
+| **Injetado em** | `<AAAA-MM-DD>` |
+| **Como foi a injeção** | `<uma ou duas linhas: desempacotamento mecânico rápido, ou fluxo respeitoso por etapas; qualquer coisa notável>` |
+| **Esfera** | `<programming / science / design / business / …>` |
+| **Sistemas de agente** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **Idioma de trabalho** | `<o idioma do proprietário>` |
+| **Tracking** | `<origin / fork>` — `<URL do repositório origin>` |
+
+## Vivendo com o KAIF (ciclo de vida)
+
+`/kaif-version` (verificar atualizações) · `/kaif-update` (migração respeitosa a partir do origin) ·
+`/kaif-fork` (evoluir o seu próprio) · `/kaif-switch-origin` · `/kaif-remove` (o parcial mantém seus
+artefatos, ou completo — sempre respeitoso). Apoiado pelos handles npm `kaif:*`.
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## Uma nota do autor
+
+> O KAIF foi concebido e construído por necessidade por **Krinik (Mikalai Kryvusha / Николай Кривуша)**
+> durante sessões de vibe-coding com Claude em um produto de software, no fim de um quente junho de 2026,
+> em Minsk. **O aniversário do KAIF é 30 de junho de 2026.**
+
+*(Texto original, em russo — canônico:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/pt/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` — planos detalhados passo a passo
+
+Planos detalhados de peças de trabalho específicas: passos individuais do plano mestre, features, ideias,
+bugs, pesquisas, procedimentos. O **`MASTER_PLAN.md`** (raiz do projeto) é o roteiro de alto nível;
+`plans/` contém os planos ampliados que implementam seus passos. Um `NN_<nome>.md` por plano.
+
+**Para o humano (proprietário):** você não precisa escrever aqui — os planos são normalmente do agente.
+Pode deixar um plano se quiser direcionar *como* algo é feito. Leia-os para ver a abordagem pretendida do
+agente antes da execução.
+
+**Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Numere os
+arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
+(`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
+não recebe a tag DONE.
+``````
+
+> **FILE: `templates/languages/pt/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` — base de conhecimento para as questões grandes e difíceis
+
+Anotações e conclusões destiladas sobre questões grandes e complexas: análises de pesquisas, experiência
+acumulada, informação de referência importante obtida com trabalho real e que não deve evaporar. Um
+`NN_<nome>.md` por tema de pesquisa.
+
+**Para o humano (proprietário):** o lugar para encontrar o pano de fundo profundo das decisões — por que
+uma abordagem foi escolhida, o que se descobriu sobre um problema difícil. Você pode indicar um tema que
+queira pesquisar.
+
+**Para o agente de IA:** quando uma questão for grande o suficiente para que suas conclusões sobrevivam à
+tarefa atual — escreva aqui uma anotação (fontes cruas → análise → conclusões/hipóteses). Referencie-a a
+partir do bug/plano/ideia que originou a pesquisa (DRY — não re-pesquise). Uma anotação de pesquisa é uma
+**referência viva**, não uma tarefa fechável: não recebe a tag `DONE` e é atualizada à medida que a
+compreensão cresce.
+``````
+
+> **FILE: `templates/languages/pt/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "«continua», «vamos continuar», «retoma», «onde paramos?»",
+  "pause": "«pausa», «vamos pausar», «encerra a sessão», «salva o progresso», «fixa o status»",
+  "autoloop": "«trabalha sozinho», «piloto automático», «mói o backlog», «inicia o ciclo autônomo»",
+  "dayloop": "«ciclo diurno», «trabalha sozinho, estou ocupado»",
+  "nightloop": "«ciclo noturno», «trabalha até de manhã»",
+  "refresh-context": "«atualiza o contexto», «relê os documentos», «remonta o backlog»",
+  "check-backlog": "«revisa o backlog», «o que falta?», «marca o que está feito com DONE»",
+  "experience": "«lembra a experiência», «consulta a experiência», «anota a lição»",
+  "report-bug": "«registra o bug», «reporta este bug», «anota este bug»",
+  "bug-research": "«investiga o bug», «descobre a causa», «para de tentar às cegas»",
+  "propose-idea": "«propõe uma ideia», «registra a ideia»",
+  "interview": "«faz uma entrevista», «pergunta sobre a bifurcação», «entrevista»",
+  "revision": "«revisa o plano mestre», «reconstrói o plano a partir da meta»",
+  "fix-vision": "«fixa a visão», «atualiza a visão a partir do chat»",
+  "what-next": "«o que vem agora?», «e agora?», «propõe os próximos passos»",
+  "help-kaif": "«fala sobre o KAIF», «como usar o KAIF», «ajuda do KAIF»",
+  "release": "«faz um release», «publica uma nova versão», «lança»",
+  "kaif-version": "«versão do KAIF», «há atualização do framework?»",
+  "kaif-update": "«atualiza o KAIF», «migra o framework»",
+  "kaif-fork": "«faz um fork do KAIF para mim», «faz o meu próprio KAIF»",
+  "kaif-switch-origin": "«volta ao KAIF oficial», «volta ao origin»",
+  "kaif-remove": "«remove o KAIF», «tira o framework»",
+  "fable-method": "«pelo método Fable», «aplica o método fable», «resolve como o Fable»",
+  "fable-loop": "«roda o ciclo fable», «faz como o Fable faria»",
+  "fable-judge": "«julga o trabalho», «verifica o que ele fez», «funcionou mesmo?»",
+  "fable-domain": "«faz uma habilidade para o setor», «adiciona um domínio ao método fable»"
+}
+``````
+
 > **FILE: `templates/languages/ru/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
 ``````md
@@ -3818,5 +5762,260 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "fable-loop": "«прогони фейбл-цикл», «сделай как Фейбл»",
   "fable-judge": "«проверь работу судьёй», «просуди работу», «это точно сработало?»",
   "fable-domain": "«сделай навык для сферы», «добавь домен в фейбл-метод»"
+}
+``````
+
+> **FILE: `templates/languages/zh-Hans/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `bugs/` —— 缺陷、困难、故障
+
+每个缺陷一份文档：症状、确定性复现、取证、根因/假设、修复历史、状态。这是代理自己的持久 Bug
+待办清单 —— 什么都不会丢失，任何 Bug 都可以被未来的会话从零接手。每个 Bug 一个 `NN_<名称>.md`。
+
+**给人类（所有者）：** 您可以用平实的语言在这里登记一个 Bug（哪里不对、如何复现）；代理会把它
+结构化。浏览此目录可以看到已知缺陷及其状态。
+
+**给 AI 代理：** 在工作/测试中碰到缺陷时，按准则在这里登记（技能：`/report-bug`；方法：
+`BUG_FIXING_FRAMEWORK.md`）—— 即使是小缺陷。开放期间不打 `DONE` 标签。修复**并验证**后，
+`git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期)` 部分。3 次盲目修复尝试失败后，
+停止并转入研究（`/bug-research`）。
+``````
+
+> **FILE: `templates/languages/zh-Hans/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> — GOAL（愿景）
+
+> **由谁填写：** 人类所有者（愿景提出者）。**语言：** 所有者的工作语言。
+> **何时填写：** 最好在部署 KAIF *之前* —— 代理会围绕本文档确定整个部署的方向（总体规划、领域、
+> 术语）。若部署时缺失，KAIF 依然可用，但代理之后必须按项目的实际含义重新诠释已部署的框架文档 ——
+> 额外的工作。最好提前写好。
+>
+> 这是一份**活的参考文档**，不是任务 —— 永远不打 `DONE` 标签。愿景每次变得更清晰时都请更新它。
+
+---
+
+## 我想要什么 —— 用一段话说清
+
+`<用平实的语言：当这个项目"完成"时，应该存在什么？最终结果是什么？为谁而做，能让他们做什么？
+以愿景提出者而非实现者的身份来写 —— 写"是什么"和"为什么"，而不是"怎么做"。几句诚实的话胜过一份
+精雕细琢的规格书。>`
+
+## 为什么重要 / 解决什么问题
+
+`<背后是什么痛点或机会？当今世界有什么问题是它要修复的？>`
+
+## 成功是什么样子
+
+`<目标达成的具体标志 —— 可观察的最终状态。"用户可以……"、"结果是……"。列出那几件会让您说
+"对，就是它"的事情。>`
+
+## 边界 —— 这不是什么
+
+`<明确超出范围的内容。指明"非目标"与指明目标一样能防止跑偏。>`
+
+## 约束与偏好（可选）
+
+`<硬约束（平台、预算、期限、必须/禁止的技术）和软偏好（品味、风格、语气）。所有代理应当无需
+反复提醒就遵守的东西。>`
+
+---
+
+> **如何使用本文档（给代理）：** 先读 `GOAL.md`；让它引导领域、术语以及由它推导出的
+> `MASTER_PLAN.md`（技能：`/revision`）。不要在这里编造愿景 —— 如果目标模糊或为空，请所有者填写
+> （或发起 `/interview`）。这份文档属于人类。
+``````
+
+> **FILE: `templates/languages/zh-Hans/homeworks/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `homeworks/` —— 代理布置给人类的任务
+
+代理请**人类**完成的任务 —— 因其数字化、无实体的天性而无法自己完成的事情：在真实硬件上测试、
+在物理世界中行动、使用只有人类拥有的账户/凭据、进行购买、离线观察某事。每份文档用面向人类的
+具体步骤描述任务，并收集人类的观察和结果。每个任务一个 `NN_<名称>.md`。
+
+**给人类（所有者）：** 当代理登记一份 homework 时，它需要您在物理/离线世界搭把手。按步骤执行，
+并把观察到的写回文档 —— 代理会读取您的记录并继续。
+
+**给 AI 代理：** 当被只有"有身体的人类"才能做的事情卡住时，不要停滞 —— 在这里写一份 homework，
+给出清晰、最少、编号的步骤和留给人类填写结果的位置，然后继续其他工作。人类反馈后，纳入结果并给
+文件打上 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）。
+``````
+
+> **FILE: `templates/languages/zh-Hans/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `ideas/` —— 功能与改进提案
+
+关于*做什么*的详细想法 —— 通常是项目的一个窄切片，描述得足以让代理据此实现。多数由**人类**撰写，
+但代理也会提出想法。每个想法一个 `NN_<名称>.md`。
+
+**给人类（所有者）：** 这是您的主要撰写目录。把想法放在这里，描述您想要什么；代理会把它整理成
+清晰的结构化形式并据此实现。想法是产品**愿景**的一部分 —— 代理只在您批准后才实现。
+
+**给 AI 代理：** 阅读所有者的想法，修正笔误，为清晰起见做最小限度的重组，然后实现。当*你*有一个
+值得做的想法时，在这里以"❓ 等待所有者批准"状态登记（技能：`/propose-idea`），批准前**不要**实现。
+实现一个想法后，把状态和日期写回其文件并打上 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）。
+``````
+
+> **FILE: `templates/languages/zh-Hans/interviews/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `interviews/` —— 所有者级别的决策
+
+代理向人类发起的访谈，用来敲定它**不应**独自做出的决策 —— UI/UX、重大技术分叉、品牌/愿景/
+优先级。封闭式 A/B/C/D 问题，推荐项放在最前，由人类**直接在文档中**作答。每份访谈一个
+`interview_NNN_<主题>.md`。
+
+**给人类（所有者）：** 当代理登记一份访谈时，它在等**您**。直接在文档中填写"**回答：**"字段
+（选 A/B/C，或在 D 中写您自己的答案）。您的关键决策在这里被记录和保存。
+
+**给 AI 代理：** 只为真正所有者级别的分叉登记访谈（技能：`/interview`）。选项为 **A/B/C/D**：
+**A** 永远是经 `PHILOSOPHY.md` 提炼的选择（最简单/最有效），并标注**（推荐）**；**D** 永远是
+留给所有者的"自定义答案"。先做好基础工作，保持 1–5 个问题，然后暂停，让所有者回答。凡是容易
+回退的 —— 自己决定。
+``````
+
+> **FILE: `templates/languages/zh-Hans/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# <PROJECT_NAME> 中的 KAIF —— 已部署的框架
+
+> **本文档是什么。** 对**部署并应用于本项目的 KAIF 框架**的高层描述 —— 可以把它当作项目的
+> "技术与框架"页面，KAIF 现在是其中一项技术。它由代理在 **KAIF 注入成功之后**撰写（本文档一旦
+> 存在，自解压核心就会被删除 —— 见 KAIF 生命周期）。此后，本项目的工作*通过* KAIF 组织，
+> 而本文件是面向人类的摘要。
+>
+> 以所有者的工作语言撰写。**活的参考文档 —— 永远不打 `DONE` 标签。** 保持版本行为最新。
+
+---
+
+## KAIF 是什么
+
+KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束的人机协作操作框架**。它把代理的
+工作记忆和纪律外化到这个仓库中 —— 一小组 markdown 文档、目录约定和可重复的斜杠技能 —— 使任何新的
+代理会话都能带着完整上下文继续工作，在清晰的边界内自主行动，并且积累而不是丢失知识。它不是代码；
+它是*以代理可读文件的形式记录下来的过程*。
+
+## 为什么在这里 —— 它给本项目带来什么
+
+- **没有冷启动。** 新会话读取 `AGENT_GUIDE.md` + `STATUS.md`，立即进入高效状态。
+- **知识得以存续。** Bug、决策、研究和想法成为持久文档，而不是丢失的聊天记录。
+- **受限的自治。** 代理独自消化待办事项，只将所有者级别的决策上报。
+- **共享的方法。** 人类 = 愿景提出者（`GOAL.md`），代理 = 执行者；KAIF 是两者之间的接口。
+
+## 在这里如何运作 —— 各个组成部分
+
+| 部件 | 在本项目中的角色 |
+|------|------------------|
+| `AGENT_GUIDE.md` | 代理在每个任务前阅读的准则。 |
+| `PHILOSOPHY.md` | 代理如何思考（KISS + 奥卡姆剃刀 + 扩展原则集）。 |
+| `BUG_FIXING_FRAMEWORK.md` | 代理如何调试。 |
+| `GOAL.md` / `MASTER_PLAN.md` | 愿景，以及通向愿景的分阶段路径。 |
+| `STATUS.md` | 活的状态 —— 每个重要任务后更新。 |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部与内部地图。 |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | 知识目录（各有自己的 README）。 |
+| `.claude/skills/`（或您代理系统的等价物） | 可重复的例行程序（`/resume`、`/pause`、循环等）。 |
+| `.kaif/kaif.json` | 部署标记：版本、领域、代理、跟踪。 |
+
+## 部署记录
+
+| 字段 | 值 |
+|------|----|
+| **KAIF 版本** | `<X.Y>` |
+| **注入日期** | `<YYYY-MM-DD>` |
+| **注入过程** | `<一两行：快速机械解包，或分阶段的尊重式流程；任何值得注意的事项>` |
+| **领域** | `<programming / science / design / business / …>` |
+| **代理系统** | `<claude-code / codex / grok-build / cline / zoo-code / …>` |
+| **工作语言** | `<所有者的语言>` |
+| **跟踪** | `<origin / fork>` — `<origin 仓库 URL>` |
+
+## 与 KAIF 共处（生命周期）
+
+`/kaif-version`（检查更新）· `/kaif-update`（从 origin 进行尊重式迁移）· `/kaif-fork`
+（演化您自己的版本）· `/kaif-switch-origin` · `/kaif-remove`（部分移除保留您的产物，或完全移除 ——
+始终保持尊重）。由 npm 句柄 `kaif:*` 支持。
+
+<!-- KAIF:AUTHOR-NOTE:BEGIN — this whole region is stripped mechanically on anonymous installs -->
+---
+
+## 作者的话
+
+> KAIF 由 **Krinik（Mikalai Kryvusha / Николай Кривуша）**出于必要而构思和构建，诞生于 2026 年
+> 炎热六月末在明斯克与 Claude 就一个软件产品进行的 vibe-coding 协作中。**KAIF 的生日是 2026 年
+> 6 月 30 日。**
+
+*(原文，俄语 —— 规范版本:)*
+
+> KAIF был придуман и разработан как вынужденная необходимость (Николай Кривуша) Криником при совместной
+> работе в режиме вайбкодинга с Claude над программным продуктом в конце жаркого июня 2026 года, в
+> г. Минск. Дата рождения KAIF — 30 июня 2026 г.
+<!-- KAIF:AUTHOR-NOTE:END -->
+``````
+
+> **FILE: `templates/languages/zh-Hans/plans/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `plans/` —— 详细的分步计划
+
+针对具体工作块的详细计划：总体规划的单个步骤、功能、想法、Bug、研究、流程。**`MASTER_PLAN.md`**
+（项目根目录）是高层路线图；`plans/` 存放实现其各步骤的放大计划。每个计划一个 `NN_<名称>.md`。
+
+**给人类（所有者）：** 您不必在这里写 —— 计划通常由代理撰写。如果想指定某事*如何*做，可以放一份
+计划。阅读它们可以在执行前看到代理打算采用的方式。
+
+**给 AI 代理：** 在非平凡工作之前，在这里写一份简短计划并遵循它。给文件编号（`NN_<名称>.md`）。
+完成且验证过的计划在文件名中加 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）并附上状态部分。
+参考资料（不可关闭的任务）不打 DONE 标签。
+``````
+
+> **FILE: `templates/languages/zh-Hans/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+# `researches/` —— 面向重大难题的知识库
+
+针对重大复杂问题的笔记和提炼结论：研究分析、积累的经验、通过实际工作获得且不应蒸发的重要参考
+信息。每个研究主题一个 `NN_<名称>.md`。
+
+**给人类（所有者）：** 在这里可以找到决策的深层背景 —— 为什么选择了某个方案，对某个难题查明了
+什么。您也可以指定想要研究的主题。
+
+**给 AI 代理：** 当一个问题大到其结论会超越当前任务而存续时 —— 在这里写笔记（原始来源 → 分析 →
+结论/假设）。从引发研究的 Bug/计划/想法中引用它（DRY —— 不要重复研究）。研究笔记是**活的参考
+文档**，不是可关闭的任务：不打 `DONE` 标签，随着理解加深而更新。
+``````
+
+> **FILE: `templates/languages/zh-Hans/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
+
+``````md
+{
+  "resume": "「继续」「接着做」「恢复工作」「我们做到哪儿了？」",
+  "pause": "「暂停」「先停一下」「收尾这次会话」「保存进度」「固定状态」",
+  "autoloop": "「自己干活」「自动驾驶」「消化待办清单」「启动自主循环」",
+  "dayloop": "「白天循环」「自己干，我忙着呢」",
+  "nightloop": "「夜间循环」「干到早上」",
+  "refresh-context": "「刷新上下文」「重读文档」「重建待办清单」",
+  "check-backlog": "「检查待办清单」「还剩什么？」「把做完的标记 DONE」",
+  "experience": "「回忆经验」「查一下经验」「记下这条教训」",
+  "report-bug": "「登记这个 bug」「报告这个 bug」「记下这个 bug」",
+  "bug-research": "「研究这个 bug」「找出原因」「别再瞎试了」",
+  "propose-idea": "「提个想法」「登记这个想法」",
+  "interview": "「做个访谈」「就这个分叉问我」「访谈」",
+  "revision": "「重审总体规划」「从目标重建计划」",
+  "fix-vision": "「固定愿景」「从聊天中更新愿景」",
+  "what-next": "「接下来做什么？」「现在呢？」「提出下一步」",
+  "help-kaif": "「讲讲 KAIF」「怎么用 KAIF」「KAIF 帮助」",
+  "release": "「做一次发布」「发布新版本」「上线」",
+  "kaif-version": "「KAIF 版本」「框架有更新吗？」",
+  "kaif-update": "「更新 KAIF」「迁移框架」",
+  "kaif-fork": "「给我 fork 一份 KAIF」「做我自己的 KAIF」",
+  "kaif-switch-origin": "「切回官方 KAIF」「切回 origin」",
+  "kaif-remove": "「移除 KAIF」「卸掉这个框架」",
+  "fable-method": "「按 Fable 方法」「应用 fable 方法」「像 Fable 那样解决」",
+  "fable-loop": "「跑一遍 fable 循环」「像 Fable 那样做」",
+  "fable-judge": "「评判这项工作」「核实它做了什么」「真的成功了吗？」",
+  "fable-domain": "「为这个行业做个技能」「给 fable 方法加个领域」"
 }
 ``````
