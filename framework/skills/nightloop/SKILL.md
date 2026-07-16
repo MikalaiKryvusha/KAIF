@@ -40,11 +40,17 @@ Until one fires — don't stop, don't wait for confirmations, work.
    - Tasks needing human actions (real hardware, external accounts) — file homework in `plans/homework_*.md`.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. High-level harness commands first; if missing, do it low-level then ADD the command.
-4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   Execute the item by the fable loop (`/fable-method`; `/fable-loop` for substantive items) — its gates
+   and forced artifacts (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
+   claimed checks, diff what actually changed against the item's scope. REFUTED → back to work (step 3),
+   not to "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take
+   another task.
+5. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
-5. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
-6. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
-7. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
+6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
+7. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
+8. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
    turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
    `ScheduleWakeup` (same `/nightloop` input, short listen) is a *mechanical fallback* for when the
    harness ITSELF ends the turn: then the cycle resumes in a new turn. Don't call it preemptively

@@ -55,19 +55,24 @@ without those resources.
 1. **Pick** the next autonomous task from the pool (priority from STATUS). Verify it can be checked
    WITHOUT the human/special resources. If not — defer, take the next.
 2. **Understand it simply** (PHILOSOPHY) — state it in 1–2 sentences. For bugs — open/create a `bugs/` doc.
-3. **Implement** in a targeted way, with comments. Don't over-complicate.
+3. **Implement** in a targeted way, with comments. Don't over-complicate. Execute the item by the fable
+   loop (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
 4. **Build** (`<BUILD_COMMAND>`). If errors — fix them, don't commit broken state.
 5. **Deploy/run** as your project requires.
 6. **Verify autonomously** on the harness (`<TEST_HARNESS>`). Look at the result carefully — don't
    wishful-think; verify objectively.
 7. **Fix cycle** on a bug: fix → build → test → logs (fresh by timestamp). The **3-attempts** rule →
    `/bug-research` (no code) → then fix.
-8. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
+8. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
+   claimed checks, diff what actually changed against the item's scope. REFUTED → back to work, not to
+   "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take another task.
+9. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
    `ideas/*`; update `STATUS.md`. After a meaningful success or failure, append the approach-level lesson
    to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human.
-9. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
+10. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
    with the Co-Authored-By trailer).
-10. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
+11. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
 
 ## Self-pacing (so the loop runs LONG)
 

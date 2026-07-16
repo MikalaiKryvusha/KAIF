@@ -27,7 +27,7 @@ Stop the loop ONLY if one of:
 look at the clock. Work **CONTINUOUSLY**: finished one — take the next. Don't pause, don't wait for
 confirmations, don't schedule big "wake up later" gaps. The only stop is a stop condition above. A
 **short** `ScheduleWakeup` (≈60s) is NOT a pause — it's the loop's heartbeat to continue in a new turn
-when the current one is exhausted (see step 7).
+when the current one is exhausted (see step 8).
 
 > ⛔ **"Context overflow / filling up", "turn exhausted", "tired", "risk of hitting the limit" are NOT
 > stop conditions and NOT a reason to announce a pause or cut the turn short.** Context management is the
@@ -48,13 +48,19 @@ when the current one is exhausted (see step 7).
      `plans/homework_*.md` and move on.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
-   then ADD a command to the harness so next time it's one step.
-4. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   then ADD a command to the harness so next time it's one step. Execute the item by the fable loop
+   (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
+   claimed checks, diff what actually changed against the item's scope. REFUTED → the item goes back to
+   work (step 3), not to "done"; after 3 failed fix-judge cycles on the same item, record it honestly in
+   `STATUS.md`/`bugs/` and take another task.
+5. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
-5. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
+6. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
    minutes. `<COMMIT_COMMAND>`.
-6. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
-7. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
+7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
+8. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
    no time checks. **Don't assess how much context is left and don't end the turn yourself** — the
    harness does that.
    - **Loop heartbeat (`ScheduleWakeup`):** this is a *mechanical fallback* for when the harness ITSELF

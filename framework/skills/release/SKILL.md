@@ -48,6 +48,15 @@ own project, also regenerate the self-extracting core: node tools/build-framewor
 `<Run the project build (BUILD_COMMAND). It must succeed. This catches errors BEFORE the version bump so
 you don't leave a half-released version.>`
 
+## Step 4.5. Judge pass — MANDATORY adversarial verification before publishing
+
+Run `/fable-judge` over the release candidate's own claims: every statement in the README/notes about
+what works is re-run or re-opened (build, self-checks, artifact list, versions, links), and the change
+set is diffed against the release's declared scope. The verdict must be **VERIFIED**, or **VERIFIED WITH
+CAVEATS** with every caveat explicitly carried into the release notes. **REFUTED blocks the release** —
+fix and re-judge before proceeding. (A release is the one artifact whose false claims the whole world
+downloads.)
+
 ## Step 5. Commit the doc/build changes (before the release)
 
 Commit the README/docs updates so the `release: X.Y` commit is a clean version bump:

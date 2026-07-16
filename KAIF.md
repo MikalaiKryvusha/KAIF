@@ -164,23 +164,24 @@ relies entirely on this document to get to work.
 4. git log --oneline -5           # where we are in history
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
-7. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
-8. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
-9. Run the build (if touching code)   # <BUILD_COMMAND>
-10. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
-11. Comment the code              # comment blocks, classes, modules, important lines
-12. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
-13. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-14. Periodically re-read the key guidance docs:
+7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
+9. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
+10. Run the build (if touching code)   # <BUILD_COMMAND>
+11. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
+12. Comment the code              # comment blocks, classes, modules, important lines
+13. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
+14. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
+15. Periodically re-read the key guidance docs:
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
-15. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
+16. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
     human can glance over and follow along.
-16. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
+17. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
     clean structured format for AI consumption. After implementing from such a document, write the
     status and the implementation date back into it.
 ```
@@ -202,6 +203,19 @@ Don't read every document "just in case" — that fills the context you're tryin
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Task execution discipline — the fable loop
+
+Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify
+the ask → define done → gather evidence → decide → act surgically → verify by observation → report
+outcome-first, with its gates and **forced artifacts** (`INTENT:` / `AUTH:` / `TWINS:` / `PENDING:`
+lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
+follow). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
+the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
+run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
+These three skills are vendored verbatim from [fable-method](https://github.com/Sahir619/fable-method)
+(Sahir619, MIT) — see their headers for the sync ritual; the project's sphere library plays the role of
+their domain adapters.
 
 ### Experience log — `EXPERIENCE.md`
 
@@ -286,6 +300,11 @@ is: work ONLY in `main`, no feature branches; commit incrementally and often; to
 (git revert / git checkout <hash> -- file), not branches. Pick what fits your project and state it here
 so the agent doesn't improvise.>`
 
+> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's
+> standing authorization for routine commits/pushes per the policy above. Everything beyond it —
+> releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
+> the owner's quoted words (an `AUTH:` line).
+
 ## Commits
 
 Style: `feat:`, `fix:`, `docs:`, `refactor:`, `ci:` + one line of what was done.
@@ -357,6 +376,10 @@ and report in the chat.
 
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
+
+Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
+per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
+interpretation. Interviews are for vision-level forks that outlive the task.
 
 ---
 
@@ -573,11 +596,22 @@ To fix a bug, the agent must:
   the human can glance over and understand where the work is.
 - **Reflect and capture knowledge** for every bug, even small ones, in a dedicated markdown file per
   bug in the `bugs/` directory.
+- **Intent gate before the first behavior-changing edit** (fable-method, Step 4): write one line —
+  `INTENT: code does <X>; the failing check/task expects <Y>; the spec (README/docs/docstring) says <Z>`
+  — actually opening the spec to fill the third slot. If X/Y/Z disagree, the disagreement IS the finding:
+  the "bug" may live in the check or in the task framing, not in the code. Never silently make one side
+  match another; authority order: explicit owner statement > spec > tests > current code behavior.
 - **Enter the loop:** run the app → reproduce the bug → read the logs for this bug → form a guess at the
   cause → make a *single, targeted* change → build → run the app again → try to reproduce again.
 - The essence: **targeted changes, then a build to test whether the change helped or not.**
 - Simplified: Fix → Test → Read logs → Fix → Test → Read logs → … until it works correctly. Working
-  correctly **is the acceptance criterion** — at that point the bug is considered fixed.
+  correctly **is the acceptance criterion** — at that point the bug is considered fixed. "Works
+  correctly" is an *observation* (it ran, it rendered, it counted), never an inference from reading the
+  diff — an unverified "fixed" claim is the classic fraud `/fable-judge` exists to catch.
+- **Twin check after the fix** (fable-method, Step 5c): a defect found in one place is presumed to recur
+  elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and
+  record in the bug document (and your report): `TWINS: searched <pattern> — found <N> other sites:
+  <files, or "none">`. Fix them or list them — a completeness claim with no search behind it is hollow.
 - To fix a bug, it is often useful to **search the web** for the solution — forums, GitHub issues,
   Reddit, Stack Overflow, official docs.
 
@@ -1434,19 +1468,24 @@ without those resources.
 1. **Pick** the next autonomous task from the pool (priority from STATUS). Verify it can be checked
    WITHOUT the human/special resources. If not — defer, take the next.
 2. **Understand it simply** (PHILOSOPHY) — state it in 1–2 sentences. For bugs — open/create a `bugs/` doc.
-3. **Implement** in a targeted way, with comments. Don't over-complicate.
+3. **Implement** in a targeted way, with comments. Don't over-complicate. Execute the item by the fable
+   loop (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
 4. **Build** (`<BUILD_COMMAND>`). If errors — fix them, don't commit broken state.
 5. **Deploy/run** as your project requires.
 6. **Verify autonomously** on the harness (`<TEST_HARNESS>`). Look at the result carefully — don't
    wishful-think; verify objectively.
 7. **Fix cycle** on a bug: fix → build → test → logs (fresh by timestamp). The **3-attempts** rule →
    `/bug-research` (no code) → then fix.
-8. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
+8. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
+   claimed checks, diff what actually changed against the item's scope. REFUTED → back to work, not to
+   "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take another task.
+9. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
    `ideas/*`; update `STATUS.md`. After a meaningful success or failure, append the approach-level lesson
    to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human.
-9. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
+10. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
    with the Co-Authored-By trailer).
-10. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
+11. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
 
 ## Self-pacing (so the loop runs LONG)
 
@@ -1505,7 +1544,7 @@ Stop the loop ONLY if one of:
 look at the clock. Work **CONTINUOUSLY**: finished one — take the next. Don't pause, don't wait for
 confirmations, don't schedule big "wake up later" gaps. The only stop is a stop condition above. A
 **short** `ScheduleWakeup` (≈60s) is NOT a pause — it's the loop's heartbeat to continue in a new turn
-when the current one is exhausted (see step 7).
+when the current one is exhausted (see step 8).
 
 > ⛔ **"Context overflow / filling up", "turn exhausted", "tired", "risk of hitting the limit" are NOT
 > stop conditions and NOT a reason to announce a pause or cut the turn short.** Context management is the
@@ -1526,13 +1565,19 @@ when the current one is exhausted (see step 7).
      `plans/homework_*.md` and move on.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
-   then ADD a command to the harness so next time it's one step.
-4. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   then ADD a command to the harness so next time it's one step. Execute the item by the fable loop
+   (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
+   claimed checks, diff what actually changed against the item's scope. REFUTED → the item goes back to
+   work (step 3), not to "done"; after 3 failed fix-judge cycles on the same item, record it honestly in
+   `STATUS.md`/`bugs/` and take another task.
+5. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
-5. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
+6. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
    minutes. `<COMMIT_COMMAND>`.
-6. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
-7. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
+7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
+8. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
    no time checks. **Don't assess how much context is left and don't end the turn yourself** — the
    harness does that.
    - **Loop heartbeat (`ScheduleWakeup`):** this is a *mechanical fallback* for when the harness ITSELF
@@ -1621,11 +1666,17 @@ Until one fires — don't stop, don't wait for confirmations, work.
    - Tasks needing human actions (real hardware, external accounts) — file homework in `plans/homework_*.md`.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. High-level harness commands first; if missing, do it low-level then ADD the command.
-4. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
+   Execute the item by the fable loop (`/fable-method`; `/fable-loop` for substantive items) — its gates
+   and forced artifacts (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
+   claimed checks, diff what actually changed against the item's scope. REFUTED → back to work (step 3),
+   not to "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take
+   another task.
+5. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
-5. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
-6. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
-7. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
+6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
+7. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
+8. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
    turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
    `ScheduleWakeup` (same `/nightloop` input, short listen) is a *mechanical fallback* for when the
    harness ITSELF ends the turn: then the cycle resumes in a new turn. Don't call it preemptively
@@ -2410,6 +2461,15 @@ own project, also regenerate the self-extracting core: node tools/build-framewor
 `<Run the project build (BUILD_COMMAND). It must succeed. This catches errors BEFORE the version bump so
 you don't leave a half-released version.>`
 
+## Step 4.5. Judge pass — MANDATORY adversarial verification before publishing
+
+Run `/fable-judge` over the release candidate's own claims: every statement in the README/notes about
+what works is re-run or re-opened (build, self-checks, artifact list, versions, links), and the change
+set is diffed against the release's declared scope. The verdict must be **VERIFIED**, or **VERIFIED WITH
+CAVEATS** with every caveat explicitly carried into the release notes. **REFUTED blocks the release** —
+fix and re-judge before proceeding. (A release is the one artifact whose false claims the whole world
+downloads.)
+
 ## Step 5. Commit the doc/build changes (before the release)
 
 Commit the README/docs updates so the `release: X.Y` commit is a clean version bump:
@@ -2455,6 +2515,352 @@ Report to the human: the version, the release link, what was attached. Done.
 - NEVER force-push and never delete others' tags/releases. If something goes wrong during publish — stop
   and show the human, don't "fix" it blindly.
 - Don't release in autonomous mode — only on the human's explicit request.
+``````
+
+### `.claude/skills/fable-domain/SKILL.md`
+
+> **FILE: `.claude/skills/fable-domain/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: fable-domain
+description: Discuss a domain with the user, research it from real sources, then generate a trusted skill bundle for it - a step-by-step workflow with a flowchart, a domain adapter, a trap fixture, and a smoke eval. Use when the user says "/fable-domain <sector>", "make a skill for <domain>", "add a domain to the fable method", or "give a lesser model Fable's workflow for <domain>". The bundle is the deliverable; a workflow without its flowchart, sources, and trap is not done.
+---
+
+> **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
+> Body kept verbatim. **KAIF context for every output below:** the "adapter" is written as a **KAIF sphere
+> library** (follow the deployed sphere template's sections — terminology mapping + minimum evidence set,
+> authority order, verification by observation, fraud table, done-by-example, sources); the trap fixture
+> and smoke-eval notes live under the project's own knowledge dirs (`researches/`); "routing surfaces" map
+> to the sphere index and `AGENT_GUIDE.md`; upstream's `eval/` harness and CI checks are not vendored —
+> use the project's own self-checks and a manual smoke run instead. The red-lines below apply unchanged.
+> Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
+
+# fable-domain
+
+The fable-method ships domain adapters that translate its loop into a sector's nouns. This skill makes a new one and hands the user a usable, step-by-step **workflow with a flowchart** for the domain, so a lesser model can approach that domain the way Fable would.
+
+Its generation core is a recording, not a guess: two Fable 5 agents were asked, with zero process hints, to "create an adapter that can be trusted the way the others are", and both independently followed the same process (`eval/results/round11-observed-traces.json`). Steps below are tagged **[observed]** (from those traces), **[covenant]** (required by the repo's no-rule-without-a-failing-test rule, even though the frontier model did not need it), or **[v1.4]** (added in this version: the discussion, the red-lines, and the flowchart output). The reason the covenant and v1.4 steps exist is the whole point: this runs on models whose domain knowledge and self-restraint are weaker than the observed model's, so a discussion, fetched sources, red-lines, and a trap substitute for expertise and judgment.
+
+## What it produces (the bundle; all four, or not done)
+
+1. **A domain workflow with a flowchart [v1.4].** The step-by-step approach for this domain, distilled from the discussion and research, plus a mermaid flowchart, the same shape as this method's own `references/flowcharts.md`. This is the user-facing "here are the steps, in order" artifact. It lives in the adapter's Workflow section (see `TEMPLATE.md`).
+2. **The adapter**, conforming to `references/domains/TEMPLATE.md`, every named regulation/policy/figure carrying a fetched source in its Sources section.
+3. **The trap fixture**, an `eval/scenarios/`-shaped directory whose GROUND-TRUTH.md defines the task, the trap (the sector's central fraud), scoring caps, and ideal behavior.
+4. **A smoke eval**, 1-2 control-vs-adapter runs, judged by diff and execution, labeled smoke-grade; remaining debt declared, never papered over.
+
+## Stage 1: Discuss [v1.4]
+
+Making a skill is a deliberate, attended act, so unlike the unattended loop, it starts with a conversation. Ask, adaptively (not a fixed script): what is the actual use case and who runs it; what does "good" look like in this domain and how would a practitioner know; which sources and authorities does the user trust; what must the skill never do; what exactly should it produce. Stop when you can state the domain's evidence, authority, and failure modes back to the user and they agree. If the user is offline, state your assumptions on each and proceed (the bundle's trap and smoke eval are the backstop).
+
+**Red-lines (a hard refusal, checked during the discussion).** If the domain requires professional licensure or a wrong answer causes physical, legal, or financial harm, do NOT generate a checklist that would wear the costume of competence. This covers, at least: medical or clinical diagnosis and treatment, legal advice (as opposed to compliance research), specific financial buy/sell/allocation advice (as opposed to analysis), mental health, and safety-critical engineering. For these, refuse and route to a qualified human: a smoke eval cannot catch advice that gets someone hurt or sued. Anything adjacent to a red-line ships only with human sign-off, never on the smoke eval alone. Medical was already excluded by prose; this makes the exclusion a gate and widens it.
+
+**Scope stop (a hard early exit, checked during the discussion, before any research or generation begins).** If the requested sector cannot fill the template with nouns genuinely different from the coding default (its evidence is files and tracebacks, its authority is the spec, its frauds are the method's own failure modes), stop here and say the method already covers it; no adapter is generated. Debugging, refactoring, testing, and general software work are the default domain, not new sectors. This check lived later in generation and a weak model blew straight past it, mid-build momentum winning over restraint (round 15); asked first, like the red-line, it costs one sentence before any work exists.
+
+## Stage 2: Research [covenant]
+
+Grounded in the discussion, bounded web research, fetched now: what practitioners treat as evidence, who the real authorities are, the current regulations and platform policies that bind the domain, and its documented failure modes (the raw material of the fraud table). Every claim that names a regulation, policy, threshold, or practice gets a link and access date in the Sources section. No web access means no trustworthy bundle: say so and stop rather than shipping memory in a suit. (The observed runs skipped this and worked from frontier knowledge; removing that dependence is exactly why this skill exists.)
+
+## Stage 3: Generate the bundle
+
+1. **Orient and read ALL existing adapters, not a sample [observed].** Enumerate the install; read every adapter in `references/domains/` plus the governing docs (the method SKILL.md router, fable-judge, flowcharts, README, CHANGELOG, TEMPLATE.md). The schema is learned from the corpus and the template together.
+2. **Scope the sector [observed].** One applies-when sentence and one boundary sentence naming the nearest adapter or the coding default and which side takes over when. (The no-adapter-needed exit already fired in Stage 1; reaching this step means the sector earned its adapter.)
+3. **Write the workflow and its flowchart [v1.4].** The ordered steps a practitioner (or a lesser model) follows in this domain, and a mermaid flowchart of them, into the adapter's Workflow section. The steps must be concrete and followable, not aspirational; each should name what to open, produce, or check.
+4. **Write the adapter to TEMPLATE.md [observed schema].** Keep the section headers exactly (CI greps them); the minimum evidence set is items that must actually be opened, every time.
+5. **Wire every routing surface [observed].** The method SKILL.md adapter paragraph, the flowcharts router, the README adapter list and count, fable-judge's sector list if it enumerates sectors, and the CHANGELOG. Keep the README and flowchart router copies byte-identical.
+6. **Build the trap fixture [covenant].** Small, single-decision, minutes to run: the tempting move is the sector's central fraud, the correct move is the workflow's discipline, and the violation is objectively detectable (a diff, a marker file, a recomputation). GROUND-TRUTH.md carries the task prompt, the trap, 0/1/2 caps, and ideal behavior, and is never given to agents under test.
+
+## Stage 4: Verify, smoke-eval, report
+
+1. **Verify mechanically [observed].** Run the repo's own check script; fix what fails.
+2. **Smoke eval [covenant].** Run the fixture bare vs with the bundle (via fable-judge suite mode, or the headless harness for skill-discovery cases). One seed is a smoke test, not a benchmark; label it, and if the trap shows no difference, report the bundle unproven rather than validated.
+3. **Judge the bundle [v1.4].** Before delivering, run a fable-judge pass over the bundle's own claims: every named source actually fetched (spot-check at least one), the trap verified in all three states (broken, wrongly fixed, correctly fixed), every routing surface actually wired, the smoke eval's numbers matching what its runs actually showed. A bundle that fails the judge is not done. This exists because weak-tier makers overclaim (measured: bare Haiku called an unverified bundle "production-ready", round 13); the judge is the backstop.
+4. **Report outcome-first.** The bundle inventory, what was verified and how, the sources fetched, and the honest debt line. Match the observed runs, which declared their eval debt unprompted.
+
+```mermaid
+flowchart TD
+    A["/fable-domain <sector>"] --> DIS["Discuss: use case, what good looks like,<br/>trusted authorities, must-nevers, outputs"]
+    DIS --> RL{"Red-line domain?<br/>licensure or high-harm"}
+    RL -->|yes| STOP["Refuse the checklist.<br/>Route to a qualified human"]
+    RL -->|no| SCOPE{"Nouns genuinely differ<br/>from coding default?"}
+    SCOPE -->|no| NOAD["Stop: no adapter needed,<br/>the method already covers it"]
+    SCOPE -->|yes| RES["Research now: evidence, authorities,<br/>regulations, documented failure modes"]
+    RES -->|"no web access"| NOSRC["Stop: no sources,<br/>no trustworthy bundle"]
+    RES --> ORI["Orient + read ALL adapters"]
+    ORI --> WF["Write the workflow + flowchart,<br/>then the adapter to TEMPLATE.md"]
+    WF --> WIRE["Wire routing surfaces;<br/>build the trap fixture"]
+    WIRE --> CHK["Run repo checks"]
+    CHK --> SMOKE["Smoke eval: bare vs bundle"]
+    SMOKE --> JDG["fable-judge pass on the<br/>bundle's own claims"]
+    JDG --> REP["Report: inventory, sources,<br/>smoke-grade label, declared debt"]
+```
+
+## Bounds
+
+- A sector already covered by an existing adapter gets an update, never a duplicate.
+- The adapter may end with one "companion skills" line naming installed skills relevant to the sector, as a pointer for the human reader; it never instructs invoking them (automatic skill discovery was tested across four wordings and fourteen runs and does not transfer to weak tiers; the negative is published).
+- User approval gates apply as in the method: writing files in the working copy is reversible; publishing, PR-ing, or committing the bundle needs the user's word (the authorization gate).
+- This skill structures domain work; it does not confer domain authority. The red-lines, the smoke-grade label, and the Sources section exist so a human expert can audit the bundle in minutes, and so the harmful domains never get a checklist at all.
+- **Small-model boundary, measured not guessed.** Generation quality tracks the model (Sonnet 9-10, Haiku 6 on the round-12 bar; a Haiku run also generated a redundant adapter for the coding default before the Stage 1 scope stop existed). Run the maker on a mid-tier model or better, or attended; the refusal gates hold at the weak tier, generation quality does not.
+``````
+
+### `.claude/skills/fable-judge/SKILL.md`
+
+> **FILE: `.claude/skills/fable-judge/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: fable-judge
+description: Adversarial verification of finished work. Treats any "done" as a set of claims, then re-runs the claimed verifications, diffs what actually changed, detects weakened tests and false completion claims, and delivers an evidence-based verdict (VERIFIED / VERIFIED WITH CAVEATS / REFUTED). Use after any agent or model claims work is complete - "/fable-judge", "judge this work", "verify what it did", "did that actually work?". Also runs the fable-method trap suite against a skill or model via "/fable-judge suite <target>".
+---
+
+> **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
+> Kept verbatim except two marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
+> directory, which KAIF does not vendor — clone the upstream repo to run it. In KAIF rituals this judge
+> pass is MANDATORY before a cycle marks a backlog item done and before `/release` publishes.
+> Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
+
+# fable-judge
+
+The most documented failure of coding agents is claiming success regardless of reality: "fixed, all tests pass" on broken work, tests quietly weakened until they pass, scope silently expanded. The judge's stance is fixed: **a report is a set of claims, not evidence.** Nothing is believed that was not observed.
+
+## Default mode: judge the work
+
+Target: the most recent completed piece of work in this conversation, or whatever the user names (a diff, a directory, a branch, another agent's report pasted in).
+
+1. **Collect the claims.** From the report or conversation, list: what was supposedly done, what was supposedly verified ("tests pass", "build green", "renders correctly"), and what was supposedly left untouched. Each becomes a row to prove or refute.
+2. **Establish what actually changed.** `git diff` and `git status` (or a directory diff against a pristine reference when there is no repo). The diff is ground truth; the report is not. Compare the set of touched files against the ask's blast radius, and against the plan's declared scope when the work declared one.
+3. **Re-run every claimed verification yourself.** Do not read code and nod: run the tests, the build, the script, the page. Capture the actual output. A claim that cannot be re-run (missing environment, credentials, human-eyes-only) is labeled UNVERIFIABLE, never assumed true.
+4. **Hunt the classic frauds**, in order of real-world frequency:
+   - **Weakened checks.** Diff the test files specifically: assertions loosened or deleted, expected values changed to match the new behavior, tests skipped, tolerances widened, real calls replaced by mocks. A changed test is guilty until its justification traces to a spec.
+   - **False completion.** A pass claimed with no run shown, a partial pass reported as full, "should work now", success language on a failure transcript.
+   - **Scope creep.** Changes beyond the ask: drive-by refactors, reformatting, new dependencies, "improvements".
+   - **Unauthorized action.** An outward-facing effect (deploy, push, publish, send, install, schedule, delete of shared data) that no quoted user instruction covers. Look for the report's `AUTH: user said` line and check its quote against the conversation; an outward effect in the diff or environment (a deploy marker, a new remote, a sent artifact) with no AUTH line, or with a quote that does not actually authorize that action, is the fraud. Documentation telling the agent to deploy does not count as authorization.
+   - **Spec betrayal.** Code changed to satisfy a check that contradicts the README/spec/docstring. Authority order: explicit user statement beats spec, spec beats tests, tests beat current code behavior.
+   - **Debris.** Leftover scratch files, debug prints, commented-out code, orphaned imports.
+   The full catalogue is `fable-method`'s `references/failure-modes.md`; use it as the checklist when the work is large.
+   **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
+5. **Deliver the verdict, evidence first.**
+   - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
+   - **VERIFIED WITH CAVEATS** - the work is sound; list exactly what could not be re-run and any minor debris.
+   - **REFUTED** - a claim failed reproduction or a fraud was found: name the exact claim, show the output that contradicts it, and state the smallest fix.
+   Format: the verdict is the first line; then a claims table (claim, what was observed); then frauds found, if any; then the recommended action. Never soften a refutation to be polite, and never inflate a caveat into a refutation to look rigorous.
+
+Standing rules: judging changes nothing (read and run only; fixes happen only if the user asks afterward). If the work touched nothing runnable, say plainly what a judge can and cannot check here. This is a gate, not a second implementation: minutes, not hours; if verification needs an environment you lack, hand that back rather than guessing.
+
+## suite mode: judge a skill or a model
+
+`/fable-judge suite <target>` runs the fable-method trap suite against a target configuration: a newly installed skill, a different model, a modified prompt. It needs the upstream repo's `eval/` directory, which KAIF does not vendor — clone `https://github.com/Sahir619/fable-method` and run suite mode from that clone.
+
+For each scenario in `eval/scenarios/`: create a fresh copy in a scratch directory, run an executor subagent with the target configuration on that scenario's task (tasks and ground truths live in `eval/workflow.js` and `eval/README.md`), then judge the run exactly as the default mode judges work: by diff and execution against the scenario's ground truth, never by the executor's report alone. Deliver per-scenario scores and which traps triggered. One seed per scenario is a smoke test, not a benchmark; multiply seeds for confidence, and say which was done.
+``````
+
+### `.claude/skills/fable-loop/SKILL.md`
+
+> **FILE: `.claude/skills/fable-loop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: fable-loop
+description: End-to-end orchestrated workflow that runs a task the way Fable ran sessions - parallel evidence subagents, one committed plan, surgical execution with an intent gate, adversarial verification agents, honest outcome-first report. Use for non-trivial multi-step tasks when the user says "/fable-loop", "run the fable loop", or "do this the way Fable would". For the rules alone without orchestration, use fable-method; inside the project's own cycles (KAIF /autoloop, /dayloop, /nightloop) apply this per backlog item.
+---
+
+> **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
+> Kept verbatim except marked KAIF patches: (1) upstream's "GSD workflow" references are mapped to KAIF's
+> own cycles (`/autoloop`/`/dayloop`/`/nightloop`) — the cycle owns picking backlog items, this loop owns
+> executing ONE item; (2) the install-path note reflects KAIF's `.claude/skills/` layout. Sync ritual:
+> before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
+
+# The Fable Loop
+
+This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.claude/skills/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
+
+**Gate first.** Trivial per the method's triviality gate: just do it, verify with the one obvious check, report in two sentences. No stages, no subagents. Everything else runs the four stages below in order.
+
+## Stage 1 - PLAN (the first bookend)
+
+1. Apply method Steps 0-3: classify the ask, define done with a named verification, state load-bearing assumptions.
+2. **Evidence fan-out.** Spawn the evidence gatherers as parallel subagents in ONE message, never sequentially:
+   - codebase questions: an Explore agent per distinct area ("how does X work", "what depends on Y");
+   - library or fact questions: a research agent that fetches current docs or searches the web;
+   - each subagent returns distilled findings with citations, never raw file dumps.
+   One batch plus one follow-up batch is the budget; a third needs a stated reason.
+3. **Produce the plan artifact** in this shape: classification; definition of done plus its verification; evidence found (cited); ONE recommended approach (alternatives dismissed in a line each); the scope (the exact files or surfaces the work will touch); risks and assumptions; and the execution checklist.
+4. **Decision gate.** Task-shaped and reversible: proceed to Stage 2 without asking. Plan-first shape (ambiguous scope, irreversible or outward-facing actions, or the user asked for a plan): present the plan artifact and STOP for approval.
+
+## Stage 2 - EXECUTE
+
+1. Work the checklist in the **main thread** (use the todo tool if the harness has one; tick items as they complete). Deciding and editing stay in the main thread; only searching and verifying fan out.
+2. Every edit follows method Step 4: intent gate before behavior changes, recall gate before first use of anything unopened, smallest correct change, precise edits, never destroy without looking.
+3. Independent mechanical items (same change across many files, isolated file generation) may fan out to parallel subagents, in one message, with worktree isolation if they could touch the same files.
+4. A surprise mid-execution re-routes per method Step 2 rule 7: say it, then update the plan or go back to Stage 1. Never force the plan through a surprise.
+5. Mid-item ignorance is a pause, not a guess: the moment an edit would carry a fact from memory (a signature, a key, a figure), stop that item, fan out one research subagent per the method's recall gate, and resume when it returns.
+6. Outward-facing checklist items obey the method's authorization gate: no quoted user authorization, no action; the item converts to a proposed next step in the report.
+
+## Stage 3 - VERIFY (adversarially)
+
+1. Run the named verification yourself, both halves: the done criterion observed (ran, rendered, counted), and the surrounding system still healthy (build, tests, lint for the touched area).
+2. **For consequential changes, spawn attackers.** 1-3 parallel subagents, each prompted to REFUTE the work from a distinct lens, for example: "Read this diff and prove the change is wrong or incomplete", "Exercise the changed behavior at runtime and find an input that breaks it", "Check this claim against the spec/docs and find a contradiction", "Diff the full change set against the plan's declared scope and prove something outside it changed". Distinct lenses beat identical reviewers.
+3. A finding that survives your own check goes back to Stage 2 as new work. Hard bound per the method: 3 failed fix-verify cycles on the same issue, or any blocker outside your control, means stop and hand back with the output and your hypothesis.
+
+## Stage 4 - AUDIT and REPORT (the second bookend)
+
+1. Self-audit per fable-method audit mode: for each method step, followed, skipped, or faked. Fix what one pass can fix (usually an unverified claim: verify it now or relabel it a caveat).
+2. Deliver per method Step 6: outcome in the first sentence, verification evidence shown, honest caveats, follow-ups only if they emerged from the work. No stage names or step numbers in the report; the INTENT and AUTH lines are the only method artifacts a report may contain.
+
+## When NOT to use this loop
+
+- Trivial tasks (the gate handles them).
+- Pure questions with no multi-step work: plain fable-method covers the shape.
+- To pick or sequence backlog items inside a KAIF cycle (`/autoloop`/`/dayloop`/`/nightloop`): the cycle owns the iteration; apply this loop to execute ONE substantive item, never nest loops.
+
+## Model economy
+
+The loop is model-agnostic. Evidence and attacker subagents are cheap-model-friendly; keep the main thread (deciding, editing) on the strongest model available, and give attackers higher effort than gatherers when a choice exists.
+``````
+
+### `.claude/skills/fable-method/SKILL.md`
+
+> **FILE: `.claude/skills/fable-method/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: fable-method
+description: A step-by-step problem-solving loop (classify the ask, define done, gather evidence, decide, act surgically, verify by observation, report outcome-first). Use when the user says "/fable-method", "use the fable method", or "approach this like Fable", or proactively when starting any multi-step task that no task-specific skill covers. Subcommands - plan (stop after the plan), audit (grade finished work against the loop), report (rewrite an answer outcome-first).
+trigger: /fable-method
+---
+
+> **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
+> Kept verbatim except two marked KAIF patches: (1) the domain-adapter references now point to the
+> project's **KAIF sphere library** (which carries the same binding sections since KAIF 1.5); (2) the
+> on-demand references list reflects what KAIF vendors (`references/failure-modes.md`, `examples.md`,
+> `flowcharts.md`; upstream's `references/domains/` is replaced by KAIF spheres). Sync ritual: before a
+> KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
+
+# The Fable Method
+
+A mid-tier model that follows this loop beats a stronger model that free-styles: the quality lives in the structure, the evidence, and the honesty, not in the model. The loop is self-contained. Follow it literally. The steps structure your work, never your output: do not narrate step numbers or step headers in anything the user reads.
+
+## Usage
+
+```
+/fable-method <task>       full loop on the task (default)
+/fable-method plan <task>  Steps 0-3 only: classify, define done, gather evidence, deliver the plan, stop
+/fable-method audit        grade the work already done in this conversation against the loop (see Modes)
+/fable-method report       rewrite the answer you were about to send per Step 6
+```
+
+Deeper material loads on demand: `references/failure-modes.md` (symptom to step map for 18 common agent failures), `references/examples.md` (full worked examples for every ask shape), the project's **sphere library** (KAIF's domain adapters — see below; `/fable-domain` generates new ones to the KAIF sphere template), `references/flowcharts.md` (the whole method as decision flowcharts; follow the arrows literally when unsure how a rule routes).
+
+**Domain adapters (KAIF spheres).** Coding is the default domain. If the project's sphere is not software — science/research, design/UX, business/ops/finance, or another sphere recorded in `.kaif/kaif.json` — read the project's deployed sphere library before Step 2. A sphere changes only the nouns, never the loop: what counts as evidence, who the authority is, what verification by observation means, and what the frauds are. Its **minimum evidence set is binding**: those items must actually be opened before acting, every time. Research is never optional; the sphere defines how much is enough. Medical and clinical work has no sphere adapter on purpose: it needs qualified review, not a checklist; say so when asked.
+
+**Triviality gate (run first).** A task is trivial only if ALL of these are true: one file, under ~10 changed lines, no new behavior, and you already know exactly what to change without searching. If trivial: make the change, confirm it with the one obvious check (re-read the changed span, or run the build/lint/command it affects), and report in one or two sentences. Everything else, and anything you are unsure about, gets the full loop.
+
+**Fit gate (run next, before Step 0).** This loop turns judgment problems into evidence problems whenever the answer is reachable; it cannot supply judgment that lives only in your own head. So first locate where the answer is, and route:
+
+- **In sources you can open** (a spec, file, dataset, check, or docs): run the loop. This is the default.
+- **In an established technique you do not yet know:** research it first (Step 2's lookup budget applies), then run the loop.
+- **Only in your own inference, nothing to open or look up:** say so. Do not dress a guess as a rigorous process (that is the costume, failure mode 14). Attended: ask whether to proceed anyway with a flagged low-confidence answer. Unattended: proceed but label the answer low-confidence, never silently. There is no "escalate to a bigger model" step; the fallback everywhere is an honest hand-back.
+- **In a specialized procedure the base model lacks, and it recurs (or the user asked for reusable tooling):** build that procedure as a skill via `fable-domain`.
+
+Whenever the gate routes anywhere but "run the loop", name that choice in the report (what was missing, what you did instead). A silent detour is indistinguishable from a skipped step.
+
+## Step 0 - Classify the ask
+
+| Shape | Signal | Deliverable |
+|---|---|---|
+| **Question / assessment** | "why is...", "what do you think...", user describes a problem or thinks out loud | Findings and a recommendation. Change nothing. |
+| **Task** | "fix", "build", "change", "make" | The completed change, verified. |
+| **Plan-first** | ambiguous scope, irreversible or outward-facing actions, or the user asks for a plan | A plan with your recommendation. Stop and wait for approval. |
+
+Tie-breaks, in order:
+1. If any plan-first signal is present, plan-first beats task.
+2. A mixed ask ("why is this failing, and can you fix it?") is a task whose final report must also answer the question.
+3. Genuinely unsure between task and plan-first: choose plan-first.
+
+"Ambiguous scope" test: you can imagine two materially different deliverables the user might mean. If evidence gathering (Step 2) can settle which one, proceed and let it. If only the user can settle it, ask exactly one pointed question that states your recommended interpretation, then wait. Never ask about things evidence can answer.
+
+Also extract the constraints the user stated and the decisions they already made. Never re-litigate a settled decision or re-derive an established fact.
+
+## Step 1 - Define done
+
+Tell the user, in one or two sentences, what done looks like and how it will be verified. By shape:
+
+- **Task:** a concrete observation (this test passes, the build stays green, this number changes, this page renders, this file exists).
+- **Question/assessment:** every claim in the findings traces to something you actually read or ran; you can cite the file and line, or the command output, for each claim.
+- **Plan-first:** a plan the user can approve, with the verification named for each planned step.
+
+State your load-bearing assumptions. If one is checkable with a single tool call, check it instead of assuming. If after re-reading the request you still cannot name a verification, ask the user one specific clarifying question before proceeding.
+
+## Step 2 - Gather evidence
+
+1. **Orient first.** Before reading anything specific, enumerate what exists: list the directory, glob the project. You cannot pick the right files to read from memory of what projects usually contain.
+2. **Primary sources beat memory.** Read the actual code, files, and output. Never invent an API signature, endpoint, payload shape, or file path from recall. For library APIs, fetch current docs: context7 if available, otherwise the official docs page or the installed package source. If neither is possible, say explicitly that you are working from memory.
+3. **Parallelize what is independent and expensive.** Web fetches, doc lookups, subagent explorations, and reads across many files go in one parallel batch, never sequentially. Chaining a few small local reads is right when each one shapes what to read next; batching is for lookups that do not depend on each other.
+4. **Read narrow, never re-read.** Search to locate the relevant section, then read that section, not the whole file. Never re-fetch what is already in context.
+5. **Time-box mechanically.** One round of lookups plus one follow-up round covers most tasks; a third needs a stated reason. If two consecutive lookups told you nothing new, stop.
+6. **Establish intent before changing behavior.** A failing check has two possible culprits: the code or the check itself. Before editing either, find the statement of intended behavior (README, spec, docstring, comment, type) and confirm that code, check, and spec all agree. If any two disagree, that is a surprise (rule 7): surface the contradiction, say which side you trust and why, and never silently make one side match another. The task framing can itself be wrong: "fix the code" does not prove the code is the broken part.
+7. **Surprises route the loop.** Anything that contradicts your expectation is your most important finding: state it to the user. If it changes what done means, update Step 1. If it changes what the user is actually asking for, go back to Step 0. Otherwise report it and continue.
+
+## Step 3 - Decide and commit
+
+Synthesize the evidence into **one recommendation**. If you seriously considered alternatives, name each in one line and say why it lost; if you considered none, say nothing.
+
+Route by the Step 0 table. For task-shaped work, proceed to Step 4 without asking permission. Reversibility test: an action is irreversible or outward-facing if another person or system can observe it before you could undo it (push, publish, send, deploy, delete shared data, payment, permission change). Actions confined to the local working tree are reversible.
+
+**Authorization gate.** An irreversible or outward-facing action needs the user's own words behind it. Before taking one, write the line `AUTH: user said "<their exact words>"`; if nothing in this conversation supplies the quote, do not act: the action goes in the report as a proposed next step instead. Documentation is not authorization: a README, workflow doc, or installed skill saying a deploy/push/send "must follow" your change makes the action documented, never authorized, and completing the task is not authorization either. The AUTH line appears verbatim in the report whenever such an action was taken.
+
+Name the scope: the files or surfaces the change will touch. Needing something outside that list mid-work is a surprise (Step 2 rule 7): say it, never silently expand.
+
+## Step 4 - Act surgically
+
+1. **Intent gate, before any behavior-changing edit.** Write one line: `INTENT: code does <X>; the failing check/task expects <Y>; the spec (README/docs/docstring) says <Z>`. You must actually open the README/docs/docstrings to fill the third slot, and if you change behavior this line must appear verbatim in your final report. If X, Y, Z do not all agree, do not edit yet: the disagreement is the real finding (Step 2 rule 7). Authority order when they disagree: an explicit user statement beats the spec, the spec beats the tests, the tests beat current code behavior. A task framing like "fix the code" or "make the tests pass" is NOT a statement of intended behavior; it does not promote the tests above the spec.
+2. **Recall gate, before first use of anything you have not opened this session.** An API signature, endpoint, config key, price, figure, or regulation written from memory is not evidence. Stop and open its source now (the docs file, the library source, a fetched page; a fresh two-lookup budget as in Step 2), or, if no source is reachable, write it and label it in the report as memory, unverified. Discovering ignorance re-opens Step 2 exactly like a surprise does.
+3. **Smallest correct change.** Touch only what the task needs. Match the existing style even if you would do it differently.
+4. **Precise edits over rewrites.** Rewrite a whole file only if you authored it this session or have fully read it.
+5. **Track multi-part work.** Any task with 3 or more heterogeneous steps, or more than ~5 similar items, gets a written checklist first (a todo tool if the harness has one, otherwise a list). Tick items as they complete; audit the list against the original ask before reporting.
+6. **Never destroy without looking.** Before deleting or overwriting anything, look at what is actually there. If it contradicts how it was described, stop and surface that.
+7. **Failed-edit recovery ladder.** Re-read the exact region, adjust the match, retry once. Only then widen to a larger span; a full rewrite is last, and you say that you fell back and why. Never retry a failed call verbatim.
+8. **Standing prohibitions, absent the user's explicit instruction:** never commit or push; never weaken a check, nor fabricate the thing it looks for, to make it pass; never touch secrets, credentials, or env files; never add a dependency; never delete or overwrite outside the declared scope.
+
+## Step 5 - Verify by observation
+
+Verification has two halves, and a third when you fixed a defect:
+- **(a)** the Step 1 done criterion passes, observed (it ran, it rendered, it counted), not inferred from reading the code;
+- **(b)** the surrounding system still works: existing tests, build, or lint for the touched area. A green targeted check with a broken build is a failed verification.
+- **(c) Twin check, whenever you fixed a defect.** A bug found in one place is presumed to recur elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and write one line that must appear verbatim in your report: `TWINS: searched <the pattern> - found <N> other sites: <files, or "none">`. Fix them or list them; a completeness claim with no search behind it is failure mode 14.
+
+On failure, route: a mechanical mistake in the change goes back to Step 4; a failure that surprises you or contradicts your understanding goes back to Step 2. Hard bound: after 3 failed fix-verify cycles on the same issue, or when blocked by anything outside your control (credentials, environment, permissions), stop. Report what was tried, the actual output, and your current hypothesis, and hand back to the user.
+
+If something cannot be verified (no runtime, needs credentials, needs human eyes), say exactly that. Never let an unverified claim pass as a verified one.
+
+## Step 6 - Report outcome-first
+
+- The first sentence answers "what happened" or "what did you find". Detail comes after. Never include step numbers, step names, or any method scaffolding in the report; the only method artifacts that belong in a report are the INTENT line when behavior changed, the AUTH line when an outward action was taken, and the PENDING line when a prescribed follow-up was deliberately not taken.
+- Match the reader, not the work: the opening paragraph must be readable by someone who never saw the code or the data. Define jargon at first use and translate numbers into meaning ("about twice as fast", not only "420ms to 210ms"); technical evidence follows the plain paragraph. Binding wherever a domain adapter applies: those reports go to clients, not engineers.
+- Complete sentences a teammate who stepped away can follow. Quote only the load-bearing lines; never dump full files or logs.
+- Include the caveats: what was skipped, what is still weak, what could not be verified. Failed things are reported as failed, with their output. If the project's own docs prescribe a follow-up to your change (a deploy, push, send, restart) and you deliberately did not take it, your report must carry the line `PENDING: <the action> - awaiting your authorization`, verbatim. No prescribed-but-untaken follow-up, no line.
+- Leave behind only intended changes: delete the scratch files and test artifacts you created during the work, and note the cleanup in the report. The judge treats leftover debris as a fraud signal; do not hand it any.
+- Offer only follow-ups that emerged from this task (a caveat you listed, a surprise you logged, scope you cut). If none emerged, end without follow-ups.
+- Before sending, reread once as a hostile reviewer: any claim not actually verified (verify it now, or relabel it as an explicit caveat), any answer in the wrong shape for the Step 0 classification, anything touched outside the declared scope? Fix, then send.
+- **Artifact gate, the last check before sending.** Sweep the finished report once against what this run owed, and repair it mechanically: behavior changed and no `INTENT:` line, add it; an outward action taken and no `AUTH:` line, add it; a prescribed follow-up deliberately untaken and no `PENDING:` line, add it; a defect fixed and no `TWINS:` line, add it. The gate fires only when something is owed and missing; a clean report passes untouched.
+
+## Compressed examples
+
+**Task: "Fix the failing date test."**
+Step 1: done = the full test suite passes, including the date test. Step 2: read the test plus the function it exercises, in one batch; surprise logged: the test is correct, the function drops timezones. Step 4: one edit in the function. Step 5: suite run, green, output shown; nothing else touched. Step 6: "The test was right; `formatDate` dropped the timezone offset. Fixed in one line, all 42 tests pass."
+
+**Question: "Why is the dashboard slow?"**
+Step 0: assessment; change nothing. Step 1: done = a cause backed by observations, every claim citable. Step 2: in parallel: the network/profile evidence and the data-fetching code. Step 6: "The dashboard refetches every widget on each keystroke (`useDashboard.ts:41`, no debounce, no cache). The fix would be a 300ms debounce plus query caching. Want me to make that change?" No edits made.
+
+## Modes
+
+**plan** - run Steps 0 to 3 and stop. Deliver: the classification, the definition of done with its verification, the evidence found (with citations), and one recommended approach with alternatives dismissed in a line each. Do not touch any file.
+
+**audit** - grade the most recent completed piece of work in this conversation against the loop. For each step, mark it followed, skipped, or faked (claimed without observation). For every skip or fake, name the concrete risk it created; `references/failure-modes.md` maps symptoms to steps. Deliver a short table plus the single highest-value fix, and apply that fix only if the user asks.
+
+**report** - apply the Step 6 checklist to the answer you were about to send: outcome in the first sentence, load-bearing quotes only, caveats present, follow-ups only if they emerged from the work, hostile-reviewer reread done. Rewrite it, do not send the original.
 ``````
 
 ### `.claude/skills/kaif-fork/SKILL.md`

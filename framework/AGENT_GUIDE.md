@@ -26,23 +26,24 @@ relies entirely on this document to get to work.
 4. git log --oneline -5           # where we are in history
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
-7. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
-8. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
-9. Run the build (if touching code)   # <BUILD_COMMAND>
-10. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
-11. Comment the code              # comment blocks, classes, modules, important lines
-12. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
-13. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-14. Periodically re-read the key guidance docs:
+7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
+9. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
+10. Run the build (if touching code)   # <BUILD_COMMAND>
+11. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
+12. Comment the code              # comment blocks, classes, modules, important lines
+13. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
+14. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
+15. Periodically re-read the key guidance docs:
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
-15. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
+16. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
     human can glance over and follow along.
-16. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
+17. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
     clean structured format for AI consumption. After implementing from such a document, write the
     status and the implementation date back into it.
 ```
@@ -64,6 +65,19 @@ Don't read every document "just in case" — that fills the context you're tryin
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Task execution discipline — the fable loop
+
+Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify
+the ask → define done → gather evidence → decide → act surgically → verify by observation → report
+outcome-first, with its gates and **forced artifacts** (`INTENT:` / `AUTH:` / `TWINS:` / `PENDING:`
+lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
+follow). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
+the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
+run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
+These three skills are vendored verbatim from [fable-method](https://github.com/Sahir619/fable-method)
+(Sahir619, MIT) — see their headers for the sync ritual; the project's sphere library plays the role of
+their domain adapters.
 
 ### Experience log — `EXPERIENCE.md`
 
@@ -148,6 +162,11 @@ is: work ONLY in `main`, no feature branches; commit incrementally and often; to
 (git revert / git checkout <hash> -- file), not branches. Pick what fits your project and state it here
 so the agent doesn't improvise.>`
 
+> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's
+> standing authorization for routine commits/pushes per the policy above. Everything beyond it —
+> releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
+> the owner's quoted words (an `AUTH:` line).
+
 ## Commits
 
 Style: `feat:`, `fix:`, `docs:`, `refactor:`, `ci:` + one line of what was done.
@@ -219,6 +238,10 @@ and report in the chat.
 
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
+
+Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
+per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
+interpretation. Interviews are for vision-level forks that outlive the task.
 
 ---
 

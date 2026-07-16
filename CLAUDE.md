@@ -19,7 +19,9 @@
 Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/autoloop`, `/dayloop`,
 `/nightloop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`, `/bug-research`,
 `/propose-idea`, `/interview`, `/revision`, `/fix-vision`, `/what-next`, `/help-kaif`, `/release` +
-жизненный цикл `/kaif-*`).
+жизненный цикл `/kaif-*` + **fable-семейство** `/fable-method`, `/fable-loop`, `/fable-judge`,
+`/fable-domain` — дисциплина исполнения задач, вендорено из fable-method (EN); judge-проход обязателен
+в циклах и перед релизом).
 
 ⚠️ **Критическое правило:** самораспаковывающееся ядро `KAIF.md` **генерируется** — никогда не правь
 его вручную. Правь `framework/_intro.md` или шаблоны `framework/*`, затем запусти

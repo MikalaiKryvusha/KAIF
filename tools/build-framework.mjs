@@ -102,7 +102,9 @@ function embedSkills() {
 let out = readFileSync(join(FW, '_intro.md'), 'utf8');
 
 // Drop the authoring comment at the top of _intro.md; replace with a "generated" banner.
-out = out.replace(/^<!--[\s\S]*?-->\n/, '');
+// (\r?\n — the working tree may be CRLF on Windows checkouts; the regex must strip the comment
+// on both platforms, otherwise the {{EMBED:...}} example inside it leaks into marker processing.)
+out = out.replace(/^<!--[\s\S]*?-->\r?\n/, '');
 out = '<!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by ' +
       'tools/build-framework.mjs. Edit the sources and re-run the tool. -->\n' + out;
 
@@ -127,7 +129,7 @@ console.log(`✅ KAIF.md generated — ${out.split('\n').length} lines, v${versi
 // (no unpacking). It is self-contained prose — no {{EMBED}} markers — so the build
 // only strips the authoring comment, stamps the version, and copies it to the root.
 let slim = readFileSync(join(FW, 'KAIF-SLIM.md'), 'utf8');
-slim = slim.replace(/^<!--[\s\S]*?-->\n/, '');
+slim = slim.replace(/^<!--[\s\S]*?-->\r?\n/, '');   // \r?\n: tolerate CRLF checkouts (see above)
 slim = '<!-- GENERATED FILE — do not edit by hand. Built from framework/KAIF-SLIM.md by ' +
        'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + slim;
 slim = slim.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());

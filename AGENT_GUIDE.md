@@ -34,13 +34,14 @@
 3. git status                     # what changed, what's uncommitted
 4. git log --oneline -5           # where we are in history
 5. Load only the relevant slice   # use the Context router below — read the required minimum + task-type docs
-6. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md
-7. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
-8. Comment your code/tools; keep docs accurate
-9. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
-10. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
-11. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md and improve them
-12. Narrate in the chat what you're doing
+6. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
+7. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md
+8. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
+9. Comment your code/tools; keep docs accurate
+10. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
+11. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
+12. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md and improve them
+13. Narrate in the chat what you're doing
 ```
 
 → **`STATUS.md`** — главный файл состояния. Обновляй его после каждой значимой задачи.
@@ -57,6 +58,18 @@
 | Баг | `BUG_FIXING_FRAMEWORK.md` · `bugs/<этот>` · карта (blast radius) |
 | Идея/фича | `ideas/<эта>` · `MASTER_PLAN.md` · релевантный `plans/<этот>` |
 | Развёртывание/распаковка | `KAIF.md` §8 · манифест распаковщика |
+
+### Дисциплина исполнения задачи — fable-цикл
+
+Любая нетривиальная задача исполняется по циклу **fable-method** (`.claude/skills/fable-method/`, EN):
+классифицируй запрос → определи «готово» → собери свидетельства → реши → действуй хирургически → проверь
+наблюдением → доложи результатом-вперёд — с его гейтами и **принудительными артефактами**
+(`INTENT:`/`AUTH:`/`TWINS:`/`PENDING:` на точках решения: слабые сессии следуют правилам на точках
+решения, а не правилам в списках). Оркестровку (параллельный сбор свидетельств, адверсарные
+верификаторы) даёт `/fable-loop` — в циклах по пункту беклога. Когда работа объявлена завершённой (твоя
+или чужая) — **`/fable-judge`**-проход перед тем, как считать её сделанной; в циклах и `/release`
+обязателен. Навыки вендорены дословно из [fable-method](https://github.com/Sahir619/fable-method)
+(Sahir619, MIT) — ритуал синхронизации в их шапках; роль доменных адаптеров играют сферы KAIF.
 
 ### Опыт — `EXPERIENCE.md`
 
@@ -169,6 +182,10 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Коммить инкрементально и часто. Чтобы откатить — используй историю git (`git revert`,
 `git checkout <hash> -- file`).
 
+> Сшивка с **authorization gate** fable-method: этот гид — *стоячая авторизация* владельца на рутинные
+> коммиты/пуши по политике выше. Всё сверх неё — релизы, деплои, внешние публикации/отправки,
+> force-push, удаление общих данных — по-прежнему требует цитируемых слов владельца (строка `AUTH:`).
+
 ## Коммиты
 
 Стиль: `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + одна строка. Каждое сообщение завершай строкой:
@@ -209,6 +226,10 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 Видение продукта принадлежит владельцу. Бренд, объём, форма фреймворка, что относится к v1, а что — позже:
 всё это проходит через `/interview` (`interviews/interview_NNN_*.md`), а не через автономные догадки. Всё,
 что дёшево откатить, — решай сам и докладывай.
+
+Двусмысленность уровня задачи (какой из двух результатов владелец имел в виду *сейчас*) — НЕ интервью:
+по fable-method (шаг 0) задай ровно **один точечный вопрос** в чате с рекомендуемой трактовкой.
+Интервью — для развилок видения, переживающих задачу.
 
 ---
 

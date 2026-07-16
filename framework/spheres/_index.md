@@ -9,6 +9,14 @@ A **sphere** tailors the deployment to the project's domain: which terminology t
 "release", "test", or "build" *means* there, and which guidance/skills to emphasize. The framework's
 structure stays the same; the **language and term libraries** adapt.
 
+Since KAIF 1.5 a sphere library also carries the domain's **execution discipline** (schema adapted from
+the domain adapters of [fable-method](https://github.com/Sahir619/fable-method), MIT): a **binding
+minimum evidence set** (what must actually be opened before acting, every time), the **authority order**
+(whose word wins in the sphere's classic conflict), what **verification by observation** means there,
+a **fraud table** that `fable-judge` hunts on non-code work, and a one-sentence **"done, by example"**.
+A sphere changes only the nouns, never the loop (`fable-method`); medical/clinical work deliberately has
+no sphere adapter — it needs qualified review, not a checklist.
+
 ## How sphere adaptation works (at deploy time)
 
 1. The agent determines the project's sphere — by inspecting the project and/or asking the human.

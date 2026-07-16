@@ -7,11 +7,22 @@ To fix a bug, the agent must:
   the human can glance over and understand where the work is.
 - **Reflect and capture knowledge** for every bug, even small ones, in a dedicated markdown file per
   bug in the `bugs/` directory.
+- **Intent gate before the first behavior-changing edit** (fable-method, Step 4): write one line —
+  `INTENT: code does <X>; the failing check/task expects <Y>; the spec (README/docs/docstring) says <Z>`
+  — actually opening the spec to fill the third slot. If X/Y/Z disagree, the disagreement IS the finding:
+  the "bug" may live in the check or in the task framing, not in the code. Never silently make one side
+  match another; authority order: explicit owner statement > spec > tests > current code behavior.
 - **Enter the loop:** run the app → reproduce the bug → read the logs for this bug → form a guess at the
   cause → make a *single, targeted* change → build → run the app again → try to reproduce again.
 - The essence: **targeted changes, then a build to test whether the change helped or not.**
 - Simplified: Fix → Test → Read logs → Fix → Test → Read logs → … until it works correctly. Working
-  correctly **is the acceptance criterion** — at that point the bug is considered fixed.
+  correctly **is the acceptance criterion** — at that point the bug is considered fixed. "Works
+  correctly" is an *observation* (it ran, it rendered, it counted), never an inference from reading the
+  diff — an unverified "fixed" claim is the classic fraud `/fable-judge` exists to catch.
+- **Twin check after the fix** (fable-method, Step 5c): a defect found in one place is presumed to recur
+  elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and
+  record in the bug document (and your report): `TWINS: searched <pattern> — found <N> other sites:
+  <files, or "none">`. Fix them or list them — a completeness claim with no search behind it is hollow.
 - To fix a bug, it is often useful to **search the web** for the solution — forums, GitHub issues,
   Reddit, Stack Overflow, official docs.
 

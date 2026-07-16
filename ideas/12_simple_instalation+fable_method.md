@@ -49,4 +49,9 @@ KAIF 1.5 — Thin KAIF
 - `researches/03_fable_method.md` — разбор fable-method по первоисточнику (клон репо, v1.4.0) + варианты интеграции (рекомендация: гибрид «vendor дословно + сшивка в ДНК»).
 - `researches/04_thin_kaif_installation.md` — карта текущей установки (13 точек когнитивной нагрузки; неустранимы только 3) + целевая архитектура «тонкий KAIF.md → KAIF-LOADER.mjs → KAIF-CORE.mjs из origin».
 - `plans/13_kaif_1.5_thin_kaif.md` — поэтапный план эпика (Фазы 0–5).
-- `interviews/interview_002_thin_kaif_and_fable_method.md` — **7 развилок, ЖДЁТ ОТВЕТОВ ВЛАДЕЛЬЦА** (гейт перед Фазой 1).
+- `interviews/interview_002_thin_kaif_and_fable_method.md` — 7 развилок; **отвечено владельцем 2026-07-16**, решения в MASTER_PLAN §7 №6–11.
+
+Фаза 1 (fable-method в KAIF) выполнена 2026-07-16: 4 навыка вендорены дословно (EN, атрибуция, пин v1.4.0)
++ references; сферы модернизированы дисциплинарными секциями (evidence set / авторитеты / верификация /
+фроды / «готово»); ДНК-сшивка в оба слоя (чек-листы, BUG_FIXING intent+twin, judge-проход обязателен в
+циклах и `/release`); сборка зелёная — 43 блока. Дальше — Фаза 2 (машинерия установки) по `plans/13`.
