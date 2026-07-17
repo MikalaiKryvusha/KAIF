@@ -187,11 +187,17 @@ const CONTEXT_POINTER =
   '`STATUS.md` (current state); think per `PHILOSOPHY.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
   'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n';
 
+// Returns true when the template was actually written; false when an existing file was
+// ADOPTED (kept as found). Adoption is provenance the deploy manifest must remember:
+// for adopted paths the sha snapshot records the OWNER'S content, not a template — so a
+// later `update` may never take "sha still matches" as permission to replace them
+// (field-caught on ndim, 2026-07-17: 18 owner-adapted skills silently templated over).
 function writeIfNew(path, content) {
-  if (okOnDisk(path) && !FORCE) { log(`= kept existing ${path}`); return; }
+  if (okOnDisk(path) && !FORCE) { log(`= kept existing ${path}`); return false; }
   mkdirSync(dirname(path) || '.', { recursive: true });
   writeFileSync(path, content);
   log(`+ wrote ${path}`);
+  return true;
 }
 
 function deployAgentSystems(skillFiles, refFiles) {
@@ -336,11 +342,17 @@ async function cmdUpdate() {
   // classify against the install-time snapshots
   const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
   const oldShas = old.shas || {};
+  // Provenance gate: paths the previous deploy ADOPTED (kept as found, never written from a
+  // template) are not replace-eligible even when the disk sha still matches the snapshot —
+  // for them the snapshot IS the owner's content. "Unchanged since the snapshot" only
+  // authorizes replacement when the snapshot itself was template-authored.
+  const adoptedBefore = new Set(old.kept || []);
   const { files, meta } = parseBundle(bundlePath);
   const { deploy } = applyLanguage(files);           // LANG defaults handled below
   const values = detectValues();
   const unresolved = new Set();
   const diverged = [];
+  const adopted = [];
   let replaced = 0, added = 0, kept = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
@@ -348,38 +360,149 @@ async function cmdUpdate() {
     const content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
     f.content = content; // derived surfaces (system skill copies) must inherit the filled text (bug 05)
     if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
-    if (oldShas[f.path] && fileSha(f.path) === oldShas[f.path]) {
+    if (!adoptedBefore.has(f.path) && oldShas[f.path] && fileSha(f.path) === oldShas[f.path]) {
       writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++;
-    } else { diverged.push(f.path); kept++; }
+    } else { diverged.push(f.path); kept++; adopted.push(f.path); }
   }
   // agent-system artifacts: same classification via the copies' snapshots
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
   const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
   deployAgentSystems(skillFiles, refFiles); // writeIfNew semantics: new appear; existing kept (their canonical .claude source got classified above)
 
-  // swap the core itself + refresh manifests
+  // swap the core itself + refresh manifests (same shape and guarantees as install's:
+  // sha snapshots + adoption provenance in `kept` + the pristine marker snapshot that
+  // backs the final self-heal).
   writeFileSync('.kaif/kaif-core.mjs', bufs['KAIF-CORE.mjs']);
   log('↻ replaced .kaif/kaif-core.mjs (the machinery itself)');
   const deployedPaths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
   const shas = {};
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas }, null, 2) + '\n');
-  writeFileSync(KAIF_JSON, JSON.stringify({ ...cur, version: man.version, released: man.released }, null, 2) + '\n');
+  const marker = { ...cur, version: man.version, released: man.released };
+  writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas, kept: adopted, marker }, null, 2) + '\n');
 
-  writeUpdateTask(diverged, { ...meta, version: man.version }, `mechanical pass done: ${replaced} replaced, ${added} added, ${kept} kept (owner/diverged)`);
+  writeUpdateTask(diverged, { ...meta, version: man.version }, `mechanical pass done: ${replaced} replaced, ${added} added, ${kept} kept (owner/diverged). Sanity-check with git diff: replaced files must carry NO owner edits — anything you meant to keep belongs in merge-diverged below`);
   log(`\n✅ KAIF updated mechanically to ${man.version} — finish ${UPDATE_TASK}, then: node .kaif/kaif-core.mjs update-verify`);
 }
 
-function cmdUpdateVerify() {
-  if (!okOnDisk(UPDATE_TASK)) die(`${UPDATE_TASK} not found — nothing to verify (or already cleaned)`);
-  const task = readFileSync(UPDATE_TASK, 'utf8');
+// ---------------------------------------------------------------------------- final gates
+// The closing guarantees are a property of the DEPLOYED TREE, not of the road taken to it:
+// install's verify-final and update's update-verify run the SAME gate sequence (field-caught
+// on ndim, 2026-07-17 — the update path used to skip these, so owner-side merges made between
+// the mechanical pass and the final check never reached the per-system skill copies).
+
+// placeholder scan on the canon + skills (GOAL/maps may legitimately hold template slots for the owner)
+function scanPlaceholders() {
+  let issues = 0;
+  const scan = ['AGENT_GUIDE.md', ...(existsSync('.claude/skills') ?
+    readdirSync('.claude/skills').map((n) => `.claude/skills/${n}/SKILL.md`).filter(existsSync) : [])];
+  for (const p of scan) {
+    const t = readFileSync(p, 'utf8');
+    for (const ph of PLACEHOLDERS) if (t.includes(ph)) { console.error(`✖ placeholder ${ph} still in ${p}`); issues++; }
+  }
+  return issues;
+}
+
+// anonymous deployments: grep the tree for author identity BEFORE cleanup —
+// transient installer files (removed by the cleanup below) are excluded from the scan.
+function anonLeakScan() {
+  const TRANSIENT = ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK, '.kaif/install', '.kaif/kaif-core.mjs', DEPLOY_MANIFEST];
+  const leaks = [];
+  const walk = (dir) => {
+    for (const n of readdirSync(dir)) {
+      const p = (dir === '.' ? '' : dir + '/') + n;
+      if (['.git', 'node_modules'].includes(n) || TRANSIENT.some((t) => p === t || p.startsWith(t + '/'))) continue;
+      if (statSync(p).isDirectory()) { walk(p); continue; }
+      if (!/\.(md|json|txt|mjs|js)$/i.test(n)) continue;
+      const t = readFileSync(p, 'utf8');
+      for (const tok of AUTHOR_TOKENS) if (t.includes(tok)) { leaks.push(`${p} → "${tok}"`); break; }
+    }
+  };
+  walk('.');
+  for (const l of leaks) console.error(`✖ anonymity leak: ${l}`);
+  return leaks.length;
+}
+
+// Self-heal the deploy marker: a weak model may have rewritten .kaif/kaif.json losing
+// fields (field-caught, ДЗ-02 run 5). Merge the pristine snapshot with whatever is there
+// now — current values win where present, lost fields come back.
+function healMarker() {
+  if (!okOnDisk(DEPLOY_MANIFEST) || !okOnDisk(KAIF_JSON)) return;
+  try {
+    const snap = readJson(DEPLOY_MANIFEST).marker;
+    if (!snap) return;
+    const cur = readJson(KAIF_JSON);
+    const healed = { ...snap, ...cur };
+    if (JSON.stringify(healed) !== JSON.stringify(cur)) {
+      writeFileSync(KAIF_JSON, JSON.stringify(healed, null, 2) + '\n');
+      log('↻ self-healed .kaif/kaif.json (restored fields lost to a rewrite)');
+    }
+  } catch { /* marker unreadable — leave for the check to flag */ }
+}
+
+// Re-sync the per-system skill copies from the canonical .claude/skills/ — cognitive work
+// (adaptation fills, update merges, owner customizations) lands in the canon only; machinery
+// propagates it so no copy is ever edited by hand (bug 05 and its empty-project tail).
+function resyncCopies() {
+  if (!existsSync('.claude/skills')) return;
+  const agents = okOnDisk(KAIF_JSON) ? (readJson(KAIF_JSON).agents || []) : [];
+  const canon = [];
+  for (const n of readdirSync('.claude/skills')) {
+    const p = `.claude/skills/${n}/SKILL.md`;
+    if (okOnDisk(p)) canon.push({ path: p, content: readFileSync(p, 'utf8') });
+    const rd = `.claude/skills/${n}/references`;
+    if (existsSync(rd)) for (const r of readdirSync(rd).filter((f) => f.endsWith('.md')))
+      canon.push({ path: `${rd}/${r}`, content: readFileSync(`${rd}/${r}`, 'utf8') });
+  }
+  const copies = { codex: '.agents/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+  let synced = 0;
+  for (const [sys, base] of Object.entries(copies)) {
+    if (!agents.includes(sys)) continue;
+    for (const f of canon) { writeFileSync(f.path.replace('.claude/skills', base), f.content); synced++; }
+  }
+  if (agents.includes('zoo-code')) for (const f of canon) {
+    const n = skillName(f.path);
+    if (n) { writeFileSync(`.roo/commands/${n}.md`, f.content.replace(/^name:[^\n]*\n/m, '')); synced++; }
+  }
+  if (synced) log(`↻ re-synced ${synced} system skill copies from the canon`);
+}
+
+// self-clean: the deployment step is done; the project is driven by the skills from here on.
+function selfCleanArtifacts(taskFile, anonDeploy) {
+  for (const p of [taskFile, 'KAIF.md', 'KAIF-LOADER.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
+  if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
+  if (anonDeploy) {
+    // the core itself and its manifest carry the origin URL — an anonymous project keeps neither,
+    // nor the kaif:* handles that point at them (version stays readable in .kaif/kaif.json).
+    for (const p of ['.kaif/kaif-core.mjs', DEPLOY_MANIFEST]) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p} (anonymous)`); }
+    try {
+      const pkg = readJson('package.json');
+      if (pkg.scripts) { delete pkg.scripts['kaif:version']; delete pkg.scripts['kaif:check']; delete pkg.scripts['kaif:update']; }
+      writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+      log('- unwired kaif:* handles (anonymous)');
+    } catch { /* no package.json — nothing to unwire */ }
+  }
+}
+
+// Shared closing sequence: checkpoint grep on the live task file, then the gates, in order.
+function runFinalGates(taskFile, tag, verb) {
+  if (!okOnDisk(taskFile)) die(`${taskFile} not found — nothing to verify (or already cleaned)`);
+  const task = readFileSync(taskFile, 'utf8');
   let missing = 0;
   for (const id of [...new Set([...task.matchAll(/checkpoint ([a-z-]+)`/g)].map((m) => m[1]))])
-    if (!new RegExp(`^KAIF-UPDATE: ${id} done$`, 'm').test(task)) { console.error(`✖ checkpoint missing: KAIF-UPDATE: ${id} done  (record it: node .kaif/kaif-core.mjs checkpoint ${id})`); missing++; }
-  if (missing) die(`update-verify FAILED: ${missing} issues — finish them and re-run`);
-  for (const p of [UPDATE_TASK, 'KAIF.md', 'KAIF-LOADER.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
-  if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
+    if (!new RegExp(`^${tag}: ${id} done$`, 'm').test(task)) { console.error(`✖ checkpoint missing: ${tag}: ${id} done  (record it: node .kaif/kaif-core.mjs checkpoint ${id})`); missing++; }
+  missing += scanPlaceholders();
+  const anonDeploy = okOnDisk(KAIF_JSON) && readJson(KAIF_JSON).tracking === 'anonymous';
+  if (anonDeploy) missing += anonLeakScan();
+  if (missing) die(`${verb} FAILED: ${missing} issues — finish them and re-run`);
+  healMarker();
+  resyncCopies();
+  selfCleanArtifacts(taskFile, anonDeploy);
+}
+
+function cmdUpdateVerify() {
+  runFinalGates(UPDATE_TASK, 'KAIF-UPDATE', 'update-verify');
   log('✅ update-verify passed — the update is complete and self-cleaned. Commit: chore: update KAIF');
 }
 
@@ -406,12 +529,13 @@ function cmdInstall() {
   //    The filled/anonymized content is written BACK into the deploy entry so every derived
   //    surface (the .roo/.agents/.grok/.cline skill copies) inherits it — deriving copies from
   //    the raw template shipped placeholders to the other agent systems (bug 05, field-caught).
+  const adopted = [];
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) { log(`⊘ anonymous — skipped ${f.path}`); continue; }
     let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
     if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
     f.content = content;
-    writeIfNew(f.path, content);
+    if (!writeIfNew(f.path, content)) adopted.push(f.path);
   }
 
   // 2) skills for all target agent systems (from the canonical .claude/skills/ set)
@@ -459,14 +583,16 @@ function cmdInstall() {
   //    `shas` snapshots what is ON DISK right after install — `update` later tells
   //    "untouched since install" (disk sha == snapshot → safe mechanical replace)
   //    from "diverged" (agent/owner edited → hands off, cognitive merge).
+  //    `kept` records PROVENANCE: paths adopted as found (not written from a template) —
+  //    their snapshot is owner content, so sha-match alone never authorizes replacing them.
   const deployedPaths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
   const shas = {};
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
   // `marker` — a pristine snapshot of .kaif/kaif.json: weak models sometimes REWRITE the
   // marker instead of adding a key (field-caught, ДЗ-02 run 5), losing version/agents/language;
-  // verify-final self-heals from this snapshot.
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas, marker }, null, 2) + '\n');
+  // the final gates self-heal from this snapshot.
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas, kept: adopted, marker }, null, 2) + '\n');
 
   // 5) the final cognitive task for the agent: fresh install → adaptation;
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
@@ -501,6 +627,11 @@ function validate(deploy, skillFiles, taskFile = TASK_FILE) {
 
 function cmdCheck() {
   // Prefer the live bundle (pre-cleanup); after verify-final fall back to the persisted manifest.
+  // Expected agent systems come from the DEPLOYED marker, not the CLI default — a narrowed
+  // install (--agents a,b) must not be judged against all five systems.
+  if (!val('--agents') && okOnDisk(KAIF_JSON)) {
+    try { const j = readJson(KAIF_JSON); if (Array.isArray(j.agents) && j.agents.length) AGENTS = j.agents; } catch { /* marker unreadable — CLI default stands */ }
+  }
   let paths, agents;
   if (existsSync(BUNDLE)) {
     const { files } = parseBundle(BUNDLE);
@@ -549,99 +680,7 @@ function cmdCheckpoint() {
 }
 
 function cmdVerifyFinal() {
-  if (!okOnDisk(TASK_FILE)) die(`${TASK_FILE} not found — run install first (or it was already cleaned)`);
-  const task = readFileSync(TASK_FILE, 'utf8');
-  const ids = [...task.matchAll(/checkpoint ([a-z-]+)`/g)].map((m) => m[1]);
-  let missing = 0;
-  for (const id of ids) {
-    const line = new RegExp(`^KAIF-ADAPT: ${id} done$`, 'm');
-    if (!line.test(task)) { console.error(`✖ checkpoint missing: KAIF-ADAPT: ${id} done  (record it: node .kaif/kaif-core.mjs checkpoint ${id})`); missing++; }
-  }
-  // placeholder scan on the canon + skills (GOAL/maps may legitimately hold template slots for the owner)
-  const scan = ['AGENT_GUIDE.md', ...(existsSync('.claude/skills') ?
-    readdirSync('.claude/skills').map((n) => `.claude/skills/${n}/SKILL.md`).filter(existsSync) : [])];
-  for (const p of scan) {
-    const t = readFileSync(p, 'utf8');
-    for (const ph of PLACEHOLDERS) if (t.includes(ph)) { console.error(`✖ placeholder ${ph} still in ${p}`); missing++; }
-  }
-  // anonymous installs: grep the deployed tree for author identity BEFORE cleanup —
-  // transient installer files (removed below) are excluded from the scan.
-  const anonInstall = okOnDisk(KAIF_JSON) && readJson(KAIF_JSON).tracking === 'anonymous';
-  const TRANSIENT = ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, '.kaif/install', '.kaif/kaif-core.mjs', KAIF_JSON.replace('kaif.json', 'deploy-manifest.json')];
-  if (anonInstall) {
-    const leaks = [];
-    const walk = (dir) => {
-      for (const n of readdirSync(dir)) {
-        const p = (dir === '.' ? '' : dir + '/') + n;
-        if (['.git', 'node_modules'].includes(n) || TRANSIENT.some((t) => p === t || p.startsWith(t + '/'))) continue;
-        if (statSync(p).isDirectory()) { walk(p); continue; }
-        if (!/\.(md|json|txt|mjs|js)$/i.test(n)) continue;
-        const t = readFileSync(p, 'utf8');
-        for (const tok of AUTHOR_TOKENS) if (t.includes(tok)) { leaks.push(`${p} → "${tok}"`); break; }
-      }
-    };
-    walk('.');
-    if (leaks.length) { for (const l of leaks) console.error(`✖ anonymity leak: ${l}`); missing += leaks.length; }
-  }
-  if (missing) die(`verify-final FAILED: ${missing} issues — finish them and re-run`);
-
-  // Self-heal the deploy marker: a weak model may have rewritten .kaif/kaif.json losing
-  // fields (field-caught, ДЗ-02 run 5). Merge the pristine install snapshot with whatever
-  // is there now — current values win where present, lost fields come back.
-  if (okOnDisk(DEPLOY_MANIFEST) && okOnDisk(KAIF_JSON)) {
-    try {
-      const snap = readJson(DEPLOY_MANIFEST).marker;
-      if (snap) {
-        const cur = readJson(KAIF_JSON);
-        const healed = { ...snap, ...cur };
-        if (JSON.stringify(healed) !== JSON.stringify(cur)) {
-          writeFileSync(KAIF_JSON, JSON.stringify(healed, null, 2) + '\n');
-          log('↻ self-healed .kaif/kaif.json (restored fields lost to a rewrite)');
-        }
-      }
-    } catch { /* marker unreadable — leave for the check to flag */ }
-  }
-
-  // Re-sync the per-system skill copies from the canonical .claude/skills/ — the agent's
-  // cognitive fills (adaptation) land in the canon only; machinery propagates them so no
-  // copy is ever edited by hand (closes the empty-project tail of bug 05).
-  if (existsSync('.claude/skills')) {
-    const agents = okOnDisk(KAIF_JSON) ? (readJson(KAIF_JSON).agents || []) : [];
-    const canon = [];
-    for (const n of readdirSync('.claude/skills')) {
-      const p = `.claude/skills/${n}/SKILL.md`;
-      if (okOnDisk(p)) canon.push({ path: p, content: readFileSync(p, 'utf8') });
-      const rd = `.claude/skills/${n}/references`;
-      if (existsSync(rd)) for (const r of readdirSync(rd).filter((f) => f.endsWith('.md')))
-        canon.push({ path: `${rd}/${r}`, content: readFileSync(`${rd}/${r}`, 'utf8') });
-    }
-    const copies = { codex: '.agents/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
-    let synced = 0;
-    for (const [sys, base] of Object.entries(copies)) {
-      if (!agents.includes(sys)) continue;
-      for (const f of canon) { writeFileSync(f.path.replace('.claude/skills', base), f.content); synced++; }
-    }
-    if (agents.includes('zoo-code')) for (const f of canon) {
-      const n = skillName(f.path);
-      if (n) { writeFileSync(`.roo/commands/${n}.md`, f.content.replace(/^name:[^\n]*\n/m, '')); synced++; }
-    }
-    if (synced) log(`↻ re-synced ${synced} system skill copies from the canon`);
-  }
-
-  // self-clean: the install is done; the project is driven by the skills from here on.
-  for (const p of ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE]) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
-  if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
-  if (anonInstall) {
-    // the core itself and its manifest carry the origin URL — an anonymous project keeps neither,
-    // nor the kaif:* handles that point at them (version stays readable in .kaif/kaif.json).
-    for (const p of ['.kaif/kaif-core.mjs', DEPLOY_MANIFEST]) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p} (anonymous)`); }
-    try {
-      const pkg = readJson('package.json');
-      if (pkg.scripts) { delete pkg.scripts['kaif:version']; delete pkg.scripts['kaif:check']; }
-      writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-      log('- unwired kaif:* handles (anonymous)');
-    } catch { /* no package.json — nothing to unwire */ }
-  }
+  runFinalGates(TASK_FILE, 'KAIF-ADAPT', 'verify-final');
   log('✅ verify-final passed — KAIF install is complete and self-cleaned. Commit: chore: deploy KAIF');
 }
 
