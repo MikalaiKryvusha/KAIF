@@ -236,7 +236,7 @@ function writeAdaptationTask(unresolved, translated, meta) {
   if (unresolved.size) items.push(['placeholders', `Fill the remaining placeholders everywhere they occur (grep each): ${[...unresolved].join(' ')}`]);
   items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection. Keep them SHORT; write in 2-3 small edits, not one giant write.']);
   items.push(['goal-plan', 'If GOAL.md is empty, seed it and ask the owner; derive MASTER_PLAN.md from GOAL.md (skill: /revision).']);
-  items.push(['sphere', 'Record the project\'s sphere in .kaif/kaif.json (e.g. "sphere": "programming"). A matching library already ships in .kaif/spheres/ — do NOT author a new document unless no library fits (then start from _template.md).']);
+  items.push(['sphere', 'Pick the project\'s sphere (libraries ship in .kaif/spheres/; do NOT author a new document unless none fits) and record it by running `node .kaif/kaif-core.mjs sphere <name>` (e.g. `sphere programming`) — never edit .kaif/kaif.json by hand.']);
   if (needTranslate) items.push(['language', `Translate the owner-facing docs (GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs) into "${LANG}" — no bundled template for this language yet. Keep agent-only docs in English.`]);
   items.push(['kaif-framework', 'Write KAIF_FRAMEWORK.md from its template: "KAIF, deployed here" + the deployment record (version, date, language, sphere, agents, mode).']);
   items.push(['verify', 'Run `node .kaif/kaif-core.mjs verify-final` — it checks these checkpoints and self-cleans the installer. Then commit `chore: deploy KAIF`.']);
@@ -457,7 +457,10 @@ function cmdInstall() {
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
   const shas = {};
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas }, null, 2) + '\n');
+  // `marker` — a pristine snapshot of .kaif/kaif.json: weak models sometimes REWRITE the
+  // marker instead of adding a key (field-caught, ДЗ-02 run 5), losing version/agents/language;
+  // verify-final self-heals from this snapshot.
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas, marker }, null, 2) + '\n');
 
   // 5) the final cognitive task for the agent: fresh install → adaptation;
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
@@ -501,6 +504,19 @@ function cmdCheck() {
     if (!okOnDisk(p)) { console.error(`✖ MISSING or empty: ${p}`); missing++; }
   if (missing) die(`INCOMPLETE: ${missing} artifacts missing`);
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present`);
+}
+
+// sphere <name> — the file-edit-free way to record the project's sphere (field lesson,
+// ДЗ-02 run 5: a weak model REPLACED .kaif/kaif.json with {"sphere":…}, losing every other
+// field). Merges the key; never lets the model touch the marker by hand.
+function cmdSphere() {
+  const name = args[1];
+  if (!name || name.startsWith('--')) die('usage: kaif-core sphere <name>   (e.g. sphere programming)');
+  if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
+  const j = readJson(KAIF_JSON);
+  j.sphere = name;
+  writeFileSync(KAIF_JSON, JSON.stringify(j, null, 2) + '\n');
+  log(`✔ sphere recorded: ${name}`);
 }
 
 // checkpoint <id> — the file-edit-free way to record a finished task item (field lesson,
@@ -558,6 +574,23 @@ function cmdVerifyFinal() {
   }
   if (missing) die(`verify-final FAILED: ${missing} issues — finish them and re-run`);
 
+  // Self-heal the deploy marker: a weak model may have rewritten .kaif/kaif.json losing
+  // fields (field-caught, ДЗ-02 run 5). Merge the pristine install snapshot with whatever
+  // is there now — current values win where present, lost fields come back.
+  if (okOnDisk(DEPLOY_MANIFEST) && okOnDisk(KAIF_JSON)) {
+    try {
+      const snap = readJson(DEPLOY_MANIFEST).marker;
+      if (snap) {
+        const cur = readJson(KAIF_JSON);
+        const healed = { ...snap, ...cur };
+        if (JSON.stringify(healed) !== JSON.stringify(cur)) {
+          writeFileSync(KAIF_JSON, JSON.stringify(healed, null, 2) + '\n');
+          log('↻ self-healed .kaif/kaif.json (restored fields lost to a rewrite)');
+        }
+      }
+    } catch { /* marker unreadable — leave for the check to flag */ }
+  }
+
   // Re-sync the per-system skill copies from the canonical .claude/skills/ — the agent's
   // cognitive fills (adaptation) land in the canon only; machinery propagates them so no
   // copy is ever edited by hand (closes the empty-project tail of bug 05).
@@ -608,5 +641,5 @@ function cmdVersion() {
 }
 
 await ({ install: cmdInstall, check: cmdCheck, 'verify-final': cmdVerifyFinal, version: cmdVersion,
-         update: cmdUpdate, 'update-verify': cmdUpdateVerify, checkpoint: cmdCheckpoint }[CMD] ||
-  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | checkpoint | version)`)))();
+         update: cmdUpdate, 'update-verify': cmdUpdateVerify, checkpoint: cmdCheckpoint, sphere: cmdSphere }[CMD] ||
+  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | checkpoint | sphere | version)`)))();
