@@ -390,12 +390,15 @@ function cmdInstall() {
   const values = detectValues();
   const unresolved = new Set();
 
-  // Legacy detection: an existing deploy marker of an OLDER version means this is an
-  // update-by-bootstrap (idea 14), not a fresh install — existing files are kept (below),
-  // new 1.5 entities are added, and the final task becomes an update merge, not adaptation.
+  // Legacy/update detection: ANY existing deploy marker means this project already runs
+  // KAIF — this bootstrap is an update-by-bootstrap (idea 14), never a fresh install:
+  // existing files are kept (below), new entities added, marker fields preserved, and the
+  // final task is an update merge, not adaptation. Version EQUALITY does not opt out
+  // (field-caught in ДЗ-03: a 1.4 project updating onto a pre-release 1.4 bundle was
+  // mis-detected as fresh and had its marker clobbered).
   let legacyOld = null;
   if (okOnDisk(KAIF_JSON)) {
-    try { const old = readJson(KAIF_JSON); if (old.version !== meta.version) legacyOld = old; } catch { /* treat as fresh */ }
+    try { legacyOld = readJson(KAIF_JSON); } catch { /* unreadable marker — treat as fresh */ }
     if (legacyOld) log(`⟳ existing KAIF ${legacyOld.version || '?'} detected — running as an UPDATE to ${meta.version} (existing files are kept, new ones added)`);
   }
 
@@ -420,13 +423,16 @@ function cmdInstall() {
   //    On a legacy update the old marker's owner-level fields (sphere, language, tracking)
   //    survive; only version/released/agents move forward.
   mkdirSync('.kaif', { recursive: true });
-  const marker = { framework: 'KAIF', version: meta.version, released: meta.released,
-                   ...(ANON ? { tracking: 'anonymous' } : { origin: ORIGIN, tracking: 'origin' }),
-                   sphere: 'TODO', agents: AGENTS, language: LANG,
-                   ...(legacyOld ? { sphere: legacyOld.sphere || 'TODO',
-                                     language: legacyOld.language || LANG,
-                                     ...(legacyOld.tracking ? { tracking: legacyOld.tracking } : {}),
-                                     ...(legacyOld.origin ? { origin: legacyOld.origin } : {}) } : {}) };
+  // Update over an existing deployment: start from the OLD marker so every field survives —
+  // including custom ones (e.g. `deployed`, ДЗ-03 field lesson) — and move only what this
+  // install owns (version/released/agents; language only if explicitly passed).
+  const marker = legacyOld
+    ? { ...legacyOld, framework: 'KAIF', version: meta.version, released: meta.released,
+        agents: AGENTS, language: val('--lang') ? LANG : (legacyOld.language || LANG) }
+    : { framework: 'KAIF', version: meta.version, released: meta.released,
+        ...(ANON ? { tracking: 'anonymous' } : { origin: ORIGIN, tracking: 'origin' }),
+        sphere: 'TODO', agents: AGENTS, language: LANG };
+  if (legacyOld && legacyOld.agent && !legacyOld.agents) delete marker.agent; // 1.4 singular field superseded by `agents`
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   log(`+ wrote ${KAIF_JSON}`);
   // Respectful wiring: NEVER clobber an existing package.json we cannot parse —
@@ -465,8 +471,13 @@ function cmdInstall() {
   // 5) the final cognitive task for the agent: fresh install → adaptation;
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
   //    with the thin KAIF.md) → an UPDATE task instead (existing files were kept).
-  if (legacyOld) writeUpdateTask([], meta, `legacy update ${legacyOld.version || '?'} → ${meta.version}: pre-1.5 project has no content snapshots, so every kept framework file may carry local edits — merge the 1.5 template news below into them pointwise`);
-  else writeAdaptationTask(unresolved, translated, meta);
+  if (legacyOld) {
+    writeUpdateTask([], meta, `legacy update ${legacyOld.version || '?'} → ${meta.version}: pre-1.5 project has no content snapshots, so every kept framework file may carry local edits — merge the 1.5 template news below into them pointwise`);
+    if (existsSync(TASK_FILE)) { unlinkSync(TASK_FILE); log(`- removed stale ${TASK_FILE} (this is an update, not an adaptation)`); }
+  } else {
+    writeAdaptationTask(unresolved, translated, meta);
+    if (existsSync(UPDATE_TASK)) { unlinkSync(UPDATE_TASK); log(`- removed stale ${UPDATE_TASK}`); }
+  }
 
   // 6) validate what we just did (the required task file depends on the mode)
   const bad = validate(deploy, skillFiles, legacyOld ? UPDATE_TASK : TASK_FILE);
