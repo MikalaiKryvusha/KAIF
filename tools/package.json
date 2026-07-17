@@ -9,6 +9,6 @@
     "pdf": "node readme-pdf.mjs"
   },
   "devDependencies": {
-    "md-to-pdf": "^5.2.4"
+    "md-to-pdf": "^5.2.5"
   }
 }

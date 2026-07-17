@@ -126,20 +126,11 @@ out = out.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => {
 // {{EMBED_SKILLS}}
 out = out.replace('{{EMBED_SKILLS}}', embedSkills());
 
-writeFileSync(join(ROOT, 'KAIF.md'), out);
-console.log(`✅ KAIF.md generated — ${out.split('\n').length} lines, v${version()} (${released()})`);
-
-// --- Slim KAIF (idea 07) ----------------------------------------------------
-// The Slim variant is a SECOND artifact: one file that IS the framework in place
-// (no unpacking). It is self-contained prose — no {{EMBED}} markers — so the build
-// only strips the authoring comment, stamps the version, and copies it to the root.
-let slim = readFileSync(join(FW, 'KAIF-SLIM.md'), 'utf8').replace(/\r\n/g, '\n');
-slim = slim.replace(/^<!--[\s\S]*?-->\n/, '');
-slim = '<!-- GENERATED FILE — do not edit by hand. Built from framework/KAIF-SLIM.md by ' +
-       'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + slim;
-slim = slim.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
-writeFileSync(join(ROOT, 'KAIF-SLIM.md'), slim);
-console.log(`✅ KAIF-SLIM.md generated — ${slim.split('\n').length} lines, v${version()} (${released()})`);
+// Since 1.5 (Tested KAIF) the ROOT KAIF.md is the THIN entry point (written below,
+// together with dist/) — the classic full core lives on as the offline release asset
+// dist/KAIF-FULL.md. The Slim variant is retired (interview 002 Q7); its source
+// remains in git history.
+console.log(`✅ full core assembled — ${out.split('\n').length} lines, v${version()} (${released()}) → dist/KAIF-FULL.md`);
 
 // --- Thin KAIF (1.5) + installer machinery → dist/ ---------------------------
 // Four artifacts of the "Thin KAIF" install path (plan 13, Phase 2). Until the 1.5
@@ -161,6 +152,7 @@ thin = thin.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', rele
 thin = thin.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => embedFile(p.trim(), 'KAIF-LOADER.mjs',
   'project root — write this ONE file verbatim, then run it (removed again by verify-final)'));
 writeFileSync(join(DIST, 'KAIF.md'), thin);
+writeFileSync(join(ROOT, 'KAIF.md'), thin);   // since 1.5 the root entry point IS the thin core
 
 // 2) the core machinery, copied verbatim (LF-normalized; it reads version data from the bundle manifest)
 const coreSrc = readFileSync(join(FW, 'installer', 'KAIF-CORE.mjs'), 'utf8').replace(/\r\n/g, '\n');

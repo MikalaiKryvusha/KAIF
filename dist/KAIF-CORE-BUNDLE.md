@@ -1,13 +1,13 @@
 <!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->
-# KAIF-CORE-BUNDLE · v1.4 (2026-07-08)
+# KAIF-CORE-BUNDLE · v1.5 (2026-07-17)
 
 > **FILE: `kaif-bundle-manifest.json`** — bundle metadata (data for KAIF-CORE, never written to disk)
 
 ``````json
 {
   "framework": "KAIF",
-  "version": "1.4",
-  "released": "2026-07-08",
+  "version": "1.5",
+  "released": "2026-07-17",
   "templateNotes": [
     "fable family vendored: /fable-method, /fable-loop, /fable-judge, /fable-domain (execution discipline; judge pass now MANDATORY in the loops and /release)",
     "AGENT_GUIDE: checklist gained \"Execute by the fable loop\"; new sections \"Task execution discipline\", \"Languages — two audiences\" (<OWNER_LANGUAGE>), standing commit authorization note",

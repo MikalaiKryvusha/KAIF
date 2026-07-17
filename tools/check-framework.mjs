@@ -15,12 +15,24 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
 
-const fwPath = join(ROOT, 'KAIF.md');
+// Since 1.5 the root KAIF.md is the THIN entry point; the full self-extracting core
+// (whose embedded blocks these checks validate) is the offline asset dist/KAIF-FULL.md.
+const fwPath = join(ROOT, 'dist', 'KAIF-FULL.md');
 if (!existsSync(fwPath)) {
-  console.error('❌ KAIF.md not found — run `node tools/build-framework.mjs` first.');
+  console.error('❌ dist/KAIF-FULL.md not found — run `node tools/build-framework.mjs` first.');
   process.exit(1);
 }
 const fw = readFileSync(fwPath, 'utf8');
+
+// The root thin entry point: exactly ONE embedded FILE block (the loader), no build markers.
+const rootThinPath = join(ROOT, 'KAIF.md');
+if (!existsSync(rootThinPath)) errors.push('root KAIF.md (thin entry point) missing');
+else {
+  const thinRoot = readFileSync(rootThinPath, 'utf8');
+  const b = (thinRoot.match(/^> \*\*FILE:/gm) || []).length;
+  if (b !== 1) errors.push(`root thin KAIF.md must embed exactly 1 FILE block (the loader), found ${b}`);
+  if (thinRoot.match(/\{\{[^}]+\}\}/)) errors.push('unreplaced build markers in root KAIF.md');
+}
 
 // Expected embedded files = key-doc templates + directory-README templates + skill templates.
 const docNames = ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'TESTING_FRAMEWORK.md',
