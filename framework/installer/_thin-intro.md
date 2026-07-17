@@ -1,5 +1,5 @@
 <!--
-  This file is the source of the THIN KAIF.md (KAIF 1.5 "Thin KAIF") — the minimal
+  This file is the source of the THIN KAIF.md (KAIF 1.5 — Tested KAIF; thin-install architecture) — the minimal
   single entry point. It is GENERATED into dist/KAIF.md by tools/build-framework.mjs:
   {{EMBED:...}} is replaced with the loader script, {{VERSION}}/{{RELEASED}} stamped.
   Do NOT edit dist/KAIF.md by hand — edit this file and re-run the build tool.

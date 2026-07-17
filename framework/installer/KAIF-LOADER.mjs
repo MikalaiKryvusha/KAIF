@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// KAIF-LOADER.mjs — the minimal KAIF bootstrap loader (KAIF 1.5 "Thin KAIF").
+// KAIF-LOADER.mjs — the minimal KAIF bootstrap loader (KAIF 1.5 — Tested KAIF; thin-install architecture).
 // The AI agent writes THIS one small file verbatim from the thin KAIF.md and runs it.
 // The loader fetches the heavy installer machinery from the KAIF origin repository,
 // verifies it against the published manifest (sha256), and hands over to it.

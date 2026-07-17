@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// KAIF-CORE.mjs — the heavy KAIF installer machinery (KAIF 1.5 "Thin KAIF").
+// KAIF-CORE.mjs — the heavy KAIF installer machinery (KAIF 1.5 — Tested KAIF; thin-install architecture).
 // Downloaded by KAIF-LOADER.mjs from the origin repo; does EVERYTHING mechanizable
 // about deploying KAIF so the AI agent's cognitive work shrinks to one short final
 // adaptation task. Successor of kaif-unpack.mjs (which stays embedded in the
