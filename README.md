@@ -13,9 +13,10 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.5-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-Thin%20(machinery%20does%20it)-3DDC84.svg)](KAIF.md)
 [![Tested](https://img.shields.io/badge/Discipline-Tested%20KAIF-FFB300.svg)](#tested-en)
+[![Guardrails](https://img.shields.io/badge/Guardrails-Homeostatic%20KAIF-8E44AD.svg)](#guardrails-en)
 [![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
 [![Languages](https://img.shields.io/badge/Owner%20docs-10%20languages-blue.svg)](#lang-en)
 
@@ -89,6 +90,26 @@ artifacts `INTENT:`/`AUTH:`/`TWINS:`/`PENDING:` at decision points), **/fable-lo
 adversarial verifiers), **/fable-judge** (adversarial verification of any "done" claim — **mandatory** in
 KAIF's autonomous loops and before every release), and **/fable-domain** (generates new domain workflow
 bundles). KAIF's spheres carry each domain's binding evidence sets, authority orders, and fraud tables.
+
+<a id="guardrails-en"></a>
+
+## Homeostatic KAIF — guardrails for weak models
+
+1.6's codename discipline, distilled from two real projects where a weaker model burned the owner:
+**a weak model can't be trusted with judgment, but it can be trusted with procedure.** KAIF turns the
+implicit obligations models silently break into explicit, countable mechanisms — and the process heals
+itself back to a healthy state (hence *homeostatic*). The guardrails: **observation over conjecture**
+(a recon doc before code whenever an external truth exists; a canon map and a countable parity
+inventory for domains with facts — "no inventory row, no code"); **the three doors** (a gap in the
+canon is answered from a source of truth or by asking the owner — inventing is forbidden, an invented
+number is worse than a missing one); **the judge before every push and deploy**, now also hunting
+diffs the agent didn't write (lock files, manifests), unjustified test edits (fraud by default),
+data-shaped literals, and stray binaries; **the one-step rule** in autonomous loops (one change = full
+gates = one commit); **a five-gate deploy checklist** (mirror the running prod before replacing it);
+and **provenance marks `[AI]…[/AI]`** on everything the AI writes into the owner's canon — the mark is
+an acceptance queue only the owner's word removes. Every closed task now ships a *"Decisions made
+without the owner"* section, and experience entries carry a ready-to-run **Repro** command and a
+**Not for** applicability range — lessons a weak model can execute, not just read.
 
 ## Quick start (for the human)
 
@@ -310,9 +331,10 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 # КАИФ — Криник АИ Фреймворк
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.5-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-Тонкая%20(машинерией)-3DDC84.svg)](KAIF.md)
 [![Tested](https://img.shields.io/badge/Дисциплина-Tested%20KAIF-FFB300.svg)](#tested-ru)
+[![Guardrails](https://img.shields.io/badge/Гвардрейлы-Homeostatic%20KAIF-8E44AD.svg)](#guardrails-ru)
 [![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
 [![Языки](https://img.shields.io/badge/Owner--доки-10%20языков-blue.svg)](#lang-ru)
 
@@ -390,6 +412,26 @@ MIT) дословно — четыре навыка, задающие, как *�
 проверка любого «готово» — **обязательна** в автономных циклах KAIF и перед каждым релизом) и
 **/fable-domain** (генерирует доменные workflow-бандлы). Сферы KAIF несут обязательные наборы
 свидетельств, порядки авторитетов и таблицы фродов своих доменов.
+
+<a id="guardrails-ru"></a>
+
+## Homeostatic KAIF — гвардрейлы для слабых моделей
+
+Дисциплина, давшая имя релизу 1.6, дистиллирована из двух реальных проектов, где слабая модель обожгла
+владельца: **слабой модели нельзя доверить суждение, но можно доверить процедуру.** KAIF превращает
+неявные обязательства, которые модели молча нарушают, в явные исчислимые механизмы — и процесс сам
+возвращает себя в здоровое состояние (отсюда *homeostatic*). Гвардрейлы: **наблюдение вместо
+додумывания** (разведдок до кода всякий раз, когда есть внешняя правда; канон-карта и исчислимый
+инвентарь паритета для доменов с фактологией — «нет строки инвентаря — нет кода»); **правило трёх
+дверей** (пробел в каноне закрывается источником истины или вопросом владельцу — выдумывать запрещено,
+выдуманное число хуже отсутствующего); **судья перед каждым push и деплоем**, теперь охотящийся и на
+диффы, которых агент не писал (lock-файлы, манифесты), правки тестов без обоснования (фрод по
+умолчанию), литералы-похожие-на-данные и приблудные бинари; **правило одного шага** в автономных
+циклах (одно изменение = полные гейты = один коммит); **деплой-чеклист из пяти гейтов** (сними зеркало
+работающего прода до его замены); и **пометки провенанса `[AI]…[/AI]`** на всём, что ИИ пишет в канон
+владельца, — пометка есть очередь на приёмку, снимает её только слово владельца. Каждая закрытая
+задача теперь несёт секцию *«Решения, принятые без владельца»*, а записи опыта — готовую команду
+**Repro** и границу применимости **Not for**: уроки, которые слабая модель исполняет, а не просто читает.
 
 ## Быстрый старт (для человека)
 
