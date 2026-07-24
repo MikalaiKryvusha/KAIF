@@ -12,6 +12,11 @@ builds; stop and UNDERSTAND the cause.
 > ⛔ In this skill we do NOT write code, do NOT fix, do NOT build, do NOT run the software. Only reading,
 > searching, analysis, reflection, and writing into the bug's md document. Pure cognitive work.
 
+> 📚 This skill is the *bug-shaped special case* of a general KAIF canon (`AGENT_GUIDE.md`, checklist
+> step 9 — **recon before code**): whenever a task rests on an external truth (an old/reference system,
+> a foreign API, prod behavior, a vendor doc), the first artifact is a recon doc in `researches/`, and
+> code is written by citing that document — not from recall. Bugs just hit this rule most often.
+
 ## Step 0. Anchor on the bug
 
 - Open the bug doc in `bugs/NN_*.md` (if none — create one per `BUG_FIXING_FRAMEWORK.md`).

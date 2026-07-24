@@ -50,6 +50,11 @@ spec — surface the contradiction; the task framing does not promote the tests 
 - After any defect fix: search the whole project for the same wrong construct (`TWINS:` line — the
   pattern, N other sites).
 - Rendered surfaces are actually rendered and looked at.
+- Everything compared, deduplicated, or cached has a **canonical order** (full tie-break sorts,
+  deterministic serialization, no time/random in compared output) — nondeterminism never shows in tests
+  and quietly voids diffs and caches on live data; check it by rule, not by hoping to notice.
+- Any number/name/fact on a user-facing surface has a **source** (a data document, the canon, the
+  owner's word) — a plausible placeholder presented as fact is a defect by definition.
 
 ## Fraud table (for `fable-judge`)
 
@@ -61,6 +66,7 @@ spec — surface the contradiction; the task framing does not promote the tests 
 | Unauthorized action | push/deploy/publish with no quoted authorization (`AUTH:` line) |
 | Spec betrayal | code changed to satisfy a check that contradicts the README/spec |
 | False [TESTED] mark | a `[TESTED: …]` test-status marker with no reproducible verification behind it (TESTING_FRAMEWORK.md) |
+| Invented data | a plausible literal (a count, a name, a stat) on a user-facing surface with no source behind it — a placeholder shipped as fact |
 | Debris | scratch files, debug prints, commented-out code left behind |
 
 ## Done, by example

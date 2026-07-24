@@ -51,25 +51,28 @@ relies entirely on this document to get to work.
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
-8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
-9. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
-10. Run the build (if touching code)   # <BUILD_COMMAND>
-11. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
-12. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
-13. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
-14. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-15. Periodically re-read the key guidance docs:
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff
+9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
+10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
+11. Run the build (if touching code)   # <BUILD_COMMAND>
+12. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
+13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
+14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
+15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
+16. Periodically re-read the key guidance docs:
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
-16. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
+17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
     human can glance over and follow along.
-17. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
-    clean structured format for AI consumption. After implementing from such a document, write the
-    status and the implementation date back into it.
+18. Documents from the human (ideas, bugs, features): FIRST commit the original verbatim (git add +
+    commit) — only then, in a following commit, fix typos and minimally restructure into a clean
+    structured format for AI consumption (the human's voice and every thought preserved; their original
+    wording stays reachable in git history). After implementing from such a document, write the status
+    and the implementation date back into it.
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -87,6 +90,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
+| External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -200,6 +204,17 @@ so the agent doesn't improvise.>`
 > releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
 > the owner's quoted words (an `AUTH:` line).
 
+**Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
+
+- **`git diff --stat` before every commit.** Anything in the diff you did not intend to change — STOP
+  and explain it first. This includes diffs *your tools* generated (lock files, manifests, formatters):
+  an agent trusts its tools even more blindly than itself — read those diffs line by line.
+- **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
+  after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
+  caught by the owner is a failure of the framework.
+- **The owner's originals are inviolable.** A document from the owner is committed verbatim BEFORE any
+  edit (checklist step 18) — never "improve" an original that isn't safely in history yet.
+
 ## Commits
 
 Style: `feat:`, `fix:`, `docs:`, `refactor:`, `ci:` + one line of what was done.
@@ -272,6 +287,14 @@ and report in the chat.
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
 
+**Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
+the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
+draft to the owner (interview/chat) and their "yes" — never straight into the canon; **mechanical edits**
+under already-accepted decisions (renames, arithmetic, references, notation) go ahead immediately but
+stay visible until the owner has reviewed them. Two-stage control: first the *intent* (before writing),
+then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
+for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
+
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
 interpretation. Interviews are for vision-level forks that outlive the task.
@@ -285,6 +308,10 @@ interpretation. Interviews are for vision-level forks that outlive the task.
   This is for transparency, traceability, and future maintainability across context-losing sessions.
 - No magic numbers — named constants with clear names.
 - Prefer the platform/library's idiomatic, built-in way over a hand-rolled mechanism.
+- **Canonical order for everything compared or cached:** any output that is diffed, deduplicated, or
+  cached must be deterministic — sorts with a full tie-break, serialization with sorted keys, no
+  `Date.now()`/random in compared output. Nondeterminism never shows in tests and quietly voids diffs
+  and caches on live data — this checklist line notices it so you don't have to.
 - `<add language/framework-specific rules here>`
 
 ---
@@ -408,6 +435,27 @@ failure, capture the reusable takeaway. Don't blindly retry an approach a past e
 go the other way, or note why this time differs. (Skill: `/experience`. This is DRY applied to *effort*:
 solve a class of problem once, then reference the lesson.)
 
+### Observation over conjecture — replace guessing with looking
+An agent session fails hardest where it must GUESS: an architecture it half-remembers, someone else's
+intent, the state of production, a fact of the domain. Never fill such a gap from imagination — replace
+conjecture with observation: a document instead of memory, a source instead of a guess, a run instead of
+"should work". If the truth exists somewhere (an old system, a spec, a running process, the owner), go
+read it first; then write code and text *citing* the observed truth, not reconstructing it. This costs
+speed and buys back rework — the trade is always worth it. (This principle drives the recon-doc rule and
+the deploy mirror in `AGENT_GUIDE.md`.)
+
+### The three doors — a gap is never filled by invention
+When the canon/spec/task has a gap (an undefined rule, a missing fact, an unnamed number), there are
+exactly three doors: **(1)** search the existing sources of truth — the code, the engine, the docs, prior
+decisions; many "gaps" were decided long ago and merely left unwritten; **(2)** ask the owner — and record
+the gap explicitly as a question; **(3)** invent something plausible — **FORBIDDEN**. Marking an
+assumption is not enough: marked assumptions quietly become canon. Every assumption you are forced to make
+gets an owner and a fate — *confirmed / refuted / asked* — before the work is called done. New entities
+(mechanics, facts, decisions) enter the owner's canon only through the owner's "yes" — see the write-gate
+in `AGENT_GUIDE.md`. Corollary: any number/name/fact shown to users must have a source (a data document,
+the canon, the owner's word); a placeholder without a source is a bug by definition — **an invented number
+is worse than a missing one**.
+
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
 this? What happens if I DON'T? What will NOT happen if I do? What will NOT happen if I don't?** Answering
@@ -508,6 +556,12 @@ To fix a bug, the agent must:
   elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and
   record in the bug document (and your report): `TWINS: searched <pattern> — found <N> other sites:
   <files, or "none">`. Fix them or list them — a completeness claim with no search behind it is hollow.
+- **Close the class, not the instance.** The fix STARTS with an inventory of ALL occurrences of the
+  defect class (grep/script → the list goes into the bug document), proceeds by the list, and is judged
+  by the list: "one fixed" ≠ "class closed" — an owner who has to say "and in the other menus too" is
+  doing the agent's sweep. Where possible, fix by *form* — copy the directory instead of the file, one
+  shared component instead of clones, a named token instead of scattered literals — so the class cannot
+  drift apart again.
 - To fix a bug, it is often useful to **search the web** for the solution — forums, GitHub issues,
   Reddit, Stack Overflow, official docs.
 
@@ -559,6 +613,35 @@ Principles:
 - **Grow the harness over time.** Every time you do something manually to reproduce or verify, ask:
   "can I add a command/flag/script so next time it's one step?" Then add it, and document it in
   `AGENT_GUIDE.md`. The harness is a living tool — extend and document it.
+
+---
+
+## Guards — every fix births a check, and the check itself is checked
+
+- **A fix without a guard is a fix on loan.** When a defect is closed, add a guard for its whole class —
+  a lint rule, an assert, a watched string, a golden output — so the class cannot silently return. A
+  cancelled decision becomes a forbidden pattern; an accepted one becomes a watched line.
+- **Verify the guard on a broken version.** A guard that has never gone red proves nothing. Feed it the
+  very defect it exists to catch and watch it fail; only then trust its green. Guard with **full unique
+  strings/shapes, not short substrings** — a short pattern will happily match someone else's line and
+  stay green while the real thing rots.
+- **Byte-exact goldens for refactors:** capture the output BEFORE the change, diff AFTER. "Looks like
+  the same numbers" is not evidence; an empty diff is.
+
+---
+
+## A finding is not a finding until verified
+
+Findings produced by a model — audit results, detected issues, "I found N problems" — are roughly half
+false until proven, and acting on unverified findings creates edits out of thin air. Before any finding
+drives a change:
+
+1. **Mechanical checks run as a script BEFORE any LLM judgment.** Does the quoted line actually exist?
+   Is the file really missing X? Code verifies hundreds of such claims in seconds, exactly.
+2. **Then the skeptic pass:** the verifier's job is to REFUTE the finding; the default verdict under
+   doubt is REFUTED. A finding survives verification — only then it drives work.
+3. **Distinguish "refuted" from "the verifier failed to run."** A crashed or killed verifier returns
+   nothing — never silently treat that as an empty list of confirmations, or real findings die with it.
 
 ---
 
@@ -676,6 +759,26 @@ of the project language:
 Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
 marker preserves that fact **across sessions**, for future agents and posterity — who else will know the
 foundation was load-tested?
+
+## Green tests ≠ working — the observation gates
+
+A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible
+to every test and obvious to one minute of looking. Before "done" on anything that runs, renders, or
+ships, walk the gates that apply:
+
+1. **Live smoke with your eyes on the log.** Run the real process (not only the tests) and read its
+   first working cycle in the log — startup, the key operation, no silent error spam.
+2. **Self-sufficiency of the shipped artifact.** The image/bundle/package must start in isolation (a
+   fresh container/directory) — a build that only works inside your working tree is not shipped.
+3. **Domain invariants, before/after.** Before the work, write down the numbers that must not change
+   (counts, sums, sizes); after, compare. Comparing two numbers is the one check any session performs
+   perfectly — and its signal is among the highest there is.
+4. **Countable quality proxies.** Where quality is visual or subjective, find what can be counted
+   (animations per screen, panel-opacity checks, bundle growth): a zero on the counter is a stop-defect.
+   A proxy never replaces the owner's eye — it catches the zeros *before* the owner has to.
+5. **A check that has never failed proves nothing.** Every new guard/check is verified on a broken
+   version first (see `BUG_FIXING_FRAMEWORK.md` → Guards); goldens for refactors are byte-exact —
+   an empty diff is proof, "the numbers look the same" is not.
 
 ## How this composes with the rest of KAIF
 
@@ -1318,6 +1421,11 @@ builds; stop and UNDERSTAND the cause.
 
 > ⛔ In this skill we do NOT write code, do NOT fix, do NOT build, do NOT run the software. Only reading,
 > searching, analysis, reflection, and writing into the bug's md document. Pure cognitive work.
+
+> 📚 This skill is the *bug-shaped special case* of a general KAIF canon (`AGENT_GUIDE.md`, checklist
+> step 9 — **recon before code**): whenever a task rests on an external truth (an old/reference system,
+> a foreign API, prod behavior, a vendor doc), the first artifact is a recon doc in `researches/`, and
+> code is written by citing that document — not from recall. Bugs just hit this rule most often.
 
 ## Step 0. Anchor on the bug
 
@@ -2365,6 +2473,8 @@ Sequence:
   don't proceed blindly on UI/UX/brand/architecture questions.
 
 ### Step 5. After the answers
+- **First commit the owner's answers verbatim** (the owner's originals are inviolable —
+  `AGENT_GUIDE.md`, git hygiene); only then rework the document in a following commit.
 - Write the decisions into the document: change status to `✅ ANSWERS RECEIVED <date>` and add a
   "Decisions" table.
 - If the decisions affect the plan/architecture — update `STATUS.md` and the relevant files in `plans/`.
@@ -3413,6 +3523,11 @@ spec — surface the contradiction; the task framing does not promote the tests 
 - After any defect fix: search the whole project for the same wrong construct (`TWINS:` line — the
   pattern, N other sites).
 - Rendered surfaces are actually rendered and looked at.
+- Everything compared, deduplicated, or cached has a **canonical order** (full tie-break sorts,
+  deterministic serialization, no time/random in compared output) — nondeterminism never shows in tests
+  and quietly voids diffs and caches on live data; check it by rule, not by hoping to notice.
+- Any number/name/fact on a user-facing surface has a **source** (a data document, the canon, the
+  owner's word) — a plausible placeholder presented as fact is a defect by definition.
 
 ## Fraud table (for `fable-judge`)
 
@@ -3424,6 +3539,7 @@ spec — surface the contradiction; the task framing does not promote the tests 
 | Unauthorized action | push/deploy/publish with no quoted authorization (`AUTH:` line) |
 | Spec betrayal | code changed to satisfy a check that contradicts the README/spec |
 | False [TESTED] mark | a `[TESTED: …]` test-status marker with no reproducible verification behind it (TESTING_FRAMEWORK.md) |
+| Invented data | a plausible literal (a count, a name, a stat) on a user-facing surface with no source behind it — a placeholder shipped as fact |
 | Debris | scratch files, debug prints, commented-out code left behind |
 
 ## Done, by example

@@ -27,25 +27,28 @@ relies entirely on this document to get to work.
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
-8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature
-9. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
-10. Run the build (if touching code)   # <BUILD_COMMAND>
-11. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
-12. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
-13. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
-14. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-15. Periodically re-read the key guidance docs:
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff
+9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
+10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
+11. Run the build (if touching code)   # <BUILD_COMMAND>
+12. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
+13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
+14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
+15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
+16. Periodically re-read the key guidance docs:
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
-16. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
+17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
     human can glance over and follow along.
-17. Documents from the human (ideas, bugs, features): read them, fix typos, minimally restructure into a
-    clean structured format for AI consumption. After implementing from such a document, write the
-    status and the implementation date back into it.
+18. Documents from the human (ideas, bugs, features): FIRST commit the original verbatim (git add +
+    commit) — only then, in a following commit, fix typos and minimally restructure into a clean
+    structured format for AI consumption (the human's voice and every thought preserved; their original
+    wording stays reachable in git history). After implementing from such a document, write the status
+    and the implementation date back into it.
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -63,6 +66,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
+| External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -176,6 +180,17 @@ so the agent doesn't improvise.>`
 > releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
 > the owner's quoted words (an `AUTH:` line).
 
+**Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
+
+- **`git diff --stat` before every commit.** Anything in the diff you did not intend to change — STOP
+  and explain it first. This includes diffs *your tools* generated (lock files, manifests, formatters):
+  an agent trusts its tools even more blindly than itself — read those diffs line by line.
+- **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
+  after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
+  caught by the owner is a failure of the framework.
+- **The owner's originals are inviolable.** A document from the owner is committed verbatim BEFORE any
+  edit (checklist step 18) — never "improve" an original that isn't safely in history yet.
+
 ## Commits
 
 Style: `feat:`, `fix:`, `docs:`, `refactor:`, `ci:` + one line of what was done.
@@ -248,6 +263,14 @@ and report in the chat.
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
 
+**Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
+the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
+draft to the owner (interview/chat) and their "yes" — never straight into the canon; **mechanical edits**
+under already-accepted decisions (renames, arithmetic, references, notation) go ahead immediately but
+stay visible until the owner has reviewed them. Two-stage control: first the *intent* (before writing),
+then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
+for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
+
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
 interpretation. Interviews are for vision-level forks that outlive the task.
@@ -261,6 +284,10 @@ interpretation. Interviews are for vision-level forks that outlive the task.
   This is for transparency, traceability, and future maintainability across context-losing sessions.
 - No magic numbers — named constants with clear names.
 - Prefer the platform/library's idiomatic, built-in way over a hand-rolled mechanism.
+- **Canonical order for everything compared or cached:** any output that is diffed, deduplicated, or
+  cached must be deterministic — sorts with a full tie-break, serialization with sorted keys, no
+  `Date.now()`/random in compared output. Nondeterminism never shows in tests and quietly voids diffs
+  and caches on live data — this checklist line notices it so you don't have to.
 - `<add language/framework-specific rules here>`
 
 ---

@@ -90,6 +90,8 @@ Sequence:
   don't proceed blindly on UI/UX/brand/architecture questions.
 
 ### Step 5. After the answers
+- **First commit the owner's answers verbatim** (the owner's originals are inviolable —
+  `AGENT_GUIDE.md`, git hygiene); only then rework the document in a following commit.
 - Write the decisions into the document: change status to `✅ ANSWERS RECEIVED <date>` and add a
   "Decisions" table.
 - If the decisions affect the plan/architecture — update `STATUS.md` and the relevant files in `plans/`.

@@ -100,6 +100,27 @@ failure, capture the reusable takeaway. Don't blindly retry an approach a past e
 go the other way, or note why this time differs. (Skill: `/experience`. This is DRY applied to *effort*:
 solve a class of problem once, then reference the lesson.)
 
+### Observation over conjecture — replace guessing with looking
+An agent session fails hardest where it must GUESS: an architecture it half-remembers, someone else's
+intent, the state of production, a fact of the domain. Never fill such a gap from imagination — replace
+conjecture with observation: a document instead of memory, a source instead of a guess, a run instead of
+"should work". If the truth exists somewhere (an old system, a spec, a running process, the owner), go
+read it first; then write code and text *citing* the observed truth, not reconstructing it. This costs
+speed and buys back rework — the trade is always worth it. (This principle drives the recon-doc rule and
+the deploy mirror in `AGENT_GUIDE.md`.)
+
+### The three doors — a gap is never filled by invention
+When the canon/spec/task has a gap (an undefined rule, a missing fact, an unnamed number), there are
+exactly three doors: **(1)** search the existing sources of truth — the code, the engine, the docs, prior
+decisions; many "gaps" were decided long ago and merely left unwritten; **(2)** ask the owner — and record
+the gap explicitly as a question; **(3)** invent something plausible — **FORBIDDEN**. Marking an
+assumption is not enough: marked assumptions quietly become canon. Every assumption you are forced to make
+gets an owner and a fate — *confirmed / refuted / asked* — before the work is called done. New entities
+(mechanics, facts, decisions) enter the owner's canon only through the owner's "yes" — see the write-gate
+in `AGENT_GUIDE.md`. Corollary: any number/name/fact shown to users must have a source (a data document,
+the canon, the owner's word); a placeholder without a source is a bug by definition — **an invented number
+is worse than a missing one**.
+
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
 this? What happens if I DON'T? What will NOT happen if I do? What will NOT happen if I don't?** Answering
