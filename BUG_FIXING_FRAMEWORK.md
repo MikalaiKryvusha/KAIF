@@ -153,6 +153,9 @@
 ## Fix plan (or the fix, if done)
 <steps; relation to architecture / other bugs>
 
+## Decisions made without the owner
+<заполняется при закрытии: каждое решение, принятое агентом в одиночку (и как выбирал), или "none" — см. AGENT_GUIDE.md>
+
 ## Links
 <related bugs / ideas / interviews>
 ```

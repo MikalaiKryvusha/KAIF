@@ -17,7 +17,15 @@
 > **Tried / did:** the approach, briefly.
 > **Result:** ✅/❌ — what happened.
 > **Lesson:** the reusable takeaway (the reason this entry exists).   → link: bugs/NN · ideas/NN · plans/NN
+> **Repro:** the ready-to-run command/check that verifies or applies the lesson — a weak session
+>   executes a pasted command reliably, an essay it won't act on. (omit only if truly none exists)
+> **Not for:** the lesson's validity range — where it does NOT apply. A documented lesson is still a
+>   hypothesis; applied outside its range it kills good ideas.
 > ```
+>
+> The `#tags` are **trigger-tags**: before a task, grep by the task's tags and QUOTE the relevant
+> lessons in your report (id + one line) — or state "no relevant lessons". An unquoted recall is
+> unverifiable; `/fable-judge` checks for this line.
 >
 > Skill: `/experience` (capture a lesson · recall relevant lessons).
 

@@ -55,6 +55,9 @@ can be returned to (or handed to `/bug-research`).
    ## Fix plan (or the fix, if done)
    <steps; relation to architecture / other bugs>
 
+   ## Decisions made without the owner
+   <filled at closing: every call the agent made solo (and how it chose), or "none">
+
    ## Links
    <related bugs / ideas / interviews>
    ```

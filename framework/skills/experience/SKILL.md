@@ -27,6 +27,8 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    **Tried / did:** briefly.
    **Result:** ✅/❌ — what happened.
    **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
+   **Repro:** the ready-to-run command/check that verifies or applies the lesson (omit only if none).
+   **Not for:** the validity range — where this lesson does NOT apply.
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
    - Pick 1–3 short `#tags` **inline on the entry** (there is no central tag cloud) — reuse an existing tag
@@ -44,8 +46,10 @@ default** — it's cheap and prevents repeated mistakes.
    (`-A4` to include the entry body), then read the matched entries.
 2. **Summarize** the relevant lessons in 1–5 lines: what was tried, what worked, what to avoid — and let
    that steer the approach BEFORE writing code. If a past entry says an approach failed, don't blindly
-   retry it; go the other way (or note why this time differs).
-3. If nothing relevant exists, say so briefly and proceed.
+   retry it; go the other way (or note why this time differs). Mind each entry's **Not for:** range —
+   a lesson applied outside its range is a new mistake, not experience.
+3. **Quote what you recalled** (id + one line each) in your report — or state "no relevant lessons".
+   An unquoted recall is unverifiable; `/fable-judge` checks for this line.
 
 ## Notes
 

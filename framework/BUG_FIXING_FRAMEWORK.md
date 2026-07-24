@@ -151,6 +151,9 @@ Canonical structure (see `/report-bug` for the full template):
 ## Fix plan (or the fix, if done)
 <steps; relation to architecture / other bugs>
 
+## Decisions made without the owner
+<filled at closing: every call the agent made solo (and how it chose), or "none" — see AGENT_GUIDE.md>
+
 ## Links
 <related bugs / ideas / interviews>
 ```

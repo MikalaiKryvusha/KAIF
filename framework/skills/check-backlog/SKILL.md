@@ -36,6 +36,8 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
    - Rename, inserting `DONE` after the number, preserving history:
      `git mv bugs/13_detach_crash.md bugs/13_DONE_detach_crash.md` (don't change the number; format
      `<NN>_DONE_<name>.md`).
+   - Before tagging, make sure the document carries its **"Decisions made without the owner"** section
+     (solo calls made while executing, or an explicit "none" — `AGENT_GUIDE.md`); add it if missing.
    - **Append a status section inside the document**, e.g.:
      ```
      ## ✅ STATUS: DONE (<date>)

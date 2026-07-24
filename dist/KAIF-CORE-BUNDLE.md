@@ -95,6 +95,24 @@ Don't read every document "just in case" — that fills the context you're tryin
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
 
+### Recon artifacts — when the task has an external truth
+
+Three artifact types live in `researches/`, each replacing a specific kind of invention with
+observation (a session that "remembers" a domain invents it):
+
+- **Recon doc** (checklist step 9) — *describes* how the external truth actually works, read from the
+  live source (old system's code, the running prod, the vendor doc) — never from recall. The first
+  artifact of any task that rests on one; reused by every future session.
+- **Canon map** — for any domain with facts (a game world, a product, a brand, an API): a table of
+  entities → their roles → mappings, **approved by the owner**. The map precedes the canon: every edit
+  is checked against it, ONLY the owner may change it, and a conflict between text and map = stop and
+  ask. Key facts of the map deserve guards (`BUG_FIXING_FRAMEWORK.md` → Guards).
+- **Parity inventory** — where a reference exists (an old system, a competitor, a brand book): a
+  **countable** checklist, one row per element — `element → reference behavior → present in ours? →
+  OK/bug`. The rule: **no inventory row — no code**; delivery is judged BY THE ROWS, not by impression.
+  A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
+  but it cannot argue with a row.
+
 ### Task execution discipline — the fable loop
 
 Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify
@@ -262,6 +280,20 @@ ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
 - A file in progress / partial / research-only — do NOT mark `DONE` (🔧/🟡/🔬 = not done yet).
 - Use `git mv` (preserves history). Don't change the number.
 - Reference docs in `plans/` (master_plan, project_map, etc.) are NOT tasks — never tag them DONE.
+- **Closing any idea/bug/plan requires a "Decisions made without the owner" section** — every
+  micro-decision the agent made solo while executing, and how it chose (or an explicit "none"). An agent
+  silently makes dozens of such calls; this section puts them on the owner's table, where a divergence
+  from the vision costs one line to fix instead of a rework — and it is the best generator of the
+  owner's next questions. Unsettled assumptions (fable `PENDING:` lines) are settled here too: each one
+  *confirmed / refuted / asked*, never silently dropped.
+
+**A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
+WAVE of bugs at once, the wave itself is a symptom that the process leaked — worth more than any bug in
+it. Fix the bugs; and on the owner's explicit ask ("figure out why so many") open a **process document**
+in `plans/` — `owner's verdict (verbatim) → honest diagnosis of the process → remedies as process
+changes → steps with checkboxes` — and execute it alongside the fixes. Health metric: the owner's next
+wave is SMALLER. If the waves don't shrink, the remedies aren't working — revise them. The goal is not
+"zero bugs"; it is "the owner stops finding them in batches."
 
 **Backlog revision skill — `/check-backlog`:** walks `bugs/` and `plans/`, collects everything without a
 `DONE` tag as the open backlog, and tags genuinely-closed files DONE (with a status section appended).
@@ -681,6 +713,9 @@ Canonical structure (see `/report-bug` for the full template):
 ## Fix plan (or the fix, if done)
 <steps; relation to architecture / other bugs>
 
+## Decisions made without the owner
+<filled at closing: every call the agent made solo (and how it chose), or "none" — see AGENT_GUIDE.md>
+
 ## Links
 <related bugs / ideas / interviews>
 ```
@@ -893,7 +928,15 @@ that a fresh session understands what already exists and works. Example:>`
 > **Tried / did:** the approach, briefly.
 > **Result:** ✅/❌ — what happened.
 > **Lesson:** the reusable takeaway (the reason this entry exists).   → link: bugs/NN · ideas/NN · plans/NN
+> **Repro:** the ready-to-run command/check that verifies or applies the lesson — a weak session
+>   executes a pasted command reliably, an essay it won't act on. (omit only if truly none exists)
+> **Not for:** the lesson's validity range — where it does NOT apply. A documented lesson is still a
+>   hypothesis; applied outside its range it kills good ideas.
 > ```
+>
+> The `#tags` are **trigger-tags**: before a task, grep by the task's tags and QUOTE the relevant
+> lessons in your report (id + one line) — or state "no relevant lessons". An unquoted recall is
+> unverifiable; `/fable-judge` checks for this line.
 >
 > Skill: `/experience` (capture a lesson · recall relevant lessons).
 
@@ -1516,6 +1559,8 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
    - Rename, inserting `DONE` after the number, preserving history:
      `git mv bugs/13_detach_crash.md bugs/13_DONE_detach_crash.md` (don't change the number; format
      `<NN>_DONE_<name>.md`).
+   - Before tagging, make sure the document carries its **"Decisions made without the owner"** section
+     (solo calls made while executing, or an explicit "none" — `AGENT_GUIDE.md`); add it if missing.
    - **Append a status section inside the document**, e.g.:
      ```
      ## ✅ STATUS: DONE (<date>)
@@ -1676,6 +1721,8 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    **Tried / did:** briefly.
    **Result:** ✅/❌ — what happened.
    **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
+   **Repro:** the ready-to-run command/check that verifies or applies the lesson (omit only if none).
+   **Not for:** the validity range — where this lesson does NOT apply.
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
    - Pick 1–3 short `#tags` **inline on the entry** (there is no central tag cloud) — reuse an existing tag
@@ -1693,8 +1740,10 @@ default** — it's cheap and prevents repeated mistakes.
    (`-A4` to include the entry body), then read the matched entries.
 2. **Summarize** the relevant lessons in 1–5 lines: what was tried, what worked, what to avoid — and let
    that steer the approach BEFORE writing code. If a past entry says an approach failed, don't blindly
-   retry it; go the other way (or note why this time differs).
-3. If nothing relevant exists, say so briefly and proceed.
+   retry it; go the other way (or note why this time differs). Mind each entry's **Not for:** range —
+   a lesson applied outside its range is a new mistake, not experience.
+3. **Quote what you recalled** (id + one line each) in your report — or state "no relevant lessons".
+   An unquoted recall is unverifiable; `/fable-judge` checks for this line.
 
 ## Notes
 
@@ -3152,6 +3201,9 @@ can be returned to (or handed to `/bug-research`).
 
    ## Fix plan (or the fix, if done)
    <steps; relation to architecture / other bugs>
+
+   ## Decisions made without the owner
+   <filled at closing: every call the agent made solo (and how it chose), or "none">
 
    ## Links
    <related bugs / ideas / interviews>
