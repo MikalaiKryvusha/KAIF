@@ -1,9 +1,9 @@
 {
   "framework": "KAIF",
-  "version": "1.5",
-  "released": "2026-07-17",
+  "version": "1.6",
+  "released": "2026-07-24",
   "sha256": {
     "KAIF-CORE.mjs": "c51cae0b4cbe5c6af3c11748d86d6ebc174894ce2a7d366dbe8215e4392f406c",
-    "KAIF-CORE-BUNDLE.md": "de87584032add82775f9b8b61e0949a7117ff7dad8b0fa0d142866392818d2df"
+    "KAIF-CORE-BUNDLE.md": "1167559495dd1ea64e47ad8bf831b1d8dd52b6531bf801587e8c0b327ca667b5"
   }
 }
