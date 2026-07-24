@@ -48,7 +48,10 @@ Until one fires — don't stop, don't wait for confirmations, work.
    another task.
 5. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
-6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
+6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes.
+   `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one commit —
+   no batch commits (a big diff can't be honestly reviewed; a judged failure rolls back one file, not a
+   night). `/fable-judge` pass before every push.
 7. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
 8. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
    turn; don't assess how much context is left and don't end the turn yourself (the harness does that).

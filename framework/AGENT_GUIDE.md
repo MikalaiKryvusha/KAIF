@@ -212,6 +212,13 @@ so the agent doesn't improvise.>`
 ## Commits
 
 Style: `feat:`, `fix:`, `docs:`, `refactor:`, `ci:` + one line of what was done.
+
+**A commit that touches test files carries a justification block:** *why this test changed and what it
+now guards*. A test edit without it is fraud by default (`/fable-judge` hunts exactly this — the quiet
+fitting of tests to new behavior is the most documented agent failure). After changing behavior, also
+answer: could the old tests now pass for the WRONG reason? If yes — rebuild the fixtures so each test
+guards what it claims to guard, and say so in the commit.
+
 End every commit message with the co-author trailer:
 
 ```

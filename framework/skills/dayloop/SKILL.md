@@ -58,7 +58,9 @@ when the current one is exhausted (see step 8).
 5. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
 6. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
-   minutes. `<COMMIT_COMMAND>`.
+   minutes. `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one
+   commit — no batch commits of half a day's work (a big diff can't be honestly reviewed; a judged
+   failure then rolls back one file, not a session). `/fable-judge` pass before every push.
 7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
 8. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
    no time checks. **Don't assess how much context is left and don't end the turn yourself** — the

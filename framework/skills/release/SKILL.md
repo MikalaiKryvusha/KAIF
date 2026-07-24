@@ -87,6 +87,25 @@ gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTE
 > "what this release is", a short "what KAIF is" paragraph, the attached artifacts, a **✨ What's new**
 > section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
 
+## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)
+
+If this release includes deploying over a live server/container/service, walk five gates — each exists
+because skipping it took down a real prod:
+
+1. **Deploy mirror first.** Capture the ACTUAL configuration of the running prod BEFORE replacing it
+   (inspect/env/version) — prod often lives with settings no document remembers, and a blind redeploy
+   "by the docs" silently changes behavior (or points prod at a dev emulator). Every difference between
+   the old run and the new one must be a conscious, named decision.
+2. **Live smoke.** Start the new instance and read its first working cycle in the log with your eyes
+   (`TESTING_FRAMEWORK.md` → observation gates).
+3. **Artifact self-sufficiency.** The image/bundle starts in isolation, all modules present — an image
+   that lagged behind the code has downed prods with every test green.
+4. **Domain invariants.** Before the switch, write down the numbers that must not change (counts, sums,
+   sizes); after it, compare them.
+5. **Prod-run document.** After the deploy, update the repo's "production run" document — the single
+   source of truth for how prod is actually launched. A prod config living only inside a running
+   process is a mine the next session steps on.
+
 ## Step 7. Verify and report
 
 ```bash

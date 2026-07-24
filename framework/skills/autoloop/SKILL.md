@@ -71,7 +71,10 @@ without those resources.
    `ideas/*`; update `STATUS.md`. After a meaningful success or failure, append the approach-level lesson
    to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human.
 10. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
-   with the Co-Authored-By trailer).
+   with the Co-Authored-By trailer). **The one-step rule:** one meaningful change = one full gate run
+   (build + tests + checks) = one commit — never batch half a day of work into one commit: a big diff
+   can't be honestly reviewed even by its author, and when the judge finds trouble, the rollback is one
+   file instead of a session. `git diff --stat` before committing — anything you didn't intend, stop.
 11. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
 
 ## Self-pacing (so the loop runs LONG)

@@ -353,6 +353,13 @@ so the agent doesn't improvise.>`
 ## Commits
 
 Style: `feat:`, `fix:`, `docs:`, `refactor:`, `ci:` + one line of what was done.
+
+**A commit that touches test files carries a justification block:** *why this test changed and what it
+now guards*. A test edit without it is fraud by default (`/fable-judge` hunts exactly this — the quiet
+fitting of tests to new behavior is the most documented agent failure). After changing behavior, also
+answer: could the old tests now pass for the WRONG reason? If yes — rebuild the fixtures so each test
+guards what it claims to guard, and say so in the commit.
+
 End every commit message with the co-author trailer:
 
 ```
@@ -1726,7 +1733,10 @@ without those resources.
    `ideas/*`; update `STATUS.md`. After a meaningful success or failure, append the approach-level lesson
    to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human.
 10. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
-   with the Co-Authored-By trailer).
+   with the Co-Authored-By trailer). **The one-step rule:** one meaningful change = one full gate run
+   (build + tests + checks) = one commit — never batch half a day of work into one commit: a big diff
+   can't be honestly reviewed even by its author, and when the judge finds trouble, the rollback is one
+   file instead of a session. `git diff --stat` before committing — anything you didn't intend, stop.
 11. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
 
 ## Self-pacing (so the loop runs LONG)
@@ -1817,7 +1827,9 @@ when the current one is exhausted (see step 8).
 5. **Document**: a worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
 6. **Commit and PUSH** (per `AGENT_GUIDE.md` git workflow): after each finished task or every ~20–30
-   minutes. `<COMMIT_COMMAND>`.
+   minutes. `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one
+   commit — no batch commits of half a day's work (a big diff can't be honestly reviewed; a judged
+   failure then rolls back one file, not a session). `/fable-judge` pass before every push.
 7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
 8. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
    no time checks. **Don't assess how much context is left and don't end the turn yourself** — the
@@ -1916,7 +1928,10 @@ Until one fires — don't stop, don't wait for confirmations, work.
    another task.
 5. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
    approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
-6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes. `<COMMIT_COMMAND>`.
+6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes.
+   `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one commit —
+   no batch commits (a big diff can't be honestly reviewed; a judged failure rolls back one file, not a
+   night). `/fable-judge` pass before every push.
 7. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
 8. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
    turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
@@ -2758,6 +2773,25 @@ gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTE
 > "what this release is", a short "what KAIF is" paragraph, the attached artifacts, a **✨ What's new**
 > section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
 
+## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)
+
+If this release includes deploying over a live server/container/service, walk five gates — each exists
+because skipping it took down a real prod:
+
+1. **Deploy mirror first.** Capture the ACTUAL configuration of the running prod BEFORE replacing it
+   (inspect/env/version) — prod often lives with settings no document remembers, and a blind redeploy
+   "by the docs" silently changes behavior (or points prod at a dev emulator). Every difference between
+   the old run and the new one must be a conscious, named decision.
+2. **Live smoke.** Start the new instance and read its first working cycle in the log with your eyes
+   (`TESTING_FRAMEWORK.md` → observation gates).
+3. **Artifact self-sufficiency.** The image/bundle starts in isolation, all modules present — an image
+   that lagged behind the code has downed prods with every test green.
+4. **Domain invariants.** Before the switch, write down the numbers that must not change (counts, sums,
+   sizes); after it, compare them.
+5. **Prod-run document.** After the deploy, update the repo's "production run" document — the single
+   source of truth for how prod is actually launched. A prod config living only inside a running
+   process is a mine the next session steps on.
+
 ## Step 7. Verify and report
 
 ```bash
@@ -2873,10 +2907,12 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except two marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> Kept verbatim except three marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
-> directory, which KAIF does not vendor — clone the upstream repo to run it. In KAIF rituals this judge
-> pass is MANDATORY before a cycle marks a backlog item done and before `/release` publishes.
+> directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
+> hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`). In KAIF rituals this
+> judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
+> deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
 
 # fable-judge
@@ -2898,6 +2934,13 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Spec betrayal.** Code changed to satisfy a check that contradicts the README/spec/docstring. Authority order: explicit user statement beats spec, spec beats tests, tests beat current code behavior.
    - **Debris.** Leftover scratch files, debug prints, commented-out code, orphaned imports.
    The full catalogue is `fable-method`'s `references/failure-modes.md`; use it as the checklist when the work is large.
+   **KAIF patch — the guardrail hunts (KAIF 1.6, not upstream):**
+   - **Diffs the agent didn't write.** Tool-generated files in the diff — lock files, manifests, generated code, auto-formatting — are read LINE BY LINE: an agent trusts its tools even more blindly than itself, and this is exactly where invisible-to-tests breakage hides (a lockfile that adds a `file:..` dependency will crash the prod build with every test green). Anything a tool changed that the declared scope does not explain is a finding.
+   - **Unjustified test edits.** Any diff under test files REQUIRES a "why this test changed and what it now guards" block in its commit message; a test edit without it is fraud BY DEFAULT (the mechanized form of Weakened checks). Additionally ask: after the behavior change, could the old tests now pass for the WRONG reason? — the one check an executor never runs on itself.
+   - **Literals that look like data.** In user-facing diffs, hunt plausible literals — counts, names, stats — with no source behind them; a placeholder shipped as fact is the "Invented data" fraud (sphere table): an invented number is worse than a missing one.
+   - **New binaries/dumps in git.** Every new binary, dump, export, or key-shaped file in the diff gets the question "why is this in git?" — the ignore-first rule (`AGENT_GUIDE.md`, git hygiene) is the standard it is judged against.
+   - **Inventory-based delivery.** If the work has a parity inventory or canon map (`AGENT_GUIDE.md` → Recon artifacts), judge BY ITS ROWS, not by impression — unaddressed rows ARE the finding; a delivery with no inventory where a reference exists is itself a caveat.
+   - **Experience recall.** The report must quote the EXPERIENCE lessons consulted (id + one line) or state "no relevant lessons" — a missing recall line is a caveat (unquoted recall is unverifiable).
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
