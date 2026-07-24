@@ -67,6 +67,7 @@ spec — surface the contradiction; the task framing does not promote the tests 
 | Spec betrayal | code changed to satisfy a check that contradicts the README/spec |
 | False [TESTED] mark | a `[TESTED: …]` test-status marker with no reproducible verification behind it (TESTING_FRAMEWORK.md) |
 | Invented data | a plausible literal (a count, a name, a stat) on a user-facing surface with no source behind it — a placeholder shipped as fact |
+| Unmarked AI text | AI-written content in the owner's canon artifact without `[AI]…[/AI]` provenance marks, or a mark removed by the agent itself (only the owner's word removes marks — AGENT_GUIDE.md) |
 | Debris | scratch files, debug prints, commented-out code left behind |
 
 ## Done, by example

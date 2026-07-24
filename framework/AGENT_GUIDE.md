@@ -310,6 +310,17 @@ stay visible until the owner has reviewed them. Two-stage control: first the *in
 then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
 for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
 
+**Provenance marks — `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]`** (canonical English strings, grep-friendly,
+like `[NOT-TESTED]`). Everything the AI writes into the owner's canon artifacts carries a visible
+paired mark: `[AI]…[/AI]` — written by the AI; `[AI-ed]…[/AI-ed]` — the owner's text, edited by the AI.
+**A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
+agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
+is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
+(an unaccepted block is safe to remove), and *safety for future agents* (never take unaccepted `[AI]`
+text for the owner's canon). The check is grep-cheap: AI text in a canon artifact without a mark — or a
+mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time; tooling
+may mechanize the check later, the convention does not depend on it.
+
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
 interpretation. Interviews are for vision-level forks that outlive the task.

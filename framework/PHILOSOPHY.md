@@ -119,7 +119,9 @@ gets an owner and a fate — *confirmed / refuted / asked* — before the work i
 (mechanics, facts, decisions) enter the owner's canon only through the owner's "yes" — see the write-gate
 in `AGENT_GUIDE.md`. Corollary: any number/name/fact shown to users must have a source (a data document,
 the canon, the owner's word); a placeholder without a source is a bug by definition — **an invented number
-is worse than a missing one**.
+is worse than a missing one**. And what the AI *does* legitimately write into the owner's canon stays
+visibly marked (`[AI]…[/AI]` provenance marks — `AGENT_GUIDE.md`) until the owner accepts it: AI text
+must never dissolve into the owner's text unnoticed.
 
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO

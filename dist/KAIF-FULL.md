@@ -451,6 +451,17 @@ stay visible until the owner has reviewed them. Two-stage control: first the *in
 then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
 for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
 
+**Provenance marks — `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]`** (canonical English strings, grep-friendly,
+like `[NOT-TESTED]`). Everything the AI writes into the owner's canon artifacts carries a visible
+paired mark: `[AI]…[/AI]` — written by the AI; `[AI-ed]…[/AI-ed]` — the owner's text, edited by the AI.
+**A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
+agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
+is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
+(an unaccepted block is safe to remove), and *safety for future agents* (never take unaccepted `[AI]`
+text for the owner's canon). The check is grep-cheap: AI text in a canon artifact without a mark — or a
+mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time; tooling
+may mechanize the check later, the convention does not depend on it.
+
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
 interpretation. Interviews are for vision-level forks that outlive the task.
@@ -611,7 +622,9 @@ gets an owner and a fate — *confirmed / refuted / asked* — before the work i
 (mechanics, facts, decisions) enter the owner's canon only through the owner's "yes" — see the write-gate
 in `AGENT_GUIDE.md`. Corollary: any number/name/fact shown to users must have a source (a data document,
 the canon, the owner's word); a placeholder without a source is a bug by definition — **an invented number
-is worse than a missing one**.
+is worse than a missing one**. And what the AI *does* legitimately write into the owner's canon stays
+visibly marked (`[AI]…[/AI]` provenance marks — `AGENT_GUIDE.md`) until the owner accepts it: AI text
+must never dissolve into the owner's text unnoticed.
 
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
@@ -2941,6 +2954,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **New binaries/dumps in git.** Every new binary, dump, export, or key-shaped file in the diff gets the question "why is this in git?" — the ignore-first rule (`AGENT_GUIDE.md`, git hygiene) is the standard it is judged against.
    - **Inventory-based delivery.** If the work has a parity inventory or canon map (`AGENT_GUIDE.md` → Recon artifacts), judge BY ITS ROWS, not by impression — unaddressed rows ARE the finding; a delivery with no inventory where a reference exists is itself a caveat.
    - **Experience recall.** The report must quote the EXPERIENCE lessons consulted (id + one line) or state "no relevant lessons" — a missing recall line is a caveat (unquoted recall is unverifiable).
+   - **Provenance marks.** In the owner's canon artifacts, AI-written text must sit inside `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]` marks (`AGENT_GUIDE.md` → write-gate); unmarked AI text — or a mark removed without the owner's quoted word — is fraud.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
