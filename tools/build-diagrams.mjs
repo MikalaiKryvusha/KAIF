@@ -62,9 +62,9 @@ const STR = {
   en: {
     d1_y: 'knowledge of the project available to the session',
     d1_x: 'consecutive sessions',
-    d1_legA: 'without KAIF', d1_legB: 'with KAIF',
-    d1_cap1: 'Without KAIF the knowledge exists only inside the session and is lost together with it.',
-    d1_cap2: 'With KAIF the state is written to files, so the next session starts from what was reached.',
+    d1_legA: 'without KAIF', d1_legB: 'with KAIF', d1_legC: 'the session is running',
+    d1_cap1: 'Knowledge is gained only while a session runs. Without KAIF it lives inside that session and dies with it.',
+    d1_cap2: 'With KAIF the state is in files, so the level holds between sessions and the next one continues from it.',
     d2_title: 'One session, start to finish',
     d2_n: ['/resume', 'the work', 'verification', 'review of claims', '/pause'],
     d2_s: [
@@ -95,9 +95,9 @@ const STR = {
   ru: {
     d1_y: 'знание о проекте, доступное сессии',
     d1_x: 'последовательные сессии',
-    d1_legA: 'без KAIF', d1_legB: 'с KAIF',
-    d1_cap1: 'Без KAIF знание существует только внутри сессии и исчезает вместе с ней.',
-    d1_cap2: 'С KAIF состояние записано в файлы, поэтому следующая сессия продолжает с достигнутого.',
+    d1_legA: 'без KAIF', d1_legB: 'с KAIF', d1_legC: 'сессия идёт',
+    d1_cap1: 'Знание прирастает только пока сессия идёт. Без KAIF оно живёт внутри сессии и исчезает вместе с ней.',
+    d1_cap2: 'С KAIF состояние записано в файлы: между сессиями уровень держится, и следующая продолжает с него.',
     d2_title: 'Одна сессия целиком',
     d2_n: ['/resume', 'работа', 'проверка', 'разбор заявлений', '/pause'],
     d2_s: [
@@ -167,52 +167,68 @@ ${body}
 // not every session is a net gain, and a chart that only ever rises would be a sales pitch.
 function diagramKnowledge(T, L) {
   const p = [];
-  const X0 = 150, X1 = 1150, Y0 = 108, Y1 = 400;
+  const X0 = 150, X1 = 1150, Y0 = 130, Y1 = 420;
   const N = 5, step = (X1 - X0) / N;
+
+  // Knowledge is only ever gained WHILE A SESSION IS RUNNING. Between sessions nothing happens:
+  // without KAIF the level is back at zero, with KAIF it holds flat, like a charge being kept.
+  // The idle gap is therefore drawn wide enough to be unmistakable — an earlier version used a
+  // 28px gap, which read as one continuous climb and so asserted something untrue.
+  const INSET = step * 0.17;
+  const bA = i => X0 + step * i + INSET;
+  const bB = i => X0 + step * (i + 1) - INSET;
 
   p.push(t(X0, 62, fit(L.d1_y, 15, false, 700, 'd1.ylabel'), { size: 15, anchor: 'start', fill: T.soft }));
 
+  // shaded columns = the session is running
+  for (let i = 0; i < N; i++) {
+    p.push(`<rect x="${bA(i)}" y="${Y0 - 14}" width="${bB(i) - bA(i)}" height="${Y1 - Y0 + 14}" fill="${T.grid}" opacity="0.75"/>`);
+  }
   for (let i = 0; i <= 4; i++) {
     const y = Y0 + ((Y1 - Y0) / 4) * i;
     p.push(path(`M${X0} ${y} L${X1} ${y}`, T.grid, 1.4));
   }
-  p.push(path(`M${X0} ${Y0 - 12} L${X0} ${Y1}`, T.soft, 1.8));
+  p.push(path(`M${X0} ${Y0 - 14} L${X0} ${Y1}`, T.soft, 1.8));
   p.push(path(`M${X0} ${Y1} L${X1 + 14} ${Y1}`, T.soft, 1.8, 'marker-end="url(#c)"'));
 
   for (let i = 0; i < N; i++) {
-    const cx = X0 + step * i + step / 2;
-    p.push(path(`M${X0 + step * (i + 1)} ${Y1} L${X0 + step * (i + 1)} ${Y1 + 7}`, T.soft, 1.6));
-    p.push(t(cx, Y1 + 28, String(i + 1), { size: 14, fill: T.soft }));
+    p.push(t((bA(i) + bB(i)) / 2, Y1 + 26, String(i + 1), { size: 14, fill: T.soft }));
   }
-  p.push(t((X0 + X1) / 2, Y1 + 54, L.d1_x, { size: 14, fill: T.soft }));
+  p.push(t((X0 + X1) / 2, Y1 + 52, L.d1_x, { size: 14, fill: T.soft }));
 
-  // without KAIF: rises inside a session, returns to the floor at every boundary
-  const saw = [];
+  // without KAIF: climbs while the session runs, drops at its end, sits at zero in between
+  const peak = Y0 + 88, saw = [];
   for (let i = 0; i < N; i++) {
-    const a = X0 + step * i + 14, b = X0 + step * (i + 1) - 14;
-    saw.push(`M${a} ${Y1} L${b} ${Y0 + 96} L${b} ${Y1}`);
+    saw.push(`M${bA(i)} ${Y1} L${bB(i)} ${peak} L${bB(i)} ${Y1}`);
+    if (i < N - 1) saw.push(`M${bB(i)} ${Y1} L${bA(i + 1)} ${Y1}`);
   }
   p.push(path(saw.join(' '), T.soft, 2.4, 'stroke-dasharray="7 5"'));
 
-  // with KAIF: carries over, with an honest setback in session 3
-  const lv = [Y1, Y1 - 62, Y1 - 132, Y1 - 108, Y1 - 186, Y1 - 258];
+  // with KAIF: climbs while the session runs, HOLDS between sessions.
+  // Session 3 ends lower than it started — not every session is a net gain.
+  const lv = [Y1, Y1 - 58, Y1 - 126, Y1 - 100, Y1 - 178, Y1 - 250];
   const pts = [];
   for (let i = 0; i < N; i++) {
-    const a = X0 + step * i + 14, b = X0 + step * (i + 1) - 14;
-    pts.push(`${i === 0 ? 'M' : 'L'}${a} ${lv[i]}`, `L${b} ${lv[i + 1]}`);
+    pts.push(`${i === 0 ? 'M' : 'L'}${bA(i)} ${lv[i]}`, `L${bB(i)} ${lv[i + 1]}`);
   }
   p.push(path(pts.join(' '), T.accent, 3));
 
-  // legend, parked in free space in the upper left of the plot
-  p.push(path(`M${X0 + 24} ${Y0 + 18} L${X0 + 74} ${Y0 + 18}`, T.soft, 2.4, 'stroke-dasharray="7 5"'));
-  p.push(t(X0 + 86, Y0 + 23, fit(L.d1_legA, 14, false, 200, 'd1.legA'), { size: 14, anchor: 'start', fill: T.soft }));
-  p.push(path(`M${X0 + 24} ${Y0 + 46} L${X0 + 74} ${Y0 + 46}`, T.accent, 3));
-  p.push(t(X0 + 86, Y0 + 51, fit(L.d1_legB, 14, false, 200, 'd1.legB'), { size: 14, anchor: 'start', fill: T.ink }));
+  // legend above the plot, laid out by measured width so items can never collide
+  let lx = X0;
+  const legend = (draw, label, colour) => {
+    p.push(draw(lx));
+    p.push(t(lx + 56, 95, label, { size: 14, anchor: 'start', fill: colour }));
+    lx += 56 + widthOf(label, 14, false) + 46;
+  };
+  legend(x => path(`M${x} ${90} L${x + 44} ${90}`, T.soft, 2.4, 'stroke-dasharray="7 5"'), L.d1_legA, T.soft);
+  legend(x => path(`M${x} ${90} L${x + 44} ${90}`, T.accent, 3), L.d1_legB, T.ink);
+  legend(x => `<rect x="${x}" y="${80}" width="${44}" height="${20}" fill="${T.grid}"/>`, L.d1_legC, T.soft);
+  if (lx > X1) throw new Error(`[build-diagrams] d1 legend overflows: ends at ${Math.ceil(lx)}px, plot ends at ${X1}px`);
 
-  p.push(t(X0, 500, fit(L.d1_cap1, 15.5, false, 1000, 'd1.cap1'), { size: 15.5, anchor: 'start', fill: T.ink, op: 0.9 }));
-  p.push(t(X0, 526, fit(L.d1_cap2, 15.5, false, 1000, 'd1.cap2'), { size: 15.5, anchor: 'start', fill: T.ink, op: 0.9 }));
+  p.push(t(X0, 512, fit(L.d1_cap1, 15.5, false, 1000, 'd1.cap1'), { size: 15.5, anchor: 'start', fill: T.ink, op: 0.9 }));
+  p.push(t(X0, 538, fit(L.d1_cap2, 15.5, false, 1000, 'd1.cap2'), { size: 15.5, anchor: 'start', fill: T.ink, op: 0.9 }));
 
-  return svg(1200, 560, T, p.join('\n'), `${L.d1_cap1} ${L.d1_cap2}`);
+  return svg(1200, 572, T, p.join('\n'), `${L.d1_cap1} ${L.d1_cap2}`);
 }
 
 // ── Diagram 2 — one session, start to finish ───────────────────────────────────
