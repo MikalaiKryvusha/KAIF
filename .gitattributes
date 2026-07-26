@@ -8,6 +8,10 @@
 *.jpg binary
 *.pdf binary
 
+# Diagrams in assets/ are TEXT (generated XML), not binaries: they must diff and must stay LF.
+# Stated explicitly rather than relying on `text=auto` inferring it.
+*.svg text eol=lf
+
 # Distribution artifacts: bytes are canonical as built (sha256 in kaif-manifest.json
 # must equal the blob raw.githubusercontent serves) — git must never transform them.
 dist/** -text
