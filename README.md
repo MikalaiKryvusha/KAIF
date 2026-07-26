@@ -41,6 +41,14 @@ AI coding agents are powerful but suffer two chronic failures:
 - **They drift.** Left autonomous, an agent either stalls (over-engineering a misunderstood task) or
   oversteps (making brand/architecture decisions that weren't its to make).
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/knowledge-en-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/knowledge-en-light.svg">
+    <img src="assets/knowledge-en-light.svg" width="880" alt="Knowledge of the project available to the session, plotted across five consecutive sessions. Without KAIF it rises inside a session and returns to zero at every boundary. With KAIF it carries over and accumulates, including one session that ends lower than it started.">
+  </picture>
+</p>
+
 **KAIF** fixes both by **externalizing the agent's working memory and discipline into the repository
 itself** — a small set of markdown files, directory conventions, and repeatable slash-skills. The result:
 any fresh session resumes instantly with full context, works autonomously within clear bounds, and
@@ -52,17 +60,13 @@ software together — a standalone by-product of that collaboration, generalized
 
 ## How it works
 
-```
-   You (human)                          Your AI agent                 The machinery
-   ───────────                          ─────────────                ─────────────
-1. Drop KAIF.md into your repo
-2. "Unpack the KAIF framework"  ─▶  3 bootstrap steps            ─▶  fetches itself from origin
-                                     (Node check · write the         (sha256-verified), deploys
-                                     loader verbatim · run it)       EVERYTHING mechanically
-                                                                  ─▶  leaves ONE short adaptation
-                                    ◀─  understands YOUR project      task for the agent
-3. /resume · /pause · /autoloop ···  ─▶  works like a disciplined, autonomous teammate
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/session-en-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/session-en-light.svg">
+    <img src="assets/session-en-light.svg" width="880" alt="One session from start to finish: /resume, the work, verification, review of claims, /pause. The repository below holds the state, the accumulated knowledge and the rules: /resume reads it, verification checks against it, /pause writes to it. The next session begins with an empty context — the files are what carries over.">
+  </picture>
+</p>
 
 **New in 1.5:** the deploy is *thin*. The agent reads ~10 KB instead of ~220 KB (×23 less), and its
 cognitive writing shrinks ×66 — the machinery unpacks the docs, generates the skills for **five agent
@@ -180,6 +184,14 @@ while the skills themselves stay English. Agent-internal docs stay English by de
 degrade honestly: English + a translation item in the adaptation task.
 
 ## What gets unpacked
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (26 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+  </picture>
+</p>
 
 ```
 your-project/
@@ -310,7 +322,9 @@ framework/                       the canonical universal templates (the payload)
   skills/ spheres/ adapters/     26 skill templates · sphere libraries · agent-system adapters
 dist/                            generated distribution: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (offline fallback)
-tools/                           build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs
+assets/                          generated README diagrams (3 × light/dark × EN/RU), from build-diagrams.mjs
+tools/                           build-framework.mjs · check-framework.mjs · build-diagrams.mjs
+                                 · readme-pdf.mjs · commit.mjs
 README.md / README.pdf           this front door (EN+RU) and its rendered copy
 GOAL.md  MASTER_PLAN.md  …        the dogfooding wrapper (the framework applied to itself)
 ```
@@ -329,6 +343,12 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 <a id="russian"></a>
 
 # КАИФ — Криник АИ Фреймворк
+
+<p align="center">
+  <a href="#english"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
+  &nbsp;
+  <a href="#russian"><img src="https://img.shields.io/badge/Русский-C0392B?style=for-the-badge" alt="Русский"></a>
+</p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
@@ -360,6 +380,14 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 - **Их «уводит».** Будучи автономным, агент либо застревает (переусложняя неверно понятую задачу), либо
   превышает полномочия (принимая решения о бренде/архитектуре, которые принимать был не вправе).
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/knowledge-ru-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/knowledge-ru-light.svg">
+    <img src="assets/knowledge-ru-light.svg" width="880" alt="Знание о проекте, доступное сессии, на протяжении пяти последовательных сессий. Без KAIF оно растёт внутри сессии и обнуляется на каждой границе. С KAIF оно переносится и накапливается — включая одну сессию, которая закончилась ниже, чем началась.">
+  </picture>
+</p>
+
 **KAIF** лечит и то и другое, **вынося рабочую память и дисциплину агента в сам репозиторий** — в виде
 небольшого набора markdown-файлов, соглашений о директориях и повторяемых /слеш-навыков. Итог: любая
 новая сессия мгновенно включается в работу с полным контекстом, работает автономно в чётких границах и
@@ -372,17 +400,13 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 ## Как это работает
 
-```
-   Вы (человек)                        Ваш ИИ-агент                  Машинерия
-   ────────────                        ────────────                  ─────────
-1. Кладёте KAIF.md в репозиторий
-2. «Распакуй фреймворк KAIF»    ─▶  3 шага бутстрапа            ─▶  скачивает себя из origin
-                                     (проверка Node · загрузчик      (проверка sha256), разворачивает
-                                     дословно · запуск)              ВСЁ механически
-                                                                 ─▶  оставляет агенту ОДНО короткое
-                                   ◀─  понимает ВАШ проект           задание адаптации
-3. /resume · /pause · /autoloop ···  ─▶ работает как дисциплинированный автономный напарник
-```
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/session-ru-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/session-ru-light.svg">
+    <img src="assets/session-ru-light.svg" width="880" alt="Одна сессия целиком: /resume, работа, проверка, разбор заявлений, /pause. Ниже — репозиторий, хранящий состояние, накопленное знание и правила: /resume читает его, проверка с ним сверяется, /pause в него пишет. Следующая сессия начинается с пустым контекстом — переносят только файлы.">
+  </picture>
+</p>
 
 **Новое в 1.5:** установка *тонкая*. Агент читает ~10 КБ вместо ~220 КБ (в 23 раза меньше), а его
 когнитивное письмо сжимается в 66 раз — машинерия распаковывает документы, генерирует навыки сразу для
@@ -503,6 +527,14 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 честно: английский + пункт перевода в задании адаптации.
 
 ## Что разворачивается
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (26 повторяемых ритуалов, вызываются по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+  </picture>
+</p>
 
 ```
 ваш-проект/
@@ -635,7 +667,9 @@ framework/                       канонические универсальн
   skills/ spheres/ adapters/     26 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
 dist/                            сгенерированная раздача: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (оффлайн-фолбэк)
-tools/                           build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs
+assets/                          сгенерированные схемы README (3 × светлая/тёмная × EN/RU), из build-diagrams.mjs
+tools/                           build-framework.mjs · check-framework.mjs · build-diagrams.mjs
+                                 · readme-pdf.mjs · commit.mjs
 README.md / README.pdf           этот «парадный вход» (EN+RU) и его рендер-копия
 GOAL.md  MASTER_PLAN.md  …        обвязка-самообёртка (фреймворк, применённый к себе)
 ```

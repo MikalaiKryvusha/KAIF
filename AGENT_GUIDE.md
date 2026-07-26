@@ -164,7 +164,10 @@ KAIF/
 │   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded into KAIF.md as a FILE: block)
 │   ├── spheres/  adapters/          ← sphere term libraries · agent-system adapters (Zoo Code = priority #1)
 │
-└── tools/  (build-framework.mjs · check-framework.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+│
+├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
+└── tools/  (build-framework.mjs · check-framework.mjs · build-diagrams.mjs · readme-pdf.mjs
+           · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -188,6 +191,7 @@ KAIF/
 
 ```bash
 node tools/build-framework.mjs     # regenerate KAIF.md from framework/_intro.md + framework/*
+node tools/build-diagrams.mjs      # regenerate assets/*.svg (README diagrams) — run before readme-pdf
 node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 ```
 
@@ -254,6 +258,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 | Команда | Что делает |
 |---------|--------------|
 | `node tools/build-framework.mjs` | Регенерирует `KAIF.md` из `framework/`. |
+| `node tools/build-diagrams.mjs` | Регенерирует схемы README в `assets/` (3 чертежа × светлая/тёмная × EN/RU) из одного источника. Гейт ширины текста валит сборку, если подпись не влезает в свой контейнер — наезд невозможен по построению. Схемы правь ТОЛЬКО здесь, не в SVG. |
 | `node tools/readme-pdf.mjs` | Рендерит `README.md` → `README.pdf` (нужен `md-to-pdf`; `npm i` в `tools/`). |
 | `node tools/commit.mjs "<msg>"` | Инкрементирует номер сборки, коммитит, пушит. |
 

@@ -13,7 +13,8 @@ KAIF/
 │
 │  ── FRONT DOOR ──
 ├── README.md                              # EN (primary) + RU
-├── README.pdf                             # rendered README (generated; gitignored)
+├── README.pdf                             # rendered README (generated, но КОММИТИТСЯ — bug 09)
+├── assets/                                # СГЕНЕРИРОВАННЫЕ схемы README (3 × light/dark × EN/RU)
 ├── LICENSE                                # MIT
 ├── version.json                           # { name, major, minor, released, origin, build } → версия = major.minor
 ├── .gitignore
@@ -37,6 +38,7 @@ KAIF/
 ├── tools/
 │   ├── build-framework.mjs                 # framework/ → KAIF.md (+ самопроверка)
 │   ├── check-framework.mjs                 # валидатор KAIF.md (npm test / kaif:check)
+│   ├── build-diagrams.mjs                   # → assets/*.svg (схемы README, гейт ширины текста)
 │   ├── readme-pdf.mjs                       # README.md → README.pdf
 │   ├── commit.mjs                           # bump build, commit, push
 │   └── kaif.mjs                             # ручки жизненного цикла (npm run kaif:*)
@@ -73,6 +75,7 @@ framework/skills/**       ├─────────────────
                         ──┘    встраивает FILE-блоки)           FILE-блоки, нет {{…}})
 
 README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
+tools/build-diagrams.mjs  ──▶  assets/*.svg  ──  README.md (через <picture>)
 ```
 
 - `build-framework.mjs` оборачивает каждый встраиваемый шаблон в **ограждение из 6 обратных кавычек** и
