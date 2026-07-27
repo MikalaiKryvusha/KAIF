@@ -141,7 +141,7 @@ if (existsSync(distDir)) {
     const vjson = JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8').replace(/^﻿/, ''));
     const expectCodenameLine = `KAIF ${vjson.major}.${vjson.minor} — ${vjson.codename}`;
     if (!vjson.codename) errors.push('version.json has no "codename" — the release codename must live there (single source)');
-    const metaMatch = bundle.match(/> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\n\n``````json\n([\s\S]*?)\n``````/);
+    const metaMatch = bundle.match(/> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\r?\n\r?\n``````json\r?\n([\s\S]*?)\r?\n``````/);
     if (!metaMatch) errors.push('bundle manifest block not found for the template-notes check');
     else {
       const notes = (JSON.parse(metaMatch[1]).templateNotes || []).join('\n');
@@ -166,7 +166,10 @@ if (existsSync(distDir)) {
     } else {
       const { splitModules, MODULE_CLASSES } = await import('./module-map-lib.mjs');
       const mm = JSON.parse(dread('kaif-module-map.json'));
-      const blockRe = /^> \*\*FILE: `([^`]+)`\*\*[^\n]*\n\n``````\w*\n([\s\S]*?)\n``````/gm;
+      // \r?\n throughout: an LF-only regex silently matched ZERO blocks on a CRLF-mangled bundle
+      // and the whole section reported a hollow green (review-caught) — hence also the
+      // zero-blocks tripwire below.
+      const blockRe = /^> \*\*FILE: `([^`]+)`\*\*[^\n]*\r?\n\r?\n``````\w*\r?\n([\s\S]*?)\r?\n``````/gm;
       let mdBlocks = 0, staleFiles = 0;
       for (let m; (m = blockRe.exec(bundle)); ) {
         const [, p, body] = m;
@@ -174,7 +177,7 @@ if (existsSync(distDir)) {
         mdBlocks++;
         const entry = (mm.files || {})[p];
         if (!entry) { errors.push(`module map: bundle file not mapped: ${p}`); continue; }
-        const mods = splitModules(body + '\n');
+        const mods = splitModules(body.replace(/\r\n/g, '\n') + '\n');
         if (mods.length !== entry.length) { staleFiles++; continue; }
         for (let i = 0; i < mods.length; i++) {
           const actualSha = createHash('sha256').update(mods[i].lines.join('\n')).digest('hex');
@@ -183,9 +186,34 @@ if (existsSync(distDir)) {
             errors.push(`module map: invalid class "${entry[i].class}" for ${p} :: ${entry[i].signature}`);
         }
       }
+      if (mdBlocks === 0) errors.push('module map check saw ZERO md blocks — the bundle is unreadable to the block regex (a hollow green is not a pass)');
       if (staleFiles) errors.push(`module map STALE: ${staleFiles} of ${mdBlocks} md files diverge from the bundle — re-run the build`);
-      if (!errors.some((e) => e.startsWith('module map')))
-        distNote += ` · module map OK (${mm.moduleCount} modules / ${mdBlocks} md files)`;
+      const mappedNotInBundle = Object.keys(mm.files || {}).length -
+        [...bundle.matchAll(blockRe)].filter(([, p]) => p.endsWith('.md') && p !== 'kaif-bundle-manifest.json' && (mm.files || {})[p]).length;
+      if (mappedNotInBundle > 0) errors.push(`module map: ${mappedNotInBundle} mapped file(s) do not exist in the bundle (ghost entries)`);
+
+      // 9. Behavioral pin: the CORE'S VENDORED splitter/classifier must equal the build library —
+      //    executed, not eyeballed. Without this gate a silent drift of the vendored copy shipped
+      //    green until someone manually re-ran the sandbox pin (review-caught).
+      try {
+        const { execFileSync } = await import('node:child_process');
+        const coreOut = JSON.parse(execFileSync(process.execPath,
+          [join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'modules', '--bundle', join(distDir, 'KAIF-CORE-BUNDLE.md')],
+          { stdio: 'pipe' }).toString());
+        let pinBad = coreOut.moduleCount !== mm.moduleCount ? 1 : 0;
+        for (const [p, mods] of Object.entries(mm.files || {})) {
+          const c = (coreOut.files || {})[p];
+          if (!c || c.length !== mods.length) { pinBad++; continue; }
+          for (let i = 0; i < mods.length; i++)
+            if (c[i].signature !== mods[i].signature || c[i].sha256 !== mods[i].sha256 || c[i].class !== mods[i].class) { pinBad++; break; }
+        }
+        for (const p of Object.keys(coreOut.files || {})) if (!(mm.files || {})[p]) pinBad++;
+        if (pinBad) errors.push(`vendored core splitter DRIFTED from the build library: ${pinBad} file-level mismatch(es) in the behavioral pin`);
+      } catch (e) {
+        errors.push('behavioral pin failed to run (core `modules` command errored): ' + String(e.message || e).slice(0, 200));
+      }
+      if (!errors.some((e) => e.startsWith('module map') || e.startsWith('vendored core')))
+        distNote += ` · module map OK (${mm.moduleCount} modules / ${mdBlocks} md files, core pin ok)`;
     }
   }
 }

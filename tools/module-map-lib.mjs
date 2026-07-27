@@ -63,7 +63,9 @@ export function classifyModule(dest, mod, overrides = {}) {
   return 'static';
 }
 
-const sha256 = (s) => createHash('sha256').update(s).digest('hex');
+// EOL-normalized like the core's normSha — the two implementations must hash identically
+// even on a CRLF-tainted input (symmetry; the behavioral pin in check-framework enforces it).
+const sha256 = (s) => createHash('sha256').update(String(s).replace(/\r\n/g, '\n')).digest('hex');
 
 // Build the map entry for one deployable md file. Throws on a duplicate signature —
 // signature anchors must stay unique per file (guard; the 1.6 canon has zero duplicates).
