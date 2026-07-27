@@ -97,6 +97,77 @@ if (!val('--mode') && okOnDisk(KAIF_JSON)) {
   catch { /* unreadable marker — the CLI default stands */ }
 }
 
+// ---------------------------------------------------------------------------- modules (plan 21)
+// A MODULE is a logical section of a template — the atom of diffing and replacement (KAIF 2.0).
+// The splitter/classifier MIRROR tools/module-map-lib.mjs at the origin (the core must stay one
+// self-contained file); the build's check pins the two implementations behaviorally: the `modules`
+// command output must equal dist/kaif-module-map.json for the same bundle.
+const normEol = (s) => s.replace(/\r\n/g, '\n');
+const normSha = (data) => sha256(normEol(String(data)));           // EOL-normalized sha: CRLF never
+const fileShaNorm = (p) => normSha(readFileSync(p, 'utf8'));       // fakes a divergence (bug 12)
+
+function splitModules(content) {
+  const lines = content.split('\n');
+  const modules = [];
+  let cur = { signature: '<preamble>', lines: [] };
+  let inFence = false;
+  for (const line of lines) {
+    if (/^(`{3,}|~{3,})/.test(line.trim())) inFence = !inFence;    // headings inside fences are not anchors
+    if (!inFence && /^#{1,3} /.test(line)) { modules.push(cur); cur = { signature: line, lines: [] }; }
+    cur.lines.push(line);
+  }
+  modules.push(cur);
+  return modules.filter((m) => m.signature !== '<preamble>' || m.lines.join('').length > 0);
+}
+const joinModules = (mods) => mods.flatMap((m) => m.lines).join('\n');
+const modText = (m) => m.lines.join('\n');
+
+// Computed classes (plan 21 §3.1): owner files are never in scope; a module carrying a canonical
+// placeholder (or a skill frontmatter) is adaptive — replaced WITH value transfer; the rest is
+// static — upstream-owned, mechanically replaceable. `overrides` ship in the bundle meta.
+function classifyModule(dest, mod, overrides) {
+  const eff = dest.replace(/^templates\/languages\/[^/]+\//, '');
+  const o = (overrides || {})[eff] || (overrides || {})[dest];
+  if (o && o.modules && o.modules[mod.signature]) return o.modules[mod.signature];
+  if (o && o.default) return o.default;
+  if (OWNER_SEEDED.includes(eff)) return 'owner';
+  const text = modText(mod);
+  if (PLACEHOLDERS.some((ph) => text.includes(ph))) return 'adaptive';
+  if (mod.signature === '<preamble>' && /^\.claude\/skills\//.test(eff) && /^description:/m.test(text)) return 'adaptive';
+  return 'static';
+}
+const moduleEntries = (dest, content, overrides) => splitModules(content).map((m) => ({
+  signature: m.signature, class: classifyModule(dest, m, overrides), sha256: normSha(modText(m)) }));
+
+// The owner's writing system, for the localization safety net (decision #17): a disk module in
+// the owner's script must never be silently replaced by a template that carries none of it.
+const SCRIPTS = { ru: /[А-Яа-яЁё]/, uk: /[А-Яа-я]/, be: /[А-Яа-я]/, 'zh-hans': /[一-鿿]/,
+                  zh: /[一-鿿]/, ja: /[぀-ヿ一-鿿]/, ar: /[؀-ۿ]/,
+                  hi: /[ऀ-ॿ]/ };
+function localizedAgainst(diskText, newText) {
+  const re = SCRIPTS[LANG];
+  return !!re && re.test(diskText) && !re.test(newText);
+}
+
+// A tiny line-level LCS diff — modules are small (median 9 lines), so O(n·m) is nothing.
+// Renders the "old template → new template" delta the field asked for in 7 of 8 reports.
+function lineDiff(oldText, newText) {
+  const a = oldText.split('\n'), b = newText.split('\n');
+  const L = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+  for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--)
+    L[i][j] = a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const out = [];
+  let i = 0, j = 0;
+  while (i < a.length && j < b.length) {
+    if (a[i] === b[j]) { out.push('  ' + a[i]); i++; j++; }
+    else if (L[i + 1][j] >= L[i][j + 1]) { out.push('- ' + a[i]); i++; }
+    else { out.push('+ ' + b[j]); j++; }
+  }
+  while (i < a.length) out.push('- ' + a[i++]);
+  while (j < b.length) out.push('+ ' + b[j++]);
+  return out.join('\n');
+}
+
 // Ignore-first (canon 1.6, bug 18): the transient installer artifacts enter .gitignore BEFORE
 // they hit the tree, so a `git add -A` during the manual-merge window between update and
 // update-verify cannot drag a 425 KB bundle into history (field-caught on NDim, which trapped
@@ -303,14 +374,27 @@ function writeAdaptationTask(unresolved, translated, meta) {
 }
 
 // The cognitive task after an UPDATE: only the genuinely diverged places + what's new.
-// Same forced-checkpoint discipline as the adaptation task.
-function writeUpdateTask(diverged, meta, contextLine) {
+// Same forced-checkpoint discipline as the adaptation task. Since plan 21 the heavy lifting is
+// per-module: `opts.divergedModules` renders "your version → new template" diffs right in the
+// task, so the agent merges MEANING, never reconstructs deltas by hand (the top field gap, П1).
+function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
+  const { divergedModules = {}, ownerConvention = [] } = opts;
+  const modFiles = Object.keys(divergedModules);
   const items = [];
+  if (modFiles.length) items.push(['merge-modules', `These MODULES carry local edits — merge each diff below into your version (the rest of their files was updated mechanically): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
   if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.join(' · ')}`]);
+  if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real), then run `node .kaif/kaif-core.mjs update-verify`.']);
   const news = (meta.templateNotes || []).map((n) => `- ${n}`).join('\n') || '- (no template notes shipped with this version)';
+  const diffSections = [];
+  for (const p of modFiles) {
+    diffSections.push(`### ${p}`, '');
+    for (const d of divergedModules[p]) {
+      diffSections.push(`**module:** \`${d.signature}\` — ${d.note}`, '', '```diff', d.diff, '```', '');
+    }
+  }
   writeFileSync(UPDATE_TASK, [
     `# KAIF update task — finish the update to ${meta.version}`,
     '',
@@ -324,10 +408,11 @@ function writeUpdateTask(diverged, meta, contextLine) {
     '',
     news,
     '',
+    ...(diffSections.length ? ['## Module diffs (your version → the new template)', '', ...diffSections] : []),
     '## Checkpoints (append below as you finish items)',
     '',
   ].join('\n'));
-  log(`+ wrote ${UPDATE_TASK} (${items.length} items${diverged.length ? `, ${diverged.length} diverged files` : ''})`);
+  log(`+ wrote ${UPDATE_TASK} (${items.length} items${diverged.length ? `, ${diverged.length} diverged files` : ''}${modFiles.length ? `, ${modFiles.length} files with module diffs` : ''})`);
 }
 
 // Fetch one artifact for `update` (URL or local dir), mirroring the loader.
@@ -340,6 +425,65 @@ async function fetchArtifact(base, name) {
   const res = await fetch(`${base}/${name}`, { redirect: 'follow' });
   if (!res.ok) die(`download failed (${res.status}) — ${base}/${name}`);
   return Buffer.from(await res.arrayBuffer());
+}
+
+// The modular merge (plan 21 §3.3) — the owner's metaphor made mechanical: a module whose disk
+// text still equals what THIS deployment's template shipped is swapped for the new template's
+// module; a module the owner/agent edited is kept and handed over WITH a diff; modules the owner
+// ADDED to a framework file survive in place (reconstruction starts from the DISK order, so
+// custom insertions keep their position). Returns null when the disk file cannot be cut cleanly.
+// [TESTED: 2026-07-27 · sandboxes S5-S7: localized module survives TWO update cycles while its
+// file's upstream modules merge mechanically; conflict module → diff in the task; upstream-
+// untouched divergence makes no noise; i18n:translated disables replacement entirely]
+function mergeModules(path, newContent, oldMods) {
+  const disk = normEol(readFileSync(path, 'utf8'));
+  const diskMods = splitModules(disk);
+  if (joinModules(diskMods) !== disk) return null;                      // pathological file — file-level fallback
+  const newMods = splitModules(newContent.replace(/\s+$/, '\n'));
+  const newBySig = new Map(newMods.map((m) => [m.signature, m]));
+  const oldBySig = new Map(oldMods.map((e) => [e.signature, e]));
+  let replaced = 0;
+  const divergedList = [];
+  const out = [];
+  for (const dm of diskMods) {
+    const dSha = normSha(modText(dm));
+    const oldE = oldBySig.get(dm.signature);
+    const newM = newBySig.get(dm.signature);
+    if (oldE && dSha === oldE.sha256) {
+      // untouched since deploy — upstream's to move
+      if (!newM) { replaced++; continue; }                              // upstream removed the module
+      const newText = modText(newM);
+      if (dSha === normSha(newText)) { out.push(dm); }                  // unchanged upstream too
+      else if (localizedAgainst(modText(dm), newText)) {                // safety net (decision #17)
+        out.push(dm);
+        divergedList.push({ signature: dm.signature, note: 'localized on disk — not replaced', diff: lineDiff(modText(dm), newText) });
+      } else { out.push({ signature: dm.signature, lines: newText.split('\n') }); replaced++; }
+    } else {
+      // owner/agent-edited, or a module the deploy never shipped (owner-added section) — keep.
+      // A diff lands in the task ONLY when upstream ACTUALLY changed this module (KPOT F2:
+      // "diverged but upstream untouched" is zero work and must not make noise).
+      out.push(dm);
+      if (oldE && newM && normSha(modText(newM)) !== oldE.sha256)
+        divergedList.push({ signature: dm.signature, note: 'carries local edits AND upstream changed it', diff: lineDiff(modText(dm), modText(newM)) });
+      else if (oldE && !newM)
+        divergedList.push({ signature: dm.signature, note: 'upstream REMOVED this module; your edited version kept', diff: lineDiff(modText(dm), '') });
+    }
+  }
+  // modules NEW in this release (absent on disk): insert by template order — right after the
+  // nearest preceding template sibling that exists in the reconstruction, else append.
+  for (let i = 0; i < newMods.length; i++) {
+    const nm = newMods[i];
+    if (diskMods.some((d) => d.signature === nm.signature)) continue;
+    let at = out.length;
+    for (let k = i - 1; k >= 0; k--) {
+      const pos = out.findIndex((o) => o.signature === newMods[k].signature);
+      if (pos >= 0) { at = pos + 1; break; }
+    }
+    out.splice(at, 0, { signature: nm.signature, lines: modText(nm).split('\n') });
+    replaced++;
+  }
+  const merged = joinModules(out);
+  return { merged, changed: merged !== disk, replaced, divergedList };
 }
 
 // ---------------------------------------------------------------------------- update (idea 14 / plan 15)
@@ -373,6 +517,8 @@ async function cmdUpdate() {
   // classify against the install-time snapshots
   const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
   const oldShas = old.shas || {};
+  const oldTplShas = old.templateShas || {};          // v2: what the previous deploy's TEMPLATES were
+  const oldModShas = old.moduleShas || {};            // v2: their per-module cut
   // Provenance gate: paths the previous deploy ADOPTED (kept as found, never written from a
   // template) are not replace-eligible even when the disk sha still matches the snapshot —
   // for them the snapshot IS the owner's content. "Unchanged since the snapshot" only
@@ -383,17 +529,51 @@ async function cmdUpdate() {
   const values = detectValues();
   const unresolved = new Set();
   const diverged = [];
+  const divergedModules = {};                        // path → [{signature, note, diff}]
+  const ownerConvention = [];                        // owner docs whose TEMPLATE changed shape
   const adopted = [];
-  let replaced = 0, added = 0, kept = 0;
+  // i18n intent (decision #17): a project that declared `"i18n": "translated"` in the marker
+  // translated its wrapper wholesale — nothing gets silently replaced; everything ships as
+  // per-module diffs instead of the machinery warring with the translation every release.
+  const i18nTranslated = String(cur.i18n || '').toLowerCase() === 'translated';
+  if (i18nTranslated) log('⟳ marker declares i18n: translated — mechanical replacement disabled, per-module diffs only');
+  let replaced = 0, added = 0, kept = 0, mergedModules = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
-    if (OWNER_SEEDED.includes(f.path)) { kept++; continue; }              // owner's — never in scope
     const content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
     f.content = content; // derived surfaces (system skill copies) must inherit the filled text (bug 05)
+    if (OWNER_SEEDED.includes(f.path)) {
+      kept++;                                                            // owner's — never in scope
+      // …but the TEMPLATE may have changed a CONVENTION (field: EXPERIENCE gained Repro:/Not for:
+      // and no project could learn it) — surface the fact, touch nothing.
+      if (oldTplShas[f.path] && oldTplShas[f.path] !== normSha(content)) ownerConvention.push(f.path);
+      continue;
+    }
     if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
-    if (!adoptedBefore.has(f.path) && oldShas[f.path] && fileSha(f.path) === oldShas[f.path]) {
-      writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++;
-    } else { diverged.push(f.path); kept++; adopted.push(f.path); }
+    // Authority to replace comes ONLY from matching the previous TEMPLATE (bug 12): the template
+    // sha never mutates with the disk, so "restored by hand at update N" can no longer read as
+    // "untouched" at update N+1. v1 manifests (no templateShas) keep the old byte-sha + kept-guard.
+    const untouched = oldTplShas[f.path]
+      ? fileShaNorm(f.path) === oldTplShas[f.path]
+      : (!adoptedBefore.has(f.path) && oldShas[f.path] && fileSha(f.path) === oldShas[f.path]);
+    if (untouched && !i18nTranslated) {
+      if (fileShaNorm(f.path) === normSha(content)) { kept++; continue; } // upstream didn't change it either
+      writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++; continue;
+    }
+    // Diverged file → the MODULAR merge when the previous deploy left a module cut (v2, md only):
+    // untouched modules move mechanically, edited ones are kept and handed over with diffs.
+    if (f.path.endsWith('.md') && oldModShas[f.path] && !i18nTranslated) {
+      const res = mergeModules(f.path, content, oldModShas[f.path]);
+      if (res) {
+        if (res.changed) { writeFileSync(f.path, res.merged); mergedModules += res.replaced;
+          log(`↻ merged ${res.replaced} module(s) into ${f.path}${res.divergedList.length ? ` (${res.divergedList.length} kept for you)` : ''}`); }
+        if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; kept++; adopted.push(f.path); }
+        continue;
+      }
+    }
+    diverged.push(f.path); kept++; adopted.push(f.path);
+    if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
+      log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
   // agent-system artifacts: same classification via the copies' snapshots
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
@@ -415,11 +595,22 @@ async function cmdUpdate() {
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
   const shas = {};
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
+  const templateShas = {};
+  const moduleShas = {};
+  for (const f of deploy) {
+    if (isSkippedAnon(f.path)) continue;
+    templateShas[f.path] = normSha(f.content);
+    if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(f.content), meta.moduleClasses);
+  }
   const marker = { ...cur, version: man.version, released: man.released };
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas, kept: adopted, marker }, null, 2) + '\n');
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
+    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted, marker }, null, 2) + '\n');
 
-  writeUpdateTask(diverged, { ...meta, version: man.version }, `mechanical pass done: ${replaced} replaced, ${added} added, ${kept} kept (owner/diverged). Sanity-check with git diff: replaced files must carry NO owner edits — anything you meant to keep belongs in merge-diverged below`);
+  const nModDiverged = Object.values(divergedModules).reduce((a, l) => a + l.length, 0);
+  writeUpdateTask(diverged, { ...meta, version: man.version },
+    `mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''}). Sanity-check with git diff: replaced content must carry NO owner edits`,
+    { divergedModules, ownerConvention });
   log(`\n✅ KAIF updated mechanically to ${man.version} — finish ${UPDATE_TASK}, then: node .kaif/kaif-core.mjs update-verify`);
 }
 
@@ -559,6 +750,17 @@ function runFinalGates(taskFile, tag, verb) {
   warnSphereLibrary();
   healMarker();
   resyncCopies();
+  // Re-snapshot the DISK shas now that every merge landed (plan 21 §3.2; field: KPOT caught the
+  // manifest asserting pre-merge shas forever). templateShas stay untouched — they are the
+  // release's truth, not the disk's.
+  if (okOnDisk(DEPLOY_MANIFEST)) {
+    try {
+      const m = readJson(DEPLOY_MANIFEST);
+      for (const p of [...(m.paths || []), ...(m.agents || [])]) if (okOnDisk(p)) m.shas[p] = fileSha(p);
+      writeFileSync(DEPLOY_MANIFEST, JSON.stringify(m, null, 2) + '\n');
+      log('↻ refreshed the disk snapshot in the deploy manifest (post-merge)');
+    } catch { /* unreadable manifest — check flags it separately */ }
+  }
   selfCleanArtifacts(taskFile, anonDeploy);
 }
 
@@ -654,19 +856,31 @@ function cmdInstall() {
   }
 
   // 4) persist the deploy manifest so `check` outlives the bundle's cleanup.
-  //    `shas` snapshots what is ON DISK right after install — `update` later tells
-  //    "untouched since install" (disk sha == snapshot → safe mechanical replace)
-  //    from "diverged" (agent/owner edited → hands off, cognitive merge).
+  //    MANIFEST v2 (plan 21 §3.2): THREE snapshots with distinct provenance —
+  //    `shas`         what is ON DISK (byte-exact; refreshed by the final gates post-merge);
+  //    `templateShas` what THIS FRAMEWORK VERSION deploys (post-fill, EOL-normalized) — the ONLY
+  //                   snapshot that authorizes a mechanical replace: it never mutates with the
+  //                   disk, so an adaptation that survived one update can't die in the next (bug 12);
+  //    `moduleShas`   the per-module cut of every md template (signature anchors + classes) —
+  //                   the base for modular merges on the next update.
   //    `kept` records PROVENANCE: paths adopted as found (not written from a template) —
   //    their snapshot is owner content, so sha-match alone never authorizes replacing them.
   const deployedPaths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
   const shas = {};
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
+  const templateShas = {};
+  const moduleShas = {};
+  for (const f of deploy) {
+    if (isSkippedAnon(f.path)) continue;
+    templateShas[f.path] = normSha(f.content);
+    if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(f.content), meta.moduleClasses);
+  }
   // `marker` — a pristine snapshot of .kaif/kaif.json: weak models sometimes REWRITE the
   // marker instead of adding a key (field-caught, ДЗ-02 run 5), losing version/agents/language;
   // the final gates self-heal from this snapshot.
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ paths: deployedPaths, agents: agentPaths, shas, kept: adopted, marker }, null, 2) + '\n');
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
+    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted, marker }, null, 2) + '\n');
 
   // 5) the final cognitive task for the agent: fresh install → adaptation;
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
@@ -808,7 +1022,22 @@ function cmdVersion() {
   log(`KAIF ${j.version} (released ${j.released}) · tracking: ${j.tracking} · lang: ${j.language} · agents: ${(j.agents || []).join(',')}`);
 }
 
+// modules — print this core's module cut of a bundle as JSON (audit surface). The origin's
+// self-check compares it against dist/kaif-module-map.json: the core's vendored splitter and
+// the build's library are thereby pinned to identical behavior (plan 21 — no silent drift).
+function cmdModules() {
+  const { files, meta } = parseBundle(val('--bundle') || BUNDLE);
+  const out = {};
+  let count = 0;
+  for (const f of files) {
+    if (!f.path.endsWith('.md')) continue;
+    out[f.path] = moduleEntries(f.path, f.content.replace(/\s+$/, '\n'), meta.moduleClasses);
+    count += out[f.path].length;
+  }
+  console.log(JSON.stringify({ moduleCount: count, files: out }, null, 2));
+}
+
 await ({ install: cmdInstall, check: cmdCheck, 'verify-final': cmdVerifyFinal, version: cmdVersion,
          update: cmdUpdate, 'update-verify': cmdUpdateVerify, checkpoint: cmdCheckpoint, sphere: cmdSphere,
-         sync: cmdSync }[CMD] ||
-  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | checkpoint | sphere | sync | version)`)))();
+         sync: cmdSync, modules: cmdModules }[CMD] ||
+  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | checkpoint | sphere | sync | modules | version)`)))();

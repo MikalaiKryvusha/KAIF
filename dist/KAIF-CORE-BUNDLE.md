@@ -15,7 +15,8 @@
     "Knowledge formats: closing any idea/bug/plan requires a \"Decisions made without the owner\" section; EXPERIENCE entries carry Repro:/Not for: fields and trigger tags that must be QUOTED before a task",
     "/fable-judge vendored skill gained the guardrail hunts (KAIF patch 3); judge pass now required before EVERY push/deploy, not only before \"done\"; /release gained the 5-gate deploy checklist",
     "Release codename for this version: KAIF 1.6 — Homeostatic KAIF"
-  ]
+  ],
+  "moduleClasses": {}
 }
 ``````
 

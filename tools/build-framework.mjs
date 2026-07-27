@@ -196,7 +196,12 @@ function embedBundle(src, dest, note) {
 
 function bundleBlocks() {
   const blocks = [];
-  const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES };
+  // Class overrides ship in the meta block so KAIF-CORE classifies modules with the SAME
+  // exceptions the build used (underscore keys are documentation, not data).
+  const ovPath = join(FW, 'module-classes.json');
+  const ovRaw = existsSync(ovPath) ? JSON.parse(readFileSync(ovPath, 'utf8').replace(/^﻿/, '')) : {};
+  const moduleClasses = Object.fromEntries(Object.entries(ovRaw).filter(([k]) => !k.startsWith('_')));
+  const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES, moduleClasses };
   blocks.push(`> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
     FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
   for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {
