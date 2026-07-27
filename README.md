@@ -237,7 +237,8 @@ your-project/
 | `STATUS.md` | The living state — what's done, where we are, next | Agent maintains after every task |
 | `EXPERIENCE.md` | The agent's grep-friendly log of lessons | Agent grows it on its own (`/experience`) |
 | `MASTER_PLAN.md` | The phased roadmap from state → GOAL | Agent derives from `GOAL.md` (`/revision`) |
-| The two maps | External layout · internal abstractions | Agent maintains |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | External map: directories, files, how the project looks from outside | Agent maintains |
+| `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Internal map: abstractions and how they interact | Agent maintains |
 | `KAIF_FRAMEWORK.md` | "KAIF, deployed here" (like a tech-stack page) | Agent writes after injection |
 
 **Knowledge directories** — same conventions as before: `plans/` (agent's step plans), `ideas/` (mostly
@@ -597,7 +598,8 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 | `STATUS.md` | Живое состояние — что сделано, где мы, что дальше | Агент ведёт после каждой задачи |
 | `EXPERIENCE.md` | Журнал уроков агента (что работает/нет) | Агент растит сам (`/experience`) |
 | `MASTER_PLAN.md` | Генплан от состояния → к GOAL | Агент выводит из `GOAL.md` (`/revision`) |
-| Две карты | Внешняя структура · внутренние абстракции | Агент ведёт |
+| `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | Внешняя карта: директории, файлы, как проект выглядит снаружи | Агент ведёт |
+| `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внутренняя карта: абстракции и их взаимодействия | Агент ведёт |
 | `KAIF_FRAMEWORK.md` | «KAIF, развёрнутый здесь» | Агент пишет после инжекции |
 
 **Директории знаний** — соглашения прежние: `plans/` (пошаговые планы агента), `ideas/` (в основном
