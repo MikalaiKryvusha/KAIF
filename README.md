@@ -6,19 +6,24 @@
 
 # KAIF — Krinik AI Framework
 
+<h3 align="center"><em>External memory and discipline for AI coding agents — in one self-deploying file.</em></h3>
+
 <p align="center">
   <a href="#english"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
   &nbsp;
   <a href="#russian"><img src="https://img.shields.io/badge/Русский-C0392B?style=for-the-badge" alt="Русский"></a>
 </p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
-[![Thin install](https://img.shields.io/badge/Install-Thin%20(machinery%20does%20it)-3DDC84.svg)](KAIF.md)
-[![Tested](https://img.shields.io/badge/Discipline-Tested%20KAIF-FFB300.svg)](#tested-en)
-[![Guardrails](https://img.shields.io/badge/Guardrails-Homeostatic%20KAIF-8E44AD.svg)](#guardrails-en)
-[![For AI agents](https://img.shields.io/badge/For-AI%20coding%20agents-7F52FF.svg)](KAIF.md)
-[![Languages](https://img.shields.io/badge/Owner%20docs-10%20languages-blue.svg)](#lang-en)
+[![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
+[![Field-certified](https://img.shields.io/badge/Field--certified-12B%20local%20model-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
+[![Guardrails](https://img.shields.io/badge/Guardrails-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-en)
+[![Languages](https://img.shields.io/badge/Owner%20docs-10%20languages-2C7BE5.svg?style=flat-square)](#lang-en)
+
+<p align="center">
+  <a href="#why">Why</a> · <a href="#how-it-works">How it works</a> · <a href="#quick-start-for-the-human">Quick start</a> · <a href="#the-skills">Skills</a> · <a href="#lifecycle-any-domain-any-agent">Lifecycle</a>
+</p>
 
 **KAIF — Krinik AI Framework — a context-resilient, fundamental strategic-operational methodological framework for AI agents: resilience to context loss and discipline of autonomy.**
 Drop it into any cognitive project — in any domain — to turn your AI agent (Claude or any other) into a
@@ -247,20 +252,32 @@ Twenty-six repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
-| `/resume` · `/pause` | Start / end a session (read docs, pick the main thing · update STATUS, commit, push). |
-| `/autoloop` · `/dayloop` · `/nightloop` | Autonomous loops: grind the backlog; each item ends with a **mandatory judge pass**. |
-| `/refresh-context` · `/check-backlog` | Re-read the plan & maps; tag finished work `DONE`. |
-| `/experience` | Capture a lesson into `EXPERIENCE.md`, or recall lessons before a task. |
-| `/report-bug` · `/bug-research` | File a bug by the canon · deep investigation after 3 failed fixes. |
-| `/propose-idea` · `/interview` | Propose a feature for your approval · ask you A/B/C/D on a fateful decision. |
-| `/revision` · `/fix-vision` · `/what-next` | Re-derive the plan from GOAL · capture your chat vision into docs · propose next steps. |
+| `/resume` | Start a session: read the canon docs, pick the one main thing, announce it, begin. |
+| `/pause` | End a session: update `STATUS.md`, rebuild artifacts, commit and push. |
+| `/autoloop` | A long autonomous series over the backlog; every item ends with a **mandatory judge pass**. |
+| `/dayloop` | Daytime autonomous work while you are busy — with brief progress pings in chat. |
+| `/nightloop` | Autonomous work until morning; the morning report leads with outcomes. |
+| `/refresh-context` | Re-read the master plan, the maps and the open backlog mid-marathon — rebuild the big picture. |
+| `/check-backlog` | Audit `bugs/` + `ideas/` + `plans/`: list what is open, tag the finished `DONE`. |
+| `/experience` | Capture a lesson into `EXPERIENCE.md` — or recall lessons by tags before a task. |
+| `/report-bug` | File a defect document in `bugs/` by the canon — one file per bug. |
+| `/bug-research` | Deep investigation without code edits — mandatory after 3 failed blind fixes. |
+| `/propose-idea` | Propose a feature as an `ideas/` document — implemented only after your approval. |
+| `/interview` | Ask you the fateful A/B/C/D questions — vision decisions are never guessed. |
+| `/revision` | Re-derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
+| `/fix-vision` | Capture your vision-level chat messages into the docs before they evaporate. |
+| `/what-next` | Rank the next steps by value toward the vision when you ask "what now?". |
 | `/help-kaif` | Explain KAIF to you in chat — a structured user manual. |
 | `/release` | Publish a release (with your confirmation and a mandatory judge pass; never autonomously). |
 | **`/fable-method`** | The execution loop: classify → define done → evidence → act → verify → report. *(vendored from [fable-method](https://github.com/Sahir619/fable-method), MIT)* |
 | **`/fable-loop`** | Orchestrated run: parallel evidence, surgical execution, adversarial verifiers. |
 | **`/fable-judge`** | Adversarial verification of any "done" claim: VERIFIED / CAVEATS / REFUTED. |
 | **`/fable-domain`** | Generate a trusted domain-workflow bundle (adapter + trap + smoke eval). |
-| `/kaif-version` · `/kaif-update` · `/kaif-fork` · `/kaif-switch-origin` · `/kaif-remove` | The lifecycle: check origin · mechanical respectful update · fork your own line · switch back · respectful removal (asks partial vs full). |
+| `/kaif-version` | Report the deployed KAIF version and check origin for a newer release. |
+| `/kaif-update` | Mechanical respectful update from origin — content snapshots protect your customizations. |
+| `/kaif-fork` | Snapshot your evolved KAIF into your own repository and track your own line. |
+| `/kaif-switch-origin` | Switch tracking from your fork back to the official origin. |
+| `/kaif-remove` | Respectful removal — asks partial (knowledge artifacts stay) vs full. |
 
 ## Lifecycle, any domain, any agent
 
@@ -344,19 +361,24 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 
 # КАИФ — Криник АИ Фреймворк
 
+<h3 align="center"><em>Внешняя память и дисциплина для ИИ-агентов — в одном саморазворачивающемся файле.</em></h3>
+
 <p align="center">
   <a href="#english"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
   &nbsp;
   <a href="#russian"><img src="https://img.shields.io/badge/Русский-C0392B?style=for-the-badge" alt="Русский"></a>
 </p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg)](https://github.com/MikalaiKryvusha/KAIF/releases)
-[![Тонкая установка](https://img.shields.io/badge/Установка-Тонкая%20(машинерией)-3DDC84.svg)](KAIF.md)
-[![Tested](https://img.shields.io/badge/Дисциплина-Tested%20KAIF-FFB300.svg)](#tested-ru)
-[![Guardrails](https://img.shields.io/badge/Гвардрейлы-Homeostatic%20KAIF-8E44AD.svg)](#guardrails-ru)
-[![Для ИИ-агентов](https://img.shields.io/badge/Для-ИИ--агентов-7F52FF.svg)](KAIF.md)
-[![Языки](https://img.shields.io/badge/Owner--доки-10%20языков-blue.svg)](#lang-ru)
+[![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
+[![Версия](https://img.shields.io/badge/Версия-1.6-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
+[![Полевая сертификация](https://img.shields.io/badge/Полевая%20сертификация-локальная%2012B--модель-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
+[![Гвардрейлы](https://img.shields.io/badge/Гвардрейлы-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-ru)
+[![Языки](https://img.shields.io/badge/Owner--доки-10%20языков-2C7BE5.svg?style=flat-square)](#lang-ru)
+
+<p align="center">
+  <a href="#зачем">Зачем</a> · <a href="#как-это-работает">Как это работает</a> · <a href="#быстрый-старт-для-человека">Быстрый старт</a> · <a href="#навыки">Навыки</a> · <a href="#жизненный-цикл-любая-сфера-любой-агент">Жизненный цикл</a>
+</p>
 
 **КАИФ — Криник АИ Фреймворк — контекстоустойчивый фундаментальный стратегическо-операционный методологический фреймворк для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 Положите его в любой когнитивный проект — в любой сфере — и ваш ИИ-агент (Claude или любой другой) превратится в
@@ -591,20 +613,32 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 
 | Навык | Назначение |
 |-------|------------|
-| `/resume` · `/pause` | Начать / завершить сессию (прочитать доки, выбрать главное · обновить STATUS, закоммитить). |
-| `/autoloop` · `/dayloop` · `/nightloop` | Автономные циклы: гриндить беклог; каждый пункт завершается **обязательным judge-проходом**. |
-| `/refresh-context` · `/check-backlog` | Перечитать план и карты; пометить сделанное `DONE`. |
-| `/experience` | Зафиксировать урок в `EXPERIENCE.md` или вспомнить уроки перед задачей. |
-| `/report-bug` · `/bug-research` | Завести баг по канону · глубокое исследование после 3 неудачных фиксов. |
-| `/propose-idea` · `/interview` | Предложить фичу на ваше одобрение · задать вам A/B/C/D по судьбоносной развилке. |
-| `/revision` · `/fix-vision` · `/what-next` | Перевывести план из GOAL · зафиксировать ваше видение из чата · предложить следующие шаги. |
+| `/resume` | Начать сессию: прочитать канон-документы, выбрать одно главное, объявить и приступить. |
+| `/pause` | Завершить сессию: обновить `STATUS.md`, пересобрать артефакты, закоммитить и запушить. |
+| `/autoloop` | Длинная автономная серия по беклогу; каждый пункт завершается **обязательным judge-проходом**. |
+| `/dayloop` | Дневная автономная работа, пока вы заняты, — с короткими сводками в чат. |
+| `/nightloop` | Автономная работа до утра; утренний отчёт — результатом вперёд. |
+| `/refresh-context` | Перечитать мастер-план, карты и открытый беклог посреди марафона — восстановить картину. |
+| `/check-backlog` | Ревизия `bugs/` + `ideas/` + `plans/`: что открыто, сделанному — тег `DONE`. |
+| `/experience` | Зафиксировать урок в `EXPERIENCE.md` — или вспомнить уроки по тегам перед задачей. |
+| `/report-bug` | Завести документ дефекта в `bugs/` по канону — один файл на баг. |
+| `/bug-research` | Глубокое исследование без правок кода — обязательно после 3 неудачных слепых фиксов. |
+| `/propose-idea` | Предложить фичу документом в `ideas/` — реализация только после вашего одобрения. |
+| `/interview` | Задать вам судьбоносные вопросы A/B/C/D — решения видения не угадываются. |
+| `/revision` | Перевывести `MASTER_PLAN.md` из `GOAL.md` и текущего состояния. |
+| `/fix-vision` | Зафиксировать ваши визионерские сообщения из чата в документы, пока не испарились. |
+| `/what-next` | Ранжировать следующие шаги по ценности к видению, когда вы спрашиваете «что дальше?». |
 | `/help-kaif` | Рассказать вам про KAIF в чате — структурный мануал. |
 | `/release` | Выпустить релиз (с вашим подтверждением и обязательным judge-проходом; никогда автономно). |
 | **`/fable-method`** | Цикл исполнения: классифицируй → «готово» → свидетельства → действуй → проверь → доложи. *(вендорено из [fable-method](https://github.com/Sahir619/fable-method), MIT)* |
 | **`/fable-loop`** | Оркестрованный прогон: параллельные свидетельства, хирургическое исполнение, адверсарные верификаторы. |
 | **`/fable-judge`** | Адверсарная проверка любого «готово»: VERIFIED / CAVEATS / REFUTED. |
 | **`/fable-domain`** | Сгенерировать доверенный доменный workflow-бандл (адаптер + ловушка + smoke-eval). |
-| `/kaif-version` · `/kaif-update` · `/kaif-fork` · `/kaif-switch-origin` · `/kaif-remove` | Жизненный цикл: версия и обновления · механический уважительный update · форк своей линии · возврат на origin · уважительное удаление (спросит: частично или полностью). |
+| `/kaif-version` | Доложить версию развёрнутого KAIF и проверить origin на новый релиз. |
+| `/kaif-update` | Механический уважительный update из origin — снапшоты контента берегут ваши кастомизации. |
+| `/kaif-fork` | Слепок вашей эволюции KAIF в ваш собственный репозиторий — ведите свою линию. |
+| `/kaif-switch-origin` | Переключить трекинг с вашего форка обратно на официальный origin. |
+| `/kaif-remove` | Уважительное удаление — спросит: частично (артефакты знаний остаются) или полностью. |
 
 ## Жизненный цикл, любая сфера, любой агент
 
