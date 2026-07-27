@@ -493,48 +493,20 @@ function mergeModules(path, newContent, oldMods) {
   return { merged, changed: merged !== disk, replaced, divergedList };
 }
 
-// ---------------------------------------------------------------------------- update (idea 14 / plan 15)
-// Mechanical respectful update: untouched framework files are replaced with the new
-// templates; diverged ones are kept and handed to the agent; owner content is never
-// in scope at all. Requires the deploy manifest with `shas` (installs since 1.5).
-async function cmdUpdate() {
-  if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
-  const cur = readJson(KAIF_JSON);
-  if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap');
-  if (!val('--lang') && cur.language) LANG = String(cur.language).toLowerCase();
-  if (!val('--agents') && Array.isArray(cur.agents) && cur.agents.length) AGENTS = cur.agents;
-  const base = val('--source') || SOURCES[(val('--channel') || 'release').toLowerCase()] || SOURCES.release;
-  log(`update: checking ${base}`);
-  const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8'));
-  if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
-  log(`update: ${cur.version} → ${man.version}`);
-
-  // fetch + verify the machinery pair (ignore-first BEFORE anything lands in the tree)
-  ensureIgnoreFirst();
-  mkdirSync('.kaif/install', { recursive: true });
-  const bufs = {};
-  for (const name of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md']) {
-    bufs[name] = await fetchArtifact(base, name);
-    const got = sha256(bufs[name]);
-    if (got !== man.sha256[name]) die(`sha256 mismatch for ${name}: expected ${man.sha256[name]}, got ${got}`);
-  }
-  const bundlePath = '.kaif/install/KAIF-CORE-BUNDLE.md';
-  writeFileSync(bundlePath, bufs['KAIF-CORE-BUNDLE.md']);
-
-  // classify against the install-time snapshots
-  const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
+// ONE classification for every road new templates arrive by — core update AND the legacy/
+// anonymous bootstrap (plan 21 §5.5; bugs 13/14: those routes used to keep everything and dump
+// the whole delta on the agent as cognitive work). Mutates f.content to the filled/anonymized
+// text (derived surfaces inherit it — bug 05) and APPLIES the mechanical moves; returns the
+// counters and the cognitive leftovers for the task writer.
+// [TESTED: 2026-07-28 · extraction verified by re-running suites S5–S12c unchanged-green]
+function classifyAndApply(deploy, old, values, unresolved, cur) {
   const oldShas = old.shas || {};
   const oldTplShas = old.templateShas || {};          // v2: what the previous deploy's TEMPLATES were
   const oldModShas = old.moduleShas || {};            // v2: their per-module cut
   // Provenance gate: paths the previous deploy ADOPTED (kept as found, never written from a
   // template) are not replace-eligible even when the disk sha still matches the snapshot —
-  // for them the snapshot IS the owner's content. "Unchanged since the snapshot" only
-  // authorizes replacement when the snapshot itself was template-authored.
+  // for them the snapshot IS the owner's content.
   const adoptedBefore = new Set(old.kept || []);
-  const { files, meta } = parseBundle(bundlePath);
-  const { deploy } = applyLanguage(files);           // LANG defaults handled below
-  const values = detectValues();
-  const unresolved = new Set();
   const diverged = [];
   const divergedModules = {};                        // path → [{signature, note, diff}]
   const ownerConvention = [];                        // owner docs whose TEMPLATE changed shape
@@ -542,12 +514,13 @@ async function cmdUpdate() {
   // i18n intent (decision #17): a project that declared `"i18n": "translated"` in the marker
   // translated its wrapper wholesale — nothing gets silently replaced; everything ships as
   // per-module diffs instead of the machinery warring with the translation every release.
-  const i18nTranslated = String(cur.i18n || '').toLowerCase() === 'translated';
+  const i18nTranslated = String((cur || {}).i18n || '').toLowerCase() === 'translated';
   if (i18nTranslated) log('⟳ marker declares i18n: translated — mechanical replacement disabled, per-module diffs only');
   let replaced = 0, added = 0, kept = 0, mergedModules = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
-    const content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
+    let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
+    if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
     f.content = content; // derived surfaces (system skill copies) must inherit the filled text (bug 05)
     if (OWNER_SEEDED.includes(f.path)) {
       kept++;                                                            // owner's — never in scope
@@ -582,6 +555,46 @@ async function cmdUpdate() {
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
+  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted };
+}
+
+// ---------------------------------------------------------------------------- update (idea 14 / plan 15)
+// Mechanical respectful update: untouched framework files are replaced with the new
+// templates; diverged ones are kept and handed to the agent; owner content is never
+// in scope at all. Requires the deploy manifest with `shas` (installs since 1.5).
+async function cmdUpdate() {
+  if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
+  const cur = readJson(KAIF_JSON);
+  if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap');
+  if (!val('--lang') && cur.language) LANG = String(cur.language).toLowerCase();
+  if (!val('--agents') && Array.isArray(cur.agents) && cur.agents.length) AGENTS = cur.agents;
+  const base = val('--source') || SOURCES[(val('--channel') || 'release').toLowerCase()] || SOURCES.release;
+  log(`update: checking ${base}`);
+  const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8'));
+  if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
+  log(`update: ${cur.version} → ${man.version}`);
+
+  // fetch + verify the machinery pair (ignore-first BEFORE anything lands in the tree)
+  ensureIgnoreFirst();
+  mkdirSync('.kaif/install', { recursive: true });
+  const bufs = {};
+  for (const name of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md']) {
+    bufs[name] = await fetchArtifact(base, name);
+    const got = sha256(bufs[name]);
+    if (got !== man.sha256[name]) die(`sha256 mismatch for ${name}: expected ${man.sha256[name]}, got ${got}`);
+  }
+  const bundlePath = '.kaif/install/KAIF-CORE-BUNDLE.md';
+  writeFileSync(bundlePath, bufs['KAIF-CORE-BUNDLE.md']);
+
+  // classify against the install-time snapshots — ONE shared classification, whatever road the
+  // new templates arrived by (plan 21 §5.5)
+  const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
+  const { files, meta } = parseBundle(bundlePath);
+  const { deploy } = applyLanguage(files);           // LANG defaults handled below
+  const values = detectValues();
+  const unresolved = new Set();
+  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted } =
+    classifyAndApply(deploy, old, values, unresolved, cur);
   // agent-system artifacts: same classification via the copies' snapshots
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
   const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
