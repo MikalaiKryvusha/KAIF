@@ -2230,7 +2230,7 @@ can be returned to (or handed to `/bug-research`).
 
 4. **Record in the backlog/process:**
    - If important/blocking — a short line in `STATUS.md`.
-   - Commit (in autoloops, by the usual discipline): `<COMMIT_COMMAND> "docs(bugNN): …"`.
+   - Commit (in autoloops, by the usual discipline): run `<COMMIT_COMMAND>` with `<msg>` = `docs(bugNN): …`.
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
    `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section (what was
@@ -2373,7 +2373,7 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 4. **Mark for review and do NOT implement:**
    - A line in `STATUS.md`: "❓ awaiting human review: idea NN — <one line>".
-   - Commit the document (`<COMMIT_COMMAND> "docs(ideaNN): proposal — …"`).
+   - Commit the document: run `<COMMIT_COMMAND>` with `<msg>` = `docs(ideaNN): proposal — …`.
    - **Do NOT start implementing** until the human explicitly approves. In an autoloop — continue with OTHER tasks.
 
 5. **After the human reacts:**
@@ -2758,10 +2758,8 @@ downloads.)
 
 ## Step 5. Commit the doc/build changes (before the release)
 
-Commit the README/docs updates so the `release: X.Y` commit is a clean version bump:
-```bash
-<COMMIT_COMMAND> "docs: README for release X.Y"
-```
+Commit the README/docs updates so the `release: X.Y` commit is a clean version bump: run
+`<COMMIT_COMMAND>` with `<msg>` = `docs: README for release X.Y`.
 
 ## Step 6. Publish (after the human's confirmation)
 
@@ -2783,7 +2781,7 @@ gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTE
 > **every language the README ships in**, with in-page language anchors/toggles, matching the house style
 > of previous releases (check the last release's body with `gh release view <prev> --json body -q .body`
 > and follow its shape). Structure per language: a header line (release date · place), a one-paragraph
-> "what this release is", a short "what KAIF is" paragraph, the attached artifacts, a **✨ What's new**
+> "what this release is", a short "what <PROJECT_NAME> is" paragraph, the attached artifacts, a **✨ What's new**
 > section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
 
 ## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)
@@ -3731,7 +3729,7 @@ Replace these throughout the guidance docs and skills during unpacking:
 | `<LICENSE>` | The project's license. |
 | `<BUILD_COMMAND>` | The exact command to build the project. |
 | `<TEST_HARNESS>` | How the agent runs/observes/drives the software without a human. |
-| `<COMMIT_COMMAND>` | The commit/push flow (a tool, or `git add -A && git commit … && git push`). |
+| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A && git commit -m "<msg>" && git push`); skills never append the message as an extra argument — they tell you what `<msg>` to use. |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
 | `<OWNER_LANGUAGE>` | The owner's working language (the AGENT_GUIDE language-policy note). |
 

@@ -66,7 +66,7 @@ can be returned to (or handed to `/bug-research`).
 
 4. **Record in the backlog/process:**
    - If important/blocking — a short line in `STATUS.md`.
-   - Commit (in autoloops, by the usual discipline): `<COMMIT_COMMAND> "docs(bugNN): …"`.
+   - Commit (in autoloops, by the usual discipline): run `<COMMIT_COMMAND>` with `<msg>` = `docs(bugNN): …`.
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
    `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section (what was

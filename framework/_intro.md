@@ -423,7 +423,7 @@ Replace these throughout the guidance docs and skills during unpacking:
 | `<LICENSE>` | The project's license. |
 | `<BUILD_COMMAND>` | The exact command to build the project. |
 | `<TEST_HARNESS>` | How the agent runs/observes/drives the software without a human. |
-| `<COMMIT_COMMAND>` | The commit/push flow (a tool, or `git add -A && git commit … && git push`). |
+| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A && git commit -m "<msg>" && git push`); skills never append the message as an extra argument — they tell you what `<msg>` to use. |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
 | `<OWNER_LANGUAGE>` | The owner's working language (the AGENT_GUIDE language-policy note). |
 

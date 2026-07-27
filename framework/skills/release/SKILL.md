@@ -59,10 +59,8 @@ downloads.)
 
 ## Step 5. Commit the doc/build changes (before the release)
 
-Commit the README/docs updates so the `release: X.Y` commit is a clean version bump:
-```bash
-<COMMIT_COMMAND> "docs: README for release X.Y"
-```
+Commit the README/docs updates so the `release: X.Y` commit is a clean version bump: run
+`<COMMIT_COMMAND>` with `<msg>` = `docs: README for release X.Y`.
 
 ## Step 6. Publish (after the human's confirmation)
 
@@ -84,7 +82,7 @@ gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTE
 > **every language the README ships in**, with in-page language anchors/toggles, matching the house style
 > of previous releases (check the last release's body with `gh release view <prev> --json body -q .body`
 > and follow its shape). Structure per language: a header line (release date · place), a one-paragraph
-> "what this release is", a short "what KAIF is" paragraph, the attached artifacts, a **✨ What's new**
+> "what this release is", a short "what <PROJECT_NAME> is" paragraph, the attached artifacts, a **✨ What's new**
 > section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
 
 ## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)

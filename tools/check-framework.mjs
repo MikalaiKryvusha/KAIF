@@ -77,6 +77,21 @@ for (const r of readmes) {
   if (!fw.includes(`${r}/README.md`)) errors.push(`directory README not embedded in KAIF.md: ${r}/README.md`);
 }
 
+// 5b. [TESTED: 2026-07-27 · both tripwires proven red on deliberately broken templates, green after restore]
+//     Template contract tripwires (bug 19 — a closed defect leaves a guard):
+//     <COMMIT_COMMAND> is never used with an appended message argument (its filled value
+//     carries the <msg> slot); the /release template names the PROJECT, not the KAIF brand.
+for (const s of skills) {
+  const t = readFileSync(join(skillsDir, s, 'SKILL.md'), 'utf8');
+  if (/<COMMIT_COMMAND>\s+"/.test(t))
+    errors.push(`skill ${s}: <COMMIT_COMMAND> used with an appended argument — the contract is a <msg> slot inside the filled value (bug 19.1)`);
+}
+if (skills.includes('release')) {
+  const relTpl = readFileSync(join(skillsDir, 'release', 'SKILL.md'), 'utf8');
+  if (relTpl.includes('"what KAIF is"'))
+    errors.push('release template leaks the KAIF brand ("what KAIF is") — must say "what <PROJECT_NAME> is" (bug 19.2)');
+}
+
 // 6. dist/ — the Thin-KAIF install artifacts (1.5+). Validated when present (the build
 //    always emits them; a checkout missing dist/ predates 1.5 and skips cleanly).
 const distDir = join(ROOT, 'dist');
@@ -113,7 +128,35 @@ if (existsSync(distDir)) {
     const man = JSON.parse(dread('kaif-manifest.json'));
     for (const n of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md'])
       if (man.sha256[n] !== dsha(n)) errors.push(`kaif-manifest.json sha256 stale for ${n} — re-run the build`);
-    distNote = ` · dist OK (bundle ${bundleBlocks} blocks, sha256 fresh)`;
+
+    // 7. [TESTED: 2026-07-27 · guard proven on a broken version: wrong codename → exit 1 with the
+    //    right reason; restored → exit 0]
+    //    The release asserts its OWN version (bug 10 — six of eight field reports were misled
+    //    by 1.6 shipping notes/headers that said "KAIF 1.5 — Tested KAIF"):
+    //    (a) templateNotes in the bundle manifest must name the current version+codename and
+    //        must not name any OTHER version's codename line;
+    //    (b) the machinery sources (CORE/LOADER) must stay version-NEUTRAL — no baked-in
+    //        "KAIF X.Y — Codename" header that goes stale the moment a release ships.
+    // BOM-tolerant read: Windows tools (PowerShell 5 Out-File) prepend a BOM (EXP-0007).
+    const vjson = JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8').replace(/^﻿/, ''));
+    const expectCodenameLine = `KAIF ${vjson.major}.${vjson.minor} — ${vjson.codename}`;
+    if (!vjson.codename) errors.push('version.json has no "codename" — the release codename must live there (single source)');
+    const metaMatch = bundle.match(/> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\n\n``````json\n([\s\S]*?)\n``````/);
+    if (!metaMatch) errors.push('bundle manifest block not found for the template-notes check');
+    else {
+      const notes = (JSON.parse(metaMatch[1]).templateNotes || []).join('\n');
+      if (!notes.includes(expectCodenameLine))
+        errors.push(`templateNotes do not name the current release ("${expectCodenameLine}") — rewrite TEMPLATE_NOTES in tools/build-framework.mjs for THIS release`);
+      const foreign = [...notes.matchAll(/KAIF \d+\.\d+ — [^\n(]+/g)].map((m) => m[0].trim()).filter((s) => s !== expectCodenameLine);
+      if (foreign.length) errors.push(`templateNotes name a different release's codename: ${foreign.join(' · ')}`);
+    }
+    for (const [src, label] of [['framework/installer/KAIF-CORE.mjs', 'KAIF-CORE.mjs'],
+                                ['framework/installer/KAIF-LOADER.mjs', 'KAIF-LOADER.mjs']]) {
+      const head = readFileSync(join(ROOT, src), 'utf8').split(/\r?\n/).slice(0, 5).join('\n');
+      const stale = head.match(/KAIF \d+\.\d+ — /);
+      if (stale) errors.push(`${label} header bakes in a version-codename ("${stale[0]}…") — machinery headers must be version-neutral`);
+    }
+    distNote = ` · dist OK (bundle ${bundleBlocks} blocks, sha256 fresh, notes name ${expectCodenameLine})`;
   }
 }
 

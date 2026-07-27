@@ -53,7 +53,7 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 4. **Mark for review and do NOT implement:**
    - A line in `STATUS.md`: "❓ awaiting human review: idea NN — <one line>".
-   - Commit the document (`<COMMIT_COMMAND> "docs(ideaNN): proposal — …"`).
+   - Commit the document: run `<COMMIT_COMMAND>` with `<msg>` = `docs(ideaNN): proposal — …`.
    - **Do NOT start implementing** until the human explicitly approves. In an autoloop — continue with OTHER tasks.
 
 5. **After the human reacts:**

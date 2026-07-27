@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-// KAIF-CORE.mjs — the heavy KAIF installer machinery (KAIF 1.5 — Tested KAIF; thin-install architecture).
+// KAIF-CORE.mjs — the heavy KAIF installer machinery (thin-install architecture; version-neutral:
+// the deployed version lives in the bundle manifest and .kaif/kaif.json, never in this header —
+// a baked-in version here shipped stale twice, bug 10).
 // Downloaded by KAIF-LOADER.mjs from the origin repo; does EVERYTHING mechanizable
 // about deploying KAIF so the AI agent's cognitive work shrinks to one short final
 // adaptation task. Successor of kaif-unpack.mjs (which stays embedded in the
@@ -10,6 +12,7 @@
 //   node kaif-core.mjs install --bundle <KAIF-CORE-BUNDLE.md> [options]
 //   node kaif-core.mjs check                       # validate the deployed manifest (bundle must still exist)
 //   node kaif-core.mjs verify-final                # checkpoints done? then self-clean the install artifacts
+//   node kaif-core.mjs sync                        # re-sync per-system skill mirrors from .claude/skills/
 //   node kaif-core.mjs version                     # report the deployed version from .kaif/kaif.json
 //
 // Install options:
@@ -35,11 +38,11 @@ const val = (f) => { const i = args.indexOf(f); return i >= 0 && args[i + 1] ? a
 const has = (f) => args.includes(f);
 
 const BUNDLE = val('--bundle') || '.kaif/install/KAIF-CORE-BUNDLE.md';
-// LANG/AGENTS are `let`: `update` inherits them from the project's .kaif/kaif.json
-// unless explicitly overridden on the CLI.
+// LANG/AGENTS/MODE are `let`: post-install commands inherit them from the project's
+// .kaif/kaif.json unless explicitly overridden on the CLI (see below for MODE/ANON).
 let LANG = (val('--lang') || 'en').toLowerCase();
-const MODE = (val('--mode') || 'standard').toLowerCase();
-const ANON = MODE === 'anonymous';
+let MODE = (val('--mode') || 'standard').toLowerCase();
+let ANON = MODE === 'anonymous';
 const FORCE = has('--force');
 const ALL_AGENTS = ['claude-code', 'codex', 'grok-build', 'cline', 'zoo-code'];
 let AGENTS = (val('--agents') || ALL_AGENTS.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
@@ -81,6 +84,33 @@ const fileSha = (p) => sha256(readFileSync(p));
 const sh = (cmd) => { try { return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; } };
 // JSON reader tolerant of a UTF-8 BOM (Windows tools like PowerShell 5 write one).
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+
+// Anonymity is a property of the DEPLOYMENT, not of the CLI call (bug 11 / GH issue #1,
+// reproduced by three field reports): a bare `check` on an anonymous install reported the
+// deliberately-skipped origin-tied skills as MISSING, and the red gate pushed weak models
+// toward "fixing" it by deploying them — breaking anonymity. When --mode is not passed,
+// inherit `tracking` from the deployed marker — the same pattern `check` already uses for agents.
+// [TESTED: 2026-07-27 · sandbox S2: bare `check` green on an anonymous install with the bundle
+// alive; explicit `--mode standard` still red (CLI override wins)]
+if (!val('--mode') && okOnDisk(KAIF_JSON)) {
+  try { if (readJson(KAIF_JSON).tracking === 'anonymous') { MODE = 'anonymous'; ANON = true; } }
+  catch { /* unreadable marker — the CLI default stands */ }
+}
+
+// Ignore-first (canon 1.6, bug 18): the transient installer artifacts enter .gitignore BEFORE
+// they hit the tree, so a `git add -A` during the manual-merge window between update and
+// update-verify cannot drag a 425 KB bundle into history (field-caught on NDim, which trapped
+// exactly that). The lines stay useful after self-clean — updates recur.
+// [TESTED: 2026-07-27 · sandboxes S1 (entries present right after install) + S4 (idempotent on update)]
+function ensureIgnoreFirst() {
+  const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK];
+  let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
+  const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
+  const add = wanted.filter((w) => !have.has(w) && !have.has(w.replace(/\/$/, '')));
+  if (!add.length) return;
+  writeFileSync('.gitignore', text.replace(/\s*$/, text ? '\n' : '') + add.join('\n') + '\n');
+  log(`+ .gitignore: ignore-first for ${add.join(', ')}`);
+}
 
 // ---------------------------------------------------------------------------- bundle parsing
 // The bundle uses the proven KAIF.md block format: `> **FILE: \`path\`** …` + 6-backtick fence.
@@ -328,7 +358,8 @@ async function cmdUpdate() {
   if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
   log(`update: ${cur.version} → ${man.version}`);
 
-  // fetch + verify the machinery pair
+  // fetch + verify the machinery pair (ignore-first BEFORE anything lands in the tree)
+  ensureIgnoreFirst();
   mkdirSync('.kaif/install', { recursive: true });
   const bufs = {};
   for (const name of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md']) {
@@ -372,8 +403,14 @@ async function cmdUpdate() {
   // swap the core itself + refresh manifests (same shape and guarantees as install's:
   // sha snapshots + adoption provenance in `kept` + the pristine marker snapshot that
   // backs the final self-heal).
-  writeFileSync('.kaif/kaif-core.mjs', bufs['KAIF-CORE.mjs']);
-  log('↻ replaced .kaif/kaif-core.mjs (the machinery itself)');
+  // An honest log line: "replaced" on byte-identical machinery sent a field agent hunting a
+  // phantom swap failure (bug 10 facet, KPOT) — when the shas match, say so instead.
+  if (okOnDisk('.kaif/kaif-core.mjs') && fileSha('.kaif/kaif-core.mjs') === sha256(bufs['KAIF-CORE.mjs'])) {
+    log('= .kaif/kaif-core.mjs unchanged in this release');
+  } else {
+    writeFileSync('.kaif/kaif-core.mjs', bufs['KAIF-CORE.mjs']);
+    log('↻ replaced .kaif/kaif-core.mjs (the machinery itself)');
+  }
   const deployedPaths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
   const agentPaths = expectedAgentArtifacts(skillFiles.map((f) => skillName(f.path)));
   const shas = {};
@@ -392,16 +429,36 @@ async function cmdUpdate() {
 // on ndim, 2026-07-17 — the update path used to skip these, so owner-side merges made between
 // the mechanical pass and the final check never reached the per-system skill copies).
 
-// placeholder scan on the canon + skills (GOAL/maps may legitimately hold template slots for the owner)
+// placeholder scan on the canon + skills across EVERY deployed surface (GOAL/maps may
+// legitimately hold template slots for the owner). Scanning only .claude/ let literal
+// <BUILD_COMMAND> live in the .agents/.grok/.cline/.roo copies and .kaif/spheres/ for a
+// whole release while the gate stayed green (bug 11, three field reports).
 function scanPlaceholders() {
   let issues = 0;
-  const scan = ['AGENT_GUIDE.md', ...(existsSync('.claude/skills') ?
-    readdirSync('.claude/skills').map((n) => `.claude/skills/${n}/SKILL.md`).filter(existsSync) : [])];
+  const scan = new Set(['AGENT_GUIDE.md']);
+  for (const base of ['.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills'])
+    if (existsSync(base)) for (const n of readdirSync(base)) { const p = `${base}/${n}/SKILL.md`; if (existsSync(p)) scan.add(p); }
+  if (existsSync('.roo/commands')) for (const n of readdirSync('.roo/commands').filter((f) => f.endsWith('.md'))) scan.add(`.roo/commands/${n}`);
+  if (existsSync('.kaif/spheres')) for (const n of readdirSync('.kaif/spheres').filter((f) => f.endsWith('.md'))) scan.add(`.kaif/spheres/${n}`);
   for (const p of scan) {
     const t = readFileSync(p, 'utf8');
     for (const ph of PLACEHOLDERS) if (t.includes(ph)) { console.error(`✖ placeholder ${ph} still in ${p}`); issues++; }
   }
   return issues;
+}
+
+// The declared sphere must EXIST as a library: fable-method calls the sphere's minimum
+// evidence set binding, yet a marker could point into the void with every gate green
+// (bug 11, Unliminium: sphere "game-design" with no .kaif/spheres/game-design.md).
+// A loud warning, not a failure: legitimate mid-adaptation states pass through here.
+// [TESTED: 2026-07-27 · sandbox S2: `sphere game-design` without a library → check exit 0 + the warning]
+function warnSphereLibrary() {
+  if (!okOnDisk(KAIF_JSON)) return;
+  try {
+    const s = readJson(KAIF_JSON).sphere;
+    if (s && s !== 'TODO' && !okOnDisk(`.kaif/spheres/${s}.md`))
+      console.error(`⚠ sphere "${s}" has no library at .kaif/spheres/${s}.md — author it from .kaif/spheres/_template.md (binding for /fable-method and /fable-judge)`);
+  } catch { /* marker unreadable — the check gate flags that separately */ }
 }
 
 // anonymous deployments: grep the tree for author identity BEFORE cleanup —
@@ -449,6 +506,9 @@ function resyncCopies() {
   const agents = okOnDisk(KAIF_JSON) ? (readJson(KAIF_JSON).agents || []) : [];
   const canon = [];
   for (const n of readdirSync('.claude/skills')) {
+    // On an anonymous deployment the origin-tied skills were deliberately skipped — the
+    // re-sync must not smuggle them back into the mirrors (bug 13 facet, QA field report).
+    if (ANON && ORIGIN_TIED.includes(n)) continue;
     const p = `.claude/skills/${n}/SKILL.md`;
     if (okOnDisk(p)) canon.push({ path: p, content: readFileSync(p, 'utf8') });
     const rd = `.claude/skills/${n}/references`;
@@ -496,6 +556,7 @@ function runFinalGates(taskFile, tag, verb) {
   const anonDeploy = okOnDisk(KAIF_JSON) && readJson(KAIF_JSON).tracking === 'anonymous';
   if (anonDeploy) missing += anonLeakScan();
   if (missing) die(`${verb} FAILED: ${missing} issues — finish them and re-run`);
+  warnSphereLibrary();
   healMarker();
   resyncCopies();
   selfCleanArtifacts(taskFile, anonDeploy);
@@ -524,6 +585,16 @@ function cmdInstall() {
     try { legacyOld = readJson(KAIF_JSON); } catch { /* unreadable marker — treat as fresh */ }
     if (legacyOld) log(`⟳ existing KAIF ${legacyOld.version || '?'} detected — running as an UPDATE to ${meta.version} (existing files are kept, new ones added)`);
   }
+  // A legacy bootstrap must not silently WIDEN the deployment: the old default (all five
+  // systems) handed a two-system project ~80 unrequested files (bug 14, KLAS). Inherit the
+  // marker's agents — the 1.4-era singular `agent` included — and always say what was chosen.
+  if (legacyOld && !val('--agents')) {
+    const inherited = Array.isArray(legacyOld.agents) && legacyOld.agents.length ? legacyOld.agents
+      : legacyOld.agent ? [legacyOld.agent] : null;
+    if (inherited) AGENTS = inherited;
+    log(`⟳ target agent systems: ${AGENTS.join(', ')} (${inherited ? 'inherited from the existing marker' : 'default — no agents in the old marker'}; override with --agents)`);
+  }
+  ensureIgnoreFirst(); // ignore-first before any transient artifact can be staged
 
   // 1) write every deployable file (placeholder-filling the text ones; anonymizing on --mode anonymous).
   //    The filled/anonymized content is written BACK into the deploy entry so every derived
@@ -556,7 +627,10 @@ function cmdInstall() {
     : { framework: 'KAIF', version: meta.version, released: meta.released,
         ...(ANON ? { tracking: 'anonymous' } : { origin: ORIGIN, tracking: 'origin' }),
         sphere: 'TODO', agents: AGENTS, language: LANG };
-  if (legacyOld && legacyOld.agent && !legacyOld.agents) delete marker.agent; // 1.4 singular field superseded by `agents`
+  // Superseded marker fields: `{...legacyOld}` carries EVERYTHING forward, so renamed fields
+  // of past schemas pile up (bug 19.3: agentsSupported from 1.4 living next to agents).
+  // `agents` is always written above — the old spellings are safe to drop unconditionally.
+  if (legacyOld) for (const stale of ['agent', 'agentsSupported']) delete marker[stale];
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   log(`+ wrote ${KAIF_JSON}`);
   // Respectful wiring: NEVER clobber an existing package.json we cannot parse —
@@ -598,7 +672,21 @@ function cmdInstall() {
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
   //    with the thin KAIF.md) → an UPDATE task instead (existing files were kept).
   if (legacyOld) {
-    writeUpdateTask([], meta, `legacy update ${legacyOld.version || '?'} → ${meta.version}: pre-1.5 project has no content snapshots, so every kept framework file may carry local edits — merge the 1.5 template news below into them pointwise`);
+    // A re-run must not clobber recorded progress (bug 14, field: a second bootstrap wiped the
+    // checkpoints and wrote a meaningless "legacy update 1.6 → 1.6" context line).
+    if (existsSync(UPDATE_TASK) && /^KAIF-UPDATE: /m.test(readFileSync(UPDATE_TASK, 'utf8'))) {
+      log(`= kept existing ${UPDATE_TASK} (it carries recorded checkpoints — not overwritten)`);
+    } else {
+      // The context line derives the REASON from the actual deployment state — "pre-1.5 project"
+      // was a false model on anonymous installs, whose snapshots were removed by self-clean.
+      const rerun = legacyOld.version === meta.version;
+      const why = legacyOld.tracking === 'anonymous'
+        ? 'this anonymous deployment keeps no content snapshots (self-clean removes them)'
+        : 'this deployment has no content snapshots (pre-1.5 deployments never wrote them)';
+      writeUpdateTask([], meta, rerun
+        ? `re-run on ${meta.version}: the tree already carries this version — verify the previous merge rather than redoing it`
+        : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`);
+    }
     if (existsSync(TASK_FILE)) { unlinkSync(TASK_FILE); log(`- removed stale ${TASK_FILE} (this is an update, not an adaptation)`); }
   } else {
     writeAdaptationTask(unresolved, translated, meta);
@@ -645,7 +733,37 @@ function cmdCheck() {
   for (const p of [...paths, ...agents, KAIF_JSON])
     if (!okOnDisk(p)) { console.error(`✖ MISSING or empty: ${p}`); missing++; }
   if (missing) die(`INCOMPLETE: ${missing} artifacts missing`);
-  log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present`);
+  // Content gate (warning, not failure): a mirror that EXISTS but drifted from its canon
+  // skill passed the old existence-only check for a whole release (bug 11; nine days of five
+  // systems on stale skills, NDim). Non-fatal by design: between `update` and `update-verify`
+  // the mirrors legitimately lag the canon until the re-sync runs.
+  let drifted = 0;
+  if (existsSync('.claude/skills')) {
+    const mirrors = { codex: (n) => [`.agents/skills/${n}/SKILL.md`, (t) => t],
+                      'grok-build': (n) => [`.grok/skills/${n}/SKILL.md`, (t) => t],
+                      cline: (n) => [`.cline/skills/${n}/SKILL.md`, (t) => t],
+                      'zoo-code': (n) => [`.roo/commands/${n}.md`, (t) => t.replace(/^name:[^\n]*\n/m, '')] };
+    for (const n of readdirSync('.claude/skills')) {
+      const canonPath = `.claude/skills/${n}/SKILL.md`;
+      if (!okOnDisk(canonPath)) continue;
+      const canonText = readFileSync(canonPath, 'utf8');
+      for (const sys of AGENTS) {
+        if (!mirrors[sys]) continue;
+        const [p, transform] = mirrors[sys](n);
+        if (okOnDisk(p) && readFileSync(p, 'utf8') !== transform(canonText)) { console.error(`⚠ mirror drifted from canon: ${p}`); drifted++; }
+      }
+    }
+    if (drifted) console.error(`⚠ ${drifted} mirror copies differ from their canon skill — run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
+  }
+  warnSphereLibrary();
+  log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
+}
+
+// sync — the standalone handle over resyncCopies(): mirror drift accumulates BETWEEN updates,
+// where the re-sync used to be unreachable (bug 11 facet; asked for by the KrinikCam report).
+function cmdSync() {
+  resyncCopies();
+  log('✅ sync done — the per-system mirrors now equal the canon .claude/skills/');
 }
 
 // sphere <name> — the file-edit-free way to record the project's sphere (field lesson,
@@ -691,5 +809,6 @@ function cmdVersion() {
 }
 
 await ({ install: cmdInstall, check: cmdCheck, 'verify-final': cmdVerifyFinal, version: cmdVersion,
-         update: cmdUpdate, 'update-verify': cmdUpdateVerify, checkpoint: cmdCheckpoint, sphere: cmdSphere }[CMD] ||
-  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | checkpoint | sphere | version)`)))();
+         update: cmdUpdate, 'update-verify': cmdUpdateVerify, checkpoint: cmdCheckpoint, sphere: cmdSphere,
+         sync: cmdSync }[CMD] ||
+  (() => die(`unknown command: ${CMD} (install | check | verify-final | update | update-verify | checkpoint | sphere | sync | version)`)))();

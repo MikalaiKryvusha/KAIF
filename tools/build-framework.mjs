@@ -48,6 +48,14 @@ function released() {
   try { return JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8')).released || ''; } catch { return ''; }
 }
 
+// Release codename from version.json — the ONE source the template notes and release rituals
+// quote. Bug 10 (field, 6 of 8 reports): the 1.6 bundle shipped notes signed "KAIF 1.5 — Tested
+// KAIF" because the codename lived hardcoded in prose; now the build computes it and the
+// self-check refuses to ship notes that name a different version.
+function codename() {
+  try { return JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8')).codename || ''; } catch { return ''; }
+}
+
 // Embed one template file as a labelled fenced block, telling the agent which
 // file to create in the target project and how to treat it. The fence language
 // follows the file extension (markdown templates vs. the .mjs unpacker script).
@@ -164,13 +172,16 @@ writeFileSync(join(DIST, 'KAIF-CORE.mjs'), coreSrc);
 //    (deployed to .kaif/spheres/ so fable-method/judge can read the project's sphere).
 // Template news for the update task (plan 15): 3–6 lines per minor describing what changed
 // in the TEMPLATES since the previous version — the agent uses them to merge diverged files.
+// RELEASE RITUAL (/release checks this; the self-check enforces the codename line): rewrite
+// these notes for EVERY release — stale notes are the single most-reported field defect
+// (bug 10: six of eight 1.6 update reports were misled by notes describing 1.5).
 const TEMPLATE_NOTES = [
-  'fable family vendored: /fable-method, /fable-loop, /fable-judge, /fable-domain (execution discipline; judge pass now MANDATORY in the loops and /release)',
-  'AGENT_GUIDE: checklist gained "Execute by the fable loop"; new sections "Task execution discipline", "Languages — two audiences" (<OWNER_LANGUAGE>), standing commit authorization note',
-  'BUG_FIXING_FRAMEWORK: intent gate before the first behavior-changing edit + twin check after every fix',
-  'NEW key doc TESTING_FRAMEWORK.md: the 7 testing principles + [NOT-TESTED]/[TESTED: …] trust markers on everything the agent generates (false [TESTED] is a judge-hunted fraud)',
-  'Spheres now carry execution discipline: binding minimum evidence set, authority order, verification by observation, fraud table, done-by-example (deployed to .kaif/spheres/)',
-  'Release codename for this version: KAIF 1.5 — Tested KAIF',
+  'AGENT_GUIDE: canon rules — recon-before-code (recon docs in researches/), quote-the-plan while coding, non-negotiable git hygiene (diff --stat before commit, ignore-first, owner originals verbatim), write-gate + [AI]…[/AI]/[AI-ed]…[/AI-ed] provenance marks on owner canon artifacts, canonical ordering for anything diffed/cached',
+  'PHILOSOPHY: new principles — "Observation over guessing" and "The three-doors rule" (a gap is never solved by invention; invented numbers are worse than missing ones)',
+  'BUG_FIXING_FRAMEWORK: close the CLASS, not the instance (inventory first); guards — every fix births a check, and the check is proven on a broken version; findings are not findings until verified (script before LLM judgment)',
+  'Knowledge formats: closing any idea/bug/plan requires a "Decisions made without the owner" section; EXPERIENCE entries carry Repro:/Not for: fields and trigger tags that must be QUOTED before a task',
+  '/fable-judge vendored skill gained the guardrail hunts (KAIF patch 3); judge pass now required before EVERY push/deploy, not only before "done"; /release gained the 5-gate deploy checklist',
+  `Release codename for this version: KAIF ${version()} — ${codename()}`,
 ];
 
 function bundleBlocks() {
@@ -217,11 +228,21 @@ const bundleHeader = '<!-- GENERATED FILE — the KAIF installer bundle. Built b
 const bundleBody = bundleBlocks();
 writeFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), bundleHeader + bundleBody.join('\n'));
 
-// 4) the loader's integrity manifest (sha256 over the two fetched artifacts)
+// 4) the loader's integrity manifest (sha256 over the two fetched artifacts).
+//    `assets` names every release artifact and its role — a field auditor took KAIF-FULL.md
+//    (44 blocks) for the complete set and got a silently wrong diff (bug 19.4): the asset
+//    composition must be machine-readable, not tribal knowledge.
 const sha256 = (p) => createHash('sha256').update(readFileSync(join(DIST, p))).digest('hex');
 writeFileSync(join(DIST, 'kaif-manifest.json'), JSON.stringify({
-  framework: 'KAIF', version: version(), released: released(),
+  framework: 'KAIF', version: version(), released: released(), codename: codename(),
   sha256: { 'KAIF-CORE.mjs': sha256('KAIF-CORE.mjs'), 'KAIF-CORE-BUNDLE.md': sha256('KAIF-CORE-BUNDLE.md') },
+  assets: {
+    'KAIF.md': 'thin entry point (bootstrap + embedded loader); transient in the target project',
+    'KAIF-CORE.mjs': 'installer machinery; lives on as .kaif/kaif-core.mjs',
+    'KAIF-CORE-BUNDLE.md': 'the COMPLETE deployable set (docs + skills + spheres + language packs) as FILE: blocks',
+    'kaif-manifest.json': 'this file — version, codename, sha256 pins, asset roles',
+    'KAIF-FULL.md': 'offline fallback core — a SUBSET (no language packs/spheres/references); not a diff baseline',
+  },
 }, null, 2) + '\n');
 
 // 5) the offline fallback: the classic full core under its release-asset name

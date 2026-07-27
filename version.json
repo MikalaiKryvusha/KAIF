@@ -2,7 +2,8 @@
   "name": "KAIF",
   "major": 1,
   "minor": 6,
+  "codename": "Homeostatic KAIF",
   "released": "2026-07-24",
   "origin": "https://github.com/MikalaiKryvusha/KAIF",
-  "build": 44
+  "build": 45
 }
