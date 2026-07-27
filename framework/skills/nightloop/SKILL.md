@@ -17,7 +17,10 @@ time and on the human appearing**, and **self-restart via `ScheduleWakeup`**.
 Stop the loop ONLY if one of:
 1. **It is ≥ the wake time** (default 09:00 local; set it when starting the loop). ⏰ Check the time
    (`date "+%H:%M"`) PERIODICALLY — don't miss the wake hour. The human comes online in the morning.
-2. **The human wrote in the chat.** Any new user message = exit, switch to them. The loop interrupts immediately.
+2. **The human wrote in the chat — classify before you switch** (idea 17 §2): a direct request →
+   exit, switch to them immediately; a **drive-by idea/bug not about the current task** → capture it
+   (`/propose-idea` / `/report-bug`, source: "tossed by the owner"), confirm in one line and
+   CONTINUE the night; vision-level → `/fix-vision`, then continue.
 3. **ONLY a truly critical error** that can't be worked around autonomously and makes continuing
    impossible in principle. RARE.
    ❗ **Non-critical errors are NOT a stop condition — just keep working:** failed build (fix), flaky

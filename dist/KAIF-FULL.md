@@ -411,6 +411,15 @@ ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
   owner's next questions. Unsettled assumptions (fable `PENDING:` lines) are settled here too: each one
   *confirmed / refuted / asked*, never silently dropped.
 
+**Owner's drive-by notes mid-task go to the backlog, not into a task switch** (idea 17 §2). When the
+owner tosses an idea/improvement/bug into the chat while you are working on something ELSE: capture it
+as a document right away (`/propose-idea` → `ideas/`, `/report-bug` → `bugs/` — note the source in the
+header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("recorded in ideas/NN —
+continuing the current task") and return to the interrupted work. Do not drop the current task for the
+note, and do not hold it in your head until the session ends — a session's head is the worst storage
+there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
+vision-level → `/fix-vision`; it is an explicit "switch to this" → switch.
+
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
 WAVE of bugs at once, the wave itself is a symptom that the process leaked — worth more than any bug in
 it. Fix the bugs; and on the owner's explicit ask ("figure out why so many") open a **process document**
@@ -1564,21 +1573,29 @@ description: Resume work where the last session left off — read the key projec
 
 A new session starts with empty context. This skill rebuilds the picture fast and gets to work.
 
-## Step 1. Read the key documents (all in parallel)
+## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
-Read at once:
+**Read every canon document — the full set, not a slice.** A session that skips one resumes with a
+hole exactly there; owners kept having to re-order the full pass by hand (idea 17 §1):
 
 - `STATUS.md` — current state, what's in progress, the "where to continue" checklist
+- `AGENT_GUIDE.md` — the rules for working on this project (the canon)
+- `PHILOSOPHY.md` — how the agent thinks: KISS + Occam and the wider principle set
+- `BUG_FIXING_FRAMEWORK.md` — how defects are fixed here
+- `TESTING_FRAMEWORK.md` — nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED]` contract
+- `GOAL.md` — the owner's vision
 - `MASTER_PLAN.md` — the long-term plan and phases
-- `AGENT_GUIDE.md` — the rules for working on this project (mandatory)
-- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — architecture: modules, files, data flow
-
+- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow
+- `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` — internal map: abstractions and interactions
+- `KAIF_FRAMEWORK.md` — the deployment record: which KAIF is deployed here and how
 - `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
 
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
-- `BUG_FIXING_FRAMEWORK.md` — if a bug fix is likely
-- `PHILOSOPHY.md` — the simplicity principle
+
+> **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
+> slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
+> here is exactly what makes the lazy slices safe afterwards. Never "optimize" one with the other.
 
 ## Step 2. Synthesize — choose the one main thing
 
@@ -1759,6 +1776,10 @@ without those resources.
 - If you need to "continue on a timer", use the harness's loop mechanism (`ScheduleWakeup`/`/loop`) with
   a reasonable interval, passing this same skill back so the cycle resumes.
 
+> 📥 **The human wrote mid-loop — classify first** (idea 17 §2): a drive-by idea/bug not about the
+> current task goes to `ideas/`/`bugs/` (source noted) with a one-line confirmation, and the loop
+> CONTINUES; only a direct interactive request or an explicit "stop/switch" interrupts the series.
+
 ## When to STOP the loop (and report to the human)
 
 - The autonomous pool is exhausted (everything left needs the human/resources).
@@ -1798,7 +1819,11 @@ This is the "working-hours" variant of `/nightloop`: same execution discipline a
 ## 🛑 STOP CONDITIONS (check at the START of each iteration)
 
 Stop the loop ONLY if one of:
-1. **The human wrote in the chat.** Any new user message = exit the loop immediately, switch to them.
+1. **The human wrote in the chat — classify before you switch** (idea 17 §2): a direct request or
+   question → exit the loop immediately, switch to them; a **drive-by idea/bug NOT about the current
+   task** → capture it as a document right away (`/propose-idea` / `/report-bug`, source noted:
+   "tossed by the owner"), confirm in one chat line and CONTINUE the loop; vision-level →
+   `/fix-vision`, then continue.
 2. **ONLY a truly critical error** that can't be worked around autonomously and makes continuing
    impossible in principle (toolchain hopelessly broken; repo in an unresolvable state). This is RARE.
    ❗ **Non-critical errors are NOT a stop condition — just keep working:** a failed build (fix it), a
@@ -1910,7 +1935,10 @@ time and on the human appearing**, and **self-restart via `ScheduleWakeup`**.
 Stop the loop ONLY if one of:
 1. **It is ≥ the wake time** (default 09:00 local; set it when starting the loop). ⏰ Check the time
    (`date "+%H:%M"`) PERIODICALLY — don't miss the wake hour. The human comes online in the morning.
-2. **The human wrote in the chat.** Any new user message = exit, switch to them. The loop interrupts immediately.
+2. **The human wrote in the chat — classify before you switch** (idea 17 §2): a direct request →
+   exit, switch to them immediately; a **drive-by idea/bug not about the current task** → capture it
+   (`/propose-idea` / `/report-bug`, source: "tossed by the owner"), confirm in one line and
+   CONTINUE the night; vision-level → `/fix-vision`, then continue.
 3. **ONLY a truly critical error** that can't be worked around autonomously and makes continuing
    impossible in principle. RARE.
    ❗ **Non-critical errors are NOT a stop condition — just keep working:** failed build (fix), flaky
@@ -2183,6 +2211,9 @@ can be returned to (or handed to `/bug-research`).
   capture the forensics/postmortem).
 - A bug needs to be deferred (take another task) without losing it.
 - The human asks to file a bug.
+- **The owner mentioned a bug in passing while you worked on something else** (drive-by, idea 17 §2):
+  file it with the source noted ("tossed by the owner, <date>"), confirm in one line, return to the
+  current task.
 - NOT for a "stuck-from-misunderstanding" stall (that's `PHILOSOPHY.md`) and not instead of fixing a trivial typo.
 
 ## What to do
@@ -2334,6 +2365,10 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 - An idea arises that moves the project toward the goals in `MASTER_PLAN.md`/`PHILOSOPHY.md` and doesn't
   contradict the human's vision.
+- **The OWNER tossed an idea into the chat mid-task** (drive-by, idea 17 §2): file it immediately with
+  the source noted in the header ("tossed by the owner, <date>"), confirm in one chat line, return to
+  the interrupted task. An owner-tossed idea needs no approval gate (it IS the owner's) — but it waits
+  its turn in the backlog unless the owner explicitly says "switch to it now".
 - NOT for small technical decisions within an already-approved task (decide those yourself and just do them).
 - NOT for questions needing the human's INPUT on work already in progress — that's `/interview` (a
   question), not an idea. The difference: `/interview` = "I need your answer to continue";
@@ -3188,6 +3223,10 @@ description: Snapshot this project's evolved KAIF into the user's own GitHub rep
 
 # /kaif-fork — snapshot KAIF into the user's own repo & track it
 
+> ⚙️ **Staleness warning:** this is a lifecycle procedure, and an adopted local copy of it goes stale
+> silently across releases. Before following it, verify the procedure against the CURRENT origin
+> release notes — the machinery and the release page win over this file's prose.
+
 After living in a project, KAIF often evolves far from origin — locally improved, adapted, extended. At
 some point the user wants to **own that evolution**: keep developing and versioning *their* KAIF in
 *their* repo, no longer bound to the origin's release cadence. This skill does that in one move.
@@ -3231,6 +3270,10 @@ description: Respectfully remove KAIF from the project. Default — surgical rem
 ---
 
 # /kaif-remove — respectful removal of KAIF (partial or full)
+
+> ⚙️ **Staleness warning:** this is a lifecycle procedure, and an adopted local copy of it goes stale
+> silently across releases. Before following it, verify the procedure against the CURRENT origin
+> release notes — the machinery and the release page win over this file's prose.
 
 Cleanly take KAIF out of a project. The guiding word is **respectful**: the user's own project remains
 intact and working — we only remove what KAIF added, surgically.
@@ -3299,6 +3342,10 @@ description: Switch this project's KAIF tracking from the user's fork back to th
 
 # /kaif-switch-origin — return tracking to the official origin
 
+> ⚙️ **Staleness warning:** this is a lifecycle procedure, and an adopted local copy of it goes stale
+> silently across releases. Before following it, verify the procedure against the CURRENT origin
+> release notes — the machinery and the release page win over this file's prose.
+
 The inverse of `/kaif-fork`. A project that was tracking the user's own KAIF fork can return to the
 official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfully.
 
@@ -3333,6 +3380,13 @@ description: Respectfully update & migrate the KAIF framework deployed in this p
 ---
 
 # /kaif-update — respectful migration update from origin
+
+> ⚙️ **The current mechanical command comes FIRST:** `npm run kaif:update`
+> (`node .kaif/kaif-core.mjs update`). If this file's prose disagrees with the machinery, trust the
+> machinery and the origin release notes: an ADOPTED local copy of this skill freezes at an older
+> version's procedure and silently leads the updater off the mechanical path (field-caught — it cost
+> a project a full manual migration and stale snapshots; lifecycle skills are exactly the class of
+> file whose staleness breaks the update itself).
 
 A newer KAIF version exists upstream (see `/kaif-version`). Since KAIF 1.5 the heavy lifting is
 **mechanical**: the machinery (`.kaif/kaif-core.mjs`) knows what was deployed and which files were never
@@ -3390,6 +3444,11 @@ description: Report the KAIF version deployed in this project and check the orig
 ---
 
 # /kaif-version — report the deployed KAIF version & check origin for updates
+
+> ⚙️ **The current mechanical command comes FIRST:** `npm run kaif:version`
+> (`node .kaif/kaif-core.mjs version`). If this file's prose disagrees with the machinery, trust the
+> machinery and the origin release notes — an adopted local copy of a lifecycle skill goes stale
+> silently across releases.
 
 KAIF is deployed (injected) into a project with a specific version. This skill tells the human which
 version is in the project and whether a newer one exists upstream.

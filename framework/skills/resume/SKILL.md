@@ -7,21 +7,29 @@ description: Resume work where the last session left off — read the key projec
 
 A new session starts with empty context. This skill rebuilds the picture fast and gets to work.
 
-## Step 1. Read the key documents (all in parallel)
+## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
-Read at once:
+**Read every canon document — the full set, not a slice.** A session that skips one resumes with a
+hole exactly there; owners kept having to re-order the full pass by hand (idea 17 §1):
 
 - `STATUS.md` — current state, what's in progress, the "where to continue" checklist
+- `AGENT_GUIDE.md` — the rules for working on this project (the canon)
+- `PHILOSOPHY.md` — how the agent thinks: KISS + Occam and the wider principle set
+- `BUG_FIXING_FRAMEWORK.md` — how defects are fixed here
+- `TESTING_FRAMEWORK.md` — nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED]` contract
+- `GOAL.md` — the owner's vision
 - `MASTER_PLAN.md` — the long-term plan and phases
-- `AGENT_GUIDE.md` — the rules for working on this project (mandatory)
-- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — architecture: modules, files, data flow
-
+- `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow
+- `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` — internal map: abstractions and interactions
+- `KAIF_FRAMEWORK.md` — the deployment record: which KAIF is deployed here and how
 - `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
 
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
-- `BUG_FIXING_FRAMEWORK.md` — if a bug fix is likely
-- `PHILOSOPHY.md` — the simplicity principle
+
+> **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
+> slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
+> here is exactly what makes the lazy slices safe afterwards. Never "optimize" one with the other.
 
 ## Step 2. Synthesize — choose the one main thing
 

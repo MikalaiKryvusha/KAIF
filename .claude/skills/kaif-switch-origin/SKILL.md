@@ -5,6 +5,10 @@ description: Switch this project's KAIF tracking from the user's fork back to th
 
 # /kaif-switch-origin — return tracking to the official origin
 
+> ⚙️ **Staleness warning:** this is a lifecycle procedure, and an adopted local copy of it goes stale
+> silently across releases. Before following it, verify the procedure against the CURRENT origin
+> release notes — the machinery and the release page win over this file's prose.
+
 The inverse of `/kaif-fork`. A project that was tracking the user's own KAIF fork can return to the
 official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfully.
 

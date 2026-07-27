@@ -5,6 +5,10 @@ description: Snapshot this project's evolved KAIF into the user's own GitHub rep
 
 # /kaif-fork — snapshot KAIF into the user's own repo & track it
 
+> ⚙️ **Staleness warning:** this is a lifecycle procedure, and an adopted local copy of it goes stale
+> silently across releases. Before following it, verify the procedure against the CURRENT origin
+> release notes — the machinery and the release page win over this file's prose.
+
 After living in a project, KAIF often evolves far from origin — locally improved, adapted, extended. At
 some point the user wants to **own that evolution**: keep developing and versioning *their* KAIF in
 *their* repo, no longer bound to the origin's release cadence. This skill does that in one move.

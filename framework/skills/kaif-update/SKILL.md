@@ -5,6 +5,13 @@ description: Respectfully update & migrate the KAIF framework deployed in this p
 
 # /kaif-update — respectful migration update from origin
 
+> ⚙️ **The current mechanical command comes FIRST:** `npm run kaif:update`
+> (`node .kaif/kaif-core.mjs update`). If this file's prose disagrees with the machinery, trust the
+> machinery and the origin release notes: an ADOPTED local copy of this skill freezes at an older
+> version's procedure and silently leads the updater off the mechanical path (field-caught — it cost
+> a project a full manual migration and stale snapshots; lifecycle skills are exactly the class of
+> file whose staleness breaks the update itself).
+
 A newer KAIF version exists upstream (see `/kaif-version`). Since KAIF 1.5 the heavy lifting is
 **mechanical**: the machinery (`.kaif/kaif-core.mjs`) knows what was deployed and which files were never
 touched since (content snapshots in `.kaif/deploy-manifest.json`), so it replaces the untouched framework

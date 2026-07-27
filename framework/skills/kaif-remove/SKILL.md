@@ -5,6 +5,10 @@ description: Respectfully remove KAIF from the project. Default — surgical rem
 
 # /kaif-remove — respectful removal of KAIF (partial or full)
 
+> ⚙️ **Staleness warning:** this is a lifecycle procedure, and an adopted local copy of it goes stale
+> silently across releases. Before following it, verify the procedure against the CURRENT origin
+> release notes — the machinery and the release page win over this file's prose.
+
 Cleanly take KAIF out of a project. The guiding word is **respectful**: the user's own project remains
 intact and working — we only remove what KAIF added, surgically.
 

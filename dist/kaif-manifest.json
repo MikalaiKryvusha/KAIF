@@ -5,7 +5,7 @@
   "codename": "Homeostatic KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "5782307c97a6e3b0e3664f7f7f04c273004705cc4fb97dba708f93047af3a853",
-    "KAIF-CORE-BUNDLE.md": "110a4e28a3243e1a0d9af23e266d5fc08610d190e3ce8e017b988fb83d9ecb5f"
+    "KAIF-CORE-BUNDLE.md": "0d4816777ed907e54d9d7f66f577637ff7995adc529fa825046c75f7cc636498"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

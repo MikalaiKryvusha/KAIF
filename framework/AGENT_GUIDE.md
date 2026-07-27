@@ -270,6 +270,15 @@ ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
   owner's next questions. Unsettled assumptions (fable `PENDING:` lines) are settled here too: each one
   *confirmed / refuted / asked*, never silently dropped.
 
+**Owner's drive-by notes mid-task go to the backlog, not into a task switch** (idea 17 §2). When the
+owner tosses an idea/improvement/bug into the chat while you are working on something ELSE: capture it
+as a document right away (`/propose-idea` → `ideas/`, `/report-bug` → `bugs/` — note the source in the
+header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("recorded in ideas/NN —
+continuing the current task") and return to the interrupted work. Do not drop the current task for the
+note, and do not hold it in your head until the session ends — a session's head is the worst storage
+there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
+vision-level → `/fix-vision`; it is an explicit "switch to this" → switch.
+
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
 WAVE of bugs at once, the wave itself is a symptom that the process leaked — worth more than any bug in
 it. Fix the bugs; and on the owner's explicit ask ("figure out why so many") open a **process document**

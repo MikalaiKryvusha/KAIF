@@ -19,6 +19,9 @@ can be returned to (or handed to `/bug-research`).
   capture the forensics/postmortem).
 - A bug needs to be deferred (take another task) without losing it.
 - The human asks to file a bug.
+- **The owner mentioned a bug in passing while you worked on something else** (drive-by, idea 17 §2):
+  file it with the source noted ("tossed by the owner, <date>"), confirm in one line, return to the
+  current task.
 - NOT for a "stuck-from-misunderstanding" stall (that's `PHILOSOPHY.md`) and not instead of fixing a trivial typo.
 
 ## What to do

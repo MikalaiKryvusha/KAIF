@@ -5,6 +5,11 @@ description: Report the KAIF version deployed in this project and check the orig
 
 # /kaif-version — report the deployed KAIF version & check origin for updates
 
+> ⚙️ **The current mechanical command comes FIRST:** `npm run kaif:version`
+> (`node .kaif/kaif-core.mjs version`). If this file's prose disagrees with the machinery, trust the
+> machinery and the origin release notes — an adopted local copy of a lifecycle skill goes stale
+> silently across releases.
+
 KAIF is deployed (injected) into a project with a specific version. This skill tells the human which
 version is in the project and whether a newer one exists upstream.
 
