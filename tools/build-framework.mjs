@@ -22,6 +22,7 @@ import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { mapFile, validateOverrides } from './module-map-lib.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const FW = join(ROOT, 'framework');
@@ -184,6 +185,15 @@ const TEMPLATE_NOTES = [
   `Release codename for this version: KAIF ${version()} — ${codename()}`,
 ];
 
+// Every (src → dest) pair that lands in the bundle is recorded here as a side effect of
+// bundleBlocks() — the module map (plan 21 §3.1) is built from EXACTLY the same set, so the
+// map can never cover a different tree than the bundle ships.
+const BUNDLE_ENTRIES = [];
+function embedBundle(src, dest, note) {
+  BUNDLE_ENTRIES.push({ src, dest });
+  return embedFile(src, dest, note);
+}
+
 function bundleBlocks() {
   const blocks = [];
   const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES };
@@ -191,19 +201,19 @@ function bundleBlocks() {
     FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
   for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {
     if (src === 'framework/kaif-unpack.mjs') continue; // legacy unpacker: lives only in the full core
-    blocks.push(embedFile(src, dest, note));
+    blocks.push(embedBundle(src, dest, note));
   }
   const skillsDir = join(FW, 'skills');
   for (const n of readdirSync(skillsDir)) {
     if (!existsSync(join(skillsDir, n, 'SKILL.md'))) continue;
-    blocks.push(embedFile(`framework/skills/${n}/SKILL.md`, `.claude/skills/${n}/SKILL.md`,
+    blocks.push(embedBundle(`framework/skills/${n}/SKILL.md`, `.claude/skills/${n}/SKILL.md`,
       "replace the command placeholders with the project's real commands"));
     const refDir = join(skillsDir, n, 'references');
     if (existsSync(refDir)) for (const r of readdirSync(refDir).filter((f) => f.endsWith('.md')))
-      blocks.push(embedFile(`framework/skills/${n}/references/${r}`, `.claude/skills/${n}/references/${r}`, 'verbatim'));
+      blocks.push(embedBundle(`framework/skills/${n}/references/${r}`, `.claude/skills/${n}/references/${r}`, 'verbatim'));
   }
   for (const s of readdirSync(join(FW, 'spheres')).filter((f) => f.endsWith('.md')))
-    blocks.push(embedFile(`framework/spheres/${s}`, `.kaif/spheres/${s}`, 'sphere library — verbatim'));
+    blocks.push(embedBundle(`framework/spheres/${s}`, `.kaif/spheres/${s}`, 'sphere library — verbatim'));
   // language packs: owner-facing doc overrides + skill trigger aliases per language.
   // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
   // override their destination paths; others are ignored.
@@ -214,13 +224,36 @@ function bundleBlocks() {
         const p = join(dir, n);
         const r = rel ? `${rel}/${n}` : n;
         if (statSync(p).isDirectory()) { walk(p, r); continue; }
-        blocks.push(embedFile(`framework/templates/languages/${r}`, `templates/languages/${r}`,
+        blocks.push(embedBundle(`framework/templates/languages/${r}`, `templates/languages/${r}`,
           'language pack — data for KAIF-CORE, applied only for the chosen --lang'));
       }
     };
     walk(langRoot, '');
   }
   return blocks;
+}
+
+// --- The module map (plan 21 §3.1) ------------------------------------------
+// Cuts every deployable md of the bundle into modules by signature anchors (full unique heading
+// lines — owner decision #16), classifies each (computed defaults + framework/module-classes.json
+// overrides) and emits dist/kaif-module-map.json. Deterministic: bundle order, document order
+// (the canonical-ordering rule — the map gets diffed and cached downstream).
+// [TESTED: 2026-07-27 · spike 5.1: 124 files → 517 modules, rejoin byte-identical, 0 duplicate signatures]
+function buildModuleMap() {
+  const overridesPath = join(FW, 'module-classes.json');
+  const overrides = existsSync(overridesPath) ? JSON.parse(readFileSync(overridesPath, 'utf8').replace(/^﻿/, '')) : {};
+  const files = {};
+  for (const { src, dest } of BUNDLE_ENTRIES) {
+    if (!dest.endsWith('.md')) continue; // .mjs machinery and json data carry no prose modules
+    const content = readFileSync(join(ROOT, src), 'utf8').replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
+    files[dest] = mapFile(dest, content, overrides); // throws on duplicate signature / broken rejoin
+  }
+  const errors = validateOverrides(overrides, files);
+  if (errors.length) { for (const e of errors) console.error('❌ ' + e); process.exit(1); }
+  const moduleCount = Object.values(files).reduce((a, m) => a + m.length, 0);
+  const map = { framework: 'KAIF', version: version(), released: released(), moduleCount, files };
+  writeFileSync(join(DIST, 'kaif-module-map.json'), JSON.stringify(map, null, 2) + '\n');
+  return moduleCount;
 }
 const bundleHeader = '<!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; ' +
   'fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->\n# KAIF-CORE-BUNDLE · v' +
@@ -247,8 +280,12 @@ writeFileSync(join(DIST, 'kaif-manifest.json'), JSON.stringify({
 
 // 5) the offline fallback: the classic full core under its release-asset name
 writeFileSync(join(DIST, 'KAIF-FULL.md'), out);
+
+// 6) the module map — generated from EXACTLY the bundle's entry set (plan 21 §3.1)
+const moduleCount = buildModuleMap();
 console.log(`✅ dist/ generated — thin KAIF.md (${thin.split('\n').length} lines) · KAIF-CORE.mjs · ` +
-  `KAIF-CORE-BUNDLE.md (${bundleBody.length} file blocks) · kaif-manifest.json · KAIF-FULL.md`);
+  `KAIF-CORE-BUNDLE.md (${bundleBody.length} file blocks) · kaif-manifest.json · KAIF-FULL.md · ` +
+  `kaif-module-map.json (${moduleCount} modules)`);
 
 // Self-check the generated installer (idea 01): fail loudly if it is malformed.
 try {

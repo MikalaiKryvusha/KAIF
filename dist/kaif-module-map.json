@@ -1,0 +1,4909 @@
+{
+  "framework": "KAIF",
+  "version": "1.6",
+  "released": "2026-07-24",
+  "moduleCount": 517,
+  "files": {
+    "AGENT_GUIDE.md": [
+      {
+        "signature": "# <PROJECT_NAME> — AI Agent Guide",
+        "class": "adaptive",
+        "sha256": "fc770d17a72d9853f31bc2cb9e7e37e92aa5af31b78b79d9b2e72acdc6deb75d",
+        "lines": [
+          1,
+          19
+        ]
+      },
+      {
+        "signature": "## Before every task — checklist",
+        "class": "adaptive",
+        "sha256": "1068bc39e4109735fff84930f1b6cc0bdfb4e9c85e5a33f96ecbe9915a27eeba",
+        "lines": [
+          20,
+          55
+        ]
+      },
+      {
+        "signature": "### Context router (progressive loading) — read only the slice you need",
+        "class": "static",
+        "sha256": "603196e19743df3b572d09abbbd297584ed8de3e4a0d075ac85f70cf38049ee6",
+        "lines": [
+          56,
+          73
+        ]
+      },
+      {
+        "signature": "### Recon artifacts — when the task has an external truth",
+        "class": "static",
+        "sha256": "1d910c3a1e267cc0976b3be751ffdb8d6f460819d149281464e411eb174d03c5",
+        "lines": [
+          74,
+          91
+        ]
+      },
+      {
+        "signature": "### Task execution discipline — the fable loop",
+        "class": "static",
+        "sha256": "ad9dee7be28f547eb0c277a4e71c59f9b42341433769216a63893ff757f7c1fe",
+        "lines": [
+          92,
+          104
+        ]
+      },
+      {
+        "signature": "### Languages — two audiences, two languages",
+        "class": "adaptive",
+        "sha256": "d1958723a3b3b1572e00d369fb84237ee41671ad0eefce181dfce903a766c3bc",
+        "lines": [
+          105,
+          112
+        ]
+      },
+      {
+        "signature": "### Experience log — `EXPERIENCE.md`",
+        "class": "static",
+        "sha256": "c1407cdfc19241e83b46751222cc522857c6b8344b1ee764af59c654d9c17edd",
+        "lines": [
+          113,
+          122
+        ]
+      },
+      {
+        "signature": "## Project identity (CANON — use these, don't invent)",
+        "class": "adaptive",
+        "sha256": "18da84d8f4ca31cfb21c4c7b9fcebe3b80f3dc0d61a13ede3351e44c81e251a6",
+        "lines": [
+          123,
+          138
+        ]
+      },
+      {
+        "signature": "## Goal of the project",
+        "class": "static",
+        "sha256": "4bb2839da554cc515191a65d936345ceba5309849aad8c0a958812060820df3f",
+        "lines": [
+          139,
+          144
+        ]
+      },
+      {
+        "signature": "## Architecture — the map",
+        "class": "static",
+        "sha256": "dc1c7b739d251b671539898faeac13013b64984619e154f92af7208ced65dd6e",
+        "lines": [
+          145,
+          161
+        ]
+      },
+      {
+        "signature": "## Build",
+        "class": "adaptive",
+        "sha256": "98cea13f34c8dacf866d048849d56f77dc4a5a80753a713152f33fdf674e6c24",
+        "lines": [
+          162,
+          172
+        ]
+      },
+      {
+        "signature": "## Test harness (how the agent observes & drives the software)",
+        "class": "static",
+        "sha256": "004093c52eacf2037e8a428b75167644b923c6e6f33777b5b339aeb6c78c6661",
+        "lines": [
+          173,
+          188
+        ]
+      },
+      {
+        "signature": "## Git workflow",
+        "class": "static",
+        "sha256": "6a5dd1aad292f24a32e25d7eac2d47bea94e1d0617cc50eb90236926aa0b2f39",
+        "lines": [
+          189,
+          211
+        ]
+      },
+      {
+        "signature": "## Commits",
+        "class": "adaptive",
+        "sha256": "a88e5bda530a6f64e35315365e6d3503a8c2856b783d7fb42a4ed4eab74a9e45",
+        "lines": [
+          212,
+          230
+        ]
+      },
+      {
+        "signature": "## Push / GitHub authentication",
+        "class": "static",
+        "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
+        "lines": [
+          231,
+          238
+        ]
+      },
+      {
+        "signature": "## Tools",
+        "class": "static",
+        "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
+        "lines": [
+          239,
+          249
+        ]
+      },
+      {
+        "signature": "## Backlog & the DONE tag",
+        "class": "static",
+        "sha256": "856c756afbc947d2b2eee15ccb0785b4556b439b435c0e3a95501e8c99ded3b3",
+        "lines": [
+          250,
+          302
+        ]
+      },
+      {
+        "signature": "## Decisions the agent must NOT make alone — interviews",
+        "class": "static",
+        "sha256": "1287df10470d9d14ddd2a70c27e5830cee0ffd3da48c4f5c0c856519b76a890d",
+        "lines": [
+          303,
+          338
+        ]
+      },
+      {
+        "signature": "## Code style",
+        "class": "static",
+        "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
+        "lines": [
+          339,
+          353
+        ]
+      },
+      {
+        "signature": "## Notes from the human",
+        "class": "static",
+        "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
+        "lines": [
+          354,
+          366
+        ]
+      }
+    ],
+    "PHILOSOPHY.md": [
+      {
+        "signature": "# PHILOSOPHY — How the agent thinks: SIMPLICITY (KISS + Occam's Razor)",
+        "class": "static",
+        "sha256": "a13417d78c4c916029984cd2f4814b4cb519b5f1e70b7528cee90e20338a1ee4",
+        "lines": [
+          1,
+          8
+        ]
+      },
+      {
+        "signature": "## The core idea",
+        "class": "static",
+        "sha256": "8e570792b21abadfb1098764753893aca5f14eccf5895906cc877c875652a030",
+        "lines": [
+          9,
+          28
+        ]
+      },
+      {
+        "signature": "## Occam's Razor",
+        "class": "static",
+        "sha256": "80d15cff6a481392e4b0bdbb3fcd5e0646963353d945babe944e7d162f6fce25",
+        "lines": [
+          29,
+          40
+        ]
+      },
+      {
+        "signature": "## KISS — Keep It Simple, Stupid",
+        "class": "static",
+        "sha256": "7ab2c24e76ddb053f498e93f34d2bfd4050aca9c3308312a84920ebbd45c549d",
+        "lines": [
+          41,
+          53
+        ]
+      },
+      {
+        "signature": "## The wider principle set — how the agent reasons",
+        "class": "static",
+        "sha256": "f4558eedf7642d181ffabfb3c3e858d6079545795aabc32bd290d78fee8d96dc",
+        "lines": [
+          54,
+          59
+        ]
+      },
+      {
+        "signature": "### Pareto — the 80/20 law",
+        "class": "static",
+        "sha256": "e0cffb2093b102c9926f9204de419c668e1a7b37913bea889334a8184d5ca8d8",
+        "lines": [
+          60,
+          64
+        ]
+      },
+      {
+        "signature": "### Murphy's Law — anything unforeseen tends to happen",
+        "class": "static",
+        "sha256": "a390d457efe399b53a568cf0f376c7dfc44b5e52fdfb3cddb7b7aa4d984e5bbb",
+        "lines": [
+          65,
+          71
+        ]
+      },
+      {
+        "signature": "### Best practices — someone has almost certainly solved this before",
+        "class": "static",
+        "sha256": "afd2b4f84aad03bcbd6b5d1828ae499dc7d80ebb246d1cef5311c58b783ded4f",
+        "lines": [
+          72,
+          77
+        ]
+      },
+      {
+        "signature": "### The Eisenhower Matrix — grooming and choosing tasks",
+        "class": "static",
+        "sha256": "9410bb10dccb1661fedcca3edde970ca121a8f2683b7a1197910446507fd3664",
+        "lines": [
+          78,
+          83
+        ]
+      },
+      {
+        "signature": "### Hanlon's Razor — don't assume malice",
+        "class": "static",
+        "sha256": "c5ab1e27e4aacd2826492f04e8c0243dd85b9719c2e908b853be78f25f2dace0",
+        "lines": [
+          84,
+          88
+        ]
+      },
+      {
+        "signature": "### DRY — Don't Repeat Yourself",
+        "class": "static",
+        "sha256": "b1ea5e02037cda1107dc42b32669d85766bd5633a2f7cfd818cc8e6466dafeba",
+        "lines": [
+          89,
+          94
+        ]
+      },
+      {
+        "signature": "### Learn once — accumulated experience",
+        "class": "static",
+        "sha256": "f441d4b91e43821ed2a8a17277b3e22a3bd79c7521e514a27aa656c8650f5452",
+        "lines": [
+          95,
+          102
+        ]
+      },
+      {
+        "signature": "### Observation over conjecture — replace guessing with looking",
+        "class": "static",
+        "sha256": "4d1c950dd4713c2db6495e9a4dd2387743524f790c2b2a2a54f85cc24b157781",
+        "lines": [
+          103,
+          111
+        ]
+      },
+      {
+        "signature": "### The three doors — a gap is never filled by invention",
+        "class": "static",
+        "sha256": "bcb9b0d6abaeef2ac1700efe80d752b0c8776f0eeff3091e1b3d7dca2e1554d0",
+        "lines": [
+          112,
+          125
+        ]
+      },
+      {
+        "signature": "### Descartes' Square — a decision tool for hard forks",
+        "class": "static",
+        "sha256": "d1013fff19dc40b98e193cd1cdefa2e84077c84b79a7706b253359d03928154a",
+        "lines": [
+          126,
+          130
+        ]
+      },
+      {
+        "signature": "### Assume the obvious — horses, not zebras",
+        "class": "static",
+        "sha256": "896fce9dd3e53cbbc489f11075ab5ca0d1c1c9bd306790ddc4b7fec8a7815230",
+        "lines": [
+          131,
+          135
+        ]
+      },
+      {
+        "signature": "### Second-order thinking — consequences of the consequences",
+        "class": "static",
+        "sha256": "2729cbf0b01244a7ef42ee854eeab51f72d3d693a8531ea8bbba80f5ef41bffd",
+        "lines": [
+          136,
+          143
+        ]
+      },
+      {
+        "signature": "### Karma — what you give is what you get",
+        "class": "static",
+        "sha256": "5137504fc6aea1fcfbdde8bb97c6e3b435c3a803961e9e70bdc35198d0efc049",
+        "lines": [
+          144,
+          154
+        ]
+      },
+      {
+        "signature": "## The rule when stuck",
+        "class": "static",
+        "sha256": "15502381e89442e396a23717a74fbea4b5d8b29ecbdbfeba9de2b15d1f298d7c",
+        "lines": [
+          155,
+          167
+        ]
+      },
+      {
+        "signature": "## Illustration: the imagined-complexity trap",
+        "class": "static",
+        "sha256": "9ef8eaffe036fb9256c9094b298b526ee9463a75e2ad0c9f93c40f737efadd6d",
+        "lines": [
+          168,
+          183
+        ]
+      },
+      {
+        "signature": "## The simplicity checklist (run before writing a complex solution)",
+        "class": "static",
+        "sha256": "de3849bd509c78e924e2b64276ae18ddda07921fa935c35f80b176136792a5f8",
+        "lines": [
+          184,
+          193
+        ]
+      }
+    ],
+    "BUG_FIXING_FRAMEWORK.md": [
+      {
+        "signature": "# BUG_FIXING_FRAMEWORK — how the agent fixes defects",
+        "class": "static",
+        "sha256": "07eba8ad2e3ccc55ed6e3dcf3e99ea27897c8ea16a0c755c34ec5cbc3403c053",
+        "lines": [
+          1,
+          67
+        ]
+      },
+      {
+        "signature": "## Instrumentation — build a test harness, don't guess",
+        "class": "static",
+        "sha256": "fd01e1cd2411cbdf9c47393252cb31c97c0668c961dd2c8ed102be6554994aec",
+        "lines": [
+          68,
+          88
+        ]
+      },
+      {
+        "signature": "## Guards — every fix births a check, and the check itself is checked",
+        "class": "static",
+        "sha256": "4fc05d5cae5c430fe2310cca7dcad3321200912402120e515eaa54d2c588e2f4",
+        "lines": [
+          89,
+          102
+        ]
+      },
+      {
+        "signature": "## A finding is not a finding until verified",
+        "class": "static",
+        "sha256": "f436890bf798822fc6e475a74b4ba0f27217f927d62dd3dd69db7a6504a6842a",
+        "lines": [
+          103,
+          117
+        ]
+      },
+      {
+        "signature": "## Working with logs",
+        "class": "static",
+        "sha256": "5e4ed7c405088b63f8bce7ee3db476837d3a7a6a580f1a81d256218782ba9e4c",
+        "lines": [
+          118,
+          127
+        ]
+      },
+      {
+        "signature": "## The bug document (one per bug, in `bugs/`)",
+        "class": "static",
+        "sha256": "bc223b95beab5c0c1e52bbd5348a81bccf29b51c8d4baa4e898b5effafbbedb1",
+        "lines": [
+          128,
+          166
+        ]
+      },
+      {
+        "signature": "## If the bug is in someone else's library",
+        "class": "static",
+        "sha256": "11b59801227bf6666400bb367a330dabadddc07cb1d0c9f9549b207abd662da0",
+        "lines": [
+          167,
+          172
+        ]
+      }
+    ],
+    "TESTING_FRAMEWORK.md": [
+      {
+        "signature": "# TESTING_FRAMEWORK — how the agent tests what it creates",
+        "class": "static",
+        "sha256": "cc627111efea4761e009a71c0b7e95109c1c36ff154f069fd278dc4549e962b6",
+        "lines": [
+          1,
+          10
+        ]
+      },
+      {
+        "signature": "## The seven principles of testing (the canon)",
+        "class": "static",
+        "sha256": "52113b5f953886e9d975064ea9943c3e797bcd9b4b462147d8680857708a217f",
+        "lines": [
+          11,
+          27
+        ]
+      },
+      {
+        "signature": "## Test-status markers — the trust contract",
+        "class": "static",
+        "sha256": "cddc3d357061b6ccd12c0cd0664cc7bf2e661f6d3cdfb3bf3d94173ab51b04ba",
+        "lines": [
+          28,
+          59
+        ]
+      },
+      {
+        "signature": "## Green tests ≠ working — the observation gates",
+        "class": "static",
+        "sha256": "4828c62c61427e56c023e74e3264c680da8903e07fbaa917e7ca61b31ce08ed6",
+        "lines": [
+          60,
+          79
+        ]
+      },
+      {
+        "signature": "## How this composes with the rest of KAIF",
+        "class": "static",
+        "sha256": "5d42df210423b02c4b37cb143af02edc3d1550992f08544f22d7c85c2595a8da",
+        "lines": [
+          80,
+          94
+        ]
+      }
+    ],
+    "STATUS.md": [
+      {
+        "signature": "# <PROJECT_NAME> — Current Status",
+        "class": "owner",
+        "sha256": "0d3283e7895469959c1d54312df9c2e53bf9893f94ab2a1d98f4200a468da784",
+        "lines": [
+          1,
+          10
+        ]
+      },
+      {
+        "signature": "## What's done",
+        "class": "owner",
+        "sha256": "30aeb4417debe226c33d06db33a06af847066bb000b48638e490ce373b2e9cbb",
+        "lines": [
+          11,
+          15
+        ]
+      },
+      {
+        "signature": "### Phase 0 — Foundation ✅",
+        "class": "owner",
+        "sha256": "c771c769af306c09febf355f8570eda7519794cd0540a0a994098fb76b24e1f8",
+        "lines": [
+          16,
+          18
+        ]
+      },
+      {
+        "signature": "### Phase 1 — <name> ✅",
+        "class": "owner",
+        "sha256": "07096ee2ec96cee2950d11802445e3eb409d5961fe7a37558bb56650944307f0",
+        "lines": [
+          19,
+          23
+        ]
+      },
+      {
+        "signature": "## Where we are now",
+        "class": "owner",
+        "sha256": "459283211f8050d02736a513666df3d6ae2df29bdd6701020e0ec858a47af2ba",
+        "lines": [
+          24,
+          35
+        ]
+      },
+      {
+        "signature": "## 🤖 Autonomous backlog pool (no human / no special hardware needed)",
+        "class": "owner",
+        "sha256": "bd6342afff3a9c040de6857d3e187dddede8555fdc9a836e03dab8b17b4323c2",
+        "lines": [
+          36,
+          46
+        ]
+      },
+      {
+        "signature": "## ❓ Awaiting human review (interviews / homework)",
+        "class": "owner",
+        "sha256": "db0d79021d62474e1c35bf27ca4ae5b880517be407bfb017d0c451f6bf6e0c29",
+        "lines": [
+          47,
+          56
+        ]
+      },
+      {
+        "signature": "## Where to continue next session",
+        "class": "owner",
+        "sha256": "cce60968c31c9d021a878ed391f2b7f47da3dea2123e9aadc15b695c4434dd71",
+        "lines": [
+          57,
+          66
+        ]
+      },
+      {
+        "signature": "## Open bugs",
+        "class": "owner",
+        "sha256": "348e204dd77258e6d44a8a48e715a5cec75acfde723f3096e64af76163c74d89",
+        "lines": [
+          67,
+          71
+        ]
+      }
+    ],
+    "EXPERIENCE.md": [
+      {
+        "signature": "# EXPERIENCE — the agent's accumulated experience",
+        "class": "owner",
+        "sha256": "8221707dd569caee541187dae9a527f7bd4e3a76dd7ebb861741b2b3ee4e8eda",
+        "lines": [
+          1,
+          31
+        ]
+      },
+      {
+        "signature": "## Entries",
+        "class": "owner",
+        "sha256": "1b987f70bae3d5ae9d605e0e23d9c0e72e15d688dc7c295aafd13fdc38677d8f",
+        "lines": [
+          32,
+          33
+        ]
+      },
+      {
+        "signature": "### EXP-0001 · 2026-01-01 · ✅ · #example #meta",
+        "class": "owner",
+        "sha256": "41fc046fffb5c76bf67b1d71719ad7a30157e9dc575f963f49181c9662069d2a",
+        "lines": [
+          34,
+          40
+        ]
+      }
+    ],
+    "GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (the vision)",
+        "class": "owner",
+        "sha256": "3f2616498ff701d55761d13c8c63ee0ff126b062722e5f48a0cfd35cb71d4b36",
+        "lines": [
+          1,
+          12
+        ]
+      },
+      {
+        "signature": "## What I want — in one paragraph",
+        "class": "owner",
+        "sha256": "94fbf8d5ca9ae1afdc090d315256432a21bb5672023f3ce6b81e8c4ff5ff9b1a",
+        "lines": [
+          13,
+          18
+        ]
+      },
+      {
+        "signature": "## Why it matters / the problem it solves",
+        "class": "owner",
+        "sha256": "eabbcacab733687269731fff58181defc9d92e3e081a9f1779cffd7d0e726f75",
+        "lines": [
+          19,
+          22
+        ]
+      },
+      {
+        "signature": "## What success looks like",
+        "class": "owner",
+        "sha256": "397679b3cd70ad2b33cf054427094f140ba01b10a2ec3e6cbf4dd1c576444915",
+        "lines": [
+          23,
+          27
+        ]
+      },
+      {
+        "signature": "## Boundaries — what this is NOT",
+        "class": "owner",
+        "sha256": "de3fa949fe3ff622d37f7d2d2f4e9ca6990195d5410778e5a2046062d4dc0bf1",
+        "lines": [
+          28,
+          31
+        ]
+      },
+      {
+        "signature": "## Constraints & preferences (optional)",
+        "class": "owner",
+        "sha256": "c5b2fd0d4281c00882ddf3fddde7c98f4082ab9b0a90324ce6065ea1a6849f94",
+        "lines": [
+          32,
+          43
+        ]
+      }
+    ],
+    "MASTER_PLAN.md": [
+      {
+        "signature": "# <PROJECT_NAME> — MASTER PLAN",
+        "class": "owner",
+        "sha256": "0fd87872ae5c81a7afe5703203ad5942daff9641f76fd8a8f78d3caa9c0a1f4a",
+        "lines": [
+          1,
+          10
+        ]
+      },
+      {
+        "signature": "## Vision (one line)",
+        "class": "owner",
+        "sha256": "9c8b66dbf0b9734babfec9fb1459c28d3799684c97e13908bde4a98034206c0f",
+        "lines": [
+          11,
+          14
+        ]
+      },
+      {
+        "signature": "## Guiding principles",
+        "class": "owner",
+        "sha256": "a11d64da14669c47449003f3989fd6754681084cd2ee384fce93ce93e2584100",
+        "lines": [
+          15,
+          19
+        ]
+      },
+      {
+        "signature": "## From here to there — the phased path",
+        "class": "owner",
+        "sha256": "653ebf9566ab40b7e80296748867ba047cd8cc451c900004b440b04848cdf0d0",
+        "lines": [
+          20,
+          24
+        ]
+      },
+      {
+        "signature": "### Phase 0 — <foundation / current state>",
+        "class": "owner",
+        "sha256": "576ba325f07300ab951e43dc4b704a6e457041d1a81695060abac7d60af3242d",
+        "lines": [
+          25,
+          29
+        ]
+      },
+      {
+        "signature": "### Phase 1 — <name>",
+        "class": "owner",
+        "sha256": "1d2b421272d61f4544cf1656c6dfca5b0b41bf479c71581e3fadffacf9ba20db",
+        "lines": [
+          30,
+          34
+        ]
+      },
+      {
+        "signature": "### Phase N — <the goal is reached>",
+        "class": "owner",
+        "sha256": "34d7eb5b5521fe86ec3f8c093103070d1c6de8ca88036e15f0a0dc5451474786",
+        "lines": [
+          35,
+          37
+        ]
+      },
+      {
+        "signature": "## Decision log",
+        "class": "owner",
+        "sha256": "f400fdefafa20fda1f1b23aa2ffce9a53ea9279e4abef7d420cb67134eec8a67",
+        "lines": [
+          38,
+          51
+        ]
+      }
+    ],
+    "PROJECT_STRUCTURE_EXTERNAL_MAP.md": [
+      {
+        "signature": "# <PROJECT_NAME> — External structure map",
+        "class": "owner",
+        "sha256": "485c9b7996231146d3ca8a511e8a09d985fe87b9a7db643cbe03eefe48c2561d",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## The tree",
+        "class": "owner",
+        "sha256": "12eb4a14e4b2888b72b9469777928b06e0ee76f1bd1001faf595b298cb5f7b0a",
+        "lines": [
+          14,
+          23
+        ]
+      },
+      {
+        "signature": "## What each part is",
+        "class": "owner",
+        "sha256": "96ea44e008e8dfec51a65e9d1889cdf2e47643947defc6a32924e750ffc1c0f5",
+        "lines": [
+          24,
+          29
+        ]
+      },
+      {
+        "signature": "## Cross-references & dependency rules",
+        "class": "owner",
+        "sha256": "64f17c7ab29d5bb22a0e5564d15304bba69d69622b803c9ee2bf37699d62e17c",
+        "lines": [
+          30,
+          35
+        ]
+      },
+      {
+        "signature": "## Entry points",
+        "class": "owner",
+        "sha256": "b79766498fc4ea2c563ff7060357a05857f0a55e24591b445f19cec6a5e86416",
+        "lines": [
+          36,
+          45
+        ]
+      }
+    ],
+    "PROJECT_ARCHITECTURE_INTERNAL_MAP.md": [
+      {
+        "signature": "# <PROJECT_NAME> — Internal architecture map",
+        "class": "owner",
+        "sha256": "cb42fc5951d9230d531d13ece38767702f379422f6327580c71bc243a98fe027",
+        "lines": [
+          1,
+          18
+        ]
+      },
+      {
+        "signature": "## The core abstractions",
+        "class": "owner",
+        "sha256": "d39ea97c0515c7193de05cfa7d397221f711c62e1d57a6ac284478b4769bd640",
+        "lines": [
+          19,
+          24
+        ]
+      },
+      {
+        "signature": "## How they interact",
+        "class": "owner",
+        "sha256": "d4ba103fbdf17f9cb095660a1636632e5056366f2c0514b7f121b5f2911fe172",
+        "lines": [
+          25,
+          34
+        ]
+      },
+      {
+        "signature": "## Invariants & rules of the model",
+        "class": "owner",
+        "sha256": "f8f52d65680b2c57ed7f5322babcced7bc9e5ffb14af939755c822adb542acaa",
+        "lines": [
+          35,
+          39
+        ]
+      },
+      {
+        "signature": "## Key decisions embedded in the architecture",
+        "class": "owner",
+        "sha256": "ba6aa2cc9653d1a7f5a35d8044e1901360ba55d6746c81e1ebffbbee3ebf64df",
+        "lines": [
+          40,
+          49
+        ]
+      }
+    ],
+    "KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF in <PROJECT_NAME> — the framework, deployed",
+        "class": "owner",
+        "sha256": "8d68faf3a63c5f050bf80119c87ea5dd2dd5920f75b16508693da830ff18bbad",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## What KAIF is",
+        "class": "owner",
+        "sha256": "2edf5c2b932220d80d024b8f576e27eb9fe5341dffe6708288efdb352c9c63fd",
+        "lines": [
+          14,
+          21
+        ]
+      },
+      {
+        "signature": "## Why it's here — what it gives this project",
+        "class": "owner",
+        "sha256": "e323d3fb2073b5047a333f798abe8ed3c903d3621e4b119e9a0360d2ef70ff05",
+        "lines": [
+          22,
+          28
+        ]
+      },
+      {
+        "signature": "## How it works here — the moving parts",
+        "class": "owner",
+        "sha256": "e91ce697f1ae55c230d9581f7aa0abfaae3888ce349f93792f1c82534cd5f191",
+        "lines": [
+          29,
+          42
+        ]
+      },
+      {
+        "signature": "## Deployment record",
+        "class": "owner",
+        "sha256": "3aca4edae63703ae91daa8d2537b6419364fbaac5a7275c8d428d1bee0d29328",
+        "lines": [
+          43,
+          54
+        ]
+      },
+      {
+        "signature": "## Living with KAIF (lifecycle)",
+        "class": "owner",
+        "sha256": "5e60b66cf3ae073ec796dac8fe12dbf1eb7bc437f9820c9eb9ad48fb48ae653a",
+        "lines": [
+          55,
+          63
+        ]
+      },
+      {
+        "signature": "## A note from the author",
+        "class": "owner",
+        "sha256": "47b8dc3313df7c9f2511f02c573114bad22ac4af6e72f73f8c1676b994083c80",
+        "lines": [
+          64,
+          76
+        ]
+      }
+    ],
+    "plans/README.md": [
+      {
+        "signature": "# `plans/` — detailed step plans",
+        "class": "static",
+        "sha256": "7c3ff7c6693079212fadba4fd7ff69dc456a6fa54928497813d1a4d2baf427e2",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "ideas/README.md": [
+      {
+        "signature": "# `ideas/` — feature & improvement proposals",
+        "class": "static",
+        "sha256": "8a57e3639b2591be854be0b0f559ae585db7f032e9266aa01ae1121ef9ac38d5",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "bugs/README.md": [
+      {
+        "signature": "# `bugs/` — defects, difficulties, breakages",
+        "class": "static",
+        "sha256": "5ab5b77d45c5e1c4afb74d700aef59572d91fa38b333c1acfc1eda1398d9f90d",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "researches/README.md": [
+      {
+        "signature": "# `researches/` — knowledge base for the big, hard questions",
+        "class": "static",
+        "sha256": "0728a720d1f6067abd6f2ef6c572f5c451c1f5ee952c15200f8914b2edfbbc41",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "interviews/README.md": [
+      {
+        "signature": "# `interviews/` — owner-level decisions",
+        "class": "static",
+        "sha256": "de61849c6ca4002c314aabccba1f4439cf64d78e3e221ba0f6f5b02bfaebdf1c",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tasks from the agent to the human",
+        "class": "static",
+        "sha256": "8e46faa370d7f6c0de3d30e6de1b05b425ea3695827c4e19865762c1159885df",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    ".claude/skills/autoloop/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "7b576b7cd70095b645daad5471f0c1e5502b44dbf4a6d109315d4b7722cb2369",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /autoloop — long autonomous work over a task pool",
+        "class": "static",
+        "sha256": "1a9572c2f03ce2c75c0cbcbf44a28152e82c557277038d57c75bc453da9f81a6",
+        "lines": [
+          6,
+          11
+        ]
+      },
+      {
+        "signature": "## 🔁 Self-invoke and self-restart (the agent starts itself)",
+        "class": "static",
+        "sha256": "5ef35c9652f5904ece0576a73e15864f0b0c2907e90f2f62df29e70d7278a347",
+        "lines": [
+          12,
+          36
+        ]
+      },
+      {
+        "signature": "## The autonomy boundary (hard limit)",
+        "class": "static",
+        "sha256": "0e7c448b2331e311fc7eb69bad1b5a5f1951abcc91a33f0de3a9f860fb80f55a",
+        "lines": [
+          37,
+          43
+        ]
+      },
+      {
+        "signature": "## Step 0. Setup (once at the start)",
+        "class": "static",
+        "sha256": "7e04aa55bb588855eeaa6cf6ca2c3d761a925387b9011b75c4daa4c75d7982e8",
+        "lines": [
+          44,
+          52
+        ]
+      },
+      {
+        "signature": "## The cycle (repeat per task)",
+        "class": "adaptive",
+        "sha256": "4d9764a93e82317bee5fe21059e1da2b38b5d7301adcdb84359451eefe7c569f",
+        "lines": [
+          53,
+          79
+        ]
+      },
+      {
+        "signature": "## Self-pacing (so the loop runs LONG)",
+        "class": "static",
+        "sha256": "eeffd24081adeb03cdaa4ec7558c9e8a91f8e37b289d93fc5aad2a58a27fe4c2",
+        "lines": [
+          80,
+          90
+        ]
+      },
+      {
+        "signature": "## When to STOP the loop (and report to the human)",
+        "class": "static",
+        "sha256": "174cffd7fa95ac79c59a3ad2ddc83ff1432ee3c20b3ee6dc5aba178472643d03",
+        "lines": [
+          91,
+          99
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "87bda388e31713aabde191182d235803d83f9f074edf721a85a597d881daaa4b",
+        "lines": [
+          100,
+          105
+        ]
+      }
+    ],
+    ".claude/skills/bug-research/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "1051a5fff5d9695deb97db2267068ff3054e7e422834a0a654d3ce11e6c33bef",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /bug-research — deep bug investigation without coding",
+        "class": "static",
+        "sha256": "4754b23f018095ce8c9654dec6bc1f01a82a588c332e67359afc05d66c611255",
+        "lines": [
+          6,
+          19
+        ]
+      },
+      {
+        "signature": "## Step 0. Anchor on the bug",
+        "class": "static",
+        "sha256": "bc1dced566d133fd70f8745e4feb70ccdbcc202d62f0e25c243eff7bd60887ac",
+        "lines": [
+          20,
+          25
+        ]
+      },
+      {
+        "signature": "## Step 1. Web search — collect a RAW knowledge base",
+        "class": "static",
+        "sha256": "0389f8680edb0d691fc45cc3fbf67b0a76fdd0160662ae79d1d2a95abd1cfca6",
+        "lines": [
+          26,
+          36
+        ]
+      },
+      {
+        "signature": "## Step 2. Code analysis — find where the cause is (no edits)",
+        "class": "static",
+        "sha256": "a85233a7c3a887935e5d8a1b1bceddb441697eaad28c062a2c14cdc63a999670",
+        "lines": [
+          37,
+          48
+        ]
+      },
+      {
+        "signature": "## Step 3. Reflection and hypotheses",
+        "class": "static",
+        "sha256": "367046ad6a1d0f61a11c369cf58f1af6bd253aa33a563c1d1bb47923c8f69b12",
+        "lines": [
+          49,
+          56
+        ]
+      },
+      {
+        "signature": "## Step 4. Summary in the chat",
+        "class": "static",
+        "sha256": "1d084bfa77795a825f8f5e322c68308c41d8f43d1994e22be14e34aef3169fc5",
+        "lines": [
+          57,
+          61
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "f1042383c924ffb291d5325ce3b7dca5959c485ff532b57e3216a2d3461c74c8",
+        "lines": [
+          62,
+          66
+        ]
+      }
+    ],
+    ".claude/skills/check-backlog/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "41da81655311393ad5fa297fdc18efeda0477cffc0ef4f2ebafd9b08f4b71a22",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /check-backlog — backlog revision (bugs/ and plans/) and DONE tagging",
+        "class": "static",
+        "sha256": "f80372151caf1e76d7d237ec433edaf16aebc0b90485352c7ca01543b3755ca8",
+        "lines": [
+          6,
+          13
+        ]
+      },
+      {
+        "signature": "## What to do",
+        "class": "static",
+        "sha256": "d9a9761460e154b5dd8905da850e20d533df6acc869128494a1af3e4bdb71319",
+        "lines": [
+          14,
+          53
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "b5297c91ff49a4e6f95fe7e183e79a6f337da88652dc6c13a5998b19a85d57c3",
+        "lines": [
+          54,
+          60
+        ]
+      }
+    ],
+    ".claude/skills/dayloop/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "070aa51b60b9e6a1916277f9949b671a13fc2432e3bb9997fb721946c5c059e6",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /dayloop — daytime autonomous work while the human is busy",
+        "class": "static",
+        "sha256": "3d3ff35785797c12c1ace25b1acff532ebff29a43be827e807c940c5e22bfff9",
+        "lines": [
+          6,
+          15
+        ]
+      },
+      {
+        "signature": "## 🛑 STOP CONDITIONS (check at the START of each iteration)",
+        "class": "static",
+        "sha256": "a5ee5283f69f85e3816ec0d9b39054c423839c0acb5748fe857c461ceef2aab3",
+        "lines": [
+          16,
+          40
+        ]
+      },
+      {
+        "signature": "## 🔁 The cycle (one iteration)",
+        "class": "adaptive",
+        "sha256": "c9e7eaf28e52bc9ac88804bdfbb777b8e719dcaea0808e5f322ef10a313b2614",
+        "lines": [
+          41,
+          78
+        ]
+      },
+      {
+        "signature": "## ⚙️ Practice",
+        "class": "static",
+        "sha256": "ff88f8d8eefa914929210ace642bae8b195f545d052e11fd5ec6468d482b2bae",
+        "lines": [
+          79,
+          89
+        ]
+      },
+      {
+        "signature": "## Backlog empty / nothing to do",
+        "class": "static",
+        "sha256": "2c1b12bb4f58080298152c09640b0a7e3a274a31ed8a167460db9c96a178b1be",
+        "lines": [
+          90,
+          97
+        ]
+      },
+      {
+        "signature": "## Finishing (when a stop condition fired)",
+        "class": "static",
+        "sha256": "084a3df287ba22df0e5d06fa911c980799575e07b7b760f2223cd289b0e81c4a",
+        "lines": [
+          98,
+          104
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "6e2435a3ebd3b775f57ed0b5a2c254a4313419ee7634dd44605103553ff85060",
+        "lines": [
+          105,
+          109
+        ]
+      }
+    ],
+    ".claude/skills/experience/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "3d20b20a452b04825a5143c4b52bf42b9216817aca5c5734793b4ba931c9df6e",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /experience — the agent's accumulated experience (EXPERIENCE.md)",
+        "class": "static",
+        "sha256": "67f65982260f50be0750e973a03848a7cc11d22b899752ac2d01652de8827fbb",
+        "lines": [
+          6,
+          14
+        ]
+      },
+      {
+        "signature": "## Mode A — CAPTURE a lesson (\"add this to experience\")",
+        "class": "static",
+        "sha256": "4aa5349898806f9c0711398fdad66001a234b47f7633f63f9f76da14d1c400f3",
+        "lines": [
+          15,
+          38
+        ]
+      },
+      {
+        "signature": "## Mode B — RECALL lessons (\"recount your experience\")",
+        "class": "static",
+        "sha256": "0d4b0da20c96c12de8c7c02105e39bf110196507741378f074c11580d56fd700",
+        "lines": [
+          39,
+          53
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "ad84029c18e96905edb2e4974aef873753140099a8d9e0399d54802a32c2f9b0",
+        "lines": [
+          54,
+          62
+        ]
+      }
+    ],
+    ".claude/skills/fable-domain/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "3d00c74ca6b1515d3c1b3f4830177f915af3d29e0aa02e284010a3e5bc41c0d6",
+        "lines": [
+          1,
+          14
+        ]
+      },
+      {
+        "signature": "# fable-domain",
+        "class": "static",
+        "sha256": "65ad84e44d39691a9080c289751f3d0db3ebff1939e036e4be67df327c8f3831",
+        "lines": [
+          15,
+          20
+        ]
+      },
+      {
+        "signature": "## What it produces (the bundle; all four, or not done)",
+        "class": "static",
+        "sha256": "d1312ebfd951b05857592d3e992fb89c7b8c1e8d34f58b8f28a8c9ca508442ce",
+        "lines": [
+          21,
+          27
+        ]
+      },
+      {
+        "signature": "## Stage 1: Discuss [v1.4]",
+        "class": "static",
+        "sha256": "c412f4089cf4e71db8f7cd7894b9119b1037c1e9cc0774a12e43dbf1a74b27b0",
+        "lines": [
+          28,
+          35
+        ]
+      },
+      {
+        "signature": "## Stage 2: Research [covenant]",
+        "class": "static",
+        "sha256": "0db1d0ded3d786c53ea60fd5547a5275104ef427da30f2864d5a22c0fa331ff4",
+        "lines": [
+          36,
+          39
+        ]
+      },
+      {
+        "signature": "## Stage 3: Generate the bundle",
+        "class": "static",
+        "sha256": "48fcb4546ef5cc1fd487ded3242e99818fbffd388543724249a0a15e50c3430a",
+        "lines": [
+          40,
+          48
+        ]
+      },
+      {
+        "signature": "## Stage 4: Verify, smoke-eval, report",
+        "class": "static",
+        "sha256": "e97832b1b7300e31aa2706df7770b5cffb86b60865695106682bd187ec8ccae6",
+        "lines": [
+          49,
+          73
+        ]
+      },
+      {
+        "signature": "## Bounds",
+        "class": "static",
+        "sha256": "4864eab15b0ccb5655addef8a25687e810eac64893497d788fdd9a63760c70db",
+        "lines": [
+          74,
+          81
+        ]
+      }
+    ],
+    ".claude/skills/fable-judge/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "202f5407372ea2e5c0ef2ba54596b685d05a795d9844772f685002b88cae99bd",
+        "lines": [
+          1,
+          14
+        ]
+      },
+      {
+        "signature": "# fable-judge",
+        "class": "static",
+        "sha256": "dec59ba77f2f849b6ef52dabcab1fb1f33a8c75b515e815a39f1a1d352c11698",
+        "lines": [
+          15,
+          18
+        ]
+      },
+      {
+        "signature": "## Default mode: judge the work",
+        "class": "static",
+        "sha256": "625c12741d9340df8b4e1960b32ef770661d6720b07a787763af4b76435e8ec1",
+        "lines": [
+          19,
+          50
+        ]
+      },
+      {
+        "signature": "## suite mode: judge a skill or a model",
+        "class": "static",
+        "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
+        "lines": [
+          51,
+          56
+        ]
+      }
+    ],
+    ".claude/skills/fable-loop/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "0b8c75e0f657fe19e0961ade6be64bb994cfeb6865b4f730474011aca4c9e677",
+        "lines": [
+          1,
+          11
+        ]
+      },
+      {
+        "signature": "# The Fable Loop",
+        "class": "static",
+        "sha256": "dd847188156c81da7f9aeff171c8ba8ed252178474e297d2b4695c2fb8d35a95",
+        "lines": [
+          12,
+          17
+        ]
+      },
+      {
+        "signature": "## Stage 1 - PLAN (the first bookend)",
+        "class": "static",
+        "sha256": "5fbb901eba702857ad7f6340bb5453732ce419d776a76bbb8e7a1837a63a525e",
+        "lines": [
+          18,
+          28
+        ]
+      },
+      {
+        "signature": "## Stage 2 - EXECUTE",
+        "class": "static",
+        "sha256": "2f234b3aace3430aaba55e069c1947a1e785099139d5a984157b3913cfc925e9",
+        "lines": [
+          29,
+          37
+        ]
+      },
+      {
+        "signature": "## Stage 3 - VERIFY (adversarially)",
+        "class": "static",
+        "sha256": "1d0c13dbe6490fa11d27658bf8e393db19000d00111f65d56b682e2a14014173",
+        "lines": [
+          38,
+          43
+        ]
+      },
+      {
+        "signature": "## Stage 4 - AUDIT and REPORT (the second bookend)",
+        "class": "static",
+        "sha256": "8dbd9b2c1dc552b3fe93b69cf5ca935ca73a483e7658a097e8ee2066e6a37cfa",
+        "lines": [
+          44,
+          48
+        ]
+      },
+      {
+        "signature": "## When NOT to use this loop",
+        "class": "static",
+        "sha256": "7dec0e8b065841a59468635c5e0de244c68fad8af068fa4f9b3caaf0255baae4",
+        "lines": [
+          49,
+          54
+        ]
+      },
+      {
+        "signature": "## Model economy",
+        "class": "static",
+        "sha256": "968ddc9b37e605b657a05c825b583b45384e83f1101e3a118f8970c3866a7ebf",
+        "lines": [
+          55,
+          58
+        ]
+      }
+    ],
+    ".claude/skills/fable-method/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "93c9840fae552dced55287e64caae5850a348c1621aa7d7a69aa87bb7eb64a42",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "# The Fable Method",
+        "class": "static",
+        "sha256": "9167f8ee5861fa4e12bd325bfcec0810ccb227bbe0ad8a2b45e7a26d19d01a40",
+        "lines": [
+          14,
+          17
+        ]
+      },
+      {
+        "signature": "## Usage",
+        "class": "static",
+        "sha256": "a4e5928e6fc64c2fd34025b76323298cd0f120cb7e59f44fcb87135324db8f55",
+        "lines": [
+          18,
+          41
+        ]
+      },
+      {
+        "signature": "## Step 0 - Classify the ask",
+        "class": "static",
+        "sha256": "665d7eddc6342ba86607ef2b729a0fe5f6913fa5b4874584471b305c4469aa32",
+        "lines": [
+          42,
+          58
+        ]
+      },
+      {
+        "signature": "## Step 1 - Define done",
+        "class": "static",
+        "sha256": "70c56e5deef5ea7dfedd6e2e05ab8ac639c7fc194284b0716abd8622709df240",
+        "lines": [
+          59,
+          68
+        ]
+      },
+      {
+        "signature": "## Step 2 - Gather evidence",
+        "class": "static",
+        "sha256": "9178832f2b9a7a546a05130a8a638d0192c535a1a4941b252ac6a8ce8e382369",
+        "lines": [
+          69,
+          78
+        ]
+      },
+      {
+        "signature": "## Step 3 - Decide and commit",
+        "class": "static",
+        "sha256": "108779d98e8afcb2ed83c0e0e5a7709a9530f86ec9ce908711626179353fc616",
+        "lines": [
+          79,
+          88
+        ]
+      },
+      {
+        "signature": "## Step 4 - Act surgically",
+        "class": "static",
+        "sha256": "194dea9bf15329acb184eb822665bc9894c21afa9b48f2a2d27f98df763de9c4",
+        "lines": [
+          89,
+          99
+        ]
+      },
+      {
+        "signature": "## Step 5 - Verify by observation",
+        "class": "static",
+        "sha256": "fa92469789e8393c35eb67cbef26606be90434a1ee55aa479d709f5d697ba75f",
+        "lines": [
+          100,
+          110
+        ]
+      },
+      {
+        "signature": "## Step 6 - Report outcome-first",
+        "class": "static",
+        "sha256": "12ea2c29bcc2c1e1c4c95b01378684e5808bb46239cfa3bc811f8ea738411de7",
+        "lines": [
+          111,
+          121
+        ]
+      },
+      {
+        "signature": "## Compressed examples",
+        "class": "static",
+        "sha256": "557cf48a869da548b6db9512b198c2da44d0e0224a9f71058b7f89b1567695ec",
+        "lines": [
+          122,
+          129
+        ]
+      },
+      {
+        "signature": "## Modes",
+        "class": "static",
+        "sha256": "a8fad7585686ac4e29c6804ed00e31857c89334341158d28ef7623ed225c0294",
+        "lines": [
+          130,
+          137
+        ]
+      }
+    ],
+    ".claude/skills/fable-method/references/examples.md": [
+      {
+        "signature": "# Worked examples: one per ask shape",
+        "class": "static",
+        "sha256": "8ed46e525fdecb51e962fa39b493b29236e62c6ed52d57d3b0639933e61a7faf",
+        "lines": [
+          1,
+          4
+        ]
+      },
+      {
+        "signature": "## 1. Trivial (gate, no loop)",
+        "class": "static",
+        "sha256": "ed5e5674768dac54911f76d2efafde6efb3788c9e255f22fb14ba1a4962af15c",
+        "lines": [
+          5,
+          12
+        ]
+      },
+      {
+        "signature": "## 2. Question / assessment",
+        "class": "static",
+        "sha256": "16ba21239ebfe40e68fd8d46ea9b4e6d879fed3f8b9237c6a9c9f42a7a3788b4",
+        "lines": [
+          13,
+          22
+        ]
+      },
+      {
+        "signature": "## 3. Task",
+        "class": "static",
+        "sha256": "e16e167febd9e8eb09e93fcff41411370f8764874e6c9e37a7521aafbcbe7cb8",
+        "lines": [
+          23,
+          33
+        ]
+      },
+      {
+        "signature": "## 4. Plan-first",
+        "class": "static",
+        "sha256": "04b3dd12e16ac811867f99e6ebeb8a5d6dc7e69608381d4acbfdb6ad033dbb44",
+        "lines": [
+          34,
+          43
+        ]
+      }
+    ],
+    ".claude/skills/fable-method/references/failure-modes.md": [
+      {
+        "signature": "# Failure modes: symptom → step",
+        "class": "static",
+        "sha256": "2f7ef0758d46a53ea538f6cfee40458cc68c5a603765c93134e94e87d4d9cf44",
+        "lines": [
+          1,
+          25
+        ]
+      },
+      {
+        "signature": "## Reading an audit",
+        "class": "static",
+        "sha256": "fe627b35ae401f8e202ce7cb42403411d45a3ffbb22980a07576b1dd4d876623",
+        "lines": [
+          26,
+          31
+        ]
+      }
+    ],
+    ".claude/skills/fable-method/references/flowcharts.md": [
+      {
+        "signature": "# The workflow, drawn",
+        "class": "static",
+        "sha256": "fe156718e06f7d610138dd43544e4f70312d86bcebeeba850ef6f5dce60b9a1e",
+        "lines": [
+          1,
+          4
+        ]
+      },
+      {
+        "signature": "## 1. The master router: any problem, start to finish",
+        "class": "static",
+        "sha256": "87a247248aa2b74d19e8eca4d429f78b6024c1afad86f393e33cca59e33eb88f",
+        "lines": [
+          5,
+          27
+        ]
+      },
+      {
+        "signature": "## 2. Classifying the ask (Step 0, with tie-breaks)",
+        "class": "static",
+        "sha256": "7321e8d4b9d16cda6b83beb843921b49b30ace1977cd691ff32ada71806ec383",
+        "lines": [
+          28,
+          43
+        ]
+      },
+      {
+        "signature": "## 3. Gathering evidence (Step 2, bounded)",
+        "class": "static",
+        "sha256": "d33120f7fb17844621a1082b67ba9c9d04230da5d5461459b24821ad8f74ea29",
+        "lines": [
+          44,
+          63
+        ]
+      },
+      {
+        "signature": "## 4. The intent gate (Step 4, before any behavior change)",
+        "class": "static",
+        "sha256": "8b3ccd3312a57bc5a8c7d6e9722d13e8815e7c60a55a8acb6a0cac4fc44dcd41",
+        "lines": [
+          64,
+          75
+        ]
+      },
+      {
+        "signature": "## 5. The authorization gate and the recall gate (Steps 3 and 4)",
+        "class": "static",
+        "sha256": "f22329e054b461540a27b6db19b7c0b5414f9c63d7c21fe5d8df773e286d7bc4",
+        "lines": [
+          76,
+          90
+        ]
+      },
+      {
+        "signature": "## 6. Verifying (Step 5, with the hard bound)",
+        "class": "static",
+        "sha256": "09e5c99973b8c673c13d7cce52d24581160dcddf5aeafc86dfe2b96bc26dc536",
+        "lines": [
+          91,
+          107
+        ]
+      },
+      {
+        "signature": "## 7. Judging finished work (fable-judge)",
+        "class": "static",
+        "sha256": "c3e4333ad69aef4a4c240d33271036e2825c60109eb93563ee6fb1bfdd0cd5e0",
+        "lines": [
+          108,
+          121
+        ]
+      },
+      {
+        "signature": "## 8. Which tool for which job (the family router)",
+        "class": "static",
+        "sha256": "35918b20911e4ef86cd4b10900130b092617d7fe098c7d5cb29b08f251532795",
+        "lines": [
+          122,
+          138
+        ]
+      },
+      {
+        "signature": "## Reading these as a model",
+        "class": "static",
+        "sha256": "41e26c6abba4f398fd70b235b4940d1cd52c8fd6462a4b94c92e265f121196ea",
+        "lines": [
+          139,
+          142
+        ]
+      },
+      {
+        "signature": "## Provenance",
+        "class": "static",
+        "sha256": "de08eb360d44778e491e58e4c18dda228957733547e479e2423cbfec41f123f8",
+        "lines": [
+          143,
+          148
+        ]
+      }
+    ],
+    ".claude/skills/fix-vision/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "6b2b3001a4aec0d6e4a6120e9bb38f4c0914d28302de1b910781a7429ca4df84",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /fix-vision — fix the owner's vision from the chat into the docs",
+        "class": "static",
+        "sha256": "aae0a8439c35fb7c4263bccf88c958939e5b2385c5aa66ddd22ec29ff8ed8292",
+        "lines": [
+          6,
+          11
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "9503a27e446036e25f7d440466f7c27459bdb4c338d15db611b94bef5bbd8ce0",
+        "lines": [
+          12,
+          13
+        ]
+      },
+      {
+        "signature": "### Step 1. Collect",
+        "class": "static",
+        "sha256": "7f950d6f730b32458deecf9c44d5b2a4a429378f73edb96c635a04535e10869c",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "### Step 2. Distill",
+        "class": "static",
+        "sha256": "392cbf1d3258df8821f6532be0bcf3586e2b1ccca119791551eac36ec5f5dcc6",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "### Step 3. Fix into the documents",
+        "class": "static",
+        "sha256": "8efaa5425378cdafd633dff0bbd42b3927a1c9da5ded1cee0929297296c8f58b",
+        "lines": [
+          24,
+          29
+        ]
+      },
+      {
+        "signature": "### Step 4. De-duplicate & report",
+        "class": "static",
+        "sha256": "3be22994568d3a48de9c03bf2dc013df11a4abc99f66f8edbf3cca13d82c7b07",
+        "lines": [
+          30,
+          34
+        ]
+      },
+      {
+        "signature": "## Rules",
+        "class": "static",
+        "sha256": "3adec9f683098f89ffd1c2f2bf1ad43472a9f350c5209dacd2d0c33887edab42",
+        "lines": [
+          35,
+          38
+        ]
+      }
+    ],
+    ".claude/skills/help-kaif/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "58992510ea8a00bf640f514563e235b36cb06690bb9cc51b64978b52e51f59fa",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /help-kaif — explain KAIF to the operator, in chat",
+        "class": "static",
+        "sha256": "dce2ab56c7c758a86c51f2734e2fdf066a9ed1db15e06434405f117c8bbfaa49",
+        "lines": [
+          6,
+          11
+        ]
+      },
+      {
+        "signature": "## Framing (important)",
+        "class": "static",
+        "sha256": "8cf763b68736a75fc2d97525e0b9446434b334cd1cb60a969d2121b6d02bdbdb",
+        "lines": [
+          12,
+          20
+        ]
+      },
+      {
+        "signature": "## What to output (structure the chat message like this)",
+        "class": "static",
+        "sha256": "08746c1cfd0f70b2002adf88cee09d4c0654a8d4d8ce25353ea3be9895800df5",
+        "lines": [
+          21,
+          47
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "b85ebca417676ded2beffe20e5868f96bcb2b39e4e64cf44d4208e552cfc3f71",
+        "lines": [
+          48,
+          54
+        ]
+      }
+    ],
+    ".claude/skills/interview/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "dafb81a850bb9ec0891b7af1ee151362b391ea08e7e0164b977ff47290ef13c0",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /interview — interview the owner",
+        "class": "static",
+        "sha256": "06a357f2297bca792a3fe59d2a638cc4111d34f107a70265aa9deba26bde175b",
+        "lines": [
+          6,
+          12
+        ]
+      },
+      {
+        "signature": "## When to call (this is a RARE event)",
+        "class": "static",
+        "sha256": "e0be9d1e50d263b23877c6a88db0143691775043c83668f4df78f8fc3a614653",
+        "lines": [
+          13,
+          29
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "9503a27e446036e25f7d440466f7c27459bdb4c338d15db611b94bef5bbd8ce0",
+        "lines": [
+          30,
+          31
+        ]
+      },
+      {
+        "signature": "### Step 1. Preparation (before writing questions)",
+        "class": "static",
+        "sha256": "b00245d45e6f152bc298e27469544f32f5378900b83e7d9242726f6c1f450a91",
+        "lines": [
+          32,
+          37
+        ]
+      },
+      {
+        "signature": "### Step 2. Create the interview document",
+        "class": "static",
+        "sha256": "96d73efe3a98aa7c9400f38b313e5aa4f74564c468b00ab22906c497a3216d18",
+        "lines": [
+          38,
+          67
+        ]
+      },
+      {
+        "signature": "### Step 3. Rules for good questions",
+        "class": "static",
+        "sha256": "f602f9849df6dafb31fd91e517fd229af3d9f4a5ffff5c981b1de00e20d450f4",
+        "lines": [
+          68,
+          81
+        ]
+      },
+      {
+        "signature": "### Step 4. Ask the owner — via the document",
+        "class": "static",
+        "sha256": "c3c425b4951a7e49cc76d712ff9a63dd3ef736878a526f53cf8db90028d1f49d",
+        "lines": [
+          82,
+          91
+        ]
+      },
+      {
+        "signature": "### Step 5. After the answers",
+        "class": "static",
+        "sha256": "507e31b0c325db6dac9b62efa039123d69029793b4c633c9cd678d7c9e4cf5b3",
+        "lines": [
+          92,
+          99
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
+        "lines": [
+          100,
+          104
+        ]
+      }
+    ],
+    ".claude/skills/kaif-fork/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "d5c748cb0be9ed3c15954bd255770e445af372fab2748def1a71aab2ce7dfe1d",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /kaif-fork — snapshot KAIF into the user's own repo & track it",
+        "class": "static",
+        "sha256": "5055d1e77c6a450309ac47811e159966c4028de3b5d68283360040f96f414630",
+        "lines": [
+          6,
+          15
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "38332b6fb3247e875e37828d1126d82fe0b3bbb55c61c161d0af60440f82128d",
+        "lines": [
+          16,
+          36
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "6372ad444c3dcffdaaa5bc319a5b6d9bbc266a758f108dffbcab41c8bb1893fb",
+        "lines": [
+          37,
+          42
+        ]
+      }
+    ],
+    ".claude/skills/kaif-remove/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "d3a9336fc57766dda8bee755d861a52876722a099edf31d72e0772c99a520bf0",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /kaif-remove — respectful removal of KAIF (partial or full)",
+        "class": "static",
+        "sha256": "7675535e9788bc4e40c371426158619fb5bdd72f83b9383a053174a7c8d16872",
+        "lines": [
+          6,
+          14
+        ]
+      },
+      {
+        "signature": "## Two modes",
+        "class": "static",
+        "sha256": "12788ee280250346acd9d0552017b985c1b68ca084808d29b6cc8f623792bb1f",
+        "lines": [
+          15,
+          22
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "4d9c4a21ae30117d822c3c97fbd8eb6c03d5adad5641f752dc8e634af8549ac3",
+        "lines": [
+          23,
+          58
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "8bdcbfa0f77610b9bc3d330b39eabdc46e74aa838cc7520d832bca3f5efbc481",
+        "lines": [
+          59,
+          65
+        ]
+      }
+    ],
+    ".claude/skills/kaif-switch-origin/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "a44e64ab49634813d7ccd145a089ba37b24e8463a1c9bd1271b518c4b39b2604",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /kaif-switch-origin — return tracking to the official origin",
+        "class": "static",
+        "sha256": "b4c5e19bf6e32e53c4273d68929ee144f1dbe83a71eefd164063ac17043a26be",
+        "lines": [
+          6,
+          14
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "911dfbca5132b4b1e231d4c58926b454a712a954c37c0ced37209157113b1d90",
+        "lines": [
+          15,
+          28
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "0012ce913ed6dd57bcaa572b46d5cf8f117f143e054b8dc7daf5713999f0177f",
+        "lines": [
+          29,
+          33
+        ]
+      }
+    ],
+    ".claude/skills/kaif-update/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "b5189b379c2cf07bb933c8bf93c0e6377a1c613697dff3c05e87e43903a65819",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /kaif-update — respectful migration update from origin",
+        "class": "static",
+        "sha256": "ab2981f610d3c5bbd1a9fd445fa279340f0f7014746e0df16aa20853d61042a4",
+        "lines": [
+          6,
+          24
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "aae8f87ae2ef162f49b82a9b8fa05da9ca533fdb8b8f9daeba298246c4fafe89",
+        "lines": [
+          25,
+          52
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "ed2fbbc607c4c7c783f3d3cf04090c458ff988c30bcce6a4b68e2aa6392a8f32",
+        "lines": [
+          53,
+          58
+        ]
+      }
+    ],
+    ".claude/skills/kaif-version/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "021d4186dd2a401e47ff71d1b610e404ebbd7c4d274092b9b7918f1f75142fe5",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /kaif-version — report the deployed KAIF version & check origin for updates",
+        "class": "static",
+        "sha256": "5e38d5b134198eac82c97f8fd0e4ccf4b42eba73e925bd6bcb3ebd5d625eceeb",
+        "lines": [
+          6,
+          15
+        ]
+      },
+      {
+        "signature": "## What to do",
+        "class": "static",
+        "sha256": "8f3188c3ea56f9eaeab11491315e1858c84fb959316b9f3c6cc9ba6ef18a5f7f",
+        "lines": [
+          16,
+          39
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "12c08b8264465b9d8f2f0da7e3362e998fbf521261aef2d17ed00aca903a225c",
+        "lines": [
+          40,
+          44
+        ]
+      }
+    ],
+    ".claude/skills/nightloop/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "d7cfffff1c250d748be566d7c97db0eff0d5f3f1d7e30b29b9ea843f2719b055",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /nightloop — autonomous work until morning",
+        "class": "static",
+        "sha256": "8a605dbbc3775f0b66e7944b92e620f305e2eee21594b9bc5b11c31957468751",
+        "lines": [
+          6,
+          14
+        ]
+      },
+      {
+        "signature": "## 🛑 STOP CONDITIONS (check at the START of each iteration)",
+        "class": "static",
+        "sha256": "7d33190566c6bc61e22b7fcdda335d6704e3ca6e40cbb31b5d6bba8e4f21a0f7",
+        "lines": [
+          15,
+          36
+        ]
+      },
+      {
+        "signature": "## 🔁 The cycle (one iteration)",
+        "class": "adaptive",
+        "sha256": "7040e803d38b6ba1bdd6eeeebccb8c9b50baa4896db9a15dfe2e8361701ddbd9",
+        "lines": [
+          37,
+          64
+        ]
+      },
+      {
+        "signature": "## ⚙️ Practice",
+        "class": "static",
+        "sha256": "26e0aa4c0b057da5efa47fe23b155bd870f36a2bfb0147240fb705ab8d9fa721",
+        "lines": [
+          65,
+          76
+        ]
+      },
+      {
+        "signature": "## Finishing (when a stop condition fired)",
+        "class": "static",
+        "sha256": "98c67ad4712aafd61297fd28e5a8e05713bcf585430777ed6d4ed58527208979",
+        "lines": [
+          77,
+          83
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "aa4f5afaf1dd1b55033467a49b1012557b4ebf80c2a3c1826cf163c81ed6df42",
+        "lines": [
+          84,
+          88
+        ]
+      }
+    ],
+    ".claude/skills/pause/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "67bef30c108e0d4932558707d842865760a591e0cab516c2691e861105c5ec34",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /pause — end the work session",
+        "class": "static",
+        "sha256": "fcebc979f9ca0a6f80a1776c420d7af91d37e55e5d317521adcc3fa49a5ecdbe",
+        "lines": [
+          6,
+          10
+        ]
+      },
+      {
+        "signature": "## Step 1. Record status & plans in STATUS.md",
+        "class": "static",
+        "sha256": "ed63ac42ffb3fba82a2003bb0b9e1c22e274f7a54cf6ea9175e369f7415a0909",
+        "lines": [
+          11,
+          21
+        ]
+      },
+      {
+        "signature": "## Step 2. Refresh README",
+        "class": "static",
+        "sha256": "1476695920ecc70ea7459a76888809efbe4ca6a2c86ed0ec1b48530023ab2fd7",
+        "lines": [
+          22,
+          26
+        ]
+      },
+      {
+        "signature": "## Step 3. (Re)build / regenerate artifacts",
+        "class": "static",
+        "sha256": "c6fbfbbabdfbd8418268123363c6371f9ea7ad9e58e9fab8ae70ef33c0e9e1c4",
+        "lines": [
+          27,
+          32
+        ]
+      },
+      {
+        "signature": "## Step 4. Commit and push",
+        "class": "adaptive",
+        "sha256": "5f92742436b29ff23d86c2ea2b1a2f1ecbc5393ff5bc7025eccb65c7b1d77e91",
+        "lines": [
+          33,
+          43
+        ]
+      },
+      {
+        "signature": "## Step 5. Report",
+        "class": "static",
+        "sha256": "e904ebc5d47edb8ea86e5c707aa472304557ad01de66e0a0498858be44dd3c0b",
+        "lines": [
+          44,
+          48
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "e28698b022965de2d6a59091eb7a79ec8f01a77096b0166c49cc76701ec67f5c",
+        "lines": [
+          49,
+          54
+        ]
+      }
+    ],
+    ".claude/skills/propose-idea/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "0ab54c0544c0d345203da6d3d7c986b5e14b865361d52063afb3899ecc9f11cb",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /propose-idea — file an idea in ideas/ (for the human's approval)",
+        "class": "static",
+        "sha256": "9fb75f24a8124e6beb1d4c8cd3f9018725f5315af2be1f7b6613a475751538fb",
+        "lines": [
+          6,
+          12
+        ]
+      },
+      {
+        "signature": "## When to call",
+        "class": "static",
+        "sha256": "4f5916b11790c224cfc5809b104e9d9c796bcc29aee247ae05be203ac0183323",
+        "lines": [
+          13,
+          25
+        ]
+      },
+      {
+        "signature": "## What to do",
+        "class": "adaptive",
+        "sha256": "9b6c75a7ba9ec652a3027b303fcce6ce6ad970ab510d2285b9ba2ab2ceaf9ddf",
+        "lines": [
+          26,
+          67
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "e0c170bb23c20ae92315f408eec9b40c3d3c3b1b73e1ca8357d1731651927bb2",
+        "lines": [
+          68,
+          72
+        ]
+      }
+    ],
+    ".claude/skills/refresh-context/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "b324557411d4f24d67b33ed5f5c0df53d4168f798368876999a0363eb73e5a86",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /refresh-context — refresh context and rebuild the backlog",
+        "class": "static",
+        "sha256": "b50da874203fe9d5dd1b95acb2c922b1722c7473b575b630d8a7160c5e07e3c8",
+        "lines": [
+          6,
+          10
+        ]
+      },
+      {
+        "signature": "## What to do",
+        "class": "static",
+        "sha256": "4f89460b09213343c65a2334732ab0d8e369d71409987a2a74a11b9d481b5b58",
+        "lines": [
+          11,
+          35
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "3728a89fb383a71183a9489e08109cb0372005f873e34498015831147c1dfb41",
+        "lines": [
+          36,
+          40
+        ]
+      }
+    ],
+    ".claude/skills/release/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "dda58fa4c7cf643400a2aaa86102701058e45eaab4e9ec66e1710f2f506d2c5b",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /release — publish a release to GitHub",
+        "class": "static",
+        "sha256": "e81712f46de39dcb3aed78720139d191fbe0a12d501b1f9aa22eff8df27d55d6",
+        "lines": [
+          6,
+          16
+        ]
+      },
+      {
+        "signature": "## Step 0. Decide the bump type and the codename",
+        "class": "static",
+        "sha256": "3b9204bde1a29ee08d66746d3ffc044914776dbeaa0fa2920072bbff8c585061",
+        "lines": [
+          17,
+          24
+        ]
+      },
+      {
+        "signature": "## Step 1. Pre-check the environment (don't release on a dirty/broken tree)",
+        "class": "static",
+        "sha256": "74c10feda1f2e25082479d67ece2f499025e1df935ee32a6734be9cdb704869c",
+        "lines": [
+          25,
+          34
+        ]
+      },
+      {
+        "signature": "## Step 2. Refresh README (all languages)",
+        "class": "static",
+        "sha256": "b5661cbcd98f9ea62dc545584dc7d7ee8dc3255197a59e394223a528cad1b7dc",
+        "lines": [
+          35,
+          40
+        ]
+      },
+      {
+        "signature": "## Step 3. Regenerate rendered docs",
+        "class": "static",
+        "sha256": "b115d50d3328db37655d59f177be203f3babb2f37764dc6ce536eaa5f299c595",
+        "lines": [
+          41,
+          45
+        ]
+      },
+      {
+        "signature": "## Step 4. Control build (before the release)",
+        "class": "static",
+        "sha256": "80d3f9e73f162ea83660e4e54add72fdcce716026df4d5ecba9bf73f3b994cf1",
+        "lines": [
+          46,
+          50
+        ]
+      },
+      {
+        "signature": "## Step 4.5. Judge pass — MANDATORY adversarial verification before publishing",
+        "class": "static",
+        "sha256": "13ebed9d3b903561cfc2dc176f856e56ba284246b18c696734b526b59cec764d",
+        "lines": [
+          51,
+          59
+        ]
+      },
+      {
+        "signature": "## Step 5. Commit the doc/build changes (before the release)",
+        "class": "adaptive",
+        "sha256": "4e99f760961b854c5d3c07763b423ae49689d66b05b2ae3c14f81f57e38e3d1b",
+        "lines": [
+          60,
+          64
+        ]
+      },
+      {
+        "signature": "## Step 6. Publish (after the human's confirmation)",
+        "class": "adaptive",
+        "sha256": "569bd217778112edbfd3095bc0dc718d3b77889e1eb17b08a2eca7541f0e5752",
+        "lines": [
+          65,
+          87
+        ]
+      },
+      {
+        "signature": "## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)",
+        "class": "static",
+        "sha256": "8445434fe3dade7d70beb20108a586a8ea97f789ab7fc71d9b1ee054c03401ee",
+        "lines": [
+          88,
+          106
+        ]
+      },
+      {
+        "signature": "## Step 7. Verify and report",
+        "class": "static",
+        "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
+        "lines": [
+          107,
+          114
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
+        "lines": [
+          115,
+          122
+        ]
+      }
+    ],
+    ".claude/skills/report-bug/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "e51853db8c950b7fef689f5018593eac867dfa93de440fc7b1940dadaff58553",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /report-bug — file a bug document in bugs/ (the agent keeps its own bug backlog)",
+        "class": "static",
+        "sha256": "35ef3eddc9a78c2c692cc90fd1d6a64fa7f315d197f28a6edd4b2f3bf9d1e8c0",
+        "lines": [
+          6,
+          15
+        ]
+      },
+      {
+        "signature": "## When to call",
+        "class": "static",
+        "sha256": "4a9e3d63400967718813facc895e46a21b8ab36482c4c71535ea03b380d3d6d2",
+        "lines": [
+          16,
+          26
+        ]
+      },
+      {
+        "signature": "## What to do",
+        "class": "adaptive",
+        "sha256": "4cd48ded39839b7d8130b598e7ba7769e93b35a79b479211f89861f5bdecce03",
+        "lines": [
+          27,
+          77
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "cc9cd26c93d2bde53041a566ba46133ed7bc717fb1ab6b8585da808d5a37330c",
+        "lines": [
+          78,
+          81
+        ]
+      }
+    ],
+    ".claude/skills/resume/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "32921b009dffbb7969dc50a38088abb24b9431b93392b10ea1a3049382ab0358",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /resume — pick up where we left off",
+        "class": "static",
+        "sha256": "607f5e3c540e59bcf81c8ea84ee2f9f4df30353793d6a46a163c6bb190505ae4",
+        "lines": [
+          6,
+          9
+        ]
+      },
+      {
+        "signature": "## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)",
+        "class": "static",
+        "sha256": "f4a08a7ad28e4dbe15b81a6e674bbee5e60847ccfd8fac499214bcba83359e24",
+        "lines": [
+          10,
+          33
+        ]
+      },
+      {
+        "signature": "## Step 2. Synthesize — choose the one main thing",
+        "class": "static",
+        "sha256": "d69f0bec0a357a20afd6688445f0cf937e98b9da021cf34bcf3886e650737a90",
+        "lines": [
+          34,
+          48
+        ]
+      },
+      {
+        "signature": "## Step 3. Work",
+        "class": "static",
+        "sha256": "145c5c387ea213935bc7900033ebeeec8bbdca49fc7d8ba6d207d365e09859b4",
+        "lines": [
+          49,
+          55
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "70349f3f6138dedff3a6c122a82143408699b741ae0a21d72f397ed502ba8bd1",
+        "lines": [
+          56,
+          60
+        ]
+      }
+    ],
+    ".claude/skills/revision/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "64cbd1b0aba0a10e224eda28674739290e9c3ad6ac8f85c8da35029cd92128ba",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /revision — derive the master plan from the vision",
+        "class": "static",
+        "sha256": "7b332a4e55009beeb80b2f4a9cf1668901fbe13d1567e12fcbd9e9973b32b775",
+        "lines": [
+          6,
+          10
+        ]
+      },
+      {
+        "signature": "## When to call",
+        "class": "static",
+        "sha256": "6c0a200121e35ed30d927fc1310e7f4eea7865fdf0e678bb7730153c69575bde",
+        "lines": [
+          11,
+          20
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "2127508a0e904efbc23f5755b0aa39927aa2c9e04f7f8c0b045cb980ebb99d25",
+        "lines": [
+          21,
+          39
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "83dd2c00ccbde48e3d9ab4df9cfab118e2b1d7eab1a15fde4ad29c38d9ccfecd",
+        "lines": [
+          40,
+          44
+        ]
+      }
+    ],
+    ".claude/skills/what-next/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "13191983c4e84238f63189eddc71846e33014a9b996a88ad4cf99b2271b65461",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /what-next — propose the highest-value next steps",
+        "class": "static",
+        "sha256": "f5581d089ab04e9e66f04a2565bc6dc7b0b1bb5b225966f452d264d30c851393",
+        "lines": [
+          6,
+          10
+        ]
+      },
+      {
+        "signature": "## Procedure",
+        "class": "static",
+        "sha256": "9503a27e446036e25f7d440466f7c27459bdb4c338d15db611b94bef5bbd8ce0",
+        "lines": [
+          11,
+          12
+        ]
+      },
+      {
+        "signature": "### Step 1. Re-orient (cheap, no deep dive)",
+        "class": "static",
+        "sha256": "e77f386e1080bdac6f219e58c736b2250524ad9e0a6ed381012dc8f70510fa5e",
+        "lines": [
+          13,
+          17
+        ]
+      },
+      {
+        "signature": "### Step 2. Rank by value",
+        "class": "static",
+        "sha256": "fc8d6cc6eb5cdb32786f03c6868938451b072f780c4babfde122ef153c5cf00f",
+        "lines": [
+          18,
+          22
+        ]
+      },
+      {
+        "signature": "### Step 3. Answer in chat",
+        "class": "static",
+        "sha256": "607dd34f191ebb18bac92a555fb492be72554542d9c826cae4ea8c8db8568628",
+        "lines": [
+          23,
+          27
+        ]
+      },
+      {
+        "signature": "### Step 4. Offer to start",
+        "class": "static",
+        "sha256": "a22be1a73b0f97728a835cadf516d18a36dbda907691104bc4764f9308aa1e8c",
+        "lines": [
+          28,
+          30
+        ]
+      },
+      {
+        "signature": "## Rules",
+        "class": "static",
+        "sha256": "997fb15a83ab4052b36394d854dabdc3f525fe692b6abde3b7d92c437a5ff730",
+        "lines": [
+          31,
+          35
+        ]
+      }
+    ],
+    ".kaif/spheres/business.md": [
+      {
+        "signature": "# Sphere: Business / Project management / Finance",
+        "class": "static",
+        "sha256": "b28a5852d70543c4675dedddcb11bd8835e59205206b12ddabdf21b927d8ddef",
+        "lines": [
+          1,
+          2
+        ]
+      },
+      {
+        "signature": "## Thesis intro",
+        "class": "static",
+        "sha256": "e6560d7e1cf23338256c948bb76320c33e6e54ac4e71bf8dff56436c55d804c4",
+        "lines": [
+          3,
+          8
+        ]
+      },
+      {
+        "signature": "## KAIF entity mapping",
+        "class": "static",
+        "sha256": "15a349f571b09e182ebc87eb81426d255de0584da5d56b4da9c390dc2f6f1b27",
+        "lines": [
+          9,
+          19
+        ]
+      },
+      {
+        "signature": "## Key terms (brief glossary)",
+        "class": "static",
+        "sha256": "d875317a458839ead017b3ae6b21ce1af82943e84f5595ae41b98be42035b316",
+        "lines": [
+          20,
+          25
+        ]
+      },
+      {
+        "signature": "## Minimum evidence set (binding — before any recommendation)",
+        "class": "static",
+        "sha256": "6fc118884a7ff32ab45ad52ecb6be6c7af5ed004c602754549db54a914316d70",
+        "lines": [
+          26,
+          34
+        ]
+      },
+      {
+        "signature": "## Authority order",
+        "class": "static",
+        "sha256": "4f6c82f69ad48494c911ae86e2ca4631c4abfa7c1a04de13b2b6664b6c610776",
+        "lines": [
+          35,
+          40
+        ]
+      },
+      {
+        "signature": "## Verification by observation",
+        "class": "static",
+        "sha256": "9cb8ebb0336bd13669a8ff7ed98ddded53ed7855b835bc52f4bb9f6c97ce658b",
+        "lines": [
+          41,
+          49
+        ]
+      },
+      {
+        "signature": "## Fraud table (for `fable-judge`)",
+        "class": "static",
+        "sha256": "96d344758632b6a25019b7f5a53237b53cf0726cfe87435da4db421b9b7357ee",
+        "lines": [
+          50,
+          60
+        ]
+      },
+      {
+        "signature": "## Done, by example",
+        "class": "static",
+        "sha256": "cd49151b9c8eea7ab4f70b0cd6259de740b86f571dfa3d2f366c456b3da7d140",
+        "lines": [
+          61,
+          66
+        ]
+      },
+      {
+        "signature": "## Adaptation notes",
+        "class": "static",
+        "sha256": "dc713361d69a25598049ae05ea555e41d2ff85a11786a997712cf013233b548f",
+        "lines": [
+          67,
+          72
+        ]
+      }
+    ],
+    ".kaif/spheres/design.md": [
+      {
+        "signature": "# Sphere: Design (product / graphic / UX)",
+        "class": "static",
+        "sha256": "1a1f561d3527229614caddb97ec4dc8cd3aa67f4f4973bb6aacff080dcc561de",
+        "lines": [
+          1,
+          2
+        ]
+      },
+      {
+        "signature": "## Thesis intro",
+        "class": "static",
+        "sha256": "464509644f109e1aa109025a09787d56cd768dff358beb364f9fec6af8a25869",
+        "lines": [
+          3,
+          9
+        ]
+      },
+      {
+        "signature": "## KAIF entity mapping",
+        "class": "static",
+        "sha256": "11678e658e0e74ed5a524f101a2715a5dbb93d1d4fadab18c40b3b4896353b3e",
+        "lines": [
+          10,
+          20
+        ]
+      },
+      {
+        "signature": "## Key terms (brief glossary)",
+        "class": "static",
+        "sha256": "f2dbe8bddc78980795ab1d7e4af4cfd63424c25dc587229d0fbfe9f62d59f572",
+        "lines": [
+          21,
+          26
+        ]
+      },
+      {
+        "signature": "## Minimum evidence set (binding — before any pixel)",
+        "class": "static",
+        "sha256": "d3712242aa9d8c60f75f8847acab518522d752c4e7f925e39e048957545adda1",
+        "lines": [
+          27,
+          34
+        ]
+      },
+      {
+        "signature": "## Authority order",
+        "class": "static",
+        "sha256": "b6d1dc7524143ba92e5243675c1d470dd7d584d13987f746f9bd6a57d82628a0",
+        "lines": [
+          35,
+          40
+        ]
+      },
+      {
+        "signature": "## Verification by observation",
+        "class": "static",
+        "sha256": "2ef41f8c19ced7548436ff1e944f1ea240fe698bf9b24c8b765f97948cb83573",
+        "lines": [
+          41,
+          50
+        ]
+      },
+      {
+        "signature": "## Fraud table (for `fable-judge`)",
+        "class": "static",
+        "sha256": "c23d188dc6b9be5031d8eecbc59c5a32fa46648c6b5f183bf20d6ce2e3252dc5",
+        "lines": [
+          51,
+          61
+        ]
+      },
+      {
+        "signature": "## Done, by example",
+        "class": "static",
+        "sha256": "b3b8ada71f4c2bae48afb4f2077be6d4e326df272580ac5793f948b312f306ee",
+        "lines": [
+          62,
+          67
+        ]
+      },
+      {
+        "signature": "## Adaptation notes",
+        "class": "static",
+        "sha256": "698fd4c0bae2015ecc76aa277da5c44a08c5edf291bda63e6381de14a170b439",
+        "lines": [
+          68,
+          73
+        ]
+      }
+    ],
+    ".kaif/spheres/programming.md": [
+      {
+        "signature": "# Sphere: Programming / Software (reference sphere)",
+        "class": "static",
+        "sha256": "51cac84a7a9f3d5f03c30a462baeabc48e91c4b778f7d3d088511148d4cf76c7",
+        "lines": [
+          1,
+          4
+        ]
+      },
+      {
+        "signature": "## Thesis intro",
+        "class": "static",
+        "sha256": "ff912773bd5ffc8e80762be38f30d8894966f5281e3fee06d7cf3b00a55d2a14",
+        "lines": [
+          5,
+          10
+        ]
+      },
+      {
+        "signature": "## KAIF entity mapping",
+        "class": "adaptive",
+        "sha256": "a1a3cff8ab1a56ba39e22325d106c155fda1835a774139eedbf0e4aa87bc1805",
+        "lines": [
+          11,
+          21
+        ]
+      },
+      {
+        "signature": "## Key terms (brief glossary)",
+        "class": "static",
+        "sha256": "efd02086eca0992f2db07f1e6e03342c12135acc6a67a21827639680ea6c0e4c",
+        "lines": [
+          22,
+          30
+        ]
+      },
+      {
+        "signature": "## Minimum evidence set (binding — open these before acting, every time)",
+        "class": "static",
+        "sha256": "29f91cccd4452f593985f955c87f8084182ef39a364ca314621bb7a4c86a63c7",
+        "lines": [
+          31,
+          38
+        ]
+      },
+      {
+        "signature": "## Authority order",
+        "class": "static",
+        "sha256": "95beb98bc48b7a467580ae37a2ce6a276bc9eb637017a655bd6e5b0c83082a36",
+        "lines": [
+          39,
+          44
+        ]
+      },
+      {
+        "signature": "## Verification by observation",
+        "class": "static",
+        "sha256": "0e8e6d02b132d22a70a2371c6d703a06eb483b9cba68360ba60686a9c4ba3e3f",
+        "lines": [
+          45,
+          58
+        ]
+      },
+      {
+        "signature": "## Fraud table (for `fable-judge`)",
+        "class": "static",
+        "sha256": "ddca9cb7205d88ee72294ff50bff44b237e6599c10101f4534f233846a80d03a",
+        "lines": [
+          59,
+          72
+        ]
+      },
+      {
+        "signature": "## Done, by example",
+        "class": "static",
+        "sha256": "c4e0531374729217f1aef0a6ded68beb8afe16016229cfcd2aee170ad7ef058e",
+        "lines": [
+          73,
+          78
+        ]
+      },
+      {
+        "signature": "## Adaptation notes",
+        "class": "static",
+        "sha256": "1a7a1e3cbb59e514a6102f48d1c5cbcabe2ac50792151ab02c54eb799d5bd806",
+        "lines": [
+          79,
+          85
+        ]
+      }
+    ],
+    ".kaif/spheres/science.md": [
+      {
+        "signature": "# Sphere: Science / Research (math, physics, biology, …)",
+        "class": "static",
+        "sha256": "9ed33f485a41914def132138133fad40fe01ee429de360428f8f9dfd4a4347c6",
+        "lines": [
+          1,
+          2
+        ]
+      },
+      {
+        "signature": "## Thesis intro",
+        "class": "static",
+        "sha256": "8a264cf9dd844fb3a0928070a557d02a609615d4ebcc6480d424b4f84f81dc4a",
+        "lines": [
+          3,
+          9
+        ]
+      },
+      {
+        "signature": "## KAIF entity mapping",
+        "class": "static",
+        "sha256": "df02402cf51f94a1375bdbc775dcfc6a3e768fec824912311c75267f9b5fcf6f",
+        "lines": [
+          10,
+          20
+        ]
+      },
+      {
+        "signature": "## Key terms (brief glossary)",
+        "class": "static",
+        "sha256": "2f06850d1c611dfdc3d5ac8bee72737fb8248a2f3336818ed660d0e0379b22d2",
+        "lines": [
+          21,
+          27
+        ]
+      },
+      {
+        "signature": "## Minimum evidence set (binding — before any claim or analysis)",
+        "class": "static",
+        "sha256": "980993fd260842366a29d0ba3957aa194d7e57b214fd95fe039bc9e3bc7cff42",
+        "lines": [
+          28,
+          35
+        ]
+      },
+      {
+        "signature": "## Authority order",
+        "class": "static",
+        "sha256": "b763525f3cb9e537f8be813eabe1191a5e31757742d0c5f4c1a9e0af13e4b5e3",
+        "lines": [
+          36,
+          41
+        ]
+      },
+      {
+        "signature": "## Verification by observation",
+        "class": "static",
+        "sha256": "d30f79ad1af1c6406328ddcc73351113beed8873d71588d001aa1e032c5ede0d",
+        "lines": [
+          42,
+          50
+        ]
+      },
+      {
+        "signature": "## Fraud table (for `fable-judge`)",
+        "class": "static",
+        "sha256": "22499e69f7d67f16b765c5cde5d6e7f448dbdf65bc504b4b7f4af7e09e8cad2d",
+        "lines": [
+          51,
+          61
+        ]
+      },
+      {
+        "signature": "## Done, by example",
+        "class": "static",
+        "sha256": "e7d408fc99620299a16a9e4cd8ae3ea58d9c7e9bd43c93dcdb9f6e270a05368e",
+        "lines": [
+          62,
+          66
+        ]
+      },
+      {
+        "signature": "## Adaptation notes",
+        "class": "static",
+        "sha256": "f402ab95c557225e93492b9553e77d31e931d5644b4e19096c9670b6e0ddc29f",
+        "lines": [
+          67,
+          73
+        ]
+      }
+    ],
+    ".kaif/spheres/_index.md": [
+      {
+        "signature": "# KAIF spheres — universal adaptivity across domains",
+        "class": "static",
+        "sha256": "5469b3c430b5da8ae6fd2e072eb66f054f15856b3871bc220e30bdddcfcaf6ac",
+        "lines": [
+          1,
+          19
+        ]
+      },
+      {
+        "signature": "## How sphere adaptation works (at deploy time)",
+        "class": "static",
+        "sha256": "352a24ede2a97d1d392f62e01b349a72496d843338f443dff3d7adc399cf2cdc",
+        "lines": [
+          20,
+          31
+        ]
+      },
+      {
+        "signature": "## Sphere libraries",
+        "class": "static",
+        "sha256": "821927c2d53861b5154834ab6d905ab96219635979f68d08e34de4cb31449788",
+        "lines": [
+          32,
+          44
+        ]
+      },
+      {
+        "signature": "## Generic fallback",
+        "class": "static",
+        "sha256": "425d3bdbcea1b67ab6413a918a778016aecbd04342fac1da5f9436b16877b55e",
+        "lines": [
+          45,
+          50
+        ]
+      }
+    ],
+    ".kaif/spheres/_template.md": [
+      {
+        "signature": "# Sphere: <SPHERE NAME>",
+        "class": "static",
+        "sha256": "186e563c82b3f61a30e009d8d9090ebfd1401fb218a2413b4a48ba25f7c6b118",
+        "lines": [
+          1,
+          10
+        ]
+      },
+      {
+        "signature": "## Thesis intro (what working in this sphere is like)",
+        "class": "static",
+        "sha256": "f4a0ab95f1be3e6a78f3b7fa4da7feceb5c31488ff60eb8cc1b06285c71f1283",
+        "lines": [
+          11,
+          15
+        ]
+      },
+      {
+        "signature": "## KAIF entity mapping (how base concepts read in this sphere)",
+        "class": "static",
+        "sha256": "a946ab8eaf81faf977c7ade764100ea6ad1717dd3952ae3fadb9473be8c4844b",
+        "lines": [
+          16,
+          26
+        ]
+      },
+      {
+        "signature": "## Key terms (brief glossary)",
+        "class": "static",
+        "sha256": "4767f41c38fced3ebb8fee1c30002c4d4d06d71fdb36882032154dbd97c9e11f",
+        "lines": [
+          27,
+          32
+        ]
+      },
+      {
+        "signature": "## Minimum evidence set (binding — open these before acting, every time)",
+        "class": "static",
+        "sha256": "db24c4aadfbfbf8fac05790599d03bb60d82df5796083bb91bcb04283f99f960",
+        "lines": [
+          33,
+          38
+        ]
+      },
+      {
+        "signature": "## Authority order",
+        "class": "static",
+        "sha256": "62f72cc81800c601dc34dd81e30552b8bec9e7112b287b678e95b994365c73fa",
+        "lines": [
+          39,
+          43
+        ]
+      },
+      {
+        "signature": "## Verification by observation",
+        "class": "static",
+        "sha256": "97d511c5f565b0c83b375706f33a3ca80dd5c0cdcff9d82ddcbbb2365f5d8f75",
+        "lines": [
+          44,
+          48
+        ]
+      },
+      {
+        "signature": "## Fraud table (for `fable-judge`)",
+        "class": "static",
+        "sha256": "07e58ca716a9f69414830f067f84149507ce3bac89064575bac1a5b30c90ca30",
+        "lines": [
+          49,
+          55
+        ]
+      },
+      {
+        "signature": "## Done, by example",
+        "class": "static",
+        "sha256": "b38bafc90a678cfbc271b570a0778b5b2b6a66441e7d71824d8454de6e95f383",
+        "lines": [
+          56,
+          60
+        ]
+      },
+      {
+        "signature": "## Adaptation notes",
+        "class": "static",
+        "sha256": "1ca80ba97c73090d6f30121cd65291ebc958fe0450df99bf56a5a3bc4dd54439",
+        "lines": [
+          61,
+          65
+        ]
+      },
+      {
+        "signature": "## Sources (for spheres authored on demand)",
+        "class": "static",
+        "sha256": "01ccdd9f770f6c93a9621bc1b08cdd76ecbbfb3edc7f24c8e4f7a162494f7503",
+        "lines": [
+          66,
+          71
+        ]
+      }
+    ],
+    "templates/languages/ar/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — العيوب والصعوبات والأعطال",
+        "class": "static",
+        "sha256": "00c7c94e1eac21a9bb38aab7cd8b5218503cde8f63d67ff1ccec749acf25af5f",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/ar/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (الرؤية)",
+        "class": "owner",
+        "sha256": "30305b2645fccb86aa4c323f542434f305237db140b2f229ac4422d4eac7d57c",
+        "lines": [
+          1,
+          11
+        ]
+      },
+      {
+        "signature": "## ما أريده — في فقرة واحدة",
+        "class": "owner",
+        "sha256": "748ee019272b7dc0a9a0b8e072cf944295c6ab4f714a4a9fe710ab8d8fff430c",
+        "lines": [
+          12,
+          17
+        ]
+      },
+      {
+        "signature": "## لماذا يهمّ / ما المشكلة التي يحلّها",
+        "class": "owner",
+        "sha256": "260165acc21e778abde646215da0f86ced927271becb957728b1556b757bbe97",
+        "lines": [
+          18,
+          21
+        ]
+      },
+      {
+        "signature": "## كيف يبدو النجاح",
+        "class": "owner",
+        "sha256": "0d7f7de72bb202d79c10f1ad2b7f54bd9d3a093b5bd91149462aecf5873524d3",
+        "lines": [
+          22,
+          26
+        ]
+      },
+      {
+        "signature": "## الحدود — ما الذي ليس هذا إياه",
+        "class": "owner",
+        "sha256": "6bdb90a22cd6d93fb8dd1d305b0f56d1bc1f3b611278ee21c5472456e13b7844",
+        "lines": [
+          27,
+          30
+        ]
+      },
+      {
+        "signature": "## القيود والتفضيلات (اختياري)",
+        "class": "owner",
+        "sha256": "3fe05da3147b3826cfdc87df71f417a5b593b68dd685dac5fed8e5edaa5f1982",
+        "lines": [
+          31,
+          41
+        ]
+      }
+    ],
+    "templates/languages/ar/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — مهام من الوكيل إلى الإنسان",
+        "class": "static",
+        "sha256": "aac1219207df7817e1dfe6da76b9e682501f661c9a26bb9c9a444d55bcfaf19a",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/ar/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — مقترحات الميزات والتحسينات",
+        "class": "static",
+        "sha256": "cf548738237dac3d74b216542d8e08201628d009ebb9220c37d6ded2fd21ff0a",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/ar/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — قرارات مستوى المالك",
+        "class": "static",
+        "sha256": "e22174accc8ac3db53bf6c37b43c387ad354884fb5a125b588cdf55c340d4a8c",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/ar/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF في <PROJECT_NAME> — الإطار المنشور",
+        "class": "owner",
+        "sha256": "3e72a8ed037ba0519f98b139293b5359558200ce7cb7e83906b4a7fd8fc8a96a",
+        "lines": [
+          1,
+          11
+        ]
+      },
+      {
+        "signature": "## ما هو KAIF",
+        "class": "owner",
+        "sha256": "6b7e41728f2d809fec585565a2ddf069c0fa5a38a4faf2d0b89206b409e2b72b",
+        "lines": [
+          12,
+          19
+        ]
+      },
+      {
+        "signature": "## لماذا هو هنا — ما الذي يمنحه لهذا المشروع",
+        "class": "owner",
+        "sha256": "784418b18af5891f032c6f37488767a3f886a98f0ff7d8db0fdca0e7cd8ea74b",
+        "lines": [
+          20,
+          26
+        ]
+      },
+      {
+        "signature": "## كيف يعمل هنا — الأجزاء المتحركة",
+        "class": "owner",
+        "sha256": "96041bf81611ddb0f16aa8c1e3a219f48f4c76f7374f108999335963c9b0f208",
+        "lines": [
+          27,
+          40
+        ]
+      },
+      {
+        "signature": "## سجلّ النشر",
+        "class": "owner",
+        "sha256": "a8842c12dc849f50785e7a2f3a5a76474957a5f7d9474b2436840d063fd1a441",
+        "lines": [
+          41,
+          52
+        ]
+      },
+      {
+        "signature": "## العيش مع KAIF (دورة الحياة)",
+        "class": "owner",
+        "sha256": "3af61f56fff08229b447d3ba1da54669593e450ee45f632866ba4a9d9d429618",
+        "lines": [
+          53,
+          61
+        ]
+      },
+      {
+        "signature": "## كلمة من المؤلف",
+        "class": "owner",
+        "sha256": "dd2f1f926378f3a40b02ade5770fe649692c9aed97d44768a9f8a85f0e7a02b6",
+        "lines": [
+          62,
+          74
+        ]
+      }
+    ],
+    "templates/languages/ar/plans/README.md": [
+      {
+        "signature": "# `plans/` — خطط مفصّلة خطوة بخطوة",
+        "class": "static",
+        "sha256": "360955d88a41b6180102394258efae58835085ef9a3fb29075d9816d06f8c4f9",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/ar/researches/README.md": [
+      {
+        "signature": "# `researches/` — قاعدة معرفة للمسائل الكبيرة الصعبة",
+        "class": "static",
+        "sha256": "89c0ee86dd010f6ffc050159bc768e961cdf89c89084094ab377fc2643767eb7",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/de/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — Defekte, Schwierigkeiten, Brüche",
+        "class": "static",
+        "sha256": "96fecc8826fbf1eb93d2ffc4dce1859df33842be884ee18cbce1209fee34685a",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/de/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (die Vision)",
+        "class": "owner",
+        "sha256": "b66130b29be4cb7126ea88c1ff94e2de33a675b340a72a519cb988304873599d",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## Was ich will — in einem Absatz",
+        "class": "owner",
+        "sha256": "dcb559e6e536224c44f712894629f524db3a93cd803849ad3f37c5017b4ed4f5",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## Warum es wichtig ist / welches Problem es löst",
+        "class": "owner",
+        "sha256": "61981cb3bae920880a427c466851c607be26315d7e563d85e7e05e10b4a52ca0",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "## Wie Erfolg aussieht",
+        "class": "owner",
+        "sha256": "cbc16fdfe9681eaa846b0abdc51e637f460e2e5cf59a49292e2bc2e18cd1a218",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## Grenzen — was das NICHT ist",
+        "class": "owner",
+        "sha256": "0499c5f0d5caafe560bdc82a2b516efeeb2efb567a726f93f5163bdbf89939be",
+        "lines": [
+          29,
+          32
+        ]
+      },
+      {
+        "signature": "## Einschränkungen und Präferenzen (optional)",
+        "class": "owner",
+        "sha256": "1015798097b7fb22dc0f3411171af27be32805ec4867ea345487ba157236eb97",
+        "lines": [
+          33,
+          45
+        ]
+      }
+    ],
+    "templates/languages/de/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — Aufgaben vom Agenten an den Menschen",
+        "class": "static",
+        "sha256": "a4baa7e0d1e41ee9834120da9a13230a2a7b11e24b906c7f4ed8e90dde78ba57",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
+    "templates/languages/de/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — Feature- und Verbesserungsvorschläge",
+        "class": "static",
+        "sha256": "3c8277c18ae20598d89a1c7e6fa9e95c9977f82df74ee3e721f2de83f90f4b3d",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/de/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — Entscheidungen auf Eigentümer-Ebene",
+        "class": "static",
+        "sha256": "5774040e1d99b057d9f848700377694dbfa8e72dac71d6024703222c2a831f2d",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
+    "templates/languages/de/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF in <PROJECT_NAME> — das Framework, deployt",
+        "class": "owner",
+        "sha256": "91311b27650af7a8b779954bb176bdcb099d3a20130e69500c2ae5dc585cd058",
+        "lines": [
+          1,
+          14
+        ]
+      },
+      {
+        "signature": "## Was KAIF ist",
+        "class": "owner",
+        "sha256": "7edc246275161a2c26f75fb18a4e5f551c44310d88130cc2014a73b690363440",
+        "lines": [
+          15,
+          23
+        ]
+      },
+      {
+        "signature": "## Warum es hier ist — was es diesem Projekt gibt",
+        "class": "owner",
+        "sha256": "da430f88698a2e17e8c25058998d602f95b93a26286a0e611748f08800579643",
+        "lines": [
+          24,
+          30
+        ]
+      },
+      {
+        "signature": "## Wie es hier funktioniert — die beweglichen Teile",
+        "class": "owner",
+        "sha256": "d5b46686eb7b831843c86acc2155136cd09f567f8ad7333a400b43c23ca0562b",
+        "lines": [
+          31,
+          44
+        ]
+      },
+      {
+        "signature": "## Deployment-Protokoll",
+        "class": "owner",
+        "sha256": "f447e23eee926133048d23080e001cd373f44c6dbcbc4dfdac3f0c6ceeef967e",
+        "lines": [
+          45,
+          56
+        ]
+      },
+      {
+        "signature": "## Leben mit KAIF (Lebenszyklus)",
+        "class": "owner",
+        "sha256": "a217d58ea7b88b5ce33ab4a72992eec9f2c7f2d8f03a44e09a31ced775445a46",
+        "lines": [
+          57,
+          65
+        ]
+      },
+      {
+        "signature": "## Eine Notiz des Autors",
+        "class": "owner",
+        "sha256": "a65deab9a9d76cb090ae0221ae4e149c1c75c9a298d728902bcef9e195af30a0",
+        "lines": [
+          66,
+          78
+        ]
+      }
+    ],
+    "templates/languages/de/plans/README.md": [
+      {
+        "signature": "# `plans/` — detaillierte Schritt-für-Schritt-Pläne",
+        "class": "static",
+        "sha256": "bb2a881ff81e10c290393335c6b0f8a6a2655c2c4f272ddfc3cc181f64847b21",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/de/researches/README.md": [
+      {
+        "signature": "# `researches/` — Wissensbasis für die großen, schweren Fragen",
+        "class": "static",
+        "sha256": "c8c4de868fa55c0c2244af3a875c211ff06c92ec481eaf7fcbf1368e488bcbcc",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/es/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — defectos, dificultades, roturas",
+        "class": "static",
+        "sha256": "40b1683e45001c7ce8913a5cefca3b8c20cf634f5c4da6d43e5f7e1f20695c13",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/es/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (la visión)",
+        "class": "owner",
+        "sha256": "1a5e89cee25142d3bf7052d2cd287e699b67cb438b1d3b3cdd4a7776ae230c30",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## Lo que quiero — en un párrafo",
+        "class": "owner",
+        "sha256": "d4665361f44ec460c89ef84300ca2a5996878b3b1396824b8eebc44499a374f9",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## Por qué importa / el problema que resuelve",
+        "class": "owner",
+        "sha256": "5de2c5a2963bcfc6cc108f95828fde7a45eaf81d2ba86c267318f023c9eb0e14",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "## Cómo se ve el éxito",
+        "class": "owner",
+        "sha256": "46424f48089522ecb9bb6a72e45068b40ede83f8b1a0c4dad86147aa7d2868d5",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## Límites — lo que esto NO es",
+        "class": "owner",
+        "sha256": "bc02378325145b2fd54d15f80e21807c7924aef9b564f1cfe47cca8185530290",
+        "lines": [
+          29,
+          32
+        ]
+      },
+      {
+        "signature": "## Restricciones y preferencias (opcional)",
+        "class": "owner",
+        "sha256": "912e7f505224e9357f4299b7765027592cfb23830f9dd5ef88b6f9294ccca8ad",
+        "lines": [
+          33,
+          44
+        ]
+      }
+    ],
+    "templates/languages/es/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tareas del agente para el humano",
+        "class": "static",
+        "sha256": "b26589f14043b53b75599788ddf1e873ee9906c4a847ff247951fc6dfe0f839b",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/es/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — propuestas de features y mejoras",
+        "class": "static",
+        "sha256": "ac6452a79a0207296f594c2670db9bb51ef6702d958c83baa804e0bf6952559d",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/es/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — decisiones del nivel del propietario",
+        "class": "static",
+        "sha256": "f0e2eaa767df4d4668e86a7dd85255f1e76a0c3911188ca85177a4a252978b9b",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/es/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF en <PROJECT_NAME> — el framework, desplegado",
+        "class": "owner",
+        "sha256": "00bafe5fdc011b4a083fc74cc01b5a59d8ce6922fec160265b95efebd1ee0927",
+        "lines": [
+          1,
+          14
+        ]
+      },
+      {
+        "signature": "## Qué es KAIF",
+        "class": "owner",
+        "sha256": "aa347700aac3f6ec58f0a8f3e1f240b16a15f6de95c4bf11bd2e0e25120b9a66",
+        "lines": [
+          15,
+          23
+        ]
+      },
+      {
+        "signature": "## Por qué está aquí — lo que aporta a este proyecto",
+        "class": "owner",
+        "sha256": "6bdf7652a8607522005dd0dc74589606dc8d8c30af3cd619e490f54326cf2566",
+        "lines": [
+          24,
+          30
+        ]
+      },
+      {
+        "signature": "## Cómo funciona aquí — las piezas móviles",
+        "class": "owner",
+        "sha256": "c574ed2fa86ea975e0640d77f1e464ec845e26da1e9651199f4d0f658ea491bd",
+        "lines": [
+          31,
+          44
+        ]
+      },
+      {
+        "signature": "## Registro del despliegue",
+        "class": "owner",
+        "sha256": "22239a3637a8bcd52eae6be7f8356b6dab3a7e54ee3709d777913445b6305003",
+        "lines": [
+          45,
+          56
+        ]
+      },
+      {
+        "signature": "## Vivir con KAIF (ciclo de vida)",
+        "class": "owner",
+        "sha256": "d995cc4475680f21ec08427228a628bf526b49b01a3db9b65b84a7c081a7e87a",
+        "lines": [
+          57,
+          65
+        ]
+      },
+      {
+        "signature": "## Una nota del autor",
+        "class": "owner",
+        "sha256": "105d4b63748e13757744d45b4e34a3fa547450a2696709976349e09485ab155c",
+        "lines": [
+          66,
+          78
+        ]
+      }
+    ],
+    "templates/languages/es/plans/README.md": [
+      {
+        "signature": "# `plans/` — planes detallados paso a paso",
+        "class": "static",
+        "sha256": "234749b5601d2d818d7ed8f1df30204ebe173c5f6ab35dc1240c6ad765dd1499",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/es/researches/README.md": [
+      {
+        "signature": "# `researches/` — base de conocimiento para las cuestiones grandes y difíciles",
+        "class": "static",
+        "sha256": "cc191ed9ef70423f17838019a0573f4ab435748ac203d1c2fbfab2996edd6b15",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/fr/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — défauts, difficultés, casses",
+        "class": "static",
+        "sha256": "b59157a99636d85ab6405bceb323acd4a5b57e237295326c2851914dd740f95c",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/fr/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (la vision)",
+        "class": "owner",
+        "sha256": "3268ef3ce5046221d85e8a140d9eb97ad47d39690bdb639528dd46e302e09a71",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## Ce que je veux — en un paragraphe",
+        "class": "owner",
+        "sha256": "770d037e88b879760f8b7a4923469e98dcb8a38512bf744f55d87a1b679b6f11",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## Pourquoi c'est important / le problème résolu",
+        "class": "owner",
+        "sha256": "d8a541a16e034ce5ddacdaba2eeb51da04a72e3f5ba9e18bf7ba5c914e4aede2",
+        "lines": [
+          20,
+          24
+        ]
+      },
+      {
+        "signature": "## À quoi ressemble le succès",
+        "class": "owner",
+        "sha256": "6e1a12252526a17a012ec954dbe7ce12cebb088b83d89716843d35b7fcf5f506",
+        "lines": [
+          25,
+          29
+        ]
+      },
+      {
+        "signature": "## Limites — ce que ce n'est PAS",
+        "class": "owner",
+        "sha256": "7951cf64d8978a4674b6ffb240b44e29d0f99f8d3244bf7d1a89ade4323bbbd0",
+        "lines": [
+          30,
+          33
+        ]
+      },
+      {
+        "signature": "## Contraintes et préférences (optionnel)",
+        "class": "owner",
+        "sha256": "13760009182a43be8146fd7ab546ce43cc54f91a2b220a6ba220c7ec59e71559",
+        "lines": [
+          34,
+          45
+        ]
+      }
+    ],
+    "templates/languages/fr/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tâches de l'agent pour l'humain",
+        "class": "static",
+        "sha256": "0ab9b6ee3c021b12bf142719bc9f6b3e3993bce830447431212f60ffe1a2a28d",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
+    "templates/languages/fr/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — propositions de fonctionnalités et d'améliorations",
+        "class": "static",
+        "sha256": "fb3034f7ed2bd5968f6db81e53ea6b21d265df7dac431b07048cef81a60344c9",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/fr/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — décisions du niveau du propriétaire",
+        "class": "static",
+        "sha256": "f078144c07d0b5d582c888622d9e09461340f1e805fc670871a1f8f5b00e9c17",
+        "lines": [
+          1,
+          18
+        ]
+      }
+    ],
+    "templates/languages/fr/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF dans <PROJECT_NAME> — le framework, déployé",
+        "class": "owner",
+        "sha256": "838928050a46ec8f2f9b14a6dcbb44901dacdcce938df444164464e08d2cfbf9",
+        "lines": [
+          1,
+          14
+        ]
+      },
+      {
+        "signature": "## Ce qu'est KAIF",
+        "class": "owner",
+        "sha256": "a62545fe8cd2ba67bc538aa64375af4c36888180bc1e3b3665ced866e73c5982",
+        "lines": [
+          15,
+          23
+        ]
+      },
+      {
+        "signature": "## Pourquoi il est là — ce qu'il apporte à ce projet",
+        "class": "owner",
+        "sha256": "270c87d31c558efcdbe5af16b7317a8210133458abca1b81a0232af2a32f5f30",
+        "lines": [
+          24,
+          30
+        ]
+      },
+      {
+        "signature": "## Comment ça marche ici — les pièces mobiles",
+        "class": "owner",
+        "sha256": "2d07aeaf997066ddb954b3d8d48f70014156285b4e42edeaa490233ed38e4184",
+        "lines": [
+          31,
+          44
+        ]
+      },
+      {
+        "signature": "## Journal de déploiement",
+        "class": "owner",
+        "sha256": "eb40c03385803183244cda7e958541612d6460aaea21f6f305c0dd3f6238d244",
+        "lines": [
+          45,
+          56
+        ]
+      },
+      {
+        "signature": "## Vivre avec KAIF (cycle de vie)",
+        "class": "owner",
+        "sha256": "71e86faafedeade1a46a76c4f6e55d2bf7c114524fd0afbac03c440677c25dfb",
+        "lines": [
+          57,
+          65
+        ]
+      },
+      {
+        "signature": "## Une note de l'auteur",
+        "class": "owner",
+        "sha256": "c6579dd61cba33ef66c8f4abe0f87fc12cbdf6135f85d1c2a9cb5349eee6002c",
+        "lines": [
+          66,
+          78
+        ]
+      }
+    ],
+    "templates/languages/fr/plans/README.md": [
+      {
+        "signature": "# `plans/` — plans détaillés pas à pas",
+        "class": "static",
+        "sha256": "aaa615d70f7f39cf19b266dc1b52959a53160c3baa6d0e8363ea7863e3ca8421",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/fr/researches/README.md": [
+      {
+        "signature": "# `researches/` — base de connaissance pour les grandes questions difficiles",
+        "class": "static",
+        "sha256": "f46b06d73cedc5baed49806522d54a203258f74389ad1a467f2c61ae0bcdc325",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/hi/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — दोष, कठिनाइयाँ, टूट-फूट",
+        "class": "static",
+        "sha256": "7e17b3a099b975f00d18c9822174c5c97c2e146c21d9248507b353c94fd51b4b",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/hi/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (विज़न)",
+        "class": "owner",
+        "sha256": "7ca72d8c26687d027e6fe2b0666c3f69f083d48188d62f74343dc8d7c6cfd643",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## मैं क्या चाहता/चाहती हूँ — एक अनुच्छेद में",
+        "class": "owner",
+        "sha256": "208689751cc30f0611cc468c7c209abc8a52900b345423ee428a512f4bbe587e",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## यह क्यों मायने रखता है / यह कौन-सी समस्या हल करता है",
+        "class": "owner",
+        "sha256": "c14d9df07759b1cb4b21f837e36bade69a05f9971ef487019521eb67559665fd",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "## सफलता कैसी दिखती है",
+        "class": "owner",
+        "sha256": "2828ea36919874532bcd3fbdfc1e7c2202b9a46270f91329708ef2a54ad89c29",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## सीमाएँ — यह क्या NAHI है",
+        "class": "owner",
+        "sha256": "fbe914b0033529df9c41de8ba31807729887108a69473df7d3824abf68f83948",
+        "lines": [
+          29,
+          32
+        ]
+      },
+      {
+        "signature": "## बाधाएँ और प्राथमिकताएँ (वैकल्पिक)",
+        "class": "owner",
+        "sha256": "53ddf2c76749f05f8765bf8b9dbdf988d8d603b8aee7eb7eeef3a28e4f4c6d4a",
+        "lines": [
+          33,
+          43
+        ]
+      }
+    ],
+    "templates/languages/hi/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — एजेंट की ओर से मानव के लिए कार्य",
+        "class": "static",
+        "sha256": "2a69eb07185e6cc141930f02ea6eb7627aac1e34dca388e182c424d048aa588c",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/hi/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — फ़ीचर और सुधार प्रस्ताव",
+        "class": "static",
+        "sha256": "0454431a16915b31be438aeddaa781b0df0dee030316487287380d80bcecdfc4",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/hi/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — स्वामी-स्तर के निर्णय",
+        "class": "static",
+        "sha256": "02ea0f6bf0fa230beb9530bdbfcb42cab2ed63c055991207e0335ddf8d185482",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/hi/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# <PROJECT_NAME> में KAIF — डिप्लॉय किया गया फ्रेमवर्क",
+        "class": "owner",
+        "sha256": "efbc3662fbf071a0494ba89131f30c7a4c95d56b61ef7e938cc47f6492aa473e",
+        "lines": [
+          1,
+          12
+        ]
+      },
+      {
+        "signature": "## KAIF क्या है",
+        "class": "owner",
+        "sha256": "9d6cc672db00e60e053d6573450443157683f7e708e7553ab27ee4293ab09af3",
+        "lines": [
+          13,
+          21
+        ]
+      },
+      {
+        "signature": "## यह यहाँ क्यों है — यह इस परियोजना को क्या देता है",
+        "class": "owner",
+        "sha256": "1d751b138fbb9f98ef6718a8b94aa045fd3a3eddfca006efe81a5f8501b15e1d",
+        "lines": [
+          22,
+          28
+        ]
+      },
+      {
+        "signature": "## यह यहाँ कैसे काम करता है — चलायमान हिस्से",
+        "class": "owner",
+        "sha256": "94666bc1c20dfef267ce4ae61c72c724f1cdf0e41097097aab70820fd025ac94",
+        "lines": [
+          29,
+          42
+        ]
+      },
+      {
+        "signature": "## डिप्लॉयमेंट रिकॉर्ड",
+        "class": "owner",
+        "sha256": "e500b5178cb9397a3b3bf838217214b20220cfd794ce1f4a92d9de69a54d913c",
+        "lines": [
+          43,
+          54
+        ]
+      },
+      {
+        "signature": "## KAIF के साथ जीवन (जीवनचक्र)",
+        "class": "owner",
+        "sha256": "369c79055ab2a8b6eee666c1e638b083bca1db4fac5de9bef499cdb0498038a2",
+        "lines": [
+          55,
+          63
+        ]
+      },
+      {
+        "signature": "## लेखक की ओर से एक नोट",
+        "class": "owner",
+        "sha256": "efd58518b31854b128beb3106faee7dd89cab98dfa8d8c25a561f933dd6dba88",
+        "lines": [
+          64,
+          76
+        ]
+      }
+    ],
+    "templates/languages/hi/plans/README.md": [
+      {
+        "signature": "# `plans/` — विस्तृत चरण-दर-चरण योजनाएँ",
+        "class": "static",
+        "sha256": "ed1136198ccc6571de8828877ce751e1eb4ffe583d4c1f0e6883db08d852d65a",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/hi/researches/README.md": [
+      {
+        "signature": "# `researches/` — बड़े कठिन प्रश्नों का ज्ञान-आधार",
+        "class": "static",
+        "sha256": "f01c25db1cc30778e1f9b429e544361ff566ecb66b2521107c58c1a00f6cab31",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/ja/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — 欠陥、困難、破損",
+        "class": "static",
+        "sha256": "3f3b400a66b631950726673278027e7d29fe27064752a41aa8406872337fe926",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/ja/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL（ビジョン）",
+        "class": "owner",
+        "sha256": "002d64278dbb365ff8896f70ed9795e5d1d0369a5bc4d87c1d6cadb5097bb4a5",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## 私が望むもの — 一段落で",
+        "class": "owner",
+        "sha256": "e789111afbb2ae3d55cf7850d00914fc89c684b9b8c601f3c2d26e784321bdd2",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## なぜ重要か / 解決する問題",
+        "class": "owner",
+        "sha256": "5e5935902c1975e78c5829aabc3aa555cf2e4ade4936b984827b15885fc76af4",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "## 成功はどう見えるか",
+        "class": "owner",
+        "sha256": "34ac1eeec57fbe2261b52ce36f527bb03618a718f0f6084cddc7c7b61b2f7223",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## 境界 — これは何では「ない」か",
+        "class": "owner",
+        "sha256": "fb12693bc7ca0b0ca853779b87de1285cb127f73098906464dfa02592d3ad787",
+        "lines": [
+          29,
+          33
+        ]
+      },
+      {
+        "signature": "## 制約と好み（任意）",
+        "class": "owner",
+        "sha256": "8b9a123c7655699f9e5d5462c2d2a97750ab5625c67ff295a93153625e0a4aef",
+        "lines": [
+          34,
+          45
+        ]
+      }
+    ],
+    "templates/languages/ja/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — エージェントから人間への宿題",
+        "class": "static",
+        "sha256": "3e390537840b453d183bdf5db045253f5237d5244ee75af7f61b5f93fef11caf",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/ja/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — 機能と改善の提案",
+        "class": "static",
+        "sha256": "946b61c8e9652b27cf1a3df71f9b3920718377a356347f5f7dca715894bf555a",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/ja/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — オーナーレベルの決定",
+        "class": "static",
+        "sha256": "23d1dd562c605a3db49836f82388b05a544223e0e776d225f7882e1543a74890",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
+    "templates/languages/ja/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# <PROJECT_NAME> における KAIF — デプロイ済みフレームワーク",
+        "class": "owner",
+        "sha256": "a539303758009725aaa51021a3eb9052acf8130fda8338fd368d2e2289e2a5e2",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## KAIF とは",
+        "class": "owner",
+        "sha256": "d323eb758a87d97010df91b1e156810ef6d4fc49fe251670c9c8b9e97c957e39",
+        "lines": [
+          14,
+          22
+        ]
+      },
+      {
+        "signature": "## なぜここにあるか — このプロジェクトに与えるもの",
+        "class": "owner",
+        "sha256": "cfc090f34aa931f4a37f0559b23f1fe44506e8e11506bd74d61833abf11a5443",
+        "lines": [
+          23,
+          29
+        ]
+      },
+      {
+        "signature": "## ここでの仕組み — 構成要素",
+        "class": "owner",
+        "sha256": "cf0dbb01f531631be66ad3b3eb21dc4ece27a8c505f25edca22167dafac41010",
+        "lines": [
+          30,
+          43
+        ]
+      },
+      {
+        "signature": "## デプロイ記録",
+        "class": "owner",
+        "sha256": "568f52475ba8becf4f4971145e71bbef9986da44e7c5a8c5238f6430629d7cc1",
+        "lines": [
+          44,
+          55
+        ]
+      },
+      {
+        "signature": "## KAIF と生きる（ライフサイクル）",
+        "class": "owner",
+        "sha256": "7ee1076d2a007937a7b77bf27b1e6c9c4773613e20b12f86352d59024375d442",
+        "lines": [
+          56,
+          64
+        ]
+      },
+      {
+        "signature": "## 作者からのノート",
+        "class": "owner",
+        "sha256": "929a4723ff6f4529fee3445ebe0927392ffd894b7fc20d593ae4457d7e5b2eb3",
+        "lines": [
+          65,
+          77
+        ]
+      }
+    ],
+    "templates/languages/ja/plans/README.md": [
+      {
+        "signature": "# `plans/` — 詳細なステップバイステップの計画",
+        "class": "static",
+        "sha256": "329330c9d663d008d232d495a71401b3e714d6f36b119b0d7c91999566cfb5a0",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/ja/researches/README.md": [
+      {
+        "signature": "# `researches/` — 大きく難しい問いのための知識ベース",
+        "class": "static",
+        "sha256": "87d1198f17ebb09fd31bb5a1e299d08ec191e5c731a3cdfa76740a11fafbe150",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/pt/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — defeitos, dificuldades, quebras",
+        "class": "static",
+        "sha256": "301970a2513e7b96410116083a365937750e5ad32a1bbc053461b91a75578348",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/pt/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (a visão)",
+        "class": "owner",
+        "sha256": "b10ce10d4e02eab4685ab83320c7bd4444a753a0f7b05abd9ebee015d26befaf",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## O que eu quero — em um parágrafo",
+        "class": "owner",
+        "sha256": "fedeebea06f7017713cb6a54e021b4502df48f4e75aa4349227fb40a83321732",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## Por que importa / o problema que resolve",
+        "class": "owner",
+        "sha256": "107b4f2495761bebcabddf543d969e2653ae7249cd216924cdc1ddeec7b1abd4",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "## Como é o sucesso",
+        "class": "owner",
+        "sha256": "b2e3ddf47d532132f7921453141228c52edad303f1aebafd84f8f2877792067a",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## Limites — o que isto NÃO é",
+        "class": "owner",
+        "sha256": "fd53510bc95032ea35a7ab6a4aba43eee4d77868e3eeb3c364ebee5570945db6",
+        "lines": [
+          29,
+          32
+        ]
+      },
+      {
+        "signature": "## Restrições e preferências (opcional)",
+        "class": "owner",
+        "sha256": "052d934ebbb48571f14c390e4e8a0c6801e5696c343504dbb084c6b18c50b2ae",
+        "lines": [
+          33,
+          44
+        ]
+      }
+    ],
+    "templates/languages/pt/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tarefas do agente para o humano",
+        "class": "static",
+        "sha256": "456159363d6addece273ce96e6b67081e6a7ba7da37486830db508f8c01b504d",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/pt/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — propostas de features e melhorias",
+        "class": "static",
+        "sha256": "4f59ef38f7cf65e4dd6c472edf4c728b5be9465b720346fa707e706e9e626755",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/pt/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — decisões do nível do proprietário",
+        "class": "static",
+        "sha256": "6729a27a889db355d8948e3cf5309a0b668e4b7c09a530469261ef248794771a",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/pt/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF em <PROJECT_NAME> — o framework, implantado",
+        "class": "owner",
+        "sha256": "5dbaa28af3aa81a1b23b017637394e94f9cb4754089ff9ea12b36609df48ee7f",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## O que é o KAIF",
+        "class": "owner",
+        "sha256": "f2841a6c1ec262bb42d41155964b9275c2f01bb8ed7a41e3f51e84fb0d0270bd",
+        "lines": [
+          14,
+          22
+        ]
+      },
+      {
+        "signature": "## Por que está aqui — o que dá a este projeto",
+        "class": "owner",
+        "sha256": "34fd2895f2c6ff3e844a78db3b7f994409bba651aaccfce22a68dd5efd0bbe0b",
+        "lines": [
+          23,
+          29
+        ]
+      },
+      {
+        "signature": "## Como funciona aqui — as peças móveis",
+        "class": "owner",
+        "sha256": "f8e16b5a6a2623ca771baedf3255a4b9ec33461fa04bec4cce4ea1fa7fb63eae",
+        "lines": [
+          30,
+          43
+        ]
+      },
+      {
+        "signature": "## Registro da implantação",
+        "class": "owner",
+        "sha256": "01cb1f6438f3bc044230073541c57d8cdf180c9b8805810fb64fbe4371f1bff8",
+        "lines": [
+          44,
+          55
+        ]
+      },
+      {
+        "signature": "## Vivendo com o KAIF (ciclo de vida)",
+        "class": "owner",
+        "sha256": "43f5fbcb4862f2f694a8ac335fe65602138c5606df64fddd191009099a8e8fd6",
+        "lines": [
+          56,
+          64
+        ]
+      },
+      {
+        "signature": "## Uma nota do autor",
+        "class": "owner",
+        "sha256": "a578d38ce4aeefbb6f87e31768498e59132a0670885e693bcee9ffc77b806995",
+        "lines": [
+          65,
+          77
+        ]
+      }
+    ],
+    "templates/languages/pt/plans/README.md": [
+      {
+        "signature": "# `plans/` — planos detalhados passo a passo",
+        "class": "static",
+        "sha256": "eebf1c7bfcc78c0ab63d4a4509786f137f39f7aba985798e9339ce5444f8cb28",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/pt/researches/README.md": [
+      {
+        "signature": "# `researches/` — base de conhecimento para as questões grandes e difíceis",
+        "class": "static",
+        "sha256": "7957edb280aa3522d16feda4412f5b637dc22d3abbf78f8ff473bf2431bc612b",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/ru/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — дефекты, трудности, поломки",
+        "class": "static",
+        "sha256": "6699f0359ec7f91de5a6c29ea3d18711d31da099487d82fbdc41a8404eaaf72c",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/ru/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL (видение)",
+        "class": "owner",
+        "sha256": "bac25fba85b2a2ff6cc8f521129332e8de55cd9b68a9c9f2778faedd3b2eb093",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## Чего я хочу — одним абзацем",
+        "class": "owner",
+        "sha256": "9b2f52142be76f720c13e45660c1a98519e08114df271db23112aeb6a78fbe3a",
+        "lines": [
+          14,
+          19
+        ]
+      },
+      {
+        "signature": "## Почему это важно / какую боль решает",
+        "class": "owner",
+        "sha256": "fbd0667798febc0684fd409ba87ba05dcc98475f46c38b5e1f4cefc2ae5ea035",
+        "lines": [
+          20,
+          23
+        ]
+      },
+      {
+        "signature": "## Как выглядит успех",
+        "class": "owner",
+        "sha256": "7fb8624f48a8f977de8b3840f714ec39a9f7d50bb4a0b8d223f96371633101f7",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## Границы — чем это НЕ является",
+        "class": "owner",
+        "sha256": "bb4f4573b3f708b25c25d0051d35c4eb94afe718038b1a89ac028a3be5dfb0df",
+        "lines": [
+          29,
+          32
+        ]
+      },
+      {
+        "signature": "## Ограничения и предпочтения (опционально)",
+        "class": "owner",
+        "sha256": "5e113fc05c5f523b84d96a11b0d5083d8a97e1d5782cf5508b91cef67735801a",
+        "lines": [
+          33,
+          44
+        ]
+      }
+    ],
+    "templates/languages/ru/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — задания от агента человеку",
+        "class": "static",
+        "sha256": "9512d324f80455c158046e7920eb5bbd33e6a741aa618b5c1aea6666affeada3",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/ru/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — идеи, фичи, предложения по улучшению",
+        "class": "static",
+        "sha256": "4a86540e9b230952860598bb379ac072560c27679f837e8944023422320610b3",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/ru/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — решения уровня владельца",
+        "class": "static",
+        "sha256": "9824c90f7bd44a87b7a6b3b75c2b30212dbdc751527450968ba857eee96c5269",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/ru/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# KAIF в <PROJECT_NAME> — фреймворк, развёрнутый здесь",
+        "class": "owner",
+        "sha256": "234a443e6eaa6af88303f1e2eb5d64eefae5b13bf26d35f83193b334ce5cd083",
+        "lines": [
+          1,
+          13
+        ]
+      },
+      {
+        "signature": "## Что такое KAIF",
+        "class": "owner",
+        "sha256": "f177aeab510adc4334e4713509a10194db986a316bc3f90c4e0b636dd0a146bb",
+        "lines": [
+          14,
+          22
+        ]
+      },
+      {
+        "signature": "## Зачем он здесь — что он даёт проекту",
+        "class": "owner",
+        "sha256": "b95e4a1c0ad0c5fcab02e2610571a104fe97d7c69b9d1d2aed9ee497c682f014",
+        "lines": [
+          23,
+          29
+        ]
+      },
+      {
+        "signature": "## Как это работает здесь — движущиеся части",
+        "class": "owner",
+        "sha256": "3b7be56b994eb670811a0cac6d89855bbbee4e2e87f080603d42f66d68a91f08",
+        "lines": [
+          30,
+          43
+        ]
+      },
+      {
+        "signature": "## Запись о развёртывании",
+        "class": "owner",
+        "sha256": "6eb032c7cf939958cbd323a6eb53cc9c8d0d072c52b72b02a86208050189d277",
+        "lines": [
+          44,
+          55
+        ]
+      },
+      {
+        "signature": "## Жизнь с KAIF (жизненный цикл)",
+        "class": "owner",
+        "sha256": "9602052829271fafea1a70321d9921b566f006f0d71504ffdd0aa56b8bb9a4a9",
+        "lines": [
+          56,
+          64
+        ]
+      },
+      {
+        "signature": "## Заметка от автора",
+        "class": "owner",
+        "sha256": "3f122e9e01ce8fd4e5069ebe26b412695abe1172110ffff58519b2db8024d736",
+        "lines": [
+          65,
+          77
+        ]
+      }
+    ],
+    "templates/languages/ru/plans/README.md": [
+      {
+        "signature": "# `plans/` — детальные пошаговые планы",
+        "class": "static",
+        "sha256": "18b995d3bb25bb73b853982074b8e75ad1221bf7fd2b7cbc475d4a91a4d3da53",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/ru/researches/README.md": [
+      {
+        "signature": "# `researches/` — база знаний по масштабным трудным вопросам",
+        "class": "static",
+        "sha256": "099080559616899da1cc28e37ffefaca55c24893a7f1383ed312127f777ff81d",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/bugs/README.md": [
+      {
+        "signature": "# `bugs/` —— 缺陷、困难、故障",
+        "class": "static",
+        "sha256": "92c77d1508622aaafbfd0101a0b642bbfe6d297267892b36f51b0a3f4c627b56",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/GOAL.md": [
+      {
+        "signature": "# <PROJECT_NAME> — GOAL（愿景）",
+        "class": "owner",
+        "sha256": "8f1b8549a024cc2385dd1164c771acf7f95cf5ad4e8411bb1e3fd9155fe17776",
+        "lines": [
+          1,
+          11
+        ]
+      },
+      {
+        "signature": "## 我想要什么 —— 用一段话说清",
+        "class": "owner",
+        "sha256": "72b992c5e93ad46834bda1b4fe51d2c3149149fb68e13547112bb26f029323d3",
+        "lines": [
+          12,
+          17
+        ]
+      },
+      {
+        "signature": "## 为什么重要 / 解决什么问题",
+        "class": "owner",
+        "sha256": "7c812b96c45c0c4d80a5e5b5cce8a3bfdb26d530b797aa63704674a1a8a15cb7",
+        "lines": [
+          18,
+          21
+        ]
+      },
+      {
+        "signature": "## 成功是什么样子",
+        "class": "owner",
+        "sha256": "234a82fd9243083f9240894b4a72d862844248afda6ca641e16e71bf3e051f91",
+        "lines": [
+          22,
+          26
+        ]
+      },
+      {
+        "signature": "## 边界 —— 这不是什么",
+        "class": "owner",
+        "sha256": "0498d16d0a685d3e04b761bc1374956718b4e9ed1c7a9f32ea99b9b33c79732b",
+        "lines": [
+          27,
+          30
+        ]
+      },
+      {
+        "signature": "## 约束与偏好（可选）",
+        "class": "owner",
+        "sha256": "9e21b264691e9fe00086a569a0e8dd419ce3b5e9cbeabe4c32074348d8cad231",
+        "lines": [
+          31,
+          41
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` —— 代理布置给人类的任务",
+        "class": "static",
+        "sha256": "5eee4623b954089d9b7e437e34924b73e946dec73d1808caafc88a506b914c55",
+        "lines": [
+          1,
+          13
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/ideas/README.md": [
+      {
+        "signature": "# `ideas/` —— 功能与改进提案",
+        "class": "static",
+        "sha256": "a9e97a4a5dc69f2a81a71c968f702e344680bf4b0633234ca1172c4e26c5e61e",
+        "lines": [
+          1,
+          12
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/interviews/README.md": [
+      {
+        "signature": "# `interviews/` —— 所有者级别的决策",
+        "class": "static",
+        "sha256": "95adc7331a210f908aa0b76677494283a4205ae122e39dcd8832be6166cf0a7c",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/KAIF_FRAMEWORK.md": [
+      {
+        "signature": "# <PROJECT_NAME> 中的 KAIF —— 已部署的框架",
+        "class": "owner",
+        "sha256": "7ebc6608628efcbbde3c4cd878fc8f42eb4fe086998fac10c7cbed13b1b1f0b1",
+        "lines": [
+          1,
+          11
+        ]
+      },
+      {
+        "signature": "## KAIF 是什么",
+        "class": "owner",
+        "sha256": "6a8ed56a3f42ac86c7d460e2c435a8efdc75b863bef9ff14c7153cb7ac786506",
+        "lines": [
+          12,
+          18
+        ]
+      },
+      {
+        "signature": "## 为什么在这里 —— 它给本项目带来什么",
+        "class": "owner",
+        "sha256": "005abe0376b2105ef431dce8bf00926fde6bd4c05d2846bf7486e22cc80a4790",
+        "lines": [
+          19,
+          25
+        ]
+      },
+      {
+        "signature": "## 在这里如何运作 —— 各个组成部分",
+        "class": "owner",
+        "sha256": "2c95df8adb4a1d49136b5a85f2cdd75c1d515fcf7a132e9927e5f20b89146e47",
+        "lines": [
+          26,
+          39
+        ]
+      },
+      {
+        "signature": "## 部署记录",
+        "class": "owner",
+        "sha256": "8317eb40984c08a8ee34142c1d12445b4c67daceaa296e786b0b976a46a7a7fd",
+        "lines": [
+          40,
+          51
+        ]
+      },
+      {
+        "signature": "## 与 KAIF 共处（生命周期）",
+        "class": "owner",
+        "sha256": "d0722b642c9889f51be8d2ba5a500b12f23a563dcb23f5cb0ecec94b3029bc8a",
+        "lines": [
+          52,
+          60
+        ]
+      },
+      {
+        "signature": "## 作者的话",
+        "class": "owner",
+        "sha256": "3f49390d6f6064892d3d7c7eb35222ea543ed4ab2852a86549ffd026b5334f82",
+        "lines": [
+          61,
+          73
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/plans/README.md": [
+      {
+        "signature": "# `plans/` —— 详细的分步计划",
+        "class": "static",
+        "sha256": "c185ddc61dcf56d6b9fec210b4f4d4830f20969289d7129f1472e073935b7dfa",
+        "lines": [
+          1,
+          12
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/researches/README.md": [
+      {
+        "signature": "# `researches/` —— 面向重大难题的知识库",
+        "class": "static",
+        "sha256": "757ea93066ab808d37ba1cccb6ab3882c1ce432320cd6a03da061713b05e1461",
+        "lines": [
+          1,
+          12
+        ]
+      }
+    ]
+  }
+}

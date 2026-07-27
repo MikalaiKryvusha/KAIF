@@ -157,6 +157,36 @@ if (existsSync(distDir)) {
       if (stale) errors.push(`${label} header bakes in a version-codename ("${stale[0]}…") — machinery headers must be version-neutral`);
     }
     distNote = ` · dist OK (bundle ${bundleBlocks} blocks, sha256 fresh, notes name ${expectCodenameLine})`;
+
+    // 8. The module map (plan 21 §3.1): present, COMPLETE (every md block of the bundle mapped),
+    //    FRESH (signatures + sha match a re-split of the bundle's own content), classes valid.
+    //    The splitter comes from the same lib the build uses — one algorithm, no drift.
+    if (!existsSync(join(distDir, 'kaif-module-map.json'))) {
+      errors.push('dist artifact missing: dist/kaif-module-map.json — re-run the build');
+    } else {
+      const { splitModules, MODULE_CLASSES } = await import('./module-map-lib.mjs');
+      const mm = JSON.parse(dread('kaif-module-map.json'));
+      const blockRe = /^> \*\*FILE: `([^`]+)`\*\*[^\n]*\n\n``````\w*\n([\s\S]*?)\n``````/gm;
+      let mdBlocks = 0, staleFiles = 0;
+      for (let m; (m = blockRe.exec(bundle)); ) {
+        const [, p, body] = m;
+        if (!p.endsWith('.md') || p === 'kaif-bundle-manifest.json') continue;
+        mdBlocks++;
+        const entry = (mm.files || {})[p];
+        if (!entry) { errors.push(`module map: bundle file not mapped: ${p}`); continue; }
+        const mods = splitModules(body + '\n');
+        if (mods.length !== entry.length) { staleFiles++; continue; }
+        for (let i = 0; i < mods.length; i++) {
+          const actualSha = createHash('sha256').update(mods[i].lines.join('\n')).digest('hex');
+          if (mods[i].signature !== entry[i].signature || actualSha !== entry[i].sha256) { staleFiles++; break; }
+          if (!MODULE_CLASSES.includes(entry[i].class))
+            errors.push(`module map: invalid class "${entry[i].class}" for ${p} :: ${entry[i].signature}`);
+        }
+      }
+      if (staleFiles) errors.push(`module map STALE: ${staleFiles} of ${mdBlocks} md files diverge from the bundle — re-run the build`);
+      if (!errors.some((e) => e.startsWith('module map')))
+        distNote += ` · module map OK (${mm.moduleCount} modules / ${mdBlocks} md files)`;
+    }
   }
 }
 

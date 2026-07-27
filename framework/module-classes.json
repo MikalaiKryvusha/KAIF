@@ -1,0 +1,4 @@
+{
+  "_readme": "Manual CLASS OVERRIDES for the module map (plan 21 §3.1). The build COMPUTES defaults: OWNER_SEEDED files → owner; a module containing a canonical placeholder, or a skill frontmatter → adaptive; everything else → static. Add an entry here ONLY when the computed default is wrong. Format: { \"<deploy dest>\": { \"default\": \"static|adaptive|owner\", \"modules\": { \"<full heading line>\": \"class\" } } }. A stale override (unknown file/signature) FAILS the build — rename-aware by design.",
+  "_classes": "static = upstream-owned, mechanically replaceable · adaptive = carries project values, replaced with value transfer · owner = the owner's content, never in the machinery's scope"
+}
