@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // kaif-provenance.mjs — the OPTIONAL provenance module for the owner's canon artifacts
-// (KAIF 2.0, plan 20 phase 5; owner decision #19: a separate optional module, not core).
+// (plan 20 phase 5; owner decision #19: a separate optional module, not core).
 // Deployed to .kaif/tools/kaif-provenance.mjs by the installer; does nothing until the project
 // declares its canon artifacts.
 //
@@ -11,6 +11,11 @@
 // asked for this exact cheap gate first: "without tooling the convention rots first, and agents
 // start marking everything" (QA field report, 1.6).
 //
+// Tags quoted in inline code spans (`…`) or fenced code blocks (``` / ~~~) are DOCUMENTATION
+// of the convention, not marks — the parser skips them. The deployed KAIF docs themselves quote
+// the convention (AGENT_GUIDE, PHILOSOPHY, fable-judge), so the gate must stay green on a fresh
+// deployment out of the box.
+//
 // Declare the canon in .kaif/kaif.json:   "canonArtifacts": ["rules/", "lore/canon.md"]
 //   (a path ending in "/" declares a directory subtree; otherwise an exact file path)
 //
@@ -18,7 +23,8 @@
 //   node .kaif/tools/kaif-provenance.mjs report            # where AI text awaits acceptance
 //   node .kaif/tools/kaif-provenance.mjs check             # the GATE (wire into your checks/CI):
 //                                                          #   · every mark is correctly paired
-//                                                          #   · marks live ONLY in declared canon
+//                                                          #   · with canonArtifacts declared:
+//                                                          #     marks live ONLY in the canon
 //                                                          # exit 1 on violations
 //   node .kaif/tools/kaif-provenance.mjs accept <file>     # THE OWNER ACCEPTED this file's blocks:
 //                                                          # move them to the acceptance registry
@@ -37,47 +43,80 @@ const KAIF_JSON = '.kaif/kaif.json';
 const REGISTRY = '.kaif/provenance-accepted.json';
 const OPEN = ['[AI]', '[AI-ed]'];
 const CLOSE = { '[AI]': '[/AI]', '[AI-ed]': '[/AI-ed]' };
+const TAGS = ['[AI-ed]', '[/AI-ed]', '[AI]', '[/AI]']; // longest first — see the guard in lineTags
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 const sha = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
+const slashes = (p) => p.replaceAll('\\', '/'); // registry keys and decl entries use forward slashes
 
 function canonDecl() {
   if (!existsSync(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
   const j = JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^﻿/, ''));
-  return Array.isArray(j.canonArtifacts) ? j.canonArtifacts : [];
+  return Array.isArray(j.canonArtifacts) ? j.canonArtifacts.map(slashes) : [];
 }
 const inCanon = (p, decl) => decl.some((d) => (d.endsWith('/') ? p.startsWith(d) : p === d));
 
-// Parse one file into mark blocks; returns { blocks, errors }. A block: { kind, text, line }.
+// Mark tags on one line, ordered by COLUMN (several pairs may share a line — processing them
+// by tag type instead of position produced false nesting errors on correct text). Occurrences
+// inside inline code spans (`…`) are quoted documentation, not marks — skipped.
+function lineTags(line) {
+  const spans = [];
+  const spanRe = /`[^`]*`/g;
+  let m;
+  while ((m = spanRe.exec(line))) spans.push([m.index, m.index + m[0].length]);
+  const inSpan = (i) => spans.some(([a, b]) => i >= a && i < b);
+  const hits = [];
+  for (const tag of TAGS) {
+    let idx = -1;
+    while ((idx = line.indexOf(tag, idx + 1)) !== -1) {
+      // longest-match guard: a "[AI]"/"[/AI]" scan must not claim the head of "[AI-ed]"/"[/AI-ed]"
+      if (tag === '[AI]' && line.slice(idx, idx + 7) === '[AI-ed]') continue;
+      if (tag === '[/AI]' && line.slice(idx, idx + 8) === '[/AI-ed]') continue;
+      if (inSpan(idx)) continue;
+      hits.push({ tag, idx });
+    }
+  }
+  return hits.sort((a, b) => a.idx - b.idx);
+}
+
+// Parse one file into mark blocks; returns { blocks, errors, tagSites }.
+// A block: { kind, line, text } — text is EXACTLY what sits between the tags (EOL-normalized,
+// so sha/excerpt are stable across CRLF and LF checkouts). tagSites — every recognized tag's
+// { line, idx, len }, reused by accept's mark stripping (only real tags are stripped).
 function parseMarks(path) {
-  const text = readFileSync(path, 'utf8');
+  const lines = readFileSync(path, 'utf8').split('\n');
   const blocks = [];
   const errors = [];
-  let open = null; // { kind, line, start }
-  const lines = text.split('\n');
+  const tagSites = [];
+  let open = null; // { kind, line, si, ci } — si/ci: 0-based line / column right after the open tag
+  let fence = false;
+  const clean = (l) => l.replace(/\r$/, '');
   for (let i = 0; i < lines.length; i++) {
-    for (const tag of [...OPEN, '[/AI]', '[/AI-ed]']) {
-      let idx = -1;
-      while ((idx = lines[i].indexOf(tag, idx + 1)) !== -1) {
-        // longest-match guard: "[AI]" also matches inside "[AI-ed]" — skip those hits
-        if (tag === '[AI]' && lines[i].slice(idx, idx + 7) === '[AI-ed]') continue;
-        if (tag === '[/AI]' && lines[i].slice(idx, idx + 8) === '[/AI-ed]') continue;
-        if (OPEN.includes(tag)) {
-          if (open) { errors.push(`${path}:${i + 1} — ${tag} opened while ${open.kind} from line ${open.line} is still open (nesting is not allowed)`); }
-          else open = { kind: tag, line: i + 1, buf: [] };
-        } else {
-          const wanted = open ? CLOSE[open.kind] : null;
-          if (!open) errors.push(`${path}:${i + 1} — stray ${tag} with no open mark`);
-          else if (tag !== wanted) errors.push(`${path}:${i + 1} — ${tag} closes ${open.kind} from line ${open.line} (expected ${wanted})`);
-          else { blocks.push({ kind: open.kind, line: open.line, text: open.buf.join('\n') }); open = null; }
+    const line = clean(lines[i]);
+    if (/^\s*(```|~~~)/.test(line)) { fence = !fence; continue; }
+    if (fence) continue;
+    for (const { tag, idx } of lineTags(line)) {
+      tagSites.push({ line: i, idx, len: tag.length });
+      if (OPEN.includes(tag)) {
+        if (open) { errors.push(`${path}:${i + 1} — ${tag} opened while ${open.kind} from line ${open.line} is still open (nesting is not allowed)`); }
+        else open = { kind: tag, line: i + 1, si: i, ci: idx + tag.length };
+      } else {
+        const wanted = open ? CLOSE[open.kind] : null;
+        if (!open) errors.push(`${path}:${i + 1} — stray ${tag} with no open mark`);
+        else if (tag !== wanted) errors.push(`${path}:${i + 1} — ${tag} closes ${open.kind} from line ${open.line} (expected ${wanted})`);
+        else {
+          const text = open.si === i
+            ? line.slice(open.ci, idx)
+            : [clean(lines[open.si]).slice(open.ci), ...lines.slice(open.si + 1, i).map(clean), line.slice(0, idx)].join('\n');
+          blocks.push({ kind: open.kind, line: open.line, text });
+          open = null;
         }
       }
     }
-    if (open) open.buf.push(lines[i]);
   }
   if (open) errors.push(`${path}:${open.line} — ${open.kind} never closed`);
-  return { blocks, errors };
+  return { blocks, errors, tagSites };
 }
 
 function* walkMd(dir = '.') {
@@ -95,7 +134,9 @@ function cmdCheck() {
   for (const p of walkMd()) {
     const { blocks, errors } = parseMarks(p);
     for (const e of errors) { console.error('✖ ' + e); issues++; }
-    if (blocks.length && !inCanon(p, decl)) {
+    // "marks live only in the canon" applies once a canon IS declared — without a declaration
+    // only mark hygiene is checked (the header's "does nothing until declared" promise).
+    if (blocks.length && decl.length && !inCanon(p, decl)) {
       console.error(`✖ ${p} carries ${blocks.length} provenance mark block(s) but is NOT a declared canon artifact — marks live only in canonArtifacts (declare it in .kaif/kaif.json, or remove the marks: agents must not mark everything)`);
       issues++;
     }
@@ -122,18 +163,30 @@ function cmdReport() {
 
 function cmdAccept() {
   if (!ARG) die('usage: kaif-provenance accept <file>   — run ONLY after the owner said the file is accepted');
-  if (!existsSync(ARG)) die(`no such file: ${ARG}`);
-  const { blocks, errors } = parseMarks(ARG);
+  const file = slashes(ARG);
+  if (!existsSync(file)) die(`no such file: ${file}`);
+  const decl = canonDecl();
+  if (decl.length && !inCanon(file, decl)) console.error(`⚠ ${file} is not a declared canon artifact — accepting on the owner's word anyway, but marks normally live only in canonArtifacts`);
+  const { blocks, errors, tagSites } = parseMarks(file);
   if (errors.length) { for (const e of errors) console.error('✖ ' + e); die('fix mark pairing before accepting'); }
-  if (!blocks.length) die(`${ARG} carries no provenance marks — nothing to accept`);
-  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8')) : { accepted: [] };
+  if (!blocks.length) die(`${file} carries no provenance marks — nothing to accept`);
+  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8').replace(/^﻿/, '')) : { accepted: [] };
   const date = new Date().toISOString().slice(0, 10);
-  for (const b of blocks) reg.accepted.push({ file: ARG, date, kind: b.kind, sha: sha(b.text), excerpt: b.text.trim().split('\n')[0].slice(0, 80) });
+  for (const b of blocks) reg.accepted.push({ file, date, kind: b.kind, sha: sha(b.text), excerpt: b.text.trim().split('\n')[0].slice(0, 80) });
   writeFileSync(REGISTRY, JSON.stringify(reg, null, 2) + '\n');
-  let text = readFileSync(ARG, 'utf8');
-  for (const tag of ['[AI-ed]', '[/AI-ed]', '[AI]', '[/AI]']) text = text.split(tag).join('');
-  writeFileSync(ARG, text);
-  log(`✔ accepted ${blocks.length} block(s) in ${ARG} — marks stripped, registry updated (${REGISTRY}). This action carries the owner's word.`);
+  // Strip ONLY the tags the parser recognized (quoted documentation stays), right-to-left per
+  // line; a line that was nothing but a tag disappears entirely — no blank-line scars.
+  const lines = readFileSync(file, 'utf8').split('\n');
+  const byLine = new Map();
+  for (const s of tagSites) { if (!byLine.has(s.line)) byLine.set(s.line, []); byLine.get(s.line).push(s); }
+  const drop = new Set();
+  for (const [ln, sites] of byLine) {
+    let l = lines[ln];
+    for (const s of sites.sort((a, b) => b.idx - a.idx)) l = l.slice(0, s.idx) + l.slice(s.idx + s.len);
+    if (l.replace(/\r$/, '').trim()) lines[ln] = l; else drop.add(ln);
+  }
+  writeFileSync(file, lines.filter((_, i) => !drop.has(i)).join('\n'));
+  log(`✔ accepted ${blocks.length} block(s) in ${file} — marks stripped, registry updated (${REGISTRY}). This action carries the owner's word.`);
 }
 
 ({ check: cmdCheck, report: cmdReport, accept: cmdAccept }[CMD] ||

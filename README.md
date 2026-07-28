@@ -194,7 +194,7 @@ degrade honestly: English + a translation item in the adaptation task.
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
-    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (26 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (28 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
   </picture>
 </p>
 
@@ -341,11 +341,12 @@ framework/                       the canonical universal templates (the payload)
   installer/                     KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
   templates/languages/           10 language packs (owner-facing docs + skill trigger aliases)
   skills/ spheres/ adapters/     28 skill templates · sphere libraries · agent-system adapters
+  tools/ readmes/                optional tool modules (provenance gate · canon linter) · directory READMEs
 dist/                            generated distribution: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
-                                 · kaif-manifest.json (sha256) · KAIF-FULL.md (offline fallback)
+                                 · kaif-manifest.json (sha256) · KAIF-FULL.md (offline fallback) · kaif-module-map.json
 assets/                          generated README diagrams (3 × light/dark × EN/RU), from build-diagrams.mjs
-tools/                           build-framework.mjs · check-framework.mjs · build-diagrams.mjs
-                                 · readme-pdf.mjs · commit.mjs
+tools/                           build-framework.mjs · check-framework.mjs · sandbox-suite.mjs (the test polygon)
+                                 · module-map-lib.mjs · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs
 README.md / README.pdf           this front door (EN+RU) and its rendered copy
 GOAL.md  MASTER_PLAN.md  …        the dogfooding wrapper (the framework applied to itself)
 ```
@@ -558,7 +559,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
-    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (26 повторяемых ритуалов, вызываются по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (28 повторяемых ритуалов, вызываются по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
   </picture>
 </p>
 
@@ -707,11 +708,12 @@ framework/                       канонические универсальн
   installer/                     KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · повествование тонкого ядра
   templates/languages/           10 языковых пакетов (owner-доки + триггер-алиасы навыков)
   skills/ spheres/ adapters/     28 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
+  tools/ readmes/                опциональные tool-модули (гейт провенанса · линтер канона) · README директорий
 dist/                            сгенерированная раздача: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
-                                 · kaif-manifest.json (sha256) · KAIF-FULL.md (оффлайн-фолбэк)
+                                 · kaif-manifest.json (sha256) · KAIF-FULL.md (оффлайн-фолбэк) · kaif-module-map.json
 assets/                          сгенерированные схемы README (3 × светлая/тёмная × EN/RU), из build-diagrams.mjs
-tools/                           build-framework.mjs · check-framework.mjs · build-diagrams.mjs
-                                 · readme-pdf.mjs · commit.mjs
+tools/                           build-framework.mjs · check-framework.mjs · sandbox-suite.mjs (тест-полигон)
+                                 · module-map-lib.mjs · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs
 README.md / README.pdf           этот «парадный вход» (EN+RU) и его рендер-копия
 GOAL.md  MASTER_PLAN.md  …        обвязка-самообёртка (фреймворк, применённый к себе)
 ```

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// kaif-canon-lint.mjs — the OPTIONAL canon-artifact linter (KAIF 2.0, plan 20 phase 5;
+// kaif-canon-lint.mjs — the OPTIONAL canon-artifact linter (plan 20 phase 5;
 // plan 17 §3 / ideas 15 §2.6). Deployed to .kaif/tools/kaif-canon-lint.mjs.
 //
 // The discipline it mechanizes: every REVOKED decision becomes a FORBIDDEN wording; every
@@ -40,24 +40,31 @@ function* walkMd(dir = '.') {
     if (/\.md$/i.test(n)) yield p;
   }
 }
-const inScope = (p, files) => !files || (files.endsWith('/') ? p.startsWith(files) : p === files);
+// files in rules may be written with backslashes on Windows — walkMd always yields forward slashes
+const inScope = (p, files) => !files || ((files = files.replaceAll('\\', '/')).endsWith('/') ? p.startsWith(files) : p === files);
+// CRLF checkouts and PS5.1 Out-File BOMs are the documented Windows profile of real projects:
+// read EOL/BOM-normalized, or required lines false-redden and $-anchored forbidden patterns
+// false-GREEN (the worst failure direction).
+const readLines = (p) => readFileSync(p, 'utf8').replace(/^﻿/, '').split(/\r?\n/);
+// A broken regex must red the run with a clear message, not a raw stack trace.
+const compileRule = (r) => { try { return new RegExp(r.pattern); } catch (e) { console.error(`✖ invalid regex in forbidden rule: ${r.pattern} — ${e.message}`); return null; } };
 
 function cmdCheck() {
   let issues = 0;
   const mdFiles = [...walkMd()];
   for (const r of rules.forbidden || []) {
-    const re = new RegExp(r.pattern);
+    const re = compileRule(r);
+    if (!re) { issues++; continue; }
     for (const p of mdFiles) {
       if (!inScope(p, r.files)) continue;
-      const lines = readFileSync(p, 'utf8').split('\n');
+      const lines = readLines(p);
       for (let i = 0; i < lines.length; i++)
         if (re.test(lines[i])) { console.error(`✖ forbidden in ${p}:${i + 1} — ${r.message || r.pattern}`); issues++; }
     }
   }
   for (const r of rules.required || []) {
     if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file} — ${r.message || ''}`); issues++; continue; }
-    const text = readFileSync(r.file, 'utf8');
-    if (!text.split('\n').includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
+    if (!readLines(r.file).includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
   }
   if (issues) die(`canon lint FAILED: ${issues} issue(s)`);
   log(`✅ canon lint OK (${(rules.forbidden || []).length} forbidden + ${(rules.required || []).length} required rules)`);
@@ -70,13 +77,15 @@ function cmdSelftest() {
   for (const r of rules.required || []) {
     if (!r.line || r.line.trim().length < 12) { console.error(`✖ required line too short to be unique (guard with FULL lines): "${r.line}"`); issues++; continue; }
     if (r.file && existsSync(r.file)) {
-      const hits = readFileSync(r.file, 'utf8').split('\n').filter((l) => l === r.line).length;
+      const hits = readLines(r.file).filter((l) => l === r.line).length;
       if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
     }
   }
   for (const r of rules.forbidden || []) {
     if (!r.example) { console.error(`✖ forbidden rule has no "example" to prove it on: ${r.pattern}`); issues++; continue; }
-    if (!new RegExp(r.pattern).test(r.example)) { console.error(`✖ forbidden pattern does NOT match its own example (a guard that never reddens proves nothing): ${r.pattern}`); issues++; }
+    const re = compileRule(r);
+    if (!re) { issues++; continue; }
+    if (!re.test(r.example)) { console.error(`✖ forbidden pattern does NOT match its own example (a guard that never reddens proves nothing): ${r.pattern}`); issues++; }
   }
   if (issues) die(`canon lint selftest FAILED: ${issues} issue(s)`);
   log(`✅ canon lint selftest OK — every guard is proven able to fire`);

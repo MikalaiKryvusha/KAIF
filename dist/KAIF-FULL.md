@@ -108,9 +108,9 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── homeworks/     # tasks from the agent to the human (things only a human can do)
 │
 │  ── WIRING ──
-├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
+├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 22 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — 28 in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -1429,7 +1429,7 @@ for understanding the project and making judgment calls.
 |---|---|
 | **Payload** | The set of canonical templates deployed into a target project. Single source: the origin repository's `framework/` directory. |
 | **Wrapper** | The framework applied to a concrete project: the deployed documents, directories and skills, plus the project's own knowledge base. |
-| **Core (thin)** | `KAIF.md` — the ~170-line entry point: a three-step bootstrap that fetches the installer machinery. Transient in the target project. |
+| **Core (thin)** | `KAIF.md` — the ~150-line entry point: a three-step bootstrap that fetches the installer machinery. Transient in the target project. |
 | **Machinery** | `KAIF-CORE.mjs`, deployed as `.kaif/kaif-core.mjs` — the installer/updater executable that performs every mechanizable step. |
 | **Bundle** | `KAIF-CORE-BUNDLE.md` — every deployable file as `FILE:` blocks plus one meta block (§8.2). |
 | **Module** | A logical section of a template — the atom of diffing and replacement (§9). Everything from one heading line to the next; the text before the first heading is the `<preamble>` module. |
@@ -1476,7 +1476,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 | `KAIF-CORE.mjs` | The machinery; survives as `.kaif/kaif-core.mjs` (except on anonymous deployments, §11.3). |
 | `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
-| `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not a diff baseline. |
+| `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
 
 ## 5. The document system
 
@@ -1516,11 +1516,12 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
-- **Lifecycle (origin-tied, skipped on anonymous deployments):** `kaif-version` · `kaif-update` ·
-  `kaif-fork` · `kaif-switch-origin` · `kaif-remove`. Their headers state the current mechanical
-  command first: an adopted copy of a lifecycle skill goes stale silently, and its staleness
-  breaks the update itself — when prose and machinery disagree, the machinery and the origin
-  release notes win.
+- **Lifecycle:** `kaif-version` · `kaif-update` · `kaif-fork` · `kaif-switch-origin` —
+  origin-tied, skipped on anonymous deployments — plus `kaif-remove`, which is NOT origin-tied
+  and ships on every deployment (removal must stay available to an anonymous owner too). Their
+  headers state the current mechanical command first: an adopted copy of a lifecycle skill goes
+  stale silently, and its staleness breaks the update itself — when prose and machinery disagree,
+  the machinery and the origin release notes win.
 
 ## 7. Installation
 
@@ -1655,7 +1656,8 @@ is provable after the fact, forever.
 
 The deploy manifest keeps `templateShas` (what the framework deployed) apart from `shas` (what
 lies on disk, refreshed post-merge). Authority to replace derives ONLY from template shas; hence
-an adaptation that survived one update cannot die in the next. All hashes are EOL-normalized.
+an adaptation that survived one update cannot die in the next. Template and module hashes are
+EOL-normalized; the disk snapshot (`shas`) is byte-exact.
 
 ### 11.3 Anonymity
 
@@ -3017,7 +3019,7 @@ Offer to begin the top step immediately; on the owner's confirmation (or in an a
 ``````md
 ---
 name: help-kaif
-description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it: the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
+description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it — the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
 ---
 
 # /help-kaif — explain KAIF to the operator, in chat
@@ -3056,15 +3058,20 @@ well-structured explanation they can read and act on.
    yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
    the DONE-tag convention in one line.
 
-4. **The skills — the commands you type.** List them grouped, each with a one-line purpose: session
-   (`/resume`, `/pause`), autonomy (`/autoloop`, `/dayloop`, `/nightloop`), hygiene (`/refresh-context`,
-   `/check-backlog`), knowledge (`/report-bug`, `/bug-research`, `/propose-idea`), owner (`/interview`),
-   planning (`/revision`), help (`/help-kaif`), shipping (`/release`), and the lifecycle (`/kaif-version`,
-   `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`, `/kaif-remove`).
+4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
+   groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
+   soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
+   `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
+   (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
+   `/what-next`), planning (`/revision`), guardrails (`/derive-styleguide`), execution discipline
+   (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
+   (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
+   `/kaif-remove`).
 
 5. **How a normal workflow looks.** A short example: *"`/resume` to start → I work and keep `STATUS.md`
-   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to wrap up."* Note the human's
-   role (visionary: `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
+   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to break off (the chat
+   continues later) or `/end-chat` to close the chat with a handoff."* Note the human's role (visionary:
+   `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
 
 6. **Where to go deeper.** Point to `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
 
@@ -3211,7 +3218,7 @@ Report to the human: the version, the release link, what was attached. Done.
 ``````md
 ---
 name: derive-styleguide
-description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule: writing into a canon artifact with no approved styleguide — derive and approve one first.
+description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule — writing into a canon artifact with no approved styleguide means derive and approve one first.
 ---
 
 # /derive-styleguide — the owner's style, extracted from evidence
@@ -3321,9 +3328,9 @@ precedes every push). Then:
 pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
-End the message with:
+End the message with your standard co-author trailer, e.g.:
 ```
-Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
+Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ```
 
 ## Step 5. The farewell report

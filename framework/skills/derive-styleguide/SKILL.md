@@ -1,6 +1,6 @@
 ---
 name: derive-styleguide
-description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule: writing into a canon artifact with no approved styleguide — derive and approve one first.
+description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule — writing into a canon artifact with no approved styleguide means derive and approve one first.
 ---
 
 # /derive-styleguide — the owner's style, extracted from evidence

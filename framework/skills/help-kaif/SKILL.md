@@ -1,6 +1,6 @@
 ---
 name: help-kaif
-description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it: the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
+description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it — the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
 ---
 
 # /help-kaif — explain KAIF to the operator, in chat
@@ -39,15 +39,20 @@ well-structured explanation they can read and act on.
    yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
    the DONE-tag convention in one line.
 
-4. **The skills — the commands you type.** List them grouped, each with a one-line purpose: session
-   (`/resume`, `/pause`), autonomy (`/autoloop`, `/dayloop`, `/nightloop`), hygiene (`/refresh-context`,
-   `/check-backlog`), knowledge (`/report-bug`, `/bug-research`, `/propose-idea`), owner (`/interview`),
-   planning (`/revision`), help (`/help-kaif`), shipping (`/release`), and the lifecycle (`/kaif-version`,
-   `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`, `/kaif-remove`).
+4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
+   groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
+   soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
+   `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
+   (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
+   `/what-next`), planning (`/revision`), guardrails (`/derive-styleguide`), execution discipline
+   (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
+   (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
+   `/kaif-remove`).
 
 5. **How a normal workflow looks.** A short example: *"`/resume` to start → I work and keep `STATUS.md`
-   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to wrap up."* Note the human's
-   role (visionary: `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
+   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to break off (the chat
+   continues later) or `/end-chat` to close the chat with a handoff."* Note the human's role (visionary:
+   `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
 
 6. **Where to go deeper.** Point to `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
 

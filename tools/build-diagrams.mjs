@@ -23,12 +23,17 @@
 //
 // Usage: node tools/build-diagrams.mjs
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'assets');
+
+// Skill count COMPUTED from framework/skills — a hand-written «26» sat burned into all four
+// layers-*.svg after the set grew to 28 (the bugs/09 class: counters rot unless derived).
+const SKILLS = readdirSync(join(ROOT, 'framework', 'skills'))
+  .filter((n) => existsSync(join(ROOT, 'framework', 'skills', n, 'SKILL.md'))).length;
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 // The light card carries an opaque white ground rather than a transparent one: where <picture>
@@ -81,7 +86,7 @@ const STR = {
     d2_return: 'the next session begins with an empty context — the files are what carries over',
     d3_title: 'What a deployed KAIF consists of',
     d3_bands: [
-      ['Commands', '26 repeatable rituals, invoked by name',
+      ['Commands', `${SKILLS} repeatable rituals, invoked by name`,
         '/resume · /pause · /autoloop · /report-bug · /propose-idea · /interview · /release'],
       ['State and knowledge', 'plain markdown, versioned with the project',
         'STATUS.md · EXPERIENCE.md · MASTER_PLAN.md · GOAL.md · bugs/ ideas/ plans/ researches/'],
@@ -114,7 +119,7 @@ const STR = {
     d2_return: 'следующая сессия начинается с пустым контекстом — переносят только файлы',
     d3_title: 'Из чего состоит развёрнутый KAIF',
     d3_bands: [
-      ['Команды', '26 повторяемых ритуалов, вызываются по имени',
+      ['Команды', `${SKILLS} повторяемых ритуалов, вызываются по имени`,
         '/resume · /pause · /autoloop · /report-bug · /propose-idea · /interview · /release'],
       ['Состояние и знание', 'обычный markdown, версионируется вместе с проектом',
         'STATUS.md · EXPERIENCE.md · MASTER_PLAN.md · GOAL.md · bugs/ ideas/ plans/ researches/'],

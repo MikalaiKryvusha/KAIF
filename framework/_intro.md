@@ -114,9 +114,9 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── homeworks/     # tasks from the agent to the human (things only a human can do)
 │
 │  ── WIRING ──
-├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agent
+├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 22 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — {{SKILL_COUNT}} in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 

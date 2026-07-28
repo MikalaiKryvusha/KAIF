@@ -41,9 +41,9 @@ precedes every push). Then:
 pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
-End the message with:
+End the message with your standard co-author trailer, e.g.:
 ```
-Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
+Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ```
 
 ## Step 5. The farewell report

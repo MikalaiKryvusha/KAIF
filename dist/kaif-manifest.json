@@ -5,13 +5,13 @@
   "codename": "Homeostatic KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "8cd3585eea1a618cd705b8a61910a8bcafd47c6eaf5f59ea5807218c67d56e1c",
-    "KAIF-CORE-BUNDLE.md": "85f30b992f1b991b77a6cf632d363ab405e4bfe05e32ac0965fba4766266c3a4"
+    "KAIF-CORE-BUNDLE.md": "08b44478c0fae6d4841ea712fafb69fedc6bd83991456840706748f976433222"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
     "KAIF-CORE.mjs": "installer machinery; lives on as .kaif/kaif-core.mjs",
-    "KAIF-CORE-BUNDLE.md": "the COMPLETE deployable set (docs + skills + spheres + language packs) as FILE: blocks",
+    "KAIF-CORE-BUNDLE.md": "the COMPLETE deployable set (docs + skills + spheres + optional tool modules + language packs) as FILE: blocks",
     "kaif-manifest.json": "this file — version, codename, sha256 pins, asset roles",
-    "KAIF-FULL.md": "offline fallback core — a SUBSET (no language packs/spheres/references); not a diff baseline"
+    "KAIF-FULL.md": "offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (last-resort synthetic-baseline candidate only)"
   }
 }

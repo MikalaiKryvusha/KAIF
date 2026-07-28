@@ -5,11 +5,14 @@
 // lives only in a session scratchpad dies with the session (the exact class the plan-21 review
 // flagged for the splitter pin).
 //
-// The suites cover the FIELD PROFILE MATRIX of researches/07 §1 (eight real 1.6-update reports):
+// The suites cover the FIELD PROFILE MATRIX of researches/07 §1 (eight real 1.6-update reports),
+// plus the optional tool modules of plan 20 phase 5:
 //   s01 — fresh/anonymous/legacy installs, ignore-first, honest logs   (profiles 03, 06; GH #1)
 //   s02 — modular update: NDim two-cycle localization, KPOT merges, i18n, splitter pin (05, 03)
 //   s03 — receipts/history, adopt-current (manual migration), diff, executing checkpoints (07, 04)
 //   s04 — anonymous mechanical bootstrap, synthetic legacy baseline, news interval (01, 02, 06, 08)
+//   s05 — kaif-provenance: mark pairing, canon scope, accept registry, quoted-docs immunity
+//   s06 — kaif-canon-lint: forbidden/required guards, selftest, CRLF/BOM tolerance
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';

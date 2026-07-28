@@ -57,6 +57,13 @@ function codename() {
   try { return JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8')).codename || ''; } catch { return ''; }
 }
 
+// Skill count, COMPUTED from framework/skills (the bugs/09 class: a hand-written counter rots
+// the moment the set grows — a computed one cannot; "22 in all" shipped in the core until 2.0).
+function skillCount() {
+  const dir = join(FW, 'skills');
+  return readdirSync(dir).filter((n) => existsSync(join(dir, n, 'SKILL.md'))).length;
+}
+
 // Embed one template file as a labelled fenced block, telling the agent which
 // file to create in the target project and how to treat it. The fence language
 // follows the file extension (markdown templates vs. the .mjs unpacker script).
@@ -123,8 +130,9 @@ out = out.replace(/^<!--[\s\S]*?-->\r?\n/, '');
 out = '<!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by ' +
       'tools/build-framework.mjs. Edit the sources and re-run the tool. -->\n' + out;
 
-// {{VERSION}}
-out = out.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
+// {{VERSION}} · {{SKILL_COUNT}}
+out = out.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released())
+         .replaceAll('{{SKILL_COUNT}}', String(skillCount()));
 
 // {{EMBED:framework/...}}
 out = out.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => {
@@ -158,7 +166,8 @@ let thin = readFileSync(join(FW, 'installer', '_thin-intro.md'), 'utf8').replace
 thin = thin.replace(/^<!--[\s\S]*?-->\n/, '');
 thin = '<!-- GENERATED FILE — do not edit by hand. Built from framework/installer/_thin-intro.md by ' +
        'tools/build-framework.mjs. Edit the source and re-run the tool. -->\n' + thin;
-thin = thin.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released());
+thin = thin.replaceAll('{{VERSION}}', version()).replaceAll('{{RELEASED}}', released())
+           .replaceAll('{{SKILL_COUNT}}', String(skillCount()));
 thin = thin.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => embedFile(p.trim(), 'KAIF-LOADER.mjs',
   'project root — write this ONE file verbatim, then run it (removed again by verify-final)'));
 writeFileSync(join(DIST, 'KAIF.md'), thin);
@@ -307,9 +316,9 @@ writeFileSync(join(DIST, 'kaif-manifest.json'), JSON.stringify({
   assets: {
     'KAIF.md': 'thin entry point (bootstrap + embedded loader); transient in the target project',
     'KAIF-CORE.mjs': 'installer machinery; lives on as .kaif/kaif-core.mjs',
-    'KAIF-CORE-BUNDLE.md': 'the COMPLETE deployable set (docs + skills + spheres + language packs) as FILE: blocks',
+    'KAIF-CORE-BUNDLE.md': 'the COMPLETE deployable set (docs + skills + spheres + optional tool modules + language packs) as FILE: blocks',
     'kaif-manifest.json': 'this file — version, codename, sha256 pins, asset roles',
-    'KAIF-FULL.md': 'offline fallback core — a SUBSET (no language packs/spheres/references); not a diff baseline',
+    'KAIF-FULL.md': 'offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (last-resort synthetic-baseline candidate only)',
   },
 }, null, 2) + '\n');
 

@@ -30,10 +30,11 @@ intact and working — we only remove what KAIF added, surgically.
    > The rest of your project stays untouched either way. Please answer in words."*
 
    - Proceed **only** on a clear, unambiguous natural-language answer that names one mode.
-   - If the answer is vague, ambiguous, or conditional ("maybe", "up to you", silence) — do **not** guess
-     and do **not** default. Ask again, restating the two options, until the owner gives an explicit choice.
-   - A `--all` flag or "full removal" / "выжги полностью" counts as explicit **full**; "keep my artifacts" /
-     "частично" counts as **partial**. Anything else → re-ask.
+   - If the answer is vague, ambiguous, or conditional ("maybe", "whatever's cleaner", "up to you", silence)
+     — do **not** guess and do **not** default. Ask again, restating the two options, until the owner gives
+     an explicit choice.
+   - A `--all` flag or an explicit phrase like "full removal" / "выжги полностью" counts as an explicit
+     answer for **full**; "keep my artifacts" / "частично" counts as **partial**. Anything else → re-ask.
 
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
    - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
@@ -57,7 +58,7 @@ intact and working — we only remove what KAIF added, surgically.
 
 ## Notes
 - **Never default the mode** — always get the owner's explicit natural-language choice first (Step 1). If
-  you must nudge, note that **partial** is the safer/gentler option (accumulated knowledge survives), but
-  the owner decides.
+  you must nudge, note that **partial** is the safer/gentler option (accumulated knowledge — bug forensics,
+  decisions, research — survives), but the owner decides.
 - Respect git history: removal is a normal commit; the user can still see KAIF in past history unless
   they choose to rewrite it (we don't rewrite history without an explicit request).

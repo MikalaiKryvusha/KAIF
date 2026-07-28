@@ -54,5 +54,31 @@ r = run('selftest');
 ok(r.code !== 0 && /too short/.test(r.out) && /does NOT match its own example/.test(r.out),
    's06 selftest ловит слепых стражей (короткая строка + несрабатывающий паттерн)', r.out);
 
+// CRLF-чекаут (git autocrlf на Windows — задокументированный профиль проекта, EXP-0005/0007):
+// стерегомая строка НЕ теряется ложно, а якорённый ($) запрет НЕ зеленеет ложно
+const CRLF_RULES = {
+  forbidden: [{ pattern: 'урон удваивается при крите$', files: 'rules/', message: 'отменено (тест, якорь $)', example: 'урон удваивается при крите' }],
+  required: [{ line: 'Критический удар добавляет +50 к урону (решение владельца).', file: 'rules/combat.md', message: 'принятое решение (тест)' }],
+};
+writeFileSync(join(ROOT, '.kaif', 'canon-lint-rules.json'), JSON.stringify(CRLF_RULES, null, 2) + '\n');
+writeFileSync(join(ROOT, 'rules', 'combat.md'), '# Бой\r\n\r\nКритический удар добавляет +50 к урону (решение владельца).\r\n');
+r = run('check');
+ok(r.code === 0, 's06 CRLF: стерегомая строка найдена (ложного MISSING нет)', r.out);
+writeFileSync(join(ROOT, 'rules', 'combat.md'), '# Бой\r\n\r\nКритический удар добавляет +50 к урону (решение владельца).\r\nА теперь урон удваивается при крите\r\n');
+r = run('check');
+ok(r.code !== 0 && /forbidden/.test(r.out), 's06 CRLF: якорённый ($) запрет срабатывает и с \\r (ложного зелёного нет)', r.out);
+
+// BOM (PS5.1 Out-File): стерегомая строка первой строкой BOM-файла находится
+writeFileSync(join(ROOT, 'rules', 'combat.md'), '﻿Критический удар добавляет +50 к урону (решение владельца).\n');
+r = run('check');
+ok(r.code === 0, 's06 BOM-файл: стерегомая строка первой строкой находится', r.out);
+
+// невалидный regex в правиле — внятный красный, не сырой стек-трейс
+writeFileSync(join(ROOT, '.kaif', 'canon-lint-rules.json'), JSON.stringify({
+  forbidden: [{ pattern: '(', message: 'битый паттерн (тест)' }] }, null, 2) + '\n');
+r = run('check');
+ok(r.code !== 0 && /invalid regex/.test(r.out) && !/at new RegExp/.test(r.out),
+   's06 невалидный паттерн — внятная ошибка, не стек-трейс', r.out);
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница canon-lint зелёная'}`);
 process.exit(failures ? 1 : 0);

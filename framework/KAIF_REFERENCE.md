@@ -18,7 +18,7 @@ for understanding the project and making judgment calls.
 |---|---|
 | **Payload** | The set of canonical templates deployed into a target project. Single source: the origin repository's `framework/` directory. |
 | **Wrapper** | The framework applied to a concrete project: the deployed documents, directories and skills, plus the project's own knowledge base. |
-| **Core (thin)** | `KAIF.md` — the ~170-line entry point: a three-step bootstrap that fetches the installer machinery. Transient in the target project. |
+| **Core (thin)** | `KAIF.md` — the ~150-line entry point: a three-step bootstrap that fetches the installer machinery. Transient in the target project. |
 | **Machinery** | `KAIF-CORE.mjs`, deployed as `.kaif/kaif-core.mjs` — the installer/updater executable that performs every mechanizable step. |
 | **Bundle** | `KAIF-CORE-BUNDLE.md` — every deployable file as `FILE:` blocks plus one meta block (§8.2). |
 | **Module** | A logical section of a template — the atom of diffing and replacement (§9). Everything from one heading line to the next; the text before the first heading is the `<preamble>` module. |
@@ -65,7 +65,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 | `KAIF-CORE.mjs` | The machinery; survives as `.kaif/kaif-core.mjs` (except on anonymous deployments, §11.3). |
 | `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
-| `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not a diff baseline. |
+| `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
 
 ## 5. The document system
 
@@ -105,11 +105,12 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
-- **Lifecycle (origin-tied, skipped on anonymous deployments):** `kaif-version` · `kaif-update` ·
-  `kaif-fork` · `kaif-switch-origin` · `kaif-remove`. Their headers state the current mechanical
-  command first: an adopted copy of a lifecycle skill goes stale silently, and its staleness
-  breaks the update itself — when prose and machinery disagree, the machinery and the origin
-  release notes win.
+- **Lifecycle:** `kaif-version` · `kaif-update` · `kaif-fork` · `kaif-switch-origin` —
+  origin-tied, skipped on anonymous deployments — plus `kaif-remove`, which is NOT origin-tied
+  and ships on every deployment (removal must stay available to an anonymous owner too). Their
+  headers state the current mechanical command first: an adopted copy of a lifecycle skill goes
+  stale silently, and its staleness breaks the update itself — when prose and machinery disagree,
+  the machinery and the origin release notes win.
 
 ## 7. Installation
 
@@ -244,7 +245,8 @@ is provable after the fact, forever.
 
 The deploy manifest keeps `templateShas` (what the framework deployed) apart from `shas` (what
 lies on disk, refreshed post-merge). Authority to replace derives ONLY from template shas; hence
-an adaptation that survived one update cannot die in the next. All hashes are EOL-normalized.
+an adaptation that survived one update cannot die in the next. Template and module hashes are
+EOL-normalized; the disk snapshot (`shas`) is byte-exact.
 
 ### 11.3 Anonymity
 

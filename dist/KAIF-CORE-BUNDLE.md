@@ -1323,7 +1323,7 @@ for understanding the project and making judgment calls.
 |---|---|
 | **Payload** | The set of canonical templates deployed into a target project. Single source: the origin repository's `framework/` directory. |
 | **Wrapper** | The framework applied to a concrete project: the deployed documents, directories and skills, plus the project's own knowledge base. |
-| **Core (thin)** | `KAIF.md` — the ~170-line entry point: a three-step bootstrap that fetches the installer machinery. Transient in the target project. |
+| **Core (thin)** | `KAIF.md` — the ~150-line entry point: a three-step bootstrap that fetches the installer machinery. Transient in the target project. |
 | **Machinery** | `KAIF-CORE.mjs`, deployed as `.kaif/kaif-core.mjs` — the installer/updater executable that performs every mechanizable step. |
 | **Bundle** | `KAIF-CORE-BUNDLE.md` — every deployable file as `FILE:` blocks plus one meta block (§8.2). |
 | **Module** | A logical section of a template — the atom of diffing and replacement (§9). Everything from one heading line to the next; the text before the first heading is the `<preamble>` module. |
@@ -1370,7 +1370,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 | `KAIF-CORE.mjs` | The machinery; survives as `.kaif/kaif-core.mjs` (except on anonymous deployments, §11.3). |
 | `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
-| `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not a diff baseline. |
+| `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
 
 ## 5. The document system
 
@@ -1410,11 +1410,12 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
-- **Lifecycle (origin-tied, skipped on anonymous deployments):** `kaif-version` · `kaif-update` ·
-  `kaif-fork` · `kaif-switch-origin` · `kaif-remove`. Their headers state the current mechanical
-  command first: an adopted copy of a lifecycle skill goes stale silently, and its staleness
-  breaks the update itself — when prose and machinery disagree, the machinery and the origin
-  release notes win.
+- **Lifecycle:** `kaif-version` · `kaif-update` · `kaif-fork` · `kaif-switch-origin` —
+  origin-tied, skipped on anonymous deployments — plus `kaif-remove`, which is NOT origin-tied
+  and ships on every deployment (removal must stay available to an anonymous owner too). Their
+  headers state the current mechanical command first: an adopted copy of a lifecycle skill goes
+  stale silently, and its staleness breaks the update itself — when prose and machinery disagree,
+  the machinery and the origin release notes win.
 
 ## 7. Installation
 
@@ -1549,7 +1550,8 @@ is provable after the fact, forever.
 
 The deploy manifest keeps `templateShas` (what the framework deployed) apart from `shas` (what
 lies on disk, refreshed post-merge). Authority to replace derives ONLY from template shas; hence
-an adaptation that survived one update cannot die in the next. All hashes are EOL-normalized.
+an adaptation that survived one update cannot die in the next. Template and module hashes are
+EOL-normalized; the disk snapshot (`shas`) is byte-exact.
 
 ### 11.3 Anonymity
 
@@ -2111,7 +2113,7 @@ pause and don't wait**, keep working:
 ``````md
 ---
 name: derive-styleguide
-description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule: writing into a canon artifact with no approved styleguide — derive and approve one first.
+description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule — writing into a canon artifact with no approved styleguide means derive and approve one first.
 ---
 
 # /derive-styleguide — the owner's style, extracted from evidence
@@ -2219,9 +2221,9 @@ precedes every push). Then:
 pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
-End the message with:
+End the message with your standard co-author trailer, e.g.:
 ```
-Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
+Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ```
 
 ## Step 5. The farewell report
@@ -2932,7 +2934,7 @@ open an `/interview` for fateful forks.
 ``````md
 ---
 name: help-kaif
-description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it: the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
+description: Give the human operator a clear, structured user manual for KAIF right here in the chat — what it is (briefly), and mainly HOW to use it — the structure, the conventions, the documents, the directories, and the skills/commands. Use when the human says "help kaif", "how do I use KAIF", "explain KAIF", "KAIF manual", "what can KAIF do", "как пользоваться KAIF", "помощь по KAIF", "мануал KAIF", "что умеет KAIF", "справка KAIF".
 ---
 
 # /help-kaif — explain KAIF to the operator, in chat
@@ -2971,15 +2973,20 @@ well-structured explanation they can read and act on.
    yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
    the DONE-tag convention in one line.
 
-4. **The skills — the commands you type.** List them grouped, each with a one-line purpose: session
-   (`/resume`, `/pause`), autonomy (`/autoloop`, `/dayloop`, `/nightloop`), hygiene (`/refresh-context`,
-   `/check-backlog`), knowledge (`/report-bug`, `/bug-research`, `/propose-idea`), owner (`/interview`),
-   planning (`/revision`), help (`/help-kaif`), shipping (`/release`), and the lifecycle (`/kaif-version`,
-   `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`, `/kaif-remove`).
+4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
+   groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
+   soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
+   `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
+   (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
+   `/what-next`), planning (`/revision`), guardrails (`/derive-styleguide`), execution discipline
+   (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
+   (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
+   `/kaif-remove`).
 
 5. **How a normal workflow looks.** A short example: *"`/resume` to start → I work and keep `STATUS.md`
-   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to wrap up."* Note the human's
-   role (visionary: `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
+   current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to break off (the chat
+   continues later) or `/end-chat` to close the chat with a handoff."* Note the human's role (visionary:
+   `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
 
 6. **Where to go deeper.** Point to `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
 
@@ -4451,7 +4458,7 @@ or cut it. Prebuilt spheres in this repo are maintained with the framework itsel
 
 ``````js
 #!/usr/bin/env node
-// kaif-canon-lint.mjs — the OPTIONAL canon-artifact linter (KAIF 2.0, plan 20 phase 5;
+// kaif-canon-lint.mjs — the OPTIONAL canon-artifact linter (plan 20 phase 5;
 // plan 17 §3 / ideas 15 §2.6). Deployed to .kaif/tools/kaif-canon-lint.mjs.
 //
 // The discipline it mechanizes: every REVOKED decision becomes a FORBIDDEN wording; every
@@ -4492,24 +4499,31 @@ function* walkMd(dir = '.') {
     if (/\.md$/i.test(n)) yield p;
   }
 }
-const inScope = (p, files) => !files || (files.endsWith('/') ? p.startsWith(files) : p === files);
+// files in rules may be written with backslashes on Windows — walkMd always yields forward slashes
+const inScope = (p, files) => !files || ((files = files.replaceAll('\\', '/')).endsWith('/') ? p.startsWith(files) : p === files);
+// CRLF checkouts and PS5.1 Out-File BOMs are the documented Windows profile of real projects:
+// read EOL/BOM-normalized, or required lines false-redden and $-anchored forbidden patterns
+// false-GREEN (the worst failure direction).
+const readLines = (p) => readFileSync(p, 'utf8').replace(/^﻿/, '').split(/\r?\n/);
+// A broken regex must red the run with a clear message, not a raw stack trace.
+const compileRule = (r) => { try { return new RegExp(r.pattern); } catch (e) { console.error(`✖ invalid regex in forbidden rule: ${r.pattern} — ${e.message}`); return null; } };
 
 function cmdCheck() {
   let issues = 0;
   const mdFiles = [...walkMd()];
   for (const r of rules.forbidden || []) {
-    const re = new RegExp(r.pattern);
+    const re = compileRule(r);
+    if (!re) { issues++; continue; }
     for (const p of mdFiles) {
       if (!inScope(p, r.files)) continue;
-      const lines = readFileSync(p, 'utf8').split('\n');
+      const lines = readLines(p);
       for (let i = 0; i < lines.length; i++)
         if (re.test(lines[i])) { console.error(`✖ forbidden in ${p}:${i + 1} — ${r.message || r.pattern}`); issues++; }
     }
   }
   for (const r of rules.required || []) {
     if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file} — ${r.message || ''}`); issues++; continue; }
-    const text = readFileSync(r.file, 'utf8');
-    if (!text.split('\n').includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
+    if (!readLines(r.file).includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
   }
   if (issues) die(`canon lint FAILED: ${issues} issue(s)`);
   log(`✅ canon lint OK (${(rules.forbidden || []).length} forbidden + ${(rules.required || []).length} required rules)`);
@@ -4522,13 +4536,15 @@ function cmdSelftest() {
   for (const r of rules.required || []) {
     if (!r.line || r.line.trim().length < 12) { console.error(`✖ required line too short to be unique (guard with FULL lines): "${r.line}"`); issues++; continue; }
     if (r.file && existsSync(r.file)) {
-      const hits = readFileSync(r.file, 'utf8').split('\n').filter((l) => l === r.line).length;
+      const hits = readLines(r.file).filter((l) => l === r.line).length;
       if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
     }
   }
   for (const r of rules.forbidden || []) {
     if (!r.example) { console.error(`✖ forbidden rule has no "example" to prove it on: ${r.pattern}`); issues++; continue; }
-    if (!new RegExp(r.pattern).test(r.example)) { console.error(`✖ forbidden pattern does NOT match its own example (a guard that never reddens proves nothing): ${r.pattern}`); issues++; }
+    const re = compileRule(r);
+    if (!re) { issues++; continue; }
+    if (!re.test(r.example)) { console.error(`✖ forbidden pattern does NOT match its own example (a guard that never reddens proves nothing): ${r.pattern}`); issues++; }
   }
   if (issues) die(`canon lint selftest FAILED: ${issues} issue(s)`);
   log(`✅ canon lint selftest OK — every guard is proven able to fire`);
@@ -4542,7 +4558,7 @@ function cmdSelftest() {
 ``````js
 #!/usr/bin/env node
 // kaif-provenance.mjs — the OPTIONAL provenance module for the owner's canon artifacts
-// (KAIF 2.0, plan 20 phase 5; owner decision #19: a separate optional module, not core).
+// (plan 20 phase 5; owner decision #19: a separate optional module, not core).
 // Deployed to .kaif/tools/kaif-provenance.mjs by the installer; does nothing until the project
 // declares its canon artifacts.
 //
@@ -4553,6 +4569,11 @@ function cmdSelftest() {
 // asked for this exact cheap gate first: "without tooling the convention rots first, and agents
 // start marking everything" (QA field report, 1.6).
 //
+// Tags quoted in inline code spans (`…`) or fenced code blocks (``` / ~~~) are DOCUMENTATION
+// of the convention, not marks — the parser skips them. The deployed KAIF docs themselves quote
+// the convention (AGENT_GUIDE, PHILOSOPHY, fable-judge), so the gate must stay green on a fresh
+// deployment out of the box.
+//
 // Declare the canon in .kaif/kaif.json:   "canonArtifacts": ["rules/", "lore/canon.md"]
 //   (a path ending in "/" declares a directory subtree; otherwise an exact file path)
 //
@@ -4560,7 +4581,8 @@ function cmdSelftest() {
 //   node .kaif/tools/kaif-provenance.mjs report            # where AI text awaits acceptance
 //   node .kaif/tools/kaif-provenance.mjs check             # the GATE (wire into your checks/CI):
 //                                                          #   · every mark is correctly paired
-//                                                          #   · marks live ONLY in declared canon
+//                                                          #   · with canonArtifacts declared:
+//                                                          #     marks live ONLY in the canon
 //                                                          # exit 1 on violations
 //   node .kaif/tools/kaif-provenance.mjs accept <file>     # THE OWNER ACCEPTED this file's blocks:
 //                                                          # move them to the acceptance registry
@@ -4579,47 +4601,80 @@ const KAIF_JSON = '.kaif/kaif.json';
 const REGISTRY = '.kaif/provenance-accepted.json';
 const OPEN = ['[AI]', '[AI-ed]'];
 const CLOSE = { '[AI]': '[/AI]', '[AI-ed]': '[/AI-ed]' };
+const TAGS = ['[AI-ed]', '[/AI-ed]', '[AI]', '[/AI]']; // longest first — see the guard in lineTags
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 const sha = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
+const slashes = (p) => p.replaceAll('\\', '/'); // registry keys and decl entries use forward slashes
 
 function canonDecl() {
   if (!existsSync(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
   const j = JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^﻿/, ''));
-  return Array.isArray(j.canonArtifacts) ? j.canonArtifacts : [];
+  return Array.isArray(j.canonArtifacts) ? j.canonArtifacts.map(slashes) : [];
 }
 const inCanon = (p, decl) => decl.some((d) => (d.endsWith('/') ? p.startsWith(d) : p === d));
 
-// Parse one file into mark blocks; returns { blocks, errors }. A block: { kind, text, line }.
+// Mark tags on one line, ordered by COLUMN (several pairs may share a line — processing them
+// by tag type instead of position produced false nesting errors on correct text). Occurrences
+// inside inline code spans (`…`) are quoted documentation, not marks — skipped.
+function lineTags(line) {
+  const spans = [];
+  const spanRe = /`[^`]*`/g;
+  let m;
+  while ((m = spanRe.exec(line))) spans.push([m.index, m.index + m[0].length]);
+  const inSpan = (i) => spans.some(([a, b]) => i >= a && i < b);
+  const hits = [];
+  for (const tag of TAGS) {
+    let idx = -1;
+    while ((idx = line.indexOf(tag, idx + 1)) !== -1) {
+      // longest-match guard: a "[AI]"/"[/AI]" scan must not claim the head of "[AI-ed]"/"[/AI-ed]"
+      if (tag === '[AI]' && line.slice(idx, idx + 7) === '[AI-ed]') continue;
+      if (tag === '[/AI]' && line.slice(idx, idx + 8) === '[/AI-ed]') continue;
+      if (inSpan(idx)) continue;
+      hits.push({ tag, idx });
+    }
+  }
+  return hits.sort((a, b) => a.idx - b.idx);
+}
+
+// Parse one file into mark blocks; returns { blocks, errors, tagSites }.
+// A block: { kind, line, text } — text is EXACTLY what sits between the tags (EOL-normalized,
+// so sha/excerpt are stable across CRLF and LF checkouts). tagSites — every recognized tag's
+// { line, idx, len }, reused by accept's mark stripping (only real tags are stripped).
 function parseMarks(path) {
-  const text = readFileSync(path, 'utf8');
+  const lines = readFileSync(path, 'utf8').split('\n');
   const blocks = [];
   const errors = [];
-  let open = null; // { kind, line, start }
-  const lines = text.split('\n');
+  const tagSites = [];
+  let open = null; // { kind, line, si, ci } — si/ci: 0-based line / column right after the open tag
+  let fence = false;
+  const clean = (l) => l.replace(/\r$/, '');
   for (let i = 0; i < lines.length; i++) {
-    for (const tag of [...OPEN, '[/AI]', '[/AI-ed]']) {
-      let idx = -1;
-      while ((idx = lines[i].indexOf(tag, idx + 1)) !== -1) {
-        // longest-match guard: "[AI]" also matches inside "[AI-ed]" — skip those hits
-        if (tag === '[AI]' && lines[i].slice(idx, idx + 7) === '[AI-ed]') continue;
-        if (tag === '[/AI]' && lines[i].slice(idx, idx + 8) === '[/AI-ed]') continue;
-        if (OPEN.includes(tag)) {
-          if (open) { errors.push(`${path}:${i + 1} — ${tag} opened while ${open.kind} from line ${open.line} is still open (nesting is not allowed)`); }
-          else open = { kind: tag, line: i + 1, buf: [] };
-        } else {
-          const wanted = open ? CLOSE[open.kind] : null;
-          if (!open) errors.push(`${path}:${i + 1} — stray ${tag} with no open mark`);
-          else if (tag !== wanted) errors.push(`${path}:${i + 1} — ${tag} closes ${open.kind} from line ${open.line} (expected ${wanted})`);
-          else { blocks.push({ kind: open.kind, line: open.line, text: open.buf.join('\n') }); open = null; }
+    const line = clean(lines[i]);
+    if (/^\s*(```|~~~)/.test(line)) { fence = !fence; continue; }
+    if (fence) continue;
+    for (const { tag, idx } of lineTags(line)) {
+      tagSites.push({ line: i, idx, len: tag.length });
+      if (OPEN.includes(tag)) {
+        if (open) { errors.push(`${path}:${i + 1} — ${tag} opened while ${open.kind} from line ${open.line} is still open (nesting is not allowed)`); }
+        else open = { kind: tag, line: i + 1, si: i, ci: idx + tag.length };
+      } else {
+        const wanted = open ? CLOSE[open.kind] : null;
+        if (!open) errors.push(`${path}:${i + 1} — stray ${tag} with no open mark`);
+        else if (tag !== wanted) errors.push(`${path}:${i + 1} — ${tag} closes ${open.kind} from line ${open.line} (expected ${wanted})`);
+        else {
+          const text = open.si === i
+            ? line.slice(open.ci, idx)
+            : [clean(lines[open.si]).slice(open.ci), ...lines.slice(open.si + 1, i).map(clean), line.slice(0, idx)].join('\n');
+          blocks.push({ kind: open.kind, line: open.line, text });
+          open = null;
         }
       }
     }
-    if (open) open.buf.push(lines[i]);
   }
   if (open) errors.push(`${path}:${open.line} — ${open.kind} never closed`);
-  return { blocks, errors };
+  return { blocks, errors, tagSites };
 }
 
 function* walkMd(dir = '.') {
@@ -4637,7 +4692,9 @@ function cmdCheck() {
   for (const p of walkMd()) {
     const { blocks, errors } = parseMarks(p);
     for (const e of errors) { console.error('✖ ' + e); issues++; }
-    if (blocks.length && !inCanon(p, decl)) {
+    // "marks live only in the canon" applies once a canon IS declared — without a declaration
+    // only mark hygiene is checked (the header's "does nothing until declared" promise).
+    if (blocks.length && decl.length && !inCanon(p, decl)) {
       console.error(`✖ ${p} carries ${blocks.length} provenance mark block(s) but is NOT a declared canon artifact — marks live only in canonArtifacts (declare it in .kaif/kaif.json, or remove the marks: agents must not mark everything)`);
       issues++;
     }
@@ -4664,18 +4721,30 @@ function cmdReport() {
 
 function cmdAccept() {
   if (!ARG) die('usage: kaif-provenance accept <file>   — run ONLY after the owner said the file is accepted');
-  if (!existsSync(ARG)) die(`no such file: ${ARG}`);
-  const { blocks, errors } = parseMarks(ARG);
+  const file = slashes(ARG);
+  if (!existsSync(file)) die(`no such file: ${file}`);
+  const decl = canonDecl();
+  if (decl.length && !inCanon(file, decl)) console.error(`⚠ ${file} is not a declared canon artifact — accepting on the owner's word anyway, but marks normally live only in canonArtifacts`);
+  const { blocks, errors, tagSites } = parseMarks(file);
   if (errors.length) { for (const e of errors) console.error('✖ ' + e); die('fix mark pairing before accepting'); }
-  if (!blocks.length) die(`${ARG} carries no provenance marks — nothing to accept`);
-  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8')) : { accepted: [] };
+  if (!blocks.length) die(`${file} carries no provenance marks — nothing to accept`);
+  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8').replace(/^﻿/, '')) : { accepted: [] };
   const date = new Date().toISOString().slice(0, 10);
-  for (const b of blocks) reg.accepted.push({ file: ARG, date, kind: b.kind, sha: sha(b.text), excerpt: b.text.trim().split('\n')[0].slice(0, 80) });
+  for (const b of blocks) reg.accepted.push({ file, date, kind: b.kind, sha: sha(b.text), excerpt: b.text.trim().split('\n')[0].slice(0, 80) });
   writeFileSync(REGISTRY, JSON.stringify(reg, null, 2) + '\n');
-  let text = readFileSync(ARG, 'utf8');
-  for (const tag of ['[AI-ed]', '[/AI-ed]', '[AI]', '[/AI]']) text = text.split(tag).join('');
-  writeFileSync(ARG, text);
-  log(`✔ accepted ${blocks.length} block(s) in ${ARG} — marks stripped, registry updated (${REGISTRY}). This action carries the owner's word.`);
+  // Strip ONLY the tags the parser recognized (quoted documentation stays), right-to-left per
+  // line; a line that was nothing but a tag disappears entirely — no blank-line scars.
+  const lines = readFileSync(file, 'utf8').split('\n');
+  const byLine = new Map();
+  for (const s of tagSites) { if (!byLine.has(s.line)) byLine.set(s.line, []); byLine.get(s.line).push(s); }
+  const drop = new Set();
+  for (const [ln, sites] of byLine) {
+    let l = lines[ln];
+    for (const s of sites.sort((a, b) => b.idx - a.idx)) l = l.slice(0, s.idx) + l.slice(s.idx + s.len);
+    if (l.replace(/\r$/, '').trim()) lines[ln] = l; else drop.add(ln);
+  }
+  writeFileSync(file, lines.filter((_, i) => !drop.has(i)).join('\n'));
+  log(`✔ accepted ${blocks.length} block(s) in ${file} — marks stripped, registry updated (${REGISTRY}). This action carries the owner's word.`);
 }
 
 ({ check: cmdCheck, report: cmdReport, accept: cmdAccept }[CMD] ||
@@ -6047,9 +6116,9 @@ DONE टैग नहीं मिलता।
 ``````md
 {
   "resume": "\"जारी रखो\", \"आगे बढ़ो\", \"काम फिर शुरू करो\", \"हम कहाँ रुके थे?\"",
-  "pause": "«रुको», «थोड़ा विराम», «काम पार्क करो», «अभी लौटता हूँ»",
-  "end-chat": "«चैट समाप्त करें», «सत्र बंद करें», «कमान सौंपें», «प्रगति सहेजें और पुश करें»",
-  "derive-styleguide": "«स्टाइल गाइड निकालो», «मेरी शैली दर्ज करो»",
+  "pause": "\"रुको\", \"थोड़ा विराम\", \"काम पार्क करो\", \"अभी लौटता हूँ\"",
+  "end-chat": "\"चैट समाप्त करें\", \"सत्र बंद करें\", \"कमान सौंपें\", \"प्रगति सहेजें और पुश करें\"",
+  "derive-styleguide": "\"स्टाइल गाइड निकालो\", \"मेरी शैली दर्ज करो\"",
   "autoloop": "\"खुद काम करो\", \"ऑटोपायलट\", \"बैकलॉग निपटाओ\", \"स्वायत्त लूप चलाओ\"",
   "dayloop": "\"दिन का लूप\", \"खुद काम करो, मैं व्यस्त हूँ\"",
   "nightloop": "\"रात का लूप\", \"सुबह तक काम करो\"",
@@ -6327,9 +6396,9 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 ``````md
 {
   "resume": "「続けて」「再開して」「どこまでやった？」「続きから」",
-  "pause": "«一時停止», «少し休憩», «作業を一旦パーク», «すぐ戻る»",
-  "end-chat": "«チャットを終了», «セッションを締める», «バトンを渡す», «進捗を保存してプッシュ», «セッション終了»",
-  "derive-styleguide": "«スタイルガイドを導出», «私の文体を固定»",
+  "pause": "「一時停止」「少し休憩」「作業を一旦パーク」「すぐ戻る」",
+  "end-chat": "「チャットを終了」「セッションを締める」「バトンを渡す」「進捗を保存してプッシュ」「セッション終了」",
+  "derive-styleguide": "「スタイルガイドを導出」「私の文体を固定」",
   "autoloop": "「自分で作業して」「オートパイロット」「バックログを消化して」「自律ループを開始」",
   "dayloop": "「昼ループ」「忙しいから自分で作業して」",
   "nightloop": "「夜ループ」「朝まで作業して」",
@@ -7139,9 +7208,9 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 ``````md
 {
   "resume": "「继续」「接着做」「恢复工作」「我们做到哪儿了？」",
-  "pause": "«暂停», «先停一下», «停车暂存», «马上回来»",
-  "end-chat": "«结束聊天», «关闭本次会话», «交接工作», «保存进度并推送», «结束会话»",
-  "derive-styleguide": "«提炼风格指南», «固定我的文风»",
+  "pause": "「暂停」「先停一下」「停车暂存」「马上回来」",
+  "end-chat": "「结束聊天」「关闭本次会话」「交接工作」「保存进度并推送」「结束会话」",
+  "derive-styleguide": "「提炼风格指南」「固定我的文风」",
   "autoloop": "「自己干活」「自动驾驶」「消化待办清单」「启动自主循环」",
   "dayloop": "「白天循环」「自己干，我忙着呢」",
   "nightloop": "「夜间循环」「干到早上」",
