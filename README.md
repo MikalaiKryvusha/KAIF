@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.6-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.0-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Field-certified](https://img.shields.io/badge/Field--certified-12B%20local%20model-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
 [![Guardrails](https://img.shields.io/badge/Guardrails-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-en)
@@ -119,6 +119,26 @@ and **provenance marks `[AI]…[/AI]`** on everything the AI writes into the own
 an acceptance queue only the owner's word removes. Every closed task now ships a *"Decisions made
 without the owner"* section, and experience entries carry a ready-to-run **Repro** command and a
 **Not for** applicability range — lessons a weak model can execute, not just read.
+
+<a id="excellent-en"></a>
+
+## Excellent KAIF — updates by machinery, not by mind
+
+2.0's codename discipline, distilled from **eight field reports** of real projects updating to 1.6:
+everything that burned updaters is now mechanized. The core of it is a **module map**: every template
+is split into logical modules addressed by their full unique heading line (a *signature anchor* — no
+tags added to documents), and the deploy manifest keeps **template shas apart from disk shas** — only
+a template-sha match ever authorizes a mechanical replacement, so your adapted and localized modules
+**survive every update** while untouched upstream modules merge silently. Updates leave a **receipt**
+(`.kaif/last-update.json` + a history in the marker), manual migrations stop killing the mechanical
+path (`adopt-current`), legacy and anonymous deployments update mechanically via a **synthetic
+baseline** rebuilt from the old release's own artifact, and template news prints for the whole
+version interval you jump across. The whole framework is now documented in one authoritative
+**reference** — [`KAIF_REFERENCE.md`](KAIF_REFERENCE.md) (§1–16: terminology, schemas, the full
+mechanics; deployed to `.kaif/`, `/help-kaif` cites its paragraphs). Optional **guardrail tools** ship
+alongside: a provenance gate over declared canon artifacts and a canon linter whose selftest proves
+every guard can fire. Verified by a **permanent sandbox polygon** — six suites, ~130 checks over the
+matrix of the eight field profiles — plus an independent adversarial judge pass before this release.
 
 ## Quick start (for the human)
 
@@ -376,7 +396,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-1.6-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.0-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Полевая сертификация](https://img.shields.io/badge/Полевая%20сертификация-локальная%2012B--модель-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
 [![Гвардрейлы](https://img.shields.io/badge/Гвардрейлы-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-ru)
@@ -484,6 +504,27 @@ MIT) дословно — четыре навыка, задающие, как *�
 владельца, — пометка есть очередь на приёмку, снимает её только слово владельца. Каждая закрытая
 задача теперь несёт секцию *«Решения, принятые без владельца»*, а записи опыта — готовую команду
 **Repro** и границу применимости **Not for**: уроки, которые слабая модель исполняет, а не просто читает.
+
+<a id="excellent-ru"></a>
+
+## Excellent KAIF — обновление машинерией, а не умом
+
+Дисциплина, давшая имя релизу 2.0, дистиллирована из **восьми полевых отчётов** реальных проектов об
+обновлении на 1.6: всё, что обжигало обновляющихся, теперь механизировано. В основе — **карта
+модулей**: каждый шаблон режется на логические модули с адресом-«сигнатурным якорем» (полная
+уникальная строка-заголовок; в документах не появляется никаких тегов), а деплой-манифест держит
+**шаблонные sha отдельно от дисковых** — право механической замены даёт только совпадение шаблонного
+sha, поэтому ваши адаптированные и локализованные модули **переживают каждое обновление**, а
+нетронутые апстрим-модули вливаются молча. Обновление оставляет **расписку** (`.kaif/last-update.json`
++ история в маркере), ручные миграции больше не убивают машинный путь (`adopt-current`), легаси- и
+анонимные развёртывания обновляются механически через **синтетический слепок** из артефакта старого
+релиза, а новости шаблонов печатаются за весь интервал версий, через который вы прыгаете. Всё
+устройство фреймворка теперь описано одним авторитетным **справочником** —
+[`KAIF_REFERENCE.md`](KAIF_REFERENCE.md) (§1–16: терминология, схемы, полная механика; едет в
+`.kaif/`, `/help-kaif` цитирует его параграфы). Рядом — опциональные **гвардрейл-инструменты**: гейт
+провенанса по объявленным канон-артефактам и линтер канона, чей selftest доказывает, что каждый страж
+умеет краснеть. Проверено **постоянным песочным полигоном** — шесть сводов, ~130 проверок по матрице
+восьми полевых профилей — плюс независимый адверсарный судейский проход перед этим релизом.
 
 ## Быстрый старт (для человека)
 
