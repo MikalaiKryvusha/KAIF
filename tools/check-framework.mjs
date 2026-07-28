@@ -122,9 +122,11 @@ if (existsSync(distDir)) {
       return a + (statSync(p).isDirectory() ? countFiles(p) : 1);
     }, 0) : 0;
     const langFiles = countFiles(langRoot);
-    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + langFiles;
+    const toolsDir2 = join(ROOT, 'framework', 'tools');
+    const toolMods = existsSync(toolsDir2) ? readdirSync(toolsDir2).filter((f) => f.endsWith('.mjs')).length : 0;
+    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + toolMods + langFiles;
     if (bundleBlocks !== wantBundle)
-      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${langFiles} lang-pack files)`);
+      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${toolMods} tool modules + ${langFiles} lang-pack files)`);
     const man = JSON.parse(dread('kaif-manifest.json'));
     for (const n of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md'])
       if (man.sha256[n] !== dsha(n)) errors.push(`kaif-manifest.json sha256 stale for ${n} — re-run the build`);

@@ -235,6 +235,10 @@ function bundleBlocks() {
   }
   for (const s of readdirSync(join(FW, 'spheres')).filter((f) => f.endsWith('.md')))
     blocks.push(embedBundle(`framework/spheres/${s}`, `.kaif/spheres/${s}`, 'sphere library — verbatim'));
+  // optional tool modules (owner decision #19: separate optional modules, never core weight)
+  const toolsDir = join(FW, 'tools');
+  if (existsSync(toolsDir)) for (const t of readdirSync(toolsDir).filter((f) => f.endsWith('.mjs')))
+    blocks.push(embedBundle(`framework/tools/${t}`, `.kaif/tools/${t}`, 'optional tool module — verbatim'));
   // language packs: owner-facing doc overrides + skill trigger aliases per language.
   // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
   // override their destination paths; others are ignored.

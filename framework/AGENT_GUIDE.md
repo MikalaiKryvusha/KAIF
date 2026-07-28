@@ -327,8 +327,11 @@ agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the 
 is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
 (an unaccepted block is safe to remove), and *safety for future agents* (never take unaccepted `[AI]`
 text for the owner's canon). The check is grep-cheap: AI text in a canon artifact without a mark — or a
-mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time; tooling
-may mechanize the check later, the convention does not depend on it.
+mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time. The check
+IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
+(`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/tools/kaif-provenance.mjs check` into your
+gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
+`accept <file>` strips marks into the registry and carries the OWNER'S word only.
 
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
