@@ -10,13 +10,19 @@ teaching moment for the human running the project — it produces **no file chan
 well-structured explanation they can read and act on.
 
 ## Framing (important)
+- **Read `.kaif/KAIF_REFERENCE.md` FIRST — it is the authoritative framework reference.** Answer
+  from it and CITE its sections ("Reference §10.2") so the operator can go deeper themselves; for
+  a specific mechanism question, quote the exact paragraph. Never answer about the framework from
+  memory of an older version: the reference on disk describes the version actually deployed here
+  (field-caught: an operator once asked "what do I have" and got an answer two versions old).
 - KAIF is **already deployed** in this project. Do **not** talk about unpacking/installation — that's done.
   Speak as "here's how to *use* what's already here."
 - Keep "what KAIF is" to a **couple of sentences**. Spend the bulk of the answer on **how to use it**:
   structure, conventions, documents, directories, and skills.
 - Write in the operator's working language. Keep `/command` names and file names canonical.
-- Base it on the deployed reality of *this* project (read `KAIF_FRAMEWORK.md`, `AGENT_GUIDE.md`, the
-  directory READMEs) — not a generic pitch. Adapt terminology to the project's sphere.
+- Base it on the deployed reality of *this* project (the reference + `KAIF_FRAMEWORK.md`,
+  `AGENT_GUIDE.md`, the actual `.claude/skills/` inventory — never a hardcoded list) — not a
+  generic pitch. Adapt terminology to the project's sphere.
 
 ## What to output (structure the chat message like this)
 

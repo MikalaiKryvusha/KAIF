@@ -164,6 +164,8 @@ experience survives context resets. It is a **living reference — never DONE-ta
 
 {{EMBED:framework/KAIF_FRAMEWORK.md}}
 
+{{EMBED:framework/KAIF_REFERENCE.md}}
+
 ---
 
 ## 5. The knowledge directories

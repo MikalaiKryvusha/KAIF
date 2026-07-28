@@ -240,6 +240,7 @@ your-project/
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | External map: directories, files, how the project looks from outside | Agent maintains |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Internal map: abstractions and how they interact | Agent maintains |
 | `KAIF_FRAMEWORK.md` | "KAIF, deployed here" (like a tech-stack page) | Agent writes after injection |
+| `KAIF_REFERENCE.md` (at `.kaif/`) | The complete framework reference — every module named, schemas included; `/help-kaif` cites its sections | Deployed verbatim |
 
 **Knowledge directories** — same conventions as before: `plans/` (agent's step plans), `ideas/` (mostly
 yours; agent implements *after your approval*), `bugs/` (one doc per defect), `researches/` (the big hard
@@ -603,6 +604,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | Внешняя карта: директории, файлы, как проект выглядит снаружи | Агент ведёт |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внутренняя карта: абстракции и их взаимодействия | Агент ведёт |
 | `KAIF_FRAMEWORK.md` | «KAIF, развёрнутый здесь» | Агент пишет после инжекции |
+| `KAIF_REFERENCE.md` (в `.kaif/`) | Пояснительная записка — полный справочник фреймворка: каждый модуль назван, схемы приведены; `/help-kaif` цитирует её параграфы | Развёртывается дословно |
 
 **Директории знаний** — соглашения прежние: `plans/` (пошаговые планы агента), `ideas/` (в основном
 ваши; агент реализует *после вашего одобрения*), `bugs/` (по документу на дефект), `researches/`

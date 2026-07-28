@@ -88,6 +88,7 @@ const DOC_TARGETS = {
   'framework/PROJECT_STRUCTURE_EXTERNAL_MAP.md':    ['PROJECT_STRUCTURE_EXTERNAL_MAP.md',    'project root — the external map, from your inspection'],
   'framework/PROJECT_ARCHITECTURE_INTERNAL_MAP.md': ['PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'project root — the internal map, adapted to the sphere'],
   'framework/KAIF_FRAMEWORK.md':       ['KAIF_FRAMEWORK.md',       'project root — write AFTER a successful injection (see §10)'],
+  'framework/KAIF_REFERENCE.md':       ['.kaif/KAIF_REFERENCE.md', 'the complete framework reference — verbatim; /help-kaif reads and cites it'],
   // Directory READMEs
   'framework/readmes/plans.md':        ['plans/README.md',        'create the directory and drop this README'],
   'framework/readmes/ideas.md':        ['ideas/README.md',        'create the directory and drop this README'],
@@ -200,6 +201,14 @@ const TEMPLATE_NOTES = TEMPLATE_NOTES_BY_VERSION[version()] || [];
 // in the update task. Empty is the normal state.
 const DEPRECATIONS = [];
 
+// POLICY changes, by version (Reference §10.6; field gap 04-§6: 1.6 changed the language POLICY
+// and the change dissolved into an ordinary diff — the owner learned about it on an audit).
+// A rule change of the previous version is declared here and the update task surfaces it in a
+// separate "decisions for the OWNER" section — never merged silently.
+const POLICY_CHANGES_BY_VERSION = {
+  '1.6': ['Language policy: agent-facing documents are English by default; the owner\'s language covers owner-facing documents and chat (a wholesale-translated wrapper declares "i18n": "translated" in the marker instead of fighting this rule).'],
+};
+
 // Every (src → dest) pair that lands in the bundle is recorded here as a side effect of
 // bundleBlocks() — the module map (plan 21 §3.1) is built from EXACTLY the same set, so the
 // map can never cover a different tree than the bundle ships.
@@ -217,7 +226,8 @@ function bundleBlocks() {
   const ovRaw = existsSync(ovPath) ? JSON.parse(readFileSync(ovPath, 'utf8').replace(/^﻿/, '')) : {};
   const moduleClasses = Object.fromEntries(Object.entries(ovRaw).filter(([k]) => !k.startsWith('_')));
   const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES,
-    templateNotesByVersion: TEMPLATE_NOTES_BY_VERSION, deprecations: DEPRECATIONS, moduleClasses };
+    templateNotesByVersion: TEMPLATE_NOTES_BY_VERSION, deprecations: DEPRECATIONS,
+    policyChanges: POLICY_CHANGES_BY_VERSION, moduleClasses };
   blocks.push(`> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
     FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
   for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {

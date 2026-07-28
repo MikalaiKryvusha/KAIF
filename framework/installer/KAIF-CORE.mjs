@@ -445,10 +445,26 @@ function handleDeprecations(meta, old) {
   return out;
 }
 
+// Policy changes in the (from, to] interval (Reference §10.6): a rule change is OWNER territory
+// and never merges silently as an ordinary diff (field: the 1.6 language-policy change dissolved
+// into a diff and the owner learned about it on an audit).
+function policyInterval(meta, fromVersion) {
+  const byVer = meta.policyChanges;
+  if (!byVer) return [];
+  const vnum = (v) => String(v || '0').split('.').map(Number);
+  const gt = (a, b) => { const [a1, a2 = 0] = vnum(a), [b1, b2 = 0] = vnum(b); return a1 !== b1 ? a1 > b1 : a2 > b2; };
+  const out = [];
+  for (const v of Object.keys(byVer).filter((v) => gt(v, fromVersion || '0') && !gt(v, meta.version)).sort((a, b) => (gt(a, b) ? 1 : -1)))
+    for (const p of byVer[v]) out.push(`[${v}] ${p}`);
+  return out;
+}
+
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [] } = opts;
+  const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   const items = [];
+  if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
   if (modFiles.length) items.push(['merge-modules', `These MODULES carry local edits — merge each diff below into your version (the rest of their files was updated mechanically): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
   if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.join(' · ')}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
@@ -1233,6 +1249,19 @@ function cmdCheck() {
   let missing = 0;
   for (const p of [...paths, ...agents, KAIF_JSON])
     if (!okOnDisk(p)) { console.error(`✖ MISSING or empty: ${p}`); missing++; }
+  // Marker SCHEMA (bugs/11 tail; the schema is Reference §12.1): the 1.5 agent→agents rename
+  // passed every gate invisibly — "exists and non-empty" is not a schema check.
+  try {
+    const j = readJson(KAIF_JSON);
+    const schemaIssues = [];
+    if (j.framework !== 'KAIF') schemaIssues.push(`framework is "${j.framework}", expected "KAIF"`);
+    if (typeof j.version !== 'string' || !j.version) schemaIssues.push('version missing or not a string');
+    if (!['origin', 'anonymous', 'fork'].includes(j.tracking)) schemaIssues.push(`tracking "${j.tracking}" is not origin|anonymous|fork`);
+    if (!Array.isArray(j.agents) || !j.agents.length) schemaIssues.push('agents is not a non-empty array');
+    if (typeof j.language !== 'string' || !j.language) schemaIssues.push('language missing');
+    for (const k of ['agent', 'agentsSupported']) if (k in j) schemaIssues.push(`superseded field "${k}" present (an older schema — update should have dropped it)`);
+    for (const s of schemaIssues) { console.error(`✖ marker schema: ${s} (Reference §12.1)`); missing++; }
+  } catch { console.error('✖ marker unreadable as JSON'); missing++; }
   if (missing) die(`INCOMPLETE: ${missing} artifacts missing`);
   // Content gate (warning, not failure): a mirror that EXISTS but drifted from its canon
   // skill passed the old existence-only check for a whole release (bug 11; nine days of five

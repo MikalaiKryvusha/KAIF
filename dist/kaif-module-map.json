@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "1.6",
   "released": "2026-07-24",
-  "moduleCount": 530,
+  "moduleCount": 569,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -887,6 +887,359 @@
         "lines": [
           64,
           76
+        ]
+      }
+    ],
+    ".kaif/KAIF_REFERENCE.md": [
+      {
+        "signature": "# KAIF Reference — the explanatory note",
+        "class": "static",
+        "sha256": "896040ad208be1c9c45cd4c03786aadba219231877c710caa7105901459d8f6d",
+        "lines": [
+          1,
+          14
+        ]
+      },
+      {
+        "signature": "## 1. Terms and definitions",
+        "class": "static",
+        "sha256": "3d0010e3bbc45e429fd1babcb2f9cd9cb1f7c3443eb1b52a616881c41d8e527e",
+        "lines": [
+          15,
+          36
+        ]
+      },
+      {
+        "signature": "## 2. Design principles",
+        "class": "static",
+        "sha256": "933c1a0d73681e0b99f3345c524a3b584896f8b0fbc95249d0f7aeef3c217ca2",
+        "lines": [
+          37,
+          49
+        ]
+      },
+      {
+        "signature": "## 3. The two layers of the origin repository",
+        "class": "static",
+        "sha256": "79a91af656127fded2be654c333b11940e9de812914dc9b7f205908a3b7b946f",
+        "lines": [
+          50,
+          57
+        ]
+      },
+      {
+        "signature": "## 4. Distribution artifacts",
+        "class": "static",
+        "sha256": "ec65d625c3398540884ceef488eafe0adb18ec0898f86fa85633a83017c956fd",
+        "lines": [
+          58,
+          69
+        ]
+      },
+      {
+        "signature": "## 5. The document system",
+        "class": "static",
+        "sha256": "62dbb219b178ddac5d6431f485a3e8fd756d2ebea77d69c890a41a391902b39f",
+        "lines": [
+          70,
+          91
+        ]
+      },
+      {
+        "signature": "## 6. The skill system",
+        "class": "static",
+        "sha256": "33355ba9471c7428c4dd49cc527902fa231524f7cfbfc167709a44251456649d",
+        "lines": [
+          92,
+          113
+        ]
+      },
+      {
+        "signature": "## 7. Installation",
+        "class": "static",
+        "sha256": "44b78cbd335e6c360797eb999463e3350c5cdeddfd24863d99ef2dc43e2e2494",
+        "lines": [
+          114,
+          115
+        ]
+      },
+      {
+        "signature": "### 7.1 The thin pipeline",
+        "class": "static",
+        "sha256": "ab9545bf0b5c0084d28525d3c6b340269d9b11588e49c3b7adf201745648df3f",
+        "lines": [
+          116,
+          121
+        ]
+      },
+      {
+        "signature": "### 7.2 What install does",
+        "class": "static",
+        "sha256": "ebe32fb6402ac60489fff458509c9f5d946ecc2d93ca970c2364671f955bc209",
+        "lines": [
+          122,
+          130
+        ]
+      },
+      {
+        "signature": "### 7.3 Agent systems",
+        "class": "static",
+        "sha256": "ecf66ec956e4700a97c14e67fd661d3f3ad3ba6c994439e1a0d75395f3fdcd1c",
+        "lines": [
+          131,
+          137
+        ]
+      },
+      {
+        "signature": "### 7.4 Languages",
+        "class": "static",
+        "sha256": "73291b9dd7dbc051ce448b519c64012fb2260359c8f4e4773030cba1a9e56aa5",
+        "lines": [
+          138,
+          145
+        ]
+      },
+      {
+        "signature": "### 7.5 The final gates",
+        "class": "static",
+        "sha256": "66d071013b370b4635401b41a9effc13a92bb0aef9b1de176b6709750423d850",
+        "lines": [
+          146,
+          152
+        ]
+      },
+      {
+        "signature": "## 8. The bundle",
+        "class": "static",
+        "sha256": "b27c64dc7d55013ee51ededaff11f50a814c42219a4415a3b1e7e38de8d97962",
+        "lines": [
+          153,
+          154
+        ]
+      },
+      {
+        "signature": "### 8.1 FILE blocks",
+        "class": "static",
+        "sha256": "44109a5c776d9b1bd49517062c2f7f78cd76aa440299ff56adbde404a088579a",
+        "lines": [
+          155,
+          159
+        ]
+      },
+      {
+        "signature": "### 8.2 The meta block",
+        "class": "static",
+        "sha256": "c89c0ead0e4f030941764b62dc471914fb38f53bb616422a03d2f5741f6c3436",
+        "lines": [
+          160,
+          166
+        ]
+      },
+      {
+        "signature": "## 9. The module map",
+        "class": "static",
+        "sha256": "c83fa0768eacc805178e0bd10afb9179fe36439b3e7ba732abdd8efd47f051e6",
+        "lines": [
+          167,
+          168
+        ]
+      },
+      {
+        "signature": "### 9.1 Generation",
+        "class": "static",
+        "sha256": "8b8bdc6ce3bd10afd5939f6cf7a96f975df27aa5aa86b174dc25c6524af00cf4",
+        "lines": [
+          169,
+          178
+        ]
+      },
+      {
+        "signature": "### 9.2 Guarantees",
+        "class": "static",
+        "sha256": "2a5b3fbc6beb91b8bb48060abd0c684d7d8527684b7b35d42444090bcb6b1fc6",
+        "lines": [
+          179,
+          183
+        ]
+      },
+      {
+        "signature": "## 10. Updating",
+        "class": "static",
+        "sha256": "bfe93071404fa914402b99a75cbd57a40103105b9f6b7366687ba17b3c9ed982",
+        "lines": [
+          184,
+          185
+        ]
+      },
+      {
+        "signature": "### 10.1 Classification",
+        "class": "static",
+        "sha256": "ce13da81c52896d6c4d79b5b9e5232ab26b99fb00950331f6c58a46c22dcdcb0",
+        "lines": [
+          186,
+          192
+        ]
+      },
+      {
+        "signature": "### 10.2 The modular merge",
+        "class": "static",
+        "sha256": "01a2dc7f739d60f90010087a93f4066f02c74fe0497a1c61137cf301d029a693",
+        "lines": [
+          193,
+          200
+        ]
+      },
+      {
+        "signature": "### 10.3 The update task",
+        "class": "static",
+        "sha256": "02da22d42e9e9237b83fe7f8f3eb67f593b796169b6c9eeb6c584726b785e9e3",
+        "lines": [
+          201,
+          207
+        ]
+      },
+      {
+        "signature": "### 10.4 Legacy and anonymous roads",
+        "class": "static",
+        "sha256": "482e52c71eb2d7abdba4a8f948ec7b59f6e88fff6a2c3e959ac0ad363803f6e2",
+        "lines": [
+          208,
+          215
+        ]
+      },
+      {
+        "signature": "### 10.5 Deprecations",
+        "class": "static",
+        "sha256": "325171663ed7b5bf8ff971a88ccfc1c5ba7dd2a661617ad11fd18eac6336e6cd",
+        "lines": [
+          216,
+          221
+        ]
+      },
+      {
+        "signature": "### 10.6 Policy changes",
+        "class": "static",
+        "sha256": "16e95c45a56a09a36130c416cf0b23f294d04d01d2dd4a80cff97e42d2868d11",
+        "lines": [
+          222,
+          227
+        ]
+      },
+      {
+        "signature": "### 10.7 Commands",
+        "class": "static",
+        "sha256": "565f808c1e150b74bcc874a275301910deddad418f60595a83bdc01c56a30ef9",
+        "lines": [
+          228,
+          234
+        ]
+      },
+      {
+        "signature": "## 11. Trust and provenance",
+        "class": "static",
+        "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
+        "lines": [
+          235,
+          236
+        ]
+      },
+      {
+        "signature": "### 11.1 Receipts and history",
+        "class": "static",
+        "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
+        "lines": [
+          237,
+          242
+        ]
+      },
+      {
+        "signature": "### 11.2 Snapshot provenance",
+        "class": "static",
+        "sha256": "36802b7f74316a42eeb96cf067cf294622fa0def2cae2ca58a884f01341c288e",
+        "lines": [
+          243,
+          248
+        ]
+      },
+      {
+        "signature": "### 11.3 Anonymity",
+        "class": "static",
+        "sha256": "dcc15859ba7b566f94d75aee2cfb8101a78c5244ef0fc5a85088882cfaebbc5d",
+        "lines": [
+          249,
+          256
+        ]
+      },
+      {
+        "signature": "## 12. Schemas",
+        "class": "static",
+        "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
+        "lines": [
+          257,
+          258
+        ]
+      },
+      {
+        "signature": "### 12.1 The marker (`.kaif/kaif.json`)",
+        "class": "static",
+        "sha256": "5e7c20b984bf2f41f30fc91ee0ea7680da18870cb48e5e9a6e91d3e879ca0032",
+        "lines": [
+          259,
+          276
+        ]
+      },
+      {
+        "signature": "### 12.2 The deploy manifest (`.kaif/deploy-manifest.json`)",
+        "class": "static",
+        "sha256": "5543ee514fdd7a69a03bc357673f3f688762c8846a4cfb09a3b939771e047290",
+        "lines": [
+          277,
+          283
+        ]
+      },
+      {
+        "signature": "### 12.3 The receipt (`.kaif/last-update.json`)",
+        "class": "static",
+        "sha256": "74c79ea9fa60feb438a6143a85cceeaecf150dc55a42f0273904fcb6056a3de9",
+        "lines": [
+          284,
+          288
+        ]
+      },
+      {
+        "signature": "## 13. Conventions",
+        "class": "static",
+        "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
+        "lines": [
+          289,
+          305
+        ]
+      },
+      {
+        "signature": "## 14. Optional tool modules",
+        "class": "static",
+        "sha256": "ecb5fb8267eeb1028bf29445ca3e73da5d4b0e5e71c420e3867eaeb8bd20e145",
+        "lines": [
+          306,
+          314
+        ]
+      },
+      {
+        "signature": "## 15. Lifecycle",
+        "class": "static",
+        "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
+        "lines": [
+          315,
+          327
+        ]
+      },
+      {
+        "signature": "## 16. Where to read more",
+        "class": "static",
+        "sha256": "4103c1056f19615aca4ef3775c81c18cb156d543c9620dff4a73830e2e180bba",
+        "lines": [
+          328,
+          334
         ]
       }
     ],
@@ -1971,10 +2324,10 @@
       {
         "signature": "## Framing (important)",
         "class": "static",
-        "sha256": "8cf763b68736a75fc2d97525e0b9446434b334cd1cb60a969d2121b6d02bdbdb",
+        "sha256": "741873e83c814e290afa1b481b4f6d7a3a6140153e490f076b0196c48ce54237",
         "lines": [
           12,
-          20
+          26
         ]
       },
       {
@@ -1982,8 +2335,8 @@
         "class": "static",
         "sha256": "08746c1cfd0f70b2002adf88cee09d4c0654a8d4d8ce25353ea3be9895800df5",
         "lines": [
-          21,
-          47
+          27,
+          53
         ]
       },
       {
@@ -1991,8 +2344,8 @@
         "class": "static",
         "sha256": "b85ebca417676ded2beffe20e5868f96bcb2b39e4e64cf44d4208e552cfc3f71",
         "lines": [
-          48,
-          54
+          54,
+          60
         ]
       }
     ],
@@ -2110,19 +2463,19 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "38332b6fb3247e875e37828d1126d82fe0b3bbb55c61c161d0af60440f82128d",
+        "sha256": "439ffb60b2939b98885bab9d9527be0b8ac01b1864d98218654a5bfd5dfb2ceb",
         "lines": [
           16,
-          36
+          51
         ]
       },
       {
         "signature": "## Notes",
         "class": "static",
-        "sha256": "6372ad444c3dcffdaaa5bc319a5b6d9bbc266a758f108dffbcab41c8bb1893fb",
+        "sha256": "9b002c25d17fc2c866aa3813ee7fd8994bf76cf98c9d59f9e9b473335ff15712",
         "lines": [
-          37,
-          42
+          52,
+          59
         ]
       }
     ],

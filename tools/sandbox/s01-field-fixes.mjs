@@ -50,6 +50,16 @@ ok(gi1.includes('.kaif/install/') && gi1.includes('KAIF_UPDATE_TASK.md') && gi1.
    'S1 ignore-first: транзиенты в .gitignore ДО работы');
 r = run(S1, 'check');
 ok(r.code === 0, 'S1 check зелёный', r.out.slice(-400));
+// схема маркера (Reference §12.1): битое поле — красный, восстановление — зелёный
+const mkPath = join(S1, '.kaif', 'kaif.json');
+const mk0 = readFileSync(mkPath, 'utf8');
+const mkBad = JSON.parse(mk0); mkBad.agents = 'claude-code'; // не массив
+writeFileSync(mkPath, JSON.stringify(mkBad, null, 2) + '\n');
+r = run(S1, 'check');
+ok(r.code !== 0 && /marker schema: agents/.test(r.out), 'S1 схема маркера: битое поле agents — красный', r.out.slice(-300));
+writeFileSync(mkPath, mk0);
+r = run(S1, 'check');
+ok(r.code === 0, 'S1 схема маркера: восстановлено — зелёный');
 
 // ---------------------------------------------------------------- S2: анонимный check при живом бандле (GH#1)
 console.log('\n=== S2: анонимная установка — check без флага при живом бандле ===');
