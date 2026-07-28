@@ -30,7 +30,7 @@ KAIF/
 │   ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md# шаблон внутренней карты
 │   ├── KAIF_FRAMEWORK.md                   # шаблон пост-инжекционного документа
 │   ├── readmes/<dir>.md                    # 6 шаблонов README директорий
-│   ├── skills/<name>/SKILL.md              # 18 шаблонов навыков (generic, плейсхолдеры команд)
+│   ├── skills/<name>/SKILL.md              # 27 шаблонов навыков (generic, плейсхолдеры команд)
 │   ├── spheres/*                           # библиотеки терминов по сферам (+ _index, _template)
 │   └── adapters/*                          # адаптеры под агентские системы (+ _index, _template)
 │

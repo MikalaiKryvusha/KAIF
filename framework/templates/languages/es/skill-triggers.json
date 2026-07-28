@@ -1,6 +1,7 @@
 {
   "resume": "«continúa», «continuemos», «retoma», «¿dónde nos quedamos?»",
-  "pause": "«pausa», «hagamos una pausa», «cierra la sesión», «guarda el progreso», «fija el estado»",
+  "pause": "«pausa», «hagamos una pausa», «aparca el trabajo», «vuelvo enseguida»",
+  "end-chat": "«terminar el chat», «cerremos el chat», «pasa el testigo», «guarda el progreso y haz push», «cierra la sesión»",
   "autoloop": "«trabaja solo», «piloto automático», «muele el backlog», «lanza el ciclo autónomo»",
   "dayloop": "«ciclo diurno», «trabaja solo, estoy ocupado»",
   "nightloop": "«ciclo nocturno», «trabaja hasta la mañana»",

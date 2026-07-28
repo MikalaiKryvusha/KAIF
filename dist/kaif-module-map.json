@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "1.6",
   "released": "2026-07-24",
-  "moduleCount": 517,
+  "moduleCount": 523,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -1225,6 +1225,80 @@
         ]
       }
     ],
+    ".claude/skills/end-chat/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "9a577d96077fd2ce5c1e5b0d91ee575a4ff1ace469e2eb9126bdde369c931f1d",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /end-chat — full closure: we say goodbye to this chat",
+        "class": "static",
+        "sha256": "ed730e40c52f580afdcf7277e8291dc14f42221c7f49983d59bc9c51a7775bf1",
+        "lines": [
+          6,
+          11
+        ]
+      },
+      {
+        "signature": "## Step 1. Record status & the baton in STATUS.md",
+        "class": "static",
+        "sha256": "37533a684be5414b346e20e84dc29ec289aeee20348a369b99496783509225c3",
+        "lines": [
+          12,
+          23
+        ]
+      },
+      {
+        "signature": "## Step 2. Refresh README (when reality moved)",
+        "class": "static",
+        "sha256": "d173bc11091b3e13b7ddb1f016f99f41dec793024f186d39526dfacdf1bc83fd",
+        "lines": [
+          24,
+          28
+        ]
+      },
+      {
+        "signature": "## Step 3. (Re)build / regenerate artifacts",
+        "class": "static",
+        "sha256": "c6fbfbbabdfbd8418268123363c6371f9ea7ad9e58e9fab8ae70ef33c0e9e1c4",
+        "lines": [
+          29,
+          34
+        ]
+      },
+      {
+        "signature": "## Step 4. Commit and push (judge first)",
+        "class": "adaptive",
+        "sha256": "7b1342c731e396e38d41cd1796aa7c2069c8019bbe6968b9e05dcb2a4bc83c6b",
+        "lines": [
+          35,
+          48
+        ]
+      },
+      {
+        "signature": "## Step 5. The farewell report",
+        "class": "static",
+        "sha256": "83c527beda1615a37f4b34849fb97b3b15591bb9ebcc0fa90381011705427d39",
+        "lines": [
+          49,
+          53
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "7ccc4bb2f9a507f89edc9445bcfbd6a2c679d50d6362c96607deb326d3d7bf99",
+        "lines": [
+          54,
+          60
+        ]
+      }
+    ],
     ".claude/skills/experience/SKILL.md": [
       {
         "signature": "<preamble>",
@@ -2217,73 +2291,55 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "67bef30c108e0d4932558707d842865760a591e0cab516c2691e861105c5ec34",
+        "sha256": "6097cd805e89a86247455b9d3719020707c763ff1fba169fe4da88b4f4097688",
         "lines": [
           1,
           5
         ]
       },
       {
-        "signature": "# /pause — end the work session",
+        "signature": "# /pause — soft-park the chat (we continue HERE later)",
         "class": "static",
-        "sha256": "fcebc979f9ca0a6f80a1776c420d7af91d37e55e5d317521adcc3fa49a5ecdbe",
+        "sha256": "8d3f951e3d1fc2509f4eacab1fed8ed261f50b116e27203b99828564ed7533d4",
         "lines": [
           6,
-          10
+          11
         ]
       },
       {
-        "signature": "## Step 1. Record status & plans in STATUS.md",
+        "signature": "## Step 1. Reach a logical stopping point — never park mid-surgery",
         "class": "static",
-        "sha256": "ed63ac42ffb3fba82a2003bb0b9e1c22e274f7a54cf6ea9175e369f7415a0909",
+        "sha256": "cab72dccf26b42eb2a66c5b95206b2bc8b0368ca6f7399316fd0c6f0103eaa1a",
         "lines": [
-          11,
-          21
+          12,
+          18
         ]
       },
       {
-        "signature": "## Step 2. Refresh README",
+        "signature": "## Step 2. Preserve the work — locally and lightly",
         "class": "static",
-        "sha256": "1476695920ecc70ea7459a76888809efbe4ca6a2c86ed0ec1b48530023ab2fd7",
+        "sha256": "ab9090e8e462e5bee5ae6ff7fe97998c349e3ca8e08031a466d62a7917a76867",
         "lines": [
-          22,
+          19,
           26
         ]
       },
       {
-        "signature": "## Step 3. (Re)build / regenerate artifacts",
+        "signature": "## Step 3. The parking note — the chat IS the memory here",
         "class": "static",
-        "sha256": "c6fbfbbabdfbd8418268123363c6371f9ea7ad9e58e9fab8ae70ef33c0e9e1c4",
+        "sha256": "7be8617bac3fcb5ec1d389ad52014de896f517e05470927be95774631c90acf7",
         "lines": [
           27,
-          32
-        ]
-      },
-      {
-        "signature": "## Step 4. Commit and push",
-        "class": "adaptive",
-        "sha256": "5f92742436b29ff23d86c2ea2b1a2f1ecbc5393ff5bc7025eccb65c7b1d77e91",
-        "lines": [
-          33,
-          43
-        ]
-      },
-      {
-        "signature": "## Step 5. Report",
-        "class": "static",
-        "sha256": "e904ebc5d47edb8ea86e5c707aa472304557ad01de66e0a0498858be44dd3c0b",
-        "lines": [
-          44,
-          48
+          36
         ]
       },
       {
         "signature": "## Notes",
         "class": "static",
-        "sha256": "e28698b022965de2d6a59091eb7a79ec8f01a77096b0166c49cc76701ec67f5c",
+        "sha256": "9f3f5734f15bcd543b2216777c063c11e1a990bd11865ea78f9b7392f99575e7",
         "lines": [
-          49,
-          54
+          37,
+          43
         ]
       }
     ],

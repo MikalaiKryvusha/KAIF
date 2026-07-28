@@ -1,6 +1,7 @@
 {
   "resume": "« continue », « reprenons », « reprends », « où en étions-nous ? »",
-  "pause": "« pause », « faisons une pause », « clôture la session », « sauvegarde la progression », « fige le statut »",
+  "pause": "«pause», «faisons une pause», «gare le travail», «je reviens vite»",
+  "end-chat": "«terminer le chat», «clôturons le chat», «passe le relais», «sauvegarde et pousse», «clos la session»",
   "autoloop": "« travaille seul », « pilote automatique », « abats le backlog », « lance la boucle autonome »",
   "dayloop": "« boucle de jour », « travaille seul, je suis occupé »",
   "nightloop": "« boucle de nuit », « travaille jusqu'au matin »",

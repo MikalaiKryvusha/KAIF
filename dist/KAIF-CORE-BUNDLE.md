@@ -1748,6 +1748,70 @@ pause and don't wait**, keep working:
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
 ``````
 
+> **FILE: `.claude/skills/end-chat/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: end-chat
+description: FULLY CLOSE this chat and hand the baton over — update all status documents (STATUS.md, README if warranted), rebuild artifacts, commit AND push, then write the handoff so agents in OTHER chats can continue seamlessly. Use when the human says "end the chat", "wrap up", "закончим чат", "завершаем чат", "передай эстафету", "сворачиваемся", "save progress, commit and push", "заверши сессию", "зафиксируй статус". For a light in-chat pause (no pushes, no ceremony) use /pause instead.
+---
+
+# /end-chat — full closure: we say goodbye to this chat
+
+The human is closing this chat for good; the work continues in OTHER chats with OTHER agent sessions
+that start from an empty context. Run the closure routine **in order**, narrate each step briefly.
+Don't skip steps. If a step fails — stop, tell the human, don't continue blindly.
+
+## Step 1. Record status & the baton in STATUS.md
+
+Update `STATUS.md`:
+- **What was done in this chat** — concrete, tied to bugs/features and files.
+- **Current position** — what works, what's in progress, where we are.
+- **The baton ("where to continue")** — a checklist written for a STRANGER: the next session knows
+  nothing this chat knew. Commands, file paths, what to verify first, open questions with owners.
+- Convert relative dates to absolute (find today's date from context / `date`).
+
+Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
+in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
+
+## Step 2. Refresh README (when reality moved)
+
+Bring `README.md` in line with reality: phase status, working features, instructions. If the README
+is bilingual, keep both languages in sync. Don't invent — reflect only what is done and verified.
+
+## Step 3. (Re)build / regenerate artifacts
+
+`<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
+own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
+regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
+
+## Step 4. Commit and push (judge first)
+
+Run a `/fable-judge` pass over this chat's finished claims before pushing (the canon: a judge pass
+precedes every push). Then:
+
+`<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
+pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+
+Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
+End the message with:
+```
+Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
+```
+
+## Step 5. The farewell report
+
+Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
+the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+
+## Notes
+
+- The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the human
+  about the divergence.
+- Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.
+``````
+
 > **FILE: `.claude/skills/experience/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
@@ -2963,57 +3027,46 @@ Until one fires — don't stop, don't wait for confirmations, work.
 ``````md
 ---
 name: pause
-description: End a work session (pause) — record status and next-session plans in STATUS.md, refresh README, (re)build the project, commit and push. Use when the human says "let's pause", "wrap up", "save progress", "commit and push", "end the session", "сделаем паузу", "заверши сессию", "зафиксируй статус".
+description: SOFT-PARK the current chat — a temporary pause with the intent to CONTINUE IN THIS SAME CHAT. Bring the task in flight to a logical stopping point, verify the tree is green, park neatly WITHOUT the heavy wrap-up (no push, no STATUS/README ceremony) and post a precise parking note in the chat. Use when the human says "pause", "park it", "hold on, back soon", "пауза", "припаркуйся", "прервёмся ненадолго". For the FULL session closure (STATUS, commits, pushes, handoff to other chats) use /end-chat instead.
 ---
 
-# /pause — end the work session
+# /pause — soft-park the chat (we continue HERE later)
 
-The human is pausing. Run the wrap-up routine **in order**. Narrate each step briefly in the chat.
-Don't skip steps. If a step fails — stop, tell the human, don't continue blindly.
+A temporary pause, not a goodbye: the human intends to come back to THIS chat and continue. The whole
+point is a **cheap, precise parking** — no heavyweight rituals. (The heavy closure — STATUS, commits,
+pushes, handing the baton to other agents — is `/end-chat`, a different skill.)
 
-## Step 1. Record status & plans in STATUS.md
+## Step 1. Reach a logical stopping point — never park mid-surgery
 
-Update `STATUS.md`:
-- **What was done this session** — concrete, tied to bugs/features and files.
-- **Current position** — what works, what's in progress, where we are.
-- **Plans for next session** — a clear "where to continue" checklist (commands, files, what to verify
-  first). Remember: the next agent session starts with empty context — write so it can jump straight in.
-- Convert relative dates to absolute (find today's date from context / `date`).
+Finish the smallest coherent unit of the work in flight: the tree must **build green and pass its
+checks**. If you are mid-edit and the tree is broken, the parking point is AFTER the minimal set of
+edits that makes it green again — say so in the chat and finish that first (minutes, not hours).
+Do NOT start anything new.
 
-Reconcile with the active bug docs in `bugs/` and reflect their status.
+## Step 2. Preserve the work — locally and lightly
 
-## Step 2. Refresh README
+- If the tree is green and carries uncommitted work: make a **local commit without pushing**
+  (`wip: <what> — soft parking` + your standard co-author trailer). A local commit costs nothing
+  and survives a crash; a push is a session-closure act and belongs to `/end-chat`.
+- Do NOT update `STATUS.md`, README or other status documents — that ceremony is exactly what this
+  skill exists to skip. The parking note in the chat (step 3) is the continuation medium.
 
-Bring `README.md` in line with reality: phase status, working features, instructions. If the README is
-bilingual, keep both languages in sync. Don't invent — reflect only what is actually done and verified.
+## Step 3. The parking note — the chat IS the memory here
 
-## Step 3. (Re)build / regenerate artifacts
+Post one compact note in the chat:
+- **Where we stand:** what just got finished and verified (one line per item).
+- **Exactly where to resume:** the next concrete action, with file/command names — written so that
+  "продолжаем"/"continue" picks up with zero re-derivation.
+- Anything time-sensitive the human should know before they leave.
 
-`<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
-own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
-regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
-
-## Step 4. Commit and push
-
-`<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
-
-Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
-End the message with:
-```
-Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
-```
-
-## Step 5. Report
-
-Briefly report to the human: what was recorded, what was built, the commit hash, what was pushed, and
-one line — the main plan for next session. That's the pause.
+Then stop. No further actions, no background work.
 
 ## Notes
 
-- If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the human
-  about the divergence.
-- Generated artifacts that are gitignored (e.g. README.pdf, build outputs) won't be committed — that's fine.
+- The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- If the pause unexpectedly becomes permanent (the human never returns to this chat), nothing is
+  lost: the local commit holds the work, and the next session's `/resume` reads the tree and
+  `git log` as usual.
 ``````
 
 > **FILE: `.claude/skills/propose-idea/SKILL.md`** — replace the command placeholders with the project's real commands
@@ -4179,7 +4232,8 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 ``````md
 {
   "resume": "«واصل», «تابع العمل», «استأنف», «أين توقفنا؟»",
-  "pause": "«توقف», «خذ استراحة», «أنهِ الجلسة», «احفظ التقدم», «ثبّت الحالة»",
+  "pause": "«توقف مؤقت», «لنتوقف قليلاً», «اركن العمل», «سأعود قريباً»",
+  "end-chat": "«إنهاء المحادثة», «إغلاق الجلسة», «تسليم المهمة», «احفظ التقدم وادفع»",
   "autoloop": "«اعمل وحدك», «الطيار الآلي», «اطحن قائمة الأعمال», «شغّل الحلقة المستقلة»",
   "dayloop": "«حلقة النهار», «اعمل وحدك، أنا مشغول»",
   "nightloop": "«حلقة الليل», «اعمل حتى الصباح»",
@@ -4464,7 +4518,8 @@ aktualisiert, während das Verständnis wächst.
 ``````md
 {
   "resume": "«mach weiter», «weiter geht's», «nimm die Arbeit wieder auf», «wo waren wir stehengeblieben?»",
-  "pause": "«Pause», «lass uns pausieren», «schließ die Sitzung ab», «sichere den Fortschritt», «halte den Status fest»",
+  "pause": "«Pause», «machen wir Pause», «park die Arbeit», «bin gleich zurück»",
+  "end-chat": "«Chat beenden», «Chat abschließen», «übergib den Staffelstab», «Fortschritt sichern und pushen», «Sitzung abschließen»",
   "autoloop": "«arbeite selbstständig», «Autopilot», «arbeite das Backlog ab», «starte die autonome Schleife»",
   "dayloop": "«Tagesschleife», «arbeite allein, ich bin beschäftigt»",
   "nightloop": "«Nachtschleife», «arbeite bis zum Morgen»",
@@ -4746,7 +4801,8 @@ medida que crece la comprensión.
 ``````md
 {
   "resume": "«continúa», «continuemos», «retoma», «¿dónde nos quedamos?»",
-  "pause": "«pausa», «hagamos una pausa», «cierra la sesión», «guarda el progreso», «fija el estado»",
+  "pause": "«pausa», «hagamos una pausa», «aparca el trabajo», «vuelvo enseguida»",
+  "end-chat": "«terminar el chat», «cerremos el chat», «pasa el testigo», «guarda el progreso y haz push», «cierra la sesión»",
   "autoloop": "«trabaja solo», «piloto automático», «muele el backlog», «lanza el ciclo autónomo»",
   "dayloop": "«ciclo diurno», «trabaja solo, estoy ocupado»",
   "nightloop": "«ciclo nocturno», «trabaja hasta la mañana»",
@@ -5032,7 +5088,8 @@ compréhension grandit.
 ``````md
 {
   "resume": "« continue », « reprenons », « reprends », « où en étions-nous ? »",
-  "pause": "« pause », « faisons une pause », « clôture la session », « sauvegarde la progression », « fige le statut »",
+  "pause": "«pause», «faisons une pause», «gare le travail», «je reviens vite»",
+  "end-chat": "«terminer le chat», «clôturons le chat», «passe le relais», «sauvegarde et pousse», «clos la session»",
   "autoloop": "« travaille seul », « pilote automatique », « abats le backlog », « lance la boucle autonome »",
   "dayloop": "« boucle de jour », « travaille seul, je suis occupé »",
   "nightloop": "« boucle de nuit », « travaille jusqu'au matin »",
@@ -5303,7 +5360,8 @@ DONE टैग नहीं मिलता।
 ``````md
 {
   "resume": "\"जारी रखो\", \"आगे बढ़ो\", \"काम फिर शुरू करो\", \"हम कहाँ रुके थे?\"",
-  "pause": "\"रुको\", \"पॉज़ करो\", \"सत्र समेटो\", \"प्रगति सहेजो\", \"स्थिति दर्ज करो\"",
+  "pause": "«रुको», «थोड़ा विराम», «काम पार्क करो», «अभी लौटता हूँ»",
+  "end-chat": "«चैट समाप्त करें», «सत्र बंद करें», «कमान सौंपें», «प्रगति सहेजें और पुश करें»",
   "autoloop": "\"खुद काम करो\", \"ऑटोपायलट\", \"बैकलॉग निपटाओ\", \"स्वायत्त लूप चलाओ\"",
   "dayloop": "\"दिन का लूप\", \"खुद काम करो, मैं व्यस्त हूँ\"",
   "nightloop": "\"रात का लूप\", \"सुबह तक काम करो\"",
@@ -5581,7 +5639,8 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 ``````md
 {
   "resume": "「続けて」「再開して」「どこまでやった？」「続きから」",
-  "pause": "「一時停止」「セッションを締めて」「進捗を保存して」「状態を固定して」",
+  "pause": "«一時停止», «少し休憩», «作業を一旦パーク», «すぐ戻る»",
+  "end-chat": "«チャットを終了», «セッションを締める», «バトンを渡す», «進捗を保存してプッシュ», «セッション終了»",
   "autoloop": "「自分で作業して」「オートパイロット」「バックログを消化して」「自律ループを開始」",
   "dayloop": "「昼ループ」「忙しいから自分で作業して」",
   "nightloop": "「夜ループ」「朝まで作業して」",
@@ -5862,7 +5921,8 @@ compreensão cresce.
 ``````md
 {
   "resume": "«continua», «vamos continuar», «retoma», «onde paramos?»",
-  "pause": "«pausa», «vamos pausar», «encerra a sessão», «salva o progresso», «fixa o status»",
+  "pause": "«pausa», «vamos pausar», «estaciona o trabalho», «volto já»",
+  "end-chat": "«encerrar o chat», «vamos fechar o chat», «passe o bastão», «salve o progresso e faça push», «encerre a sessão»",
   "autoloop": "«trabalha sozinho», «piloto automático», «mói o backlog», «inicia o ciclo autônomo»",
   "dayloop": "«ciclo diurno», «trabalha sozinho, estou ocupado»",
   "nightloop": "«ciclo noturno», «trabalha até de manhã»",
@@ -6132,7 +6192,8 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 ``````md
 {
   "resume": "«продолжи», «продолжим», «возобнови», «на чём мы остановились», «что дальше по работе»",
-  "pause": "«пауза», «сделаем паузу», «сверни сессию», «сохрани прогресс», «зафиксируй статус»",
+  "pause": "«пауза», «сделаем паузу», «припаркуйся», «прервёмся ненадолго»",
+  "end-chat": "«закончим чат», «завершаем чат», «передай эстафету», «сверни сессию», «сохрани прогресс», «зафиксируй статус», «заверши сессию»",
   "autoloop": "«работай сам», «автопилот», «погриндь беклог», «запусти автономный цикл»",
   "dayloop": "«дневной цикл», «работай сам, я занят», «гринди беклог днём»",
   "nightloop": "«ночной цикл», «работай до утра», «поработай ночью»",
@@ -6387,7 +6448,8 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 ``````md
 {
   "resume": "「继续」「接着做」「恢复工作」「我们做到哪儿了？」",
-  "pause": "「暂停」「先停一下」「收尾这次会话」「保存进度」「固定状态」",
+  "pause": "«暂停», «先停一下», «停车暂存», «马上回来»",
+  "end-chat": "«结束聊天», «关闭本次会话», «交接工作», «保存进度并推送», «结束会话»",
   "autoloop": "「自己干活」「自动驾驶」「消化待办清单」「启动自主循环」",
   "dayloop": "「白天循环」「自己干，我忙着呢」",
   "nightloop": "「夜间循环」「干到早上」",

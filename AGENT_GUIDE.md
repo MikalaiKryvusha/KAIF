@@ -11,7 +11,7 @@
 > фреймворком* (он применяет себя к себе, dogfooding). Поэтому здесь два слоя, и путать их нельзя:
 >
 > 1. **Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:
->    - `framework/` — канонические универсальные шаблоны (девять ключевых документов, шесть README директорий, двадцать один навык и скрипт-распаковщик).
+>    - `framework/` — канонические универсальные шаблоны (одиннадцать ключевых документов, шесть README директорий, двадцать семь навыков и скрипт-распаковщик).
 >    - `KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
 >      `tools/build-framework.mjs`. Это единственный источник истины для развёртывания.
 > 2. **Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):
@@ -160,7 +160,7 @@ KAIF/
 │   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md GOAL.md MASTER_PLAN.md
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md  KAIF_FRAMEWORK.md
 │   ├── readmes/<dir>.md             ← the six directory-README templates
-│   ├── skills/<name>/SKILL.md       ← the 21 skill templates
+│   ├── skills/<name>/SKILL.md       ← the 27 skill templates
 │   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded into KAIF.md as a FILE: block)
 │   ├── spheres/  adapters/          ← sphere term libraries · agent-system adapters (Zoo Code = priority #1)
 │

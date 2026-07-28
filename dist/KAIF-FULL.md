@@ -1632,57 +1632,46 @@ Do the chosen task. Along the way:
 ``````md
 ---
 name: pause
-description: End a work session (pause) — record status and next-session plans in STATUS.md, refresh README, (re)build the project, commit and push. Use when the human says "let's pause", "wrap up", "save progress", "commit and push", "end the session", "сделаем паузу", "заверши сессию", "зафиксируй статус".
+description: SOFT-PARK the current chat — a temporary pause with the intent to CONTINUE IN THIS SAME CHAT. Bring the task in flight to a logical stopping point, verify the tree is green, park neatly WITHOUT the heavy wrap-up (no push, no STATUS/README ceremony) and post a precise parking note in the chat. Use when the human says "pause", "park it", "hold on, back soon", "пауза", "припаркуйся", "прервёмся ненадолго". For the FULL session closure (STATUS, commits, pushes, handoff to other chats) use /end-chat instead.
 ---
 
-# /pause — end the work session
+# /pause — soft-park the chat (we continue HERE later)
 
-The human is pausing. Run the wrap-up routine **in order**. Narrate each step briefly in the chat.
-Don't skip steps. If a step fails — stop, tell the human, don't continue blindly.
+A temporary pause, not a goodbye: the human intends to come back to THIS chat and continue. The whole
+point is a **cheap, precise parking** — no heavyweight rituals. (The heavy closure — STATUS, commits,
+pushes, handing the baton to other agents — is `/end-chat`, a different skill.)
 
-## Step 1. Record status & plans in STATUS.md
+## Step 1. Reach a logical stopping point — never park mid-surgery
 
-Update `STATUS.md`:
-- **What was done this session** — concrete, tied to bugs/features and files.
-- **Current position** — what works, what's in progress, where we are.
-- **Plans for next session** — a clear "where to continue" checklist (commands, files, what to verify
-  first). Remember: the next agent session starts with empty context — write so it can jump straight in.
-- Convert relative dates to absolute (find today's date from context / `date`).
+Finish the smallest coherent unit of the work in flight: the tree must **build green and pass its
+checks**. If you are mid-edit and the tree is broken, the parking point is AFTER the minimal set of
+edits that makes it green again — say so in the chat and finish that first (minutes, not hours).
+Do NOT start anything new.
 
-Reconcile with the active bug docs in `bugs/` and reflect their status.
+## Step 2. Preserve the work — locally and lightly
 
-## Step 2. Refresh README
+- If the tree is green and carries uncommitted work: make a **local commit without pushing**
+  (`wip: <what> — soft parking` + your standard co-author trailer). A local commit costs nothing
+  and survives a crash; a push is a session-closure act and belongs to `/end-chat`.
+- Do NOT update `STATUS.md`, README or other status documents — that ceremony is exactly what this
+  skill exists to skip. The parking note in the chat (step 3) is the continuation medium.
 
-Bring `README.md` in line with reality: phase status, working features, instructions. If the README is
-bilingual, keep both languages in sync. Don't invent — reflect only what is actually done and verified.
+## Step 3. The parking note — the chat IS the memory here
 
-## Step 3. (Re)build / regenerate artifacts
+Post one compact note in the chat:
+- **Where we stand:** what just got finished and verified (one line per item).
+- **Exactly where to resume:** the next concrete action, with file/command names — written so that
+  "продолжаем"/"continue" picks up with zero re-derivation.
+- Anything time-sensitive the human should know before they leave.
 
-`<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
-own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
-regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
-
-## Step 4. Commit and push
-
-`<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
-
-Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
-End the message with:
-```
-Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
-```
-
-## Step 5. Report
-
-Briefly report to the human: what was recorded, what was built, the commit hash, what was pushed, and
-one line — the main plan for next session. That's the pause.
+Then stop. No further actions, no background work.
 
 ## Notes
 
-- If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the human
-  about the divergence.
-- Generated artifacts that are gitignored (e.g. README.pdf, build outputs) won't be committed — that's fine.
+- The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- If the pause unexpectedly becomes permanent (the human never returns to this chat), nothing is
+  lost: the local commit holds the work, and the next session's `/resume` reads the tree and
+  `git log` as usual.
 ``````
 
 ### `.claude/skills/autoloop/SKILL.md`
@@ -2853,6 +2842,72 @@ Report to the human: the version, the release link, what was attached. Done.
 - NEVER force-push and never delete others' tags/releases. If something goes wrong during publish — stop
   and show the human, don't "fix" it blindly.
 - Don't release in autonomous mode — only on the human's explicit request.
+``````
+
+### `.claude/skills/end-chat/SKILL.md`
+
+> **FILE: `.claude/skills/end-chat/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: end-chat
+description: FULLY CLOSE this chat and hand the baton over — update all status documents (STATUS.md, README if warranted), rebuild artifacts, commit AND push, then write the handoff so agents in OTHER chats can continue seamlessly. Use when the human says "end the chat", "wrap up", "закончим чат", "завершаем чат", "передай эстафету", "сворачиваемся", "save progress, commit and push", "заверши сессию", "зафиксируй статус". For a light in-chat pause (no pushes, no ceremony) use /pause instead.
+---
+
+# /end-chat — full closure: we say goodbye to this chat
+
+The human is closing this chat for good; the work continues in OTHER chats with OTHER agent sessions
+that start from an empty context. Run the closure routine **in order**, narrate each step briefly.
+Don't skip steps. If a step fails — stop, tell the human, don't continue blindly.
+
+## Step 1. Record status & the baton in STATUS.md
+
+Update `STATUS.md`:
+- **What was done in this chat** — concrete, tied to bugs/features and files.
+- **Current position** — what works, what's in progress, where we are.
+- **The baton ("where to continue")** — a checklist written for a STRANGER: the next session knows
+  nothing this chat knew. Commands, file paths, what to verify first, open questions with owners.
+- Convert relative dates to absolute (find today's date from context / `date`).
+
+Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
+in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
+
+## Step 2. Refresh README (when reality moved)
+
+Bring `README.md` in line with reality: phase status, working features, instructions. If the README
+is bilingual, keep both languages in sync. Don't invent — reflect only what is done and verified.
+
+## Step 3. (Re)build / regenerate artifacts
+
+`<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
+own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
+regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
+
+## Step 4. Commit and push (judge first)
+
+Run a `/fable-judge` pass over this chat's finished claims before pushing (the canon: a judge pass
+precedes every push). Then:
+
+`<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
+pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+
+Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
+End the message with:
+```
+Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
+```
+
+## Step 5. The farewell report
+
+Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
+the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+
+## Notes
+
+- The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the human
+  about the divergence.
+- Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.
 ``````
 
 ### `.claude/skills/fable-domain/SKILL.md`

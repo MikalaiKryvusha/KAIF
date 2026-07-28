@@ -249,12 +249,13 @@ filename; `GOAL`, `MASTER_PLAN`, the maps and `researches/` are living reference
 
 ## The skills
 
-Twenty-six repeatable rituals — the verbs of working on a project:
+Twenty-seven repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
 | `/resume` | Start a session: read the canon docs, pick the one main thing, announce it, begin. |
-| `/pause` | End a session: update `STATUS.md`, rebuild artifacts, commit and push. |
+| `/pause` | Soft-park the chat: reach a logical stopping point, keep the tree green, continue HERE later — no pushes, no ceremony. |
+| `/end-chat` | Fully close the chat: update `STATUS.md`, rebuild artifacts, commit AND push, hand the baton to other chats. |
 | `/autoloop` | A long autonomous series over the backlog; every item ends with a **mandatory judge pass**. |
 | `/dayloop` | Daytime autonomous work while you are busy — with brief progress pings in chat. |
 | `/nightloop` | Autonomous work until morning; the morning report leads with outcomes. |
@@ -337,7 +338,7 @@ KAIF.md                          ⭐ the THIN entry point (~170 lines; bootstrap
 framework/                       the canonical universal templates (the payload)
   installer/                     KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
   templates/languages/           10 language packs (owner-facing docs + skill trigger aliases)
-  skills/ spheres/ adapters/     26 skill templates · sphere libraries · agent-system adapters
+  skills/ spheres/ adapters/     27 skill templates · sphere libraries · agent-system adapters
 dist/                            generated distribution: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (offline fallback)
 assets/                          generated README diagrams (3 × light/dark × EN/RU), from build-diagrams.mjs
@@ -611,12 +612,13 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 
 ## Навыки
 
-Двадцать шесть повторяемых ритуалов — глаголы работы над проектом:
+Двадцать семь повторяемых ритуалов — глаголы работы над проектом:
 
 | Навык | Назначение |
 |-------|------------|
 | `/resume` | Начать сессию: прочитать канон-документы, выбрать одно главное, объявить и приступить. |
-| `/pause` | Завершить сессию: обновить `STATUS.md`, пересобрать артефакты, закоммитить и запушить. |
+| `/pause` | Мягко припарковать чат: дойти до логической точки, оставить дерево зелёным, продолжить ЗДЕСЬ позже — без пушей и церемоний. |
+| `/end-chat` | Полностью закрыть чат: обновить `STATUS.md`, пересобрать артефакты, закоммитить И запушить, передать эстафету другим чатам. |
 | `/autoloop` | Длинная автономная серия по беклогу; каждый пункт завершается **обязательным judge-проходом**. |
 | `/dayloop` | Дневная автономная работа, пока вы заняты, — с короткими сводками в чат. |
 | `/nightloop` | Автономная работа до утра; утренний отчёт — результатом вперёд. |
@@ -700,7 +702,7 @@ KAIF.md                          ⭐ ТОНКАЯ точка входа (~170 с
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
   installer/                     KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · повествование тонкого ядра
   templates/languages/           10 языковых пакетов (owner-доки + триггер-алиасы навыков)
-  skills/ spheres/ adapters/     26 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
+  skills/ spheres/ adapters/     27 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
 dist/                            сгенерированная раздача: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (оффлайн-фолбэк)
 assets/                          сгенерированные схемы README (3 × светлая/тёмная × EN/RU), из build-diagrams.mjs
