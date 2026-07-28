@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "1.6",
   "released": "2026-07-24",
-  "moduleCount": 523,
+  "moduleCount": 530,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -161,10 +161,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "d2ecdb1d8a417b92dbbf1aeb8fa9b25a525ad3c0156f1edcaad4bc99887da236",
+        "sha256": "28501ee0a9044b86767aa1cf8e3f49626c2257b9083aa8171ecdf25dc22309fa",
         "lines": [
           303,
-          341
+          353
         ]
       },
       {
@@ -172,8 +172,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          342,
-          356
+          354,
+          368
         ]
       },
       {
@@ -181,8 +181,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          357,
-          369
+          369,
+          381
         ]
       }
     ],
@@ -1222,6 +1222,71 @@
         "lines": [
           105,
           109
+        ]
+      }
+    ],
+    ".claude/skills/derive-styleguide/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "cb6fd7a7c181fd2e9a05be85f377f8ca48218264fa883118c89708261805e47d",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /derive-styleguide — the owner's style, extracted from evidence",
+        "class": "static",
+        "sha256": "58a69c7b66af8768d32b2b7c02ea5f2d6e634fd369aa2081a079c04e7eb82430",
+        "lines": [
+          6,
+          16
+        ]
+      },
+      {
+        "signature": "## Step 1. Collect the sample",
+        "class": "static",
+        "sha256": "8f07481458850f500f3498902fa4cc1bb7863a74a15c6728f653f4e19a33b01a",
+        "lines": [
+          17,
+          23
+        ]
+      },
+      {
+        "signature": "## Step 2. Extract, with quotes",
+        "class": "static",
+        "sha256": "acfe79c211133eb1f6595a01f2f1300e1c52300514625adad99c7f8e9ebd7179",
+        "lines": [
+          24,
+          38
+        ]
+      },
+      {
+        "signature": "## Step 3. Split the rules: lintable vs judgment",
+        "class": "static",
+        "sha256": "c98389b2f85c77ee498538fde4acdbfa72c4edd8fa9f52b637cc419ca57cff15",
+        "lines": [
+          39,
+          48
+        ]
+      },
+      {
+        "signature": "## Step 4. The owner approves — then it binds",
+        "class": "static",
+        "sha256": "653d10ed5c8978577e4c40a5abbc64b757957c5043c64f2ce2fdee6e21e0374a",
+        "lines": [
+          49,
+          56
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "c799586103b50d8155a805122745e770b112ae44cd84403b56a0f4d9ea9b43eb",
+        "lines": [
+          57,
+          63
         ]
       }
     ],

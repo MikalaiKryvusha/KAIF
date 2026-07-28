@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
-                's05-provenance.mjs'];
+                's05-provenance.mjs', 's06-canon-lint.mjs'];
 let failed = 0;
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);

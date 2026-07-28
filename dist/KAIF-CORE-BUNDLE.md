@@ -374,6 +374,18 @@ IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
 `accept <file>` strips marks into the registry and carries the OWNER'S word only.
 
+**Strictness modes — slow is fine when it is visible.** Name the mode a piece of writing runs under:
+- **draft** — fast, OUTSIDE the owner's canon: sketches, research notes, ideas, spikes. No
+  styleguide, no marks, no canon linter — cheap by design. A draft never silently becomes canon.
+- **canon** — anything entering the owner's canon artifacts walks the full pipeline: approved
+  styleguide (`/derive-styleguide`) → write with provenance marks → canon linter green
+  (`.kaif/tools/kaif-canon-lint.mjs check`, guards proven by `selftest`) → provenance gate green →
+  the owner's acceptance.
+Model split (mark it in skills and task items): mechanical steps — running linters and gates,
+renames, arithmetic, re-syncs — any model; judgment steps — deriving the styleguide, canon wording,
+acceptance calls — a strong model only. Everything machine-checkable is checked by CODE; LLMs keep
+the judgment.
+
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
 interpretation. Interviews are for vision-level forks that outlive the task.
@@ -1749,6 +1761,73 @@ pause and don't wait**, keep working:
 
 - This is an INTENSIVE mode: don't spare tokens/time, maximize useful autonomous work.
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
+``````
+
+> **FILE: `.claude/skills/derive-styleguide/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: derive-styleguide
+description: Derive a style guide FROM THE OWNER'S OWN SAMPLE before writing into their canon artifacts — registers, reference examples quoted from the owner's text, a one-concept-one-word dictionary, a pre-write checklist — and hand it to the owner for approval together with the list of MACHINE-LINTABLE rules. Use before any substantial writing into owner canon (rulebooks, lore, brand texts), or when the human says "derive a styleguide", "выведи стайлгайд", "зафиксируй мой стиль". Framework rule: writing into a canon artifact with no approved styleguide — derive and approve one first.
+---
+
+# /derive-styleguide — the owner's style, extracted from evidence
+
+A weak session cannot HOLD the owner's style in its head — ten pages in, it drifts. The cure is
+never "try harder": extract the style ONCE from the owner's own text, get it approved, and turn
+every machine-checkable rule into a linter line. "The model forgets the styleguide after ten
+pages — the linter never does."
+
+**The prime rule: derive from the SAMPLE, not from your head.** Every claim in the styleguide
+must point at evidence in the owner's text. A styleguide invented from taste is the same fraud
+as an invented number.
+
+## Step 1. Collect the sample
+
+Ask the owner which artifacts are the reference (or take the declared `canonArtifacts` from
+`.kaif/kaif.json`). Prefer text the owner WROTE over text the owner merely accepted. If the
+sample is thin (< a few pages), say so — a thin sample yields a thin guide, and the owner should
+know which rules rest on how much evidence.
+
+## Step 2. Extract, with quotes
+
+Work through the sample and extract, each item WITH a quoted example from the owner's text:
+
+1. **Registers** — which voice serves which content (e.g. dry codex-register for mechanics,
+   narrative register for lore; the owner's own split, not a textbook's).
+2. **Reference examples** — 3–7 short quotes that ARE the style: sentence shape, rhythm,
+   how terms are introduced, how numbers/tables are presented.
+3. **The dictionary: one concept — one word.** Every domain concept mapped to the OWNER'S term;
+   every synonym the owner does NOT use goes to the forbidden list (synonym drift is how canons rot).
+4. **Formatting conventions** — headings, capitalization, list punctuation, number formats,
+   how formulas/stat blocks are laid out.
+5. **Anti-patterns** — what the owner's text never does (filler phrases, hedging, marketing tone…),
+   each with the evidence "absent from the sample / removed by the owner in commit X".
+
+## Step 3. Split the rules: lintable vs judgment
+
+Mark every extracted rule:
+- **LINTABLE** — checkable by grep/script: forbidden synonyms and filler markers, banned
+  constructions, "a formula without its where-block", heading-case violations, register-marker
+  words in the wrong document type. These become lines in the canon linter (its template ships
+  with the framework) — list them in a machine-friendly table: `pattern → message`.
+- **JUDGMENT** — tone, rhythm, taste: stays in the guide for strong-model passes and the owner's
+  proofreading. Never pretend judgment rules are enforced — say plainly which ones nothing guards.
+
+## Step 4. The owner approves — then it binds
+
+File the guide as a document next to the canon it governs (e.g. `rules/STYLEGUIDE.md`), marked
+with your provenance marks like any AI text in owner territory. Hand it to the owner with ONE
+question per genuinely ambiguous register choice (not a quiz — you did the work; they veto).
+After approval: the guide is binding for every future write into that canon; the lintable rules
+go into the linter the same day (a rule without its guard is a wish, not a rule).
+
+## Notes
+
+- Re-derive incrementally: when the owner writes something new that contradicts the guide, the
+  OWNER is right — update the guide and its linter lines, never "correct" the owner's text.
+- Strictness modes: deriving/updating the guide is strong-model work; RUNNING the linter is any
+  model's work — that split is the point.
 ``````
 
 > **FILE: `.claude/skills/end-chat/SKILL.md`** — replace the command placeholders with the project's real commands
@@ -4002,6 +4081,96 @@ sphere names — the link plus the access date. A claim with no source is memory
 or cut it. Prebuilt spheres in this repo are maintained with the framework itself.>`
 ``````
 
+> **FILE: `.kaif/tools/kaif-canon-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-canon-lint.mjs — the OPTIONAL canon-artifact linter (KAIF 2.0, plan 20 phase 5;
+// plan 17 §3 / ideas 15 §2.6). Deployed to .kaif/tools/kaif-canon-lint.mjs.
+//
+// The discipline it mechanizes: every REVOKED decision becomes a FORBIDDEN wording; every
+// ACCEPTED decision becomes a GUARDED full unique line. The linter GROWS with every fix —
+// "closed a defect → add a guard for its whole class". Guard with FULL UNIQUE LINES, never
+// short substrings: a short pattern happily matches someone else's text and stays green while
+// the real thing rots (field-caught: a guard for "= 50" greened on an unrelated line).
+//
+// Rules live in the PROJECT at .kaif/canon-lint-rules.json and are owned by its agent+owner:
+// {
+//   "forbidden": [ { "pattern": "<regex>", "files": "rules/", "message": "why it is banned" } ],
+//   "required":  [ { "line": "<FULL unique line>", "file": "rules/combat.md", "message": "what it guards" } ]
+// }
+//   forbidden.files — a "dir/" subtree or an exact path; omitted = all .md files.
+//
+// Commands:
+//   node .kaif/tools/kaif-canon-lint.mjs check       # the gate: forbidden absent, required present
+//   node .kaif/tools/kaif-canon-lint.mjs selftest    # PROVE the guards: every required line is
+//                                                    # verified findable, every forbidden pattern
+//                                                    # is verified to MATCH its own example
+//                                                    # ("a guard that never went red proves nothing")
+// selftest needs forbidden rules to carry "example": a string the pattern MUST match.
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+
+const CMD = process.argv[2] || 'check';
+const RULES = '.kaif/canon-lint-rules.json';
+const log = (s) => console.log(s);
+const die = (s) => { console.error('✖ ' + s); process.exit(1); };
+
+if (!existsSync(RULES)) die(`no ${RULES} — seed it (see this file's header for the format); the linter grows with every fix`);
+const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
+
+function* walkMd(dir = '.') {
+  for (const n of readdirSync(dir)) {
+    const p = (dir === '.' ? '' : dir + '/') + n;
+    if (['.git', 'node_modules', '.kaif'].includes(n)) continue;
+    if (statSync(p).isDirectory()) { yield* walkMd(p); continue; }
+    if (/\.md$/i.test(n)) yield p;
+  }
+}
+const inScope = (p, files) => !files || (files.endsWith('/') ? p.startsWith(files) : p === files);
+
+function cmdCheck() {
+  let issues = 0;
+  const mdFiles = [...walkMd()];
+  for (const r of rules.forbidden || []) {
+    const re = new RegExp(r.pattern);
+    for (const p of mdFiles) {
+      if (!inScope(p, r.files)) continue;
+      const lines = readFileSync(p, 'utf8').split('\n');
+      for (let i = 0; i < lines.length; i++)
+        if (re.test(lines[i])) { console.error(`✖ forbidden in ${p}:${i + 1} — ${r.message || r.pattern}`); issues++; }
+    }
+  }
+  for (const r of rules.required || []) {
+    if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file} — ${r.message || ''}`); issues++; continue; }
+    const text = readFileSync(r.file, 'utf8');
+    if (!text.split('\n').includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
+  }
+  if (issues) die(`canon lint FAILED: ${issues} issue(s)`);
+  log(`✅ canon lint OK (${(rules.forbidden || []).length} forbidden + ${(rules.required || []).length} required rules)`);
+}
+
+// A guard is proven, not assumed: required lines must be full and unique; forbidden patterns
+// must actually match their own recorded example (else the guard would green forever).
+function cmdSelftest() {
+  let issues = 0;
+  for (const r of rules.required || []) {
+    if (!r.line || r.line.trim().length < 12) { console.error(`✖ required line too short to be unique (guard with FULL lines): "${r.line}"`); issues++; continue; }
+    if (r.file && existsSync(r.file)) {
+      const hits = readFileSync(r.file, 'utf8').split('\n').filter((l) => l === r.line).length;
+      if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
+    }
+  }
+  for (const r of rules.forbidden || []) {
+    if (!r.example) { console.error(`✖ forbidden rule has no "example" to prove it on: ${r.pattern}`); issues++; continue; }
+    if (!new RegExp(r.pattern).test(r.example)) { console.error(`✖ forbidden pattern does NOT match its own example (a guard that never reddens proves nothing): ${r.pattern}`); issues++; }
+  }
+  if (issues) die(`canon lint selftest FAILED: ${issues} issue(s)`);
+  log(`✅ canon lint selftest OK — every guard is proven able to fire`);
+}
+
+({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => die(`unknown command: ${CMD} (check | selftest)`)))();
+``````
+
 > **FILE: `.kaif/tools/kaif-provenance.mjs`** — optional tool module — verbatim
 
 ``````js
@@ -4382,6 +4551,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
   "resume": "«واصل», «تابع العمل», «استأنف», «أين توقفنا؟»",
   "pause": "«توقف مؤقت», «لنتوقف قليلاً», «اركن العمل», «سأعود قريباً»",
   "end-chat": "«إنهاء المحادثة», «إغلاق الجلسة», «تسليم المهمة», «احفظ التقدم وادفع»",
+  "derive-styleguide": "«استخرج دليل الأسلوب», «ثبّت أسلوبي»",
   "autoloop": "«اعمل وحدك», «الطيار الآلي», «اطحن قائمة الأعمال», «شغّل الحلقة المستقلة»",
   "dayloop": "«حلقة النهار», «اعمل وحدك، أنا مشغول»",
   "nightloop": "«حلقة الليل», «اعمل حتى الصباح»",
@@ -4668,6 +4838,7 @@ aktualisiert, während das Verständnis wächst.
   "resume": "«mach weiter», «weiter geht's», «nimm die Arbeit wieder auf», «wo waren wir stehengeblieben?»",
   "pause": "«Pause», «machen wir Pause», «park die Arbeit», «bin gleich zurück»",
   "end-chat": "«Chat beenden», «Chat abschließen», «übergib den Staffelstab», «Fortschritt sichern und pushen», «Sitzung abschließen»",
+  "derive-styleguide": "«leite den Styleguide ab», «fixiere meinen Stil»",
   "autoloop": "«arbeite selbstständig», «Autopilot», «arbeite das Backlog ab», «starte die autonome Schleife»",
   "dayloop": "«Tagesschleife», «arbeite allein, ich bin beschäftigt»",
   "nightloop": "«Nachtschleife», «arbeite bis zum Morgen»",
@@ -4951,6 +5122,7 @@ medida que crece la comprensión.
   "resume": "«continúa», «continuemos», «retoma», «¿dónde nos quedamos?»",
   "pause": "«pausa», «hagamos una pausa», «aparca el trabajo», «vuelvo enseguida»",
   "end-chat": "«terminar el chat», «cerremos el chat», «pasa el testigo», «guarda el progreso y haz push», «cierra la sesión»",
+  "derive-styleguide": "«deriva la guía de estilo», «fija mi estilo»",
   "autoloop": "«trabaja solo», «piloto automático», «muele el backlog», «lanza el ciclo autónomo»",
   "dayloop": "«ciclo diurno», «trabaja solo, estoy ocupado»",
   "nightloop": "«ciclo nocturno», «trabaja hasta la mañana»",
@@ -5238,6 +5410,7 @@ compréhension grandit.
   "resume": "« continue », « reprenons », « reprends », « où en étions-nous ? »",
   "pause": "«pause», «faisons une pause», «gare le travail», «je reviens vite»",
   "end-chat": "«terminer le chat», «clôturons le chat», «passe le relais», «sauvegarde et pousse», «clos la session»",
+  "derive-styleguide": "«dérive le guide de style», «fixe mon style»",
   "autoloop": "« travaille seul », « pilote automatique », « abats le backlog », « lance la boucle autonome »",
   "dayloop": "« boucle de jour », « travaille seul, je suis occupé »",
   "nightloop": "« boucle de nuit », « travaille jusqu'au matin »",
@@ -5510,6 +5683,7 @@ DONE टैग नहीं मिलता।
   "resume": "\"जारी रखो\", \"आगे बढ़ो\", \"काम फिर शुरू करो\", \"हम कहाँ रुके थे?\"",
   "pause": "«रुको», «थोड़ा विराम», «काम पार्क करो», «अभी लौटता हूँ»",
   "end-chat": "«चैट समाप्त करें», «सत्र बंद करें», «कमान सौंपें», «प्रगति सहेजें और पुश करें»",
+  "derive-styleguide": "«स्टाइल गाइड निकालो», «मेरी शैली दर्ज करो»",
   "autoloop": "\"खुद काम करो\", \"ऑटोपायलट\", \"बैकलॉग निपटाओ\", \"स्वायत्त लूप चलाओ\"",
   "dayloop": "\"दिन का लूप\", \"खुद काम करो, मैं व्यस्त हूँ\"",
   "nightloop": "\"रात का लूप\", \"सुबह तक काम करो\"",
@@ -5789,6 +5963,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
   "resume": "「続けて」「再開して」「どこまでやった？」「続きから」",
   "pause": "«一時停止», «少し休憩», «作業を一旦パーク», «すぐ戻る»",
   "end-chat": "«チャットを終了», «セッションを締める», «バトンを渡す», «進捗を保存してプッシュ», «セッション終了»",
+  "derive-styleguide": "«スタイルガイドを導出», «私の文体を固定»",
   "autoloop": "「自分で作業して」「オートパイロット」「バックログを消化して」「自律ループを開始」",
   "dayloop": "「昼ループ」「忙しいから自分で作業して」",
   "nightloop": "「夜ループ」「朝まで作業して」",
@@ -6071,6 +6246,7 @@ compreensão cresce.
   "resume": "«continua», «vamos continuar», «retoma», «onde paramos?»",
   "pause": "«pausa», «vamos pausar», «estaciona o trabalho», «volto já»",
   "end-chat": "«encerrar o chat», «vamos fechar o chat», «passe o bastão», «salve o progresso e faça push», «encerre a sessão»",
+  "derive-styleguide": "«derive o guia de estilo», «fixe meu estilo»",
   "autoloop": "«trabalha sozinho», «piloto automático», «mói o backlog», «inicia o ciclo autônomo»",
   "dayloop": "«ciclo diurno», «trabalha sozinho, estou ocupado»",
   "nightloop": "«ciclo noturno», «trabalha até de manhã»",
@@ -6342,6 +6518,7 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "resume": "«продолжи», «продолжим», «возобнови», «на чём мы остановились», «что дальше по работе»",
   "pause": "«пауза», «сделаем паузу», «припаркуйся», «прервёмся ненадолго»",
   "end-chat": "«закончим чат», «завершаем чат», «передай эстафету», «сверни сессию», «сохрани прогресс», «зафиксируй статус», «заверши сессию»",
+  "derive-styleguide": "«выведи стайлгайд», «зафиксируй мой стиль», «стайлгайд из образца»",
   "autoloop": "«работай сам», «автопилот», «погриндь беклог», «запусти автономный цикл»",
   "dayloop": "«дневной цикл», «работай сам, я занят», «гринди беклог днём»",
   "nightloop": "«ночной цикл», «работай до утра», «поработай ночью»",
@@ -6598,6 +6775,7 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
   "resume": "「继续」「接着做」「恢复工作」「我们做到哪儿了？」",
   "pause": "«暂停», «先停一下», «停车暂存», «马上回来»",
   "end-chat": "«结束聊天», «关闭本次会话», «交接工作», «保存进度并推送», «结束会话»",
+  "derive-styleguide": "«提炼风格指南», «固定我的文风»",
   "autoloop": "「自己干活」「自动驾驶」「消化待办清单」「启动自主循环」",
   "dayloop": "「白天循环」「自己干，我忙着呢」",
   "nightloop": "「夜间循环」「干到早上」",

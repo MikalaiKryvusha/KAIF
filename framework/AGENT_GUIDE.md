@@ -333,6 +333,18 @@ IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
 `accept <file>` strips marks into the registry and carries the OWNER'S word only.
 
+**Strictness modes — slow is fine when it is visible.** Name the mode a piece of writing runs under:
+- **draft** — fast, OUTSIDE the owner's canon: sketches, research notes, ideas, spikes. No
+  styleguide, no marks, no canon linter — cheap by design. A draft never silently becomes canon.
+- **canon** — anything entering the owner's canon artifacts walks the full pipeline: approved
+  styleguide (`/derive-styleguide`) → write with provenance marks → canon linter green
+  (`.kaif/tools/kaif-canon-lint.mjs check`, guards proven by `selftest`) → provenance gate green →
+  the owner's acceptance.
+Model split (mark it in skills and task items): mechanical steps — running linters and gates,
+renames, arithmetic, re-syncs — any model; judgment steps — deriving the styleguide, canon wording,
+acceptance calls — a strong model only. Everything machine-checkable is checked by CODE; LLMs keep
+the judgment.
+
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
 interpretation. Interviews are for vision-level forks that outlive the task.

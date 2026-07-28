@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+// kaif-canon-lint.mjs — the OPTIONAL canon-artifact linter (KAIF 2.0, plan 20 phase 5;
+// plan 17 §3 / ideas 15 §2.6). Deployed to .kaif/tools/kaif-canon-lint.mjs.
+//
+// The discipline it mechanizes: every REVOKED decision becomes a FORBIDDEN wording; every
+// ACCEPTED decision becomes a GUARDED full unique line. The linter GROWS with every fix —
+// "closed a defect → add a guard for its whole class". Guard with FULL UNIQUE LINES, never
+// short substrings: a short pattern happily matches someone else's text and stays green while
+// the real thing rots (field-caught: a guard for "= 50" greened on an unrelated line).
+//
+// Rules live in the PROJECT at .kaif/canon-lint-rules.json and are owned by its agent+owner:
+// {
+//   "forbidden": [ { "pattern": "<regex>", "files": "rules/", "message": "why it is banned" } ],
+//   "required":  [ { "line": "<FULL unique line>", "file": "rules/combat.md", "message": "what it guards" } ]
+// }
+//   forbidden.files — a "dir/" subtree or an exact path; omitted = all .md files.
+//
+// Commands:
+//   node .kaif/tools/kaif-canon-lint.mjs check       # the gate: forbidden absent, required present
+//   node .kaif/tools/kaif-canon-lint.mjs selftest    # PROVE the guards: every required line is
+//                                                    # verified findable, every forbidden pattern
+//                                                    # is verified to MATCH its own example
+//                                                    # ("a guard that never went red proves nothing")
+// selftest needs forbidden rules to carry "example": a string the pattern MUST match.
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+
+const CMD = process.argv[2] || 'check';
+const RULES = '.kaif/canon-lint-rules.json';
+const log = (s) => console.log(s);
+const die = (s) => { console.error('✖ ' + s); process.exit(1); };
+
+if (!existsSync(RULES)) die(`no ${RULES} — seed it (see this file's header for the format); the linter grows with every fix`);
+const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
+
+function* walkMd(dir = '.') {
+  for (const n of readdirSync(dir)) {
+    const p = (dir === '.' ? '' : dir + '/') + n;
+    if (['.git', 'node_modules', '.kaif'].includes(n)) continue;
+    if (statSync(p).isDirectory()) { yield* walkMd(p); continue; }
+    if (/\.md$/i.test(n)) yield p;
+  }
+}
+const inScope = (p, files) => !files || (files.endsWith('/') ? p.startsWith(files) : p === files);
+
+function cmdCheck() {
+  let issues = 0;
+  const mdFiles = [...walkMd()];
+  for (const r of rules.forbidden || []) {
+    const re = new RegExp(r.pattern);
+    for (const p of mdFiles) {
+      if (!inScope(p, r.files)) continue;
+      const lines = readFileSync(p, 'utf8').split('\n');
+      for (let i = 0; i < lines.length; i++)
+        if (re.test(lines[i])) { console.error(`✖ forbidden in ${p}:${i + 1} — ${r.message || r.pattern}`); issues++; }
+    }
+  }
+  for (const r of rules.required || []) {
+    if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file} — ${r.message || ''}`); issues++; continue; }
+    const text = readFileSync(r.file, 'utf8');
+    if (!text.split('\n').includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
+  }
+  if (issues) die(`canon lint FAILED: ${issues} issue(s)`);
+  log(`✅ canon lint OK (${(rules.forbidden || []).length} forbidden + ${(rules.required || []).length} required rules)`);
+}
+
+// A guard is proven, not assumed: required lines must be full and unique; forbidden patterns
+// must actually match their own recorded example (else the guard would green forever).
+function cmdSelftest() {
+  let issues = 0;
+  for (const r of rules.required || []) {
+    if (!r.line || r.line.trim().length < 12) { console.error(`✖ required line too short to be unique (guard with FULL lines): "${r.line}"`); issues++; continue; }
+    if (r.file && existsSync(r.file)) {
+      const hits = readFileSync(r.file, 'utf8').split('\n').filter((l) => l === r.line).length;
+      if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
+    }
+  }
+  for (const r of rules.forbidden || []) {
+    if (!r.example) { console.error(`✖ forbidden rule has no "example" to prove it on: ${r.pattern}`); issues++; continue; }
+    if (!new RegExp(r.pattern).test(r.example)) { console.error(`✖ forbidden pattern does NOT match its own example (a guard that never reddens proves nothing): ${r.pattern}`); issues++; }
+  }
+  if (issues) die(`canon lint selftest FAILED: ${issues} issue(s)`);
+  log(`✅ canon lint selftest OK — every guard is proven able to fire`);
+}
+
+({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => die(`unknown command: ${CMD} (check | selftest)`)))();

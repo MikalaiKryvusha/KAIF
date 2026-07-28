@@ -249,7 +249,7 @@ filename; `GOAL`, `MASTER_PLAN`, the maps and `researches/` are living reference
 
 ## The skills
 
-Twenty-seven repeatable rituals — the verbs of working on a project:
+Twenty-eight repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
@@ -271,6 +271,7 @@ Twenty-seven repeatable rituals — the verbs of working on a project:
 | `/what-next` | Rank the next steps by value toward the vision when you ask "what now?". |
 | `/help-kaif` | Explain KAIF to you in chat — a structured user manual. |
 | `/release` | Publish a release (with your confirmation and a mandatory judge pass; never autonomously). |
+| `/derive-styleguide` | Derive your style guide from YOUR OWN sample — approved once, then machine-lintable rules guard it. |
 | **`/fable-method`** | The execution loop: classify → define done → evidence → act → verify → report. *(vendored from [fable-method](https://github.com/Sahir619/fable-method), MIT)* |
 | **`/fable-loop`** | Orchestrated run: parallel evidence, surgical execution, adversarial verifiers. |
 | **`/fable-judge`** | Adversarial verification of any "done" claim: VERIFIED / CAVEATS / REFUTED. |
@@ -338,7 +339,7 @@ KAIF.md                          ⭐ the THIN entry point (~170 lines; bootstrap
 framework/                       the canonical universal templates (the payload)
   installer/                     KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
   templates/languages/           10 language packs (owner-facing docs + skill trigger aliases)
-  skills/ spheres/ adapters/     27 skill templates · sphere libraries · agent-system adapters
+  skills/ spheres/ adapters/     28 skill templates · sphere libraries · agent-system adapters
 dist/                            generated distribution: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (offline fallback)
 assets/                          generated README diagrams (3 × light/dark × EN/RU), from build-diagrams.mjs
@@ -612,7 +613,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 
 ## Навыки
 
-Двадцать семь повторяемых ритуалов — глаголы работы над проектом:
+Двадцать восемь повторяемых ритуалов — глаголы работы над проектом:
 
 | Навык | Назначение |
 |-------|------------|
@@ -634,6 +635,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 | `/what-next` | Ранжировать следующие шаги по ценности к видению, когда вы спрашиваете «что дальше?». |
 | `/help-kaif` | Рассказать вам про KAIF в чате — структурный мануал. |
 | `/release` | Выпустить релиз (с вашим подтверждением и обязательным judge-проходом; никогда автономно). |
+| `/derive-styleguide` | Вывести ваш стайлгайд из ВАШЕГО ЖЕ образца — утверждён однажды, дальше его стерегут машинные правила. |
 | **`/fable-method`** | Цикл исполнения: классифицируй → «готово» → свидетельства → действуй → проверь → доложи. *(вендорено из [fable-method](https://github.com/Sahir619/fable-method), MIT)* |
 | **`/fable-loop`** | Оркестрованный прогон: параллельные свидетельства, хирургическое исполнение, адверсарные верификаторы. |
 | **`/fable-judge`** | Адверсарная проверка любого «готово»: VERIFIED / CAVEATS / REFUTED. |
@@ -702,7 +704,7 @@ KAIF.md                          ⭐ ТОНКАЯ точка входа (~170 с
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
   installer/                     KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · повествование тонкого ядра
   templates/languages/           10 языковых пакетов (owner-доки + триггер-алиасы навыков)
-  skills/ spheres/ adapters/     27 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
+  skills/ spheres/ adapters/     28 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
 dist/                            сгенерированная раздача: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (оффлайн-фолбэк)
 assets/                          сгенерированные схемы README (3 × светлая/тёмная × EN/RU), из build-diagrams.mjs
