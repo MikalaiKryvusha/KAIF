@@ -179,9 +179,14 @@ matrix of the eight field profiles — plus an independent adversarial judge pas
    short `KAIF_ADAPTATION_TASK.md` (study the project, fill the maps, derive the plan) with a forced
    checkpoint command per item — **field-certified on a local 12 B model end-to-end**.
 
-5. **Drive it with skills:** `/resume` · `/pause` · `/autoloop` · `/dayloop` · `/nightloop` ·
-   `/report-bug` · `/propose-idea` · `/interview` · `/fable-method` · `/fable-judge` · `/what-next` ·
-   `/help-kaif` · `/release`.
+5. **Drive it with skills — all 28 of them:** sessions `/resume` · `/pause` · `/end-chat` ·
+   autonomy `/autoloop` · `/dayloop` · `/nightloop` · hygiene `/refresh-context` · `/check-backlog` ·
+   knowledge & memory `/report-bug` · `/bug-research` · `/propose-idea` · `/experience` ·
+   owner `/interview` · `/fix-vision` · `/what-next` · planning `/revision` ·
+   guardrails `/derive-styleguide` · execution discipline `/fable-method` · `/fable-loop` ·
+   `/fable-judge` · `/fable-domain` · help `/help-kaif` · shipping `/release` ·
+   lifecycle `/kaif-version` · `/kaif-update` · `/kaif-fork` · `/kaif-switch-origin` · `/kaif-remove`.
+   (Each is described in the skills table below.)
 
 ## Updating a deployed project
 
@@ -566,9 +571,14 @@ sha, поэтому ваши адаптированные и локализов�
    принудительной чекпоинт-командой на каждый пункт — **полевая сертификация: локальная модель 12B
    проходит путь насквозь**.
 
-5. **Управляйте навыками:** `/resume` · `/pause` · `/autoloop` · `/dayloop` · `/nightloop` ·
-   `/report-bug` · `/propose-idea` · `/interview` · `/fable-method` · `/fable-judge` · `/what-next` ·
-   `/help-kaif` · `/release`.
+5. **Управляйте навыками — всеми 28:** сессия `/resume` · `/pause` · `/end-chat` ·
+   автономия `/autoloop` · `/dayloop` · `/nightloop` · гигиена `/refresh-context` · `/check-backlog` ·
+   знания и память `/report-bug` · `/bug-research` · `/propose-idea` · `/experience` ·
+   владелец `/interview` · `/fix-vision` · `/what-next` · планирование `/revision` ·
+   гвардрейлы `/derive-styleguide` · дисциплина исполнения `/fable-method` · `/fable-loop` ·
+   `/fable-judge` · `/fable-domain` · помощь `/help-kaif` · выпуск `/release` ·
+   жизненный цикл `/kaif-version` · `/kaif-update` · `/kaif-fork` · `/kaif-switch-origin` · `/kaif-remove`.
+   (Каждый описан в таблице навыков ниже.)
 
 ## Обновление развёрнутого проекта
 
