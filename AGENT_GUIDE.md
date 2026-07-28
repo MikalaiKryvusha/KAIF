@@ -137,13 +137,14 @@
 ```
 KAIF/
 ├── KAIF.md                          ← ⭐ GENERATED self-extracting core (EN; unpacks into any language)
-├── README.md / README.pdf           ← EN (primary) + RU front door (+ rendered copy, gitignored)
+├── README.md / README.pdf           ← EN (primary) + RU front door (+ rendered copy — generated, but COMMITTED)
 ├── LICENSE                          ← MIT
 ├── version.json                     ← { major, minor, released, origin, build } — version = major.minor
 │
 │  ── KEY DOCS (root; dogfooding wrapper = the framework applied to THIS project) ──
 ├── KAIF_FRAMEWORK.md                ← high-level "KAIF, deployed here" (post-injection doc)
-├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  STATUS.md
+├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  TESTING_FRAMEWORK.md  STATUS.md
+├── EXPERIENCE.md                    ← the agent's accumulated lessons (skill: /experience)
 ├── GOAL.md                          ← the vision (owner-filled)
 ├── MASTER_PLAN.md                   ← the phased roadmap from state → GOAL
 ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md   ← external map (dirs/files/links)
@@ -154,20 +155,27 @@ KAIF/
 ├── .claude/skills/                  ← this project's own skill instance (placeholders filled)
 ├── .kaif/kaif.json  CLAUDE.md       ← deploy marker · auto-loaded context → AGENT_GUIDE.md
 │
-│  ── THE PAYLOAD (canonical universal templates → generate KAIF.md) ──
+│  ── THE PAYLOAD (canonical universal templates → generate KAIF.md + dist/) ──
 ├── framework/
-│   ├── _intro.md                    ← narrative spine of KAIF.md (with {{EMBED}} markers)
-│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md GOAL.md MASTER_PLAN.md
-│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md  KAIF_FRAMEWORK.md
+│   ├── _intro.md                    ← narrative spine of the full core (with {{EMBED}}/{{SKILL_COUNT}} markers)
+│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md EXPERIENCE.md
+│   ├── STATUS.md GOAL.md MASTER_PLAN.md KAIF_FRAMEWORK.md KAIF_REFERENCE.md (→ .kaif/)
+│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md
 │   ├── readmes/<dir>.md             ← the six directory-README templates
 │   ├── skills/<name>/SKILL.md       ← the 28 skill templates
-│   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded into KAIF.md as a FILE: block)
+│   ├── installer/                   ← KAIF-CORE.mjs (machinery) · KAIF-LOADER.mjs · _thin-intro.md
+│   ├── templates/languages/<lang>/  ← 9 language packs (owner docs + skill-triggers.json)
+│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint)
+│   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded as a FILE: block)
+│   ├── module-classes.json          ← manual module-class overrides (classes are otherwise computed)
 │   ├── spheres/  adapters/          ← sphere term libraries · agent-system adapters (Zoo Code = priority #1)
 │
-│
+├── dist/                            ← GENERATED distribution: thin KAIF.md · KAIF-CORE.mjs ·
+│                                      KAIF-CORE-BUNDLE.md · kaif-manifest.json · KAIF-FULL.md ·
+│                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
-└── tools/  (build-framework.mjs · check-framework.mjs · build-diagrams.mjs · readme-pdf.mjs
-           · commit.mjs · kaif.mjs)
+└── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
+           · sandbox/s01–s06 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -201,10 +209,13 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 
 ## «Тестирование» этого проекта
 
-Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто; (2) встроенные
-блоки `FILE:` в `KAIF.md` сбалансированы и полны (динамический подсчёт: 9 ключевых документов + 6 README + 21 навык + 1 распаковщик = 37); (3) ссылки на
-файлы/навыки/пути в документах разрешаются; (4) английский и русский README остаются синхронными; (5) PDF
-рендерится.
+Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
+исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
+полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 12 ключевых документов +
+6 README + 28 навыков + 1 распаковщик = 47; бандл 139 блоков; карта — 569 модулей) — не переписывай эти
+числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
+(4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
+синхронными; (6) PDF рендерится.
 
 ---
 
@@ -260,7 +271,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 | `node tools/build-framework.mjs` | Регенерирует `KAIF.md` из `framework/`. |
 | `node tools/build-diagrams.mjs` | Регенерирует схемы README в `assets/` (3 чертежа × светлая/тёмная × EN/RU) из одного источника. Гейт ширины текста валит сборку, если подпись не влезает в свой контейнер — наезд невозможен по построению. Схемы правь ТОЛЬКО здесь, не в SVG. |
 | `node tools/readme-pdf.mjs` | Рендерит `README.md` → `README.pdf` (нужен `md-to-pdf`; `npm i` в `tools/`). |
-| `node tools/sandbox-suite.mjs` (`npm run test:core`) | **Постоянный песочный полигон машинерии** (план 21): 4 свода ~97 проверок по матрице восьми полевых профилей (свежая/анонимная/легаси установки, по-модульный update, расписки/adopt-current/diff, слепок). ОБЯЗАТЕЛЕН после любой правки `framework/installer/*` или сборщика и перед релизом. |
+| `node tools/sandbox-suite.mjs` (`npm run test:core`) | **Постоянный песочный полигон машинерии** (план 21): 6 сводов ~130 проверок по матрице восьми полевых профилей (свежая/анонимная/легаси установки, по-модульный update, расписки/adopt-current/diff, слепок, tool-модули provenance/canon-lint). ОБЯЗАТЕЛЕН после любой правки `framework/installer/*`, `framework/tools/*` или сборщика и перед релизом. |
 | `node tools/commit.mjs "<msg>"` | Инкрементирует номер сборки, коммитит, пушит. |
 
 ---

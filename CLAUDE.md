@@ -18,12 +18,12 @@
 `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `KAIF_FRAMEWORK.md`. Директории знаний (в каждой свой README): `plans/`, `ideas/`, `bugs/`, `researches/`,
 `interviews/`, `homeworks/`.
 
-Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/autoloop`, `/dayloop`,
-`/nightloop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`, `/bug-research`,
-`/propose-idea`, `/interview`, `/revision`, `/fix-vision`, `/what-next`, `/help-kaif`, `/release` +
-жизненный цикл `/kaif-*` + **fable-семейство** `/fable-method`, `/fable-loop`, `/fable-judge`,
-`/fable-domain` — дисциплина исполнения задач, вендорено из fable-method (EN); judge-проход обязателен
-в циклах и перед релизом).
+Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/end-chat`, `/autoloop`,
+`/dayloop`, `/nightloop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
+`/bug-research`, `/propose-idea`, `/interview`, `/revision`, `/fix-vision`, `/what-next`,
+`/derive-styleguide`, `/help-kaif`, `/release` + жизненный цикл `/kaif-*` + **fable-семейство**
+`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain` — дисциплина исполнения задач,
+вендорено из fable-method (EN); judge-проход обязателен в циклах и перед релизом).
 
 ⚠️ **Критическое правило:** самораспаковывающееся ядро `KAIF.md` **генерируется** — никогда не правь
 его вручную. Правь `framework/_intro.md` или шаблоны `framework/*`, затем запусти

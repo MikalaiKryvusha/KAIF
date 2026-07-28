@@ -4,6 +4,9 @@
 есть два слоя (полезная нагрузка против dogfooding-обвязки). Спутник — `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`
 (внутренняя логическая архитектура). Держите документ в синхроне с реальным деревом.
 
+> Числовые счётчики (документы/навыки/блоки/модули) в этом документе НЕ дублируются прозой — их печатает
+> сама сборка (`node tools/build-framework.mjs`); класс «протухший счётчик» закрыт в `bugs/09`.
+
 ---
 
 ## Дерево файлов
@@ -13,54 +16,69 @@ KAIF/
 │
 │  ── FRONT DOOR ──
 ├── README.md                              # EN (primary) + RU
-├── README.pdf                             # rendered README (generated, но КОММИТИТСЯ — bug 09)
-├── assets/                                # СГЕНЕРИРОВАННЫЕ схемы README (3 × light/dark × EN/RU)
+├── README.pdf                             # rendered README (generated, но КОММИТИТСЯ — решение владельца)
+├── assets/                                # СГЕНЕРИРОВАННЫЕ схемы README (3 × light/dark × EN/RU), из build-diagrams.mjs
 ├── LICENSE                                # MIT
-├── version.json                           # { name, major, minor, released, origin, build } → версия = major.minor
+├── version.json                           # { name, major, minor, codename, released, origin, build } → версия = major.minor
 ├── .gitignore
 │
 │  ── PAYLOAD (что разворачивается в пользовательские проекты) ──
-├── KAIF.md                                # ⭐ GENERATED самораспаковывающееся ядро (EN; распаковывается в любой язык)
+├── KAIF.md                                # ⭐ GENERATED ТОНКАЯ точка входа (бутстрап + встроенный загрузчик)
 ├── framework/
-│   ├── _intro.md                          # повествовательный стержень KAIF.md ({{VERSION}}, {{EMBED:…}}, {{EMBED_SKILLS}})
-│   ├── AGENT_GUIDE.md                      # шаблон руководящего документа (generic, <PLACEHOLDERS>)
-│   ├── PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md   # шаблоны руководящих документов
-│   ├── GOAL.md MASTER_PLAN.md              # шаблоны ключевых документов
-│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md   # шаблон внешней карты
-│   ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md# шаблон внутренней карты
-│   ├── KAIF_FRAMEWORK.md                   # шаблон пост-инжекционного документа
-│   ├── readmes/<dir>.md                    # 6 шаблонов README директорий
-│   ├── skills/<name>/SKILL.md              # 28 шаблонов навыков (generic, плейсхолдеры команд)
-│   ├── tools/*.mjs                         # опциональные модули поставки (kaif-provenance, kaif-canon-lint → .kaif/tools/)
-│   ├── spheres/*                           # библиотеки терминов по сферам (+ _index, _template)
-│   └── adapters/*                          # адаптеры под агентские системы (+ _index, _template)
+│   ├── _intro.md                          # повествовательный стержень полного ядра ({{VERSION}}, {{SKILL_COUNT}}, {{EMBED:…}}, {{EMBED_SKILLS}})
+│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md   # шаблоны руководящих документов
+│   ├── STATUS.md EXPERIENCE.md GOAL.md MASTER_PLAN.md                              # шаблоны состояния/опыта/видения/плана
+│   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md PROJECT_ARCHITECTURE_INTERNAL_MAP.md      # шаблоны карт
+│   ├── KAIF_FRAMEWORK.md                  # шаблон пост-инжекционного документа
+│   ├── KAIF_REFERENCE.md                  # пояснительная записка (12-й ключевой документ; dest → .kaif/)
+│   ├── readmes/<dir>.md                   # 6 шаблонов README директорий
+│   ├── skills/<name>/SKILL.md             # шаблоны навыков (число печатает сборка; generic, плейсхолдеры команд)
+│   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
+│   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
+│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint → .kaif/tools/)
+│   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
+│   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
+│   ├── spheres/*                          # библиотеки терминов по сферам (+ _index, _template)
+│   └── adapters/*                         # адаптеры под агентские системы (+ _index, _template; Zoo Code — приоритет №1)
+│
+│  ── DIST (генерируется сборкой; артефакты релиза) ──
+├── dist/
+│   ├── KAIF.md                            # тонкая точка входа (копия корневой)
+│   ├── KAIF-CORE.mjs                      # машинерия (загружается загрузчиком; живёт как .kaif/kaif-core.mjs)
+│   ├── KAIF-CORE-BUNDLE.md                # ПОЛНЫЙ комплект поставки FILE:-блоками + мета-блок
+│   ├── kaif-manifest.json                 # версия · codename · sha256-пины · роли ассетов
+│   ├── KAIF-FULL.md                       # оффлайн-фолбэк (классическое полное ядро; подмножество)
+│   └── kaif-module-map.json               # карта модулей: сигнатурные якоря · классы · sha (эпик №1 2.0)
 │
 │  ── TOOLS ──
 ├── tools/
-│   ├── build-framework.mjs                 # framework/ → KAIF.md (+ самопроверка)
-│   ├── check-framework.mjs                 # валидатор KAIF.md (npm test / kaif:check)
-│   ├── build-diagrams.mjs                   # → assets/*.svg (схемы README, гейт ширины текста)
-│   ├── readme-pdf.mjs                       # README.md → README.pdf
-│   ├── commit.mjs                           # bump build, commit, push
-│   └── kaif.mjs                             # ручки жизненного цикла (npm run kaif:*)
+│   ├── build-framework.mjs                # framework/ → KAIF.md + dist/ (в конце сам исполняет check-framework)
+│   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
+│   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
+│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s06
+│   ├── sandbox/s01…s06*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint)
+│   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
+│   ├── readme-pdf.mjs                     # README.md → README.pdf
+│   ├── commit.mjs                         # bump build, commit, push
+│   └── kaif.mjs                           # ручки жизненного цикла (npm run kaif:*)
 │
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
-├── KAIF_FRAMEWORK.md                       # «KAIF, развёрнутый здесь»
-├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
-├── EXPERIENCE.md                           # накопленный опыт агента (греп-дружелив; навык /experience)
-├── GOAL.md                                 # видение (заполняет владелец)
-├── MASTER_PLAN.md                          # пошаговый генплан от состояния к GOAL
-├── PROJECT_STRUCTURE_EXTERNAL_MAP.md       # (этот файл)
-├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md    # внутренняя карта
-├── CLAUDE.md                               # авто-загружаемый контекст → указывает на AGENT_GUIDE.md
-├── .kaif/kaif.json                         # маркер развёртывания
-├── .claude/skills/<name>/SKILL.md          # экземпляр навыков этого проекта (плейсхолдеры заполнены)
-├── plans/       (README + NN_*.md + kaif_implementation_plan.md)   # пошаговые планы
-├── ideas/       (README + NN_*.md)         # идеи/предложения (в т.ч. исторические 01–05)
-├── bugs/        (README + NN_*.md)         # дефекты
-├── researches/  (README + NN_*.md)         # конспекты исследований
+├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока: записка и tool-модули живут в framework/)
+├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
+├── EXPERIENCE.md                          # накопленный опыт агента (греп-дружелюбен; навык /experience)
+├── GOAL.md                                # видение (заполняет владелец)
+├── MASTER_PLAN.md                         # пошаговый генплан от состояния к GOAL (+ журнал решений владельца)
+├── PROJECT_STRUCTURE_EXTERNAL_MAP.md      # (этот файл)
+├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md   # внутренняя карта
+├── CLAUDE.md                              # авто-загружаемый контекст → указывает на AGENT_GUIDE.md
+├── .kaif/kaif.json                        # маркер развёртывания (схема — Reference §12.1)
+├── .claude/skills/<name>/SKILL.md         # экземпляр навыков этого проекта (плейсхолдеры заполнены)
+├── plans/       (README + NN_*.md)        # пошаговые планы
+├── ideas/       (README + NN_*.md)        # идеи/предложения
+├── bugs/        (README + NN_*.md)        # дефекты (закрытые — с тегом DONE в имени)
+├── researches/  (README + NN_*.md)        # конспекты исследований
 ├── interviews/  (README + interview_NNN_*.md)  # решения уровня владельца
-└── homeworks/   (README + NN_*.md)         # задания человеку
+└── homeworks/   (README + NN_*.md)        # задания человеку
 ```
 
 ---
@@ -68,35 +86,44 @@ KAIF/
 ## Сборка (поток данных)
 
 ```
-framework/_intro.md    ──┐
-framework/<KEY DOCS>.md   │
-framework/readmes/*.md    │   tools/build-framework.mjs        tools/check-framework.mjs
-framework/skills/**       ├──────────────────────────────▶  KAIF.md  ──валидатор──▶  ✅/❌
-                          │   (подставляет {{VERSION}},        (сбалансированные
-                        ──┘    встраивает FILE-блоки)           FILE-блоки, нет {{…}})
+framework/_intro.md ──┐
+framework/<KEY DOCS>  │                        ┌─▶ KAIF.md (корень, тонкий) и dist/KAIF.md
+framework/readmes/*   │  tools/build-framework │─▶ dist/KAIF-CORE.mjs      (из framework/installer/)
+framework/skills/**   ├──────────────────────▶─┤─▶ dist/KAIF-CORE-BUNDLE.md (весь комплект FILE:-блоками)
+framework/installer/* │      .mjs              │─▶ dist/kaif-manifest.json  (sha256-пины + роли ассетов)
+framework/tools/*     │                        │─▶ dist/KAIF-FULL.md        (оффлайн-фолбэк)
+framework/templates/**│                        └─▶ dist/kaif-module-map.json (сигнатурные якоря/классы/sha)
+                    ──┘                                     │
+                                 (сборка в конце САМА исполняет tools/check-framework.mjs:
+                                  блоки сбалансированы · нет {{маркеров}} · стражи нотации/бренда ·
+                                  карта модулей пересплитом · пин сплиттера ядро==сборка · sha свежи)
 
+npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s06 в OS-temp  →  ~130 проверок полигона
+tools/build-diagrams.mjs  ──▶  assets/*.svg  ──▶  README.md (через <picture>)
 README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
-tools/build-diagrams.mjs  ──▶  assets/*.svg  ──  README.md (через <picture>)
 ```
 
 - `build-framework.mjs` оборачивает каждый встраиваемый шаблон в **ограждение из 6 обратных кавычек** и
   помечает `> **FILE: \`<dest>\`**`, чтобы распаковывающий агент точно знал, какой файл создать.
-- Число встроенных `FILE:`-блоков считается динамически: ключевые доки + README директорий + навыки.
-- Версия в документах и именах релизов — **две цифры** `major.minor`; дата релиза — в описании релиза.
+- Число встроенных `FILE:`-блоков считается динамически: ключевые доки + README директорий + навыки +
+  распаковщик; актуальные цифры — в выводе сборки.
+- Версия в документах и именах релизов — **две цифры** `major.minor`; кодовое имя — в `version.json`;
+  дата релиза — в описании релиза.
 
 ---
 
 ## Два слоя (не путайте их)
 
-1. **Полезная нагрузка** = `framework/` (исходник) → `KAIF.md` (сгенерировано). Именно это разворачивается на
-   стороне.
+1. **Полезная нагрузка** = `framework/` (исходник) → корневой `KAIF.md` + `dist/` (сгенерировано). Именно
+   это разворачивается на стороне.
 2. **Обвязка** = корневые ключевые документы + `.claude/skills/` + `plans/`/`ideas/`/`bugs/`/`researches/`/
-   `interviews/`/`homeworks/` + `CLAUDE.md`. Это фреймворк, применённый к *этому* проекту.
+   `interviews/`/`homeworks/` + `CLAUDE.md` + `.kaif/kaif.json`. Это фреймворк, применённый к *этому* проекту.
 
-Универсальные файлы (`PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, навыки) зеркалят друг друга между слоями —
-кроме заполненных плейсхолдеров команд в обвязке. **Разделение по языку:** полезная нагрузка — на
-**английском**; обвязка — на **русском**. Редактируйте полезную нагрузку в `framework/`, держите содержимое
-обвязки в синхроне и заново собирайте.
+Универсальные файлы (`PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `TESTING_FRAMEWORK.md`, навыки) зеркалят
+друг друга между слоями — кроме заполненных плейсхолдеров команд в обвязке; lifecycle- и fable-навыки в
+обвязке — вендоренные EN-копии со staleness-шапками (языковая политика 1.6: agent-facing — EN).
+**Разделение по языку:** полезная нагрузка — на **английском**; обвязка — на **русском**. Редактируйте
+полезную нагрузку в `framework/`, держите содержимое обвязки в синхроне и заново собирайте.
 
 ---
 
@@ -106,9 +133,14 @@ tools/build-diagrams.mjs  ──▶  assets/*.svg  ──  README.md (через
 |------------------|-------|-------|
 | Повествование/текст ядра | `framework/_intro.md` | `node tools/build-framework.mjs` |
 | Шаблон ключевого документа | `framework/<DOC>.md` (+ корневая копия, если универсальный) | пересобрать |
+| Пояснительную записку | `framework/KAIF_REFERENCE.md` | пересобрать |
+| Машинерию установки/обновления | `framework/installer/KAIF-CORE.mjs` | пересобрать + `npm run test:core` |
+| Опциональный tool-модуль | `framework/tools/*.mjs` | пересобрать + `npm run test:core` (s05/s06) |
+| Языковой пакет | `framework/templates/languages/<lang>/` | пересобрать |
 | Шаблон README директории | `framework/readmes/<dir>.md` | пересобрать |
 | Навык (как шаблон) | `framework/skills/<name>/SKILL.md` (+ копия `.claude/skills/<name>`) | пересобрать |
 | Дорожную карту / решения | `MASTER_PLAN.md` | — |
 | Видение | `GOAL.md` | (при смене — `/revision`) |
 | Текущее состояние проекта | `STATUS.md` | — |
 | README | `README.md` (и EN, и RU) | `node tools/readme-pdf.mjs` |
+| Схемы README | `tools/build-diagrams.mjs` (НЕ сами SVG) | `node tools/build-diagrams.mjs` + PDF |

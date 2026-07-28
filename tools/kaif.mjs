@@ -27,8 +27,9 @@ switch (cmd) {
   case 'version': {
     const m = marker(), v = ver();
     if (m) {
+      const agents = m.agents ? [].concat(m.agents).join(',') : m.agent; // legacy singular tolerated
       console.log(`KAIF ${m.version} (${m.released}) · tracking=${m.tracking} · origin=${m.origin}` +
-        (m.sphere ? ` · sphere=${m.sphere}` : '') + (m.agent ? ` · agent=${m.agent}` : ''));
+        (m.sphere ? ` · sphere=${m.sphere}` : '') + (agents ? ` · agents=${agents}` : ''));
     } else if (v) {
       console.log(`KAIF ${v} (origin repo; no .kaif/kaif.json marker present)`);
     } else {
