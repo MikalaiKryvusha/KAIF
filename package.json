@@ -17,6 +17,7 @@
     "kaif:fork": "node tools/kaif.mjs fork",
     "kaif:switch-origin": "node tools/kaif.mjs switch-origin",
     "kaif:remove": "node tools/kaif.mjs remove",
-    "kaif:remove-all": "node tools/kaif.mjs remove-all"
+    "kaif:remove-all": "node tools/kaif.mjs remove-all",
+    "test:core": "node tools/sandbox-suite.mjs"
   }
 }

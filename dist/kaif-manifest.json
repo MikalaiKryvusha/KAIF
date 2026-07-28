@@ -4,8 +4,8 @@
   "released": "2026-07-24",
   "codename": "Homeostatic KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "fcec4429aeb1d4fd5744b43215b1fb1b872895f3330928a750ba098006000ae7",
-    "KAIF-CORE-BUNDLE.md": "b46372ca12561dc011143698949ef207871f715f9f8d68a1b9b72efaf1d7f5ce"
+    "KAIF-CORE.mjs": "d79dfb123e647dc9c9796634dcbc8dcb138c4fcac93e4ab06dab3f7edcd4f952",
+    "KAIF-CORE-BUNDLE.md": "d49133de13a51c13ab482edeaf2553b213eb8c3feaaed274a3054c1dd6eab47f"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

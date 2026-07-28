@@ -260,6 +260,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 | `node tools/build-framework.mjs` | Регенерирует `KAIF.md` из `framework/`. |
 | `node tools/build-diagrams.mjs` | Регенерирует схемы README в `assets/` (3 чертежа × светлая/тёмная × EN/RU) из одного источника. Гейт ширины текста валит сборку, если подпись не влезает в свой контейнер — наезд невозможен по построению. Схемы правь ТОЛЬКО здесь, не в SVG. |
 | `node tools/readme-pdf.mjs` | Рендерит `README.md` → `README.pdf` (нужен `md-to-pdf`; `npm i` в `tools/`). |
+| `node tools/sandbox-suite.mjs` (`npm run test:core`) | **Постоянный песочный полигон машинерии** (план 21): 4 свода ~97 проверок по матрице восьми полевых профилей (свежая/анонимная/легаси установки, по-модульный update, расписки/adopt-current/diff, слепок). ОБЯЗАТЕЛЕН после любой правки `framework/installer/*` или сборщика и перед релизом. |
 | `node tools/commit.mjs "<msg>"` | Инкрементирует номер сборки, коммитит, пушит. |
 
 ---

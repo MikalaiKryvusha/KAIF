@@ -171,19 +171,34 @@ writeFileSync(join(DIST, 'KAIF-CORE.mjs'), coreSrc);
 //    Contents: the key docs + directory READMEs (from DOC_TARGETS, minus the legacy
 //    unpacker), every skill (with its references/), and the sphere libraries
 //    (deployed to .kaif/spheres/ so fable-method/judge can read the project's sphere).
-// Template news for the update task (plan 15): 3–6 lines per minor describing what changed
-// in the TEMPLATES since the previous version — the agent uses them to merge diverged files.
-// RELEASE RITUAL (/release checks this; the self-check enforces the codename line): rewrite
-// these notes for EVERY release — stale notes are the single most-reported field defect
-// (bug 10: six of eight 1.6 update reports were misled by notes describing 1.5).
-const TEMPLATE_NOTES = [
-  'AGENT_GUIDE: canon rules — recon-before-code (recon docs in researches/), quote-the-plan while coding, non-negotiable git hygiene (diff --stat before commit, ignore-first, owner originals verbatim), write-gate + [AI]…[/AI]/[AI-ed]…[/AI-ed] provenance marks on owner canon artifacts, canonical ordering for anything diffed/cached',
-  'PHILOSOPHY: new principles — "Observation over guessing" and "The three-doors rule" (a gap is never solved by invention; invented numbers are worse than missing ones)',
-  'BUG_FIXING_FRAMEWORK: close the CLASS, not the instance (inventory first); guards — every fix births a check, and the check is proven on a broken version; findings are not findings until verified (script before LLM judgment)',
-  'Knowledge formats: closing any idea/bug/plan requires a "Decisions made without the owner" section; EXPERIENCE entries carry Repro:/Not for: fields and trigger tags that must be QUOTED before a task',
-  '/fable-judge vendored skill gained the guardrail hunts (KAIF patch 3); judge pass now required before EVERY push/deploy, not only before "done"; /release gained the 5-gate deploy checklist',
-  `Release codename for this version: KAIF ${version()} — ${codename()}`,
-];
+// Template news, KEPT BY VERSION (plan 21 §3.4; field gap T2: single-release notes left a
+// 1.2→1.6 jumper seeing one release's news out of four). The update task prints the UNION of
+// every version in the (from, to] interval. RELEASE RITUAL (/release checks this; the
+// self-check enforces the codename line): add THIS release's entry every time — stale notes
+// were the single most-reported field defect (bug 10: six of eight 1.6 reports misled).
+const TEMPLATE_NOTES_BY_VERSION = {
+  '1.5': [
+    'fable family vendored: /fable-method, /fable-loop, /fable-judge, /fable-domain (execution discipline; judge pass MANDATORY in the loops and /release)',
+    'NEW key doc TESTING_FRAMEWORK.md: the 7 testing principles + [NOT-TESTED]/[TESTED: …] trust markers (false [TESTED] is a judge-hunted fraud)',
+    'Spheres carry execution discipline: binding minimum evidence set, authority order, verification by observation, fraud table (deployed to .kaif/spheres/)',
+  ],
+  '1.6': [
+    'AGENT_GUIDE: canon rules — recon-before-code (recon docs in researches/), quote-the-plan while coding, non-negotiable git hygiene (diff --stat before commit, ignore-first, owner originals verbatim), write-gate + [AI]…[/AI]/[AI-ed]…[/AI-ed] provenance marks on owner canon artifacts, canonical ordering for anything diffed/cached',
+    'PHILOSOPHY: new principles — "Observation over guessing" and "The three-doors rule" (a gap is never solved by invention; invented numbers are worse than missing ones)',
+    'BUG_FIXING_FRAMEWORK: close the CLASS, not the instance (inventory first); guards — every fix births a check, and the check is proven on a broken version; findings are not findings until verified (script before LLM judgment)',
+    'Knowledge formats: closing any idea/bug/plan requires a "Decisions made without the owner" section; EXPERIENCE entries carry Repro:/Not for: fields and trigger tags that must be QUOTED before a task',
+    '/fable-judge vendored skill gained the guardrail hunts (KAIF patch 3); judge pass now required before EVERY push/deploy, not only before "done"; /release gained the 5-gate deploy checklist',
+    `Release codename for this version: KAIF ${version()} — ${codename()}`,
+  ],
+};
+// Flat notes for the CURRENT version stay in the meta for older cores reading a newer bundle.
+const TEMPLATE_NOTES = TEMPLATE_NOTES_BY_VERSION[version()] || [];
+
+// Artifacts RETIRED by this release that earlier releases deployed (plan 21 §3.5, field gap
+// T10 — a mechanism that replaces another owns the cleanup of its predecessor). Each entry:
+// { path, reason }. The core removes untouched instances mechanically and lists edited ones
+// in the update task. Empty is the normal state.
+const DEPRECATIONS = [];
 
 // Every (src → dest) pair that lands in the bundle is recorded here as a side effect of
 // bundleBlocks() — the module map (plan 21 §3.1) is built from EXACTLY the same set, so the
@@ -201,7 +216,8 @@ function bundleBlocks() {
   const ovPath = join(FW, 'module-classes.json');
   const ovRaw = existsSync(ovPath) ? JSON.parse(readFileSync(ovPath, 'utf8').replace(/^﻿/, '')) : {};
   const moduleClasses = Object.fromEntries(Object.entries(ovRaw).filter(([k]) => !k.startsWith('_')));
-  const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES, moduleClasses };
+  const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES,
+    templateNotesByVersion: TEMPLATE_NOTES_BY_VERSION, deprecations: DEPRECATIONS, moduleClasses };
   blocks.push(`> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
     FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
   for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {

@@ -384,17 +384,80 @@ function writeAdaptationTask(unresolved, translated, meta) {
 // Same forced-checkpoint discipline as the adaptation task. Since plan 21 the heavy lifting is
 // per-module: `opts.divergedModules` renders "your version → new template" diffs right in the
 // task, so the agent merges MEANING, never reconstructs deltas by hand (the top field gap, П1).
+// Version-interval news (plan 21 §3.4, field gap T2): a 1.2→2.0 jump prints the UNION of every
+// release's notes in (from, to], newest last — single-release notes left long jumpers blind.
+function newsInterval(meta, fromVersion) {
+  const byVer = meta.templateNotesByVersion;
+  if (!byVer) return (meta.templateNotes || []).map((n) => `- ${n}`).join('\n') || '- (no template notes shipped with this version)';
+  const vnum = (v) => String(v || '0').split('.').map(Number);
+  const gt = (a, b) => { const [a1, a2 = 0] = vnum(a), [b1, b2 = 0] = vnum(b); return a1 !== b1 ? a1 > b1 : a2 > b2; };
+  const vers = Object.keys(byVer).filter((v) => gt(v, fromVersion || '0') && !gt(v, meta.version)).sort((a, b) => (gt(a, b) ? 1 : -1));
+  if (!vers.length) return '- (no template notes recorded for this interval)';
+  return vers.map((v) => [`**${v}:**`, ...byVer[v].map((n) => `- ${n}`)].join('\n')).join('\n\n');
+}
+
+// The "assertion surface" scan (plan 21 §3.5, field gap П9 — Unliminium counted 12 documents
+// still asserting the OLD version after a green update, 3 of them on the public storefront):
+// any line that mentions KAIF together with the old version number and not the new one is a
+// stale claim the machinery can FIND for the agent, even in files it does not own.
+function scanStaleClaims(fromVersion, toVersion) {
+  if (!fromVersion || fromVersion === toVersion) return [];
+  const hits = [];
+  const SKIP_DIRS = ['.git', 'node_modules', '.kaif'];
+  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs'];
+  const walk = (dir) => {
+    for (const n of readdirSync(dir)) {
+      const p = (dir === '.' ? '' : dir + '/') + n;
+      if (SKIP_DIRS.includes(n) || SKIP_FILES.includes(p)) continue;
+      if (statSync(p).isDirectory()) { walk(p); continue; }
+      if (!/\.md$/i.test(n)) continue;
+      const lines = readFileSync(p, 'utf8').split('\n');
+      for (let i = 0; i < lines.length; i++) {
+        if (/kaif|каиф/i.test(lines[i]) && lines[i].includes(fromVersion) && !lines[i].includes(toVersion)) {
+          hits.push(`${p}:${i + 1} — ${lines[i].trim().slice(0, 100)}`);
+          if (hits.length >= 40) return hits;
+        }
+      }
+    }
+    return hits;
+  };
+  try { walk('.'); } catch { /* best-effort scan */ }
+  return hits;
+}
+
+// Deprecations (plan 21 §3.5, field gap T10): a release may RETIRE artifacts that EARLIER
+// releases deployed — the mechanism that replaced another mechanism owns the cleanup of its
+// predecessor (KLAS: a 1.2-era validator survived four versions printing false greens).
+// Untouched instances are removed mechanically; locally edited ones go to the task.
+function handleDeprecations(meta, old) {
+  const out = { removed: 0, items: [] };
+  for (const d of meta.deprecations || []) {
+    if (!d.path || !existsSync(d.path)) continue;
+    const tpl = (old.templateShas || {})[d.path];
+    if (tpl && fileShaNorm(d.path) === tpl) {
+      unlinkSync(d.path);
+      out.removed++;
+      log(`- retired ${d.path} (${d.reason || 'deprecated upstream'})`);
+    } else {
+      out.items.push(`${d.path} — ${d.reason || 'deprecated upstream'} (carries local edits: remove it yourself, or keep it consciously)`);
+    }
+  }
+  return out;
+}
+
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [] } = opts;
   const modFiles = Object.keys(divergedModules);
   const items = [];
   if (modFiles.length) items.push(['merge-modules', `These MODULES carry local edits — merge each diff below into your version (the rest of their files was updated mechanically): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
   if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.join(' · ')}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
+  if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
+  if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real), then run `node .kaif/kaif-core.mjs update-verify`.']);
-  const news = (meta.templateNotes || []).map((n) => `- ${n}`).join('\n') || '- (no template notes shipped with this version)';
+  const news = newsInterval(meta, fromVersion);
   const diffSections = [];
   for (const p of modFiles) {
     diffSections.push(`### ${p}`, '');
@@ -685,10 +748,12 @@ async function cmdUpdate() {
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
     agents: agentPaths, shas, templateShas, moduleShas, kept: adopted, marker }, null, 2) + '\n');
 
+  const dep = handleDeprecations(meta, old);
+  const staleClaims = scanStaleClaims(cur.version, man.version);
   const nModDiverged = Object.values(divergedModules).reduce((a, l) => a + l.length, 0);
   writeUpdateTask(diverged, { ...meta, version: man.version },
-    `mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''}). Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention });
+    `mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — Unliminium §4). Survives self-clean; update-verify stamps it when the gates pass.
@@ -998,6 +1063,7 @@ async function cmdInstall() {
     if (!baseline) baseline = await buildSyntheticBaseline(legacyOld);
     if (baseline) {
       cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld);
+      cls.baselineOld = baseline; // deprecations later need the OLD template shas (step 5)
       adopted = cls.adopted;
       log(`⟳ bootstrap classified against ${baseline.synthetic ? `a synthetic baseline of v${legacyOld.version}` : 'the surviving deploy manifest'}: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept`);
     }
@@ -1092,7 +1158,9 @@ async function cmdInstall() {
     // receipt — that receipt is the permanent proof bug 17 exists to provide (review-caught).
     if (legacyOld.version !== meta.version) {
       writeReceipt({ from: legacyOld.version, to: meta.version, route: 'legacy-bootstrap',
-        counters: { adopted: adopted.length } });
+        counters: cls ? { replaced: cls.replaced, mergedModules: cls.mergedModules, added: cls.added, kept: cls.kept, adopted: adopted.length }
+                      : { adopted: adopted.length },
+        classified: !!cls });
       appendHistory(marker, legacyOld.version, meta.version, 'legacy-bootstrap');
       writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
     }
@@ -1104,12 +1172,21 @@ async function cmdInstall() {
       // The context line derives the REASON from the actual deployment state — "pre-1.5 project"
       // was a false model on anonymous installs, whose snapshots were removed by self-clean.
       const rerun = legacyOld.version === meta.version;
+      const nMod = cls ? Object.values(cls.divergedModules).reduce((a, l) => a + l.length, 0) : 0;
       const why = legacyOld.tracking === 'anonymous'
-        ? 'this anonymous deployment keeps no content snapshots (self-clean removes them)'
+        ? 'this anonymous deployment kept no content snapshots'
         : 'this deployment has no content snapshots (pre-1.5 deployments never wrote them)';
-      writeUpdateTask([], meta, rerun
+      const dep = cls ? handleDeprecations(meta, cls.baselineOld || {}) : { removed: 0, items: [] };
+      const staleClaims = rerun ? [] : scanStaleClaims(legacyOld.version, meta.version);
+      // A CLASSIFIED bootstrap (surviving manifest / synthetic baseline) hands over exactly what
+      // a core update would: per-module diffs and honest counters — not "merge everything".
+      writeUpdateTask(cls ? cls.diverged : [], meta, rerun
         ? `re-run on ${meta.version}: the tree already carries this version — verify the previous merge rather than redoing it`
-        : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`);
+        : cls
+          ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
+          : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims }
+            : { fromVersion: legacyOld.version, staleClaims });
     }
     if (existsSync(TASK_FILE)) { unlinkSync(TASK_FILE); log(`- removed stale ${TASK_FILE} (this is an update, not an adaptation)`); }
   } else {
