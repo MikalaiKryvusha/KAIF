@@ -22,7 +22,7 @@
 [![Languages](https://img.shields.io/badge/Owner%20docs-10%20languages-2C7BE5.svg?style=flat-square)](#lang-en)
 
 <p align="center">
-  <a href="#why">Why</a> · <a href="#how-it-works">How it works</a> · <a href="#quick-start-for-the-human">Quick start</a> · <a href="#the-skills">Skills</a> · <a href="#lifecycle-any-domain-any-agent">Lifecycle</a>
+  <a href="#why">Why</a> · <a href="#how-it-works">How it works</a> · <a href="#excellent-en">What it is today</a> · <a href="#quick-start-for-the-human">Quick start</a> · <a href="#the-skills">Skills</a> · <a href="#lifecycle-any-domain-any-agent">Lifecycle</a>
 </p>
 
 **KAIF — Krinik AI Framework — a context-resilient, fundamental strategic-operational methodological framework for AI agents: resilience to context loss and discipline of autonomy.**
@@ -73,72 +73,82 @@ software together — a standalone by-product of that collaboration, generalized
   </picture>
 </p>
 
-**New in 1.5:** the deploy is *thin*. The agent reads ~10 KB instead of ~220 KB (×23 less), and its
-cognitive writing shrinks ×66 — the machinery unpacks the docs, generates the skills for **five agent
-systems at once**, localizes the owner-facing docs, wires everything, validates itself, and self-cleans.
+**The deploy is thin.** The agent reads ~10 KB instead of ~220 KB (×23 less), and its cognitive
+writing shrinks ×66 — the machinery unpacks the docs, generates the skills for **five agent systems
+at once**, localizes the owner-facing docs, wires everything, validates itself, and self-cleans.
 Field-certified end-to-end on a 12-billion-parameter local model.
-
-<a id="tested-en"></a>
-
-## Tested KAIF — nothing raw is trusted
-
-1.5's codename discipline: **raw generated content is never trusted.** Everything non-trivial the agent
-creates is born marked **`[NOT-TESTED]`** in its comment; only verification *by observation* (it ran, it
-rendered, it counted) flips it to **`[TESTED: date · how]`**. A false `[TESTED]` is a fraud the judge
-hunts. The canon lives in a new key document, **`TESTING_FRAMEWORK.md`** — the seven classic testing
-principles (defects exist · exhaustive testing is impossible · test early · defects cluster · the
-pesticide paradox · context matters · a bug-free product that misses the user's goal is worthless),
-written for an AI agent and universal across domains: code, documents, analyses, anything.
-
-## The fable execution loop — discipline at decision points
-
-KAIF 1.5 vendors the **[fable-method](https://github.com/Sahir619/fable-method)** family (© Sahir619,
-MIT) verbatim — four skills that script how a task is *executed*: **/fable-method** (classify → define
-done → evidence → decide → act surgically → verify by observation → report outcome-first, with forced
-artifacts `INTENT:`/`AUTH:`/`TWINS:`/`PENDING:` at decision points), **/fable-loop** (orchestration with
-adversarial verifiers), **/fable-judge** (adversarial verification of any "done" claim — **mandatory** in
-KAIF's autonomous loops and before every release), and **/fable-domain** (generates new domain workflow
-bundles). KAIF's spheres carry each domain's binding evidence sets, authority orders, and fraud tables.
-
-<a id="guardrails-en"></a>
-
-## Homeostatic KAIF — guardrails for weak models
-
-1.6's codename discipline, distilled from two real projects where a weaker model burned the owner:
-**a weak model can't be trusted with judgment, but it can be trusted with procedure.** KAIF turns the
-implicit obligations models silently break into explicit, countable mechanisms — and the process heals
-itself back to a healthy state (hence *homeostatic*). The guardrails: **observation over conjecture**
-(a recon doc before code whenever an external truth exists; a canon map and a countable parity
-inventory for domains with facts — "no inventory row, no code"); **the three doors** (a gap in the
-canon is answered from a source of truth or by asking the owner — inventing is forbidden, an invented
-number is worse than a missing one); **the judge before every push and deploy**, now also hunting
-diffs the agent didn't write (lock files, manifests), unjustified test edits (fraud by default),
-data-shaped literals, and stray binaries; **the one-step rule** in autonomous loops (one change = full
-gates = one commit); **a five-gate deploy checklist** (mirror the running prod before replacing it);
-and **provenance marks `[AI]…[/AI]`** on everything the AI writes into the owner's canon — the mark is
-an acceptance queue only the owner's word removes. Every closed task now ships a *"Decisions made
-without the owner"* section, and experience entries carry a ready-to-run **Repro** command and a
-**Not for** applicability range — lessons a weak model can execute, not just read.
 
 <a id="excellent-en"></a>
 
-## Excellent KAIF — updates by machinery, not by mind
+## Excellent KAIF — what it is today
 
-2.0's codename discipline, distilled from **eight field reports** of real projects updating to 1.6:
-everything that burned updaters is now mechanized. The core of it is a **module map**: every template
-is split into logical modules addressed by their full unique heading line (a *signature anchor* — no
-tags added to documents), and the deploy manifest keeps **template shas apart from disk shas** — only
-a template-sha match ever authorizes a mechanical replacement, so your adapted and localized modules
-**survive every update** while untouched upstream modules merge silently. Updates leave a **receipt**
-(`.kaif/last-update.json` + a history in the marker), manual migrations stop killing the mechanical
-path (`adopt-current`), legacy and anonymous deployments update mechanically via a **synthetic
-baseline** rebuilt from the old release's own artifact, and template news prints for the whole
-version interval you jump across. The whole framework is now documented in one authoritative
-**reference** — [`KAIF_REFERENCE.md`](KAIF_REFERENCE.md) (§1–16: terminology, schemas, the full
-mechanics; deployed to `.kaif/`, `/help-kaif` cites its paragraphs). Optional **guardrail tools** ship
-alongside: a provenance gate over declared canon artifacts and a canon linter whose selftest proves
-every guard can fire. Verified by a **permanent sandbox polygon** — six suites, ~130 checks over the
-matrix of the eight field profiles — plus an independent adversarial judge pass before this release.
+KAIF 2.0 at a glance: one thin entry file, a mechanical deploy, externalized memory, disciplined
+execution, and a full lifecycle in which even updates are done by machinery, not by the agent's mind.
+The disciplines below define the framework as it stands. None was invented at a whiteboard — each
+was distilled from real practice, several straight from projects that got burned without them, and
+each is held by a mechanism, not by a plea in a prompt.
+
+**Updates by machinery, not by mind.** Every template is split into logical modules addressed by
+their full unique heading line (a *signature anchor* — no tags added to documents), and the deploy
+manifest keeps **template shas apart from disk shas** — only a template-sha match ever authorizes a
+mechanical replacement. So your adapted and localized modules **survive every update** while
+untouched upstream modules merge silently; every update leaves a **receipt**
+(`.kaif/last-update.json` + a history in the marker); manual migrations don't kill the mechanical
+path (`adopt-current`); legacy and anonymous deployments update via a **synthetic baseline** rebuilt from the old release's
+own artifact; and template news prints for the whole version interval you jump across.
+
+<a id="tested-en"></a>
+
+**Nothing raw is trusted.** Everything non-trivial the agent creates is born marked **`[NOT-TESTED]`**;
+only verification *by observation* (it ran, it rendered, it counted) flips it to
+**`[TESTED: date · how]`** — the canon is a dedicated key document, **`TESTING_FRAMEWORK.md`**,
+written for an AI agent and universal across domains: code, documents, analyses, anything. Execution
+runs the vendored **[fable-method](https://github.com/Sahir619/fable-method)** loop (© Sahir619, MIT):
+classify → define done → evidence → decide → act surgically → verify by observation → report
+outcome-first, with forced artifacts `INTENT:`/`AUTH:`/`TWINS:`/`PENDING:` at decision points. And
+every "done" claim faces **/fable-judge** — adversarial verification that re-runs the claims,
+mandatory in KAIF's autonomous loops and before every release. A false `[TESTED]` is a fraud the
+judge hunts.
+
+<a id="guardrails-en"></a>
+
+**Guardrails for weak models.** A weak model can't be trusted with judgment, but it can be trusted
+with procedure — so the implicit obligations models silently break are explicit, countable mechanisms
+here, and the process heals itself back to a healthy state (that's the *homeostatic* in the badge
+above): **observation over conjecture** (a recon doc before code whenever an external truth exists;
+a canon map and a countable parity inventory for domains with facts — "no inventory row, no code");
+**the three doors** (a gap in the canon is answered from a source of truth or by asking the owner —
+inventing is forbidden, an invented number is worse than a missing one); **the judge before every
+push and deploy**, hunting also diffs the agent didn't write (lock files, manifests), unjustified
+test edits (fraud by default), data-shaped literals, and stray binaries; **the one-step rule** in
+autonomous loops (one change = full gates = one commit); **a five-gate deploy checklist** (mirror
+the running prod before replacing it); and **provenance marks `[AI]…[/AI]`** on everything the AI
+writes into the owner's canon — an acceptance queue only the owner's word removes. Every closed task
+ships a *"Decisions made without the owner"* section, and experience entries carry a ready-to-run
+**Repro** command and a **Not for** applicability range — lessons a weak model can execute, not just
+read. Optional tools mechanize the checks: a provenance gate over declared canon artifacts and a
+canon linter whose selftest proves every guard can fire.
+
+**One authoritative reference.** The whole framework — terminology, schemas, the full mechanics — is
+documented in **[`KAIF_REFERENCE.md`](KAIF_REFERENCE.md)** (§1–16), deployed to `.kaif/`;
+`/help-kaif` cites its paragraphs instead of improvising.
+
+### The experience that made it
+
+KAIF wasn't designed — it was distilled, then hardened in the field. What shaped the framework as it
+is now:
+
+- it was born as a by-product of Krinik and Claude building real software together — the method
+  existed before the framework did;
+- **eight field reports** of real projects updating to 1.6 became the 2.0 update machinery — every
+  pain in them is now mechanized;
+- two real projects where a weaker model burned the owner became the guardrails;
+- a **12-billion-parameter local model** walked the whole deploy end-to-end — the field certification
+  that the machinery, not model strength, carries the structure;
+- every change runs through a **permanent sandbox polygon** — six suites, ~130 checks over the matrix
+  of eight real field profiles — and an independent adversarial judge pass precedes every release;
+- the framework runs its own repository (see the fractal note below) — every rule here was applied to
+  building KAIF itself first.
 
 ## Quick start (for the human)
 
@@ -190,17 +200,19 @@ matrix of the eight field profiles — plus an independent adversarial judge pas
 
 ## Updating a deployed project
 
-Since 1.5 updates are **mechanical and respectful**: `npm run kaif:update` (or
-`node .kaif/kaif-core.mjs update`) fetches the latest machinery and classifies every framework file by
-**provenance**: it refreshes only the files the machinery itself once wrote and you never touched —
-anything adopted from your pre-existing setup or edited since (adaptations, localizations) stays
-byte-for-byte yours and lands in a short `KAIF_UPDATE_TASK.md` for a hand-merge. Your content
-(`GOAL.md`, `STATUS.md`, the knowledge directories) is never in scope at all. The update closes with
-the same guarantees as a fresh install: `update-verify` re-syncs the per-system skill copies from your
-canonical `.claude/skills/`, re-scans placeholders, self-heals the deploy marker, then self-cleans.
-A pre-1.5 project updates by simply dropping the fresh thin `KAIF.md` on top and asking for an
-update — the installer detects the existing deployment and adopts everything it finds as yours.
-Field-tested on a real 1.4 project: the owner's content survived byte-for-byte.
+Updates are **mechanical and respectful**: `npm run kaif:update` (or
+`node .kaif/kaif-core.mjs update`) fetches the latest machinery and classifies every framework file
+by **provenance**: a file you never touched refreshes wholesale, while a file you adapted or
+localized goes through the **module-by-module merge** — your modules stay yours, untouched upstream
+modules silently take the new template text, and a module lands in the short `KAIF_UPDATE_TASK.md`
+(with a ready diff) only where upstream actually changed under your edits. Your content (`GOAL.md`,
+`STATUS.md`, the knowledge directories) is never in scope at all. The update closes with the same
+guarantees as a fresh install — `update-verify` re-syncs the per-system skill copies from your
+canonical `.claude/skills/`, re-scans placeholders, self-heals the deploy marker, then self-cleans —
+and leaves a **receipt** (`.kaif/last-update.json`). A pre-1.5 project updates by simply dropping
+the fresh thin `KAIF.md` on top and asking for an update — the installer detects the existing
+deployment and adopts everything it finds as yours. Field-tested on a real 1.4 project: the owner's
+content survived byte-for-byte.
 
 <a id="lang-en"></a>
 
@@ -341,6 +353,32 @@ Forking, switching origin, and removal are driven by their skills (`/kaif-fork`,
 3. **Bounded autonomy** — the agent decides what's cheap to reverse; it escalates brand/UX/architecture via interviews.
 4. **Nothing raw is trusted** — execution runs the fable loop, everything created carries a test-status marker, and a judge re-runs the claims. *(Simplicity still rules: KISS + Occam.)*
 
+## Milestones — how KAIF got here
+
+The history in one list; each codename is a discipline the framework learned. Full notes (from 1.1
+on) live in the [releases](https://github.com/MikalaiKryvusha/KAIF/releases).
+
+- **v1.0 (2026-06-30)** — the distillation: the working method extracted into a single
+  self-extracting core (renamed `KAIF.md` in 1.1); the repository wrapped by its own framework from
+  day one.
+- **v1.1 «Structured KAIF» (2026-07-01)** — `x.y` versioning, the key-document set (vision, plan,
+  two maps), the knowledge directories.
+- **v1.2 «Anonymous KAIF» (2026-07-03)** — the mechanical unpacker, the anonymous install mode,
+  skill translation for non-Claude systems.
+- **v1.3 «Slim KAIF» (2026-07-06)** — a one-file lightweight variant (retired in 1.5 in favor of
+  the thin core + offline `KAIF-FULL.md`).
+- **v1.4 «Savvied KAIF» (2026-07-08)** — `EXPERIENCE.md`, the agent's grep-friendly journal of
+  lessons; lazy context loading; optional hook enforcement.
+- **v1.5 «Tested KAIF» (2026-07-17)** — the thin install (×23 less reading), five agent systems
+  and ten languages at once, mechanical respectful updates, `TESTING_FRAMEWORK.md` with the
+  `[NOT-TESTED]`/`[TESTED]` contract, the vendored fable execution loop; field-certified on a
+  12 B local model.
+- **v1.6 «Homeostatic KAIF» (2026-07-24)** — guardrails for weak models: observation over
+  conjecture, the three doors, the judge before every push, provenance marks `[AI]…[/AI]`.
+- **v2.0 «Excellent KAIF» (2026-07-28)** — updates by machinery, not by mind: the module map,
+  template-vs-disk shas, update receipts, the `KAIF_REFERENCE.md` reference, optional guardrail
+  tools, the permanent sandbox polygon.
+
 ## For AI agents
 
 If you are an AI agent: read **[`KAIF.md`](KAIF.md)** — it is short. Your entire bootstrap is three steps
@@ -408,7 +446,7 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
 [![Языки](https://img.shields.io/badge/Owner--доки-10%20языков-2C7BE5.svg?style=flat-square)](#lang-ru)
 
 <p align="center">
-  <a href="#зачем">Зачем</a> · <a href="#как-это-работает">Как это работает</a> · <a href="#быстрый-старт-для-человека">Быстрый старт</a> · <a href="#навыки">Навыки</a> · <a href="#жизненный-цикл-любая-сфера-любой-агент">Жизненный цикл</a>
+  <a href="#зачем">Зачем</a> · <a href="#как-это-работает">Как это работает</a> · <a href="#excellent-ru">Какой он сегодня</a> · <a href="#быстрый-старт-для-человека">Быстрый старт</a> · <a href="#навыки">Навыки</a> · <a href="#жизненный-цикл-любая-сфера-любой-агент">Жизненный цикл</a>
 </p>
 
 **КАИФ — Криник АИ Фреймворк — контекстоустойчивый фундаментальный стратегическо-операционный методологический фреймворк для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
@@ -461,75 +499,85 @@ Use it, copy it, modify it, ship it — including, as this repo shows, on the fr
   </picture>
 </p>
 
-**Новое в 1.5:** установка *тонкая*. Агент читает ~10 КБ вместо ~220 КБ (в 23 раза меньше), а его
-когнитивное письмо сжимается в 66 раз — машинерия распаковывает документы, генерирует навыки сразу для
+**Установка тонкая.** Агент читает ~10 КБ вместо ~220 КБ (в 23 раза меньше), а его когнитивное
+письмо сжимается в 66 раз — машинерия распаковывает документы, генерирует навыки сразу для
 **пяти агентских систем**, локализует owner-документы, делает весь wiring, самопроверяется и
 самоочищается. Полевая сертификация — насквозь на локальной модели в 12 миллиардов параметров.
 
+<a id="excellent-ru"></a>
+
+## Excellent KAIF — какой он сегодня
+
+KAIF 2.0 одним взглядом: один тонкий входной файл, механическое развёртывание, вынесенная память,
+дисциплинированное исполнение и полный жизненный цикл, в котором даже обновления делает машинерия, а
+не ум агента. Фреймворк сегодня определяют дисциплины ниже. Ни одна не придумана за доской — каждая
+дистиллирована из реальной практики, а некоторые — прямо из проектов, которые без них обожглись;
+каждую держит механизм, а не просьба в промпте.
+
+**Обновление машинерией, а не умом.** Каждый шаблон порезан на логические модули с
+адресом-«сигнатурным якорем» (полная уникальная строка-заголовок; в документах не появляется никаких
+тегов), а деплой-манифест держит **шаблонные sha отдельно от дисковых** — право механической замены
+даёт только совпадение шаблонного sha. Поэтому ваши адаптированные и локализованные модули
+**переживают каждое обновление**, а нетронутые апстрим-модули вливаются молча; каждое обновление
+оставляет **расписку** (`.kaif/last-update.json` + история в маркере); ручные миграции не убивают
+машинный путь (`adopt-current`); легаси- и анонимные развёртывания обновляются через
+**синтетический слепок** из артефакта старого релиза; а новости шаблонов печатаются за весь интервал
+версий, через который вы прыгаете.
+
 <a id="tested-ru"></a>
 
-## Tested KAIF — сырому доверия нет
-
-Дисциплина, давшая имя релизу 1.5: **сырому сгенерированному контенту доверять нельзя.** Всё
-нетривиальное, что агент создаёт, рождается с маркером **`[NOT-TESTED]`** в комментарии; только проверка
-*наблюдением* (запустилось, отрисовалось, посчиталось) переводит его в **`[TESTED: дата · как]`**. Ложный
-`[TESTED]` — фрод, на который охотится судья. Канон — в новом ключевом документе
-**`TESTING_FRAMEWORK.md`**: семь классических принципов тестирования (дефекты есть всегда ·
-исчерпывающее тестирование невозможно · тестируй рано · дефекты кучкуются · парадокс пестицида ·
-контекст решает · безошибочный продукт мимо цели пользователя бесполезен), написанные для ИИ-агента и
-универсальные по сферам: код, документы, анализы — что угодно.
-
-## Fable-цикл исполнения — дисциплина на точках решения
-
-KAIF 1.5 вендорит семейство **[fable-method](https://github.com/Sahir619/fable-method)** (© Sahir619,
-MIT) дословно — четыре навыка, задающие, как *исполняется* задача: **/fable-method** (классифицируй →
-определи «готово» → свидетельства → решай → действуй хирургически → проверь наблюдением → доложи
-результатом-вперёд, с принудительными артефактами `INTENT:`/`AUTH:`/`TWINS:`/`PENDING:` на точках
-решения), **/fable-loop** (оркестровка с адверсарными верификаторами), **/fable-judge** (адверсарная
-проверка любого «готово» — **обязательна** в автономных циклах KAIF и перед каждым релизом) и
-**/fable-domain** (генерирует доменные workflow-бандлы). Сферы KAIF несут обязательные наборы
-свидетельств, порядки авторитетов и таблицы фродов своих доменов.
+**Сырому доверия нет.** Всё нетривиальное, что агент создаёт, рождается с маркером **`[NOT-TESTED]`**;
+только проверка *наблюдением* (запустилось, отрисовалось, посчиталось) переводит его в
+**`[TESTED: дата · как]`** — канон живёт в отдельном ключевом документе **`TESTING_FRAMEWORK.md`**,
+написанном для ИИ-агента и универсальном по сферам: код, документы, анализы — что угодно. Исполнение
+идёт по вендореному циклу **[fable-method](https://github.com/Sahir619/fable-method)** (© Sahir619,
+MIT): классифицируй → определи «готово» → свидетельства → решай → действуй хирургически → проверь
+наблюдением → доложи результатом-вперёд, с принудительными артефактами
+`INTENT:`/`AUTH:`/`TWINS:`/`PENDING:` на точках решения. А каждое «готово» встречает **/fable-judge**
+— адверсарную проверку, перепрогоняющую заявления, обязательную в автономных циклах KAIF и перед
+каждым релизом. Ложный `[TESTED]` — фрод, на который охотится судья.
 
 <a id="guardrails-ru"></a>
 
-## Homeostatic KAIF — гвардрейлы для слабых моделей
+**Гвардрейлы для слабых моделей.** Слабой модели нельзя доверить суждение, но можно доверить
+процедуру — поэтому неявные обязательства, которые модели молча нарушают, здесь превращены в явные
+исчислимые механизмы, а процесс сам возвращает себя в здоровое состояние (это и есть *homeostatic*
+на бейдже выше): **наблюдение вместо додумывания** (разведдок до кода всякий раз, когда есть
+внешняя правда; канон-карта и исчислимый инвентарь паритета для доменов с фактологией — «нет строки
+инвентаря — нет кода»); **правило трёх дверей** (пробел в каноне закрывается источником истины или
+вопросом владельцу — выдумывать запрещено, выдуманное число хуже отсутствующего); **судья перед
+каждым push и деплоем**, охотящийся и на диффы, которых агент не писал (lock-файлы, манифесты),
+правки тестов без обоснования (фрод по умолчанию), литералы-похожие-на-данные и приблудные бинари;
+**правило одного шага** в автономных циклах (одно изменение = полные гейты = один коммит);
+**деплой-чеклист из пяти гейтов** (сними зеркало работающего прода до его замены); и **пометки
+провенанса `[AI]…[/AI]`** на всём, что ИИ пишет в канон владельца, — очередь на приёмку, которую
+снимает только слово владельца. Каждая закрытая задача несёт секцию *«Решения, принятые без
+владельца»*, а записи опыта — готовую команду **Repro** и границу применимости **Not for**: уроки,
+которые слабая модель исполняет, а не просто читает. Опциональные инструменты механизируют
+проверки: гейт провенанса по объявленным канон-артефактам и линтер канона, чей selftest доказывает,
+что каждый страж умеет краснеть.
 
-Дисциплина, давшая имя релизу 1.6, дистиллирована из двух реальных проектов, где слабая модель обожгла
-владельца: **слабой модели нельзя доверить суждение, но можно доверить процедуру.** KAIF превращает
-неявные обязательства, которые модели молча нарушают, в явные исчислимые механизмы — и процесс сам
-возвращает себя в здоровое состояние (отсюда *homeostatic*). Гвардрейлы: **наблюдение вместо
-додумывания** (разведдок до кода всякий раз, когда есть внешняя правда; канон-карта и исчислимый
-инвентарь паритета для доменов с фактологией — «нет строки инвентаря — нет кода»); **правило трёх
-дверей** (пробел в каноне закрывается источником истины или вопросом владельцу — выдумывать запрещено,
-выдуманное число хуже отсутствующего); **судья перед каждым push и деплоем**, теперь охотящийся и на
-диффы, которых агент не писал (lock-файлы, манифесты), правки тестов без обоснования (фрод по
-умолчанию), литералы-похожие-на-данные и приблудные бинари; **правило одного шага** в автономных
-циклах (одно изменение = полные гейты = один коммит); **деплой-чеклист из пяти гейтов** (сними зеркало
-работающего прода до его замены); и **пометки провенанса `[AI]…[/AI]`** на всём, что ИИ пишет в канон
-владельца, — пометка есть очередь на приёмку, снимает её только слово владельца. Каждая закрытая
-задача теперь несёт секцию *«Решения, принятые без владельца»*, а записи опыта — готовую команду
-**Repro** и границу применимости **Not for**: уроки, которые слабая модель исполняет, а не просто читает.
+**Один авторитетный справочник.** Всё устройство фреймворка — терминология, схемы, полная механика —
+описано в **[`KAIF_REFERENCE.md`](KAIF_REFERENCE.md)** (§1–16), едет в `.kaif/`; `/help-kaif`
+цитирует его параграфы, а не импровизирует.
 
-<a id="excellent-ru"></a>
+### Опыт, который сделал его таким
 
-## Excellent KAIF — обновление машинерией, а не умом
+KAIF не спроектирован — он дистиллирован, а затем закалён в поле. Вот что сделало фреймворк таким,
+какой он сейчас:
 
-Дисциплина, давшая имя релизу 2.0, дистиллирована из **восьми полевых отчётов** реальных проектов об
-обновлении на 1.6: всё, что обжигало обновляющихся, теперь механизировано. В основе — **карта
-модулей**: каждый шаблон режется на логические модули с адресом-«сигнатурным якорем» (полная
-уникальная строка-заголовок; в документах не появляется никаких тегов), а деплой-манифест держит
-**шаблонные sha отдельно от дисковых** — право механической замены даёт только совпадение шаблонного
-sha, поэтому ваши адаптированные и локализованные модули **переживают каждое обновление**, а
-нетронутые апстрим-модули вливаются молча. Обновление оставляет **расписку** (`.kaif/last-update.json`
-+ история в маркере), ручные миграции больше не убивают машинный путь (`adopt-current`), легаси- и
-анонимные развёртывания обновляются механически через **синтетический слепок** из артефакта старого
-релиза, а новости шаблонов печатаются за весь интервал версий, через который вы прыгаете. Всё
-устройство фреймворка теперь описано одним авторитетным **справочником** —
-[`KAIF_REFERENCE.md`](KAIF_REFERENCE.md) (§1–16: терминология, схемы, полная механика; едет в
-`.kaif/`, `/help-kaif` цитирует его параграфы). Рядом — опциональные **гвардрейл-инструменты**: гейт
-провенанса по объявленным канон-артефактам и линтер канона, чей selftest доказывает, что каждый страж
-умеет краснеть. Проверено **постоянным песочным полигоном** — шесть сводов, ~130 проверок по матрице
-восьми полевых профилей — плюс независимый адверсарный судейский проход перед этим релизом.
+- он родился побочным продуктом реальной совместной разработки Криника и Claude — метод существовал
+  раньше фреймворка;
+- **восемь полевых отчётов** реальных проектов об обновлении на 1.6 стали машинерией обновления
+  2.0 — всё, что в них обжигало, теперь механизировано;
+- два реальных проекта, где слабая модель обожгла владельца, стали гвардрейлами;
+- **локальная модель в 12 миллиардов параметров** прошла всё развёртывание насквозь — полевая
+  сертификация того, что структуру несёт машинерия, а не сила модели;
+- каждое изменение прогоняется через **постоянный песочный полигон** — шесть сводов, ~130 проверок
+  по матрице восьми реальных полевых профилей, — а перед каждым релизом проходит независимый
+  адверсарный судейский проход;
+- фреймворк ведёт собственный репозиторий (см. заметку о фрактальности ниже) — каждое правило здесь
+  сначала было применено к разработке самого KAIF.
 
 ## Быстрый старт (для человека)
 
@@ -582,17 +630,19 @@ sha, поэтому ваши адаптированные и локализов�
 
 ## Обновление развёрнутого проекта
 
-С 1.5 обновления **механические и уважительные**: `npm run kaif:update` (или
+Обновления **механические и уважительные**: `npm run kaif:update` (или
 `node .kaif/kaif-core.mjs update`) скачивает свежую машинерию и классифицирует каждый файл фреймворка
-по **происхождению**: обновляются только те, что машинерия сама когда-то записала и вы с тех пор не
-трогали — всё унаследованное от вашей прежней обвязки или правленное после (адаптации, локализации)
-остаётся вашим байт в байт и попадает в короткое `KAIF_UPDATE_TASK.md` на ручной мёрж. Ваш контент
+по **происхождению**: файл, который вы не трогали, обновляется целиком, а адаптированный или
+локализованный проходит **по-модульный мёрж** — ваши модули остаются вашими, нетронутые
+апстрим-модули молча берут новый текст шаблона, и модуль попадает в короткое `KAIF_UPDATE_TASK.md`
+(с готовым диффом) только там, где апстрим действительно менялся под вашими правками. Ваш контент
 (`GOAL.md`, `STATUS.md`, директории знаний) вообще вне зоны действия. Финал обновления даёт те же
-гарантии, что и свежая установка: `update-verify` пересинхронизирует копии навыков для всех систем из
-канонических `.claude/skills/`, заново сканирует плейсхолдеры, самолечит маркер развёртывания и
-самоочищается. Проект на до-1.5 обновляется просто: положите свежий тонкий `KAIF.md` поверх и
-попросите обновить — инсталлятор сам увидит существующее развёртывание и усыновит всё найденное как
-ваше. Полевой тест на реальном 1.4-проекте: контент владельца пережил обновление байт в байт.
+гарантии, что и свежая установка, — `update-verify` пересинхронизирует копии навыков для всех систем
+из канонических `.claude/skills/`, заново сканирует плейсхолдеры, самолечит маркер развёртывания и
+самоочищается — и оставляет **расписку** (`.kaif/last-update.json`). Проект на до-1.5 обновляется
+просто: положите свежий тонкий `KAIF.md` поверх и попросите обновить — инсталлятор сам увидит
+существующее развёртывание и усыновит всё найденное как ваше. Полевой тест на реальном 1.4-проекте:
+контент владельца пережил обновление байт в байт.
 
 <a id="lang-ru"></a>
 
@@ -601,7 +651,7 @@ sha, поэтому ваши адаптированные и локализов�
 Исходники фреймворка — английские (язык сообщества). При развёртывании машинерия **локализует
 owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директорий) из предсобранных пакетов — десять
 языков: **en, ru, zh-Hans, es, hi, ar, pt, fr, de, ja** — и дописывает каждому навыку **триггер-алиасы
-на вашем языке**, чтобы агент ловил ваши команды («сделай релиз», «продолжи»…), при этом сами навыки
+на вашем языке**, чтобы агент ловил ваши команды («сделай релиз», «haz un release», …), при этом сами навыки
 остаются английскими. Внутренние документы агента — английские by design. Прочие языки деградируют
 честно: английский + пункт перевода в задании адаптации.
 
@@ -648,11 +698,11 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 |----------|----------|-------------------|
 | `AGENT_GUIDE.md` | Канон — правила, карта, команды, соглашения | Машинерия разворачивает; агент адаптирует; вы почти не трогаете |
 | `PHILOSOPHY.md` | Как агент мыслит (KISS + Оккам + принципы) | Универсальный — дословно |
-| `BUG_FIXING_FRAMEWORK.md` | Как агент чинит баги | Универсальный — дословно |
+| `BUG_FIXING_FRAMEWORK.md` | Как агент чинит баги (intent gate, 3 попытки, twin check) | Универсальный — дословно |
 | `TESTING_FRAMEWORK.md` | Как агент тестирует всё созданное | Универсальный — дословно |
 | **`GOAL.md`** | Видение: чего вы хотите в итоге | **Вы (владелец)** — единственный документ, который стоит заполнить |
 | `STATUS.md` | Живое состояние — что сделано, где мы, что дальше | Агент ведёт после каждой задачи |
-| `EXPERIENCE.md` | Журнал уроков агента (что работает/нет) | Агент растит сам (`/experience`) |
+| `EXPERIENCE.md` | Греп-дружелюбный журнал уроков агента | Агент растит сам (`/experience`) |
 | `MASTER_PLAN.md` | Генплан от состояния → к GOAL | Агент выводит из `GOAL.md` (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | Внешняя карта: директории, файлы, как проект выглядит снаружи | Агент ведёт |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внутренняя карта: абстракции и их взаимодействия | Агент ведёт |
@@ -730,9 +780,34 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 ## Четыре идеи, на которых всё держится
 
 1. **Вынесенная память** — состояние агента живёт в файлах, а не в чате. Новая сессия продуктивна сразу.
-2. **Накопление знаний** — баги, решения, исследования и идеи становятся долговечными документами.
+2. **Накопление знаний** — баги, решения, исследования и идеи становятся долговечными документами, а не потерянным чатом.
 3. **Ограниченная автономность** — агент сам решает то, что легко откатить; бренд/UX/архитектуру выносит на интервью.
 4. **Сырому доверия нет** — исполнение идёт по fable-циклу, всё созданное несёт маркер тест-статуса, а судья перепрогоняет заявления. *(Простота по-прежнему правит: KISS + Оккам.)*
+
+## Вехи — как KAIF дошёл до этого
+
+Вся история — одним списком; каждое кодовое имя — дисциплина, которую фреймворк выучил. Полные
+ноты (с 1.1) — в [релизах](https://github.com/MikalaiKryvusha/KAIF/releases).
+
+- **v1.0 (2026-06-30)** — дистилляция: рабочий метод извлечён в одно самораспаковывающееся ядро
+  (переименовано в `KAIF.md` в 1.1); репозиторий с первого дня обёрнут собственным фреймворком.
+- **v1.1 «Structured KAIF» (2026-07-01)** — версионирование `x.y`, набор ключевых документов
+  (видение, план, две карты), директории знаний.
+- **v1.2 «Anonymous KAIF» (2026-07-03)** — механический распаковщик, анонимный режим установки,
+  трансляция навыков для не-Claude систем.
+- **v1.3 «Slim KAIF» (2026-07-06)** — лёгкий однофайловый вариант (снят в 1.5 в пользу тонкого
+  ядра + оффлайн `KAIF-FULL.md`).
+- **v1.4 «Savvied KAIF» (2026-07-08)** — `EXPERIENCE.md`, греп-дружелюбный журнал уроков агента;
+  ленивая загрузка контекста; опциональные хуки-энфорсеры.
+- **v1.5 «Tested KAIF» (2026-07-17)** — тонкая установка (чтение ×23 меньше), пять агентских
+  систем и десять языков сразу, механические уважительные обновления, `TESTING_FRAMEWORK.md` с
+  контрактом `[NOT-TESTED]`/`[TESTED]`, вендореный fable-цикл исполнения; полевая сертификация
+  на локальной 12B-модели.
+- **v1.6 «Homeostatic KAIF» (2026-07-24)** — гвардрейлы для слабых моделей: наблюдение вместо
+  додумывания, правило трёх дверей, судья перед каждым push, пометки провенанса `[AI]…[/AI]`.
+- **v2.0 «Excellent KAIF» (2026-07-28)** — обновление машинерией, а не умом: карта модулей,
+  шаблонные-против-дисковых sha, расписки обновлений, справочник `KAIF_REFERENCE.md`,
+  опциональные гвардрейл-инструменты, постоянный песочный полигон.
 
 ## Для ИИ-агентов
 
