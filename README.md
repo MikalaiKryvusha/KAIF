@@ -337,6 +337,7 @@ development *of the framework itself*.
 
 ```
 KAIF.md                          ⭐ the THIN entry point (~170 lines; bootstrap + embedded loader), generated
+KAIF_REFERENCE.md                the complete framework reference (generated copy of framework/KAIF_REFERENCE.md)
 framework/                       the canonical universal templates (the payload)
   installer/                     KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
   templates/languages/           10 language packs (owner-facing docs + skill trigger aliases)
@@ -704,6 +705,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 
 ```
 KAIF.md                          ⭐ ТОНКАЯ точка входа (~170 строк; бутстрап + встроенный загрузчик), генерируется
+KAIF_REFERENCE.md                пояснительная записка — полный справочник (генерируемая копия framework/KAIF_REFERENCE.md)
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
   installer/                     KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · повествование тонкого ядра
   templates/languages/           10 языковых пакетов (owner-доки + триггер-алиасы навыков)

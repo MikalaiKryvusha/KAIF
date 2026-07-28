@@ -63,7 +63,8 @@ KAIF/
 │   └── kaif.mjs                           # ручки жизненного цикла (npm run kaif:*)
 │
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
-├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока: записка и tool-модули живут в framework/)
+├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока)
+├── KAIF_REFERENCE.md                      # ⭐ СГЕНЕРИРОВАННАЯ копия framework/KAIF_REFERENCE.md (страж в check; правь источник)
 ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
 ├── EXPERIENCE.md                          # накопленный опыт агента (греп-дружелюбен; навык /experience)
 ├── GOAL.md                                # видение (заполняет владелец)

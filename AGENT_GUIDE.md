@@ -143,6 +143,7 @@ KAIF/
 │
 │  ── KEY DOCS (root; dogfooding wrapper = the framework applied to THIS project) ──
 ├── KAIF_FRAMEWORK.md                ← high-level "KAIF, deployed here" (post-injection doc)
+├── KAIF_REFERENCE.md                ← ⭐ GENERATED copy of framework/KAIF_REFERENCE.md (the reference; edit the source)
 ├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  TESTING_FRAMEWORK.md  STATUS.md
 ├── EXPERIENCE.md                    ← the agent's accumulated lessons (skill: /experience)
 ├── GOAL.md                          ← the vision (owner-filled)

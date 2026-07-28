@@ -41,7 +41,7 @@ markdown-документов, соглашения о директориях, �
 | `GOAL.md` / `MASTER_PLAN.md` | Видение и пошаговый путь к нему. |
 | `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
-| Пояснительная записка `KAIF_REFERENCE.md` | Авторитетный справочник устройства фреймворка. **Особый случай истока:** здесь живёт в `framework/KAIF_REFERENCE.md` (источник); в развёрнутые проекты едет копией `.kaif/KAIF_REFERENCE.md`. По той же причине в собственном `.kaif/` истока нет `tools/` — исходники tool-модулей лежат в `framework/tools/` (DRY: исток не держит копий своей же поставки). |
+| Пояснительная записка `KAIF_REFERENCE.md` | Авторитетный справочник устройства фреймворка. **Особый случай истока:** источник — `framework/KAIF_REFERENCE.md`; корневая `KAIF_REFERENCE.md` — СГЕНЕРИРОВАННАЯ копия (страж расхождения в check-framework); развёрнутым проектам едет в `.kaif/KAIF_REFERENCE.md`. В собственном `.kaif/` истока нет `tools/` — исходники tool-модулей лежат в `framework/tools/` (DRY: исток не держит рукописных копий своей поставки). |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Директории знаний (в каждой свой README). |
 | `.claude/skills/` | Повторяемые ритуалы (`/resume`, `/pause`, циклы, `/revision`, …). |
 | `.kaif/kaif.json` | Маркер развёртывания: версия, сфера, агент, tracking. |

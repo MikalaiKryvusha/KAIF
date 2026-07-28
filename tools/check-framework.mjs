@@ -92,6 +92,22 @@ if (skills.includes('release')) {
     errors.push('release template leaks the KAIF brand ("what KAIF is") — must say "what <PROJECT_NAME> is" (bug 19.2)');
 }
 
+// 5c. [TESTED: 2026-07-28 · proven red on a deliberately edited root copy, green after rebuild]
+//     Root KAIF_REFERENCE.md is a GENERATED verbatim copy of framework/KAIF_REFERENCE.md
+//     (owner decision 2026-07-28: the reference is a root document of the source repo too).
+//     Guard: banner + byte-identical body — a drifted copy is the bugs/09 class reborn.
+{
+  const rootRef = join(ROOT, 'KAIF_REFERENCE.md');
+  if (!existsSync(rootRef)) {
+    errors.push('root KAIF_REFERENCE.md missing — run the build (it generates the copy of framework/KAIF_REFERENCE.md)');
+  } else {
+    const body = readFileSync(rootRef, 'utf8').replace(/\r\n/g, '\n').replace(/^<!--[^]*?-->\n/, '');
+    const src = readFileSync(join(ROOT, 'framework', 'KAIF_REFERENCE.md'), 'utf8').replace(/\r\n/g, '\n');
+    if (body !== src)
+      errors.push('root KAIF_REFERENCE.md diverged from framework/KAIF_REFERENCE.md — never edit the root copy; edit the source and rebuild');
+  }
+}
+
 // 6. dist/ — the Thin-KAIF install artifacts (1.5+). Validated when present (the build
 //    always emits them; a checkout missing dist/ predates 1.5 and skips cleanly).
 const distDir = join(ROOT, 'dist');

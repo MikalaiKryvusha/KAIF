@@ -173,6 +173,16 @@ thin = thin.replace(/\{\{EMBED:([^}]+)\}\}/g, (_, p) => embedFile(p.trim(), 'KAI
 writeFileSync(join(DIST, 'KAIF.md'), thin);
 writeFileSync(join(ROOT, 'KAIF.md'), thin);   // since 1.5 the root entry point IS the thin core
 
+// The reference is a ROOT document of the source repo too (owner decision, 2026-07-28): a
+// generated verbatim copy of framework/KAIF_REFERENCE.md — same rule as the root KAIF.md
+// (framework/ stays the single source; the root copy cannot drift: the build rewrites it and
+// check-framework diffs it against the source — the bugs/09 class must not reopen here).
+const refSrc = readFileSync(join(FW, 'KAIF_REFERENCE.md'), 'utf8').replace(/\r\n/g, '\n');
+writeFileSync(join(ROOT, 'KAIF_REFERENCE.md'),
+  '<!-- GENERATED COPY — do not edit. Source: framework/KAIF_REFERENCE.md (edit there, then run ' +
+  'tools/build-framework.mjs). Deployed projects receive this document at .kaif/KAIF_REFERENCE.md. -->\n'
+  + refSrc);
+
 // 2) the core machinery, copied verbatim (LF-normalized; it reads version data from the bundle manifest)
 const coreSrc = readFileSync(join(FW, 'installer', 'KAIF-CORE.mjs'), 'utf8').replace(/\r\n/g, '\n');
 writeFileSync(join(DIST, 'KAIF-CORE.mjs'), coreSrc);

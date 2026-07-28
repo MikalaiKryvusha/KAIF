@@ -15,8 +15,10 @@
 
 Ключевые документы в корне: `AGENT_GUIDE.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`,
 `TESTING_FRAMEWORK.md`, `STATUS.md`, `EXPERIENCE.md`, `GOAL.md`, `MASTER_PLAN.md`,
-`PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `KAIF_FRAMEWORK.md`. Директории знаний (в каждой свой README): `plans/`, `ideas/`, `bugs/`, `researches/`,
-`interviews/`, `homeworks/`.
+`PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `KAIF_FRAMEWORK.md`,
+`KAIF_REFERENCE.md` (пояснительная записка — авторитетный справочник устройства; корневая копия
+ГЕНЕРИРУЕТСЯ из `framework/KAIF_REFERENCE.md` — правь источник и пересобирай). Директории знаний
+(в каждой свой README): `plans/`, `ideas/`, `bugs/`, `researches/`, `interviews/`, `homeworks/`.
 
 Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/end-chat`, `/autoloop`,
 `/dayloop`, `/nightloop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
