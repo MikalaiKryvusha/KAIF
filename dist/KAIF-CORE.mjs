@@ -54,9 +54,12 @@ const ORIGIN = 'https://github.com/MikalaiKryvusha/KAIF';
 // references the origin repo, and anonymity is BY DESIGN now — the version stays readable
 // in .kaif/kaif.json directly.
 const ORIGIN_TIED = ['kaif-update', 'kaif-switch-origin', 'kaif-fork', 'kaif-version'];
-// Author identity tokens: anonymous installs strip marked regions, de-expand the brand
-// acronym, and verify-final greps the deployed tree for these before declaring success.
-const AUTHOR_TOKENS = ['Kryvusha', 'KRINIK', 'Krinik', 'MikalaiKryvusha', 'Кривуша', 'Криник'];
+// Author identity tokens, grouped in transliteration CLUSTERS: anonymous installs strip marked
+// regions, de-expand the brand acronym, and the final gates grep the DEPLOYED paths for these.
+// Clusters matter because the scan must excuse the PROJECT OWNER's own name across scripts:
+// an owner named Кривуша writes Latin "Kryvusha" into git config — both spellings are his,
+// neither is a leak (bug 13, field blocker: 44 false hits froze an update).
+const AUTHOR_TOKEN_CLUSTERS = [['Kryvusha', 'Кривуша', 'MikalaiKryvusha'], ['KRINIK', 'Krinik', 'Криник']];
 const ACRONYM_EXPANSIONS = ['KAIF (Krinik AI Framework)', 'Krinik AI Framework (KAIF)', 'Krinik AI Framework'];
 const KAIF_JSON = '.kaif/kaif.json';
 const DEPLOY_MANIFEST = '.kaif/deploy-manifest.json'; // persisted path list — `check` works after the bundle is cleaned
@@ -189,15 +192,17 @@ function ensureIgnoreFirst() {
 // The bundle uses the proven KAIF.md block format: `> **FILE: \`path\`** …` + 6-backtick fence.
 // One special block, FILE: `kaif-bundle-manifest.json`, carries per-file metadata
 // (audience/adaptation notes) and the version stamp — it is data, never written to disk.
-function parseBundle(src) {
-  if (!existsSync(src)) die(`bundle not found: ${src} (pass --bundle <path>)`);
+// `loose` (plan 21 §5.5): a synthetic-baseline source may be an OLD-era artifact (KAIF-FULL.md,
+// a 1.4 KAIF.md) with FILE: blocks but no bundle manifest — return what parses instead of dying.
+function parseBundle(src, loose = false) {
+  if (!existsSync(src)) { if (loose) return null; die(`bundle not found: ${src} (pass --bundle <path>)`); }
   const text = readFileSync(src, 'utf8');
   const re = new RegExp('^> \\*\\*FILE: `([^`]+)`\\*\\*[^\\n]*\\r?\\n\\r?\\n' + FENCE + '\\w*\\r?\\n([\\s\\S]*?)\\r?\\n' + FENCE + '\\s*$', 'gm');
   const files = [];
   for (let m; (m = re.exec(text)); ) files.push({ path: m[1], content: m[2].replace(/\r\n/g, '\n') + '\n' });
-  if (!files.length) die('no FILE: blocks found — is this a KAIF-CORE-BUNDLE.md?');
+  if (!files.length) { if (loose) return null; die('no FILE: blocks found — is this a KAIF-CORE-BUNDLE.md?'); }
   const metaBlock = files.find((f) => f.path === 'kaif-bundle-manifest.json');
-  if (!metaBlock) die('bundle manifest block (kaif-bundle-manifest.json) missing');
+  if (!metaBlock) { if (loose) return { files, meta: {} }; die('bundle manifest block (kaif-bundle-manifest.json) missing'); }
   const meta = JSON.parse(metaBlock.content);
   return { files: files.filter((f) => f.path !== 'kaif-bundle-manifest.json'), meta };
 }
@@ -429,6 +434,56 @@ async function fetchArtifact(base, name) {
   return Buffer.from(await res.arrayBuffer());
 }
 
+// The soft variant for OPTIONAL artifacts (the synthetic baseline): absence is an answer,
+// not a death — the caller falls back to the classic path.
+async function fetchMaybe(base, name) {
+  try {
+    if (!/^https?:\/\//.test(base)) {
+      const p = join(base, name);
+      return existsSync(p) ? readFileSync(p) : null;
+    }
+    const res = await fetch(`${base}/${name}`, { redirect: 'follow' });
+    return res.ok ? Buffer.from(await res.arrayBuffer()) : null;
+  } catch { return null; }
+}
+
+// The synthetic baseline (plan 21 §5.5, field gap П7): a pre-2.0 deployment carries no content
+// snapshots, but the OLD version's own release artifact IS one — fetch it, run it through the
+// same transform pipeline (language, fill, anonymize), and the blind adopt-everything legacy
+// path becomes an ordinary modular update. Field prototype: KLAS's kaif-baseline-diff.mjs.
+// --baseline <dir|url> overrides the source (sandboxes; offline owners with a saved artifact).
+async function buildSyntheticBaseline(legacyOld) {
+  const ver = legacyOld && legacyOld.version;
+  if (!ver) return null;
+  const base = val('--baseline') || `${ORIGIN}/releases/download/v${ver}`;
+  for (const name of ['KAIF-CORE-BUNDLE.md', 'KAIF-FULL.md', 'KAIF.md']) {
+    const buf = await fetchMaybe(base, name);
+    if (!buf) continue;
+    mkdirSync('.kaif/install', { recursive: true });
+    const tmp = '.kaif/install/BASELINE.md';
+    writeFileSync(tmp, buf);
+    const parsed = parseBundle(tmp, true);
+    unlinkSync(tmp);
+    if (!parsed || !parsed.files.length) continue;
+    const { deploy } = applyLanguage(parsed.files);
+    const values = detectValues();
+    const un = new Set();
+    const templateShas = {};
+    const moduleShas = {};
+    for (const f of deploy) {
+      if (isSkippedAnon(f.path)) continue;
+      let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, un);
+      if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
+      templateShas[f.path] = normSha(content);
+      if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(content), (parsed.meta || {}).moduleClasses);
+    }
+    log(`⟳ synthetic baseline: v${ver}'s own ${name} (${Object.keys(templateShas).length} templates) — the legacy path is no longer blind`);
+    return { shas: {}, templateShas, moduleShas, kept: [], synthetic: true };
+  }
+  log(`⟳ no baseline artifact reachable for v${ver} (${base}) — classic adopt-everything legacy path`);
+  return null;
+}
+
 // The modular merge (plan 21 §3.3) — the owner's metaphor made mechanical: a module whose disk
 // text still equals what THIS deployment's template shipped is swapped for the new template's
 // module; a module the owner/agent edited is kept and handed over WITH a diff; modules the owner
@@ -523,6 +578,9 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
     if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
     f.content = content; // derived surfaces (system skill copies) must inherit the filled text (bug 05)
     if (OWNER_SEEDED.includes(f.path)) {
+      // A MISSING owner doc is seeded from the template (a 1.2-era tree predates EXPERIENCE.md —
+      // the classified legacy path must seed it exactly like a fresh install would; sandbox-caught).
+      if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
       kept++;                                                            // owner's — never in scope
       // …but the TEMPLATE may have changed a CONVENTION (field: EXPERIENCE gained Repro:/Not for:
       // and no project could learn it) — surface the fact, touch nothing.
@@ -565,7 +623,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
 async function cmdUpdate() {
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
   const cur = readJson(KAIF_JSON);
-  if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap');
+  if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap (the surviving deploy manifest makes that pass mechanical since 2.0)');
   if (!val('--lang') && cur.language) LANG = String(cur.language).toLowerCase();
   if (!val('--agents') && Array.isArray(cur.agents) && cur.agents.length) AGENTS = cur.agents;
   const base = val('--source') || SOURCES[(val('--channel') || 'release').toLowerCase()] || SOURCES.release;
@@ -693,23 +751,47 @@ function warnSphereLibrary() {
   } catch { /* marker unreadable — the check gate flags that separately */ }
 }
 
-// anonymous deployments: grep the tree for author identity BEFORE cleanup —
-// transient installer files (removed by the cleanup below) are excluded from the scan.
+// anonymous deployments: grep for author identity BEFORE cleanup. Two bug-13 lessons baked in:
+// (1) scan ONLY the paths the machinery deployed (manifest paths+agents) — a whole-tree walk
+//     once flagged the owner's name in his own JIRA dumps 44 times and froze the update;
+// (2) exclude token clusters matching the PROJECT OWNER's identity (git user.name — the same
+//     value the machinery itself substitutes for <AUTHOR>): the owner's name is not a leak,
+//     and the author deploying his own framework is the guaranteed collision case.
 function anonLeakScan() {
-  const TRANSIENT = ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK, '.kaif/install', '.kaif/kaif-core.mjs', DEPLOY_MANIFEST];
+  const ownerId = sh('git config user.name').toLowerCase();
+  const active = [];
+  const excluded = [];
+  for (const cluster of AUTHOR_TOKEN_CLUSTERS) {
+    if (ownerId && cluster.some((t) => ownerId.includes(t.toLowerCase()))) excluded.push(...cluster);
+    else active.push(...cluster);
+  }
+  if (excluded.length) log(`⟳ owner-identity tokens excluded from the anonymity scan: ${excluded.join(', ')} (the owner's own name is not a leak)`);
   const leaks = [];
-  const walk = (dir) => {
-    for (const n of readdirSync(dir)) {
-      const p = (dir === '.' ? '' : dir + '/') + n;
-      if (['.git', 'node_modules'].includes(n) || TRANSIENT.some((t) => p === t || p.startsWith(t + '/'))) continue;
-      if (statSync(p).isDirectory()) { walk(p); continue; }
-      if (!/\.(md|json|txt|mjs|js)$/i.test(n)) continue;
-      const t = readFileSync(p, 'utf8');
-      for (const tok of AUTHOR_TOKENS) if (t.includes(tok)) { leaks.push(`${p} → "${tok}"`); break; }
-    }
+  const scanFile = (p) => {
+    if (!okOnDisk(p) || !/\.(md|json|txt|mjs|js)$/i.test(p)) return;
+    const t = readFileSync(p, 'utf8');
+    for (const tok of active) if (t.includes(tok)) { leaks.push(`${p} → "${tok}"`); break; }
   };
-  walk('.');
+  let manifestPaths = null;
+  if (okOnDisk(DEPLOY_MANIFEST)) {
+    try { const m = readJson(DEPLOY_MANIFEST); manifestPaths = [...(m.paths || []), ...(m.agents || [])]; } catch { /* fall back to the walk */ }
+  }
+  if (manifestPaths) { for (const p of manifestPaths) scanFile(p); }
+  else {
+    // no manifest to scope the scan — the conservative whole-tree walk, transients excluded
+    const TRANSIENT = ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK, '.kaif/install', '.kaif/kaif-core.mjs', DEPLOY_MANIFEST];
+    const walk = (dir) => {
+      for (const n of readdirSync(dir)) {
+        const p = (dir === '.' ? '' : dir + '/') + n;
+        if (['.git', 'node_modules'].includes(n) || TRANSIENT.some((t) => p === t || p.startsWith(t + '/'))) continue;
+        if (statSync(p).isDirectory()) { walk(p); continue; }
+        scanFile(p);
+      }
+    };
+    walk('.');
+  }
   for (const l of leaks) console.error(`✖ anonymity leak: ${l}`);
+  if (leaks.length) console.error('  (if a flagged name belongs to the PROJECT OWNER, it is not a leak — set `git config user.name` to the owner\'s name so the scan can excuse it, or adjust the text with the owner)');
   return leaks.length;
 }
 
@@ -765,14 +847,24 @@ function selfCleanArtifacts(taskFile, anonDeploy) {
   for (const p of [taskFile, 'KAIF.md', 'KAIF-LOADER.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
   if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
   if (anonDeploy) {
-    // the core itself and its manifest carry the origin URL — an anonymous project keeps neither,
-    // nor the kaif:* handles that point at them (version stays readable in .kaif/kaif.json).
-    for (const p of ['.kaif/kaif-core.mjs', DEPLOY_MANIFEST]) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p} (anonymous)`); }
+    // The core carries the origin URL — an anonymous project keeps no core (and no kaif:* handles;
+    // the version stays readable in .kaif/kaif.json). The deploy MANIFEST carries no origin at all
+    // (paths, shas, marker-sans-origin) and since plan 21 §5.5 it SURVIVES: it is exactly what
+    // makes the next update-by-bootstrap mechanical instead of fully cognitive (bug 13; field
+    // report 08: the mechanics used to move nothing but the version stamp).
+    for (const p of ['.kaif/kaif-core.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p} (anonymous)`); }
     try {
       const pkg = readJson('package.json');
-      if (pkg.scripts) { delete pkg.scripts['kaif:version']; delete pkg.scripts['kaif:check']; delete pkg.scripts['kaif:update']; }
-      writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-      log('- unwired kaif:* handles (anonymous)');
+      // Unwire by VALUE, never by key name: an owner's own script that happens to be called
+      // kaif:check must survive (bug 13, QA field report: the by-name delete would have silently
+      // removed the owner's validator).
+      let unwired = 0;
+      if (pkg.scripts) for (const [k, v] of Object.entries(pkg.scripts))
+        if (String(v).includes('.kaif/kaif-core.mjs')) { delete pkg.scripts[k]; unwired++; }
+      if (unwired) {
+        writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+        log(`- unwired ${unwired} kaif handle(s) pointing at the removed core (anonymous; owner's own scripts untouched)`);
+      }
     } catch { /* no package.json — nothing to unwire */ }
   }
 }
@@ -854,8 +946,14 @@ function cmdUpdateVerify() {
 }
 
 // ---------------------------------------------------------------------------- commands
-function cmdInstall() {
+async function cmdInstall() {
   const { files, meta } = parseBundle(BUNDLE);
+  // A legacy bootstrap inherits the OWNER'S LANGUAGE from the marker (like agents below):
+  // re-running a ru-deployment's bootstrap without --lang used to silently apply English
+  // templates and aliases (the same silent-widening class as bug 14's five systems).
+  if (okOnDisk(KAIF_JSON) && !val('--lang')) {
+    try { const j = readJson(KAIF_JSON); if (j.language) LANG = String(j.language).toLowerCase(); } catch { /* CLI default stands */ }
+  }
   const { deploy, translated, aliased } = applyLanguage(files);
   const values = detectValues();
   const unresolved = new Set();
@@ -886,13 +984,32 @@ function cmdInstall() {
   //    The filled/anonymized content is written BACK into the deploy entry so every derived
   //    surface (the .roo/.agents/.grok/.cline skill copies) inherits it — deriving copies from
   //    the raw template shipped placeholders to the other agent systems (bug 05, field-caught).
-  const adopted = [];
-  for (const f of deploy) {
-    if (isSkippedAnon(f.path)) { log(`⊘ anonymous — skipped ${f.path}`); continue; }
-    let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
-    if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
-    f.content = content;
-    if (!writeIfNew(f.path, content)) adopted.push(f.path);
+  //    Since plan 21 §5.5 a bootstrap over an EXISTING deployment is classified exactly like a
+  //    core update whenever a baseline exists: the surviving deploy manifest (anonymous installs
+  //    keep an origin-free one now) or a SYNTHETIC baseline cut from the old version's own
+  //    release artifact. Only with no baseline at all does classic adopt-everything run.
+  let adopted = [];
+  let cls = null;
+  if (legacyOld) {
+    let baseline = null;
+    if (okOnDisk(DEPLOY_MANIFEST)) {
+      try { const mOld = readJson(DEPLOY_MANIFEST); if (mOld.templateShas) baseline = mOld; } catch { /* unreadable — try synthetic */ }
+    }
+    if (!baseline) baseline = await buildSyntheticBaseline(legacyOld);
+    if (baseline) {
+      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld);
+      adopted = cls.adopted;
+      log(`⟳ bootstrap classified against ${baseline.synthetic ? `a synthetic baseline of v${legacyOld.version}` : 'the surviving deploy manifest'}: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept`);
+    }
+  }
+  if (!cls) {
+    for (const f of deploy) {
+      if (isSkippedAnon(f.path)) { log(`⊘ anonymous — skipped ${f.path}`); continue; }
+      let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
+      if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
+      f.content = content;
+      if (!writeIfNew(f.path, content)) adopted.push(f.path);
+    }
   }
 
   // 2) skills for all target agent systems (from the canonical .claude/skills/ set)
