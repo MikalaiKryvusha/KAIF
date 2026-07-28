@@ -10,6 +10,9 @@ import { tmpdir } from 'node:os';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
+// текущая версия репо — ЧИТАЕТСЯ из dist, не хардкодится: захардкоженная «1.6» ломала
+// полигон на релизном бампе 2.0 при нуле продуктовых дефектов
+const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 // абсолютный корень: аргумент node внутри execSync резолвится от cwd песочницы
 const ROOT = resolve(process.argv[2] || join(tmpdir(), 'kaif-sbx-field'));
 rmSync(ROOT, { recursive: true, force: true });
@@ -93,7 +96,7 @@ ok(r.out.includes('inherited from the existing marker'), 'S3 agents унасле
 ok(!existsSync(join(S3, '.agents')) && !existsSync(join(S3, '.grok')) && !existsSync(join(S3, '.roo')),
    'S3 лишние системы НЕ развёрнуты (было: все пять молча)');
 const task3 = readFileSync(join(S3, 'KAIF_UPDATE_TASK.md'), 'utf8');
-ok(task3.includes('legacy update 1.4 → 1.6') && task3.includes('pre-1.5 deployments never wrote them'),
+ok(task3.includes(`legacy update 1.4 → ${CUR}`) && task3.includes('pre-1.5 deployments never wrote them'),
    'S3 контекстная строка честная (без хардкода «1.5 news», причина из состояния)');
 ok(!/merge the 1\.5 template news/.test(task3), 'S3 хардкод «merge the 1.5 template news» исчез');
 const marker3 = JSON.parse(readFileSync(join(S3, '.kaif', 'kaif.json'), 'utf8'));

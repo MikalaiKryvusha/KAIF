@@ -1,20 +1,21 @@
 <!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->
-# KAIF-CORE-BUNDLE · v1.6 (2026-07-24)
+# KAIF-CORE-BUNDLE · v2.0 (2026-07-28)
 
 > **FILE: `kaif-bundle-manifest.json`** — bundle metadata (data for KAIF-CORE, never written to disk)
 
 ``````json
 {
   "framework": "KAIF",
-  "version": "1.6",
-  "released": "2026-07-24",
+  "version": "2.0",
+  "released": "2026-07-28",
   "templateNotes": [
-    "AGENT_GUIDE: canon rules — recon-before-code (recon docs in researches/), quote-the-plan while coding, non-negotiable git hygiene (diff --stat before commit, ignore-first, owner originals verbatim), write-gate + [AI]…[/AI]/[AI-ed]…[/AI-ed] provenance marks on owner canon artifacts, canonical ordering for anything diffed/cached",
-    "PHILOSOPHY: new principles — \"Observation over guessing\" and \"The three-doors rule\" (a gap is never solved by invention; invented numbers are worse than missing ones)",
-    "BUG_FIXING_FRAMEWORK: close the CLASS, not the instance (inventory first); guards — every fix births a check, and the check is proven on a broken version; findings are not findings until verified (script before LLM judgment)",
-    "Knowledge formats: closing any idea/bug/plan requires a \"Decisions made without the owner\" section; EXPERIENCE entries carry Repro:/Not for: fields and trigger tags that must be QUOTED before a task",
-    "/fable-judge vendored skill gained the guardrail hunts (KAIF patch 3); judge pass now required before EVERY push/deploy, not only before \"done\"; /release gained the 5-gate deploy checklist",
-    "Release codename for this version: KAIF 1.6 — Homeostatic KAIF"
+    "NEW key doc .kaif/KAIF_REFERENCE.md — the complete framework reference (§1–16: terminology, marker/manifest/receipt schemas, the full mechanics); /help-kaif reads and CITES it. Added mechanically; nothing to merge",
+    "Updates are now MODULAR machinery, not agent judgment: deploy-manifest v2 keeps template shas apart from disk shas (only a template-sha match authorizes replacement), files merge PER MODULE from the disk order, your localized/adapted modules survive updates, diffs reach the update task only where upstream actually changed. If your old manifest is v1 — run `node .kaif/kaif-core.mjs adopt-current` once after this update to upgrade provenance",
+    "Update proof: .kaif/last-update.json receipt (verifiedAt stamp) + history in the marker; `diff` (audit + per-module preview), `adopt-current` (manual migrations stop killing the mechanical path), synthetic baseline for legacy/anonymous deployments (--baseline), checkpoints now EXECUTE their checks; deprecated artifacts are removed mechanically when untouched",
+    "Optional tool modules land in .kaif/tools/ (added mechanically; wiring is opt-in): kaif-provenance.mjs — the [AI]…[/AI] provenance gate over declared canonArtifacts with an acceptance registry; kaif-canon-lint.mjs — forbidden wordings / guarded lines with a selftest that proves every guard can fire",
+    "Skills: /pause is now a SOFT PARK (the chat continues later); NEW /end-chat — the full wrap-up with a handoff baton; NEW /derive-styleguide — extract the owner's style guide from their own sample before writing into their canon. If your adapted skill copies diverged, merge these semantics by hand",
+    "AGENT_GUIDE: strictness modes (draft vs canon pipeline) + the any-model/strong-model split on task steps; the write-gate now names the mechanized gates (provenance check + canon lint)",
+    "Release codename for this version: KAIF 2.0 — Excellent KAIF"
   ],
   "templateNotesByVersion": {
     "1.5": [

@@ -1,11 +1,11 @@
 {
   "framework": "KAIF",
-  "version": "1.6",
-  "released": "2026-07-24",
-  "codename": "Homeostatic KAIF",
+  "version": "2.0",
+  "released": "2026-07-28",
+  "codename": "Excellent KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "8cd3585eea1a618cd705b8a61910a8bcafd47c6eaf5f59ea5807218c67d56e1c",
-    "KAIF-CORE-BUNDLE.md": "6a1ee86304f777a3e357cabbbc6b3def2e5855fc39b9ed8f10dcd460cf2362e7"
+    "KAIF-CORE-BUNDLE.md": "8bf03b41a1d96241481ce08d4b00ee904baddc47cf64d12ce3f24d16131e85e9"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

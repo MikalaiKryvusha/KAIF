@@ -11,6 +11,8 @@ import { splitModules, joinModules } from '../module-map-lib.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
+// текущая версия репо — из dist, не из головы (хардкод «1.6» ломал полигон на бампе 2.0)
+const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 const ROOT = resolve(process.argv[2] || join(tmpdir(), 'kaif-sbx-anon-legacy'));
 rmSync(ROOT, { recursive: true, force: true });
 mkdirSync(ROOT, { recursive: true });
@@ -44,7 +46,11 @@ function editBundleModule(bundleText, filePath, moduleIndex, mutate) {
 const SRC = join(ROOT, 'src-9.9'); mkdirSync(SRC);
 let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (anon/legacy)'));
-bundle = bundle.replace('"version": "1.6"', '"version": "9.9"'); // мета-блок бандла: install-путь читает версию отсюда
+// мета-блок бандла: install-путь читает версию отсюда. Патч ОБЯЗАН исполниться —
+// молчаливый no-op replace и был причиной трёх красных сводов на релизном бампе
+const bundlePatched = bundle.replace(`"version": "${CUR}"`, '"version": "9.9"');
+if (bundlePatched === bundle) throw new Error(`bundle meta version patch was a NO-OP — expected "version": "${CUR}" in the bundle meta`);
+bundle = bundlePatched;
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
 cpSync(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
 const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
@@ -104,7 +110,7 @@ ok(r.code !== 0 && /surviving deploy manifest makes that pass mechanical/.test(r
 console.log('\n=== S14: легаси без манифеста — синтетический слепок из артефакта старой версии ===');
 const S14 = join(ROOT, 's14'); mkdirSync(S14); seed(S14);
 r = run(S14, 'install');
-ok(r.code === 0, 'S14 install (1.6) exit 0', r.out);
+ok(r.code === 0, `S14 install (${CUR}) exit 0`, r.out);
 unlinkSync(join(S14, '.kaif', 'deploy-manifest.json')); // «древний» проект: снапшотов нет
 // локализация модуля PHILOSOPHY [1] (заголовок цел, тело русское) — должна пережить слепок
 const P14 = join(S14, 'PHILOSOPHY.md');

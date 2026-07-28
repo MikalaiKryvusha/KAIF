@@ -11,6 +11,8 @@ import { splitModules, joinModules } from '../module-map-lib.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
+// текущая версия репо — из dist, не из головы (хардкод «1.6» ломал полигон на бампе 2.0)
+const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 const ROOT = resolve(process.argv[2] || join(tmpdir(), 'kaif-sbx-receipts'));
 rmSync(ROOT, { recursive: true, force: true });
 mkdirSync(ROOT, { recursive: true });
@@ -61,7 +63,7 @@ run(S9, 'install');
 let r = run(S9, `update --source ${SRC}`);
 ok(r.code === 0, 'S9 update →9.9 exit 0', r.out);
 const rc1 = JSON.parse(readFileSync(join(S9, '.kaif', 'last-update.json'), 'utf8'));
-ok(rc1.from === '1.6' && rc1.to === '9.9' && rc1.route === 'core-update' && rc1.date && rc1.counters,
+ok(rc1.from === CUR && rc1.to === '9.9' && rc1.route === 'core-update' && rc1.date && rc1.counters,
    'S9 расписка: from/to/route/date/counters', JSON.stringify(rc1).slice(0, 200));
 let mk = JSON.parse(readFileSync(join(S9, '.kaif', 'kaif.json'), 'utf8'));
 ok(Array.isArray(mk.history) && mk.history.length === 1 && mk.history[0].to === '9.9',
