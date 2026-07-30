@@ -68,6 +68,9 @@ ok(rc1.from === CUR && rc1.to === '9.9' && rc1.route === 'core-update' && rc1.da
 let mk = JSON.parse(readFileSync(join(S9, '.kaif', 'kaif.json'), 'utf8'));
 ok(Array.isArray(mk.history) && mk.history.length === 1 && mk.history[0].to === '9.9',
    'S9 история маркера: 1 запись после первого update');
+// Сознательный сброс задания №1: с bugs/25 update отказывает поверх неотработанного задания;
+// этот свод стережёт расписку и историю, дисциплину заданий стережёт s07/T9.
+rmSync(join(S9, 'KAIF_UPDATE_TASK.md'), { force: true });
 r = run(S9, `update --source ${SRC2}`);
 mk = JSON.parse(readFileSync(join(S9, '.kaif', 'kaif.json'), 'utf8'));
 ok(mk.history.length === 2 && mk.history[1].from === '9.9' && mk.history[1].to === '9.10',
@@ -179,6 +182,7 @@ r = run(S12, 'checkpoint judge --verdict "VERIFIED: re-recorded after bare tick"
 ok(r.code === 0 && /verdict recorded for the already-ticked/.test(r.out), 'S12c вердикт ДОПИСАН к уже стоящему тику (дедлок мёртв)');
 r = run(S12, 'update-verify');
 ok(r.code === 0, 'S12 update-verify зелёный (полный путь)', r.out);
+ok(/module audit: \d+ files match/.test(r.out), 'S12 update-verify печатает модульный аудит (предложение A третьего отчёта)', r.out.slice(-300));
 ok(!existsSync(join(S12, 'KAIF_UPDATE_TASK.md')) && !existsSync(join(S12, '.kaif', 'install')),
    'S12 самоочистка отработала');
 const rc12 = JSON.parse(readFileSync(join(S12, '.kaif', 'last-update.json'), 'utf8'));

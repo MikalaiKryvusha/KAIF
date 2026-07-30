@@ -180,7 +180,8 @@ function lineDiff(oldText, newText) {
 // exactly that). The lines stay useful after self-clean — updates recur.
 // [TESTED: 2026-07-27 · sandboxes S1 (entries present right after install) + S4 (idempotent on update)]
 function ensureIgnoreFirst() {
-  const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK];
+  const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK,
+                  'KAIF_UPDATE_TASK.superseded.md'];
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
   const add = wanted.filter((w) => !have.has(w) && !have.has(w.replace(/\/$/, '')));
@@ -795,6 +796,10 @@ async function cmdUpdate() {
   log(`update: checking ${base}`);
   const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8'));
   if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
+  // Fail-closed on an unfinished previous update (bug 25, judge two-hop repro: clobbering the
+  // task silently discarded un-merged module diffs of a translated file — forever, without a
+  // trace). The task is the delivery; it must be consumed or discarded CONSCIOUSLY.
+  if (okOnDisk(UPDATE_TASK)) die(`${UPDATE_TASK} exists — the previous update was never verified, and its module diffs may be unmerged. Finish it (work the items, then \`node .kaif/kaif-core.mjs update-verify\`), or delete the file consciously to discard its guidance, then re-run update.`);
   log(`update: ${cur.version} → ${man.version}`);
 
   // fetch + verify the machinery pair (ignore-first BEFORE anything lands in the tree)
@@ -816,8 +821,18 @@ async function cmdUpdate() {
   const { deploy } = applyLanguage(files);           // LANG defaults handled below
   const values = stableValues();                     // frozen deploy values win over re-detection (bug 26)
   const unresolved = new Set();
+  // Before/after file sizes: the honest way to SEE a K1-class mangling instantly (field ask —
+  // "the doubling is visible in a size summary at once, and invisible in 43 merged-lines").
+  const sizeBefore = {};
+  for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
     classifyAndApply(deploy, old, values, unresolved, cur);
+  const sizeJumps = deploy
+    .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
+    .map((f) => ({ path: f.path, before: sizeBefore[f.path], after: statSync(f.path).size }))
+    .filter((s) => s.after > s.before * 1.5 && s.after - s.before > 400)
+    .sort((a, b) => (b.after - b.before) - (a.after - a.before)).slice(0, 5);
+  for (const s of sizeJumps) log(`⚠ size jump: ${s.path} ${s.before} → ${s.after} bytes — eyeball it (a mangled merge is visible here first)`);
   // agent-system artifacts: same classification via the copies' snapshots
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
   const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
@@ -860,13 +875,19 @@ async function cmdUpdate() {
   const liveUnresolved = [...unresolved].filter((ph) =>
     deploy.some((f) => f.path.endsWith('.md') && okOnDisk(f.path) && readFileSync(f.path, 'utf8').includes(ph)));
   const nModDiverged = Object.values(divergedModules).reduce((a, l) => a + l.length, 0);
+  // The honest size of the work (field ask: the log said "161 modules merged", the task said
+  // "2 await you" — the real answer to "how much do I read" is "the framework changed N of M").
+  const oldTpl = old.templateShas || {};
+  const changedCnt = Object.keys(oldTpl).length
+    ? deploy.filter((f) => !isSkippedAnon(f.path) && (!oldTpl[f.path] || oldTpl[f.path] !== normSha(f.content))).length : null;
   writeUpdateTask(diverged, { ...meta, version: man.version },
-    `mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
+    `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
     { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — Unliminium §4). Survives self-clean; update-verify stamps it when the gates pass.
   writeReceipt({ from: cur.version, to: man.version, route: 'core-update',
+    source: base,   // where THIS update came from — the previous delta stays recomputable (field ask №3)
     counters: { replaced, mergedModules, added, kept },
     diverged, divergedModules: Object.fromEntries(Object.entries(divergedModules).map(([p, l]) => [p, l.map((d) => d.signature)])),
     ownerConvention });
@@ -1021,32 +1042,42 @@ function selfCleanArtifacts(taskFile, anonDeploy) {
   for (const p of [taskFile, 'KAIF.md', 'KAIF-LOADER.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p}`); }
   if (existsSync('.kaif/install')) { rmSync('.kaif/install', { recursive: true, force: true }); log('- removed .kaif/install/'); }
   if (anonDeploy) {
-    // The core carries the origin URL — an anonymous project keeps no core (and no kaif:* handles;
-    // the version stays readable in .kaif/kaif.json). The deploy MANIFEST carries no origin at all
-    // (paths, shas, marker-sans-origin) and since plan 21 §5.5 it SURVIVES: it is exactly what
-    // makes the next update-by-bootstrap mechanical instead of fully cognitive (bug 13; field
-    // report 08: the mechanics used to move nothing but the version stamp).
-    for (const p of ['.kaif/kaif-core.mjs']) if (existsSync(p)) { unlinkSync(p); log(`- removed ${p} (anonymous)`); }
-    try {
-      const pkg = readJson('package.json');
-      // Unwire by VALUE, never by key name: an owner's own script that happens to be called
-      // kaif:check must survive (bug 13, QA field report: the by-name delete would have silently
-      // removed the owner's validator).
-      let unwired = 0;
-      if (pkg.scripts) for (const [k, v] of Object.entries(pkg.scripts))
-        if (String(v).includes('.kaif/kaif-core.mjs')) { delete pkg.scripts[k]; unwired++; }
-      if (unwired) {
-        writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-        log(`- unwired ${unwired} kaif handle(s) pointing at the removed core (anonymous; owner's own scripts untouched)`);
+    // Anonymity contradicts two CONSTANTS, not the file (bug 29, third 2.0 field report: deleting
+    // the core also deleted check/sync/diff/adopt-current — exactly what 2.0 added — and the field
+    // audited 96 mirror copies with a hand-rolled script). Same doctrine as the manifest ("carries
+    // no origin at all … SURVIVES", plan 21 §5.5): keep an ANONYMIZED core — the origin URL and
+    // the owner's account token are stripped; origin-dependent commands degrade gracefully
+    // (`update` already refuses on an anonymous marker before touching the network).
+    const CORE = '.kaif/kaif-core.mjs';
+    if (existsSync(CORE)) {
+      try {
+        // Strip longest strings first (expansions contain the bare tokens); placeholders are
+        // NON-token literals so the stripped text can never re-trip a leak grep (judge F4).
+        // Idempotent by construction: a second pass finds none of the originals.
+        const owner = (ORIGIN.match(/github\.com\/([^/]+)/) || [])[1];
+        let src = readFileSync(CORE, 'utf8').split(ORIGIN).join('<origin-removed>');
+        if (owner) src = src.split(owner).join('<owner-removed>');
+        for (const exp of ACRONYM_EXPANSIONS) src = src.split(exp).join('KAIF');
+        for (const cluster of AUTHOR_TOKEN_CLUSTERS) for (const t of cluster) src = src.split(t).join('<removed>');
+        writeFileSync(CORE, src);
+        // process.execPath, not a PATH lookup (judge F5 — same rule the recheck checkpoint follows)
+        execFileSync(process.execPath, ['--check', CORE], { stdio: 'ignore' });
+        log(`↻ kept an anonymized ${CORE} (origin, account and author tokens stripped) — check/sync/diff/adopt-current/checkpoint stay available`);
+      } catch {
+        unlinkSync(CORE);
+        log(`- removed ${CORE} (anonymization failed the syntax check — fell back to removal)`);
       }
-    } catch { /* no package.json — nothing to unwire */ }
+    }
   }
 }
 
 // Shared closing sequence: checkpoint grep on the live task file, then the gates, in order.
 function runFinalGates(taskFile, tag, verb) {
   if (!okOnDisk(taskFile)) die(`${taskFile} not found — nothing to verify (or already cleaned)`);
-  const task = readFileSync(taskFile, 'utf8');
+  // EOL-normalized read (bug 24): a CRLF-resaved task (Windows editor) breaks `$`-anchored
+  // checkpoint regexes — JS `$` in multiline mode matches before \n but never before \r, so
+  // every recorded checkpoint would read as "missing" and the gate would lie red.
+  const task = normEol(readFileSync(taskFile, 'utf8'));
   let missing = 0;
   // Anchored to the COMMAND form: a bare /checkpoint (\w+)/ scan once matched the word "for"
   // inside the task's own prose ("appends the checkpoint for you") and demanded a bogus tick
@@ -1109,8 +1140,39 @@ function runFinalGates(taskFile, tag, verb) {
   selfCleanArtifacts(taskFile, anonDeploy);
 }
 
+// The module audit (field proposal A, third 2.0 report §5): re-cut the DISK with the same
+// splitter and compare per-signature against the manifest — it catches the class the module
+// machinery itself can break ("a module lost its identity"), which no line-level check sees.
+// Informational: divergence is often legitimate (owner edits); the value is making it VISIBLE.
+function moduleAudit() {
+ try {   // informational by doctrine — it must never be able to burn the receipt (judge F2)
+  if (!okOnDisk(DEPLOY_MANIFEST)) return;
+  let m; try { m = readJson(DEPLOY_MANIFEST); } catch { return; }
+  if (!m.moduleShas) return;
+  let identical = 0, differs = 0, absent = 0, ours = 0;
+  const lines = [];
+  for (const [p, mods] of Object.entries(m.moduleShas)) {
+    if (!okOnDisk(p)) continue;
+    const disk = splitModules(normEol(readFileSync(p, 'utf8')));
+    const diskBySig = new Map(disk.map((d) => [d.signature, normSha(modText(d))]));
+    let fileClean = true;
+    for (const e of mods) {
+      const got = diskBySig.get(e.signature);
+      if (got === undefined) { absent++; fileClean = false; lines.push(`  MODULE ABSENT: ${p} :: ${e.signature} (${e.class})`); }
+      else if (got !== e.sha256) { differs++; fileClean = false; }
+    }
+    for (const d of disk) if (!mods.some((e) => e.signature === d.signature)) { ours++; fileClean = false; }
+    if (fileClean) identical++;
+  }
+  log(`module audit: ${identical} files match their deployed cut; ${differs} modules differ, ${absent} template modules absent, ${ours} modules are yours`);
+  for (const l of lines.slice(0, 10)) log(l);
+  if (absent) log('  (an ABSENT template module usually means its signature drifted — see bug 26; eyeball the file)');
+ } catch (e) { log(`⚠ module audit skipped: ${e.message}`); }
+}
+
 function cmdUpdateVerify() {
   runFinalGates(UPDATE_TASK, 'KAIF-UPDATE', 'update-verify');
+  moduleAudit();
   // Stamp the receipt: the proof of a verified update must outlive the self-clean (bug 17).
   if (okOnDisk(LAST_UPDATE)) {
     try {
@@ -1291,6 +1353,15 @@ async function cmdInstall() {
       // The context line derives the REASON from the actual deployment state — "pre-1.5 project"
       // was a false model on anonymous installs, whose snapshots were removed by self-clean.
       const rerun = legacyOld.version === meta.version;
+      // bugs/25, bootstrap facet (judge F1): a checkpoint-less unfinished task from a PREVIOUS
+      // interval carries undelivered module diffs — for anonymous deployments the bootstrap is
+      // the ONLY update road, so clobbering it here would lose them without a trace. Preserve
+      // it aside; a same-version re-run regenerates the equivalent task and needs no ceremony.
+      if (!rerun && existsSync(UPDATE_TASK)) {
+        const aside = 'KAIF_UPDATE_TASK.superseded.md';
+        writeFileSync(aside, readFileSync(UPDATE_TASK));
+        log(`⚠ an unfinished ${UPDATE_TASK} from a previous interval was preserved as ${aside} — mine it for unmerged diffs, then delete it`);
+      }
       const nMod = cls ? Object.values(cls.divergedModules).reduce((a, l) => a + l.length, 0) : 0;
       const why = legacyOld.tracking === 'anonymous'
         ? 'this anonymous deployment kept no content snapshots'
@@ -1387,10 +1458,12 @@ function cmdCheck() {
       for (const sys of AGENTS) {
         if (!mirrors[sys]) continue;
         const [p, transform] = mirrors[sys](n);
-        if (okOnDisk(p) && readFileSync(p, 'utf8') !== transform(canonText)) { console.error(`⚠ mirror drifted from canon: ${p}`); drifted++; }
+        // One line per drifted mirror flooded the mid-update check with 44 warnings (bug 30.5,
+        // field: "normal state until re-sync") — show a sample, summarize the rest.
+        if (okOnDisk(p) && readFileSync(p, 'utf8') !== transform(canonText)) { if (drifted < 3) console.error(`⚠ mirror drifted from canon: ${p}`); drifted++; }
       }
     }
-    if (drifted) console.error(`⚠ ${drifted} mirror copies differ from their canon skill — run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
+    if (drifted) console.error(`⚠ ${drifted} mirror copies lag the canon${drifted > 3 ? ` (${drifted - 3} more not listed)` : ''} — normal until re-sync; run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
   }
   warnSphereLibrary();
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
@@ -1425,7 +1498,7 @@ function cmdCheckpoint() {
   const file = okOnDisk(UPDATE_TASK) ? UPDATE_TASK : okOnDisk(TASK_FILE) ? TASK_FILE : null;
   if (!file) die('no task file found — nothing to checkpoint');
   const tag = file === UPDATE_TASK ? 'KAIF-UPDATE' : 'KAIF-ADAPT';
-  const task = readFileSync(file, 'utf8');
+  const task = normEol(readFileSync(file, 'utf8'));   // bug 24: $-anchors vs a CRLF-resaved task
   if (!task.includes(`kaif-core.mjs checkpoint ${id}`) && !task.includes(`${tag}: ${id} done`))
     die(`unknown item id "${id}" — it is not named in ${file}`);
   // Checkpoints EXECUTE their own gate where one exists (bug 17: recording a tick used to be

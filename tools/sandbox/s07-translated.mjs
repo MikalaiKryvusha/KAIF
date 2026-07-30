@@ -73,6 +73,11 @@ const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
 man.version = '9.9';
 man.sha256['KAIF-CORE-BUNDLE.md'] = sha256(readFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md')));
 writeFileSync(join(SRC, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
+// v9.10 поверх 9.9 (тот же контент, версия выше) — для гейта незавершённого задания (bugs/25)
+const SRC2 = join(ROOT, 'src-9.10'); mkdirSync(SRC2);
+copy(join(SRC, 'KAIF-CORE-BUNDLE.md'), join(SRC2, 'KAIF-CORE-BUNDLE.md'));
+copy(join(SRC, 'KAIF-CORE.mjs'), join(SRC2, 'KAIF-CORE.mjs'));
+writeFileSync(join(SRC2, 'kaif-manifest.json'), JSON.stringify({ ...man, version: '9.10' }, null, 2) + '\n');
 const FROM = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version; // «старая» версия = текущая сборка
 
 // ---------------------------------------------------------------- T1+T4: перевод с заголовками
@@ -136,6 +141,19 @@ ok(readFileSync(join(T2, 'TESTING_FRAMEWORK.md'), 'utf8').includes('UPSTREAM ADD
    'sha до=' + tfShaBefore.slice(0, 12));
 ok(readFileSync(join(T2, '.claude/skills/check-backlog/SKILL.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (check-backlog)'),
    'K2: EN-навык с машинными алиасами — не «перевод», под флагом обновляется механически');
+
+// ---------------------------------------------------------------- T9: незавершённое задание не затирается (bugs/25)
+// В T2 живёт неотработанное KAIF_UPDATE_TASK.md с Module diffs — второй update обязан отказать,
+// а не молча потерять невлитую дельту (двух-хоповая потеря воспроизведена судьёй на до-фиксном коде).
+console.log('\n=== T9 (bugs/25): update поверх незавершённого задания — честный отказ ===');
+r = run(T2, `update --source ${SRC2}`);
+ok(r.code !== 0 && r.out.includes('KAIF_UPDATE_TASK.md') && r.out.includes('never verified'),
+   'bugs/25: update отказал — предыдущее задание не отработано (fail-closed)', r.out.slice(-200));
+rmSync(join(T2, 'KAIF_UPDATE_TASK.md'));
+r = run(T2, `update --source ${SRC2}`);
+ok(r.code === 0, 'bugs/25: после СОЗНАТЕЛЬНОГО удаления задания update проходит', r.out);
+const rc2 = JSON.parse(readFileSync(join(T2, '.kaif', 'last-update.json'), 'utf8'));
+ok(String(rc2.source || '').includes('src-9.10'), 'B4: расписка хранит source обновления (дельта пересчитываема)');
 
 // ---------------------------------------------------------------- T6: сетка НЕ душит владельческие добавки (находка F1 судьи)
 // Файл с крошечной базой (1 модуль: README директории) + владелец ДОБАВИЛ кириллическую секцию
@@ -206,6 +224,8 @@ ok(dm7.values && dm7.values['<PROJECT_NAME>'] === 't7', 'Д1: снимок value
 const task7 = readFileSync(join(T7, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/\*\*placeholders\*\*/.test(task7) && task7.includes('<YOUR AGENT/MODEL>'),
    'Д3: update-задание несёт пункт placeholders с непроставленным слотом');
+ok(/the framework changed \d+ of \d+ shipped files/.test(task7),
+   'B4: задание называет честный размер работы (N из M файлов)');
 
 // ---------------------------------------------------------------- T8: порядок гейтов и слепой слот (bugs/27, 28)
 console.log('\n=== T8 (Д2+Д3): re-sync зеркал ДО гейта плейсхолдеров; слот email не слепой ===');
@@ -232,8 +252,12 @@ fillCanon(T8);
 const taskIds = [...new Set([...readFileSync(join(T8, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of taskIds) run(T8, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
+// K6/bugs/24: задание ПЕРЕСОХРАНЕНО с CRLF (Windows-редактор) уже С чекпоинтами — $-якоря
+// гейта обязаны узнавать записанные чекпоинты и после этого (класс ndim: «нет фронтматтера» ×15)
+const AT8 = join(T8, 'KAIF_ADAPTATION_TASK.md');
+writeFileSync(AT8, readFileSync(AT8, 'utf8').replace(/\r?\n/g, '\r\n'));
 r = run(T8, 'verify-final');
-ok(r.code === 0, 'Д2: канон заполнен, зеркала отстали → verify сам ресинкает и ЗЕЛЕНЕЕТ (не гонит править зеркала руками)', r.out);
+ok(r.code === 0, 'Д2+K6: CRLF-задание с чекпоинтами; verify ресинкает зеркала и ЗЕЛЕНЕЕТ', r.out);
 // Д3, слепой слот: свежая установка, заполнен ТОЛЬКО <YOUR AGENT/MODEL> — гейт обязан краснеть на email-слоте
 const T8b = join(ROOT, 't8b'); mkdirSync(T8b); seed(T8b);
 run(T8b, 'install');
@@ -244,6 +268,17 @@ for (const id of idsB) run(T8b, `checkpoint ${id}${id === 'judge' ? ' --verdict 
 r = run(T8b, 'verify-final');
 ok(r.code !== 0 && r.out.includes("<YOUR AGENT'S noreply EMAIL>"),
    'Д3: незаполненный email-слот ЛОВИТСЯ гейтом (раньше был слеп)', r.out.slice(-300));
+
+// ---------------------------------------------------------------- T10 (K6/bugs/24): распаковщик терпит CRLF
+console.log('\n=== T10 (K6): kaif-unpack на CRLF-пересохранённом ядре находит блоки ===');
+const T10 = join(ROOT, 't10'); mkdirSync(T10);
+writeFileSync(join(T10, 'KAIF-FULL-CRLF.md'), readFileSync(join(DIST, 'KAIF-FULL.md'), 'utf8').replace(/\r?\n/g, '\r\n'));
+let unp;
+try { unp = { code: 0, out: execSync(`node ${join(REPO, 'framework', 'kaif-unpack.mjs')} KAIF-FULL-CRLF.md 2>&1`, { cwd: T10, stdio: 'pipe' }).toString() }; }
+catch (e) { unp = { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+ok(unp.code === 0 && !/no FILE: blocks/.test(unp.out), 'K6: CRLF-ядро распаковано (блоки найдены; красное доказательство — HEAD-версия: exit 1 «no FILE: blocks»)', unp.out.slice(-200));
+ok(existsSync(join(T10, 'AGENT_GUIDE.md')) && !readFileSync(join(T10, 'AGENT_GUIDE.md'), 'utf8').includes('\r'),
+   'K6: распакованное из CRLF-ядра нормализовано в LF');
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ s07: все стражи зелёные'}`);
 process.exit(failures ? 1 : 0);

@@ -104,7 +104,10 @@ ok(task.includes('owner-conventions') && task.includes('EXPERIENCE.md'), 'кон
 ok(!/merge-modules[^\n]*PHILOSOPHY\.md/.test(task), 'локализованный модуль БЕЗ апстрим-правки не шумит в задаче (KPOT F2: «делать нечего» не показывается)');
 ok(/UPSTREAM ADDITION 9\.9 \(pause\)/.test(pauseTxt) && !/merge-modules[^\n]*pause/.test(task), 'pause: апстрим-модуль влит, локальный не требует мержа — файла нет в merge-modules');
 
-// цикл №2 — 9.9 → 9.10 (тот же контент): локализация обязана пережить И ЕГО (класс NDim F1)
+// цикл №2 — 9.9 → 9.10 (тот же контент): локализация обязана пережить И ЕГО (класс NDim F1).
+// Задание цикла №1 сбрасываем СОЗНАТЕЛЬНО: с bugs/25 update отказывает поверх неотработанного
+// задания (fail-closed), а этот свод стережёт локализацию, не дисциплину заданий (её стережёт s07/T9).
+rmSync(join(S5, 'KAIF_UPDATE_TASK.md'), { force: true });
 r = run(S5, `update --source ${SRC2}`);
 ok(r.code === 0, 'S5 update →9.10 exit 0', r.out);
 phil = readFileSync(PHIL, 'utf8');

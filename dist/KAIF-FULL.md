@@ -4122,12 +4122,14 @@ if (!existsSync(SOURCE)) { console.error(`✖ source not found: ${SOURCE}`); pro
 const text = readFileSync(SOURCE, 'utf8');
 
 // Parse every embedded file: `> **FILE: \`path\`** …` + blank line + fenced block.
+// Line ends are \r?\n throughout: a CRLF-resaved core (Windows editor, autocrlf checkout) used to
+// yield ZERO blocks and a false "is this the KAIF.md core?" (bug 24 — the \n-bound regex class).
 const blockRe = new RegExp(
-  '^> \\*\\*FILE: `([^`]+)`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n([\\s\\S]*?)\\n' + FENCE + '\\s*$',
+  '^> \\*\\*FILE: `([^`]+)`\\*\\*[^\\n]*\\r?\\n\\r?\\n' + FENCE + '\\w*\\r?\\n([\\s\\S]*?)\\r?\\n' + FENCE + '\\s*$',
   'gm'
 );
 const manifest = []; // [{ path, content }]
-for (let m; (m = blockRe.exec(text)); ) manifest.push({ path: m[1], content: m[2] + '\n' });
+for (let m; (m = blockRe.exec(text)); ) manifest.push({ path: m[1], content: m[2].replace(/\r\n/g, '\n') + '\n' });
 if (manifest.length === 0) { console.error('✖ no FILE: blocks found — is this the KAIF.md core?'); process.exit(1); }
 
 const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [])[1] || null;

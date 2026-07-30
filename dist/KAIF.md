@@ -11,6 +11,8 @@
 > **Repo:** https://github.com/MikalaiKryvusha/KAIF
 > 🌐 Installing needs the network (it fetches from the repo). Fully offline? Use the `KAIF-FULL.md`
 > asset attached to every release — the classic self-contained core.
+> 🗑️ **This file is transient:** the deployment SELF-DELETES it (and the loader) when the final
+> verification passes — seeing `KAIF.md` disappear from your tree afterwards is expected, not a loss.
 
 ---
 

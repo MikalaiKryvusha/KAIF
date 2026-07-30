@@ -86,7 +86,13 @@ for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verd
 r = run(S13, 'verify-final');
 ok(r.code === 0, 'S13 verify-final exit 0 (полный анонимный install)', r.out);
 ok(existsSync(join(S13, '.kaif', 'deploy-manifest.json')), '🔴 S13 обезличенный манифест ПЕРЕЖИЛ самоочистку');
-ok(!existsSync(join(S13, '.kaif', 'kaif-core.mjs')), 'S13 ядро удалено (origin не хранится)');
+// bug 29 (третий 2.0-отчёт): ядро больше НЕ удаляется — остаётся анонимизированным, механика
+// 2.0 (check/sync/diff/adopt-current) доступна анониму; origin и аккаунт вырезаны по значению.
+ok(existsSync(join(S13, '.kaif', 'kaif-core.mjs')), 'S13 ядро СОХРАНЕНО анонимизированным (bug 29)');
+const core13 = readFileSync(join(S13, '.kaif', 'kaif-core.mjs'), 'utf8');
+ok(!core13.includes('MikalaiKryvusha'), 'S13 в оставленном ядре нет origin-аккаунта');
+r = run(S13, 'sync');
+ok(r.code === 0, 'S13 sync РАБОТАЕТ после анонимной самоочистки (поле аудитило 96 зеркал своим скриптом)', r.out);
 const dm13 = JSON.parse(readFileSync(join(S13, '.kaif', 'deploy-manifest.json'), 'utf8'));
 ok(!JSON.stringify(dm13).includes('MikalaiKryvusha') && !JSON.stringify(dm13).includes('github.com'),
    'S13 манифест не несёт origin/автора');
