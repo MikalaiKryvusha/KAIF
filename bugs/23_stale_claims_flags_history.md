@@ -16,6 +16,12 @@
 версию → update → сейчас обе строки в `stale-claims`; после фикса — нет (или в секции «вероятно
 история»).
 
+## Forensics
+
+**Красный прогон s07/T4 (2026-07-31):** все три фикстурных журнала прошлого попали в stale-claims
+задания — `researches/15_kaif_20_note.md`, дописанная EXP-строка в `EXPERIENCE.md`, строка
+«Предыдущее обновление: KAIF 2.0.» в `STATUS.md` (3 стража красные).
+
 ## Root cause
 
 `framework/installer/KAIF-CORE.mjs:403-426` — `scanStaleClaims` ходит по ВСЕМ .md (кроме
