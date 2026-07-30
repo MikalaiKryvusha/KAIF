@@ -1544,9 +1544,18 @@ meta block's `policyChanges`, keyed by version. The update task prints them in a
 ### 10.7 Commands
 
 `update` (mechanical pass) · `diff` (audit: protected vs replace-eligible; `--source`: per-module
-preview against another version) · `adopt-current` (after a MANUAL migration: re-adopt reality so
+preview against another version — a v1 manifest gets a synthetic baseline of the deployed version,
+`--baseline` overrides its source) · `adopt-current` (after a MANUAL migration: re-adopt reality so
 the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the machinery's
 module cut) · `checkpoint` · `update-verify` · `check` · `version`.
+
+### 10.8 Predicting a pass
+
+The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git archive`), re-init git
+in the copy, run the REAL update or bootstrap there and read its diff. This is not a model of the
+pass but the pass itself — field-proven byte-identical to the subsequent live run. Recommended
+before the first-ever update and on heavily localized deployments; `diff --source` remains the
+lighter per-module preview.
 
 ## 11. Trust and provenance
 
@@ -3317,7 +3326,18 @@ diverged places. Your cognitive work is that task, not the migration.
 1. **Pre-flight.** Working tree clean (commit/stash first). Read `.kaif/kaif.json`: if `tracking` is
    `fork`, confirm the human really wants to pull from the official origin.
 
-2. **Route by what the project has:**
+2. **Predict the pass BEFORE touching the tree** (both moves are cheap; the field proved both):
+   - `node .kaif/kaif-core.mjs diff --source <url|dir>` — a per-module preview of what the new
+     version would change *here*. Works even on a v1 manifest: the machinery builds a synthetic
+     baseline of your CURRENT version (`--baseline <dir|url>` points it at saved artifacts when
+     the origin release is unreachable).
+   - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
+     (`git archive HEAD | tar -x -C <tmpdir>`), `git init` there, run the REAL update/bootstrap in
+     the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field
+     the live pass matched the sandbox byte for byte. Prefer this on the first-ever update and on
+     any deployment with heavy localization.
+
+3. **Route by what the project has:**
    - **`.kaif/kaif-core.mjs` exists (KAIF ≥ 1.5):** run `node .kaif/kaif-core.mjs update`
      (or `npm run kaif:update`). It fetches the latest machinery from origin (sha256-verified),
      replaces every framework file that is byte-identical to its install snapshot, adds new files,
@@ -3329,15 +3349,15 @@ diverged places. Your cognitive work is that task, not the migration.
      KEPT, new entities added, owner-level fields of the marker preserved, and `KAIF_UPDATE_TASK.md`
      replaces the usual adaptation task.
 
-3. **Work `KAIF_UPDATE_TASK.md`** — the only cognitive part: merge the template news into the files the
+4. **Work `KAIF_UPDATE_TASK.md`** — the only cognitive part: merge the template news into the files the
    machinery could not touch (they carry your local edits), review what's new, run
    `node .kaif/kaif-core.mjs check`, and finish with a `/fable-judge` pass over the update. Tick each
    item AND append its `KAIF-UPDATE: <id> done` checkpoint.
 
-4. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
+5. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
    removes the transient installer files.
 
-5. **Report & commit.** Summarize: replaced/added/kept counts, what you merged by hand, anything left
+6. **Report & commit.** Summarize: replaced/added/kept counts, what you merged by hand, anything left
    for the human. Commit `chore: update KAIF to X.Y`.
 
 ## Notes

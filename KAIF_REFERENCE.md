@@ -230,9 +230,18 @@ meta block's `policyChanges`, keyed by version. The update task prints them in a
 ### 10.7 Commands
 
 `update` (mechanical pass) · `diff` (audit: protected vs replace-eligible; `--source`: per-module
-preview against another version) · `adopt-current` (after a MANUAL migration: re-adopt reality so
+preview against another version — a v1 manifest gets a synthetic baseline of the deployed version,
+`--baseline` overrides its source) · `adopt-current` (after a MANUAL migration: re-adopt reality so
 the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the machinery's
 module cut) · `checkpoint` · `update-verify` · `check` · `version`.
+
+### 10.8 Predicting a pass
+
+The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git archive`), re-init git
+in the copy, run the REAL update or bootstrap there and read its diff. This is not a model of the
+pass but the pass itself — field-proven byte-identical to the subsequent live run. Recommended
+before the first-ever update and on heavily localized deployments; `diff --source` remains the
+lighter per-module preview.
 
 ## 11. Trust and provenance
 

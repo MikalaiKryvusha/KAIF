@@ -1,7 +1,7 @@
 # Bug 21 — предсказание прохода недоступно ровно тем, кто обновляется впервые (K3)
 
-**Status:** ✅ DONE (2026-07-31) — код; канонизация приёма песочной копии в /kaif-update и
-KAIF_REFERENCE — хвост Фазы B2 плана 23
+**Status:** ✅ DONE (2026-07-31) — код + канонизация: шаг «Predict the pass» в /kaif-update (оба
+слоя) и §10.8 «Predicting a pass» в KAIF_REFERENCE (Фаза B2 закрыта, build 76)
 **Version/build:** 2.0 (build 68) · **When/context:** 2026-07-31, отчёт ndim (`ai_agents_reports/23`, K3).
 
 ## Symptom
