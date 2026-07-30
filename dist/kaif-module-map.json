@@ -894,7 +894,7 @@
       {
         "signature": "# KAIF Reference — the explanatory note",
         "class": "static",
-        "sha256": "896040ad208be1c9c45cd4c03786aadba219231877c710caa7105901459d8f6d",
+        "sha256": "58a38c8928063a4d7eb691897dabbccab740f91afc27f7a37d9836b827de704d",
         "lines": [
           1,
           14
@@ -1200,10 +1200,10 @@
       {
         "signature": "### 12.2 The deploy manifest (`.kaif/deploy-manifest.json`)",
         "class": "static",
-        "sha256": "5543ee514fdd7a69a03bc357673f3f688762c8846a4cfb09a3b939771e047290",
+        "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
           288,
-          294
+          296
         ]
       },
       {
@@ -1211,8 +1211,8 @@
         "class": "static",
         "sha256": "74c79ea9fa60feb438a6143a85cceeaecf150dc55a42f0273904fcb6056a3de9",
         "lines": [
-          295,
-          299
+          297,
+          301
         ]
       },
       {
@@ -1220,8 +1220,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          300,
-          316
+          302,
+          318
         ]
       },
       {
@@ -1229,8 +1229,8 @@
         "class": "static",
         "sha256": "ecb5fb8267eeb1028bf29445ca3e73da5d4b0e5e71c420e3867eaeb8bd20e145",
         "lines": [
-          317,
-          325
+          319,
+          327
         ]
       },
       {
@@ -1238,8 +1238,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          326,
-          338
+          328,
+          340
         ]
       },
       {
@@ -1247,8 +1247,8 @@
         "class": "static",
         "sha256": "4103c1056f19615aca4ef3775c81c18cb156d543c9620dff4a73830e2e180bba",
         "lines": [
-          339,
-          345
+          341,
+          347
         ]
       }
     ],

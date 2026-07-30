@@ -15,7 +15,7 @@
 //   T3 (K4, bugs/22)  — package.json с уже вшитыми хендлами и CRLF не переписывается.
 //   T5 (K3, bugs/21)  — diff --source на v1-манифесте не рапортует пустой ноль (hollow green),
 //                       а строит синтетическую базу (--baseline) и показывает реальную дельту.
-import { readFileSync, writeFileSync, mkdirSync, rmSync, appendFileSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, appendFileSync, statSync, existsSync, readdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -61,8 +61,12 @@ const SRC = join(ROOT, 'src-9.9'); mkdirSync(SRC);
 let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 bundle = editBundleModule(bundle, '.claude/skills/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
-bundle = editBundleModule(bundle, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)'));
+bundle = editBundleModule(bundle, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)', '', 'Historical note: this discipline entered the canon in KAIF 2.0.'));
 bundle = editBundleModule(bundle, 'bugs/README.md', 0, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (bugs-readme)'));
+bundle = editBundleModule(bundle, 'AGENT_GUIDE.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (agent-guide)'));
+// Д3 (bugs/28): апстрим-правка привозит НОВЫЙ незаполняемый слот в модуль end-chat —
+// update-задание обязано получить пункт placeholders (а не узнать о нём падением финального гейта)
+bundle = editBundleModule(bundle, '.claude/skills/end-chat/SKILL.md', 1, (m) => m.lines.push('', 'Sign as <YOUR AGENT/MODEL>.'));
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
 copy(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
 const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
@@ -104,6 +108,8 @@ console.log('\n=== T4 (K5): журналы прошлого не считают�
 ok(!task1.includes('researches/15_kaif_20_note.md'), 'K5: researches/ не в stale-claims');
 ok(!/stale-claims[^]*EXPERIENCE\.md/.test(task1), 'K5: EXPERIENCE.md не в stale-claims');
 ok(!/stale-claims[^]*Предыдущее обновление/.test(task1), 'K5: строка «Предыдущее обновление» STATUS пропущена');
+ok(!/stale-claims[^]*TESTING_FRAMEWORK\.md/.test(task1),
+   'Д4: файл, байт-в-байт равный текущему шаблону, не может нести протухшее утверждение ПРОЕКТА');
 
 // ---------------------------------------------------------------- T2: i18n translated — диффы есть, EN-файлы живут
 console.log('\n=== T2 (K2): i18n translated — не слепота, а «не заменять, но анализировать» ===');
@@ -170,6 +176,74 @@ r = run(T5, `diff --source ${SRC} --baseline ${DIST}`);
 ok(r.code === 0, 'T5 diff --source exit 0', r.out);
 ok(!/diff vs 9\.9: 0 file\(s\)/.test(r.out) && /[1-9]\d* file\(s\) carry upstream/.test(r.out),
    'K3: на v1-манифесте diff показывает РЕАЛЬНУЮ дельту (синтетическая база), а не пустой ноль', r.out);
+
+// ---------------------------------------------------------------- T7: дрейф значений плейсхолдеров (bugs/26, Д1)
+// Деплой БЕЗ package.json (имя = каталог 't7'), затем появился package.json с ДРУГИМ именем —
+// апдейт не должен дописывать дубликат H1 с новым именем в конец канона.
+console.log('\n=== T7 (Д1): дрейф <PROJECT_NAME> — дубликата H1 в конце канона не бывает ===');
+const T7 = join(ROOT, 't7'); mkdirSync(T7); seed(T7);
+r = run(T7, 'install');
+ok(r.code === 0, 'T7 install (без package.json) exit 0', r.out);
+// проект живой: локальная правка в AGENT_GUIDE (как в поле) — файл разойдётся и пойдёт через
+// модульный merge, где дрейф сигнатуры H1 и даёт дубликат
+const AG7 = join(T7, 'AGENT_GUIDE.md');
+const ag7 = splitModules(readFileSync(AG7, 'utf8'));
+ag7[2].lines.push('', 'LOCAL PROJECT EDIT (agent guide)');
+writeFileSync(AG7, joinModules(ag7));
+// …и дрейф значения <PROJECT_NAME>: package.json переименован после деплоя
+writeFileSync(join(T7, 'package.json'), JSON.stringify({ name: 'renamed-project', scripts: { 'kaif:version': 'node .kaif/kaif-core.mjs version', 'kaif:check': 'node .kaif/kaif-core.mjs check', 'kaif:update': 'node .kaif/kaif-core.mjs update' } }, null, 2) + '\n');
+r = run(T7, `update --source ${SRC}`);
+ok(r.code === 0, 'T7 update exit 0', r.out);
+const agTxt = readFileSync(join(T7, 'AGENT_GUIDE.md'), 'utf8');
+const h1Count = (agTxt.match(/^# /gm) || []).length;
+ok(h1Count === 1, `Д1: в AGENT_GUIDE.md ровно один H1 (найдено ${h1Count}) — дубликат не дописан`);
+ok(/^# t7 — /.test(agTxt), 'Д1: H1 развёртывания ЦЕЛ и стоит ПЕРВОЙ строкой (не удалён как «убранный апстримом»)');
+ok(!agTxt.includes('renamed-project'), 'Д1: дрейфнувшее имя не просочилось в канон ни в каком виде');
+ok(agTxt.includes('UPSTREAM ADDITION 9.9 (agent-guide)'), 'Д1: апстримная правка соседнего модуля влита механически');
+const dm7 = JSON.parse(readFileSync(join(T7, '.kaif', 'deploy-manifest.json'), 'utf8'));
+ok(dm7.values && dm7.values['<PROJECT_NAME>'] === 't7', 'Д1: снимок values живёт в манифесте (имя развёртывания зафиксировано)');
+// Д3: пункт placeholders в задании (новый слот приехал апстрим-правкой end-chat)
+const task7 = readFileSync(join(T7, 'KAIF_UPDATE_TASK.md'), 'utf8');
+ok(/\*\*placeholders\*\*/.test(task7) && task7.includes('<YOUR AGENT/MODEL>'),
+   'Д3: update-задание несёт пункт placeholders с непроставленным слотом');
+
+// ---------------------------------------------------------------- T8: порядок гейтов и слепой слот (bugs/27, 28)
+console.log('\n=== T8 (Д2+Д3): re-sync зеркал ДО гейта плейсхолдеров; слот email не слепой ===');
+const T8 = join(ROOT, 't8'); mkdirSync(T8); seed(T8);
+r = run(T8, 'install');
+ok(r.code === 0, 'T8 install exit 0', r.out);
+// агент заполняет ВСЕ слоты в КАНОНЕ (как велит адаптационное задание), зеркала остаются
+// несинхронизированными — ровно полевой сценарий bug 27
+const PH_ALL = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_PATH>', '<LICENSE>',
+  '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>',
+  "<YOUR AGENT'S noreply EMAIL>", '<OWNER_LANGUAGE>'];
+const fillCanon = (dir, skipPh = []) => {
+  const fill = (p) => { let t = readFileSync(p, 'utf8'); for (const ph of PH_ALL) { if (skipPh.includes(ph)) continue; t = t.split(ph).join('X'); } writeFileSync(p, t); };
+  for (const doc of ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'TESTING_FRAMEWORK.md'])
+    if (existsSync(join(dir, doc))) fill(join(dir, doc));
+  for (const n of readdirSync(join(dir, '.claude', 'skills')))
+    if (existsSync(join(dir, '.claude', 'skills', n, 'SKILL.md'))) fill(join(dir, '.claude', 'skills', n, 'SKILL.md'));
+  if (existsSync(join(dir, '.kaif', 'spheres')))
+    for (const n of readdirSync(join(dir, '.kaif', 'spheres')))
+      if (n.endsWith('.md')) fill(join(dir, '.kaif', 'spheres', n));
+};
+fillCanon(T8);
+// проставить все чекпоинты адаптационного задания (механика, не суждение)
+const taskIds = [...new Set([...readFileSync(join(T8, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
+  .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
+for (const id of taskIds) run(T8, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
+r = run(T8, 'verify-final');
+ok(r.code === 0, 'Д2: канон заполнен, зеркала отстали → verify сам ресинкает и ЗЕЛЕНЕЕТ (не гонит править зеркала руками)', r.out);
+// Д3, слепой слот: свежая установка, заполнен ТОЛЬКО <YOUR AGENT/MODEL> — гейт обязан краснеть на email-слоте
+const T8b = join(ROOT, 't8b'); mkdirSync(T8b); seed(T8b);
+run(T8b, 'install');
+fillCanon(T8b, ["<YOUR AGENT'S noreply EMAIL>"]);   // всё заполнено, КРОМЕ email-слота
+const idsB = [...new Set([...readFileSync(join(T8b, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
+  .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
+for (const id of idsB) run(T8b, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
+r = run(T8b, 'verify-final');
+ok(r.code !== 0 && r.out.includes("<YOUR AGENT'S noreply EMAIL>"),
+   'Д3: незаполненный email-слот ЛОВИТСЯ гейтом (раньше был слеп)', r.out.slice(-300));
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ s07: все стражи зелёные'}`);
 process.exit(failures ? 1 : 0);

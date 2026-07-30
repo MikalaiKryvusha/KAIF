@@ -145,7 +145,8 @@ r = run(S12, 'update-verify');
 ok(r.code !== 0, 'S12 update-verify до чекпоинтов — красный');
 // заполняем плейсхолдеры в каноне (роль адаптации) и раскатываем зеркала штатной командой sync
 const PH = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_PATH>', '<LICENSE>',
-  '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>', '<OWNER_LANGUAGE>'];
+  '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>',
+  "<YOUR AGENT'S noreply EMAIL>", '<OWNER_LANGUAGE>'];   // email-слот виден гейту с bug 28
 const fill = (p) => { let t = readFileSync(p, 'utf8'); for (const ph of PH) t = t.split(ph).join('X'); writeFileSync(p, t); };
 fill(join(S12, 'AGENT_GUIDE.md'));
 for (const n of readdirSync(join(S12, '.claude', 'skills'))) {

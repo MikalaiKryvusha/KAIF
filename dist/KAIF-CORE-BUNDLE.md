@@ -1315,7 +1315,7 @@ respectful). Backed by `npm run kaif:*` handles.
 ``````md
 # KAIF Reference — the explanatory note
 
-This document is the COMPLETE technical reference of the Krinik AI Framework (KAIF): every module
+This document is the COMPLETE technical reference of Krinik AI Framework (KAIF): every module
 of the framework is named, defined and located here, and the internal terminology is established
 here. It is written for two readers at once: the human who wants to understand what is deployed in
 their project, and the AI agent that must answer such questions precisely (`/help-kaif` reads this
@@ -1604,8 +1604,10 @@ only through commands (`sphere`, updates) — never by hand.
 
 `manifestVersion: 2` · `paths` (deployed files) · `agents` (per-system artifacts) · `shas` (disk
 snapshot) · `templateShas` (deployed-template snapshot) · `moduleShas` (per-module cut:
-signature/class/sha per markdown file) · `kept` (adoption provenance) · `marker` (pristine marker
-snapshot backing self-heal).
+signature/class/sha per markdown file) · `kept` (adoption provenance) · `values` (the deploy-time
+placeholder snapshot — every later pass fills templates with THESE values, so signatures never
+drift when the environment changes; to rename the project deliberately, edit this snapshot and
+reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-heal).
 
 ### 12.3 The receipt (`.kaif/last-update.json`)
 
@@ -4518,7 +4520,13 @@ const RULES = '.kaif/canon-lint-rules.json';
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 
-if (!existsSync(RULES)) die(`no ${RULES} — seed it (see this file's header for the format); the linter grows with every fix`);
+// "Not configured" is NOT "a guard failed to fire" (bug 30.2, field: a fresh deployment's red
+// selftest is exactly what agents chase). Absence of the rules file exits 0 with a hint — the
+// module is optional and unconfigured by design; exit 1 stays reserved for real guard failures.
+if (!existsSync(RULES)) {
+  log(`= ${RULES} not found — canon lint is not configured yet (optional module). Seed it (see this file's header for the format); the linter grows with every fix.`);
+  process.exit(0);
+}
 const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
 
 function* walkMd(dir = '.') {

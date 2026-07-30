@@ -29,7 +29,13 @@ const RULES = '.kaif/canon-lint-rules.json';
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 
-if (!existsSync(RULES)) die(`no ${RULES} — seed it (see this file's header for the format); the linter grows with every fix`);
+// "Not configured" is NOT "a guard failed to fire" (bug 30.2, field: a fresh deployment's red
+// selftest is exactly what agents chase). Absence of the rules file exits 0 with a hint — the
+// module is optional and unconfigured by design; exit 1 stays reserved for real guard failures.
+if (!existsSync(RULES)) {
+  log(`= ${RULES} not found — canon lint is not configured yet (optional module). Seed it (see this file's header for the format); the linter grows with every fix.`);
+  process.exit(0);
+}
 const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
 
 function* walkMd(dir = '.') {

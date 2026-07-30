@@ -1,7 +1,7 @@
 <!-- GENERATED COPY — do not edit. Source: framework/KAIF_REFERENCE.md (edit there, then run tools/build-framework.mjs). Deployed projects receive this document at .kaif/KAIF_REFERENCE.md. -->
 # KAIF Reference — the explanatory note
 
-This document is the COMPLETE technical reference of the Krinik AI Framework (KAIF): every module
+This document is the COMPLETE technical reference of Krinik AI Framework (KAIF): every module
 of the framework is named, defined and located here, and the internal terminology is established
 here. It is written for two readers at once: the human who wants to understand what is deployed in
 their project, and the AI agent that must answer such questions precisely (`/help-kaif` reads this
@@ -290,8 +290,10 @@ only through commands (`sphere`, updates) — never by hand.
 
 `manifestVersion: 2` · `paths` (deployed files) · `agents` (per-system artifacts) · `shas` (disk
 snapshot) · `templateShas` (deployed-template snapshot) · `moduleShas` (per-module cut:
-signature/class/sha per markdown file) · `kept` (adoption provenance) · `marker` (pristine marker
-snapshot backing self-heal).
+signature/class/sha per markdown file) · `kept` (adoption provenance) · `values` (the deploy-time
+placeholder snapshot — every later pass fills templates with THESE values, so signatures never
+drift when the environment changes; to rename the project deliberately, edit this snapshot and
+reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-heal).
 
 ### 12.3 The receipt (`.kaif/last-update.json`)
 

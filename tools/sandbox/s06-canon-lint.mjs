@@ -80,5 +80,13 @@ r = run('check');
 ok(r.code !== 0 && /invalid regex/.test(r.out) && !/at new RegExp/.test(r.out),
    's06 невалидный паттерн — внятная ошибка, не стек-трейс', r.out);
 
+// «не сконфигурирован» ≠ «гвардия не сработала» (bug 30.2, полевой отчёт: exit 1 без rules-файла
+// на свежем развёртывании — «это то, за чем агенты гоняются»; красное поведение наблюдено в поле)
+rmSync(join(ROOT, '.kaif', 'canon-lint-rules.json'));
+r = run('selftest');
+ok(r.code === 0 && /not configured/.test(r.out), 's06 без rules-файла — exit 0 с подсказкой (опциональный модуль), не красный', r.out);
+r = run('check');
+ok(r.code === 0, 's06 check без rules-файла — тоже exit 0', r.out);
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница canon-lint зелёная'}`);
 process.exit(failures ? 1 : 0);

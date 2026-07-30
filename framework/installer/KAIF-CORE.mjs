@@ -70,6 +70,7 @@ const FENCE = '`'.repeat(6);
 // detect mechanically; the rest lands in the adaptation task for the agent.
 const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_PATH>',
                       '<LICENSE>', '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>',
+                      "<YOUR AGENT'S noreply EMAIL>",   // bug 28: shipped by /end-chat, was invisible to the gate
                       '<OWNER_LANGUAGE>'];
 
 // Docs seeded/owned by the OWNER after deploy — an update never touches them and never
@@ -261,9 +262,21 @@ function detectValues() {
     '<TEST_HARNESS>': pkg && pkg.scripts && pkg.scripts.test ? 'npm test' : null,
     '<COMMIT_COMMAND>': 'git add -A && git commit -m "<msg>" && git push',
     '<YOUR AGENT/MODEL>': null, // depends on the running agent — always the agent's to fill
+    "<YOUR AGENT'S noreply EMAIL>": null, // same — the agent signs its own commits (bug 28)
     '<OWNER_LANGUAGE>': LANG,   // the language-policy note in AGENT_GUIDE (idea 12: two audiences, two languages)
   };
 }
+
+// Placeholder values are FROZEN at deploy time (bug 26 / field: <PROJECT_NAME> re-detected on
+// every run drifted when package.json appeared later, and the drifted signature made the modular
+// merge mangle the canon's H1). The deploy manifest carries the snapshot; every later pass builds
+// on it and re-detects only what the deploy left unresolved.
+const persistValues = (v) => Object.fromEntries(Object.entries(v).filter(([, x]) => x));
+function snapshotValues() {
+  try { return okOnDisk(DEPLOY_MANIFEST) ? (readJson(DEPLOY_MANIFEST).values || {}) : {}; }
+  catch { return {}; }
+}
+const stableValues = () => ({ ...detectValues(), ...snapshotValues() });
 
 function fillPlaceholders(content, values, unresolved) {
   let out = content;
@@ -400,7 +413,7 @@ function newsInterval(meta, fromVersion) {
 // still asserting the OLD version after a green update, 3 of them on the public storefront):
 // any line that mentions KAIF together with the old version number and not the new one is a
 // stale claim the machinery can FIND for the agent, even in files it does not own.
-function scanStaleClaims(fromVersion, toVersion) {
+function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   if (!fromVersion || fromVersion === toVersion) return [];
   const hits = [];
   // Knowledge directories and EXPERIENCE/HISTORY are JOURNALS OF THE PAST by definition — a line
@@ -414,6 +427,9 @@ function scanStaleClaims(fromVersion, toVersion) {
       if (SKIP_DIRS.includes(n) || SKIP_FILES.includes(p)) continue;
       if (statSync(p).isDirectory()) { walk(p); continue; }
       if (!/\.md$/i.test(n)) continue;
+      // A file byte-identical to the CURRENT template cannot carry a stale PROJECT claim — its
+      // text is upstream's own prose (bug 30: ten hits were fable-judge's "added in KAIF 1.6").
+      if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;
       const lines = readFileSync(p, 'utf8').split('\n');
       for (let i = 0; i < lines.length; i++) {
         if (p === 'STATUS.md' && /предыдущ|previous/i.test(lines[i])) continue;   // history, not a claim
@@ -464,7 +480,7 @@ function policyInterval(meta, fromVersion) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [] } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   const items = [];
@@ -474,6 +490,9 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
   if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
+  // New templates may arrive carrying deploy-time slots the machinery cannot fill (bug 28: the
+  // update used to learn about them only when the FINAL gate failed, after "I'm done").
+  if (unresolved.length) items.push(['placeholders', `New templates carry deploy-time slots the machinery could not fill — fill each in the canonical .claude/skills/ copy (mirrors re-sync at update-verify): ${unresolved.join(' · ')}`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real), then run `node .kaif/kaif-core.mjs update-verify`.']);
@@ -549,7 +568,7 @@ async function buildSyntheticBaseline(legacyOld) {
     unlinkSync(tmp);
     if (!parsed || !parsed.files.length) continue;
     const { deploy } = applyLanguage(parsed.files);
-    const values = detectValues();
+    const values = stableValues();   // frozen deploy values (bug 26) — the baseline must cut like the deploy did
     const un = new Set();
     const templateShas = {};
     const moduleShas = {};
@@ -618,6 +637,12 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
       // as a diff instead — bug 20/K2, the "don't replace" and "don't analyze" split)
       if (!newM) {
         if (dryRun) { out.push(dm); divergedList.push({ signature: dm.signature, note: 'upstream REMOVED this module (not applied — i18n: translated)', diff: lineDiff(modText(dm), '') }); }
+        else if (/^# /.test(dm.signature)) {
+          // A release never removes the document's H1 — its "absence" in the template means the
+          // SIGNATURE drifted (placeholder values changed between deploys, bug 26). Keep it.
+          out.push(dm);
+          divergedList.push({ signature: dm.signature, note: 'the document H1 is absent from the incoming template — treated as placeholder-signature drift, kept (bug 26)', diff: '' });
+        }
         else replaced++;
         continue;
       }
@@ -648,6 +673,13 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
     const nm = newMods[i];
     if (diskMods.some((d) => d.signature === nm.signature)) continue;
     if (dryRun) { divergedList.push({ signature: nm.signature, note: 'NEW module in this release (not inserted — i18n: translated)', diff: lineDiff('', modText(nm)) }); continue; }
+    // An H1 module is never INSERTED into a document that already carries one: a "new" H1 is a
+    // drifted placeholder signature, and inserting it appends a duplicate header to the end of
+    // the canon (bug 26, field: AGENT_GUIDE grew a second title under another project name).
+    if (/^# /.test(nm.signature) && out.some((o) => /^# /.test(o.signature))) {
+      divergedList.push({ signature: nm.signature, note: 'an H1 module may not be inserted next to an existing H1 — placeholder-signature drift, reconcile by hand (bug 26)', diff: lineDiff('', modText(nm)) });
+      continue;
+    }
     let at = out.length;
     for (let k = i - 1; k >= 0; k--) {
       const pos = out.findIndex((o) => o.signature === newMods[k].signature);
@@ -782,7 +814,7 @@ async function cmdUpdate() {
   const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
   const { files, meta } = parseBundle(bundlePath);
   const { deploy } = applyLanguage(files);           // LANG defaults handled below
-  const values = detectValues();
+  const values = stableValues();                     // frozen deploy values win over re-detection (bug 26)
   const unresolved = new Set();
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
     classifyAndApply(deploy, old, values, unresolved, cur);
@@ -816,14 +848,21 @@ async function cmdUpdate() {
   const marker = { ...cur, version: man.version, released: man.released };
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
-    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted, marker }, null, 2) + '\n');
+    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
+    values: persistValues(values), marker }, null, 2) + '\n');
 
   const dep = handleDeprecations(meta, old);
-  const staleClaims = scanStaleClaims(cur.version, man.version);
+  const staleClaims = scanStaleClaims(cur.version, man.version, templateShas);
+  // The task lists only slots that are LITERALLY on disk after the pass (judge finding: the raw
+  // `unresolved` set collects every null-valued slot seen in incoming templates — on a fully
+  // filled deployment that would put a phantom `placeholders` item into EVERY update task, and
+  // a noisy guard teaches the agent to ignore it).
+  const liveUnresolved = [...unresolved].filter((ph) =>
+    deploy.some((f) => f.path.endsWith('.md') && okOnDisk(f.path) && readFileSync(f.path, 'utf8').includes(ph)));
   const nModDiverged = Object.values(divergedModules).reduce((a, l) => a + l.length, 0);
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale });
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — Unliminium §4). Survives self-clean; update-verify stamps it when the gates pass.
@@ -1045,13 +1084,17 @@ function runFinalGates(taskFile, tag, verb) {
     }
     if (unmergedLines) console.error(`⚠ ${unmergedLines} upstream line(s) from the module diffs are absent on disk — merge them or state why in the judge verdict`);
   }
+  // Mirrors are re-synced from the canon BEFORE the placeholder gate (bug 27, field: the agent
+  // fixed the canon, the gate went red on four stale MIRRORS, and the shortest visible path was
+  // hand-editing copies — exactly what the canon forbids). The step is mechanical and idempotent;
+  // whatever still fails after it is a genuine canon-side problem.
+  resyncCopies();
   missing += scanPlaceholders();
   const anonDeploy = okOnDisk(KAIF_JSON) && readJson(KAIF_JSON).tracking === 'anonymous';
   if (anonDeploy) missing += anonLeakScan();
   if (missing) die(`${verb} FAILED: ${missing} issues — finish them and re-run`);
   warnSphereLibrary();
   healMarker();
-  resyncCopies();
   // Re-snapshot the DISK shas now that every merge landed (plan 21 §3.2; field: KPOT caught the
   // manifest asserting pre-merge shas forever). templateShas stay untouched — they are the
   // release's truth, not the disk's.
@@ -1090,7 +1133,7 @@ async function cmdInstall() {
     try { const j = readJson(KAIF_JSON); if (j.language) LANG = String(j.language).toLowerCase(); } catch { /* CLI default stands */ }
   }
   const { deploy, translated, aliased } = applyLanguage(files);
-  const values = detectValues();
+  const values = stableValues();   // a re-run/bootstrap over an existing deploy keeps ITS values (bug 26)
   const unresolved = new Set();
 
   // Legacy/update detection: ANY existing deploy marker means this project already runs
@@ -1222,7 +1265,8 @@ async function cmdInstall() {
   // marker instead of adding a key (field-caught, ДЗ-02 run 5), losing version/agents/language;
   // the final gates self-heal from this snapshot.
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
-    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted, marker }, null, 2) + '\n');
+    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
+    values: persistValues(values), marker }, null, 2) + '\n');
 
   // 5) the final cognitive task for the agent: fresh install → adaptation;
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
@@ -1252,7 +1296,11 @@ async function cmdInstall() {
         ? 'this anonymous deployment kept no content snapshots'
         : 'this deployment has no content snapshots (pre-1.5 deployments never wrote them)';
       const dep = cls ? handleDeprecations(meta, cls.baselineOld || {}) : { removed: 0, items: [] };
-      const staleClaims = rerun ? [] : scanStaleClaims(legacyOld.version, meta.version);
+      const staleClaims = rerun ? [] : scanStaleClaims(legacyOld.version, meta.version,
+        okOnDisk(DEPLOY_MANIFEST) ? (() => { try { return readJson(DEPLOY_MANIFEST).templateShas || null; } catch { return null; } })() : null);
+      // Only slots literally on disk make the task item (judge finding — see cmdUpdate).
+      const liveUnresolved = [...unresolved].filter((ph) =>
+        deploy.some((f) => f.path.endsWith('.md') && okOnDisk(f.path) && readFileSync(f.path, 'utf8').includes(ph)));
       // A CLASSIFIED bootstrap (surviving manifest / synthetic baseline) hands over exactly what
       // a core update would: per-module diffs and honest counters — not "merge everything".
       writeUpdateTask(cls ? cls.diverged : [], meta, rerun
@@ -1260,8 +1308,8 @@ async function cmdInstall() {
         : cls
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale }
-            : { fromVersion: legacyOld.version, staleClaims });
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved }
+            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved });
     }
     if (existsSync(TASK_FILE)) { unlinkSync(TASK_FILE); log(`- removed stale ${TASK_FILE} (this is an update, not an adaptation)`); }
   } else {
@@ -1485,7 +1533,7 @@ async function cmdDiff() {
   const { files, meta } = parseBundle(tmp);
   unlinkSync(tmp);
   const { deploy: otherDeploy } = applyLanguage(files);
-  const values = detectValues();
+  const values = stableValues();   // preview must fill exactly like the deploy did (bug 26)
   // A v1 manifest has no module provenance, and the loop below would skip every file and print
   // a hollow "0 files / 0 nothing to do" — worse than an honest refusal, and it hit exactly the
   // first-ever update, the moment of highest risk (bug 21 / ndim K3). Build the deployed
