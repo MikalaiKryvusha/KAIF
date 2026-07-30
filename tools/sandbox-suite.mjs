@@ -13,6 +13,7 @@
 //   s04 — anonymous mechanical bootstrap, synthetic legacy baseline, news interval (01, 02, 06, 08)
 //   s05 — kaif-provenance: mark pairing, canon scope, accept registry, quoted-docs immunity
 //   s06 — kaif-canon-lint: forbidden/required guards, selftest, CRLF/BOM tolerance
+//   s07 — translated-wholesale deployment (ndim 2.0 report, K1/K2) + K3 diff-on-v1 + K4/K5 (plan 23)
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -21,7 +22,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
-                's05-provenance.mjs', 's06-canon-lint.mjs'];
+                's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs'];
 let failed = 0;
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);

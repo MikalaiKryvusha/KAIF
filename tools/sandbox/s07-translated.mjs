@@ -62,6 +62,7 @@ let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 bundle = editBundleModule(bundle, '.claude/skills/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
 bundle = editBundleModule(bundle, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)'));
+bundle = editBundleModule(bundle, 'bugs/README.md', 0, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (bugs-readme)'));
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
 copy(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
 const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
@@ -111,21 +112,42 @@ run(T2, 'install --lang ru');
 const mk = JSON.parse(readFileSync(join(T2, '.kaif', 'kaif.json'), 'utf8'));
 mk.i18n = 'translated';
 writeFileSync(join(T2, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n');
-// локальная правка в ТОМ ЖЕ модуле PHILOSOPHY, что меняет апстрим (заголовки целы — EN)
+// ЛОКАЛИЗОВАННАЯ локальная правка в ТОМ ЖЕ модуле PHILOSOPHY, что меняет апстрим
+// (заголовки целы — EN; тело правки — русское: файл «несёт письменность владельца»)
 const P2 = join(T2, 'PHILOSOPHY.md');
 const p2 = splitModules(readFileSync(P2, 'utf8'));
-p2[2].lines.push('', 'LOCAL EDIT in the SAME module upstream changes');
+p2[2].lines.push('', 'Локальная правка по-русски в том же модуле, что менял апстрим.');
 writeFileSync(P2, joinModules(p2));
 const tfShaBefore = sha256(readFileSync(join(T2, 'TESTING_FRAMEWORK.md')));
 r = run(T2, `update --source ${SRC}`);
 ok(r.code === 0 && r.out.includes('i18n: translated'), 'T2 update exit 0, флаг признан', r.out);
-ok(!readFileSync(P2, 'utf8').includes('UPSTREAM ADDITION'), 'K2: локализованный проект — ни одной молчаливой замены правленного');
+ok(!readFileSync(P2, 'utf8').includes('UPSTREAM ADDITION'), 'K2: локализованный файл — ни одной молчаливой замены (dry-run)');
 const task2 = readFileSync(join(T2, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task2.includes('## Module diffs') && task2.includes('+ UPSTREAM ADDITION 9.9 (philosophy)'),
    'K2: обещанные per-module диффы ЕСТЬ в задании (лог/доки перестали врать)');
 ok(readFileSync(join(T2, 'TESTING_FRAMEWORK.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (testing)'),
    'K2: нетронутый чисто-EN файл обновлён механически несмотря на флаг',
    'sha до=' + tfShaBefore.slice(0, 12));
+ok(readFileSync(join(T2, '.claude/skills/check-backlog/SKILL.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (check-backlog)'),
+   'K2: EN-навык с машинными алиасами — не «перевод», под флагом обновляется механически');
+
+// ---------------------------------------------------------------- T6: сетка НЕ душит владельческие добавки (находка F1 судьи)
+// Файл с крошечной базой (1 модуль: README директории) + владелец ДОБАВИЛ кириллическую секцию
+// при script-языке БЕЗ языкового пакета (uk): заголовки базы целы — это НЕ перевод, и апстримная
+// правка обязана влиться механически, а сетка «translated wholesale» — молчать.
+console.log('\n=== T6 (F1): владельческая добавка в 1-модульный файл ≠ «переведён целиком» ===');
+const T6 = join(ROOT, 't6'); mkdirSync(T6); seed(T6);
+r = run(T6, 'install --lang uk');
+ok(r.code === 0, 'T6 install --lang uk exit 0', r.out);
+const BR = join(T6, 'bugs', 'README.md');
+appendFileSync(BR, '\n## Власні нотатки\n\nВласний текст українською — додана секція власника.\n');
+r = run(T6, `update --source ${SRC}`);
+ok(r.code === 0, 'T6 update exit 0', r.out);
+const brTxt = readFileSync(BR, 'utf8');
+ok(brTxt.includes('UPSTREAM ADDITION 9.9 (bugs-readme)'), 'F1: апстримная правка влита механически (файл не заморожен сеткой)');
+ok(brTxt.includes('Власні нотатки'), 'F1: добавленная секция владельца цела');
+ok(!/bugs\/README\.md \(translated wholesale/.test(readFileSync(join(T6, 'KAIF_UPDATE_TASK.md'), 'utf8')),
+   'F1: задание не лжёт про «translated wholesale» на файле с целыми заголовками базы');
 
 // ---------------------------------------------------------------- T3: package.json не переписывается зря
 console.log('\n=== T3 (K4): package.json с вшитыми хендлами и CRLF не трогается ===');

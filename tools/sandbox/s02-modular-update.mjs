@@ -129,16 +129,26 @@ ok(task6.includes('merge-modules') && task6.includes('PHILOSOPHY.md') && task6.i
    task6.includes('+ UPSTREAM ADDITION 9.9 (philosophy)') && task6.includes('- LOCAL EDIT in the SAME module'),
    'S6 задача несёт по-модульный дифф «твоя версия → новый шаблон»');
 
-// ---------------------------------------------------------------- S7: i18n translated — ничего молча
-console.log('\n=== S7: маркер i18n: translated — механическая замена выключена ===');
+// ---------------------------------------------------------------- S7: i18n translated — переведённое не трогается
+// Семантика флага пере-резана эпиком B 2.1 (bugs/20 K2): флаг защищает ПО-ФАЙЛОВО и только файлы,
+// реально несущие письменность владельца; чисто-EN файлы продолжают обновляться механически.
+// Свод стережёт защитную половину: ЛОКАЛИЗОВАННЫЙ файл под флагом не меняется на диске.
+// (Аналитическая половина — диффы в задании, EN-файлы под флагом — стережётся s07-translated.)
+console.log('\n=== S7: маркер i18n: translated — переведённый файл не заменяется ===');
 const S7 = join(ROOT, 's7'); mkdirSync(S7); seed(S7);
 run(S7, 'install --lang ru');
 const mk = JSON.parse(readFileSync(join(S7, '.kaif', 'kaif.json'), 'utf8'));
 mk.i18n = 'translated';
 writeFileSync(join(S7, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n');
+// файл «несёт письменность владельца»: русская локализация тела модуля (заголовки целы)
+const PH7 = join(S7, 'PHILOSOPHY.md');
+const ph7 = splitModules(readFileSync(PH7, 'utf8'));
+ph7[1].lines.push('', 'Русская локализация тела модуля — файл переведён владельцем.');
+writeFileSync(PH7, joinModules(ph7));
 r = run(S7, `update --source ${SRC}`);
-ok(r.code === 0 && r.out.includes('mechanical replacement disabled'), 'S7 i18n: translated признан, замены выключены', r.out);
-ok(!readFileSync(join(S7, 'PHILOSOPHY.md'), 'utf8').includes('UPSTREAM ADDITION'), 'S7 ни один модуль не заменён молча');
+ok(r.code === 0 && r.out.includes('mechanical replacement disabled'), 'S7 i18n: translated признан, замены выключены для переведённого', r.out);
+ok(!readFileSync(PH7, 'utf8').includes('UPSTREAM ADDITION'), 'S7 переведённый файл не заменён и не дополнен молча (dry-run)');
+ok(readFileSync(PH7, 'utf8').includes('Русская локализация тела модуля'), 'S7 локализация владельца цела');
 
 // ---------------------------------------------------------------- S8: пин сплиттеров (ядро == библиотека сборки)
 console.log('\n=== S8: пин-тест — modules-команда ядра против dist/kaif-module-map.json ===');

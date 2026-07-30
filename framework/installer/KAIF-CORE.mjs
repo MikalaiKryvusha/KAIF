@@ -403,8 +403,11 @@ function newsInterval(meta, fromVersion) {
 function scanStaleClaims(fromVersion, toVersion) {
   if (!fromVersion || fromVersion === toVersion) return [];
   const hits = [];
-  const SKIP_DIRS = ['.git', 'node_modules', '.kaif'];
-  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs'];
+  // Knowledge directories and EXPERIENCE/HISTORY are JOURNALS OF THE PAST by definition — a line
+  // "we updated to <old>" cannot be "updated to <new>" without lying; half the field scan's hits
+  // were exactly that (bug 23 / ndim K5), and a noisy guard teaches the agent to ignore it.
+  const SKIP_DIRS = ['.git', 'node_modules', '.kaif', 'researches', 'interviews', 'homeworks', 'bugs', 'ideas'];
+  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs', 'EXPERIENCE.md', 'PROJECT_HISTORY.md'];
   const walk = (dir) => {
     for (const n of readdirSync(dir)) {
       const p = (dir === '.' ? '' : dir + '/') + n;
@@ -413,6 +416,7 @@ function scanStaleClaims(fromVersion, toVersion) {
       if (!/\.md$/i.test(n)) continue;
       const lines = readFileSync(p, 'utf8').split('\n');
       for (let i = 0; i < lines.length; i++) {
+        if (p === 'STATUS.md' && /предыдущ|previous/i.test(lines[i])) continue;   // history, not a claim
         if (/kaif|каиф/i.test(lines[i]) && lines[i].includes(fromVersion) && !lines[i].includes(toVersion)) {
           hits.push(`${p}:${i + 1} — ${lines[i].trim().slice(0, 100)}`);
           if (hits.length >= 40) return hits;
@@ -460,13 +464,13 @@ function policyInterval(meta, fromVersion) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [] } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   const items = [];
   if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
-  if (modFiles.length) items.push(['merge-modules', `These MODULES carry local edits — merge each diff below into your version (the rest of their files was updated mechanically): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
-  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.join(' · ')}`]);
+  if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
+  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; fold the news in by hand)` : p).join(' · ')}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
   if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
@@ -568,10 +572,11 @@ async function buildSyntheticBaseline(legacyOld) {
 // module; a module the owner/agent edited is kept and handed over WITH a diff; modules the owner
 // ADDED to a framework file survive in place (reconstruction starts from the DISK order, so
 // custom insertions keep their position). Returns null when the disk file cannot be cut cleanly.
-// [TESTED: 2026-07-27 · sandboxes S5-S7: localized module survives TWO update cycles while its
-// file's upstream modules merge mechanically; conflict module → diff in the task; upstream-
-// untouched divergence makes no noise; i18n:translated disables replacement entirely]
-function mergeModules(path, newContent, oldMods) {
+// [TESTED: 2026-07-31 · polygon s02 S5-S8 + s07 T1/T2/T6: localized module survives TWO update
+// cycles while its file's upstream modules merge mechanically; conflict module → diff in the
+// task; upstream-untouched divergence makes no noise; a translated-wholesale file is kept intact
+// (no doubling); dryRun analyzes without writes; owner-added sections never trip the net]
+function mergeModules(path, newContent, oldMods, dryRun = false) {
   const disk = normEol(readFileSync(path, 'utf8'));
   const diskMods = splitModules(disk);
   if (joinModules(diskMods) !== disk) return null;                      // pathological file — file-level fallback
@@ -583,6 +588,24 @@ function mergeModules(path, newContent, oldMods) {
   if (dupCheck(diskMods) || dupCheck(newMods)) return null;
   const newBySig = new Map(newMods.map((m) => [m.signature, m]));
   const oldBySig = new Map(oldMods.map((e) => [e.signature, e]));
+  // Translated-wholesale net (bug 20 / ndim K1): a file whose HEADINGS were translated matches
+  // (almost) no baseline signature, so a by-signature merge would read it as "all owner-added"
+  // and DOUBLE the document with the English template (field: 25 files, +6534 lines). If the
+  // baseline's signatures are (all but one) gone from disk AND the disk body carries the owner's
+  // script while the template body does not — this is a translation, not additions: hands off.
+  // Bodies exclude <preamble> on purpose: machinery-appended trigger aliases put the owner's
+  // script into every skill's frontmatter and would blind the test.
+  const nonPre = (list) => list.filter((x) => x.signature !== '<preamble>');
+  const script = SCRIPTS[LANG];
+  const bodyOf = (mods) => nonPre(mods).map(modText).join('\n');
+  const baseFound = nonPre(oldMods).filter((e) => diskMods.some((d) => d.signature === e.signature)).length;
+  // On a TINY base (directory READMEs cut into 1 module) "≤1 matched" degenerates: an intact base
+  // heading plus one owner-added section in the owner's script would read as a translation and
+  // freeze the file with a lying task note (judge finding F1, s07/T6) — small bases demand that
+  // NO base signature survives before the net may fire.
+  const wholesaleCeiling = nonPre(oldMods).length <= 2 ? 0 : 1;
+  if (nonPre(oldMods).length && baseFound <= wholesaleCeiling && script && script.test(bodyOf(diskMods)) && !script.test(bodyOf(newMods)))
+    return { translatedWholesale: true };
   let replaced = 0;
   const divergedList = [];
   const out = [];
@@ -591,13 +614,21 @@ function mergeModules(path, newContent, oldMods) {
     const oldE = oldBySig.get(dm.signature);
     const newM = newBySig.get(dm.signature);
     if (oldE && dSha === oldE.sha256) {
-      // untouched since deploy — upstream's to move
-      if (!newM) { replaced++; continue; }                              // upstream removed the module
+      // untouched since deploy — upstream's to move (in dryRun nothing moves: the change ships
+      // as a diff instead — bug 20/K2, the "don't replace" and "don't analyze" split)
+      if (!newM) {
+        if (dryRun) { out.push(dm); divergedList.push({ signature: dm.signature, note: 'upstream REMOVED this module (not applied — i18n: translated)', diff: lineDiff(modText(dm), '') }); }
+        else replaced++;
+        continue;
+      }
       const newText = modText(newM);
       if (dSha === normSha(newText)) { out.push(dm); }                  // unchanged upstream too
       else if (localizedAgainst(modText(dm), newText)) {                // safety net (decision #17)
         out.push(dm);
         divergedList.push({ signature: dm.signature, note: 'localized on disk — not replaced', diff: lineDiff(modText(dm), newText) });
+      } else if (dryRun) {
+        out.push(dm);
+        divergedList.push({ signature: dm.signature, note: 'upstream updated this module (not applied — i18n: translated)', diff: lineDiff(modText(dm), newText) });
       } else { out.push({ signature: dm.signature, lines: newText.split('\n') }); replaced++; }
     } else {
       // owner/agent-edited, or a module the deploy never shipped (owner-added section) — keep.
@@ -612,9 +643,11 @@ function mergeModules(path, newContent, oldMods) {
   }
   // modules NEW in this release (absent on disk): insert by template order — right after the
   // nearest preceding template sibling that exists in the reconstruction, else append.
+  // In dryRun they are REPORTED, never inserted (a translated file must not grow English text).
   for (let i = 0; i < newMods.length; i++) {
     const nm = newMods[i];
     if (diskMods.some((d) => d.signature === nm.signature)) continue;
+    if (dryRun) { divergedList.push({ signature: nm.signature, note: 'NEW module in this release (not inserted — i18n: translated)', diff: lineDiff('', modText(nm)) }); continue; }
     let at = out.length;
     for (let k = i - 1; k >= 0; k--) {
       const pos = out.findIndex((o) => o.signature === newMods[k].signature);
@@ -624,7 +657,7 @@ function mergeModules(path, newContent, oldMods) {
     replaced++;
   }
   const merged = joinModules(out);
-  return { merged, changed: merged !== disk, replaced, divergedList };
+  return { merged, changed: !dryRun && merged !== disk, replaced, divergedList };
 }
 
 // ONE classification for every road new templates arrive by — core update AND the legacy/
@@ -645,11 +678,15 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
   const divergedModules = {};                        // path → [{signature, note, diff}]
   const ownerConvention = [];                        // owner docs whose TEMPLATE changed shape
   const adopted = [];
-  // i18n intent (decision #17): a project that declared `"i18n": "translated"` in the marker
-  // translated its wrapper wholesale — nothing gets silently replaced; everything ships as
-  // per-module diffs instead of the machinery warring with the translation every release.
+  // i18n intent (decision #17, re-cut by bug 20/K2): a project that declared `"i18n": "translated"`
+  // translated its wrapper — but the flag protects PER FILE, and only files that actually carry
+  // the owner's script where the template does not (machinery-appended skill aliases are not a
+  // translation). Protected files are never written; upstream changes ship as per-module diffs
+  // (a dry-run merge). Pure-English files keep their mechanical updates — the old all-or-nothing
+  // flag silently froze 21 untouched files forever (ndim field report).
   const i18nTranslated = String((cur || {}).i18n || '').toLowerCase() === 'translated';
-  if (i18nTranslated) log('⟳ marker declares i18n: translated — mechanical replacement disabled, per-module diffs only');
+  if (i18nTranslated) log('⟳ marker declares i18n: translated — mechanical replacement disabled for files carrying the owner\'s script; upstream changes ship as per-module diffs');
+  const translatedWholesale = [];
   let replaced = 0, added = 0, kept = 0, mergedModules = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
@@ -673,15 +710,32 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
     const untouched = oldTplShas[f.path]
       ? fileShaNorm(f.path) === oldTplShas[f.path]
       : (!adoptedBefore.has(f.path) && oldShas[f.path] && fileSha(f.path) === oldShas[f.path]);
-    if (untouched && !i18nTranslated) {
+    // The flag freezes only files that ARE a translation: owner's script on disk, none in the
+    // incoming template (bug 20/K2 — aliases in frontmatter make every skill Cyrillic, so the
+    // judgment is localizedAgainst the NEW content, not bare script presence).
+    const fileTranslated = i18nTranslated && f.path.endsWith('.md')
+      && localizedAgainst(normEol(readFileSync(f.path, 'utf8')), content);
+    if (untouched && !fileTranslated) {
       if (fileShaNorm(f.path) === normSha(content)) { kept++; continue; } // upstream didn't change it either
       writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++; continue;
     }
     // Diverged file → the MODULAR merge when the previous deploy left a module cut (v2, md only):
     // untouched modules move mechanically, edited ones are kept and handed over with diffs.
-    if (f.path.endsWith('.md') && oldModShas[f.path] && !i18nTranslated) {
-      const res = mergeModules(f.path, content, oldModShas[f.path]);
+    // A translated file goes through the SAME merge in dry-run: analysis without writes (K2).
+    if (f.path.endsWith('.md') && oldModShas[f.path]) {
+      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated);
+      if (res && res.translatedWholesale) {
+        // headings translated — merging would double the document (bug 20/K1); hands off, task item
+        diverged.push(f.path); translatedWholesale.push(f.path); kept++; adopted.push(f.path);
+        log(`⟳ ${f.path} is translated wholesale (its headings are in the owner's script) — kept intact; fold the template news in by hand`);
+        continue;
+      }
       if (res) {
+        if (fileTranslated) {
+          if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; }
+          kept++; adopted.push(f.path);
+          continue;
+        }
         if (res.changed) { writeFileSync(f.path, res.merged); mergedModules += res.replaced;
           log(`↻ merged ${res.replaced} module(s) into ${f.path}${res.divergedList.length ? ` (${res.divergedList.length} kept for you)` : ''}`); }
         if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; kept++; adopted.push(f.path); }
@@ -692,7 +746,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
-  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted };
+  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale };
 }
 
 // ---------------------------------------------------------------------------- update (idea 14 / plan 15)
@@ -730,7 +784,7 @@ async function cmdUpdate() {
   const { deploy } = applyLanguage(files);           // LANG defaults handled below
   const values = detectValues();
   const unresolved = new Set();
-  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted } =
+  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
     classifyAndApply(deploy, old, values, unresolved, cur);
   // agent-system artifacts: same classification via the copies' snapshots
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
@@ -769,7 +823,7 @@ async function cmdUpdate() {
   const nModDiverged = Object.values(divergedModules).reduce((a, l) => a + l.length, 0);
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims });
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — Unliminium §4). Survives self-clean; update-verify stamps it when the gates pass.
@@ -1129,13 +1183,18 @@ async function cmdInstall() {
     catch { console.error('⚠ package.json exists but is not parseable JSON — kaif:* handles NOT wired (add them by hand)'); }
   } else pkg = {};
   if (pkg) {
-    pkg.name = pkg.name || values['<PROJECT_NAME>'].toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+    // Write ONLY when something was actually added: an unconditional rewrite re-serialized the
+    // user's file (CRLF→LF) into a phantom whole-file diff on every install (bug 22 / ndim K4).
+    let wired = 0;
+    if (!pkg.name) { pkg.name = values['<PROJECT_NAME>'].toLowerCase().replace(/[^a-z0-9-]+/g, '-'); wired++; }
     pkg.scripts = pkg.scripts || {};
     const handles = { 'kaif:version': 'node .kaif/kaif-core.mjs version', 'kaif:check': 'node .kaif/kaif-core.mjs check',
                       'kaif:update': 'node .kaif/kaif-core.mjs update' };
-    for (const [k, v] of Object.entries(handles)) if (!pkg.scripts[k]) pkg.scripts[k] = v;
-    writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-    log('+ wired kaif:* handles into package.json');
+    for (const [k, v] of Object.entries(handles)) if (!pkg.scripts[k]) { pkg.scripts[k] = v; wired++; }
+    if (wired) {
+      writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+      log('+ wired kaif:* handles into package.json');
+    } else log('= kaif:* handles already wired — package.json untouched');
   }
 
   // 4) persist the deploy manifest so `check` outlives the bundle's cleanup.
@@ -1201,7 +1260,7 @@ async function cmdInstall() {
         : cls
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims }
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale }
             : { fromVersion: legacyOld.version, staleClaims });
     }
     if (existsSync(TASK_FILE)) { unlinkSync(TASK_FILE); log(`- removed stale ${TASK_FILE} (this is an update, not an adaptation)`); }
@@ -1427,12 +1486,23 @@ async function cmdDiff() {
   unlinkSync(tmp);
   const { deploy: otherDeploy } = applyLanguage(files);
   const values = detectValues();
+  // A v1 manifest has no module provenance, and the loop below would skip every file and print
+  // a hollow "0 files / 0 nothing to do" — worse than an honest refusal, and it hit exactly the
+  // first-ever update, the moment of highest risk (bug 21 / ndim K3). Build the deployed
+  // version's SYNTHETIC baseline instead (same code as the legacy bootstrap; --baseline works).
+  let mineModShas = m.moduleShas;
+  if (!mineModShas || !Object.keys(mineModShas).length) {
+    const curVer = okOnDisk(KAIF_JSON) ? (() => { try { return readJson(KAIF_JSON).version; } catch { return null; } })() : null;
+    const synth = await buildSyntheticBaseline({ version: curVer });
+    if (!synth) die(`this deployment carries a v1 manifest (no template provenance) and no baseline artifact for v${curVer || '?'} is reachable — pass --baseline <dir|url> with that version's release artifacts, or run the next update (it upgrades the manifest to v2)`);
+    mineModShas = synth.moduleShas;
+  }
   let changedFiles = 0, sameFiles = 0;
   const lines = [];
   for (const f of otherDeploy) {
     if (!f.path.endsWith('.md')) continue;
-    const mine = (m.moduleShas || {})[f.path];
-    if (!mine) continue; // not deployed here (or a v1 manifest)
+    const mine = mineModShas[f.path];
+    if (!mine) continue; // not deployed here
     const filled = fillPlaceholders(f.content, values, new Set());
     const other = moduleEntries(f.path, normEol(filled).replace(/\s+$/, '\n'), meta.moduleClasses);
     const mineBySig = new Map(mine.map((e) => [e.signature, e]));
