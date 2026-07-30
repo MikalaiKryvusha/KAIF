@@ -26,5 +26,7 @@
   "fable-method": "「按 Fable 方法」「应用 fable 方法」「像 Fable 那样解决」",
   "fable-loop": "「跑一遍 fable 循环」「像 Fable 那样做」",
   "fable-judge": "「评判这项工作」「核实它做了什么」「真的成功了吗？」",
-  "fable-domain": "「为这个行业做个技能」「给 fable 方法加个领域」"
+  "fable-domain": "「为这个行业做个技能」「给 fable 方法加个领域」",
+  "plan-task": "「规划这个任务」「给这个任务做个计划」「为这个 bug 做计划」",
+  "plan-epic": "「规划这个史诗任务」「拆解这个大特性」「完整的规划阶梯」"
 }

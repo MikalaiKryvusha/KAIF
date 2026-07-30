@@ -61,7 +61,9 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
    - **Do NOT start implementing** until the human explicitly approves. In an autoloop — continue with OTHER tasks.
 
 5. **After the human reacts:**
-   - Approved → take it into work (technical decisions inside — yours). After implementing: status ✅ +
+   - Approved → take it into work (technical decisions inside — yours). An EPIC-scale idea (the
+     heaviness test of `/plan-task`) is planned by the full ladder first — `/plan-epic`: research →
+     meta-plan → phased operational plans. After implementing: status ✅ +
      date, and by the DONE-tag convention — `git mv` with the `DONE` tag and a status section inside.
    - Rejected/reframed → reflect their decision in the document (or delete the idea if rejected).
 

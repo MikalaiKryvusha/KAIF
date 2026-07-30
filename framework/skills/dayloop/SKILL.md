@@ -54,7 +54,8 @@ when the current one is exhausted (see step 8).
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
    then ADD a command to the harness so next time it's one step. Execute the item by the fable loop
    (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
-   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too. A HEAVY item with no plan yet →
+   `/plan-epic` first (research → meta-plan), then execute phase by phase.
 4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
    claimed checks, diff what actually changed against the item's scope. REFUTED → the item goes back to
    work (step 3), not to "done"; after 3 failed fix-judge cycles on the same item, record it honestly in

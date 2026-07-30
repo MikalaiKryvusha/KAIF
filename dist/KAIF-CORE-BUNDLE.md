@@ -83,7 +83,7 @@ relies entirely on this document to get to work.
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
-8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics)
 9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
 10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 11. Run the build (if touching code)   # <BUILD_COMMAND>
@@ -121,7 +121,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Testing / verifying anything | `TESTING_FRAMEWORK.md` (the 7 principles · `[NOT-TESTED]`/`[TESTED]` markers) · the sphere's verification sections |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
-| Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
+| Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
@@ -157,6 +157,37 @@ run a **`/fable-judge`** pass before presenting it as done — mandatory in the 
 These three skills are vendored verbatim from [fable-method](https://github.com/Sahir619/fable-method)
 (Sahir619, MIT) — see their headers for the sync ritual; the project's sphere library plays the role of
 their domain adapters.
+
+### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
+
+Nearly everything in this industry has golden standards, best practices, published research — or at
+least documented practitioner lore. **A major epic feature therefore starts with a web recon of the
+industry's golden practices and a research doc in `researches/`** — this extends "recon before code"
+(checklist step 9) from *external truth* to *industry knowledge*: the state of the art is an external
+truth too, and a session that skips the sweep re-invents solved problems badly.
+
+**The heaviness test** (checkable, not taste). A task is HEAVY when **≥2** of these hold:
+touches ≥3 subsystems or canon documents · rests on an external truth or an industry standard ·
+does not fit one session · changes shipped composition or public contracts · needs owner-level
+decisions. Otherwise it is ordinary.
+
+- **Ordinary → `/plan-task`:** ONE operational plan — goal, done-criteria, steps with checkboxes,
+  verification-by-observation, risks. Small enough? The plan lives as a section right inside the
+  idea/bug document itself. Ceremony must never outweigh the work.
+- **Heavy → `/plan-epic`** — the full ladder, each rung an artifact:
+  1. **Research** — industry sweep (web) + local recon + the project's requirements, synthesized
+     into a research doc in `researches/`. No code, no meta-plan before it exists.
+  2. **Meta-plan** — one epic plan in `plans/`: phases, order, gates, acceptance criteria;
+     vision-level forks go to `/interview` (work on unblocked phases proceeds meanwhile).
+  3. **Operational plans per phase** — R&D · testing · mock-ups · development · debugging ·
+     acceptance. Detail ONLY the next phase; the plan for phase N+1 is written when phase N closes —
+     never all upfront (they would be fiction by the time you reach them).
+  4. **Trace** — every operational step cites its meta-plan anchor line (the citing rule of
+     checklist step 8); a step you cannot anchor is scope drift caught before the diff.
+
+The ladder is not ceremony for its own sake: research is where the epic gets its evidence base,
+the meta-plan is where the owner sees the whole shape once, and phase-by-phase operational plans are
+what keeps a context-losing session executing the RIGHT next step instead of re-deriving the epic.
 
 ### Languages — two audiences, two languages
 
@@ -1406,7 +1437,7 @@ Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `rese
 
 ## 6. The skill system
 
-Twenty-eight skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -1415,6 +1446,9 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
   with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch.
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
+- **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
+  `plan-epic` (the full ladder for heavy work: industry web-recon + local recon → research doc →
+  meta-plan with phases → operational plan of the NEXT phase only).
 - **Vision:** `revision` · `fix-vision` · `what-next` · `help-kaif` (reads THIS reference).
 - **Canon writing:** `derive-styleguide` (§13.4).
 - **Shipping:** `release` (owner-confirmed only).
@@ -1835,7 +1869,8 @@ without those resources.
 2. **Understand it simply** (PHILOSOPHY) — state it in 1–2 sentences. For bugs — open/create a `bugs/` doc.
 3. **Implement** in a targeted way, with comments. Don't over-complicate. Execute the item by the fable
    loop (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
-   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too. A HEAVY item with no plan yet →
+   build the ladder first (`/plan-epic`: research → meta-plan), then execute phase by phase.
 4. **Build** (`<BUILD_COMMAND>`). If errors — fix them, don't commit broken state.
 5. **Deploy/run** as your project requires.
 6. **Verify autonomously** on the harness (`<TEST_HARNESS>`). Look at the result carefully — don't
@@ -2075,7 +2110,8 @@ when the current one is exhausted (see step 8).
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
    then ADD a command to the harness so next time it's one step. Execute the item by the fable loop
    (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
-   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too. A HEAVY item with no plan yet →
+   `/plan-epic` first (research → meta-plan), then execute phase by phase.
 4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
    claimed checks, diff what actually changed against the item's scope. REFUTED → the item goes back to
    work (step 3), not to "done"; after 3 failed fix-judge cycles on the same item, record it honestly in
@@ -3466,7 +3502,8 @@ Until one fires — don't stop, don't wait for confirmations, work.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. High-level harness commands first; if missing, do it low-level then ADD the command.
    Execute the item by the fable loop (`/fable-method`; `/fable-loop` for substantive items) — its gates
-   and forced artifacts (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+   and forced artifacts (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too. A HEAVY item
+   with no plan yet → `/plan-epic` first (research → meta-plan), then execute phase by phase.
 4. **Judge pass — MANDATORY before "done"**: run `/fable-judge` over the finished item — re-run the
    claimed checks, diff what actually changed against the item's scope. REFUTED → back to work (step 3),
    not to "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take
@@ -3556,6 +3593,147 @@ Then stop. No further actions, no background work.
   `git log` as usual.
 ``````
 
+> **FILE: `.claude/skills/plan-epic/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: plan-epic
+description: Plan a HEAVY task or epic by the full ladder — industry web-recon + local recon synthesized into a research doc, then ONE meta-plan with phases and gates, then an operational plan for the NEXT phase only (phase N+1 is planned when phase N closes). Use when the human says "plan this epic", "take this big feature into work", "нарезай эпик", or when /plan-task's heaviness test hands the task over; the deliverable is the ladder's artifacts, not started code.
+---
+
+# /plan-epic — the full planning ladder for heavy work
+
+Nearly everything in this industry has golden standards, best practices, published research — or at
+least documented practitioner lore. An epic planned from memory re-invents solved problems badly,
+and an epic planned all-upfront executes fiction by phase three. The ladder fixes both: research
+gives the epic its evidence base, the meta-plan shows the owner the whole shape once, and
+phase-by-phase operational plans keep a context-losing session on the RIGHT next step.
+
+Canon: `AGENT_GUIDE.md` → "Planning discipline — the task ladder".
+
+## Step 0 — confirm heaviness
+
+Run the heaviness test (≥2 of: ≥3 subsystems/canon docs · external truth or industry standard ·
+more than one session · changes shipped composition/contracts · owner decisions). NOT heavy →
+switch to `/plan-task`; dragging the ladder onto an ordinary task is ceremony outweighing work.
+
+## Rung 1 — research (the epic's first artifact; no code, no meta-plan before it)
+
+Synthesize THREE sources into one research doc in `researches/NN_<epic>.md`:
+
+1. **Industry sweep (web):** golden standards, best practices, papers, mature open-source
+   solutions for this problem class. Every claim carries its source URL; no invented citations.
+   Record anti-patterns too — knowing what the industry abandoned is half the value.
+2. **Local recon:** how the project's current code/docs/data actually stand where the epic will
+   land (read, don't recall); prior art in `researches/` and lessons in `EXPERIENCE.md`.
+3. **Requirements:** the owner's ask verbatim, `GOAL.md`/`MASTER_PLAN.md` fit, constraints.
+
+Close the doc with: findings → implications for THIS epic → open forks for the owner. Where the
+source material is large, extraction may be delegated — but only with verbatim-quote schemas and a
+mechanical quote check (a finding is not a finding until verified).
+
+## Rung 2 — the meta-plan (one document in `plans/`)
+
+- Phases with a stated ORDER and the reasoning behind it; dependencies between phases.
+- Gates: what must be true to enter/close each phase (builds green, guards proven able to fail,
+  judge passes — per `TESTING_FRAMEWORK.md`).
+- Acceptance criteria for the whole epic — observable, countable where possible.
+- Vision-level forks → `/interview` (work on unblocked phases proceeds meanwhile);
+  task-level ambiguity → one pointed question in chat.
+- Commit the meta-plan before executing anything.
+
+## Rung 3 — operational plan for the NEXT phase only
+
+Detail ONLY the upcoming phase (R&D · testing · mock-ups · development · debugging · acceptance —
+whichever apply): steps with checkboxes, per-step verification, risks. Later phases stay as
+skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
+with everything phase N taught folded in.
+
+## Rung 4 — trace and execute
+
+- Every operational step cites its meta-plan anchor line (the citing rule, checklist step 8);
+  a step you cannot anchor is scope drift caught before the diff.
+- Execute each phase by the fable loop; a `/fable-judge` pass closes a phase before the next
+  one's operational plan is written.
+- Tick the meta-plan as phases close; on epic close, fill "Decisions made without the owner".
+
+## What this skill refuses to do
+
+- Start coding "while the research settles" — the research IS the epic's first artifact.
+- Write all operational plans upfront — phase N+1 is planned with phase N's lessons, not before.
+- Treat the web sweep as optional — "I know this domain" is a session's recall, and recall invents.
+- Swallow owner forks into defaults — vision-level forks go to `/interview`, visibly.
+``````
+
+> **FILE: `.claude/skills/plan-task/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: plan-task
+description: Plan an ORDINARY task, bug or idea into one operational plan — goal, done-criteria, steps with checkboxes, verification-by-observation, risks — sized so the ceremony never outweighs the work. Runs the heaviness test first and hands a HEAVY task over to /plan-epic (the full research → meta-plan → phased ladder). Use when the human says "plan this task", "make a plan for this bug/idea", "how would you approach this", or when the agent picks up an unplanned backlog item; for epic-scale work use /plan-epic instead.
+---
+
+# /plan-task — one operational plan for an ordinary task
+
+An unplanned task gets executed by improvisation, and improvisation does not survive a
+context-losing session. An ORDINARY task deserves exactly ONE artifact: a short operational plan
+a fresh session can execute and judge the work by. No ladder, no phases — that is `/plan-epic`'s
+territory, and dragging an epic's ceremony onto a small task is as wrong as skipping planning on
+a big one.
+
+## Step 0 — the heaviness test (canon: AGENT_GUIDE.md → Planning discipline)
+
+The task is HEAVY when **≥2** of these hold:
+
+- touches ≥3 subsystems or canon documents;
+- rests on an external truth or an industry standard;
+- does not fit one session;
+- changes shipped composition or public contracts;
+- needs owner-level decisions.
+
+HEAVY → stop here, switch to **`/plan-epic`** (say so in one chat line). Otherwise continue.
+
+## Step 1 — gather (minutes, not hours)
+
+- The source document (`ideas/NN`, `bugs/NN`, or the owner's ask verbatim).
+- The relevant map slice (`PROJECT_ARCHITECTURE_INTERNAL_MAP.md` — blast radius).
+- `EXPERIENCE.md` grep by the task's tags — cite relevant lessons or say "none".
+- If the task rests on an external truth — the recon doc first (checklist step 9); planning from
+  recall is inventing.
+
+## Step 2 — write the plan
+
+Structure (keep it to one screen where possible):
+
+```
+## Plan: <one-line goal>
+**Done when:** <observable criteria — what will be SEEN working, not "code written">
+**Steps:**
+- [ ] <step — small enough to verify on its own>
+- [ ] ...
+**Verification:** <how each claim will be observed: run, render, measurement, guard>
+**Risks:** <top 1-3, each with the reaction if it fires — Murphy ranking from PHILOSOPHY.md>
+```
+
+Placement: a small task's plan lives as a **section inside its idea/bug document**; a larger one
+gets its own `plans/NN_<name>.md`. Either way the plan is committed before the work starts.
+
+## Step 3 — clearance, then go
+
+- The plan crosses owner territory (brand, UX, architecture, canon content)? Surface the fork
+  first — one pointed question in chat for task-level ambiguity, `/interview` for vision-level.
+- Otherwise start executing immediately (fable loop, checklist step 7) — the plan is standing
+  authorization for its own reversible steps.
+
+## What this skill refuses to do
+
+- Plan an epic as a flat step list (the heaviness test exists so scope drift is caught at
+  planning, not mid-execution).
+- Produce a plan without done-criteria or verification — "steps done" is not "task done"
+  (`TESTING_FRAMEWORK.md`: raw output is untrusted).
+- Skip the plan because "the task is clear" — clear to THIS session; the plan is for the next one.
+``````
+
 > **FILE: `.claude/skills/propose-idea/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
@@ -3622,7 +3800,9 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
    - **Do NOT start implementing** until the human explicitly approves. In an autoloop — continue with OTHER tasks.
 
 5. **After the human reacts:**
-   - Approved → take it into work (technical decisions inside — yours). After implementing: status ✅ +
+   - Approved → take it into work (technical decisions inside — yours). An EPIC-scale idea (the
+     heaviness test of `/plan-task`) is planned by the full ladder first — `/plan-epic`: research →
+     meta-plan → phased operational plans. After implementing: status ✅ +
      date, and by the DONE-tag convention — `git mv` with the `DONE` tag and a status section inside.
    - Rejected/reframed → reflect their decision in the document (or delete the idea if rejected).
 
@@ -5048,7 +5228,9 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
   "fable-method": "«بطريقة Fable», «طبّق منهج fable», «حُلّها كما يفعل Fable»",
   "fable-loop": "«شغّل حلقة fable», «افعلها كما كان Fable سيفعل»",
   "fable-judge": "«احكم على العمل», «تحقق مما فعله», «هل نجح فعلًا؟»",
-  "fable-domain": "«اصنع مهارة لهذا القطاع», «أضف مجالًا إلى منهج fable»"
+  "fable-domain": "«اصنع مهارة لهذا القطاع», «أضف مجالًا إلى منهج fable»",
+  "plan-task": "«خطّط لهذه المهمة», «اعمل خطة لهذه المهمة», «خطة لهذا الخلل»",
+  "plan-epic": "«خطّط لهذه الملحمة», «قسّم الميزة الكبيرة», «سُلّم التخطيط الكامل»"
 }
 ``````
 
@@ -5335,7 +5517,9 @@ aktualisiert, während das Verständnis wächst.
   "fable-method": "«nach der Fable-Methode», «wende die Fable-Methode an», «löse es wie Fable»",
   "fable-loop": "«fahr die Fable-Schleife», «mach es, wie Fable es täte»",
   "fable-judge": "«beurteile die Arbeit», «prüfe, was er getan hat», «hat das wirklich funktioniert?»",
-  "fable-domain": "«bau einen Skill für die Branche», «füge der Fable-Methode eine Domäne hinzu»"
+  "fable-domain": "«bau einen Skill für die Branche», «füge der Fable-Methode eine Domäne hinzu»",
+  "plan-task": "«plane diese Aufgabe», «erstelle einen Plan für die Aufgabe», «Plan für diesen Bug»",
+  "plan-epic": "«plane dieses Epic», «zerlege das Epic», «vollständige Planungsleiter»"
 }
 ``````
 
@@ -5619,7 +5803,9 @@ medida que crece la comprensión.
   "fable-method": "«según el método Fable», «aplica el método fable», «resuélvelo como Fable»",
   "fable-loop": "«corre el ciclo fable», «hazlo como lo haría Fable»",
   "fable-judge": "«juzga el trabajo», «verifica lo que hizo», «¿de verdad funcionó?»",
-  "fable-domain": "«haz una habilidad para el sector», «añade un dominio al método fable»"
+  "fable-domain": "«haz una habilidad para el sector», «añade un dominio al método fable»",
+  "plan-task": "«planifica esta tarea», «haz un plan para esta tarea», «plan para este bug»",
+  "plan-epic": "«planifica esta épica», «desglosa la épica», «escalera completa de planificación»"
 }
 ``````
 
@@ -5907,7 +6093,9 @@ compréhension grandit.
   "fable-method": "« selon la méthode Fable », « applique la méthode fable », « résous ça comme Fable »",
   "fable-loop": "« lance la boucle fable », « fais comme Fable le ferait »",
   "fable-judge": "« juge le travail », « vérifie ce qu'il a fait », « ça a vraiment marché ? »",
-  "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »"
+  "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »",
+  "plan-task": "« planifie cette tâche », « fais un plan pour cette tâche », « plan pour ce bug »",
+  "plan-epic": "« planifie cet epic », « découpe l'epic », « échelle complète de planification »"
 }
 ``````
 
@@ -6180,7 +6368,9 @@ DONE टैग नहीं मिलता।
   "fable-method": "\"Fable विधि से\", \"fable विधि लागू करो\", \"Fable की तरह हल करो\"",
   "fable-loop": "\"fable लूप चलाओ\", \"जैसे Fable करता वैसे करो\"",
   "fable-judge": "\"काम को परखो\", \"जो किया उसकी जाँच करो\", \"सचमुच काम किया?\"",
-  "fable-domain": "\"इस क्षेत्र के लिए स्किल बनाओ\", \"fable विधि में डोमेन जोड़ो\""
+  "fable-domain": "\"इस क्षेत्र के लिए स्किल बनाओ\", \"fable विधि में डोमेन जोड़ो\"",
+  "plan-task": "\"इस काम की योजना बनाओ\", \"इस टास्क का प्लान बनाओ\", \"इस बग का प्लान\"",
+  "plan-epic": "\"इस एपिक की योजना बनाओ\", \"बड़े फ़ीचर को चरणों में बाँटो\", \"पूरी योजना-सीढ़ी से\""
 }
 ``````
 
@@ -6460,7 +6650,9 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
   "fable-method": "「Fable メソッドで」「fable メソッドを適用して」「Fable のように解決して」",
   "fable-loop": "「fable ループを回して」「Fable がやるようにやって」",
   "fable-judge": "「作業をジャッジして」「やったことを検証して」「本当に動いた？」",
-  "fable-domain": "「この業界向けのスキルを作って」「fable メソッドにドメインを追加して」"
+  "fable-domain": "「この業界向けのスキルを作って」「fable メソッドにドメインを追加して」",
+  "plan-task": "「このタスクを計画して」「このタスクの計画を作って」「このバグの計画」",
+  "plan-epic": "「このエピックを計画して」「大きな機能を分解して」「計画のはしご全体で」"
 }
 ``````
 
@@ -6743,7 +6935,9 @@ compreensão cresce.
   "fable-method": "«pelo método Fable», «aplica o método fable», «resolve como o Fable»",
   "fable-loop": "«roda o ciclo fable», «faz como o Fable faria»",
   "fable-judge": "«julga o trabalho», «verifica o que ele fez», «funcionou mesmo?»",
-  "fable-domain": "«faz uma habilidade para o setor», «adiciona um domínio ao método fable»"
+  "fable-domain": "«faz uma habilidade para o setor», «adiciona um domínio ao método fable»",
+  "plan-task": "«planeje esta tarefa», «faça um plano para a tarefa», «plano para este bug»",
+  "plan-epic": "«planeje este épico», «divida o épico», «escada completa de planejamento»"
 }
 ``````
 
@@ -7015,7 +7209,9 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "fable-method": "«по методу Фейбла», «примени фейбл-метод», «реши по фейблу»",
   "fable-loop": "«прогони фейбл-цикл», «сделай как Фейбл»",
   "fable-judge": "«проверь работу судьёй», «просуди работу», «это точно сработало?»",
-  "fable-domain": "«сделай навык для сферы», «добавь домен в фейбл-метод»"
+  "fable-domain": "«сделай навык для сферы», «добавь домен в фейбл-метод»",
+  "plan-task": "«спланируй задачу», «составь план по задаче», «план по багу», «план по идее»",
+  "plan-epic": "«спланируй эпик», «нарезай эпик», «полная лестница планирования», «бери эпик в работу»"
 }
 ``````
 
@@ -7272,6 +7468,8 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
   "fable-method": "「按 Fable 方法」「应用 fable 方法」「像 Fable 那样解决」",
   "fable-loop": "「跑一遍 fable 循环」「像 Fable 那样做」",
   "fable-judge": "「评判这项工作」「核实它做了什么」「真的成功了吗？」",
-  "fable-domain": "「为这个行业做个技能」「给 fable 方法加个领域」"
+  "fable-domain": "「为这个行业做个技能」「给 fable 方法加个领域」",
+  "plan-task": "「规划这个任务」「给这个任务做个计划」「为这个 bug 做计划」",
+  "plan-epic": "「规划这个史诗任务」「拆解这个大特性」「完整的规划阶梯」"
 }
 ``````

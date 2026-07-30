@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.0",
   "released": "2026-07-28",
-  "moduleCount": 570,
+  "moduleCount": 586,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -17,7 +17,7 @@
       {
         "signature": "## Before every task — checklist",
         "class": "adaptive",
-        "sha256": "1068bc39e4109735fff84930f1b6cc0bdfb4e9c85e5a33f96ecbe9915a27eeba",
+        "sha256": "c5d80cce7ef2d26e5d06bc33b314d6bedc16216ef3822d17fa6b1c8e6fcdfe84",
         "lines": [
           20,
           55
@@ -26,7 +26,7 @@
       {
         "signature": "### Context router (progressive loading) — read only the slice you need",
         "class": "static",
-        "sha256": "603196e19743df3b572d09abbbd297584ed8de3e4a0d075ac85f70cf38049ee6",
+        "sha256": "fe0c2cf27d0c7c14dfb7dfee055f1d227693bda8bf3123bdcae4725bbd29984f",
         "lines": [
           56,
           73
@@ -51,12 +51,21 @@
         ]
       },
       {
+        "signature": "### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)",
+        "class": "static",
+        "sha256": "b1fc4f233d85e9d1005640f23e7bd0d225ca4fb5aee6175ca3db530e1460be00",
+        "lines": [
+          105,
+          135
+        ]
+      },
+      {
         "signature": "### Languages — two audiences, two languages",
         "class": "adaptive",
         "sha256": "d1958723a3b3b1572e00d369fb84237ee41671ad0eefce181dfce903a766c3bc",
         "lines": [
-          105,
-          112
+          136,
+          143
         ]
       },
       {
@@ -64,8 +73,8 @@
         "class": "static",
         "sha256": "c1407cdfc19241e83b46751222cc522857c6b8344b1ee764af59c654d9c17edd",
         "lines": [
-          113,
-          122
+          144,
+          153
         ]
       },
       {
@@ -73,8 +82,8 @@
         "class": "adaptive",
         "sha256": "18da84d8f4ca31cfb21c4c7b9fcebe3b80f3dc0d61a13ede3351e44c81e251a6",
         "lines": [
-          123,
-          138
+          154,
+          169
         ]
       },
       {
@@ -82,8 +91,8 @@
         "class": "static",
         "sha256": "4bb2839da554cc515191a65d936345ceba5309849aad8c0a958812060820df3f",
         "lines": [
-          139,
-          144
+          170,
+          175
         ]
       },
       {
@@ -91,8 +100,8 @@
         "class": "static",
         "sha256": "dc1c7b739d251b671539898faeac13013b64984619e154f92af7208ced65dd6e",
         "lines": [
-          145,
-          161
+          176,
+          192
         ]
       },
       {
@@ -100,8 +109,8 @@
         "class": "adaptive",
         "sha256": "98cea13f34c8dacf866d048849d56f77dc4a5a80753a713152f33fdf674e6c24",
         "lines": [
-          162,
-          172
+          193,
+          203
         ]
       },
       {
@@ -109,8 +118,8 @@
         "class": "static",
         "sha256": "004093c52eacf2037e8a428b75167644b923c6e6f33777b5b339aeb6c78c6661",
         "lines": [
-          173,
-          188
+          204,
+          219
         ]
       },
       {
@@ -118,8 +127,8 @@
         "class": "static",
         "sha256": "6a5dd1aad292f24a32e25d7eac2d47bea94e1d0617cc50eb90236926aa0b2f39",
         "lines": [
-          189,
-          211
+          220,
+          242
         ]
       },
       {
@@ -127,8 +136,8 @@
         "class": "adaptive",
         "sha256": "a88e5bda530a6f64e35315365e6d3503a8c2856b783d7fb42a4ed4eab74a9e45",
         "lines": [
-          212,
-          230
+          243,
+          261
         ]
       },
       {
@@ -136,8 +145,8 @@
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          231,
-          238
+          262,
+          269
         ]
       },
       {
@@ -145,8 +154,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          239,
-          249
+          270,
+          280
         ]
       },
       {
@@ -154,8 +163,8 @@
         "class": "static",
         "sha256": "856c756afbc947d2b2eee15ccb0785b4556b439b435c0e3a95501e8c99ded3b3",
         "lines": [
-          250,
-          302
+          281,
+          333
         ]
       },
       {
@@ -163,8 +172,8 @@
         "class": "static",
         "sha256": "28501ee0a9044b86767aa1cf8e3f49626c2257b9083aa8171ecdf25dc22309fa",
         "lines": [
-          303,
-          353
+          334,
+          384
         ]
       },
       {
@@ -172,8 +181,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          354,
-          368
+          385,
+          399
         ]
       },
       {
@@ -181,8 +190,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          369,
-          381
+          400,
+          412
         ]
       }
     ],
@@ -948,10 +957,10 @@
       {
         "signature": "## 6. The skill system",
         "class": "static",
-        "sha256": "eea7b245d20be0fab9fbe9cbe922228451f0ed4be3e90edca0197c0de183bda0",
+        "sha256": "1778add3028a29d7b56f59f93d6c6f0177c321c18e4a1f5fbd3143c4b836b78c",
         "lines": [
           92,
-          114
+          117
         ]
       },
       {
@@ -959,8 +968,8 @@
         "class": "static",
         "sha256": "44b78cbd335e6c360797eb999463e3350c5cdeddfd24863d99ef2dc43e2e2494",
         "lines": [
-          115,
-          116
+          118,
+          119
         ]
       },
       {
@@ -968,8 +977,8 @@
         "class": "static",
         "sha256": "ab9545bf0b5c0084d28525d3c6b340269d9b11588e49c3b7adf201745648df3f",
         "lines": [
-          117,
-          122
+          120,
+          125
         ]
       },
       {
@@ -977,8 +986,8 @@
         "class": "static",
         "sha256": "ebe32fb6402ac60489fff458509c9f5d946ecc2d93ca970c2364671f955bc209",
         "lines": [
-          123,
-          131
+          126,
+          134
         ]
       },
       {
@@ -986,8 +995,8 @@
         "class": "static",
         "sha256": "ecf66ec956e4700a97c14e67fd661d3f3ad3ba6c994439e1a0d75395f3fdcd1c",
         "lines": [
-          132,
-          138
+          135,
+          141
         ]
       },
       {
@@ -995,8 +1004,8 @@
         "class": "static",
         "sha256": "73291b9dd7dbc051ce448b519c64012fb2260359c8f4e4773030cba1a9e56aa5",
         "lines": [
-          139,
-          146
+          142,
+          149
         ]
       },
       {
@@ -1004,8 +1013,8 @@
         "class": "static",
         "sha256": "66d071013b370b4635401b41a9effc13a92bb0aef9b1de176b6709750423d850",
         "lines": [
-          147,
-          153
+          150,
+          156
         ]
       },
       {
@@ -1013,8 +1022,8 @@
         "class": "static",
         "sha256": "b27c64dc7d55013ee51ededaff11f50a814c42219a4415a3b1e7e38de8d97962",
         "lines": [
-          154,
-          155
+          157,
+          158
         ]
       },
       {
@@ -1022,8 +1031,8 @@
         "class": "static",
         "sha256": "44109a5c776d9b1bd49517062c2f7f78cd76aa440299ff56adbde404a088579a",
         "lines": [
-          156,
-          160
+          159,
+          163
         ]
       },
       {
@@ -1031,8 +1040,8 @@
         "class": "static",
         "sha256": "c89c0ead0e4f030941764b62dc471914fb38f53bb616422a03d2f5741f6c3436",
         "lines": [
-          161,
-          167
+          164,
+          170
         ]
       },
       {
@@ -1040,8 +1049,8 @@
         "class": "static",
         "sha256": "c83fa0768eacc805178e0bd10afb9179fe36439b3e7ba732abdd8efd47f051e6",
         "lines": [
-          168,
-          169
+          171,
+          172
         ]
       },
       {
@@ -1049,8 +1058,8 @@
         "class": "static",
         "sha256": "8b8bdc6ce3bd10afd5939f6cf7a96f975df27aa5aa86b174dc25c6524af00cf4",
         "lines": [
-          170,
-          179
+          173,
+          182
         ]
       },
       {
@@ -1058,8 +1067,8 @@
         "class": "static",
         "sha256": "2a5b3fbc6beb91b8bb48060abd0c684d7d8527684b7b35d42444090bcb6b1fc6",
         "lines": [
-          180,
-          184
+          183,
+          187
         ]
       },
       {
@@ -1067,8 +1076,8 @@
         "class": "static",
         "sha256": "bfe93071404fa914402b99a75cbd57a40103105b9f6b7366687ba17b3c9ed982",
         "lines": [
-          185,
-          186
+          188,
+          189
         ]
       },
       {
@@ -1076,8 +1085,8 @@
         "class": "static",
         "sha256": "ce13da81c52896d6c4d79b5b9e5232ab26b99fb00950331f6c58a46c22dcdcb0",
         "lines": [
-          187,
-          193
+          190,
+          196
         ]
       },
       {
@@ -1085,8 +1094,8 @@
         "class": "static",
         "sha256": "01a2dc7f739d60f90010087a93f4066f02c74fe0497a1c61137cf301d029a693",
         "lines": [
-          194,
-          201
+          197,
+          204
         ]
       },
       {
@@ -1094,8 +1103,8 @@
         "class": "static",
         "sha256": "02da22d42e9e9237b83fe7f8f3eb67f593b796169b6c9eeb6c584726b785e9e3",
         "lines": [
-          202,
-          208
+          205,
+          211
         ]
       },
       {
@@ -1103,8 +1112,8 @@
         "class": "static",
         "sha256": "482e52c71eb2d7abdba4a8f948ec7b59f6e88fff6a2c3e959ac0ad363803f6e2",
         "lines": [
-          209,
-          216
+          212,
+          219
         ]
       },
       {
@@ -1112,8 +1121,8 @@
         "class": "static",
         "sha256": "325171663ed7b5bf8ff971a88ccfc1c5ba7dd2a661617ad11fd18eac6336e6cd",
         "lines": [
-          217,
-          222
+          220,
+          225
         ]
       },
       {
@@ -1121,8 +1130,8 @@
         "class": "static",
         "sha256": "16e95c45a56a09a36130c416cf0b23f294d04d01d2dd4a80cff97e42d2868d11",
         "lines": [
-          223,
-          228
+          226,
+          231
         ]
       },
       {
@@ -1130,8 +1139,8 @@
         "class": "static",
         "sha256": "dd02da2e0780b229625c6eb0e4dcd8a6864a4dadeca317c286b68fa5ecc2dfb4",
         "lines": [
-          229,
-          236
+          232,
+          239
         ]
       },
       {
@@ -1139,8 +1148,8 @@
         "class": "static",
         "sha256": "104d97b9dd44c46088d6bfd4fa8b5c59327fd50831c711a2492d083d5f75c648",
         "lines": [
-          237,
-          244
+          240,
+          247
         ]
       },
       {
@@ -1148,8 +1157,8 @@
         "class": "static",
         "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
         "lines": [
-          245,
-          246
+          248,
+          249
         ]
       },
       {
@@ -1157,8 +1166,8 @@
         "class": "static",
         "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
         "lines": [
-          247,
-          252
+          250,
+          255
         ]
       },
       {
@@ -1166,8 +1175,8 @@
         "class": "static",
         "sha256": "2ac0a888bff20e43e4cc1ab04c648898e525ad70ad501b0a85d1ad8da1d799bf",
         "lines": [
-          253,
-          259
+          256,
+          262
         ]
       },
       {
@@ -1175,8 +1184,8 @@
         "class": "static",
         "sha256": "dcc15859ba7b566f94d75aee2cfb8101a78c5244ef0fc5a85088882cfaebbc5d",
         "lines": [
-          260,
-          267
+          263,
+          270
         ]
       },
       {
@@ -1184,8 +1193,8 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          268,
-          269
+          271,
+          272
         ]
       },
       {
@@ -1193,8 +1202,8 @@
         "class": "static",
         "sha256": "5e7c20b984bf2f41f30fc91ee0ea7680da18870cb48e5e9a6e91d3e879ca0032",
         "lines": [
-          270,
-          287
+          273,
+          290
         ]
       },
       {
@@ -1202,8 +1211,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          288,
-          296
+          291,
+          299
         ]
       },
       {
@@ -1211,8 +1220,8 @@
         "class": "static",
         "sha256": "74c79ea9fa60feb438a6143a85cceeaecf150dc55a42f0273904fcb6056a3de9",
         "lines": [
-          297,
-          301
+          300,
+          304
         ]
       },
       {
@@ -1220,8 +1229,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          302,
-          318
+          305,
+          321
         ]
       },
       {
@@ -1229,8 +1238,8 @@
         "class": "static",
         "sha256": "ecb5fb8267eeb1028bf29445ca3e73da5d4b0e5e71c420e3867eaeb8bd20e145",
         "lines": [
-          319,
-          327
+          322,
+          330
         ]
       },
       {
@@ -1238,8 +1247,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          328,
-          340
+          331,
+          343
         ]
       },
       {
@@ -1247,8 +1256,8 @@
         "class": "static",
         "sha256": "4103c1056f19615aca4ef3775c81c18cb156d543c9620dff4a73830e2e180bba",
         "lines": [
-          341,
-          347
+          344,
+          350
         ]
       }
     ],
@@ -1367,10 +1376,10 @@
       {
         "signature": "## The cycle (repeat per task)",
         "class": "adaptive",
-        "sha256": "4d9764a93e82317bee5fe21059e1da2b38b5d7301adcdb84359451eefe7c569f",
+        "sha256": "49e8034da944acf8919545007a171e6092bb5245e6830ac34717320567703aaa",
         "lines": [
           53,
-          79
+          80
         ]
       },
       {
@@ -1378,8 +1387,8 @@
         "class": "static",
         "sha256": "eeffd24081adeb03cdaa4ec7558c9e8a91f8e37b289d93fc5aad2a58a27fe4c2",
         "lines": [
-          80,
-          90
+          81,
+          91
         ]
       },
       {
@@ -1387,8 +1396,8 @@
         "class": "static",
         "sha256": "174cffd7fa95ac79c59a3ad2ddc83ff1432ee3c20b3ee6dc5aba178472643d03",
         "lines": [
-          91,
-          99
+          92,
+          100
         ]
       },
       {
@@ -1396,8 +1405,8 @@
         "class": "static",
         "sha256": "87bda388e31713aabde191182d235803d83f9f074edf721a85a597d881daaa4b",
         "lines": [
-          100,
-          105
+          101,
+          106
         ]
       }
     ],
@@ -1544,10 +1553,10 @@
       {
         "signature": "## 🔁 The cycle (one iteration)",
         "class": "adaptive",
-        "sha256": "c9e7eaf28e52bc9ac88804bdfbb777b8e719dcaea0808e5f322ef10a313b2614",
+        "sha256": "9555d66dbb1d41a7217a6dcb919a9a0ec1a30f10943505846f4fc24aef891130",
         "lines": [
           41,
-          78
+          79
         ]
       },
       {
@@ -1555,8 +1564,8 @@
         "class": "static",
         "sha256": "ff88f8d8eefa914929210ace642bae8b195f545d052e11fd5ec6468d482b2bae",
         "lines": [
-          79,
-          89
+          80,
+          90
         ]
       },
       {
@@ -1564,8 +1573,8 @@
         "class": "static",
         "sha256": "2c1b12bb4f58080298152c09640b0a7e3a274a31ed8a167460db9c96a178b1be",
         "lines": [
-          90,
-          97
+          91,
+          98
         ]
       },
       {
@@ -1573,8 +1582,8 @@
         "class": "static",
         "sha256": "084a3df287ba22df0e5d06fa911c980799575e07b7b760f2223cd289b0e81c4a",
         "lines": [
-          98,
-          104
+          99,
+          105
         ]
       },
       {
@@ -1582,8 +1591,8 @@
         "class": "static",
         "sha256": "6e2435a3ebd3b775f57ed0b5a2c254a4313419ee7634dd44605103553ff85060",
         "lines": [
-          105,
-          109
+          106,
+          110
         ]
       }
     ],
@@ -2680,10 +2689,10 @@
       {
         "signature": "## 🔁 The cycle (one iteration)",
         "class": "adaptive",
-        "sha256": "7040e803d38b6ba1bdd6eeeebccb8c9b50baa4896db9a15dfe2e8361701ddbd9",
+        "sha256": "bde876e87ed19d36092620ccdfe609cb3539164a4ccc9882d79f20ce17250f1e",
         "lines": [
           37,
-          64
+          65
         ]
       },
       {
@@ -2691,8 +2700,8 @@
         "class": "static",
         "sha256": "26e0aa4c0b057da5efa47fe23b155bd870f36a2bfb0147240fb705ab8d9fa721",
         "lines": [
-          65,
-          76
+          66,
+          77
         ]
       },
       {
@@ -2700,8 +2709,8 @@
         "class": "static",
         "sha256": "98c67ad4712aafd61297fd28e5a8e05713bcf585430777ed6d4ed58527208979",
         "lines": [
-          77,
-          83
+          78,
+          84
         ]
       },
       {
@@ -2709,8 +2718,8 @@
         "class": "static",
         "sha256": "aa4f5afaf1dd1b55033467a49b1012557b4ebf80c2a3c1826cf163c81ed6df42",
         "lines": [
-          84,
-          88
+          85,
+          89
         ]
       }
     ],
@@ -2770,6 +2779,145 @@
         ]
       }
     ],
+    ".claude/skills/plan-epic/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "518ccb63902e0daa328fc2bc8596e49879aa73b98b0cb451fb55410368fed62a",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /plan-epic — the full planning ladder for heavy work",
+        "class": "static",
+        "sha256": "e739bf9b82bc134167fff504f4dda87076c92e4c21575436c49755c67fec0d6e",
+        "lines": [
+          6,
+          15
+        ]
+      },
+      {
+        "signature": "## Step 0 — confirm heaviness",
+        "class": "static",
+        "sha256": "2acc7168e55c042407fc475c01f36feb5e0d2addfb49dafef79511dc879e09d9",
+        "lines": [
+          16,
+          21
+        ]
+      },
+      {
+        "signature": "## Rung 1 — research (the epic's first artifact; no code, no meta-plan before it)",
+        "class": "static",
+        "sha256": "3a92c76a9f33b3875846bd482035fd178b1cc61ed6b5c7205d5f71e1ae643057",
+        "lines": [
+          22,
+          36
+        ]
+      },
+      {
+        "signature": "## Rung 2 — the meta-plan (one document in `plans/`)",
+        "class": "static",
+        "sha256": "89ca60a2fd53de9ddaa337cedca71b8d46a5532fbd5bc809c5429f13846624ff",
+        "lines": [
+          37,
+          46
+        ]
+      },
+      {
+        "signature": "## Rung 3 — operational plan for the NEXT phase only",
+        "class": "static",
+        "sha256": "7f4740ab1dff60d22b02f10896a4faff0b45ef74e41483bc7be7fa2346dd4f21",
+        "lines": [
+          47,
+          53
+        ]
+      },
+      {
+        "signature": "## Rung 4 — trace and execute",
+        "class": "static",
+        "sha256": "0981b11c8c9fe2ebe9b12817f341505c57e88a1a0bf96264cc7fd36fb658c609",
+        "lines": [
+          54,
+          61
+        ]
+      },
+      {
+        "signature": "## What this skill refuses to do",
+        "class": "static",
+        "sha256": "dea38a30df721585fadd74966c51fae422ffc109ce9960be610597949b599b05",
+        "lines": [
+          62,
+          68
+        ]
+      }
+    ],
+    ".claude/skills/plan-task/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "a610df2fe5176e83965824c79e02301d90c8f86a91632a82effa952cc15f7f4d",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /plan-task — one operational plan for an ordinary task",
+        "class": "static",
+        "sha256": "5664bd4f851f75592eb601856b79d8e859d7fd583c0b52f246c173529141368d",
+        "lines": [
+          6,
+          13
+        ]
+      },
+      {
+        "signature": "## Step 0 — the heaviness test (canon: AGENT_GUIDE.md → Planning discipline)",
+        "class": "static",
+        "sha256": "f6faf42a09f6df71013074a9f25b273a278f83e4f4b9e62cadc64ef9b60e061c",
+        "lines": [
+          14,
+          25
+        ]
+      },
+      {
+        "signature": "## Step 1 — gather (minutes, not hours)",
+        "class": "static",
+        "sha256": "a3214704e52151e423451912bad21656368ca33c27fbff76e753cc219d81c8b2",
+        "lines": [
+          26,
+          33
+        ]
+      },
+      {
+        "signature": "## Step 2 — write the plan",
+        "class": "static",
+        "sha256": "02d9c109f2844982e3f047278f0f95aa636667f7537b95c87a810ff6fa0c7ee8",
+        "lines": [
+          34,
+          50
+        ]
+      },
+      {
+        "signature": "## Step 3 — clearance, then go",
+        "class": "static",
+        "sha256": "086d4fe0dbf3db280fc6682a5f8d56ad515fa4c1195b143ab6eb8d1f6895d2e0",
+        "lines": [
+          51,
+          57
+        ]
+      },
+      {
+        "signature": "## What this skill refuses to do",
+        "class": "static",
+        "sha256": "5d26ab535d3bdb8fb5a7da6bf3e93ef4d72404f237f7bfc3408985af1a426a89",
+        "lines": [
+          58,
+          65
+        ]
+      }
+    ],
     ".claude/skills/propose-idea/SKILL.md": [
       {
         "signature": "<preamble>",
@@ -2801,10 +2949,10 @@
       {
         "signature": "## What to do",
         "class": "adaptive",
-        "sha256": "9b6c75a7ba9ec652a3027b303fcce6ce6ad970ab510d2285b9ba2ab2ceaf9ddf",
+        "sha256": "4eb335d79255ac809fd86fd727dcaaf2fbd1e74218de8788bbb63c6e50945d8b",
         "lines": [
           26,
-          67
+          69
         ]
       },
       {
@@ -2812,8 +2960,8 @@
         "class": "static",
         "sha256": "e0c170bb23c20ae92315f408eec9b40c3d3c3b1b73e1ca8357d1731651927bb2",
         "lines": [
-          68,
-          72
+          70,
+          74
         ]
       }
     ],

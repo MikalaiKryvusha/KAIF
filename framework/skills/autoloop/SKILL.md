@@ -57,7 +57,8 @@ without those resources.
 2. **Understand it simply** (PHILOSOPHY) — state it in 1–2 sentences. For bugs — open/create a `bugs/` doc.
 3. **Implement** in a targeted way, with comments. Don't over-complicate. Execute the item by the fable
    loop (`/fable-method`; `/fable-loop` for substantive items) — its gates and forced artifacts
-   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too.
+   (`INTENT`/`AUTH`/`TWINS`/`PENDING`) apply inside the cycle too. A HEAVY item with no plan yet →
+   build the ladder first (`/plan-epic`: research → meta-plan), then execute phase by phase.
 4. **Build** (`<BUILD_COMMAND>`). If errors — fix them, don't commit broken state.
 5. **Deploy/run** as your project requires.
 6. **Verify autonomously** on the harness (`<TEST_HARNESS>`). Look at the result carefully — don't

@@ -27,7 +27,7 @@ relies entirely on this document to get to work.
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
-8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics)
 9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
 10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 11. Run the build (if touching code)   # <BUILD_COMMAND>
@@ -65,7 +65,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Testing / verifying anything | `TESTING_FRAMEWORK.md` (the 7 principles · `[NOT-TESTED]`/`[TESTED]` markers) · the sphere's verification sections |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
-| Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog                            |
+| Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
@@ -101,6 +101,37 @@ run a **`/fable-judge`** pass before presenting it as done — mandatory in the 
 These three skills are vendored verbatim from [fable-method](https://github.com/Sahir619/fable-method)
 (Sahir619, MIT) — see their headers for the sync ritual; the project's sphere library plays the role of
 their domain adapters.
+
+### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
+
+Nearly everything in this industry has golden standards, best practices, published research — or at
+least documented practitioner lore. **A major epic feature therefore starts with a web recon of the
+industry's golden practices and a research doc in `researches/`** — this extends "recon before code"
+(checklist step 9) from *external truth* to *industry knowledge*: the state of the art is an external
+truth too, and a session that skips the sweep re-invents solved problems badly.
+
+**The heaviness test** (checkable, not taste). A task is HEAVY when **≥2** of these hold:
+touches ≥3 subsystems or canon documents · rests on an external truth or an industry standard ·
+does not fit one session · changes shipped composition or public contracts · needs owner-level
+decisions. Otherwise it is ordinary.
+
+- **Ordinary → `/plan-task`:** ONE operational plan — goal, done-criteria, steps with checkboxes,
+  verification-by-observation, risks. Small enough? The plan lives as a section right inside the
+  idea/bug document itself. Ceremony must never outweigh the work.
+- **Heavy → `/plan-epic`** — the full ladder, each rung an artifact:
+  1. **Research** — industry sweep (web) + local recon + the project's requirements, synthesized
+     into a research doc in `researches/`. No code, no meta-plan before it exists.
+  2. **Meta-plan** — one epic plan in `plans/`: phases, order, gates, acceptance criteria;
+     vision-level forks go to `/interview` (work on unblocked phases proceeds meanwhile).
+  3. **Operational plans per phase** — R&D · testing · mock-ups · development · debugging ·
+     acceptance. Detail ONLY the next phase; the plan for phase N+1 is written when phase N closes —
+     never all upfront (they would be fiction by the time you reach them).
+  4. **Trace** — every operational step cites its meta-plan anchor line (the citing rule of
+     checklist step 8); a step you cannot anchor is scope drift caught before the diff.
+
+The ladder is not ceremony for its own sake: research is where the epic gets its evidence base,
+the meta-plan is where the owner sees the whole shape once, and phase-by-phase operational plans are
+what keeps a context-losing session executing the RIGHT next step instead of re-deriving the epic.
 
 ### Languages — two audiences, two languages
 

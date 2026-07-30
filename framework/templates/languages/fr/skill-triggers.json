@@ -26,5 +26,7 @@
   "fable-method": "« selon la méthode Fable », « applique la méthode fable », « résous ça comme Fable »",
   "fable-loop": "« lance la boucle fable », « fais comme Fable le ferait »",
   "fable-judge": "« juge le travail », « vérifie ce qu'il a fait », « ça a vraiment marché ? »",
-  "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »"
+  "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »",
+  "plan-task": "« planifie cette tâche », « fais un plan pour cette tâche », « plan pour ce bug »",
+  "plan-epic": "« planifie cet epic », « découpe l'epic », « échelle complète de planification »"
 }

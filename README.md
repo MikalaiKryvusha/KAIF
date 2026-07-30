@@ -189,10 +189,10 @@ is now:
    short `KAIF_ADAPTATION_TASK.md` (study the project, fill the maps, derive the plan) with a forced
    checkpoint command per item — **field-certified on a local 12 B model end-to-end**.
 
-5. **Drive it with skills — all 28 of them:** sessions `/resume` · `/pause` · `/end-chat` ·
+5. **Drive it with skills — all 30 of them:** sessions `/resume` · `/pause` · `/end-chat` ·
    autonomy `/autoloop` · `/dayloop` · `/nightloop` · hygiene `/refresh-context` · `/check-backlog` ·
    knowledge & memory `/report-bug` · `/bug-research` · `/propose-idea` · `/experience` ·
-   owner `/interview` · `/fix-vision` · `/what-next` · planning `/revision` ·
+   owner `/interview` · `/fix-vision` · `/what-next` · planning `/plan-task` · `/plan-epic` · `/revision` ·
    guardrails `/derive-styleguide` · execution discipline `/fable-method` · `/fable-loop` ·
    `/fable-judge` · `/fable-domain` · help `/help-kaif` · shipping `/release` ·
    lifecycle `/kaif-version` · `/kaif-update` · `/kaif-fork` · `/kaif-switch-origin` · `/kaif-remove`.
@@ -231,7 +231,7 @@ degrade honestly: English + a translation item in the adaptation task.
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
-    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (28 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (30 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
   </picture>
 </p>
 
@@ -287,7 +287,7 @@ filename; `GOAL`, `MASTER_PLAN`, the maps and `researches/` are living reference
 
 ## The skills
 
-Twenty-eight repeatable rituals — the verbs of working on a project:
+Thirty repeatable rituals — the verbs of working on a project:
 
 | Skill | Purpose |
 |-------|---------|
@@ -304,6 +304,8 @@ Twenty-eight repeatable rituals — the verbs of working on a project:
 | `/bug-research` | Deep investigation without code edits — mandatory after 3 failed blind fixes. |
 | `/propose-idea` | Propose a feature as an `ideas/` document — implemented only after your approval. |
 | `/interview` | Ask you the fateful A/B/C/D questions — vision decisions are never guessed. |
+| `/plan-task` | Plan an ordinary task/bug/idea into ONE operational plan (goal · done-criteria · steps · verification · risks); heavy tasks are handed to `/plan-epic`. |
+| `/plan-epic` | Plan a heavy epic by the full ladder: industry web-recon + local recon → research doc → meta-plan with phases → operational plan of the NEXT phase only. |
 | `/revision` | Re-derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
 | `/fix-vision` | Capture your vision-level chat messages into the docs before they evaporate. |
 | `/what-next` | Rank the next steps by value toward the vision when you ask "what now?". |
@@ -404,7 +406,7 @@ KAIF_REFERENCE.md                the complete framework reference (generated cop
 framework/                       the canonical universal templates (the payload)
   installer/                     KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
   templates/languages/           10 language packs (owner-facing docs + skill trigger aliases)
-  skills/ spheres/ adapters/     28 skill templates · sphere libraries · agent-system adapters
+  skills/ spheres/ adapters/     30 skill templates · sphere libraries · agent-system adapters
   tools/ readmes/                optional tool modules (provenance gate · canon linter) · directory READMEs
 dist/                            generated distribution: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (offline fallback) · kaif-module-map.json
@@ -619,10 +621,10 @@ KAIF не спроектирован — он дистиллирован, а з�
    принудительной чекпоинт-командой на каждый пункт — **полевая сертификация: локальная модель 12B
    проходит путь насквозь**.
 
-5. **Управляйте навыками — всеми 28:** сессия `/resume` · `/pause` · `/end-chat` ·
+5. **Управляйте навыками — всеми 30:** сессия `/resume` · `/pause` · `/end-chat` ·
    автономия `/autoloop` · `/dayloop` · `/nightloop` · гигиена `/refresh-context` · `/check-backlog` ·
    знания и память `/report-bug` · `/bug-research` · `/propose-idea` · `/experience` ·
-   владелец `/interview` · `/fix-vision` · `/what-next` · планирование `/revision` ·
+   владелец `/interview` · `/fix-vision` · `/what-next` · планирование `/plan-task` · `/plan-epic` · `/revision` ·
    гвардрейлы `/derive-styleguide` · дисциплина исполнения `/fable-method` · `/fable-loop` ·
    `/fable-judge` · `/fable-domain` · помощь `/help-kaif` · выпуск `/release` ·
    жизненный цикл `/kaif-version` · `/kaif-update` · `/kaif-fork` · `/kaif-switch-origin` · `/kaif-remove`.
@@ -661,7 +663,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
-    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (28 повторяемых ритуалов, вызываются по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (30 повторяемых ритуалов, вызываются по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
   </picture>
 </p>
 
@@ -718,7 +720,7 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 
 ## Навыки
 
-Двадцать восемь повторяемых ритуалов — глаголы работы над проектом:
+Тридцать повторяемых ритуалов — глаголы работы над проектом:
 
 | Навык | Назначение |
 |-------|------------|
@@ -735,6 +737,8 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 | `/bug-research` | Глубокое исследование без правок кода — обязательно после 3 неудачных слепых фиксов. |
 | `/propose-idea` | Предложить фичу документом в `ideas/` — реализация только после вашего одобрения. |
 | `/interview` | Задать вам судьбоносные вопросы A/B/C/D — решения видения не угадываются. |
+| `/plan-task` | Спланировать обычную задачу/баг/идею в ОДИН операционный план (цель · критерии «готово» · шаги · верификация · риски); тяжёлое передаётся `/plan-epic`. |
+| `/plan-epic` | Спланировать тяжёлый эпик полной лестницей: гуглёж индустрии + локальная разведка → research-документ → мета-план с фазами → операционный план ТОЛЬКО ближайшей фазы. |
 | `/revision` | Перевывести `MASTER_PLAN.md` из `GOAL.md` и текущего состояния. |
 | `/fix-vision` | Зафиксировать ваши визионерские сообщения из чата в документы, пока не испарились. |
 | `/what-next` | Ранжировать следующие шаги по ценности к видению, когда вы спрашиваете «что дальше?». |
@@ -835,7 +839,7 @@ KAIF_REFERENCE.md                пояснительная записка — �
 framework/                       канонические универсальные шаблоны (полезная нагрузка)
   installer/                     KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · повествование тонкого ядра
   templates/languages/           10 языковых пакетов (owner-доки + триггер-алиасы навыков)
-  skills/ spheres/ adapters/     28 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
+  skills/ spheres/ adapters/     30 шаблонов навыков · библиотеки сфер · адаптеры агентских систем
   tools/ readmes/                опциональные tool-модули (гейт провенанса · линтер канона) · README директорий
 dist/                            сгенерированная раздача: KAIF.md · KAIF-CORE.mjs · KAIF-CORE-BUNDLE.md
                                  · kaif-manifest.json (sha256) · KAIF-FULL.md (оффлайн-фолбэк) · kaif-module-map.json

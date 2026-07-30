@@ -22,7 +22,8 @@
 
 Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/end-chat`, `/autoloop`,
 `/dayloop`, `/nightloop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
-`/bug-research`, `/propose-idea`, `/interview`, `/revision`, `/fix-vision`, `/what-next`,
+`/bug-research`, `/propose-idea`, `/interview`, `/plan-task`, `/plan-epic`, `/revision`,
+`/fix-vision`, `/what-next`,
 `/derive-styleguide`, `/help-kaif`, `/release` + жизненный цикл `/kaif-*` + **fable-семейство**
 `/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain` — дисциплина исполнения задач,
 вендорено из fable-method (EN); judge-проход обязателен в циклах и перед релизом).
