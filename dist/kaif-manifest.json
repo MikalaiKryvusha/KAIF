@@ -1,11 +1,11 @@
 {
   "framework": "KAIF",
-  "version": "2.0",
-  "released": "2026-07-28",
-  "codename": "Excellent KAIF",
+  "version": "2.1",
+  "released": "2026-07-31",
+  "codename": "Strong KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "6a488f8235738c3f6794330ba8626673f2ef5533afb19bd91fa8cce1d15cbc1d",
-    "KAIF-CORE-BUNDLE.md": "1d77ead2d8546d03cb3b7b24e5a7021971e128bc2c8770bcda4d625b8edcde15"
+    "KAIF-CORE-BUNDLE.md": "15ddaaf05e9031ca4b367bd7fc12fde216188c1c605d5914983b3343bbb23573"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

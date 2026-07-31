@@ -1,21 +1,22 @@
 <!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->
-# KAIF-CORE-BUNDLE · v2.0 (2026-07-28)
+# KAIF-CORE-BUNDLE · v2.1 (2026-07-31)
 
 > **FILE: `kaif-bundle-manifest.json`** — bundle metadata (data for KAIF-CORE, never written to disk)
 
 ``````json
 {
   "framework": "KAIF",
-  "version": "2.0",
-  "released": "2026-07-28",
+  "version": "2.1",
+  "released": "2026-07-31",
   "templateNotes": [
-    "NEW key doc .kaif/KAIF_REFERENCE.md — the complete framework reference (§1–16: terminology, marker/manifest/receipt schemas, the full mechanics); /help-kaif reads and CITES it. Added mechanically; nothing to merge",
-    "Updates are now MODULAR machinery, not agent judgment: deploy-manifest v2 keeps template shas apart from disk shas (only a template-sha match authorizes replacement), files merge PER MODULE from the disk order, your localized/adapted modules survive updates, diffs reach the update task only where upstream actually changed. If your old manifest is v1 — run `node .kaif/kaif-core.mjs adopt-current` once after this update to upgrade provenance",
-    "Update proof: .kaif/last-update.json receipt (verifiedAt stamp) + history in the marker; `diff` (audit + per-module preview), `adopt-current` (manual migrations stop killing the mechanical path), synthetic baseline for legacy/anonymous deployments (--baseline), checkpoints now EXECUTE their checks; deprecated artifacts are removed mechanically when untouched",
-    "Optional tool modules land in .kaif/tools/ (added mechanically; wiring is opt-in): kaif-provenance.mjs — the [AI]…[/AI] provenance gate over declared canonArtifacts with an acceptance registry; kaif-canon-lint.mjs — forbidden wordings / guarded lines with a selftest that proves every guard can fire",
-    "Skills: /pause is now a SOFT PARK (the chat continues later); NEW /end-chat — the full wrap-up with a handoff baton; NEW /derive-styleguide — extract the owner's style guide from their own sample before writing into their canon. If your adapted skill copies diverged, merge these semantics by hand",
-    "AGENT_GUIDE: strictness modes (draft vs canon pipeline) + the any-model/strong-model split on task steps; the write-gate now names the mechanized gates (provenance check + canon lint)",
-    "Release codename for this version: KAIF 2.0 — Excellent KAIF"
+    "NEW key doc PROJECT_HISTORY.md — the append-only chronicle of closed sessions/phases/releases (13th key doc; added mechanically, outside /resume and the required minimum). STATUS.md is now the living SUMMARY of the present (~200-line soft target, warning-mode guard). MIGRATION — agent work, not machinery: move the overgrown history out of your STATUS into PROJECT_HISTORY (machinery cannot judge what counts as history; do it once, by the /end-chat rules)",
+    "NEW skills (6): /plan-task + /plan-epic (the planning ladder — heavy work climbs recon → research doc → meta-plan → operational plan of the NEXT phase only), /guarded-loop (autonomous loop under an external watchdog: wake-ups every N minutes, a work-proving heartbeat file, a restart policy with an escalation cap), /code-revision (periodic READING revision by the strongest model: reviewers armed with the project's paid-for failure classes, verbatim quote per finding, adversarial skeptic defaulting to \"not a defect\"), /owner-voice (stylometric portrait of the owner's written voice; the skeleton ships mechanically as .kaif/_owner-voice-template.md), /owner-reviews (optional review contour: interviews/drafts as local HTML pages, decisions recorded with by/at, send-side fail-closed approval gate)",
+    "AGENT_GUIDE canon — the place-of-questions HARD RULE: everything the agent wants FROM the owner (fork, review, approval, answer) lives ONLY in interviews/ (the one pointed task-level chat question stays legal); an adopted practice keeps a mechanical guard and an executable violation-showing command; an answer's force does not depend on transport (HTML = md = chat), recorded with by/at — /interview gained the optional render step and autonomous-loop queueing",
+    "AGENT_GUIDE canon — judgment boundaries: the TASTE class (acceptance criterion is a perception adjective ⇒ the agent produces a MOCK-UP and files homework, never concludes; all candidates on ONE material, blind labels) and action-permission ≠ identity-authorship (naming, codenames, brand strings are never the agent's decision under any breadth of approval)",
+    "AGENT_GUIDE canon — planning-discipline ladder; document & text hygiene incl. the truth↔mirror pairs registry (a mirrored/generated surface is edited at its source and rebuilt, never patched in place) and text-through-files (owner/canon text never passes through CLI string arguments); recon artifacts now name the canon map and the parity inventory; EXPERIENCE entries: Repro is REQUIRED, Trigger tags quoted before tasks, a repeating lesson gets mechanized",
+    "fable patches (vendored skills): /fable-method Step 5 gained the CRAFT SLOTS (TWINS-MECH mechanism-not-string grep, the removal table for moved logic, AFTER-WORK, BOTH-WAYS, the deleted-text sweep, craft questions by diff type); /fable-judge gained the hunts identity-without-an-author, timer-fed heartbeat, mutation addressivity (a guard proven by mutation names its addressees BEFORE the run); spheres gained Craft recipes + Owner's voice sections + the \"Voice without a corpus\" fraud row",
+    "Update machinery hardened by the 2.0 field reports: translated deployments (\"i18n\": \"translated\") merge correctly, the first-update prediction is honest, CRLF-resaved cores unpack, a missing owner-seeded doc re-seeds on update, the stale-claims scan skips chronicles; the sandbox polygon grew suite s07",
+    "Release codename for this version: KAIF 2.1 — Strong KAIF"
   ],
   "templateNotesByVersion": {
     "1.5": [
