@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.0",
   "released": "2026-07-28",
-  "moduleCount": 586,
+  "moduleCount": 588,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -141,12 +141,21 @@
         ]
       },
       {
+        "signature": "## Document & text hygiene (field-paid rules)",
+        "class": "static",
+        "sha256": "c45a8f017a65fdb358aa92672d62b071df286e0db4c26554f357cd5fe3e9081d",
+        "lines": [
+          262,
+          293
+        ]
+      },
+      {
         "signature": "## Push / GitHub authentication",
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          262,
-          269
+          294,
+          301
         ]
       },
       {
@@ -154,8 +163,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          270,
-          280
+          302,
+          312
         ]
       },
       {
@@ -163,17 +172,17 @@
         "class": "static",
         "sha256": "856c756afbc947d2b2eee15ccb0785b4556b439b435c0e3a95501e8c99ded3b3",
         "lines": [
-          281,
-          333
+          313,
+          365
         ]
       },
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "28501ee0a9044b86767aa1cf8e3f49626c2257b9083aa8171ecdf25dc22309fa",
+        "sha256": "88781175799f21210079dcbc0ad5a428b73fe1027d47605934fc6b0d49d7ceb4",
         "lines": [
-          334,
-          384
+          366,
+          440
         ]
       },
       {
@@ -181,8 +190,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          385,
-          399
+          441,
+          455
         ]
       },
       {
@@ -190,8 +199,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          400,
-          412
+          456,
+          468
         ]
       }
     ],
@@ -390,10 +399,10 @@
       {
         "signature": "# BUG_FIXING_FRAMEWORK — how the agent fixes defects",
         "class": "static",
-        "sha256": "07eba8ad2e3ccc55ed6e3dcf3e99ea27897c8ea16a0c755c34ec5cbc3403c053",
+        "sha256": "6a2e04cb6b3ead5437096d91b48e1090cd9848935a26526e60847b82f04a6e60",
         "lines": [
           1,
-          67
+          70
         ]
       },
       {
@@ -401,8 +410,8 @@
         "class": "static",
         "sha256": "fd01e1cd2411cbdf9c47393252cb31c97c0668c961dd2c8ed102be6554994aec",
         "lines": [
-          68,
-          88
+          71,
+          91
         ]
       },
       {
@@ -410,8 +419,8 @@
         "class": "static",
         "sha256": "4fc05d5cae5c430fe2310cca7dcad3321200912402120e515eaa54d2c588e2f4",
         "lines": [
-          89,
-          102
+          92,
+          105
         ]
       },
       {
@@ -419,8 +428,8 @@
         "class": "static",
         "sha256": "f436890bf798822fc6e475a74b4ba0f27217f927d62dd3dd69db7a6504a6842a",
         "lines": [
-          103,
-          117
+          106,
+          120
         ]
       },
       {
@@ -428,8 +437,8 @@
         "class": "static",
         "sha256": "5e4ed7c405088b63f8bce7ee3db476837d3a7a6a580f1a81d256218782ba9e4c",
         "lines": [
-          118,
-          127
+          121,
+          130
         ]
       },
       {
@@ -437,8 +446,8 @@
         "class": "static",
         "sha256": "bc223b95beab5c0c1e52bbd5348a81bccf29b51c8d4baa4e898b5effafbbedb1",
         "lines": [
-          128,
-          166
+          131,
+          169
         ]
       },
       {
@@ -446,8 +455,8 @@
         "class": "static",
         "sha256": "11b59801227bf6666400bb367a330dabadddc07cb1d0c9f9549b207abd662da0",
         "lines": [
-          167,
-          172
+          170,
+          175
         ]
       }
     ],
@@ -489,12 +498,21 @@
         ]
       },
       {
+        "signature": "## The taste class — when the observer must be human",
+        "class": "static",
+        "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
+        "lines": [
+          80,
+          88
+        ]
+      },
+      {
         "signature": "## How this composes with the rest of KAIF",
         "class": "static",
         "sha256": "5d42df210423b02c4b37cb143af02edc3d1550992f08544f22d7c85c2595a8da",
         "lines": [
-          80,
-          94
+          89,
+          103
         ]
       }
     ],
@@ -1320,10 +1338,10 @@
       {
         "signature": "# `homeworks/` — tasks from the agent to the human",
         "class": "static",
-        "sha256": "8e46faa370d7f6c0de3d30e6de1b05b425ea3695827c4e19865762c1159885df",
+        "sha256": "771ff5f4643dad898adc83e7f4310991bda67016564a8eaa7c3572a00507f99f",
         "lines": [
           1,
-          16
+          23
         ]
       }
     ],
@@ -1860,10 +1878,10 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "202f5407372ea2e5c0ef2ba54596b685d05a795d9844772f685002b88cae99bd",
+        "sha256": "cd23be4388a7609b0662dc019f567e35d59eefdcab30a305c0f3e8cd181ad9f6",
         "lines": [
           1,
-          14
+          15
         ]
       },
       {
@@ -1871,17 +1889,17 @@
         "class": "static",
         "sha256": "dec59ba77f2f849b6ef52dabcab1fb1f33a8c75b515e815a39f1a1d352c11698",
         "lines": [
-          15,
-          18
+          16,
+          19
         ]
       },
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "625c12741d9340df8b4e1960b32ef770661d6720b07a787763af4b76435e8ec1",
+        "sha256": "af35c59d4fa621e321282651b81273a13708af3e8ef707816a17dabf576c4719",
         "lines": [
-          19,
-          50
+          20,
+          52
         ]
       },
       {
@@ -1889,8 +1907,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          51,
-          56
+          53,
+          58
         ]
       }
     ],
@@ -3023,12 +3041,12 @@
         ]
       },
       {
-        "signature": "## Step 0. Decide the bump type and the codename",
+        "signature": "## Step 0. Decide the bump type and the codename (an IDENTITY stop, not a formality)",
         "class": "static",
-        "sha256": "3b9204bde1a29ee08d66746d3ffc044914776dbeaa0fa2920072bbff8c585061",
+        "sha256": "b36e3aa90d6ac8fd7632b6be9b46e40fcb7037d7f4fb48d179fd794fa43477a9",
         "lines": [
           17,
-          24
+          42
         ]
       },
       {
@@ -3036,8 +3054,8 @@
         "class": "static",
         "sha256": "74c10feda1f2e25082479d67ece2f499025e1df935ee32a6734be9cdb704869c",
         "lines": [
-          25,
-          34
+          43,
+          52
         ]
       },
       {
@@ -3045,8 +3063,8 @@
         "class": "static",
         "sha256": "b5661cbcd98f9ea62dc545584dc7d7ee8dc3255197a59e394223a528cad1b7dc",
         "lines": [
-          35,
-          40
+          53,
+          58
         ]
       },
       {
@@ -3054,8 +3072,8 @@
         "class": "static",
         "sha256": "b115d50d3328db37655d59f177be203f3babb2f37764dc6ce536eaa5f299c595",
         "lines": [
-          41,
-          45
+          59,
+          63
         ]
       },
       {
@@ -3063,8 +3081,8 @@
         "class": "static",
         "sha256": "80d3f9e73f162ea83660e4e54add72fdcce716026df4d5ecba9bf73f3b994cf1",
         "lines": [
-          46,
-          50
+          64,
+          68
         ]
       },
       {
@@ -3072,8 +3090,8 @@
         "class": "static",
         "sha256": "13ebed9d3b903561cfc2dc176f856e56ba284246b18c696734b526b59cec764d",
         "lines": [
-          51,
-          59
+          69,
+          77
         ]
       },
       {
@@ -3081,17 +3099,17 @@
         "class": "adaptive",
         "sha256": "4e99f760961b854c5d3c07763b423ae49689d66b05b2ae3c14f81f57e38e3d1b",
         "lines": [
-          60,
-          64
+          78,
+          82
         ]
       },
       {
         "signature": "## Step 6. Publish (after the human's confirmation)",
-        "class": "adaptive",
-        "sha256": "569bd217778112edbfd3095bc0dc718d3b77889e1eb17b08a2eca7541f0e5752",
+        "class": "static",
+        "sha256": "3019009c113c500556c6a8203677ae4d418eb3fca0dedfb90b45801ff431101f",
         "lines": [
-          65,
-          87
+          83,
+          114
         ]
       },
       {
@@ -3099,8 +3117,8 @@
         "class": "static",
         "sha256": "8445434fe3dade7d70beb20108a586a8ea97f789ab7fc71d9b1ee054c03401ee",
         "lines": [
-          88,
-          106
+          115,
+          133
         ]
       },
       {
@@ -3108,8 +3126,8 @@
         "class": "static",
         "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
         "lines": [
-          107,
-          114
+          134,
+          141
         ]
       },
       {
@@ -3117,8 +3135,8 @@
         "class": "static",
         "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
         "lines": [
-          115,
-          122
+          142,
+          149
         ]
       }
     ],

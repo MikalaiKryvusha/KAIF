@@ -13,3 +13,10 @@ continues.
 a homework here with clear, minimal, numbered steps and a place for the human's results, then continue with
 other work. When the human reports back, incorporate the results and `DONE`-tag the file
 (`git mv NN_x.md NN_DONE_x.md`).
+
+**Taste-class homework** (the acceptance criterion is a perception adjective — `AGENT_GUIDE.md` →
+"The taste class"): the agent hands the human an ARTIFACT to perceive, never a link or a foreign
+benchmark; all candidates on ONE same material, blind labels, the key beside them. Two standing
+fields in every such doc: **"Ready to see/hear right now"** (paths to the artifacts) and
+**"Verdicts already given"** (the owner's calls, recorded verbatim — a verdict is canon and is
+never asked twice).

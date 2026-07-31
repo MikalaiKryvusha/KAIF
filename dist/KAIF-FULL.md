@@ -400,6 +400,38 @@ Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
 `<If you use a commit/version tool (e.g. tools/commit.mjs that bumps a build number, commits, pushes),
 document it here.>`
 
+## Document & text hygiene (field-paid rules)
+
+**Each document answers its own question — and takes its shape from its own kin.** README: *"what
+is this and how do I use it"* (the product, present tense). Release notes: *"what changed in THIS
+version, do I upgrade"* (strictly the delta; anything general is a LINK to the README — the
+mechanical check: a paragraph pasteable into the README unchanged belongs in the README).
+`STATUS.md`: *"where are we now"*. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
+Updating the README — draw on the current README and the owner's other repo storefronts (one
+storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
+notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style choice.
+
+**TEXT TRAVELS THROUGH FILES, NEVER THROUGH COMMAND-LINE ARGUMENTS.** Feeding a tool Cyrillic (or
+any non-ASCII), curly quotes, emoji, multi-line content, markdown, JSON? Write a UTF-8 file and
+pass the PATH. No `python -c "…text…"`, no `-m "…"`, no `echo "…" > file` with non-ASCII. One
+class, four unlike faces — recognize it BY SYMPTOM, they hit every Windows project (and face 3
+reproduces in JS/JSON/YAML anywhere):
+
+1. `python -c` + non-ASCII → `SyntaxError: (unicode error)` — or WORSE, silent mojibake written to
+   the file (the console encoding corrupts the argument before the program sees it);
+2. backticks inside double quotes → the shell's command substitution eats chunks of text, prints
+   "ok", and the document gets HOLES — no error at all; caught only by reading the result back;
+3. Windows paths inside strings → `truncated \uXXXX escape` (`\w`, `\u` read as escapes);
+4. different shells are different worlds: GNU tar takes `D:\…` for a remote host while bsdtar
+   doesn't; a Git-Bash `/tmp` file is invisible to Windows Python; PowerShell 5 `Set-Content`
+   writes ANSI by default. Know WHICH shell you are in; before running a foreign script on
+   Windows, check what `tar`/`curl`/`find` actually resolve to in the current PATH; record in the
+   project docs which shell the build runs from.
+
+Companions: after ANY machine edit of a non-ASCII document — READ THE RESULT BACK (face 2 cannot be
+caught otherwise); prefer the file tools (Write/Edit) over the shell for editing text — the shell
+runs processes, it does not carry content.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
@@ -482,6 +514,30 @@ and report in the chat.
 
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
+
+**The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
+(verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
+lies a third class: the acceptance criterion is a PERCEPTION adjective (beautiful, natural,
+pleasant, readable, "feels right") — grep-detectable in the ask. There the agent does not conclude;
+it **produces a MOCK-UP and files homework**: find the live best candidates → mock them QUICKLY on
+OUR OWN material → hand the human an ARTIFACT to perceive (never a link, never someone else's
+benchmark — a human judging sound needs sound, not a score; in the field both suggested demo URLs
+turned out dead) → record the verdict as canon (the owner's taste is not re-litigated by the
+agent). Comparison contract: all candidates on ONE same material, blind labels, the key stored
+beside them. The homework doc carries two standing fields: *"ready to see/hear right now"* (paths
+to artifacts) and *"verdicts already given"* (so no verdict is ever asked twice).
+
+**Action permission ≠ identity authorship.** A blanket "go ahead, don't ask me" removes
+confirmation FRICTION on actions; it never transfers authorship of IDENTITY — naming: release
+codenames, product and feature names, slogans, any brand string a human reads first (the test: it
+is read first and says how the product presents itself). Identity is NEVER the agent's decision,
+under any breadth of approval — a wide "yes" quietly disguises a taste question as a technical
+detail of shipping, which is exactly how the field incident happened. The right move under blanket
+approval: do everything else and ask ONE pointed question about the name. The fallback: ship under
+a neutral factual title — never a placeholder name (still a name someone must un-decide). Every
+shipped name carries a source artifact (*owner · channel · date*), and a brand mistake is fixed
+only by the owner — un-naming is a brand decision too. (`/release` Step 0 enforces this at the
+decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
@@ -790,6 +846,9 @@ To fix a bug, the agent must:
   drift apart again.
 - To fix a bug, it is often useful to **search the web** for the solution — forums, GitHub issues,
   Reddit, Stack Overflow, official docs.
+- **Symptom "text silently corrupted / holes in a document"** → before any theory, check the
+  text-through-CLI class first (`AGENT_GUIDE.md` → Document & text hygiene, four faces): a shell
+  argument mangled by console encoding or command substitution corrupts data with a GREEN exit code.
 
 > ⚠️ **THE 3-ATTEMPTS RULE → switch to research (`/bug-research`).**
 > If after **three iterations** of "targeted fix → build → test" the bug is NOT fixed — STOP going
@@ -1009,6 +1068,15 @@ ships, walk the gates that apply:
 5. **A check that has never failed proves nothing.** Every new guard/check is verified on a broken
    version first (see `BUG_FIXING_FRAMEWORK.md` → Guards); goldens for refactors are byte-exact —
    an empty diff is proof, "the numbers look the same" is not.
+
+## The taste class — when the observer must be human
+
+A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural,
+pleasant, "feels right") is still verified by observation — but the OBSERVER is the human, by
+necessity, not the agent. The agent's role is to PREPARE the observation: produce a mock-up on the
+project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
+class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not
+a verification and never flips a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
@@ -1922,6 +1990,13 @@ continues.
 a homework here with clear, minimal, numbered steps and a place for the human's results, then continue with
 other work. When the human reports back, incorporate the results and `DONE`-tag the file
 (`git mv NN_x.md NN_DONE_x.md`).
+
+**Taste-class homework** (the acceptance criterion is a perception adjective — `AGENT_GUIDE.md` →
+"The taste class"): the agent hands the human an ARTIFACT to perceive, never a link or a foreign
+benchmark; all candidates on ONE same material, blind labels, the key beside them. Two standing
+fields in every such doc: **"Ready to see/hear right now"** (paths to the artifacts) and
+**"Verdicts already given"** (the owner's calls, recorded verbatim — a verdict is canon and is
+never asked twice).
 ``````
 
 
@@ -3154,13 +3229,31 @@ show the error, do NOT continue blindly.
 > = a public tag and Release, unpleasant to roll back. **In autonomous mode (`/autoloop`/loops) do NOT
 > publish a release.**
 
-## Step 0. Decide the bump type and the codename
+## Step 0. Decide the bump type and the codename (an IDENTITY stop, not a formality)
 
 Confirm with the human (or confirm the default): patch / minor / major. State the current → new version.
 
-**Every release gets a short codename** (a memorable one- or two-word name for the theme, e.g. *Anonymous*,
-*Slim*, *Savvied*). Ask the human for it (or propose one and confirm). The codename drives the release
-**title** and headline — see Step 6.
+**Every release normally gets a short codename** (a memorable one- or two-word name for the theme, e.g.
+*Anonymous*, *Slim*, *Savvied*). The codename drives the release **title** and headline — see Step 6.
+
+**The codename is IDENTITY, and identity is authored by the owner — never by the agent, under ANY
+breadth of approval.** A blanket "ship it, don't ask me" removes confirmation FRICTION on actions;
+it does not transfer AUTHORSHIP of how the product presents itself (field incident: under a literal
+"I APPROVE EVERYTHING, don't ask" an agent invented a release codename, and the owner met their
+product's name as a fait accompli). This hard stop has exactly three legal outcomes:
+
+1. **the owner names it** (or picks from candidates you offer);
+2. **you do EVERYTHING else and ask ONE pointed question about the name** — one question inside
+   already-authorized work costs nothing and is not what "don't ask" was about;
+3. **release UNNAMED** under the neutral factual title (`<PROJECT> X.Y`) — the ALWAYS-AVAILABLE
+   fallback: when the owner is unreachable, the release is never blocked forever, and only the
+   owner may name it, retroactively if need be. Never a placeholder name: a placeholder is still a
+   name someone must later un-decide.
+
+**The shipped name carries a SOURCE artifact** — a line in the release notes/plan:
+`codename: <owner · channel · date>` — the way a research claim carries its citation; a name
+without an author must be impossible to miss. And if a shipped name proves wrong, the agent does
+not rename on its own initiative — fixing a brand mistake is a brand decision too.
 
 ## Step 1. Pre-check the environment (don't release on a dirty/broken tree)
 
@@ -3215,15 +3308,24 @@ gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTE
 
 > 📛 **Release title — FIXED FORMAT (CANON):** `<PROJECT> X.Y — <Codename>` — the project name, the
 > `major.minor` version, an em dash `—`, then the Step-0 codename. Examples: `KAIF 1.2 — Anonymous KAIF`,
-> `KAIF 1.3 — Slim KAIF`, `KAIF 1.4 — Savvied KAIF`. **Not** `vX.Y`, no guillemets, no quotes. Keep it
+> `KAIF 1.3 — Slim KAIF`, `KAIF 1.4 — Savvied KAIF`. On Step 0's legal UNNAMED outcome the title is the
+> neutral `<PROJECT> X.Y` — factual, no invented name. **Not** `vX.Y`, no guillemets, no quotes. Keep it
 > consistent with every prior release (check `gh release list`).
 >
-> 📝 **Release notes — detailed and BILINGUAL (do NOT `--generate-notes`).** Write real notes and mirror
-> **every language the README ships in**, with in-page language anchors/toggles, matching the house style
-> of previous releases (check the last release's body with `gh release view <prev> --json body -q .body`
-> and follow its shape). Structure per language: a header line (release date · place), a one-paragraph
-> "what this release is", a short "what <PROJECT_NAME> is" paragraph, the attached artifacts, a **✨ What's new**
-> section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
+> 📝 **Release notes — the DELTA, never a README copy (do NOT `--generate-notes`).** Notes answer ONE
+> question: *"what changed in THIS version, and should I upgrade?"* — strictly this version's delta;
+> anything that describes the product in general is LINKED to the README, never copied (field
+> incident: 34 KB of notes turned out to be a near-copy of the README; rewritten by the delta —
+> 12 KB, not one fact lost). The mechanical scope check before publishing: **a paragraph you could
+> paste into the README unchanged belongs in the README, not in the notes.**
+> **Different documents draw from different wells:** notes take their shape from THIS project's
+> PREVIOUS release notes (`gh release view <prev> --json body -q .body` — follow the house style);
+> the README takes its shape from the current README and the owner's other repo storefronts. Mirror
+> **every language the README ships in**, with in-page anchors/toggles. Structure per language: a
+> header line (release date · place), a one-paragraph "what this release is", the attached
+> artifacts, a **✨ What's new** section (the delta), an **⬆️ Upgrading** note when relevant, and a
+> LINK to the README for what the product is and how to start. Write the notes to a file and pass
+> `--notes-file`.
 
 ## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)
 
@@ -3494,10 +3596,11 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except three marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> Kept verbatim except four marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
-> hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`). In KAIF rituals this
+> hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
+> **identity-without-an-author** hunt inside that block (added in KAIF 2.1 — judgment boundaries). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -3529,6 +3632,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Inventory-based delivery.** If the work has a parity inventory or canon map (`AGENT_GUIDE.md` → Recon artifacts), judge BY ITS ROWS, not by impression — unaddressed rows ARE the finding; a delivery with no inventory where a reference exists is itself a caveat.
    - **Experience recall.** The report must quote the EXPERIENCE lessons consulted (id + one line) or state "no relevant lessons" — a missing recall line is a caveat (unquoted recall is unverifiable).
    - **Provenance marks.** In the owner's canon artifacts, AI-written text must sit inside `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]` marks (`AGENT_GUIDE.md` → write-gate); unmarked AI text — or a mark removed without the owner's quoted word — is fraud.
+   - **Identity without an author (KAIF 2.1).** Any shipped NAME — a release codename, a product/feature name, a slogan, a brand string humans read first — must carry its source artifact (*owner · channel · date*, `/release` Step 0). A name with no source is an agent-invented identity: a finding regardless of how broad the owner's action approval was ("permission to act" never transfers "authorship of identity" — `AGENT_GUIDE.md`).
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

@@ -14,13 +14,31 @@ show the error, do NOT continue blindly.
 > = a public tag and Release, unpleasant to roll back. **In autonomous mode (`/autoloop`/loops) do NOT
 > publish a release.**
 
-## Step 0. Decide the bump type and the codename
+## Step 0. Decide the bump type and the codename (an IDENTITY stop, not a formality)
 
 Confirm with the human (or confirm the default): patch / minor / major. State the current → new version.
 
-**Every release gets a short codename** (a memorable one- or two-word name for the theme, e.g. *Anonymous*,
-*Slim*, *Savvied*). Ask the human for it (or propose one and confirm). The codename drives the release
-**title** and headline — see Step 6.
+**Every release normally gets a short codename** (a memorable one- or two-word name for the theme, e.g.
+*Anonymous*, *Slim*, *Savvied*). The codename drives the release **title** and headline — see Step 6.
+
+**The codename is IDENTITY, and identity is authored by the owner — never by the agent, under ANY
+breadth of approval.** A blanket "ship it, don't ask me" removes confirmation FRICTION on actions;
+it does not transfer AUTHORSHIP of how the product presents itself (field incident: under a literal
+"I APPROVE EVERYTHING, don't ask" an agent invented a release codename, and the owner met their
+product's name as a fait accompli). This hard stop has exactly three legal outcomes:
+
+1. **the owner names it** (or picks from candidates you offer);
+2. **you do EVERYTHING else and ask ONE pointed question about the name** — one question inside
+   already-authorized work costs nothing and is not what "don't ask" was about;
+3. **release UNNAMED** under the neutral factual title (`<PROJECT> X.Y`) — the ALWAYS-AVAILABLE
+   fallback: when the owner is unreachable, the release is never blocked forever, and only the
+   owner may name it, retroactively if need be. Never a placeholder name: a placeholder is still a
+   name someone must later un-decide.
+
+**The shipped name carries a SOURCE artifact** — a line in the release notes/plan:
+`codename: <owner · channel · date>` — the way a research claim carries its citation; a name
+without an author must be impossible to miss. And if a shipped name proves wrong, the agent does
+not rename on its own initiative — fixing a brand mistake is a brand decision too.
 
 ## Step 1. Pre-check the environment (don't release on a dirty/broken tree)
 
@@ -75,15 +93,24 @@ gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTE
 
 > 📛 **Release title — FIXED FORMAT (CANON):** `<PROJECT> X.Y — <Codename>` — the project name, the
 > `major.minor` version, an em dash `—`, then the Step-0 codename. Examples: `KAIF 1.2 — Anonymous KAIF`,
-> `KAIF 1.3 — Slim KAIF`, `KAIF 1.4 — Savvied KAIF`. **Not** `vX.Y`, no guillemets, no quotes. Keep it
+> `KAIF 1.3 — Slim KAIF`, `KAIF 1.4 — Savvied KAIF`. On Step 0's legal UNNAMED outcome the title is the
+> neutral `<PROJECT> X.Y` — factual, no invented name. **Not** `vX.Y`, no guillemets, no quotes. Keep it
 > consistent with every prior release (check `gh release list`).
 >
-> 📝 **Release notes — detailed and BILINGUAL (do NOT `--generate-notes`).** Write real notes and mirror
-> **every language the README ships in**, with in-page language anchors/toggles, matching the house style
-> of previous releases (check the last release's body with `gh release view <prev> --json body -q .body`
-> and follow its shape). Structure per language: a header line (release date · place), a one-paragraph
-> "what this release is", a short "what <PROJECT_NAME> is" paragraph, the attached artifacts, a **✨ What's new**
-> section, and a **🚀 Get started** section. Write the notes to a file and pass `--notes-file`.
+> 📝 **Release notes — the DELTA, never a README copy (do NOT `--generate-notes`).** Notes answer ONE
+> question: *"what changed in THIS version, and should I upgrade?"* — strictly this version's delta;
+> anything that describes the product in general is LINKED to the README, never copied (field
+> incident: 34 KB of notes turned out to be a near-copy of the README; rewritten by the delta —
+> 12 KB, not one fact lost). The mechanical scope check before publishing: **a paragraph you could
+> paste into the README unchanged belongs in the README, not in the notes.**
+> **Different documents draw from different wells:** notes take their shape from THIS project's
+> PREVIOUS release notes (`gh release view <prev> --json body -q .body` — follow the house style);
+> the README takes its shape from the current README and the owner's other repo storefronts. Mirror
+> **every language the README ships in**, with in-page anchors/toggles. Structure per language: a
+> header line (release date · place), a one-paragraph "what this release is", the attached
+> artifacts, a **✨ What's new** section (the delta), an **⬆️ Upgrading** note when relevant, and a
+> LINK to the README for what the product is and how to start. Write the notes to a file and pass
+> `--notes-file`.
 
 ## Step 6.5. The deploy checklist (when shipping replaces a RUNNING system)
 

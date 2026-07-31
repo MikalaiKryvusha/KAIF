@@ -259,6 +259,38 @@ Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
 `<If you use a commit/version tool (e.g. tools/commit.mjs that bumps a build number, commits, pushes),
 document it here.>`
 
+## Document & text hygiene (field-paid rules)
+
+**Each document answers its own question — and takes its shape from its own kin.** README: *"what
+is this and how do I use it"* (the product, present tense). Release notes: *"what changed in THIS
+version, do I upgrade"* (strictly the delta; anything general is a LINK to the README — the
+mechanical check: a paragraph pasteable into the README unchanged belongs in the README).
+`STATUS.md`: *"where are we now"*. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
+Updating the README — draw on the current README and the owner's other repo storefronts (one
+storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
+notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style choice.
+
+**TEXT TRAVELS THROUGH FILES, NEVER THROUGH COMMAND-LINE ARGUMENTS.** Feeding a tool Cyrillic (or
+any non-ASCII), curly quotes, emoji, multi-line content, markdown, JSON? Write a UTF-8 file and
+pass the PATH. No `python -c "…text…"`, no `-m "…"`, no `echo "…" > file` with non-ASCII. One
+class, four unlike faces — recognize it BY SYMPTOM, they hit every Windows project (and face 3
+reproduces in JS/JSON/YAML anywhere):
+
+1. `python -c` + non-ASCII → `SyntaxError: (unicode error)` — or WORSE, silent mojibake written to
+   the file (the console encoding corrupts the argument before the program sees it);
+2. backticks inside double quotes → the shell's command substitution eats chunks of text, prints
+   "ok", and the document gets HOLES — no error at all; caught only by reading the result back;
+3. Windows paths inside strings → `truncated \uXXXX escape` (`\w`, `\u` read as escapes);
+4. different shells are different worlds: GNU tar takes `D:\…` for a remote host while bsdtar
+   doesn't; a Git-Bash `/tmp` file is invisible to Windows Python; PowerShell 5 `Set-Content`
+   writes ANSI by default. Know WHICH shell you are in; before running a foreign script on
+   Windows, check what `tar`/`curl`/`find` actually resolve to in the current PATH; record in the
+   project docs which shell the build runs from.
+
+Companions: after ANY machine edit of a non-ASCII document — READ THE RESULT BACK (face 2 cannot be
+caught otherwise); prefer the file tools (Write/Edit) over the shell for editing text — the shell
+runs processes, it does not carry content.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
@@ -341,6 +373,30 @@ and report in the chat.
 
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
+
+**The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
+(verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
+lies a third class: the acceptance criterion is a PERCEPTION adjective (beautiful, natural,
+pleasant, readable, "feels right") — grep-detectable in the ask. There the agent does not conclude;
+it **produces a MOCK-UP and files homework**: find the live best candidates → mock them QUICKLY on
+OUR OWN material → hand the human an ARTIFACT to perceive (never a link, never someone else's
+benchmark — a human judging sound needs sound, not a score; in the field both suggested demo URLs
+turned out dead) → record the verdict as canon (the owner's taste is not re-litigated by the
+agent). Comparison contract: all candidates on ONE same material, blind labels, the key stored
+beside them. The homework doc carries two standing fields: *"ready to see/hear right now"* (paths
+to artifacts) and *"verdicts already given"* (so no verdict is ever asked twice).
+
+**Action permission ≠ identity authorship.** A blanket "go ahead, don't ask me" removes
+confirmation FRICTION on actions; it never transfers authorship of IDENTITY — naming: release
+codenames, product and feature names, slogans, any brand string a human reads first (the test: it
+is read first and says how the product presents itself). Identity is NEVER the agent's decision,
+under any breadth of approval — a wide "yes" quietly disguises a taste question as a technical
+detail of shipping, which is exactly how the field incident happened. The right move under blanket
+approval: do everything else and ask ONE pointed question about the name. The fallback: ship under
+a neutral factual title — never a placeholder name (still a name someone must un-decide). Every
+shipped name carries a source artifact (*owner · channel · date*), and a brand mistake is fixed
+only by the owner — un-naming is a brand decision too. (`/release` Step 0 enforces this at the
+decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a

@@ -34,6 +34,9 @@ To fix a bug, the agent must:
   drift apart again.
 - To fix a bug, it is often useful to **search the web** for the solution — forums, GitHub issues,
   Reddit, Stack Overflow, official docs.
+- **Symptom "text silently corrupted / holes in a document"** → before any theory, check the
+  text-through-CLI class first (`AGENT_GUIDE.md` → Document & text hygiene, four faces): a shell
+  argument mangled by console encoding or command substitution corrupts data with a GREEN exit code.
 
 > ⚠️ **THE 3-ATTEMPTS RULE → switch to research (`/bug-research`).**
 > If after **three iterations** of "targeted fix → build → test" the bug is NOT fixed — STOP going
