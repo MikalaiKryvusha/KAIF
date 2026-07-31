@@ -43,7 +43,7 @@ well-structured explanation they can read and act on.
 4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
    groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
    soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
-   `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
+   `/dayloop`, `/nightloop`, `/guarded-loop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
    `/what-next`), planning (`/plan-task`, `/plan-epic`, `/revision`), guardrails (`/derive-styleguide`), execution discipline
    (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping

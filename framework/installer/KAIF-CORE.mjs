@@ -181,7 +181,8 @@ function lineDiff(oldText, newText) {
 // [TESTED: 2026-07-27 · sandboxes S1 (entries present right after install) + S4 (idempotent on update)]
 function ensureIgnoreFirst() {
   const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK,
-                  'KAIF_UPDATE_TASK.superseded.md'];
+                  'KAIF_UPDATE_TASK.superseded.md',
+                  '.kaif/heartbeat.log'];   // the guarded loop's pulse is runtime state, not history
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
   const add = wanted.filter((w) => !have.has(w) && !have.has(w.replace(/\/$/, '')));

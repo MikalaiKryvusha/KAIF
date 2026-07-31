@@ -45,7 +45,7 @@ description: Дать человеку-оператору ясный струк�
 4. **Навыки — команды, которые вы вводите.** Перечисли группами, каждую с одной строкой назначения —
    группы собирай из ФАКТИЧЕСКОГО инвентаря навыков (никогда не копируй этот пример дословно): сессия
    (`/resume`, `/pause` — мягкая парковка, чат продолжится, `/end-chat` — полное закругление с эстафетой),
-   автономия (`/autoloop`, `/dayloop`, `/nightloop`), гигиена (`/refresh-context`, `/check-backlog`),
+   автономия (`/autoloop`, `/dayloop`, `/nightloop`, `/guarded-loop`), гигиена (`/refresh-context`, `/check-backlog`),
    знания и память (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), владелец
    (`/interview`, `/fix-vision`, `/what-next`), планирование (`/plan-task`, `/plan-epic`, `/revision`), гвардрейлы
    (`/derive-styleguide`), дисциплина исполнения (`/fable-method`, `/fable-loop`, `/fable-judge`,

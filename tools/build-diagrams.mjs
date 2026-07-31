@@ -34,6 +34,15 @@ const OUT = join(ROOT, 'assets');
 // layers-*.svg after the set grew to 28 (the bugs/09 class: counters rot unless derived).
 const SKILLS = readdirSync(join(ROOT, 'framework', 'skills'))
   .filter((n) => existsSync(join(ROOT, 'framework', 'skills', n, 'SKILL.md'))).length;
+// Русское согласование числительного (judge-caught: «31 повторяемых ритуалов» — сломанная форма).
+// 1/21/31… → «повторяемый ритуал», 2–4/22–24… → «повторяемых ритуала», остальное → «…ритуалов»;
+// 11–14 — всегда родительный множественного.
+function ruRituals(n) {
+  const d10 = n % 10, d100 = n % 100;
+  if (d10 === 1 && d100 !== 11) return `${n} повторяемый ритуал`;
+  if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return `${n} повторяемых ритуала`;
+  return `${n} повторяемых ритуалов`;
+}
 
 // ── Design tokens ──────────────────────────────────────────────────────────────
 // The light card carries an opaque white ground rather than a transparent one: where <picture>
@@ -119,7 +128,7 @@ const STR = {
     d2_return: 'следующая сессия начинается с пустым контекстом — переносят только файлы',
     d3_title: 'Из чего состоит развёрнутый KAIF',
     d3_bands: [
-      ['Команды', `${SKILLS} повторяемых ритуалов, вызываются по имени`,
+      ['Команды', `${ruRituals(SKILLS)} — вызов по имени`,
         '/resume · /pause · /autoloop · /report-bug · /propose-idea · /interview · /release'],
       ['Состояние и знание', 'обычный markdown, версионируется вместе с проектом',
         'STATUS.md · EXPERIENCE.md · MASTER_PLAN.md · GOAL.md · bugs/ ideas/ plans/ researches/'],

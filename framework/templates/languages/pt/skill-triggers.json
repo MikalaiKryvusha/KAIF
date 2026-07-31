@@ -28,5 +28,6 @@
   "fable-judge": "«julga o trabalho», «verifica o que ele fez», «funcionou mesmo?»",
   "fable-domain": "«faz uma habilidade para o setor», «adiciona um domínio ao método fable»",
   "plan-task": "«planeje esta tarefa», «faça um plano para a tarefa», «plano para este bug»",
-  "plan-epic": "«planeje este épico», «divida o épico», «escada completa de planejamento»"
+  "plan-epic": "«planeje este épico», «divida o épico», «escada completa de planejamento»",
+  "guarded-loop": "«ciclo protegido», «trabalhe em ciclo protegido», «ciclo com alarmes»"
 }

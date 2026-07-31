@@ -13,7 +13,7 @@
 <text x="40" y="54" text-anchor="start" font-family="system-ui,-apple-system,&#34;Segoe UI&#34;,Roboto,Helvetica,Arial,sans-serif" font-size="19" font-weight="700" fill="#e9e7ec">What a deployed KAIF consists of</text>
 <rect x="330" y="92" width="830" height="112" rx="4" fill="none" stroke="#e9e7ec" stroke-width="2.2"/>
 <text x="352" y="126" text-anchor="start" font-family="system-ui,-apple-system,&#34;Segoe UI&#34;,Roboto,Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#e9e7ec">Commands</text>
-<text x="352" y="150" text-anchor="start" font-family="system-ui,-apple-system,&#34;Segoe UI&#34;,Roboto,Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#9aa0aa">30 repeatable rituals, invoked by name</text>
+<text x="352" y="150" text-anchor="start" font-family="system-ui,-apple-system,&#34;Segoe UI&#34;,Roboto,Helvetica,Arial,sans-serif" font-size="13.5" font-weight="400" fill="#9aa0aa">31 repeatable rituals, invoked by name</text>
 <text x="352" y="180" text-anchor="start" font-family="ui-monospace,&#34;Cascadia Code&#34;,Consolas,&#34;Liberation Mono&#34;,monospace" font-size="13" font-weight="400" fill="#e9e7ec" opacity="0.88">/resume · /pause · /autoloop · /report-bug · /propose-idea · /interview · /release</text>
 <rect x="330" y="220" width="830" height="112" rx="4" fill="none" stroke="#e9e7ec" stroke-width="2.2"/>
 <text x="352" y="254" text-anchor="start" font-family="system-ui,-apple-system,&#34;Segoe UI&#34;,Roboto,Helvetica,Arial,sans-serif" font-size="17" font-weight="700" fill="#e9e7ec">State and knowledge</text>

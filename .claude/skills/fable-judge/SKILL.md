@@ -8,7 +8,8 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
-> **identity-without-an-author** hunt inside that block (added in KAIF 2.1 — judgment boundaries). In KAIF rituals this
+> **identity-without-an-author** and **timer-fed-heartbeat** hunts inside that block (added in
+> KAIF 2.1 — judgment boundaries and the guarded loop). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -41,6 +42,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Experience recall.** The report must quote the EXPERIENCE lessons consulted (id + one line) or state "no relevant lessons" — a missing recall line is a caveat (unquoted recall is unverifiable).
    - **Provenance marks.** In the owner's canon artifacts, AI-written text must sit inside `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]` marks (`AGENT_GUIDE.md` → write-gate); unmarked AI text — or a mark removed without the owner's quoted word — is fraud.
    - **Identity without an author (KAIF 2.1).** Any shipped NAME — a release codename, a product/feature name, a slogan, a brand string humans read first — must carry its source artifact (*owner · channel · date*, `/release` Step 0). A name with no source is an agent-invented identity: a finding regardless of how broad the owner's action approval was ("permission to act" never transfers "authorship of identity" — `AGENT_GUIDE.md`).
+   - **Timer-fed heartbeat (KAIF 2.1).** In a guarded loop (`/guarded-loop`), a `.kaif/heartbeat.log` pulse must correspond to a COMPLETED step — cross-check pulse lines against the actual work trail (commits, task ticks). A pulse written on a schedule while no work landed is the exact fraud the watchdog exists to catch: it keeps a hung agent looking alive.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

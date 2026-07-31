@@ -92,14 +92,16 @@ Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `rese
 
 ## 6. The skill system
 
-Thirty skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-one skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
   chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat` (full closure:
   STATUS baton, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
-  with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch.
+  with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
+  plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
+  a work-proving heartbeat file, a restart policy with an escalation cap).
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
   `plan-epic` (the full ladder for heavy work: industry web-recon + local recon → research doc →

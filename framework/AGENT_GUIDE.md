@@ -11,7 +11,8 @@ relies entirely on this document to get to work.
 
 > 🤖 **AUTONOMOUS MODE.** When the human has stepped away / granted autonomy and there is no active
 > interactive task, and `STATUS.md` has an open autonomous backlog — the agent SHOULD, on its own
-> initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop`) and grind the
+> initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop` — or
+> `/guarded-loop` when the owner asked for a protected run) and grind the
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
 > conditions. Do not enter a loop if the human just gave a specific interactive task.
 

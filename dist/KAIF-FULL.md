@@ -110,7 +110,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 30 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — 31 in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -152,7 +152,8 @@ relies entirely on this document to get to work.
 
 > 🤖 **AUTONOMOUS MODE.** When the human has stepped away / granted autonomy and there is no active
 > interactive task, and `STATUS.md` has an open autonomous backlog — the agent SHOULD, on its own
-> initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop`) and grind the
+> initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop` — or
+> `/guarded-loop` when the owner asked for a protected run) and grind the
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
 > conditions. Do not enter a loop if the human just gave a specific interactive task.
 
@@ -1651,14 +1652,16 @@ Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `rese
 
 ## 6. The skill system
 
-Thirty skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-one skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
   chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat` (full closure:
   STATUS baton, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
-  with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch.
+  with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
+  plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
+  a work-proving heartbeat file, a restart policy with an escalation cap).
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
   `plan-epic` (the full ladder for heavy work: industry web-recon + local recon → research doc →
@@ -3240,7 +3243,7 @@ well-structured explanation they can read and act on.
 4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
    groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
    soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
-   `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
+   `/dayloop`, `/nightloop`, `/guarded-loop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
    `/what-next`), planning (`/plan-task`, `/plan-epic`, `/revision`), guardrails (`/derive-styleguide`), execution discipline
    (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
@@ -3660,7 +3663,8 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
-> **identity-without-an-author** hunt inside that block (added in KAIF 2.1 — judgment boundaries). In KAIF rituals this
+> **identity-without-an-author** and **timer-fed-heartbeat** hunts inside that block (added in
+> KAIF 2.1 — judgment boundaries and the guarded loop). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -3693,6 +3697,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Experience recall.** The report must quote the EXPERIENCE lessons consulted (id + one line) or state "no relevant lessons" — a missing recall line is a caveat (unquoted recall is unverifiable).
    - **Provenance marks.** In the owner's canon artifacts, AI-written text must sit inside `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]` marks (`AGENT_GUIDE.md` → write-gate); unmarked AI text — or a mark removed without the owner's quoted word — is fraud.
    - **Identity without an author (KAIF 2.1).** Any shipped NAME — a release codename, a product/feature name, a slogan, a brand string humans read first — must carry its source artifact (*owner · channel · date*, `/release` Step 0). A name with no source is an agent-invented identity: a finding regardless of how broad the owner's action approval was ("permission to act" never transfers "authorship of identity" — `AGENT_GUIDE.md`).
+   - **Timer-fed heartbeat (KAIF 2.1).** In a guarded loop (`/guarded-loop`), a `.kaif/heartbeat.log` pulse must correspond to a COMPLETED step — cross-check pulse lines against the actual work trail (commits, task ticks). A pulse written on a schedule while no work landed is the exact fraud the watchdog exists to catch: it keeps a hung agent looking alive.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -3914,6 +3919,104 @@ Step 0: assessment; change nothing. Step 1: done = a cause backed by observation
 **audit** - grade the most recent completed piece of work in this conversation against the loop. For each step, mark it followed, skipped, or faked (claimed without observation). For every skip or fake, name the concrete risk it created; `references/failure-modes.md` maps symptoms to steps. Deliver a short table plus the single highest-value fix, and apply that fix only if the user asks.
 
 **report** - apply the Step 6 checklist to the answer you were about to send: outcome in the first sentence, load-bearing quotes only, caveats present, follow-ups only if they emerged from the work, hostile-reviewer reread done. Rewrite it, do not send the original.
+``````
+
+### `.claude/skills/guarded-loop/SKILL.md`
+
+> **FILE: `.claude/skills/guarded-loop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: guarded-loop
+description: Run an autonomous backlog loop under a WATCHDOG — the agent arranges its own EXTERNAL wake-ups every N minutes (default 10) so a hung chat, a flaky network or a stuck API call can never silently kill the run; a heartbeat file proves real progress, a bounded duration (default 1 hour when none is given) ends the run cleanly, and a restart policy with a cooldown and an escalation cap replaces infinite crash-loops. Use when the human says "run a guarded loop", "work autonomously until 22:00 with alarms every 20 minutes", "work the backlog for 3 hours", "работай в защищённом цикле", "работай автономно с будильниками". Item execution itself follows /autoloop verbatim.
+---
+
+# /guarded-loop — an autonomous loop that survives a hang
+
+The ordinary loops (`/autoloop`, `/dayloop`, `/nightloop`) trust the harness to keep the agent
+alive. In the field that trust sometimes breaks: the network lags, an API call errors out, the
+chat hangs — and the agent never wakes up on its own. The guarded loop adds three guarantees on
+top of the SAME loop discipline: an **external watchdog** that pokes the agent every N minutes, a
+**heartbeat** that proves real progress, and a **restart policy** that neither gives up nor loops
+forever. Everything about picking and executing backlog items is `/autoloop`'s canon, unchanged.
+
+## Step 0 — parse the ask, state the contract
+
+Two parameters, spoken back in ONE line before starting:
+
+- **Duration** — explicit ("until 22:00", "for 3 hours") or the default: **1 hour** for a bare
+  "run a guarded loop".
+- **Alarm interval** — explicit ("alarms every 20 minutes") or the default: **10 minutes**.
+
+Example: *"Guarded loop: until 22:00, wake-ups every 10 min (default). Starting."*
+
+## Step 1 — arm the WATCHDOG (external, never self)
+
+The process that runs the work must not be the only judge of its own health — a hung agent cannot
+run its own self-check. Two layers:
+
+1. **The harness's native scheduler first** (scheduled wake-ups / cron prompts / self-alarms of
+   your agent system) — armed for the alarm interval. This is the STANDARD path.
+2. **The guard layer — a LOCAL OS mechanism** the agent builds once per project (Windows Task
+   Scheduler / cron / a background script — add it to the project's harness and document it):
+   every N minutes it checks the heartbeat file's freshness and, on a stale pulse, re-pokes or
+   restarts the agent by whatever means the project's harness allows (re-invoke CLI, notification
+   to the owner as last resort). KAIF prescribes the CONTRACT below; the script itself is the
+   project's tool, not the framework's.
+
+Watchdog contract (each line exists because its absence burned a real run):
+- **single-instance guard** — a lock/pid file, so two watchdogs never double-restart;
+- **debounce** — act only after M consecutive stale checks (a long build legitimately silences
+  the pulse; pick M from the project's MEASURED longest step, never from thin air);
+- **disarm at the end of the run** (Step 5) — a watchdog left armed past its run is a footgun.
+
+## Step 2 — the HEARTBEAT: pulse = finished work, never a timer
+
+Append one line to **`.kaif/heartbeat.log`** at the END of every completed iteration/step:
+
+```
+<ISO timestamp> | <backlog item> | <status: done/progress/blocked> | next: <next action>
+```
+
+The pulse is written ONLY when a step actually completes. A heartbeat fed by a timer ("still
+alive" on schedule) defeats the entire mechanism — the watchdog would happily watch a hung agent
+tick — and is a fraud `/fable-judge` hunts. The last line doubles as a micro-recovery-context.
+
+## Step 3 — the loop itself
+
+Run backlog items exactly per `/autoloop`: same item selection, same fable-loop execution, the
+mandatory judge pass per item, drive-by notes to the backlog, a HEAVY unplanned item →
+`/plan-epic` first. Context/limits are the harness's concern, never a stop condition.
+
+## Step 4 — waking up: restart policy
+
+Woken by the watchdog and the pulse is stale:
+
+1. Say so aloud: *"woken by watchdog — pulse stale since <T>"* (honesty first; the log line is
+   forensics for the next session).
+2. Recover by the standard entry: **`/resume`** — `STATUS.md` plus the last heartbeat line ARE
+   the recovery context; continue the interrupted item or take the next one.
+3. **Cooldown** between watchdog-triggered restarts (don't thrash a flaky network).
+4. **Escalation cap:** after ~3 consecutive restarts with NO forward progress (no new heartbeat
+   entries between them) — STOP: record the state in `STATUS.md` (and a `bugs/` doc if the cause
+   looks like a defect), disarm the watchdog, and leave a clear note for the owner. An endless
+   crash-loop burns the budget and masks the real problem.
+
+## Step 5 — end of the run
+
+At the duration boundary (or when the pool is empty): finish the current item cleanly, write the
+final heartbeat line (`run complete`), **disarm the external watchdog**, and close per the
+session's situation — a parking note (the `/pause` way) if the chat continues, or the full
+`/end-chat` ceremony if the session ends. Report: items done, restarts survived, anything
+escalated.
+
+## What this skill refuses to do
+
+- Rely on the agent's own liveness alone — the runner is never the sole judge of its health.
+- Feed the heartbeat from a timer — the pulse proves WORK (the judge hunts this).
+- "Always restart" — without a cooldown and the escalation cap a bad state becomes a crash-storm.
+- Leave the watchdog armed after the run, or run two watchdogs without a single-instance guard.
+- Invent thresholds — the debounce and timeouts come from the project's measured durations.
 ``````
 
 ### `.claude/skills/kaif-fork/SKILL.md`

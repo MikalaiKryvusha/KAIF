@@ -22,7 +22,7 @@
 (в каждой свой README): `plans/`, `ideas/`, `bugs/`, `researches/`, `interviews/`, `homeworks/`.
 
 Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/end-chat`, `/autoloop`,
-`/dayloop`, `/nightloop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
+`/dayloop`, `/nightloop`, `/guarded-loop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
 `/bug-research`, `/propose-idea`, `/interview`, `/plan-task`, `/plan-epic`, `/revision`,
 `/fix-vision`, `/what-next`,
 `/derive-styleguide`, `/help-kaif`, `/release` + жизненный цикл `/kaif-*` + **fable-семейство**

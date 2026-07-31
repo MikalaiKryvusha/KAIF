@@ -28,5 +28,6 @@
   "fable-judge": "«beurteile die Arbeit», «prüfe, was er getan hat», «hat das wirklich funktioniert?»",
   "fable-domain": "«bau einen Skill für die Branche», «füge der Fable-Methode eine Domäne hinzu»",
   "plan-task": "«plane diese Aufgabe», «erstelle einen Plan für die Aufgabe», «Plan für diesen Bug»",
-  "plan-epic": "«plane dieses Epic», «zerlege das Epic», «vollständige Planungsleiter»"
+  "plan-epic": "«plane dieses Epic», «zerlege das Epic», «vollständige Planungsleiter»",
+  "guarded-loop": "«geschützter Zyklus», «arbeite im geschützten Zyklus», «Zyklus mit Weckern»"
 }
