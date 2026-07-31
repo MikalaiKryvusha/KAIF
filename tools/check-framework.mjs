@@ -140,9 +140,13 @@ if (existsSync(distDir)) {
     const langFiles = countFiles(langRoot);
     const toolsDir2 = join(ROOT, 'framework', 'tools');
     const toolMods = existsSync(toolsDir2) ? readdirSync(toolsDir2).filter((f) => f.endsWith('.mjs')).length : 0;
-    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + toolMods + langFiles;
+    // root-level framework/templates/*.md are embedded as .kaif/ payloads (e.g. the owner-voice
+    // portrait skeleton); languages/ underneath is counted separately as lang-pack files
+    const tmplDir = join(ROOT, 'framework', 'templates');
+    const tmpls = existsSync(tmplDir) ? readdirSync(tmplDir).filter((f) => f.endsWith('.md')).length : 0;
+    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + toolMods + tmpls + langFiles;
     if (bundleBlocks !== wantBundle)
-      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${toolMods} tool modules + ${langFiles} lang-pack files)`);
+      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${toolMods} tool modules + ${tmpls} templates + ${langFiles} lang-pack files)`);
     const man = JSON.parse(dread('kaif-manifest.json'));
     for (const n of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md'])
       if (man.sha256[n] !== dsha(n)) errors.push(`kaif-manifest.json sha256 stale for ${n} — re-run the build`);

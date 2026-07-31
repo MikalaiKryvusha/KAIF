@@ -50,6 +50,9 @@ relies entirely on this document to get to work.
     structured format for AI consumption (the human's voice and every thought preserved; their original
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
+19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
+    copy) → open the owner's voice portrait if one is taken (/owner-voice) and run its checklist before
+    handover; no portrait after a second style rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -68,6 +71,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
+| Writing into the owner's artifact (text the human signs or reads as their own) | the owner's voice portrait, if one is taken (`/owner-voice`) · the artifact's styleguide |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -89,6 +93,11 @@ observation (a session that "remembers" a domain invents it):
   OK/bug`. The rule: **no inventory row — no code**; delivery is judged BY THE ROWS, not by impression.
   A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
   but it cannot argue with a row.
+
+Adjacent, but NOT a fourth type: the **owner's voice portrait** (`/owner-voice`). It replaces the same
+kind of invention with observation — the owner's own texts instead of a session "remembering" their
+style — but it is a CANON document the owner accepts, and it is routed by task type ("writing into the
+owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
@@ -292,6 +301,15 @@ Companions: after ANY machine edit of a non-ASCII document — READ THE RESULT B
 caught otherwise); prefer the file tools (Write/Edit) over the shell for editing text — the shell
 runs processes, it does not carry content.
 
+**The truth↔mirror pairs registry.** The costliest field defects were not complex code but DRIFT
+between a source of truth and its mirror: a deploy manifest pinning an old engine version while
+prod ran a newer one, a comment contradicting the compose file it describes, a producer's contract
+diverging from its consumer. A weak session updates the side it SEES and does not know the other
+side exists. Keep a light registry — a table, one row per pair:
+`truth → mirror(s) → the one-line check command`. `/end-chat` and `/release` run the registry's
+commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
+Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
@@ -374,6 +392,19 @@ and report in the chat.
 
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
+
+**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
+review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue
+document), never in the tail of a plan, research, or bug file. The one exception stays: the single
+pointed task-level question in chat (above). Field fact: this rule gets broken even by agents that
+KNOW it — chat is cheaper in the moment — so a project that adopts the practice keeps a mechanical
+guard ("no unanswered questions outside interviews; every interview carries a status"; a guard of a
+text rule runs ~10 false hits per real one — exceptions are explicit, with the reason on the line),
+and a tool counts as ADOPTED only when a ritual contains the executable command that shows
+violations ("show all unanswered interviews") — in the field such a guard surfaced two questions
+nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML render of an
+interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
+the transport (equivalence rule in `/interview`: HTML = md = chat).
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them

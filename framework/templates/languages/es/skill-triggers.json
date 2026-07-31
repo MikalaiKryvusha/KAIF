@@ -29,5 +29,8 @@
   "fable-domain": "«haz una habilidad para el sector», «añade un dominio al método fable»",
   "plan-task": "«planifica esta tarea», «haz un plan para esta tarea», «plan para este bug»",
   "plan-epic": "«planifica esta épica», «desglosa la épica», «escalera completa de planificación»",
-  "guarded-loop": "«ciclo protegido», «trabaja en ciclo protegido», «ciclo con alarmas»"
+  "guarded-loop": "«ciclo protegido», «trabaja en ciclo protegido», «ciclo con alarmas»",
+  "code-revision": "«revisión del código», «audita la base de código», «relee el código»",
+  "owner-voice": "«retrato de mi estilo», «escribe como yo», «este no es mi lenguaje»",
+  "owner-reviews": "«revisión en página», «renderiza la entrevista», «monta el circuito de aprobaciones»"
 }

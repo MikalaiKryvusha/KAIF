@@ -86,10 +86,20 @@ The default, autonomy-friendly method: the owner answers **right in the md docum
 Sequence:
 - Compose `interviews/interview_NNN_<topic>.md` with questions and "**Answer:**" fields.
 - Write ONE paragraph in the chat: what you found, the forks, and a link to the document.
+- **Optional render step** — if the project has the `/owner-reviews` contour: render the document
+  to its HTML page and open it to the owner, signaling AFTER the page is up (contour invariant I5).
+  No contour → nothing changes; the md document alone is the full-fledged path.
 - **Pause** the work (so the owner is signaled to come and fill in the answers). Don't guess for them and
-  don't proceed blindly on UI/UX/brand/architecture questions.
+  don't proceed blindly on UI/UX/brand/architecture questions. **In an autonomous loop** with the
+  contour present: don't stand at the open page — queue the interview for the "N accumulated" batch
+  page (contour invariant I7) and move to unblocked work.
 
 ### Step 5. After the answers
+- **Answer equivalence:** an answer given on the rendered HTML page = an answer written into the md
+  = an answer said in chat. All three are the owner's word with equal force; whatever the
+  transport, the decision is recorded into the md document (the contour does it mechanically for
+  HTML; the agent does it for chat) **with `by` (who decided) and `at` (when)** — that is what
+  makes the archive readable months later.
 - **First commit the owner's answers verbatim** (the owner's originals are inviolable —
   `AGENT_GUIDE.md`, git hygiene); only then rework the document in a following commit.
 - Write the decisions into the document: change status to `✅ ANSWERS RECEIVED <date>` and add a

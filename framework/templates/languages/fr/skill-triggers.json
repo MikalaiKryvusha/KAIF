@@ -29,5 +29,8 @@
   "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »",
   "plan-task": "« planifie cette tâche », « fais un plan pour cette tâche », « plan pour ce bug »",
   "plan-epic": "« planifie cet epic », « découpe l'epic », « échelle complète de planification »",
-  "guarded-loop": "« boucle protégée », « travaille en boucle protégée », « boucle avec réveils »"
+  "guarded-loop": "« boucle protégée », « travaille en boucle protégée », « boucle avec réveils »",
+  "code-revision": "« révision du code », « audite la base de code », « relis le code »",
+  "owner-voice": "« portrait de mon style », « écris comme moi », « ce n’est pas mon langage »",
+  "owner-reviews": "« relecture en page », « rends l’interview en HTML », « monte le circuit d’approbations »"
 }

@@ -47,8 +47,9 @@ description: Дать человеку-оператору ясный струк�
    (`/resume`, `/pause` — мягкая парковка, чат продолжится, `/end-chat` — полное закругление с эстафетой),
    автономия (`/autoloop`, `/dayloop`, `/nightloop`, `/guarded-loop`), гигиена (`/refresh-context`, `/check-backlog`),
    знания и память (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), владелец
-   (`/interview`, `/fix-vision`, `/what-next`), планирование (`/plan-task`, `/plan-epic`, `/revision`), гвардрейлы
-   (`/derive-styleguide`), дисциплина исполнения (`/fable-method`, `/fable-loop`, `/fable-judge`,
+   (`/interview`, `/fix-vision`, `/what-next`, `/owner-voice`, `/owner-reviews`), планирование
+   (`/plan-task`, `/plan-epic`, `/revision`), гвардрейлы
+   (`/derive-styleguide`, `/code-revision`), дисциплина исполнения (`/fable-method`, `/fable-loop`, `/fable-judge`,
    `/fable-domain`), помощь (`/help-kaif`), выпуск (`/release`) и жизненный цикл (`/kaif-version`,
    `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`, `/kaif-remove`).
 

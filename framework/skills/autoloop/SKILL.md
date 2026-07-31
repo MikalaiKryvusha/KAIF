@@ -92,7 +92,10 @@ without those resources.
 ## When to STOP the loop (and report to the human)
 
 - The autonomous pool is exhausted (everything left needs the human/resources).
-- A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and pause.
+- A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and
+  pause. (A project running the `/owner-reviews` contour queues the interview to its "N accumulated"
+  batch page instead — invariant I7 — and moves on to unblocked work; the loop pauses only when
+  nothing unblocked remains.)
 - Something destructive/irreversible (a release, a deletion, a force-push) — don't do it alone, ask.
 
 At the end of the loop — a summary: what got done across the series (list of commits), what was deferred

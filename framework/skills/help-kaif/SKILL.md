@@ -45,7 +45,8 @@ well-structured explanation they can read and act on.
    soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
    `/dayloop`, `/nightloop`, `/guarded-loop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
-   `/what-next`), planning (`/plan-task`, `/plan-epic`, `/revision`), guardrails (`/derive-styleguide`), execution discipline
+   `/what-next`, `/owner-voice`, `/owner-reviews`), planning (`/plan-task`, `/plan-epic`, `/revision`),
+   guardrails (`/derive-styleguide`, `/code-revision`), execution discipline
    (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
    (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
    `/kaif-remove`).

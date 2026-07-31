@@ -222,6 +222,17 @@ const TEMPLATE_NOTES_BY_VERSION = {
     'AGENT_GUIDE: strictness modes (draft vs canon pipeline) + the any-model/strong-model split on task steps; the write-gate now names the mechanized gates (provenance check + canon lint)',
     'Release codename for this version: KAIF 2.0 — Excellent KAIF',
   ],
+  '2.1': [
+    'NEW key doc PROJECT_HISTORY.md — the append-only chronicle of closed sessions/phases/releases (13th key doc; added mechanically, outside /resume and the required minimum). STATUS.md is now the living SUMMARY of the present (~200-line soft target, warning-mode guard). MIGRATION — agent work, not machinery: move the overgrown history out of your STATUS into PROJECT_HISTORY (machinery cannot judge what counts as history; do it once, by the /end-chat rules)',
+    'NEW skills (6): /plan-task + /plan-epic (the planning ladder — heavy work climbs recon → research doc → meta-plan → operational plan of the NEXT phase only), /guarded-loop (autonomous loop under an external watchdog: wake-ups every N minutes, a work-proving heartbeat file, a restart policy with an escalation cap), /code-revision (periodic READING revision by the strongest model: reviewers armed with the project\'s paid-for failure classes, verbatim quote per finding, adversarial skeptic defaulting to "not a defect"), /owner-voice (stylometric portrait of the owner\'s written voice; the skeleton ships mechanically as .kaif/_owner-voice-template.md), /owner-reviews (optional review contour: interviews/drafts as local HTML pages, decisions recorded with by/at, send-side fail-closed approval gate)',
+    'AGENT_GUIDE canon — the place-of-questions HARD RULE: everything the agent wants FROM the owner (fork, review, approval, answer) lives ONLY in interviews/ (the one pointed task-level chat question stays legal); an adopted practice keeps a mechanical guard and an executable violation-showing command; an answer\'s force does not depend on transport (HTML = md = chat), recorded with by/at — /interview gained the optional render step and autonomous-loop queueing',
+    'AGENT_GUIDE canon — judgment boundaries: the TASTE class (acceptance criterion is a perception adjective ⇒ the agent produces a MOCK-UP and files homework, never concludes; all candidates on ONE material, blind labels) and action-permission ≠ identity-authorship (naming, codenames, brand strings are never the agent\'s decision under any breadth of approval)',
+    'AGENT_GUIDE canon — planning-discipline ladder; document & text hygiene incl. the truth↔mirror pairs registry (a mirrored/generated surface is edited at its source and rebuilt, never patched in place) and text-through-files (owner/canon text never passes through CLI string arguments); recon artifacts now name the canon map and the parity inventory; EXPERIENCE entries: Repro is REQUIRED, Trigger tags quoted before tasks, a repeating lesson gets mechanized',
+    'fable patches (vendored skills): /fable-method Step 5 gained the CRAFT SLOTS (TWINS-MECH mechanism-not-string grep, the removal table for moved logic, AFTER-WORK, BOTH-WAYS, the deleted-text sweep, craft questions by diff type); /fable-judge gained the hunts identity-without-an-author, timer-fed heartbeat, mutation addressivity (a guard proven by mutation names its addressees BEFORE the run); spheres gained Craft recipes + Owner\'s voice sections + the "Voice without a corpus" fraud row',
+    'Update machinery hardened by the 2.0 field reports: translated deployments ("i18n": "translated") merge correctly, the first-update prediction is honest, CRLF-resaved cores unpack, a missing owner-seeded doc re-seeds on update, the stale-claims scan skips chronicles; the sandbox polygon grew suite s07',
+    // frozen literal: a dynamic version()/codename() here would rename HISTORY on the next bump
+    'Release codename for this version: KAIF 2.1 — Strong KAIF',
+  ],
 };
 // Flat notes for the CURRENT version stay in the meta for older cores reading a newer bundle.
 const TEMPLATE_NOTES = TEMPLATE_NOTES_BY_VERSION[version()] || [];
@@ -280,6 +291,12 @@ function bundleBlocks() {
   const toolsDir = join(FW, 'tools');
   if (existsSync(toolsDir)) for (const t of readdirSync(toolsDir).filter((f) => f.endsWith('.mjs')))
     blocks.push(embedBundle(`framework/tools/${t}`, `.kaif/tools/${t}`, 'optional tool module — verbatim'));
+  // the owner-voice portrait skeleton (epic C, 2.1): bundle-only like the tools — an OPTIONAL
+  // methodology template; a deployment without an owner's artifact never reddens for lacking it.
+  // Dest is .kaif/ (NOT .kaif/spheres/ — it would be read as a sphere library; field report 22).
+  if (existsSync(join(FW, 'templates', '_owner-voice-template.md')))
+    blocks.push(embedBundle('framework/templates/_owner-voice-template.md', '.kaif/_owner-voice-template.md',
+      'the owner-voice portrait skeleton — optional; /owner-voice portrait mode fills it'));
   // language packs: owner-facing doc overrides + skill trigger aliases per language.
   // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
   // override their destination paths; others are ignored.

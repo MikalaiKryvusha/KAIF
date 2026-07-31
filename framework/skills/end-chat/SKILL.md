@@ -21,6 +21,9 @@ Update `STATUS.md`:
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
 in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
 
+If the project keeps a **truth↔mirror pairs registry**, run its check commands before passing the
+baton — a handoff over a drifted pair hands the next session a lie.
+
 **The bonsai trim (STATUS is a summary, not a chronicle):** entries that stopped being "now" —
 closed phases, finished sessions, shipped releases — move VERBATIM into `PROJECT_HISTORY.md`
 (newest on top; move, don't rewrite). Then re-read what remains of `STATUS.md` with the two tests

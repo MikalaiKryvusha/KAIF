@@ -39,6 +39,16 @@
       "Skills: /pause is now a SOFT PARK (the chat continues later); NEW /end-chat — the full wrap-up with a handoff baton; NEW /derive-styleguide — extract the owner's style guide from their own sample before writing into their canon. If your adapted skill copies diverged, merge these semantics by hand",
       "AGENT_GUIDE: strictness modes (draft vs canon pipeline) + the any-model/strong-model split on task steps; the write-gate now names the mechanized gates (provenance check + canon lint)",
       "Release codename for this version: KAIF 2.0 — Excellent KAIF"
+    ],
+    "2.1": [
+      "NEW key doc PROJECT_HISTORY.md — the append-only chronicle of closed sessions/phases/releases (13th key doc; added mechanically, outside /resume and the required minimum). STATUS.md is now the living SUMMARY of the present (~200-line soft target, warning-mode guard). MIGRATION — agent work, not machinery: move the overgrown history out of your STATUS into PROJECT_HISTORY (machinery cannot judge what counts as history; do it once, by the /end-chat rules)",
+      "NEW skills (6): /plan-task + /plan-epic (the planning ladder — heavy work climbs recon → research doc → meta-plan → operational plan of the NEXT phase only), /guarded-loop (autonomous loop under an external watchdog: wake-ups every N minutes, a work-proving heartbeat file, a restart policy with an escalation cap), /code-revision (periodic READING revision by the strongest model: reviewers armed with the project's paid-for failure classes, verbatim quote per finding, adversarial skeptic defaulting to \"not a defect\"), /owner-voice (stylometric portrait of the owner's written voice; the skeleton ships mechanically as .kaif/_owner-voice-template.md), /owner-reviews (optional review contour: interviews/drafts as local HTML pages, decisions recorded with by/at, send-side fail-closed approval gate)",
+      "AGENT_GUIDE canon — the place-of-questions HARD RULE: everything the agent wants FROM the owner (fork, review, approval, answer) lives ONLY in interviews/ (the one pointed task-level chat question stays legal); an adopted practice keeps a mechanical guard and an executable violation-showing command; an answer's force does not depend on transport (HTML = md = chat), recorded with by/at — /interview gained the optional render step and autonomous-loop queueing",
+      "AGENT_GUIDE canon — judgment boundaries: the TASTE class (acceptance criterion is a perception adjective ⇒ the agent produces a MOCK-UP and files homework, never concludes; all candidates on ONE material, blind labels) and action-permission ≠ identity-authorship (naming, codenames, brand strings are never the agent's decision under any breadth of approval)",
+      "AGENT_GUIDE canon — planning-discipline ladder; document & text hygiene incl. the truth↔mirror pairs registry (a mirrored/generated surface is edited at its source and rebuilt, never patched in place) and text-through-files (owner/canon text never passes through CLI string arguments); recon artifacts now name the canon map and the parity inventory; EXPERIENCE entries: Repro is REQUIRED, Trigger tags quoted before tasks, a repeating lesson gets mechanized",
+      "fable patches (vendored skills): /fable-method Step 5 gained the CRAFT SLOTS (TWINS-MECH mechanism-not-string grep, the removal table for moved logic, AFTER-WORK, BOTH-WAYS, the deleted-text sweep, craft questions by diff type); /fable-judge gained the hunts identity-without-an-author, timer-fed heartbeat, mutation addressivity (a guard proven by mutation names its addressees BEFORE the run); spheres gained Craft recipes + Owner's voice sections + the \"Voice without a corpus\" fraud row",
+      "Update machinery hardened by the 2.0 field reports: translated deployments (\"i18n\": \"translated\") merge correctly, the first-update prediction is honest, CRLF-resaved cores unpack, a missing owner-seeded doc re-seeds on update, the stale-claims scan skips chronicles; the sandbox polygon grew suite s07",
+      "Release codename for this version: KAIF 2.1 — Strong KAIF"
     ]
   },
   "deprecations": [],
@@ -106,6 +116,9 @@ relies entirely on this document to get to work.
     structured format for AI consumption (the human's voice and every thought preserved; their original
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
+19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
+    copy) → open the owner's voice portrait if one is taken (/owner-voice) and run its checklist before
+    handover; no portrait after a second style rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -124,6 +137,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
+| Writing into the owner's artifact (text the human signs or reads as their own) | the owner's voice portrait, if one is taken (`/owner-voice`) · the artifact's styleguide |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -145,6 +159,11 @@ observation (a session that "remembers" a domain invents it):
   OK/bug`. The rule: **no inventory row — no code**; delivery is judged BY THE ROWS, not by impression.
   A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
   but it cannot argue with a row.
+
+Adjacent, but NOT a fourth type: the **owner's voice portrait** (`/owner-voice`). It replaces the same
+kind of invention with observation — the owner's own texts instead of a session "remembering" their
+style — but it is a CANON document the owner accepts, and it is routed by task type ("writing into the
+owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
@@ -348,6 +367,15 @@ Companions: after ANY machine edit of a non-ASCII document — READ THE RESULT B
 caught otherwise); prefer the file tools (Write/Edit) over the shell for editing text — the shell
 runs processes, it does not carry content.
 
+**The truth↔mirror pairs registry.** The costliest field defects were not complex code but DRIFT
+between a source of truth and its mirror: a deploy manifest pinning an old engine version while
+prod ran a newer one, a comment contradicting the compose file it describes, a producer's contract
+diverging from its consumer. A weak session updates the side it SEES and does not know the other
+side exists. Keep a light registry — a table, one row per pair:
+`truth → mirror(s) → the one-line check command`. `/end-chat` and `/release` run the registry's
+commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
+Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
@@ -430,6 +458,19 @@ and report in the chat.
 
 Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
 for the long term — interview.
+
+**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
+review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue
+document), never in the tail of a plan, research, or bug file. The one exception stays: the single
+pointed task-level question in chat (above). Field fact: this rule gets broken even by agents that
+KNOW it — chat is cheaper in the moment — so a project that adopts the practice keeps a mechanical
+guard ("no unanswered questions outside interviews; every interview carries a status"; a guard of a
+text rule runs ~10 false hits per real one — exceptions are explicit, with the reason on the line),
+and a tool counts as ADOPTED only when a ritual contains the executable command that shows
+violations ("show all unanswered interviews") — in the field such a guard surfaced two questions
+nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML render of an
+interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
+the transport (equivalence rule in `/interview`: HTML = md = chat).
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
@@ -1153,10 +1194,20 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 > **Result:** ✅/❌ — what happened.
 > **Lesson:** the reusable takeaway (the reason this entry exists).   → link: bugs/NN · ideas/NN · plans/NN
 > **Repro:** the ready-to-run command/check that verifies or applies the lesson — a weak session
->   executes a pasted command reliably, an essay it won't act on. (omit only if truly none exists)
+>   executes a pasted command reliably, an essay it won't act on. REQUIRED since 2.1: a lesson
+>   with no Repro line is not accepted (field-proven: lessons with a Repro command get executed,
+>   essay-lessons get read and ignored). If the lesson genuinely has no command, say what to
+>   OBSERVE instead — but say it as an action.
+> **Trigger:** for class-level lessons — the decision point that must invoke this lesson, as
+>   "writing X → run Y" (the lesson names WHERE it applies, instead of hoping to be remembered).
 > **Not for:** the lesson's validity range — where it does NOT apply. A documented lesson is still a
 >   hypothesis; applied outside its range it kills good ideas.
 > ```
+>
+> **A lesson that repeats is a lesson that failed as text.** When the same class recurs in NEW code
+> after its entry was recorded, the journal has proven insufficient — the lesson MUST become
+> executable (a linter rule, a guard, a gate), and the entry gains the line
+> `mechanized: <the tool>`. Two strikes → a mechanism, never a third reminder.
 >
 > The `#tags` are **trigger-tags**: before a task, grep by the task's tags and QUOTE the relevant
 > lessons in your report (id + one line) — or state "no relevant lessons". An unquoted recall is
@@ -1555,7 +1606,7 @@ Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `rese
 
 ## 6. The skill system
 
-Thirty-one skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-four skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -1566,11 +1617,20 @@ mirrored into every declared agent system (§7.3). Groups:
   plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
   a work-proving heartbeat file, a restart policy with an escalation cap).
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
+- **Owner contour (2.1):** `owner-voice` (a stylometric portrait of the owner's written voice from
+  their own texts; portrait and rewrite modes, the skeleton ships as
+  `.kaif/_owner-voice-template.md`) · `owner-reviews` (the optional review contour: interviews and
+  outbound drafts as local HTML pages, decisions recorded with `by`/`at`, sends gated fail-closed;
+  the hard place-of-questions rule itself lives in AGENT_GUIDE).
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
   `plan-epic` (the full ladder for heavy work: industry web-recon + local recon → research doc →
   meta-plan with phases → operational plan of the NEXT phase only).
 - **Vision:** `revision` · `fix-vision` · `what-next` · `help-kaif` (reads THIS reference).
 - **Canon writing:** `derive-styleguide` (§13.4).
+- **Code quality (2.1):** `code-revision` — the periodic reading revision of the codebase by the
+  strongest model: zoned parallel reviewers armed with the project's paid-for failure classes
+  (EXPERIENCE + bugs), verbatim quote per finding, adversarial skeptic with the default verdict
+  "not a defect"; survivors become bug docs and feed the guardrails.
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
@@ -2031,7 +2091,10 @@ without those resources.
 ## When to STOP the loop (and report to the human)
 
 - The autonomous pool is exhausted (everything left needs the human/resources).
-- A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and pause.
+- A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and
+  pause. (A project running the `/owner-reviews` contour queues the interview to its "N accumulated"
+  batch page instead — invariant I7 — and moves on to unblocked work; the loop pauses only when
+  nothing unblocked remains.)
 - Something destructive/irreversible (a release, a deletion, a force-push) — don't do it alone, ask.
 
 At the end of the loop — a summary: what got done across the series (list of commits), what was deferred
@@ -2176,6 +2239,85 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 - Reference docs in `plans/` are never DONE-tagged.
 - In autoloops and at `/refresh-context`, call this once every few iterations, not every iteration.
 - If human-level questions surface — file in `interviews/` + mark `STATUS.md`, don't decide blindly.
+``````
+
+> **FILE: `.claude/skills/code-revision/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: code-revision
+description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code by axis, run parallel reviewers each armed with the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or on the cadence the project sets (e.g., every N weeks); distilled from two field audits (KLAS and NDim) that found every real defect OUTSIDE what gates could see.
+---
+
+# /code-revision — the periodic reading revision
+
+Gates and judges verify what was CLAIMED ("did X — is X true?"). Two independent field audits
+found the same thing: every real defect lived in the UNCLAIMED — checks that could not physically
+fail, invariants guarded in one direction, comments describing deleted code. Those are found only
+by READING, and reading at strength is exactly what a periodic revision by the strongest available
+model buys: one strong hour closes weeks of accumulated weak-session gaps — and its findings feed
+`EXPERIENCE.md` and the sphere's craft recipes, which is what makes the WEAK sessions smarter
+afterwards.
+
+## Step 0 — scope and cadence
+
+Owner-triggered or on the project's recorded cadence. Scope: the zones touched since the last
+revision (git log since the last revision's record), or the whole codebase on the first run.
+Record the run's scope line in the chat before starting.
+
+## Step 1 — zone and arm the reviewers
+
+- Cut the scope into zones by language/layer/subsystem (one reviewer per zone; parallel where the
+  harness allows).
+- Arm EVERY reviewer with the project's own **paid-for failure classes**: the relevant
+  `EXPERIENCE.md` entries (grep by the zone's tags) and the closed `bugs/` classes. A reviewer
+  hunting the classes this project already paid for finds their new faces; a generic reviewer
+  finds style nits.
+- Standing axes that both field audits proved fertile (add the project's own): decorative
+  guardians (can this check actually STOP anything? what happens on empty input?) ·
+  one-directional invariants (`BOTH-WAYS`) · truth↔mirror drift (run the pairs registry) ·
+  progress marks set before the work (`AFTER-WORK`) · comments/docs describing deleted behavior ·
+  happy-path process/stream wiring · test-fraud (checks green for the wrong reason).
+
+## Step 2 — the finding contract: no quote, no finding
+
+Every finding carries a verbatim quote (file:line + the exact text). A finding without its quote
+does not exist — this single rule kept both field audits' reports checkable by script.
+
+## Step 3 — the adversarial skeptic (mandatory, not optional)
+
+Every finding goes to a SEPARATE skeptic whose job is to REFUTE it and whose default verdict is
+**"not a defect"**. The skeptic reads the project's decision documents — interviews, ideas, bugs —
+because that is where the truth usually is: in the field, 9 of 21 findings died here as recorded
+owner decisions or already-guarded behavior, and each would have become false work. Only survivors
+move forward.
+
+## Step 4 — verify, file, fix separately
+
+- Each surviving finding is verified by REPRODUCTION before any fix (a finding is not a finding
+  until verified — `BUG_FIXING_FRAMEWORK.md`).
+- Survivors become `bugs/` documents (same-class findings → ONE class doc with a full inventory).
+- Fixes are a separate pass from the revision (separate commits; every fix proves itself with an
+  ADDRESSED mutation: *mutant M → exactly checks P₁…Pₙ red, and only they; intact code → 0 red*).
+- Refuted findings are recorded WITH their refutation reason — otherwise the next revision "finds"
+  them again.
+
+## Step 5 — feed the loop back
+
+- Every confirmed class appends an `EXPERIENCE.md` lesson **with its Repro line and Trigger
+  point**; a class seen for the SECOND time must leave as a mechanism (linter/guard/gate), not as
+  a third reminder.
+- New craft gaps go into the sphere's craft recipes (the guardian skeleton, platform patterns) —
+  that is the amplification: the strong model's reading becomes the weak models' recipes.
+- Record the revision (date, scope, found/refuted/fixed counts) so the next run knows its
+  baseline.
+
+## What this skill refuses to do
+
+- Ship findings without quotes, or fix anything during the reading pass.
+- Skip the skeptic — unrefuted findings are half false, and false findings become false work.
+- Treat "the gates are green" as a reason not to read — the gates not lying is exactly what both
+  audits confirmed, and every real defect was outside them anyway.
 ``````
 
 > **FILE: `.claude/skills/dayloop/SKILL.md`** — replace the command placeholders with the project's real commands
@@ -2385,6 +2527,9 @@ Update `STATUS.md`:
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
 in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
 
+If the project keeps a **truth↔mirror pairs registry**, run its check commands before passing the
+baton — a handoff over a drifted pair hands the next session a lie.
+
 **The bonsai trim (STATUS is a summary, not a chronicle):** entries that stopped being "now" —
 closed phases, finished sessions, shipped releases — move VERBATIM into `PROJECT_HISTORY.md`
 (newest on top; move, don't rewrite). Then re-read what remains of `STATUS.md` with the two tests
@@ -2593,8 +2738,8 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
-> **identity-without-an-author** and **timer-fed-heartbeat** hunts inside that block (added in
-> KAIF 2.1 — judgment boundaries and the guarded loop). In KAIF rituals this
+> KAIF 2.1 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
+> **mutation addressivity** (judgment boundaries · the guarded loop · craft prostheses). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -2628,6 +2773,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Provenance marks.** In the owner's canon artifacts, AI-written text must sit inside `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]` marks (`AGENT_GUIDE.md` → write-gate); unmarked AI text — or a mark removed without the owner's quoted word — is fraud.
    - **Identity without an author (KAIF 2.1).** Any shipped NAME — a release codename, a product/feature name, a slogan, a brand string humans read first — must carry its source artifact (*owner · channel · date*, `/release` Step 0). A name with no source is an agent-invented identity: a finding regardless of how broad the owner's action approval was ("permission to act" never transfers "authorship of identity" — `AGENT_GUIDE.md`).
    - **Timer-fed heartbeat (KAIF 2.1).** In a guarded loop (`/guarded-loop`), a `.kaif/heartbeat.log` pulse must correspond to a COMPLETED step — cross-check pulse lines against the actual work trail (commits, task ticks). A pulse written on a schedule while no work landed is the exact fraud the watchdog exists to catch: it keeps a hung agent looking alive.
+   - **Mutation addressivity (KAIF 2.1).** A guard proven by mutation must name its addressees BEFORE the run: *mutant M → exactly checks P₁…Pₙ go red, and only they; intact code → 0 red*. A mutation that reddens only side checks — or a guard "proven" with no named addressees — proves nothing (field: a green smoke that forgave the entire error class it was supposed to catch).
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -2716,10 +2862,12 @@ trigger: /fable-method
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except two marked KAIF patches: (1) the domain-adapter references now point to the
+> Kept verbatim except three marked KAIF patches: (1) the domain-adapter references now point to the
 > project's **KAIF sphere library** (which carries the same binding sections since KAIF 1.5); (2) the
 > on-demand references list reflects what KAIF vendors (`references/failure-modes.md`, `examples.md`,
-> `flowcharts.md`; upstream's `references/domains/` is replaced by KAIF spheres). Sync ritual: before a
+> `flowcharts.md`; upstream's `references/domains/` is replaced by KAIF spheres); (3) the **craft
+> slots** block in Step 5 (added in KAIF 2.1 — weak-model craft prostheses: `TWINS-MECH:` /
+> `AFTER-WORK:` / `BOTH-WAYS:`, the removal table, the deleted-text sweep). Sync ritual: before a
 > KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
 
 # The Fable Method
@@ -2814,6 +2962,15 @@ Verification has two halves, and a third when you fixed a defect:
 - **(a)** the Step 1 done criterion passes, observed (it ran, it rendered, it counted), not inferred from reading the code;
 - **(b)** the surrounding system still works: existing tests, build, or lint for the touched area. A green targeted check with a broken build is a failed verification.
 - **(c) Twin check, whenever you fixed a defect.** A bug found in one place is presumed to recur elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and write one line that must appear verbatim in your report: `TWINS: searched <the pattern> - found <N> other sites: <files, or "none">`. Fix them or list them; a completeness claim with no search behind it is failure mode 14.
+
+**KAIF patch — the craft slots (KAIF 2.1, not upstream; distilled from two independent field audits, KLAS + NDim).** Weak sessions fail on CRAFT, not on intent: the rule they need exists in some list, but no one asks it at the moment of writing. Each slot below fires only on its trigger, and then its line appears verbatim in the report:
+
+- `TWINS-MECH:` — alongside every `TWINS:` line: state the defect's MECHANISM in one sentence with NO property/function names, list every syntax that mechanism can wear, grep each. A grep for the fixed line finds copies of the line, not copies of the defect (field: `drop-shadow` got fixed while `text-shadow`/`box-shadow` of the same mechanism survived).
+- **Moved logic owes a removal table.** Any refactor that extracts/moves logic produces the list of the OLD path's consumers (grep) with a verdict per row: *switched / removed / consciously kept*. Without the table the move is NOT complete — weak models fill tables reliably and "remember about duplicates" never (field: an extracted normalization layer left the old guard alive on the live path, resurrecting a closed bug).
+- `AFTER-WORK:` — when the change sets/clears progress or state marks: name every mark, and what remains in the system if execution dies on the line AFTER each one (field: a "done" flag written before the work it claimed was done).
+- `BOTH-WAYS:` — when the change touches an invariant between two worlds (stage/prod, demo/live, source/mirror): is it guarded in BOTH directions? Name the reverse guard, or record why one direction suffices (field: "demo never enters prod" was guarded; "prod never enters the emulator" was not — and nearly fired).
+- **Deleted-text sweep.** After a behavior-changing edit, grep the repo for the literals and numbers your diff REMOVED; every hit in a comment or doc is fixed in the same commit or explained (field: a canon comment kept confidently describing deleted behavior — a future session would have "repaired" the code back to it).
+- **Craft questions by diff type** — before writing, pull the matching recipe from the sphere library's craft section: writing a check/bench/watchdog → the guardian skeleton's six points; touching a process/stream/lock/download → the platform patterns; writing a parser → "does every special character of the format have a branch?".
 
 On failure, route: a mechanical mistake in the change goes back to Step 4; a failure that surprises you or contradicts your understanding goes back to Step 2. Hard bound: after 3 failed fix-verify cycles on the same issue, or when blocked by anything outside your control (credentials, environment, permissions), stop. Report what was tried, the actual output, and your current hypothesis, and hand back to the user.
 
@@ -3181,6 +3338,8 @@ Append one line to **`.kaif/heartbeat.log`** at the END of every completed itera
 The pulse is written ONLY when a step actually completes. A heartbeat fed by a timer ("still
 alive" on schedule) defeats the entire mechanism — the watchdog would happily watch a hung agent
 tick — and is a fraud `/fable-judge` hunts. The last line doubles as a micro-recovery-context.
+The file is runtime state, not history: it lives in `.gitignore` (the machinery's ignore-first
+list covers it since 2.1) — never commit the pulse.
 
 ## Step 3 — the loop itself
 
@@ -3269,7 +3428,8 @@ well-structured explanation they can read and act on.
    soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
    `/dayloop`, `/nightloop`, `/guarded-loop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
-   `/what-next`), planning (`/plan-task`, `/plan-epic`, `/revision`), guardrails (`/derive-styleguide`), execution discipline
+   `/what-next`, `/owner-voice`, `/owner-reviews`), planning (`/plan-task`, `/plan-epic`, `/revision`),
+   guardrails (`/derive-styleguide`, `/code-revision`), execution discipline
    (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
    (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
    `/kaif-remove`).
@@ -3380,10 +3540,20 @@ The default, autonomy-friendly method: the owner answers **right in the md docum
 Sequence:
 - Compose `interviews/interview_NNN_<topic>.md` with questions and "**Answer:**" fields.
 - Write ONE paragraph in the chat: what you found, the forks, and a link to the document.
+- **Optional render step** — if the project has the `/owner-reviews` contour: render the document
+  to its HTML page and open it to the owner, signaling AFTER the page is up (contour invariant I5).
+  No contour → nothing changes; the md document alone is the full-fledged path.
 - **Pause** the work (so the owner is signaled to come and fill in the answers). Don't guess for them and
-  don't proceed blindly on UI/UX/brand/architecture questions.
+  don't proceed blindly on UI/UX/brand/architecture questions. **In an autonomous loop** with the
+  contour present: don't stand at the open page — queue the interview for the "N accumulated" batch
+  page (contour invariant I7) and move to unblocked work.
 
 ### Step 5. After the answers
+- **Answer equivalence:** an answer given on the rendered HTML page = an answer written into the md
+  = an answer said in chat. All three are the owner's word with equal force; whatever the
+  transport, the decision is recorded into the md document (the contour does it mechanically for
+  HTML; the agent does it for chat) **with `by` (who decided) and `at` (when)** — that is what
+  makes the archive readable months later.
 - **First commit the owner's answers verbatim** (the owner's originals are inviolable —
   `AGENT_GUIDE.md`, git hygiene); only then rework the document in a following commit.
 - Write the decisions into the document: change status to `✅ ANSWERS RECEIVED <date>` and add a
@@ -3780,6 +3950,222 @@ Until one fires — don't stop, don't wait for confirmations, work.
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
 ``````
 
+> **FILE: `.claude/skills/owner-reviews/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: owner-reviews
+description: Deploy the interactive review contour "agent ↔ owner" — everything the agent wants from the owner (forks, reviews, approvals, answers) rendered as local HTML pages with recorded one-click decisions, a send-side approval gate, signaling, and accumulation for autonomous loops. Optional sugar on top of the hard canon rule "the place of questions is interviews/" (AGENT_GUIDE.md). Use when the owner asks to move approvals to rendered pages ("render my interviews", "set up owner reviews", "сделай вычитку страницей") or when a project adopts the place-of-questions practice with tooling. KAIF fixes the methodology (what must hold); the project's agent builds the tools (how). Field-proven contour (Nogamelabs: "Мне нравится. Получилось удобно").
+---
+
+# /owner-reviews — the owner-review contour
+
+The hard rule already stands in `AGENT_GUIDE.md`: everything the agent wants FROM the owner lives
+ONLY in `interviews/` (or a named decision-queue document). This skill is the OPTIONAL contour on
+top: interviews and outbound drafts rendered as local HTML, decisions recorded with author and
+time, sends mechanically gated by approval. The field's main lesson goes first: **HTML is not the
+goal but the transport; the goal is the GUARD** — the place-of-questions rule was broken by an
+agent who knew it, and the guard found two questions nobody saw, hanging 5 and 13 days.
+
+KAIF fixes NAMES and INVARIANTS; the implementation belongs to the project's agent. Zero external
+dependencies is explicitly encouraged — the field contour is a ~100-line markdown mini-renderer, a
+stdlib localhost server that lives seconds (serve → record → die), system utilities for
+voice/sound/notification/browser; the page is self-contained and opens offline. The temptation to
+take a static-site generator or UI framework is large and the win is zero.
+
+## Build order (field-corrected: "ours was worse")
+
+1. **The place-of-questions guard** — depends on nothing, pays immediately, shows the real scale.
+2. **Render + decision record** — the core; the metadata contract lives here.
+3. **The send-side gate** — makes approval mechanical; without it the page is decoration.
+4. **Signaling** — useless before there is something to show.
+5. **Accumulation for autonomous loops** — needed exactly when the practice enters day/night loops.
+6. **Pilot on REAL data** — the only thing that catches seam defects.
+
+**Acceptance criterion:** a full routine cycle passes **without a single clarification in chat**.
+Not "the page opened" — "the owner approved and the agent never had to re-ask".
+
+## The invariants (normative — a contour without them falls apart)
+
+- **I1. md is the source, HTML is derived. Always.** The page is built from the document and never
+  hand-edited — otherwise a second truth appears and the next empty-context session misses
+  decisions.
+- **I2. An answer is recorded in THREE places:** back into the source md (the next session reads
+  the document) · `<doc>.decision.json` beside it (machine check before send) · a copy in the
+  decisions archive with `by` and `at` (who decided, when). The decision filename is DERIVED from
+  the document name — a shared decision file gets overwritten by the next interview.
+- **I3. Approval binds to the SHA-256 of the BODY, not to the click.** Text changed after approval
+  = approval void, checked by machine. **And agree on normalization** — who strips what, at which
+  step: the field's costliest defect was the page hashing file bytes while the sender hashed
+  normalized text (trailing `\n` stripped); both self-tests green, the gate would refuse every
+  artifact always. Only the end-to-end pilot on real data caught it.
+- **I4. The gate stands on the SEND side, fail-closed.** The sending tool itself reads the
+  decision, requires `approved` for THIS artifact, re-checks the hash — and refuses non-zero even
+  under an explicit `--apply` when the decision is missing, `rejected`, or the text drifted. Any
+  doubt = refusal. A request never self-approves by timeout.
+- **I5. The signal follows a successfully opened page** — call the owner from the renderer, after
+  the page is up; otherwise you get the class "summoned, nothing to show".
+- **I6. Quiet hours override everything**, including an explicitly requested voice level:
+  autoloop → quiet hours → setting. The window CROSSES MIDNIGHT (e.g. 23:00–09:00) — naive
+  `from <= now <= to` is silent all day and loud all night; that comparison deserves its own guard.
+- **I7. Autonomous loops accumulate, never block.** A queue flag parks the document in a pending
+  folder; one "N accumulated" page (each card linking to its document) calls the owner ONCE per
+  batch. Without this the practice is incompatible with day/night loops.
+
+## The name contract (candidate, field-tested on four product routines)
+
+Metadata block in the document head (fenced YAML): `title` · `kind` (interview / outbound draft /
+…) · `artifacts:` list of approvable bodies, each `{id, target ("Slack · #channel"), format,
+body_file}`. **`body_file` is a LINK, not a copy-paste** — the page shows exactly the bytes that
+will leave, and the hash is computed over them; a pasted copy is a second truth and breaks I3.
+Decision record: `kind, document, by, at, comment` + `artifacts: {<id>: {status, sha256}}` for
+drafts / `answers: {Q1: {choice, text, comment}}` for interviews. `by` is not decoration — it is
+what makes the archive readable months later.
+
+## Rakes to warn about (in falling price order)
+
+1. Hash without a normalization agreement → the gate refuses always, on green self-tests (I3).
+2. **Tool built, agent not using it** — the same day the page worked, the agent retold questions
+   in chat: chat is cheaper in the moment. A tool counts as ADOPTED only when a ritual carries the
+   executable command that shows violations ("show ALL unanswered interviews on one page").
+3. **Exit 0 ≠ the human got the signal** — native notifications get muted silently by OS focus
+   settings with a success code. A must-arrive signal needs a path independent of user settings,
+   and delivery is confirmed WITH THE HUMAN, not by exit code.
+4. **Fixtures don't catch live documents** — three renderer defects surfaced only on the project's
+   real files. A run over ALL existing live documents is a handover condition for the tool.
+5. **A false alarm in a guard is worse than a miss** — it teaches ignoring the tool; close each
+   with its own guard. Expect ~10 false hits per real one for a text-rule guard; exceptions are
+   explicit, with the reason on the line.
+6. **Both OS themes** — dark-on-dark code blocks were caught by the owner, not by self-checks.
+7. **Non-ASCII regexes:** in Node `\w`/`\b` are ASCII-only even with `u` — use `\p{L}` /
+   `(?!\p{L})` with the `u` flag, or the guard silently misses its own language.
+
+## Parameters and compatibility
+
+- Sound/TTS are PARAMETERS: the voice name is a parameter, not a menu (a field machine had exactly
+  one usable voice out of 185); quiet hours are mandatory, not optional.
+- Industrial four on the page: **Approve / Reject-with-reason / Edit / Respond**; the payload is
+  visible in full; the audit trail keeps refusals too.
+- An answer's force never depends on transport: **HTML = md = chat** — all are the owner's word,
+  recorded with `by`/`at` (equivalence rule, `/interview`).
+- Interviews without the contour keep working exactly as before — the sugar never becomes a duty.
+``````
+
+> **FILE: `.claude/skills/owner-voice/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: owner-voice
+description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md.
+---
+
+# /owner-voice — the owner's voice
+
+A styleguide is a set of bans and structure demands: it answers "what not to write" and does NOT
+restore a voice — a whole field epic went through a full styleguide pipeline and the owner still
+said "this is not my language". The cure is a different instrument class: a POSITIVE portrait
+("a stylistic LoRA") taken from the owner's own texts, where every rule is proven by their quote.
+The portrait is a CANON document: the agent writes it, the owner accepts it. The methodology is
+the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freestyle.
+
+## When to invoke
+
+- On the owner's ask; on the proactive trigger "second rejection over language".
+- NOT for touching up three paragraphs — there, write with the portrait open and run its
+  checklist; the full ritual starts at several units of work.
+
+## Mode `portrait` — capturing the voice
+
+1. **Corpus registry, via `/interview`** (asynchronous — work continues on what is already in the
+   repo while the owner answers; such sources are marked "pending confirmation"). Ask by SOURCE
+   CLASSES the owner won't recall unprompted: same genre pre-AI (highest weight) · any finished
+   released work · current unmarked text · the foundation they LEARNED to write from · historical
+   "embarrassing" texts (low weight but the only INNATE/ACQUIRED separator). Record the owner's
+   restrictions VERBATIM in the registry ("take the language, NOT the formatting rules") — without
+   that line the agent hauls content instead of style. Late additions are the NORM: a new source =
+   a new analyst pass + a re-synthesis, never a restart. **The corpus gate** (thresholds in the
+   skeleton) decides whether this is a portrait or only draft observations.
+2. **One analyst per source** (same dimensions: syntax · lexicon · structure · punctuation/rhythm ·
+   morphology; an observation without a verbatim quote is not accepted) **+ a separate
+   ANTI-PORTRAIT analyst** on the AI text already in the artifact: what still sounds like AI after
+   every formal ban is satisfied. That is half the value.
+3. **Synthesis into the skeleton + an adversarial completeness critic** with the one question:
+   *"could a weak session, armed with ONLY this document, write text the owner takes for their
+   own?"* — returns "complete" or the list of holes.
+4. **Acceptance by BLIND TEST** (the honest eval): 6–10 unlabeled fragments, half genuine
+   owner texts NOT in the corpus, half agent texts by the portrait; the owner marks "mine / not
+   mine"; accepted when they cannot tell better than chance. Every correct catch becomes a new
+   anti-portrait row.
+5. **The weave-in — a handover gate, all five points:** context router (task type "writing into
+   the owner's artifact" ⇒ read the portrait) · the before-every-task checklist · the sphere
+   library's binding evidence set · the artifact's styleguide (if any) · a machine guard in
+   WARNING mode (calibrated on the live artifact first; noise above signal = no guard).
+6. **Upkeep:** the portrait is alive and versioned, never DONE. Every owner edit at review is
+   input: a rejected wording becomes an anti-portrait row; a rule rejected twice is deleted, not
+   defended. Ripened machine heuristics graduate into a guard.
+
+## Mode `rewrite` — re-voicing an artifact
+
+**Applicability gate first:** the pipeline assumes a TEXT artifact under version control with a
+line diff. Slides/CMS/cloud doc → either convert with a PROVEN round-trip (export → edit → import
+→ compare, tested on one unit BEFORE starting) or don't start; edit fragment-by-fragment via the
+owner instead.
+
+**Provenance is the precondition:** only text marked as AI-written is rewritten (the marks turn
+"make it pretty" into a machine-bounded task: rewrite inside, not a character outside). Owner text
+edited by AI (`[AI-ed]`) is NOT rewritten — only spot-removal of explicit anti-portrait markers.
+No provenance? The ladder: (a) a pre-AI revision exists → machine-mark the diff from it; (b) the
+owner names the last revision they vouch for (via `/interview`) → everything after gets marked;
+(c) no history at all → **marks are never invented backdated** — rewrite mode is unavailable;
+do `portrait` + "all new AI text under marks from now on"; the existing artifact is edited
+fragment-by-fragment at the owner's direct word.
+
+**The pipeline is a DELTA to `/fable-loop`** (do not restate it: rewriter → adversarial judge,
+separate instance, reads the diff LINE BY LINE → up to two repair rounds → verified → invariants
+check → one commit per unit). New here is only: the provenance gate, the invariants ladder, and
+the no-meaning-fixes rule. The judge checks TWO things separately: meaning identity (numbers,
+formulas, references, enumerated cases) and portrait conformity (by the anti-portrait and pairs).
+
+**Invariants named BEFORE work, shown after** — the ladder, top to bottom:
+1. universal minimum: text outside marks byte-identical to the previous revision + the FACT
+   INVENTORY of the unit (sorted lists of numbers · proper names/terms · references · enumerated
+   cases, before vs after — the diff of the two lists is empty; this is the parity-inventory craft
+   under its existing name);
+2. sphere bonus where it exists: linter · build · tests · byte-identical machine-consumer output;
+3. neither available → the work is NOT handed over as verified: it carries `[NOT-TESTED]` and goes
+   to the owner as a draft.
+
+**Waves of 4–6 units, one commit per unit** (the only thing that survived three network drops in
+the field). After a crash: revise the tree — keep what's whole, roll back what's broken, never
+commit what wasn't judged; the resume list SHRINKS PHYSICALLY to the undone (a stale resume cache
+happily rewrites accepted work).
+
+**Meaning holes found while rewriting are NEVER fixed in passing** — they go to a suspicion list,
+and a VERIFICATOR with the live text and the decision docs stands between the list and the backlog
+(field: 75 suspicions → 8 real docs + 43 refuted; without the verificator the backlog gets half
+garbage). Rejects are recorded WITH reasons.
+
+**Handover — the self-review loop:** assemble the artifact → LOOK at it with eyes (render it if
+visual — and prove the render path works BEFORE the first edit, not at handover) → not satisfied →
+fix → look again → … → satisfied → report. Green checks are not a handover.
+
+## What this skill forbids
+
+- Starting with rewrite before a portrait exists (a lost epic in the field).
+- A portrait rule without an owner quote; an empty skeleton section skipped silently.
+- Fixing meaning under the guise of style; touching provenance marks.
+- Declaring done without the named invariant shown and without eyes on the artifact.
+- Transferring rules between languages or registers without their own quotes.
+
+## Notes
+
+- Frauds of this ritual live in the sphere fraud tables as ONE row ("Voice without a corpus");
+  the rest are hunted by `/fable-judge` via its standing hunts (meaning drift = weakened checks;
+  removed marks = provenance fraud).
+- The judge is a separate agent instance; a harness without subagents runs the judge as a clean
+  pass strictly by the critic checklist, forbidden to look at its own rationale.
+``````
+
 > **FILE: `.claude/skills/pause/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
@@ -4144,6 +4530,10 @@ git pull --rebase           # so the push is fast-forward
 gh auth status              # gh logged in (needed for the GitHub Release)
 ```
 If the tree is dirty — commit/sort it out first (`/pause` or your commit tool).
+
+If the project keeps a **truth↔mirror pairs registry** (`AGENT_GUIDE.md` → Document & text
+hygiene), run every row's check command now — a release shipped over a drifted pair pins the drift
+into the delivery. Red row = stop and reconcile before proceeding.
 
 ## Step 2. Refresh README (all languages)
 
@@ -4544,12 +4934,21 @@ never silently resolved; decisions the owner already recorded are settled — do
 | Silent scope change | the deliverable drifts from the brief, unflagged |
 | Stale commitments | prices, terms, regulations quoted from memory |
 | Decision re-litigation | reopening choices the owner already recorded as settled |
+| Voice without a corpus | a "portrait of the owner's style" or a re-voiced text whose rules carry no verbatim owner quotes with addresses — style derived from memory of the owner instead of their texts (`/owner-voice`) |
 
 ## Done, by example
 
 "The budget plan is done" means: every line item priced from a current source, the total reconciled
 against the stated constraint, trade-offs named, open decisions listed for the owner. Not: "a
 reasonable-looking allocation."
+
+## Owner's voice (KAIF 2.1)
+
+The voice carriers are the texts that go out signed by the owner: proposals, client letters,
+selling pages, investor updates. This sphere most often needs TWO registers (the formal contract
+voice vs the selling voice) — the portrait keeps them separate with quotas, never mixed. Typical
+corpora: pre-AI proposals and letters the owner wrote alone. Ritual and thresholds:
+`/owner-voice` + `.kaif/_owner-voice-template.md`.
 
 ## Adaptation notes
 
@@ -4621,12 +5020,22 @@ token system — surface the conflict.
 | Happy-path-only | error, empty, loading, overflow states missing, unmentioned |
 | Off-family surface | new work visibly foreign to neighboring pages, unflagged |
 | Placeholder debris | lorem ipsum, dummy images, dead links left in "finished" work |
+| Voice without a corpus | a "portrait of the owner's style" or a re-voiced text whose rules carry no verbatim owner quotes with addresses — style derived from memory of the owner instead of their texts (`/owner-voice`) |
 
 ## Done, by example
 
 "The page is done" means: rendered and reviewed at two widths, every value from tokens, contrast computed
 on new color pairs, all states present, consistent with sibling pages. Not: "the component compiles and
 looks fine."
+
+## Owner's voice (KAIF 2.1)
+
+The voice carriers are the words inside the design: microcopy, brand copy, headings, empty-state
+and error texts — plus the design doc narrated "as the owner". Typical corpora: the owner's
+pre-AI copy, brand materials they wrote themselves. Voice here overlaps the taste class
+(mock-up + homework stays for the visuals); the blind test from the portrait ritual is the
+acceptance for the words. Ritual and thresholds: `/owner-voice` +
+`.kaif/_owner-voice-template.md`.
 
 ## Adaptation notes
 
@@ -4709,12 +5118,66 @@ spec — surface the contradiction; the task framing does not promote the tests 
 | Invented data | a plausible literal (a count, a name, a stat) on a user-facing surface with no source behind it — a placeholder shipped as fact |
 | Unmarked AI text | AI-written content in the owner's canon artifact without `[AI]…[/AI]` provenance marks, or a mark removed by the agent itself (only the owner's word removes marks — AGENT_GUIDE.md) |
 | Debris | scratch files, debug prints, commented-out code left behind |
+| Voice without a corpus | a "portrait of the owner's style" or a re-voiced text whose rules carry no verbatim owner quotes with addresses — style derived from memory of the owner instead of their texts (`/owner-voice`) |
 
 ## Done, by example
 
 "The fix is done" means: the named check passes, observed; the build/tests for the touched area are
 green; twins searched; the report leads with the outcome and carries its owed `INTENT`/`TWINS` lines.
 Not: "should work now."
+
+## Owner's voice (KAIF 2.1)
+
+The voice carriers here are the surfaces a human reads as the owner's own text: README and docs,
+UI copy, release notes, error messages. Typical corpora: the owner's pre-AI docs and posts, their
+hand-written issues and commit messages. "Accepted" means the owner reads the surface and does not
+flag the language — the ritual and thresholds are `/owner-voice` + the shipped skeleton
+`.kaif/_owner-voice-template.md`; code identifiers and comments follow the codebase style, not the
+portrait.
+
+## Craft recipes (KAIF 2.1 — prostheses for weak sessions; copy the skeleton, don't re-derive it)
+
+Two independent field audits agreed: weak models follow recipes and samples flawlessly and fail on
+principles. These are the recipes for the exact places they fail. The fable craft slots
+(`/fable-method` Step 5) route here.
+
+### The guardian skeleton — every check/bench/watchdog you write fills these six points
+
+1. **Self-check on bare run** — invoked with no arguments, it explains itself instead of crashing.
+2. **A failure EXITS non-zero** — printing "MEASUREMENT INVALID" is not a signal; only the exit
+   code stops a pipeline (field: five independent decorative guardians, none could stop anything).
+3. **Empty input is RED** — an empty corpus is "nothing was checked", never "0 problems".
+4. **Failures stay in the denominator** — 9 refusals out of 10 is not "100% of the measured".
+5. **Two-sided fixture** — proven RED on a broken version and GREEN on a fixed one before trusted.
+6. **A looping watchdog survives its own sensor's failure** — one bad probe must not kill the loop
+   (`set +e` around the probe in bash; try/catch in Node).
+
+**The measuring tool changes only together with a re-measure** — editing a judge/bench/scorer
+changes the scale; ship the tool change and the re-measured numbers in ONE commit, or the old
+numbers silently lie (field rule, paid for by a benchmark drift).
+
+### Platform patterns — copy these, don't re-derive the platform's edge semantics
+
+Weak sessions share the same gaps in Node/bash/HTTP edge semantics; each pattern is one
+"when to take it" line — the shape lives in your project's harness once, then gets reused:
+
+- **`spawn` with an `'error'` handler wired BEFORE anything else** (ENOENT is a diagnosable event,
+  not a crash), and the `'close'` promise created before any await that might race it.
+- **SSE/line reader with a carry buffer** — a line split by a chunk boundary is the NORMAL case;
+  keep the tail, prepend it to the next chunk.
+- **Atomic file lock** — create with `{flag:'wx'}` + write the pid; release checks the pid;
+  a check-then-write pair is a TOCTOU race, not a lock.
+- **Download to `tmp` + `rename`** — never straight into the final name (a died download leaves a
+  broken file forever); handle HTTP 416 and add a stall watchdog.
+- **Bash watchdog loop with `set +e` inside** — under `set -e` one failed probe kills the guard.
+
+### The stand-doors inventory — every stage-only mechanism is a table row
+
+Any stand/dev-only door (`?as=` params, auto-login, emulator defaults in compose) enters the recon
+doc as a row: `door → what it does on the stand → WHAT IT DOES IN PROD → the guard of the pair`.
+An empty "in prod" cell is tomorrow's incident (field: compose led prod into the emulator — the
+stand direction was guarded, the prod direction was not). Mechanizable: grep
+`isStand|localhost|EMULATOR` and demand a row per hit.
 
 ## Adaptation notes
 
@@ -4787,11 +5250,21 @@ never quietly adjust the analysis until it "agrees".
 | Post-hoc hypothesis | the hypothesis quietly rewritten to match the result |
 | Unreproducible number | no seed/script/pipeline behind a reported figure |
 | Stale constants | figures/constants from memory, not from a source |
+| Voice without a corpus | a "portrait of the owner's style" or a re-voiced text whose rules carry no verbatim owner quotes with addresses — style derived from memory of the owner instead of their texts (`/owner-voice`) |
 
 ## Done, by example
 
 "The analysis is done" means: the pipeline re-ran from raw data end-to-end, the text's numbers match the
 pipeline's output, every citation was opened, limitations stated. Not: "the notebook has the plots."
+
+## Owner's voice (KAIF 2.1)
+
+The voice carrier is the text published under the researcher's name: the paper, the thesis, the
+grant application, the review response. Typical corpora: prior sole-authored papers pre-AI, the
+thesis, lecture notes. The stakes are highest here — a journal reads the text as the author's;
+meaning identity (numbers, formulas, citations) is the hard invariant during any re-voicing.
+Ritual and thresholds: `/owner-voice` + `.kaif/_owner-voice-template.md`; one portrait per
+language.
 
 ## Adaptation notes
 
@@ -4912,11 +5385,28 @@ memory. Then one sentence: the sphere's classic conflict and which side wins.>`
 |---|---|
 | `<name the fraud in 2–3 words>` | `<the observable symptom a judge can hunt by diffing, re-running, or re-fetching>` |
 | … (4–7 rows) | |
+| Voice without a corpus | a "portrait of the owner's style" or a re-voiced text whose rules carry no verbatim owner quotes with addresses — style derived from memory of the owner instead of their texts (`/owner-voice`) — keep this row verbatim in every sphere |
 
 ## Done, by example
 
 "`<A typical deliverable>` is done" means: `<the observed checklist in one sentence>`. Not:
 "`<the sphere's classic hollow claim>`".
+
+## Owner's voice (KAIF 2.1)
+
+`<Who carries the owner's voice in this sphere — which artifact is written "as the owner" (a rule
+book, a paper, a selling page, a design doc)? Which corpora are typical here? What does "the text
+is accepted by the owner" mean in this sphere? The ritual itself is /owner-voice + the shipped
+skeleton .kaif/_owner-voice-template.md — this section only names the sphere's carriers.>`
+
+## Craft recipes (KAIF 2.1 — prostheses for weak sessions)
+
+`<The sphere's copy-not-derive recipes for the places weak sessions fail: what is this sphere's
+"guardian skeleton" (the invariant shape of any check — a failure must be able to STOP the process,
+empty input is red, the fixture is two-sided)? What are its "platform patterns" (the edge semantics
+every session gets wrong the same way — give the proven shape with one "when to take it" line)?
+What is its "measuring tool" and the rule that it changes only together with a re-measure? Keep it
+to recipes and samples — principles the sessions already "know" and don't apply belong nowhere.>`
 
 ## Adaptation notes
 
@@ -5233,6 +5723,111 @@ function cmdAccept() {
   (() => die(`unknown command: ${CMD} (report | check | accept <file>)`)))();
 ``````
 
+> **FILE: `.kaif/_owner-voice-template.md`** — the owner-voice portrait skeleton — optional; /owner-voice portrait mode fills it
+
+``````md
+# The Owner's Voice Portrait — <OWNER> ("the stylistic LoRA" of <PROJECT_NAME>)
+
+> **Status: a BINDING instruction** for any agent writing <the owner's target artifact>. It acts
+> together with the styleguide (if one exists): STRUCTURE lives in the styleguide, LANGUAGE lives
+> here. This skeleton IS the methodology — fill the sections, never invent your own structure
+> (a portrait written freestyle reads beautifully and does not work; field-proven).
+> Written in the LANGUAGE OF THE ARTIFACT; a bilingual owner gets one portrait per language —
+> rules never transfer between languages without their own quotes (features are language-bound).
+>
+> **Corpus registry** (filled by `/owner-voice` portrait mode, via `/interview`):
+> | source path | what it is | weight | what we take from it (the owner's own words, verbatim) | confirmed by owner |
+> |---|---|---|---|---|
+> | `<path>` | `<same genre, pre-AI / finished work / current / foundation / historical>` | `<highest…low>` | `<e.g. "the language, NOT the formatting rules described in it">` | `<yes/pending>` |
+>
+> **🚧 The corpus gate:** at least TWO independent finished texts by the owner, ~15–20k words total
+> (science floor: ~2,500–5,000 words minimum — below it any attribution method is noise), at least
+> one in the target artifact's genre. Less corpus → this document is DRAFT OBSERVATIONS, never
+> cited as canon, and rewrite mode does not start. No historical texts → the "innate" mark is not
+> used at all (there is no separator), and the portrait says so aloud.
+>
+> Living document — versioned, never DONE-tagged. A rule the owner rejects twice in practice is
+> DELETED, not defended.
+
+## 1. How to read this document
+
+Five points, filled: binding force · the work boundary (rewrite only inside provenance marks) ·
+register choice (which register applies to which artifact) · the self-check checklist before any
+handover · calibration by the before/after pairs (§6) — the hand is calibrated on pairs, not on
+descriptions.
+
+## 2. The portrait — register <PRIMARY>
+
+**R0. THE DOCUMENT SKELETON** — how a chapter/section/clause/formula/example/table is built.
+(A foreign hand is recognized by the skeleton before the vocabulary; this rule comes first.)
+
+**R1…Rn. The rules** — syntax · voice and person · condition-first ordering · nomination instead
+of pronouns · repetition instead of synonymy · the clause template · how an example is built ·
+modality · punctuation · micro-typography · case enumeration · the limits of permitted liveliness.
+
+Each rule: the operational formulation + **≥2 verbatim owner quotes with addresses**
+(`file:line` or source section). A rule without quotes does not enter the portrait.
+Mark ✦ = a feature alive since the earliest texts (the innate core — never touched).
+
+> Science note: the load-bearing signal lives in FUNCTION WORDS, affixes and punctuation habits —
+> not in catchphrases (catchphrases are topic-bound content and expose imitation first). Prefer
+> rules about the small unconscious machinery over rules about favorite words.
+
+## 2-C. The collocation lexicon
+
+Table: turn of phrase → its verbatim source quote. Requirement: use EXACTLY, synonyms forbidden.
+**≥20 rows** or the section names its own thinness aloud.
+
+## 3. The portrait — register <SECOND> (if the owner has more than one)
+
+The second register's rules + its OWN anti-portrait. ⚠️ One register's rules destroy the other —
+they never mix. Use QUOTAS instead of bans ("at most one short punch sentence per 4–6 periods").
+
+## 4. The foundation (schooling/industry): where the owner equals the source — and where they are LIVELIER than it
+
+The second half is mandatory: without it the agent over-dries the text into officialese. No
+nameable foundation → the section is declared absent aloud and sharpness expectations drop.
+
+## 5. The anti-portrait: AI markers and their antidotes
+
+Table: marker (with a quote FROM THE ARTIFACT BEING REWRITTEN) → "instead of X write Y".
+**≥10 markers.** This is half the portrait's value: the marks that survive after every styleguide
+ban is already satisfied (the aphorism-proverb close · "headline thesis + body" · the "not X but Y"
+antithesis as a thought template · parcellation · pseudo-precision · entity personification).
+Watch the documented drift: an LLM "improves" the author — richer vocabulary, smoother rhythm —
+so quotas on variety belong here too.
+
+## 6. BEFORE/AFTER: calibration pairs
+
+**≥8 pairs for the primary register, ≥3 per additional one.** A real bad-text quote → its rewrite
+by the portrait. This is the document's heart: few-shot on the owner's own material is what
+actually moves a model — descriptions alone do not.
+
+## 7. The self-check checklist (layered)
+
+7A — the machine minute (greps of stop-patterns and required positives). 7B — the semantic pass.
+7C — the second register's pass. **≥3 layers; every item checkable by an action**, never by
+"does it sound like the owner".
+
+## 8. Machine heuristics
+
+**≥10 grep patterns** of stop-constructions and positive markers whose ABSENCE is itself a signal;
+each names its legal exceptions. For inflected languages the pattern covers word forms, or the
+grep stays silent. These graduate into a project guard once calibrated on the live artifact
+(warning mode first; noise above signal = no guard).
+
+## Appendix: the hierarchy when in doubt
+
+Which corpus wins on divergence; what to do with the owner's own variability.
+
+---
+
+> **Thresholds recap (below them the portrait is a DRAFT and rewrite mode does not start):**
+> ≥10 rules (one being the skeleton) · ≥2 quotes per rule · ≥20 collocations · ≥10 anti-portrait
+> markers · ≥8/≥3 before/after pairs · a ≥3-layer checklist · ≥10 machine heuristics.
+> Empty sections do not exist: nothing to write IS a finding — name it aloud, never skip silently.
+``````
+
 > **FILE: `templates/languages/ar/bugs/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
 ``````md
@@ -5495,7 +6090,10 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
   "fable-domain": "«اصنع مهارة لهذا القطاع», «أضف مجالًا إلى منهج fable»",
   "plan-task": "«خطّط لهذه المهمة», «اعمل خطة لهذه المهمة», «خطة لهذا الخلل»",
   "plan-epic": "«خطّط لهذه الملحمة», «قسّم الميزة الكبيرة», «سُلّم التخطيط الكامل»",
-  "guarded-loop": "«حلقة محمية», «اعمل في حلقة محمية», «حلقة بمنبّهات»"
+  "guarded-loop": "«حلقة محمية», «اعمل في حلقة محمية», «حلقة بمنبّهات»",
+  "code-revision": "«شغّل مراجعة الكود», «دقّق قاعدة الكود», «أعد قراءة الكود»",
+  "owner-voice": "«صورة أسلوبي», «اكتب مثلي», «هذه ليست لغتي»",
+  "owner-reviews": "«اعرض المراجعة كصفحة», «صيّر المقابلة», «ابنِ دائرة الموافقات»"
 }
 ``````
 
@@ -5785,7 +6383,10 @@ aktualisiert, während das Verständnis wächst.
   "fable-domain": "«bau einen Skill für die Branche», «füge der Fable-Methode eine Domäne hinzu»",
   "plan-task": "«plane diese Aufgabe», «erstelle einen Plan für die Aufgabe», «Plan für diesen Bug»",
   "plan-epic": "«plane dieses Epic», «zerlege das Epic», «vollständige Planungsleiter»",
-  "guarded-loop": "«geschützter Zyklus», «arbeite im geschützten Zyklus», «Zyklus mit Weckern»"
+  "guarded-loop": "«geschützter Zyklus», «arbeite im geschützten Zyklus», «Zyklus mit Weckern»",
+  "code-revision": "«Code-Revision», «auditiere die Codebasis», «lies den Code durch»",
+  "owner-voice": "«Porträt meines Stils», «schreib wie ich», «das ist nicht meine Sprache»",
+  "owner-reviews": "«Review als Seite», «rendere das Interview», «bau den Freigabe-Kreislauf»"
 }
 ``````
 
@@ -6072,7 +6673,10 @@ medida que crece la comprensión.
   "fable-domain": "«haz una habilidad para el sector», «añade un dominio al método fable»",
   "plan-task": "«planifica esta tarea», «haz un plan para esta tarea», «plan para este bug»",
   "plan-epic": "«planifica esta épica», «desglosa la épica», «escalera completa de planificación»",
-  "guarded-loop": "«ciclo protegido», «trabaja en ciclo protegido», «ciclo con alarmas»"
+  "guarded-loop": "«ciclo protegido», «trabaja en ciclo protegido», «ciclo con alarmas»",
+  "code-revision": "«revisión del código», «audita la base de código», «relee el código»",
+  "owner-voice": "«retrato de mi estilo», «escribe como yo», «este no es mi lenguaje»",
+  "owner-reviews": "«revisión en página», «renderiza la entrevista», «monta el circuito de aprobaciones»"
 }
 ``````
 
@@ -6363,7 +6967,10 @@ compréhension grandit.
   "fable-domain": "« fais une compétence pour le secteur », « ajoute un domaine à la méthode fable »",
   "plan-task": "« planifie cette tâche », « fais un plan pour cette tâche », « plan pour ce bug »",
   "plan-epic": "« planifie cet epic », « découpe l'epic », « échelle complète de planification »",
-  "guarded-loop": "« boucle protégée », « travaille en boucle protégée », « boucle avec réveils »"
+  "guarded-loop": "« boucle protégée », « travaille en boucle protégée », « boucle avec réveils »",
+  "code-revision": "« révision du code », « audite la base de code », « relis le code »",
+  "owner-voice": "« portrait de mon style », « écris comme moi », « ce n’est pas mon langage »",
+  "owner-reviews": "« relecture en page », « rends l’interview en HTML », « monte le circuit d’approbations »"
 }
 ``````
 
@@ -6639,7 +7246,10 @@ DONE टैग नहीं मिलता।
   "fable-domain": "\"इस क्षेत्र के लिए स्किल बनाओ\", \"fable विधि में डोमेन जोड़ो\"",
   "plan-task": "\"इस काम की योजना बनाओ\", \"इस टास्क का प्लान बनाओ\", \"इस बग का प्लान\"",
   "plan-epic": "\"इस एपिक की योजना बनाओ\", \"बड़े फ़ीचर को चरणों में बाँटो\", \"पूरी योजना-सीढ़ी से\"",
-  "guarded-loop": "\"संरक्षित चक्र\", \"संरक्षित चक्र में काम करो\", \"अलार्म वाला चक्र\""
+  "guarded-loop": "\"संरक्षित चक्र\", \"संरक्षित चक्र में काम करो\", \"अलार्म वाला चक्र\"",
+  "code-revision": "\"कोड रिवीज़न चलाओ\", \"कोडबेस का ऑडिट करो\", \"कोड दोबारा पढ़ो\"",
+  "owner-voice": "\"मेरी शैली का पोर्ट्रेट\", \"मेरी तरह लिखो\", \"यह मेरी भाषा नहीं है\"",
+  "owner-reviews": "\"समीक्षा पेज पर दिखाओ\", \"इंटरव्यू रेंडर करो\", \"अनुमोदन सर्किट बनाओ\""
 }
 ``````
 
@@ -6922,7 +7532,10 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
   "fable-domain": "「この業界向けのスキルを作って」「fable メソッドにドメインを追加して」",
   "plan-task": "「このタスクを計画して」「このタスクの計画を作って」「このバグの計画」",
   "plan-epic": "「このエピックを計画して」「大きな機能を分解して」「計画のはしご全体で」",
-  "guarded-loop": "「保護付きループ」「保護付きループで作業して」「アラーム付きループ」"
+  "guarded-loop": "「保護付きループ」「保護付きループで作業して」「アラーム付きループ」",
+  "code-revision": "「コードレビジョンを回して」「コード総点検」「コードベースを監査して」",
+  "owner-voice": "「私の文体ポートレート」「私のように書いて」「これは私の言葉ではない」",
+  "owner-reviews": "「レビューをページにして」「インタビューをレンダリングして」「承認ループを作って」"
 }
 ``````
 
@@ -7208,7 +7821,10 @@ compreensão cresce.
   "fable-domain": "«faz uma habilidade para o setor», «adiciona um domínio ao método fable»",
   "plan-task": "«planeje esta tarefa», «faça um plano para a tarefa», «plano para este bug»",
   "plan-epic": "«planeje este épico», «divida o épico», «escada completa de planejamento»",
-  "guarded-loop": "«ciclo protegido», «trabalhe em ciclo protegido», «ciclo com alarmes»"
+  "guarded-loop": "«ciclo protegido», «trabalhe em ciclo protegido», «ciclo com alarmes»",
+  "code-revision": "«revisão do código», «audite a base de código», «releia o código»",
+  "owner-voice": "«retrato do meu estilo», «escreva como eu», «esta não é a minha linguagem»",
+  "owner-reviews": "«revisão em página», «renderize a entrevista», «monte o circuito de aprovações»"
 }
 ``````
 
@@ -7483,7 +8099,10 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "fable-domain": "«сделай навык для сферы», «добавь домен в фейбл-метод»",
   "plan-task": "«спланируй задачу», «составь план по задаче», «план по багу», «план по идее»",
   "plan-epic": "«спланируй эпик», «нарезай эпик», «полная лестница планирования», «бери эпик в работу»",
-  "guarded-loop": "«защищённый цикл», «работай в защищённом цикле», «цикл с будильниками», «работай автономно с будильниками»"
+  "guarded-loop": "«защищённый цикл», «работай в защищённом цикле», «цикл с будильниками», «работай автономно с будильниками»",
+  "code-revision": "«прогони ревизию кода», «ревизия кода», «аудит кодовой базы», «вычитай код»",
+  "owner-voice": "«портрет моего стиля», «пиши как я», «это не мой язык», «перепиши моим голосом»",
+  "owner-reviews": "«сделай вычитку страницей», «отрендери интервью», «разверни контур согласований»"
 }
 ``````
 
@@ -7743,6 +8362,9 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
   "fable-domain": "「为这个行业做个技能」「给 fable 方法加个领域」",
   "plan-task": "「规划这个任务」「给这个任务做个计划」「为这个 bug 做计划」",
   "plan-epic": "「规划这个史诗任务」「拆解这个大特性」「完整的规划阶梯」",
-  "guarded-loop": "「受保护循环」「在受保护循环中工作」「带闹钟的循环」"
+  "guarded-loop": "「受保护循环」「在受保护循环中工作」「带闹钟的循环」",
+  "code-revision": "「跑一次代码复审」「代码复审」「审计代码库」",
+  "owner-voice": "「我的文风画像」「像我一样写」「这不是我的语言」",
+  "owner-reviews": "「把评审做成页面」「渲染访谈」「搭建审批回路」"
 }
 ``````

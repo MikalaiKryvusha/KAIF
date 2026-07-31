@@ -50,6 +50,10 @@ gh auth status              # gh logged in (needed for the GitHub Release)
 ```
 If the tree is dirty — commit/sort it out first (`/pause` or your commit tool).
 
+If the project keeps a **truth↔mirror pairs registry** (`AGENT_GUIDE.md` → Document & text
+hygiene), run every row's check command now — a release shipped over a drifted pair pins the drift
+into the delivery. Red row = stop and reconcile before proceeding.
+
 ## Step 2. Refresh README (all languages)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If bilingual, keep

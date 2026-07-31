@@ -29,5 +29,8 @@
   "fable-domain": "«bau einen Skill für die Branche», «füge der Fable-Methode eine Domäne hinzu»",
   "plan-task": "«plane diese Aufgabe», «erstelle einen Plan für die Aufgabe», «Plan für diesen Bug»",
   "plan-epic": "«plane dieses Epic», «zerlege das Epic», «vollständige Planungsleiter»",
-  "guarded-loop": "«geschützter Zyklus», «arbeite im geschützten Zyklus», «Zyklus mit Weckern»"
+  "guarded-loop": "«geschützter Zyklus», «arbeite im geschützten Zyklus», «Zyklus mit Weckern»",
+  "code-revision": "«Code-Revision», «auditiere die Codebasis», «lies den Code durch»",
+  "owner-voice": "«Porträt meines Stils», «schreib wie ich», «das ist nicht meine Sprache»",
+  "owner-reviews": "«Review als Seite», «rendere das Interview», «bau den Freigabe-Kreislauf»"
 }

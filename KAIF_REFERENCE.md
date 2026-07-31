@@ -93,7 +93,7 @@ Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `rese
 
 ## 6. The skill system
 
-Thirty-one skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-four skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -104,11 +104,20 @@ mirrored into every declared agent system (§7.3). Groups:
   plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
   a work-proving heartbeat file, a restart policy with an escalation cap).
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
+- **Owner contour (2.1):** `owner-voice` (a stylometric portrait of the owner's written voice from
+  their own texts; portrait and rewrite modes, the skeleton ships as
+  `.kaif/_owner-voice-template.md`) · `owner-reviews` (the optional review contour: interviews and
+  outbound drafts as local HTML pages, decisions recorded with `by`/`at`, sends gated fail-closed;
+  the hard place-of-questions rule itself lives in AGENT_GUIDE).
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
   `plan-epic` (the full ladder for heavy work: industry web-recon + local recon → research doc →
   meta-plan with phases → operational plan of the NEXT phase only).
 - **Vision:** `revision` · `fix-vision` · `what-next` · `help-kaif` (reads THIS reference).
 - **Canon writing:** `derive-styleguide` (§13.4).
+- **Code quality (2.1):** `code-revision` — the periodic reading revision of the codebase by the
+  strongest model: zoned parallel reviewers armed with the project's paid-for failure classes
+  (EXPERIENCE + bugs), verbatim quote per finding, adversarial skeptic with the default verdict
+  "not a defect"; survivors become bug docs and feed the guardrails.
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
