@@ -27,6 +27,9 @@ hole exactly there; owners kept having to re-order the full pass by hand (idea 1
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
 
+> `PROJECT_HISTORY.md` (the chronicle) is deliberately NOT in this set — it is the project's past,
+> not its now. Open it on demand when you need the archaeology of a decision or an old phase.
+
 > **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
 > slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
 > here is exactly what makes the lazy slices safe afterwards. Never "optimize" one with the other.

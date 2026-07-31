@@ -14,7 +14,8 @@
    после значимого успеха/провала (навык `/experience`).
 
 Ключевые документы в корне: `AGENT_GUIDE.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`,
-`TESTING_FRAMEWORK.md`, `STATUS.md`, `EXPERIENCE.md`, `GOAL.md`, `MASTER_PLAN.md`,
+`TESTING_FRAMEWORK.md`, `STATUS.md`, `PROJECT_HISTORY.md` (летопись — вне /resume, по
+потребности), `EXPERIENCE.md`, `GOAL.md`, `MASTER_PLAN.md`,
 `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `KAIF_FRAMEWORK.md`,
 `KAIF_REFERENCE.md` (пояснительная записка — авторитетный справочник устройства; корневая копия
 ГЕНЕРИРУЕТСЯ из `framework/KAIF_REFERENCE.md` — правь источник и пересобирай). Директории знаний

@@ -21,6 +21,12 @@ Update `STATUS.md`:
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
 in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
 
+**The bonsai trim (STATUS is a summary, not a chronicle):** entries that stopped being "now" —
+closed phases, finished sessions, shipped releases — move VERBATIM into `PROJECT_HISTORY.md`
+(newest on top; move, don't rewrite). Then re-read what remains of `STATUS.md` with the two tests
+from its header ("remove this line — will the next agent err?" · "readable in one sitting?"; soft
+target ~200 lines). Leave the file the way you'd want to find it.
+
 ## Step 2. Refresh README (when reality moved)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If the README

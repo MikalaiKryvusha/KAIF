@@ -39,7 +39,8 @@ markdown-документов, соглашения о директориях, �
 | `TESTING_FRAMEWORK.md` | Как агент тестирует созданное (маркеры `[NOT-TESTED]`/`[TESTED]`). |
 | `EXPERIENCE.md` | Накопленный опыт агента — уроки между сессиями (навык `/experience`). |
 | `GOAL.md` / `MASTER_PLAN.md` | Видение и пошаговый путь к нему. |
-| `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
+| `STATUS.md` | Живая сводка текущего (~200 строк) — обновляется после каждой значимой задачи; закрытое переезжает в летопись. |
+| `PROJECT_HISTORY.md` | Летопись (append-only): закрытые сессии/фазы/релизы; вне `/resume` — археология по потребности. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
 | Пояснительная записка `KAIF_REFERENCE.md` | Авторитетный справочник устройства фреймворка. **Особый случай истока:** источник — `framework/KAIF_REFERENCE.md`; корневая `KAIF_REFERENCE.md` — СГЕНЕРИРОВАННАЯ копия (страж расхождения в check-framework); развёрнутым проектам едет в `.kaif/KAIF_REFERENCE.md`. В собственном `.kaif/` истока нет `tools/` — исходники tool-модулей лежат в `framework/tools/` (DRY: исток не держит рукописных копий своей поставки). |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Директории знаний (в каждой свой README). |

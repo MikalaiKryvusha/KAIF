@@ -69,7 +69,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 
 ## 5. The document system
 
-Twelve key documents ship with a deployment (eleven project documents plus this reference):
+Thirteen key documents ship with a deployment (twelve project documents plus this reference):
 
 | Document | Purpose | Written by |
 |---|---|---|
@@ -79,7 +79,8 @@ Twelve key documents ship with a deployment (eleven project documents plus this 
 | `TESTING_FRAMEWORK.md` | Nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED: …]` contract, observation gates. | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living state and the baton between sessions. | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
+| `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The internal map: abstractions and interactions. | Agent maintains. |

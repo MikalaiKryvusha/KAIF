@@ -87,6 +87,8 @@ const DOC_TARGETS = {
   'framework/BUG_FIXING_FRAMEWORK.md': ['BUG_FIXING_FRAMEWORK.md', 'project root — universal, write verbatim'],
   'framework/TESTING_FRAMEWORK.md':    ['TESTING_FRAMEWORK.md',    'project root — universal, write verbatim'],
   'framework/STATUS.md':               ['STATUS.md',               "project root — seed with the project's current real state"],
+  // The chronicle added in 2.1 (epic H): STATUS stays a summary of NOW, closed work moves here
+  'framework/PROJECT_HISTORY.md':      ['PROJECT_HISTORY.md',      'project root — seed this template; closed STATUS entries move here verbatim (the bonsai trim)'],
   // Experience log added in 1.4 (grows on its own; living reference)
   'framework/EXPERIENCE.md':           ['EXPERIENCE.md',           'project root — seed this template; the agent grows it (skill: /experience)'],
   // Key docs added in 1.1

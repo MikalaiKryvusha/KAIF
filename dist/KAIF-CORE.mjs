@@ -75,7 +75,7 @@ const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>'
 
 // Docs seeded/owned by the OWNER after deploy — an update never touches them and never
 // even lists them as "diverged" (their divergence is the whole point of their existence).
-const OWNER_SEEDED = ['GOAL.md', 'STATUS.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
+const OWNER_SEEDED = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
   'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
 // Where update fetches the fresh machinery from (mirrors KAIF-LOADER.mjs).
 const SOURCES = { release: `${ORIGIN}/releases/latest/download`,
@@ -428,6 +428,9 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       if (SKIP_DIRS.includes(n) || SKIP_FILES.includes(p)) continue;
       if (statSync(p).isDirectory()) { walk(p); continue; }
       if (!/\.md$/i.test(n)) continue;
+      // The chronicle's era volumes (PROJECT_HISTORY_<era>.md, the split its template prescribes)
+      // are journals of the past exactly like the main file — judge-caught before the first split.
+      if (/^PROJECT_HISTORY/.test(p)) continue;
       // A file byte-identical to the CURRENT template cannot carry a stale PROJECT claim — its
       // text is upstream's own prose (bug 30: ten hits were fable-judge's "added in KAIF 1.6").
       if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;

@@ -18,7 +18,7 @@ export const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REP
 
 // Deploy destinations owned by the OWNER after deploy — every module of these is class `owner`
 // (mirrors OWNER_SEEDED in KAIF-CORE.mjs).
-export const OWNER_SEEDED_DESTS = ['GOAL.md', 'STATUS.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
+export const OWNER_SEEDED_DESTS = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
   'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
 
 export const MODULE_CLASSES = ['static', 'adaptive', 'owner'];

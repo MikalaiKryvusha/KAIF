@@ -27,7 +27,7 @@ KAIF/
 ├── framework/
 │   ├── _intro.md                          # повествовательный стержень полного ядра ({{VERSION}}, {{SKILL_COUNT}}, {{EMBED:…}}, {{EMBED_SKILLS}})
 │   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md   # шаблоны руководящих документов
-│   ├── STATUS.md EXPERIENCE.md GOAL.md MASTER_PLAN.md                              # шаблоны состояния/опыта/видения/плана
+│   ├── STATUS.md PROJECT_HISTORY.md EXPERIENCE.md GOAL.md MASTER_PLAN.md           # шаблоны состояния/летописи/опыта/видения/плана
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md PROJECT_ARCHITECTURE_INTERNAL_MAP.md      # шаблоны карт
 │   ├── KAIF_FRAMEWORK.md                  # шаблон пост-инжекционного документа
 │   ├── KAIF_REFERENCE.md                  # пояснительная записка (12-й ключевой документ; dest → .kaif/)
@@ -66,6 +66,7 @@ KAIF/
 ├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока)
 ├── KAIF_REFERENCE.md                      # ⭐ СГЕНЕРИРОВАННАЯ копия framework/KAIF_REFERENCE.md (страж в check; правь источник)
 ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
+├── PROJECT_HISTORY.md                     # летопись (append-only; вне /resume — археология по потребности; 2.1 эпик H)
 ├── EXPERIENCE.md                          # накопленный опыт агента (греп-дружелюбен; навык /experience)
 ├── GOAL.md                                # видение (заполняет владелец)
 ├── MASTER_PLAN.md                         # пошаговый генплан от состояния к GOAL (+ журнал решений владельца)

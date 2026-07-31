@@ -5,18 +5,30 @@
 > able to get productive from this file alone. Write accordingly — concrete, with file paths and commands.
 > 🧠 Prime thinking principle — `PHILOSOPHY.md` (SIMPLICITY: KISS + Occam). Read your working framework
 > in `AGENT_GUIDE.md`.
+>
+> ⚠️ **STATUS is a SUMMARY of NOW, not a chronicle.** A status file that only ever grows turns into
+> the project's history book, and the agent that came for a quick "where are we" drowns in it
+> (field: a 2 300-line STATUS — "an abyss, not a summary"). The rules that keep it a summary:
+>
+> - **Every line passes two tests:** *"if I remove this line, will the next agent make a mistake?"*
+>   and *"does a newcomer still read the whole file in one sitting?"* Soft target: **~200 lines**
+>   (one-two screens of substance) — the guard is a warning, not a wall, but crossing it means a
+>   trim is overdue.
+> - **Closed work is MOVED OUT, not accumulated:** when a phase/session's entry is no longer "now",
+>   move it VERBATIM into `PROJECT_HISTORY.md` (the chronicle — that is what it is for).
+>   `/end-chat` carries a "bonsai trim" step for exactly this (`/pause` stays ceremony-free by design).
+> - **Leave the file the way you'd want to find it:** fresh summary of what works, what's in
+>   progress, what's next, the pitfalls, and WHERE TO LOOK for the details (plans, bugs, history) —
+>   pointers, not retellings.
 
 ---
 
-## What's done
+## What's done (the short tail — older entries live in PROJECT_HISTORY.md)
 
-`<Chronological-ish list of completed phases/features, concrete, tied to files/modules. Enough detail
-that a fresh session understands what already exists and works. Example:>`
+`<Only the RECENT completed work that still shapes "now" — a handful of entries, concrete, tied to
+files/modules. When an entry stops being current context, move it verbatim to PROJECT_HISTORY.md.>`
 
-### Phase 0 — Foundation ✅
-- `<...>`
-
-### Phase 1 — <name> ✅
+### <recent phase/session> ✅
 - `<...>`
 
 ---

@@ -1153,18 +1153,30 @@ style, tone). Anything the agent should honor without being told twice.>`
 > able to get productive from this file alone. Write accordingly — concrete, with file paths and commands.
 > 🧠 Prime thinking principle — `PHILOSOPHY.md` (SIMPLICITY: KISS + Occam). Read your working framework
 > in `AGENT_GUIDE.md`.
+>
+> ⚠️ **STATUS is a SUMMARY of NOW, not a chronicle.** A status file that only ever grows turns into
+> the project's history book, and the agent that came for a quick "where are we" drowns in it
+> (field: a 2 300-line STATUS — "an abyss, not a summary"). The rules that keep it a summary:
+>
+> - **Every line passes two tests:** *"if I remove this line, will the next agent make a mistake?"*
+>   and *"does a newcomer still read the whole file in one sitting?"* Soft target: **~200 lines**
+>   (one-two screens of substance) — the guard is a warning, not a wall, but crossing it means a
+>   trim is overdue.
+> - **Closed work is MOVED OUT, not accumulated:** when a phase/session's entry is no longer "now",
+>   move it VERBATIM into `PROJECT_HISTORY.md` (the chronicle — that is what it is for).
+>   `/end-chat` carries a "bonsai trim" step for exactly this (`/pause` stays ceremony-free by design).
+> - **Leave the file the way you'd want to find it:** fresh summary of what works, what's in
+>   progress, what's next, the pitfalls, and WHERE TO LOOK for the details (plans, bugs, history) —
+>   pointers, not retellings.
 
 ---
 
-## What's done
+## What's done (the short tail — older entries live in PROJECT_HISTORY.md)
 
-`<Chronological-ish list of completed phases/features, concrete, tied to files/modules. Enough detail
-that a fresh session understands what already exists and works. Example:>`
+`<Only the RECENT completed work that still shapes "now" — a handful of entries, concrete, tied to
+files/modules. When an entry stops being current context, move it verbatim to PROJECT_HISTORY.md.>`
 
-### Phase 0 — Foundation ✅
-- `<...>`
-
-### Phase 1 — <name> ✅
+### <recent phase/session> ✅
 - `<...>`
 
 ---
@@ -1216,6 +1228,43 @@ that a fresh session understands what already exists and works. Example:>`
 
 `<Pull from bugs/ (non-DONE). One line each with status and a pointer. Example:>`
 - 🔴 `bugs/NN_<name>.md` — `<symptom, one line>`
+``````
+
+
+> **FILE: `PROJECT_HISTORY.md`** — project root — seed this template; closed STATUS entries move here verbatim (the bonsai trim)
+
+``````md
+# <PROJECT_NAME> — Project History (the chronicle)
+
+> The APPEND-ONLY chronicle of how this project lived and grew: closed sessions, shipped phases,
+> releases, big decisions in the order they happened. This is where `STATUS.md` sheds its past —
+> STATUS stays a short live summary of NOW; everything finished moves HERE (the "bonsai trim" step
+> of `/end-chat`).
+>
+> **Not required reading.** This file is NOT part of `/resume`'s canon set and not in the
+> before-every-task minimum — open it only when you actually need the archaeology: how a decision
+> came to be, what an old phase contained, when something shipped.
+>
+> **Chronicle rules (ADR discipline):**
+> - **Append-only, newest on top.** A recorded entry is never edited to say something else —
+>   history that can be rewritten is not history. Corrections come as NEW entries that reference
+>   and supersede the old one.
+> - An entry moves here VERBATIM from `STATUS.md` when its work closes — move, don't rewrite;
+>   the entry already carries its dates, counters and file pointers.
+> - Entries mention versions and dates freely — a chronicle legitimately speaks of old versions,
+>   and the update machinery's stale-claims scan knows to leave this file alone.
+> - When the file grows unwieldy, split by era: keep the newest era here, move older ones to
+>   `PROJECT_HISTORY_<era>.md` files, and leave a one-line index at the top of this file
+>   (the pattern large changelogs use).
+>
+> Living document — never DONE-tagged.
+
+---
+
+## Entries (newest first)
+
+### <date> — <session/phase/release title> <✅/🎉>
+`<The entry as it lived in STATUS.md — verbatim: what was done, key numbers, file pointers.>`
 ``````
 
 
@@ -1579,7 +1628,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 
 ## 5. The document system
 
-Twelve key documents ship with a deployment (eleven project documents plus this reference):
+Thirteen key documents ship with a deployment (twelve project documents plus this reference):
 
 | Document | Purpose | Written by |
 |---|---|---|
@@ -1589,7 +1638,8 @@ Twelve key documents ship with a deployment (eleven project documents plus this 
 | `TESTING_FRAMEWORK.md` | Nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED: …]` contract, observation gates. | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living state and the baton between sessions. | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
+| `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The internal map: abstractions and interactions. | Agent maintains. |
@@ -2068,6 +2118,9 @@ hole exactly there; owners kept having to re-order the full pass by hand (idea 1
 
 If relevant to open questions:
 - `bugs/` — `ls bugs/`, open the non-`DONE` bugs
+
+> `PROJECT_HISTORY.md` (the chronicle) is deliberately NOT in this set — it is the project's past,
+> not its now. Open it on demand when you need the archaeology of a decision or an old phase.
 
 > **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
 > slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
@@ -3176,7 +3229,8 @@ well-structured explanation they can read and act on.
 
 2. **The key documents — what to read/keep, and who owns each.** Briefly, as a list:
    `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `BUG_FIXING_FRAMEWORK.md`,
-   **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (living state), `MASTER_PLAN.md`
+   **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (the living summary of now),
+   `PROJECT_HISTORY.md` (the chronicle — archaeology on demand), `MASTER_PLAN.md`
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
 
 3. **The directories — where knowledge lives, and where the owner acts.** `plans/`, `ideas/` (mostly
@@ -3188,7 +3242,7 @@ well-structured explanation they can read and act on.
    soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
    `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
-   `/what-next`), planning (`/revision`), guardrails (`/derive-styleguide`), execution discipline
+   `/what-next`), planning (`/plan-task`, `/plan-epic`, `/revision`), guardrails (`/derive-styleguide`), execution discipline
    (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
    (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
    `/kaif-remove`).
@@ -3459,6 +3513,12 @@ Update `STATUS.md`:
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
 in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
+
+**The bonsai trim (STATUS is a summary, not a chronicle):** entries that stopped being "now" —
+closed phases, finished sessions, shipped releases — move VERBATIM into `PROJECT_HISTORY.md`
+(newest on top; move, don't rewrite). Then re-read what remains of `STATUS.md` with the two tests
+from its header ("remove this line — will the next agent err?" · "readable in one sitting?"; soft
+target ~200 lines). Leave the file the way you'd want to find it.
 
 ## Step 2. Refresh README (when reality moved)
 

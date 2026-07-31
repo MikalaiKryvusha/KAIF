@@ -94,6 +94,9 @@ writeFileSync(CB, cbPre +
   '## Что делать\n\nШаги ревизии по-русски.\n\n' +
   '## Заметки\n\nЗаметки по-русски.\n');
 const cbLenBefore = statSync(CB).size;
+// H (эпик H 2.1): летопись — 13-й ключевой документ, owner-seeded
+ok(existsSync(join(T1, 'PROJECT_HISTORY.md')), 'H: PROJECT_HISTORY.md едет со свежей установкой');
+writeFileSync(join(T1, 'PROJECT_HISTORY.md'), '# Летопись\n\nOWNER CHRONICLE — MUST SURVIVE\n');
 // T4-фикстура (K5): журналы прошлого, честно упоминающие старую версию
 mkdirSync(join(T1, 'researches'), { recursive: true });
 writeFileSync(join(T1, 'researches', '15_kaif_20_note.md'), `# Отчёт\n\nЭтот документ ПРО KAIF ${FROM} и его механику — история, не протухание.\n`);
@@ -115,6 +118,8 @@ ok(!/stale-claims[^]*EXPERIENCE\.md/.test(task1), 'K5: EXPERIENCE.md не в sta
 ok(!/stale-claims[^]*Предыдущее обновление/.test(task1), 'K5: строка «Предыдущее обновление» STATUS пропущена');
 ok(!/stale-claims[^]*TESTING_FRAMEWORK\.md/.test(task1),
    'Д4: файл, байт-в-байт равный текущему шаблону, не может нести протухшее утверждение ПРОЕКТА');
+ok(readFileSync(join(T1, 'PROJECT_HISTORY.md'), 'utf8').includes('OWNER CHRONICLE — MUST SURVIVE'),
+   'H: летопись — owner-seeded, update её не трогает');
 
 // ---------------------------------------------------------------- T2: i18n translated — диффы есть, EN-файлы живут
 console.log('\n=== T2 (K2): i18n translated — не слепота, а «не заменять, но анализировать» ===');
@@ -210,6 +215,8 @@ ag7[2].lines.push('', 'LOCAL PROJECT EDIT (agent guide)');
 writeFileSync(AG7, joinModules(ag7));
 // …и дрейф значения <PROJECT_NAME>: package.json переименован после деплоя
 writeFileSync(join(T7, 'package.json'), JSON.stringify({ name: 'renamed-project', scripts: { 'kaif:version': 'node .kaif/kaif-core.mjs version', 'kaif:check': 'node .kaif/kaif-core.mjs check', 'kaif:update': 'node .kaif/kaif-core.mjs update' } }, null, 2) + '\n');
+// H: развёртывание БЕЗ летописи (до-2.1) — update обязан досеять недостающий owner-док из шаблона
+rmSync(join(T7, 'PROJECT_HISTORY.md'), { force: true });
 r = run(T7, `update --source ${SRC}`);
 ok(r.code === 0, 'T7 update exit 0', r.out);
 const agTxt = readFileSync(join(T7, 'AGENT_GUIDE.md'), 'utf8');
@@ -226,6 +233,8 @@ ok(/\*\*placeholders\*\*/.test(task7) && task7.includes('<YOUR AGENT/MODEL>'),
    'Д3: update-задание несёт пункт placeholders с непроставленным слотом');
 ok(/the framework changed \d+ of \d+ shipped files/.test(task7),
    'B4: задание называет честный размер работы (N из M файлов)');
+ok(existsSync(join(T7, 'PROJECT_HISTORY.md')) && readFileSync(join(T7, 'PROJECT_HISTORY.md'), 'utf8').includes('chronicle'),
+   'H: недостающий owner-док (летопись) досеян апдейтом из шаблона');
 
 // ---------------------------------------------------------------- T8: порядок гейтов и слепой слот (bugs/27, 28)
 console.log('\n=== T8 (Д2+Д3): re-sync зеркал ДО гейта плейсхолдеров; слот email не слепой ===');

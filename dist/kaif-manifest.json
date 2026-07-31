@@ -4,8 +4,8 @@
   "released": "2026-07-28",
   "codename": "Excellent KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "87bc7c197b92991b70b40aa00e1cb0721f7640d12ee3e6ae04d8a990643914fd",
-    "KAIF-CORE-BUNDLE.md": "7179303e8db6eeb5019e771da1043a0458083ae10bf0d419b204738be2919841"
+    "KAIF-CORE.mjs": "8037e0f9c8870bcf186e7a937ac9c546fa19f454b9f3a6c36ea1fe3997abe219",
+    "KAIF-CORE-BUNDLE.md": "55029d21cbc2ffe3df6c830a775ab003682cf7cd9ae05a5c80b0fb907cdb8323"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

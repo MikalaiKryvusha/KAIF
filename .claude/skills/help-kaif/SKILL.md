@@ -34,7 +34,8 @@ description: Дать человеку-оператору ясный струк�
 
 2. **Ключевые документы — что читать/вести и чьё каждое.** Списком, кратко: `AGENT_GUIDE.md` (канон),
    `PHILOSOPHY.md` (как агент мыслит), `BUG_FIXING_FRAMEWORK.md`, **`GOAL.md`** (видение владельца — *ваш*
-   документ), `STATUS.md` (живое состояние), `MASTER_PLAN.md` (генплан), внешняя и внутренняя карты,
+   документ), `STATUS.md` (живая сводка «сейчас»), `PROJECT_HISTORY.md` (летопись — археология по
+   потребности), `MASTER_PLAN.md` (генплан), внешняя и внутренняя карты,
    `KAIF_FRAMEWORK.md` (эта сводка «что развёрнуто»).
 
 3. **Директории — где живут знания и где действует владелец.** `plans/`, `ideas/` (в основном ваши),
@@ -46,7 +47,7 @@ description: Дать человеку-оператору ясный струк�
    (`/resume`, `/pause` — мягкая парковка, чат продолжится, `/end-chat` — полное закругление с эстафетой),
    автономия (`/autoloop`, `/dayloop`, `/nightloop`), гигиена (`/refresh-context`, `/check-backlog`),
    знания и память (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), владелец
-   (`/interview`, `/fix-vision`, `/what-next`), планирование (`/revision`), гвардрейлы
+   (`/interview`, `/fix-vision`, `/what-next`), планирование (`/plan-task`, `/plan-epic`, `/revision`), гвардрейлы
    (`/derive-styleguide`), дисциплина исполнения (`/fable-method`, `/fable-loop`, `/fable-judge`,
    `/fable-domain`), помощь (`/help-kaif`), выпуск (`/release`) и жизненный цикл (`/kaif-version`,
    `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`, `/kaif-remove`).

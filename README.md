@@ -271,7 +271,8 @@ your-project/
 | `BUG_FIXING_FRAMEWORK.md` | How the agent debugs (intent gate, 3 attempts, twin check) | Universal — deployed verbatim |
 | `TESTING_FRAMEWORK.md` | How the agent tests everything it creates | Universal — deployed verbatim |
 | **`GOAL.md`** | The vision: what you want in the end | **You (owner)** — the one doc you should fill |
-| `STATUS.md` | The living state — what's done, where we are, next | Agent maintains after every task |
+| `STATUS.md` | The living SUMMARY of now (~200-line soft target) — closed work moves to the chronicle | Agent maintains after every task |
+| `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases — archaeology on demand, not required reading | Agent moves entries at `/end-chat` |
 | `EXPERIENCE.md` | The agent's grep-friendly log of lessons | Agent grows it on its own (`/experience`) |
 | `MASTER_PLAN.md` | The phased roadmap from state → GOAL | Agent derives from `GOAL.md` (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | External map: directories, files, how the project looks from outside | Agent maintains |
@@ -703,7 +704,8 @@ owner-документы** (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директ�
 | `BUG_FIXING_FRAMEWORK.md` | Как агент чинит баги (intent gate, 3 попытки, twin check) | Универсальный — дословно |
 | `TESTING_FRAMEWORK.md` | Как агент тестирует всё созданное | Универсальный — дословно |
 | **`GOAL.md`** | Видение: чего вы хотите в итоге | **Вы (владелец)** — единственный документ, который стоит заполнить |
-| `STATUS.md` | Живое состояние — что сделано, где мы, что дальше | Агент ведёт после каждой задачи |
+| `STATUS.md` | Живая СВОДКА текущего (мягкий ориентир ~200 строк) — закрытое переезжает в летопись | Агент ведёт после каждой задачи |
+| `PROJECT_HISTORY.md` | Летопись (append-only): закрытые сессии/фазы/релизы — археология по потребности, не обязательное чтение | Агент переносит записи на `/end-chat` |
 | `EXPERIENCE.md` | Греп-дружелюбный журнал уроков агента | Агент растит сам (`/experience`) |
 | `MASTER_PLAN.md` | Генплан от состояния → к GOAL | Агент выводит из `GOAL.md` (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | Внешняя карта: директории, файлы, как проект выглядит снаружи | Агент ведёт |

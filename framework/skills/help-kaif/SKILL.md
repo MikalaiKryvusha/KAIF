@@ -32,7 +32,8 @@ well-structured explanation they can read and act on.
 
 2. **The key documents — what to read/keep, and who owns each.** Briefly, as a list:
    `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `BUG_FIXING_FRAMEWORK.md`,
-   **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (living state), `MASTER_PLAN.md`
+   **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (the living summary of now),
+   `PROJECT_HISTORY.md` (the chronicle — archaeology on demand), `MASTER_PLAN.md`
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
 
 3. **The directories — where knowledge lives, and where the owner acts.** `plans/`, `ideas/` (mostly
@@ -44,7 +45,7 @@ well-structured explanation they can read and act on.
    soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
    `/dayloop`, `/nightloop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
-   `/what-next`), planning (`/revision`), guardrails (`/derive-styleguide`), execution discipline
+   `/what-next`), planning (`/plan-task`, `/plan-epic`, `/revision`), guardrails (`/derive-styleguide`), execution discipline
    (`/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain`), help (`/help-kaif`), shipping
    (`/release`), and the lifecycle (`/kaif-version`, `/kaif-update`, `/kaif-fork`, `/kaif-switch-origin`,
    `/kaif-remove`).

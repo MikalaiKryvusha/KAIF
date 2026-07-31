@@ -154,6 +154,8 @@ experience survives context resets. It is a **living reference — never DONE-ta
 
 {{EMBED:framework/STATUS.md}}
 
+{{EMBED:framework/PROJECT_HISTORY.md}}
+
 {{EMBED:framework/EXPERIENCE.md}}
 
 {{EMBED:framework/MASTER_PLAN.md}}
