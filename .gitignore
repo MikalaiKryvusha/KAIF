@@ -9,6 +9,7 @@ tools/package-lock.json
 
 # Logs / temp / scratch
 *.log
+*.stackdump
 scratchpad/
 
 # Note: README.pdf and FRAMEWORK.md are committed deliverables (generated, but tracked).
