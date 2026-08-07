@@ -1828,6 +1828,10 @@ async function cmdInstall() {
   const bad = validate(deploy, skillFiles, legacyOld ? UPDATE_TASK : TASK_FILE);
   if (bad) die(`install INCOMPLETE: ${bad} artifacts missing — re-run, or fix and \`check\``);
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translated ? ` · ${translated} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
+  // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
+  // are absent from it, and the first thing the human sees when trying one is "no such command" —
+  // which reads as "the install failed". Saying it HERE costs one line and prevents that diagnosis.
+  if (skillFiles && skillFiles.length) log(`➡ Restart your agent client so the ${skillFiles.length} skills appear in its command list (clients read that list at startup — until then a new skill answers "no such command", which is a stale list, not a failed install).`);
   if (legacyOld) log(`➡ ONE cognitive step remains — open ${UPDATE_TASK} and work it, then run: node .kaif/kaif-core.mjs update-verify`);
   else log(`➡ ONE cognitive step remains — open ${TASK_FILE} and work it, then run: node .kaif/kaif-core.mjs verify-final`);
 }
