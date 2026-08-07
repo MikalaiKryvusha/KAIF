@@ -1,8 +1,9 @@
 # План 09 — KAIF 1.2 «Anonymous KAIF»: механическая распаковка, анонимная установка, новые навыки
 
-> Источники: `ideas/06_extended_skills.md` (владелец), `bugs/01_poor_kaif_deploy_on_local_llms.md`,
-> `researches/01_agent_skill_formats.md`. Дата: 2026-07-03.
+> **Родитель:** `ideas/06_extended_skills.md` (владелец) · `bugs/01_poor_kaif_deploy_on_local_llms.md` ·
+> `researches/01_agent_skill_formats.md`. **Создан:** 2026-07-03.
 > Приоритет владельца: **№1 — чёткая распаковка в Zoo Code** (форк-цепочка Cline → Roo Code → Zoo Code).
+> **Статус:** ✅ исполнен — релиз KAIF 1.2 «Anonymous KAIF» отгружен (хроника — `PROJECT_HISTORY.md`). **Вовне:** —.
 
 ## Цель
 

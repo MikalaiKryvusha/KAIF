@@ -1,6 +1,7 @@
 # План 31 — ЭПИК O (2.2): свежий контекст и досье окружения — мета-план
 
-> **Зонтик:** `plans/26_kaif_2.2.md` §1. **Research-ступень (готова):** `researches/15` §6 +
+> **Родитель:** `plans/26_kaif_2.2.md` §1 (зонтик 2.2). **Вовне:** —.
+> **Research-ступень (готова):** `researches/15` §6 +
 > §11.3 (Claude Code hooks поимённо · system-reminder паттерн · Cline Memory Bank → lifecycle-
 > хуки · AGENTS.md · наука: context rot / lost in the middle / DriftBench «recall ≠ adherence» ·
 > ansible facts / devcontainer). **Постановка владельца** — идея 20 пп. 3, 7.

@@ -1,6 +1,7 @@
 # План 27 — ЭПИК K (2.2): интерактивный контур — мета-план
 
-> **Зонтик:** `plans/26_kaif_2.2.md` §1. **Research-ступень (готова):**
+> **Родитель:** `plans/26_kaif_2.2.md` §1 (зонтик 2.2). **Вовне:** закрытие issue #2 (§12,
+> условия 11/11) — исполняет Фаза R. **Research-ступень (готова):**
 > `researches/15_kaif_2.2_scope_metasynthesis.md` §2 — четыре независимых полевых источника:
 > исполнимый контракт NDim (`D:\work\ai_sandbox\ndim\researches\28_owner_reviews_contour_field_report.md`,
 > часть II) · И1–И5 с headless-починкой (`D:\work\unliminiumProject\bugs\54_…`) · И9–И15 с

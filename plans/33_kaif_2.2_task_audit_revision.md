@@ -1,7 +1,7 @@
 # План 33 — задача T3 (2.2): ревизия /code-revision под аудит сильной моделью → reports/KAIF_AUDIT
 
-> **Зонтик:** `plans/26_kaif_2.2.md` §1 (строка 9). **Источник:** идея 20 п. 12 («изучить, есть
-> ли в KAIF навык… Если есть - причесать»). **Research:** `researches/15` §8 (T3) + §11.4
+> **Родитель:** `plans/26_kaif_2.2.md` §1 (строка 9, зонтик 2.2) ← идея 20 п. 12 («изучить, есть
+> ли в KAIF навык… Если есть - причесать»). **Вовне:** —. **Research:** `researches/15` §8 (T3) + §11.4
 > (Cloudflare Recon→Hunt→Validate→Report · Tricorder effective-FP ≤10 % · Copilot Autofix ·
 > SARIF baseline · SSVC · HalluJudge). **Gap-анализ:** `/code-revision` покрывает ~70 %
 > требуемого (оси + скептик «не дефект» по умолчанию + цитата-контракт — фронтир индустрии);

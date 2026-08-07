@@ -1,6 +1,6 @@
 # План 23 — эпик B (2.1): полевые фиксы обновления 2.0
 
-> **Зонтик:** `plans/22_kaif_2.1.md` §2. **Research:** `researches/13` §2 + первоисточники:
+> **Родитель:** `plans/22_kaif_2.1.md` §2 (зонтик 2.1). **Вовне:** —. **Research:** `researches/13` §2 + первоисточники:
 > `ideas/ai_agents_reports/23_kaif_20_update_mechanics_from_ndim.md` (ndim 1.6→2.0, находки K1–K6)
 > и `ideas/ai_agents_reports/KAIF_2.0_UPDATE_REPORT.md` (анонимная установка 1.6→2.0, добавлен
 > владельцем 2026-07-31 — интервью 005 Q3; дефекты Д1–Д7 + предложение A → bugs/26–30).

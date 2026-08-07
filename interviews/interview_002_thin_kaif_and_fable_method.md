@@ -1,9 +1,9 @@
 # Интервью #002 — KAIF 1.5 «Thin KAIF»: развилки по установке и fable-method
 
-> Тема: решения уровня владельца для эпика `ideas/12_simple_instalation+fable_method.md`.
+> Topic: решения уровня владельца для эпика `ideas/12_simple_instalation+fable_method.md`.
 > Подоплёка: `researches/03_fable_method.md` (fable) · `researches/04_thin_kaif_installation.md` (установка) ·
 > план `plans/13_kaif_1.5_thin_kaif.md`. Создано: 2026-07-16.
-> Статус: **🟢 ОТВЕЧЕНО владельцем 2026-07-16** (Q1–Q3, Q5–Q7 — в файле; Q4 — в чате после пояснения).
+> Status: **🟢 ОТВЕЧЕНО владельцем 2026-07-16** (Q1–Q3, Q5–Q7 — в файле; Q4 — в чате после пояснения).
 > Гейт Фазы 1 плана 13 снят.
 
 ## Контекст
