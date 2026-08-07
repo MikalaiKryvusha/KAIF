@@ -108,6 +108,28 @@ if (skills.includes('release')) {
   }
 }
 
+// 5d. §9.11 (bug 31): the owner's script must not live in the BODIES of EN payload templates —
+//     author examples inside pause/kaif-remove blinded the translated-wholesale net in three
+//     field projects at once (the net demands "no owner script in the incoming template body";
+//     the per-file translation test judges bodies the same way). Frontmatter is exempt:
+//     localized trigger phrases in `description:` are the trigger contract, and the body-based
+//     tests never judge the preamble. Owner-seeded doc templates are exempt too — the author's
+//     own voice lives there legitimately (KAIF_FRAMEWORK's birth note).
+{
+  const OWNER_SEEDED_TPL = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
+    'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
+  const CYR = /[А-Яа-яЁё]/;
+  const stripFrontmatter = (t) => t.replace(/^---\r?\n[^]*?\r?\n---\r?\n/, '');
+  const bodies = [];
+  for (const d of docs) if (!OWNER_SEEDED_TPL.includes(d)) bodies.push([`framework/${d}`, readFileSync(join(ROOT, 'framework', d), 'utf8')]);
+  for (const r of readmes) bodies.push([`framework/readmes/${r}.md`, readFileSync(join(readmesDir, `${r}.md`), 'utf8')]);
+  for (const s of skills) bodies.push([`framework/skills/${s}/SKILL.md`, stripFrontmatter(readFileSync(join(skillsDir, s, 'SKILL.md'), 'utf8'))]);
+  for (const [name, body] of bodies) {
+    const hit = body.split(/\r?\n/).findIndex((l) => CYR.test(l));
+    if (hit >= 0) errors.push(`Cyrillic in an EN template BODY: ${name} (frontmatter-relative line ${hit + 1}) — move the example to a language pack or rephrase (invariant §9.11, bug 31: it blinds the translation net)`);
+  }
+}
+
 // 6. dist/ — the Thin-KAIF install artifacts (1.5+). Validated when present (the build
 //    always emits them; a checkout missing dist/ predates 1.5 and skips cleanly).
 const distDir = join(ROOT, 'dist');

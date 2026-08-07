@@ -33,8 +33,9 @@ intact and working — we only remove what KAIF added, surgically.
    - If the answer is vague, ambiguous, or conditional ("maybe", "whatever's cleaner", "up to you", silence)
      — do **not** guess and do **not** default. Ask again, restating the two options, until the owner gives
      an explicit choice.
-   - A `--all` flag or an explicit phrase like "full removal" / "выжги полностью" counts as an explicit
-     answer for **full**; "keep my artifacts" / "частично" counts as **partial**. Anything else → re-ask.
+   - A `--all` flag or an explicit phrase like "full removal" (in any language the owner speaks) counts
+     as an explicit answer for **full**; "keep my artifacts" / "partial" counts as **partial**. Anything
+     else → re-ask.
 
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
    - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,

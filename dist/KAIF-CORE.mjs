@@ -155,6 +155,27 @@ function localizedAgainst(diskText, newText) {
   return !!re && re.test(diskText) && !re.test(newText);
 }
 
+// The whole-file variant of the test is BLIND on skills (bug 31): machinery-appended trigger
+// aliases put the owner's script into every frontmatter on BOTH sides, so no skill ever read as
+// "translated" and the i18n flag protected nothing. Judge "is this file a translation" by the
+// BODY only — the modules below the preamble.
+function bodyLocalized(diskText, newText) {
+  const body = (t) => splitModules(normEol(t)).filter((m) => m.signature !== '<preamble>').map(modText).join('\n');
+  return localizedAgainst(body(diskText), body(newText));
+}
+
+// The alias tail applyLanguage appends to a skill's description is MACHINERY's, not the owner's:
+// frontmatter comparisons must ignore it, or a trigger-pack change between versions makes every
+// skill's preamble read as owner-edited forever — and an updated `description` never reaches the
+// disk while the body merges on, leaving one file with two contradicting claims (bug 43,
+// KrinikCam /dayloop: the routing field kept asserting the OLD rule the merged body had dropped).
+const stripAliasTail = (t) => t.replace(/ Trigger aliases \([a-zA-Z-]+\): [^\n]*/g, '');
+
+// A real translation keeps some TERM headings untranslated (KLAS field: KISS and DRY survived —
+// 2 of PHILOSOPHY's 21), so the wholesale net tolerates up to this share of surviving base
+// signatures instead of the old absolute "≤1" that read every real translation as English (bug 31).
+const WHOLESALE_SURVIVOR_SHARE = 0.15;
+
 // A tiny line-level LCS diff — modules are small (median 9 lines), so O(n·m) is nothing.
 // Renders the "old template → new template" delta the field asked for in 7 of 8 reports.
 function lineDiff(oldText, newText) {
@@ -491,7 +512,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const items = [];
   if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
   if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
-  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (see the template news below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; fold the news in by hand)` : p).join(' · ')}`]);
+  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below)` : p).join(' · ')}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
   if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
@@ -542,14 +563,16 @@ async function fetchArtifact(base, name) {
 }
 
 // The soft variant for OPTIONAL artifacts (the synthetic baseline): absence is an answer,
-// not a death — the caller falls back to the classic path.
+// not a death — the caller falls back to the classic path. A hung network must not hang the
+// whole update for an OPTIONAL artifact (judge finding, phase L2) — hence the hard timeout.
+const BASELINE_FETCH_TIMEOUT_MS = 30000;
 async function fetchMaybe(base, name) {
   try {
     if (!/^https?:\/\//.test(base)) {
       const p = join(base, name);
       return existsSync(p) ? readFileSync(p) : null;
     }
-    const res = await fetch(`${base}/${name}`, { redirect: 'follow' });
+    const res = await fetch(`${base}/${name}`, { redirect: 'follow', signal: AbortSignal.timeout(BASELINE_FETCH_TIMEOUT_MS) });
     return res.ok ? Buffer.from(await res.arrayBuffer()) : null;
   } catch { return null; }
 }
@@ -572,20 +595,29 @@ async function buildSyntheticBaseline(legacyOld) {
     const parsed = parseBundle(tmp, true);
     unlinkSync(tmp);
     if (!parsed || !parsed.files.length) continue;
+    // A baseline claiming a DIFFERENT version than the deployment's own is not the previous
+    // release — trusting it would silently eat real task items via the zero-delta filter
+    // (judge finding, phase L2). Old-era artifacts without a manifest stay accepted as before.
+    if (parsed.meta && parsed.meta.version && String(parsed.meta.version) !== String(ver)) {
+      log(`⟳ baseline artifact at ${base} declares v${parsed.meta.version}, expected v${ver} — not the previous release, skipped`);
+      continue;
+    }
     const { deploy } = applyLanguage(parsed.files);
     const values = stableValues();   // frozen deploy values (bug 26) — the baseline must cut like the deploy did
     const un = new Set();
     const templateShas = {};
     const moduleShas = {};
+    const templateTexts = {};                          // the OLD template texts — the missing half of every real diff (bug 32)
     for (const f of deploy) {
       if (isSkippedAnon(f.path)) continue;
       let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, un);
       if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
       templateShas[f.path] = normSha(content);
+      templateTexts[f.path] = normEol(content);
       if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(content), (parsed.meta || {}).moduleClasses);
     }
-    log(`⟳ synthetic baseline: v${ver}'s own ${name} (${Object.keys(templateShas).length} templates) — the legacy path is no longer blind`);
-    return { shas: {}, templateShas, moduleShas, kept: [], synthetic: true };
+    log(`⟳ synthetic baseline: v${ver}'s own ${name} (${Object.keys(templateShas).length} templates) — old template texts in hand for real diffs`);
+    return { shas: {}, templateShas, moduleShas, templateTexts, kept: [], synthetic: true };
   }
   log(`⟳ no baseline artifact reachable for v${ver} (${base}) — classic adopt-everything legacy path`);
   return null;
@@ -600,7 +632,7 @@ async function buildSyntheticBaseline(legacyOld) {
 // cycles while its file's upstream modules merge mechanically; conflict module → diff in the
 // task; upstream-untouched divergence makes no noise; a translated-wholesale file is kept intact
 // (no doubling); dryRun analyzes without writes; owner-added sections never trip the net]
-function mergeModules(path, newContent, oldMods, dryRun = false) {
+function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null) {
   const disk = normEol(readFileSync(path, 'utf8'));
   const diskMods = splitModules(disk);
   if (joinModules(diskMods) !== disk) return null;                      // pathological file — file-level fallback
@@ -626,9 +658,12 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
   // On a TINY base (directory READMEs cut into 1 module) "≤1 matched" degenerates: an intact base
   // heading plus one owner-added section in the owner's script would read as a translation and
   // freeze the file with a lying task note (judge finding F1, s07/T6) — small bases demand that
-  // NO base signature survives before the net may fire.
-  const wholesaleCeiling = nonPre(oldMods).length <= 2 ? 0 : 1;
-  if (nonPre(oldMods).length && baseFound <= wholesaleCeiling && script && script.test(bodyOf(diskMods)) && !script.test(bodyOf(newMods)))
+  // NO base signature survives before the net may fire. On a real-size base the ceiling is a
+  // SHARE of the base, not an absolute: real translations leave TERMS untranslated, and the old
+  // "≤1" ceiling read KLAS's 2-survivors-of-21 translation as English and doubled it (bug 31).
+  const baseN = nonPre(oldMods).length;
+  const wholesaleCeiling = baseN <= 2 ? 0 : Math.max(1, Math.floor(baseN * WHOLESALE_SURVIVOR_SHARE));
+  if (baseN && baseFound <= wholesaleCeiling && script && script.test(bodyOf(diskMods)) && !script.test(bodyOf(newMods)))
     return { translatedWholesale: true };
   let replaced = 0;
   const divergedList = [];
@@ -637,7 +672,15 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
     const dSha = normSha(modText(dm));
     const oldE = oldBySig.get(dm.signature);
     const newM = newBySig.get(dm.signature);
-    if (oldE && dSha === oldE.sha256) {
+    // Frontmatter is a named pseudo-module with one extra right (bug 43): equality with its old
+    // template is judged MODULO the machinery-appended alias tail — the old text comes from the
+    // baseline artifact and must agree with the deploy's own module snapshot before it is trusted.
+    let untouchedMod = oldE && dSha === oldE.sha256;
+    if (!untouchedMod && oldE && dm.signature === '<preamble>' && oldTexts && oldTexts.has('<preamble>')) {
+      const ot = oldTexts.get('<preamble>');
+      if (normSha(ot) === oldE.sha256 && stripAliasTail(modText(dm)) === stripAliasTail(ot)) untouchedMod = true;
+    }
+    if (untouchedMod) {
       // untouched since deploy — upstream's to move (in dryRun nothing moves: the change ships
       // as a diff instead — bug 20/K2, the "don't replace" and "don't analyze" split)
       if (!newM) {
@@ -653,18 +696,30 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
       }
       const newText = modText(newM);
       if (dSha === normSha(newText)) { out.push(dm); }                  // unchanged upstream too
-      else if (localizedAgainst(modText(dm), newText)) {                // safety net (decision #17)
+      // The safety net never judges the preamble: machinery aliases make it carry the owner's
+      // script by construction (bug 43) — the alias tail is preserved by the replacement below.
+      else if (dm.signature !== '<preamble>' && localizedAgainst(modText(dm), newText)) {  // safety net (decision #17)
         out.push(dm);
         divergedList.push({ signature: dm.signature, note: 'localized on disk — not replaced', diff: lineDiff(modText(dm), newText) });
       } else if (dryRun) {
         out.push(dm);
         divergedList.push({ signature: dm.signature, note: 'upstream updated this module (not applied — i18n: translated)', diff: lineDiff(modText(dm), newText) });
-      } else { out.push({ signature: dm.signature, lines: newText.split('\n') }); replaced++; }
+      } else {
+        // Replacing the frontmatter must not WIPE localization: if the disk carried an alias
+        // tail and the incoming preamble has none (edge: language pack missing), carry it over.
+        let text = newText;
+        if (dm.signature === '<preamble>' && / Trigger aliases \(/.test(modText(dm)) && !/ Trigger aliases \(/.test(text))
+          text = text.replace(/^(description:[^\n]*?)(\s*)$/m, (_, d) => d.replace(/\s+$/, '') + (modText(dm).match(/ Trigger aliases \([a-zA-Z-]+\): [^\n]*/) || [''])[0]);
+        out.push({ signature: dm.signature, lines: text.split('\n') }); replaced++;
+      }
     } else {
       // owner/agent-edited, or a module the deploy never shipped (owner-added section) — keep.
       // A diff lands in the task ONLY when upstream ACTUALLY changed this module (KPOT F2:
       // "diverged but upstream untouched" is zero work and must not make noise).
       out.push(dm);
+      // A CONFLICT diff stays "your version → the new template" (the 2.0 canon, s02/S6): the
+      // owner's edit must be visible as `-` lines right where the merge happens. Template→template
+      // diffs are reserved for files whose DISK text shows nothing (translated/wholesale/absent).
       if (oldE && newM && normSha(modText(newM)) !== oldE.sha256)
         divergedList.push({ signature: dm.signature, note: 'carries local edits AND upstream changed it', diff: lineDiff(modText(dm), modText(newM)) });
       else if (oldE && !newM)
@@ -677,6 +732,23 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
   for (let i = 0; i < newMods.length; i++) {
     const nm = newMods[i];
     if (diskMods.some((d) => d.signature === nm.signature)) continue;
+    // A module absent on disk is inserted ONLY when it is genuinely NEW upstream — absent from
+    // the previous release's template too. If the old template had it: unchanged upstream means
+    // the absence is the OWNER's doing (translation or deletion) — never re-insert (bug 31: the
+    // English doubling of translated files; the same gate kills the false "NEW module in this
+    // release" items at zero upstream delta — bug 32, NDim's 19 phantoms); changed upstream
+    // means the owner must reconcile — a diff, never a resurrection.
+    const oldEIns = oldBySig.get(nm.signature);
+    if (oldEIns && oldEIns.sha256 === normSha(modText(nm))) continue;
+    if (oldEIns) {
+      const ot = oldTexts && oldTexts.has(nm.signature) && normSha(oldTexts.get(nm.signature)) === oldEIns.sha256
+        ? oldTexts.get(nm.signature) : '';
+      divergedList.push({ signature: nm.signature, note: dryRun
+        ? 'upstream updated this module (not applied — i18n: translated)'
+        : 'this module is absent from your copy (translated or removed locally) and upstream CHANGED it — reconcile by hand',
+        diff: lineDiff(ot, modText(nm)) });
+      continue;
+    }
     if (dryRun) { divergedList.push({ signature: nm.signature, note: 'NEW module in this release (not inserted — i18n: translated)', diff: lineDiff('', modText(nm)) }); continue; }
     // An H1 module is never INSERTED into a document that already carries one: a "new" H1 is a
     // drifted placeholder signature, and inserting it appends a duplicate header to the end of
@@ -697,16 +769,61 @@ function mergeModules(path, newContent, oldMods, dryRun = false) {
   return { merged, changed: !dryRun && merged !== disk, replaced, divergedList };
 }
 
+// The real delivery for a file the machinery may not touch (translated wholesale): the
+// old-template → new-template delta, module by module, judged against the deploy's own module
+// snapshot (bug 32; KLAS D12 — the costliest task section used to arrive EMPTY for exactly these
+// files, and Unliminium counted 5 norms it would have silently lost). Old module TEXTS come from
+// the baseline artifact; without one the delta is still DETECTED by the snapshot shas and the
+// item says the diff is unavailable instead of staying silent — zero upstream delta = zero items.
+function templateDelta(oldEntries, newContent, oldTexts) {
+  const out = [];
+  const newMods = splitModules(normEol(newContent).replace(/\s+$/, '\n'));
+  const newBySig = new Map(newMods.map((m) => [m.signature, m]));
+  const textOf = (e) => {
+    const t = oldTexts && oldTexts.get(e.signature);
+    return t != null && normSha(t) === e.sha256 ? t : null;
+  };
+  for (const e of oldEntries || []) {
+    const nm = newBySig.get(e.signature);
+    if (!nm) {
+      const ot = textOf(e);
+      out.push({ signature: e.signature, note: 'upstream REMOVED this module in this interval',
+        diff: ot !== null ? lineDiff(ot, '') : '(diff unavailable — pass --baseline <dir|url> with the previous release artifacts)' });
+      continue;
+    }
+    const nt = modText(nm);
+    if (normSha(nt) === e.sha256) continue;
+    const ot = textOf(e);
+    out.push({ signature: e.signature, note: 'upstream updated this module (not applied — the file is translated)',
+      diff: ot !== null ? lineDiff(ot, nt) : lineDiff('', nt) });
+  }
+  for (const nm of newMods) {
+    if ((oldEntries || []).some((e) => e.signature === nm.signature)) continue;
+    out.push({ signature: nm.signature, note: 'NEW module in this release (not inserted — the file is translated)', diff: lineDiff('', modText(nm)) });
+  }
+  return out;
+}
+
 // ONE classification for every road new templates arrive by — core update AND the legacy/
 // anonymous bootstrap (plan 21 §5.5; bugs 13/14: those routes used to keep everything and dump
 // the whole delta on the agent as cognitive work). Mutates f.content to the filled/anonymized
 // text (derived surfaces inherit it — bug 05) and APPLIES the mechanical moves; returns the
-// counters and the cognitive leftovers for the task writer.
+// counters and the cognitive leftovers for the task writer. `base` (optional) is the previous
+// release's synthetic baseline: template provenance for v1 manifests and old template TEXTS for
+// the real old→new diffs of bug 32.
 // [TESTED: 2026-07-28 · extraction verified by re-running suites S5–S12c unchanged-green]
-function classifyAndApply(deploy, old, values, unresolved, cur) {
+function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
   const oldShas = old.shas || {};
-  const oldTplShas = old.templateShas || {};          // v2: what the previous deploy's TEMPLATES were
-  const oldModShas = old.moduleShas || {};            // v2: their per-module cut
+  const oldTplShas = old.templateShas || (base && base.templateShas) || {};   // v2: what the previous deploy's TEMPLATES were
+  const oldModShas = { ...((base && base.moduleShas) || {}), ...(old.moduleShas || {}) };  // v2: their per-module cut (manifest wins per path)
+  const oldTplTexts = old.templateTexts || (base && base.templateTexts) || {};
+  // What the previous deploy SHIPPED at all — distinguishes "provenance unknown" (v1 manifest)
+  // from "genuinely NEW file in this release" (judge finding, phase L2).
+  const oldPaths = new Set(
+    (old.paths && old.paths.length ? old.paths : null)
+    || (old.templateShas ? Object.keys(old.templateShas) : null)
+    || (base && base.templateShas ? Object.keys(base.templateShas) : null)
+    || []);
   // Provenance gate: paths the previous deploy ADOPTED (kept as found, never written from a
   // template) are not replace-eligible even when the disk sha still matches the snapshot —
   // for them the snapshot IS the owner's content.
@@ -747,24 +864,38 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
     const untouched = oldTplShas[f.path]
       ? fileShaNorm(f.path) === oldTplShas[f.path]
       : (!adoptedBefore.has(f.path) && oldShas[f.path] && fileSha(f.path) === oldShas[f.path]);
-    // The flag freezes only files that ARE a translation: owner's script on disk, none in the
-    // incoming template (bug 20/K2 — aliases in frontmatter make every skill Cyrillic, so the
-    // judgment is localizedAgainst the NEW content, not bare script presence).
-    const fileTranslated = i18nTranslated && f.path.endsWith('.md')
-      && localizedAgainst(normEol(readFileSync(f.path, 'utf8')), content);
-    if (untouched && !fileTranslated) {
+    if (untouched) {
+      // An untouched file IS the old template — replacing it with the new one is right even
+      // under the i18n flag (the flag protects the owner's translation, and an untouched file
+      // carries none; s07 T2 guards this for pure-EN files on translated deployments).
       if (fileShaNorm(f.path) === normSha(content)) { kept++; continue; } // upstream didn't change it either
       writeFileSync(f.path, content); log(`↻ replaced ${f.path}`); replaced++; continue;
     }
+    // bugs/32 (all four 2.1 field reports): a diverged/translated file whose TEMPLATE did not
+    // change in this interval has NOTHING to deliver — it stays as-is and never makes a task
+    // item ("zero upstream delta = zero items"; NDim: 77% of the task was diffs nobody needed,
+    // KrinikCam: 8 of 23 merge-diverged items were byte-identical between the releases).
+    if (oldTplShas[f.path] && oldTplShas[f.path] === normSha(content)) { kept++; adopted.push(f.path); continue; }
+    // The flag freezes only files that ARE a translation — judged by the BODY, because
+    // machinery-appended aliases put the owner's script into every skill's frontmatter on both
+    // sides and blinded the whole-file test for all 34 skills (bug 31; re-cut of bug 20/K2).
+    const fileTranslated = i18nTranslated && f.path.endsWith('.md')
+      && bodyLocalized(readFileSync(f.path, 'utf8'), content);
     // Diverged file → the MODULAR merge when the previous deploy left a module cut (v2, md only):
     // untouched modules move mechanically, edited ones are kept and handed over with diffs.
     // A translated file goes through the SAME merge in dry-run: analysis without writes (K2).
     if (f.path.endsWith('.md') && oldModShas[f.path]) {
-      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated);
+      const oldTexts = oldTplTexts[f.path] != null
+        ? new Map(splitModules(normEol(oldTplTexts[f.path])).map((m) => [m.signature, modText(m)])) : null;
+      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts);
       if (res && res.translatedWholesale) {
-        // headings translated — merging would double the document (bug 20/K1); hands off, task item
+        // headings translated — merging would double the document (bug 20/K1); hands off. The
+        // task item now carries the REAL old→new template delta instead of "fold the news in
+        // by hand" with nothing attached (bug 32 / KLAS D12).
         diverged.push(f.path); translatedWholesale.push(f.path); kept++; adopted.push(f.path);
-        log(`⟳ ${f.path} is translated wholesale (its headings are in the owner's script) — kept intact; fold the template news in by hand`);
+        const delta = templateDelta(oldModShas[f.path], content, oldTexts);
+        if (delta.length) divergedModules[f.path] = delta;
+        log(`⟳ ${f.path} is translated wholesale (its headings are in the owner's script) — kept intact; the template delta ships in the task`);
         continue;
       }
       if (res) {
@@ -780,6 +911,25 @@ function classifyAndApply(deploy, old, values, unresolved, cur) {
       }
     }
     diverged.push(f.path); kept++; adopted.push(f.path);
+    // No module cut for this file (v1-era manifest or a pathological split) — the template delta
+    // is delivered whole-file when the baseline is in hand, and NAMED honestly when it is not:
+    // an empty merge-diverged item is indistinguishable from "nothing changed" (bug 32).
+    if (f.path.endsWith('.md') && oldTplTexts[f.path] != null && normEol(oldTplTexts[f.path]) !== normEol(content)) {
+      divergedModules[f.path] = [{ signature: '(whole file — template delta)',
+        note: 'the template changed in this interval; your copy carries local edits — fold the delta into it by hand',
+        diff: lineDiff(normEol(oldTplTexts[f.path]).replace(/\n$/, ''), normEol(content).replace(/\n$/, '')) }];
+    } else if (f.path.endsWith('.md') && oldTplShas[f.path] && oldTplShas[f.path] !== normSha(content)) {
+      divergedModules[f.path] = [{ signature: '(whole file)',
+        note: 'the template changed in this interval, but no baseline artifact is reachable to render the diff — pass --baseline <dir|url>, or fold the template news in by hand',
+        diff: '(unavailable)' }];
+    } else if (f.path.endsWith('.md') && oldPaths.size && !oldPaths.has(f.path)) {
+      // A file NEW in this release collided with an existing file of the owner's — there is no
+      // old template to diff against, so the incoming template ships whole: an empty item is
+      // indistinguishable from "nothing to do" (bug 32, judge finding).
+      divergedModules[f.path] = [{ signature: '(new file in this release)',
+        note: 'this release ships a NEW file, but a file with this name already exists in your project and was kept — adopt what you need from the incoming template below',
+        diff: lineDiff('', normEol(content).replace(/\n$/, '')) }];
+    }
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
@@ -825,12 +975,16 @@ async function cmdUpdate() {
   const { deploy } = applyLanguage(files);           // LANG defaults handled below
   const values = stableValues();                     // frozen deploy values win over re-detection (bug 26)
   const unresolved = new Set();
+  // The previous release's own artifact provides the OLD template texts — the missing half of
+  // every real "old template → new template" diff in the task (bug 32). Optional by design:
+  // absence degrades to sha-detected notes, never to silence, and never blocks the update.
+  const oldBase = await buildSyntheticBaseline(cur);
   // Before/after file sizes: the honest way to SEE a K1-class mangling instantly (field ask —
   // "the doubling is visible in a size summary at once, and invisible in 43 merged-lines").
   const sizeBefore = {};
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
-    classifyAndApply(deploy, old, values, unresolved, cur);
+    classifyAndApply(deploy, old, values, unresolved, cur, oldBase);
   const sizeJumps = deploy
     .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
     .map((f) => ({ path: f.path, before: sizeBefore[f.path], after: statSync(f.path).size }))
@@ -865,6 +1019,13 @@ async function cmdUpdate() {
     if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(f.content), meta.moduleClasses);
   }
   const marker = { ...cur, version: man.version, released: man.released };
+  // KLAS D2 (bug 31): pre-2.0 translated deployments carry no i18n key, so the per-file freeze
+  // is off for them. When the wholesale net just recognized translated files on a non-English
+  // deployment, record the fact — every future update protects them by FLAG, not only by net.
+  if (LANG !== 'en' && translatedWholesale.length && String(cur.i18n || '').toLowerCase() !== 'translated') {
+    marker.i18n = 'translated';
+    log(`⟳ marker: "i18n": "translated" recorded (${LANG} deployment; ${translatedWholesale.length} translated-wholesale file(s) recognized)`);
+  }
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
     agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
@@ -1279,6 +1440,12 @@ async function cmdInstall() {
   // of past schemas pile up (bug 19.3: agentsSupported from 1.4 living next to agents).
   // `agents` is always written above — the old spellings are safe to drop unconditionally.
   if (legacyOld) for (const stale of ['agent', 'agentsSupported']) delete marker[stale];
+  // Same auto-record as cmdUpdate (KLAS D2, bug 31): a legacy bootstrap that just recognized
+  // translated-wholesale files on a non-English deployment writes the i18n fact down.
+  if (legacyOld && cls && LANG !== 'en' && cls.translatedWholesale.length && String(legacyOld.i18n || '').toLowerCase() !== 'translated') {
+    marker.i18n = 'translated';
+    log(`⟳ marker: "i18n": "translated" recorded (${LANG} deployment; ${cls.translatedWholesale.length} translated-wholesale file(s) recognized)`);
+  }
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   log(`+ wrote ${KAIF_JSON}`);
   // Respectful wiring: NEVER clobber an existing package.json we cannot parse —
@@ -1444,6 +1611,17 @@ function cmdCheck() {
     for (const k of ['agent', 'agentsSupported']) if (k in j) schemaIssues.push(`superseded field "${k}" present (an older schema — update should have dropped it)`);
     for (const s of schemaIssues) { console.error(`✖ marker schema: ${s} (Reference §12.1)`); missing++; }
   } catch { console.error('✖ marker unreadable as JSON'); missing++; }
+  // Two-headed deployed docs (bug 31; field: KrinikCam's /pause and /kaif-remove, KLAS's doubled
+  // PHILOSOPHY): a broken merge that ever leaves a SECOND H1 in a framework-owned .md means two
+  // documents living in one file — and both `check` and `update-verify` were green on it.
+  // Every deployed non-owner .md is in scope (a zero-delta update legally skips a file, so the
+  // damage of a PAST broken merge must be visible HERE — judge finding, phase L2); owner-seeded
+  // docs are exempt: their content is the owner's business. Fence-aware count via the splitter.
+  for (const p of paths.filter((x) => x.endsWith('.md') && !OWNER_SEEDED.includes(x))) {
+    if (!okOnDisk(p)) continue;
+    const h1 = splitModules(normEol(readFileSync(p, 'utf8'))).filter((m) => /^# /.test(m.signature)).length;
+    if (h1 > 1) { console.error(`✖ two-headed document (${h1} H1 headings): ${p} — a broken merge left two documents in one file; reconcile by hand`); missing++; }
+  }
   if (missing) die(`INCOMPLETE: ${missing} artifacts missing`);
   // Content gate (warning, not failure): a mirror that EXISTS but drifted from its canon
   // skill passed the old existence-only check for a whole release (bug 11; nine days of five

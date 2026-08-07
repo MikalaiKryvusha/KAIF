@@ -29,7 +29,7 @@ Do NOT start anything new.
 Post one compact note in the chat:
 - **Where we stand:** what just got finished and verified (one line per item).
 - **Exactly where to resume:** the next concrete action, with file/command names — written so that
-  "продолжаем"/"continue" picks up with zero re-derivation.
+  a bare "continue" (in any language the owner speaks) picks up with zero re-derivation.
 - Anything time-sensitive the human should know before they leave.
 
 Then stop. No further actions, no background work.

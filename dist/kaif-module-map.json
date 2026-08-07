@@ -2732,10 +2732,10 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "4d9c4a21ae30117d822c3c97fbd8eb6c03d5adad5641f752dc8e634af8549ac3",
+        "sha256": "4e054a9ef5c92105ef69de6e098ef39c80873e0233140cfae22e9cf669093552",
         "lines": [
           23,
-          58
+          59
         ]
       },
       {
@@ -2743,8 +2743,8 @@
         "class": "static",
         "sha256": "8bdcbfa0f77610b9bc3d330b39eabdc46e74aa838cc7520d832bca3f5efbc481",
         "lines": [
-          59,
-          65
+          60,
+          66
         ]
       }
     ],
@@ -3097,7 +3097,7 @@
       {
         "signature": "## Step 3. The parking note — the chat IS the memory here",
         "class": "static",
-        "sha256": "7be8617bac3fcb5ec1d389ad52014de896f517e05470927be95774631c90acf7",
+        "sha256": "a0a57beb69b9f8c33b676bf08d128978dd912d90f270f3082042235f63d22b87",
         "lines": [
           27,
           36

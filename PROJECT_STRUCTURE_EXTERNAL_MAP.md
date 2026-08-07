@@ -55,8 +55,8 @@ KAIF/
 │   ├── build-framework.mjs                # framework/ → KAIF.md + dist/ (в конце сам исполняет check-framework)
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
-│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s06
-│   ├── sandbox/s01…s06*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint)
+│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s08
+│   ├── sandbox/s01…s08*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf
 │   ├── commit.mjs                         # bump build, commit, push
@@ -100,7 +100,7 @@ framework/templates/**│                        └─▶ dist/kaif-module-map.
                                   блоки сбалансированы · нет {{маркеров}} · стражи нотации/бренда ·
                                   карта модулей пересплитом · пин сплиттера ядро==сборка · sha свежи)
 
-npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s06 в OS-temp  →  ~130 проверок полигона
+npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s08 в OS-temp  →  проверки полигона (число печатает прогон)
 tools/build-diagrams.mjs  ──▶  assets/*.svg  ──▶  README.md (через <picture>)
 README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 ```
