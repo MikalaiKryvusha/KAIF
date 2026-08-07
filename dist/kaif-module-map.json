@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 648,
+  "moduleCount": 650,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -3019,12 +3019,30 @@
         ]
       },
       {
+        "signature": "## Guard norms (G1–G13) — how the contour's checks are built",
+        "class": "static",
+        "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
+        "lines": [
+          383,
+          453
+        ]
+      },
+      {
+        "signature": "## The acceptance checklist (QA1–QA7) — accepting a built contour",
+        "class": "static",
+        "sha256": "87dec1399bd8cddaf5e14c13d6f600e7c9196a6c75b0a223fe4ba20812865000",
+        "lines": [
+          454,
+          472
+        ]
+      },
+      {
         "signature": "## Rakes to warn about (in falling price order)",
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          383,
-          402
+          473,
+          492
         ]
       },
       {
@@ -3032,8 +3050,8 @@
         "class": "static",
         "sha256": "75154dacc1ca33671a8ac80af4d5ab7c6cb23e09ce7a501873c3d2dd3261c9df",
         "lines": [
-          403,
-          412
+          493,
+          502
         ]
       }
     ],

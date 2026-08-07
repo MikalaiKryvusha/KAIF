@@ -4409,6 +4409,96 @@ word.
 | DEF7 | Call timings | the beep's child call carries a hard 8 s deadline; the voice — a 60 s timeout; the first cold call takes up to ~11 s — the beep-first order covers the pause (pre-warming is advice, not a requirement) |
 | DEF8 | Window | `--app=<url>` + `--window-size=1100,900`; fallback order: Edge → Chrome → a plain tab with the honest "please close it yourself" |
 
+## Guard norms (G1–G13) — how the contour's checks are built
+
+The field wording, vendored verbatim: *"A guard that is red from birth is not a gate."* Every
+guard below proves itself RED on a broken version before its green means anything.
+
+- **G1. The place-of-questions guard: narrow signs, explicit exceptions.** Two strong signs
+  instead of ten weak ones: a queue HEADING ("Awaits the owner", "Open questions to the
+  owner") · an address at the START of a line (the marker within the first ~40 characters of
+  content, past list/quote markers). Do NOT catch prose mid-paragraph or lines that already
+  point to the place of questions (containing `interviews/` or "interview #"). Exceptions are
+  explicit only, with the reason on the line — a marker with an EMPTY reason is itself a
+  violation, otherwise the marker becomes a way to silence the guard. An unanswered interview
+  is a REPORT, not a violation. Minimum three mutations, by name: a new violation → red · a
+  marker with a reason → green · a marker with an EMPTY reason → red.
+- **G2. A debt baseline (ratchet) — the norm for ANY new guard on an old project.** Snapshot
+  the inherited debt, fire red only on NEW items, print the debt number on every run — and it
+  must go down. (I20's mechanics, generalized to every guard born on a living project.)
+- **G3. The stale-status detector — the guard's second half.** A "waiting" status over zero
+  empty fields = "STATUS IS STALE": the document looks alive and the next session waits for
+  what was long given. The two halves answer opposite questions. (Procedure canon lives in
+  `/interview`.)
+- **G4. The question-content guard.** A question to the owner is a STATEMENT about the canon's
+  state and is checked as one (the principle is canon in `/interview`): entities named in
+  options must exist — paths on disk, tasks in the tracker; a MANDATORY intent note
+  `<!-- new: … -->` for what does not exist yet, otherwise the guard forbids asking about the
+  future; a negation ("nowhere", "never") must be proved against the whole source, and only in
+  OPEN questions; the owner's ANSWER is never checked; check only what has a source of truth.
+  The guard stands at the SHOW point and never blocks — findings print before the page
+  address (a blocking gate here would be a third form of the same sabotage). Calibration: only
+  STRONG negation forms — a weak "no" drowns the guard.
+- **G5. Rules belong on FIXTURES; live data gets only invariants** — statements true in ANY of
+  its states. The defect's tell: a concrete number or a live document's name inside a check;
+  such checks turn red at the moment of the tool's success (the owner answered).
+- **G6. Recognition is built NEGATIVELY.** "A letter NOT followed by …" instead of a list of
+  allowed separators: to enumerate the allowed is to one day not enumerate — in the field, two
+  options out of three silently did not show, under a green counting check.
+- **G7. An independent sign + a frozen etalon reviewed with eyes.** "Found as many as I
+  searched for" is self-confirmation, not measurement: the cross-check must be INDEPENDENT of
+  the checked parser — a sign of another nature, whose false hits are allowed (the etalon
+  extinguishes them); a new document intentionally fails the run until the etalon is
+  re-reviewed.
+- **G8. Localize the comparison inside question blocks.** A document-wide count drowns the
+  signal in noise. Companion: a measured "100%" or "0%" is first of all a reason to suspect
+  the instrument, never a sensation.
+- **G9. "A false alarm is worse than a miss" — the principle, held in full by rake 5 above**
+  (raised there to principle rank). The G-series names it because guard-building is exactly
+  where it gets violated; the normative text lives in rake 5 — one copy, no drift.
+- **G10. Mutation with a PREDICTION; bind to your own object; search the syntax, not the
+  word.** Half the field's guards could not turn red until mutation-tested — and two mutations
+  SURVIVED at first, which is worth remembering: predict each mutation's exact failure before
+  running it. A file-wide guard gets satisfied by a neighbor's object — bind the check to its
+  own line. Search the syntax `owner-review:` with the colon, never the bare word.
+- **G11. Count, don't look: the option-count cross-check.** The number of candidate lines must
+  equal the number of parsed options across ALL live documents. A silently lost option is this
+  contour's worst defect class: the page looks fine and the decision is made over a truncated
+  list.
+- **G12. A layout fixture holds BOTH a short and a long variant.** A replaced element in a
+  flex row gets squeezed by a long neighbor; on a short example the defect does not reproduce
+  at all — the check is green by construction.
+- **G13. Frame self-review with a SUBJECT: compare same-type elements.** Look as a geometry
+  comparator, not as a reader — in the field the whole option list printed TWICE and each copy
+  looked normal by itself; a page screenshot goes into the task's artifacts.
+
+**Red proof, guard by guard (the gate of this section):** place-of-questions — the three G1
+mutations by name · return leg (I20) — delete an answered question's citation from its
+declared target → red · stale status (G3) — a "waiting" status over a fully-filled fixture →
+red · content (G4) — an option naming a nonexistent path without the `new` note → red ·
+show-grep (I17) — a reply fixture saying "see file X.pdf" → red · dead server (QA7) — the run
+against a pre-fix page must fail its etalon values · reverse pulse (I14) — close the page: a
+server that outlives the silence threshold → red.
+
+## The acceptance checklist (QA1–QA7) — accepting a built contour
+
+- **QA1. A live acceptance in a real browser:** raise the contour → open → click → save → the
+  answer landed in all places and the process terminated on its own.
+- **QA2. Window behavior on a VISIBLE window,** as a separate run (T2 — headless proves the
+  wrong thing).
+- **QA3. BOTH "page left" scenarios:** a reload — the contour must LIVE; a close — it must
+  DIE. Checking only the second means not noticing that you kill live pages.
+- **QA4. A frozen parse etalon over the live documents,** with an intentional failure on a new
+  document until the etalon is re-reviewed (G7).
+- **QA5. Proof by mutation:** a broken parse must fail the run — a check that cannot fail is
+  not a check.
+- **QA6. Cleanup:** debug windows and browser profiles are extinguished at the run's end — the
+  owner works at the same machine.
+- **QA7. The dead-server headless check:** capture the live page → kill the server → type an
+  answer in a real headless browser → click → read the DOM. The "after the fix" etalon, all
+  five: rescue block present = true · save button re-enabled = true · the answer present in
+  the output = true · the draft persisted = true · the status honest.
+
 ## Rakes to warn about (in falling price order)
 
 1. Hash without a normalization agreement → the gate refuses always, on green self-tests (I3).
