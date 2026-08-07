@@ -6852,9 +6852,19 @@ const isLegal = (line) =>
   /^\s*>/.test(line) || line.includes('❌') ||
   /\(\s*(justified|оправдано)\s*:/iu.test(line);
 // Inline code spans AND «…»/"…" quoted segments are citations — a line DISCUSSING a stop word
-// (the dictionary quoting itself) is not a requirement using one.
-const stripCodeSpans = (line) =>
-  line.replace(/`[^`]*`/g, '`code`').replace(/«[^»]*»/g, '«quote»').replace(/"[^"]*"/g, '"quote"');
+// (the dictionary quoting itself) is not a requirement using one. «…» quotations WRAP across
+// lines in prose, so the two HALVES are citations too: a lone « opens a quote that closes on a
+// later line (everything after it is quoted), a lone » closes one opened earlier (everything
+// before it is quoted). The per-line pair strip cannot see across lines — handle halves
+// explicitly, or every wrapped owner quote becomes a false finding.
+function stripCodeSpans(line) {
+  line = line.replace(/`[^`]*`/g, '`code`').replace(/«[^»]*»/g, '«quote»').replace(/"[^"]*"/g, '"quote"');
+  const close = line.indexOf('»');
+  if (close >= 0 && (line.indexOf('«') < 0 || close < line.indexOf('«'))) line = '«quote»' + line.slice(close + 1);
+  const open = line.lastIndexOf('«');
+  if (open >= 0 && line.lastIndexOf('»') < open) line = line.slice(0, open) + '«quote»';
+  return line;
+}
 
 // Requirement-section detection (default scope): heading matches → lines until the next
 // heading of the same-or-higher level are in scope.

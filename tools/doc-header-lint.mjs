@@ -1,22 +1,32 @@
 #!/usr/bin/env node
-// doc-header-lint.mjs — линтер шапки-меты документов знаний (эпик N, фаза N3, plans/53 шаг 2).
-// [TESTED: 2026-08-07 · селфтест — 8 предсказанных находок на сломанной фикстуре (4 FULL + no-H1 +
-// bugs-диалект + interview-диалект + корневой ярус), +1 под --all, чистые файлы молчат (цитата
-// вывода в plans/53); живой прогон по репо — рабочий список массовой правки шага 3]
+// doc-header-lint.mjs — линтер шапки-меты И блока требований документов знаний
+// (эпик N: шапка — фаза N3, plans/53 шаг 2; блок вектора цели + композиция со стоп-словарём —
+// фаза N5, plans/55 шаги 1–2).
+// [TESTED: 2026-08-07 · селфтест — 12 предсказанных находок на сломанной фикстуре (4 FULL +
+// no-H1 + bugs-диалект ×2 + interview-диалект + корневой ярус + вектор/критерии ×2 + вектор
+// идеи), +1 под --all, чистые файлы молчат, композиция со словарём находит подложенное
+// стоп-слово (цитата вывода в plans/55); живой прогон по репо — 0 находок после ретрофитов N5]
 //
-// Схема — решение в plans/53 («Решение по схеме»): каждый документ несёт линтуемую шапку-мету,
-// по которой будущая сессия понимает документ, не читая тела. Четыре диалекта:
+// Схема шапки — решение в plans/53 («Решение по схеме»): каждый документ несёт линтуемую
+// шапку-мету, по которой будущая сессия понимает документ, не читая тела. Четыре диалекта:
 //   FULL (plans/ ideas/ researches/ homeworks/) — H1 первой строкой + blockquote-шапка сразу
 //        после H1 с метками: **Создан:** (ISO-дата) · **Родитель:** · **Статус:** · **Вовне:**
 //        (значение непустое на строке метки); опциональная **Наследники:** — формат, если есть.
-//   BUGS (bugs/) — шапка шаблона /report-bug: **Status:** + **Version/build:** (родство/вовне —
+//   BUGS (bugs/) — шапка шаблона /report-bug: **Status:** + **Version/build:** +
+//        **Fix accepted when** (наблюдаемый критерий приёмки фикса — норма N2; родство/вовне —
 //        секция ## Links шаблона; второй раз не канонизируем, DRY).
 //   INTERVIEWS (interviews/) — диалект questions-guard: строки `> Topic:` + `> Status:` (G3
 //        стережёт содержание статуса — здесь только наличие меток, две истины не плодим).
-//   ROOT (корневые ключевые документы, рабочий список до канон-таксономии N4) — H1 первой
+//   ROOT (корневые ключевые документы, канон-таксономия N4) — H1 первой
 //        строкой + непустое самоописание до первого ##.
-// Линтер КОНСУЛЬТИРУЕТ (exit 1 = есть находки), никогда не шлюз перед началом работы
-// (антипаттерн DoR — критерий эпика 7).
+// Блок требований (N5): живые ЦЕЛЕВЫЕ документы нормо-эпохи (plans ≥ 26, ideas ≥ 21)
+// открываются блоком «Вектор цели» (+ «Критерии приёмки» у планов) — REQUIREMENTS_FRAMEWORK;
+// после структурных проверок линтер ГОНЯЕТ стоп-словарь payload-модуля
+// kaif-requirements-lint по секциям требований plans/bugs/ideas (композиция: словарь живёт
+// ТОЛЬКО в payload-модуле — здесь структура документов, там лексика требований; оговорка
+// истока — модуль лежит в framework/tools/, собственного .kaif/tools/ исток не держит).
+// Линтер КОНСУЛЬТИРУЕТ (exit 1 = есть находки, «поправь или оправдай на месте»), никогда не
+// шлюз перед началом работы (антипаттерн DoR — критерий эпика 7).
 //
 // Запуск:  node tools/doc-header-lint.mjs             — живые документы (без _DONE_)
 //          node tools/doc-header-lint.mjs --all       — включая DONE (advisory: ратчет ретрофита)
@@ -24,7 +34,9 @@
 //          node tools/doc-header-lint.mjs --root <dir> — прогон по чужому корню (фикстуры)
 
 import { readFileSync, readdirSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 
 // ── Константы (никаких магических значений) ────────────────────────────────────────────────
@@ -66,6 +78,30 @@ const FIELD_PARENT = 'Родитель';
 const FIELD_STATUS = 'Статус';
 const FIELD_OUTBOUND = 'Вовне';
 const FIELD_HEIRS = 'Наследники'; // опциональная: линтуется формат, требовать нельзя
+// Метка bugs-диалекта из шаблона /report-bug (норма N2): канонический английский лейбл,
+// греп-дружелюбный, как [TESTED]/DONE.
+const FIELD_FIX_ACCEPTED = 'Fix accepted when';
+
+// ── Блок «Вектор цели + Критерии приёмки» (N5, plans/55 критерий 1) ────────────────────────
+// Скоуп — живые ЦЕЛЕВЫЕ документы обвязки: plans/ и ideas/ (баг несёт диалектное поле
+// Fix accepted when; интервью и researches/homeworks — не целевые документы). Норма родилась
+// фазой N2 (2026-08-07) и НЕ ретроактивна — закрытое прошлое не переписывается (тот же
+// принцип, что T8), поэтому порог по номеру документа:
+//   plans ≥ 26 — эпоха 2.2, все живые уже несут блок (обмер N5: 30/30);
+//   ideas ≥ 21 — первая живая агентская идея, ретрофичена в N5.
+// Файл без номера в имени (kaif_implementation_plan) — донормовый справочный, вне скоупа.
+const GOAL_VECTOR_MIN = { plans: 26, ideas: 21 };
+// Обе канонические формы блока: заголовок H2+ (де-факто конвенция планов 2.2, обмер N5) ИЛИ
+// жирная метка в начале строки (форма шаблона /plan-task); EN-формы — шаблон /propose-idea.
+// У идей отдельный блок критериев не требуется: шаблон складывает «как проверим» в сам
+// Goal vector.
+const VECTOR_RE = /^(?:#{2,6} .*(?:[Вв]ектор цели|Goal vector)|\*\*(?:Вектор цели|Goal vector))/m;
+const CRITERIA_RE = /^(?:#{2,6} .*(?:[Кк]ритерии приёмки|[Гг]отово, когда|Acceptance criteria|[Dd]one when)|\*\*(?:Критерии приёмки|Acceptance criteria))/m;
+// Payload-модуль стоп-словаря — композиция, не сращивание (решение N3 №7: здесь структура
+// документов, там лексика требований); exit 3 модуля = «сканировать нечего», не находка.
+const REQ_LINT_MODULE = join(dirname(fileURLToPath(import.meta.url)), '..', 'framework', 'tools', 'kaif-requirements-lint.mjs');
+const DICT_TARGET_DIRS = ['plans', 'bugs', 'ideas'];
+const EXIT_DICT_SKIPPED = 3;
 
 // ── Утилиты ────────────────────────────────────────────────────────────────────────────────
 const stripBom = (s) => s.replace(/^﻿/, '');
@@ -111,6 +147,23 @@ function lintBugs(relPath, lines, findings) {
   if (!/^# /.test(lines[0] || '')) findings.push([relPath, 'нет H1 первой строкой']);
   if (!/\*\*Status:\*\*/.test(head)) findings.push([relPath, 'нет **Status:** (шапка шаблона /report-bug)']);
   if (!/\*\*Version\/build:\*\*/.test(head)) findings.push([relPath, 'нет **Version/build:** (шапка шаблона /report-bug)']);
+  if (!head.includes('**' + FIELD_FIX_ACCEPTED)) {
+    findings.push([relPath, `нет **${FIELD_FIX_ACCEPTED} (observable):** (норма N2, шаблон /report-bug)`]);
+  }
+}
+
+// Целевой документ нормо-эпохи открывается блоком «Вектор цели» (+ «Критерии приёмки» у
+// планов) — REQUIREMENTS_FRAMEWORK; проверка НАЛИЧИЯ блока, содержание судит словарь и судья.
+function lintGoalVector(dir, relPath, lines, findings) {
+  const min = GOAL_VECTOR_MIN[dir];
+  if (!min) return;
+  const num = relPath.match(/\/(\d+)_/);
+  if (!num || Number(num[1]) < min) return;
+  const body = lines.join('\n');
+  if (!VECTOR_RE.test(body)) findings.push([relPath, 'нет блока «Вектор цели» (норма N2, REQUIREMENTS_FRAMEWORK)']);
+  if (dir === 'plans' && !CRITERIA_RE.test(body)) {
+    findings.push([relPath, 'нет блока «Критерии приёмки» (норма N2, REQUIREMENTS_FRAMEWORK)']);
+  }
 }
 
 function lintInterview(relPath, lines, findings) {
@@ -140,7 +193,9 @@ function run(root, { all = false } = {}) {
   for (const dir of FULL_DIRS) for (const f of listMd(join(root, dir))) {
     const rel = `${dir}/${f}`;
     if (!inScope(rel)) continue;
-    scanned++; lintFull(rel, readLines(join(root, dir, f)), findings);
+    const lines = readLines(join(root, dir, f));
+    scanned++; lintFull(rel, lines, findings);
+    lintGoalVector(dir, rel, lines, findings);
   }
   for (const f of listMd(join(root, BUGS_DIR))) {
     const rel = `${BUGS_DIR}/${f}`;
@@ -162,8 +217,23 @@ function run(root, { all = false } = {}) {
 
 function report({ findings, scanned }) {
   for (const [file, msg] of findings) console.log(`  ${file} — ${msg}`);
-  console.log(`doc-header-lint: scanned ${scanned}, findings ${findings.length}${findings.length ? '' : ' — all headers green'}`);
+  console.log(`doc-header-lint: scanned ${scanned}, findings ${findings.length}${findings.length
+    ? ' — консультативно: поправь или оправдай на месте, старт работы не блокируется'
+    : ' — all headers green'}`);
   return findings.length ? 1 : 0;
+}
+
+// Композиция N5: прогнать стоп-словарь payload-модуля по секциям требований целевых
+// директорий. Вывод модуля печатается как есть (его находки несут готовое решение
+// «rewrite measurably or add (justified: …)»); SKIPPED (exit 3) — не находка.
+function runRequirementsDict(root) {
+  console.log('— стоп-словарь требований (kaif-requirements-lint, payload-модуль) —');
+  const dirs = DICT_TARGET_DIRS.filter((d) => existsSync(join(root, d)));
+  if (!dirs.length) { console.log('  ⊘ нечего сканировать (нет plans/bugs/ideas)'); return 0; }
+  const r = spawnSync(process.execPath, [REQ_LINT_MODULE, 'check', ...dirs], { cwd: root, encoding: 'utf8' });
+  process.stdout.write((r.stdout || '') + (r.stderr || ''));
+  if (r.status === EXIT_DICT_SKIPPED) return 0;
+  return r.status === 0 ? 0 : 1;
 }
 
 // ── Селфтест: красный доказан на сломанной фикстуре, зелёный — на чистой (G10) ─────────────
@@ -171,19 +241,34 @@ function selftest() {
   const fx = join(tmpdir(), 'kaif-doc-header-lint-fx');
   rmSync(fx, { recursive: true, force: true });
   for (const d of [...FULL_DIRS, BUGS_DIR, INTERVIEWS_DIR]) mkdirSync(join(fx, d), { recursive: true });
+  // Чистая blockquote-шапка для нормо-эпохных фикстур (в них ломается БЛОК, не шапка).
+  const CLEAN_HEADER = '> **Создан:** 2026-08-07. **Родитель:** `plans/30`. **Статус:** в работе. **Вовне:** —.\n';
   // Сломанные (предсказание точных отказов ДО прогона):
   writeFileSync(join(fx, 'plans', '01_broken.md'),
     '# План 01 — сломанная шапка\n\n> **Создан:** без даты тут. **Статус:**\n\nтело\n');
   //   ожидаем: Создан без ISO-даты · Родитель отсутствует · Статус пусто (значение не на строке) · Вовне отсутствует = 4
   writeFileSync(join(fx, 'plans', '02_no_h1.md'), 'текст без заголовка\n');            // ожидаем: нет H1 = 1
-  writeFileSync(join(fx, 'bugs', '03_bug_broken.md'), '# Bug 03 — без версии\n\n**Status:** OPEN\n'); // ожидаем: нет Version/build = 1
+  writeFileSync(join(fx, 'bugs', '03_bug_broken.md'), '# Bug 03 — без версии\n\n**Status:** OPEN\n'); // ожидаем: нет Version/build + нет Fix accepted when = 2
   writeFileSync(join(fx, 'interviews', 'interview_004_broken.md'), '# Interview 004\n\n> Topic: тема\n'); // ожидаем: нет Status = 1
   writeFileSync(join(fx, 'STATUS.md'), '# Статус\n## Сразу секция\n');                 // ожидаем: нет самоописания = 1
+  writeFileSync(join(fx, 'plans', '26_no_vector.md'),
+    '# План 26 — нормо-эпохный без блока требований\n\n' + CLEAN_HEADER + '\nтело без блоков\n');
+  //   ожидаем: нет «Вектор цели» + нет «Критерии приёмки» = 2 (шапка чиста — находки только блока)
+  writeFileSync(join(fx, 'ideas', '22_no_vector.md'),
+    '# Идея 22 — нормо-эпохная без вектора\n\n' + CLEAN_HEADER + '\n## Суть\n\nтело\n');
+  //   ожидаем: нет «Вектор цели» = 1 (у идей отдельный блок критериев не требуется)
   // Чистые (не должны дать находок):
   writeFileSync(join(fx, 'plans', '05_clean.md'),
     '# План 05 — чистая шапка\n\n> **Создан:** 2026-08-07 · по слову владельца. **Родитель:** `plans/30`.\n> **Статус:** в работе. **Вовне:** —. **Наследники:** `plans/54`.\n\nтело\n');
   writeFileSync(join(fx, 'ideas', '06_DONE_closed.md'), 'без H1 — вне дефолтного скоупа\n'); // DONE: скипается без --all
-  const expected = 8; // 4 + 1 + 1 + 1 + 1
+  writeFileSync(join(fx, 'plans', '27_with_block.md'),
+    '# План 27 — нормо-эпохный с блоком\n\n' + CLEAN_HEADER +
+    '\n## Вектор цели\n\nДостичь X, наблюдаемого прогоном Y (Achieve).\n' +
+    '\n## Критерии приёмки (готово, когда)\n\n1. Сборка проходит за ≤ 60 с на референс-машине CI.\n');
+  writeFileSync(join(fx, 'ideas', '23_with_vector.md'),
+    '# Идея 23 — нормо-эпохная с вектором (EN-форма шаблона)\n\n' + CLEAN_HEADER +
+    '\n## Goal vector — the pain it solves + how we check\n\nPain: owners re-type answers after a restart. Check: the draft survives a page restart.\n');
+  const expected = 12; // 4 + 1 + 2 + 1 + 1 + 2 + 1
   const res = run(fx, { all: false });
   console.log('— селфтест, сломанная фикстура —');
   report(res);
@@ -196,8 +281,19 @@ function selftest() {
     console.error(`СЕЛФТЕСТ ПРОВАЛЕН (--all): ожидали ${expected + 1}, получили ${resAll.findings.length}`);
     process.exit(1);
   }
+  // Композиция со словарём: подложенное стоп-слово в секции критериев целевого документа
+  // обязано быть найдено payload-модулем (структурно файл чист — краснеет только словарь).
+  writeFileSync(join(fx, 'plans', '28_stopword.md'),
+    '# План 28 — стоп-слово в секции критериев\n\n' + CLEAN_HEADER +
+    '\n## Вектор цели\n\nДостичь состояния Z, наблюдаемого замером W.\n' +
+    '\n## Критерии приёмки (готово, когда)\n\n1. Система должна работать быстро.\n');
+  const dictExit = runRequirementsDict(fx);
+  if (dictExit !== 1) {
+    console.error(`СЕЛФТЕСТ ПРОВАЛЕН (композиция): словарь обязан найти подложенное «быстро» (exit 1), получили ${dictExit}`);
+    process.exit(1);
+  }
   rmSync(fx, { recursive: true, force: true });
-  console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат`);
+  console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат, композиция со словарём находит стоп-слово`);
 }
 
 // ── Точка входа ────────────────────────────────────────────────────────────────────────────
@@ -206,5 +302,7 @@ if (args.includes('--selftest')) { selftest(); }
 else {
   const rootIdx = args.indexOf('--root');
   const root = rootIdx >= 0 ? args[rootIdx + 1] : process.cwd();
-  process.exit(report(run(root, { all: args.includes('--all') })));
+  const headerExit = report(run(root, { all: args.includes('--all') }));
+  const dictExit = runRequirementsDict(root);
+  process.exit(Math.max(headerExit, dictExit));
 }

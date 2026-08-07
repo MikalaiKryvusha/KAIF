@@ -3,6 +3,9 @@
 **Status:** 🔧 fix shipped — awaiting field verification
 **Version/build:** KAIF 1.3 · **When/context:** 2026-07-07, наблюдение владельца за реальным
 `/dayloop`.
+**Fix accepted when (observable):** реальный длинный `/dayloop` (не мегацикл в одном чате)
+проходит от старта до штатного вечернего завершения без единой самоостановки со ссылкой на
+переполнение/заполнение контекста в чате цикла.
 
 ## Symptom
 
