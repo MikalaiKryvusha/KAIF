@@ -142,7 +142,7 @@ below; the numbers inside it are printed by the build.
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
-    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (34 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (35 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
   </picture>
 </p>
 
@@ -209,13 +209,14 @@ Table 2 — Knowledge directories
    are appended at deploy time; the skill bodies stay English.
 2. Skills are generated for five agent systems at once — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.claude/skills/`.
-3. Thirty-four skills are deployed. Each is given its own row in Table 3.
+3. Thirty-five skills are deployed. Each is given its own row in Table 3.
 
 Table 3 — The skills
 
 | Skill | Purpose |
 |-------|---------|
 | `/resume` | Start a session: read the canon docs, pick the one main thing, announce it, begin. |
+| `/kaif-go` | The kick (short alias `/go`): resume work already in flight, with no "shall I continue?" round trip — never a blanket yes to vision forks, the write-gate or an `AUTH:` line. |
 | `/pause` | Soft-park the chat: reach a logical stopping point, keep the tree green, continue HERE later — no pushes, no ceremony. |
 | `/end-chat` | Fully close the chat: update `STATUS.md`, rebuild artifacts, commit AND push, hand the baton to other chats. |
 | `/autoloop` | A long autonomous series over the backlog; every item ends with a mandatory judge pass. |
@@ -442,8 +443,8 @@ artifacts are never hand-edited.
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
-5. Counters in this manual (14 documents + 7 READMEs + 34 skills + 1 unpacker = 56 embedded
-   files; 159 bundle blocks; 672 modules) are printed by `node tools/build-framework.mjs` and are
+5. Counters in this manual (14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded
+   files; 160 bundle blocks; 679 modules) are printed by `node tools/build-framework.mjs` and are
    current as of the 2.2 development line.
 
 ## License
@@ -598,7 +599,7 @@ project. Thank you, and pleasant work!
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
-    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (34 повторяемых ритуала — вызов по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (35 повторяемых ритуалов — вызов по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
   </picture>
 </p>
 
@@ -665,13 +666,14 @@ project. Thank you, and pleasant work!
    тела навыков остаются английскими.
 2. Навыки генерируются сразу для пяти агентских систем — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.claude/skills/`.
-3. Разворачиваются тридцать четыре навыка. Каждому отведена своя строка Таблицы 3.
+3. Разворачиваются тридцать пять навыков. Каждому отведена своя строка Таблицы 3.
 
 Таблица 3 — Навыки
 
 | Навык | Назначение |
 |-------|------------|
 | `/resume` | Начать сессию: прочитать канон-документы, выбрать одно главное, объявить и приступить. |
+| `/kaif-go` | Пинок (короткий алиас `/go`): возобновить уже начатую работу без обмена репликами «продолжать ли» — но никогда не бланковое «да» на развилки видения, write-gate и строки `AUTH:`. |
 | `/pause` | Мягко припарковать чат: дойти до логической точки, оставить дерево зелёным, продолжить ЗДЕСЬ позже — без пушей и церемоний. |
 | `/end-chat` | Полностью закрыть чат: обновить `STATUS.md`, пересобрать артефакты, закоммитить И запушить, передать эстафету другим чатам. |
 | `/autoloop` | Длинная автономная серия по беклогу; каждый пункт завершается обязательным judge-проходом. |
@@ -902,8 +904,8 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
-5. Счётчики настоящего руководства (14 документов + 7 README + 34 навыка + 1 распаковщик = 56
-   встроенных файлов; 159 блоков бандла; 672 модуля) печатаются командой
+5. Счётчики настоящего руководства (14 документов + 7 README + 35 навыков + 1 распаковщик = 57
+   встроенных файлов; 160 блоков бандла; 679 модулей) печатаются командой
    `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
 
 ## Лицензия

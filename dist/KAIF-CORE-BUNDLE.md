@@ -2023,7 +2023,7 @@ project's working language); **OTHER KAIF documents** — the project's local "h
 
 ## 6. The skill system
 
-Thirty-four skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-five skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -4182,6 +4182,82 @@ some point the user wants to **own that evolution**: keep developing and version
   adds themselves as the fork's maintainer.
 - Candidate mechanization (backlog): a `fork-bundle` core command assembling the three artifacts
   from the deployed tree.
+``````
+
+> **FILE: `.claude/skills/kaif-go/SKILL.md`** — replace the command placeholders with the project's real commands
+
+``````md
+---
+name: kaif-go
+description: The KICK — one short command that resumes work already in flight, with no "shall I continue?" round trip. Picks the resume point up from the parking note, the active plan or STATUS, refreshes only if a refresh trigger has fired, and carries on. Use when the human says "/kaif-go", "/go", "go", "go on", "continue", "keep going", "carry on", "next", "дальше", "продолжай", "поехали" — as a STANDALONE command, never as those words appearing mid-sentence. NOT a blanket yes: it never stands in for the owner's approval on vision-level forks, never lifts the write-gate or an AUTH line, and never pre-authorizes destructive or outward-facing actions. Cold context at the start of a session → /resume instead; nothing in flight → /what-next.
+---
+
+# /kaif-go — the kick (short alias: `/go`)
+
+The human wants the work to move, not to be asked about it. This skill is the shortest legal way to
+say *"continue by the plan"* — and it is deliberately narrow: it restarts **momentum**, it never
+grants **authority**.
+
+> **One line of difference from its neighbours.** `/resume` = ENTER a session with empty context
+> (full canon pass). `/pause` = park and leave a note. **`/kaif-go` = a session already warm, work
+> already chosen — go.** If the context is cold, do not fake warmth: run `/resume` instead.
+
+## Step 1. Find the resume point — read it, do not reconstruct it
+
+Take the FIRST one that exists, in this order:
+
+1. **The parking note** left in this chat by `/pause` — it names the next concrete action.
+2. **The active plan** — the step after the last checked box, quoted by its anchor line
+   (`AGENT_GUIDE.md` → quote the plan line you are about to execute).
+3. **`STATUS.md` → "where to continue"** — its first unfinished item.
+4. Nothing of the above → this is not a kick, it is a choice: run `/what-next` and offer, do not guess.
+
+Name the resume point in one line in the chat before acting. That line is the whole ceremony —
+a kick that reports for three paragraphs has defeated its own purpose.
+
+## Step 2. Refresh only if a trigger has fired — otherwise do not re-read
+
+The kick is used many times per session; re-reading the canon on each one would burn the very
+context it protects. Check the refresh triggers (`AGENT_GUIDE.md` → Context refresh): more than an
+hour since the last refresh · a heavy task starting · returning from compaction or a long idle.
+
+- **No trigger** → do not re-read anything. Go.
+- **A trigger fired** → refresh the re-read core first, update the witness (marker + a quoted line),
+  then go. The kick does not exempt you from the refresh canon; it just does not invent a reason.
+
+## Step 3. Continue — and do not ask whether to continue
+
+Execute the next step. Do not reply with a plan of the plan, do not re-derive decisions already
+recorded, do not ask for a confirmation the human has just pre-empted by kicking you.
+
+If the work was parked ON A FORK with a recommended option, the kick means *take the recommended
+option and continue* — provided the fork is task-level (see the border below). Say which option you
+took, in one line, and move.
+
+## The border — what the kick does NOT authorize
+
+The kick removes the friction of "continue", not the owner's authorship. It is **never** a yes to:
+
+- **Vision-level forks** — brand, naming, scope, product shape. These live in `interviews/`, and
+  they are answered by the owner's own words, not by a kick.
+- **The write-gate** on the owner's canon artifacts — new entities still need the owner's "yes",
+  and AI-written text still carries its provenance marks.
+- **`AUTH:` lines** — releases, deploys, outward publications and sends, force-pushes, deletion of
+  shared data. Standing authorization covers routine commits and nothing beyond it.
+- **Destructive or irreversible actions** that would otherwise be confirmed.
+
+Hit one of these while carrying on? Do everything that does NOT depend on it, then stop at that one
+point and ask there. A kick met with silence on a vision fork is how a guess becomes canon.
+
+## Notes
+
+- **Standalone only.** Treat these words as the command when they stand alone as the whole message.
+  The same words inside a sentence ("continue reading the log and tell me what you see") are prose —
+  obey the sentence, not the alias.
+- **The kick is idempotent.** Kicked twice on the same step? You are behind on narration, not on
+  work: say where you are in one line and keep going.
+- **Momentum is not haste.** The kick does not shorten verification: what is claimed done is still
+  observed done (`TESTING_FRAMEWORK.md`), and a task called complete still faces `/fable-judge`.
 ``````
 
 > **FILE: `.claude/skills/kaif-remove/SKILL.md`** — replace the command placeholders with the project's real commands
@@ -8028,7 +8104,8 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
   "guarded-loop": "«حلقة محمية», «اعمل في حلقة محمية», «حلقة بمنبّهات»",
   "code-revision": "«شغّل مراجعة الكود», «دقّق قاعدة الكود», «أعد قراءة الكود»",
   "owner-voice": "«صورة أسلوبي», «اكتب مثلي», «هذه ليست لغتي»",
-  "owner-reviews": "«اعرض المراجعة كصفحة», «صيّر المقابلة», «ابنِ دائرة الموافقات»"
+  "owner-reviews": "«اعرض المراجعة كصفحة», «صيّر المقابلة», «ابنِ دائرة الموافقات»",
+  "kaif-go": "«/go», «هيا», «واصل الآن», «التالي»"
 }
 ``````
 
@@ -8348,7 +8425,8 @@ aktualisiert, während das Verständnis wächst.
   "guarded-loop": "«geschützter Zyklus», «arbeite im geschützten Zyklus», «Zyklus mit Weckern»",
   "code-revision": "«Code-Revision», «auditiere die Codebasis», «lies den Code durch»",
   "owner-voice": "«Porträt meines Stils», «schreib wie ich», «das ist nicht meine Sprache»",
-  "owner-reviews": "«Review als Seite», «rendere das Interview», «bau den Freigabe-Kreislauf»"
+  "owner-reviews": "«Review als Seite», «rendere das Interview», «bau den Freigabe-Kreislauf»",
+  "kaif-go": "«/go», «los», «weiter machen», «nächster Schritt»"
 }
 ``````
 
@@ -8665,7 +8743,8 @@ medida que crece la comprensión.
   "guarded-loop": "«ciclo protegido», «trabaja en ciclo protegido», «ciclo con alarmas»",
   "code-revision": "«revisión del código», «audita la base de código», «relee el código»",
   "owner-voice": "«retrato de mi estilo», «escribe como yo», «este no es mi lenguaje»",
-  "owner-reviews": "«revisión en página», «renderiza la entrevista», «monta el circuito de aprobaciones»"
+  "owner-reviews": "«revisión en página», «renderiza la entrevista», «monta el circuito de aprobaciones»",
+  "kaif-go": "«/go», «dale», «sigue», «siguiente paso»"
 }
 ``````
 
@@ -8986,7 +9065,8 @@ compréhension grandit.
   "guarded-loop": "« boucle protégée », « travaille en boucle protégée », « boucle avec réveils »",
   "code-revision": "« révision du code », « audite la base de code », « relis le code »",
   "owner-voice": "« portrait de mon style », « écris comme moi », « ce n’est pas mon langage »",
-  "owner-reviews": "« relecture en page », « rends l’interview en HTML », « monte le circuit d’approbations »"
+  "owner-reviews": "« relecture en page », « rends l’interview en HTML », « monte le circuit d’approbations »",
+  "kaif-go": "« /go », « vas-y », « poursuis », « étape suivante »"
 }
 ``````
 
@@ -9289,7 +9369,8 @@ DONE टैग नहीं मिलता।
   "guarded-loop": "\"संरक्षित चक्र\", \"संरक्षित चक्र में काम करो\", \"अलार्म वाला चक्र\"",
   "code-revision": "\"कोड रिवीज़न चलाओ\", \"कोडबेस का ऑडिट करो\", \"कोड दोबारा पढ़ो\"",
   "owner-voice": "\"मेरी शैली का पोर्ट्रेट\", \"मेरी तरह लिखो\", \"यह मेरी भाषा नहीं है\"",
-  "owner-reviews": "\"समीक्षा पेज पर दिखाओ\", \"इंटरव्यू रेंडर करो\", \"अनुमोदन सर्किट बनाओ\""
+  "owner-reviews": "\"समीक्षा पेज पर दिखाओ\", \"इंटरव्यू रेंडर करो\", \"अनुमोदन सर्किट बनाओ\"",
+  "kaif-go": "\"/go\", \"आगे बढ़ो\", \"चलो\", \"अगला कदम\""
 }
 ``````
 
@@ -9599,7 +9680,8 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
   "guarded-loop": "「保護付きループ」「保護付きループで作業して」「アラーム付きループ」",
   "code-revision": "「コードレビジョンを回して」「コード総点検」「コードベースを監査して」",
   "owner-voice": "「私の文体ポートレート」「私のように書いて」「これは私の言葉ではない」",
-  "owner-reviews": "「レビューをページにして」「インタビューをレンダリングして」「承認ループを作って」"
+  "owner-reviews": "「レビューをページにして」「インタビューをレンダリングして」「承認ループを作って」",
+  "kaif-go": "「/go」「進めて」「続けて」「次のステップ」"
 }
 ``````
 
@@ -9915,7 +9997,8 @@ compreensão cresce.
   "guarded-loop": "«ciclo protegido», «trabalhe em ciclo protegido», «ciclo com alarmes»",
   "code-revision": "«revisão do código», «audite a base de código», «releia o código»",
   "owner-voice": "«retrato do meu estilo», «escreva como eu», «esta não é a minha linguagem»",
-  "owner-reviews": "«revisão em página», «renderize a entrevista», «monte o circuito de aprovações»"
+  "owner-reviews": "«revisão em página», «renderize a entrevista», «monte o circuito de aprovações»",
+  "kaif-go": "«/go», «vai», «segue», «próximo passo»"
 }
 ``````
 
@@ -10219,7 +10302,8 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "guarded-loop": "«защищённый цикл», «работай в защищённом цикле», «цикл с будильниками», «работай автономно с будильниками»",
   "code-revision": "«прогони ревизию кода», «ревизия кода», «аудит кодовой базы», «вычитай код»",
   "owner-voice": "«портрет моего стиля», «пиши как я», «это не мой язык», «перепиши моим голосом»",
-  "owner-reviews": "«сделай вычитку страницей», «отрендери интервью», «разверни контур согласований»"
+  "owner-reviews": "«сделай вычитку страницей», «отрендери интервью», «разверни контур согласований»",
+  "kaif-go": "«/go», «дальше», «поехали», «давай», «продолжай»"
 }
 ``````
 
@@ -10503,6 +10587,7 @@ header meta）。研究笔记是**活的参考
   "guarded-loop": "「受保护循环」「在受保护循环中工作」「带闹钟的循环」",
   "code-revision": "「跑一次代码复审」「代码复审」「审计代码库」",
   "owner-voice": "「我的文风画像」「像我一样写」「这不是我的语言」",
-  "owner-reviews": "「把评审做成页面」「渲染访谈」「搭建审批回路」"
+  "owner-reviews": "「把评审做成页面」「渲染访谈」「搭建审批回路」",
+  "kaif-go": "「/go」「往下走」「接着来」「下一步」"
 }
 ``````

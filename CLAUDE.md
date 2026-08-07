@@ -23,7 +23,8 @@
 ГЕНЕРИРУЕТСЯ из `framework/KAIF_REFERENCE.md` — правь источник и пересобирай). Директории знаний
 (в каждой свой README): `plans/`, `ideas/`, `bugs/`, `researches/`, `interviews/`, `homeworks/`, `reports/`.
 
-Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/pause`, `/end-chat`, `/autoloop`,
+Твои повторяемые ритуалы живут в **`.claude/skills/`** (`/resume`, `/kaif-go` (пинок, алиас `/go`),
+`/pause`, `/end-chat`, `/autoloop`,
 `/dayloop`, `/nightloop`, `/guarded-loop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
 `/bug-research`, `/propose-idea`, `/interview`, `/owner-voice`, `/owner-reviews`, `/plan-task`,
 `/plan-epic`, `/revision`, `/fix-vision`, `/what-next`,

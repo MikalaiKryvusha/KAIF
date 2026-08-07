@@ -231,9 +231,15 @@ b10 = editBundleFile(b10, 'templates/languages/ru/skill-triggers.json', (json) =
 writeFileSync(join(D10, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b10);
 copy(join(DIST, 'KAIF-CORE.mjs'), join(D10, '.kaif', 'kaif-core.mjs'));
 r = run(D10, 'install --lang ru');
+// Ожидание берётся из САМОЙ ПОСТАВКИ, а не зашивается числом: зашитое «34» было ещё одним
+// незамеченным зеркалом счётчика навыков и покраснело бы на каждом новом навыке (план 62/T1).
+// Страж от этого только крепче: он теперь заодно требует, чтобы применённых алиасов было ровно
+// столько, сколько навыков ЕДЕТ В БАНДЛЕ, — а разрыв с ключами пакета (2 фантома) сохранён.
+const SKILLS_IN_BUNDLE = (readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8')
+  .match(/^> \*\*FILE: `\.claude\/skills\/[^/]+\/SKILL\.md`/gm) || []).length;
 const aliasedM = r.out.match(/(\d+) skills trigger-aliased/);
-ok(r.code === 0 && aliasedM && aliasedM[1] === '34',
-   `G10: счётчик алиасов = 34 применённых, а не 36 ключей пакета (лог: ${aliasedM ? aliasedM[1] : '?'})`, r.out.slice(-200));
+ok(r.code === 0 && SKILLS_IN_BUNDLE > 0 && aliasedM && aliasedM[1] === String(SKILLS_IN_BUNDLE),
+   `G10: счётчик алиасов = ${SKILLS_IN_BUNDLE} применённых, а не ${SKILLS_IN_BUNDLE + 2} ключей пакета (лог: ${aliasedM ? aliasedM[1] : '?'})`, r.out.slice(-200));
 
 // ================================================================ D1: update-эра — защита задания, чекпоинты-исполнители, вердикт файлом
 console.log('\n=== D1 (bugs/33 Г1 + 34 D5 + 39): задание неприкосновенно, чекпоинты исполняют, вердикт файлом ===');

@@ -32,5 +32,6 @@
   "guarded-loop": "« boucle protégée », « travaille en boucle protégée », « boucle avec réveils »",
   "code-revision": "« révision du code », « audite la base de code », « relis le code »",
   "owner-voice": "« portrait de mon style », « écris comme moi », « ce n’est pas mon langage »",
-  "owner-reviews": "« relecture en page », « rends l’interview en HTML », « monte le circuit d’approbations »"
+  "owner-reviews": "« relecture en page », « rends l’interview en HTML », « monte le circuit d’approbations »",
+  "kaif-go": "« /go », « vas-y », « poursuis », « étape suivante »"
 }

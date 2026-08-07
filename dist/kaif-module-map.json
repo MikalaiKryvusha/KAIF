@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 672,
+  "moduleCount": 679,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -1123,7 +1123,7 @@
       {
         "signature": "## 6. The skill system",
         "class": "static",
-        "sha256": "f5c090e452668d821e2ebde73d8b9412512cb1d6b9a4d8564264493c8ca000b5",
+        "sha256": "71ce2469cbde8ee36696ded36a47cf628301ed514a9ccf81245fa33a94a201c9",
         "lines": [
           106,
           142
@@ -2837,6 +2837,71 @@
         "lines": [
           52,
           59
+        ]
+      }
+    ],
+    ".claude/skills/kaif-go/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "c9ff5da747daebb10405139bc11e1b111d67bef40a6318b5738a8176ea250982",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /kaif-go — the kick (short alias: `/go`)",
+        "class": "static",
+        "sha256": "d0702d992979b1997e2e2fb0972c362dd3ffded167780c431925104cfd3157f0",
+        "lines": [
+          6,
+          15
+        ]
+      },
+      {
+        "signature": "## Step 1. Find the resume point — read it, do not reconstruct it",
+        "class": "static",
+        "sha256": "5a06a9c74909cbdc9229b83ec180608947cdad6e6b2162219e1ac42dba6eada8",
+        "lines": [
+          16,
+          28
+        ]
+      },
+      {
+        "signature": "## Step 2. Refresh only if a trigger has fired — otherwise do not re-read",
+        "class": "static",
+        "sha256": "737eb66febc5fbca50bd080bca325a939078afe4d75e030a82fcc5305900911d",
+        "lines": [
+          29,
+          38
+        ]
+      },
+      {
+        "signature": "## Step 3. Continue — and do not ask whether to continue",
+        "class": "static",
+        "sha256": "d6142ab5a08961636b481a2991857f907bca8bcc4f31592c98d4ae2bf6b04a95",
+        "lines": [
+          39,
+          47
+        ]
+      },
+      {
+        "signature": "## The border — what the kick does NOT authorize",
+        "class": "static",
+        "sha256": "3385d78e9a0064a09a900961665cc3f5d61aff8e8d0dcac30a4dceb56a209d4d",
+        "lines": [
+          48,
+          62
+        ]
+      },
+      {
+        "signature": "## Notes",
+        "class": "static",
+        "sha256": "b7ae0c2ab0fbbbe5563be525558b7a69a27d579448a4e785e8394753f33ea30a",
+        "lines": [
+          63,
+          72
         ]
       }
     ],

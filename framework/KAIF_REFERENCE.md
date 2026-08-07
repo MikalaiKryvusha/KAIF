@@ -105,7 +105,7 @@ project's working language); **OTHER KAIF documents** — the project's local "h
 
 ## 6. The skill system
 
-Thirty-four skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-five skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
