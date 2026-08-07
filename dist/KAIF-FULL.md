@@ -181,13 +181,16 @@ relies entirely on this document to get to work.
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
 14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
 15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-16. Periodically re-read the key guidance docs:
+16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below):
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
+    - GOAL.md
+    - MASTER_PLAN.md
     - REQUIREMENTS_FRAMEWORK.md
     - TESTING_FRAMEWORK.md
     - BUG_FIXING_FRAMEWORK.md
+    - PROJECT_STRUCTURE_EXTERNAL_MAP.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -223,6 +226,68 @@ Don't read every document "just in case" — that fills the context you're tryin
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Document taxonomy — the five tiers
+
+Every document in the project sits in exactly one tier; the tier tells the agent what it owes the
+document — re-read it, know it, follow its regulation, or leave it alone:
+
+1. **KEY canon documents — the re-read core.** What the agent re-reads regularly and keeps fresh
+   in context (checklist step 16; `/resume` reads the full set): `GOAL.md` · `AGENT_GUIDE.md` ·
+   `PHILOSOPHY.md` · `REQUIREMENTS_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` ·
+   `BUG_FIXING_FRAMEWORK.md` · `STATUS.md` · `MASTER_PLAN.md` ·
+   `PROJECT_STRUCTURE_EXTERNAL_MAP.md`. The key documents reference every other document of the
+   framework — having read them, the agent knows what else exists and when to fetch it. NOTE two
+   distinct sets: this re-read core (nine) is smaller than the SHIPPED key-document set (fourteen,
+   Reference §5) — `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `EXPERIENCE.md` (grepped by tag, never
+   re-read whole), `PROJECT_HISTORY.md` (archaeology on demand), `KAIF_FRAMEWORK.md` and
+   `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
+   schedule.
+2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
+   chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
+   may skip them when refreshing context, but knows they exist and works with them when the router
+   points there.
+3. **WORKING canon documents.** The dynamic documents born under the framework's regulations —
+   plans, bugs, ideas, researches, interviews, homeworks, reports. Their form is set by their
+   directory README and skill templates; their header — by the header-meta norm below.
+4. **OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent
+   that modify or extend KAIF in this specific project. Local law — it governs here and travels
+   nowhere.
+5. **Project working documents.** Everything of the owner's project itself — code, assets,
+   documents that are not the framework's. KAIF governs how the agent works on them, not what
+   they are.
+
+### Document header meta — the first screen answers "what is this"
+
+A future session must understand any knowledge-directory document without reading its body. Every
+WORKING canon document in `plans/`, `ideas/`, `researches/`, `homeworks/` opens with:
+
+- **Line 1 — H1:** `# <Type> NN — <one-line essence>`.
+- **Right after the H1 — a blockquote header** with fixed, lintable labels: **Created:** ISO date
+  (plus by whom / on whose word, when it is not the project agent) · **Parent:** the parent or
+  source (a plan, an idea, "owner's drive-by note") or `—` · **Status:** the living status WITH
+  milestones (phase/step closure dates) · **Outbound:** what from this document must go where
+  outside (a decision to the owner · an issue upstream · into a shipped template) or `—`.
+  Optional **Descendants:** child documents — lintable when present, never required.
+
+The header is meta, not a chronicle: brief history = milestones in **Status:** plus git history;
+a prose changelog in a header is an unlintable drift pair. `bugs/` and `interviews/` keep their
+own already-canonical header dialects (the `/report-bug` template header; `Topic:`/`Status:` read
+by the questions guard) — one concept, one header, no second canonization. Root key documents
+carry self-description as the first block after the H1 instead of the field schema. Each field is
+either lintable or it is not in the schema; a header lint consults — it never blocks starting work.
+
+### Contours — the project's large logical modules
+
+A **contour** is a top-level logical module of the system or of the methodology itself — a
+complete, closed stack of context on one direction (the update contour, the feedback contour, the
+interactive review contour…). Its anatomy has four parts: **boundaries** (what is inside, what is
+out) · **governance** (rules, conventions, standards, terminology) · **execution** (workflows,
+scenarios, code artifacts, prompts) · **quality control** (done-criteria, obligations, checks).
+Working "in contour X", the agent activates that contour's rules and tools and treats it as one
+isolated subsystem with clear inputs and outputs. Name contours explicitly and watch their edges:
+a contour whose boundary blurs is either reformulated or recorded as conscious debt with a backlog
+address — never left unowned.
 
 ### Recon artifacts — when the task has an external truth
 
@@ -1859,6 +1924,7 @@ for understanding the project and making judgment calls.
 | **Receipt** | `.kaif/last-update.json` — the permanent proof of the last update (§12.3). |
 | **Owner** | The human whose vision the project serves. The owner's word outranks every document. |
 | **Canon artifact** | An owner document whose wording IS the content (rules, lore, brand texts). AI text enters it only marked (§13.3). |
+| **Contour** | A top-level logical module of the system or of the methodology itself: a complete closed stack of context on one direction — boundaries · governance · execution layer · quality control (`AGENT_GUIDE.md` → Contours). |
 
 ## 2. Design principles
 
@@ -1917,6 +1983,16 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
 research notes and reports are living records and are never tagged.
+
+The documents divide into five tiers (the taxonomy canon lives in `AGENT_GUIDE.md` → Document
+taxonomy): **KEY canon documents** — the re-read core of nine the agent re-reads on schedule
+(`GOAL`, `AGENT_GUIDE`, `PHILOSOPHY`, `REQUIREMENTS_FRAMEWORK`, `TESTING_FRAMEWORK`,
+`BUG_FIXING_FRAMEWORK`, `STATUS`, `MASTER_PLAN`, `PROJECT_STRUCTURE_EXTERNAL_MAP`) — a smaller
+set than the fourteen shipped key documents above; **EXTENDED canon documents**, fetched on demand
+by the context router; **WORKING canon documents** — the dynamic knowledge-directory documents,
+each opening with the lintable header meta (H1 + `Created`/`Parent`/`Status`/`Outbound`, in the
+project's working language); **OTHER KAIF documents** — the project's local "house rules"; and
+**project working documents**, which belong to the owner's project, not to the framework.
 
 ## 6. The skill system
 
@@ -2231,7 +2307,9 @@ executes.
 
 **For the AI agent:** before non-trivial work, write a short plan here and follow it. Every plan
 OPENS with its goal vector + acceptance criteria — written by `REQUIREMENTS_FRAMEWORK.md`; they may
-change as the work teaches. Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+change as the work teaches. Right after the H1 comes the lintable header meta — **Created:** ·
+**Parent:** · **Status:** (with milestones) · **Outbound:** (`AGENT_GUIDE.md` → Document header
+meta). Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
 ``````
 
@@ -2252,7 +2330,9 @@ product **vision** — the agent implements it only after you approve.
 **For the AI agent:** read owner ideas, fix typos, restructure minimally for clarity, then implement. When
 *you* have a worthwhile idea, file it here with status "❓ awaiting owner approval" (skill: `/propose-idea`)
 and do **not** implement until approved. An idea document opens with the pain it solves + how we
-check that it worked (`REQUIREMENTS_FRAMEWORK.md`). After implementing an idea, write the status and date back into
+check that it worked (`REQUIREMENTS_FRAMEWORK.md`), and right after the H1 carries the lintable
+header meta — **Created:** · **Parent:** · **Status:** · **Outbound:** (`AGENT_GUIDE.md` →
+Document header meta). After implementing an idea, write the status and date back into
 its file and `DONE`-tag it (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -2299,7 +2379,9 @@ chosen, what was learned about a hard problem. You may seed a topic you want inv
 
 **For the AI agent:** when a question is large enough that its findings deserve to outlive the current
 task, write a research note here (raw sources → analysis → conclusions/hypotheses). Link to it from the
-bug/plan/idea that motivated it (DRY — don't re-research). A research note is a **living reference**, not a
+bug/plan/idea that motivated it (DRY — don't re-research). Right after the H1 comes the lintable header
+meta — **Created:** · **Parent:** · **Status:** · **Outbound:** (`AGENT_GUIDE.md` → Document header
+meta). A research note is a **living reference**, not a
 closable task — do not `DONE`-tag it; keep updating it as understanding grows.
 ``````
 
@@ -2340,7 +2422,9 @@ continues.
 
 **For the AI agent:** when you're blocked on something only a human-with-a-body can do, don't stall — write
 a homework here with clear, minimal, numbered steps and a place for the human's results, then continue with
-other work. When the human reports back, incorporate the results and `DONE`-tag the file
+other work. Right after the H1 comes the lintable header meta — **Created:** · **Parent:** ·
+**Status:** · **Outbound:** (`AGENT_GUIDE.md` → Document header meta). When the human reports back,
+incorporate the results and `DONE`-tag the file
 (`git mv NN_x.md NN_DONE_x.md`).
 
 **Taste-class homework** (the acceptance criterion is a perception adjective — `AGENT_GUIDE.md` →

@@ -12,7 +12,9 @@ l'agent lit vos notes et continue.
 
 **Pour l'agent IA :** quand vous êtes bloqué sur quelque chose que seul un humain-avec-un-corps peut faire,
 ne calez pas — écrivez ici un homework avec des étapes claires, minimales et numérotées et une place pour
-les résultats de l'humain, puis continuez avec un autre travail. Quand l'humain rapporte, intégrez les
+les résultats de l'humain, puis continuez avec un autre travail. Juste après le H1 vient l'en-tête
+méta lintable — **Créé :** · **Parent :** · **Statut :** · **Vers l'extérieur :**
+(`AGENT_GUIDE.md` → Document header meta). Quand l'humain rapporte, intégrez les
 résultats et étiquetez le fichier `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework de la classe « goût »** (le critère d'acceptation est un adjectif de perception —

@@ -36,13 +36,16 @@ relies entirely on this document to get to work.
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
 14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
 15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-16. Periodically re-read the key guidance docs:
+16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below):
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
+    - GOAL.md
+    - MASTER_PLAN.md
     - REQUIREMENTS_FRAMEWORK.md
     - TESTING_FRAMEWORK.md
     - BUG_FIXING_FRAMEWORK.md
+    - PROJECT_STRUCTURE_EXTERNAL_MAP.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -78,6 +81,68 @@ Don't read every document "just in case" — that fills the context you're tryin
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Document taxonomy — the five tiers
+
+Every document in the project sits in exactly one tier; the tier tells the agent what it owes the
+document — re-read it, know it, follow its regulation, or leave it alone:
+
+1. **KEY canon documents — the re-read core.** What the agent re-reads regularly and keeps fresh
+   in context (checklist step 16; `/resume` reads the full set): `GOAL.md` · `AGENT_GUIDE.md` ·
+   `PHILOSOPHY.md` · `REQUIREMENTS_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` ·
+   `BUG_FIXING_FRAMEWORK.md` · `STATUS.md` · `MASTER_PLAN.md` ·
+   `PROJECT_STRUCTURE_EXTERNAL_MAP.md`. The key documents reference every other document of the
+   framework — having read them, the agent knows what else exists and when to fetch it. NOTE two
+   distinct sets: this re-read core (nine) is smaller than the SHIPPED key-document set (fourteen,
+   Reference §5) — `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `EXPERIENCE.md` (grepped by tag, never
+   re-read whole), `PROJECT_HISTORY.md` (archaeology on demand), `KAIF_FRAMEWORK.md` and
+   `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
+   schedule.
+2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
+   chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
+   may skip them when refreshing context, but knows they exist and works with them when the router
+   points there.
+3. **WORKING canon documents.** The dynamic documents born under the framework's regulations —
+   plans, bugs, ideas, researches, interviews, homeworks, reports. Their form is set by their
+   directory README and skill templates; their header — by the header-meta norm below.
+4. **OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent
+   that modify or extend KAIF in this specific project. Local law — it governs here and travels
+   nowhere.
+5. **Project working documents.** Everything of the owner's project itself — code, assets,
+   documents that are not the framework's. KAIF governs how the agent works on them, not what
+   they are.
+
+### Document header meta — the first screen answers "what is this"
+
+A future session must understand any knowledge-directory document without reading its body. Every
+WORKING canon document in `plans/`, `ideas/`, `researches/`, `homeworks/` opens with:
+
+- **Line 1 — H1:** `# <Type> NN — <one-line essence>`.
+- **Right after the H1 — a blockquote header** with fixed, lintable labels: **Created:** ISO date
+  (plus by whom / on whose word, when it is not the project agent) · **Parent:** the parent or
+  source (a plan, an idea, "owner's drive-by note") or `—` · **Status:** the living status WITH
+  milestones (phase/step closure dates) · **Outbound:** what from this document must go where
+  outside (a decision to the owner · an issue upstream · into a shipped template) or `—`.
+  Optional **Descendants:** child documents — lintable when present, never required.
+
+The header is meta, not a chronicle: brief history = milestones in **Status:** plus git history;
+a prose changelog in a header is an unlintable drift pair. `bugs/` and `interviews/` keep their
+own already-canonical header dialects (the `/report-bug` template header; `Topic:`/`Status:` read
+by the questions guard) — one concept, one header, no second canonization. Root key documents
+carry self-description as the first block after the H1 instead of the field schema. Each field is
+either lintable or it is not in the schema; a header lint consults — it never blocks starting work.
+
+### Contours — the project's large logical modules
+
+A **contour** is a top-level logical module of the system or of the methodology itself — a
+complete, closed stack of context on one direction (the update contour, the feedback contour, the
+interactive review contour…). Its anatomy has four parts: **boundaries** (what is inside, what is
+out) · **governance** (rules, conventions, standards, terminology) · **execution** (workflows,
+scenarios, code artifacts, prompts) · **quality control** (done-criteria, obligations, checks).
+Working "in contour X", the agent activates that contour's rules and tools and treats it as one
+isolated subsystem with clear inputs and outputs. Name contours explicitly and watch their edges:
+a contour whose boundary blurs is either reformulated or recorded as conscious debt with a backlog
+address — never left unowned.
 
 ### Recon artifacts — when the task has an external truth
 

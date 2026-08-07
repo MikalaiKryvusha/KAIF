@@ -11,7 +11,9 @@ continues.
 
 **For the AI agent:** when you're blocked on something only a human-with-a-body can do, don't stall — write
 a homework here with clear, minimal, numbered steps and a place for the human's results, then continue with
-other work. When the human reports back, incorporate the results and `DONE`-tag the file
+other work. Right after the H1 comes the lintable header meta — **Created:** · **Parent:** ·
+**Status:** · **Outbound:** (`AGENT_GUIDE.md` → Document header meta). When the human reports back,
+incorporate the results and `DONE`-tag the file
 (`git mv NN_x.md NN_DONE_x.md`).
 
 **Taste-class homework** (the acceptance criterion is a perception adjective — `AGENT_GUIDE.md` →

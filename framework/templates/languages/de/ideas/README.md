@@ -12,5 +12,7 @@ daraus. Eine Idee ist ein Stück Produkt-**Vision** — der Agent implementiert 
 Klarheit um, dann implementiere. Wenn *du* eine lohnende Idee hast, lege sie hier mit dem Status
 „❓ wartet auf Freigabe des Eigentümers" ab (Skill: `/propose-idea`) und implementiere sie **nicht** vor der
 Freigabe. Ein Ideen-Dokument beginnt mit dem Schmerz, den es löst, + wie wir prüfen, dass es
-funktioniert hat (`REQUIREMENTS_FRAMEWORK.md`). Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
+funktioniert hat (`REQUIREMENTS_FRAMEWORK.md`), und trägt direkt nach der H1 die lintbare
+Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** · **Nach außen:** (`AGENT_GUIDE.md` →
+Document header meta). Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
 mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).

@@ -9,5 +9,7 @@ chosen, what was learned about a hard problem. You may seed a topic you want inv
 
 **For the AI agent:** when a question is large enough that its findings deserve to outlive the current
 task, write a research note here (raw sources → analysis → conclusions/hypotheses). Link to it from the
-bug/plan/idea that motivated it (DRY — don't re-research). A research note is a **living reference**, not a
+bug/plan/idea that motivated it (DRY — don't re-research). Right after the H1 comes the lintable header
+meta — **Created:** · **Parent:** · **Status:** · **Outbound:** (`AGENT_GUIDE.md` → Document header
+meta). A research note is a **living reference**, not a
 closable task — do not `DONE`-tag it; keep updating it as understanding grows.

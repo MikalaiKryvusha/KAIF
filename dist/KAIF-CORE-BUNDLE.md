@@ -108,13 +108,16 @@ relies entirely on this document to get to work.
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
 14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
 15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-16. Periodically re-read the key guidance docs:
+16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below):
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
+    - GOAL.md
+    - MASTER_PLAN.md
     - REQUIREMENTS_FRAMEWORK.md
     - TESTING_FRAMEWORK.md
     - BUG_FIXING_FRAMEWORK.md
+    - PROJECT_STRUCTURE_EXTERNAL_MAP.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -150,6 +153,68 @@ Don't read every document "just in case" — that fills the context you're tryin
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
+
+### Document taxonomy — the five tiers
+
+Every document in the project sits in exactly one tier; the tier tells the agent what it owes the
+document — re-read it, know it, follow its regulation, or leave it alone:
+
+1. **KEY canon documents — the re-read core.** What the agent re-reads regularly and keeps fresh
+   in context (checklist step 16; `/resume` reads the full set): `GOAL.md` · `AGENT_GUIDE.md` ·
+   `PHILOSOPHY.md` · `REQUIREMENTS_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` ·
+   `BUG_FIXING_FRAMEWORK.md` · `STATUS.md` · `MASTER_PLAN.md` ·
+   `PROJECT_STRUCTURE_EXTERNAL_MAP.md`. The key documents reference every other document of the
+   framework — having read them, the agent knows what else exists and when to fetch it. NOTE two
+   distinct sets: this re-read core (nine) is smaller than the SHIPPED key-document set (fourteen,
+   Reference §5) — `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `EXPERIENCE.md` (grepped by tag, never
+   re-read whole), `PROJECT_HISTORY.md` (archaeology on demand), `KAIF_FRAMEWORK.md` and
+   `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
+   schedule.
+2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
+   chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
+   may skip them when refreshing context, but knows they exist and works with them when the router
+   points there.
+3. **WORKING canon documents.** The dynamic documents born under the framework's regulations —
+   plans, bugs, ideas, researches, interviews, homeworks, reports. Their form is set by their
+   directory README and skill templates; their header — by the header-meta norm below.
+4. **OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent
+   that modify or extend KAIF in this specific project. Local law — it governs here and travels
+   nowhere.
+5. **Project working documents.** Everything of the owner's project itself — code, assets,
+   documents that are not the framework's. KAIF governs how the agent works on them, not what
+   they are.
+
+### Document header meta — the first screen answers "what is this"
+
+A future session must understand any knowledge-directory document without reading its body. Every
+WORKING canon document in `plans/`, `ideas/`, `researches/`, `homeworks/` opens with:
+
+- **Line 1 — H1:** `# <Type> NN — <one-line essence>`.
+- **Right after the H1 — a blockquote header** with fixed, lintable labels: **Created:** ISO date
+  (plus by whom / on whose word, when it is not the project agent) · **Parent:** the parent or
+  source (a plan, an idea, "owner's drive-by note") or `—` · **Status:** the living status WITH
+  milestones (phase/step closure dates) · **Outbound:** what from this document must go where
+  outside (a decision to the owner · an issue upstream · into a shipped template) or `—`.
+  Optional **Descendants:** child documents — lintable when present, never required.
+
+The header is meta, not a chronicle: brief history = milestones in **Status:** plus git history;
+a prose changelog in a header is an unlintable drift pair. `bugs/` and `interviews/` keep their
+own already-canonical header dialects (the `/report-bug` template header; `Topic:`/`Status:` read
+by the questions guard) — one concept, one header, no second canonization. Root key documents
+carry self-description as the first block after the H1 instead of the field schema. Each field is
+either lintable or it is not in the schema; a header lint consults — it never blocks starting work.
+
+### Contours — the project's large logical modules
+
+A **contour** is a top-level logical module of the system or of the methodology itself — a
+complete, closed stack of context on one direction (the update contour, the feedback contour, the
+interactive review contour…). Its anatomy has four parts: **boundaries** (what is inside, what is
+out) · **governance** (rules, conventions, standards, terminology) · **execution** (workflows,
+scenarios, code artifacts, prompts) · **quality control** (done-criteria, obligations, checks).
+Working "in contour X", the agent activates that contour's rules and tools and treats it as one
+isolated subsystem with clear inputs and outputs. Name contours explicitly and watch their edges:
+a contour whose boundary blurs is either reformulated or recorded as conscious debt with a backlog
+address — never left unowned.
 
 ### Recon artifacts — when the task has an external truth
 
@@ -1773,6 +1838,7 @@ for understanding the project and making judgment calls.
 | **Receipt** | `.kaif/last-update.json` — the permanent proof of the last update (§12.3). |
 | **Owner** | The human whose vision the project serves. The owner's word outranks every document. |
 | **Canon artifact** | An owner document whose wording IS the content (rules, lore, brand texts). AI text enters it only marked (§13.3). |
+| **Contour** | A top-level logical module of the system or of the methodology itself: a complete closed stack of context on one direction — boundaries · governance · execution layer · quality control (`AGENT_GUIDE.md` → Contours). |
 
 ## 2. Design principles
 
@@ -1831,6 +1897,16 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
 research notes and reports are living records and are never tagged.
+
+The documents divide into five tiers (the taxonomy canon lives in `AGENT_GUIDE.md` → Document
+taxonomy): **KEY canon documents** — the re-read core of nine the agent re-reads on schedule
+(`GOAL`, `AGENT_GUIDE`, `PHILOSOPHY`, `REQUIREMENTS_FRAMEWORK`, `TESTING_FRAMEWORK`,
+`BUG_FIXING_FRAMEWORK`, `STATUS`, `MASTER_PLAN`, `PROJECT_STRUCTURE_EXTERNAL_MAP`) — a smaller
+set than the fourteen shipped key documents above; **EXTENDED canon documents**, fetched on demand
+by the context router; **WORKING canon documents** — the dynamic knowledge-directory documents,
+each opening with the lintable header meta (H1 + `Created`/`Parent`/`Status`/`Outbound`, in the
+project's working language); **OTHER KAIF documents** — the project's local "house rules"; and
+**project working documents**, which belong to the owner's project, not to the framework.
 
 ## 6. The skill system
 
@@ -2128,7 +2204,9 @@ executes.
 
 **For the AI agent:** before non-trivial work, write a short plan here and follow it. Every plan
 OPENS with its goal vector + acceptance criteria — written by `REQUIREMENTS_FRAMEWORK.md`; they may
-change as the work teaches. Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+change as the work teaches. Right after the H1 comes the lintable header meta — **Created:** ·
+**Parent:** · **Status:** (with milestones) · **Outbound:** (`AGENT_GUIDE.md` → Document header
+meta). Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
 ``````
 
@@ -2148,7 +2226,9 @@ product **vision** — the agent implements it only after you approve.
 **For the AI agent:** read owner ideas, fix typos, restructure minimally for clarity, then implement. When
 *you* have a worthwhile idea, file it here with status "❓ awaiting owner approval" (skill: `/propose-idea`)
 and do **not** implement until approved. An idea document opens with the pain it solves + how we
-check that it worked (`REQUIREMENTS_FRAMEWORK.md`). After implementing an idea, write the status and date back into
+check that it worked (`REQUIREMENTS_FRAMEWORK.md`), and right after the H1 carries the lintable
+header meta — **Created:** · **Parent:** · **Status:** · **Outbound:** (`AGENT_GUIDE.md` →
+Document header meta). After implementing an idea, write the status and date back into
 its file and `DONE`-tag it (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -2193,7 +2273,9 @@ chosen, what was learned about a hard problem. You may seed a topic you want inv
 
 **For the AI agent:** when a question is large enough that its findings deserve to outlive the current
 task, write a research note here (raw sources → analysis → conclusions/hypotheses). Link to it from the
-bug/plan/idea that motivated it (DRY — don't re-research). A research note is a **living reference**, not a
+bug/plan/idea that motivated it (DRY — don't re-research). Right after the H1 comes the lintable header
+meta — **Created:** · **Parent:** · **Status:** · **Outbound:** (`AGENT_GUIDE.md` → Document header
+meta). A research note is a **living reference**, not a
 closable task — do not `DONE`-tag it; keep updating it as understanding grows.
 ``````
 
@@ -2232,7 +2314,9 @@ continues.
 
 **For the AI agent:** when you're blocked on something only a human-with-a-body can do, don't stall — write
 a homework here with clear, minimal, numbered steps and a place for the human's results, then continue with
-other work. When the human reports back, incorporate the results and `DONE`-tag the file
+other work. Right after the H1 comes the lintable header meta — **Created:** · **Parent:** ·
+**Status:** · **Outbound:** (`AGENT_GUIDE.md` → Document header meta). When the human reports back,
+incorporate the results and `DONE`-tag the file
 (`git mv NN_x.md NN_DONE_x.md`).
 
 **Taste-class homework** (the acceptance criterion is a perception adjective — `AGENT_GUIDE.md` →
@@ -7039,7 +7123,9 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 المتصل. اتبع الخطوات واكتب ما لاحظته في الوثيقة — يقرأ الوكيل ملاحظاتك ويكمل.
 
 **لوكيل الذكاء الاصطناعي:** حين تُحاصَر بشيء لا يقدر عليه إلا إنسان ذو جسد، لا تتوقف — اكتب هنا
-واجبًا بخطوات واضحة مرقّمة في حدها الأدنى ومكانٍ لنتائج الإنسان، ثم واصل عملًا آخر. وعندما يبلّغ
+واجبًا بخطوات واضحة مرقّمة في حدها الأدنى ومكانٍ لنتائج الإنسان، ثم واصل عملًا آخر. بعد H1 مباشرةً
+تأتي ترويسة الميتا القابلة للفحص الآلي — **أُنشئ:** · **الأصل:** · **الحالة:** · **إلى الخارج:**
+(`AGENT_GUIDE.md` → Document header meta). وعندما يبلّغ
 الإنسان، أدرج النتائج ووسم الملف بـ `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **واجب من فئة «الذوق»** (حين يكون معيار القبول صفةَ إدراكٍ حسّي — `AGENT_GUIDE.md` →
@@ -7063,7 +7149,9 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 **لوكيل الذكاء الاصطناعي:** اقرأ أفكار المالك، صحّح الأخطاء المطبعية، وأعد الهيكلة بأدنى قدر من أجل
 الوضوح، ثم نفّذ. وحين تكون *لديك* فكرة تستحق، سجّلها هنا بحالة «❓ في انتظار موافقة المالك» (المهارة:
 `/propose-idea`) و**لا** تنفّذها قبل الموافقة. وثيقة الفكرة تُفتَتح بالألم الذي تحلّه + كيف نتحقق
-من أنها نجحت (`REQUIREMENTS_FRAMEWORK.md`). بعد تنفيذ فكرة، اكتب الحالة والتاريخ في ملفها ووسمه بـ
+من أنها نجحت (`REQUIREMENTS_FRAMEWORK.md`)، وتحمل بعد H1 مباشرةً ترويسة الميتا القابلة للفحص
+الآلي — **أُنشئ:** · **الأصل:** · **الحالة:** · **إلى الخارج:** (`AGENT_GUIDE.md` → Document
+header meta). بعد تنفيذ فكرة، اكتب الحالة والتاريخ في ملفها ووسمه بـ
 `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -7177,7 +7265,9 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 
 **لوكيل الذكاء الاصطناعي:** قبل أي عمل غير بديهي، اكتب هنا خطة قصيرة واتبعها. كل خطة تُفتَتح
 بمتجه الهدف + معايير القبول — تُكتب وفق `REQUIREMENTS_FRAMEWORK.md`؛ ويجوز أن تتغيّر كلما علّمنا
-العمل. رقّم الملفات (`NN_<name>.md`). الخطة المكتملة والمتحقَّق منها تحصل على وسم `DONE` في اسمها
+العمل. بعد H1 مباشرةً تأتي ترويسة الميتا القابلة للفحص الآلي — **أُنشئ:** · **الأصل:** ·
+**الحالة:** (مع المعالم) · **إلى الخارج:** (`AGENT_GUIDE.md` → Document header meta).
+رقّم الملفات (`NN_<name>.md`). الخطة المكتملة والمتحقَّق منها تحصل على وسم `DONE` في اسمها
 (`git mv NN_x.md NN_DONE_x.md`) مع قسم حالة. المواد المرجعية (ليست مهمة قابلة للإغلاق) لا تُوسم بـ DONE.
 ``````
 
@@ -7194,7 +7284,9 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 
 **لوكيل الذكاء الاصطناعي:** حين تكون المسألة كبيرة بما يكفي لتعيش استنتاجاتها بعد المهمة الحالية —
 اكتب هنا ملاحظة (مصادر خام ← تحليل ← استنتاجات/فرضيات). أشِر إليها من الخطأ/الخطة/الفكرة التي ولّدت
-البحث (DRY — لا تعِد البحث). ملاحظة البحث **مرجع حيّ** وليست مهمة قابلة للإغلاق: لا تُوسم بـ `DONE`
+البحث (DRY — لا تعِد البحث). بعد H1 مباشرةً تأتي ترويسة الميتا القابلة للفحص الآلي — **أُنشئ:** ·
+**الأصل:** · **الحالة:** · **إلى الخارج:** (`AGENT_GUIDE.md` → Document header meta).
+ملاحظة البحث **مرجع حيّ** وليست مهمة قابلة للإغلاق: لا تُوسم بـ `DONE`
 وتُحدَّث كلما نما الفهم.
 ``````
 
@@ -7334,7 +7426,9 @@ zurück — der Agent liest Ihre Notizen und macht weiter.
 
 **Für den KI-Agenten:** Wenn du an etwas blockiert bist, das nur ein Mensch-mit-Körper tun kann, bleib
 nicht stecken — schreibe hier ein Homework mit klaren, minimalen, nummerierten Schritten und einem Platz
-für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Wenn der Mensch berichtet, arbeite
+für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Direkt nach der H1 folgt die
+lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** · **Nach außen:**
+(`AGENT_GUIDE.md` → Document header meta). Wenn der Mensch berichtet, arbeite
 die Ergebnisse ein und markiere die Datei mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework der Geschmacksklasse** (das Abnahmekriterium ist ein Wahrnehmungsadjektiv — `AGENT_GUIDE.md` →
@@ -7362,7 +7456,9 @@ daraus. Eine Idee ist ein Stück Produkt-**Vision** — der Agent implementiert 
 Klarheit um, dann implementiere. Wenn *du* eine lohnende Idee hast, lege sie hier mit dem Status
 „❓ wartet auf Freigabe des Eigentümers" ab (Skill: `/propose-idea`) und implementiere sie **nicht** vor der
 Freigabe. Ein Ideen-Dokument beginnt mit dem Schmerz, den es löst, + wie wir prüfen, dass es
-funktioniert hat (`REQUIREMENTS_FRAMEWORK.md`). Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
+funktioniert hat (`REQUIREMENTS_FRAMEWORK.md`), und trägt direkt nach der H1 die lintbare
+Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** · **Nach außen:** (`AGENT_GUIDE.md` →
+Document header meta). Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
 mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -7484,7 +7580,9 @@ beabsichtigten Ansatz des Agenten vor der Ausführung zu sehen.
 
 **Für den KI-Agenten:** Schreibe vor nicht-trivialer Arbeit hier einen kurzen Plan und folge ihm.
 Jeder Plan BEGINNT mit seinem Zielvektor + Abnahmekriterien — geschrieben nach
-`REQUIREMENTS_FRAMEWORK.md`; sie dürfen sich ändern, wenn die Arbeit dazulernt. Nummeriere die
+`REQUIREMENTS_FRAMEWORK.md`; sie dürfen sich ändern, wenn die Arbeit dazulernt. Direkt nach der H1
+folgt die lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** (mit Meilensteinen) ·
+**Nach außen:** (`AGENT_GUIDE.md` → Document header meta). Nummeriere die
 Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
 Dateinamen (`git mv NN_x.md NN_DONE_x.md`) plus einen Statusabschnitt. Referenzmaterial (keine schließbare
 Aufgabe) wird nicht mit DONE markiert.
@@ -7505,7 +7603,9 @@ Thema benennen, das untersucht werden soll.
 
 **Für den KI-Agenten:** Wenn eine Frage groß genug ist, dass ihre Schlussfolgerungen die aktuelle Aufgabe
 überleben — schreibe hier eine Notiz (Rohquellen → Analyse → Schlussfolgerungen/Hypothesen). Verweise
-darauf aus dem Bug/Plan/der Idee, die die Recherche ausgelöst haben (DRY — nicht neu recherchieren). Eine
+darauf aus dem Bug/Plan/der Idee, die die Recherche ausgelöst haben (DRY — nicht neu recherchieren).
+Direkt nach der H1 folgt die lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** ·
+**Nach außen:** (`AGENT_GUIDE.md` → Document header meta). Eine
 Recherche-Notiz ist eine **lebende Referenz**, keine schließbare Aufgabe: nie mit `DONE` markiert,
 aktualisiert, während das Verständnis wächst.
 ``````
@@ -7644,7 +7744,9 @@ notas y continúa.
 
 **Para el agente de IA:** cuando esté bloqueado por algo que solo puede hacer un humano-con-cuerpo, no se
 atasque — escriba aquí un homework con pasos claros, mínimos y numerados y un lugar para los resultados del
-humano, y luego continúe con otro trabajo. Cuando el humano informe, incorpore los resultados y etiquete el
+humano, y luego continúe con otro trabajo. Justo después del H1 va la cabecera meta lintable —
+**Creado:** · **Padre:** · **Estado:** · **Hacia fuera:** (`AGENT_GUIDE.md` → Document header
+meta). Cuando el humano informe, incorpore los resultados y etiquete el
 archivo con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework de clase «gusto»** (el criterio de aceptación es un adjetivo de percepción — `AGENT_GUIDE.md` →
@@ -7672,7 +7774,9 @@ Una idea es una pieza de la **visión** del producto — el agente la implementa
 claridad, y luego implemente. Cuando *usted* tenga una idea que valga la pena, regístrela aquí con el
 estado "❓ a la espera de la aprobación del propietario" (habilidad: `/propose-idea`) y **no** la implemente
 hasta que se apruebe. El documento de una idea se abre con el dolor que resuelve + cómo comprobamos
-que funcionó (`REQUIREMENTS_FRAMEWORK.md`). Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
+que funcionó (`REQUIREMENTS_FRAMEWORK.md`), y justo después del H1 lleva la cabecera meta
+lintable — **Creado:** · **Padre:** · **Estado:** · **Hacia fuera:** (`AGENT_GUIDE.md` →
+Document header meta). Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
 con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -7793,7 +7897,9 @@ de que lo ejecute.
 
 **Para el agente de IA:** antes de un trabajo no trivial, escriba aquí un plan corto y sígalo. Todo plan
 SE ABRE con su vector de objetivo + criterios de aceptación — escritos según
-`REQUIREMENTS_FRAMEWORK.md`; pueden cambiar a medida que el trabajo enseña. Numere los
+`REQUIREMENTS_FRAMEWORK.md`; pueden cambiar a medida que el trabajo enseña. Justo después del H1
+va la cabecera meta lintable — **Creado:** · **Padre:** · **Estado:** (con hitos) ·
+**Hacia fuera:** (`AGENT_GUIDE.md` → Document header meta). Numere los
 archivos (`NN_<nombre>.md`). Un plan terminado y verificado recibe la etiqueta `DONE` en su nombre
 (`git mv NN_x.md NN_DONE_x.md`) más una sección de estado. El material de referencia (no una tarea
 cerrable) no se etiqueta con DONE.
@@ -7814,7 +7920,9 @@ investigar.
 
 **Para el agente de IA:** cuando una cuestión sea lo bastante grande como para que sus conclusiones
 sobrevivan a la tarea actual — escriba aquí un apunte (fuentes crudas → análisis → conclusiones/hipótesis).
-Refiérase a él desde el bug/plan/idea que originó la investigación (DRY — no re-investigue). Un apunte de
+Refiérase a él desde el bug/plan/idea que originó la investigación (DRY — no re-investigue). Justo
+después del H1 va la cabecera meta lintable — **Creado:** · **Padre:** · **Estado:** ·
+**Hacia fuera:** (`AGENT_GUIDE.md` → Document header meta). Un apunte de
 investigación es una **referencia viva**, no una tarea cerrable: no se etiqueta con `DONE` y se actualiza a
 medida que crece la comprensión.
 ``````
@@ -7955,7 +8063,9 @@ l'agent lit vos notes et continue.
 
 **Pour l'agent IA :** quand vous êtes bloqué sur quelque chose que seul un humain-avec-un-corps peut faire,
 ne calez pas — écrivez ici un homework avec des étapes claires, minimales et numérotées et une place pour
-les résultats de l'humain, puis continuez avec un autre travail. Quand l'humain rapporte, intégrez les
+les résultats de l'humain, puis continuez avec un autre travail. Juste après le H1 vient l'en-tête
+méta lintable — **Créé :** · **Parent :** · **Statut :** · **Vers l'extérieur :**
+(`AGENT_GUIDE.md` → Document header meta). Quand l'humain rapporte, intégrez les
 résultats et étiquetez le fichier `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework de la classe « goût »** (le critère d'acceptation est un adjectif de perception —
@@ -7983,7 +8093,9 @@ Une idée est un morceau de la **vision** du produit — l'agent ne l'implément
 la clarté, puis implémentez. Quand *vous* avez une idée qui en vaut la peine, déposez-la ici avec le statut
 « ❓ en attente de l'approbation du propriétaire » (compétence : `/propose-idea`) et ne l'implémentez
 **pas** avant approbation. Le document d'une idée s'ouvre sur la douleur qu'elle résout + comment
-nous vérifions qu'elle a fonctionné (`REQUIREMENTS_FRAMEWORK.md`). Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
+nous vérifions qu'elle a fonctionné (`REQUIREMENTS_FRAMEWORK.md`), et porte juste après le H1
+l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut :** · **Vers l'extérieur :**
+(`AGENT_GUIDE.md` → Document header meta). Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
 et étiquetez-le `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -8106,7 +8218,9 @@ pour voir l'approche prévue par l'agent avant qu'il l'exécute.
 
 **Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Tout plan
 S'OUVRE sur son vecteur d'objectif + ses critères d'acceptation — écrits selon
-`REQUIREMENTS_FRAMEWORK.md` ; ils peuvent changer à mesure que le travail apprend. Numérotez les
+`REQUIREMENTS_FRAMEWORK.md` ; ils peuvent changer à mesure que le travail apprend. Juste après le
+H1 vient l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut :** (avec jalons) ·
+**Vers l'extérieur :** (`AGENT_GUIDE.md` → Document header meta). Numérotez les
 fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
 (`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
 fermable) n'est pas étiqueté DONE.
@@ -8127,7 +8241,9 @@ vous voulez faire étudier.
 
 **Pour l'agent IA :** quand une question est assez grande pour que ses conclusions survivent à la tâche en
 cours — écrivez ici une note (sources brutes → analyse → conclusions/hypothèses). Référencez-la depuis le
-bug/plan/idée qui a engendré la recherche (DRY — ne re-cherchez pas). Une note de recherche est une
+bug/plan/idée qui a engendré la recherche (DRY — ne re-cherchez pas). Juste après le H1 vient
+l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut :** · **Vers l'extérieur :**
+(`AGENT_GUIDE.md` → Document header meta). Une note de recherche est une
 **référence vivante**, pas une tâche fermable : jamais étiquetée `DONE`, mise à jour à mesure que la
 compréhension grandit.
 ``````
@@ -8261,7 +8377,9 @@ upstream भेजते हैं, अलग हुए सब कुछ स्�
 
 **AI एजेंट के लिए:** जब आप ऐसी चीज़ पर अटकें जो केवल शरीरधारी मानव कर सकता है, तो ठहरें नहीं — यहाँ
 स्पष्ट, न्यूनतम, क्रमांकित चरणों और मानव के परिणामों के लिए जगह के साथ homework लिखें, फिर दूसरा काम
-जारी रखें। मानव के बताने पर परिणाम शामिल करें और फ़ाइल को `DONE` टैग दें
+जारी रखें। H1 के तुरंत बाद लिंट-योग्य हेडर मेटा आता है — **निर्मित:** · **मूल:** · **स्थिति:** ·
+**बाहर:** (`AGENT_GUIDE.md` → Document header meta)। मानव के बताने पर परिणाम शामिल करें और फ़ाइल
+को `DONE` टैग दें
 (`git mv NN_x.md NN_DONE_x.md`)।
 
 **«स्वाद» वर्ग का homework** (जब स्वीकृति मानदंड बोध का विशेषण हो — `AGENT_GUIDE.md` →
@@ -8287,7 +8405,9 @@ upstream भेजते हैं, अलग हुए सब कुछ स्�
 **AI एजेंट के लिए:** स्वामी के विचार पढ़ें, वर्तनी सुधारें, स्पष्टता के लिए न्यूनतम पुनर्संरचना करें, फिर
 लागू करें। जब *आपके* पास कोई सार्थक विचार हो, तो उसे यहाँ "❓ स्वामी की स्वीकृति की प्रतीक्षा" स्थिति के
 साथ दर्ज करें (स्किल: `/propose-idea`) और स्वीकृति तक **लागू न करें**। विचार का दस्तावेज़ उस दर्द से
-खुलता है जिसे वह हल करता है + हम कैसे जाँचेंगे कि वह कारगर रहा (`REQUIREMENTS_FRAMEWORK.md`)। विचार लागू करने के बाद, स्थिति और
+खुलता है जिसे वह हल करता है + हम कैसे जाँचेंगे कि वह कारगर रहा (`REQUIREMENTS_FRAMEWORK.md`), और
+H1 के तुरंत बाद लिंट-योग्य हेडर मेटा रखता है — **निर्मित:** · **मूल:** · **स्थिति:** · **बाहर:**
+(`AGENT_GUIDE.md` → Document header meta)। विचार लागू करने के बाद, स्थिति और
 तिथि उसकी फ़ाइल में लिखें और `DONE` टैग दें (`git mv NN_x.md NN_DONE_x.md`)।
 ``````
 
@@ -8405,7 +8525,9 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 
 **AI एजेंट के लिए:** गैर-तुच्छ काम से पहले यहाँ एक छोटी योजना लिखें और उसका पालन करें। हर योजना
 अपने लक्ष्य-सदिश + स्वीकृति मानदंडों से खुलती है — `REQUIREMENTS_FRAMEWORK.md` के अनुसार लिखे गए;
-काम जैसे-जैसे सिखाता है, वे बदल सकते हैं। फ़ाइलों को क्रमांकित करें (`NN_<naam>.md`)। पूर्ण और सत्यापित योजना के नाम में `DONE` टैग जोड़ें
+काम जैसे-जैसे सिखाता है, वे बदल सकते हैं। H1 के तुरंत बाद लिंट-योग्य हेडर मेटा आता है —
+**निर्मित:** · **मूल:** · **स्थिति:** (मील-पत्थरों सहित) · **बाहर:** (`AGENT_GUIDE.md` →
+Document header meta)। फ़ाइलों को क्रमांकित करें (`NN_<naam>.md`)। पूर्ण और सत्यापित योजना के नाम में `DONE` टैग जोड़ें
 (`git mv NN_x.md NN_DONE_x.md`) और स्थिति खंड जोड़ें। संदर्भ सामग्री (बंद करने योग्य कार्य नहीं) को
 DONE टैग नहीं मिलता।
 ``````
@@ -8423,7 +8545,9 @@ DONE टैग नहीं मिलता।
 
 **AI एजेंट के लिए:** जब कोई प्रश्न इतना बड़ा हो कि उसके निष्कर्ष वर्तमान कार्य से आगे जिएँ — यहाँ नोट
 लिखें (कच्चे स्रोत → विश्लेषण → निष्कर्ष/परिकल्पनाएँ)। जिस बग/योजना/विचार ने शोध को जन्म दिया, उससे
-इसका संदर्भ दें (DRY — दोबारा शोध न करें)। शोध-नोट **जीवित संदर्भ** है, बंद करने योग्य कार्य नहीं:
+इसका संदर्भ दें (DRY — दोबारा शोध न करें)। H1 के तुरंत बाद लिंट-योग्य हेडर मेटा आता है —
+**निर्मित:** · **मूल:** · **स्थिति:** · **बाहर:** (`AGENT_GUIDE.md` → Document header meta)।
+शोध-नोट **जीवित संदर्भ** है, बंद करने योग्य कार्य नहीं:
 `DONE` टैग नहीं मिलता, समझ बढ़ने के साथ अपडेट होता है।
 ``````
 
@@ -8559,7 +8683,9 @@ DONE टैग नहीं मिलता।
 
 **AI エージェントへ：** 身体を持つ人間にしかできないことでブロックされたら、停滞しないこと —
 明確で最小限の番号付きステップと、人間の結果を書く場所を備えた homework をここに書き、その後は
-他の作業を続けること。人間が報告したら、結果を取り込み、ファイルに `DONE` タグを付ける
+他の作業を続けること。H1 の直後にリント可能なヘッダーメタが来る — **作成:** · **親:** ·
+**ステータス:** · **外部へ:**（`AGENT_GUIDE.md` → Document header meta）。人間が報告したら、
+結果を取り込み、ファイルに `DONE` タグを付ける
 （`git mv NN_x.md NN_DONE_x.md`）。
 
 **「好み」クラスの homework**（受け入れ基準が知覚の形容詞である場合 — `AGENT_GUIDE.md` →
@@ -8586,7 +8712,9 @@ DONE टैग नहीं मिलता।
 **AI エージェントへ：** オーナーのアイデアを読み、誤字を直し、明瞭さのために最小限に再構成し、
 実装すること。*自分に*価値あるアイデアがあるときは、「❓ オーナーの承認待ち」ステータスでここに
 登録し（スキル: `/propose-idea`）、承認まで**実装しない**こと。アイデア文書は、それが解決する
-痛み + うまくいったことをどう確認するかで始まる（`REQUIREMENTS_FRAMEWORK.md`）。アイデアを実装したら、ステータスと
+痛み + うまくいったことをどう確認するかで始まり（`REQUIREMENTS_FRAMEWORK.md`）、H1 の直後に
+リント可能なヘッダーメタを持つ — **作成:** · **親:** · **ステータス:** · **外部へ:**
+（`AGENT_GUIDE.md` → Document header meta）。アイデアを実装したら、ステータスと
 日付をそのファイルに書き戻し、`DONE` タグを付ける（`git mv NN_x.md NN_DONE_x.md`）。
 ``````
 
@@ -8707,7 +8835,9 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 
 **AI エージェントへ：** 非自明な作業の前に、ここに短い計画を書いてそれに従うこと。すべての計画は
 目標ベクトル + 受け入れ基準で始まる — `REQUIREMENTS_FRAMEWORK.md` に従って書く。作業から学ぶに
-つれて変更してよい。ファイルには番号を付ける（`NN_<名前>.md`）。完了し検証済みの計画はファイル名に `DONE` タグを入れ
+つれて変更してよい。H1 の直後にリント可能なヘッダーメタが来る — **作成:** · **親:** ·
+**ステータス:**（マイルストーン付き）· **外部へ:**（`AGENT_GUIDE.md` → Document header meta）。
+ファイルには番号を付ける（`NN_<名前>.md`）。完了し検証済みの計画はファイル名に `DONE` タグを入れ
 （`git mv NN_x.md NN_DONE_x.md`）、ステータスセクションを追記する。参照資料（クローズできる
 タスクではないもの）には DONE タグを付けない。
 ``````
@@ -8725,7 +8855,9 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 
 **AI エージェントへ：** 問いが、その結論が現在のタスクを超えて生き残るほど大きいときは — ここに
 ノートを書くこと（生のソース → 分析 → 結論／仮説）。調査を生んだバグ／計画／アイデアからそれを
-参照すること（DRY — 再調査しない）。調査ノートは**生きたリファレンス**であり、クローズできる
+参照すること（DRY — 再調査しない）。H1 の直後にリント可能なヘッダーメタが来る — **作成:** ·
+**親:** · **ステータス:** · **外部へ:**（`AGENT_GUIDE.md` → Document header meta）。
+調査ノートは**生きたリファレンス**であり、クローズできる
 タスクではありません：`DONE` タグは付けず、理解が深まるにつれ更新します。
 ``````
 
@@ -8863,7 +8995,9 @@ continua.
 
 **Para o agente de IA:** quando estiver bloqueado em algo que só um humano-com-corpo pode fazer, não trave
 — escreva aqui um homework com passos claros, mínimos e numerados e um lugar para os resultados do humano,
-depois continue com outro trabalho. Quando o humano reportar, incorpore os resultados e marque o arquivo
+depois continue com outro trabalho. Logo após o H1 vem o cabeçalho meta lintável — **Criado:** ·
+**Pai:** · **Estado:** · **Para fora:** (`AGENT_GUIDE.md` → Document header meta). Quando o humano
+reportar, incorpore os resultados e marque o arquivo
 com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework da classe «gosto»** (o critério de aceitação é um adjetivo de percepção — `AGENT_GUIDE.md` →
@@ -8891,7 +9025,9 @@ ideia é uma peça da **visão** do produto — o agente só a implementa após 
 minimamente para clareza e depois implemente. Quando *você* tiver uma ideia que valha a pena, registre-a
 aqui com o status "❓ aguardando aprovação do proprietário" (habilidade: `/propose-idea`) e **não**
 implemente até que seja aprovada. O documento de uma ideia se abre com a dor que ela resolve + como
-verificamos que funcionou (`REQUIREMENTS_FRAMEWORK.md`). Após implementar uma ideia, escreva o status e a data no arquivo e
+verificamos que funcionou (`REQUIREMENTS_FRAMEWORK.md`), e logo após o H1 carrega o cabeçalho meta
+lintável — **Criado:** · **Pai:** · **Estado:** · **Para fora:** (`AGENT_GUIDE.md` → Document
+header meta). Após implementar uma ideia, escreva o status e a data no arquivo e
 marque-o com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -9011,7 +9147,9 @@ agente antes da execução.
 
 **Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Todo plano
 SE ABRE com seu vetor de objetivo + critérios de aceitação — escritos segundo o
-`REQUIREMENTS_FRAMEWORK.md`; eles podem mudar conforme o trabalho ensina. Numere os
+`REQUIREMENTS_FRAMEWORK.md`; eles podem mudar conforme o trabalho ensina. Logo após o H1 vem o
+cabeçalho meta lintável — **Criado:** · **Pai:** · **Estado:** (com marcos) · **Para fora:**
+(`AGENT_GUIDE.md` → Document header meta). Numere os
 arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
 (`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
 não recebe a tag DONE.
@@ -9032,7 +9170,9 @@ queira pesquisar.
 
 **Para o agente de IA:** quando uma questão for grande o suficiente para que suas conclusões sobrevivam à
 tarefa atual — escreva aqui uma anotação (fontes cruas → análise → conclusões/hipóteses). Referencie-a a
-partir do bug/plano/ideia que originou a pesquisa (DRY — não re-pesquise). Uma anotação de pesquisa é uma
+partir do bug/plano/ideia que originou a pesquisa (DRY — não re-pesquise). Logo após o H1 vem o
+cabeçalho meta lintável — **Criado:** · **Pai:** · **Estado:** · **Para fora:**
+(`AGENT_GUIDE.md` → Document header meta). Uma anotação de pesquisa é uma
 **referência viva**, não uma tarefa fechável: não recebe a tag `DONE` e é atualizada à medida que a
 compreensão cresce.
 ``````
@@ -9169,7 +9309,9 @@ issue-трекере origin и отправляют подтверждённые
 
 **Для ИИ-агента:** заблокирован на том, что может сделать только человек-с-телом, — не застревай: заведи
 homework с ясными минимальными пронумерованными шагами и местом для результатов человека, затем продолжай
-другую работу. Получив ответ человека, учти результаты и пометь файл `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+другую работу. Сразу после H1 — линтуемая шапка-мета: **Создан:** · **Родитель:** · **Статус:** ·
+**Вовне:** (`AGENT_GUIDE.md` → Document header meta). Получив ответ человека, учти результаты и
+пометь файл `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework класса «вкус»** (критерий приёмки — прилагательное восприятия; `AGENT_GUIDE.md` →
 "The taste class"): агент отдаёт человеку АРТЕФАКТ для восприятия — никогда не ссылку и не чужой
@@ -9194,7 +9336,9 @@ homework с ясными минимальными пронумерованным
 **Для ИИ-агента:** читай идеи владельца, исправляй опечатки, минимально структурируй и реализуй. Свою
 стоящую идею оформляй здесь со статусом «❓ ожидает одобрения владельца» (навык `/propose-idea`) и **не**
 реализуй до одобрения. Документ идеи открывается болью, которую она решает, + чем проверим, что
-сработала (`REQUIREMENTS_FRAMEWORK.md`). После реализации впиши статус и дату в файл и пометь `DONE`
+сработала (`REQUIREMENTS_FRAMEWORK.md`), а сразу после H1 несёт линтуемую шапку-мету:
+**Создан:** · **Родитель:** · **Статус:** · **Вовне:** (`AGENT_GUIDE.md` → Document header meta).
+После реализации впиши статус и дату в файл и пометь `DONE`
 (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -9311,7 +9455,9 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 
 **Для ИИ-агента:** перед нетривиальной работой пиши сюда короткий план и следуй ему. Каждый план
 ОТКРЫВАЕТСЯ вектором цели + критериями приёмки — пишутся по `REQUIREMENTS_FRAMEWORK.md`; они
-меняются по мере работы. Нумеруй файлы (`NN_<имя>.md`). Завершённый и проверенный план получает тег `DONE` в имени (`git mv NN_x.md
+меняются по мере работы. Сразу после H1 — линтуемая шапка-мета: **Создан:** · **Родитель:** ·
+**Статус:** (с вехами) · **Вовне:** (`AGENT_GUIDE.md` → Document header meta). Нумеруй файлы
+(`NN_<имя>.md`). Завершённый и проверенный план получает тег `DONE` в имени (`git mv NN_x.md
 NN_DONE_x.md`) плюс раздел статуса. Справочные документы (не закрываемые задачи) тегом не помечаются.
 ``````
 
@@ -9329,7 +9475,9 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 
 **Для ИИ-агента:** когда вопрос достаточно большой, чтобы его выводы пережили текущую задачу, — пиши сюда
 конспект (сырые источники → анализ → выводы/гипотезы). Ссылайся на него из бага/плана/идеи, породивших
-исследование (DRY — не переисследуй). Конспект исследования — **живой справочник**, а не закрываемая
+исследование (DRY — не переисследуй). Сразу после H1 — линтуемая шапка-мета: **Создан:** ·
+**Родитель:** · **Статус:** · **Вовне:** (`AGENT_GUIDE.md` → Document header meta). Конспект
+исследования — **живой справочник**, а не закрываемая
 задача: тегом `DONE` не помечается, обновляется по мере роста понимания.
 ``````
 
@@ -9455,7 +9603,9 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 并把观察到的写回文档 —— 代理会读取您的记录并继续。
 
 **给 AI 代理：** 当被只有"有身体的人类"才能做的事情卡住时，不要停滞 —— 在这里写一份 homework，
-给出清晰、最少、编号的步骤和留给人类填写结果的位置，然后继续其他工作。人类反馈后，纳入结果并给
+给出清晰、最少、编号的步骤和留给人类填写结果的位置，然后继续其他工作。H1 之后紧跟可 lint 的文档
+头部元信息 —— **创建:** · **父级:** · **状态:** · **对外:**（`AGENT_GUIDE.md` → Document header
+meta）。人类反馈后，纳入结果并给
 文件打上 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）。
 
 **「品味」类 homework**（验收标准是感知类形容词 —— `AGENT_GUIDE.md` → "The taste class"）：
@@ -9477,7 +9627,9 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 
 **给 AI 代理：** 阅读所有者的想法，修正笔误，为清晰起见做最小限度的重组，然后实现。当*你*有一个
 值得做的想法时，在这里以"❓ 等待所有者批准"状态登记（技能：`/propose-idea`），批准前**不要**实现。
-想法文档以它所解决的痛点 + 我们如何验证它奏效开篇（`REQUIREMENTS_FRAMEWORK.md`）。
+想法文档以它所解决的痛点 + 我们如何验证它奏效开篇（`REQUIREMENTS_FRAMEWORK.md`），并在 H1 之后
+紧跟可 lint 的文档头部元信息 —— **创建:** · **父级:** · **状态:** · **对外:**（`AGENT_GUIDE.md`
+→ Document header meta）。
 实现一个想法后，把状态和日期写回其文件并打上 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）。
 ``````
 
@@ -9588,7 +9740,9 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 计划。阅读它们可以在执行前看到代理打算采用的方式。
 
 **给 AI 代理：** 在非平凡工作之前，在这里写一份简短计划并遵循它。每份计划以目标向量 + 验收标准
-开篇 —— 按 `REQUIREMENTS_FRAMEWORK.md` 撰写；随着工作的深入可以修改。给文件编号（`NN_<名称>.md`）。
+开篇 —— 按 `REQUIREMENTS_FRAMEWORK.md` 撰写；随着工作的深入可以修改。H1 之后紧跟可 lint 的文档
+头部元信息 —— **创建:** · **父级:** · **状态:**（含里程碑）· **对外:**（`AGENT_GUIDE.md` →
+Document header meta）。给文件编号（`NN_<名称>.md`）。
 完成且验证过的计划在文件名中加 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）并附上状态部分。
 参考资料（不可关闭的任务）不打 DONE 标签。
 ``````
@@ -9605,7 +9759,9 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 什么。您也可以指定想要研究的主题。
 
 **给 AI 代理：** 当一个问题大到其结论会超越当前任务而存续时 —— 在这里写笔记（原始来源 → 分析 →
-结论/假设）。从引发研究的 Bug/计划/想法中引用它（DRY —— 不要重复研究）。研究笔记是**活的参考
+结论/假设）。从引发研究的 Bug/计划/想法中引用它（DRY —— 不要重复研究）。H1 之后紧跟可 lint 的
+文档头部元信息 —— **创建:** · **父级:** · **状态:** · **对外:**（`AGENT_GUIDE.md` → Document
+header meta）。研究笔记是**活的参考
 文档**，不是可关闭的任务：不打 `DONE` 标签，随着理解加深而更新。
 ``````
 

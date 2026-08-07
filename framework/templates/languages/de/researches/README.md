@@ -10,6 +10,8 @@ Thema benennen, das untersucht werden soll.
 
 **Für den KI-Agenten:** Wenn eine Frage groß genug ist, dass ihre Schlussfolgerungen die aktuelle Aufgabe
 überleben — schreibe hier eine Notiz (Rohquellen → Analyse → Schlussfolgerungen/Hypothesen). Verweise
-darauf aus dem Bug/Plan/der Idee, die die Recherche ausgelöst haben (DRY — nicht neu recherchieren). Eine
+darauf aus dem Bug/Plan/der Idee, die die Recherche ausgelöst haben (DRY — nicht neu recherchieren).
+Direkt nach der H1 folgt die lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** ·
+**Nach außen:** (`AGENT_GUIDE.md` → Document header meta). Eine
 Recherche-Notiz ist eine **lebende Referenz**, keine schließbare Aufgabe: nie mit `DONE` markiert,
 aktualisiert, während das Verständnis wächst.

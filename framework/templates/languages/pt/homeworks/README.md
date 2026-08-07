@@ -11,7 +11,9 @@ continua.
 
 **Para o agente de IA:** quando estiver bloqueado em algo que só um humano-com-corpo pode fazer, não trave
 — escreva aqui um homework com passos claros, mínimos e numerados e um lugar para os resultados do humano,
-depois continue com outro trabalho. Quando o humano reportar, incorpore os resultados e marque o arquivo
+depois continue com outro trabalho. Logo após o H1 vem o cabeçalho meta lintável — **Criado:** ·
+**Pai:** · **Estado:** · **Para fora:** (`AGENT_GUIDE.md` → Document header meta). Quando o humano
+reportar, incorpore os resultados e marque o arquivo
 com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework da classe «gosto»** (o critério de aceitação é um adjetivo de percepção — `AGENT_GUIDE.md` →

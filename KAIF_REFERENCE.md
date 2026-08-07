@@ -34,6 +34,7 @@ for understanding the project and making judgment calls.
 | **Receipt** | `.kaif/last-update.json` — the permanent proof of the last update (§12.3). |
 | **Owner** | The human whose vision the project serves. The owner's word outranks every document. |
 | **Canon artifact** | An owner document whose wording IS the content (rules, lore, brand texts). AI text enters it only marked (§13.3). |
+| **Contour** | A top-level logical module of the system or of the methodology itself: a complete closed stack of context on one direction — boundaries · governance · execution layer · quality control (`AGENT_GUIDE.md` → Contours). |
 
 ## 2. Design principles
 
@@ -92,6 +93,16 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
 research notes and reports are living records and are never tagged.
+
+The documents divide into five tiers (the taxonomy canon lives in `AGENT_GUIDE.md` → Document
+taxonomy): **KEY canon documents** — the re-read core of nine the agent re-reads on schedule
+(`GOAL`, `AGENT_GUIDE`, `PHILOSOPHY`, `REQUIREMENTS_FRAMEWORK`, `TESTING_FRAMEWORK`,
+`BUG_FIXING_FRAMEWORK`, `STATUS`, `MASTER_PLAN`, `PROJECT_STRUCTURE_EXTERNAL_MAP`) — a smaller
+set than the fourteen shipped key documents above; **EXTENDED canon documents**, fetched on demand
+by the context router; **WORKING canon documents** — the dynamic knowledge-directory documents,
+each opening with the lintable header meta (H1 + `Created`/`Parent`/`Status`/`Outbound`, in the
+project's working language); **OTHER KAIF documents** — the project's local "house rules"; and
+**project working documents**, which belong to the owner's project, not to the framework.
 
 ## 6. The skill system
 

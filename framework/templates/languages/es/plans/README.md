@@ -10,7 +10,9 @@ de que lo ejecute.
 
 **Para el agente de IA:** antes de un trabajo no trivial, escriba aquí un plan corto y sígalo. Todo plan
 SE ABRE con su vector de objetivo + criterios de aceptación — escritos según
-`REQUIREMENTS_FRAMEWORK.md`; pueden cambiar a medida que el trabajo enseña. Numere los
+`REQUIREMENTS_FRAMEWORK.md`; pueden cambiar a medida que el trabajo enseña. Justo después del H1
+va la cabecera meta lintable — **Creado:** · **Padre:** · **Estado:** (con hitos) ·
+**Hacia fuera:** (`AGENT_GUIDE.md` → Document header meta). Numere los
 archivos (`NN_<nombre>.md`). Un plan terminado y verificado recibe la etiqueta `DONE` en su nombre
 (`git mv NN_x.md NN_DONE_x.md`) más una sección de estado. El material de referencia (no una tarea
 cerrable) no se etiqueta con DONE.

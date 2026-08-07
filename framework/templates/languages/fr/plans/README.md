@@ -10,7 +10,9 @@ pour voir l'approche prévue par l'agent avant qu'il l'exécute.
 
 **Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Tout plan
 S'OUVRE sur son vecteur d'objectif + ses critères d'acceptation — écrits selon
-`REQUIREMENTS_FRAMEWORK.md` ; ils peuvent changer à mesure que le travail apprend. Numérotez les
+`REQUIREMENTS_FRAMEWORK.md` ; ils peuvent changer à mesure que le travail apprend. Juste après le
+H1 vient l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut :** (avec jalons) ·
+**Vers l'extérieur :** (`AGENT_GUIDE.md` → Document header meta). Numérotez les
 fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
 (`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
 fermable) n'est pas étiqueté DONE.

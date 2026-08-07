@@ -10,7 +10,9 @@ beabsichtigten Ansatz des Agenten vor der Ausführung zu sehen.
 
 **Für den KI-Agenten:** Schreibe vor nicht-trivialer Arbeit hier einen kurzen Plan und folge ihm.
 Jeder Plan BEGINNT mit seinem Zielvektor + Abnahmekriterien — geschrieben nach
-`REQUIREMENTS_FRAMEWORK.md`; sie dürfen sich ändern, wenn die Arbeit dazulernt. Nummeriere die
+`REQUIREMENTS_FRAMEWORK.md`; sie dürfen sich ändern, wenn die Arbeit dazulernt. Direkt nach der H1
+folgt die lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** (mit Meilensteinen) ·
+**Nach außen:** (`AGENT_GUIDE.md` → Document header meta). Nummeriere die
 Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
 Dateinamen (`git mv NN_x.md NN_DONE_x.md`) plus einen Statusabschnitt. Referenzmaterial (keine schließbare
 Aufgabe) wird nicht mit DONE markiert.

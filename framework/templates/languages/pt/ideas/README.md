@@ -12,5 +12,7 @@ ideia é uma peça da **visão** do produto — o agente só a implementa após 
 minimamente para clareza e depois implemente. Quando *você* tiver uma ideia que valha a pena, registre-a
 aqui com o status "❓ aguardando aprovação do proprietário" (habilidade: `/propose-idea`) e **não**
 implemente até que seja aprovada. O documento de uma ideia se abre com a dor que ela resolve + como
-verificamos que funcionou (`REQUIREMENTS_FRAMEWORK.md`). Após implementar uma ideia, escreva o status e a data no arquivo e
+verificamos que funcionou (`REQUIREMENTS_FRAMEWORK.md`), e logo após o H1 carrega o cabeçalho meta
+lintável — **Criado:** · **Pai:** · **Estado:** · **Para fora:** (`AGENT_GUIDE.md` → Document
+header meta). Após implementar uma ideia, escreva o status e a data no arquivo e
 marque-o com `DONE` (`git mv NN_x.md NN_DONE_x.md`).

@@ -12,5 +12,7 @@ Una idea es una pieza de la **visión** del producto — el agente la implementa
 claridad, y luego implemente. Cuando *usted* tenga una idea que valga la pena, regístrela aquí con el
 estado "❓ a la espera de la aprobación del propietario" (habilidad: `/propose-idea`) y **no** la implemente
 hasta que se apruebe. El documento de una idea se abre con el dolor que resuelve + cómo comprobamos
-que funcionó (`REQUIREMENTS_FRAMEWORK.md`). Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
+que funcionó (`REQUIREMENTS_FRAMEWORK.md`), y justo después del H1 lleva la cabecera meta
+lintable — **Creado:** · **Padre:** · **Estado:** · **Hacia fuera:** (`AGENT_GUIDE.md` →
+Document header meta). Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
 con `DONE` (`git mv NN_x.md NN_DONE_x.md`).

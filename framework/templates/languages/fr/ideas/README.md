@@ -12,5 +12,7 @@ Une idée est un morceau de la **vision** du produit — l'agent ne l'implément
 la clarté, puis implémentez. Quand *vous* avez une idée qui en vaut la peine, déposez-la ici avec le statut
 « ❓ en attente de l'approbation du propriétaire » (compétence : `/propose-idea`) et ne l'implémentez
 **pas** avant approbation. Le document d'une idée s'ouvre sur la douleur qu'elle résout + comment
-nous vérifions qu'elle a fonctionné (`REQUIREMENTS_FRAMEWORK.md`). Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
+nous vérifions qu'elle a fonctionné (`REQUIREMENTS_FRAMEWORK.md`), et porte juste après le H1
+l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut :** · **Vers l'extérieur :**
+(`AGENT_GUIDE.md` → Document header meta). Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
 et étiquetez-le `DONE` (`git mv NN_x.md NN_DONE_x.md`).

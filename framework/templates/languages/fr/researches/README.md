@@ -10,6 +10,8 @@ vous voulez faire étudier.
 
 **Pour l'agent IA :** quand une question est assez grande pour que ses conclusions survivent à la tâche en
 cours — écrivez ici une note (sources brutes → analyse → conclusions/hypothèses). Référencez-la depuis le
-bug/plan/idée qui a engendré la recherche (DRY — ne re-cherchez pas). Une note de recherche est une
+bug/plan/idée qui a engendré la recherche (DRY — ne re-cherchez pas). Juste après le H1 vient
+l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut :** · **Vers l'extérieur :**
+(`AGENT_GUIDE.md` → Document header meta). Une note de recherche est une
 **référence vivante**, pas une tâche fermable : jamais étiquetée `DONE`, mise à jour à mesure que la
 compréhension grandit.

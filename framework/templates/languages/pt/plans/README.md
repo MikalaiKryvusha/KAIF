@@ -10,7 +10,9 @@ agente antes da execução.
 
 **Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Todo plano
 SE ABRE com seu vetor de objetivo + critérios de aceitação — escritos segundo o
-`REQUIREMENTS_FRAMEWORK.md`; eles podem mudar conforme o trabalho ensina. Numere os
+`REQUIREMENTS_FRAMEWORK.md`; eles podem mudar conforme o trabalho ensina. Logo após o H1 vem o
+cabeçalho meta lintável — **Criado:** · **Pai:** · **Estado:** (com marcos) · **Para fora:**
+(`AGENT_GUIDE.md` → Document header meta). Numere os
 arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
 (`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
 não recebe a tag DONE.

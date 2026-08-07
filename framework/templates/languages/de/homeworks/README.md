@@ -12,7 +12,9 @@ zurück — der Agent liest Ihre Notizen und macht weiter.
 
 **Für den KI-Agenten:** Wenn du an etwas blockiert bist, das nur ein Mensch-mit-Körper tun kann, bleib
 nicht stecken — schreibe hier ein Homework mit klaren, minimalen, nummerierten Schritten und einem Platz
-für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Wenn der Mensch berichtet, arbeite
+für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Direkt nach der H1 folgt die
+lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** · **Nach außen:**
+(`AGENT_GUIDE.md` → Document header meta). Wenn der Mensch berichtet, arbeite
 die Ergebnisse ein und markiere die Datei mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 
 **Homework der Geschmacksklasse** (das Abnahmekriterium ist ein Wahrnehmungsadjektiv — `AGENT_GUIDE.md` →

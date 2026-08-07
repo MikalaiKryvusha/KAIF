@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 662,
+  "moduleCount": 665,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -17,10 +17,10 @@
       {
         "signature": "## Before every task — checklist",
         "class": "adaptive",
-        "sha256": "ef209843b5a14acadb84542d8222d587d73ca5f897da3a105adcf53b910c3d59",
+        "sha256": "07c3686224939d1e9fe5668003d2eed67331599556c27941e8bcc55371a05b9b",
         "lines": [
           21,
-          61
+          64
         ]
       },
       {
@@ -28,8 +28,35 @@
         "class": "static",
         "sha256": "fdef097c2a4f7094c13aaf097b6664ff436c18703fa8af244734fb36d7289bbd",
         "lines": [
-          62,
-          81
+          65,
+          84
+        ]
+      },
+      {
+        "signature": "### Document taxonomy — the five tiers",
+        "class": "static",
+        "sha256": "3566757bd187154e72e5cf9f50c4d8e7010ecdaacc575cf66280a96ef8eceaf2",
+        "lines": [
+          85,
+          114
+        ]
+      },
+      {
+        "signature": "### Document header meta — the first screen answers \"what is this\"",
+        "class": "static",
+        "sha256": "cab17544c78f089dfed261222ae0f0eed93905cb2e9c395ceaa1c3e800d91d7a",
+        "lines": [
+          115,
+          134
+        ]
+      },
+      {
+        "signature": "### Contours — the project's large logical modules",
+        "class": "static",
+        "sha256": "a895c3489b5097363fbbb7e72361fcc67ca4f968ccd163f1b24bdfe1bfc12513",
+        "lines": [
+          135,
+          146
         ]
       },
       {
@@ -37,8 +64,8 @@
         "class": "static",
         "sha256": "78448150129eed6cc9f1159a9fb03622eb3e23bc316675c9b66df43f906cf789",
         "lines": [
-          82,
-          104
+          147,
+          169
         ]
       },
       {
@@ -46,8 +73,8 @@
         "class": "static",
         "sha256": "ad9dee7be28f547eb0c277a4e71c59f9b42341433769216a63893ff757f7c1fe",
         "lines": [
-          105,
-          117
+          170,
+          182
         ]
       },
       {
@@ -55,8 +82,8 @@
         "class": "static",
         "sha256": "b1fc4f233d85e9d1005640f23e7bd0d225ca4fb5aee6175ca3db530e1460be00",
         "lines": [
-          118,
-          148
+          183,
+          213
         ]
       },
       {
@@ -64,8 +91,8 @@
         "class": "adaptive",
         "sha256": "d1958723a3b3b1572e00d369fb84237ee41671ad0eefce181dfce903a766c3bc",
         "lines": [
-          149,
-          156
+          214,
+          221
         ]
       },
       {
@@ -73,8 +100,8 @@
         "class": "static",
         "sha256": "c1407cdfc19241e83b46751222cc522857c6b8344b1ee764af59c654d9c17edd",
         "lines": [
-          157,
-          166
+          222,
+          231
         ]
       },
       {
@@ -82,8 +109,8 @@
         "class": "adaptive",
         "sha256": "18da84d8f4ca31cfb21c4c7b9fcebe3b80f3dc0d61a13ede3351e44c81e251a6",
         "lines": [
-          167,
-          182
+          232,
+          247
         ]
       },
       {
@@ -91,8 +118,8 @@
         "class": "static",
         "sha256": "4bb2839da554cc515191a65d936345ceba5309849aad8c0a958812060820df3f",
         "lines": [
-          183,
-          188
+          248,
+          253
         ]
       },
       {
@@ -100,8 +127,8 @@
         "class": "static",
         "sha256": "dc1c7b739d251b671539898faeac13013b64984619e154f92af7208ced65dd6e",
         "lines": [
-          189,
-          205
+          254,
+          270
         ]
       },
       {
@@ -109,8 +136,8 @@
         "class": "adaptive",
         "sha256": "98cea13f34c8dacf866d048849d56f77dc4a5a80753a713152f33fdf674e6c24",
         "lines": [
-          206,
-          216
+          271,
+          281
         ]
       },
       {
@@ -118,8 +145,8 @@
         "class": "static",
         "sha256": "004093c52eacf2037e8a428b75167644b923c6e6f33777b5b339aeb6c78c6661",
         "lines": [
-          217,
-          232
+          282,
+          297
         ]
       },
       {
@@ -127,8 +154,8 @@
         "class": "static",
         "sha256": "6a5dd1aad292f24a32e25d7eac2d47bea94e1d0617cc50eb90236926aa0b2f39",
         "lines": [
-          233,
-          255
+          298,
+          320
         ]
       },
       {
@@ -136,8 +163,8 @@
         "class": "adaptive",
         "sha256": "a88e5bda530a6f64e35315365e6d3503a8c2856b783d7fb42a4ed4eab74a9e45",
         "lines": [
-          256,
-          274
+          321,
+          339
         ]
       },
       {
@@ -145,8 +172,8 @@
         "class": "static",
         "sha256": "8fc9b32ec79b8b26027f49ec94fac9957b3682f03490709d63ad74387416d29d",
         "lines": [
-          275,
-          320
+          340,
+          385
         ]
       },
       {
@@ -154,8 +181,8 @@
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          321,
-          328
+          386,
+          393
         ]
       },
       {
@@ -163,8 +190,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          329,
-          339
+          394,
+          404
         ]
       },
       {
@@ -172,8 +199,8 @@
         "class": "static",
         "sha256": "91ef0d6cae41c2f3c1d78495d25ad908036eba23639224ba2d25a91eb04d17ac",
         "lines": [
-          340,
-          426
+          405,
+          491
         ]
       },
       {
@@ -181,8 +208,8 @@
         "class": "static",
         "sha256": "2007e758c0ecff437fcc1f118ec9101b1d2e11bd373c852ab5ae493de5b6edda",
         "lines": [
-          427,
-          527
+          492,
+          592
         ]
       },
       {
@@ -190,8 +217,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          528,
-          542
+          593,
+          607
         ]
       },
       {
@@ -199,8 +226,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          543,
-          555
+          608,
+          620
         ]
       }
     ],
@@ -1024,10 +1051,10 @@
       {
         "signature": "## 1. Terms and definitions",
         "class": "static",
-        "sha256": "0be8f93a86e1cf2521fe61138c2045982b4e8b1f7a3868c55361f8b4eec0675b",
+        "sha256": "0cb4aa0569659c4865a92c08a9c7e3165a0cc17717578d954cfe3a06cf4df43c",
         "lines": [
           15,
-          36
+          37
         ]
       },
       {
@@ -1035,8 +1062,8 @@
         "class": "static",
         "sha256": "933c1a0d73681e0b99f3345c524a3b584896f8b0fbc95249d0f7aeef3c217ca2",
         "lines": [
-          37,
-          49
+          38,
+          50
         ]
       },
       {
@@ -1044,8 +1071,8 @@
         "class": "static",
         "sha256": "79a91af656127fded2be654c333b11940e9de812914dc9b7f205908a3b7b946f",
         "lines": [
-          50,
-          57
+          51,
+          58
         ]
       },
       {
@@ -1053,17 +1080,17 @@
         "class": "static",
         "sha256": "f02d57267802547cd950a1013e3120ad988cf972e9d01f93b2f7d8999c92daa3",
         "lines": [
-          58,
-          69
+          59,
+          70
         ]
       },
       {
         "signature": "## 5. The document system",
         "class": "static",
-        "sha256": "4c43c00166253be9f02ea244220f0c2ac28c9cb93bc358f4570589350c831697",
+        "sha256": "1058edb1e60ede1a4a8ff3101da63e5a1266ae194f0b48af2721d0842de201cd",
         "lines": [
-          70,
-          94
+          71,
+          105
         ]
       },
       {
@@ -1071,8 +1098,8 @@
         "class": "static",
         "sha256": "f5c090e452668d821e2ebde73d8b9412512cb1d6b9a4d8564264493c8ca000b5",
         "lines": [
-          95,
-          131
+          106,
+          142
         ]
       },
       {
@@ -1080,8 +1107,8 @@
         "class": "static",
         "sha256": "44b78cbd335e6c360797eb999463e3350c5cdeddfd24863d99ef2dc43e2e2494",
         "lines": [
-          132,
-          133
+          143,
+          144
         ]
       },
       {
@@ -1089,8 +1116,8 @@
         "class": "static",
         "sha256": "ab9545bf0b5c0084d28525d3c6b340269d9b11588e49c3b7adf201745648df3f",
         "lines": [
-          134,
-          139
+          145,
+          150
         ]
       },
       {
@@ -1098,8 +1125,8 @@
         "class": "static",
         "sha256": "1fb343cc4657d608caa9f6bcf9b92377d7f46202bc4b742ce0215dd0fa2b763c",
         "lines": [
-          140,
-          150
+          151,
+          161
         ]
       },
       {
@@ -1107,8 +1134,8 @@
         "class": "static",
         "sha256": "ecf66ec956e4700a97c14e67fd661d3f3ad3ba6c994439e1a0d75395f3fdcd1c",
         "lines": [
-          151,
-          157
+          162,
+          168
         ]
       },
       {
@@ -1116,8 +1143,8 @@
         "class": "static",
         "sha256": "73291b9dd7dbc051ce448b519c64012fb2260359c8f4e4773030cba1a9e56aa5",
         "lines": [
-          158,
-          165
+          169,
+          176
         ]
       },
       {
@@ -1125,8 +1152,8 @@
         "class": "static",
         "sha256": "66d071013b370b4635401b41a9effc13a92bb0aef9b1de176b6709750423d850",
         "lines": [
-          166,
-          172
+          177,
+          183
         ]
       },
       {
@@ -1134,8 +1161,8 @@
         "class": "static",
         "sha256": "b27c64dc7d55013ee51ededaff11f50a814c42219a4415a3b1e7e38de8d97962",
         "lines": [
-          173,
-          174
+          184,
+          185
         ]
       },
       {
@@ -1143,8 +1170,8 @@
         "class": "static",
         "sha256": "44109a5c776d9b1bd49517062c2f7f78cd76aa440299ff56adbde404a088579a",
         "lines": [
-          175,
-          179
+          186,
+          190
         ]
       },
       {
@@ -1152,8 +1179,8 @@
         "class": "static",
         "sha256": "c89c0ead0e4f030941764b62dc471914fb38f53bb616422a03d2f5741f6c3436",
         "lines": [
-          180,
-          186
+          191,
+          197
         ]
       },
       {
@@ -1161,8 +1188,8 @@
         "class": "static",
         "sha256": "c83fa0768eacc805178e0bd10afb9179fe36439b3e7ba732abdd8efd47f051e6",
         "lines": [
-          187,
-          188
+          198,
+          199
         ]
       },
       {
@@ -1170,8 +1197,8 @@
         "class": "static",
         "sha256": "8b8bdc6ce3bd10afd5939f6cf7a96f975df27aa5aa86b174dc25c6524af00cf4",
         "lines": [
-          189,
-          198
+          200,
+          209
         ]
       },
       {
@@ -1179,8 +1206,8 @@
         "class": "static",
         "sha256": "2a5b3fbc6beb91b8bb48060abd0c684d7d8527684b7b35d42444090bcb6b1fc6",
         "lines": [
-          199,
-          203
+          210,
+          214
         ]
       },
       {
@@ -1188,8 +1215,8 @@
         "class": "static",
         "sha256": "bfe93071404fa914402b99a75cbd57a40103105b9f6b7366687ba17b3c9ed982",
         "lines": [
-          204,
-          205
+          215,
+          216
         ]
       },
       {
@@ -1197,8 +1224,8 @@
         "class": "static",
         "sha256": "ce13da81c52896d6c4d79b5b9e5232ab26b99fb00950331f6c58a46c22dcdcb0",
         "lines": [
-          206,
-          212
+          217,
+          223
         ]
       },
       {
@@ -1206,8 +1233,8 @@
         "class": "static",
         "sha256": "01a2dc7f739d60f90010087a93f4066f02c74fe0497a1c61137cf301d029a693",
         "lines": [
-          213,
-          220
+          224,
+          231
         ]
       },
       {
@@ -1215,8 +1242,8 @@
         "class": "static",
         "sha256": "cb3b45c757485504bba9543a5250412ca6d9df70258e29464a331cdd228e51f4",
         "lines": [
-          221,
-          229
+          232,
+          240
         ]
       },
       {
@@ -1224,8 +1251,8 @@
         "class": "static",
         "sha256": "482e52c71eb2d7abdba4a8f948ec7b59f6e88fff6a2c3e959ac0ad363803f6e2",
         "lines": [
-          230,
-          237
+          241,
+          248
         ]
       },
       {
@@ -1233,8 +1260,8 @@
         "class": "static",
         "sha256": "325171663ed7b5bf8ff971a88ccfc1c5ba7dd2a661617ad11fd18eac6336e6cd",
         "lines": [
-          238,
-          243
+          249,
+          254
         ]
       },
       {
@@ -1242,8 +1269,8 @@
         "class": "static",
         "sha256": "16e95c45a56a09a36130c416cf0b23f294d04d01d2dd4a80cff97e42d2868d11",
         "lines": [
-          244,
-          249
+          255,
+          260
         ]
       },
       {
@@ -1251,8 +1278,8 @@
         "class": "static",
         "sha256": "dd02da2e0780b229625c6eb0e4dcd8a6864a4dadeca317c286b68fa5ecc2dfb4",
         "lines": [
-          250,
-          257
+          261,
+          268
         ]
       },
       {
@@ -1260,8 +1287,8 @@
         "class": "static",
         "sha256": "104d97b9dd44c46088d6bfd4fa8b5c59327fd50831c711a2492d083d5f75c648",
         "lines": [
-          258,
-          265
+          269,
+          276
         ]
       },
       {
@@ -1269,8 +1296,8 @@
         "class": "static",
         "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
         "lines": [
-          266,
-          267
+          277,
+          278
         ]
       },
       {
@@ -1278,8 +1305,8 @@
         "class": "static",
         "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
         "lines": [
-          268,
-          273
+          279,
+          284
         ]
       },
       {
@@ -1287,8 +1314,8 @@
         "class": "static",
         "sha256": "2ac0a888bff20e43e4cc1ab04c648898e525ad70ad501b0a85d1ad8da1d799bf",
         "lines": [
-          274,
-          280
+          285,
+          291
         ]
       },
       {
@@ -1296,8 +1323,8 @@
         "class": "static",
         "sha256": "dcc15859ba7b566f94d75aee2cfb8101a78c5244ef0fc5a85088882cfaebbc5d",
         "lines": [
-          281,
-          288
+          292,
+          299
         ]
       },
       {
@@ -1305,8 +1332,8 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          289,
-          290
+          300,
+          301
         ]
       },
       {
@@ -1314,8 +1341,8 @@
         "class": "static",
         "sha256": "197191373a9da4adf45b9a1c94de6fb2c3e51a15f4ba3358ba340a098d22809d",
         "lines": [
-          291,
-          309
+          302,
+          320
         ]
       },
       {
@@ -1323,8 +1350,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          310,
-          318
+          321,
+          329
         ]
       },
       {
@@ -1332,8 +1359,8 @@
         "class": "static",
         "sha256": "bbbe655e8707eb05712b6dead34ce3a290bc637b696deec73cba7993565c415c",
         "lines": [
-          319,
-          325
+          330,
+          336
         ]
       },
       {
@@ -1341,8 +1368,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          326,
-          342
+          337,
+          353
         ]
       },
       {
@@ -1350,8 +1377,8 @@
         "class": "static",
         "sha256": "145983fa722aa81134d94b55afbd35cbd2d3770ee517900a92b3d84eebc99ff7",
         "lines": [
-          343,
-          352
+          354,
+          363
         ]
       },
       {
@@ -1359,8 +1386,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          353,
-          365
+          364,
+          376
         ]
       },
       {
@@ -1368,8 +1395,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          366,
-          374
+          377,
+          385
         ]
       }
     ],
@@ -1377,10 +1404,10 @@
       {
         "signature": "# `plans/` — detailed step plans",
         "class": "static",
-        "sha256": "441738447191685e2b3974c60469ac24352f2ab8a221ba61c8fad90ef48f5463",
+        "sha256": "ad94d4669be5732a329fc816d299a70d21f0d6e68713e24a43dfed25927d937d",
         "lines": [
           1,
-          15
+          17
         ]
       }
     ],
@@ -1388,10 +1415,10 @@
       {
         "signature": "# `ideas/` — feature & improvement proposals",
         "class": "static",
-        "sha256": "fee7845505ab349853e570badc34d7cc532e450f61919bb34d82d49049d166f6",
+        "sha256": "851eaa40e8464ccd70989013d12e40c716a5b01badb1f930186685cdb7b16730",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -1410,10 +1437,10 @@
       {
         "signature": "# `researches/` — knowledge base for the big, hard questions",
         "class": "static",
-        "sha256": "0728a720d1f6067abd6f2ef6c572f5c451c1f5ee952c15200f8914b2edfbbc41",
+        "sha256": "a46f00d81eda6b0b26477a97c9528a996db81f42799448ab9947a545f1b1b544",
         "lines": [
           1,
-          14
+          16
         ]
       }
     ],
@@ -1432,10 +1459,10 @@
       {
         "signature": "# `homeworks/` — tasks from the agent to the human",
         "class": "static",
-        "sha256": "771ff5f4643dad898adc83e7f4310991bda67016564a8eaa7c3572a00507f99f",
+        "sha256": "c7c2f17d3453bceef4499dd842476aeb9eb0dd53721ed43c8f963fb3a04d2260",
         "lines": [
           1,
-          23
+          25
         ]
       }
     ],
@@ -4624,10 +4651,10 @@
       {
         "signature": "# `homeworks/` — مهام من الوكيل إلى الإنسان",
         "class": "static",
-        "sha256": "e8a2b18fa637b7daa1a0398ab83e07e9dfbb0e83dd12f50092b47f32a90c64f6",
+        "sha256": "25a75e3ad50f3e6bfb1901b3dfbec761e6d28a5c30de8b0b8f4bc375da0251d6",
         "lines": [
           1,
-          20
+          22
         ]
       }
     ],
@@ -4635,10 +4662,10 @@
       {
         "signature": "# `ideas/` — مقترحات الميزات والتحسينات",
         "class": "static",
-        "sha256": "a0e836a95e4a5b9cf57ed9ae926deed692dcfec65edb0dafcc7b7c36ec7468f2",
+        "sha256": "24ad083335244dfba690541a819da8a5811588f69989e042784659f33ca12e19",
         "lines": [
           1,
-          14
+          16
         ]
       }
     ],
@@ -4722,10 +4749,10 @@
       {
         "signature": "# `plans/` — خطط مفصّلة خطوة بخطوة",
         "class": "static",
-        "sha256": "f6db8267c906bc5c31445d36dfd4025ff8da474abd187352b8f970151d018c60",
+        "sha256": "2dc565bb1b21e668014b93ea1f7ec35c9602d2d681ce19378ef41c73aeebf9e6",
         "lines": [
           1,
-          14
+          16
         ]
       }
     ],
@@ -4733,10 +4760,10 @@
       {
         "signature": "# `researches/` — قاعدة معرفة للمسائل الكبيرة الصعبة",
         "class": "static",
-        "sha256": "89c0ee86dd010f6ffc050159bc768e961cdf89c89084094ab377fc2643767eb7",
+        "sha256": "16d8d9ad0d86c5741ed98f1689add4ae393a602cbcaa0341cc3c5152757217dc",
         "lines": [
           1,
-          13
+          15
         ]
       }
     ],
@@ -4811,10 +4838,10 @@
       {
         "signature": "# `homeworks/` — Aufgaben vom Agenten an den Menschen",
         "class": "static",
-        "sha256": "34d45b4983907149fd487d94d9a82c44cc9caf004c40ad7f0fd0fe962231cddd",
+        "sha256": "c473d3f462cd650495a882510c7c9c2b3f447f15cec7ee6cc4c9973978f3449b",
         "lines": [
           1,
-          24
+          26
         ]
       }
     ],
@@ -4822,10 +4849,10 @@
       {
         "signature": "# `ideas/` — Feature- und Verbesserungsvorschläge",
         "class": "static",
-        "sha256": "513f36c0015d8b99b62ef17453aa676c29ac9977ccdfeebaf7a6ef247a6f5997",
+        "sha256": "fbc87b9203f56b35078332941ce8c5c540e11bf96eaaf2834b0882828061f913",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -4909,10 +4936,10 @@
       {
         "signature": "# `plans/` — detaillierte Schritt-für-Schritt-Pläne",
         "class": "static",
-        "sha256": "635b89ffe0a6cb73bff0177dac11d68747cfce7cf0ff082537b7bc6a84b14cb4",
+        "sha256": "14c1d7e9d5481a67c153307ff957e9c0bcd63ff84339ab761f4a52d206954e3a",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -4920,10 +4947,10 @@
       {
         "signature": "# `researches/` — Wissensbasis für die großen, schweren Fragen",
         "class": "static",
-        "sha256": "c8c4de868fa55c0c2244af3a875c211ff06c92ec481eaf7fcbf1368e488bcbcc",
+        "sha256": "d2f3c41142be236547fa1a2120f8f65437767f59810a5374400ec7c67d09ed14",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -4998,10 +5025,10 @@
       {
         "signature": "# `homeworks/` — tareas del agente para el humano",
         "class": "static",
-        "sha256": "c5c7a6f5d80f40536693d78f6f0008c129e6d5633011007bae83127e7fb78e5d",
+        "sha256": "2892824b50b3ea42d31e7ee6556ecb977798b433f2dc0861b52705141324762b",
         "lines": [
           1,
-          23
+          25
         ]
       }
     ],
@@ -5009,10 +5036,10 @@
       {
         "signature": "# `ideas/` — propuestas de features y mejoras",
         "class": "static",
-        "sha256": "322e068a58af4043b2cc18f13e07fb5af105514b639115ed06a8292e3ee25567",
+        "sha256": "2db58c5c42a61ce7a67c21fc2003bd866ab7d1358100d927d9bda8bc6976ad96",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -5096,10 +5123,10 @@
       {
         "signature": "# `plans/` — planes detallados paso a paso",
         "class": "static",
-        "sha256": "893c1e676790dcd7b9dd61f66d2b2b671c6c05768940861b0e9f60cc2009c769",
+        "sha256": "4be0eab0e52e40cc6258ac886a8b13baa7d9fcdb0bb8176e045ed5bbd069f8e4",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -5107,10 +5134,10 @@
       {
         "signature": "# `researches/` — base de conocimiento para las cuestiones grandes y difíciles",
         "class": "static",
-        "sha256": "cc191ed9ef70423f17838019a0573f4ab435748ac203d1c2fbfab2996edd6b15",
+        "sha256": "0f1afcb399811ae6ff3b039dc17710760b5ec99a95c15e3fbc6a8eaa582fc81d",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5185,10 +5212,10 @@
       {
         "signature": "# `homeworks/` — tâches de l'agent pour l'humain",
         "class": "static",
-        "sha256": "d7685fbc0ca318cc69076f5b9f5ece7c6c55beb796128f38bb638b0156fe4061",
+        "sha256": "b9eb5fbc819daec1f0e7b8ced54d4fca92a66630a90b15caec553be70ea63828",
         "lines": [
           1,
-          24
+          26
         ]
       }
     ],
@@ -5196,10 +5223,10 @@
       {
         "signature": "# `ideas/` — propositions de fonctionnalités et d'améliorations",
         "class": "static",
-        "sha256": "bd26ecdfbd95d75dd3ac0212a184aa8b019aff8db7b1b3b83c590a31ddcaa77b",
+        "sha256": "96b24a5bd6d7f5a248d63b343d2b2d8261421e8a5d887830917ce681e555cab2",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -5283,10 +5310,10 @@
       {
         "signature": "# `plans/` — plans détaillés pas à pas",
         "class": "static",
-        "sha256": "8ca79d8141453d0f81f93df9224c8168cb586387537731aa7fdca50e0efe4072",
+        "sha256": "8f20a2aa6240da15c4563f88bbe094e7ff91268a5a2fbace62b563a376be942f",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -5294,10 +5321,10 @@
       {
         "signature": "# `researches/` — base de connaissance pour les grandes questions difficiles",
         "class": "static",
-        "sha256": "f46b06d73cedc5baed49806522d54a203258f74389ad1a467f2c61ae0bcdc325",
+        "sha256": "a5f11a6eaa58352f9c67ee73efefdc0f91ae20920ed871a17b1ee25725f0de07",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5372,10 +5399,10 @@
       {
         "signature": "# `homeworks/` — एजेंट की ओर से मानव के लिए कार्य",
         "class": "static",
-        "sha256": "f99a5edb14f3f115c324c3aa6bb5c78cc98aa7f282a4783042ef50ac3aa869ea",
+        "sha256": "b511c16235637aa80a017c51be3a33b1b732a6c92bd9cd7658cd72b03c4c5839",
         "lines": [
           1,
-          21
+          23
         ]
       }
     ],
@@ -5383,10 +5410,10 @@
       {
         "signature": "# `ideas/` — फ़ीचर और सुधार प्रस्ताव",
         "class": "static",
-        "sha256": "0ef6a1654e68cc8551feea03adf41ac2d26d05bf3cd0a57a1cd45e27e18a9a75",
+        "sha256": "2f51d76e2ba697a264f1f19eff1ce611adb68712aae3e62c1b2eddfb6ec0e85f",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5470,10 +5497,10 @@
       {
         "signature": "# `plans/` — विस्तृत चरण-दर-चरण योजनाएँ",
         "class": "static",
-        "sha256": "8a48449b987ea086eb61a92790bee36f9c4a34c4459a5b5ee8076221d553bff6",
+        "sha256": "1ce83331468dd2e2d6ad08a78c744bc459f64c016532fc7cc8381599f7651192",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5481,10 +5508,10 @@
       {
         "signature": "# `researches/` — बड़े कठिन प्रश्नों का ज्ञान-आधार",
         "class": "static",
-        "sha256": "f01c25db1cc30778e1f9b429e544361ff566ecb66b2521107c58c1a00f6cab31",
+        "sha256": "52f6556678cdab8088503ad99fdba5c6acd649696baedc3c17a1ab8dbbf4b1f8",
         "lines": [
           1,
-          13
+          15
         ]
       }
     ],
@@ -5559,10 +5586,10 @@
       {
         "signature": "# `homeworks/` — エージェントから人間への宿題",
         "class": "static",
-        "sha256": "fd1bc1f7a94f960e644240ce9c8662318edea3d3da0c1db4a7c5ac2e1bbca206",
+        "sha256": "9e842116550fc529cce4a7eb6729f2f7e858f16aad3a2b42cb169d9df2afa53b",
         "lines": [
           1,
-          23
+          25
         ]
       }
     ],
@@ -5570,10 +5597,10 @@
       {
         "signature": "# `ideas/` — 機能と改善の提案",
         "class": "static",
-        "sha256": "750c481d9581a28f82cd46033eebde13a030234d7b23a6320f018301fe2acd63",
+        "sha256": "baa869371746640aadcefc83f5262a1114631a80419e4071ea6c31b1cecb97ad",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5657,10 +5684,10 @@
       {
         "signature": "# `plans/` — 詳細なステップバイステップの計画",
         "class": "static",
-        "sha256": "13efc4e7e7a117950927da075b2b4e01ac9620202daf634c01b4d71368009b99",
+        "sha256": "b5dd4e6c16ca2fda964a0c9c8cdd114e5138ea7edcd24f35f13e5b985c3dcb77",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5668,10 +5695,10 @@
       {
         "signature": "# `researches/` — 大きく難しい問いのための知識ベース",
         "class": "static",
-        "sha256": "87d1198f17ebb09fd31bb5a1e299d08ec191e5c731a3cdfa76740a11fafbe150",
+        "sha256": "faa24ed0e139ae4bc5989a100f9f085f34b56083a1a773170bb2f86ad63e37fa",
         "lines": [
           1,
-          13
+          15
         ]
       }
     ],
@@ -5746,10 +5773,10 @@
       {
         "signature": "# `homeworks/` — tarefas do agente para o humano",
         "class": "static",
-        "sha256": "5fe378fcb5240cb6421c7f9bba9c58ca5fdd3cf0985d3aed5bbdbb02a39e0eb8",
+        "sha256": "f8912211584fa9db4630eb75ddea13893e1d6c30fd3362c3e354f32e6865daf6",
         "lines": [
           1,
-          23
+          25
         ]
       }
     ],
@@ -5757,10 +5784,10 @@
       {
         "signature": "# `ideas/` — propostas de features e melhorias",
         "class": "static",
-        "sha256": "687ccfa4e1067bc7a508314ad35c01aa7a641d02c94f5e33ee52fd95cb49ae25",
+        "sha256": "30d03042ca22e0e76e4d7393977f76469938cb087349fcfeb05947c93f3bcb96",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -5844,10 +5871,10 @@
       {
         "signature": "# `plans/` — planos detalhados passo a passo",
         "class": "static",
-        "sha256": "5eee6fe5af22b18cac6c8f768af707e245d3f843c5502e534e55dab4a50c247d",
+        "sha256": "eeab58ab192309c7607d1f50134263e2f46578301c135ca3d57834d70f5b3f5a",
         "lines": [
           1,
-          17
+          19
         ]
       }
     ],
@@ -5855,10 +5882,10 @@
       {
         "signature": "# `researches/` — base de conhecimento para as questões grandes e difíceis",
         "class": "static",
-        "sha256": "7957edb280aa3522d16feda4412f5b637dc22d3abbf78f8ff473bf2431bc612b",
+        "sha256": "b512e42864eff1a3a31453780857e8f0729eae53247bffc1dd72260d4ab53c38",
         "lines": [
           1,
-          16
+          18
         ]
       }
     ],
@@ -5933,10 +5960,10 @@
       {
         "signature": "# `homeworks/` — задания от агента человеку",
         "class": "static",
-        "sha256": "ac60a0354784dc34ec917dce7cc844eb0b10f76fe3e16550d738c65a57a59b80",
+        "sha256": "d80a4ea909fbe9882b7ca01fd16388b70b6feb535d98ab6f3fe51307334984cd",
         "lines": [
           1,
-          22
+          24
         ]
       }
     ],
@@ -5944,10 +5971,10 @@
       {
         "signature": "# `ideas/` — идеи, фичи, предложения по улучшению",
         "class": "static",
-        "sha256": "c5ad806fa8c6edff18c92f4ee792e1d461214ac0f19c2741a78c6ee445c23dfa",
+        "sha256": "3b347bdae725aa12b8c6b7583a098a3f17086d09ad79575d6105eb72387d6298",
         "lines": [
           1,
-          15
+          17
         ]
       }
     ],
@@ -6031,10 +6058,10 @@
       {
         "signature": "# `plans/` — детальные пошаговые планы",
         "class": "static",
-        "sha256": "1ad38bb010954583eed871a38812f28e173a0e79596c84e08ec9f9585e6930fa",
+        "sha256": "1c9d959c30dd114b60b0f9fa31af0297ee201fc7e3b389b0dfcd304a2dd26847",
         "lines": [
           1,
-          14
+          16
         ]
       }
     ],
@@ -6042,10 +6069,10 @@
       {
         "signature": "# `researches/` — база знаний по масштабным трудным вопросам",
         "class": "static",
-        "sha256": "099080559616899da1cc28e37ffefaca55c24893a7f1383ed312127f777ff81d",
+        "sha256": "7c493dac10755d02bedd7f5d588d56ec2d0b65fbf2f4233a007c527a79c7c452",
         "lines": [
           1,
-          14
+          16
         ]
       }
     ],
@@ -6120,10 +6147,10 @@
       {
         "signature": "# `homeworks/` —— 代理布置给人类的任务",
         "class": "static",
-        "sha256": "f46fbd5942ebf56f1db6af34f0d1f2d00a828616b53a1b77b5fac1c07aa294a3",
+        "sha256": "7e86bf31b6ea94056dcec08c6a80abd664c6a279ccc1e9240ea1b2af134bd599",
         "lines": [
           1,
-          18
+          20
         ]
       }
     ],
@@ -6131,10 +6158,10 @@
       {
         "signature": "# `ideas/` —— 功能与改进提案",
         "class": "static",
-        "sha256": "a664592255454092c7ac5d0a414d82a784a8782b6578aceb1a92c4225bf5ab67",
+        "sha256": "163c8bb8cb922fbb0a2c42540f4b4c3942ccb1d57df4f5f6285dcd36d8cde656",
         "lines": [
           1,
-          13
+          15
         ]
       }
     ],
@@ -6218,10 +6245,10 @@
       {
         "signature": "# `plans/` —— 详细的分步计划",
         "class": "static",
-        "sha256": "f8b96deb0062c347d7d3ca0f71deadb51d6190b3b647d888f6afe7af062bfbf5",
+        "sha256": "e3c393acc38a3fc1ab0c6fe0d6255b2e1e5b3ccc1f4da0773467d5f590b2b70c",
         "lines": [
           1,
-          13
+          15
         ]
       }
     ],
@@ -6229,10 +6256,10 @@
       {
         "signature": "# `researches/` —— 面向重大难题的知识库",
         "class": "static",
-        "sha256": "757ea93066ab808d37ba1cccb6ab3882c1ce432320cd6a03da061713b05e1461",
+        "sha256": "c2cb92a69a6c04f2e2b08344360506f743e503d2b5c5ae9bf435bf97e56e20ef",
         "lines": [
           1,
-          12
+          14
         ]
       }
     ]

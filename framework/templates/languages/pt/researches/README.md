@@ -10,6 +10,8 @@ queira pesquisar.
 
 **Para o agente de IA:** quando uma questão for grande o suficiente para que suas conclusões sobrevivam à
 tarefa atual — escreva aqui uma anotação (fontes cruas → análise → conclusões/hipóteses). Referencie-a a
-partir do bug/plano/ideia que originou a pesquisa (DRY — não re-pesquise). Uma anotação de pesquisa é uma
+partir do bug/plano/ideia que originou a pesquisa (DRY — não re-pesquise). Logo após o H1 vem o
+cabeçalho meta lintável — **Criado:** · **Pai:** · **Estado:** · **Para fora:**
+(`AGENT_GUIDE.md` → Document header meta). Uma anotação de pesquisa é uma
 **referência viva**, não uma tarefa fechável: não recebe a tag `DONE` e é atualizada à medida que a
 compreensão cresce.

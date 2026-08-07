@@ -10,5 +10,7 @@ executes.
 
 **For the AI agent:** before non-trivial work, write a short plan here and follow it. Every plan
 OPENS with its goal vector + acceptance criteria — written by `REQUIREMENTS_FRAMEWORK.md`; they may
-change as the work teaches. Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+change as the work teaches. Right after the H1 comes the lintable header meta — **Created:** ·
+**Parent:** · **Status:** (with milestones) · **Outbound:** (`AGENT_GUIDE.md` → Document header
+meta). Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.

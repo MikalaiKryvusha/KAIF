@@ -10,6 +10,8 @@ investigar.
 
 **Para el agente de IA:** cuando una cuestión sea lo bastante grande como para que sus conclusiones
 sobrevivan a la tarea actual — escriba aquí un apunte (fuentes crudas → análisis → conclusiones/hipótesis).
-Refiérase a él desde el bug/plan/idea que originó la investigación (DRY — no re-investigue). Un apunte de
+Refiérase a él desde el bug/plan/idea que originó la investigación (DRY — no re-investigue). Justo
+después del H1 va la cabecera meta lintable — **Creado:** · **Padre:** · **Estado:** ·
+**Hacia fuera:** (`AGENT_GUIDE.md` → Document header meta). Un apunte de
 investigación es una **referencia viva**, no una tarea cerrable: no se etiqueta con `DONE` y se actualiza a
 medida que crece la comprensión.

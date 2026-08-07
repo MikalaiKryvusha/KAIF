@@ -11,5 +11,7 @@ product **vision** — the agent implements it only after you approve.
 **For the AI agent:** read owner ideas, fix typos, restructure minimally for clarity, then implement. When
 *you* have a worthwhile idea, file it here with status "❓ awaiting owner approval" (skill: `/propose-idea`)
 and do **not** implement until approved. An idea document opens with the pain it solves + how we
-check that it worked (`REQUIREMENTS_FRAMEWORK.md`). After implementing an idea, write the status and date back into
+check that it worked (`REQUIREMENTS_FRAMEWORK.md`), and right after the H1 carries the lintable
+header meta — **Created:** · **Parent:** · **Status:** · **Outbound:** (`AGENT_GUIDE.md` →
+Document header meta). After implementing an idea, write the status and date back into
 its file and `DONE`-tag it (`git mv NN_x.md NN_DONE_x.md`).
