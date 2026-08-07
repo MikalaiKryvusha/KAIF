@@ -55,9 +55,12 @@ run('git add -A');
 // Сообщение идёт через `git commit -F <файл>` — текст вообще не попадает в argv/шелл
 // (лекарство класса bugs/46; -m с не-ASCII запрещён по построению).
 const tmpMsg = join(tmpdir(), `kaif-commit-msg-${process.pid}.txt`);
-// Трейлер идемпотентен: сообщение, уже несущее его (напр., из --msg-file), не получает дубля
-// (bugs/47). [TESTED: 2026-08-07 · фикс-коммит bugs/47 нёс трейлер в файле — в git log он один]
-writeFileSync(tmpMsg, msg.includes(trailer) ? msg + '\n' : msg + '\n\n' + trailer + '\n');
+// Трейлер идемпотентен по КЛАССУ, а не по одной строке: сообщение, уже несущее ЛЮБОЙ
+// Co-Authored-By, не получает второго (bugs/47 закрыл «тот же трейлер дважды», bugs/50 — соседний
+// случай: трейлер с ДРУГИМ именем модели проскакивал мимо `includes` и коммит уходил с двумя
+// со-авторами, один из которых работу не делал).
+// [TESTED: 2026-08-08 · коммит bugs/50 нёс трейлер «Claude Opus 5» — в git log он один]
+writeFileSync(tmpMsg, /^Co-Authored-By:/mi.test(msg) ? msg + '\n' : msg + '\n\n' + trailer + '\n');
 try {
   run(`git commit -F "${tmpMsg}"`);
 } finally {
