@@ -33,5 +33,10 @@
     "questions": 15,
     "parsedOptions": 45,
     "candidateLines": 45
+  },
+  "interviews/interview_008_k5_contour_decisions.md": {
+    "questions": 4,
+    "parsedOptions": 15,
+    "candidateLines": 15
   }
 }

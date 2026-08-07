@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // questions-guard.mjs — страж места вопросов интерактивного контура (фаза K5, plans/48 шаг 1).
-// [TESTED: 2026-08-07 · селфтест 5 мутаций с предсказаниями + живой прогон по репо]
+// [TESTED: 2026-08-07 · селфтест — все 6 мутаций сбылись по предсказанию (цитата вывода) + живой прогон по репо]
 //
 // Построен ПО собственному вендоренному контракту /owner-reviews (framework/skills/owner-reviews):
 //   G1 — две узкие приметы (заголовок-очередь · адресация в начале строки), явные исключения
@@ -27,6 +27,9 @@ import { join, relative, resolve } from 'node:path'; // T10: resolve, не join,
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
+// Разбор интервью — ЕДИНЫМ парсером ядра (пилот 008: дубль парсера в страже разошёлся с ядром
+// на «комментарий ≠ ответ» — класс «две истины» закрыт формой: один парсер обеим сторонам).
+import { parseQuestions, docStatus } from './lib/review-core.mjs';
 
 // ── Константы (никаких магических значений) ────────────────────────────────────────────────
 // Скоуп скана — рабочие директории знаний обвязки + живой STATUS.md.
@@ -59,15 +62,6 @@ const POINTS_TO_INTERVIEWS_RE = /interviews\/|интервью\s*№|interview\s
 
 // Явное исключение стража: маркер с причиной на строке; пустая причина — само нарушение.
 const ALLOW_MARKER_RE = /<!--\s*questions-guard:allow\s*(.*?)\s*-->/iu;
-
-// Статусы интервью (эвристика по всей истории форматов: DONE / ОТВЕЧЕНО / ANSWERS RECEIVED / 🟡 awaiting).
-const STATUS_CLOSED_RE = /✅|🟢|STATUS:\s*DONE|ANSWERS\s+RECEIVED|ОТВЕЧЕНО/iu;
-const STATUS_WAITING_RE = /🟡|awaiting|ждёт\s+ответ|ожидает\s+ответ/iu;
-
-// Вопрос и поля ответа внутри интервью.
-const QUESTION_HEADING_RE = /^#{2,4}\s+(Q\d+|В\d+)\b/u;
-const ANSWER_LABEL_RE = /^\s*\*{0,2}(?:Answer|Ответ(?:\s+владельца)?)\s*:?\*{0,2}\s*(.*)$/iu;
-const TARGET_LABEL_RE = /^\s*\*{0,2}Адресат\s+ответа\s*:?\*{0,2}\s*(.*)$/iu;
 
 // ── Утилиты ────────────────────────────────────────────────────────────────────────────────
 const sha1 = (s) => createHash('sha1').update(s, 'utf8').digest('hex');
@@ -133,60 +127,16 @@ const mkHit = (root, p, i, line, emptyReason) => ({
 });
 
 // ── Проверка 2: интервью — неотвеченные (отчёт), протухший статус (G3), обратное плечо (I20/I21) ──
+// Разбор — единым парсером ядра (C4, все пять правил; «комментарий ≠ ответ» — пилот 008).
 function parseInterview(root, p) {
-  const lines = readLines(p);
+  const md = readLines(p).join('\n');
   const name = rel(root, p);
   const num = (name.match(/interview_(\d+)/) || [])[1] || null;
-  const head = lines.slice(0, 30).join('\n');
-  const closed = STATUS_CLOSED_RE.test(head);
-  const waiting = !closed && STATUS_WAITING_RE.test(head);
-
-  // Вопросы: от заголовка QN до следующего заголовка того же/высшего уровня или горизонтальной
-  // линейки --- (C4, правило 1: линейка тоже закрывает блок — иначе пустой вопрос «отвечен»).
-  const questions = [];
-  let cur = null;
-  let inFence = false;
-  for (const line of lines) {
-    if (/^\s*(```|~~~)/.test(line)) { inFence = !inFence; if (cur) cur.body.push(line); continue; }
-    if (!inFence && (QUESTION_HEADING_RE.test(line) || /^#{1,3}\s/.test(line) || /^---\s*$/.test(line))) {
-      if (cur) questions.push(cur);
-      const qm = line.match(QUESTION_HEADING_RE);
-      cur = qm ? { id: qm[1], body: [] } : null;
-      continue;
-    }
-    if (cur) cur.body.push(line);
-  }
-  if (cur) questions.push(cur);
-
-  for (const q of questions) {
-    q.answered = false;
-    q.targets = [];
-    for (let j = 0; j < q.body.length; j++) {
-      const t = q.body[j].match(TARGET_LABEL_RE);
-      if (t) { q.targets.push(t[1]); continue; }
-      const a = q.body[j].match(ANSWER_LABEL_RE);
-      if (a) {
-        // C4, правило 2: поле-«контрвопрос» ответом не считается; ответ = непустой текст
-        // на строке метки или первой непустой строке ниже (до следующей метки/конца блока).
-        let text = a[1].trim();
-        if (!text) {
-          for (let k = j + 1; k < q.body.length; k++) {
-            const nl = q.body[k].trim();
-            if (!nl) continue;
-            if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k])) break;
-            text = nl;
-            break;
-          }
-        }
-        if (text) q.answered = true;
-      }
-      // C4, правило 3 (многострочный вариант ответа) покрыт сбором тела до следующей метки.
-    }
-    // C4, правило 4: истина о закрытости — СТАТУС ДОКУМЕНТА; в закрытом интервью вопрос без
-    // распознанного поля ответа считается отвеченным иным форматом (историю не переписываем).
-    if (closed) q.answered = true;
-  }
-  return { file: name, num, closed, waiting, questions };
+  const st = docStatus(md);
+  const questions = parseQuestions(md).map((q) => ({
+    id: q.id, answered: q.answered, targets: q.target ? [q.target] : [],
+  }));
+  return { file: name, num, closed: st === 'closed', waiting: st === 'waiting', questions };
 }
 
 function scanInterviews(root) {
@@ -222,7 +172,11 @@ function scanInterviews(root) {
         for (const tgt of q.targets) {
           const m = tgt.match(/([\p{L}\d_./-]+\/[\p{L}\d_.-]+|[A-Z_]+\.md)/u);
           const hint = m ? m[1].replace(/\.md$/, '') : null;
-          const docs = hint ? corpus.filter((c) => c.file.startsWith(hint)) : [];
+          let docs = hint ? corpus.filter((c) => c.file.startsWith(hint)) : [];
+          // Адресат может быть КОДОВЫМ файлом вне корпуса скана (tools/*.mjs — пилот 008):
+          // читаем его с диска напрямую — цитата «интервью №NNN, QN» живёт и в комментариях кода.
+          if (docs.length === 0 && hint && existsSync(resolve(root, m[1])))
+            docs = [{ file: m[1], text: readLines(resolve(root, m[1])).join('\n') }];
           const cited = docs.some((c) => numRe.test(c.text) && c.text.includes(q.id));
           if (!cited)
             out.propagation.push({

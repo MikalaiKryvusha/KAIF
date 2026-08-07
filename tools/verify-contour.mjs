@@ -178,11 +178,13 @@ function makeFixtureRoot() {
   return root;
 }
 
-// Заполнить поля Q1 и нажать «Записать» — реальная механика страницы (mousedown → click)
+// Заполнить поля Q1 и нажать «Записать» — реальная механика страницы (pointerdown-активация P3)
 const FILL_AND_SAVE_JS = [
   "(function(){",
   " var radio=document.querySelector('input[name=\"choice:interviews/interview_101_fixture.md:Q1\"][value=\"A\"]');",
-  " radio.dispatchEvent(new MouseEvent('mousedown',{bubbles:true}));radio.click();",
+  // черновик мог уже подхватить выбор (I12, тот же origin) — клик по ВЫБРАННОМУ радио честно
+  // снял бы его (P3); кликаем только если не выбрано — как человек, который видит страницу
+  " if(!radio.checked)radio.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true}));",
   " var txt=document.getElementsByName('text:interviews/interview_101_fixture.md:Q1')[0];",
   " txt.value='и свой текст';txt.dispatchEvent(new Event('input',{bubbles:true}));",
   " document.querySelector('#save').click();return true})()",
@@ -243,12 +245,17 @@ async function main() {
           "  return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]}",
           " var l1=lum(body.color),l2=lum(body.backgroundColor);var contrast=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);",
           " return {cards:document.querySelectorAll('.qcard').length,opts:document.querySelectorAll('.opt input').length,",
+          "  optsEnabled:document.querySelectorAll('.opt input:not([disabled])').length,",
           "  tables:document.querySelectorAll('.doc table').length,stripe:cs.borderLeftWidth,",
           "  stripeDiff:cs.borderLeftColor!==csd.borderLeftColor,contrast:contrast,",
           "  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1}})()",
         ].join(''));
         const tag = scheme + '/' + width;
-        check(tag + ': карточки и варианты на месте', probe.cards === 2 && probe.opts === 2);
+        // Закрытый вопрос показывает варианты ЦЕЛИКОМ выключенными радио (пилот 008):
+        // всего 4 радио (2 активных Q1 + 2 выключенных Q2), активных — 2.
+        check(tag + ': карточки и варианты на месте (в т.ч. серые закрытого)',
+          probe.cards === 2 && probe.opts === 4 && probe.optsEnabled === 2,
+          'cards=' + probe.cards + ' opts=' + probe.opts + ' enabled=' + probe.optsEnabled);
         check(tag + ': таблица отрендерена', probe.tables >= 1);
         check(tag + ': полоса состояния 5px и цветом различает wait/done (P1)',
           probe.stripe === '5px' && probe.stripeDiff);
@@ -264,17 +271,21 @@ async function main() {
       const page = await attachPage(browser.cdp, pageUrl);
       const sel = await page.evaluate([
         "(function(){var rs=document.querySelectorAll('input[name=\"choice:interviews/interview_101_fixture.md:Q1\"]');",
-        " function md(el){el.dispatchEvent(new MouseEvent('mousedown',{bubbles:true}))}",
-        " var out=[];md(rs[0]);rs[0].click();out.push(rs[0].checked);",       // клик выделяет
-        " md(rs[0]);rs[0].click();out.push(!rs[0].checked);",                 // второй снимает (P3)
-        " md(rs[0]);rs[0].click();out.push(rs[0].checked);",                  // третий снова ставит
-        " md(rs[1]);rs[1].click();out.push(rs[1].checked&&!rs[0].checked);",  // сосед гасит прежний
+        " function pd(el){el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true}))}",
+        " var out=[];pd(rs[0]);out.push(rs[0].checked);",                     // клик выделяет
+        " pd(rs[0]);out.push(!rs[0].checked);",                               // второй снимает (P3)
+        " pd(rs[0]);out.push(rs[0].checked);",                                // третий снова ставит
+        " pd(rs[1]);out.push(rs[1].checked&&!rs[0].checked);",                // сосед гасит прежний
+        " pd(rs[0]);var div=rs[0].closest('label').querySelector('div');",    // текст-клик по выбранному
+        " pd(div);out.push(rs[0].checked);",                                  // не снимает (skipped)
+        " try{localStorage.clear()}catch(e){}",                               // тест-черновик не должен утечь в блок 6
         " return out})()",
       ].join(''));
       check('клик выделяет', sel[0] === true);
-      check('второй клик СНИМАЕТ выбор (P3)', sel[1] === true);
+      check('второй клик СНИМАЕТ выбор (P3, полевой баг пилота 008)', sel[1] === true);
       check('третий клик снова выделяет', sel[2] === true);
       check('сосед гасит прежний', sel[3] === true);
+      check('клик по ТЕКСТУ выбирает, но не снимает (label-target skipped)', sel[4] === true);
       await browser.cdp.send('Target.closeTarget', { targetId: page.targetId });
     }
 
@@ -290,7 +301,8 @@ async function main() {
       check('место 1: ответ в исходном md', qs.find((q) => q.id === 'Q1').answered);
       check('провенанс by/at в md', /owner-review: by .+ · \d+ /u.test(mdAfter));
       const dec = readDecision(fixtureRoot, fxDoc);
-      check('место 2: decision.json с by/at/answers', dec && dec.by && dec.at && dec.answers.Q1.choice === 'A');
+      check('место 2: decision.json с by/at/answers', dec && dec.by && dec.at && dec.answers.Q1.choice === 'A',
+        dec ? 'answers=' + JSON.stringify(dec.answers) : 'decision.json не прочитан');
       const archive = join(fixtureRoot, 'interviews/decisions/archive');
       check('место 3: архивная копия существует', existsSync(archive) && readdirSync(archive).length === 1);
       check('ответ владельца в Q2 НЕ затёрт (байт-в-байт)',
@@ -444,9 +456,12 @@ async function main() {
     await sleep(800); // Windows отпускает файлы убитого браузера не мгновенно
     rmTolerant(fixtureRoot);
     rmTolerant(profile);
+    // Считаем только СВОИ замки (фикстура/очередь): замок живого документа, открытого
+    // владельцу параллельно с QA, — не мусор прогона (пилот 008).
     const locks = existsSync(join(ROOT, 'interviews/decisions'))
-      ? readdirSync(join(ROOT, 'interviews/decisions')).filter((f) => f.endsWith('.lock')) : [];
-    check('след убран: фикстура и профиль удалены, замков в репо нет',
+      ? readdirSync(join(ROOT, 'interviews/decisions'))
+        .filter((f) => f.endsWith('.lock') && /interview_101_fixture|_queue/.test(f)) : [];
+    check('след убран: фикстура и профиль удалены, замков QA-прогона в репо нет',
       !existsSync(fixtureRoot) && !existsSync(profile) && locks.length === 0, 'остались замки: ' + locks.join(','));
   }
 }

@@ -41,32 +41,50 @@ const SILENCE_THRESHOLD_MS = 180000;  // DEF6: порог тишины 3 мин 
 const SILENCE_TICK_MS = 15000;        // DEF5: вахта тишины тикает каждые 15 с
 const SILENCE_STRIKES_TO_DIE = 2;     // DEF6/T5: два страйка против сна машины
 const BEEP_DEADLINE_MS = 8000;        // DEF7: жёсткий срок дочернего вызова писка
-const VOICE_TIMEOUT_MS = 60000;       // DEF7: таймаут голоса
+const VOICE_TIMEOUT_MS = 60000;       // DEF7: таймаут голоса (первый холодный зов ~11 с — писки прикрывают)
+// Голос — ВЫНЕСЕННЫЙ вердикт владельца (не переспрашивается): движок Silero v5 ru, голос eugene —
+// «звучит по-человечески, а не роботом» (вердикт зафиксирован в NDim tools/review.mjs, движок —
+// общий «рот» МАШИНЫ в KLAS, I36: тяжёлый TTS принадлежит машине, проект зовёт готовую команду).
+const VOICE_TOOL = process.env.KAIF_VOICE_TOOL || 'F:\\KLAS\\tools\\voice-say.mjs';
+const VOICE_NAME = process.env.KAIF_VOICE || 'eugene';
+const SAPI_VOICE = process.env.KAIF_SAPI_VOICE || 'Microsoft Irina Desktop'; // фолбэк-голос доноров (NDim/Unliminium)
 const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130; // I25: три исхода
 const QUEUE_FILE = 'interviews/decisions/queue.json'; // I7: очередь — файл состояния
 const TMP_DIR = 'tools/.review-tmp';
 
 // ── Сигнал (C8/I33): писк → консоль → голос; тихие часы поверх всего (I6) ──────────────────
-export function signalCall(root, phrase, { quiet = inQuietHours(), log = console.log } = {}) {
-  log('СИГНАЛ: ' + phrase); // C8: простой текст в консоль — exit-код не доказывает, что человек услышал
+export function signalCall(root, rawPhrase, { quiet = inQuietHours(), log = console.log } = {}) {
+  // Звено «баннер» = строка в консоли (без OS-уведомлений) — принято владельцем: интервью №008, Q2.
+  log('СИГНАЛ: ' + rawPhrase); // C8: простой текст в консоль — exit-код не доказывает, что человек услышал
+  // Разметка в голос не уходит (урок KLAS bugs/14: markdown утекал в речь).
+  const phrase = rawPhrase.replace(/[*_`#>[\]()«»]/g, ' ').replace(/\s{2,}/g, ' ').trim();
   if (quiet) { log('Тихие часы (I6) — писк и голос подавлены; страница поднята молча.'); return; }
   // Писки — через звуковую карту (I34), команда ASCII, жёсткий срок DEF7; затем — голос.
   const beep = spawn('powershell.exe',
     ['-NoProfile', '-Command', '[console]::beep(880,160);[console]::beep(660,160);[console]::beep(990,260)'],
     { stdio: 'ignore', timeout: BEEP_DEADLINE_MS });
   beep.on('exit', () => {
-    // Голос: текст едет ФАЙЛОМ (C8/I36; UTF-8 с BOM — PowerShell 5.1 читает кодировку по BOM),
-    // движок — системный SAPI (I35: честный фолбэк; тембр — дело машины, не проекта).
-    const dir = resolve(root, TMP_DIR);
-    mkdirSync(dir, { recursive: true });
-    const phraseFile = join(dir, 'call-phrase.txt');
-    writeFileSync(phraseFile, '﻿' + phrase, 'utf8');
-    spawn('powershell.exe', ['-NoProfile', '-Command',
-      'Add-Type -AssemblyName System.Speech; ' +
-      '$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
-      "$s.Speak([IO.File]::ReadAllText('" + phraseFile.replace(/\\/g, '\\\\').replace(/'/g, "''") + "'))"],
-      { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS }).on('error', () => {});
+    // Голос: сначала Silero (вердикт владельца — eugene; node-argv без шелла, кодировка не
+    // искажается), при недоступности «рта» машины — честный фолбэк на системный SAPI (I35).
+    const sapiFallback = () => {
+      const dir = resolve(root, TMP_DIR);
+      mkdirSync(dir, { recursive: true });
+      const phraseFile = join(dir, 'call-phrase.txt');
+      writeFileSync(phraseFile, '﻿' + phrase, 'utf8'); // UTF-8 с BOM — PS5.1 читает кодировку по BOM
+      spawn('powershell.exe', ['-NoProfile', '-Command',
+        'Add-Type -AssemblyName System.Speech; ' +
+        '$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
+        "try { $s.SelectVoice('" + SAPI_VOICE.replace(/'/g, "''") + "') } catch {}; " +
+        "$s.Speak([IO.File]::ReadAllText('" + phraseFile.replace(/\\/g, '\\\\').replace(/'/g, "''") + "'))"],
+        { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS }).on('error', () => {});
+    };
+    try {
+      const silero = spawn(process.execPath, [VOICE_TOOL, phrase, '--play', '--voice', VOICE_NAME],
+        { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
+      silero.on('exit', (code) => { if (code !== 0) sapiFallback(); });
+      silero.on('error', sapiFallback);
+    } catch { sapiFallback(); }
   });
   beep.on('error', () => {}); // сигнал никогда не роняет контур (I32)
 }
@@ -118,16 +136,51 @@ export function buildPage(root, docPath) {
   const kind = (meta && meta.kind) ||
     (rel.startsWith('interviews/') ? 'интервью' : rel.startsWith('homeworks/') ? 'домашка' : 'документ');
   const title = (meta && meta.title) || (normalize(md).match(/^#\s+(.+)$/m) || [])[1] || basename(docPath);
-  const questions = parseQuestions(md).map((q) => ({
-    doc: rel, id: q.id, title: q.title, answered: q.answered,
+  const parsed = parseQuestions(md);
+  // Карточка несёт ВСЁ тело вопроса (расширенная мета: происхождение, что питает/блокирует —
+  // слово владельца, пилот 008), кроме вариантов и полей ответа — те интерактивны.
+  const proseOf = (q) => {
+    const keep = [];
+    let inOpt = false;
+    for (const line of q.body) {
+      if (/^\s*-\s+\*\*[A-ZА-Я]\)/u.test(line)) { inOpt = true; continue; }
+      if (inOpt && /^\s{2,}\S/.test(line)) continue;
+      inOpt = false;
+      if (/^\s*\*{0,2}(?:Answer|Ответ(?:\s+владельца)?)\s*(?:\([^)]*\))?\s*:/iu.test(line)) continue;
+      if (/^\s*\*{0,2}Адресат\s+ответа\s*:/iu.test(line)) continue; // уходит в мета-строку
+      keep.push(line);
+    }
+    return renderMd(keep.join('\n'));
+  };
+  const questions = parsed.map((q) => ({
+    doc: rel, id: q.id, title: q.title, answered: q.answered, target: q.target,
+    bodyHtml: proseOf(q),
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text) })),
-    existing: q.answers.filter((a) => a.text).map((a) => a.text),
+    // I24 в узле показа (класс NDim bug 112 — «просочились некрасивые комментарии», пилот 008):
+    // провенанс-маркер живёт в md, но НИКОГДА не показывается человеку.
+    existing: q.answers.filter((a) => a.text)
+      .map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
   }));
   const docHash = bodyHash(md);
-  const body = renderMd(md);
+  // Полевые правки пилота 008 (слово владельца, 2026-08-07):
+  // 1) блоки вопросов ВЫРЕЗАЮТСЯ из текстового рендера — интерактивные карточки ниже
+  //    остаются единственной формой вопросов (дубль текстом сбивал с толку);
+  // 2) шапка несёт наглядную сводку «отвечено / ждут вас».
+  const normLines = normalize(md).split('\n');
+  const drop = new Set();
+  for (const q of parsed)
+    for (let i = q.line - 1; i <= q.line - 1 + q.body.length && i < normLines.length; i++) drop.add(i);
+  normLines.forEach((l, i) => { if (/^#{1,3}\s+(QUESTIONS|Вопросы)\b/iu.test(l)) drop.add(i); });
+  const body = renderMd(normLines.filter((_, i) => !drop.has(i)).join('\n'));
+  const nAns = questions.filter((q) => q.answered).length;
+  const nWait = questions.length - nAns;
+  const summary = questions.length
+    ? ' <span class="tag done">отвечено ' + nAns + '</span>' +
+      (nWait ? ' <span class="tag you">ждут вас ' + nWait + '</span>' : ' <span class="tag done">все отвечены</span>')
+    : '';
   const html = pageShell({
     title, kind,
-    heading: '<span class="kind">' + kind + '</span><span>' + esc(title) + '</span>',
+    heading: '<span class="kind">' + kind + '</span><span>' + esc(title) + '</span>' + summary,
     main: '<div class="doc">' + body + '</div><h2>Вопросы</h2>' +
       (questions.map((q) => qCard(q)).join('\n') ||
         '<p>Вопросов в документе нет — можно оставить общий комментарий.</p>') +
@@ -170,17 +223,29 @@ const docCommentBlock = (rel) =>
   'placeholder="Можно без ответов — просто сказать (запишется датированным блоком в конец документа)"></textarea></p>';
 
 function qCard(q) {
-  const tag = q.answered ? '<span class="tag done">answered</span>'
-    : '<span class="tag wait">unanswered</span> <span class="tag you">awaits you</span>';
-  const opts = q.answered ? '' : q.options.map((o) =>
-    '<label class="opt"><input type="radio" data-draft name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
+  // Язык интерфейса = язык владельца (слово владельца, пилот 008): интервью на русском —
+  // чипсы состояний на русском; английские метки поверх русского текста — не user-friendly.
+  const tag = q.answered ? '<span class="tag done">отвечено</span>'
+    : '<span class="tag wait">без ответа</span> <span class="tag you">ждёт вас</span>';
+  // Закрытые вопросы НЕ сворачиваются: варианты остаются полностью, как были, карточка
+  // уводится в серый (слово владельца, пилот 008); выбранный вариант помечен, поля выключены.
+  const chosenLetter = q.answered && q.existing[0]
+    ? (q.existing[0].match(/^([A-ZА-Я])\)/u) || [])[1] || null : null;
+  const opts = q.options.map((o) =>
+    '<label class="opt"><input type="radio" ' +
+    (q.answered ? 'disabled' + (o.letter === chosenLetter ? ' checked' : '')
+      : 'data-draft') +
+    ' name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
     '<div>' + o.html + '</div></label>').join('');
   const existing = q.existing.map((t) => '<p><strong>Ответ:</strong> ' + esc(t) + '</p>').join('');
   const inputs = q.answered ? '' :
     '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="Свой вариант / текст ответа (D)"></p>' +
     '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Комментарий к вопросу (P7)"></textarea></p>';
+  const meta = q.target
+    ? '<div class="qmeta">Адресат ответа: ' + esc(q.target).replace(/`/g, '') + '</div>' : '';
   return '<section class="qcard' + (q.answered ? ' done' : '') + '">' +
     '<div><strong>' + q.id + '.</strong> ' + esc(q.title) + ' ' + tag + '</div>' +
+    (q.bodyHtml ? '<div class="qbody">' + q.bodyHtml + '</div>' : '') + meta +
     existing + opts + inputs + '</section>';
 }
 
@@ -210,18 +275,27 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
   .doc blockquote { border-left:3px solid var(--line); margin:8px 0; padding:2px 12px; color:var(--muted) }
   .qcard { background:var(--card); border:1px solid var(--line); border-left:5px solid var(--wait);
     border-radius:10px; padding:12px 16px; margin:14px 0 } /* P1: полоса состояния 5px */
-  .qcard.done { border-left-color:var(--done) }
+  .qcard.done { border-left-color:var(--done); opacity:.72 } /* закрытый вопрос виден целиком, но в сером */
   .tag { font-size:12px; padding:2px 8px; border-radius:99px; color:#fff } /* P2 */
   .tag.wait { background:var(--wait) } .tag.done { background:var(--done) } .tag.you { background:var(--you) }
-  .opt { display:flex; gap:8px; align-items:flex-start; margin:6px 0 }
+  /* Полевые правки пилота 008: радио большие и выразительные; текст варианта на одной линии
+     с кнопкой (маргины абзацев внутри флекса роняли текст ниже кнопки — «вёрстка разъехалась») */
+  .opt { display:flex; gap:12px; align-items:flex-start; margin:10px 0; cursor:pointer }
+  .opt input[type=radio] { width:22px; height:22px; flex:0 0 auto; margin-top:0;
+    accent-color:var(--accent); cursor:pointer }
+  .opt div p { margin:2px 0 }
+  .qbody p { margin:6px 0 }
+  .qmeta { font-size:13px; color:var(--muted); margin:6px 0 }
   textarea, input[type=text] { width:100%; background:var(--bg); color:var(--ink);
     border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit }
   .bar { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--line);
-    padding:10px 20px; display:flex; gap:14px; align-items:center }
+    padding:10px 20px; display:flex; gap:14px; align-items:center; justify-content:center;
+    text-align:center } /* центрировано — слово владельца, пилот 008 (2026-08-07) */
+  .bar #status { flex:0 1 auto }
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px;
     font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
-  #status { flex:1 } .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
+  #status { flex:0 1 auto } .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
   #banner { display:none; position:sticky; top:46px; background:var(--danger); color:#fff;
     padding:8px 20px; font-weight:600; z-index:6 }`;
@@ -239,10 +313,16 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
     "  if(v===null||v==='')continue;",
     "  if(el.type==='radio'){if(el.value===v&&!el.checked){el.checked=true;n++}}else if(!el.value){el.value=v;n++}}",
     " if(n>0)status('Подхвачен черновик: '+n+' полей(я) восстановлено из браузера','okmsg')}",
-    // P3: радио, очищаемое вторым кликом — состояние на mousedown, события label пропускаем
-    "document.addEventListener('mousedown',function(e){if(e.target&&e.target.type==='radio')e.target.dataset.was=e.target.checked?'1':'0'},true);",
-    "document.addEventListener('click',function(e){var t=e.target;if(!t||t.type!=='radio')return;",
-    " if(t.dataset.was==='1'){t.checked=false;saveDraft(t)}else{saveDraft(t)}delete t.dataset.was},true);",
+    // P3: радио, очищаемое вторым кликом. ПОЛЕВОЙ БАГ пилота 008 («тысячу раз чинили»):
+    // нативная активация label-обёртки ДУБЛИРУЕТ click — второй клик снимал и тут же ставил
+    // обратно. Лечение по классу: активацию берём на себя на pointerdown с preventDefault —
+    // нативной активации (и дубля) не существует вовсе. Клик по самому полю переключает
+    // (второй СНИМАЕТ); клик по тексту выбирает, но не снимает (label-target skipped).
+    "document.addEventListener('pointerdown',function(e){var lab=e.target&&e.target.closest?e.target.closest('label.opt'):null;",
+    " if(!lab)return;var inp=lab.querySelector('input[type=radio]');if(!inp||inp.disabled)return;",
+    " e.preventDefault();var was=inp.checked;",
+    " if(e.target===inp){inp.checked=!was}else if(!was){inp.checked=true}",
+    " saveDraft(inp)});",
     "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft'))saveDraft(e.target)});",
     // Сбор ответов по документу (пачка шлёт свой doc; одиночная страница — единственный)
     "function fieldVal(name){var el=document.getElementsByName(name)[0];return el?el.value:''}",
@@ -428,9 +508,14 @@ export function serveContour(root, { docPath = null, batch = false }, opts = {})
       log('Страница поднята: ' + url + (batch ? ' (очередь)' : ' (' + first.title + ')'));
       if (open) log('Окно: ' + openWindow(url)); // показ — действие агента (I15)
       if (signal) { // I5: зов — ПОСЛЕ поднявшейся страницы; I32: не блокирует контур
+        // Фраза называет тип, имя и ЧИСЛО вопросов без ответа (урок KLAS: человек решает
+        // «идти сейчас или после дела» ДО чтения страницы).
+        const nWait = first.questions ? first.questions.filter((q) => !q.answered).length : 0;
         const phrase = batch
-          ? 'Криник, накопились вопросы КАИФ: документов ' + pendingDocs(root).length + '. Страница открыта.'
-          : 'Криник, ' + first.kind + ' «' + first.title + '» ждёт вычитки. Страница открыта.';
+          ? 'Криник, накопились вопросы КАИФ: документов ' + pendingDocs(root).length +
+            ', вопросов без ответа ' + (first.total || 0) + '. Страница открыта.'
+          : 'Криник, ' + first.kind + ' «' + first.title + '» ждёт вычитки' +
+            (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.';
         signalCall(root, phrase, { log });
       }
       serveContour._onUp && serveContour._onUp(url); // хук для QA-прогона

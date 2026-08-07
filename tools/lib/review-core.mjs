@@ -27,8 +27,11 @@ export const PROJECT_NAME = 'KAIF'; // P9: имя проекта в шапке �
 export const OWNER_NAME = 'Mikalai Kryvusha (KOT KRINIK)'; // P4: вопрос «кто отвечает» убран, ЗАПИСЬ by остаётся
 export const DECISIONS_DIR = 'interviews/decisions'; // машинная память решений (коммитится)
 export const ARCHIVE_DIR = 'interviews/decisions/archive'; // копии «никогда не перезаписываются»
-export const QUIET_FROM = '23:00'; // тихие часы проекта (I6); окно пересекает полночь
-export const QUIET_TO = '09:00';
+// Тихих часов в ЭТОМ репозитории НЕТ — слово владельца (интервью №008, Q1, 2026-08-07):
+// «в проекте KAIF тихих часов нет». Канонический дефолт КОНТРАКТА (23:00–09:00, I6) остаётся
+// нормой для развёртываемых проектов — здесь выключено осознанно, зов звучит всегда.
+export const QUIET_FROM = null;
+export const QUIET_TO = null;
 
 // ── C3: нормализация и хеш — одна функция обеим сторонам ───────────────────────────────────
 export function normalize(s) {
@@ -55,6 +58,7 @@ export function provenance(now = new Date()) {
 
 // ── I6: тихие часы — окно пересекает полночь ───────────────────────────────────────────────
 export function inQuietHours(now = new Date(), from = QUIET_FROM, to = QUIET_TO) {
+  if (!from || !to) return false; // окно не задано — тихих часов нет (№008 Q1)
   const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
   const n = now.getHours() * 60 + now.getMinutes();
   const f = mins(from), t = mins(to);
@@ -93,6 +97,7 @@ export function docStatus(md) {
 const QUESTION_HEADING_RE = /^(#{2,4})\s+((Q|В)\d+)\.?\s*(.*)$/u;
 const ANSWER_LABEL_RE = /^\s*\*{0,2}(?:Answer|Ответ(?:\s+владельца)?)\s*(?:\((?<mod>[^)]*)\))?\s*:\*{0,2}\s*(?<rest>.*)$/iu;
 const COUNTER_LABEL_RE = /встречн\p{L}*\s+вопрос|counter-?question/iu; // правило 2: контрвопрос — НЕ ответ
+const COMMENT_LABEL_RE = /^\s*\*{0,2}Комментарий\s+владельца/iu; // комментарий — НЕ текст ответа (пилот 008)
 const TARGET_LABEL_RE = /^\s*\*{0,2}Адресат\s+ответа\s*:?\*{0,2}\s*(.*)$/iu;
 const OPTION_START_RE = /^\s*-\s+\*\*([A-ZА-Я])\)/u;
 
@@ -145,7 +150,10 @@ function finishQuestion(q, docClosed) {
         for (let k = j + 1; k < q.body.length; k++) {
           const nl = q.body[k].trim();
           if (!nl) continue;
-          if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k]) || OPTION_START_RE.test(q.body[k])) break;
+          // ПОЛЕВОЙ БАГ пилота 008: «Комментарий владельца» ниже пустого Answer читался как
+          // текст ответа — вопрос ложно закрывался, а G3 ложно кричал «статус протух».
+          if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k]) ||
+              OPTION_START_RE.test(q.body[k]) || COMMENT_LABEL_RE.test(q.body[k])) break;
           text = nl; break;
         }
       }
@@ -242,23 +250,29 @@ export function recordDecision(root, docPath, payload, now = new Date()) {
   const lines = src.replace(/^﻿/, '').split(/\r?\n/);
   const questions = parseQuestions(src);
   const prov = `<!-- owner-review: by ${record.by} · ${atHuman} -->`;
-  for (const [qid, ans] of Object.entries(payload.answers || {})) {
-    const q = questions.find((x) => x.id === qid);
-    if (!q) continue;
-    const text = [ans.choice ? ans.choice + ')' : '', ans.text || ''].filter(Boolean).join(' — ').trim() || '(без текста)';
+  // ПОЛЕВОЙ БАГ пилота 008: вставка комментария сдвигает строки НИЖЕ себя, и позиции следующих
+  // вопросов протухают (хвост Q4 уехал в строку варианта D). Лечение по классу: вопросы
+  // обрабатываются СНИЗУ ВВЕРХ — сплайсы не трогают ещё не обработанные позиции выше.
+  const entries = Object.entries(payload.answers || {})
+    .map(([qid, ans]) => ({ qid, ans, q: questions.find((x) => x.id === qid) }))
+    .filter((e) => e.q)
+    .sort((a, b) => b.q.line - a.q.line);
+  for (const { ans, q } of entries) {
+    const answerText = [ans.choice ? ans.choice + ')' : '', ans.text || ''].filter(Boolean).join(' — ').trim();
     const qStart = q.line; // 1-based строка заголовка вопроса
+    // Комментарий — ПЕРВЫМ (в конец блока): сплайс ниже строки ответа её не сдвигает.
+    if (ans.comment)
+      lines.splice(qStart + q.body.length, 0, '', `**Комментарий владельца (${atHuman}):** ${ans.comment} ${prov}`, '');
+    // «Только комментарий» — НЕ ответ: поле Answer не трогаем, вопрос остаётся открытым (пилот 008).
+    if (!answerText) continue;
     const emptyAns = q.answers.find((a) => !a.text);
     if (emptyAns !== undefined) {
-      lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + text + ' ' + prov;
+      lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + answerText + ' ' + prov;
     } else {
       // Ответ владельца НЕПРИКОСНОВЕНЕН: новый текст — только датированным дополнением (I2)
       const lastAns = q.answers[q.answers.length - 1];
       const insertAt = lastAns ? qStart + lastAns.line + 1 : qStart + q.body.length;
-      lines.splice(insertAt, 0, '', `**Answer (дополнение, ${atHuman}):** ${text} ${prov}`);
-    }
-    if (ans.comment) {
-      const q2 = parseQuestions(lines.join('\n')).find((x) => x.id === qid); // строки уже сдвинулись
-      lines.splice(q2.line + q2.body.length, 0, '', `**Комментарий владельца (${atHuman}):** ${ans.comment} ${prov}`);
+      lines.splice(insertAt, 0, '', `**Answer (дополнение, ${atHuman}):** ${answerText} ${prov}`);
     }
   }
   if (record.comment) { // общий комментарий — датированным блоком в КОНЕЦ файла (C6)
@@ -328,6 +342,8 @@ function selftest() {
   ok(!qs[0].answered, 'разбор: пустой Answer не отвечен, линейка закрыла блок (правило 1)');
   ok(qs[1].answered && qs[1].answers.length === 1, 'разбор: контрвопрос не посчитан ответом (правило 2)');
   ok(parseQuestions(fx.replace('🟡 awaiting', '✅ ANSWERS RECEIVED'))[0].answered, 'разбор: закрытый статус закрывает и пустой вопрос (правило 4)');
+  const fxc = '# I\n\n> Status: **🟡 awaiting**\n\n### Q1. Вопрос?\n\n**Answer:**\n\n**Комментарий владельца (сегодня):** только мысль, не ответ\n';
+  ok(!parseQuestions(fxc)[0].answered, 'разбор: комментарий владельца ниже пустого Answer — НЕ ответ (пилот 008)');
 
   // P8/I24: рендер — экранирование первым, комментарии вне кода вырезаны, в коде сохранены
   const html = renderMd('# Заголовок <b>\n\nтекст <!-- секрет --> дальше\n\n```\nвнутри <!-- контент -->\n```\n');
