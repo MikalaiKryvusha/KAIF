@@ -126,6 +126,8 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
    **Status:** 🔴 OPEN   (or 🟡 partial / 🔬 research-only / 🔧 fix pending verification)
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
+   **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
+   REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches>
 
    ## Symptom
    <what is observed>

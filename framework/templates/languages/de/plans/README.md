@@ -9,6 +9,8 @@ können einen Plan ablegen, wenn Sie steuern wollen, *wie* etwas getan wird. Les
 beabsichtigten Ansatz des Agenten vor der Ausführung zu sehen.
 
 **Für den KI-Agenten:** Schreibe vor nicht-trivialer Arbeit hier einen kurzen Plan und folge ihm.
-Nummeriere die Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
+Jeder Plan BEGINNT mit seinem Zielvektor + Abnahmekriterien — geschrieben nach
+`REQUIREMENTS_FRAMEWORK.md`; sie dürfen sich ändern, wenn die Arbeit dazulernt. Nummeriere die
+Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
 Dateinamen (`git mv NN_x.md NN_DONE_x.md`) plus einen Statusabschnitt. Referenzmaterial (keine schließbare
 Aufgabe) wird nicht mit DONE markiert.

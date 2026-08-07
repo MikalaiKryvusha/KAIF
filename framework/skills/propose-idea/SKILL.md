@@ -39,11 +39,12 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
    > Source: AI agent (dayloop/nightloop/observation), <date>.
    > Status: ❓ AWAITING HUMAN APPROVAL — an agent idea = an element of the vision; not implemented without approval.
 
+   ## Goal vector — the pain it solves + how we check
+   <what pain/opportunity, for whom, and where we want to be; acceptance criteria — how we will
+   OBSERVE that the idea worked (REQUIREMENTS_FRAMEWORK.md); both may change as the work teaches>
+
    ## Essence
    <what is proposed, briefly>
-
-   ## Why / what problem it solves
-   <the pain/opportunity; for whom>
 
    ## How it fits the master plan and vision
    <clear tie to master_plan / accepted decisions — why it's "on track", not sideways>

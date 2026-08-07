@@ -8,7 +8,9 @@ haut niveau ; `plans/` contient les plans rapprochés qui implémentent ses éta
 l'agent. Vous pouvez déposer un plan si vous voulez orienter *comment* quelque chose est fait. Lisez-les
 pour voir l'approche prévue par l'agent avant qu'il l'exécute.
 
-**Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Numérotez les
+**Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Tout plan
+S'OUVRE sur son vecteur d'objectif + ses critères d'acceptation — écrits selon
+`REQUIREMENTS_FRAMEWORK.md` ; ils peuvent changer à mesure que le travail apprend. Numérotez les
 fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
 (`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
 fermable) n'est pas étiqueté DONE.

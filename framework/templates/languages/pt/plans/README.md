@@ -8,7 +8,9 @@ bugs, pesquisas, procedimentos. O **`MASTER_PLAN.md`** (raiz do projeto) é o ro
 Pode deixar um plano se quiser direcionar *como* algo é feito. Leia-os para ver a abordagem pretendida do
 agente antes da execução.
 
-**Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Numere os
+**Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Todo plano
+SE ABRE com seu vetor de objetivo + critérios de aceitação — escritos segundo o
+`REQUIREMENTS_FRAMEWORK.md`; eles podem mudar conforme o trabalho ensina. Numere os
 arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
 (`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
 não recebe a tag DONE.

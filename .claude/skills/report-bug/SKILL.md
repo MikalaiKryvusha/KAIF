@@ -62,6 +62,8 @@ description: Завести документ бага в bugs/ по правил
 
    **Status:** 🔴 OPEN   (или 🟡 partial / 🔬 research-only / 🔧 fix pending verification)
    **Version/build:** <build>   ·   **When/context:** <дата, во время какой задачи найдено>
+   **Fix accepted when (observable):** <что будет ВИДНО работающим после фикса — пишется по
+   REQUIREMENTS_FRAMEWORK.md; уточняется по мере расследования>
 
    ## Symptom
    <что наблюдается>

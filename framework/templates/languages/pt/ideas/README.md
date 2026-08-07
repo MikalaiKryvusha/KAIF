@@ -11,5 +11,6 @@ ideia é uma peça da **visão** do produto — o agente só a implementa após 
 **Para o agente de IA:** leia as ideias do proprietário, corrija erros de digitação, reestruture
 minimamente para clareza e depois implemente. Quando *você* tiver uma ideia que valha a pena, registre-a
 aqui com o status "❓ aguardando aprovação do proprietário" (habilidade: `/propose-idea`) e **não**
-implemente até que seja aprovada. Após implementar uma ideia, escreva o status e a data no arquivo e
+implemente até que seja aprovada. O documento de uma ideia se abre com a dor que ela resolve + como
+verificamos que funcionou (`REQUIREMENTS_FRAMEWORK.md`). Após implementar uma ideia, escreva o status e a data no arquivo e
 marque-o com `DONE` (`git mv NN_x.md NN_DONE_x.md`).

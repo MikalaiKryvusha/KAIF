@@ -173,7 +173,7 @@ relies entirely on this document to get to work.
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
-8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics)
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics). Filing a plan/bug/idea → goal vector + acceptance criteria FIRST, per REQUIREMENTS_FRAMEWORK.md
 9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
 10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 11. Run the build (if touching code)   # <BUILD_COMMAND>
@@ -2229,8 +2229,9 @@ bugs, research efforts, procedures. The **`MASTER_PLAN.md`** (project root) is t
 plan if you want to steer *how* something is done. Read them to see the agent's intended approach before it
 executes.
 
-**For the AI agent:** before non-trivial work, write a short plan here and follow it. Number files
-(`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+**For the AI agent:** before non-trivial work, write a short plan here and follow it. Every plan
+OPENS with its goal vector + acceptance criteria — written by `REQUIREMENTS_FRAMEWORK.md`; they may
+change as the work teaches. Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
 ``````
 
@@ -2250,7 +2251,8 @@ product **vision** — the agent implements it only after you approve.
 
 **For the AI agent:** read owner ideas, fix typos, restructure minimally for clarity, then implement. When
 *you* have a worthwhile idea, file it here with status "❓ awaiting owner approval" (skill: `/propose-idea`)
-and do **not** implement until approved. After implementing an idea, write the status and date back into
+and do **not** implement until approved. An idea document opens with the pain it solves + how we
+check that it worked (`REQUIREMENTS_FRAMEWORK.md`). After implementing an idea, write the status and date back into
 its file and `DONE`-tag it (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -2268,7 +2270,9 @@ future session. One `NN_<name>.md` per bug.
 agent will structure it. Browse this directory to see known defects and their status.
 
 **For the AI agent:** when you hit a defect during work/testing, file it here by the canon (skill:
-`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. While open, no `DONE` tag. When fixed
+`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. The bug doc carries an
+observable fix-acceptance criterion — what will be SEEN working after the fix
+(`REQUIREMENTS_FRAMEWORK.md`). While open, no `DONE` tag. When fixed
 **and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
 
@@ -3181,6 +3185,8 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
    **Status:** 🔴 OPEN   (or 🟡 partial / 🔬 research-only / 🔧 fix pending verification)
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
+   **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
+   REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches>
 
    ## Symptom
    <what is observed>
@@ -3337,11 +3343,12 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
    > Source: AI agent (dayloop/nightloop/observation), <date>.
    > Status: ❓ AWAITING HUMAN APPROVAL — an agent idea = an element of the vision; not implemented without approval.
 
+   ## Goal vector — the pain it solves + how we check
+   <what pain/opportunity, for whom, and where we want to be; acceptance criteria — how we will
+   OBSERVE that the idea worked (REQUIREMENTS_FRAMEWORK.md); both may change as the work teaches>
+
    ## Essence
    <what is proposed, briefly>
-
-   ## Why / what problem it solves
-   <the pain/opportunity; for whom>
 
    ## How it fits the master plan and vision
    <clear tie to master_plan / accepted decisions — why it's "on track", not sideways>
@@ -5610,10 +5617,13 @@ mechanical quote check (a finding is not a finding until verified).
 
 ## Rung 2 — the meta-plan (one document in `plans/`)
 
+- The meta-plan OPENS with the epic's goal vector — *what pain we solve and where we want to
+  be* — and the epic's acceptance criteria (observable, countable where possible), written by
+  `REQUIREMENTS_FRAMEWORK.md`; vector and criteria may be modified as phases teach — changing
+  them is an edit, not a failure.
 - Phases with a stated ORDER and the reasoning behind it; dependencies between phases.
 - Gates: what must be true to enter/close each phase (builds green, guards proven able to fail,
   judge passes — per `TESTING_FRAMEWORK.md`).
-- Acceptance criteria for the whole epic — observable, countable where possible.
 - Vision-level forks → `/interview` (work on unblocked phases proceeds meanwhile);
   task-level ambiguity → one pointed question in chat.
 - Commit the meta-plan before executing anything.
@@ -5621,8 +5631,9 @@ mechanical quote check (a finding is not a finding until verified).
 ## Rung 3 — operational plan for the NEXT phase only
 
 Detail ONLY the upcoming phase (R&D · testing · mock-ups · development · debugging · acceptance —
-whichever apply): steps with checkboxes, per-step verification, risks. Later phases stay as
-skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
+whichever apply): steps with checkboxes, per-step verification, risks. The operational plan
+inherits the opening block — the phase's own goal vector + acceptance criteria first
+(`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
 ## Rung 4 — trace and execute
@@ -5648,7 +5659,7 @@ with everything phase N taught folded in.
 ``````md
 ---
 name: plan-task
-description: Plan an ORDINARY task, bug or idea into one operational plan — goal, done-criteria, steps with checkboxes, verification-by-observation, risks — sized so the ceremony never outweighs the work. Runs the heaviness test first and hands a HEAVY task over to /plan-epic (the full research → meta-plan → phased ladder). Use when the human says "plan this task", "make a plan for this bug/idea", "how would you approach this", or when the agent picks up an unplanned backlog item; for epic-scale work use /plan-epic instead.
+description: Plan an ORDINARY task, bug or idea into one operational plan — goal vector, acceptance criteria, steps with checkboxes, verification-by-observation, risks — sized so the ceremony never outweighs the work. Runs the heaviness test first and hands a HEAVY task over to /plan-epic (the full research → meta-plan → phased ladder). Use when the human says "plan this task", "make a plan for this bug/idea", "how would you approach this", or when the agent picks up an unplanned backlog item; for epic-scale work use /plan-epic instead.
 ---
 
 # /plan-task — one operational plan for an ordinary task
@@ -5685,13 +5696,19 @@ Structure (keep it to one screen where possible):
 
 ```
 ## Plan: <one-line goal>
-**Done when:** <observable criteria — what will be SEEN working, not "code written">
+**Goal vector:** <what pain we solve and where we want to be — name Achieve / Maintain / Avoid where it clarifies>
+**Acceptance criteria (done when):** <observable criteria — what will be SEEN working, not "code written"; a numeric criterion carries its fit criterion: Scale · Meter · Target>
 **Steps:**
 - [ ] <step — small enough to verify on its own>
 - [ ] ...
 **Verification:** <how each claim will be observed: run, render, measurement, guard>
 **Risks:** <top 1-3, each with the reaction if it fires — Murphy ranking from PHILOSOPHY.md>
 ```
+
+The goal vector + acceptance criteria block OPENS the plan and is written by
+`REQUIREMENTS_FRAMEWORK.md` (verifiable wording, no stop-words, fit criteria). The vector and
+criteria are not final truths — they may be modified, added, or removed as the work teaches;
+changing them is an edit, not a failure.
 
 Placement: a small task's plan lives as a **section inside its idea/bug document**; a larger one
 gets its own `plans/NN_<name>.md`. Either way the plan is committed before the work starts.
@@ -5707,7 +5724,7 @@ gets its own `plans/NN_<name>.md`. Either way the plan is committed before the w
 
 - Plan an epic as a flat step list (the heaviness test exists so scope drift is caught at
   planning, not mid-execution).
-- Produce a plan without done-criteria or verification — "steps done" is not "task done"
+- Produce a plan without acceptance criteria or verification — "steps done" is not "task done"
   (`TESTING_FRAMEWORK.md`: raw output is untrusted).
 - Skip the plan because "the task is clear" — clear to THIS session; the plan is for the next one.
 ``````

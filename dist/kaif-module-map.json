@@ -17,7 +17,7 @@
       {
         "signature": "## Before every task — checklist",
         "class": "adaptive",
-        "sha256": "5226e15b12d446b124475e862beb6335535271214f1021c8590903b2142cf679",
+        "sha256": "ef209843b5a14acadb84542d8222d587d73ca5f897da3a105adcf53b910c3d59",
         "lines": [
           21,
           61
@@ -1377,10 +1377,10 @@
       {
         "signature": "# `plans/` — detailed step plans",
         "class": "static",
-        "sha256": "7c3ff7c6693079212fadba4fd7ff69dc456a6fa54928497813d1a4d2baf427e2",
+        "sha256": "441738447191685e2b3974c60469ac24352f2ab8a221ba61c8fad90ef48f5463",
         "lines": [
           1,
-          14
+          15
         ]
       }
     ],
@@ -1388,10 +1388,10 @@
       {
         "signature": "# `ideas/` — feature & improvement proposals",
         "class": "static",
-        "sha256": "8a57e3639b2591be854be0b0f559ae585db7f032e9266aa01ae1121ef9ac38d5",
+        "sha256": "fee7845505ab349853e570badc34d7cc532e450f61919bb34d82d49049d166f6",
         "lines": [
           1,
-          15
+          16
         ]
       }
     ],
@@ -1399,10 +1399,10 @@
       {
         "signature": "# `bugs/` — defects, difficulties, breakages",
         "class": "static",
-        "sha256": "c6907000d00b2278cb99cc838c5e00cc131986456b70db561b0697301565f15e",
+        "sha256": "f30c682adefaefd7f7feb34561372f3b0f3ea1be3dc1a9e824c9ffcfc336040e",
         "lines": [
           1,
-          21
+          23
         ]
       }
     ],
@@ -3301,19 +3301,19 @@
       {
         "signature": "## Rung 2 — the meta-plan (one document in `plans/`)",
         "class": "static",
-        "sha256": "89ca60a2fd53de9ddaa337cedca71b8d46a5532fbd5bc809c5429f13846624ff",
+        "sha256": "3ee39f7f5584a52bbfcf623e14723ac11a4ade382e9ad79ff54930bafd6dbdc9",
         "lines": [
           37,
-          46
+          49
         ]
       },
       {
         "signature": "## Rung 3 — operational plan for the NEXT phase only",
         "class": "static",
-        "sha256": "7f4740ab1dff60d22b02f10896a4faff0b45ef74e41483bc7be7fa2346dd4f21",
+        "sha256": "2175593a7d278179a648acb26372bdbaacb4c16e096d326ba739205ad6d3c7cb",
         "lines": [
-          47,
-          53
+          50,
+          57
         ]
       },
       {
@@ -3321,8 +3321,8 @@
         "class": "static",
         "sha256": "0981b11c8c9fe2ebe9b12817f341505c57e88a1a0bf96264cc7fd36fb658c609",
         "lines": [
-          54,
-          61
+          58,
+          65
         ]
       },
       {
@@ -3330,8 +3330,8 @@
         "class": "static",
         "sha256": "dea38a30df721585fadd74966c51fae422ffc109ce9960be610597949b599b05",
         "lines": [
-          62,
-          68
+          66,
+          72
         ]
       }
     ],
@@ -3339,7 +3339,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "a610df2fe5176e83965824c79e02301d90c8f86a91632a82effa952cc15f7f4d",
+        "sha256": "e463d6276a8dc084e2c36c81076e0bbe7a8f39624bda8e73ce9eadf78aeb90df",
         "lines": [
           1,
           5
@@ -3375,10 +3375,10 @@
       {
         "signature": "## Step 2 — write the plan",
         "class": "static",
-        "sha256": "02d9c109f2844982e3f047278f0f95aa636667f7537b95c87a810ff6fa0c7ee8",
+        "sha256": "bd5acf076c59a855bbd99f4711703f3712cd353d636e3da05577a864172da08d",
         "lines": [
           34,
-          50
+          56
         ]
       },
       {
@@ -3386,17 +3386,17 @@
         "class": "static",
         "sha256": "086d4fe0dbf3db280fc6682a5f8d56ad515fa4c1195b143ab6eb8d1f6895d2e0",
         "lines": [
-          51,
-          57
+          57,
+          63
         ]
       },
       {
         "signature": "## What this skill refuses to do",
         "class": "static",
-        "sha256": "5d26ab535d3bdb8fb5a7da6bf3e93ef4d72404f237f7bfc3408985af1a426a89",
+        "sha256": "41843d36a144da89b42869b748b963360472b4176c05069451a5765f3eabbda2",
         "lines": [
-          58,
-          65
+          64,
+          71
         ]
       }
     ],
@@ -3431,10 +3431,10 @@
       {
         "signature": "## What to do",
         "class": "adaptive",
-        "sha256": "4eb335d79255ac809fd86fd727dcaaf2fbd1e74218de8788bbb63c6e50945d8b",
+        "sha256": "aa743594f20fccbb1566393539844f5f86f1cdde2b457d63958cfa5ca3497909",
         "lines": [
           26,
-          69
+          70
         ]
       },
       {
@@ -3442,8 +3442,8 @@
         "class": "static",
         "sha256": "e0c170bb23c20ae92315f408eec9b40c3d3c3b1b73e1ca8357d1731651927bb2",
         "lines": [
-          70,
-          74
+          71,
+          75
         ]
       }
     ],
@@ -3662,10 +3662,10 @@
       {
         "signature": "## What to do",
         "class": "adaptive",
-        "sha256": "4cd48ded39839b7d8130b598e7ba7769e93b35a79b479211f89861f5bdecce03",
+        "sha256": "b1aca4e5fb583ec0765b997d501e0eae9c2a2cad570b85595c8336f9d2f815cb",
         "lines": [
           111,
-          161
+          163
         ]
       },
       {
@@ -3673,8 +3673,8 @@
         "class": "static",
         "sha256": "cc9cd26c93d2bde53041a566ba46133ed7bc717fb1ab6b8585da808d5a37330c",
         "lines": [
-          162,
-          165
+          164,
+          167
         ]
       }
     ],
@@ -4557,10 +4557,10 @@
       {
         "signature": "# `bugs/` — العيوب والصعوبات والأعطال",
         "class": "static",
-        "sha256": "ed0bbdce36c84c884ebac799c4e5e48f7310e15506a031d488ccd63201978462",
+        "sha256": "a896aefa4f220c56ba1fd91e087d7d2d1b84f8291ec82f49810e4d6a455f536d",
         "lines": [
           1,
-          21
+          22
         ]
       }
     ],
@@ -4635,10 +4635,10 @@
       {
         "signature": "# `ideas/` — مقترحات الميزات والتحسينات",
         "class": "static",
-        "sha256": "cf548738237dac3d74b216542d8e08201628d009ebb9220c37d6ded2fd21ff0a",
+        "sha256": "a0e836a95e4a5b9cf57ed9ae926deed692dcfec65edb0dafcc7b7c36ec7468f2",
         "lines": [
           1,
-          13
+          14
         ]
       }
     ],
@@ -4722,10 +4722,10 @@
       {
         "signature": "# `plans/` — خطط مفصّلة خطوة بخطوة",
         "class": "static",
-        "sha256": "360955d88a41b6180102394258efae58835085ef9a3fb29075d9816d06f8c4f9",
+        "sha256": "f6db8267c906bc5c31445d36dfd4025ff8da474abd187352b8f970151d018c60",
         "lines": [
           1,
-          13
+          14
         ]
       }
     ],
@@ -4744,10 +4744,10 @@
       {
         "signature": "# `bugs/` — Defekte, Schwierigkeiten, Brüche",
         "class": "static",
-        "sha256": "3916bea790491108e8f5b98fb60f41b91aedf970d00250f331faf6890e9db950",
+        "sha256": "4d986a9ceb3db560fba213b26eed17c2c4a596e7e4d149ea55243529ba5ec013",
         "lines": [
           1,
-          24
+          25
         ]
       }
     ],
@@ -4822,10 +4822,10 @@
       {
         "signature": "# `ideas/` — Feature- und Verbesserungsvorschläge",
         "class": "static",
-        "sha256": "3c8277c18ae20598d89a1c7e6fa9e95c9977f82df74ee3e721f2de83f90f4b3d",
+        "sha256": "513f36c0015d8b99b62ef17453aa676c29ac9977ccdfeebaf7a6ef247a6f5997",
         "lines": [
           1,
-          16
+          17
         ]
       }
     ],
@@ -4909,10 +4909,10 @@
       {
         "signature": "# `plans/` — detaillierte Schritt-für-Schritt-Pläne",
         "class": "static",
-        "sha256": "bb2a881ff81e10c290393335c6b0f8a6a2655c2c4f272ddfc3cc181f64847b21",
+        "sha256": "635b89ffe0a6cb73bff0177dac11d68747cfce7cf0ff082537b7bc6a84b14cb4",
         "lines": [
           1,
-          15
+          17
         ]
       }
     ],
@@ -4931,10 +4931,10 @@
       {
         "signature": "# `bugs/` — defectos, dificultades, roturas",
         "class": "static",
-        "sha256": "e80afed6ea1e1945adace7bdaa968647616ec9b9eda541fdd9d349503049acd5",
+        "sha256": "241c1221c467a31e0c65887ff706f0dcf0405d8fe9e012a16d1df0ad7b359288",
         "lines": [
           1,
-          24
+          25
         ]
       }
     ],
@@ -5009,10 +5009,10 @@
       {
         "signature": "# `ideas/` — propuestas de features y mejoras",
         "class": "static",
-        "sha256": "ac6452a79a0207296f594c2670db9bb51ef6702d958c83baa804e0bf6952559d",
+        "sha256": "322e068a58af4043b2cc18f13e07fb5af105514b639115ed06a8292e3ee25567",
         "lines": [
           1,
-          16
+          17
         ]
       }
     ],
@@ -5096,10 +5096,10 @@
       {
         "signature": "# `plans/` — planes detallados paso a paso",
         "class": "static",
-        "sha256": "234749b5601d2d818d7ed8f1df30204ebe173c5f6ab35dc1240c6ad765dd1499",
+        "sha256": "893c1e676790dcd7b9dd61f66d2b2b671c6c05768940861b0e9f60cc2009c769",
         "lines": [
           1,
-          15
+          17
         ]
       }
     ],
@@ -5118,10 +5118,10 @@
       {
         "signature": "# `bugs/` — défauts, difficultés, casses",
         "class": "static",
-        "sha256": "8cdccec961aa67b3ed9b02702f907c8f974ab940395e0b2a7b6b2ce2ed6ad9b2",
+        "sha256": "d0c599f1130de0cb6e4d96138b46e45e6dd8e421c3aca264ff6d8798ace3269c",
         "lines": [
           1,
-          24
+          25
         ]
       }
     ],
@@ -5196,10 +5196,10 @@
       {
         "signature": "# `ideas/` — propositions de fonctionnalités et d'améliorations",
         "class": "static",
-        "sha256": "fb3034f7ed2bd5968f6db81e53ea6b21d265df7dac431b07048cef81a60344c9",
+        "sha256": "bd26ecdfbd95d75dd3ac0212a184aa8b019aff8db7b1b3b83c590a31ddcaa77b",
         "lines": [
           1,
-          16
+          17
         ]
       }
     ],
@@ -5283,10 +5283,10 @@
       {
         "signature": "# `plans/` — plans détaillés pas à pas",
         "class": "static",
-        "sha256": "aaa615d70f7f39cf19b266dc1b52959a53160c3baa6d0e8363ea7863e3ca8421",
+        "sha256": "8ca79d8141453d0f81f93df9224c8168cb586387537731aa7fdca50e0efe4072",
         "lines": [
           1,
-          15
+          17
         ]
       }
     ],
@@ -5305,10 +5305,10 @@
       {
         "signature": "# `bugs/` — दोष, कठिनाइयाँ, टूट-फूट",
         "class": "static",
-        "sha256": "b7ef2a1e4f9e72575c48cef494902690ea6f80189801296af41920bd3cdc8a8c",
+        "sha256": "e3a946a991dabbe02e07cbc04db439b473d773a955b17d09b38698484cf9715d",
         "lines": [
           1,
-          21
+          22
         ]
       }
     ],
@@ -5383,10 +5383,10 @@
       {
         "signature": "# `ideas/` — फ़ीचर और सुधार प्रस्ताव",
         "class": "static",
-        "sha256": "0454431a16915b31be438aeddaa781b0df0dee030316487287380d80bcecdfc4",
+        "sha256": "0ef6a1654e68cc8551feea03adf41ac2d26d05bf3cd0a57a1cd45e27e18a9a75",
         "lines": [
           1,
-          15
+          16
         ]
       }
     ],
@@ -5470,10 +5470,10 @@
       {
         "signature": "# `plans/` — विस्तृत चरण-दर-चरण योजनाएँ",
         "class": "static",
-        "sha256": "ed1136198ccc6571de8828877ce751e1eb4ffe583d4c1f0e6883db08d852d65a",
+        "sha256": "8a48449b987ea086eb61a92790bee36f9c4a34c4459a5b5ee8076221d553bff6",
         "lines": [
           1,
-          15
+          16
         ]
       }
     ],
@@ -5492,10 +5492,10 @@
       {
         "signature": "# `bugs/` — 欠陥、困難、破損",
         "class": "static",
-        "sha256": "bac14bc3fee3f15ae16059cae7bf32c2f38611144de39229362e974a73341856",
+        "sha256": "e491b4129dc35c8e5ea0afae5e4249954fd99937927e1b685df11df29cb613c3",
         "lines": [
           1,
-          21
+          22
         ]
       }
     ],
@@ -5570,10 +5570,10 @@
       {
         "signature": "# `ideas/` — 機能と改善の提案",
         "class": "static",
-        "sha256": "946b61c8e9652b27cf1a3df71f9b3920718377a356347f5f7dca715894bf555a",
+        "sha256": "750c481d9581a28f82cd46033eebde13a030234d7b23a6320f018301fe2acd63",
         "lines": [
           1,
-          15
+          16
         ]
       }
     ],
@@ -5657,10 +5657,10 @@
       {
         "signature": "# `plans/` — 詳細なステップバイステップの計画",
         "class": "static",
-        "sha256": "329330c9d663d008d232d495a71401b3e714d6f36b119b0d7c91999566cfb5a0",
+        "sha256": "13efc4e7e7a117950927da075b2b4e01ac9620202daf634c01b4d71368009b99",
         "lines": [
           1,
-          15
+          16
         ]
       }
     ],
@@ -5679,10 +5679,10 @@
       {
         "signature": "# `bugs/` — defeitos, dificuldades, quebras",
         "class": "static",
-        "sha256": "af457d10504b9678f70a4f1cb6ff7dc3cecf0116293d97e925ac93e7d4ae5acb",
+        "sha256": "cbc0045ddd5a85ddbf935aa33eb3a1c70066736eb78ad1a4e8ea6bfd3f7f3d3c",
         "lines": [
           1,
-          24
+          25
         ]
       }
     ],
@@ -5757,10 +5757,10 @@
       {
         "signature": "# `ideas/` — propostas de features e melhorias",
         "class": "static",
-        "sha256": "4f59ef38f7cf65e4dd6c472edf4c728b5be9465b720346fa707e706e9e626755",
+        "sha256": "687ccfa4e1067bc7a508314ad35c01aa7a641d02c94f5e33ee52fd95cb49ae25",
         "lines": [
           1,
-          16
+          17
         ]
       }
     ],
@@ -5844,10 +5844,10 @@
       {
         "signature": "# `plans/` — planos detalhados passo a passo",
         "class": "static",
-        "sha256": "eebf1c7bfcc78c0ab63d4a4509786f137f39f7aba985798e9339ce5444f8cb28",
+        "sha256": "5eee6fe5af22b18cac6c8f768af707e245d3f843c5502e534e55dab4a50c247d",
         "lines": [
           1,
-          15
+          17
         ]
       }
     ],
@@ -5866,10 +5866,10 @@
       {
         "signature": "# `bugs/` — дефекты, трудности, поломки",
         "class": "static",
-        "sha256": "26dbf76c843923874476ff7e6443f7ad6c9053d3e368e2a9a2ae82257fc1416a",
+        "sha256": "b5ff71ccb2927e8140d47e77a0fb135459335381c7d5d90b738ccbc38f61a003",
         "lines": [
           1,
-          22
+          23
         ]
       }
     ],
@@ -5944,10 +5944,10 @@
       {
         "signature": "# `ideas/` — идеи, фичи, предложения по улучшению",
         "class": "static",
-        "sha256": "4a86540e9b230952860598bb379ac072560c27679f837e8944023422320610b3",
+        "sha256": "c5ad806fa8c6edff18c92f4ee792e1d461214ac0f19c2741a78c6ee445c23dfa",
         "lines": [
           1,
-          14
+          15
         ]
       }
     ],
@@ -6031,10 +6031,10 @@
       {
         "signature": "# `plans/` — детальные пошаговые планы",
         "class": "static",
-        "sha256": "18b995d3bb25bb73b853982074b8e75ad1221bf7fd2b7cbc475d4a91a4d3da53",
+        "sha256": "1ad38bb010954583eed871a38812f28e173a0e79596c84e08ec9f9585e6930fa",
         "lines": [
           1,
-          13
+          14
         ]
       }
     ],
@@ -6053,10 +6053,10 @@
       {
         "signature": "# `bugs/` —— 缺陷、困难、故障",
         "class": "static",
-        "sha256": "6046403e70b8490101c56d3adba6e53010750b7eb6d8c41ca057627ee07d386b",
+        "sha256": "13658b9e86cf75a21bf4be4f01de70e1177bd864845dd484078151c06d0aab1c",
         "lines": [
           1,
-          18
+          19
         ]
       }
     ],
@@ -6131,10 +6131,10 @@
       {
         "signature": "# `ideas/` —— 功能与改进提案",
         "class": "static",
-        "sha256": "a9e97a4a5dc69f2a81a71c968f702e344680bf4b0633234ca1172c4e26c5e61e",
+        "sha256": "a664592255454092c7ac5d0a414d82a784a8782b6578aceb1a92c4225bf5ab67",
         "lines": [
           1,
-          12
+          13
         ]
       }
     ],
@@ -6218,10 +6218,10 @@
       {
         "signature": "# `plans/` —— 详细的分步计划",
         "class": "static",
-        "sha256": "c185ddc61dcf56d6b9fec210b4f4d4830f20969289d7129f1472e073935b7dfa",
+        "sha256": "f8b96deb0062c347d7d3ca0f71deadb51d6190b3b647d888f6afe7af062bfbf5",
         "lines": [
           1,
-          12
+          13
         ]
       }
     ],

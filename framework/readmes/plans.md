@@ -8,6 +8,7 @@ bugs, research efforts, procedures. The **`MASTER_PLAN.md`** (project root) is t
 plan if you want to steer *how* something is done. Read them to see the agent's intended approach before it
 executes.
 
-**For the AI agent:** before non-trivial work, write a short plan here and follow it. Number files
-(`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+**For the AI agent:** before non-trivial work, write a short plan here and follow it. Every plan
+OPENS with its goal vector + acceptance criteria — written by `REQUIREMENTS_FRAMEWORK.md`; they may
+change as the work teaches. Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.

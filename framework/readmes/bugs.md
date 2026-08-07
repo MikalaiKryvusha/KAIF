@@ -8,7 +8,9 @@ future session. One `NN_<name>.md` per bug.
 agent will structure it. Browse this directory to see known defects and their status.
 
 **For the AI agent:** when you hit a defect during work/testing, file it here by the canon (skill:
-`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. While open, no `DONE` tag. When fixed
+`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. The bug doc carries an
+observable fix-acceptance criterion — what will be SEEN working after the fix
+(`REQUIREMENTS_FRAMEWORK.md`). While open, no `DONE` tag. When fixed
 **and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
 

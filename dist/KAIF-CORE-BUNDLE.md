@@ -100,7 +100,7 @@ relies entirely on this document to get to work.
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
-8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics)
+8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics). Filing a plan/bug/idea → goal vector + acceptance criteria FIRST, per REQUIREMENTS_FRAMEWORK.md
 9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
 10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 11. Run the build (if touching code)   # <BUILD_COMMAND>
@@ -2126,8 +2126,9 @@ bugs, research efforts, procedures. The **`MASTER_PLAN.md`** (project root) is t
 plan if you want to steer *how* something is done. Read them to see the agent's intended approach before it
 executes.
 
-**For the AI agent:** before non-trivial work, write a short plan here and follow it. Number files
-(`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
+**For the AI agent:** before non-trivial work, write a short plan here and follow it. Every plan
+OPENS with its goal vector + acceptance criteria — written by `REQUIREMENTS_FRAMEWORK.md`; they may
+change as the work teaches. Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
 ``````
 
@@ -2146,7 +2147,8 @@ product **vision** — the agent implements it only after you approve.
 
 **For the AI agent:** read owner ideas, fix typos, restructure minimally for clarity, then implement. When
 *you* have a worthwhile idea, file it here with status "❓ awaiting owner approval" (skill: `/propose-idea`)
-and do **not** implement until approved. After implementing an idea, write the status and date back into
+and do **not** implement until approved. An idea document opens with the pain it solves + how we
+check that it worked (`REQUIREMENTS_FRAMEWORK.md`). After implementing an idea, write the status and date back into
 its file and `DONE`-tag it (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -2163,7 +2165,9 @@ future session. One `NN_<name>.md` per bug.
 agent will structure it. Browse this directory to see known defects and their status.
 
 **For the AI agent:** when you hit a defect during work/testing, file it here by the canon (skill:
-`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. While open, no `DONE` tag. When fixed
+`/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. The bug doc carries an
+observable fix-acceptance criterion — what will be SEEN working after the fix
+(`REQUIREMENTS_FRAMEWORK.md`). While open, no `DONE` tag. When fixed
 **and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
 
@@ -5026,10 +5030,13 @@ mechanical quote check (a finding is not a finding until verified).
 
 ## Rung 2 — the meta-plan (one document in `plans/`)
 
+- The meta-plan OPENS with the epic's goal vector — *what pain we solve and where we want to
+  be* — and the epic's acceptance criteria (observable, countable where possible), written by
+  `REQUIREMENTS_FRAMEWORK.md`; vector and criteria may be modified as phases teach — changing
+  them is an edit, not a failure.
 - Phases with a stated ORDER and the reasoning behind it; dependencies between phases.
 - Gates: what must be true to enter/close each phase (builds green, guards proven able to fail,
   judge passes — per `TESTING_FRAMEWORK.md`).
-- Acceptance criteria for the whole epic — observable, countable where possible.
 - Vision-level forks → `/interview` (work on unblocked phases proceeds meanwhile);
   task-level ambiguity → one pointed question in chat.
 - Commit the meta-plan before executing anything.
@@ -5037,8 +5044,9 @@ mechanical quote check (a finding is not a finding until verified).
 ## Rung 3 — operational plan for the NEXT phase only
 
 Detail ONLY the upcoming phase (R&D · testing · mock-ups · development · debugging · acceptance —
-whichever apply): steps with checkboxes, per-step verification, risks. Later phases stay as
-skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
+whichever apply): steps with checkboxes, per-step verification, risks. The operational plan
+inherits the opening block — the phase's own goal vector + acceptance criteria first
+(`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
 ## Rung 4 — trace and execute
@@ -5062,7 +5070,7 @@ with everything phase N taught folded in.
 ``````md
 ---
 name: plan-task
-description: Plan an ORDINARY task, bug or idea into one operational plan — goal, done-criteria, steps with checkboxes, verification-by-observation, risks — sized so the ceremony never outweighs the work. Runs the heaviness test first and hands a HEAVY task over to /plan-epic (the full research → meta-plan → phased ladder). Use when the human says "plan this task", "make a plan for this bug/idea", "how would you approach this", or when the agent picks up an unplanned backlog item; for epic-scale work use /plan-epic instead.
+description: Plan an ORDINARY task, bug or idea into one operational plan — goal vector, acceptance criteria, steps with checkboxes, verification-by-observation, risks — sized so the ceremony never outweighs the work. Runs the heaviness test first and hands a HEAVY task over to /plan-epic (the full research → meta-plan → phased ladder). Use when the human says "plan this task", "make a plan for this bug/idea", "how would you approach this", or when the agent picks up an unplanned backlog item; for epic-scale work use /plan-epic instead.
 ---
 
 # /plan-task — one operational plan for an ordinary task
@@ -5099,13 +5107,19 @@ Structure (keep it to one screen where possible):
 
 ```
 ## Plan: <one-line goal>
-**Done when:** <observable criteria — what will be SEEN working, not "code written">
+**Goal vector:** <what pain we solve and where we want to be — name Achieve / Maintain / Avoid where it clarifies>
+**Acceptance criteria (done when):** <observable criteria — what will be SEEN working, not "code written"; a numeric criterion carries its fit criterion: Scale · Meter · Target>
 **Steps:**
 - [ ] <step — small enough to verify on its own>
 - [ ] ...
 **Verification:** <how each claim will be observed: run, render, measurement, guard>
 **Risks:** <top 1-3, each with the reaction if it fires — Murphy ranking from PHILOSOPHY.md>
 ```
+
+The goal vector + acceptance criteria block OPENS the plan and is written by
+`REQUIREMENTS_FRAMEWORK.md` (verifiable wording, no stop-words, fit criteria). The vector and
+criteria are not final truths — they may be modified, added, or removed as the work teaches;
+changing them is an edit, not a failure.
 
 Placement: a small task's plan lives as a **section inside its idea/bug document**; a larger one
 gets its own `plans/NN_<name>.md`. Either way the plan is committed before the work starts.
@@ -5121,7 +5135,7 @@ gets its own `plans/NN_<name>.md`. Either way the plan is committed before the w
 
 - Plan an epic as a flat step list (the heaviness test exists so scope drift is caught at
   planning, not mid-execution).
-- Produce a plan without done-criteria or verification — "steps done" is not "task done"
+- Produce a plan without acceptance criteria or verification — "steps done" is not "task done"
   (`TESTING_FRAMEWORK.md`: raw output is untrusted).
 - Skip the plan because "the task is clear" — clear to THIS session; the plan is for the next one.
 ``````
@@ -5170,11 +5184,12 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
    > Source: AI agent (dayloop/nightloop/observation), <date>.
    > Status: ❓ AWAITING HUMAN APPROVAL — an agent idea = an element of the vision; not implemented without approval.
 
+   ## Goal vector — the pain it solves + how we check
+   <what pain/opportunity, for whom, and where we want to be; acceptance criteria — how we will
+   OBSERVE that the idea worked (REQUIREMENTS_FRAMEWORK.md); both may change as the work teaches>
+
    ## Essence
    <what is proposed, briefly>
-
-   ## Why / what problem it solves
-   <the pain/opportunity; for whom>
 
    ## How it fits the master plan and vision
    <clear tie to master_plan / accepted decisions — why it's "on track", not sideways>
@@ -5538,6 +5553,8 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
    **Status:** 🔴 OPEN   (or 🟡 partial / 🔬 research-only / 🔧 fix pending verification)
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
+   **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
+   REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches>
 
    ## Symptom
    <what is observed>
@@ -6950,7 +6967,8 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 هيكلته. تصفَّح هذا المجلد لترى العيوب المعروفة وحالتها.
 
 **لوكيل الذكاء الاصطناعي:** حين تصطدم بعيب أثناء العمل/الاختبار، سجّله هنا وفق القانون (المهارة:
-`/report-bug`؛ المنهج: `BUG_FIXING_FRAMEWORK.md`) — حتى الصغير منها. ما دام مفتوحًا فلا وسم `DONE`.
+`/report-bug`؛ المنهج: `BUG_FIXING_FRAMEWORK.md`) — حتى الصغير منها. وثيقة الخطأ تحمل معيار قبول
+ملموسًا للإصلاح — ما الذي سيُرى يعمل بعد الإصلاح (`REQUIREMENTS_FRAMEWORK.md`). ما دام مفتوحًا فلا وسم `DONE`.
 وعند إصلاحه **والتحقق منه**: `git mv NN_x.md NN_DONE_x.md` وأضف قسم `## ✅ STATUS: DONE (التاريخ)`.
 بعد 3 محاولات إصلاح عمياء فاشلة، توقف وانتقل إلى البحث (`/bug-research`).
 
@@ -7044,7 +7062,8 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 
 **لوكيل الذكاء الاصطناعي:** اقرأ أفكار المالك، صحّح الأخطاء المطبعية، وأعد الهيكلة بأدنى قدر من أجل
 الوضوح، ثم نفّذ. وحين تكون *لديك* فكرة تستحق، سجّلها هنا بحالة «❓ في انتظار موافقة المالك» (المهارة:
-`/propose-idea`) و**لا** تنفّذها قبل الموافقة. بعد تنفيذ فكرة، اكتب الحالة والتاريخ في ملفها ووسمه بـ
+`/propose-idea`) و**لا** تنفّذها قبل الموافقة. وثيقة الفكرة تُفتَتح بالألم الذي تحلّه + كيف نتحقق
+من أنها نجحت (`REQUIREMENTS_FRAMEWORK.md`). بعد تنفيذ فكرة، اكتب الحالة والتاريخ في ملفها ووسمه بـ
 `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -7156,8 +7175,9 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 **للإنسان (المالك):** لست مضطرًا للكتابة هنا — فالخطط عادةً من شأن الوكيل. يمكنك وضع خطة إن أردت توجيه
 *كيفية* إنجاز شيء ما. اقرأها لترى نهج الوكيل المزمع قبل التنفيذ.
 
-**لوكيل الذكاء الاصطناعي:** قبل أي عمل غير بديهي، اكتب هنا خطة قصيرة واتبعها. رقّم الملفات
-(`NN_<name>.md`). الخطة المكتملة والمتحقَّق منها تحصل على وسم `DONE` في اسمها
+**لوكيل الذكاء الاصطناعي:** قبل أي عمل غير بديهي، اكتب هنا خطة قصيرة واتبعها. كل خطة تُفتَتح
+بمتجه الهدف + معايير القبول — تُكتب وفق `REQUIREMENTS_FRAMEWORK.md`؛ ويجوز أن تتغيّر كلما علّمنا
+العمل. رقّم الملفات (`NN_<name>.md`). الخطة المكتملة والمتحقَّق منها تحصل على وسم `DONE` في اسمها
 (`git mv NN_x.md NN_DONE_x.md`) مع قسم حالة. المواد المرجعية (ليست مهمة قابلة للإغلاق) لا تُوسم بـ DONE.
 ``````
 
@@ -7233,8 +7253,9 @@ wie man es reproduziert); der Agent strukturiert ihn. Durchstöbern Sie dieses V
 Defekte und ihren Status zu sehen.
 
 **Für den KI-Agenten:** Wenn du bei der Arbeit/beim Testen auf einen Defekt stößt, lege ihn hier nach dem
-Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kleine. Solange offen, kein
-`DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
+Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kleine. Das Bug-Dokument
+trägt ein beobachtbares Abnahmekriterium des Fixes — was nach dem Fix SICHTBAR funktionieren wird
+(`REQUIREMENTS_FRAMEWORK.md`). Solange offen, kein `DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
 `## ✅ STATUS: DONE (Datum)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
 zur Recherche (`/bug-research`).
 
@@ -7340,7 +7361,8 @@ daraus. Eine Idee ist ein Stück Produkt-**Vision** — der Agent implementiert 
 **Für den KI-Agenten:** Lies die Ideen des Eigentümers, korrigiere Tippfehler, strukturiere minimal für
 Klarheit um, dann implementiere. Wenn *du* eine lohnende Idee hast, lege sie hier mit dem Status
 „❓ wartet auf Freigabe des Eigentümers" ab (Skill: `/propose-idea`) und implementiere sie **nicht** vor der
-Freigabe. Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
+Freigabe. Ein Ideen-Dokument beginnt mit dem Schmerz, den es löst, + wie wir prüfen, dass es
+funktioniert hat (`REQUIREMENTS_FRAMEWORK.md`). Nach der Umsetzung einer Idee schreibe Status und Datum in ihre Datei zurück und markiere sie
 mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -7461,7 +7483,9 @@ können einen Plan ablegen, wenn Sie steuern wollen, *wie* etwas getan wird. Les
 beabsichtigten Ansatz des Agenten vor der Ausführung zu sehen.
 
 **Für den KI-Agenten:** Schreibe vor nicht-trivialer Arbeit hier einen kurzen Plan und folge ihm.
-Nummeriere die Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
+Jeder Plan BEGINNT mit seinem Zielvektor + Abnahmekriterien — geschrieben nach
+`REQUIREMENTS_FRAMEWORK.md`; sie dürfen sich ändern, wenn die Arbeit dazulernt. Nummeriere die
+Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
 Dateinamen (`git mv NN_x.md NN_DONE_x.md`) plus einen Statusabschnitt. Referenzmaterial (keine schließbare
 Aufgabe) wird nicht mit DONE markiert.
 ``````
@@ -7542,7 +7566,8 @@ estado.
 
 **Para el agente de IA:** cuando choque con un defecto durante el trabajo/las pruebas, regístrelo aquí
 según el canon (habilidad: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — incluso los pequeños.
-Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
+El documento del bug lleva un criterio de aceptación observable de la corrección — qué se VERÁ
+funcionando tras el fix (`REQUIREMENTS_FRAMEWORK.md`). Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
 `git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha)`. Tras 3 intentos ciegos
 fallidos de corrección, pare y pase a investigación (`/bug-research`).
 
@@ -7646,7 +7671,8 @@ Una idea es una pieza de la **visión** del producto — el agente la implementa
 **Para el agente de IA:** lea las ideas del propietario, corrija erratas, reestructure mínimamente para la
 claridad, y luego implemente. Cuando *usted* tenga una idea que valga la pena, regístrela aquí con el
 estado "❓ a la espera de la aprobación del propietario" (habilidad: `/propose-idea`) y **no** la implemente
-hasta que se apruebe. Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
+hasta que se apruebe. El documento de una idea se abre con el dolor que resuelve + cómo comprobamos
+que funcionó (`REQUIREMENTS_FRAMEWORK.md`). Tras implementar una idea, escriba el estado y la fecha en su archivo y etiquétela
 con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -7765,7 +7791,9 @@ alto nivel; `plans/` contiene los planes ampliados que implementan sus pasos. Un
 dejar un plan si quiere dirigir *cómo* se hace algo. Léalos para ver el enfoque previsto del agente antes
 de que lo ejecute.
 
-**Para el agente de IA:** antes de un trabajo no trivial, escriba aquí un plan corto y sígalo. Numere los
+**Para el agente de IA:** antes de un trabajo no trivial, escriba aquí un plan corto y sígalo. Todo plan
+SE ABRE con su vector de objetivo + criterios de aceptación — escritos según
+`REQUIREMENTS_FRAMEWORK.md`; pueden cambiar a medida que el trabajo enseña. Numere los
 archivos (`NN_<nombre>.md`). Un plan terminado y verificado recibe la etiqueta `DONE` en su nombre
 (`git mv NN_x.md NN_DONE_x.md`) más una sección de estado. El material de referencia (no una tarea
 cerrable) no se etiqueta con DONE.
@@ -7846,8 +7874,9 @@ comment le reproduire) ; l'agent le structurera. Parcourez ce répertoire pour v
 leur statut.
 
 **Pour l'agent IA :** quand vous heurtez un défaut pendant le travail/les tests, déposez-le ici selon le
-canon (compétence : `/report-bug` ; méthode : `BUG_FIXING_FRAMEWORK.md`) — même les petits. Tant qu'il est
-ouvert, pas d'étiquette `DONE`. Une fois corrigé **et vérifié**, `git mv NN_x.md NN_DONE_x.md` et ajoutez
+canon (compétence : `/report-bug` ; méthode : `BUG_FIXING_FRAMEWORK.md`) — même les petits. Le document
+du bug porte un critère d'acceptation observable du correctif — ce qu'on VERRA fonctionner après le
+fix (`REQUIREMENTS_FRAMEWORK.md`). Tant qu'il est ouvert, pas d'étiquette `DONE`. Une fois corrigé **et vérifié**, `git mv NN_x.md NN_DONE_x.md` et ajoutez
 une section `## ✅ STATUS: DONE (date)`. Après 3 tentatives aveugles de correction échouées, arrêtez et
 passez à la recherche (`/bug-research`).
 
@@ -7953,7 +7982,8 @@ Une idée est un morceau de la **vision** du produit — l'agent ne l'implément
 **Pour l'agent IA :** lisez les idées du propriétaire, corrigez les coquilles, restructurez au minimum pour
 la clarté, puis implémentez. Quand *vous* avez une idée qui en vaut la peine, déposez-la ici avec le statut
 « ❓ en attente de l'approbation du propriétaire » (compétence : `/propose-idea`) et ne l'implémentez
-**pas** avant approbation. Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
+**pas** avant approbation. Le document d'une idée s'ouvre sur la douleur qu'elle résout + comment
+nous vérifions qu'elle a fonctionné (`REQUIREMENTS_FRAMEWORK.md`). Après avoir implémenté une idée, inscrivez le statut et la date dans son fichier
 et étiquetez-le `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -8074,7 +8104,9 @@ haut niveau ; `plans/` contient les plans rapprochés qui implémentent ses éta
 l'agent. Vous pouvez déposer un plan si vous voulez orienter *comment* quelque chose est fait. Lisez-les
 pour voir l'approche prévue par l'agent avant qu'il l'exécute.
 
-**Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Numérotez les
+**Pour l'agent IA :** avant tout travail non trivial, écrivez ici un plan court et suivez-le. Tout plan
+S'OUVRE sur son vecteur d'objectif + ses critères d'acceptation — écrits selon
+`REQUIREMENTS_FRAMEWORK.md` ; ils peuvent changer à mesure que le travail apprend. Numérotez les
 fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
 (`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
 fermable) n'est pas étiqueté DONE.
@@ -8154,7 +8186,8 @@ compréhension grandit.
 एजेंट उसे संरचित करेगा। ज्ञात दोष और उनकी स्थिति देखने के लिए इस डायरेक्टरी को देखें।
 
 **AI एजेंट के लिए:** काम/परीक्षण के दौरान दोष मिलने पर उसे कैनन के अनुसार यहाँ दर्ज करें (स्किल:
-`/report-bug`; विधि: `BUG_FIXING_FRAMEWORK.md`) — छोटे दोष भी। खुला रहते हुए `DONE` टैग नहीं। ठीक
+`/report-bug`; विधि: `BUG_FIXING_FRAMEWORK.md`) — छोटे दोष भी। बग-दस्तावेज़ में सुधार की स्वीकृति का
+अवलोकनीय मानदंड होता है — फ़िक्स के बाद क्या काम करता हुआ दिखेगा (`REQUIREMENTS_FRAMEWORK.md`)। खुला रहते हुए `DONE` टैग नहीं। ठीक
 **और सत्यापित** होने पर `git mv NN_x.md NN_DONE_x.md` करें और `## ✅ STATUS: DONE (तिथि)` खंड जोड़ें।
 3 असफल अंधे सुधार-प्रयासों के बाद रुकें और शोध पर जाएँ (`/bug-research`)।
 
@@ -8253,7 +8286,8 @@ upstream भेजते हैं, अलग हुए सब कुछ स्�
 
 **AI एजेंट के लिए:** स्वामी के विचार पढ़ें, वर्तनी सुधारें, स्पष्टता के लिए न्यूनतम पुनर्संरचना करें, फिर
 लागू करें। जब *आपके* पास कोई सार्थक विचार हो, तो उसे यहाँ "❓ स्वामी की स्वीकृति की प्रतीक्षा" स्थिति के
-साथ दर्ज करें (स्किल: `/propose-idea`) और स्वीकृति तक **लागू न करें**। विचार लागू करने के बाद, स्थिति और
+साथ दर्ज करें (स्किल: `/propose-idea`) और स्वीकृति तक **लागू न करें**। विचार का दस्तावेज़ उस दर्द से
+खुलता है जिसे वह हल करता है + हम कैसे जाँचेंगे कि वह कारगर रहा (`REQUIREMENTS_FRAMEWORK.md`)। विचार लागू करने के बाद, स्थिति और
 तिथि उसकी फ़ाइल में लिखें और `DONE` टैग दें (`git mv NN_x.md NN_DONE_x.md`)।
 ``````
 
@@ -8369,8 +8403,9 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 बताना चाहते हैं कि कुछ *कैसे* किया जाए, तो योजना रख सकते हैं। निष्पादन से पहले एजेंट का इरादा देखने के
 लिए इन्हें पढ़ें।
 
-**AI एजेंट के लिए:** गैर-तुच्छ काम से पहले यहाँ एक छोटी योजना लिखें और उसका पालन करें। फ़ाइलों को
-क्रमांकित करें (`NN_<naam>.md`)। पूर्ण और सत्यापित योजना के नाम में `DONE` टैग जोड़ें
+**AI एजेंट के लिए:** गैर-तुच्छ काम से पहले यहाँ एक छोटी योजना लिखें और उसका पालन करें। हर योजना
+अपने लक्ष्य-सदिश + स्वीकृति मानदंडों से खुलती है — `REQUIREMENTS_FRAMEWORK.md` के अनुसार लिखे गए;
+काम जैसे-जैसे सिखाता है, वे बदल सकते हैं। फ़ाइलों को क्रमांकित करें (`NN_<naam>.md`)। पूर्ण और सत्यापित योजना के नाम में `DONE` टैग जोड़ें
 (`git mv NN_x.md NN_DONE_x.md`) और स्थिति खंड जोड़ें। संदर्भ सामग्री (बंद करने योग्य कार्य नहीं) को
 DONE टैग नहीं मिलता।
 ``````
@@ -8446,8 +8481,9 @@ DONE टैग नहीं मिलता।
 エージェントが構造化します。既知の欠陥とそのステータスはこのディレクトリで確認できます。
 
 **AI エージェントへ：** 作業／テスト中に欠陥に当たったら、規範に従ってここに登録すること
-（スキル: `/report-bug`。方法: `BUG_FIXING_FRAMEWORK.md`）— 小さなものでも。オープンな間は
-`DONE` タグなし。修正**かつ検証**されたら、`git mv NN_x.md NN_DONE_x.md` し、
+（スキル: `/report-bug`。方法: `BUG_FIXING_FRAMEWORK.md`）— 小さなものでも。バグ文書には修正の
+観察可能な受け入れ基準を書く — 修正後に何が動いて見えるか（`REQUIREMENTS_FRAMEWORK.md`）。
+オープンな間は `DONE` タグなし。修正**かつ検証**されたら、`git mv NN_x.md NN_DONE_x.md` し、
 `## ✅ STATUS: DONE (日付)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
 切り替える（`/bug-research`）。
 
@@ -8549,7 +8585,8 @@ DONE टैग नहीं मिलता।
 
 **AI エージェントへ：** オーナーのアイデアを読み、誤字を直し、明瞭さのために最小限に再構成し、
 実装すること。*自分に*価値あるアイデアがあるときは、「❓ オーナーの承認待ち」ステータスでここに
-登録し（スキル: `/propose-idea`）、承認まで**実装しない**こと。アイデアを実装したら、ステータスと
+登録し（スキル: `/propose-idea`）、承認まで**実装しない**こと。アイデア文書は、それが解決する
+痛み + うまくいったことをどう確認するかで始まる（`REQUIREMENTS_FRAMEWORK.md`）。アイデアを実装したら、ステータスと
 日付をそのファイルに書き戻し、`DONE` タグを付ける（`git mv NN_x.md NN_DONE_x.md`）。
 ``````
 
@@ -8668,8 +8705,9 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 *どのように*行うかを指示したいときは計画を置いても構いません。実行前にエージェントの意図する
 アプローチを見るために読んでください。
 
-**AI エージェントへ：** 非自明な作業の前に、ここに短い計画を書いてそれに従うこと。ファイルには
-番号を付ける（`NN_<名前>.md`）。完了し検証済みの計画はファイル名に `DONE` タグを入れ
+**AI エージェントへ：** 非自明な作業の前に、ここに短い計画を書いてそれに従うこと。すべての計画は
+目標ベクトル + 受け入れ基準で始まる — `REQUIREMENTS_FRAMEWORK.md` に従って書く。作業から学ぶに
+つれて変更してよい。ファイルには番号を付ける（`NN_<名前>.md`）。完了し検証済みの計画はファイル名に `DONE` タグを入れ
 （`git mv NN_x.md NN_DONE_x.md`）、ステータスセクションを追記する。参照資料（クローズできる
 タスクではないもの）には DONE タグを付けない。
 ``````
@@ -8746,8 +8784,9 @@ como reproduzir); o agente o estruturará. Navegue neste diretório para ver os 
 status.
 
 **Para o agente de IA:** quando encontrar um defeito durante o trabalho/testes, registre-o aqui segundo o
-cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesmo os pequenos. Enquanto aberto,
-sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
+cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesmo os pequenos. O documento
+do bug carrega um critério de aceitação observável da correção — o que se VERÁ funcionando após o
+fix (`REQUIREMENTS_FRAMEWORK.md`). Enquanto aberto, sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
 `## ✅ STATUS: DONE (data)`. Após 3 tentativas cegas falhadas de correção, pare e mude para pesquisa
 (`/bug-research`).
 
@@ -8851,7 +8890,8 @@ ideia é uma peça da **visão** do produto — o agente só a implementa após 
 **Para o agente de IA:** leia as ideias do proprietário, corrija erros de digitação, reestruture
 minimamente para clareza e depois implemente. Quando *você* tiver uma ideia que valha a pena, registre-a
 aqui com o status "❓ aguardando aprovação do proprietário" (habilidade: `/propose-idea`) e **não**
-implemente até que seja aprovada. Após implementar uma ideia, escreva o status e a data no arquivo e
+implemente até que seja aprovada. O documento de uma ideia se abre com a dor que ela resolve + como
+verificamos que funcionou (`REQUIREMENTS_FRAMEWORK.md`). Após implementar uma ideia, escreva o status e a data no arquivo e
 marque-o com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -8969,7 +9009,9 @@ bugs, pesquisas, procedimentos. O **`MASTER_PLAN.md`** (raiz do projeto) é o ro
 Pode deixar um plano se quiser direcionar *como* algo é feito. Leia-os para ver a abordagem pretendida do
 agente antes da execução.
 
-**Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Numere os
+**Para o agente de IA:** antes de um trabalho não trivial, escreva aqui um plano curto e siga-o. Todo plano
+SE ABRE com seu vetor de objetivo + critérios de aceitação — escritos segundo o
+`REQUIREMENTS_FRAMEWORK.md`; eles podem mudar conforme o trabalho ensina. Numere os
 arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
 (`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
 não recebe a tag DONE.
@@ -9049,7 +9091,8 @@ compreensão cresce.
 структурирует. Просматривайте директорию, чтобы видеть известные дефекты и их статус.
 
 **Для ИИ-агента:** наткнулся на дефект в работе/тестах — заводи документ по канону (навык `/report-bug`;
-метод — `BUG_FIXING_FRAMEWORK.md`), даже мелкий. Пока открыт — без тега `DONE`. Починен **и проверен** —
+метод — `BUG_FIXING_FRAMEWORK.md`), даже мелкий. Документ бага несёт наблюдаемый критерий приёмки
+фикса — что будет ВИДНО работающим после фикса (`REQUIREMENTS_FRAMEWORK.md`). Пока открыт — без тега `DONE`. Починен **и проверен** —
 `git mv NN_x.md NN_DONE_x.md` и добавь раздел `## ✅ STATUS: DONE (дата)`. После 3 неудачных слепых попыток
 фикса — стоп и переход к исследованию (`/bug-research`).
 
@@ -9150,7 +9193,8 @@ homework с ясными минимальными пронумерованным
 
 **Для ИИ-агента:** читай идеи владельца, исправляй опечатки, минимально структурируй и реализуй. Свою
 стоящую идею оформляй здесь со статусом «❓ ожидает одобрения владельца» (навык `/propose-idea`) и **не**
-реализуй до одобрения. После реализации впиши статус и дату в файл и пометь `DONE`
+реализуй до одобрения. Документ идеи открывается болью, которую она решает, + чем проверим, что
+сработала (`REQUIREMENTS_FRAMEWORK.md`). После реализации впиши статус и дату в файл и пометь `DONE`
 (`git mv NN_x.md NN_DONE_x.md`).
 ``````
 
@@ -9265,8 +9309,9 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 **Для владельца:** писать сюда не обязательно — планы обычно ведёт агент. Можете положить план, если хотите
 задать, *как* именно что-то сделать. Читайте их, чтобы увидеть намеченный агентом подход до исполнения.
 
-**Для ИИ-агента:** перед нетривиальной работой пиши сюда короткий план и следуй ему. Нумеруй файлы
-(`NN_<имя>.md`). Завершённый и проверенный план получает тег `DONE` в имени (`git mv NN_x.md
+**Для ИИ-агента:** перед нетривиальной работой пиши сюда короткий план и следуй ему. Каждый план
+ОТКРЫВАЕТСЯ вектором цели + критериями приёмки — пишутся по `REQUIREMENTS_FRAMEWORK.md`; они
+меняются по мере работы. Нумеруй файлы (`NN_<имя>.md`). Завершённый и проверенный план получает тег `DONE` в имени (`git mv NN_x.md
 NN_DONE_x.md`) плюс раздел статуса. Справочные документы (не закрываемые задачи) тегом не помечаются.
 ``````
 
@@ -9341,7 +9386,8 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 结构化。浏览此目录可以看到已知缺陷及其状态。
 
 **给 AI 代理：** 在工作/测试中碰到缺陷时，按准则在这里登记（技能：`/report-bug`；方法：
-`BUG_FIXING_FRAMEWORK.md`）—— 即使是小缺陷。开放期间不打 `DONE` 标签。修复**并验证**后，
+`BUG_FIXING_FRAMEWORK.md`）—— 即使是小缺陷。Bug 文档带有可观察的修复验收标准 —— 修复后将看到
+什么在工作（`REQUIREMENTS_FRAMEWORK.md`）。开放期间不打 `DONE` 标签。修复**并验证**后，
 `git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期)` 部分。3 次盲目修复尝试失败后，
 停止并转入研究（`/bug-research`）。
 
@@ -9431,6 +9477,7 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 
 **给 AI 代理：** 阅读所有者的想法，修正笔误，为清晰起见做最小限度的重组，然后实现。当*你*有一个
 值得做的想法时，在这里以"❓ 等待所有者批准"状态登记（技能：`/propose-idea`），批准前**不要**实现。
+想法文档以它所解决的痛点 + 我们如何验证它奏效开篇（`REQUIREMENTS_FRAMEWORK.md`）。
 实现一个想法后，把状态和日期写回其文件并打上 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）。
 ``````
 
@@ -9540,7 +9587,8 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 **给人类（所有者）：** 您不必在这里写 —— 计划通常由代理撰写。如果想指定某事*如何*做，可以放一份
 计划。阅读它们可以在执行前看到代理打算采用的方式。
 
-**给 AI 代理：** 在非平凡工作之前，在这里写一份简短计划并遵循它。给文件编号（`NN_<名称>.md`）。
+**给 AI 代理：** 在非平凡工作之前，在这里写一份简短计划并遵循它。每份计划以目标向量 + 验收标准
+开篇 —— 按 `REQUIREMENTS_FRAMEWORK.md` 撰写；随着工作的深入可以修改。给文件编号（`NN_<名称>.md`）。
 完成且验证过的计划在文件名中加 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）并附上状态部分。
 参考资料（不可关闭的任务）不打 DONE 标签。
 ``````

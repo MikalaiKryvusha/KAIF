@@ -39,11 +39,12 @@ description: Предложить идею/фичу/улучшение, согл
    > Source: AI agent (dayloop/nightloop/observation), <date>.
    > Status: ❓ AWAITING HUMAN APPROVAL — идея агента = элемент видения; не реализуется без одобрения.
 
+   ## Goal vector — the pain it solves + how we check
+   <какую боль/возможность и для кого; где хотим оказаться; критерии приёмки — чем НАБЛЮДАЕМ,
+   что идея сработала (REQUIREMENTS_FRAMEWORK.md); и то и другое уточняется по мере работы>
+
    ## Essence
    <что предлагается, кратко>
-
-   ## Why / what problem it solves
-   <боль/возможность; для кого>
 
    ## How it fits the master plan and vision
    <чёткая привязка к master_plan / принятым решениям — почему это «в русле», а не вбок>

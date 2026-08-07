@@ -36,10 +36,13 @@ mechanical quote check (a finding is not a finding until verified).
 
 ## Rung 2 — the meta-plan (one document in `plans/`)
 
+- The meta-plan OPENS with the epic's goal vector — *what pain we solve and where we want to
+  be* — and the epic's acceptance criteria (observable, countable where possible), written by
+  `REQUIREMENTS_FRAMEWORK.md`; vector and criteria may be modified as phases teach — changing
+  them is an edit, not a failure.
 - Phases with a stated ORDER and the reasoning behind it; dependencies between phases.
 - Gates: what must be true to enter/close each phase (builds green, guards proven able to fail,
   judge passes — per `TESTING_FRAMEWORK.md`).
-- Acceptance criteria for the whole epic — observable, countable where possible.
 - Vision-level forks → `/interview` (work on unblocked phases proceeds meanwhile);
   task-level ambiguity → one pointed question in chat.
 - Commit the meta-plan before executing anything.
@@ -47,8 +50,9 @@ mechanical quote check (a finding is not a finding until verified).
 ## Rung 3 — operational plan for the NEXT phase only
 
 Detail ONLY the upcoming phase (R&D · testing · mock-ups · development · debugging · acceptance —
-whichever apply): steps with checkboxes, per-step verification, risks. Later phases stay as
-skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
+whichever apply): steps with checkboxes, per-step verification, risks. The operational plan
+inherits the opening block — the phase's own goal vector + acceptance criteria first
+(`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
 ## Rung 4 — trace and execute

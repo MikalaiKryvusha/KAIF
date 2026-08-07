@@ -9,8 +9,9 @@ como reproduzir); o agente o estruturará. Navegue neste diretório para ver os 
 status.
 
 **Para o agente de IA:** quando encontrar um defeito durante o trabalho/testes, registre-o aqui segundo o
-cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesmo os pequenos. Enquanto aberto,
-sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
+cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesmo os pequenos. O documento
+do bug carrega um critério de aceitação observável da correção — o que se VERÁ funcionando após o
+fix (`REQUIREMENTS_FRAMEWORK.md`). Enquanto aberto, sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
 `## ✅ STATUS: DONE (data)`. Após 3 tentativas cegas falhadas de correção, pare e mude para pesquisa
 (`/bug-research`).
 
