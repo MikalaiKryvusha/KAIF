@@ -118,5 +118,39 @@ r = run('check');
 ok(r.code !== 0 && /never closed/.test(r.out), 's05 при пустом каноне битая пара всё равно красная', r.out);
 rmSync(join(ROOT, 'rules', 'broken2.md'));
 
+// 10) Q14 / решение №45 (2.2 L5): ЗАГОЛОВОЧНАЯ форма марки — одиночный [AI] в заголовке
+//     помечает секцию до следующего заголовка ТОГО ЖЕ (или выше) уровня, БЕЗ парного закрытия.
+//     🔴 КРАСНЫЕ ДО ФИКСА parseMarks: заголовочная марка читалась как «[AI] never closed».
+writeFileSync(join(ROOT, '.kaif', 'kaif.json'), JSON.stringify({
+  framework: 'KAIF', version: '2.0', tracking: 'origin', canonArtifacts: ['rules/'] }, null, 2) + '\n');
+writeFileSync(join(ROOT, 'rules', 'sections.md'), [
+  '# Rules', '', 'Текст владельца.', '',
+  '## Новая глава [AI]', '', 'Секция целиком написана ИИ и ждёт приёмки.', '',
+  '### Подраздел', 'Тоже внутри марки (ниже уровнем — граница не здесь).', '',
+  '## Следующая глава', '', 'Текст владельца после границы.', '',
+].join('\n'));
+r = run('check');
+ok(r.code === 0, '🔴 s05 заголовочная [AI]-марка легальна — check зелёный без парного закрытия (Q14)', r.out);
+r = run('report');
+ok(r.code === 0 && /sections\.md — 1 block/.test(r.out) && r.out.includes('Новая глава'),
+   '🔴 s05 report видит заголовочную марку одним блоком-секцией (excerpt — заголовок)', r.out);
+r = run('accept rules/sections.md');
+ok(r.code === 0 && /accepted 1 block/.test(r.out), '🔴 s05 accept заголовочной марки отработал', r.out);
+const sec = readFileSync(join(ROOT, 'rules', 'sections.md'), 'utf8');
+ok(sec.includes('## Новая глава') && !sec.includes('[AI]') && sec.includes('Секция целиком написана ИИ')
+   && sec.includes('## Следующая глава') && sec.includes('### Подраздел'),
+   '🔴 s05 тег снят из заголовка; секция, подраздел и соседние главы целы');
+// закрывающий тег после заголовочной марки — ошибка нотации с внятной причиной
+writeFileSync(join(ROOT, 'rules', 'badclose.md'), '## Глава [AI]\n\nтекст\n[/AI]\n\n## Дальше\n');
+r = run('check');
+ok(r.code !== 0 && /heading/i.test(r.out) && /no close|takes NO close/i.test(r.out),
+   '🔴 s05 [/AI] после заголовочной марки — красный: форма без закрытия, причина названа', r.out);
+rmSync(join(ROOT, 'rules', 'badclose.md'));
+// инвариант (зелёный и до, и после): инлайн-ПАРА внутри заголовка остаётся парной формой
+writeFileSync(join(ROOT, 'rules', 'inlinehead.md'), '## Глава [AI]добавка ИИ[/AI] хвост\n\nтекст владельца\n');
+r = run('check');
+ok(r.code === 0, 's05 инвариант: инлайн-пара внутри заголовка — легальна как раньше', r.out);
+rmSync(join(ROOT, 'rules', 'inlinehead.md'));
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница provenance зелёная'}`);
 process.exit(failures ? 1 : 0);

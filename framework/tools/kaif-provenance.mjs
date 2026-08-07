@@ -119,6 +119,11 @@ function lineTags(line) {
 // A block: { kind, line, text } — text is EXACTLY what sits between the tags (EOL-normalized,
 // so sha/excerpt are stable across CRLF and LF checkouts). tagSites — every recognized tag's
 // { line, idx, len }, reused by accept's mark stripping (only real tags are stripped).
+// Two legal mark forms:
+//   · the PAIRED form — [AI]…[/AI] anywhere, including inline inside a heading;
+//   · the HEADING form (the owner's decision, 2.2) — a LONE open tag on a heading line marks
+//     the whole section, until the next heading of the same-or-higher level, with NO paired
+//     close (a close tag inside such a section is a notation error named precisely).
 function parseMarks(path) {
   const lines = readFileSync(path, 'utf8').split('\n');
   const blocks = [];
@@ -126,19 +131,45 @@ function parseMarks(path) {
   const tagSites = [];
   let open = null; // { kind, line, si, ci } — si/ci: 0-based line / column right after the open tag
   let fence = false;
+  let lastHeading = null; // { kind, line, endLine } — the last heading-form block's span (exclusive end)
   const clean = (l) => l.replace(/\r$/, '');
+  const headingOf = (l) => { const m = l.match(/^(#{1,6})\s/); return m ? m[1].length : 0; };
   for (let i = 0; i < lines.length; i++) {
     const line = clean(lines[i]);
     if (/^\s*(```|~~~)/.test(line)) { fence = !fence; continue; }
     if (fence) continue;
-    for (const { tag, idx } of lineTags(line)) {
+    const hLevel = headingOf(line);
+    const tags = lineTags(line);
+    // Heading form: exactly one tag on a heading line, it is an OPEN tag, and no pair is open —
+    // the section is the block. An open+close pair on the same heading stays the paired form.
+    if (hLevel && !open && tags.length === 1 && OPEN.includes(tags[0].tag)) {
+      const { tag, idx } = tags[0];
+      tagSites.push({ line: i, idx, len: tag.length });
+      let j = i + 1, f2 = false;
+      for (; j < lines.length; j++) {
+        const l2 = clean(lines[j]);
+        if (/^\s*(```|~~~)/.test(l2)) { f2 = !f2; continue; }
+        if (f2) continue;
+        const h2 = headingOf(l2);
+        if (h2 && h2 <= hLevel) break;   // the boundary: same-or-higher heading (or EOF)
+      }
+      const headText = (line.slice(0, idx) + line.slice(idx + tag.length)).replace(/\s+$/, '');
+      blocks.push({ kind: tag, line: i + 1, text: [headText, ...lines.slice(i + 1, j).map(clean)].join('\n') });
+      lastHeading = { kind: tag, line: i + 1, endLine: j };
+      continue;   // the section's INNER lines are still scanned normally (a stray close must be caught)
+    }
+    for (const { tag, idx } of tags) {
       tagSites.push({ line: i, idx, len: tag.length });
       if (OPEN.includes(tag)) {
         if (open) { errors.push(`${path}:${i + 1} — ${tag} opened while ${open.kind} from line ${open.line} is still open (nesting is not allowed)`); }
         else open = { kind: tag, line: i + 1, si: i, ci: idx + tag.length };
       } else {
         const wanted = open ? CLOSE[open.kind] : null;
-        if (!open) errors.push(`${path}:${i + 1} — stray ${tag} with no open mark`);
+        if (!open) {
+          if (lastHeading && i < lastHeading.endLine && tag === CLOSE[lastHeading.kind])
+            errors.push(`${path}:${i + 1} — ${tag} closes the HEADING-form ${lastHeading.kind} from line ${lastHeading.line}, but the heading form spans its section and takes NO close — remove ${tag} (or make the mark an inline pair)`);
+          else errors.push(`${path}:${i + 1} — stray ${tag} with no open mark`);
+        }
         else if (tag !== wanted) errors.push(`${path}:${i + 1} — ${tag} closes ${open.kind} from line ${open.line} (expected ${wanted})`);
         else {
           const text = open.si === i
