@@ -55,7 +55,9 @@ run('git add -A');
 // Сообщение идёт через `git commit -F <файл>` — текст вообще не попадает в argv/шелл
 // (лекарство класса bugs/46; -m с не-ASCII запрещён по построению).
 const tmpMsg = join(tmpdir(), `kaif-commit-msg-${process.pid}.txt`);
-writeFileSync(tmpMsg, msg + '\n\n' + trailer + '\n');
+// Трейлер идемпотентен: сообщение, уже несущее его (напр., из --msg-file), не получает дубля
+// (bugs/47). [TESTED: 2026-08-07 · фикс-коммит bugs/47 нёс трейлер в файле — в git log он один]
+writeFileSync(tmpMsg, msg.includes(trailer) ? msg + '\n' : msg + '\n\n' + trailer + '\n');
 try {
   run(`git commit -F "${tmpMsg}"`);
 } finally {
