@@ -1238,10 +1238,10 @@
       {
         "signature": "### 12.1 The marker (`.kaif/kaif.json`)",
         "class": "static",
-        "sha256": "5e7c20b984bf2f41f30fc91ee0ea7680da18870cb48e5e9a6e91d3e879ca0032",
+        "sha256": "197191373a9da4adf45b9a1c94de6fb2c3e51a15f4ba3358ba340a098d22809d",
         "lines": [
           285,
-          302
+          303
         ]
       },
       {
@@ -1249,17 +1249,17 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          303,
-          311
+          304,
+          312
         ]
       },
       {
         "signature": "### 12.3 The receipt (`.kaif/last-update.json`)",
         "class": "static",
-        "sha256": "74c79ea9fa60feb438a6143a85cceeaecf150dc55a42f0273904fcb6056a3de9",
+        "sha256": "bbbe655e8707eb05712b6dead34ce3a290bc637b696deec73cba7993565c415c",
         "lines": [
-          312,
-          316
+          313,
+          319
         ]
       },
       {
@@ -1267,8 +1267,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          317,
-          333
+          320,
+          336
         ]
       },
       {
@@ -1276,8 +1276,8 @@
         "class": "static",
         "sha256": "ecb5fb8267eeb1028bf29445ca3e73da5d4b0e5e71c420e3867eaeb8bd20e145",
         "lines": [
-          334,
-          342
+          337,
+          345
         ]
       },
       {
@@ -1285,8 +1285,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          343,
-          355
+          346,
+          358
         ]
       },
       {
@@ -1294,8 +1294,8 @@
         "class": "static",
         "sha256": "4103c1056f19615aca4ef3775c81c18cb156d543c9620dff4a73830e2e180bba",
         "lines": [
-          356,
-          362
+          359,
+          365
         ]
       }
     ],

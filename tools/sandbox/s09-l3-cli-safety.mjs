@@ -1,0 +1,296 @@
+// s09-l3-cli-safety.mjs — свод фазы L3 эпика L 2.2 (план 42): «CLI-безопасность и зелёная ложь».
+// Баг-доки: bugs/33 (голый запуск деструктивен, help не команда, аргументы глотаются),
+// bugs/34 (стражи зелёные без конфигурации, счётчики считают намерение, чекпоинты-галочки,
+// слепой провенанс), bugs/39 (вердикт судьи только CLI-аргументом).
+//
+// ⚠️ Дисциплина стражей (EXP-0016/0017): свод написан ДО фиксов и обязан быть КРАСНЫМ на
+// текущем коде ровно в помеченных стражах. Предсказания до первого прогона (2026-08-07):
+//   G1/G1b КРАСНЫЕ — THE полевой инцидент (KCam Г1, единственная потеря работы за 4 отчёта):
+//          голый запуск и same-version `install` ПЕРЕЗАПИСЫВАЮТ незавершённое задание без
+//          чекпоинтов (регенерация теряет модульные диффы и новости релиза).
+//   G2a/G2b/G2c КРАСНЫЕ — `help`, голый запуск и `--help` не справка: unknown command exit 1
+//          или деструктивный install-дефолт (NDim гр.5, Unlim Г4, KCam Г9а).
+//   G3 КРАСНЫЙ — `sync --dry-run`: флаг молча игнорируется, гоняется РЕАЛЬНАЯ синхронизация
+//          (KCam Г10).
+//   G4 КРАСНЫЙ — `diff PHILOSOPHY.md`: позиционный аргумент проглатывается, печатается полный
+//          аудит exit 0 (Unlim Г3, KLAS).
+//   G5 КРАСНЫЙ — `update --sourse <дир>` (опечатка): флаг молча игнорируется, команда идёт в
+//          release-канал вместо отказа с именем флага.
+//   G6a/G6b КРАСНЫЕ — canon-lint check/selftest без rules-файла → exit 0 («доказательство…
+//          отсутствует, но выглядит как успех» — Unlim Г9, KLAS D4, KCam Г8); ждём SKIPPED/3.
+//   G7a КРАСНЫЙ — свежий маркер не сеет "canonArtifacts": [] (мёртвая инструкция
+//          /derive-styleguide — Unlim §3.2, KLAS D4 хвост).
+//   G7b/G7c КРАСНЫЕ — provenance check и report при ОТСУТСТВУЮЩЕМ ключе canonArtifacts
+//          расходятся и оба зелёные (KCam Г7); ждём согласованные SKIPPED/3.
+//   G8a/G8b КРАСНЫЕ — локализованные марки [ИИ] из маркера невидимы: report «no AI text
+//          awaits» при блоке, ждущем приёмки; check зелёный на утечке в не-канон (Unlim Г8).
+//   G9 КРАСНЫЙ — транзиент KAIF_UPDATE_TASK.md с парными марками красит check (Unlim Г7);
+//          ждём исключение транзиентов.
+//   G10 КРАСНЫЙ — счётчик «N skills trigger-aliased» считает ключи пакета (намерение), а не
+//          применённые алиасы: 2 фантомных ключа завышают счёт (KLAS D3: «34» при 23).
+//   G11 КРАСНЫЙ — `checkpoint placeholders` ставит галочку при ЛИТЕРАЛЬНОМ плейсхолдере на
+//          диске — сканер существует, но не исполняется (KLAS D5, Unlim §2.12-3).
+//   G12a/G12b КРАСНЫЕ — `--verdict-file` не существует: многострочный кириллический вердикт
+//          невозможно передать по норме «текст через файлы» (Unlim Г12, KCam Г6).
+//   G13 КРАСНЫЙ — `checkpoint recheck` не закрывает окно дрейфа зеркал: check только warning,
+//          зеркало остаётся протухшим (KCam Г11 + суд.1; решение фазы: recheck зовёт sync).
+//   G14 КРАСНЫЙ — `checkpoint stale-claims` не перезапускает существующий сканер — галочка
+//          при живых протухших строках без единого слова (KLAS D5).
+// Инварианты (зелёные и до, и после): explicit install работает; голый sync синхронизирует;
+// голый diff печатает аудит; checkpoint recheck тикается.
+//
+// Стражи находок судьи фазы (G15–G18): красное доказательство — исполненные репро судейской
+// панели L3 (воркфлоу 4 линз, зафиксировано в plans/42): G15 — адаптационное задание с
+// чекпоинтами безусловно сносилось bootstrap'ом (unlinkSync без keep/superseded, «CHECKPOINT
+// LOST» воспроизведён судьёй дважды); G16 — опечатка ЗНАЧЕНИЯ --channel молча падала в
+// release; G17 — aiMarks-не-массив молча ослеплял провенанс над ждущим [ИИ]-блоком;
+// G18 — `help install` молча глотал аргумент.
+//
+// В tools/sandbox-suite.mjs свод вписывается ВМЕСТЕ с фиксами, когда зеленеет.
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, appendFileSync } from 'node:fs';
+import { execSync } from 'node:child_process';
+import { join, resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
+import { createHash } from 'node:crypto';
+import { splitModules, joinModules } from '../module-map-lib.mjs';
+
+const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const DIST = join(REPO, 'dist');
+const ROOT = resolve(process.argv[2] || join(tmpdir(), 'kaif-sbx-l3-cli'));
+rmSync(ROOT, { recursive: true, force: true });
+mkdirSync(ROOT, { recursive: true });
+
+let failures = 0;
+const ok = (cond, name, extra = '') => {
+  console.log((cond ? '✅ ' : '❌ ') + name + (cond || !extra ? '' : ' — ' + String(extra).slice(-300)));
+  if (!cond) failures++;
+};
+const sha256 = (b) => createHash('sha256').update(b).digest('hex');
+const run = (cwd, args) => {
+  try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
+  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+};
+const runTool = (cwd, tool, args) => {
+  try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'tools', tool)} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
+  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+};
+const seed = (dir) => {
+  mkdirSync(join(dir, '.kaif', 'install'), { recursive: true });
+  copy(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(dir, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'));
+  copy(join(DIST, 'KAIF-CORE.mjs'), join(dir, '.kaif', 'kaif-core.mjs'));
+};
+const copy = (a, b) => writeFileSync(b, readFileSync(a));
+const readMarker = (dir) => JSON.parse(readFileSync(join(dir, '.kaif', 'kaif.json'), 'utf8'));
+const writeMarker = (dir, j) => writeFileSync(join(dir, '.kaif', 'kaif.json'), JSON.stringify(j, null, 2) + '\n');
+
+// ---- апстрим v9.9 (для сценария D1 — update-эра с диффами и протухшей строкой) ----------------
+const FENCE = '`'.repeat(6);
+function editBundleModule(bundleText, filePath, moduleIndex, mutate) {
+  const re = new RegExp('(^> \\*\\*FILE: `' + filePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+    '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n)([\\s\\S]*?)(\\n' + FENCE + ')', 'm');
+  const m = bundleText.match(re);
+  if (!m) throw new Error('block not found: ' + filePath);
+  const mods = splitModules(m[2] + '\n');
+  mutate(mods[moduleIndex]);
+  return bundleText.replace(re, m[1] + joinModules(mods).replace(/\n$/, '') + m[3]);
+}
+// правка целого FILE-блока (для G10 — фантомные ключи в skill-triggers.json)
+function editBundleFile(bundleText, filePath, transform) {
+  const re = new RegExp('(^> \\*\\*FILE: `' + filePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+    '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n)([\\s\\S]*?)(\\n' + FENCE + ')', 'm');
+  const m = bundleText.match(re);
+  if (!m) throw new Error('block not found: ' + filePath);
+  return bundleText.replace(re, m[1] + transform(m[2]) + m[3]);
+}
+const SRC = join(ROOT, 'src-9.9'); mkdirSync(SRC);
+let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
+bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
+// ВНУТРЕННИЙ манифест-блок бандла тоже 9.9: G1b гоняет same-version re-run через install,
+// а install берёт версию из блока (не из внешнего манифеста) — рассинхрон читался бы даунгрейдом
+bundle = editBundleFile(bundle, 'kaif-bundle-manifest.json', (json) => {
+  const m9 = JSON.parse(json); m9.version = '9.9'; return JSON.stringify(m9, null, 2);
+});
+writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
+copy(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
+const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
+man.version = '9.9';
+man.sha256['KAIF-CORE-BUNDLE.md'] = sha256(readFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md')));
+writeFileSync(join(SRC, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
+const FROM = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
+
+// ================================================================ D0: CLI-безопасность + стражи без конфигурации
+console.log('\n=== D0 (bugs/33 + 34): голый запуск, help, вайтлист, SKIPPED-семантика, провенанс ===');
+const D0 = join(ROOT, 'd0'); mkdirSync(D0); seed(D0);
+let r = run(D0, 'install');
+ok(r.code === 0, 'D0 install exit 0 (инвариант: явный install работает)', r.out);
+ok(existsSync(join(D0, 'KAIF_ADAPTATION_TASK.md')), 'D0 адаптационное задание создано');
+
+r = run(D0, 'help');
+ok(r.code === 0 && r.out.includes('install') && r.out.includes('update') && r.out.includes('checkpoint'),
+   'G2a (bugs/33): `help` — команда: exit 0 + список команд', r.out.slice(-200));
+const taskD0Before = readFileSync(join(D0, 'KAIF_ADAPTATION_TASK.md'));
+r = run(D0, '');
+ok(r.code === 0 && !r.out.includes('deployed mechanically') && r.out.includes('update'),
+   'G2b (KCam Г1 корень): ГОЛЫЙ запуск — справка, не деструктивный install', r.out.slice(-200));
+// existsSync-щит: до фикса голый запуск УНИЧТОЖАЕТ адаптационное задание (bootstrap-ветка
+// сносит TASK_FILE) — сверка обязана краснеть, а не ронять свод ENOENT'ом
+ok(existsSync(join(D0, 'KAIF_ADAPTATION_TASK.md')) && readFileSync(join(D0, 'KAIF_ADAPTATION_TASK.md')).equals(taskD0Before),
+   'G2b: голый запуск не тронул задание ни байтом');
+r = run(D0, '--help');
+ok(r.code === 0 && r.out.includes('install') && !r.out.includes('deployed mechanically'),
+   'G2c (NDim гр.5): `--help` — справка, не install', r.out.slice(-200));
+
+r = run(D0, 'diff PHILOSOPHY.md');
+ok(r.code !== 0 && /PHILOSOPHY\.md/.test(r.out),
+   'G4 (Unlim Г3/KLAS): `diff <файл>` — отказ с именем аргумента, не молчаливый полный аудит', r.out.slice(-200));
+r = run(D0, 'diff');
+ok(r.code === 0 && /diff \(audit/.test(r.out), 'G4-инвариант: голый diff печатает аудит как прежде', r.out.slice(-200));
+
+r = run(D0, `update --sourse ${SRC}`);
+ok(r.code !== 0 && /sourse/.test(r.out),
+   'G5 (bugs/33): опечатка `--sourse` — отказ с именем флага, не молчаливый уход в release-канал', r.out.slice(-250));
+r = run(D0, 'update --channel nigthly');
+ok(r.code !== 0 && /unknown channel/.test(r.out) && /release/.test(r.out),
+   'G16 (судья L3): опечатка ЗНАЧЕНИЯ --channel — отказ со списком каналов, не тихий release', r.out.slice(-250));
+r = run(D0, 'help install');
+ok(r.code !== 0 && /install/.test(r.out),
+   'G18 (судья L3): `help install` — отказ, а не общая справка под видом справки по install', r.out.slice(-250));
+
+// G3: sync --dry-run — до фикса флаг игнорируется и синхронизация РЕАЛЬНАЯ
+const MIRROR = join(D0, '.agents', 'skills', 'resume', 'SKILL.md');
+writeFileSync(MIRROR, 'JUNK MIRROR CONTENT\n');
+r = run(D0, 'sync --dry-run');
+ok(r.code !== 0 && /dry-run/.test(r.out), 'G3 (KCam Г10): неизвестный флаг `--dry-run` у sync — отказ', r.out.slice(-200));
+ok(readFileSync(MIRROR, 'utf8') === 'JUNK MIRROR CONTENT\n', 'G3: отказ означает НОЛЬ действий — зеркало не синхронизировано');
+r = run(D0, 'sync');
+ok(r.code === 0 && readFileSync(MIRROR, 'utf8') === readFileSync(join(D0, '.claude', 'skills', 'resume', 'SKILL.md'), 'utf8'),
+   'G3-инвариант: голый sync синхронизирует как прежде');
+
+// G6: canon-lint без конфигурации — SKIPPED с кодом 3, не зелёный ноль
+r = runTool(D0, 'kaif-canon-lint.mjs', 'check');
+ok(r.code === 3 && /SKIPPED/.test(r.out), 'G6a (Unlim Г9/KLAS D4): canon-lint check без rules — SKIPPED, код 3', `code=${r.code} ` + r.out.slice(-200));
+r = runTool(D0, 'kaif-canon-lint.mjs', 'selftest');
+ok(r.code === 3 && /SKIPPED/.test(r.out), 'G6b (KCam Г8): canon-lint selftest без rules — SKIPPED, код 3', `code=${r.code} ` + r.out.slice(-200));
+
+// G7: провенанс — сеяние ключа + согласованные SKIPPED при его отсутствии
+const mk0 = readMarker(D0);
+ok(Array.isArray(mk0.canonArtifacts), 'G7a (KLAS D4 хвост): свежий маркер сеет "canonArtifacts": [] — инструкция /derive-styleguide жива');
+const mk0NoKey = { ...mk0 }; delete mk0NoKey.canonArtifacts; delete mk0NoKey.aiMarks;
+writeMarker(D0, mk0NoKey);
+r = runTool(D0, 'kaif-provenance.mjs', 'check');
+ok(r.code === 3 && /SKIPPED/.test(r.out), 'G7b (KCam Г7): provenance check БЕЗ ключа canonArtifacts — SKIPPED, код 3', `code=${r.code} ` + r.out.slice(-200));
+r = runTool(D0, 'kaif-provenance.mjs', 'report');
+ok(r.code === 3 && /SKIPPED/.test(r.out), 'G7c (KCam Г7): report согласован с check — тот же SKIPPED, код 3', `code=${r.code} ` + r.out.slice(-200));
+writeMarker(D0, { ...mk0NoKey, canonArtifacts: [] });
+r = runTool(D0, 'kaif-provenance.mjs', 'check');
+ok(r.code === 0, 'G7-инвариант: объявленный ПУСТЫМ канон — осознанное состояние, check зелёный', `code=${r.code} ` + r.out.slice(-200));
+
+// G8: локализованные марки из маркера развёртывания (Unlim Г8: [ИИ] невидимы)
+writeMarker(D0, { ...mk0NoKey, canonArtifacts: ['rules/'], aiMarks: ['[ИИ]', '[ИИ-ред]'] });
+mkdirSync(join(D0, 'rules'), { recursive: true });
+writeFileSync(join(D0, 'rules', 'canon.md'), '# Канон\n\n[ИИ]Правило, написанное ИИ и ждущее приёмки владельца.[/ИИ]\n');
+r = runTool(D0, 'kaif-provenance.mjs', 'report');
+ok(r.code === 0 && /rules\/canon\.md/.test(r.out) && /awaiting|ждут|1 block/.test(r.out),
+   'G8a (Unlim Г8): report ВИДИТ локализованный блок [ИИ] в каноне (очередь приёмки не пуста)', r.out.slice(-300));
+writeFileSync(join(D0, 'leak.md'), '# Утечка\n\n[ИИ]ИИ-текст вне канона.[/ИИ]\n');
+r = runTool(D0, 'kaif-provenance.mjs', 'check');
+ok(r.code !== 0 && /leak\.md/.test(r.out),
+   'G8b: check КРАСЕН на локализованной марке вне канона (марки живут только в canonArtifacts)', r.out.slice(-300));
+rmSync(join(D0, 'leak.md'));
+
+// G9: транзиенты машинерии исключены из провенанс-скана (Unlim Г7)
+writeFileSync(join(D0, 'KAIF_UPDATE_TASK.md'), '# task\n\nnew in 2.x: the [AI] ... [/AI] convention ships as a gate.\n');
+r = runTool(D0, 'kaif-provenance.mjs', 'check');
+ok(r.code === 0, 'G9 (Unlim Г7): транзиент KAIF_UPDATE_TASK.md с марками НЕ красит гейт (исключён из скана)', `code=${r.code} ` + r.out.slice(-300));
+rmSync(join(D0, 'KAIF_UPDATE_TASK.md'));
+// G17: КРИВОЙ aiMarks (строка вместо массива) — громкий отказ, не молчаливое ослепление
+writeMarker(D0, { ...mk0NoKey, canonArtifacts: ['rules/'], aiMarks: '[ИИ]' });
+r = runTool(D0, 'kaif-provenance.mjs', 'check');
+ok(r.code !== 0 && /aiMarks/.test(r.out),
+   'G17 (судья L3): malformed aiMarks — отказ с именем ключа (объявленную конвенцию нельзя молча отбросить)', `code=${r.code} ` + r.out.slice(-250));
+writeMarker(D0, { ...mk0NoKey, canonArtifacts: ['rules/'], aiMarks: ['[ИИ]', '[ИИ-ред]'] });
+// G15 (судья L3, ПОСЛЕДНИМ в D0 — мутирует сценарий): адаптация В ПРОЦЕССЕ (чекпоинты
+// записаны) не сносится bootstrap'ом бесследно — превращается в superseded-копию
+appendFileSync(join(D0, 'KAIF_ADAPTATION_TASK.md'), 'KAIF-ADAPT: study done\n');
+r = run(D0, 'install');
+ok(r.code === 0 && existsSync(join(D0, 'KAIF_ADAPTATION_TASK.superseded.md'))
+   && readFileSync(join(D0, 'KAIF_ADAPTATION_TASK.superseded.md'), 'utf8').includes('KAIF-ADAPT: study done'),
+   'G15 (судья L3): адаптационное задание с чекпоинтами пережило bootstrap superseded-копией (CHECKPOINT LOST мёртв)', r.out.slice(-300));
+
+// ================================================================ G10: счётчик алиасов считает ЗАПИСЬ, не намерение
+console.log('\n=== G10 (KLAS D3): «N skills trigger-aliased» — применённые алиасы, не ключи пакета ===');
+const D10 = join(ROOT, 'd10'); mkdirSync(D10);
+mkdirSync(join(D10, '.kaif', 'install'), { recursive: true });
+let b10 = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
+b10 = editBundleFile(b10, 'templates/languages/ru/skill-triggers.json', (json) => {
+  const t = JSON.parse(json);
+  t['phantom-skill-one'] = 'фантом'; t['phantom-skill-two'] = 'фантом'; // ключи без навыков — намерение без записи
+  return JSON.stringify(t, null, 2);
+});
+writeFileSync(join(D10, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b10);
+copy(join(DIST, 'KAIF-CORE.mjs'), join(D10, '.kaif', 'kaif-core.mjs'));
+r = run(D10, 'install --lang ru');
+const aliasedM = r.out.match(/(\d+) skills trigger-aliased/);
+ok(r.code === 0 && aliasedM && aliasedM[1] === '34',
+   `G10: счётчик алиасов = 34 применённых, а не 36 ключей пакета (лог: ${aliasedM ? aliasedM[1] : '?'})`, r.out.slice(-200));
+
+// ================================================================ D1: update-эра — защита задания, чекпоинты-исполнители, вердикт файлом
+console.log('\n=== D1 (bugs/33 Г1 + 34 D5 + 39): задание неприкосновенно, чекпоинты исполняют, вердикт файлом ===');
+const D1 = join(ROOT, 'd1'); mkdirSync(D1); seed(D1);
+r = run(D1, 'install');
+ok(r.code === 0, 'D1 install exit 0', r.out);
+// протухшая строка (для пункта stale-claims) + локальная правка в модуле, который меняет 9.9 (диффы в задание)
+appendFileSync(join(D1, 'AGENT_GUIDE.md'), `\nThis deployment runs KAIF ${FROM} and its pipeline.\n`);
+const P1 = join(D1, 'PHILOSOPHY.md');
+const p1 = splitModules(readFileSync(P1, 'utf8').replace(/\r\n/g, '\n'));
+p1[2].lines.push('', 'LOCAL EDIT in the same module');
+writeFileSync(P1, joinModules(p1));
+r = run(D1, `update --source ${SRC} --baseline ${DIST}`);
+ok(r.code === 0, 'D1 update →9.9 exit 0', r.out);
+const TASK1 = join(D1, 'KAIF_UPDATE_TASK.md');
+const task1 = readFileSync(TASK1, 'utf8');
+ok(task1.includes('```diff') && /stale-claims/.test(task1) && /checkpoint judge/.test(task1),
+   'D1: задание несёт диффы + пункты stale-claims и judge (фикстура полна)');
+
+// G1: THE инцидент KCam Г1 — СТРОГО до первого чекпоинта: защита «not overwritten» не смеет
+// зависеть от галочек (поле потеряло ровно ЧЕКПОИНТ-ЛЕССОВОЕ задание)
+const taskBytes = readFileSync(TASK1);
+r = run(D1, '');
+ok(r.code === 0 && existsSync(TASK1) && readFileSync(TASK1).equals(taskBytes),
+   'G1 (KCam Г1): ГОЛЫЙ запуск при незавершённом задании БЕЗ чекпоинтов — справка; задание цело байт-в-байт', r.out.slice(-250));
+r = run(D1, 'install');
+ok(existsSync(TASK1) && readFileSync(TASK1).equals(taskBytes),
+   'G1b (KCam Г1): same-version `install` НЕ регенерирует незавершённое задание (диффы = поставка)', r.out.slice(-250));
+
+// G14: тик stale-claims ПЕРЕЗАПУСКАЕТ сканер (видимость, не гейт — «state why» легален)
+r = run(D1, 'checkpoint stale-claims');
+ok(r.code === 0 && /stale/i.test(r.out) && /scan|assert/i.test(r.out),
+   'G14 (KLAS D5): checkpoint stale-claims исполняет сканер и показывает остаток', r.out.slice(-300));
+
+// G11: тик placeholders ОТКАЗЫВАЕТ при литеральном плейсхолдере на диске
+r = run(D1, 'checkpoint placeholders');
+ok(r.code !== 0 && /placeholder/.test(r.out),
+   'G11 (Unlim §2.12-3): checkpoint placeholders ОТКАЗАН — сканер исполнен, слоты не заполнены', r.out.slice(-300));
+
+// G12: вердикт судьи файлом — норма «текст через файлы» в собственном API
+const VF = join(D1, '.kaif', 'install', 'verdict.md');
+writeFileSync(VF, '﻿ВЕРДИКТ: ПОДТВЕРЖДЕНО — «полигон зелёный», стражи наблюдались красными → зелёными\nВторая строка улик: 8/8 сводов · реестр пар 6/6.\n');
+r = run(D1, `checkpoint judge --verdict-file ${VF}`);
+ok(r.code === 0, 'G12a (bugs/39): checkpoint judge --verdict-file принят (кириллица, ёлочки, BOM, многострочник)', r.out.slice(-250));
+const task1b = readFileSync(TASK1, 'utf8');
+ok(/^KAIF-UPDATE: judge verdict: ВЕРДИКТ: ПОДТВЕРЖДЕНО/m.test(task1b),
+   'G12a: первая строка вердикта легла чекпоинт-строкой в задание');
+const rec1 = JSON.parse(readFileSync(join(D1, '.kaif', 'last-update.json'), 'utf8'));
+ok(String(rec1.judgeVerdict || '').includes('Вторая строка улик'),
+   'G12b (решение №42): ПОЛНЫЙ вердикт уехал в коммитимую квитанцию');
+
+// G13: recheck закрывает окно дрейфа зеркал (KCam Г11: решение фазы — recheck зовёт sync)
+const MIR1 = join(D1, '.agents', 'skills', 'resume', 'SKILL.md');
+writeFileSync(MIR1, 'JUNK MIRROR CONTENT\n');
+r = run(D1, 'checkpoint recheck');
+ok(r.code === 0 && readFileSync(MIR1, 'utf8') === readFileSync(join(D1, '.claude', 'skills', 'resume', 'SKILL.md'), 'utf8'),
+   'G13 (KCam Г11): checkpoint recheck сперва синхронизирует зеркала, потом гоняет check', r.out.slice(-250));
+
+console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ s09: все стражи зелёные'}`);
+process.exit(failures ? 1 : 0);

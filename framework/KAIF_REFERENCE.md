@@ -293,8 +293,9 @@ the owner's name is not a leak.
 | `sphere` | The project's sphere; its library shall exist at `.kaif/spheres/<sphere>.md`. |
 | `agents` | The declared agent systems (array). |
 | `language` | The owner's working language. |
-| `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4). |
-| `canonArtifacts` | Optional: declared owner canon paths for the provenance module (§13.3). |
+| `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
+| `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
+| `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
 | `history` | Update history: `{from, to, route, date}` entries. |
 
 Commands never require the CLI to restate what the marker already records. The marker is edited
@@ -312,7 +313,9 @@ reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-
 ### 12.3 The receipt (`.kaif/last-update.json`)
 
 `from`, `to`, `route` (`core-update` | `legacy-bootstrap`), `date`, `counters`, `diverged`,
-`divergedModules`, `ownerConvention`, `verifiedAt` (stamped by `update-verify`).
+`divergedModules`, `ownerConvention`, `judgeVerdict` (the full judge verdict recorded by
+`checkpoint judge` — the committable proof of the update's judging), `verifiedAt` (stamped by
+`update-verify`).
 
 ## 13. Conventions
 

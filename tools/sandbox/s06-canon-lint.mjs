@@ -80,13 +80,24 @@ r = run('check');
 ok(r.code !== 0 && /invalid regex/.test(r.out) && !/at new RegExp/.test(r.out),
    's06 невалидный паттерн — внятная ошибка, не стек-трейс', r.out);
 
-// «не сконфигурирован» ≠ «гвардия не сработала» (bug 30.2, полевой отчёт: exit 1 без rules-файла
-// на свежем развёртывании — «это то, за чем агенты гоняются»; красное поведение наблюдено в поле)
+// страж, указывающий в НИКУДА, не может сработать — selftest обязан краснеть на required-правиле
+// с отсутствующим файлом (находка судьи L3: раньше молча пропускался вопреки собственному
+// обещанию «every required line is verified findable»; check-половина пары краснела и до фикса)
+writeFileSync(join(ROOT, '.kaif', 'canon-lint-rules.json'), JSON.stringify({
+  required: [{ line: 'эта стерегомая строка достаточно длинная', file: 'canon/absent-file.md', message: 'тест' }] }, null, 2) + '\n');
+r = run('selftest');
+ok(r.code !== 0 && /required-line file missing/.test(r.out),
+   's06 selftest КРАСЕН на правиле с отсутствующим файлом (судья L3)', r.out);
+
+// «не сконфигурирован» ≠ «проверено и зелено» (bugs/34, фаза L3 2.2 — ПЕРЕСМОТР компромисса
+// bug 30.2 по полевой цене: три проекта независимо получили «вечнозелёный гейт» — exit 0 без
+// конфигурации читался как успех в CI). Новая семантика: SKIPPED с отдельным кодом 3 —
+// «ничего не доказано»; exit 1 остаётся настоящим провалом стража, exit 0 — прогнанным правилам.
 rmSync(join(ROOT, '.kaif', 'canon-lint-rules.json'));
 r = run('selftest');
-ok(r.code === 0 && /not configured/.test(r.out), 's06 без rules-файла — exit 0 с подсказкой (опциональный модуль), не красный', r.out);
+ok(r.code === 3 && /SKIPPED/.test(r.out), 's06 без rules-файла — SKIPPED с кодом 3, не зелёный ноль (bugs/34)', r.out);
 r = run('check');
-ok(r.code === 0, 's06 check без rules-файла — тоже exit 0', r.out);
+ok(r.code === 3 && /SKIPPED/.test(r.out), 's06 check без rules-файла — тот же SKIPPED/3', r.out);
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница canon-lint зелёная'}`);
 process.exit(failures ? 1 : 0);

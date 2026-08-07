@@ -56,6 +56,10 @@
   "policyChanges": {
     "1.6": [
       "Language policy: agent-facing documents are English by default; the owner's language covers owner-facing documents and chat (a wholesale-translated wrapper declares \"i18n\": \"translated\" in the marker instead of fighting this rule)."
+    ],
+    "2.2": [
+      "CLI safety (bug 33): a bare or flags-only `kaif-core.mjs` run prints help and touches NOTHING (the old default was `install` — it once overwrote a live update task in the field); unknown commands, flags and stray arguments now REFUSE instead of being silently ignored. Scripts relying on the old default must name `install` and its flags explicitly.",
+      "Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 \"SKIPPED\" instead of 0. CI that treats any non-zero exit as failure must handle 3 as \"not configured, nothing proven\"."
     ]
   },
   "moduleClasses": {}
@@ -1808,8 +1812,9 @@ the owner's name is not a leak.
 | `sphere` | The project's sphere; its library shall exist at `.kaif/spheres/<sphere>.md`. |
 | `agents` | The declared agent systems (array). |
 | `language` | The owner's working language. |
-| `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4). |
-| `canonArtifacts` | Optional: declared owner canon paths for the provenance module (§13.3). |
+| `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
+| `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
+| `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
 | `history` | Update history: `{from, to, route, date}` entries. |
 
 Commands never require the CLI to restate what the marker already records. The marker is edited
@@ -1827,7 +1832,9 @@ reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-
 ### 12.3 The receipt (`.kaif/last-update.json`)
 
 `from`, `to`, `route` (`core-update` | `legacy-bootstrap`), `date`, `counters`, `diverged`,
-`divergedModules`, `ownerConvention`, `verifiedAt` (stamped by `update-verify`).
+`divergedModules`, `ownerConvention`, `judgeVerdict` (the full judge verdict recorded by
+`checkpoint judge` — the committable proof of the update's judging), `verifiedAt` (stamped by
+`update-verify`).
 
 ## 13. Conventions
 
@@ -5449,6 +5456,10 @@ or cut it. Prebuilt spheres in this repo are maintained with the framework itsel
 //                                                    # is verified to MATCH its own example
 //                                                    # ("a guard that never went red proves nothing")
 // selftest needs forbidden rules to carry "example": a string the pattern MUST match.
+//
+// Exit codes: 0 = the configured rules ran green · 1 = a guard fired (real failure) ·
+//             3 = SKIPPED, not configured / zero rules — nothing was proven (bug 34: an
+//             unconfigured guard must never read as a passed one).
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 
 const CMD = process.argv[2] || 'check';
@@ -5456,19 +5467,30 @@ const RULES = '.kaif/canon-lint-rules.json';
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 
-// "Not configured" is NOT "a guard failed to fire" (bug 30.2, field: a fresh deployment's red
-// selftest is exactly what agents chase). Absence of the rules file exits 0 with a hint — the
-// module is optional and unconfigured by design; exit 1 stays reserved for real guard failures.
+// "Not configured" must be DISTINGUISHABLE from "checked and passed" (bug 34, three field
+// projects independently: an unconfigured guard exiting 0 wires a forever-green gate into CI —
+// "the proof is absent but looks like success"). Exit 3 = SKIPPED: nothing was proven; exit 1
+// stays reserved for real guard failures; exit 0 means the configured rules actually ran.
+// (Supersedes the bug 30.2 compromise — the field showed its price.)
+const EXIT_SKIPPED = 3;
 if (!existsSync(RULES)) {
-  log(`= ${RULES} not found — canon lint is not configured yet (optional module). Seed it (see this file's header for the format); the linter grows with every fix.`);
-  process.exit(0);
+  console.log(`⊘ SKIPPED — ${RULES} not found: canon lint is not configured, nothing was proven (optional module; seed it — see this file's header for the format). Exit code 3 keeps an unconfigured guard from reading as a passed one (bug 34).`);
+  process.exit(EXIT_SKIPPED);
 }
 const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
+if (!(rules.forbidden || []).length && !(rules.required || []).length) {
+  console.log(`⊘ SKIPPED — ${RULES} carries zero rules: nothing to prove (exit 3; add forbidden/required rules — the linter grows with every fix).`);
+  process.exit(EXIT_SKIPPED);
+}
 
+// The machinery's own transients (tasks, the thin entry point) legally QUOTE conventions and
+// forbidden wordings while describing them — scanning them is self-inflicted red (bug 34 class).
+const TRANSIENTS = ['KAIF.md', 'KAIF_UPDATE_TASK.md', 'KAIF_ADAPTATION_TASK.md', 'KAIF_UPDATE_TASK.superseded.md'];
 function* walkMd(dir = '.') {
   for (const n of readdirSync(dir)) {
     const p = (dir === '.' ? '' : dir + '/') + n;
     if (['.git', 'node_modules', '.kaif'].includes(n)) continue;
+    if (dir === '.' && TRANSIENTS.includes(n)) continue;
     if (statSync(p).isDirectory()) { yield* walkMd(p); continue; }
     if (/\.md$/i.test(n)) yield p;
   }
@@ -5509,10 +5531,11 @@ function cmdSelftest() {
   let issues = 0;
   for (const r of rules.required || []) {
     if (!r.line || r.line.trim().length < 12) { console.error(`✖ required line too short to be unique (guard with FULL lines): "${r.line}"`); issues++; continue; }
-    if (r.file && existsSync(r.file)) {
-      const hits = readLines(r.file).filter((l) => l === r.line).length;
-      if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
-    }
+    // A guard pointing at a missing file cannot fire — selftest's own promise ("every required
+    // line is verified findable") demands a red here, not a silent skip (judge finding, L3).
+    if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file || '(none)'} — a guard pointing at nothing cannot fire`); issues++; continue; }
+    const hits = readLines(r.file).filter((l) => l === r.line).length;
+    if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
   }
   for (const r of rules.forbidden || []) {
     if (!r.example) { console.error(`✖ forbidden rule has no "example" to prove it on: ${r.pattern}`); issues++; continue; }
@@ -5549,7 +5572,13 @@ function cmdSelftest() {
 // deployment out of the box.
 //
 // Declare the canon in .kaif/kaif.json:   "canonArtifacts": ["rules/", "lore/canon.md"]
-//   (a path ending in "/" declares a directory subtree; otherwise an exact file path)
+//   (a path ending in "/" declares a directory subtree; otherwise an exact file path;
+//    deployments seed "canonArtifacts": [] — the conscious "no canon yet" state)
+// Localized mark pairs (translated wrappers) — also in .kaif/kaif.json:
+//   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog open tags; closers are
+//   derived ([ИИ] → [/ИИ]); the English pair is always recognized too (bug 34, Unliminium Г8).
+// Exit codes: 0 = gate ran green · 1 = violations · 3 = SKIPPED (no canonArtifacts KEY —
+//   nothing was proven; check and report agree on this, bug 34 / field report KCam Г7).
 //
 // Commands:
 //   node .kaif/tools/kaif-provenance.mjs report            # where AI text awaits acceptance
@@ -5573,21 +5602,49 @@ const CMD = process.argv[2] || 'report';
 const ARG = process.argv[3];
 const KAIF_JSON = '.kaif/kaif.json';
 const REGISTRY = '.kaif/provenance-accepted.json';
-const OPEN = ['[AI]', '[AI-ed]'];
-const CLOSE = { '[AI]': '[/AI]', '[AI-ed]': '[/AI-ed]' };
-const TAGS = ['[AI-ed]', '[/AI-ed]', '[AI]', '[/AI]']; // longest first — see the guard in lineTags
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 const sha = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 const slashes = (p) => p.replaceAll('\\', '/'); // registry keys and decl entries use forward slashes
+// SKIPPED ≠ passed (bug 34): without a canonArtifacts KEY the gate has nothing to guard —
+// exit 3 says "nothing was proven", and check/report AGREE on it (they used to diverge:
+// report said "nothing to report" exit 0 while check scanned and failed — field report KCam Г7).
+const EXIT_SKIPPED = 3;
 
-function canonDecl() {
+// The deployment's marker carries the whole convention: the canon declaration AND the
+// LOCALIZED mark pairs. A wholesale-translated wrapper marks its text [ИИ]…[/ИИ], and a
+// scanner that knows only the English pair reports "✅ no AI text awaits acceptance" over 91
+// waiting blocks — the worst failure direction (bug 34, Unliminium Г8). Declare in kaif.json:
+//   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog OPEN tags; closers are
+//                                       derived ([ИИ] → [/ИИ]); the English pair always works.
+function readMarker() {
   if (!existsSync(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
-  const j = JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^﻿/, ''));
-  return Array.isArray(j.canonArtifacts) ? j.canonArtifacts.map(slashes) : [];
+  return JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^﻿/, ''));
 }
+const MARKER = readMarker();
+const DECLARED = Array.isArray(MARKER.canonArtifacts);
+const DECL = DECLARED ? MARKER.canonArtifacts.map(slashes) : [];
+const PAIRS = [['[AI]', '[/AI]'], ['[AI-ed]', '[/AI-ed]']];
+// A DECLARED convention must never be silently ignored (bug 34; judge finding, L3): a
+// malformed aiMarks (a string instead of an array, tags without brackets) would quietly
+// blind the scanner over waiting blocks — refuse loudly instead.
+if ('aiMarks' in MARKER) {
+  const okMarks = Array.isArray(MARKER.aiMarks) && MARKER.aiMarks.length
+    && MARKER.aiMarks.every((o) => typeof o === 'string' && /^\[.+\]$/.test(o));
+  if (!okMarks) die(`malformed "aiMarks" in ${KAIF_JSON} — expected an array of open tags like ["[XX]", "[XX-ed]"] (closers are derived); fix the marker, the convention must not be silently dropped`);
+  for (const o of MARKER.aiMarks) PAIRS.push([o, '[/' + o.slice(1)]);
+}
+const OPEN = PAIRS.map((p) => p[0]);
+const CLOSE = Object.fromEntries(PAIRS);
+const TAGS = PAIRS.flat().sort((a, b) => b.length - a.length); // longest first — see the guard in lineTags
+
 const inCanon = (p, decl) => decl.some((d) => (d.endsWith('/') ? p.startsWith(d) : p === d));
+function requireDeclaredOrSkip() {
+  if (DECLARED) return;
+  console.log(`⊘ SKIPPED — .kaif/kaif.json declares no canonArtifacts key: the provenance gate has nothing to guard, nothing was proven (declare "canonArtifacts": [] for "no canon yet", or list your canon; deployments seed [] since 2.2). Exit code 3 keeps an unconfigured guard from reading as a passed one (bug 34).`);
+  process.exit(EXIT_SKIPPED);
+}
 
 // Mark tags on one line, ordered by COLUMN (several pairs may share a line — processing them
 // by tag type instead of position produced false nesting errors on correct text). Occurrences
@@ -5602,9 +5659,10 @@ function lineTags(line) {
   for (const tag of TAGS) {
     let idx = -1;
     while ((idx = line.indexOf(tag, idx + 1)) !== -1) {
-      // longest-match guard: a "[AI]"/"[/AI]" scan must not claim the head of "[AI-ed]"/"[/AI-ed]"
-      if (tag === '[AI]' && line.slice(idx, idx + 7) === '[AI-ed]') continue;
-      if (tag === '[/AI]' && line.slice(idx, idx + 8) === '[/AI-ed]') continue;
+      // longest-match guard, generic over localized pairs (bug 34): a shorter tag must not
+      // claim the head of a longer one starting at the same column ("[AI]" vs "[AI-ed]",
+      // "[ИИ]" vs "[ИИ-ред]") — TAGS is sorted longest-first, so the longer tag already hit.
+      if (TAGS.some((t2) => t2.length > tag.length && line.startsWith(t2, idx))) continue;
       if (inSpan(idx)) continue;
       hits.push({ tag, idx });
     }
@@ -5651,35 +5709,42 @@ function parseMarks(path) {
   return { blocks, errors, tagSites };
 }
 
+// The machinery's own transients (tasks, the thin entry point) legally QUOTE the mark
+// convention while describing release news — scanning them red-flagged the gate on the
+// machinery's own output (bug 34, Unliminium Г7).
+const TRANSIENTS = ['KAIF.md', 'KAIF_UPDATE_TASK.md', 'KAIF_ADAPTATION_TASK.md', 'KAIF_UPDATE_TASK.superseded.md'];
 function* walkMd(dir = '.') {
   for (const n of readdirSync(dir)) {
     const p = (dir === '.' ? '' : dir + '/') + n;
     if (['.git', 'node_modules', '.kaif'].includes(n)) continue;
+    if (dir === '.' && TRANSIENTS.includes(n)) continue;
     if (statSync(p).isDirectory()) { yield* walkMd(p); continue; }
     if (/\.md$/i.test(n)) yield p;
   }
 }
 
 function cmdCheck() {
-  const decl = canonDecl();
+  requireDeclaredOrSkip();
+  const decl = DECL;
   let issues = 0;
   for (const p of walkMd()) {
     const { blocks, errors } = parseMarks(p);
     for (const e of errors) { console.error('✖ ' + e); issues++; }
-    // "marks live only in the canon" applies once a canon IS declared — without a declaration
-    // only mark hygiene is checked (the header's "does nothing until declared" promise).
+    // "marks live only in the canon" applies once a canon IS declared non-empty — with an
+    // empty declaration (the conscious "no canon yet" state) only mark hygiene is checked.
     if (blocks.length && decl.length && !inCanon(p, decl)) {
       console.error(`✖ ${p} carries ${blocks.length} provenance mark block(s) but is NOT a declared canon artifact — marks live only in canonArtifacts (declare it in .kaif/kaif.json, or remove the marks: agents must not mark everything)`);
       issues++;
     }
   }
   if (issues) die(`provenance check FAILED: ${issues} issue(s)`);
-  log(`✅ provenance check OK${decl.length ? '' : ' (no canonArtifacts declared — only mark hygiene was checked)'}`);
+  log(`✅ provenance check OK${decl.length ? '' : ' (canonArtifacts declared empty — no canon yet; only mark hygiene was checked)'}`);
 }
 
 function cmdReport() {
-  const decl = canonDecl();
-  if (!decl.length) { log('no canonArtifacts declared in .kaif/kaif.json — nothing to report'); return; }
+  requireDeclaredOrSkip();
+  const decl = DECL;
+  if (!decl.length) { log('✅ canonArtifacts is declared EMPTY (no canon yet) — nothing awaits acceptance'); return; }
   let total = 0;
   for (const p of walkMd()) {
     if (!inCanon(p, decl)) continue;
@@ -5697,8 +5762,7 @@ function cmdAccept() {
   if (!ARG) die('usage: kaif-provenance accept <file>   — run ONLY after the owner said the file is accepted');
   const file = slashes(ARG);
   if (!existsSync(file)) die(`no such file: ${file}`);
-  const decl = canonDecl();
-  if (decl.length && !inCanon(file, decl)) console.error(`⚠ ${file} is not a declared canon artifact — accepting on the owner's word anyway, but marks normally live only in canonArtifacts`);
+  if (DECL.length && !inCanon(file, DECL)) console.error(`⚠ ${file} is not a declared canon artifact — accepting on the owner's word anyway, but marks normally live only in canonArtifacts`);
   const { blocks, errors, tagSites } = parseMarks(file);
   if (errors.length) { for (const e of errors) console.error('✖ ' + e); die('fix mark pairing before accepting'); }
   if (!blocks.length) die(`${file} carries no provenance marks — nothing to accept`);

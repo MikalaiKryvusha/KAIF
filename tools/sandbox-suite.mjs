@@ -17,6 +17,9 @@
 //   s08 — the three 2.1-update field faces (NDim/KLAS/KrinikCam): translation vs insertion,
 //         share-based wholesale ceiling, auto-i18n, real template deltas in the task,
 //         frontmatter pseudo-module, two-headed-skill check guard (plan 41, phase L2)
+//   s09 — CLI safety & green lies (plan 42, phase L3): bare run = help, argv whitelists,
+//         task never clobbered checkpoint-less, SKIPPED/3 for unconfigured guards, localized
+//         provenance marks, executing checkpoints, --verdict-file, write-counting counters
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -25,7 +28,8 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
-                's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs'];
+                's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
+                's09-l3-cli-safety.mjs'];
 let failed = 0;
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);

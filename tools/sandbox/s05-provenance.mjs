@@ -99,14 +99,23 @@ ok(last2.some((e) => e.excerpt.includes('новый текст')) && last2.some(
 ok(readFileSync(join(ROOT, 'rules', 'inline.md'), 'utf8').includes('Правка: новый текст и добавка.'),
    's05 однострочные теги сняты чисто, текст цел');
 
-// 9) без canonArtifacts — только гигиена пар (обещание шапки инструмента), но битая пара красная
+// 9) семантика конфигурации (bugs/34, фаза L3 2.2 — пересмотр по полевой цене KCam Г7):
+//    БЕЗ ключа canonArtifacts — SKIPPED/3 у ОБОИХ (check и report расходились: report exit 0
+//    «nothing to report» при check, сканирующем и падающем); объявленный ПУСТЫМ ключ — осознанное
+//    «канона ещё нет»: гигиена пар зелёная, битая пара всё равно красная (обещание шапки живо).
 writeFileSync(join(ROOT, '.kaif', 'kaif.json'), JSON.stringify({
   framework: 'KAIF', version: '2.0', tracking: 'origin' }, null, 2) + '\n');
 r = run('check');
-ok(r.code === 0 && /only mark hygiene/.test(r.out), 's05 без canonArtifacts — только гигиена пар, зелёный', r.out);
+ok(r.code === 3 && /SKIPPED/.test(r.out), 's05 БЕЗ ключа canonArtifacts — check SKIPPED/3, не зелёная ложь (bugs/34)', r.out);
+r = run('report');
+ok(r.code === 3 && /SKIPPED/.test(r.out), 's05 report согласован с check — тот же SKIPPED/3 (KCam Г7)', r.out);
+writeFileSync(join(ROOT, '.kaif', 'kaif.json'), JSON.stringify({
+  framework: 'KAIF', version: '2.0', tracking: 'origin', canonArtifacts: [] }, null, 2) + '\n');
+r = run('check');
+ok(r.code === 0 && /hygiene/.test(r.out), 's05 canonArtifacts: [] — осознанное «канона нет»: гигиена пар, зелёный', r.out);
 writeFileSync(join(ROOT, 'rules', 'broken2.md'), '[AI]\nне закрыто\n');
 r = run('check');
-ok(r.code !== 0 && /never closed/.test(r.out), 's05 без canonArtifacts битая пара всё равно красная', r.out);
+ok(r.code !== 0 && /never closed/.test(r.out), 's05 при пустом каноне битая пара всё равно красная', r.out);
 rmSync(join(ROOT, 'rules', 'broken2.md'));
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница provenance зелёная'}`);

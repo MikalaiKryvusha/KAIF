@@ -22,6 +22,10 @@
 //                                                    # is verified to MATCH its own example
 //                                                    # ("a guard that never went red proves nothing")
 // selftest needs forbidden rules to carry "example": a string the pattern MUST match.
+//
+// Exit codes: 0 = the configured rules ran green · 1 = a guard fired (real failure) ·
+//             3 = SKIPPED, not configured / zero rules — nothing was proven (bug 34: an
+//             unconfigured guard must never read as a passed one).
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 
 const CMD = process.argv[2] || 'check';
@@ -29,19 +33,30 @@ const RULES = '.kaif/canon-lint-rules.json';
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 
-// "Not configured" is NOT "a guard failed to fire" (bug 30.2, field: a fresh deployment's red
-// selftest is exactly what agents chase). Absence of the rules file exits 0 with a hint — the
-// module is optional and unconfigured by design; exit 1 stays reserved for real guard failures.
+// "Not configured" must be DISTINGUISHABLE from "checked and passed" (bug 34, three field
+// projects independently: an unconfigured guard exiting 0 wires a forever-green gate into CI —
+// "the proof is absent but looks like success"). Exit 3 = SKIPPED: nothing was proven; exit 1
+// stays reserved for real guard failures; exit 0 means the configured rules actually ran.
+// (Supersedes the bug 30.2 compromise — the field showed its price.)
+const EXIT_SKIPPED = 3;
 if (!existsSync(RULES)) {
-  log(`= ${RULES} not found — canon lint is not configured yet (optional module). Seed it (see this file's header for the format); the linter grows with every fix.`);
-  process.exit(0);
+  console.log(`⊘ SKIPPED — ${RULES} not found: canon lint is not configured, nothing was proven (optional module; seed it — see this file's header for the format). Exit code 3 keeps an unconfigured guard from reading as a passed one (bug 34).`);
+  process.exit(EXIT_SKIPPED);
 }
 const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
+if (!(rules.forbidden || []).length && !(rules.required || []).length) {
+  console.log(`⊘ SKIPPED — ${RULES} carries zero rules: nothing to prove (exit 3; add forbidden/required rules — the linter grows with every fix).`);
+  process.exit(EXIT_SKIPPED);
+}
 
+// The machinery's own transients (tasks, the thin entry point) legally QUOTE conventions and
+// forbidden wordings while describing them — scanning them is self-inflicted red (bug 34 class).
+const TRANSIENTS = ['KAIF.md', 'KAIF_UPDATE_TASK.md', 'KAIF_ADAPTATION_TASK.md', 'KAIF_UPDATE_TASK.superseded.md'];
 function* walkMd(dir = '.') {
   for (const n of readdirSync(dir)) {
     const p = (dir === '.' ? '' : dir + '/') + n;
     if (['.git', 'node_modules', '.kaif'].includes(n)) continue;
+    if (dir === '.' && TRANSIENTS.includes(n)) continue;
     if (statSync(p).isDirectory()) { yield* walkMd(p); continue; }
     if (/\.md$/i.test(n)) yield p;
   }
@@ -82,10 +97,11 @@ function cmdSelftest() {
   let issues = 0;
   for (const r of rules.required || []) {
     if (!r.line || r.line.trim().length < 12) { console.error(`✖ required line too short to be unique (guard with FULL lines): "${r.line}"`); issues++; continue; }
-    if (r.file && existsSync(r.file)) {
-      const hits = readLines(r.file).filter((l) => l === r.line).length;
-      if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
-    }
+    // A guard pointing at a missing file cannot fire — selftest's own promise ("every required
+    // line is verified findable") demands a red here, not a silent skip (judge finding, L3).
+    if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file || '(none)'} — a guard pointing at nothing cannot fire`); issues++; continue; }
+    const hits = readLines(r.file).filter((l) => l === r.line).length;
+    if (hits > 1) { console.error(`✖ required line is NOT unique in ${r.file} (${hits} hits): "${r.line.slice(0, 60)}…"`); issues++; }
   }
   for (const r of rules.forbidden || []) {
     if (!r.example) { console.error(`✖ forbidden rule has no "example" to prove it on: ${r.pattern}`); issues++; continue; }

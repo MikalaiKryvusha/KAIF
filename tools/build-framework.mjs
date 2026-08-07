@@ -249,6 +249,10 @@ const DEPRECATIONS = [];
 // separate "decisions for the OWNER" section — never merged silently.
 const POLICY_CHANGES_BY_VERSION = {
   '1.6': ['Language policy: agent-facing documents are English by default; the owner\'s language covers owner-facing documents and chat (a wholesale-translated wrapper declares "i18n": "translated" in the marker instead of fighting this rule).'],
+  '2.2': [
+    'CLI safety (bug 33): a bare or flags-only `kaif-core.mjs` run prints help and touches NOTHING (the old default was `install` — it once overwrote a live update task in the field); unknown commands, flags and stray arguments now REFUSE instead of being silently ignored. Scripts relying on the old default must name `install` and its flags explicitly.',
+    'Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 "SKIPPED" instead of 0. CI that treats any non-zero exit as failure must handle 3 as "not configured, nothing proven".',
+  ],
 };
 
 // Every (src → dest) pair that lands in the bundle is recorded here as a side effect of
