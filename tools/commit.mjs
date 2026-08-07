@@ -2,16 +2,42 @@
 // tools/commit.mjs
 // Bump the build number in version.json, commit all changes with the project's
 // commit style + Co-Authored-By trailer, and push. Usage:
-//   node tools/commit.mjs "feat: <what was done>"
+//   node tools/commit.mjs "fix: <ASCII-only message>"
+//   node tools/commit.mjs --msg-file <path>   ← ОБЯЗАТЕЛЕН для сообщений с не-ASCII
+// [TESTED: 2026-08-07 · страж argv красный на кириллице (наблюдение); --msg-file — сообщение
+// в git log побайтно чистое (фикс-коммит bugs/46 прочитан обратно)]
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const msg = process.argv.slice(2).join(' ').trim();
+
+// Два режима входа. Страж класса «текст-через-CLI» (bugs/46, AGENT_GUIDE → Гигиена, симптом 5):
+// не-ASCII/слэши в argv коверкаются шелл-слоями ДО программы (git-bash/MSYS2 конвертирует
+// «/»→«\», «:»→«;», «/Word»→«C:\Program Files\Git\Word»; PowerShell/cmd портят кодировкой) —
+// такое сообщение обязано ехать ФАЙЛОМ, argv-режим его отвергает с готовым решением.
+let msg;
+const fileIdx = process.argv.indexOf('--msg-file');
+if (fileIdx >= 0) {
+  const p = process.argv[fileIdx + 1];
+  if (!p) {
+    console.error('usage: node tools/commit.mjs --msg-file <path>');
+    process.exit(1);
+  }
+  msg = readFileSync(p, 'utf8').replace(/^\uFEFF/, '').trim(); // BOM-терпимо (EXP-0007)
+} else {
+  msg = process.argv.slice(2).join(' ').trim();
+  if (/[^\x00-\x7F]/.test(msg)) {
+    console.error('✋ non-ASCII commit message via argv — shell layers corrupt it (bugs/46).');
+    console.error('   Fix: write the message to a UTF-8 file and run:');
+    console.error('   node tools/commit.mjs --msg-file <path>');
+    process.exit(1);
+  }
+}
 if (!msg) {
-  console.error('usage: node tools/commit.mjs "<commit message>"');
+  console.error('usage: node tools/commit.mjs "<ASCII message>"  |  --msg-file <path>');
   process.exit(1);
 }
 
@@ -26,7 +52,15 @@ const trailer = 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>';
 const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
 
 run('git add -A');
-run(`git commit -m ${JSON.stringify(msg)} -m ${JSON.stringify(trailer)}`);
+// Сообщение идёт через `git commit -F <файл>` — текст вообще не попадает в argv/шелл
+// (лекарство класса bugs/46; -m с не-ASCII запрещён по построению).
+const tmpMsg = join(tmpdir(), `kaif-commit-msg-${process.pid}.txt`);
+writeFileSync(tmpMsg, msg + '\n\n' + trailer + '\n');
+try {
+  run(`git commit -F "${tmpMsg}"`);
+} finally {
+  rmSync(tmpMsg, { force: true }); // finally — нетеряющая уборка (EXP-0027)
+}
 try {
   run('git push');
 } catch {
