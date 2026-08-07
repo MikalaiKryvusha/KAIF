@@ -28,3 +28,26 @@ deployed guidance docs instead of inlining).
 - [ ] every KAIF skill → `.windsurf/workflows/<name>.md` (≤12k chars)
 - [ ] validate: workflow count == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "windsurf"`
+
+## Hooks (optional enforcement)
+
+> ✅ Hook contract verified against https://docs.devin.ai/desktop/cascade/hooks on **2026-08-07**
+> (the `docs.windsurf.com` path now redirects there — the product sits under the Devin umbrella).
+
+Config `hooks.json` at three merged levels: system (`/etc/windsurf/hooks.json`,
+`/Library/Application Support/Windsurf/hooks.json`, `C:\ProgramData\Windsurf\hooks.json`), user
+(`~/.codeium/windsurf/hooks.json`; JetBrains: `~/.codeium/hooks.json`) and workspace
+(`.windsurf/hooks.json`). Entries carry `command`, optional `powershell` (the only surveyed system
+with a first-class Windows override), `show_output`, `working_directory`. Execution order is
+system → user → workspace.
+
+Events (snake_case): `pre_read_code`, `pre_write_code`, `pre_run_command`, `pre_mcp_tool_use`,
+`pre_user_prompt`, `post_read_code`, `post_write_code`, `post_run_command`, `post_mcp_tool_use`,
+`post_cascade_response`, `post_cascade_response_with_transcript`, `post_setup_worktree`. stdin
+carries `agent_action_name`, `trajectory_id`, `execution_id`, `timestamp`, `model_name`,
+`tool_info`.
+
+⚠️ **No session-start and no compaction event, and hooks cannot inject context at all** — they
+communicate only through exit codes (0 proceeds, 2 blocks a pre-hook). Cascade hooks are therefore
+good for guardrails, logging and validation, and cannot carry context-refresh style enforcement.
+For that class of rule, Windsurf runs the markdown ritual — which is complete on its own.

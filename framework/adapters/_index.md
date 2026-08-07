@@ -25,8 +25,35 @@ pointing at `AGENT_GUIDE.md` is always generated as a cross-tool fallback.
 | **Cursor** | `.cursor/rules/*.mdc` + `AGENTS.md` | `.cursor/skills/`, `.agents/skills/` — **reads `.claude/skills/` as-is** |
 | **Windsurf/Cascade** | `.devin/rules/` (legacy `.windsurf/rules/`) + `AGENTS.md` | `.windsurf/workflows/*` (manual `/name`) |
 | **Cline** | `.clinerules/` + `AGENTS.md` | Skills (≥3.48): `.cline/skills/`, also reads `.claude/skills/` |
+| **Google Antigravity CLI** (2026-08) | `AGENTS.md` + `.agents/` customization dir | Agent Skills preserved from Gemini CLI — **exact path unverified**; keep `.claude/skills/` |
+| **Grok Build** (xAI) | `AGENTS.md` · `CLAUDE.md` | `.grok/skills/` — also reads `.claude/` layout as-is |
 | Roo Code (archived) | = Zoo Code (byte-compatible) | = Zoo Code |
 | Devin · OpenCode · Aider · Junie | `AGENTS.md` fallback | Skills standard (Devin/OpenCode) or named docs |
+| Meta Muse Code (beta 2026-08-05) | not yet verified | not yet verified — adapter pending vendor docs |
+
+> ⛔ **Gemini CLI is retired** — Google moved it to **Antigravity CLI**; Gemini CLI and the Gemini
+> Code Assist IDE extensions stopped serving requests on **2026-06-18**. Deployments pointing at it
+> must migrate (`google-antigravity.md`).
+
+### Hook support (mechanical enforcement) — surveyed 2026-08-07
+
+Hooks became an industry standard over 2026, and the contracts differ enough that "it has hooks"
+is not a portable statement. Verified per system: **agent-facing context injection** is the
+capability that decides whether rule-enforcement modules can be wired at all.
+
+| System | Session-start / post-compaction | Per-turn | On-stop |
+|---|---|---|---|
+| Claude Code · OpenAI Codex | ✅ (`hookSpecificOutput.additionalContext`) | ✅ | ✅ / ⚠️ Codex unverified |
+| Grok Build | ✅ reads `.claude/settings.json` directly | ✅ same path | ✅ same path |
+| Cursor | ✅ `sessionStart` → `additional_context` | ❌ | ❌ auto-submits a followup prompt |
+| GitHub Copilot | ✅ `sessionStart` → `additionalContext` | ❌ not permitted on that event | ❌ |
+| Google Antigravity | ❌ no such event | ✅ `PreInvocation` → `injectSteps` | ⚠️ field names match, values unverified |
+| Windsurf / Cascade | ❌ | ❌ | ❌ hooks cannot inject context at all |
+| Cline | ❌ | ❌ | ❌ hooks are SDK plugins, not config-invoked |
+| Zoo Code ⭐ | ❌ no hook mechanism | ❌ | ❌ |
+
+A ❌ describes that system's published contract, not a gap in KAIF: markdown rituals are the
+designed, complete fallback, and the priority target (Zoo Code) runs on them alone.
 
 > Priority for first-class adapters (per the owner): **Zoo Code first**, then OpenAI Codex → GitHub
 > Copilot → Cursor → Windsurf → Cline, then Devin, OpenCode, Aider, Junie. Conventions evolve fast — an

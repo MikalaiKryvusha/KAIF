@@ -2278,6 +2278,19 @@ is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
 complete contour on its own.
 
+**Portability across agent systems** (phase O5; contracts read in each vendor's live docs on
+2026-08-07). The predicate and the order text are system-independent; only the JSON envelope of
+the injection differs, so each script takes `--emit <shape>` and the SAMPLE names the shape
+explicitly — never auto-detection, because a hook must exit silently on anything unclear and a
+wrong guess would therefore fail invisibly. Four samples ship beside the reference one:
+`sample-codex-hooks.json` (identical field names — the scripts run unchanged),
+`sample-cursor-hooks.json`, `sample-copilot-hooks.json`, `sample-antigravity-hooks.json`. Grok
+Build needs none — it reads `.claude/settings.json` directly. Where a system's contract carries
+only one hook of three, the sample ships that one and says why in its own `_readme`; where a
+system cannot inject agent-facing context at all (Windsurf/Cascade, Cline), no sample ships and
+the markdown ritual is the honest answer. The module README holds the per-system table, and the
+adapters (`_index.md` → "Hook support") hold the same survey from the agent-system side.
+
 ## 15. Lifecycle
 
 - `kaif-version` — the deployed version; check origin for newer releases.

@@ -30,3 +30,28 @@ Prompt files: `.github/prompts/<name>.prompt.md` (VS Code / Visual Studio / JetB
 - [ ] every KAIF skill → `.github/prompts/<name>.prompt.md`
 - [ ] validate: prompt-file count == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "github-copilot"`
+
+## Hooks (optional enforcement)
+
+> ✅ Hook contract verified against https://docs.github.com/en/copilot/reference/hooks-reference on
+> **2026-08-07**. This supersedes older notes saying no `sessionStart` analog was confirmed — it
+> exists, and so does `preCompact`.
+
+Config: `.github/hooks/*.json` (repository), `~/.copilot/hooks/*.json` (user), inline in
+`.github/copilot/settings.json`, or bundled by plugins; schema
+`{"version": 1, "hooks": {"<event>": [...]}}` with entry fields `type`, `bash`/`powershell`/
+`command`, `cwd`, `env`, `timeoutSec`, `matcher`. Supported on both Copilot CLI and the cloud agent
+(the cloud agent reads only `.github/hooks/*.json`).
+
+Events: `sessionStart`, `sessionEnd`, `userPromptSubmitted`, `userPromptTransformed`, `preToolUse`,
+`postToolUse`, `postToolUseFailure`, `preCompact`, `permissionRequest`, `notification`, `agentStop`,
+`subagentStart`, `subagentStop`, `errorOccurred`.
+
+**Two naming conventions are accepted** — camelCase events with camelCase fields, or PascalCase
+events with snake_case fields (the Claude Code convention), which eases porting.
+
+⚠️ **Context injection is event-scoped:** `additionalContext` is permitted on `postToolUse`,
+`postToolUseFailure`, `notification`, `sessionStart` and `subagentStart` — **not** on
+`userPromptSubmitted` or `agentStop`. Per-turn or on-stop enforcement that needs to speak to the
+model has nowhere to land here. Exit 0 = success, 2 = warning (deny for `preToolUse`/
+`permissionRequest`), other codes fail open except `preToolUse`, which is fail-closed.

@@ -1393,10 +1393,10 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "7a833dd4599753e15028be663c275e19ddf8c177a6d17fd462cb56f565dffdb0",
+        "sha256": "005f6f41a8ef92d09ae48dc5080200ad744b295e05acbfde295f9a7c5d24cbaa",
         "lines": [
           354,
-          375
+          388
         ]
       },
       {
@@ -1404,8 +1404,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          376,
-          388
+          389,
+          401
         ]
       },
       {
@@ -1413,8 +1413,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          389,
-          397
+          402,
+          410
         ]
       }
     ],

@@ -20,5 +20,26 @@ in Grok Build as-is.
 
 ## Hooks (optional enforcement)
 
-Grok Build advertises hook support in the `.claude/`-compatible layout; treat parity with Claude Code
-hooks as plausible but UNVERIFIED — test before relying on enforcement there.
+> ✅ Hook contract re-verified against https://docs.x.ai/build/features/hooks on **2026-08-07**.
+> The earlier "plausible but UNVERIFIED" parity note is now settled — with one caveat that
+> matters more than the parity itself.
+
+**Native hooks.** Personal `~/.grok/hooks/*.json`, project `<project>/.grok/hooks/*.json`. Events
+are a superset of Claude Code's: `SessionStart`, `SessionEnd`, `UserPromptSubmit`, `PreToolUse`,
+`PostToolUse`, `PostToolUseFailure`, `PermissionDenied`, `Stop`, `StopFailure`, `Notification`,
+`SubagentStart`, `SubagentStop`, `PreCompact`, `PostCompact`. stdin carries `hookEventName`,
+`sessionId`, `cwd`, `workspaceRoot`; the process also gets `GROK_HOOK_EVENT`, `GROK_HOOK_NAME`,
+`GROK_SESSION_ID`, `GROK_WORKSPACE_ROOT`. Default timeout **5 s**; timeouts, crashes and malformed
+output all **fail open**.
+
+**Parity confirmed:** the docs state that `.claude/settings.json` and `.cursor/hooks.json` are read
+alongside the native files (including Cursor's camelCase event names). A Claude-Code-shaped KAIF
+deployment therefore needs no Grok-specific hook config.
+
+⚠️ **Caveat worth testing before you rely on it.** In the NATIVE contract `SessionStart`,
+`UserPromptSubmit`, `PreCompact` and `Stop` are passive — "stdout is ignored"; only the blocking
+`PreToolUse` reads JSON output (`decision`/`reason`). Whether Grok honours
+`hookSpecificOutput.additionalContext` on the Claude-compatible path is not documented. So hooks
+that only ACT (log, lint, notify) are safe here; hooks that INJECT context — like KAIF's optional
+refresh-hooks module — may run and have their output dropped. If the refresh order never appears in
+your session, that is the first thing to check.

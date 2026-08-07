@@ -26,3 +26,23 @@ unchanged (KAIF skills already carry `name` + `description`).
 - [ ] every KAIF skill → `.agents/skills/<name>/SKILL.md` (copied as-is)
 - [ ] validate: skill count on disk == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "openai-codex"`
+
+## Hooks (optional enforcement)
+
+> ✅ Hook contract verified against the official Codex hooks doc on **2026-08-07**.
+
+**The closest analog to Claude Code of any surveyed system.** `<repo>/.codex/hooks.json` or
+`~/.codex/hooks.json` (inline `[hooks]` tables in `config.toml` also work); the nesting is
+identical to Claude Code's — event → matcher group → `"hooks"` handlers. Events: `SessionStart`,
+`SessionEnd`, `SubagentStart`, `PreToolUse`, `PermissionRequest`, `PostToolUse`, `PreCompact`,
+`PostCompact`, `UserPromptSubmit`, `SubagentStop`, `Stop`. `SessionStart` matches on `source` with
+values `startup`, `resume`, `clear`, `compact`.
+
+stdin uses the same snake_case fields (`session_id`, `transcript_path`, `cwd`, `hook_event_name`,
+`model`, `permission_mode`). Context injection uses the **same field names**:
+`{"hookSpecificOutput": {"additionalContext": "..."}}` — plain stdout also counts as developer
+context. Handler fields: `type`, `command` (one string, no `args` array), `timeout` (default 600 s),
+`statusMessage`, `additionalContextLimit` (default 2500 tokens), `commandWindows`.
+
+→ Claude-Code-shaped hook scripts run here **unchanged**; only the config file differs. Not
+verified: the output shape of `Stop` (the docs describe blocking via exit 2 + stderr).

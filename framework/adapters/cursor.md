@@ -28,3 +28,24 @@ them up. (For purism, copying to `.cursor/skills/` is equivalent.)
 - [ ] `.claude/skills/` deployed (read natively by Cursor)
 - [ ] validate: skills visible in the `/` menu == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "cursor"`
+
+## Hooks (optional enforcement)
+
+> ✅ Hook contract verified against https://cursor.com/docs/hooks on **2026-08-07**.
+
+`hooks.json` at project (`<root>/.cursor/hooks.json`), user (`~/.cursor/hooks.json`), enterprise and
+team levels; schema `{"version": 1, "hooks": {"<event>": [{command, type, timeout, loop_limit,
+failClosed, matcher}]}}`. Events include `sessionStart`, `sessionEnd`, `beforeSubmitPrompt`,
+`preCompact`, `stop`, `preToolUse`/`postToolUse`, `beforeShellExecution`, `afterFileEdit`,
+`workspaceOpen`. Exit 0 = success (JSON read), exit 2 = block, anything else fails **open** unless
+the entry sets `"failClosed": true`.
+
+**What can inject context into the agent — and what cannot.** `sessionStart` returns
+`{"env": {...}, "additional_context": "..."}` and is the one place an agent-facing injection lands.
+`beforeSubmitPrompt` returns only `{"continue", "user_message"}` — it blocks a prompt or messages
+the HUMAN. `preCompact` is observational ("cannot block or modify compaction"). `stop` returns
+`followup_message`, which Cursor AUTO-SUBMITS as the next prompt. Plan enforcement around that
+shape rather than assuming the Claude Code contract.
+
+**Handy:** hooks get `CLAUDE_PROJECT_DIR` as an explicit compatibility alias next to
+`CURSOR_PROJECT_DIR`, so `${CLAUDE_PROJECT_DIR}`-style paths carry over unchanged.

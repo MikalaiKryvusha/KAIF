@@ -29,3 +29,18 @@ directory name, kebab-case; `description` ≤ 1024 chars) in `.cline/skills/`, `
 - [ ] `.claude/skills/` deployed (read natively by Cline)
 - [ ] validate: skills visible == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "cline"`
+
+## Hooks (optional enforcement)
+
+> ✅ Verified against Cline's plugins-and-hooks documentation on **2026-08-07**.
+
+Cline's hooks are **programmatic, not config-invoked**: plugins are TypeScript/JavaScript objects
+passed through the `extensions` array of the SDK configuration, not shell commands named in a JSON
+file. The seven hooks are `beforeRun`/`afterRun`, `beforeTool`/`afterTool`, `beforeModel`/
+`afterModel`, and `onEvent`; they receive context objects (e.g. `beforeTool` gets
+`{ toolCall, input }`) and can alter behaviour such as skipping a tool call.
+
+⚠️ There is **no session-start or compaction event, and no documented way to inject context back
+into the model's reasoning**. Enforcement that must speak to the agent — KAIF's optional
+refresh-hooks module among it — cannot be wired here as shipped; porting it would mean writing a
+Cline plugin against their SDK. The markdown ritual covers the same rule without any of that.
