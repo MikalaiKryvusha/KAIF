@@ -14,7 +14,7 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 - An idea arises that moves the project toward the goals in `MASTER_PLAN.md`/`PHILOSOPHY.md` and doesn't
   contradict the human's vision.
-- **The OWNER tossed an idea into the chat mid-task** (drive-by, idea 17 §2): file it immediately with
+- **The OWNER tossed an idea into the chat mid-task** (the drive-by rule, `AGENT_GUIDE.md`): file it immediately with
   the source noted in the header ("tossed by the owner, <date>"), confirm in one chat line, return to
   the interrupted task. An owner-tossed idea needs no approval gate (it IS the owner's) — but it waits
   its turn in the backlog unless the owner explicitly says "switch to it now".

@@ -85,7 +85,7 @@ without those resources.
 - If you need to "continue on a timer", use the harness's loop mechanism (`ScheduleWakeup`/`/loop`) with
   a reasonable interval, passing this same skill back so the cycle resumes.
 
-> 📥 **The human wrote mid-loop — classify first** (idea 17 §2): a drive-by idea/bug not about the
+> 📥 **The human wrote mid-loop — classify first** (the drive-by rule, `AGENT_GUIDE.md`): a drive-by idea/bug not about the
 > current task goes to `ideas/`/`bugs/` (source noted) with a one-line confirmation, and the loop
 > CONTINUES; only a direct interactive request or an explicit "stop/switch" interrupts the series.
 

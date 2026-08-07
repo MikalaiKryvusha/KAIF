@@ -27,7 +27,11 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    **Tried / did:** briefly.
    **Result:** ✅/❌ — what happened.
    **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
-   **Repro:** the ready-to-run command/check that verifies or applies the lesson (omit only if none).
+   **Repro:** the ready-to-run command/check that verifies or applies the lesson — REQUIRED since 2.1:
+     a lesson with no Repro line is not accepted (a weak session executes a pasted command reliably,
+     an essay it won't act on). If the lesson genuinely has no command, say what to OBSERVE — as an action.
+   **Trigger:** for class-level lessons — the decision point that must invoke this lesson, as
+     "writing X → run Y" (the lesson names WHERE it applies, instead of hoping to be remembered).
    **Not for:** the validity range — where this lesson does NOT apply.
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
@@ -35,6 +39,9 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
      where one fits (grep the file to see what's in use), so `grep '#tag'` collects related experiences.
    - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
 3. Keep it truthful — record what actually happened, including failures.
+4. **A lesson that repeats is a lesson that failed as text.** When the same class recurs in NEW code
+   after its entry was recorded, the lesson MUST become executable (a linter rule, a guard, a gate) and
+   the entry gains the line `mechanized: <the tool>`. Two strikes → a mechanism, never a third reminder.
 
 ## Mode B — RECALL lessons ("recount your experience")
 

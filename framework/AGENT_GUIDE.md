@@ -41,6 +41,7 @@ relies entirely on this document to get to work.
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
+    - TESTING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -275,7 +276,10 @@ document it here.>`
 is this and how do I use it"* (the product, present tense). Release notes: *"what changed in THIS
 version, do I upgrade"* (strictly the delta; anything general is a LINK to the README — the
 mechanical check: a paragraph pasteable into the README unchanged belongs in the README).
-`STATUS.md`: *"where are we now"*. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
+`STATUS.md`: *"where are we now"* — the living SUMMARY of the present (soft target ~200 lines;
+`check` warns above it). `PROJECT_HISTORY.md`: *"the closed past"* — the append-only chronicle:
+closed sessions/phases/releases MOVE there verbatim (the `/end-chat` bonsai trim) instead of piling
+up in STATUS. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
 Updating the README — draw on the current README and the owner's other repo storefronts (one
 storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
 notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style choice.
@@ -308,6 +312,8 @@ diverging from its consumer. A weak session updates the side it SEES and does no
 side exists. Keep a light registry — a table, one row per pair:
 `truth → mirror(s) → the one-line check command`. `/end-chat` and `/release` run the registry's
 commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
+A mirrored/generated surface is edited at its SOURCE and rebuilt — never patched in place (the
+patch dies on the next rebuild, and the pair drifts again).
 Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
 
 ## Push / GitHub authentication
@@ -352,7 +358,7 @@ ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
   owner's next questions. Unsettled assumptions (fable `PENDING:` lines) are settled here too: each one
   *confirmed / refuted / asked*, never silently dropped.
 
-**Owner's drive-by notes mid-task go to the backlog, not into a task switch** (idea 17 §2). When the
+**Owner's drive-by notes mid-task go to the backlog, not into a task switch.** When the
 owner tosses an idea/improvement/bug into the chat while you are working on something ELSE: capture it
 as a document right away (`/propose-idea` → `ideas/`, `/report-bug` → `bugs/` — note the source in the
 header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("recorded in ideas/NN —

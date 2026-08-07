@@ -59,10 +59,10 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 ## ❓ Awaiting human review (interviews / homework)
 
 > Decisions the agent must not make alone (brand/UX/architecture), or actions only the human can do
-> (test on real hardware, external accounts). Filed in `interviews/` and `plans/homework_*.md`.
+> (test on real hardware, external accounts). Filed in `interviews/` and `homeworks/`.
 
 - ❓ `<interview NNN — one line>` → `interviews/interview_NNN_*.md`
-- 🧰 `<homework — one line>` → `plans/homework_*.md`
+- 🧰 `<homework — one line>` → `homeworks/NN_*.md`
 
 ---
 

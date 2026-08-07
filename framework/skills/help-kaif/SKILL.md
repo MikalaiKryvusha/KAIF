@@ -56,7 +56,8 @@ well-structured explanation they can read and act on.
    continues later) or `/end-chat` to close the chat with a handoff."* Note the human's role (visionary:
    `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
 
-6. **Where to go deeper.** Point to `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
+6. **Where to go deeper.** Point to `.kaif/KAIF_REFERENCE.md` (the authoritative framework
+   reference — first), then `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
 
 ## Notes
 - This is a **read-and-explain** skill — don't edit files, don't deploy, don't change state.

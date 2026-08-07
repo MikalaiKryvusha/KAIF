@@ -130,6 +130,63 @@ if (skills.includes('release')) {
   }
 }
 
+// 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (8 findings) and green
+//     after the content fixes — see bugs/38]
+//     The BUNDLE lint (bugs/38): the truth↔mirror pairs registry, applied to the bundle itself.
+//     The 2.1 field audit (KLAS D10) found eight desyncs INSIDE one shipped delivery: a doc
+//     introduced a norm its leading skill never learned, the canon didn't know a new entity,
+//     the source repo's internal backlog numbers leaked downstream, release notes promised a
+//     clause no template carried. One row per guarded pair; drift is caught only by checking
+//     pairs — never by reading one file. A new release-note promise adds its row HERE.
+{
+  const readT = (p) => readFileSync(join(ROOT, ...p.split('/')), 'utf8');
+  // "document/notes norm → the file that must carry it" — tokens are FULL unique strings
+  // (a short pattern happily matches someone else's line and stays green while truth rots)
+  const PAIRS = [
+    ['EXPERIENCE.md norms ↔ /experience skill', 'framework/skills/experience/SKILL.md',
+      ['REQUIRED since 2.1', '**Trigger:**', 'mechanized: <the tool>']],
+    ['re-read list ↔ TESTING_FRAMEWORK (KLAS D10: the doc ships but the list forgot it)', 'framework/AGENT_GUIDE.md',
+      ['    - TESTING_FRAMEWORK.md']],
+    ['canon ↔ PROJECT_HISTORY (the chronicle the update task demands migration into)', 'framework/AGENT_GUIDE.md',
+      ['PROJECT_HISTORY.md']],
+    ['2.1 notes ↔ pairs-registry rebuild clause', 'framework/AGENT_GUIDE.md',
+      ['never patched in place']],
+    ['help-kaif "go deeper" ↔ the authoritative reference', 'framework/skills/help-kaif/SKILL.md',
+      ['**Where to go deeper.** Point to `.kaif/KAIF_REFERENCE.md`']],
+    ['task-choice entry points ↔ the planning ladder', 'framework/skills/refresh-context/SKILL.md',
+      ['/plan-task', '/plan-epic']],
+    ['task-choice entry points ↔ the planning ladder', 'framework/skills/what-next/SKILL.md',
+      ['/plan-task', '/plan-epic']],
+  ];
+  for (const [pair, file, tokens] of PAIRS) {
+    let body; try { body = readT(file); } catch { errors.push(`bundle lint: ${file} unreadable (pair "${pair}")`); continue; }
+    for (const t of tokens) if (!body.includes(t))
+      errors.push(`bundle lint (bugs/38): pair "${pair}" broken — ${file} does not carry "${t}"`);
+  }
+  // The source repo's internal coordinates must not leak downstream: a backlog number or a
+  // superseded path is a dangling reference in every deployed project (KLAS D10).
+  const FORBIDDEN = [
+    [/\(idea \d+ §\d+\)|\(drive-by, idea \d+/, "the source repo's internal backlog numbering"],
+    [/plans\/homework_/, 'the pre-homeworks/ homework path (superseded by the homeworks/ directory)'],
+  ];
+  const payloadBodies = [];
+  for (const d of docs) payloadBodies.push([`framework/${d}`, readFileSync(join(ROOT, 'framework', d), 'utf8')]);
+  for (const r of readmes) payloadBodies.push([`framework/readmes/${r}.md`, readFileSync(join(readmesDir, `${r}.md`), 'utf8')]);
+  for (const s of skills) payloadBodies.push([`framework/skills/${s}/SKILL.md`, readFileSync(join(skillsDir, s, 'SKILL.md'), 'utf8')]);
+  for (const [name, body] of payloadBodies)
+    for (const [re, why] of FORBIDDEN)
+      if (re.test(body)) errors.push(`bundle lint (bugs/38): ${name} leaks ${why} (${re})`);
+  // Order guard: in /check-backlog the "Decisions made without the owner" precondition must be
+  // WRITTEN BEFORE the `git mv` action — a weak model executes in written order (KLAS D10).
+  try {
+    const cb = readT('framework/skills/check-backlog/SKILL.md');
+    const iPre = cb.indexOf('Decisions made without the owner');
+    const iAct = cb.indexOf('git mv bugs/13');
+    if (iPre < 0 || iAct < 0 || iPre > iAct)
+      errors.push('bundle lint (bugs/38): /check-backlog states the DONE-tag precondition AFTER the git mv action (or not at all) — a weak model renames before checking');
+  } catch { errors.push('bundle lint: framework/skills/check-backlog/SKILL.md unreadable'); }
+}
+
 // 6. dist/ — the Thin-KAIF install artifacts (1.5+). Validated when present (the build
 //    always emits them; a checkout missing dist/ predates 1.5 and skips cleanly).
 const distDir = join(ROOT, 'dist');

@@ -10,7 +10,7 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
 **Read every canon document — the full set, not a slice.** A session that skips one resumes with a
-hole exactly there; owners kept having to re-order the full pass by hand (idea 17 §1):
+hole exactly there; owners kept having to re-order the full pass by hand:
 
 - `STATUS.md` — current state, what's in progress, the "where to continue" checklist
 - `AGENT_GUIDE.md` — the rules for working on this project (the canon)

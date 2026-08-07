@@ -182,6 +182,7 @@ relies entirely on this document to get to work.
     - AGENT_GUIDE.md
     - STATUS.md
     - BUG_FIXING_FRAMEWORK.md
+    - TESTING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -416,7 +417,10 @@ document it here.>`
 is this and how do I use it"* (the product, present tense). Release notes: *"what changed in THIS
 version, do I upgrade"* (strictly the delta; anything general is a LINK to the README — the
 mechanical check: a paragraph pasteable into the README unchanged belongs in the README).
-`STATUS.md`: *"where are we now"*. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
+`STATUS.md`: *"where are we now"* — the living SUMMARY of the present (soft target ~200 lines;
+`check` warns above it). `PROJECT_HISTORY.md`: *"the closed past"* — the append-only chronicle:
+closed sessions/phases/releases MOVE there verbatim (the `/end-chat` bonsai trim) instead of piling
+up in STATUS. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
 Updating the README — draw on the current README and the owner's other repo storefronts (one
 storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
 notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style choice.
@@ -449,6 +453,8 @@ diverging from its consumer. A weak session updates the side it SEES and does no
 side exists. Keep a light registry — a table, one row per pair:
 `truth → mirror(s) → the one-line check command`. `/end-chat` and `/release` run the registry's
 commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
+A mirrored/generated surface is edited at its SOURCE and rebuilt — never patched in place (the
+patch dies on the next rebuild, and the pair drifts again).
 Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
 
 ## Push / GitHub authentication
@@ -493,7 +499,7 @@ ideas/07_dev_menu.md      →  ideas/07_DONE_dev_menu.md
   owner's next questions. Unsettled assumptions (fable `PENDING:` lines) are settled here too: each one
   *confirmed / refuted / asked*, never silently dropped.
 
-**Owner's drive-by notes mid-task go to the backlog, not into a task switch** (idea 17 §2). When the
+**Owner's drive-by notes mid-task go to the backlog, not into a task switch.** When the
 owner tosses an idea/improvement/bug into the chat while you are working on something ELSE: capture it
 as a document right away (`/propose-idea` → `ideas/`, `/report-bug` → `bugs/` — note the source in the
 header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("recorded in ideas/NN —
@@ -1239,10 +1245,10 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 ## ❓ Awaiting human review (interviews / homework)
 
 > Decisions the agent must not make alone (brand/UX/architecture), or actions only the human can do
-> (test on real hardware, external accounts). Filed in `interviews/` and `plans/homework_*.md`.
+> (test on real hardware, external accounts). Filed in `interviews/` and `homeworks/`.
 
 - ❓ `<interview NNN — one line>` → `interviews/interview_NNN_*.md`
-- 🧰 `<homework — one line>` → `plans/homework_*.md`
+- 🧰 `<homework — one line>` → `homeworks/NN_*.md`
 
 ---
 
@@ -2158,7 +2164,7 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
 **Read every canon document — the full set, not a slice.** A session that skips one resumes with a
-hole exactly there; owners kept having to re-order the full pass by hand (idea 17 §1):
+hole exactly there; owners kept having to re-order the full pass by hand:
 
 - `STATUS.md` — current state, what's in progress, the "where to continue" checklist
 - `AGENT_GUIDE.md` — the rules for working on this project (the canon)
@@ -2351,7 +2357,7 @@ without those resources.
 - If you need to "continue on a timer", use the harness's loop mechanism (`ScheduleWakeup`/`/loop`) with
   a reasonable interval, passing this same skill back so the cycle resumes.
 
-> 📥 **The human wrote mid-loop — classify first** (idea 17 §2): a drive-by idea/bug not about the
+> 📥 **The human wrote mid-loop — classify first** (the drive-by rule, `AGENT_GUIDE.md`): a drive-by idea/bug not about the
 > current task goes to `ideas/`/`bugs/` (source noted) with a one-line confirmation, and the loop
 > CONTINUES; only a direct interactive request or an explicit "stop/switch" interrupts the series.
 
@@ -2397,7 +2403,7 @@ This is the "working-hours" variant of `/nightloop`: same execution discipline a
 ## 🛑 STOP CONDITIONS (check at the START of each iteration)
 
 Stop the loop ONLY if one of:
-1. **The human wrote in the chat — classify before you switch** (idea 17 §2): a direct request or
+1. **The human wrote in the chat — classify before you switch** (the drive-by rule, `AGENT_GUIDE.md`): a direct request or
    question → exit the loop immediately, switch to them; a **drive-by idea/bug NOT about the current
    task** → capture it as a document right away (`/propose-idea` / `/report-bug`, source noted:
    "tossed by the owner"), confirm in one chat line and CONTINUE the loop; vision-level →
@@ -2430,7 +2436,7 @@ when the current one is exhausted (see step 8).
      alone) — don't do them blind: file the question in `interviews/interview_NNN_*.md` (`/interview`)
      AND mark `STATUS.md` "❓ awaiting human review: …". Then take ANOTHER task and continue.
    - If a task needs **human actions** (test on real hardware, external accounts) — file **homework** in
-     `plans/homework_*.md` and move on.
+     `homeworks/` and move on.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. Use the high-level harness commands; if one is missing, do it the low-level way,
    then ADD a command to the harness so next time it's one step. Execute the item by the fable loop
@@ -2514,7 +2520,7 @@ time and on the human appearing**, and **self-restart via `ScheduleWakeup`**.
 Stop the loop ONLY if one of:
 1. **It is ≥ the wake time** (default 09:00 local; set it when starting the loop). ⏰ Check the time
    (`date "+%H:%M"`) PERIODICALLY — don't miss the wake hour. The human comes online in the morning.
-2. **The human wrote in the chat — classify before you switch** (idea 17 §2): a direct request →
+2. **The human wrote in the chat — classify before you switch** (the drive-by rule, `AGENT_GUIDE.md`): a direct request →
    exit, switch to them immediately; a **drive-by idea/bug not about the current task** → capture it
    (`/propose-idea` / `/report-bug`, source: "tossed by the owner"), confirm in one line and
    CONTINUE the night; vision-level → `/fix-vision`, then continue.
@@ -2537,7 +2543,7 @@ Until one fires — don't stop, don't wait for confirmations, work.
 2. **Pick ANY backlog task.** Sources & priority as in `/dayloop` (finish started > bugs/polish > new ideas).
    - Make technical/implementation decisions yourself.
    - ONLY brand/UX/architecture-defining decisions — file an `/interview` + mark `STATUS.md`, take another task.
-   - Tasks needing human actions (real hardware, external accounts) — file homework in `plans/homework_*.md`.
+   - Tasks needing human actions (real hardware, external accounts) — file homework in `homeworks/`.
 3. **Do it**: code → build (`<BUILD_COMMAND>`) → deploy → test on the harness (`<TEST_HARNESS>`),
    verify objectively. High-level harness commands first; if missing, do it low-level then ADD the command.
    Execute the item by the fable loop (`/fable-method`; `/fable-loop` for substantive items) — its gates
@@ -2616,14 +2622,16 @@ restores it quickly and forms a current backlog.
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
    - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
-   - Glance at `plans/homework_*.md` and `interviews/` — what's waiting on the human (don't take into
+   - Glance at `homeworks/` and `interviews/` — what's waiting on the human (don't take into
      work, but know it).
    - Form the current open-task list (briefly, e.g. in a TodoWrite list).
    - 🧹 **If the backlog hasn't been revised in a while** (closed files without the `DONE` tag have piled
      up) — call `/check-backlog`: it tags genuinely-closed files DONE and returns a clean open list.
 
 4. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
-   doesn't need a human decision. If you're in a loop — continue the loop with it.
+   doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
+   ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
+   the loop with it.
 
 ## Notes
 - This is a FAST skill (read + list), a couple of minutes. Don't rewrite docs without need.
@@ -2671,11 +2679,12 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
    - **If unclear** → do NOT tag; leave open and mark "needs verification".
 
 4. **DONE tagging (only for confirmed-closed):**
-   - Rename, inserting `DONE` after the number, preserving history:
+   - FIRST the precondition, then the action (a weak model executes in written order): make sure the
+     document carries its **"Decisions made without the owner"** section (solo calls made while
+     executing, or an explicit "none" — `AGENT_GUIDE.md`); add it if missing.
+   - Only then rename, inserting `DONE` after the number, preserving history:
      `git mv bugs/13_detach_crash.md bugs/13_DONE_detach_crash.md` (don't change the number; format
      `<NN>_DONE_<name>.md`).
-   - Before tagging, make sure the document carries its **"Decisions made without the owner"** section
-     (solo calls made while executing, or an explicit "none" — `AGENT_GUIDE.md`); add it if missing.
    - **Append a status section inside the document**, e.g.:
      ```
      ## ✅ STATUS: DONE (<date>)
@@ -2731,7 +2740,11 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    **Tried / did:** briefly.
    **Result:** ✅/❌ — what happened.
    **Lesson:** the reusable takeaway.   → link: bugs/NN · ideas/NN · plans/NN (if any)
-   **Repro:** the ready-to-run command/check that verifies or applies the lesson (omit only if none).
+   **Repro:** the ready-to-run command/check that verifies or applies the lesson — REQUIRED since 2.1:
+     a lesson with no Repro line is not accepted (a weak session executes a pasted command reliably,
+     an essay it won't act on). If the lesson genuinely has no command, say what to OBSERVE — as an action.
+   **Trigger:** for class-level lessons — the decision point that must invoke this lesson, as
+     "writing X → run Y" (the lesson names WHERE it applies, instead of hoping to be remembered).
    **Not for:** the validity range — where this lesson does NOT apply.
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
@@ -2739,6 +2752,9 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
      where one fits (grep the file to see what's in use), so `grep '#tag'` collects related experiences.
    - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
 3. Keep it truthful — record what actually happened, including failures.
+4. **A lesson that repeats is a lesson that failed as text.** When the same class recurs in NEW code
+   after its entry was recorded, the lesson MUST become executable (a linter rule, a guard, a gate) and
+   the entry gains the line `mechanized: <the tool>`. Two strikes → a mechanism, never a third reminder.
 
 ## Mode B — RECALL lessons ("recount your experience")
 
@@ -2791,7 +2807,7 @@ can be returned to (or handed to `/bug-research`).
   capture the forensics/postmortem).
 - A bug needs to be deferred (take another task) without losing it.
 - The human asks to file a bug.
-- **The owner mentioned a bug in passing while you worked on something else** (drive-by, idea 17 §2):
+- **The owner mentioned a bug in passing while you worked on something else** (the drive-by rule, `AGENT_GUIDE.md`):
   file it with the source noted ("tossed by the owner, <date>"), confirm in one line, return to the
   current task.
 - NOT for a "stuck-from-misunderstanding" stall (that's `PHILOSOPHY.md`) and not instead of fixing a trivial typo.
@@ -2945,7 +2961,7 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
 
 - An idea arises that moves the project toward the goals in `MASTER_PLAN.md`/`PHILOSOPHY.md` and doesn't
   contradict the human's vision.
-- **The OWNER tossed an idea into the chat mid-task** (drive-by, idea 17 §2): file it immediately with
+- **The OWNER tossed an idea into the chat mid-task** (the drive-by rule, `AGENT_GUIDE.md`): file it immediately with
   the source noted in the header ("tossed by the owner, <date>"), confirm in one chat line, return to
   the interrupted task. An owner-tossed idea needs no approval gate (it IS the owner's) — but it waits
   its turn in the backlog unless the owner explicitly says "switch to it now".
@@ -3252,6 +3268,8 @@ most future work). Note the rough effort of each.
 
 ### Step 4. Offer to start
 Offer to begin the top step immediately; on the owner's confirmation (or in an autonomous loop) — start.
+An unplanned step gets planned before code: `/plan-task` for an ordinary one, `/plan-epic` when the
+heaviness test says it's heavy.
 
 ## Rules
 - Never answer "nothing to do": an empty backlog means propose `/check-backlog` or `/refresh-context`,
@@ -3322,7 +3340,8 @@ well-structured explanation they can read and act on.
    continues later) or `/end-chat` to close the chat with a handoff."* Note the human's role (visionary:
    `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
 
-6. **Where to go deeper.** Point to `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
+6. **Where to go deeper.** Point to `.kaif/KAIF_REFERENCE.md` (the authoritative framework
+   reference — first), then `KAIF_FRAMEWORK.md` and `AGENT_GUIDE.md` for the full detail.
 
 ## Notes
 - This is a **read-and-explain** skill — don't edit files, don't deploy, don't change state.

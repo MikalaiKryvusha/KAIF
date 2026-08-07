@@ -27,6 +27,8 @@ most future work). Note the rough effort of each.
 
 ### Step 4. Offer to start
 Offer to begin the top step immediately; on the owner's confirmation (or in an autonomous loop) — start.
+An unplanned step gets planned before code: `/plan-task` for an ordinary one, `/plan-epic` when the
+heaviness test says it's heavy.
 
 ## Rules
 - Never answer "nothing to do": an empty backlog means propose `/check-backlog` or `/refresh-context`,

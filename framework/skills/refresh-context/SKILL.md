@@ -24,14 +24,16 @@ restores it quickly and forms a current backlog.
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
    - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
-   - Glance at `plans/homework_*.md` and `interviews/` — what's waiting on the human (don't take into
+   - Glance at `homeworks/` and `interviews/` — what's waiting on the human (don't take into
      work, but know it).
    - Form the current open-task list (briefly, e.g. in a TodoWrite list).
    - 🧹 **If the backlog hasn't been revised in a while** (closed files without the `DONE` tag have piled
      up) — call `/check-backlog`: it tags genuinely-closed files DONE and returns a clean open list.
 
 4. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
-   doesn't need a human decision. If you're in a loop — continue the loop with it.
+   doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
+   ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
+   the loop with it.
 
 ## Notes
 - This is a FAST skill (read + list), a couple of minutes. Don't rewrite docs without need.
