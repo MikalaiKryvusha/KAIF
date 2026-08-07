@@ -1,0 +1,20 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_011_scope_tasks_T1_T9.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-08-07T19:16:41.645Z",
+  "atHuman": "7 августа 2026, 22:16 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "C",
+      "text": "",
+      "comment": "мы не торопимся. Мы делаем хорошо и полно, качественно, и тестируем, и полируем, чтобы 2.2 получилась полноценной и крепкой версией."
+    },
+    "Q2": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    }
+  }
+}
