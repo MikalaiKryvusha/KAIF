@@ -25,6 +25,8 @@
   <a href="#1-general">General</a> · <a href="#2-installation">Installation</a> · <a href="#3-the-deployed-framework">Deployed framework</a> · <a href="#4-the-skills">Skills</a> · <a href="#5-working-on-a-project">Working</a> · <a href="#6-updating-forking-removing">Updating</a> · <a href="#8-reference">Reference</a>
 </p>
 
+**KAIF — Krinik AI Framework — a context-resilient, fundamental strategic-operational methodological framework for AI agents: resilience to context loss and discipline of autonomy.**
+
 This document is the user manual of the framework: it describes what KAIF is and how to use it.
 The project's history lives in the [releases](https://github.com/MikalaiKryvusha/KAIF/releases)
 and in section 8.1.
@@ -478,6 +480,8 @@ project. Thank you, and pleasant work!
 <p align="center">
   <a href="#1-общие-сведения">Общие сведения</a> · <a href="#2-установка">Установка</a> · <a href="#3-устройство-развёрнутого-фреймворка">Устройство</a> · <a href="#4-навыки">Навыки</a> · <a href="#5-работа-над-проектом">Работа</a> · <a href="#6-обновление-форк-удаление">Обновление</a> · <a href="#8-справочные-сведения">Справка</a>
 </p>
+
+**КАИФ — Криник АИ Фреймворк — контекстоустойчивый фундаментальный стратегическо-операционный методологический фреймворк для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 
 Настоящий документ является руководством пользователя фреймворка: он описывает, чем KAIF является
 и как им пользоваться. История проекта живёт в
