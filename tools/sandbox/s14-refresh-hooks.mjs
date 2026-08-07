@@ -49,7 +49,10 @@ cpSync(join(DIST, 'KAIF-CORE.mjs'), join(S, '.kaif', 'kaif-core.mjs'));
 let r = run(S, 'install');
 ok(r.code === 0, 's14 install exit 0', r.out.slice(-400));
 const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'stop-status-guard.mjs',
-                    'settings-fragment.json', 'README.md'];
+                    'settings-fragment.json', 'README.md',
+                    // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
+                    'sample-codex-hooks.json', 'sample-cursor-hooks.json',
+                    'sample-copilot-hooks.json', 'sample-antigravity-hooks.json'];
 for (const f of HOOK_FILES)
   ok(existsSync(join(S, '.kaif', 'hooks', f)), `s14 деплой: .kaif/hooks/${f} доехал`);
 r = run(S, 'check');
@@ -137,6 +140,78 @@ const NG = join(ROOT, 'no-git'); seedHooks(NG);
 writeFileSync(join(NG, 'STATUS.md'), '# s'); utimesSync(join(NG, 'STATUS.md'), oldSec, oldSec);
 out = runHook(NG, 'stop-status-guard.mjs', { hook_event_name: 'Stop', cwd: NG, session_id: sid + '-c' });
 ok(out === '', 's14 страж STATUS: не-git проект — тишина (не краснеет там, где не наблюдает)', out.slice(0, 120));
+
+// ---------------------------------------------------------------- O5: образцы под другие системы
+// Фаза O5 (план 60): у каждой системы с ПОДТВЕРЖДЁННЫМ живым контрактом — свой образец конфига.
+// Стережём три класса, каждый из которых уже ронял поставки в поле:
+//   (1) образец — валидный JSON и адресует РЕАЛЬНО развёрнутые скрипты (битая ссылка выглядит
+//       поставкой и молча не работает);
+//   (2) образец называет свою форму вывода явно (--emit), а не полагается на автоопределение;
+//   (3) ОБРАТНАЯ проверка честности: образец НЕ ссылается на хук, который система не тянет —
+//       иначе таблица README обещает одно, а файл делает другое.
+console.log('\n=== s14: образцы конфигов под другие агентские системы (фаза O5) ===');
+const readJson = (p) => { try { return JSON.parse(readFileSync(p, 'utf8')); } catch { return null; } };
+// Ассерты смотрят на ИСПОЛНЯЕМЫЕ строки, а не на весь файл: образцы несут пояснительные ключи
+// `_readme`/`_why_…`, где имена скриптов и флаги упоминаются ПРОЗОЙ. Первый прогон этого свода
+// покраснел ровно на этом (проза Codex объясняет, почему --emit не нужен, — и текстовый греп
+// счёл это флагом). Собираем значения ключей command/bash/powershell рекурсивно — то, что
+// система реально запустит.
+const CMD_KEYS = new Set(['command', 'bash', 'powershell', 'commandWindows']);
+const commandsOf = (node, acc = []) => {
+  if (Array.isArray(node)) node.forEach((n) => commandsOf(n, acc));
+  else if (node && typeof node === 'object')
+    for (const [k, v] of Object.entries(node)) {
+      if (CMD_KEYS.has(k) && typeof v === 'string') acc.push(v);
+      else commandsOf(v, acc);
+    }
+  return acc;
+};
+const sampleTxt = (f) => commandsOf(readJson(join(S, '.kaif', 'hooks', f))).join('\n');
+// система → [файл образца, требуемый флаг формы, скрипты которые ОБЯЗАНЫ быть, скрипты которых быть НЕ ДОЛЖНО]
+const SAMPLES = [
+  ['Codex', 'sample-codex-hooks.json', null,
+   ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs'], ['stop-status-guard.mjs']],
+  ['Cursor', 'sample-cursor-hooks.json', '--emit cursor',
+   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs']],
+  ['Copilot', 'sample-copilot-hooks.json', '--emit copilot',
+   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs']],
+  ['Antigravity', 'sample-antigravity-hooks.json', '--emit antigravity',
+   ['prompt-refresh-timer.mjs'], ['session-start-refresh.mjs', 'stop-status-guard.mjs']],
+];
+for (const [sys, file, emit, must, mustNot] of SAMPLES) {
+  ok(readJson(join(S, '.kaif', 'hooks', file)) !== null, `s14/O5 ${sys}: образец ${file} — валидный JSON`);
+  const txt = sampleTxt(file);
+  ok(must.every((m) => txt.includes(`.kaif/hooks/${m}`)),
+     `s14/O5 ${sys}: образец адресует развёрнутые скрипты (${must.join(', ')})`);
+  ok(mustNot.every((m) => !txt.includes(`.kaif/hooks/${m}`)),
+     `s14/O5 ${sys}: образец НЕ обещает хук, который система не тянет (${mustNot.join(', ')})`);
+  if (emit) ok(txt.includes(emit), `s14/O5 ${sys}: образец называет форму вывода явно (${emit})`);
+}
+// Codex — единственный, кто читает форму Claude Code дословно: флага формы у него быть НЕ должно
+ok(!sampleTxt('sample-codex-hooks.json').includes('--emit'),
+   's14/O5 Codex: флага формы нет — контракт совпадает с референсом дословно');
+
+// поведение форм: один приказ, четыре конверта (проверяется на РАЗВЁРНУТЫХ копиях)
+const emitOut = (script, args, input) => {
+  try { return execFileSync(process.execPath, [join(S, '.kaif', 'hooks', script), ...args], { input: JSON.stringify(input), cwd: S }).toString(); }
+  catch (e) { return `<HOOK-CRASH: ${String(e.message).slice(0, 120)}>`; }
+};
+const cursorJs = parseHook(emitOut('session-start-refresh.mjs', ['--emit', 'cursor'], { source: 'clear', cwd: S }));
+ok(typeof cursorJs.additional_context === 'string' && /re-read core/.test(cursorJs.additional_context),
+   's14/O5 форма cursor: плоское additional_context (snake_case) с тем же приказом');
+ok(cursorJs.hookSpecificOutput === undefined, 's14/O5 форма cursor: конверта Claude Code НЕТ');
+const copilotJs = parseHook(emitOut('session-start-refresh.mjs', ['--emit', 'copilot'], { source: 'compact', cwd: S }));
+ok(typeof copilotJs.additionalContext === 'string' && /re-read core/.test(copilotJs.additionalContext),
+   's14/O5 форма copilot: плоское additionalContext (camelCase)');
+rmSync(marker, { force: true }); // маркера нет → таймер обязан говорить
+const agJs = parseHook(emitOut('prompt-refresh-timer.mjs', ['--emit', 'antigravity'], { cwd: S }));
+ok(Array.isArray(agJs.injectSteps) && typeof agJs.injectSteps[0]?.ephemeralMessage === 'string'
+   && /re-read core/.test(agJs.injectSteps[0].ephemeralMessage),
+   's14/O5 форма antigravity: injectSteps — МАССИВ ОБЪЕКТОВ с ephemeralMessage, не строк');
+// неизвестная форма — конверт референса, НИКОГДА не тишина (опечатка в образце обязана быть видна)
+const junkJs = parseHook(emitOut('session-start-refresh.mjs', ['--emit', 'no-such-shape'], { source: 'clear', cwd: S }));
+ok(junkJs.hookSpecificOutput?.additionalContext?.length > 0,
+   's14/O5 неизвестная форма: фолбэк на конверт референса, не молчание');
 
 // ---------------------------------------------------------------- деплой БЕЗ хуков не краснеет
 // Инвариант §9.10 в семантике машинерии: опциональность = АКТИВАЦИЯ, не наличие файлов.

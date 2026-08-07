@@ -22,6 +22,18 @@
 // [TESTED: 2026-08-07 · polygon s14: fresh marker → silent; missing marker → order ("no refresh
 //  witness"); marker older than the interval → order naming the age; MALFORMED marker → judged by
 //  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks]
+//
+// PORTABILITY — `--emit <shape>` (epic O phase O5, contracts live-fetched 2026-08-07). The
+// timer is the hook systems disagree about MOST: only two of the surveyed systems let a
+// per-turn hook inject context at all.
+//   claude (default) — Claude Code AND OpenAI Codex (identical field names, `UserPromptSubmit`)
+//   antigravity      — Google Antigravity CLI, event `PreInvocation` (fires before each model
+//                      call): {"injectSteps": [{"ephemeralMessage": "…"}]} — the array holds
+//                      objects, and `ephemeralMessage` is the right member for an order that
+//                      must steer this turn without settling into the transcript.
+// Cursor (`beforeSubmitPrompt` → only `continue`/`user_message`) and GitHub Copilot
+// (`additionalContext` is not permitted on `userPromptSubmitted`) cannot carry this hook at
+// all — they ship the session-start hook only, and .kaif/hooks/README.md says so per system.
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -29,10 +41,18 @@ const OUTPUT_CAP = 10000;           // Claude Code caps hook output strings at 1
 const DEFAULT_INTERVAL_MIN = 60;    // the canon's "refresh at least once an hour"
 const MARKER = '.kaif/refresh-marker.json';
 
+// Same order, different envelope per system — see the PORTABILITY note above.
+const ENVELOPES = {
+  claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
+  antigravity: (order) => ({ injectSteps: [{ ephemeralMessage: order }] }),
+};
+
 try {
   const argv = process.argv.slice(2);
   const mi = argv.indexOf('--minutes');
   const intervalMin = mi !== -1 && Number(argv[mi + 1]) > 0 ? Number(argv[mi + 1]) : DEFAULT_INTERVAL_MIN;
+  const ei = argv.indexOf('--emit');
+  const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
 
   let cwd = process.cwd();
   try {
@@ -58,7 +78,8 @@ try {
       `re-read the re-read core (AGENT_GUIDE.md → "Context refresh"), re-stamp .kaif/refresh-marker.json ` +
       `{ "at": "<ISO>", "docs": [...], "trigger": "hour" } and put the acceptance quote in the chat — one concrete ` +
       `line from what you re-read, relevant to the task. This reminder repeats until the marker is actually refreshed.`;
-    const payload = { hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: order } };
+    // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
+    const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
     if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
   }
 } catch { /* a hook must never take the session down with it */ }

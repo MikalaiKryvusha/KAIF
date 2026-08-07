@@ -7114,6 +7114,18 @@ function cmdSelftest() {
 // [TESTED: 2026-08-07 · polygon s14: fresh marker → silent; missing marker → order ("no refresh
 //  witness"); marker older than the interval → order naming the age; MALFORMED marker → judged by
 //  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks]
+//
+// PORTABILITY — `--emit <shape>` (epic O phase O5, contracts live-fetched 2026-08-07). The
+// timer is the hook systems disagree about MOST: only two of the surveyed systems let a
+// per-turn hook inject context at all.
+//   claude (default) — Claude Code AND OpenAI Codex (identical field names, `UserPromptSubmit`)
+//   antigravity      — Google Antigravity CLI, event `PreInvocation` (fires before each model
+//                      call): {"injectSteps": [{"ephemeralMessage": "…"}]} — the array holds
+//                      objects, and `ephemeralMessage` is the right member for an order that
+//                      must steer this turn without settling into the transcript.
+// Cursor (`beforeSubmitPrompt` → only `continue`/`user_message`) and GitHub Copilot
+// (`additionalContext` is not permitted on `userPromptSubmitted`) cannot carry this hook at
+// all — they ship the session-start hook only, and .kaif/hooks/README.md says so per system.
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -7121,10 +7133,18 @@ const OUTPUT_CAP = 10000;           // Claude Code caps hook output strings at 1
 const DEFAULT_INTERVAL_MIN = 60;    // the canon's "refresh at least once an hour"
 const MARKER = '.kaif/refresh-marker.json';
 
+// Same order, different envelope per system — see the PORTABILITY note above.
+const ENVELOPES = {
+  claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
+  antigravity: (order) => ({ injectSteps: [{ ephemeralMessage: order }] }),
+};
+
 try {
   const argv = process.argv.slice(2);
   const mi = argv.indexOf('--minutes');
   const intervalMin = mi !== -1 && Number(argv[mi + 1]) > 0 ? Number(argv[mi + 1]) : DEFAULT_INTERVAL_MIN;
+  const ei = argv.indexOf('--emit');
+  const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
 
   let cwd = process.cwd();
   try {
@@ -7150,7 +7170,8 @@ try {
       `re-read the re-read core (AGENT_GUIDE.md → "Context refresh"), re-stamp .kaif/refresh-marker.json ` +
       `{ "at": "<ISO>", "docs": [...], "trigger": "hour" } and put the acceptance quote in the chat — one concrete ` +
       `line from what you re-read, relevant to the task. This reminder repeats until the marker is actually refreshed.`;
-    const payload = { hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: order } };
+    // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
+    const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
     if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
   }
 } catch { /* a hook must never take the session down with it */ }
@@ -7202,12 +7223,166 @@ either way.
 
 ## Other agent systems
 
-The scripts speak the Claude Code hook contract (JSON on stdin → `hookSpecificOutput` /
-`decision` JSON on stdout). Systems with their own hook formats (Cursor `.cursor/hooks.json`,
-Codex `.codex/hooks.json`, Copilot agent hooks) can call the same scripts but need their own
-config wiring — author it from this sample against the system's live docs. Systems without
-hooks (Zoo Code among them) run the markdown ritual alone: that is the designed fallback, not
-a gap.
+**The scripts are one implementation; only the wiring is per-system.** Each system names its own
+config file, its own event names, and its own envelope for injected context — so the scripts take
+`--emit <shape>` and the SAMPLE names the shape explicitly. Nothing is auto-detected: a hook must
+exit silently on anything unclear, so a wrong guess would fail invisibly, while a wrong flag in a
+sample is visible to a human reading it.
+
+Contracts below were read in each vendor's live documentation on **2026-08-07**. Treat any row
+older than a few weeks as a hypothesis and re-read the vendor doc before relying on it — hook
+APIs were still moving through beta across the industry when this table was written.
+
+| System | Sample | Canon after compaction | Hourly timer | STATUS guard |
+|---|---|---|---|---|
+| **Claude Code** | `settings-fragment.json` | ✅ | ✅ | ✅ |
+| **OpenAI Codex** | `sample-codex-hooks.json` | ✅ same field names, matcher on `source` | ✅ | ❌ output shape of `Stop` not verified |
+| **Cursor** | `sample-cursor-hooks.json` | ✅ `additional_context` | ❌ `beforeSubmitPrompt` cannot inject agent context | ❌ `stop` auto-submits a followup prompt instead |
+| **Google Antigravity** | `sample-antigravity-hooks.json` | ❌ no session/compaction event exists | ✅ `PreInvocation` → `injectSteps` | ❌ field names match, blocking value not verified |
+| **GitHub Copilot** | `sample-copilot-hooks.json` | ✅ `additionalContext` on `sessionStart` | ❌ injection not permitted on `userPromptSubmitted` | ❌ not permitted on `agentStop` |
+| **Grok Build** | *(none needed)* | ✅ reads `.claude/settings.json` directly | ✅ same path | ✅ same path |
+| **Meta Muse Code** | *(none yet)* | ❌ no such event found | 🟡 a prompt event exists; contract not published | ❌ |
+| **Windsurf / Cascade** | *(not supported)* | ❌ | ❌ | ❌ hooks cannot inject context at all — exit codes only |
+| **Cline** | *(not supported)* | ❌ | ❌ | ❌ hooks are SDK plugins (TS/JS objects), not config-invoked commands |
+| **Zoo Code** | *(markdown ritual)* | — | — | — no hook mechanism |
+
+Reading the table: a ❌ is a statement about that system's published contract, not about the
+module. Where a system carries one hook out of three, wire that one — a partial mechanical
+contour plus the markdown ritual is strictly better than the ritual alone, and the ritual is
+complete by itself in every row.
+
+**Grok Build needs no sample of its own:** its docs state that `.claude/settings.json` and
+`.cursor/hooks.json` are read alongside its native `.grok/hooks/*.json`. Use the Claude Code
+fragment as-is. One caveat worth knowing: in Grok's NATIVE contract the session/prompt/compaction
+events are passive ("stdout is ignored"), so whether it honours `additionalContext` on the
+Claude-compatible path is unverified — if the order never appears in your session, that is the
+first thing to test.
+
+**Meta Muse Code** (beta since 2026-08-05) documents hooks with a prompt-submission event and its
+own trust model — project and user hooks must be explicitly trusted before they run. No sample
+ships until the vendor publishes the contract: a config written from overviews would look like
+delivery and behave like a guess.
+
+**Adding a system yourself:** read its live hook docs, find (1) the event that fires after context
+is lost or per turn, and (2) the exact output field that injects context into the AGENT — not a
+message to the human. If (2) does not exist, the system cannot carry this module, and the markdown
+ritual is the honest answer, not a lesser one. If it does, add a shape to the `ENVELOPES` table in
+the relevant script and a sample next to these.
+``````
+
+> **FILE: `.kaif/hooks/sample-antigravity-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````json
+{
+  "_readme": "SAMPLE Google Antigravity CLI hooks config for the optional KAIF refresh-hooks module. Destination: .agents/hooks.json in the workspace (or ~/.gemini/config/hooks.json for a personal one). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_note_on_the_platform": "Antigravity CLI is Google's successor to Gemini CLI, which stopped serving requests on 2026-06-18. A project still wired to Gemini CLI has no hook contour at all — this file is where it moves to.",
+  "_one_hook_of_three": "Antigravity has NO session-start and NO context-compaction event (its docs say per-session events are expected later), so the 'canon after compaction' hook cannot exist here at all. What Antigravity does have is PreInvocation — fired before every model call — which is an even tighter fit for the hourly timer than a per-prompt event: it also covers turns the human never typed.",
+  "_stop_guard_deliberately_absent": "Antigravity's Stop event returns {\"decision\", \"reason\"} — the same FIELD NAMES our stop-status-guard.mjs prints. But the documented value vocabulary is 'continue' or other, and whether it accepts our blocking value is NOT verified. Same field names are not the same contract, so the guard is left out rather than shipped on a resemblance.",
+  "_emit_shape": "PreInvocation injects via {\"injectSteps\": [{\"ephemeralMessage\": \"...\"}]} — an array of objects, not strings; `ephemeralMessage` is the right member for an order that must steer this turn without settling into the transcript. Hence --emit antigravity.",
+  "kaif-refresh-timer": {
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node .kaif/hooks/prompt-refresh-timer.mjs --emit antigravity",
+        "timeout": 15
+      }
+    ]
+  }
+}
+``````
+
+> **FILE: `.kaif/hooks/sample-codex-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````json
+{
+  "_readme": "SAMPLE OpenAI Codex hooks config for the optional KAIF refresh-hooks module. Destination: <repo>/.codex/hooks.json (per-project) or ~/.codex/hooks.json (per-profile). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_why_no_emit_flag": "Codex reads the SAME output fields as Claude Code ({\"hookSpecificOutput\": {\"additionalContext\": ...}}) and the SAME snake_case stdin fields, so the scripts run in their default shape — no --emit needed. Its config nesting (event -> matcher group -> \"hooks\" handlers) is identical too; only the file and the entry fields differ (`command` is one string; no `args` array).",
+  "_two_matcher_groups_on_purpose": "Codex matches SessionStart on `source` with values startup|resume|clear|compact. Whether its matcher accepts regex alternation (\"compact|clear\") is NOT verified in the docs, so this sample uses two single-value groups — certainly valid, and it costs three lines.",
+  "_not_covered": "The Stop guard is absent on purpose: Codex documents blocking via exit code 2 + stderr, and the output shape our stop-status-guard.mjs prints (decision/reason) is NOT verified for Codex. Shipping it would be a guess. The two hooks below are the verified ones.",
+  "_context_limit": "Codex truncates injected context at `additionalContextLimit` tokens (default 2500). The refresh order is a few hundred characters, so the default is ample.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .kaif/hooks/session-start-refresh.mjs",
+            "statusMessage": "KAIF: canon re-read order",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .kaif/hooks/session-start-refresh.mjs",
+            "statusMessage": "KAIF: canon re-read order",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .kaif/hooks/prompt-refresh-timer.mjs",
+            "statusMessage": "KAIF: refresh timer",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
+``````
+
+> **FILE: `.kaif/hooks/sample-copilot-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````json
+{
+  "_readme": "SAMPLE GitHub Copilot hooks config for the optional KAIF refresh-hooks module. Destination: .github/hooks/kaif-refresh.json (repository level) or ~/.copilot/hooks/kaif-refresh.json (user level). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_one_hook_of_three": "Copilot HAS all three matching events (sessionStart, userPromptSubmitted, preCompact, agentStop) — but `additionalContext` injection is permitted only on postToolUse, postToolUseFailure, notification, sessionStart and subagentStart. It is NOT permitted on userPromptSubmitted or agentStop, so the timer and the STATUS guard cannot be carried here. Ship what the contract allows; say so where it does not.",
+  "_emit_shape": "Copilot's output field is top-level camelCase: {\"additionalContext\": \"...\"} — hence --emit copilot.",
+  "_naming_conventions": "Copilot accepts BOTH camelCase event names with camelCase payload fields AND PascalCase event names with snake_case fields (the Claude Code convention). This sample uses the camelCase form, which is Copilot's own.",
+  "_precompact_note": "preCompact fires when compaction is about to BEGIN — i.e. before the context is lost, not after it is restored. Our order is written for the post-compaction session, so it is deliberately wired to sessionStart (which fires for new AND resumed sessions) rather than to preCompact.",
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": "node .kaif/hooks/session-start-refresh.mjs --emit copilot",
+        "cwd": ".",
+        "timeoutSec": 15
+      }
+    ]
+  }
+}
+``````
+
+> **FILE: `.kaif/hooks/sample-cursor-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````json
+{
+  "_readme": "SAMPLE Cursor hooks config for the optional KAIF refresh-hooks module. Destination: <project-root>/.cursor/hooks.json (a ~/.cursor/hooks.json user-level file works the same way). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_one_hook_of_three": "Only the session-start hook is shippable on Cursor, and that is a property of Cursor's contract, not a gap in the module: `beforeSubmitPrompt` returns only {continue, user_message} — it can block a prompt or message the HUMAN, but cannot inject context for the AGENT, so the hourly timer has nowhere to land. `preCompact` is documented as observational (it 'cannot block or modify compaction') and likewise carries no agent context. `stop` returns `followup_message`, which Cursor AUTO-SUBMITS as the next prompt — that is a different behaviour from our soft STATUS block, so shipping it there would be a guess about intent, not a port.",
+  "_emit_shape": "Cursor's sessionStart output is FLAT snake_case: {\"additional_context\": \"...\"} — hence --emit cursor. The predicate and the order text are identical to every other system.",
+  "_paths": "Cursor exposes CLAUDE_PROJECT_DIR as an explicit compatibility alias alongside CURSOR_PROJECT_DIR, so an absolute ${CLAUDE_PROJECT_DIR}/.kaif/hooks/... path also works if a relative one does not suit your setup.",
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "node .kaif/hooks/session-start-refresh.mjs --emit cursor",
+        "timeout": 15
+      }
+    ]
+  }
+}
 ``````
 
 > **FILE: `.kaif/hooks/session-start-refresh.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
@@ -7232,12 +7407,37 @@ a gap.
 // stdout on exit 0 — {"hookSpecificOutput": {"hookEventName": "SessionStart",
 // "additionalContext": "…"}}. A hook must never break the session: any internal error → exit 0
 // silently.
+//
+// PORTABILITY — `--emit <shape>` (epic O phase O5, contracts live-fetched 2026-08-07): the
+// PREDICATE and the order text are identical everywhere; only the JSON envelope differs per
+// agent system, so the shape is named EXPLICITLY by the sample config rather than guessed from
+// stdin. A hook must exit silently on anything unclear, so a wrong guess would fail invisibly —
+// an explicit flag fails loudly at review time instead. Shapes:
+//   claude (default) — Claude Code AND OpenAI Codex: both read
+//                      {"hookSpecificOutput": {"hookEventName": …, "additionalContext": …}}
+//   cursor           — {"additional_context": …} (flat, snake_case; `sessionStart` only)
+//   copilot          — {"additionalContext": …}  (flat, camelCase; `sessionStart` only)
+// Systems whose session-start event cannot inject at all (Windsurf, Cline) get no sample: see
+// .kaif/hooks/README.md. Unknown shape → treated as `claude`, never as silence.
 // [TESTED: 2026-08-07 · polygon s14: stdin JSON piped in → stdout order names the re-read core, the marker and the quote; length under the cap]
 import { readFileSync } from 'node:fs';
 
 const OUTPUT_CAP = 10000; // Claude Code caps hook output strings at 10 000 characters
 
+// One order string, four envelopes. Keeping this table next to the writer (rather than in a
+// shared lib) keeps the module at three self-contained scripts — a fourth file would have to be
+// registered through the whole delivery circle for six lines of JSON shaping.
+const ENVELOPES = {
+  claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
+  cursor: (order) => ({ additional_context: order }),
+  copilot: (order) => ({ additionalContext: order }),
+};
+
 try {
+  const argv = process.argv.slice(2);
+  const ei = argv.indexOf('--emit');
+  const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
+
   let source = 'compact';
   try {
     const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
@@ -7255,7 +7455,9 @@ try {
     `(3) put the acceptance quote in the chat — one concrete line from what you re-read, relevant to the current task. ` +
     `A marker without the quote is fraud of the false-[TESTED] class (/fable-judge hunts it).`;
 
-  const payload = { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: order } };
+  // Unknown shape falls back to the reference envelope: printing SOMETHING the reference system
+  // understands beats printing nothing, and a typo in a sample config stays visible.
+  const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'SessionStart');
   if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);
