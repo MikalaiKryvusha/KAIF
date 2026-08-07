@@ -26,7 +26,15 @@ restores it quickly and forms a current backlog.
    rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
    the current work.
 
-3. **Walk the backlog and rebuild it:**
+3. **Check the environment dossier** (`AGENT_GUIDE.md` → Environment dossier). Read the "Taken"
+   date in the section header: **older than four weeks, or values still `— not probed yet —`
+   (a fresh deployment) → re-run the probes in column 3 and rewrite the values and the date.**
+   Probe in EVERY shell available separately — the difference between shells is the point. Fresh
+   dossier → skip this step; it is not a per-refresh ritual, it is a staleness check. A fact you
+   could not probe stays `— not probed yet —`: a missing fact is honest, an invented one is a
+   defect.
+
+4. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
    - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
    - Glance at `homeworks/` and `interviews/` — what's waiting on the human (don't take into
@@ -35,7 +43,7 @@ restores it quickly and forms a current backlog.
    - 🧹 **If the backlog hasn't been revised in a while** (closed files without the `DONE` tag have piled
      up) — call `/check-backlog`: it tags genuinely-closed files DONE and returns a clean open list.
 
-4. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
+5. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
    doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
    ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
    the loop with it.

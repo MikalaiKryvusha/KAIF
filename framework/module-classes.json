@@ -1,4 +1,10 @@
 {
   "_readme": "Manual CLASS OVERRIDES for the module map (plan 21 §3.1). The build COMPUTES defaults: OWNER_SEEDED files → owner; a module containing a canonical placeholder, or a skill frontmatter → adaptive; everything else → static. Add an entry here ONLY when the computed default is wrong. Format: { \"<deploy dest>\": { \"default\": \"static|adaptive|owner\", \"modules\": { \"<full heading line>\": \"class\" } } }. A stale override (unknown file/signature) FAILS the build — rename-aware by design.",
-  "_classes": "static = upstream-owned, mechanically replaceable · adaptive = carries project values, replaced with value transfer · owner = the owner's content, never in the machinery's scope"
+  "_classes": "static = upstream-owned, mechanically replaceable · adaptive = carries project values, replaced with value transfer · owner = the owner's content, never in the machinery's scope",
+  "AGENT_GUIDE.md": {
+    "modules": {
+      "### Environment dossier — the agent knows its machine from its own notes": "adaptive"
+    },
+    "_why": "The dossier ships as an empty template and is FILLED per project by probing the machine (epic O, phase O3). Computed default was `static` — it carries no canonical placeholder — and static is what `diff` compares byte-wise, so every project with a filled dossier would be reported as 'upstream changed this module' forever. `adaptive` states the truth: the section carries project values and an update transfers them."
+  }
 }

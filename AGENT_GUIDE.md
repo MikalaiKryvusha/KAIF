@@ -143,6 +143,53 @@
 Маркер без цитаты — или заявленное освежение при протухшем маркере — фрод класса ложного
 `[TESTED]`: `/fable-judge` охотится на него (охота «refresh-witness»).
 
+Markdown-ритуал — полноценный самодостаточный контур. В системах с lifecycle-хуками его
+механически усиливает опциональный **модуль refresh-hooks** (`.kaif/hooks/`, подключение — в его
+README; в поставке с 2.2, эпик O): приказ перечитать после сжатия, таймер возраста маркера на
+каждом промпте, мягкий страж STATUS раз в сессию. Подключение — явный опт-ин владельца
+(машинерия чужие `settings.json` не редактирует); развёртывание без хуков не краснеет.
+
+### Досье окружения — агент знает свою машину из собственных заметок
+
+Сессия, которая ПОМНИТ окружение, — выдумывает его: какой шелл сейчас запущен, чем на самом деле
+является `tar` в этом PATH, в какой кодировке пишет редирект. Это факты о машине, а факты
+СНИМАЮТСЯ пробами, а не вспоминаются (`PHILOSOPHY.md` → наблюдение вместо додумывания). Досье —
+таблица ниже: агент заполняет её прогоном проб, а каждая будущая сессия читает вместо того, чтобы
+переоткрывать — или наступать на уже оплаченное.
+
+**Как собирать** (процедура — в `/refresh-context`): пробы по шести осям, и **в каждом доступном
+шелле отдельно** — разные шеллы это разные миры, и ровно эту разницу досье и существует
+фиксировать. Оси: ОС/железо · шеллы и кодировки · тулчейн (включая то, ЧЕМ являются
+`tar`/`curl`/`find` в каждом шелле — по ТИПУ команды, не только по пути) · политики git ·
+пакетные менеджеры · особенности поведения (ссылками на оплаченные уроки, не копиями).
+
+> **Досье окружения.** Снято: **2026-08-07** · Перегенерация: `/refresh-context` → шаг досье
+> (прогнать пробы колонки 3, переписать значения и эту дату) · **Протухание: факты старше четырёх
+> недель — ГИПОТЕЗЫ, переснимай пробой, прежде чем на них опираться.**
+
+| Факт | Значение | Проба |
+|---|---|---|
+| ОС | Windows 11 Pro 10.0.26200.0 | PS: `[Environment]::OSVersion.Version` |
+| CPU / RAM | AMD Ryzen 7 5700G · 8 ядер / 16 потоков · 32 ГБ | PS: `Get-CimInstance Win32_Processor` |
+| PowerShell | **5.1** Desktop; **pwsh 7 НЕ установлен** | PS: `$PSVersionTable` |
+| git-bash | GNU bash 5.2.21 (MINGW64); **локаль ПУСТАЯ** (`$LANG` не задан) | bash: `echo "[$LANG]"` |
+| Кодировки | консоль 65001 (UTF-8), **ACP 1251** → `Set-Content` без `-Encoding utf8` пишет ANSI | PS: `[Console]::OutputEncoding.CodePage` и `[System.Text.Encoding]::Default.CodePage` |
+| node / npm | v24.15.0 / 10.8.2 | `node -v` · `npm -v` |
+| git | 2.43.0.windows.1 · `core.autocrlf=true` · helper `manager` | `git --version` · `git config core.autocrlf` |
+| gh | 2.95.0, аутентифицирован (аккаунт владельца) | `gh --version` · `gh auth status` |
+| python | `C:\Python314\python` | bash: `command -v python` |
+| `tar` | PS: `system32\tar.exe` (bsdtar) · bash: `/usr/bin/tar` (GNU) — **РАЗНЫЕ программы** | PS: `Get-Command tar` · bash: `type -p tar` |
+| `curl` | PS 5.1: **Alias на `Invoke-WebRequest`** (другая программа; у алиаса `.Source` пуст — смотри `CommandType`) · bash: `/mingw64/bin/curl` | PS: `Get-Command curl` · bash: `type -p curl` |
+| `find` | PS: `system32\find.exe` (Windows-фильтр строк!) · bash: `/usr/bin/find` (GNU) | PS: `Get-Command find` · bash: `type -p find` |
+| Пакетные менеджеры | winget 1.29.280 · chocolatey установлен · scoop нет | PS: `winget --version` · `Get-Command choco` |
+| Оплаченные грабли | EXP-0005 (CRLF в регэкспах) · EXP-0007 (BOM PS5.1) · EXP-0026 (экранирование в командах доков) · EXP-0027 (сигналы/keep-alive Windows) · EXP-0032 (`grep -i` не кейс-фолдит кириллицу — следствие пустой локали) · EXP-0034 (MSYS2 конвертирует argv) | `grep 'EXP-00' EXPERIENCE.md` |
+
+**Граница DRY с «Гигиеной документов и текста»** ниже: досье держит ФАКТЫ машины (что
+установлено, чем является `tar`, какая кодировка); гигиена — ПРАВИЛА ПОВЕДЕНИЯ, выведенные из
+инцидентов (текст через файлы, читай записанное обратно). Досье ссылается на уроки по id и
+никогда не копирует их текст; правило поведения, найденное при сборе досье, уходит в гигиену или
+`EXPERIENCE.md`, а здесь остаётся только ссылка.
+
 ### Шапка-мета документов — первый экран отвечает «что это»
 
 Будущая сессия обязана понять любой документ директорий знаний, не читая тела. Каждый РАБОЧИЙ
@@ -358,7 +405,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 34 навыка + 1 распаковщик = 56; бандл 150 блоков; карта — 666 модулей) — не переписывай эти
+7 README + 34 навыка + 1 распаковщик = 56; бандл 155 блоков; карта — 671 модуль) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.
@@ -457,7 +504,7 @@ consumer. Слабая сессия обновляет ту сторону, ко
 |---|---|---|
 | `framework/skills/fable-method,fable-judge` (вендорено, EN) | `.claude/skills/…` (побайтовые копии) | `diff framework/skills/fable-method/SKILL.md .claude/skills/fable-method/SKILL.md && diff framework/skills/fable-judge/SKILL.md .claude/skills/fable-judge/SKILL.md` |
 | `framework/*` (источник) | корневые генерированные копии + `dist/*` | `node tools/build-framework.mjs && git diff --stat` (дифф генератов после пересборки = дрейф) |
-| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 56; бандл 150 блоков; карта — 666 модулей' AGENT_GUIDE.md` |
+| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») + оба README | `node tools/counters-guard.mjs` (сверяет ЖИВЫЕ числа сборки со всеми зеркалами разом; bugs/49) |
 | Состав навыков `framework/skills/` | таблицы README (EN+RU половины) | `test $(ls framework/skills | wc -l) -eq 34 && test $(grep -c '^| [*.]*./' README.md) -eq 68` |
 | Счётчик ритуалов в SVG (генератор) | alt-тексты README | `grep -o '34 repeatable' assets/layers-en-light.svg && grep -c '34 повторяемых ритуала\|34 repeatable rituals' README.md` |
 | Состав навыков `framework/skills/` | ключи 9 языковых пакетов | `node -e "const{readdirSync,readFileSync}=require('fs');const n=readdirSync('framework/skills').length;for(const l of readdirSync('framework/templates/languages')){const k=Object.keys(JSON.parse(readFileSync('framework/templates/languages/'+l+'/skill-triggers.json','utf8'))).length;if(k!==n){console.error(l,k,'!=',n);process.exit(1)}}console.log('ok',n)"` |
@@ -479,6 +526,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 | `node tools/readme-pdf.mjs` | Рендерит `README.md` → `README.pdf` (нужен `md-to-pdf`; `npm i` в `tools/`). |
 | `node tools/sandbox-suite.mjs` (`npm run test:core`) | **Постоянный песочный полигон машинерии** (план 21): число сводов и проверок печатает сам полигон («all N suites green») — по матрице полевых профилей (свежая/анонимная/легаси установки, по-модульный update, расписки/adopt-current/diff, слепок, tool-модули provenance/canon-lint/requirements-lint, контур K5). ОБЯЗАТЕЛЕН после любой правки `framework/installer/*`, `framework/tools/*` или сборщика и перед релизом. |
 | `node tools/doc-header-lint.mjs` | Линтер шапки-меты И блока требований документов знаний (шапка — `plans/53`; блок — `plans/55`): фикс-словарь `Создан`/`Родитель`/`Статус`/`Вовне` + диалекты bugs (`Fix accepted when` — норма N2) /interviews + ярус корневых + блок «Вектор цели/Критерии приёмки» в нормо-эпохных целевых (plans ≥ 26, ideas ≥ 21) + композиция: гоняет стоп-словарь payload-модуля `kaif-requirements-lint` по секциям требований plans/bugs/ideas. Дефолт — живые документы, `--all` — включая DONE, `--selftest` — красный на сломанной фикстуре. Консультирует, не блокирует старт работы. |
+| `node tools/counters-guard.mjs` (`--selftest`) | Страж КЛАССА «протухший счётчик прозы» (bugs/49; прародитель bugs/09, урок EXP-0025): берёт ЖИВЫЕ числа из артефактов (встроенные файлы `framework/` · блоки `dist/KAIF-CORE-BUNDLE.md` · модули карты · своды `sandbox-suite.mjs`) и сверяет разом ВСЕ пять зеркал — строку AGENT_GUIDE и обе половины README (счётчики + число сводов). Прежняя команда реестра стерегла одно зеркало из пяти. `--selftest` доказывает красный мутацией. |
 | `node tools/commit.mjs "<msg>"` · `--msg-file <путь>` | Инкрементирует номер сборки, коммитит (`git commit -F`, текст не проходит через argv), пушит. Не-ASCII сообщение — ТОЛЬКО через `--msg-file` (страж отвергает argv-кириллицу; bugs/46). |
 
 ---

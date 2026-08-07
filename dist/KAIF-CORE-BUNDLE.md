@@ -60,10 +60,19 @@
     "2.2": [
       "CLI safety (bug 33): a bare or flags-only `kaif-core.mjs` run prints help and touches NOTHING (the old default was `install` — it once overwrote a live update task in the field); unknown commands, flags and stray arguments now REFUSE instead of being silently ignored. Scripts relying on the old default must name `install` and its flags explicitly.",
       "Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 \"SKIPPED\" instead of 0. CI that treats any non-zero exit as failure must handle 3 as \"not configured, nothing proven\".",
-      "NEW key doc REQUIREMENTS_FRAMEWORK.md (the 14th) — the requirements canon: goal vector + acceptance criteria FIRST in every target document, the ten quality criteria (ISO/IEC/IEEE 29148 anchor), EARS patterns, fit criterion (Scale/Meter/Target), the stop-word dictionary. Universal, added mechanically; nothing to merge. Its executable form is the NEW optional tool module .kaif/tools/kaif-requirements-lint.mjs (check | selftest; advisory — a linter and a judge rubric, never a Definition-of-Ready turnstile; SKIPPED=3 when nothing to scan)."
+      "NEW key doc REQUIREMENTS_FRAMEWORK.md (the 14th) — the requirements canon: goal vector + acceptance criteria FIRST in every target document, the ten quality criteria (ISO/IEC/IEEE 29148 anchor), EARS patterns, fit criterion (Scale/Meter/Target), the stop-word dictionary. Universal, added mechanically; nothing to merge. Its executable form is the NEW optional tool module .kaif/tools/kaif-requirements-lint.mjs (check | selftest; advisory — a linter and a judge rubric, never a Definition-of-Ready turnstile; SKIPPED=3 when nothing to scan).",
+      "AGENT_GUIDE canon — CONTEXT REFRESH: the re-read core is RE-READ, not remembered, at four triggers (the hour · before a heavy task · after compaction/pause · ritual points), and a refresh is a verifiable action with a two-part witness — the machine-readable marker .kaif/refresh-marker.json (ignored by git, like the other session state) plus a quote-acceptance in the chat; a marker without the quote is judge-hunted fraud of the false-[TESTED] class. Woven into 7 ritual skills by reference. NEW optional module .kaif/hooks/ makes it mechanical where the agent system has lifecycle hooks: session-start-refresh (order to re-read after compaction/clear), prompt-refresh-timer (marker older than 60 min → order; silent while fresh), stop-status-guard (work happened while STATUS went stale → ONE soft block per session), plus settings-fragment.json — the ready config sample. DECISION FOR THE OWNER: the files arrive mechanically, but ACTIVATION is yours — KAIF never edits your settings.json; merge the fragment into .claude/settings.json only if you want the hooks. A deployment without them never reddens: the markdown ritual is the complete contour on its own.",
+      "AGENT_GUIDE canon — the ENVIRONMENT DOSSIER: a section the agent FILLS by probing its machine (six axes: OS/hardware · shells and encodings · toolchain incl. what tar/curl/find actually resolve to per shell · VCS policies · package managers · links to paid-for lessons), as a fact → value → probe table whose header carries the date taken, the regeneration command and the staleness rule (facts older than four weeks are hypotheses). The collection procedure is a step in /refresh-context — probe in EVERY shell separately, since the difference between shells is the point. MIGRATION — agent work: the section deploys with `— not probed yet —` values; run the probes once and fill it (a missing fact is honest, an invented one is a defect)."
     ]
   },
-  "moduleClasses": {}
+  "moduleClasses": {
+    "AGENT_GUIDE.md": {
+      "modules": {
+        "### Environment dossier — the agent knows its machine from its own notes": "adaptive"
+      },
+      "_why": "The dossier ships as an empty template and is FILLED per project by probing the machine (epic O, phase O3). Computed default was `static` — it carries no canonical placeholder — and static is what `diff` compares byte-wise, so every project with a filled dossier would be reported as 'upstream changed this module' forever. `adaptive` states the truth: the section carries project values and an update transfers them."
+    }
+  }
 }
 ``````
 
@@ -215,6 +224,65 @@ The witness has two parts, both mandatory:
 
 A marker without the quote — or a claimed refresh with a stale marker — is fraud of the
 false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
+
+This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
+the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
+mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
+once-per-session STATUS guard. Activation is an explicit owner opt-in; a deployment without
+hooks never reddens.
+
+### Environment dossier — the agent knows its machine from its own notes
+
+A session that REMEMBERS the environment invents it: which shell is running, what `tar` actually
+is in this PATH, which encoding a redirect writes. Those are facts about a machine, and facts are
+PROBED, never recalled (`PHILOSOPHY.md` → observation instead of guessing). The dossier is the
+section below: the agent fills it by running the probes, and every future session reads instead
+of rediscovering — or stepping on what was already paid for.
+
+**How to collect** (the procedure lives in `/refresh-context`; run it at deployment and whenever
+the dossier goes stale). Probe six axes, and probe them **in every shell available separately** —
+different shells are different worlds, and that difference is exactly what the dossier exists to
+capture:
+
+1. **OS / hardware** — OS version, CPU cores, RAM.
+2. **Shells and encodings** — which shells exist, console codepage, the default ANSI encoding a
+   redirect writes, each shell's locale.
+3. **Toolchain** — language runtimes, package/build tools, VCS and their versions; and WHAT
+   `tar` / `curl` / `find` resolve to in each shell (a system binary, a GNU tool, or a shell
+   alias to something else entirely — check the command TYPE, not just its path).
+4. **VCS policies** — line-ending policy, credential helper.
+5. **Package managers** — what is available to install with.
+6. **Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never
+   copies of them.
+
+**Format.** One table, one row per fact, three columns — **fact → value → probe command** — so a
+future session can re-derive any single value without re-deriving the procedure. The section
+header carries three things: the **date the facts were taken**, the **regeneration command**, and
+the **staleness rule**. A fact never probed is written `— not probed yet —`: a missing fact is
+honest, an invented one is a defect (`PHILOSOPHY.md` → the three doors).
+
+> **Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step
+> (re-run the probes in column 3 and rewrite the values and this date) · **Staleness: facts older
+> than four weeks are HYPOTHESES — re-probe before relying on them.**
+
+| Fact | Value | Probe |
+|---|---|---|
+| OS | `— not probed yet —` | (the OS version command of this platform) |
+| CPU / RAM | `— not probed yet —` | |
+| Shells available | `— not probed yet —` | |
+| Console / ANSI encoding | `— not probed yet —` | |
+| Locale per shell | `— not probed yet —` | |
+| Runtimes and build tools | `— not probed yet —` | |
+| `tar` / `curl` / `find` per shell | `— not probed yet —` | |
+| VCS line-ending policy | `— not probed yet —` | |
+| Package manager | `— not probed yet —` | |
+| Quirks paid for by incidents | `— not probed yet —` | (links to `EXPERIENCE.md` ids) |
+
+**The DRY boundary with "Document and text hygiene"** below: the dossier holds FACTS of the
+machine (what is installed, what `tar` is, which encoding); hygiene holds RULES OF BEHAVIOUR
+derived from incidents (text through files, read back what you wrote). The dossier links to
+lessons by id and never copies their text; a behavioural rule discovered while probing goes to
+hygiene or `EXPERIENCE.md`, and only its link stays here.
 
 ### Document header meta — the first screen answers "what is this"
 
@@ -1901,7 +1969,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 |---|---|
 | `KAIF.md` | The thin entry point; transient in the target project. |
 | `KAIF-CORE.mjs` | The machinery; survives as `.kaif/kaif-core.mjs` (except on anonymous deployments, §11.3). |
-| `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, language packs. |
+| `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, the optional refresh-hooks module, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
 | `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
 
@@ -2197,6 +2265,18 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-provenance.mjs` | The acceptance gate for AI text in owner canon (§13.3). |
 | `kaif-canon-lint.mjs` | The growing canon linter: revoked decision → forbidden wording; accepted decision → guarded full unique line; `selftest` proves every guard can fire. |
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
+
+A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
+mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
+agent systems with lifecycle hooks. Three scripts speaking the Claude Code hook contract —
+`session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
+(refresh-marker age over 60 minutes → refresh order; silent while fresh),
+`stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
+session) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
+predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
+is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
+`settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
+complete contour on its own.
 
 ## 15. Lifecycle
 
@@ -5381,7 +5461,15 @@ restores it quickly and forms a current backlog.
    rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
    the current work.
 
-3. **Walk the backlog and rebuild it:**
+3. **Check the environment dossier** (`AGENT_GUIDE.md` → Environment dossier). Read the "Taken"
+   date in the section header: **older than four weeks, or values still `— not probed yet —`
+   (a fresh deployment) → re-run the probes in column 3 and rewrite the values and the date.**
+   Probe in EVERY shell available separately — the difference between shells is the point. Fresh
+   dossier → skip this step; it is not a per-refresh ritual, it is a staleness check. A fact you
+   could not probe stays `— not probed yet —`: a missing fact is honest, an invented one is a
+   defect.
+
+4. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
    - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
    - Glance at `homeworks/` and `interviews/` — what's waiting on the human (don't take into
@@ -5390,7 +5478,7 @@ restores it quickly and forms a current backlog.
    - 🧹 **If the backlog hasn't been revised in a while** (closed files without the `DONE` tag have piled
      up) — call `/check-backlog`: it tags genuinely-closed files DONE and returns a clean open list.
 
-4. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
+5. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
    doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
    ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
    the loop with it.
@@ -6999,6 +7087,303 @@ function cmdSelftest() {
 ({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => die(`unknown command: ${CMD} (check | selftest)`)))();
 ``````
 
+> **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// prompt-refresh-timer.mjs — the hourly refresh timer hook (KAIF 2.2, epic O; optional
+// refresh-hooks module, deployed to .kaif/hooks/). Claude Code event: UserPromptSubmit.
+//
+// What it does: mechanizes trigger 1 of the refresh canon ("refresh at least once an hour" —
+// AGENT_GUIDE.md → "Context refresh"). On every prompt it reads the AGE of the refresh witness
+// `.kaif/refresh-marker.json`; if the last refresh is older than the interval (or the marker is
+// missing — this session never refreshed), it injects an ORDER to refresh before starting the
+// work. A fresh marker → no output at all: silence is the normal state.
+//
+// Predicate (anti-noise): marker age > REFRESH_INTERVAL_MIN. Cooldown: the marker itself —
+// only the FACT of a refresh (agent re-stamps the marker) resets the clock, so the order
+// repeats on every prompt until obeyed, by design: a reminder that goes away unobeyed teaches
+// that it can be ignored.
+//
+// Interval: 60 minutes (the canon's "at least once an hour"); override per project with
+// `--minutes N` in the hook's args if the owner wants a different cadence.
+//
+// Contract (live-fetched 2026-08-07): stdin — JSON with `hook_event_name`, `cwd`; stdout on
+// exit 0 — {"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext":
+// "…"}}. A hook must never break the session: any internal error → exit 0 silently.
+// [TESTED: 2026-08-07 · polygon s14: fresh marker → silent; missing marker → order ("no refresh
+//  witness"); marker older than the interval → order naming the age; MALFORMED marker → judged by
+//  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks]
+import { readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+
+const OUTPUT_CAP = 10000;           // Claude Code caps hook output strings at 10 000 characters
+const DEFAULT_INTERVAL_MIN = 60;    // the canon's "refresh at least once an hour"
+const MARKER = '.kaif/refresh-marker.json';
+
+try {
+  const argv = process.argv.slice(2);
+  const mi = argv.indexOf('--minutes');
+  const intervalMin = mi !== -1 && Number(argv[mi + 1]) > 0 ? Number(argv[mi + 1]) : DEFAULT_INTERVAL_MIN;
+
+  let cwd = process.cwd();
+  try {
+    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    if (input.cwd) cwd = String(input.cwd);
+  } catch { /* unreadable stdin — fall back to process.cwd() */ }
+
+  const markerPath = join(cwd, MARKER);
+  // Age of the last refresh: the marker's own `at` field is the truth; a malformed field falls
+  // back to the file mtime; a missing file means "never refreshed" → infinitely stale.
+  let ageMin = Infinity;
+  try {
+    let at = NaN;
+    try { at = Date.parse(JSON.parse(readFileSync(markerPath, 'utf8')).at); } catch { /* malformed JSON/at */ }
+    if (Number.isNaN(at)) at = statSync(markerPath).mtimeMs;
+    ageMin = (Date.now() - at) / 60000;
+  } catch { /* no marker at all — stays Infinity */ }
+
+  if (ageMin > intervalMin) {
+    const ageLabel = ageMin === Infinity ? 'no refresh witness found this session' : `last refresh ${Math.round(ageMin)} min ago`;
+    const order =
+      `KAIF context refresh (timer: ${ageLabel}, interval ${intervalMin} min). Before starting on this prompt: ` +
+      `re-read the re-read core (AGENT_GUIDE.md → "Context refresh"), re-stamp .kaif/refresh-marker.json ` +
+      `{ "at": "<ISO>", "docs": [...], "trigger": "hour" } and put the acceptance quote in the chat — one concrete ` +
+      `line from what you re-read, relevant to the task. This reminder repeats until the marker is actually refreshed.`;
+    const payload = { hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: order } };
+    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+  }
+} catch { /* a hook must never take the session down with it */ }
+process.exit(0);
+``````
+
+> **FILE: `.kaif/hooks/README.md`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````md
+# .kaif/hooks — the optional refresh-hooks module
+
+The context-refresh canon (AGENT_GUIDE.md → "Context refresh") is a **markdown ritual — complete
+and self-sufficient on its own**: four triggers, the two-part witness (marker + acceptance
+quote), the judge hunt. This module is the OPTIONAL second contour on top of it: on agent
+systems that support lifecycle hooks, the same triggers become **mechanical injections** the
+session cannot forget. A deployment without hooks is not degraded and never reddens for
+lacking them.
+
+## What ships here
+
+| Script | Event (Claude Code) | Predicate (anti-noise) | Action |
+|---|---|---|---|
+| `session-start-refresh.mjs` | `SessionStart`, matcher `compact\|clear` | none — compaction is itself rare | injects the ORDER to re-read the re-read core + stamp the witness |
+| `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | injects the refresh order; silent while the marker is fresh |
+| `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h; **once per session** | soft block: update STATUS.md or say why nothing changed |
+
+Design rules baked in (they are canon requirements, not preferences): every hook carries a
+predicate and a cooldown; injections are ORDERS to re-read, never document bodies (the output
+cap is 10 000 characters, and pasting docs would spend the context the refresh restores);
+`Stop` is the only blocking hook, and even it fires at most once per session. A hook never
+breaks the session: on any internal error it exits 0 silently.
+
+## Opt-in — an explicit owner step
+
+**KAIF never edits your `settings.json`.** Wiring hooks changes how your agent system behaves
+on every prompt — that is the project owner's decision, exactly like `.gitattributes` or CI
+config. To enable:
+
+1. Open `.kaif/hooks/settings-fragment.json` — it carries the ready `hooks` object.
+2. Merge that object into `.claude/settings.json` (shared with the team, committed) or
+   `.claude/settings.local.json` (personal), with the owner's consent recorded where your
+   project records decisions.
+3. Reload the session (hook configs are read at session start). Smoke: run
+   `node .kaif/hooks/prompt-refresh-timer.mjs` with no `.kaif/refresh-marker.json` present —
+   it must print a JSON order; stamp a fresh marker — it must print nothing.
+
+To disable: remove the entries from your settings file. The markdown ritual keeps working
+either way.
+
+## Other agent systems
+
+The scripts speak the Claude Code hook contract (JSON on stdin → `hookSpecificOutput` /
+`decision` JSON on stdout). Systems with their own hook formats (Cursor `.cursor/hooks.json`,
+Codex `.codex/hooks.json`, Copilot agent hooks) can call the same scripts but need their own
+config wiring — author it from this sample against the system's live docs. Systems without
+hooks (Zoo Code among them) run the markdown ritual alone: that is the designed fallback, not
+a gap.
+``````
+
+> **FILE: `.kaif/hooks/session-start-refresh.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// session-start-refresh.mjs — the "canon after compaction" hook (KAIF 2.2, epic O; optional
+// refresh-hooks module, deployed to .kaif/hooks/). Claude Code event: SessionStart, matcher
+// `compact|clear` (the sample config in .kaif/hooks/README.md wires exactly that).
+//
+// What it does: after a context compaction or /clear the session holds a RETELLING of the
+// canon, not the canon — this hook injects an ORDER to re-read the re-read core and stamp the
+// two-part refresh witness (AGENT_GUIDE.md → "Context refresh"). It injects the ORDER only,
+// never document bodies: additionalContext is capped at 10 000 characters, and pasting docs
+// would spend the very context the refresh is meant to restore.
+//
+// Predicate (anti-noise): none beyond the config matcher — compaction/clear is itself a rare
+// event, so every firing is signal. Cooldown: the refresh marker; a session that obeys the
+// order resets the timer hook's clock as a side effect.
+//
+// Contract (live-fetched 2026-08-07): stdin — JSON with `hook_event_name`, `source`, `cwd`;
+// stdout on exit 0 — {"hookSpecificOutput": {"hookEventName": "SessionStart",
+// "additionalContext": "…"}}. A hook must never break the session: any internal error → exit 0
+// silently.
+// [TESTED: 2026-08-07 · polygon s14: stdin JSON piped in → stdout order names the re-read core, the marker and the quote; length under the cap]
+import { readFileSync } from 'node:fs';
+
+const OUTPUT_CAP = 10000; // Claude Code caps hook output strings at 10 000 characters
+
+try {
+  let source = 'compact';
+  try {
+    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    if (input.source) source = String(input.source);
+  } catch { /* unreadable stdin — keep the default source label; the order still stands */ }
+
+  // The trigger value the agent must stamp follows the ACTUAL event: a marker stamped
+  // "compaction" after a /clear would misreport why the refresh happened.
+  const trigger = source === 'clear' ? 'ritual:/clear' : 'compaction';
+  const order =
+    `KAIF context refresh (SessionStart:${source}). The context was just ${source === 'clear' ? 'cleared' : 'compacted'}: ` +
+    `what this session now remembers of the canon is a retelling, not the canon. BEFORE task work: ` +
+    `(1) re-read the re-read core (tier 1 of the document taxonomy — see AGENT_GUIDE.md → "Context refresh"); ` +
+    `(2) stamp .kaif/refresh-marker.json { "at": "<ISO>", "docs": [...], "trigger": "${trigger}" }; ` +
+    `(3) put the acceptance quote in the chat — one concrete line from what you re-read, relevant to the current task. ` +
+    `A marker without the quote is fraud of the false-[TESTED] class (/fable-judge hunts it).`;
+
+  const payload = { hookSpecificOutput: { hookEventName: 'SessionStart', additionalContext: order } };
+  if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+} catch { /* a hook must never take the session down with it */ }
+process.exit(0);
+``````
+
+> **FILE: `.kaif/hooks/settings-fragment.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````json
+{
+  "_readme": "SAMPLE Claude Code hooks config for the optional KAIF refresh-hooks module (.kaif/hooks/README.md explains it). This file is NEVER applied automatically: KAIF does not edit your settings.json — wiring the hooks is an explicit opt-in step done by the project owner (or by the agent with the owner's quoted consent). Merge the `hooks` object below into .claude/settings.json (project) or settings.local.json (personal).",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/session-start-refresh.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/prompt-refresh-timer.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-status-guard.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}
+``````
+
+> **FILE: `.kaif/hooks/stop-status-guard.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// stop-status-guard.mjs — the STATUS freshness guard hook (KAIF 2.2, epic O; optional
+// refresh-hooks module, deployed to .kaif/hooks/). Claude Code event: Stop. The ONLY blocking
+// hook of the module — and even it blocks softly: once per session, with a reason that asks
+// for an update or an explicit "nothing changed", never a hard wall.
+//
+// What it does: STATUS.md is the baton between sessions — a session that changed the tree but
+// never touched STATUS hands the next session a stale summary. When the agent is about to
+// finish its turn, this hook checks: did this session do work (dirty worktree or a recent
+// commit) while STATUS.md stayed untouched longer than the staleness window? If yes — one soft
+// block with the reminder.
+//
+// Predicate (anti-noise): (dirty git worktree OR last commit within STALE_HOURS) AND
+// STATUS.md mtime older than STALE_HOURS. Cooldown: once per session — a state file keyed by
+// session_id in the OS temp dir (ephemeral session state; never pollutes the project tree).
+// No git / no STATUS.md → silent: the guard never reddens a project it does not understand.
+//
+// Contract (live-fetched 2026-08-07): stdin — JSON with `session_id`, `cwd`; blocking output —
+// top-level {"decision": "block", "reason": "…"}. A hook must never break the session: any
+// internal error → exit 0 silently.
+// [TESTED: 2026-08-07 · polygon s14: dirty tree + old STATUS → block JSON once; same session again → silent (cooldown); fresh STATUS → silent; no git → silent]
+import { readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+
+const STALE_HOURS = 3;        // STATUS older than this while work happened → remind
+const STATUS_FILE = 'STATUS.md';
+
+try {
+  let cwd = process.cwd();
+  let sessionId = 'unknown-session';
+  try {
+    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    if (input.cwd) cwd = String(input.cwd);
+    if (input.session_id) sessionId = String(input.session_id);
+  } catch { /* unreadable stdin — defaults keep the guard functional */ }
+
+  // Cooldown: one reminder per session. The state file lives in the OS temp dir — session
+  // state never pollutes the project tree (the refresh marker earned its .gitignore line;
+  // this one does not even need that).
+  const cooldownPath = join(tmpdir(), `kaif-status-guard-${sessionId.replace(/[^\w.-]/g, '_')}`);
+  if (existsSync(cooldownPath)) process.exit(0);
+
+  const statusPath = join(cwd, STATUS_FILE);
+  if (!existsSync(statusPath)) process.exit(0);   // no STATUS.md — nothing to guard
+  const statusAgeH = (Date.now() - statSync(statusPath).mtimeMs) / 3600000;
+  if (statusAgeH <= STALE_HOURS) process.exit(0); // STATUS is fresh — silence is the normal state
+
+  // Did this session actually do work? Dirty worktree or a commit within the window.
+  // Any git failure (not a repo, git missing) → silent: never redden what we cannot observe.
+  const git = (args) => execFileSync('git', args, { cwd, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  let workHappened = false;
+  try {
+    if (git(['status', '--porcelain'])) workHappened = true;
+    else {
+      const lastCommitSec = Number(git(['log', '-1', '--format=%ct']));
+      if (lastCommitSec && (Date.now() / 1000 - lastCommitSec) / 3600 < STALE_HOURS) workHappened = true;
+    }
+  } catch { process.exit(0); }
+  if (!workHappened) process.exit(0);
+
+  writeFileSync(cooldownPath, new Date().toISOString());
+  process.stdout.write(JSON.stringify({
+    decision: 'block',
+    reason: `KAIF STATUS guard (fires once per session): this session changed the tree, but ${STATUS_FILE} was last ` +
+      `touched ~${Math.round(statusAgeH)} h ago. Update ${STATUS_FILE} with the current state — or state explicitly ` +
+      `in the chat why nothing in it changed — then finish.`,
+  }));
+} catch { /* a hook must never take the session down with it */ }
+process.exit(0);
+``````
+
 > **FILE: `.kaif/_owner-voice-template.md`** — the owner-voice portrait skeleton — optional; /owner-voice portrait mode fills it
 
 ``````md
@@ -7358,7 +7743,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 
 > **FILE: `templates/languages/ar/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "«واصل», «تابع العمل», «استأنف», «أين توقفنا؟»",
   "pause": "«توقف مؤقت», «لنتوقف قليلاً», «اركن العمل», «سأعود قريباً»",
@@ -7678,7 +8063,7 @@ aktualisiert, während das Verständnis wächst.
 
 > **FILE: `templates/languages/de/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "«mach weiter», «weiter geht's», «nimm die Arbeit wieder auf», «wo waren wir stehengeblieben?»",
   "pause": "«Pause», «machen wir Pause», «park die Arbeit», «bin gleich zurück»",
@@ -7995,7 +8380,7 @@ medida que crece la comprensión.
 
 > **FILE: `templates/languages/es/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "«continúa», «continuemos», «retoma», «¿dónde nos quedamos?»",
   "pause": "«pausa», «hagamos una pausa», «aparca el trabajo», «vuelvo enseguida»",
@@ -8316,7 +8701,7 @@ compréhension grandit.
 
 > **FILE: `templates/languages/fr/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "« continue », « reprenons », « reprends », « où en étions-nous ? »",
   "pause": "«pause», «faisons une pause», «gare le travail», «je reviens vite»",
@@ -8619,7 +9004,7 @@ DONE टैग नहीं मिलता।
 
 > **FILE: `templates/languages/hi/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "\"जारी रखो\", \"आगे बढ़ो\", \"काम फिर शुरू करो\", \"हम कहाँ रुके थे?\"",
   "pause": "\"रुको\", \"थोड़ा विराम\", \"काम पार्क करो\", \"अभी लौटता हूँ\"",
@@ -8929,7 +9314,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 
 > **FILE: `templates/languages/ja/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "「続けて」「再開して」「どこまでやった？」「続きから」",
   "pause": "「一時停止」「少し休憩」「作業を一旦パーク」「すぐ戻る」",
@@ -9245,7 +9630,7 @@ compreensão cresce.
 
 > **FILE: `templates/languages/pt/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "«continua», «vamos continuar», «retoma», «onde paramos?»",
   "pause": "«pausa», «vamos pausar», «estaciona o trabalho», «volto já»",
@@ -9549,7 +9934,7 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 
 > **FILE: `templates/languages/ru/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "«продолжи», «продолжим», «возобнови», «на чём мы остановились», «что дальше по работе»",
   "pause": "«пауза», «сделаем паузу», «припаркуйся», «прервёмся ненадолго»",
@@ -9833,7 +10218,7 @@ header meta）。研究笔记是**活的参考
 
 > **FILE: `templates/languages/zh-Hans/skill-triggers.json`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
-``````md
+``````json
 {
   "resume": "「继续」「接着做」「恢复工作」「我们做到哪儿了？」",
   "pause": "「暂停」「先停一下」「停车暂存」「马上回来」",

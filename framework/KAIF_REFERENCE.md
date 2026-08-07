@@ -64,7 +64,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 |---|---|
 | `KAIF.md` | The thin entry point; transient in the target project. |
 | `KAIF-CORE.mjs` | The machinery; survives as `.kaif/kaif-core.mjs` (except on anonymous deployments, §11.3). |
-| `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, language packs. |
+| `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, the optional refresh-hooks module, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
 | `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
 
@@ -360,6 +360,18 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-provenance.mjs` | The acceptance gate for AI text in owner canon (§13.3). |
 | `kaif-canon-lint.mjs` | The growing canon linter: revoked decision → forbidden wording; accepted decision → guarded full unique line; `selftest` proves every guard can fire. |
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
+
+A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
+mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
+agent systems with lifecycle hooks. Three scripts speaking the Claude Code hook contract —
+`session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
+(refresh-marker age over 60 minutes → refresh order; silent while fresh),
+`stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
+session) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
+predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
+is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
+`settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
+complete contour on its own.
 
 ## 15. Lifecycle
 

@@ -35,6 +35,11 @@
 //   s13 — kaif-requirements-lint (epic N, plan 38): the stop-word dictionary as a guard —
 //         red proven on unverifiable wording, green on measurable fit criteria, quotes/❌/
 //         code/justifications legal, requirement-section scope, SKIPPED=3 when nothing to scan
+//   s14 — refresh-hooks module (epic O, plan 57): deploy WITH the module (files land in
+//         .kaif/hooks/, three hooks obey the live Claude Code contract: order after compaction,
+//         marker-age timer silent-while-fresh, once-per-session STATUS guard) and deploy
+//         WITHOUT WIRING (no settings.json → every gate green: optionality is ACTIVATION, not
+//         file presence; deleted module files stay an honest MISSING, as for the tool modules)
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -45,7 +50,7 @@ const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
                 's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
                 's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs',
-                's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs'];
+                's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs'];
 let failed = 0;
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);

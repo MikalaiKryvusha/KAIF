@@ -27,9 +27,13 @@ hook-контура (опционального); (4) проект досье о
 | `PostToolBatch` | — | нет | периодическое напоминание в длинных прогонах без промптов |
 | `FileChanged` | литеральные имена файлов | нет | слежение за самим каноном (watchPaths из SessionStart) |
 
-Контракт: вход — JSON на stdin (`session_id`, `cwd`, `hook_event_name`, …); выход при exit 0 —
-JSON на stdout, поле **`additionalContext`** впрыскивает текст в контекст модели, **кап 10 000
-символов** (сверх — файл + превью-путь). Exit 2 = блокировка + stderr модели (только у
+Контракт: вход — JSON на stdin (`session_id`, `cwd`, `hook_event_name`, …; у `SessionStart` —
+`source`, у `UserPromptSubmit` — `user_input`); выход при exit 0 — JSON на stdout, поле
+**`additionalContext`** впрыскивает текст в контекст модели — оно ВЛОЖЕНО:
+`{"hookSpecificOutput": {"hookEventName": "<событие>", "additionalContext": "…"}}` (уточнение
+повторным fetch 2026-08-07 при исполнении O3; верхнеуровневым полем не работает), **кап 10 000
+символов** (сверх — файл + превью-путь). Блокировка `Stop` — верхнеуровневые
+`{"decision": "block", "reason": "…"}`. Exit 2 = блокировка + stderr модели (только у
 блокируемых событий). Конфиг: `.claude/settings.json` (проектный, коммитится) /
 `settings.local.json` / `~/.claude/settings.json`; поля хэндлера: `type: "command"`, `command`,
 `timeout`, `async`. Плейсхолдер `${CLAUDE_PROJECT_DIR}` — путь проекта.
@@ -137,7 +141,7 @@ Zoo Code хуков нет. Поэтому двухконтурность обя
 | `tar` | PS: `system32\tar.exe` (bsdtar) · bash: `/usr/bin/tar` (GNU) — РАЗНЫЕ программы |
 | `find` | PS: `system32\find.exe` (Windows-фильтр строк!) · bash: `/usr/bin/find` (GNU) |
 | `curl` | PS 5.1: **alias на `Invoke-WebRequest`** (молча ДРУГАЯ программа — `.Source` у алиаса пуст, проба обязана смотреть `CommandType`; находка судьи O1) · bash: `/mingw64/bin/curl` |
-| Пакетный менеджер | winget 1.29.280 |
+| Пакетный менеджер | winget 1.29.280 · chocolatey установлен · scoop нет (дельта O3: пересъём проб 2026-08-07 нашёл choco, которого не было в первом смоке — ось «пакетные менеджеры» требует пробы по КАЖДОМУ кандидату, а не остановки на первом найденном) |
 
 Смок подтвердил ценность процедуры наблюдением: пробы поймали ЖИВЬЁМ три класса, уже
 оплаченных полем (шелло-зависимые `tar`/`find`, ACP-1251, пустая локаль git-bash), — досье

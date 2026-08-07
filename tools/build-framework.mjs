@@ -73,7 +73,8 @@ function embedFile(relPath, destLabel, note) {
   // what raw.githubusercontent serves (bug 04 — the real root cause).
   const content = readFileSync(join(ROOT, relPath), 'utf8').replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
   const header = `> **FILE: \`${destLabel}\`**${note ? ' — ' + note : ''}\n\n`;
-  const lang = relPath.endsWith('.mjs') ? 'js' : 'md';
+  // Fence language follows the extension: .mjs → js, .json → json, everything else → md.
+  const lang = relPath.endsWith('.mjs') ? 'js' : relPath.endsWith('.json') ? 'json' : 'md';
   return header + FENCE + lang + '\n' + content + FENCE + '\n';
 }
 
@@ -256,6 +257,8 @@ const POLICY_CHANGES_BY_VERSION = {
     'CLI safety (bug 33): a bare or flags-only `kaif-core.mjs` run prints help and touches NOTHING (the old default was `install` — it once overwrote a live update task in the field); unknown commands, flags and stray arguments now REFUSE instead of being silently ignored. Scripts relying on the old default must name `install` and its flags explicitly.',
     'Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 "SKIPPED" instead of 0. CI that treats any non-zero exit as failure must handle 3 as "not configured, nothing proven".',
     'NEW key doc REQUIREMENTS_FRAMEWORK.md (the 14th) — the requirements canon: goal vector + acceptance criteria FIRST in every target document, the ten quality criteria (ISO/IEC/IEEE 29148 anchor), EARS patterns, fit criterion (Scale/Meter/Target), the stop-word dictionary. Universal, added mechanically; nothing to merge. Its executable form is the NEW optional tool module .kaif/tools/kaif-requirements-lint.mjs (check | selftest; advisory — a linter and a judge rubric, never a Definition-of-Ready turnstile; SKIPPED=3 when nothing to scan).',
+    'AGENT_GUIDE canon — CONTEXT REFRESH: the re-read core is RE-READ, not remembered, at four triggers (the hour · before a heavy task · after compaction/pause · ritual points), and a refresh is a verifiable action with a two-part witness — the machine-readable marker .kaif/refresh-marker.json (ignored by git, like the other session state) plus a quote-acceptance in the chat; a marker without the quote is judge-hunted fraud of the false-[TESTED] class. Woven into 7 ritual skills by reference. NEW optional module .kaif/hooks/ makes it mechanical where the agent system has lifecycle hooks: session-start-refresh (order to re-read after compaction/clear), prompt-refresh-timer (marker older than 60 min → order; silent while fresh), stop-status-guard (work happened while STATUS went stale → ONE soft block per session), plus settings-fragment.json — the ready config sample. DECISION FOR THE OWNER: the files arrive mechanically, but ACTIVATION is yours — KAIF never edits your settings.json; merge the fragment into .claude/settings.json only if you want the hooks. A deployment without them never reddens: the markdown ritual is the complete contour on its own.',
+    'AGENT_GUIDE canon — the ENVIRONMENT DOSSIER: a section the agent FILLS by probing its machine (six axes: OS/hardware · shells and encodings · toolchain incl. what tar/curl/find actually resolve to per shell · VCS policies · package managers · links to paid-for lessons), as a fact → value → probe table whose header carries the date taken, the regeneration command and the staleness rule (facts older than four weeks are hypotheses). The collection procedure is a step in /refresh-context — probe in EVERY shell separately, since the difference between shells is the point. MIGRATION — agent work: the section deploys with `— not probed yet —` values; run the probes once and fill it (a missing fact is honest, an invented one is a defect).',
   ],
 };
 
@@ -299,6 +302,15 @@ function bundleBlocks() {
   const toolsDir = join(FW, 'tools');
   if (existsSync(toolsDir)) for (const t of readdirSync(toolsDir).filter((f) => f.endsWith('.mjs')))
     blocks.push(embedBundle(`framework/tools/${t}`, `.kaif/tools/${t}`, 'optional tool module — verbatim'));
+  // optional refresh-hooks module (epic O, 2.2): scripts + sample config + wiring README →
+  // .kaif/hooks/. Same optionality as the tool modules: the files DEPLOY, activation is an
+  // explicit owner step (KAIF never edits the project's settings.json — see the README).
+  // File filter mirrors the tool modules: a stray directory or editor temp file in the module
+  // must be ignored, never crash the build with EISDIR (and check-framework counts the same way).
+  const hooksDir = join(FW, 'hooks');
+  if (existsSync(hooksDir)) for (const h of readdirSync(hooksDir).filter((f) => statSync(join(hooksDir, f)).isFile()))
+    blocks.push(embedBundle(`framework/hooks/${h}`, `.kaif/hooks/${h}`,
+      'optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)'));
   // the owner-voice portrait skeleton (epic C, 2.1): bundle-only like the tools — an OPTIONAL
   // methodology template; a deployment without an owner's artifact never reddens for lacking it.
   // Dest is .kaif/ (NOT .kaif/spheres/ — it would be read as a sphere library; field report 22).

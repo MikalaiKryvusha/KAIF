@@ -144,6 +144,65 @@ The witness has two parts, both mandatory:
 A marker without the quote — or a claimed refresh with a stale marker — is fraud of the
 false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 
+This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
+the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
+mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
+once-per-session STATUS guard. Activation is an explicit owner opt-in; a deployment without
+hooks never reddens.
+
+### Environment dossier — the agent knows its machine from its own notes
+
+A session that REMEMBERS the environment invents it: which shell is running, what `tar` actually
+is in this PATH, which encoding a redirect writes. Those are facts about a machine, and facts are
+PROBED, never recalled (`PHILOSOPHY.md` → observation instead of guessing). The dossier is the
+section below: the agent fills it by running the probes, and every future session reads instead
+of rediscovering — or stepping on what was already paid for.
+
+**How to collect** (the procedure lives in `/refresh-context`; run it at deployment and whenever
+the dossier goes stale). Probe six axes, and probe them **in every shell available separately** —
+different shells are different worlds, and that difference is exactly what the dossier exists to
+capture:
+
+1. **OS / hardware** — OS version, CPU cores, RAM.
+2. **Shells and encodings** — which shells exist, console codepage, the default ANSI encoding a
+   redirect writes, each shell's locale.
+3. **Toolchain** — language runtimes, package/build tools, VCS and their versions; and WHAT
+   `tar` / `curl` / `find` resolve to in each shell (a system binary, a GNU tool, or a shell
+   alias to something else entirely — check the command TYPE, not just its path).
+4. **VCS policies** — line-ending policy, credential helper.
+5. **Package managers** — what is available to install with.
+6. **Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never
+   copies of them.
+
+**Format.** One table, one row per fact, three columns — **fact → value → probe command** — so a
+future session can re-derive any single value without re-deriving the procedure. The section
+header carries three things: the **date the facts were taken**, the **regeneration command**, and
+the **staleness rule**. A fact never probed is written `— not probed yet —`: a missing fact is
+honest, an invented one is a defect (`PHILOSOPHY.md` → the three doors).
+
+> **Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step
+> (re-run the probes in column 3 and rewrite the values and this date) · **Staleness: facts older
+> than four weeks are HYPOTHESES — re-probe before relying on them.**
+
+| Fact | Value | Probe |
+|---|---|---|
+| OS | `— not probed yet —` | (the OS version command of this platform) |
+| CPU / RAM | `— not probed yet —` | |
+| Shells available | `— not probed yet —` | |
+| Console / ANSI encoding | `— not probed yet —` | |
+| Locale per shell | `— not probed yet —` | |
+| Runtimes and build tools | `— not probed yet —` | |
+| `tar` / `curl` / `find` per shell | `— not probed yet —` | |
+| VCS line-ending policy | `— not probed yet —` | |
+| Package manager | `— not probed yet —` | |
+| Quirks paid for by incidents | `— not probed yet —` | (links to `EXPERIENCE.md` ids) |
+
+**The DRY boundary with "Document and text hygiene"** below: the dossier holds FACTS of the
+machine (what is installed, what `tar` is, which encoding); hygiene holds RULES OF BEHAVIOUR
+derived from incidents (text through files, read back what you wrote). The dossier links to
+lessons by id and never copies their text; a behavioural rule discovered while probing goes to
+hygiene or `EXPERIENCE.md`, and only its link stays here.
+
 ### Document header meta — the first screen answers "what is this"
 
 A future session must understand any knowledge-directory document without reading its body. Every

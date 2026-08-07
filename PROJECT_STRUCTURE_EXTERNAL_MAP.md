@@ -36,6 +36,7 @@ KAIF/
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint → .kaif/tools/)
+│   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
 │   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
 │   ├── spheres/*                          # библиотеки терминов по сферам (+ _index, _template)
@@ -55,7 +56,7 @@ KAIF/
 │   ├── build-framework.mjs                # framework/ → KAIF.md + dist/ (в конце сам исполняет check-framework)
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
-│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s09
+│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s14
 │   ├── sandbox/s01…s09*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf
@@ -101,7 +102,7 @@ framework/templates/**│                        └─▶ dist/kaif-module-map.
                                   блоки сбалансированы · нет {{маркеров}} · стражи нотации/бренда ·
                                   карта модулей пересплитом · пин сплиттера ядро==сборка · sha свежи)
 
-npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s09 в OS-temp  →  проверки полигона (число печатает прогон)
+npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s14 в OS-temp  →  проверки полигона (число печатает прогон)
 tools/build-diagrams.mjs  ──▶  assets/*.svg  ──▶  README.md (через <picture>)
 README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 ```
@@ -140,6 +141,7 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 | Пояснительную записку | `framework/KAIF_REFERENCE.md` | пересобрать |
 | Машинерию установки/обновления | `framework/installer/KAIF-CORE.mjs` | пересобрать + `npm run test:core` |
 | Опциональный tool-модуль | `framework/tools/*.mjs` | пересобрать + `npm run test:core` (s05/s06) |
+| Хук освежения контекста | `framework/hooks/*` | пересобрать + `npm run test:core` (s14) |
 | Языковой пакет | `framework/templates/languages/<lang>/` | пересобрать |
 | Шаблон README директории | `framework/readmes/<dir>.md` | пересобрать |
 | Навык (как шаблон) | `framework/skills/<name>/SKILL.md` (+ копия `.claude/skills/<name>`) | пересобрать |

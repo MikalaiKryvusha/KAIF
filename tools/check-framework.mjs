@@ -8,7 +8,7 @@
 //   2. The 6-backtick fences are balanced, one pair per embedded block.
 //   3. No unreplaced build markers ({{...}}) remain.
 //   4. Every skill in framework/skills/ is embedded in KAIF.md.
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, statSync as statSyncTop } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -125,6 +125,21 @@ if (skills.includes('release')) {
   for (const d of docs) if (!OWNER_SEEDED_TPL.includes(d)) bodies.push([`framework/${d}`, readFileSync(join(ROOT, 'framework', d), 'utf8')]);
   for (const r of readmes) bodies.push([`framework/readmes/${r}.md`, readFileSync(join(readmesDir, `${r}.md`), 'utf8')]);
   for (const s of skills) bodies.push([`framework/skills/${s}/SKILL.md`, stripFrontmatter(readFileSync(join(skillsDir, s, 'SKILL.md'), 'utf8'))]);
+  // Every OTHER payload surface that deploys as English prose. Added after a judge proved the
+  // guard blind by mutation: appending a Cyrillic line to `framework/hooks/README.md` kept the
+  // build green, and the module ships into every deployment (epic O, phase O3).
+  // EXCLUDED BY DESIGN — `framework/tools/*.mjs`: the requirements linter carries the RU half of
+  // the stop-word dictionary and the provenance module carries RU mark examples; there the
+  // Cyrillic IS the payload, not an owner's leaked example.
+  for (const [dir, label] of [['hooks', 'hooks'], ['spheres', 'spheres'], ['adapters', 'adapters']]) {
+    const d = join(ROOT, 'framework', dir);
+    if (!existsSync(d)) continue;
+    for (const n of readdirSync(d)) {
+      const p = join(d, n);
+      if (statSyncTop(p).isDirectory()) continue;
+      bodies.push([`framework/${label}/${n}`, stripFrontmatter(readFileSync(p, 'utf8'))]);
+    }
+  }
   for (const [name, body] of bodies) {
     const hit = body.split(/\r?\n/).findIndex((l) => CYR.test(l));
     if (hit >= 0) errors.push(`Cyrillic in an EN template BODY: ${name} (frontmatter-relative line ${hit + 1}) — move the example to a language pack or rephrase (invariant §9.11, bug 31: it blinds the translation net)`);
@@ -288,13 +303,18 @@ if (existsSync(distDir)) {
     const langFiles = countFiles(langRoot);
     const toolsDir2 = join(ROOT, 'framework', 'tools');
     const toolMods = existsSync(toolsDir2) ? readdirSync(toolsDir2).filter((f) => f.endsWith('.mjs')).length : 0;
+    // the optional refresh-hooks module (epic O, 2.2): every FILE in framework/hooks/ ships to
+    // .kaif/hooks/ (the filter mirrors the build's — a stray directory is ignored by both sides)
+    const hooksDir = join(ROOT, 'framework', 'hooks');
+    const hookFiles = existsSync(hooksDir)
+      ? readdirSync(hooksDir).filter((f) => statSyncTop(join(hooksDir, f)).isFile()).length : 0;
     // root-level framework/templates/*.md are embedded as .kaif/ payloads (e.g. the owner-voice
     // portrait skeleton); languages/ underneath is counted separately as lang-pack files
     const tmplDir = join(ROOT, 'framework', 'templates');
     const tmpls = existsSync(tmplDir) ? readdirSync(tmplDir).filter((f) => f.endsWith('.md')).length : 0;
-    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + toolMods + tmpls + langFiles;
+    const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + toolMods + hookFiles + tmpls + langFiles;
     if (bundleBlocks !== wantBundle)
-      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${toolMods} tool modules + ${tmpls} templates + ${langFiles} lang-pack files)`);
+      errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${toolMods} tool modules + ${hookFiles} hook files + ${tmpls} templates + ${langFiles} lang-pack files)`);
     const man = JSON.parse(dread('kaif-manifest.json'));
     for (const n of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md'])
       if (man.sha256[n] !== dsha(n)) errors.push(`kaif-manifest.json sha256 stale for ${n} — re-run the build`);

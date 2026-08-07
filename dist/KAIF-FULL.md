@@ -289,6 +289,65 @@ The witness has two parts, both mandatory:
 A marker without the quote — or a claimed refresh with a stale marker — is fraud of the
 false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 
+This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
+the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
+mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
+once-per-session STATUS guard. Activation is an explicit owner opt-in; a deployment without
+hooks never reddens.
+
+### Environment dossier — the agent knows its machine from its own notes
+
+A session that REMEMBERS the environment invents it: which shell is running, what `tar` actually
+is in this PATH, which encoding a redirect writes. Those are facts about a machine, and facts are
+PROBED, never recalled (`PHILOSOPHY.md` → observation instead of guessing). The dossier is the
+section below: the agent fills it by running the probes, and every future session reads instead
+of rediscovering — or stepping on what was already paid for.
+
+**How to collect** (the procedure lives in `/refresh-context`; run it at deployment and whenever
+the dossier goes stale). Probe six axes, and probe them **in every shell available separately** —
+different shells are different worlds, and that difference is exactly what the dossier exists to
+capture:
+
+1. **OS / hardware** — OS version, CPU cores, RAM.
+2. **Shells and encodings** — which shells exist, console codepage, the default ANSI encoding a
+   redirect writes, each shell's locale.
+3. **Toolchain** — language runtimes, package/build tools, VCS and their versions; and WHAT
+   `tar` / `curl` / `find` resolve to in each shell (a system binary, a GNU tool, or a shell
+   alias to something else entirely — check the command TYPE, not just its path).
+4. **VCS policies** — line-ending policy, credential helper.
+5. **Package managers** — what is available to install with.
+6. **Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never
+   copies of them.
+
+**Format.** One table, one row per fact, three columns — **fact → value → probe command** — so a
+future session can re-derive any single value without re-deriving the procedure. The section
+header carries three things: the **date the facts were taken**, the **regeneration command**, and
+the **staleness rule**. A fact never probed is written `— not probed yet —`: a missing fact is
+honest, an invented one is a defect (`PHILOSOPHY.md` → the three doors).
+
+> **Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step
+> (re-run the probes in column 3 and rewrite the values and this date) · **Staleness: facts older
+> than four weeks are HYPOTHESES — re-probe before relying on them.**
+
+| Fact | Value | Probe |
+|---|---|---|
+| OS | `— not probed yet —` | (the OS version command of this platform) |
+| CPU / RAM | `— not probed yet —` | |
+| Shells available | `— not probed yet —` | |
+| Console / ANSI encoding | `— not probed yet —` | |
+| Locale per shell | `— not probed yet —` | |
+| Runtimes and build tools | `— not probed yet —` | |
+| `tar` / `curl` / `find` per shell | `— not probed yet —` | |
+| VCS line-ending policy | `— not probed yet —` | |
+| Package manager | `— not probed yet —` | |
+| Quirks paid for by incidents | `— not probed yet —` | (links to `EXPERIENCE.md` ids) |
+
+**The DRY boundary with "Document and text hygiene"** below: the dossier holds FACTS of the
+machine (what is installed, what `tar` is, which encoding); hygiene holds RULES OF BEHAVIOUR
+derived from incidents (text through files, read back what you wrote). The dossier links to
+lessons by id and never copies their text; a behavioural rule discovered while probing goes to
+hygiene or `EXPERIENCE.md`, and only its link stays here.
+
 ### Document header meta — the first screen answers "what is this"
 
 A future session must understand any knowledge-directory document without reading its body. Every
@@ -1987,7 +2046,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 |---|---|
 | `KAIF.md` | The thin entry point; transient in the target project. |
 | `KAIF-CORE.mjs` | The machinery; survives as `.kaif/kaif-core.mjs` (except on anonymous deployments, §11.3). |
-| `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, language packs. |
+| `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, the optional refresh-hooks module, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
 | `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
 
@@ -2283,6 +2342,18 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-provenance.mjs` | The acceptance gate for AI text in owner canon (§13.3). |
 | `kaif-canon-lint.mjs` | The growing canon linter: revoked decision → forbidden wording; accepted decision → guarded full unique line; `selftest` proves every guard can fire. |
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
+
+A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
+mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
+agent systems with lifecycle hooks. Three scripts speaking the Claude Code hook contract —
+`session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
+(refresh-marker age over 60 minutes → refresh order; silent while fresh),
+`stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
+session) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
+predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
+is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
+`settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
+complete contour on its own.
 
 ## 15. Lifecycle
 
@@ -3025,7 +3096,15 @@ restores it quickly and forms a current backlog.
    rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
    the current work.
 
-3. **Walk the backlog and rebuild it:**
+3. **Check the environment dossier** (`AGENT_GUIDE.md` → Environment dossier). Read the "Taken"
+   date in the section header: **older than four weeks, or values still `— not probed yet —`
+   (a fresh deployment) → re-run the probes in column 3 and rewrite the values and the date.**
+   Probe in EVERY shell available separately — the difference between shells is the point. Fresh
+   dossier → skip this step; it is not a per-refresh ritual, it is a staleness check. A fact you
+   could not probe stays `— not probed yet —`: a missing fact is honest, an invented one is a
+   defect.
+
+4. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
    - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).
    - Glance at `homeworks/` and `interviews/` — what's waiting on the human (don't take into
@@ -3034,7 +3113,7 @@ restores it quickly and forms a current backlog.
    - 🧹 **If the backlog hasn't been revised in a while** (closed files without the `DONE` tag have piled
      up) — call `/check-backlog`: it tags genuinely-closed files DONE and returns a clean open list.
 
-4. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
+5. **Pick one task** from the rebuilt backlog (priority: finish what's started > bugs > new ideas) that
    doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
    ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
    the loop with it.
