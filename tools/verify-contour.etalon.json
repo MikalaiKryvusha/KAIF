@@ -38,5 +38,10 @@
     "questions": 4,
     "parsedOptions": 15,
     "candidateLines": 15
+  },
+  "interviews/interview_009_informative_call_scope.md": {
+    "questions": 3,
+    "parsedOptions": 11,
+    "candidateLines": 11
   }
 }

@@ -238,9 +238,13 @@ function qCard(q) {
     ' name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
     '<div>' + o.html + '</div></label>').join('');
   const existing = q.existing.map((t) => '<p><strong>Ответ:</strong> ' + esc(t) + '</p>').join('');
-  const inputs = q.answered ? '' :
-    '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="Свой вариант / текст ответа (D)"></p>' +
-    '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Комментарий к вопросу (P7)"></textarea></p>';
+  // У отвеченного вопроса остаётся поле комментария (слово владельца, пилот 009): дописать
+  // мысль по уже решённому можно всегда; сам ответ неприкосновенен — комментарий ляжет
+  // датированным блоком в конец вопроса.
+  const inputs = q.answered
+    ? '<p class="addcomment"><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Дополнительный комментарий к уже отвеченному (запишется датированным блоком, ответ не тронет)"></textarea></p>'
+    : '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="Свой вариант / текст ответа (D)"></p>' +
+      '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Комментарий к вопросу (P7)"></textarea></p>';
   const meta = q.target
     ? '<div class="qmeta">Адресат ответа: ' + esc(q.target).replace(/`/g, '') + '</div>' : '';
   return '<section class="qcard' + (q.answered ? ' done' : '') + '">' +
@@ -275,7 +279,11 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
   .doc blockquote { border-left:3px solid var(--line); margin:8px 0; padding:2px 12px; color:var(--muted) }
   .qcard { background:var(--card); border:1px solid var(--line); border-left:5px solid var(--wait);
     border-radius:10px; padding:12px 16px; margin:14px 0 } /* P1: полоса состояния 5px */
-  .qcard.done { border-left-color:var(--done); opacity:.72 } /* закрытый вопрос виден целиком, но в сером */
+  /* Закрытый вопрос виден целиком, но в сером; затемняются ДЕТИ, а не карточка — иначе поле
+     доп-комментария наследует тусклость (баг пилота 009: «текст серый — нужно яркий белый»). */
+  .qcard.done { border-left-color:var(--done) }
+  .qcard.done > * { opacity:.72 }
+  .qcard.done .addcomment { opacity:1 }
   .tag { font-size:12px; padding:2px 8px; border-radius:99px; color:#fff } /* P2 */
   .tag.wait { background:var(--wait) } .tag.done { background:var(--done) } .tag.you { background:var(--you) }
   /* Полевые правки пилота 008: радио большие и выразительные; текст варианта на одной линии
@@ -327,10 +335,13 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
     // Сбор ответов по документу (пачка шлёт свой doc; одиночная страница — единственный)
     "function fieldVal(name){var el=document.getElementsByName(name)[0];return el?el.value:''}",
     "function collect(doc){var answers={};for(var i=0;i<QS.length;i++){var q=QS[i];",
-    " if(q.answered||q.doc!==doc)continue;",
+    " if(q.doc!==doc)continue;",
+    " var com=fieldVal('comment:'+doc+':'+q.id);",
+    // отвеченный вопрос отдаёт ТОЛЬКО дополнительный комментарий — ответ неприкосновенен
+    " if(q.answered){if(com.trim())answers[q.id]={choice:'',text:'',comment:com.trim()};continue}",
     " var chosen='';var rs=document.getElementsByName('choice:'+doc+':'+q.id);",
     " for(var j=0;j<rs.length;j++)if(rs[j].checked)chosen=rs[j].value;",
-    " var own=fieldVal('text:'+doc+':'+q.id);var com=fieldVal('comment:'+doc+':'+q.id);",
+    " var own=fieldVal('text:'+doc+':'+q.id);",
     " if(chosen||own.trim()||com.trim())answers[q.id]={choice:chosen,text:own.trim(),comment:com.trim()}}",
     " return {doc:doc,answers:answers,comment:fieldVal('doccomment:'+doc)}}",
     // I10/I11: громкий отказ + спасательный круг; кнопка снова активна, текст возвращается человеку
