@@ -131,6 +131,12 @@ Sequence:
 - **Stale-status check** (the guard's second half): status says "awaiting" while no answer field
   is empty ⇒ THE STATUS IS STALE — fix it and look for what else never propagated. In the field an
   interview hung "awaiting" for two days over twelve filled answers.
+- **An owner's comment on an UNANSWERED question is INPUT, not a footnote.** Before showing the
+  question again, REWORK it: rebuild the options FROM the comment's words (mark them v2, with
+  provenance), never re-serve the stale list. The owner's field complaint, paraphrased: "my
+  comment should have shaped the new answer options — instead you fed me the old ones I had
+  explicitly not chosen" (2026-08-07). Re-showing an unchanged question after a comment makes
+  the owner repeat themselves — the same class as re-asking a settled verdict.
 - Proceed to implement per the approved plan (or, if the owner asks to pause — call `/pause`).
 
 ## Notes

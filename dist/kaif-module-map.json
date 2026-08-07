@@ -2647,10 +2647,10 @@
       {
         "signature": "### Step 5. After the answers",
         "class": "static",
-        "sha256": "f4e8d3bdf1ed28e6d98cf20fc05a82b36ee74514732060721e38f8d892db2691",
+        "sha256": "54cc47883643cb234460f0dae5ee77246019759ecb0fd19b74b8869ec090796d",
         "lines": [
           114,
-          135
+          141
         ]
       },
       {
@@ -2658,8 +2658,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          136,
-          140
+          142,
+          146
         ]
       }
     ],
@@ -2958,28 +2958,28 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "00d37001774b9c8b80c14e91e762ce5cfa18d5f0562469058829e2aae896f391",
+        "sha256": "24c69504141bade9b754778d342a4f5a09426a2d56f3bde41fa3362c20e43b1c",
         "lines": [
           40,
-          190
+          193
         ]
       },
       {
         "signature": "## The named class: \"handling the human's work\"",
         "class": "static",
-        "sha256": "ecec33df31e230c2c3c12245fdcb5762cc305aa312dfdb1964d16ecc6997499d",
+        "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          191,
-          199
+          194,
+          205
         ]
       },
       {
         "signature": "## Page elements by name (P1–P9) — one style across projects",
         "class": "static",
-        "sha256": "3af3941558b77182d7975c2c3626fe551fdd6e6b3e68fc69038c7db5971c1136",
+        "sha256": "34a1ddfa9aadb128da970f5db8df5b28a44f654051d466fd09d286dfecdd9458",
         "lines": [
-          200,
-          229
+          206,
+          238
         ]
       },
       {
@@ -2987,17 +2987,17 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          230,
-          239
+          239,
+          248
         ]
       },
       {
         "signature": "## The executable build contract (C1–C13) — assemble by steps, don't re-invent",
         "class": "static",
-        "sha256": "89eb3dabcdf773e0342baf7d27ae3350d3e5d35beb3b3c208aef19bb326e1bec",
+        "sha256": "00a9322b97b28da62f0169e9a1240c4f37197c9c9b134b1b29f10c1bfeeb4b73",
         "lines": [
-          240,
-          340
+          249,
+          360
         ]
       },
       {
@@ -3005,8 +3005,8 @@
         "class": "static",
         "sha256": "81674bb4e07934a8bf603b61358af949ac4b315f59df859ac67a669df96c24b1",
         "lines": [
-          341,
-          373
+          361,
+          393
         ]
       },
       {
@@ -3014,8 +3014,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          374,
-          389
+          394,
+          409
         ]
       },
       {
@@ -3023,8 +3023,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          390,
-          460
+          410,
+          480
         ]
       },
       {
@@ -3032,8 +3032,8 @@
         "class": "static",
         "sha256": "0d1a55845743246bd68df0b614d8e790d24a27f07d90693220b64f3da04e0600",
         "lines": [
-          461,
-          481
+          481,
+          501
         ]
       },
       {
@@ -3041,8 +3041,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          482,
-          501
+          502,
+          521
         ]
       },
       {
@@ -3050,8 +3050,8 @@
         "class": "static",
         "sha256": "75154dacc1ca33671a8ac80af4d5ab7c6cb23e09ce7a501873c3d2dd3261c9df",
         "lines": [
-          502,
-          511
+          522,
+          531
         ]
       }
     ],

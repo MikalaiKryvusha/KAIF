@@ -147,7 +147,10 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   own action.
 - **I24. The markdown renderer strips HTML comments.** Escaping foreign markup and displaying
   service comments are different things; inside fenced code, comments stay (there they are
-  content). Fix it in the renderer — one node covers all present and future markers.
+  content). Fix it in the renderer — one node covers all present and future markers — and every
+  path that shows document text to the human must go THROUGH that node: an answer excerpt on a
+  card that bypasses the renderer re-leaks the marker (field pilot, same class as the original
+  leak).
 
 **Window, port, outcomes, process (I25–I31):**
 
@@ -195,16 +198,22 @@ rendering — and none of them is found by any mechanical self-check. The class 
 verified BY ROSTER, walking the field-paid cases one by one, not by self-tests: no-timeout
 waiting (I9) · loud refusal (I10) · rescue ring (I11) · browser draft (I12) · both pulses
 (I13/I14) · app window, not a tab (I26) · auto-close attempt (I27) · voice by default (I28) ·
-project name in the header (page element P9). Accepting a contour = walking this roster.
+project name in the header (page element P9) · never restarting the contour under a LIVE window
+(field pilot: an "improved page" restart burned the owner's in-progress draft — the port is part
+of the web origin, a new server orphans the old draft; fixes wait for the I25 outcome).
+Accepting a contour = walking this roster.
 
 ## Page elements by name (P1–P9) — one style across projects
 
 - **P1** — question widget with a 4–5 px state stripe on the left edge; the stripe's color IS the
   state (waiting / answered): one detail carries two meanings — separates and informs.
 - **P2** — explicit state tags on every question: answered / unanswered / awaits you.
-- **P3** — selection clearable by a second click (a native radio cannot return to "none"): state
-  remembered on `mousedown` (before browser activation), cleared on the field's own click,
-  label-target events skipped — otherwise a text click clears twice, i.e. never.
+- **P3** — selection clearable by a second click (a native radio cannot return to "none").
+  Field-corrected mechanics (pilot 2026-08-07 — the mousedown/click scheme still let the label
+  duplicate the click, and the second click "cleared and instantly re-selected"): take the
+  activation over on `pointerdown` with `preventDefault` — the native label duplicate ceases to
+  exist by construction; a click on the FIELD toggles (the second click CLEARS), a click on the
+  label text selects but never clears; disabled inputs are skipped.
 - **P4** — no "who answers" question on a one-owner project; the server still stamps `by` —
   remove the QUESTION, not the RECORD, or the archive is unreadable months later.
 - **P5** — both OS themes via `prefers-color-scheme`, colors as variables, contrast measured in
@@ -263,6 +272,10 @@ hand over a path is born (I15).
     decisions/            machine memory of decisions (+ archive/, queue.json)
   ```
 
+  EVERY consumer — the page, the gate, AND the guard — parses documents through this one core:
+  a duplicated parser is a second truth (in the field the guard's own copy diverged from the
+  core on "a comment is not an answer" within a single day).
+
 - **C2. The order of the six steps is the Build order above, the guard FIRST** — confirmed in
   the field by execution: not one step had to be moved. Before any code, MEASURE: grep the
   working directories for candidate markers and hand-triage how many are real — that number is
@@ -286,18 +299,25 @@ hand over a path is born (I15).
   with a provenance comment · `<doc-base>.decision.json` beside it · an archive copy
   `<doc-base>--<time>.json` that is never overwritten. The owner's already-written answer is
   untouchable — new text arrives as a dated follow-up field; the document-wide comment appends
-  as a dated block at the END of the file.
+  as a dated block at the END of the file. Three write rules paid for by the field pilot
+  (2026-08-07): questions are applied BOTTOM-UP — an inserted comment shifts every line below
+  it, and stale positions wrote one answer's tail onto a neighboring OPTION line; a comment
+  WITHOUT an answer never closes a question (it is a thought, not a decision); an ANSWERED
+  question still offers an additional-comment field on the page — the comment lands as a dated
+  block, the answer stays verbatim.
 - **C7. The send gate — one function `checkApproval(document, artifact)`, called by BOTH the
   gate and the sender.** Refusal on: no decision · status not approved · artifact not declared ·
   body missing · hash drifted · any unexpected error. It never throws — it returns a refusal
   (I4). The sender must have a REAL addressee and refuses even under an explicit `--apply`:
   without a real consumer the gate is decoration.
 - **C8. The signal:** strictly AFTER the page is up (I5) · sound first and always (I33/I34) ·
-  the voice is a parameter, the phrase = document type + its name, the type taken from the
-  metadata block or the directory · quiet hours override everything, and the midnight-crossing
-  window gets its own self-test (I6) · the text rides to the synthesizer as a FILE and the
-  command itself is ASCII-only · print plain text to the console — the exit code does not prove
-  the human heard.
+  the voice is a parameter, the phrase = document type + its name + the COUNT of unanswered
+  questions (the human decides "now or after the current task" BEFORE reading the page), the
+  type taken from the metadata block or the directory · markup never rides into speech (strip
+  md symbols from the phrase — in the field markdown leaked into the voice) · quiet hours
+  override everything, and the midnight-crossing window gets its own self-test (I6) · the text
+  rides to the synthesizer as a FILE and the command itself is ASCII-only · print plain text to
+  the console — the exit code does not prove the human heard.
 - **C9. Accumulation — and immediately I8.** The queue is a state file; live documents are
   never moved (I7). Any save closes the contour; if the queue still holds unanswered items,
   re-raising the page is the agent's duty (I8). The command that holds the server MUST have a
