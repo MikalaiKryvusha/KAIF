@@ -56,9 +56,10 @@ rmSync(ROOT, { recursive: true, force: true });
 mkdirSync(ROOT, { recursive: true });
 
 let failures = 0;
+let passes = 0;
 const ok = (cond, name, extra = '') => {
   console.log((cond ? '✅ ' : '❌ ') + name + (cond || !extra ? '' : ' — ' + String(extra).slice(-300)));
-  if (!cond) failures++;
+  if (!cond) failures++; else passes++;
 };
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 const run = (cwd, args) => {
@@ -272,5 +273,7 @@ ok(r.out.includes('INCOMPLETE BY DESIGN'), '🔴 T6 печать «INCOMPLETE BY
 ok(r.out.includes('AGENT_GUIDE.md') && /skill bodies/.test(r.out),
    '🔴 T6 печать называет EN-документы и тела скиллов (формулировка KLAS §4.7)', r.out.slice(-600));
 
-console.log(failures ? `\n❌ s11: ${failures} guard(s) red` : '\n✅ s11: all green');
+// Число стражей печатает СВОД, не проза коммита (класс bugs/09/L4 «счётчик разошёлся с
+// фактом», рецидив пойман судьёй эпика L: в месседже жило «34», фактических — 44).
+console.log(failures ? `\n❌ s11: ${failures} of ${passes + failures} guard(s) red` : `\n✅ s11: all ${passes} guards green`);
 process.exit(failures ? 1 : 0);

@@ -4417,7 +4417,12 @@ diverged places. Your cognitive work is that task, not the migration.
 1. **Pre-flight.** Working tree clean (commit/stash first). Read `.kaif/kaif.json`: if `tracking` is
    `fork`, confirm the human really wants to pull from the official origin.
 
-2. **Predict the pass BEFORE touching the tree** (both moves are cheap; the field proved both):
+2. **Predict the pass BEFORE touching the tree** (both moves are cheap; the field proved both).
+   Route note: `update` runs the interval with your CURRENTLY DEPLOYED core (the fresh one is
+   swapped in at the end) — so the NEW version's update-time guarantees (pre-update backup
+   tree, new task scopes) apply to the NEXT interval. To get them on THIS pass, update by the
+   thin-`KAIF.md` bootstrap route instead: the fresh core classifies against your surviving
+   deploy manifest and the pass is equally mechanical.
    - `node .kaif/kaif-core.mjs diff --source <url|dir>` — a per-module preview of what the new
      version would change *here*. Works even on a v1 manifest: the machinery builds a synthetic
      baseline of your CURRENT version (`--baseline <dir|url>` points it at saved artifacts when

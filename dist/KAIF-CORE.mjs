@@ -1354,7 +1354,14 @@ function healMarker() {
     if (!snap) return;
     const cur = readJson(KAIF_JSON);
     const healed = { ...snap, ...cur };
-    if (JSON.stringify(healed) !== JSON.stringify(cur)) {
+    // Content comparison, not string comparison: `{...snap, ...cur}` reorders keys whenever
+    // the snapshot lacks a field the live marker gained later (history, projectName), and a
+    // plain stringify-compare then logged "restored fields lost" on a perfectly healthy
+    // marker — a false alarm on the healthy path is the same lie class this delivery hunts
+    // (epic-judge finding). Canonical deep key order per the project rule.
+    const canon = (v) => Array.isArray(v) ? v.map(canon)
+      : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon(v[k])])) : v;
+    if (JSON.stringify(canon(healed)) !== JSON.stringify(canon(cur))) {
       writeFileSync(KAIF_JSON, JSON.stringify(healed, null, 2) + '\n');
       log('↻ self-healed .kaif/kaif.json (restored fields lost to a rewrite)');
     }
