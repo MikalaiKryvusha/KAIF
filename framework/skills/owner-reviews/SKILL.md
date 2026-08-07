@@ -220,6 +220,13 @@ project name in the header (page element P9). Accepting a contour = walking this
 - **P9** — the project name in the page header: the owner runs several projects, and the document
   title alone does not say WHO is asking.
 
+**The page speaks the owner's language.** The interface chrome — state tags, buttons, notices,
+the header summary — follows the language the owner works in, not the tool author's: English
+chips over a Russian interview are not user-friendly (the owner's word, field pilot 2026-08-07).
+The header carries a visible answered/awaiting summary; a question card carries the question's
+FULL body — its origin, what it feeds and blocks, the answer target — not just the title: an
+owner facing options without context answers "I don't know what we are deciding here".
+
 ## The name contract (candidate, field-tested on four product routines)
 
 Metadata block in the document head (fenced YAML): `title` · `kind` (interview / outbound draft /
@@ -460,7 +467,9 @@ server that outlives the silence threshold → red.
 - **QA3. BOTH "page left" scenarios:** a reload — the contour must LIVE; a close — it must
   DIE. Checking only the second means not noticing that you kill live pages.
 - **QA4. A frozen parse etalon over the live documents,** with an intentional failure on a new
-  document until the etalon is re-reviewed (G7).
+  document until the etalon is re-reviewed (G7). The field numbers behind this norm are cited,
+  never re-measured: 39 fixture checks → 0 findings, while the FIRST run over 16 live documents
+  caught 2 silent losses — out of 281 checks total.
 - **QA5. Proof by mutation:** a broken parse must fail the run — a check that cannot fail is
   not a check.
 - **QA6. Cleanup:** debug windows and browser profiles are extinguished at the run's end — the

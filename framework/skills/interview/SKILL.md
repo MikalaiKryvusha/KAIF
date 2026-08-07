@@ -55,6 +55,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 
   **Answer target:** <the document/section that waits on this answer — e.g. `plans/24 §B8` — written TOGETHER with the question>
 
+  **Origin:** <the question's extended meta, written for the owner facing the card without your context: where the question came from and what problem it decides · who formulated it and when · which documents, tasks and epics it feeds or blocks (the owner's field ask, 2026-08-07: options without this context earn "I don't know what we are deciding here")>
+
   - **A) (recommended)** <the option distilled through PHILOSOPHY.md — simplest/most effective — + why>
   - **B)** <option>
   - **C)** <option>
