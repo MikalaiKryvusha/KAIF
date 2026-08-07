@@ -39,7 +39,7 @@ researches/18; «пересборки处» в plans/49) — артефакт г�
 **Урок:** генерация не-ASCII текста может нести ТОЧЕЧНУЮ подмену слова иероглифом при зелёной
 записи. «Прочитай записанное обратно» класс ловит, но взглядом — ненадёжно; надёжен машинный скан
 CJK-диапазонов по каждому машинно-написанному русскому md перед коммитом.
-**Repro:** `node -e "const t=require('fs').readFileSync(process.argv[1],'utf8');const m=t.match(/[㐀-鿿぀-ヿ가-힯豈-﫿]/g);if(m){console.error('CJK:',m.join(''));process.exit(1)}console.log('clean')" <файл.md>`
+**Repro:** `node -e "const t=require('fs').readFileSync(process.argv[1],'utf8');const m=t.match(/[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu);if(m){console.error('CJK:',m.join(''));process.exit(1)}console.log('clean')" <файл.md>` (свойства письменностей, не сырые диапазоны — наивный диапазон ловил эмодзи ложняком)
 **Триггер:** машинно написал/правил русский md → прогони скан вместе с чтением обратно, до
 коммита.
 **Not for:** файлов, где CJK легален (языковые пакеты zh-Hans/ja и их фикстуры полигона).

@@ -36,7 +36,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 | `GOAL.md` / `MASTER_PLAN.md` | The vision, and the phased path to it. |
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | The knowledge directories (each has its own README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | The knowledge directories (each has its own README). |
 | `.claude/skills/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
 | `.kaif/kaif.json` | The deploy marker: version, sphere, agent, tracking. |
 

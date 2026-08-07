@@ -80,7 +80,8 @@ KAIF/
 ├── bugs/        (README + NN_*.md)        # дефекты (закрытые — с тегом DONE в имени)
 ├── researches/  (README + NN_*.md)        # конспекты исследований
 ├── interviews/  (README + interview_NNN_*.md)  # решения уровня владельца
-└── homeworks/   (README + NN_*.md)        # задания человеку
+├── homeworks/   (README + NN_*.md)        # задания человеку
+└── reports/     (README + NN_*.md)        # отчёты агента (KAIF_UPDATES/ · KAIF_AUDIT/)
 ```
 
 ---
@@ -119,7 +120,7 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 1. **Полезная нагрузка** = `framework/` (исходник) → корневой `KAIF.md` + `dist/` (сгенерировано). Именно
    это разворачивается на стороне.
 2. **Обвязка** = корневые ключевые документы + `.claude/skills/` + `plans/`/`ideas/`/`bugs/`/`researches/`/
-   `interviews/`/`homeworks/` + `CLAUDE.md` + `.kaif/kaif.json`. Это фреймворк, применённый к *этому* проекту.
+   `interviews/`/`homeworks/`/`reports/` + `CLAUDE.md` + `.kaif/kaif.json`. Это фреймворк, применённый к *этому* проекту.
 
 Универсальные файлы (`PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `TESTING_FRAMEWORK.md`, навыки) зеркалят
 друг друга между слоями — кроме заполненных плейсхолдеров команд в обвязке; lifecycle- и fable-навыки в

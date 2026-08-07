@@ -34,7 +34,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 | `GOAL.md` / `MASTER_PLAN.md` | الرؤية، والطريق المرحلي إليها. |
 | `STATUS.md` | الحالة الحية — تُحدَّث بعد كل مهمة مهمة. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | الخريطتان الخارجية والداخلية. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | مجلدات المعرفة (لكلٍّ منها README خاص). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | مجلدات المعرفة (لكلٍّ منها README خاص). |
 | `.claude/skills/` (أو مكافئه في نظام وكيلك) | الطقوس القابلة للتكرار (`/resume`، `/pause`، الحلقات، …). |
 | `.kaif/kaif.json` | علامة النشر: الإصدار، المجال، الوكيل، التتبع. |
 

@@ -1502,7 +1502,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 | `GOAL.md` / `MASTER_PLAN.md` | The vision, and the phased path to it. |
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | The knowledge directories (each has its own README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | The knowledge directories (each has its own README). |
 | `.claude/skills/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
 | `.kaif/kaif.json` | The deploy marker: version, sphere, agent, tracking. |
 
@@ -1634,7 +1634,8 @@ Thirteen key documents ship with a deployment (twelve project documents plus thi
 | `KAIF_REFERENCE.md` (this document, at `.kaif/`) | The complete framework reference. | Deployed verbatim. |
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
-`interviews/` `homeworks/`. Closed items take the `DONE` tag in the filename (§13.1).
+`interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
+research notes and reports are living records and are never tagged.
 
 ## 6. The skill system
 
@@ -1963,6 +1964,13 @@ agent will structure it. Browse this directory to see known defects and their st
 `/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. While open, no `DONE` tag. When fixed
 **and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
+
+**The `bugs/KAIF/` subdirectory** — defects and improvement requests about the KAIF **framework
+itself**, not this project. When a failure traces to a gap in KAIF (a rule that misled, a missing
+guardrail, machinery that broke), file it there by the same bug canon — **strictly in English**
+(these documents address the KAIF developer). Deduplicate before filing: search `bugs/KAIF/`
+first; origin-tracked deployments also search the origin issue tracker and send confirmed signals
+upstream, detached ones keep everything local.
 ``````
 
 > **FILE: `researches/README.md`** — create the directory and drop this README
@@ -2027,6 +2035,35 @@ benchmark; all candidates on ONE same material, blind labels, the key beside the
 fields in every such doc: **"Ready to see/hear right now"** (paths to the artifacts) and
 **"Verdicts already given"** (the owner's calls, recorded verbatim — a verdict is canon and is
 never asked twice).
+``````
+
+> **FILE: `reports/README.md`** — create the directory and drop this README
+
+``````md
+# `reports/` — the agent's reports on cognitively heavy work
+
+When the agent has done cognitively dense work — analysis, synthesis, reconnaissance, an audit, a
+field run — the distilled write-up lands here: for the agent's own future sessions, for other
+agents working on the project, and for informing the owner about milestones. One `NN_<name>.md`
+per report; evidence-first (numbers reproduced by commands, verbatim logs), terse.
+
+**Subdirectories** (each is created together with its first report — empty directories don't live
+in git):
+
+- **`KAIF_UPDATES/`** — field reports on KAIF lifecycle runs. Every framework **update** and the
+  initial **install** MUST finish with a short report here — terse, bullet-style, **strictly in
+  English** (they address the KAIF developer, whatever the project's working language).
+  Origin-tracked deployments also send them upstream; detached ones keep them local only.
+- **`KAIF_AUDIT/`** — comprehensive audit reports by strong models (agentic codebase review),
+  grouped one document per finding class/family, with rich accompanying meta (links, dates,
+  document names) so that weaker models can later execute the fixes.
+
+**For the human (owner):** browse here for milestone write-ups and field evidence; reports are
+records, not opinions — every claim carries a command or a quote behind it.
+
+**For the AI agent:** write a report after any cognitively heavy work whose conclusions should
+outlive the session. KAIF lifecycle reports (update/install) are mandatory and strictly English.
+Reports are records — never `DONE`-tagged, never rewritten (append corrections instead).
 ``````
 
 > **FILE: `.claude/skills/autoloop/SKILL.md`** — replace the command placeholders with the project's real commands
@@ -3463,8 +3500,9 @@ well-structured explanation they can read and act on.
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
 
 3. **The directories — where knowledge lives, and where the owner acts.** `plans/`, `ideas/` (mostly
-   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
-   the DONE-tag convention in one line.
+   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you),
+   `reports/` (the agent's field and audit reports; KAIF update/install reports are mandatory there).
+   Mention the DONE-tag convention in one line.
 
 4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
    groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
@@ -3726,8 +3764,8 @@ intact and working — we only remove what KAIF added, surgically.
 ## Two modes
 
 - **Partial** — remove the framework **core/wrapper** but **keep the content artifacts**:
-  `bugs/`, `interviews/`, `ideas/`, `researches/`, `homeworks/`, and any other knowledge the work produced.
-  The agent's accumulated knowledge survives; only the KAIF machinery leaves.
+  `bugs/`, `interviews/`, `ideas/`, `researches/`, `homeworks/`, `reports/`, and any other knowledge the
+  work produced. The agent's accumulated knowledge survives; only the KAIF machinery leaves.
 - **Full** — remove the core/wrapper **and** the content artifacts. KAIF is burned out of the project's
   history as if it had never been there — leaving only the user's project.
 
@@ -3755,7 +3793,7 @@ intact and working — we only remove what KAIF added, surgically.
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
-     `researches/`, `homeworks/`, `plans/`, etc.
+     `researches/`, `homeworks/`, `plans/`, `reports/`, etc.
    - **NEVER touched:** the user's own project files and directories.
 
 3. **Un-wire the npm handles.** Remove the `kaif:*` scripts that KAIF added to the project's
@@ -6452,6 +6490,13 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 `/report-bug`؛ المنهج: `BUG_FIXING_FRAMEWORK.md`) — حتى الصغير منها. ما دام مفتوحًا فلا وسم `DONE`.
 وعند إصلاحه **والتحقق منه**: `git mv NN_x.md NN_DONE_x.md` وأضف قسم `## ✅ STATUS: DONE (التاريخ)`.
 بعد 3 محاولات إصلاح عمياء فاشلة، توقف وانتقل إلى البحث (`/bug-research`).
+
+**المجلد الفرعي `bugs/KAIF/`** — عيوب وطلبات تحسين تخص **إطار KAIF نفسه**، لا هذا
+المشروع. عندما يعود فشلٌ إلى ثغرة في KAIF (قاعدة ضلّلت، حاجز أمان مفقود، آلية تعطّلت)، أودِع
+الوثيقة هناك وفق قانون العيوب نفسه — **بالإنجليزية حصراً** (هذه الوثائق موجهة إلى مطوّر KAIF).
+أزل التكرار قبل الإيداع: ابحث أولاً في `bugs/KAIF/`؛ عمليات النشر المرتبطة بالأصل تبحث أيضاً
+في متتبّع القضايا الخاص بالأصل وترسل الإشارات المؤكدة إلى الأعلى، وغير المرتبطة تُبقي كل شيء
+محلياً.
 ``````
 
 > **FILE: `templates/languages/ar/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -6597,7 +6642,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 | `GOAL.md` / `MASTER_PLAN.md` | الرؤية، والطريق المرحلي إليها. |
 | `STATUS.md` | الحالة الحية — تُحدَّث بعد كل مهمة مهمة. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | الخريطتان الخارجية والداخلية. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | مجلدات المعرفة (لكلٍّ منها README خاص). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | مجلدات المعرفة (لكلٍّ منها README خاص). |
 | `.claude/skills/` (أو مكافئه في نظام وكيلك) | الطقوس القابلة للتكرار (`/resume`، `/pause`، الحلقات، …). |
 | `.kaif/kaif.json` | علامة النشر: الإصدار، المجال، الوكيل، التتبع. |
 
@@ -6729,6 +6774,14 @@ Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kle
 `DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
 `## ✅ STATUS: DONE (Datum)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
 zur Recherche (`/bug-research`).
+
+**Das Unterverzeichnis `bugs/KAIF/`** — Defekte und Verbesserungsanträge zum
+**KAIF-Framework selbst**, nicht zu diesem Projekt. Wenn ein Fehlschlag auf eine Lücke in KAIF
+zurückgeht (eine irreführende Regel, ein fehlendes Guardrail, kaputte Maschinerie), lege das
+Dokument dort nach demselben Bug-Kanon an — **strikt auf Englisch** (diese Dokumente richten
+sich an den KAIF-Entwickler). Vor dem Anlegen deduplizieren: zuerst `bugs/KAIF/` durchsuchen;
+origin-gebundene Deployments durchsuchen zusätzlich den Issue-Tracker des Origin und senden
+bestätigte Signale upstream, losgelöste halten alles lokal.
 ``````
 
 > **FILE: `templates/languages/de/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -6892,7 +6945,7 @@ in klaren Grenzen arbeitet und Wissen ansammelt, statt es zu verlieren. Es ist k
 | `GOAL.md` / `MASTER_PLAN.md` | Die Vision und der phasenweise Weg dorthin. |
 | `STATUS.md` | Der lebende Zustand — nach jeder bedeutenden Aufgabe aktualisiert. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Die externe und interne Karte. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Die Wissensverzeichnisse (jedes mit eigenem README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Die Wissensverzeichnisse (jedes mit eigenem README). |
 | `.claude/skills/` (oder das Äquivalent Ihres Agentensystems) | Die wiederholbaren Rituale (`/resume`, `/pause`, Loops, …). |
 | `.kaif/kaif.json` | Der Deploy-Marker: Version, Sphäre, Agent, Tracking. |
 
@@ -7029,6 +7082,14 @@ según el canon (habilidad: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) �
 Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
 `git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha)`. Tras 3 intentos ciegos
 fallidos de corrección, pare y pase a investigación (`/bug-research`).
+
+**El subdirectorio `bugs/KAIF/`** — defectos y solicitudes de mejora sobre el **propio
+framework KAIF**, no sobre este proyecto. Cuando un fallo se remonta a un hueco de KAIF (una
+regla que confundió, un guardarraíl ausente, maquinaria rota), archívalo allí por el mismo canon
+de bugs — **estrictamente en inglés** (estos documentos se dirigen al desarrollador de KAIF).
+Deduplica antes de crear: busca primero en `bugs/KAIF/`; los despliegues ligados al origin
+buscan también en el issue tracker del origin y envían las señales confirmadas río arriba; los
+desligados lo mantienen todo local.
 ``````
 
 > **FILE: `templates/languages/es/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7189,7 +7250,7 @@ de forma autónoma dentro de límites claros y acumula conocimiento en lugar de 
 | `GOAL.md` / `MASTER_PLAN.md` | La visión, y el camino por fases hacia ella. |
 | `STATUS.md` | El estado vivo — actualizado tras cada tarea significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Los mapas externo e interno. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Los directorios de conocimiento (cada uno con su README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Los directorios de conocimiento (cada uno con su README). |
 | `.claude/skills/` (o el equivalente de su sistema de agente) | Los rituales repetibles (`/resume`, `/pause`, ciclos, …). |
 | `.kaif/kaif.json` | El marcador de despliegue: versión, esfera, agente, tracking. |
 
@@ -7326,6 +7387,14 @@ canon (compétence : `/report-bug` ; méthode : `BUG_FIXING_FRAMEWORK.md`) — m
 ouvert, pas d'étiquette `DONE`. Une fois corrigé **et vérifié**, `git mv NN_x.md NN_DONE_x.md` et ajoutez
 une section `## ✅ STATUS: DONE (date)`. Après 3 tentatives aveugles de correction échouées, arrêtez et
 passez à la recherche (`/bug-research`).
+
+**Le sous-répertoire `bugs/KAIF/`** — défauts et demandes d'amélioration concernant le
+**framework KAIF lui-même**, pas ce projet. Quand un échec remonte à une lacune de KAIF (une
+règle trompeuse, un guardrail manquant, une machinerie cassée), déposez le document là selon le
+même canon des bugs — **strictement en anglais** (ces documents s'adressent au développeur de
+KAIF). Dédupliquez avant de créer : cherchez d'abord dans `bugs/KAIF/` ; les déploiements liés
+à l'origin cherchent aussi dans le tracker d'issues de l'origin et envoient les signaux
+confirmés en amont, les déploiements détachés gardent tout en local.
 ``````
 
 > **FILE: `templates/languages/fr/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7490,7 +7559,7 @@ perdre. Ce n'est pas du code ; c'est *un processus capturé sous forme de fichie
 | `GOAL.md` / `MASTER_PLAN.md` | La vision, et le chemin par phases vers elle. |
 | `STATUS.md` | L'état vivant — mis à jour après chaque tâche significative. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Les cartes externe et interne. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Les répertoires de connaissance (chacun avec son README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Les répertoires de connaissance (chacun avec son README). |
 | `.claude/skills/` (ou l'équivalent de votre système d'agent) | Les rituels répétables (`/resume`, `/pause`, boucles, …). |
 | `.kaif/kaif.json` | Le marqueur de déploiement : version, sphère, agent, tracking. |
 
@@ -7625,6 +7694,13 @@ compréhension grandit.
 `/report-bug`; विधि: `BUG_FIXING_FRAMEWORK.md`) — छोटे दोष भी। खुला रहते हुए `DONE` टैग नहीं। ठीक
 **और सत्यापित** होने पर `git mv NN_x.md NN_DONE_x.md` करें और `## ✅ STATUS: DONE (तिथि)` खंड जोड़ें।
 3 असफल अंधे सुधार-प्रयासों के बाद रुकें और शोध पर जाएँ (`/bug-research`)।
+
+**उपनिर्देशिका `bugs/KAIF/`** — **स्वयं KAIF फ्रेमवर्क** के दोष और सुधार-अनुरोध, इस
+परियोजना के नहीं। जब कोई विफलता KAIF की कमी तक पहुँचे (भ्रमित करने वाला नियम, अनुपस्थित
+guardrail, टूटी मशीनरी), तो उसी बग-कैनन से वहाँ दस्तावेज़ दर्ज करें — **सख़्ती से अंग्रेज़ी में**
+(ये दस्तावेज़ KAIF डेवलपर को संबोधित हैं)। दर्ज करने से पहले डुप्लिकेट हटाएँ: पहले `bugs/KAIF/`
+में खोजें; origin से जुड़े परिनियोजन origin के issue ट्रैकर में भी खोजते हैं और पुष्ट संकेत
+upstream भेजते हैं, अलग हुए सब कुछ स्थानीय रखते हैं।
 ``````
 
 > **FILE: `templates/languages/hi/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7778,7 +7854,7 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 | `GOAL.md` / `MASTER_PLAN.md` | विज़न, और उस तक चरणबद्ध रास्ता। |
 | `STATUS.md` | जीवित स्थिति — हर महत्वपूर्ण कार्य के बाद अपडेट। |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | बाहरी और आंतरिक नक्शे। |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | ज्ञान डायरेक्टरियाँ (हर एक का अपना README)। |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | ज्ञान डायरेक्टरियाँ (हर एक का अपना README)। |
 | `.claude/skills/` (या आपके एजेंट सिस्टम का समकक्ष) | दोहराने योग्य अनुष्ठान (`/resume`, `/pause`, लूप, …)। |
 | `.kaif/kaif.json` | डिप्लॉय मार्कर: संस्करण, क्षेत्र, एजेंट, ट्रैकिंग। |
 
@@ -7911,6 +7987,12 @@ DONE टैग नहीं मिलता।
 `DONE` タグなし。修正**かつ検証**されたら、`git mv NN_x.md NN_DONE_x.md` し、
 `## ✅ STATUS: DONE (日付)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
 切り替える（`/bug-research`）。
+
+**サブディレクトリ `bugs/KAIF/`** — このプロジェクトではなく **KAIF フレームワーク自体**の
+欠陥と改善要望の置き場。失敗の原因が KAIF の欠落(誤解を招くルール、欠けたガードレール、壊れた機構)に
+遡るときは、同じバグの規範に従ってそこに記録する — **必ず英語で**(これらの文書は KAIF 開発者に宛てた
+もの)。起票前に重複排除:まず `bugs/KAIF/` を検索し、origin 連携のデプロイは origin の issue
+トラッカーも検索して確認済みシグナルを上流へ送る。切り離されたデプロイはすべてローカルに保つ。
 ``````
 
 > **FILE: `templates/languages/ja/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8071,7 +8153,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 | `GOAL.md` / `MASTER_PLAN.md` | ビジョンと、そこへ至る段階的な道筋。 |
 | `STATUS.md` | 生きた状態 — 重要なタスクごとに更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部マップと内部マップ。 |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | 知識ディレクトリ（各自の README 付き）。 |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | 知識ディレクトリ（各自の README 付き）。 |
 | `.claude/skills/`（またはご使用のエージェントシステムの同等物） | 繰り返し可能な儀式（`/resume`、`/pause`、ループ等）。 |
 | `.kaif/kaif.json` | デプロイマーカー：バージョン、領域、エージェント、トラッキング。 |
 
@@ -8205,6 +8287,14 @@ cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesm
 sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
 `## ✅ STATUS: DONE (data)`. Após 3 tentativas cegas falhadas de correção, pare e mude para pesquisa
 (`/bug-research`).
+
+**O subdiretório `bugs/KAIF/`** — defeitos e pedidos de melhoria sobre o **próprio
+framework KAIF**, não sobre este projeto. Quando uma falha remonta a uma lacuna do KAIF (uma
+regra que enganou, um guardrail ausente, maquinaria quebrada), registre o documento lá pelo
+mesmo cânone de bugs — **estritamente em inglês** (esses documentos se dirigem ao desenvolvedor
+do KAIF). Deduplique antes de registrar: procure primeiro em `bugs/KAIF/`; implantações
+atreladas ao origin procuram também no issue tracker do origin e enviam sinais confirmados para
+upstream; as desatreladas mantêm tudo local.
 ``````
 
 > **FILE: `templates/languages/pt/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8364,7 +8454,7 @@ forma autônoma dentro de limites claros e acumula conhecimento em vez de perdê
 | `GOAL.md` / `MASTER_PLAN.md` | A visão, e o caminho em fases até ela. |
 | `STATUS.md` | O estado vivo — atualizado após cada tarefa significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Os mapas externo e interno. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Os diretórios de conhecimento (cada um com seu README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Os diretórios de conhecimento (cada um com seu README). |
 | `.claude/skills/` (ou o equivalente do seu sistema de agente) | Os rituais repetíveis (`/resume`, `/pause`, ciclos, …). |
 | `.kaif/kaif.json` | O marcador de implantação: versão, esfera, agente, tracking. |
 
@@ -8499,6 +8589,14 @@ compreensão cresce.
 метод — `BUG_FIXING_FRAMEWORK.md`), даже мелкий. Пока открыт — без тега `DONE`. Починен **и проверен** —
 `git mv NN_x.md NN_DONE_x.md` и добавь раздел `## ✅ STATUS: DONE (дата)`. После 3 неудачных слепых попыток
 фикса — стоп и переход к исследованию (`/bug-research`).
+
+**Поддиректория `bugs/KAIF/`** — дефекты и запросы на улучшение о **самом фреймворке
+KAIF**, а не об этом проекте. Когда сбой восходит к дыре в KAIF (правило ввело в заблуждение,
+не хватило гвардрейла, сломалась машинерия) — заведи документ там по тому же канону багов,
+**строго на английском** (эти документы адресованы разработчику KAIF). Перед заведением —
+дедупликация: сначала поищи в `bugs/KAIF/`; развёртывания с привязкой к origin ищут ещё и в
+issue-трекере origin и отправляют подтверждённые сигналы наверх, отвязанные — держат всё
+локально.
 ``````
 
 > **FILE: `templates/languages/ru/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8653,7 +8751,7 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 | `GOAL.md` / `MASTER_PLAN.md` | Видение и поэтапный путь к нему. |
 | `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Директории знаний (в каждой свой README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Директории знаний (в каждой свой README). |
 | `.claude/skills/` (или эквивалент вашей агентской системы) | Повторяемые ритуалы (`/resume`, `/pause`, циклы, …). |
 | `.kaif/kaif.json` | Маркер развёртывания: версия, сфера, агент, трекинг. |
 
@@ -8783,6 +8881,11 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 `BUG_FIXING_FRAMEWORK.md`）—— 即使是小缺陷。开放期间不打 `DONE` 标签。修复**并验证**后，
 `git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期)` 部分。3 次盲目修复尝试失败后，
 停止并转入研究（`/bug-research`）。
+
+**子目录 `bugs/KAIF/`** — 关于 **KAIF 框架本身**(而非本项目)的缺陷与改进请求。当一次
+失败追溯到 KAIF 的缺口(误导性的规则、缺失的护栏、损坏的机械)时,按同一套缺陷规范把文档立在那里 —
+**严格使用英文**(这些文档面向 KAIF 开发者)。立单前先去重:先搜索 `bugs/KAIF/`;绑定 origin 的部署
+还要搜索 origin 的 issue 跟踪器,并把确认的信号发往上游;脱离 origin 的部署把一切保留在本地。
 ``````
 
 > **FILE: `templates/languages/zh-Hans/GOAL.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8924,7 +9027,7 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 | `GOAL.md` / `MASTER_PLAN.md` | 愿景，以及通向愿景的分阶段路径。 |
 | `STATUS.md` | 活的状态 —— 每个重要任务后更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部与内部地图。 |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | 知识目录（各有自己的 README）。 |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | 知识目录（各有自己的 README）。 |
 | `.claude/skills/`（或您代理系统的等价物） | 可重复的例行程序（`/resume`、`/pause`、循环等）。 |
 | `.kaif/kaif.json` | 部署标记：版本、领域、代理、跟踪。 |
 

@@ -90,8 +90,13 @@ writeFileSync(PAUSE, joinModules(pz));
 // owner-контент: EXPERIENCE.md наполняем владельческим
 writeFileSync(join(S5, 'EXPERIENCE.md'), '# EXPERIENCE\n\nOWNER CONTENT — MUST SURVIVE\n');
 
+// M2 (plans/49): развёртывание ДО эпохи reports/ (симуляция: сносим README) обязано
+// ПОЛУЧИТЬ директорию обновлением — «update доносит существующим»
+rmSync(join(S5, 'reports'), { recursive: true, force: true });
+
 r = run(S5, `update --source ${SRC}`);
 ok(r.code === 0, 'S5 update →9.9 exit 0', r.out);
+ok(existsSync(join(S5, 'reports', 'README.md')), 'S5 update доносит reports/README существующему развёртыванию');
 phil = readFileSync(PHIL, 'utf8');
 ok(phil.includes('русская локализация'), 'NDim: локализованный модуль ПЕРЕЖИЛ update №1');
 ok(phil.includes('UPSTREAM ADDITION 9.9 (philosophy)'), 'NDim: апстримный модуль того же файла заменён механически');

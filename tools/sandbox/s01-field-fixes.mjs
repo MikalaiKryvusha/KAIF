@@ -53,6 +53,14 @@ ok(gi1.includes('.kaif/install/') && gi1.includes('KAIF_UPDATE_TASK.md') && gi1.
    'S1 ignore-first: транзиенты в .gitignore ДО работы');
 r = run(S1, 'check');
 ok(r.code === 0, 'S1 check зелёный', r.out.slice(-400));
+// M2 (plans/49): свежая установка создаёт канон-директорию reports/ с README;
+// README описывает поддиректории KAIF_UPDATES/KAIF_AUDIT (сами поддиректории — лениво,
+// первым отчётом: git пустых директорий не хранит)
+const repReadme = join(S1, 'reports', 'README.md');
+ok(existsSync(repReadme), 'S1 reports/: свежая установка создаёт README');
+const repTxt = existsSync(repReadme) ? readFileSync(repReadme, 'utf8') : '';
+ok(repTxt.includes('KAIF_UPDATES') && repTxt.includes('KAIF_AUDIT'),
+   'S1 reports/README: назван состав (KAIF_UPDATES + KAIF_AUDIT)');
 // схема маркера (Reference §12.1): битое поле — красный, восстановление — зелёный
 const mkPath = join(S1, '.kaif', 'kaif.json');
 const mk0 = readFileSync(mkPath, 'utf8');

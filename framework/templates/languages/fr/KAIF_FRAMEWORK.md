@@ -38,7 +38,7 @@ perdre. Ce n'est pas du code ; c'est *un processus capturé sous forme de fichie
 | `GOAL.md` / `MASTER_PLAN.md` | La vision, et le chemin par phases vers elle. |
 | `STATUS.md` | L'état vivant — mis à jour après chaque tâche significative. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Les cartes externe et interne. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Les répertoires de connaissance (chacun avec son README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Les répertoires de connaissance (chacun avec son README). |
 | `.claude/skills/` (ou l'équivalent de votre système d'agent) | Les rituels répétables (`/resume`, `/pause`, boucles, …). |
 | `.kaif/kaif.json` | Le marqueur de déploiement : version, sphère, agent, tracking. |
 

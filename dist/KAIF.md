@@ -159,7 +159,7 @@ process.exit(r.status ?? 1);
 <project root>/
 ├── AGENT_GUIDE.md · PHILOSOPHY.md · BUG_FIXING_FRAMEWORK.md · GOAL.md · STATUS.md
 ├── EXPERIENCE.md · MASTER_PLAN.md · the two project maps · KAIF_FRAMEWORK.md (last)
-├── plans/ ideas/ bugs/ researches/ interviews/ homeworks/     (each with its README)
+├── plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/   (each with its README)
 ├── .claude/skills/  .agents/skills/  .grok/skills/  .cline/skills/  .roo/commands/
 ├── AGENTS.md · CLAUDE.md · .clinerules/ · .roo/rules/          (context pointers)
 └── .kaif/  (kaif.json marker · kaif-core.mjs — backs the kaif:* npm handles · spheres/)

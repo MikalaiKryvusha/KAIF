@@ -581,6 +581,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   // Agent-system mirrors are DERIVATIVE — the machinery itself re-syncs them from the canon,
   // yet they once ate 44 of 46 hits and the whole cap (bugs/35, KCam Г4).
   const SKIP_DIRS = ['.git', 'node_modules', '.kaif', 'researches', 'interviews', 'homeworks', 'bugs', 'ideas',
+                     'reports',   // dated field/audit journals — same noise class as the other knowledge dirs (bugs/35)
                      '.agents', '.grok', '.cline', '.roo'];
   // GOAL.md and the declared canon artifacts are the OWNER's documents: the scan once proposed
   // editing GOAL.md — a file the machinery itself declares untouchable (bugs/35, NDim гр.3).

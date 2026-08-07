@@ -38,7 +38,7 @@ de forma autónoma dentro de límites claros y acumula conocimiento en lugar de 
 | `GOAL.md` / `MASTER_PLAN.md` | La visión, y el camino por fases hacia ella. |
 | `STATUS.md` | El estado vivo — actualizado tras cada tarea significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Los mapas externo e interno. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | Los directorios de conocimiento (cada uno con su README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Los directorios de conocimiento (cada uno con su README). |
 | `.claude/skills/` (o el equivalente de su sistema de agente) | Los rituales repetibles (`/resume`, `/pause`, ciclos, …). |
 | `.kaif/kaif.json` | El marcador de despliegue: versión, esfera, agente, tracking. |
 

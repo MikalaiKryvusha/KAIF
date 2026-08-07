@@ -106,6 +106,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── researches/    # knowledge base for the big, hard questions
 ├── interviews/    # A/B/C/D questions for the owner on owner-level decisions
 ├── homeworks/     # tasks from the agent to the human (things only a human can do)
+├── reports/       # the agent's reports on cognitively heavy work (incl. KAIF field reports)
 │
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
@@ -1583,7 +1584,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 | `GOAL.md` / `MASTER_PLAN.md` | The vision, and the phased path to it. |
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | The knowledge directories (each has its own README). |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | The knowledge directories (each has its own README). |
 | `.claude/skills/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
 | `.kaif/kaif.json` | The deploy marker: version, sphere, agent, tracking. |
 
@@ -1716,7 +1717,8 @@ Thirteen key documents ship with a deployment (twelve project documents plus thi
 | `KAIF_REFERENCE.md` (this document, at `.kaif/`) | The complete framework reference. | Deployed verbatim. |
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
-`interviews/` `homeworks/`. Closed items take the `DONE` tag in the filename (§13.1).
+`interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
+research notes and reports are living records and are never tagged.
 
 ## 6. The skill system
 
@@ -1997,7 +1999,7 @@ FRAMEWORK; the project's own architecture lives in the project's two maps.
 
 ## 5. The knowledge directories
 
-Six directories accumulate the project's knowledge. **Each gets a short `README.md`** (embedded below)
+Seven directories accumulate the project's knowledge. **Each gets a short `README.md`** (embedded below)
 stating its purpose and the conventions for both the owner and the agent. Create the directory and drop its
 README during unpacking.
 
@@ -2007,6 +2009,7 @@ README during unpacking.
 - **`researches/`** — durable research notes for large, hard questions. Living references — not DONE-tagged.
 - **`interviews/`** — `interview_NNN_<topic>.md`: owner-level decisions, A/B/C/D with a recommendation first.
 - **`homeworks/`** — `NN_<name>.md`: tasks the agent hands to the human (physical/offline/account-only work).
+- **`reports/`** — the agent's reports on cognitively heavy work; `KAIF_UPDATES/` (mandatory update/install field reports, strictly EN) and `KAIF_AUDIT/` (strong-model audit reports) live inside. Records — not DONE-tagged.
 
 > **FILE: `plans/README.md`** — create the directory and drop this README
 
@@ -2063,6 +2066,13 @@ agent will structure it. Browse this directory to see known defects and their st
 `/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. While open, no `DONE` tag. When fixed
 **and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
+
+**The `bugs/KAIF/` subdirectory** — defects and improvement requests about the KAIF **framework
+itself**, not this project. When a failure traces to a gap in KAIF (a rule that misled, a missing
+guardrail, machinery that broke), file it there by the same bug canon — **strictly in English**
+(these documents address the KAIF developer). Deduplicate before filing: search `bugs/KAIF/`
+first; origin-tracked deployments also search the origin issue tracker and send confirmed signals
+upstream, detached ones keep everything local.
 ``````
 
 
@@ -2130,6 +2140,36 @@ benchmark; all candidates on ONE same material, blind labels, the key beside the
 fields in every such doc: **"Ready to see/hear right now"** (paths to the artifacts) and
 **"Verdicts already given"** (the owner's calls, recorded verbatim — a verdict is canon and is
 never asked twice).
+``````
+
+
+> **FILE: `reports/README.md`** — create the directory and drop this README
+
+``````md
+# `reports/` — the agent's reports on cognitively heavy work
+
+When the agent has done cognitively dense work — analysis, synthesis, reconnaissance, an audit, a
+field run — the distilled write-up lands here: for the agent's own future sessions, for other
+agents working on the project, and for informing the owner about milestones. One `NN_<name>.md`
+per report; evidence-first (numbers reproduced by commands, verbatim logs), terse.
+
+**Subdirectories** (each is created together with its first report — empty directories don't live
+in git):
+
+- **`KAIF_UPDATES/`** — field reports on KAIF lifecycle runs. Every framework **update** and the
+  initial **install** MUST finish with a short report here — terse, bullet-style, **strictly in
+  English** (they address the KAIF developer, whatever the project's working language).
+  Origin-tracked deployments also send them upstream; detached ones keep them local only.
+- **`KAIF_AUDIT/`** — comprehensive audit reports by strong models (agentic codebase review),
+  grouped one document per finding class/family, with rich accompanying meta (links, dates,
+  document names) so that weaker models can later execute the fixes.
+
+**For the human (owner):** browse here for milestone write-ups and field evidence; reports are
+records, not opinions — every claim carries a command or a quote behind it.
+
+**For the AI agent:** write a report after any cognitively heavy work whose conclusions should
+outlive the session. KAIF lifecycle reports (update/install) are mandatory and strictly English.
+Reports are records — never `DONE`-tagged, never rewritten (append corrections instead).
 ``````
 
 
@@ -3374,8 +3414,9 @@ well-structured explanation they can read and act on.
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
 
 3. **The directories — where knowledge lives, and where the owner acts.** `plans/`, `ideas/` (mostly
-   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
-   the DONE-tag convention in one line.
+   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you),
+   `reports/` (the agent's field and audit reports; KAIF update/install reports are mandatory there).
+   Mention the DONE-tag convention in one line.
 
 4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
    groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
@@ -4347,8 +4388,8 @@ intact and working — we only remove what KAIF added, surgically.
 ## Two modes
 
 - **Partial** — remove the framework **core/wrapper** but **keep the content artifacts**:
-  `bugs/`, `interviews/`, `ideas/`, `researches/`, `homeworks/`, and any other knowledge the work produced.
-  The agent's accumulated knowledge survives; only the KAIF machinery leaves.
+  `bugs/`, `interviews/`, `ideas/`, `researches/`, `homeworks/`, `reports/`, and any other knowledge the
+  work produced. The agent's accumulated knowledge survives; only the KAIF machinery leaves.
 - **Full** — remove the core/wrapper **and** the content artifacts. KAIF is burned out of the project's
   history as if it had never been there — leaving only the user's project.
 
@@ -4376,7 +4417,7 @@ intact and working — we only remove what KAIF added, surgically.
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
-     `researches/`, `homeworks/`, `plans/`, etc.
+     `researches/`, `homeworks/`, `plans/`, `reports/`, etc.
    - **NEVER touched:** the user's own project files and directories.
 
 3. **Un-wire the npm handles.** Remove the `kaif:*` scripts that KAIF added to the project's

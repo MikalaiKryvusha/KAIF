@@ -89,7 +89,8 @@ Thirteen key documents ship with a deployment (twelve project documents plus thi
 | `KAIF_REFERENCE.md` (this document, at `.kaif/`) | The complete framework reference. | Deployed verbatim. |
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
-`interviews/` `homeworks/`. Closed items take the `DONE` tag in the filename (§13.1).
+`interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
+research notes and reports are living records and are never tagged.
 
 ## 6. The skill system
 

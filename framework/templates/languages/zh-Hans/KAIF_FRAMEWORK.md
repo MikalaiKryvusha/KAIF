@@ -33,7 +33,7 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 | `GOAL.md` / `MASTER_PLAN.md` | 愿景，以及通向愿景的分阶段路径。 |
 | `STATUS.md` | 活的状态 —— 每个重要任务后更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部与内部地图。 |
-| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/` | 知识目录（各有自己的 README）。 |
+| `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | 知识目录（各有自己的 README）。 |
 | `.claude/skills/`（或您代理系统的等价物） | 可重复的例行程序（`/resume`、`/pause`、循环等）。 |
 | `.kaif/kaif.json` | 部署标记：版本、领域、代理、跟踪。 |
 

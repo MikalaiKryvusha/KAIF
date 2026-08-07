@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 650,
+  "moduleCount": 651,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -903,7 +903,7 @@
       {
         "signature": "## How it works here — the moving parts",
         "class": "owner",
-        "sha256": "e91ce697f1ae55c230d9581f7aa0abfaae3888ce349f93792f1c82534cd5f191",
+        "sha256": "c0ff3b990e9bb03e7206e669908ce6fccdc39f00b3f136ef9adf30b3b05b40fa",
         "lines": [
           29,
           42
@@ -986,10 +986,10 @@
       {
         "signature": "## 5. The document system",
         "class": "static",
-        "sha256": "0fa94ca1c00285a8cd92d8a1a1d6aeec846a4d1fc1a74d18c788c35199c660bf",
+        "sha256": "2da76e46a61d8ac3a351e9dd75d3750845df0ae2036d32c4cd38f48087ad6dfe",
         "lines": [
           70,
-          92
+          93
         ]
       },
       {
@@ -997,8 +997,8 @@
         "class": "static",
         "sha256": "f5c090e452668d821e2ebde73d8b9412512cb1d6b9a4d8564264493c8ca000b5",
         "lines": [
-          93,
-          129
+          94,
+          130
         ]
       },
       {
@@ -1006,8 +1006,8 @@
         "class": "static",
         "sha256": "44b78cbd335e6c360797eb999463e3350c5cdeddfd24863d99ef2dc43e2e2494",
         "lines": [
-          130,
-          131
+          131,
+          132
         ]
       },
       {
@@ -1015,8 +1015,8 @@
         "class": "static",
         "sha256": "ab9545bf0b5c0084d28525d3c6b340269d9b11588e49c3b7adf201745648df3f",
         "lines": [
-          132,
-          137
+          133,
+          138
         ]
       },
       {
@@ -1024,8 +1024,8 @@
         "class": "static",
         "sha256": "ebe32fb6402ac60489fff458509c9f5d946ecc2d93ca970c2364671f955bc209",
         "lines": [
-          138,
-          146
+          139,
+          147
         ]
       },
       {
@@ -1033,8 +1033,8 @@
         "class": "static",
         "sha256": "ecf66ec956e4700a97c14e67fd661d3f3ad3ba6c994439e1a0d75395f3fdcd1c",
         "lines": [
-          147,
-          153
+          148,
+          154
         ]
       },
       {
@@ -1042,8 +1042,8 @@
         "class": "static",
         "sha256": "73291b9dd7dbc051ce448b519c64012fb2260359c8f4e4773030cba1a9e56aa5",
         "lines": [
-          154,
-          161
+          155,
+          162
         ]
       },
       {
@@ -1051,8 +1051,8 @@
         "class": "static",
         "sha256": "66d071013b370b4635401b41a9effc13a92bb0aef9b1de176b6709750423d850",
         "lines": [
-          162,
-          168
+          163,
+          169
         ]
       },
       {
@@ -1060,8 +1060,8 @@
         "class": "static",
         "sha256": "b27c64dc7d55013ee51ededaff11f50a814c42219a4415a3b1e7e38de8d97962",
         "lines": [
-          169,
-          170
+          170,
+          171
         ]
       },
       {
@@ -1069,8 +1069,8 @@
         "class": "static",
         "sha256": "44109a5c776d9b1bd49517062c2f7f78cd76aa440299ff56adbde404a088579a",
         "lines": [
-          171,
-          175
+          172,
+          176
         ]
       },
       {
@@ -1078,8 +1078,8 @@
         "class": "static",
         "sha256": "c89c0ead0e4f030941764b62dc471914fb38f53bb616422a03d2f5741f6c3436",
         "lines": [
-          176,
-          182
+          177,
+          183
         ]
       },
       {
@@ -1087,8 +1087,8 @@
         "class": "static",
         "sha256": "c83fa0768eacc805178e0bd10afb9179fe36439b3e7ba732abdd8efd47f051e6",
         "lines": [
-          183,
-          184
+          184,
+          185
         ]
       },
       {
@@ -1096,8 +1096,8 @@
         "class": "static",
         "sha256": "8b8bdc6ce3bd10afd5939f6cf7a96f975df27aa5aa86b174dc25c6524af00cf4",
         "lines": [
-          185,
-          194
+          186,
+          195
         ]
       },
       {
@@ -1105,8 +1105,8 @@
         "class": "static",
         "sha256": "2a5b3fbc6beb91b8bb48060abd0c684d7d8527684b7b35d42444090bcb6b1fc6",
         "lines": [
-          195,
-          199
+          196,
+          200
         ]
       },
       {
@@ -1114,8 +1114,8 @@
         "class": "static",
         "sha256": "bfe93071404fa914402b99a75cbd57a40103105b9f6b7366687ba17b3c9ed982",
         "lines": [
-          200,
-          201
+          201,
+          202
         ]
       },
       {
@@ -1123,8 +1123,8 @@
         "class": "static",
         "sha256": "ce13da81c52896d6c4d79b5b9e5232ab26b99fb00950331f6c58a46c22dcdcb0",
         "lines": [
-          202,
-          208
+          203,
+          209
         ]
       },
       {
@@ -1132,8 +1132,8 @@
         "class": "static",
         "sha256": "01a2dc7f739d60f90010087a93f4066f02c74fe0497a1c61137cf301d029a693",
         "lines": [
-          209,
-          216
+          210,
+          217
         ]
       },
       {
@@ -1141,8 +1141,8 @@
         "class": "static",
         "sha256": "02da22d42e9e9237b83fe7f8f3eb67f593b796169b6c9eeb6c584726b785e9e3",
         "lines": [
-          217,
-          223
+          218,
+          224
         ]
       },
       {
@@ -1150,8 +1150,8 @@
         "class": "static",
         "sha256": "482e52c71eb2d7abdba4a8f948ec7b59f6e88fff6a2c3e959ac0ad363803f6e2",
         "lines": [
-          224,
-          231
+          225,
+          232
         ]
       },
       {
@@ -1159,8 +1159,8 @@
         "class": "static",
         "sha256": "325171663ed7b5bf8ff971a88ccfc1c5ba7dd2a661617ad11fd18eac6336e6cd",
         "lines": [
-          232,
-          237
+          233,
+          238
         ]
       },
       {
@@ -1168,8 +1168,8 @@
         "class": "static",
         "sha256": "16e95c45a56a09a36130c416cf0b23f294d04d01d2dd4a80cff97e42d2868d11",
         "lines": [
-          238,
-          243
+          239,
+          244
         ]
       },
       {
@@ -1177,8 +1177,8 @@
         "class": "static",
         "sha256": "dd02da2e0780b229625c6eb0e4dcd8a6864a4dadeca317c286b68fa5ecc2dfb4",
         "lines": [
-          244,
-          251
+          245,
+          252
         ]
       },
       {
@@ -1186,8 +1186,8 @@
         "class": "static",
         "sha256": "104d97b9dd44c46088d6bfd4fa8b5c59327fd50831c711a2492d083d5f75c648",
         "lines": [
-          252,
-          259
+          253,
+          260
         ]
       },
       {
@@ -1195,8 +1195,8 @@
         "class": "static",
         "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
         "lines": [
-          260,
-          261
+          261,
+          262
         ]
       },
       {
@@ -1204,8 +1204,8 @@
         "class": "static",
         "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
         "lines": [
-          262,
-          267
+          263,
+          268
         ]
       },
       {
@@ -1213,8 +1213,8 @@
         "class": "static",
         "sha256": "2ac0a888bff20e43e4cc1ab04c648898e525ad70ad501b0a85d1ad8da1d799bf",
         "lines": [
-          268,
-          274
+          269,
+          275
         ]
       },
       {
@@ -1222,8 +1222,8 @@
         "class": "static",
         "sha256": "dcc15859ba7b566f94d75aee2cfb8101a78c5244ef0fc5a85088882cfaebbc5d",
         "lines": [
-          275,
-          282
+          276,
+          283
         ]
       },
       {
@@ -1231,8 +1231,8 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          283,
-          284
+          284,
+          285
         ]
       },
       {
@@ -1240,8 +1240,8 @@
         "class": "static",
         "sha256": "197191373a9da4adf45b9a1c94de6fb2c3e51a15f4ba3358ba340a098d22809d",
         "lines": [
-          285,
-          303
+          286,
+          304
         ]
       },
       {
@@ -1249,8 +1249,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          304,
-          312
+          305,
+          313
         ]
       },
       {
@@ -1258,8 +1258,8 @@
         "class": "static",
         "sha256": "bbbe655e8707eb05712b6dead34ce3a290bc637b696deec73cba7993565c415c",
         "lines": [
-          313,
-          319
+          314,
+          320
         ]
       },
       {
@@ -1267,8 +1267,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          320,
-          336
+          321,
+          337
         ]
       },
       {
@@ -1276,8 +1276,8 @@
         "class": "static",
         "sha256": "ecb5fb8267eeb1028bf29445ca3e73da5d4b0e5e71c420e3867eaeb8bd20e145",
         "lines": [
-          337,
-          345
+          338,
+          346
         ]
       },
       {
@@ -1285,8 +1285,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          346,
-          358
+          347,
+          359
         ]
       },
       {
@@ -1294,8 +1294,8 @@
         "class": "static",
         "sha256": "4103c1056f19615aca4ef3775c81c18cb156d543c9620dff4a73830e2e180bba",
         "lines": [
-          359,
-          365
+          360,
+          366
         ]
       }
     ],
@@ -1325,10 +1325,10 @@
       {
         "signature": "# `bugs/` — defects, difficulties, breakages",
         "class": "static",
-        "sha256": "5ab5b77d45c5e1c4afb74d700aef59572d91fa38b333c1acfc1eda1398d9f90d",
+        "sha256": "c6907000d00b2278cb99cc838c5e00cc131986456b70db561b0697301565f15e",
         "lines": [
           1,
-          14
+          21
         ]
       }
     ],
@@ -1362,6 +1362,17 @@
         "lines": [
           1,
           23
+        ]
+      }
+    ],
+    "reports/README.md": [
+      {
+        "signature": "# `reports/` — the agent's reports on cognitively heavy work",
+        "class": "static",
+        "sha256": "89bae4667300cc2f6baa2d9d5e4187d8438f3c1c53431ef752e02575f02d2229",
+        "lines": [
+          1,
+          25
         ]
       }
     ],
@@ -2555,10 +2566,10 @@
       {
         "signature": "## What to output (structure the chat message like this)",
         "class": "static",
-        "sha256": "76c954da6b1d7f3dcf8e7f20806a11bb28ac132f1d849a059696f49a125b164f",
+        "sha256": "181a2693d5e853cdcff2224076cb2f1556b8022263abddb2f0f68503904a5413",
         "lines": [
           27,
-          61
+          62
         ]
       },
       {
@@ -2566,8 +2577,8 @@
         "class": "static",
         "sha256": "b85ebca417676ded2beffe20e5868f96bcb2b39e4e64cf44d4208e552cfc3f71",
         "lines": [
-          62,
-          68
+          63,
+          69
         ]
       }
     ],
@@ -2723,7 +2734,7 @@
       {
         "signature": "## Two modes",
         "class": "static",
-        "sha256": "12788ee280250346acd9d0552017b985c1b68ca084808d29b6cc8f623792bb1f",
+        "sha256": "34ab4b7aaa23f8f120e3d35b629989e94a3963f6bee4ddbf68a5dd4be4d07128",
         "lines": [
           15,
           22
@@ -2732,7 +2743,7 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "4e054a9ef5c92105ef69de6e098ef39c80873e0233140cfae22e9cf669093552",
+        "sha256": "d15262a6ce88a9f0ad9f831a39fa2647a201904f88ac96a7a7a487e606a94ab3",
         "lines": [
           23,
           59
@@ -4445,10 +4456,10 @@
       {
         "signature": "# `bugs/` — العيوب والصعوبات والأعطال",
         "class": "static",
-        "sha256": "00c7c94e1eac21a9bb38aab7cd8b5218503cde8f63d67ff1ccec749acf25af5f",
+        "sha256": "ed0bbdce36c84c884ebac799c4e5e48f7310e15506a031d488ccd63201978462",
         "lines": [
           1,
-          14
+          21
         ]
       }
     ],
@@ -4572,7 +4583,7 @@
       {
         "signature": "## كيف يعمل هنا — الأجزاء المتحركة",
         "class": "owner",
-        "sha256": "96041bf81611ddb0f16aa8c1e3a219f48f4c76f7374f108999335963c9b0f208",
+        "sha256": "6b0891a3fb14e5eea8fc8d25af2c2c281120c7f903261258186690af20af573c",
         "lines": [
           27,
           40
@@ -4632,10 +4643,10 @@
       {
         "signature": "# `bugs/` — Defekte, Schwierigkeiten, Brüche",
         "class": "static",
-        "sha256": "96fecc8826fbf1eb93d2ffc4dce1859df33842be884ee18cbce1209fee34685a",
+        "sha256": "3916bea790491108e8f5b98fb60f41b91aedf970d00250f331faf6890e9db950",
         "lines": [
           1,
-          16
+          24
         ]
       }
     ],
@@ -4759,7 +4770,7 @@
       {
         "signature": "## Wie es hier funktioniert — die beweglichen Teile",
         "class": "owner",
-        "sha256": "d5b46686eb7b831843c86acc2155136cd09f567f8ad7333a400b43c23ca0562b",
+        "sha256": "a47db54fc0c553a70dd50aff824c0bae2c1e74789aca788701ecd34e81bcfd38",
         "lines": [
           31,
           44
@@ -4819,10 +4830,10 @@
       {
         "signature": "# `bugs/` — defectos, dificultades, roturas",
         "class": "static",
-        "sha256": "40b1683e45001c7ce8913a5cefca3b8c20cf634f5c4da6d43e5f7e1f20695c13",
+        "sha256": "e80afed6ea1e1945adace7bdaa968647616ec9b9eda541fdd9d349503049acd5",
         "lines": [
           1,
-          16
+          24
         ]
       }
     ],
@@ -4946,7 +4957,7 @@
       {
         "signature": "## Cómo funciona aquí — las piezas móviles",
         "class": "owner",
-        "sha256": "c574ed2fa86ea975e0640d77f1e464ec845e26da1e9651199f4d0f658ea491bd",
+        "sha256": "255cbc68fc7406a75e11342c948414caec65e3f5942eaab6d75e63c63c77b60d",
         "lines": [
           31,
           44
@@ -5006,10 +5017,10 @@
       {
         "signature": "# `bugs/` — défauts, difficultés, casses",
         "class": "static",
-        "sha256": "b59157a99636d85ab6405bceb323acd4a5b57e237295326c2851914dd740f95c",
+        "sha256": "8cdccec961aa67b3ed9b02702f907c8f974ab940395e0b2a7b6b2ce2ed6ad9b2",
         "lines": [
           1,
-          16
+          24
         ]
       }
     ],
@@ -5133,7 +5144,7 @@
       {
         "signature": "## Comment ça marche ici — les pièces mobiles",
         "class": "owner",
-        "sha256": "2d07aeaf997066ddb954b3d8d48f70014156285b4e42edeaa490233ed38e4184",
+        "sha256": "e5dc1f1b7162e751f06e67e970ca02a4468f6bb07997bc37c8d3ce48a6778e18",
         "lines": [
           31,
           44
@@ -5193,10 +5204,10 @@
       {
         "signature": "# `bugs/` — दोष, कठिनाइयाँ, टूट-फूट",
         "class": "static",
-        "sha256": "7e17b3a099b975f00d18c9822174c5c97c2e146c21d9248507b353c94fd51b4b",
+        "sha256": "b7ef2a1e4f9e72575c48cef494902690ea6f80189801296af41920bd3cdc8a8c",
         "lines": [
           1,
-          14
+          21
         ]
       }
     ],
@@ -5320,7 +5331,7 @@
       {
         "signature": "## यह यहाँ कैसे काम करता है — चलायमान हिस्से",
         "class": "owner",
-        "sha256": "94666bc1c20dfef267ce4ae61c72c724f1cdf0e41097097aab70820fd025ac94",
+        "sha256": "90bf51ff8353e718c51126b61e5e15472bf3f6bb4d36a9cb39e293e198f64da7",
         "lines": [
           29,
           42
@@ -5380,10 +5391,10 @@
       {
         "signature": "# `bugs/` — 欠陥、困難、破損",
         "class": "static",
-        "sha256": "3f3b400a66b631950726673278027e7d29fe27064752a41aa8406872337fe926",
+        "sha256": "bac14bc3fee3f15ae16059cae7bf32c2f38611144de39229362e974a73341856",
         "lines": [
           1,
-          15
+          21
         ]
       }
     ],
@@ -5507,7 +5518,7 @@
       {
         "signature": "## ここでの仕組み — 構成要素",
         "class": "owner",
-        "sha256": "cf0dbb01f531631be66ad3b3eb21dc4ece27a8c505f25edca22167dafac41010",
+        "sha256": "93a4384483d0c9efc586b632e378e10226bb266d267813c82b9bb345389b7241",
         "lines": [
           30,
           43
@@ -5567,10 +5578,10 @@
       {
         "signature": "# `bugs/` — defeitos, dificuldades, quebras",
         "class": "static",
-        "sha256": "301970a2513e7b96410116083a365937750e5ad32a1bbc053461b91a75578348",
+        "sha256": "af457d10504b9678f70a4f1cb6ff7dc3cecf0116293d97e925ac93e7d4ae5acb",
         "lines": [
           1,
-          16
+          24
         ]
       }
     ],
@@ -5694,7 +5705,7 @@
       {
         "signature": "## Como funciona aqui — as peças móveis",
         "class": "owner",
-        "sha256": "f8e16b5a6a2623ca771baedf3255a4b9ec33461fa04bec4cce4ea1fa7fb63eae",
+        "sha256": "511338e173ca1b04320c3c54d325087adeae1556bb0dd458f74263f25518e523",
         "lines": [
           30,
           43
@@ -5754,10 +5765,10 @@
       {
         "signature": "# `bugs/` — дефекты, трудности, поломки",
         "class": "static",
-        "sha256": "6699f0359ec7f91de5a6c29ea3d18711d31da099487d82fbdc41a8404eaaf72c",
+        "sha256": "26dbf76c843923874476ff7e6443f7ad6c9053d3e368e2a9a2ae82257fc1416a",
         "lines": [
           1,
-          14
+          22
         ]
       }
     ],
@@ -5881,7 +5892,7 @@
       {
         "signature": "## Как это работает здесь — движущиеся части",
         "class": "owner",
-        "sha256": "3b7be56b994eb670811a0cac6d89855bbbee4e2e87f080603d42f66d68a91f08",
+        "sha256": "57622cd1a941cda1bbf994937cb3957c2e0695187e37db0928b98411e8dd5b92",
         "lines": [
           30,
           43
@@ -5941,10 +5952,10 @@
       {
         "signature": "# `bugs/` —— 缺陷、困难、故障",
         "class": "static",
-        "sha256": "92c77d1508622aaafbfd0101a0b642bbfe6d297267892b36f51b0a3f4c627b56",
+        "sha256": "6046403e70b8490101c56d3adba6e53010750b7eb6d8c41ca057627ee07d386b",
         "lines": [
           1,
-          13
+          18
         ]
       }
     ],
@@ -6068,7 +6079,7 @@
       {
         "signature": "## 在这里如何运作 —— 各个组成部分",
         "class": "owner",
-        "sha256": "2c95df8adb4a1d49136b5a85f2cdd75c1d515fcf7a132e9927e5f20b89146e47",
+        "sha256": "f854badb7cf23cc2740f3f4a26e59ad9c8ea55d8370d341cc7f4763bf80de991",
         "lines": [
           26,
           39

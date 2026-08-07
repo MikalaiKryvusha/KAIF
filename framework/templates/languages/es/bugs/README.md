@@ -13,3 +13,11 @@ según el canon (habilidad: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) �
 Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
 `git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha)`. Tras 3 intentos ciegos
 fallidos de corrección, pare y pase a investigación (`/bug-research`).
+
+**El subdirectorio `bugs/KAIF/`** — defectos y solicitudes de mejora sobre el **propio
+framework KAIF**, no sobre este proyecto. Cuando un fallo se remonta a un hueco de KAIF (una
+regla que confundió, un guardarraíl ausente, maquinaria rota), archívalo allí por el mismo canon
+de bugs — **estrictamente en inglés** (estos documentos se dirigen al desarrollador de KAIF).
+Deduplica antes de crear: busca primero en `bugs/KAIF/`; los despliegues ligados al origin
+buscan también en el issue tracker del origin y envían las señales confirmadas río arriba; los
+desligados lo mantienen todo local.

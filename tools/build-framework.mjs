@@ -105,6 +105,7 @@ const DOC_TARGETS = {
   'framework/readmes/researches.md':   ['researches/README.md',   'create the directory and drop this README'],
   'framework/readmes/interviews.md':   ['interviews/README.md',   'create the directory and drop this README'],
   'framework/readmes/homeworks.md':    ['homeworks/README.md',    'create the directory and drop this README'],
+  'framework/readmes/reports.md':      ['reports/README.md',      'create the directory and drop this README'],
 };
 
 // Embed all skills in a sensible, documented order.

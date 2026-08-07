@@ -11,7 +11,7 @@
 > фреймворком* (он применяет себя к себе, dogfooding). Поэтому здесь два слоя, и путать их нельзя:
 >
 > 1. **Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:
->    - `framework/` — канонические универсальные шаблоны (тринадцать ключевых документов вкл. летопись `PROJECT_HISTORY.md` и пояснительную записку `KAIF_REFERENCE.md`, шесть README директорий, тридцать один навык, опциональные модули и скрипт-распаковщик).
+>    - `framework/` — канонические универсальные шаблоны (тринадцать ключевых документов вкл. летопись `PROJECT_HISTORY.md` и пояснительную записку `KAIF_REFERENCE.md`, семь README директорий, тридцать четыре навыка, опциональные модули и скрипт-распаковщик).
 >    - `KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
 >      `tools/build-framework.mjs`. Это единственный источник истины для развёртывания.
 > 2. **Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):
@@ -196,7 +196,7 @@ KAIF/
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md ← internal map (abstractions & interactions)
 │
 │  ── KNOWLEDGE DIRECTORIES (each has its own README.md) ──
-├── plans/  ideas/  bugs/  researches/  interviews/  homeworks/
+├── plans/  ideas/  bugs/  researches/  interviews/  homeworks/  reports/
 ├── .claude/skills/                  ← this project's own skill instance (placeholders filled)
 ├── .kaif/kaif.json  CLAUDE.md       ← deploy marker · auto-loaded context → AGENT_GUIDE.md
 │
@@ -231,7 +231,7 @@ KAIF/
   запрошенный язык (отдельных переводов ядра не держим). Русская половина README — для читателей-людей.
 - **Локальная обвязка для dogfooding** (этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`,
   `BUG_FIXING_FRAMEWORK.md`, `GOAL.md`, `MASTER_PLAN.md`, карты, `KAIF_FRAMEWORK.md`, `CLAUDE.md`,
-  `.claude/skills/`, `plans/`, `ideas/`, `bugs/`, `researches/`, `interviews/`, `homeworks/`) ведётся на
+  `.claude/skills/`, `plans/`, `ideas/`, `bugs/`, `researches/`, `interviews/`, `homeworks/`, `reports/`) ведётся на
   **русском** — рабочем языке владельца. Корневые универсальные файлы —
   русские переводы шаблонов из `framework/` (с заполненными плейсхолдерами). Держи их *содержание*
   синхронным с английской полезной нагрузкой, даже если язык у них разный.
@@ -257,7 +257,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 13 ключевых документов +
-6 README + 34 навыка + 1 распаковщик = 54; бандл 147 блоков; карта — 650 модулей) — не переписывай эти
+7 README + 34 навыка + 1 распаковщик = 55; бандл 148 блоков; карта — 651 модуль) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.
@@ -350,7 +350,7 @@ consumer. Слабая сессия обновляет ту сторону, ко
 |---|---|---|
 | `framework/skills/fable-method,fable-judge` (вендорено, EN) | `.claude/skills/…` (побайтовые копии) | `diff framework/skills/fable-method/SKILL.md .claude/skills/fable-method/SKILL.md && diff framework/skills/fable-judge/SKILL.md .claude/skills/fable-judge/SKILL.md` |
 | `framework/*` (источник) | корневые генерированные копии + `dist/*` | `node tools/build-framework.mjs && git diff --stat` (дифф генератов после пересборки = дрейф) |
-| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 54; бандл 147 блоков; карта — 650 модулей' AGENT_GUIDE.md` |
+| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 55; бандл 148 блоков; карта — 651 модуль' AGENT_GUIDE.md` |
 | Состав навыков `framework/skills/` | таблицы README (EN+RU половины) | `test $(ls framework/skills | wc -l) -eq 34 && test $(grep -c '^| [*.]*./' README.md) -eq 68` |
 | Счётчик ритуалов в SVG (генератор) | alt-тексты README | `grep -o '34 repeatable' assets/layers-en-light.svg && grep -c '34 повторяемых ритуала\|34 repeatable rituals' README.md` |
 | Состав навыков `framework/skills/` | ключи 9 языковых пакетов | `node -e "const{readdirSync,readFileSync}=require('fs');const n=readdirSync('framework/skills').length;for(const l of readdirSync('framework/templates/languages')){const k=Object.keys(JSON.parse(readFileSync('framework/templates/languages/'+l+'/skill-triggers.json','utf8'))).length;if(k!==n){console.error(l,k,'!=',n);process.exit(1)}}console.log('ok',n)"` |

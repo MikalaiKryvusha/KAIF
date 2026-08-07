@@ -112,6 +112,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── researches/    # knowledge base for the big, hard questions
 ├── interviews/    # A/B/C/D questions for the owner on owner-level decisions
 ├── homeworks/     # tasks from the agent to the human (things only a human can do)
+├── reports/       # the agent's reports on cognitively heavy work (incl. KAIF field reports)
 │
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
@@ -172,7 +173,7 @@ experience survives context resets. It is a **living reference — never DONE-ta
 
 ## 5. The knowledge directories
 
-Six directories accumulate the project's knowledge. **Each gets a short `README.md`** (embedded below)
+Seven directories accumulate the project's knowledge. **Each gets a short `README.md`** (embedded below)
 stating its purpose and the conventions for both the owner and the agent. Create the directory and drop its
 README during unpacking.
 
@@ -182,6 +183,7 @@ README during unpacking.
 - **`researches/`** — durable research notes for large, hard questions. Living references — not DONE-tagged.
 - **`interviews/`** — `interview_NNN_<topic>.md`: owner-level decisions, A/B/C/D with a recommendation first.
 - **`homeworks/`** — `NN_<name>.md`: tasks the agent hands to the human (physical/offline/account-only work).
+- **`reports/`** — the agent's reports on cognitively heavy work; `KAIF_UPDATES/` (mandatory update/install field reports, strictly EN) and `KAIF_AUDIT/` (strong-model audit reports) live inside. Records — not DONE-tagged.
 
 {{EMBED:framework/readmes/plans.md}}
 
@@ -194,6 +196,8 @@ README during unpacking.
 {{EMBED:framework/readmes/interviews.md}}
 
 {{EMBED:framework/readmes/homeworks.md}}
+
+{{EMBED:framework/readmes/reports.md}}
 
 ---
 

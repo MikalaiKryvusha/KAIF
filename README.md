@@ -169,7 +169,7 @@ Table 1 — Key documents of a deployment
 
 ### 3.3. The knowledge directories
 
-Six knowledge directories are deployed, each with its own localized README. Their purposes are
+Seven knowledge directories are deployed, each with its own README. Their purposes are
 given in Table 2. Closed items in `bugs/`, `ideas/`, `plans/`, and `homeworks/` receive the `DONE`
 tag in the filename; the living references are never tagged.
 
@@ -183,6 +183,7 @@ Table 2 — Knowledge directories
 | `researches/` | Recon documents and answers to the big hard questions |
 | `interviews/` | Owner-level decisions; the owner answers right in the document |
 | `homeworks/` | Tasks only a human with a body can do, including taste-class artifacts |
+| `reports/` | The agent's reports on cognitively heavy work; mandatory KAIF update/install field reports (`KAIF_UPDATES/`) and strong-model audit reports (`KAIF_AUDIT/`) |
 
 ### 3.4. The machinery
 
@@ -416,7 +417,7 @@ tools/                                build-framework.mjs · check-framework.mjs
                                       · module-map-lib.mjs · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs
 AGENT_GUIDE.md · STATUS.md · …        the dogfooding wrapper: the framework applied to itself
 plans/ ideas/ bugs/ researches/       the wrapper's knowledge directories
-interviews/ homeworks/                (each with its own README)
+interviews/ homeworks/ reports/       (each with its own README)
 ```
 
 ### 8.3. This repository is fractal
@@ -622,7 +623,7 @@ project. Thank you, and pleasant work!
 ### 3.3. Директории знаний
 
 Разворачиваются шесть директорий знаний, каждая со своим локализованным README. Их назначение
-приведено в Таблице 2. Закрытые единицы в `bugs/`, `ideas/`, `plans/` и `homeworks/` получают тег
+приведено в Таблице 2 (директорий — семь). Закрытые единицы в `bugs/`, `ideas/`, `plans/` и `homeworks/` получают тег
 `DONE` в имени файла; живые справочники тегом не помечаются.
 
 Таблица 2 — Директории знаний
@@ -635,6 +636,7 @@ project. Thank you, and pleasant work!
 | `researches/` | Разведдоки и ответы на большие трудные вопросы |
 | `interviews/` | Решения уровня владельца; владелец отвечает прямо в документе |
 | `homeworks/` | Задачи, которые может выполнить только человек с телом, включая артефакты класса «вкус» |
+| `reports/` | Отчёты агента о когнитивно ёмкой работе; обязательные полевые отчёты об обновлении/установке KAIF (`KAIF_UPDATES/`) и аудит-отчёты сильных моделей (`KAIF_AUDIT/`) |
 
 ### 3.4. Механика
 
@@ -872,7 +874,7 @@ tools/                                build-framework.mjs · check-framework.mjs
                                       · module-map-lib.mjs · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs
 AGENT_GUIDE.md · STATUS.md · …        обвязка для dogfooding: фреймворк, применённый к самому себе
 plans/ ideas/ bugs/ researches/       директории знаний обвязки
-interviews/ homeworks/                (в каждой свой README)
+interviews/ homeworks/ reports/       (в каждой свой README)
 ```
 
 ### 8.3. Этот репозиторий фрактален

@@ -37,8 +37,9 @@ well-structured explanation they can read and act on.
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
 
 3. **The directories — where knowledge lives, and where the owner acts.** `plans/`, `ideas/` (mostly
-   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you). Mention
-   the DONE-tag convention in one line.
+   yours), `bugs/`, `researches/`, `interviews/` (you answer here), `homeworks/` (tasks for you),
+   `reports/` (the agent's field and audit reports; KAIF update/install reports are mandatory there).
+   Mention the DONE-tag convention in one line.
 
 4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
    groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —

@@ -13,3 +13,11 @@ Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kle
 `DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
 `## ✅ STATUS: DONE (Datum)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
 zur Recherche (`/bug-research`).
+
+**Das Unterverzeichnis `bugs/KAIF/`** — Defekte und Verbesserungsanträge zum
+**KAIF-Framework selbst**, nicht zu diesem Projekt. Wenn ein Fehlschlag auf eine Lücke in KAIF
+zurückgeht (eine irreführende Regel, ein fehlendes Guardrail, kaputte Maschinerie), lege das
+Dokument dort nach demselben Bug-Kanon an — **strikt auf Englisch** (diese Dokumente richten
+sich an den KAIF-Entwickler). Vor dem Anlegen deduplizieren: zuerst `bugs/KAIF/` durchsuchen;
+origin-gebundene Deployments durchsuchen zusätzlich den Issue-Tracker des Origin und senden
+bestätigte Signale upstream, losgelöste halten alles lokal.
