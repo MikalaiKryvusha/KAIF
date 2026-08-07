@@ -1,0 +1,20 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_010_scope_after_epic_o.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-08-07T19:05:31.187Z",
+  "atHuman": "7 августа 2026, 22:05 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "C",
+      "text": "",
+      "comment": "и ещё Grok Build нужно добавить в набор наших систем. И посмотреть, есть ли у Meta своя ИИ агентская система и у Google есть ли своя агентская система, и есть ли у них эти механизмы. Если есть - делаем и под них. Делаем, если поддерживают."
+    },
+    "Q2": {
+      "choice": "B",
+      "text": "",
+      "comment": ""
+    }
+  }
+}
