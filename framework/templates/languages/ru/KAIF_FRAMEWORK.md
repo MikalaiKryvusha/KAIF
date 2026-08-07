@@ -33,7 +33,7 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 |-------|---------------------|
 | `AGENT_GUIDE.md` | Канон, который агент читает перед каждой задачей. |
 | `PHILOSOPHY.md` | Как агент мыслит (KISS + Оккам + расширенный набор принципов). |
-| `BUG_FIXING_FRAMEWORK.md` | Как агент отлаживает. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Требования формируют требуемое, тестирование сверяет сделанное с ним, починка багов закрывает разрыв. |
 | `GOAL.md` / `MASTER_PLAN.md` | Видение и поэтапный путь к нему. |
 | `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |

@@ -146,7 +146,7 @@ below; the numbers inside it are printed by the build.
 
 ### 3.2. The key documents
 
-Thirteen key documents are deployed to the project root. Their purposes and maintainers are given
+Fourteen key documents are deployed to the project root. Their purposes and maintainers are given
 in Table 1.
 
 Table 1 — Key documents of a deployment
@@ -157,6 +157,7 @@ Table 1 — Key documents of a deployment
 | `PHILOSOPHY.md` | How the agent thinks: KISS + Occam + the principle set | Universal — deployed verbatim |
 | `BUG_FIXING_FRAMEWORK.md` | How the agent debugs: intent gate, fix→build→test, twin check | Universal — deployed verbatim |
 | `TESTING_FRAMEWORK.md` | How the agent tests everything it creates: 7 principles + the `[NOT-TESTED]`/`[TESTED]` contract | Universal — deployed verbatim |
+| `REQUIREMENTS_FRAMEWORK.md` | How the agent writes and checks requirements: goal vector + acceptance criteria first, ten quality criteria, the stop-word dictionary | Universal — deployed verbatim |
 | `GOAL.md` | The vision: what the owner wants in the end | **The owner** — the one document that is theirs to fill |
 | `STATUS.md` | The living summary of now (~200-line soft target) | Agent, after every significant task |
 | `PROJECT_HISTORY.md` | The append-only chronicle of closed sessions, phases, releases | Agent moves entries at `/end-chat` |
@@ -404,7 +405,7 @@ framework/                            the canonical universal templates (the pay
   templates/languages/                9 language packs (owner-facing docs + skill trigger aliases; English is the source)
   tools/                              optional tool modules: provenance gate · canon linter
   readmes/                            the six directory READMEs
-  AGENT_GUIDE.md … KAIF_REFERENCE.md  the thirteen key-document templates
+  AGENT_GUIDE.md … KAIF_REFERENCE.md  the fourteen key-document templates
 dist/                                 generated distribution (never hand-edited)
   KAIF.md                             the thin entry point
   KAIF-CORE.mjs                       the installer machinery
@@ -435,13 +436,13 @@ artifacts are never hand-edited.
    canon and skill bodies are English by design.
 2. Native skills are generated for five agent systems; other harnesses (Cursor, Copilot,
    Windsurf) ride the universal `AGENTS.md` fallback without native skill files.
-3. The sandbox polygon (7 suites) verifies the deploy/update machinery; the methodology itself is
+3. The sandbox polygon (13 suites) verifies the deploy/update machinery; the methodology itself is
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
-5. Counters in this manual (13 documents + 6 READMEs + 34 skills + 1 unpacker = 54 embedded
-   files; 147 bundle blocks; 643 modules) are printed by `node tools/build-framework.mjs` and are
-   current as of v2.1.
+5. Counters in this manual (14 documents + 7 READMEs + 34 skills + 1 unpacker = 56 embedded
+   files; 150 bundle blocks; 662 modules) are printed by `node tools/build-framework.mjs` and are
+   current as of the 2.2 development line.
 
 ## License
 
@@ -599,7 +600,7 @@ project. Thank you, and pleasant work!
 
 ### 3.2. Ключевые документы
 
-В корень проекта разворачиваются тринадцать ключевых документов. Их назначение и ведущие приведены
+В корень проекта разворачиваются четырнадцать ключевых документов. Их назначение и ведущие приведены
 в Таблице 1.
 
 Таблица 1 — Ключевые документы развёртывания
@@ -610,6 +611,7 @@ project. Thank you, and pleasant work!
 | `PHILOSOPHY.md` | Как агент мыслит: KISS + Оккам + набор принципов | Универсален — разворачивается дословно |
 | `BUG_FIXING_FRAMEWORK.md` | Как агент отлаживает: гейт намерения, fix→build→test, поиск близнецов | Универсален — разворачивается дословно |
 | `TESTING_FRAMEWORK.md` | Как агент тестирует всё созданное: 7 принципов + контракт `[NOT-TESTED]`/`[TESTED]` | Универсален — разворачивается дословно |
+| `REQUIREMENTS_FRAMEWORK.md` | Как агент пишет и проверяет требования: вектор цели + критерии приёмки первыми, десять критериев качества, стоп-словарь | Универсален — разворачивается дословно |
 | `GOAL.md` | Видение: чего владелец хочет в итоге | **Владелец** — единственный документ, который заполняет он |
 | `STATUS.md` | Живая сводка текущего положения (мягкий ориентир ~200 строк) | Агент, после каждой значимой задачи |
 | `PROJECT_HISTORY.md` | Дописываемая летопись закрытых сессий, фаз, релизов | Агент переносит записи на `/end-chat` |
@@ -861,7 +863,7 @@ framework/                            канонические универса�
   templates/languages/                9 языковых пакетов (документы владельца + алиасы навыков; английский — исходник)
   tools/                              опциональные tool-модули: гейт провенанса · линтер канона
   readmes/                            шесть README директорий
-  AGENT_GUIDE.md … KAIF_REFERENCE.md  шаблоны тринадцати ключевых документов
+  AGENT_GUIDE.md … KAIF_REFERENCE.md  шаблоны четырнадцати ключевых документов
 dist/                                 генерируемая поставка (руками не правится)
   KAIF.md                             тонкая точка входа
   KAIF-CORE.mjs                       установочная машинерия
@@ -892,13 +894,13 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    тела навыков — английские by design.
 2. Родные навыки генерируются для пяти агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) едут на универсальном фолбэке `AGENTS.md` без родных файлов навыков.
-3. Песочный полигон (7 сводов) проверяет машинерию развёртывания и обновления; сама методология
+3. Песочный полигон (13 сводов) проверяет машинерию развёртывания и обновления; сама методология
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
-5. Счётчики настоящего руководства (13 документов + 6 README + 34 навыка + 1 распаковщик = 54
-   встроенных файла; 147 блоков бандла; 643 модуля) печатаются командой
-   `node tools/build-framework.mjs` и актуальны на v2.1.
+5. Счётчики настоящего руководства (14 документов + 7 README + 34 навыка + 1 распаковщик = 56
+   встроенных файлов; 150 блоков бандла; 662 модуля) печатаются командой
+   `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
 
 ## Лицензия
 

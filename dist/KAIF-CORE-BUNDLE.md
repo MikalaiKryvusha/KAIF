@@ -59,7 +59,8 @@
     ],
     "2.2": [
       "CLI safety (bug 33): a bare or flags-only `kaif-core.mjs` run prints help and touches NOTHING (the old default was `install` — it once overwrote a live update task in the field); unknown commands, flags and stray arguments now REFUSE instead of being silently ignored. Scripts relying on the old default must name `install` and its flags explicitly.",
-      "Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 \"SKIPPED\" instead of 0. CI that treats any non-zero exit as failure must handle 3 as \"not configured, nothing proven\"."
+      "Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 \"SKIPPED\" instead of 0. CI that treats any non-zero exit as failure must handle 3 as \"not configured, nothing proven\".",
+      "NEW key doc REQUIREMENTS_FRAMEWORK.md (the 14th) — the requirements canon: goal vector + acceptance criteria FIRST in every target document, the ten quality criteria (ISO/IEC/IEEE 29148 anchor), EARS patterns, fit criterion (Scale/Meter/Target), the stop-word dictionary. Universal, added mechanically; nothing to merge. Its executable form is the NEW optional tool module .kaif/tools/kaif-requirements-lint.mjs (check | selftest; advisory — a linter and a judge rubric, never a Definition-of-Ready turnstile; SKIPPED=3 when nothing to scan)."
     ]
   },
   "moduleClasses": {}
@@ -111,8 +112,9 @@ relies entirely on this document to get to work.
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
-    - BUG_FIXING_FRAMEWORK.md
+    - REQUIREMENTS_FRAMEWORK.md
     - TESTING_FRAMEWORK.md
+    - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -139,6 +141,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | **Required minimum (always)** | `STATUS.md` · `PHILOSOPHY.md` (the principle set) · this router · `EXPERIENCE.md` (grep by tag) |
 | Bug                | `BUG_FIXING_FRAMEWORK.md` · `bugs/<this>` · the map (blast radius)     |
 | Testing / verifying anything | `TESTING_FRAMEWORK.md` (the 7 principles · `[NOT-TESTED]`/`[TESTED]` markers) · the sphere's verification sections |
+| Writing requirements / acceptance criteria / a goal vector | `REQUIREMENTS_FRAMEWORK.md` (the ten criteria · stop-word dictionary · fit criterion) |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
@@ -845,7 +848,9 @@ statement contains a simple, supported path that makes all the clever machinery 
 # BUG_FIXING_FRAMEWORK — how the agent fixes defects
 
 > Defects arrive here from testing (`TESTING_FRAMEWORK.md`: nothing raw is trusted — `[NOT-TESTED]`
-> content gets verified, and what verification finds broken lands in `bugs/`).
+> content gets verified, and what verification finds broken lands in `bugs/`). Bugs are what is born
+> when testing's checks run against what `REQUIREMENTS_FRAMEWORK.md` demanded — this canon closes
+> that chain.
 
 To fix a bug, the agent must:
 
@@ -1111,6 +1116,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
+- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED before anything is made; this framework
+  verifies what was MADE against it. Principle 3 (early testing) is executed at the requirements
+  stage by that canon; bugs are what is born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
 - **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
   says WHAT must carry a status and how trust propagates. The triviality gate still applies: a trivial
   change verified by its one obvious check needs no ceremony beyond its normal comment.
@@ -1123,6 +1131,147 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 *Grounding: the seven principles are the ISTQB canon (istqb.org; ru: testbase.ru) — distilled here for an
 AI agent across all spheres.*
+``````
+
+> **FILE: `REQUIREMENTS_FRAMEWORK.md`** — project root — universal, write verbatim
+
+``````md
+# REQUIREMENTS_FRAMEWORK — how the agent writes and checks requirements
+
+A requirement written badly is a defect shipped before the first line of code: every plan, test, and
+review downstream inherits its ambiguity. When the agent writes requirements, acceptance criteria, or
+goal statements for itself or for the owner — in a plan, a bug fix's "done when", an idea, an epic —
+they are written by THIS canon. The one-line boundary with its sibling: **`TESTING_FRAMEWORK.md`
+verifies what was MADE; this framework shapes what is REQUIRED** — the earliest testing there is
+(testing principle 3: verify at the requirements stage, where defects are cheapest).
+**`BUG_FIXING_FRAMEWORK.md`** closes the chain: bugs are what is born when TESTING's checks run
+against what REQUIREMENTS demanded.
+
+**Goal vector first.** Every target document (plan, epic, bug, idea) OPENS with its goal vector —
+*what pain we solve and where we want to be* — and its acceptance criteria — *how we observe that we
+arrived*. Plans without them are speculation with no purpose; with them, plans become checkable.
+Goal types worth naming explicitly: **Achieve** (reach a new state), **Maintain** (keep an invariant
+holding), **Avoid** (keep a bad state out). Vectors and criteria are NOT final truths — they may be
+modified, added, or removed as the work teaches; changing them is an edit, not a failure.
+
+## The ten quality criteria (the canon)
+
+Each criterion: essence, a ❌/✅ pair, and its anchor in ISO/IEC/IEEE 29148 (IEEE 830's heir).
+
+1. **Atomic (singular).** One requirement — one isolated thought; if it splits into independent
+   sub-requirements, split it. *(29148: Singular)*
+   ❌ The system shall let a user register and send a confirmation email.
+   ✅ 1.1 The system shall register a user. · 1.2 The system shall send a registration-confirmation email.
+2. **Complete.** The sentence carries everything needed to implement it — no gaps, no "and so on".
+   *(29148: Complete)*
+   ❌ The registration form shall contain name, email, etc.
+   ✅ The registration form shall contain the mandatory fields "Name", "Email", "Phone number".
+3. **Unambiguous.** Exactly one reading exists; every reader understands the same thing. *(29148: Unambiguous)*
+   ❌ The system shall be fast.
+   ✅ Catalog search shall respond within 200 ms at up to 500 RPS.
+4. **Consistent.** It contradicts no other requirement or adjacent document. *(29148 set characteristic:
+   Consistent)*
+   ❌ §1 "Login is by password." · §3 "Login is possible only by SMS code."
+   ✅ Login is by password; an SMS code is additionally required on a new device.
+5. **Verifiable.** A defined way exists to check the implementation succeeded; the criterion is
+   measurable. *(29148: Verifiable — the heart of the whole canon)*
+   ❌ The interface shall be convenient and intuitive.
+   ✅ A purchase completes in at most 3 clicks from the cart page.
+6. **Feasible.** Technically achievable within the budget, deadlines, and stack. *(29148: Feasible)*
+   ❌ 10,000,000 RPS on one virtual server.
+   ✅ Up to 1,000 RPS with horizontal scaling.
+7. **Necessary.** It carries real value for the owner or user; deleting it would lose a needed
+   property. *(29148: Necessary)*
+   ❌ A pink admin theme nobody asked for.
+   ✅ The theme request is declined: no business value in the primary scenario.
+8. **Prioritized.** Every requirement carries an importance level (e.g. MoSCoW) — and the levels
+   differ; "all 150 are critical" is an unprioritized list. *(29148: a requirement attribute;
+   IEEE 830: ranked for importance)*
+9. **Traceable.** The source is known (business goal, law, owner's word) and the links to code and
+   test cases exist. *(29148: the trace attribute; IEEE 830: traceable)*
+   ✅ REQ-05 (source: goal BC-02; linked: test TC-12, task JIRA-402).
+10. **Modifiable.** The document's structure lets one requirement change without breaking the others —
+    one fact lives in one place, referenced elsewhere (DRY). *(IEEE 830: modifiable, a set property)*
+
+What the 29148 anchor adds beyond these ten: per-requirement **Appropriate** (stated at the right
+level), **Correct** (an accurate need), **Conforming** (follows the set's conventions); per-set
+**Comprehensible** and **Able to be validated**. The ten above are the working canon; the standard is
+the anchor to consult when a case falls between them.
+
+## The sentence discipline (NASA Appendix C, distilled)
+
+- **One modal, used honestly:** *shall* = binding requirement · *should* = preference/goal · *will* =
+  statement of fact about the surroundings. Normative keywords per RFC 2119/8174: MUST/SHALL, SHOULD,
+  MAY are normative **only in UPPERCASE** — lowercase prose stays prose.
+- **Active voice, actor named:** "The system shall …", never "… shall be provided" (by whom?).
+- **One thought per sentence** (criterion 1 in grammar form); conditions explicit, not implied.
+- **EARS patterns** — the de-facto notation for agent-written requirements; pick the shape that fits:
+  - *Ubiquitous:* The <system> shall <response>.
+  - *Event-driven:* **WHEN** <trigger>, the <system> shall <response>.
+  - *State-driven:* **WHILE** <state>, the <system> shall <response>.
+  - *Unwanted behavior:* **IF** <condition>, **THEN** the <system> shall <response>.
+  - *Optional feature:* **WHERE** <feature is present>, the <system> shall <response>.
+  A non-English project mirrors the keywords in its working language, keeping them UPPERCASE next to
+  the original — the pattern, not the English, is the notation.
+
+## The stop-word dictionary (unverifiable words)
+
+Words that make a requirement unverifiable by construction (NASA's black list + requirements smells).
+The dictionary is a **grep-lintable guard**: a hit means *rewrite measurably or justify explicitly in
+place* — it consults, it does not forbid writing.
+
+| Class | Words |
+|---|---|
+| Perception adjectives | user-friendly · easy · convenient · intuitive · seamless · flexible · robust · beautiful |
+| Unbounded qualifiers | fast · quickly · efficient · optimal · adequate · sufficient · significant · minimal · best |
+| Escape clauses | as appropriate · as applicable · if possible · as needed · where practicable |
+| Open-ended lists | etc. · and so on · including but not limited to · and/or |
+| Vague verbs | support · handle · process · manage · improve · maximize · minimize (no measure) |
+| Placeholders | TBD · TBS · TBR |
+
+The shipped linter (`kaif-requirements-lint`, below) carries this dictionary in **English and Russian**;
+a project in another working language mirrors the classes into its language the same way (the class,
+not the wording, is the dictionary). A stop word inside a *quotation, a ❌ example, or a named
+justification* is legal — the guard hunts unverifiable REQUIREMENTS, not vocabulary.
+
+## The fit criterion (acceptance-criteria formula)
+
+Every requirement and every goal-vector line carries a **fit criterion** — the measurable test of
+compliance a future session can run without asking. For numeric criteria use the Planguage triad:
+**Scale** (the unit measured) · **Meter** (how/with what it is measured) · **Target** (the number to
+reach). "Search is fast" → Scale: ms per query at 500 RPS · Meter: load-test run L-7 · Target: ≤ 200 ms.
+A criterion nobody can measure is a wish; a criterion with Scale/Meter/Target is a check the agent can
+execute and cite (verification then follows `TESTING_FRAMEWORK.md` — by observation, never inferred).
+
+## Boundaries — what this framework is NOT
+
+- **Not a Definition-of-Ready gate.** The criteria work as a LINTER and a judge's rubric over what is
+  written — never a turnstile that forbids starting work until requirements are "ready" (that is the
+  mini-waterfall anti-pattern). Draft freely; lint what you drafted; perfect what survives.
+- **Not BDUF.** No full specification up front — requirements are written for the work at hand
+  (a plan's goal vector, a bug's "done when"), and grow with the work.
+- **Not Gherkin-everywhere.** EARS shapes the *requirement sentence*; scenario syntax is a per-project
+  choice, not a canon obligation.
+- **Not a second testing canon.** TESTING verifies what was made; REQUIREMENTS shapes what is
+  required — one line, one boundary, no overlap.
+
+## How this composes with the rest of KAIF
+
+- **Target-document templates** (plans, epics, bugs, ideas — their skills and directory READMEs) open
+  with "Goal vector + acceptance criteria"; this document defines HOW those lines are written well.
+- **The stop-word dictionary as a guard** — the optional tool module `kaif-requirements-lint`
+  (`.kaif/tools/`) runs the dictionary as a grep step over target documents; advisory, with an
+  explicit-justification escape.
+- **`/fable-judge`** — treats acceptance criteria as claims to re-run; an unverifiable criterion is
+  judged like an unverifiable "done".
+- **`TESTING_FRAMEWORK.md`** — receives every fit criterion at verification time; principle 3 (early
+  testing) is the reason this framework exists.
+- **`PHILOSOPHY.md`** — the three-doors rule: a gap in a requirement is filled from a source or asked
+  as a question, never invented plausibly.
+
+*Grounding: IEEE 830 / ISO/IEC/IEEE 29148:2018 (the ten-criteria distillation is the KAIF canon),
+NASA SE Handbook Appendix C, EARS (Mavin), Volere fit criterion, Gilb's Planguage, RFC 2119/8174,
+requirements smells (Femmer et al.) — distilled for an AI agent across all spheres.*
 ``````
 
 > **FILE: `STATUS.md`** — project root — seed with the project's current real state
@@ -1543,7 +1692,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 |-------|----------------------|
 | `AGENT_GUIDE.md` | The canon the agent reads before every task. |
 | `PHILOSOPHY.md` | How the agent thinks (KISS + Occam + the wider principle set). |
-| `BUG_FIXING_FRAMEWORK.md` | How the agent debugs. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Requirements shape what is required, testing compares what was made against it, bug-fixing closes the gap. |
 | `GOAL.md` / `MASTER_PLAN.md` | The vision, and the phased path to it. |
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
@@ -1660,7 +1809,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 
 ## 5. The document system
 
-Thirteen key documents ship with a deployment (twelve project documents plus this reference):
+Fourteen key documents ship with a deployment (thirteen project documents plus this reference):
 
 | Document | Purpose | Written by |
 |---|---|---|
@@ -1668,6 +1817,7 @@ Thirteen key documents ship with a deployment (twelve project documents plus thi
 | `PHILOSOPHY.md` | How the agent thinks: simplicity (KISS + Occam) and the wider principle set. | Deployed verbatim. |
 | `BUG_FIXING_FRAMEWORK.md` | How defects are fixed: intent gate, 3-attempt rule, twin check, class-not-instance, guards. | Deployed verbatim. |
 | `TESTING_FRAMEWORK.md` | Nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED: …]` contract, observation gates. | Deployed verbatim. |
+| `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
 | `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
@@ -1938,6 +2088,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 |---|---|
 | `kaif-provenance.mjs` | The acceptance gate for AI text in owner canon (§13.3). |
 | `kaif-canon-lint.mjs` | The growing canon linter: revoked decision → forbidden wording; accepted decision → guarded full unique line; `selftest` proves every guard can fire. |
+| `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 
 ## 15. Lifecycle
 
@@ -1955,9 +2106,11 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 ## 16. Where to read more
 
 The living showcase is the origin README. The execution discipline is documented inside the
-`fable-*` skills. The testing canon is `TESTING_FRAMEWORK.md`; the debugging canon is
-`BUG_FIXING_FRAMEWORK.md`; the thinking canon is `PHILOSOPHY.md`. This reference documents the
-FRAMEWORK; the project's own architecture lives in the project's two maps.
+`fable-*` skills. The requirements canon is `REQUIREMENTS_FRAMEWORK.md`; the testing canon is
+`TESTING_FRAMEWORK.md`; the debugging canon is `BUG_FIXING_FRAMEWORK.md` — bugs are what is born
+when testing's checks run against what the requirements demanded. The thinking canon is
+`PHILOSOPHY.md`. This reference documents the FRAMEWORK; the project's own architecture lives in
+the project's two maps.
 ``````
 
 > **FILE: `plans/README.md`** — create the directory and drop this README
@@ -3543,7 +3696,9 @@ well-structured explanation they can read and act on.
    files in the repo so no session starts from zero. One line on why it's useful here.
 
 2. **The key documents — what to read/keep, and who owns each.** Briefly, as a list:
-   `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `BUG_FIXING_FRAMEWORK.md`,
+   `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `REQUIREMENTS_FRAMEWORK.md` +
+   `TESTING_FRAMEWORK.md` + `BUG_FIXING_FRAMEWORK.md` (requirements shape, testing compares,
+   bug-fixing closes the gap),
    **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (the living summary of now),
    `PROJECT_HISTORY.md` (the chronicle — archaeology on demand), `MASTER_PLAN.md`
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).
@@ -5443,6 +5598,7 @@ hole exactly there; owners kept having to re-order the full pass by hand:
 - `PHILOSOPHY.md` — how the agent thinks: KISS + Occam and the wider principle set
 - `BUG_FIXING_FRAMEWORK.md` — how defects are fixed here
 - `TESTING_FRAMEWORK.md` — nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED]` contract
+- `REQUIREMENTS_FRAMEWORK.md` — how requirements and acceptance criteria are written and checked
 - `GOAL.md` — the owner's vision
 - `MASTER_PLAN.md` — the long-term plan and phases
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow
@@ -6516,6 +6672,166 @@ function cmdAccept() {
   (() => die(`unknown command: ${CMD} (report | check | accept <file>)`)))();
 ``````
 
+> **FILE: `.kaif/tools/kaif-requirements-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-requirements-lint.mjs — the OPTIONAL stop-word linter for requirements (2.2, epic N;
+// REQUIREMENTS_FRAMEWORK.md § "The stop-word dictionary"). Deployed to .kaif/tools/.
+//
+// What it mechanizes: the dictionary of unverifiable words (NASA Appendix C black list +
+// requirements smells) as a grep step over REQUIREMENT LINES. A hit means "rewrite measurably
+// or justify explicitly in place" — the linter CONSULTS, it is never a Definition-of-Ready
+// turnstile: it lints what was written, it does not forbid starting work (the anti-pattern
+// boundary in REQUIREMENTS_FRAMEWORK.md).
+//
+// Scope discipline (precision over reach — a noisy advisor trains everyone to ignore it):
+//   by default only lines inside REQUIREMENT SECTIONS are scanned — a section whose heading
+//   matches /готово, когда|критери\w+ приёмки|вектор цели|acceptance criteria|goal vector|
+//   done when|requirements/i — from that heading to the next heading of the same-or-higher
+//   level. `--all` widens the scan to whole files.
+// Legal by construction (never flagged):
+//   quotation lines (`>`), ❌-example lines, fenced code blocks, inline code spans, and lines
+//   carrying a named justification — `(justified: …)` or `(оправдано: …)`.
+//
+// Commands:
+//   node .kaif/tools/kaif-requirements-lint.mjs check [paths…]   # default paths: plans/ bugs/ ideas/
+//   node .kaif/tools/kaif-requirements-lint.mjs check --all [paths…]
+//   node .kaif/tools/kaif-requirements-lint.mjs selftest         # PROVE the dictionary: every class
+//                                                                # matches its own ❌ example and
+//                                                                # stays silent on a clean ✅ line
+// Exit codes: 0 = scanned and clean · 1 = findings (or selftest failure) ·
+//             3 = SKIPPED, nothing to scan — "not scanned" must never read as "clean" (bug 34).
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+
+const argv = process.argv.slice(2);
+const CMD = argv[0] || 'check';
+const ALL = argv.includes('--all');
+const PATHS = argv.slice(1).filter((a) => a !== '--all');
+const EXIT_SKIPPED = 3;
+const die = (s) => { console.error('✖ ' + s); process.exit(1); };
+
+// ---------------------------------------------------------------------------
+// The dictionary. Six classes, EN+RU (the shipped canon; REQUIREMENTS_FRAMEWORK.md carries the
+// EN table — this file is the executable RU+EN form). A project in another working language
+// extends WORDS with its own mirrors: the class, not the wording, is the dictionary.
+// EN patterns ride \b word boundaries; RU stems ride Unicode-letter lookarounds (\b is
+// ASCII-only in JS and silently never fires inside Cyrillic — a guard that cannot fire).
+const ru = (stem) => `(?<!\\p{L})(?:${stem})`;
+const WORDS = [
+  { cls: 'perception', re: /\b(user-friendly|easy|convenient|intuitive|seamless|flexible|robust|beautiful)\b/iu,
+    ruRe: new RegExp(ru('удобн|интуитивн|бесшовн|гибк|надёжн|надежн|красив|прост(?:ой|ая|ое|ые|ых|ым|ого|ому|ую|ыми?)'), 'iu'),
+    example: 'Интерфейс должен быть удобным и интуитивно понятным.', exampleEn: 'The interface shall be easy and intuitive.' },
+  { cls: 'unbounded', re: /\b(fast|quickly|efficient(?:ly)?|optimal|adequate|sufficient|significant|minimal|best)\b/iu,
+    ruRe: new RegExp(ru('быстр|эффективн|оптимальн|достаточн|значительн|минимальн|лучш'), 'iu'),
+    example: 'Система должна работать быстро.', exampleEn: 'The system shall be fast.' },
+  { cls: 'escape', re: /\b(as appropriate|as applicable|if possible|as needed|where practicable)\b/iu,
+    ruRe: new RegExp(ru('по возможности|при необходимости|по мере необходимости|где применимо'), 'iu'),
+    example: 'Логи ротируются при необходимости.', exampleEn: 'Logs are rotated as appropriate.' },
+  { cls: 'open-ended', re: /(\betc\.|\band so on\b|\bincluding but not limited to\b|\band\/or\b)/iu,
+    ruRe: new RegExp(ru('и т\\.\\s?д\\.|и так далее|и т\\.\\s?п\\.|и/или'), 'iu'),
+    example: 'Форма содержит имя, email и т.д.', exampleEn: 'The form contains name, email, etc.' },
+  { cls: 'vague-verb', re: /\b(support|handle|process|manage|improve|maximize|minimize)\b/iu,
+    ruRe: new RegExp(ru('поддержива|обрабатыва|управля|улучш|максимизир|минимизир'), 'iu'),
+    example: 'Система должна поддерживать большие файлы.', exampleEn: 'The system shall support large files.' },
+  { cls: 'placeholder', re: /\b(TBD|TBS|TBR)\b/u,
+    ruRe: new RegExp(ru('уточняется|будет определено'), 'iu'),
+    example: 'Формат экспорта уточняется.', exampleEn: 'The export format is TBD.' },
+];
+// Clean fit-criterion lines every class must stay SILENT on (the ✅ side of the selftest).
+const CLEAN = [
+  'Время отклика поиска по каталогу — не более 200 мс при нагрузке до 500 RPS.',
+  'A purchase completes in at most 3 clicks from the cart page.',
+];
+
+// ---------------------------------------------------------------------------
+// Line legality: quotations, ❌ examples, code, and named justifications are citations of the
+// convention, not requirements — the guard hunts unverifiable REQUIREMENTS, not vocabulary.
+const isLegal = (line) =>
+  /^\s*>/.test(line) || line.includes('❌') ||
+  /\(\s*(justified|оправдано)\s*:/iu.test(line);
+// Inline code spans AND «…»/"…" quoted segments are citations — a line DISCUSSING a stop word
+// (the dictionary quoting itself) is not a requirement using one.
+const stripCodeSpans = (line) =>
+  line.replace(/`[^`]*`/g, '`code`').replace(/«[^»]*»/g, '«quote»').replace(/"[^"]*"/g, '"quote"');
+
+// Requirement-section detection (default scope): heading matches → lines until the next
+// heading of the same-or-higher level are in scope.
+const SECTION_RE = /готово,\s*когда|критери\p{L}*\s+приёмки|вектор\p{L}*\s+цел|acceptance criteria|goal vector|done when|requirements/iu;
+function scopedLines(text) {
+  const lines = text.split(/\r?\n/);
+  const out = []; // [lineNo, line]
+  let inFence = false, inScope = false, scopeLevel = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (/^\s*(```|~~~)/.test(l)) { inFence = !inFence; continue; }
+    if (inFence) continue;
+    const h = l.match(/^(#{1,6})\s/);
+    if (h) {
+      if (inScope && h[1].length <= scopeLevel) inScope = false;
+      if (SECTION_RE.test(l)) { inScope = true; scopeLevel = h[1].length; continue; }
+    }
+    if (ALL || inScope) out.push([i + 1, l]);
+  }
+  return out;
+}
+
+function* walkMd(dir) {
+  for (const n of readdirSync(dir)) {
+    const p = dir + '/' + n;
+    if (['.git', 'node_modules', '.kaif'].includes(n)) continue;
+    if (statSync(p).isDirectory()) { yield* walkMd(p); continue; }
+    if (/\.md$/i.test(n)) yield p;
+  }
+}
+
+function cmdCheck() {
+  const roots = PATHS.length ? PATHS : ['plans', 'bugs', 'ideas'];
+  const files = [];
+  for (const r of roots) {
+    if (!existsSync(r)) continue;
+    if (statSync(r).isDirectory()) files.push(...walkMd(r));
+    else files.push(r);
+  }
+  if (!files.length) {
+    console.log(`⊘ SKIPPED — nothing to scan under: ${roots.join(', ')} (exit ${EXIT_SKIPPED}; "not scanned" must never read as "clean")`);
+    process.exit(EXIT_SKIPPED);
+  }
+  let findings = 0;
+  for (const f of files) {
+    const text = readFileSync(f, 'utf8').replace(/^﻿/, '');
+    for (const [no, raw] of scopedLines(text)) {
+      if (isLegal(raw)) continue;
+      const line = stripCodeSpans(raw);
+      for (const w of WORDS) {
+        const hit = line.match(w.re) || line.match(w.ruRe);
+        if (hit) { console.error(`✖ ${f}:${no} — "${hit[0]}" (${w.cls}): rewrite measurably or add (justified: …)`); findings++; }
+      }
+    }
+  }
+  if (findings) die(`requirements lint: ${findings} unverifiable-word finding(s) — advisory: rewrite or justify in place`);
+  console.log(`✅ requirements lint OK — ${files.length} file(s), ${WORDS.length} word classes, 0 findings`);
+}
+
+// The dictionary is proven, never assumed: every class must MATCH its own ❌ examples (RU and
+// EN) and stay SILENT on the clean fit-criterion lines — a guard that never reddens proves
+// nothing, and one that fires on a measurable criterion is noise by construction.
+function cmdSelftest() {
+  let issues = 0;
+  for (const w of WORDS) {
+    if (!(w.ruRe.test(w.example))) { console.error(`✖ class "${w.cls}" does NOT match its own RU example: ${w.example}`); issues++; }
+    if (!(w.re.test(w.exampleEn))) { console.error(`✖ class "${w.cls}" does NOT match its own EN example: ${w.exampleEn}`); issues++; }
+  }
+  for (const clean of CLEAN)
+    for (const w of WORDS)
+      if (w.re.test(clean) || w.ruRe.test(clean)) { console.error(`✖ class "${w.cls}" FIRES on a clean fit-criterion line (noise by construction): ${clean}`); issues++; }
+  if (issues) die(`requirements lint selftest FAILED: ${issues} issue(s)`);
+  console.log(`✅ requirements lint selftest OK — ${WORDS.length} classes match their ❌ examples and stay silent on clean ✅ lines`);
+}
+
+({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => die(`unknown command: ${CMD} (check | selftest)`)))();
+``````
+
 > **FILE: `.kaif/_owner-voice-template.md`** — the owner-voice portrait skeleton — optional; /owner-voice portrait mode fills it
 
 ``````md
@@ -6785,7 +7101,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 |-------|----------------------|
 | `AGENT_GUIDE.md` | القانون الذي يقرؤه الوكيل قبل كل مهمة. |
 | `PHILOSOPHY.md` | كيف يفكر الوكيل (KISS + أوكام + مجموعة المبادئ الموسعة). |
-| `BUG_FIXING_FRAMEWORK.md` | كيف يصحّح الوكيل الأخطاء. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | المتطلبات تحدّد المطلوب، والاختبار يقارن ما صُنع به، وإصلاح الأخطاء يغلق الفجوة. |
 | `GOAL.md` / `MASTER_PLAN.md` | الرؤية، والطريق المرحلي إليها. |
 | `STATUS.md` | الحالة الحية — تُحدَّث بعد كل مهمة مهمة. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | الخريطتان الخارجية والداخلية. |
@@ -7088,7 +7404,7 @@ in klaren Grenzen arbeitet und Wissen ansammelt, statt es zu verlieren. Es ist k
 |------|-------------------------|
 | `AGENT_GUIDE.md` | Der Kanon, den der Agent vor jeder Aufgabe liest. |
 | `PHILOSOPHY.md` | Wie der Agent denkt (KISS + Ockham + das erweiterte Prinzipienset). |
-| `BUG_FIXING_FRAMEWORK.md` | Wie der Agent debuggt. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Anforderungen formen das Geforderte, Tests vergleichen das Gebaute damit, Bugfixing schließt die Lücke. |
 | `GOAL.md` / `MASTER_PLAN.md` | Die Vision und der phasenweise Weg dorthin. |
 | `STATUS.md` | Der lebende Zustand — nach jeder bedeutenden Aufgabe aktualisiert. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Die externe und interne Karte. |
@@ -7393,7 +7709,7 @@ de forma autónoma dentro de límites claros y acumula conocimiento en lugar de 
 |-------|----------------------|
 | `AGENT_GUIDE.md` | El canon que el agente lee antes de cada tarea. |
 | `PHILOSOPHY.md` | Cómo piensa el agente (KISS + Occam + el conjunto ampliado de principios). |
-| `BUG_FIXING_FRAMEWORK.md` | Cómo depura el agente. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Los requisitos definen lo requerido, las pruebas comparan lo hecho con ello, la corrección de errores cierra la brecha. |
 | `GOAL.md` / `MASTER_PLAN.md` | La visión, y el camino por fases hacia ella. |
 | `STATUS.md` | El estado vivo — actualizado tras cada tarea significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Los mapas externo e interno. |
@@ -7702,7 +8018,7 @@ perdre. Ce n'est pas du code ; c'est *un processus capturé sous forme de fichie
 |-------|---------------------|
 | `AGENT_GUIDE.md` | Le canon que l'agent lit avant chaque tâche. |
 | `PHILOSOPHY.md` | Comment l'agent pense (KISS + Occam + l'ensemble élargi de principes). |
-| `BUG_FIXING_FRAMEWORK.md` | Comment l'agent débogue. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Les exigences définissent le requis, les tests comparent le réalisé avec lui, la correction des bugs comble l'écart. |
 | `GOAL.md` / `MASTER_PLAN.md` | La vision, et le chemin par phases vers elle. |
 | `STATUS.md` | L'état vivant — mis à jour après chaque tâche significative. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Les cartes externe et interne. |
@@ -7997,7 +8313,7 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 |--------|------------------------|
 | `AGENT_GUIDE.md` | वह कैनन जिसे एजेंट हर कार्य से पहले पढ़ता है। |
 | `PHILOSOPHY.md` | एजेंट कैसे सोचता है (KISS + ओकम + विस्तारित सिद्धांत सेट)। |
-| `BUG_FIXING_FRAMEWORK.md` | एजेंट कैसे डिबग करता है। |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | आवश्यकताएँ अपेक्षित को आकार देती हैं, परीक्षण बने हुए की उससे तुलना करता है, बग-सुधार अंतर को बंद करता है। |
 | `GOAL.md` / `MASTER_PLAN.md` | विज़न, और उस तक चरणबद्ध रास्ता। |
 | `STATUS.md` | जीवित स्थिति — हर महत्वपूर्ण कार्य के बाद अपडेट। |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | बाहरी और आंतरिक नक्शे। |
@@ -8296,7 +8612,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 |------|--------------------------|
 | `AGENT_GUIDE.md` | エージェントが各タスクの前に読む規範。 |
 | `PHILOSOPHY.md` | エージェントの思考法（KISS + オッカム + 拡張原則セット）。 |
-| `BUG_FIXING_FRAMEWORK.md` | エージェントのデバッグ法。 |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | 要求が求めるものを定め、テストが作られたものを照合し、バグ修正がその差を埋める。 |
 | `GOAL.md` / `MASTER_PLAN.md` | ビジョンと、そこへ至る段階的な道筋。 |
 | `STATUS.md` | 生きた状態 — 重要なタスクごとに更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部マップと内部マップ。 |
@@ -8597,7 +8913,7 @@ forma autônoma dentro de limites claros e acumula conhecimento em vez de perdê
 |------|---------------------|
 | `AGENT_GUIDE.md` | O cânone que o agente lê antes de cada tarefa. |
 | `PHILOSOPHY.md` | Como o agente pensa (KISS + Occam + o conjunto ampliado de princípios). |
-| `BUG_FIXING_FRAMEWORK.md` | Como o agente depura. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Os requisitos definem o exigido, os testes comparam o feito com ele, a correção de bugs fecha a lacuna. |
 | `GOAL.md` / `MASTER_PLAN.md` | A visão, e o caminho em fases até ela. |
 | `STATUS.md` | O estado vivo — atualizado após cada tarefa significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Os mapas externo e interno. |
@@ -8894,7 +9210,7 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 |-------|---------------------|
 | `AGENT_GUIDE.md` | Канон, который агент читает перед каждой задачей. |
 | `PHILOSOPHY.md` | Как агент мыслит (KISS + Оккам + расширенный набор принципов). |
-| `BUG_FIXING_FRAMEWORK.md` | Как агент отлаживает. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Требования формируют требуемое, тестирование сверяет сделанное с ним, починка багов закрывает разрыв. |
 | `GOAL.md` / `MASTER_PLAN.md` | Видение и поэтапный путь к нему. |
 | `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
@@ -9170,7 +9486,7 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 |------|------------------|
 | `AGENT_GUIDE.md` | 代理在每个任务前阅读的准则。 |
 | `PHILOSOPHY.md` | 代理如何思考（KISS + 奥卡姆剃刀 + 扩展原则集）。 |
-| `BUG_FIXING_FRAMEWORK.md` | 代理如何调试。 |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | 需求定义所求，测试将所造与之对照，缺陷修复弥合差距。 |
 | `GOAL.md` / `MASTER_PLAN.md` | 愿景，以及通向愿景的分阶段路径。 |
 | `STATUS.md` | 活的状态 —— 每个重要任务后更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部与内部地图。 |

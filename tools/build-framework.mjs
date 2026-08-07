@@ -86,6 +86,8 @@ const DOC_TARGETS = {
   'framework/PHILOSOPHY.md':           ['PHILOSOPHY.md',           'project root — universal, write verbatim'],
   'framework/BUG_FIXING_FRAMEWORK.md': ['BUG_FIXING_FRAMEWORK.md', 'project root — universal, write verbatim'],
   'framework/TESTING_FRAMEWORK.md':    ['TESTING_FRAMEWORK.md',    'project root — universal, write verbatim'],
+  // The requirements canon added in 2.2 (epic N): goal vector + acceptance criteria + stop-word dictionary
+  'framework/REQUIREMENTS_FRAMEWORK.md': ['REQUIREMENTS_FRAMEWORK.md', 'project root — universal, write verbatim'],
   'framework/STATUS.md':               ['STATUS.md',               "project root — seed with the project's current real state"],
   // The chronicle added in 2.1 (epic H): STATUS stays a summary of NOW, closed work moves here
   'framework/PROJECT_HISTORY.md':      ['PROJECT_HISTORY.md',      'project root — seed this template; closed STATUS entries move here verbatim (the bonsai trim)'],
@@ -253,6 +255,7 @@ const POLICY_CHANGES_BY_VERSION = {
   '2.2': [
     'CLI safety (bug 33): a bare or flags-only `kaif-core.mjs` run prints help and touches NOTHING (the old default was `install` — it once overwrote a live update task in the field); unknown commands, flags and stray arguments now REFUSE instead of being silently ignored. Scripts relying on the old default must name `install` and its flags explicitly.',
     'Guard exit semantics (bug 34): unconfigured optional guards — kaif-canon-lint without rules, kaif-provenance without a canonArtifacts key — exit 3 "SKIPPED" instead of 0. CI that treats any non-zero exit as failure must handle 3 as "not configured, nothing proven".',
+    'NEW key doc REQUIREMENTS_FRAMEWORK.md (the 14th) — the requirements canon: goal vector + acceptance criteria FIRST in every target document, the ten quality criteria (ISO/IEC/IEEE 29148 anchor), EARS patterns, fit criterion (Scale/Meter/Target), the stop-word dictionary. Universal, added mechanically; nothing to merge. Its executable form is the NEW optional tool module .kaif/tools/kaif-requirements-lint.mjs (check | selftest; advisory — a linter and a judge rubric, never a Definition-of-Ready turnstile; SKIPPED=3 when nothing to scan).',
   ],
 };
 

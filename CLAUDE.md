@@ -7,14 +7,16 @@
    структуру: *полезная нагрузка* `framework/` + сгенерированный `KAIF.md` vs. эта *обвязка для
    dogfooding*).
 2. Прочитай **`STATUS.md`** — текущее состояние и где продолжить.
-3. Мысли по **`PHILOSOPHY.md`** (KISS + Оккам). Отлаживай по **`BUG_FIXING_FRAMEWORK.md`**. Тестируй
-   всё созданное по **`TESTING_FRAMEWORK.md`** (сырое — `[NOT-TESTED]`, проверенное наблюдением —
-   `[TESTED: …]`; ложный TESTED — фрод для judge).
+3. Мысли по **`PHILOSOPHY.md`** (KISS + Оккам). Требования и критерии приёмки пиши по
+   **`REQUIREMENTS_FRAMEWORK.md`** (вектор цели — первым). Тестируй всё созданное по
+   **`TESTING_FRAMEWORK.md`** (сырое — `[NOT-TESTED]`, проверенное наблюдением — `[TESTED: …]`;
+   ложный TESTED — фрод для judge). Отлаживай по **`BUG_FIXING_FRAMEWORK.md`** — баги рождаются
+   из проверок TESTING против заданного REQUIREMENTS.
 4. Сверься с **`EXPERIENCE.md`** (грепом по тегам задачи) — не повторяй известные тупики; допиши урок
    после значимого успеха/провала (навык `/experience`).
 
 Ключевые документы в корне: `AGENT_GUIDE.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`,
-`TESTING_FRAMEWORK.md`, `STATUS.md`, `PROJECT_HISTORY.md` (летопись — вне /resume, по
+`TESTING_FRAMEWORK.md`, `REQUIREMENTS_FRAMEWORK.md`, `STATUS.md`, `PROJECT_HISTORY.md` (летопись — вне /resume, по
 потребности), `EXPERIENCE.md`, `GOAL.md`, `MASTER_PLAN.md`,
 `PROJECT_STRUCTURE_EXTERNAL_MAP.md`, `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `KAIF_FRAMEWORK.md`,
 `KAIF_REFERENCE.md` (пояснительная записка — авторитетный справочник устройства; корневая копия

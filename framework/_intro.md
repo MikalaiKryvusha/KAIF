@@ -97,6 +97,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 ├── PHILOSOPHY.md                        # how the agent thinks (KISS + Occam + the principle set)
 ├── BUG_FIXING_FRAMEWORK.md              # how the agent debugs
 ├── TESTING_FRAMEWORK.md                 # how the agent tests everything it creates ([NOT-TESTED]/[TESTED] markers)
+├── REQUIREMENTS_FRAMEWORK.md            # how the agent writes & checks requirements (goal vector · acceptance criteria)
 ├── GOAL.md                              # the vision — owner-filled (what we want in the end)
 ├── STATUS.md                            # the living state — updated after every significant task
 ├── EXPERIENCE.md                        # the agent's growing log of lessons (grep-friendly; skill: /experience)
@@ -134,9 +135,11 @@ Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for
 ## 4. The key documents
 
 The agent's brain on disk. Each template below is generic: replace every `<PLACEHOLDER>` with the project's
-real value during unpacking. `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, and `TESTING_FRAMEWORK.md` (the
+real value during unpacking. `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `TESTING_FRAMEWORK.md` (the
 testing canon: seven principles + the `[NOT-TESTED]`/`[TESTED: …]` trust markers on everything the agent
-generates) are universal — copy verbatim.
+generates), and `REQUIREMENTS_FRAMEWORK.md` (the requirements canon: ten quality criteria + the
+goal-vector/acceptance-criteria discipline + the grep-lintable stop-word dictionary) are universal — copy
+verbatim.
 `GOAL.md` is **owner-filled** (if empty, seed the template and ask the owner). `MASTER_PLAN.md` and the two
 maps are authored from your inspection of the project. `KAIF_FRAMEWORK.md` is written **after** injection
 (§10). `EXPERIENCE.md` starts as the seed template below and **grows on its own** — the agent appends a
@@ -150,6 +153,8 @@ experience survives context resets. It is a **living reference — never DONE-ta
 {{EMBED:framework/BUG_FIXING_FRAMEWORK.md}}
 
 {{EMBED:framework/TESTING_FRAMEWORK.md}}
+
+{{EMBED:framework/REQUIREMENTS_FRAMEWORK.md}}
 
 {{EMBED:framework/GOAL.md}}
 

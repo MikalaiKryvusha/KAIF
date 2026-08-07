@@ -29,7 +29,7 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 |------|------------------|
 | `AGENT_GUIDE.md` | 代理在每个任务前阅读的准则。 |
 | `PHILOSOPHY.md` | 代理如何思考（KISS + 奥卡姆剃刀 + 扩展原则集）。 |
-| `BUG_FIXING_FRAMEWORK.md` | 代理如何调试。 |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | 需求定义所求，测试将所造与之对照，缺陷修复弥合差距。 |
 | `GOAL.md` / `MASTER_PLAN.md` | 愿景，以及通向愿景的分阶段路径。 |
 | `STATUS.md` | 活的状态 —— 每个重要任务后更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部与内部地图。 |

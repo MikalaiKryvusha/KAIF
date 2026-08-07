@@ -61,6 +61,12 @@ ok(existsSync(repReadme), 'S1 reports/: свежая установка созд
 const repTxt = existsSync(repReadme) ? readFileSync(repReadme, 'utf8') : '';
 ok(repTxt.includes('KAIF_UPDATES') && repTxt.includes('KAIF_AUDIT'),
    'S1 reports/README: назван состав (KAIF_UPDATES + KAIF_AUDIT)');
+// N1 (plans/38): свежая установка кладёт 14-й ключевой документ — канон требований — в корень;
+// красный доказан против HEAD-бандла до поставки (в нём FILE-блока REQUIREMENTS_FRAMEWORK нет)
+const reqFw = join(S1, 'REQUIREMENTS_FRAMEWORK.md');
+ok(existsSync(reqFw), 'S1 REQUIREMENTS_FRAMEWORK: свежая установка кладёт 14-й ключевой документ');
+ok(existsSync(reqFw) && readFileSync(reqFw, 'utf8').includes('goal vector'),
+   'S1 REQUIREMENTS_FRAMEWORK: несёт дисциплину goal vector + acceptance criteria');
 // схема маркера (Reference §12.1): битое поле — красный, восстановление — зелёный
 const mkPath = join(S1, '.kaif', 'kaif.json');
 const mk0 = readFileSync(mkPath, 'utf8');

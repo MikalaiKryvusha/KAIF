@@ -26,7 +26,7 @@ KAIF/
 ├── KAIF.md                                # ⭐ GENERATED ТОНКАЯ точка входа (бутстрап + встроенный загрузчик)
 ├── framework/
 │   ├── _intro.md                          # повествовательный стержень полного ядра ({{VERSION}}, {{SKILL_COUNT}}, {{EMBED:…}}, {{EMBED_SKILLS}})
-│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md   # шаблоны руководящих документов
+│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md REQUIREMENTS_FRAMEWORK.md   # шаблоны руководящих документов
 │   ├── STATUS.md PROJECT_HISTORY.md EXPERIENCE.md GOAL.md MASTER_PLAN.md           # шаблоны состояния/летописи/опыта/видения/плана
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md PROJECT_ARCHITECTURE_INTERNAL_MAP.md      # шаблоны карт
 │   ├── KAIF_FRAMEWORK.md                  # шаблон пост-инжекционного документа
@@ -65,7 +65,7 @@ KAIF/
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
 ├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока)
 ├── KAIF_REFERENCE.md                      # ⭐ СГЕНЕРИРОВАННАЯ копия framework/KAIF_REFERENCE.md (страж в check; правь источник)
-├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
+├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md REQUIREMENTS_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
 ├── PROJECT_HISTORY.md                     # летопись (append-only; вне /resume — археология по потребности; 2.1 эпик H)
 ├── EXPERIENCE.md                          # накопленный опыт агента (греп-дружелюбен; навык /experience)
 ├── GOAL.md                                # видение (заполняет владелец)
@@ -122,7 +122,8 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 2. **Обвязка** = корневые ключевые документы + `.claude/skills/` + `plans/`/`ideas/`/`bugs/`/`researches/`/
    `interviews/`/`homeworks/`/`reports/` + `CLAUDE.md` + `.kaif/kaif.json`. Это фреймворк, применённый к *этому* проекту.
 
-Универсальные файлы (`PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `TESTING_FRAMEWORK.md`, навыки) зеркалят
+Универсальные файлы (`PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `TESTING_FRAMEWORK.md`,
+`REQUIREMENTS_FRAMEWORK.md`, навыки) зеркалят
 друг друга между слоями — кроме заполненных плейсхолдеров команд в обвязке; lifecycle- и fable-навыки в
 обвязке — вендоренные EN-копии со staleness-шапками (языковая политика 1.6: agent-facing — EN).
 **Разделение по языку:** полезная нагрузка — на **английском**; обвязка — на **русском**. Редактируйте

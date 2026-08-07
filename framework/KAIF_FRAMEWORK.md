@@ -32,7 +32,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 |-------|----------------------|
 | `AGENT_GUIDE.md` | The canon the agent reads before every task. |
 | `PHILOSOPHY.md` | How the agent thinks (KISS + Occam + the wider principle set). |
-| `BUG_FIXING_FRAMEWORK.md` | How the agent debugs. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Requirements shape what is required, testing compares what was made against it, bug-fixing closes the gap. |
 | `GOAL.md` / `MASTER_PLAN.md` | The vision, and the phased path to it. |
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |

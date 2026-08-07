@@ -30,7 +30,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 |-------|----------------------|
 | `AGENT_GUIDE.md` | القانون الذي يقرؤه الوكيل قبل كل مهمة. |
 | `PHILOSOPHY.md` | كيف يفكر الوكيل (KISS + أوكام + مجموعة المبادئ الموسعة). |
-| `BUG_FIXING_FRAMEWORK.md` | كيف يصحّح الوكيل الأخطاء. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | المتطلبات تحدّد المطلوب، والاختبار يقارن ما صُنع به، وإصلاح الأخطاء يغلق الفجوة. |
 | `GOAL.md` / `MASTER_PLAN.md` | الرؤية، والطريق المرحلي إليها. |
 | `STATUS.md` | الحالة الحية — تُحدَّث بعد كل مهمة مهمة. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | الخريطتان الخارجية والداخلية. |

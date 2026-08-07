@@ -17,6 +17,7 @@ hole exactly there; owners kept having to re-order the full pass by hand:
 - `PHILOSOPHY.md` — how the agent thinks: KISS + Occam and the wider principle set
 - `BUG_FIXING_FRAMEWORK.md` — how defects are fixed here
 - `TESTING_FRAMEWORK.md` — nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED]` contract
+- `REQUIREMENTS_FRAMEWORK.md` — how requirements and acceptance criteria are written and checked
 - `GOAL.md` — the owner's vision
 - `MASTER_PLAN.md` — the long-term plan and phases
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow

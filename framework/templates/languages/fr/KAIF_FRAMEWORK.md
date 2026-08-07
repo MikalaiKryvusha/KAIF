@@ -34,7 +34,7 @@ perdre. Ce n'est pas du code ; c'est *un processus capturé sous forme de fichie
 |-------|---------------------|
 | `AGENT_GUIDE.md` | Le canon que l'agent lit avant chaque tâche. |
 | `PHILOSOPHY.md` | Comment l'agent pense (KISS + Occam + l'ensemble élargi de principes). |
-| `BUG_FIXING_FRAMEWORK.md` | Comment l'agent débogue. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Les exigences définissent le requis, les tests comparent le réalisé avec lui, la correction des bugs comble l'écart. |
 | `GOAL.md` / `MASTER_PLAN.md` | La vision, et le chemin par phases vers elle. |
 | `STATUS.md` | L'état vivant — mis à jour après chaque tâche significative. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Les cartes externe et interne. |

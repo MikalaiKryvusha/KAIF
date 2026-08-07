@@ -17,6 +17,7 @@ description: Продолжить работу с того места, на ко
 - `PHILOSOPHY.md` — как агент мыслит: KISS + Оккам и расширенный набор принципов
 - `BUG_FIXING_FRAMEWORK.md` — как здесь чинят дефекты
 - `TESTING_FRAMEWORK.md` — сырому доверия нет: контракт `[NOT-TESTED]`/`[TESTED]`
+- `REQUIREMENTS_FRAMEWORK.md` — как пишутся и проверяются требования и критерии приёмки
 - `GOAL.md` — видение владельца
 - `MASTER_PLAN.md` — долгосрочный план и фазы
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — внешняя карта: модули, файлы, поток данных

@@ -70,7 +70,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 
 ## 5. The document system
 
-Thirteen key documents ship with a deployment (twelve project documents plus this reference):
+Fourteen key documents ship with a deployment (thirteen project documents plus this reference):
 
 | Document | Purpose | Written by |
 |---|---|---|
@@ -78,6 +78,7 @@ Thirteen key documents ship with a deployment (twelve project documents plus thi
 | `PHILOSOPHY.md` | How the agent thinks: simplicity (KISS + Occam) and the wider principle set. | Deployed verbatim. |
 | `BUG_FIXING_FRAMEWORK.md` | How defects are fixed: intent gate, 3-attempt rule, twin check, class-not-instance, guards. | Deployed verbatim. |
 | `TESTING_FRAMEWORK.md` | Nothing raw is trusted: the `[NOT-TESTED]`/`[TESTED: …]` contract, observation gates. | Deployed verbatim. |
+| `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
 | `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
@@ -348,6 +349,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 |---|---|
 | `kaif-provenance.mjs` | The acceptance gate for AI text in owner canon (§13.3). |
 | `kaif-canon-lint.mjs` | The growing canon linter: revoked decision → forbidden wording; accepted decision → guarded full unique line; `selftest` proves every guard can fire. |
+| `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 
 ## 15. Lifecycle
 
@@ -365,6 +367,8 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 ## 16. Where to read more
 
 The living showcase is the origin README. The execution discipline is documented inside the
-`fable-*` skills. The testing canon is `TESTING_FRAMEWORK.md`; the debugging canon is
-`BUG_FIXING_FRAMEWORK.md`; the thinking canon is `PHILOSOPHY.md`. This reference documents the
-FRAMEWORK; the project's own architecture lives in the project's two maps.
+`fable-*` skills. The requirements canon is `REQUIREMENTS_FRAMEWORK.md`; the testing canon is
+`TESTING_FRAMEWORK.md`; the debugging canon is `BUG_FIXING_FRAMEWORK.md` — bugs are what is born
+when testing's checks run against what the requirements demanded. The thinking canon is
+`PHILOSOPHY.md`. This reference documents the FRAMEWORK; the project's own architecture lives in
+the project's two maps.

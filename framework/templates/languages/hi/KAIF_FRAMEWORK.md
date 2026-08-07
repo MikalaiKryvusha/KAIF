@@ -32,7 +32,7 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 |--------|------------------------|
 | `AGENT_GUIDE.md` | वह कैनन जिसे एजेंट हर कार्य से पहले पढ़ता है। |
 | `PHILOSOPHY.md` | एजेंट कैसे सोचता है (KISS + ओकम + विस्तारित सिद्धांत सेट)। |
-| `BUG_FIXING_FRAMEWORK.md` | एजेंट कैसे डिबग करता है। |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | आवश्यकताएँ अपेक्षित को आकार देती हैं, परीक्षण बने हुए की उससे तुलना करता है, बग-सुधार अंतर को बंद करता है। |
 | `GOAL.md` / `MASTER_PLAN.md` | विज़न, और उस तक चरणबद्ध रास्ता। |
 | `STATUS.md` | जीवित स्थिति — हर महत्वपूर्ण कार्य के बाद अपडेट। |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | बाहरी और आंतरिक नक्शे। |

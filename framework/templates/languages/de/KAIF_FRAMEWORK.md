@@ -34,7 +34,7 @@ in klaren Grenzen arbeitet und Wissen ansammelt, statt es zu verlieren. Es ist k
 |------|-------------------------|
 | `AGENT_GUIDE.md` | Der Kanon, den der Agent vor jeder Aufgabe liest. |
 | `PHILOSOPHY.md` | Wie der Agent denkt (KISS + Ockham + das erweiterte Prinzipienset). |
-| `BUG_FIXING_FRAMEWORK.md` | Wie der Agent debuggt. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Anforderungen formen das Geforderte, Tests vergleichen das Gebaute damit, Bugfixing schließt die Lücke. |
 | `GOAL.md` / `MASTER_PLAN.md` | Die Vision und der phasenweise Weg dorthin. |
 | `STATUS.md` | Der lebende Zustand — nach jeder bedeutenden Aufgabe aktualisiert. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Die externe und interne Karte. |

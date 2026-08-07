@@ -34,7 +34,7 @@ de forma autónoma dentro de límites claros y acumula conocimiento en lugar de 
 |-------|----------------------|
 | `AGENT_GUIDE.md` | El canon que el agente lee antes de cada tarea. |
 | `PHILOSOPHY.md` | Cómo piensa el agente (KISS + Occam + el conjunto ampliado de principios). |
-| `BUG_FIXING_FRAMEWORK.md` | Cómo depura el agente. |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | Los requisitos definen lo requerido, las pruebas comparan lo hecho con ello, la corrección de errores cierra la brecha. |
 | `GOAL.md` / `MASTER_PLAN.md` | La visión, y el camino por fases hacia ella. |
 | `STATUS.md` | El estado vivo — actualizado tras cada tarea significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Los mapas externo e interno. |

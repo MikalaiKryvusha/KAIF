@@ -33,7 +33,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 |------|--------------------------|
 | `AGENT_GUIDE.md` | エージェントが各タスクの前に読む規範。 |
 | `PHILOSOPHY.md` | エージェントの思考法（KISS + オッカム + 拡張原則セット）。 |
-| `BUG_FIXING_FRAMEWORK.md` | エージェントのデバッグ法。 |
+| `REQUIREMENTS_FRAMEWORK.md` / `TESTING_FRAMEWORK.md` / `BUG_FIXING_FRAMEWORK.md` | 要求が求めるものを定め、テストが作られたものを照合し、バグ修正がその差を埋める。 |
 | `GOAL.md` / `MASTER_PLAN.md` | ビジョンと、そこへ至る段階的な道筋。 |
 | `STATUS.md` | 生きた状態 — 重要なタスクごとに更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部マップと内部マップ。 |

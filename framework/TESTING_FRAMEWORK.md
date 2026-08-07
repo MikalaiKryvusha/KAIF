@@ -88,6 +88,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
+- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED before anything is made; this framework
+  verifies what was MADE against it. Principle 3 (early testing) is executed at the requirements
+  stage by that canon; bugs are what is born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
 - **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
   says WHAT must carry a status and how trust propagates. The triviality gate still applies: a trivial
   change verified by its one obvious check needs no ceremony beyond its normal comment.

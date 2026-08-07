@@ -40,8 +40,9 @@ relies entirely on this document to get to work.
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
-    - BUG_FIXING_FRAMEWORK.md
+    - REQUIREMENTS_FRAMEWORK.md
     - TESTING_FRAMEWORK.md
+    - BUG_FIXING_FRAMEWORK.md
     Edit them when it would make future autonomous work more effective. The agent operates across
     sessions that lose context — these docs must let a fresh session get productive from empty context.
 17. Narrate in the chat, at least a little, in natural language — what you're doing right now — so the
@@ -68,6 +69,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | **Required minimum (always)** | `STATUS.md` · `PHILOSOPHY.md` (the principle set) · this router · `EXPERIENCE.md` (grep by tag) |
 | Bug                | `BUG_FIXING_FRAMEWORK.md` · `bugs/<this>` · the map (blast radius)     |
 | Testing / verifying anything | `TESTING_FRAMEWORK.md` (the 7 principles · `[NOT-TESTED]`/`[TESTED]` markers) · the sphere's verification sections |
+| Writing requirements / acceptance criteria / a goal vector | `REQUIREMENTS_FRAMEWORK.md` (the ten criteria · stop-word dictionary · fit criterion) |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |

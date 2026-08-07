@@ -1,7 +1,9 @@
 # BUG_FIXING_FRAMEWORK — how the agent fixes defects
 
 > Defects arrive here from testing (`TESTING_FRAMEWORK.md`: nothing raw is trusted — `[NOT-TESTED]`
-> content gets verified, and what verification finds broken lands in `bugs/`).
+> content gets verified, and what verification finds broken lands in `bugs/`). Bugs are what is born
+> when testing's checks run against what `REQUIREMENTS_FRAMEWORK.md` demanded — this canon closes
+> that chain.
 
 To fix a bug, the agent must:
 

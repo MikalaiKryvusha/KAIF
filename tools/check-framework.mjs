@@ -36,6 +36,7 @@ else {
 
 // Expected embedded files = key-doc templates + directory-README templates + skill templates.
 const docNames = ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'TESTING_FRAMEWORK.md',
+                  'REQUIREMENTS_FRAMEWORK.md',
                   'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'GOAL.md', 'MASTER_PLAN.md',
                   'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md',
                   'KAIF_FRAMEWORK.md', 'KAIF_REFERENCE.md'];

@@ -31,7 +31,9 @@ well-structured explanation they can read and act on.
    files in the repo so no session starts from zero. One line on why it's useful here.
 
 2. **The key documents — what to read/keep, and who owns each.** Briefly, as a list:
-   `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `BUG_FIXING_FRAMEWORK.md`,
+   `AGENT_GUIDE.md` (the canon), `PHILOSOPHY.md` (how the agent thinks), `REQUIREMENTS_FRAMEWORK.md` +
+   `TESTING_FRAMEWORK.md` + `BUG_FIXING_FRAMEWORK.md` (requirements shape, testing compares,
+   bug-fixing closes the gap),
    **`GOAL.md`** (the owner's vision — *your* document), `STATUS.md` (the living summary of now),
    `PROJECT_HISTORY.md` (the chronicle — archaeology on demand), `MASTER_PLAN.md`
    (roadmap), the external & internal maps, `KAIF_FRAMEWORK.md` (this "what's deployed" summary).

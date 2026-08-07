@@ -11,7 +11,7 @@
 > фреймворком* (он применяет себя к себе, dogfooding). Поэтому здесь два слоя, и путать их нельзя:
 >
 > 1. **Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:
->    - `framework/` — канонические универсальные шаблоны (тринадцать ключевых документов вкл. летопись `PROJECT_HISTORY.md` и пояснительную записку `KAIF_REFERENCE.md`, семь README директорий, тридцать четыре навыка, опциональные модули и скрипт-распаковщик).
+>    - `framework/` — канонические универсальные шаблоны (четырнадцать ключевых документов вкл. канон требований `REQUIREMENTS_FRAMEWORK.md`, летопись `PROJECT_HISTORY.md` и пояснительную записку `KAIF_REFERENCE.md`, семь README директорий, тридцать четыре навыка, опциональные модули и скрипт-распаковщик).
 >    - `KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
 >      `tools/build-framework.mjs`. Это единственный источник истины для развёртывания.
 > 2. **Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):
@@ -47,7 +47,7 @@
 10. Comment your code/tools; keep docs accurate   # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAMEWORK.md)
 11. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
 12. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
-13. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md / TESTING_FRAMEWORK.md and improve them
+13. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md / REQUIREMENTS_FRAMEWORK.md / TESTING_FRAMEWORK.md / BUG_FIXING_FRAMEWORK.md and improve them
 14. Narrate in the chat what you're doing
 15. Документы от владельца        # СНАЧАЛА закоммить оригинал дословно (git add + commit), только потом —
                                   # правка следующим коммитом; голос и каждая мысль владельца сохраняются,
@@ -71,6 +71,7 @@
 | Правка шаблона (payload) | `AGENT_GUIDE.md` (слои) · инвариант пересборки · релевантный `framework/*` |
 | Баг | `BUG_FIXING_FRAMEWORK.md` · `bugs/<этот>` · карта (blast radius) |
 | Тестирование/проверка чего угодно | `TESTING_FRAMEWORK.md` (7 принципов · маркеры `[NOT-TESTED]`/`[TESTED]`) · секции верификации сферы |
+| Письмо требований / критериев приёмки / вектора цели | `REQUIREMENTS_FRAMEWORK.md` (десять критериев · стоп-словарь · fit criterion) |
 | Идея/фича | `ideas/<эта>` · `MASTER_PLAN.md` · релевантный `plans/<этот>` |
 | Планирование | `MASTER_PLAN.md` · `GOAL.md` · открытый беклог · секция «Дисциплина планирования» (тяжёлое → `/plan-epic`) |
 | Развёртывание/распаковка | `KAIF.md` §8 · манифест распаковщика |
@@ -188,7 +189,7 @@ KAIF/
 │  ── KEY DOCS (root; dogfooding wrapper = the framework applied to THIS project) ──
 ├── KAIF_FRAMEWORK.md                ← high-level "KAIF, deployed here" (post-injection doc)
 ├── KAIF_REFERENCE.md                ← ⭐ GENERATED copy of framework/KAIF_REFERENCE.md (the reference; edit the source)
-├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  TESTING_FRAMEWORK.md  STATUS.md
+├── AGENT_GUIDE.md  PHILOSOPHY.md  BUG_FIXING_FRAMEWORK.md  TESTING_FRAMEWORK.md  REQUIREMENTS_FRAMEWORK.md  STATUS.md
 ├── EXPERIENCE.md                    ← the agent's accumulated lessons (skill: /experience)
 ├── GOAL.md                          ← the vision (owner-filled)
 ├── MASTER_PLAN.md                   ← the phased roadmap from state → GOAL
@@ -203,7 +204,7 @@ KAIF/
 │  ── THE PAYLOAD (canonical universal templates → generate KAIF.md + dist/) ──
 ├── framework/
 │   ├── _intro.md                    ← narrative spine of the full core (with {{EMBED}}/{{SKILL_COUNT}} markers)
-│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md EXPERIENCE.md
+│   ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md REQUIREMENTS_FRAMEWORK.md EXPERIENCE.md
 │   ├── STATUS.md GOAL.md MASTER_PLAN.md KAIF_FRAMEWORK.md KAIF_REFERENCE.md (→ .kaif/)
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md
 │   ├── readmes/<dir>.md             ← the six directory-README templates
@@ -256,8 +257,8 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
-полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 13 ключевых документов +
-7 README + 34 навыка + 1 распаковщик = 55; бандл 148 блоков; карта — 655 модулей) — не переписывай эти
+полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
+7 README + 34 навыка + 1 распаковщик = 56; бандл 150 блоков; карта — 662 модуля) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.
@@ -350,7 +351,7 @@ consumer. Слабая сессия обновляет ту сторону, ко
 |---|---|---|
 | `framework/skills/fable-method,fable-judge` (вендорено, EN) | `.claude/skills/…` (побайтовые копии) | `diff framework/skills/fable-method/SKILL.md .claude/skills/fable-method/SKILL.md && diff framework/skills/fable-judge/SKILL.md .claude/skills/fable-judge/SKILL.md` |
 | `framework/*` (источник) | корневые генерированные копии + `dist/*` | `node tools/build-framework.mjs && git diff --stat` (дифф генератов после пересборки = дрейф) |
-| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 55; бандл 148 блоков; карта — 655 модулей' AGENT_GUIDE.md` |
+| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 56; бандл 150 блоков; карта — 662 модуля' AGENT_GUIDE.md` |
 | Состав навыков `framework/skills/` | таблицы README (EN+RU половины) | `test $(ls framework/skills | wc -l) -eq 34 && test $(grep -c '^| [*.]*./' README.md) -eq 68` |
 | Счётчик ритуалов в SVG (генератор) | alt-тексты README | `grep -o '34 repeatable' assets/layers-en-light.svg && grep -c '34 повторяемых ритуала\|34 repeatable rituals' README.md` |
 | Состав навыков `framework/skills/` | ключи 9 языковых пакетов | `node -e "const{readdirSync,readFileSync}=require('fs');const n=readdirSync('framework/skills').length;for(const l of readdirSync('framework/templates/languages')){const k=Object.keys(JSON.parse(readFileSync('framework/templates/languages/'+l+'/skill-triggers.json','utf8'))).length;if(k!==n){console.error(l,k,'!=',n);process.exit(1)}}console.log('ok',n)"` |
@@ -370,7 +371,7 @@ Remote по HTTPS. `gh` аутентифицирован (аккаунт `Mikala
 | `node tools/build-framework.mjs` | Регенерирует `KAIF.md` из `framework/`. |
 | `node tools/build-diagrams.mjs` | Регенерирует схемы README в `assets/` (3 чертежа × светлая/тёмная × EN/RU) из одного источника. Гейт ширины текста валит сборку, если подпись не влезает в свой контейнер — наезд невозможен по построению. Схемы правь ТОЛЬКО здесь, не в SVG. |
 | `node tools/readme-pdf.mjs` | Рендерит `README.md` → `README.pdf` (нужен `md-to-pdf`; `npm i` в `tools/`). |
-| `node tools/sandbox-suite.mjs` (`npm run test:core`) | **Постоянный песочный полигон машинерии** (план 21): 9 сводов (актуальное число проверок печатает полигон) по матрице восьми полевых профилей (свежая/анонимная/легаси установки, по-модульный update, расписки/adopt-current/diff, слепок, tool-модули provenance/canon-lint). ОБЯЗАТЕЛЕН после любой правки `framework/installer/*`, `framework/tools/*` или сборщика и перед релизом. |
+| `node tools/sandbox-suite.mjs` (`npm run test:core`) | **Постоянный песочный полигон машинерии** (план 21): число сводов и проверок печатает сам полигон («all N suites green») — по матрице полевых профилей (свежая/анонимная/легаси установки, по-модульный update, расписки/adopt-current/diff, слепок, tool-модули provenance/canon-lint/requirements-lint, контур K5). ОБЯЗАТЕЛЕН после любой правки `framework/installer/*`, `framework/tools/*` или сборщика и перед релизом. |
 | `node tools/commit.mjs "<msg>"` | Инкрементирует номер сборки, коммитит, пушит. |
 
 ---

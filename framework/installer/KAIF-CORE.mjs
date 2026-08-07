@@ -391,7 +391,8 @@ function anonymize(content) {
 //   zoo-code:    .roo/commands/<n>.md (drop `name:`; filename = command) + .roo/rules/kaif.md
 const CONTEXT_POINTER =
   '# Agent rules\n\nThis project is KAIF-wrapped. Before every task read `AGENT_GUIDE.md` (the canon) and ' +
-  '`STATUS.md` (current state); think per `PHILOSOPHY.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
+  '`STATUS.md` (current state); think per `PHILOSOPHY.md`; write requirements per `REQUIREMENTS_FRAMEWORK.md`; ' +
+  'test per `TESTING_FRAMEWORK.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
   'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n';
 
 // Returns true when the template was actually written; false when an existing file was
