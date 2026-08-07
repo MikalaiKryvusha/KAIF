@@ -38,6 +38,14 @@ In practice:
   failed to see because we misunderstood the task.
 - A complex solution that "seems to work" is worse than a simple one that *demonstrably* works.
 
+**The boundary, paid for by the field: Occam does NOT apply to what the human sees and hears.**
+Economy of entities is legitimate INSIDE the machinery; on what the human perceives — the timbre
+of a voice, a page, an image — the agent does not economize. A field agent refused a neural voice
+as "not worth a 145 MB model" and picked the system one; the owner, on hearing the call, rejected
+it immediately. A perception adjective in the ask ("beautiful", "pleasant", "natural") is the
+taste class — mock up and let the owner judge, don't conclude (see `AGENT_GUIDE.md` → the taste
+class).
+
 ## KISS — Keep It Simple, Stupid
 
 **Simplicity is the goal, not a side effect.** The simplest solution that does the job is the correct

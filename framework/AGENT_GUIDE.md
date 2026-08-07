@@ -412,6 +412,19 @@ nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML
 interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
 the transport (equivalence rule in `/interview`: HTML = md = chat).
 
+**Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
+doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
+agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
+THEIR EYES, and the action between those two states belongs to the agent, who knows the path and
+the command (the owner doesn't and shouldn't). "Lies at path…", "opens by double-click", "see
+file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
+footnote of where it landed — never as an errand. No separate show tool: the review contour opens
+any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
+contour, open the file with the system opener. The rule is guarded mechanically — grep your own
+reply for "double-click / opens offline / see file / lies at" next to an artifact extension: a
+hit means the show was replaced by a link. Field words that paid for this rule: "I will NOT open
+it by double-click! You are forcing me to dig through project files again!"
+
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
 lies a third class: the acceptance criterion is a PERCEPTION adjective (beautiful, natural,

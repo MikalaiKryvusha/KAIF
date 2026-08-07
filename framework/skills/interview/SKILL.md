@@ -52,6 +52,9 @@ If it shapes brand/architecture/UX for the long term — interview.
   ## QUESTIONS
 
   ### Q1. <question>
+
+  **Answer target:** <the document/section that waits on this answer — e.g. `plans/24 §B8` — written TOGETHER with the question>
+
   - **A) (recommended)** <the option distilled through PHILOSOPHY.md — simplest/most effective — + why>
   - **B)** <option>
   - **C)** <option>
@@ -74,6 +77,18 @@ If it shapes brand/architecture/UX for the long term — interview.
 - **Option D is always "your own answer"** — a slot for the owner to write their own choice if none of
   A/B/C fits.
 - **B and C** are the serious alternatives, each with a short "why" / trade-off.
+- **Every question declares its ANSWER TARGET** (contour invariant I18) — the document/section
+  blocked by the question, written at question-writing time: the agent knows it exactly then
+  (that knowledge is the reason to ask), and by closing time — often another session, days later —
+  it is gone. The field is cheaper than any memory.
+- **A question to the owner is a CLAIM about the state of the canon, and it is verified as a
+  claim** — before showing it, three subchecks: a negative claim ("the system has no X") needs
+  proof over the WHOLE source, not one read spot (one spot proves only itself) · a quote offered
+  as the owner's canon needs a look at its provenance marker (unaccepted AI text repeated to the
+  human launders invention into canon) · every name in the ANSWER OPTIONS must exist — an
+  invented entity in an option is worse than in prose: the human physically cannot answer, and
+  the question burns for nothing. Questions about things that do not exist YET are legal — declare
+  the intent explicitly ("proposing to create X") instead of implying X exists.
 - Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
   pad, but don't starve the interview either: a cramped interview that misses what the agent actually
   needed to clarify is worse than a few extra questions.
@@ -102,9 +117,18 @@ Sequence:
   makes the archive readable months later.
 - **First commit the owner's answers verbatim** (the owner's originals are inviolable —
   `AGENT_GUIDE.md`, git hygiene); only then rework the document in a following commit.
-- Write the decisions into the document: change status to `✅ ANSWERS RECEIVED <date>` and add a
-  "Decisions" table.
-- If the decisions affect the plan/architecture — update `STATUS.md` and the relevant files in `plans/`.
+- **Closing = PROPAGATION, not a status flip** (contour invariant I19). The interview counts as
+  closed only when EVERY declared answer target cites "interview #NNN, QN" and is brought in line
+  with the answer — **including REMOVING what the answer cancelled**: a stale risk or a phase
+  order derived from the open question keeps steering the plan long after the answer landed. Cap
+  on form: one citation in the blocked document — not a traceability table, not a separate
+  register. For old interviews that never declared targets, the soft heuristic applies (at least
+  one citation anywhere outside `interviews/`; history is not rewritten — I21).
+- Only AFTER the propagation pass: add the "Decisions" table and change status to
+  `✅ ANSWERS RECEIVED <date>` — the status change is the LAST action, not the first.
+- **Stale-status check** (the guard's second half): status says "awaiting" while no answer field
+  is empty ⇒ THE STATUS IS STALE — fix it and look for what else never propagated. In the field an
+  interview hung "awaiting" for two days over twelve filled answers.
 - Proceed to implement per the approved plan (or, if the owner asks to pause — call `/pause`).
 
 ## Notes

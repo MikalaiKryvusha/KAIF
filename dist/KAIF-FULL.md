@@ -553,6 +553,19 @@ nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML
 interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
 the transport (equivalence rule in `/interview`: HTML = md = chat).
 
+**Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
+doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
+agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
+THEIR EYES, and the action between those two states belongs to the agent, who knows the path and
+the command (the owner doesn't and shouldn't). "Lies at path…", "opens by double-click", "see
+file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
+footnote of where it landed — never as an errand. No separate show tool: the review contour opens
+any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
+contour, open the file with the system opener. The rule is guarded mechanically — grep your own
+reply for "double-click / opens offline / see file / lies at" next to an artifact extension: a
+hit means the show was replaced by a link. Field words that paid for this rule: "I will NOT open
+it by double-click! You are forcing me to dig through project files again!"
+
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
 lies a third class: the acceptance criterion is a PERCEPTION adjective (beautiful, natural,
@@ -689,6 +702,14 @@ In practice:
 - If a solution needs five interlocking hacks — there is almost certainly one simple solution we
   failed to see because we misunderstood the task.
 - A complex solution that "seems to work" is worse than a simple one that *demonstrably* works.
+
+**The boundary, paid for by the field: Occam does NOT apply to what the human sees and hears.**
+Economy of entities is legitimate INSIDE the machinery; on what the human perceives — the timbre
+of a voice, a page, an image — the agent does not economize. A field agent refused a neural voice
+as "not worth a 145 MB model" and picked the system one; the owner, on hearing the call, rejected
+it immediately. A perception adjective in the ask ("beautiful", "pleasant", "natural") is the
+taste class — mock up and let the owner judge, don't conclude (see `AGENT_GUIDE.md` → the taste
+class).
 
 ## KISS — Keep It Simple, Stupid
 
@@ -3079,6 +3100,9 @@ If it shapes brand/architecture/UX for the long term — interview.
   ## QUESTIONS
 
   ### Q1. <question>
+
+  **Answer target:** <the document/section that waits on this answer — e.g. `plans/24 §B8` — written TOGETHER with the question>
+
   - **A) (recommended)** <the option distilled through PHILOSOPHY.md — simplest/most effective — + why>
   - **B)** <option>
   - **C)** <option>
@@ -3101,6 +3125,18 @@ If it shapes brand/architecture/UX for the long term — interview.
 - **Option D is always "your own answer"** — a slot for the owner to write their own choice if none of
   A/B/C fits.
 - **B and C** are the serious alternatives, each with a short "why" / trade-off.
+- **Every question declares its ANSWER TARGET** (contour invariant I18) — the document/section
+  blocked by the question, written at question-writing time: the agent knows it exactly then
+  (that knowledge is the reason to ask), and by closing time — often another session, days later —
+  it is gone. The field is cheaper than any memory.
+- **A question to the owner is a CLAIM about the state of the canon, and it is verified as a
+  claim** — before showing it, three subchecks: a negative claim ("the system has no X") needs
+  proof over the WHOLE source, not one read spot (one spot proves only itself) · a quote offered
+  as the owner's canon needs a look at its provenance marker (unaccepted AI text repeated to the
+  human launders invention into canon) · every name in the ANSWER OPTIONS must exist — an
+  invented entity in an option is worse than in prose: the human physically cannot answer, and
+  the question burns for nothing. Questions about things that do not exist YET are legal — declare
+  the intent explicitly ("proposing to create X") instead of implying X exists.
 - Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
   pad, but don't starve the interview either: a cramped interview that misses what the agent actually
   needed to clarify is worse than a few extra questions.
@@ -3129,9 +3165,18 @@ Sequence:
   makes the archive readable months later.
 - **First commit the owner's answers verbatim** (the owner's originals are inviolable —
   `AGENT_GUIDE.md`, git hygiene); only then rework the document in a following commit.
-- Write the decisions into the document: change status to `✅ ANSWERS RECEIVED <date>` and add a
-  "Decisions" table.
-- If the decisions affect the plan/architecture — update `STATUS.md` and the relevant files in `plans/`.
+- **Closing = PROPAGATION, not a status flip** (contour invariant I19). The interview counts as
+  closed only when EVERY declared answer target cites "interview #NNN, QN" and is brought in line
+  with the answer — **including REMOVING what the answer cancelled**: a stale risk or a phase
+  order derived from the open question keeps steering the plan long after the answer landed. Cap
+  on form: one citation in the blocked document — not a traceability table, not a separate
+  register. For old interviews that never declared targets, the soft heuristic applies (at least
+  one citation anywhere outside `interviews/`; history is not rewritten — I21).
+- Only AFTER the propagation pass: add the "Decisions" table and change status to
+  `✅ ANSWERS RECEIVED <date>` — the status change is the LAST action, not the first.
+- **Stale-status check** (the guard's second half): status says "awaiting" while no answer field
+  is empty ⇒ THE STATUS IS STALE — fix it and look for what else never propagated. In the field an
+  interview hung "awaiting" for two days over twelve filled answers.
 - Proceed to implement per the approved plan (or, if the owner asks to pause — call `/pause`).
 
 ## Notes
@@ -4550,7 +4595,18 @@ take a static-site generator or UI framework is large and the win is zero.
 **Acceptance criterion:** a full routine cycle passes **without a single clarification in chat**.
 Not "the page opened" — "the owner approved and the agent never had to re-ask".
 
+**Borrowing from a donor project.** When the owner points at a neighbor project as the model
+("theirs came out better — study it"), the reading order is: **its bugs → its plan → its code**,
+and the recon is not finished until its EXPERIENCE file and its upstream queue are read — what
+the owner names aloud is what they noticed as a user; what their agent already SUFFERED lies in
+the bug tracker, and skipping it means paying for the same defects again. Borrow the INTERFACE
+and the lessons, never the files: a copy is a second truth with two places to fix.
+
 ## The invariants (normative — a contour without them falls apart)
+
+One number space, I1–I36. I1–I7 are the original core; I8–I36 were each paid for by a field
+incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
+a show replaced by a file path · an answered question re-asked two days later).
 
 - **I1. md is the source, HTML is derived. Always.** The page is built from the document and never
   hand-edited — otherwise a second truth appears and the next empty-context session misses
@@ -4558,7 +4614,9 @@ Not "the page opened" — "the owner approved and the agent never had to re-ask"
 - **I2. An answer is recorded in THREE places:** back into the source md (the next session reads
   the document) · `<doc>.decision.json` beside it (machine check before send) · a copy in the
   decisions archive with `by` and `at` (who decided, when). The decision filename is DERIVED from
-  the document name — a shared decision file gets overwritten by the next interview.
+  the document name — a shared decision file gets overwritten by the next interview. An answer the
+  owner already wrote is NEVER overwritten: a new text arrives as a dated follow-up field, the
+  original stays verbatim.
 - **I3. Approval binds to the SHA-256 of the BODY, not to the click.** Text changed after approval
   = approval void, checked by machine. **And agree on normalization** — who strips what, at which
   step: the field's costliest defect was the page hashing file bytes while the sender hashed
@@ -4573,9 +4631,159 @@ Not "the page opened" — "the owner approved and the agent never had to re-ask"
 - **I6. Quiet hours override everything**, including an explicitly requested voice level:
   autoloop → quiet hours → setting. The window CROSSES MIDNIGHT (e.g. 23:00–09:00) — naive
   `from <= now <= to` is silent all day and loud all night; that comparison deserves its own guard.
-- **I7. Autonomous loops accumulate, never block.** A queue flag parks the document in a pending
-  folder; one "N accumulated" page (each card linking to its document) calls the owner ONCE per
-  batch. Without this the practice is incompatible with day/night loops.
+- **I7. Autonomous loops accumulate, never block.** The queue is a STATE FILE — never move live
+  documents into a pending folder (moving breaks every link to them from status and plans); one
+  "N accumulated" page (each card linking to its document) calls the owner ONCE per batch. Paired
+  with I8, the batch page must not live long: the owner answers one document, the contour closes
+  and wakes the agent; if the queue still holds items, re-raising the batch is the agent's duty.
+
+**The waiting-and-wake loop (I8–I14):**
+
+- **I8. Saving wakes the waiter.** Field wording, vendored verbatim: *"The contour must WAKE the
+  waiting agent on save. The agent learns of events by the TERMINATION of a process it started —
+  therefore a long-lived server and a wake-up are mutually exclusive, and the wake-up wins. Any
+  recorded decision terminates the contour; if anything remains unanswered, re-opening the page is
+  the AGENT's duty, never the human's."* Every check before this one asserted the path TO the
+  human; the path BACK is what the contour exists for.
+- **I9. The machine's patience is infinite.** Waiting for a human's answer has NO timeout by
+  default — the default is `0`, not "a big number" (a finite default gives the same defect, just
+  rarer, and a rare defect is worse: it arrives when nobody expects it). A finite limit is an
+  explicit flag for automation only, and it means tolerated SILENCE, never a deadline on thinking.
+- **I10. Refusing the human's work must be LOUD.** Every network call that carries the human's
+  work sits in try/catch. Mechanical test: "does a path exist where the save button stays disabled
+  and no error status shows?" — if yes, that is a defect, not an edge case. A silent refusal is
+  worse than a crash: a crash is seen at once, silence eats an hour.
+- **I11. A rescue ring on the client.** Recording failed → the human's text comes back onto the
+  page: a field with the full content, a Copy button, a Retry button, the save button re-enabled.
+  The human's work has no right to exist only in the RAM of someone else's process.
+- **I12. A draft in the browser.** `localStorage` on every input, restored on page load with a
+  visible "picked up N fields" notice. Insurance never lives inside the thing it insures against —
+  the server is exactly the part that dies.
+- **I13. The receiver's pulse (page → server).** The page polls `/alive` (default every 15 s;
+  10–60 s envelope) and says out loud the moment the server goes silent — the human learns of the
+  trouble immediately, not after an hour at the click. The one measure that makes the
+  ate-the-work defect impossible rather than fixable.
+- **I14. The reverse pulse (server ← page).** Closing the page is an EVENT for the server. Two
+  channels: a `sendBeacon('/closed')` on `pagehide` (fast path; wait ~3 s to tell a reload from a
+  close) plus a silence watch (threshold with a large margin, ~3 min, against background-tab
+  throttling; two strikes against machine sleep). Infinite patience (I9) is right only while the
+  addressee is alive — if a contour can notice its partner's death in one direction, it must
+  notice it in the other.
+
+**Antagonists — read as ONE block.** I8 (the process dies ON EVENT) ↔ I9 (never BY CLOCK) ↔ I14
+(patience lasts while the page lives). The forbidden reading is named: *"since the process must
+die anyway, let it also die on a timer"* — that false symmetry is exactly what the field paid for.
+
+**Showing (I15–I17; the canon lives in `AGENT_GUIDE.md`, the contour enforces it):**
+
+- **I15. Showing is an action, not a link.** Whatever the agent wants the human to perceive, the
+  agent OPENS ITSELF; "lies at path…", "opens by double-click", "see file X" addressed to the
+  human are banned as a way of showing. The path is a footnote AFTER the show, never an errand.
+- **I16. The show contour = the question contour.** The page opens ANY markdown, not only
+  documents with questions; the document-wide comment field lets the human answer or stay silent.
+  No separate show tool is ever built.
+- **I17. A mechanical check on showing.** Grep the agent's own reply for "double-click", "opens
+  offline", "see file", "lies at" next to an artifact extension — a hit means the show was
+  replaced by a link. The rule holds through an executable command in rituals, not through intent.
+
+**Answer propagation — the return leg (I18–I21; procedure in `/interview`):**
+
+- **I18. A question declares its ANSWER TARGET, written together with the question.** The agent
+  knows which line of which document is blocked exactly at asking time — that knowledge is the
+  reason to ask; the field is cheaper than any memory.
+- **I19. Closing an interview is PROPAGATION, not a status flip.** Every declared target cites
+  "interview #NNN, QN" and is brought in line with the answer — including REMOVING what the answer
+  cancelled (a stale risk or phase order left alive keeps steering the plan). The status change is
+  the LAST action. Cap on form: one citation in the blocked document — not a traceability table,
+  not a separate register.
+- **I20. The return-leg guard.** For every ANSWERED question, check that its declared targets cite
+  it. Inherited debt goes into a baseline (key: `file + sha1(text)`), red fires only on NEW items,
+  the debt count prints on every run and must go down. The summary reports BOTH legs — a one-leg
+  "0 waiting" is a false green; the unit is the QUESTION, never the interview file.
+- **I21. Old interviews without the target field get a heuristic, not a refusal:** at least one
+  citation anywhere outside `interviews/`. Zero migration; history is not rewritten.
+
+**Provenance (I22–I24):**
+
+- **I22. Provenance has TWO representations:** machine (ISO, for the archive and programs) and
+  human (local time in words, next to the answer and on the question card). One never replaces the
+  other.
+- **I23. Time shown to a human is always LOCAL.** UTC in the interface is a lie about the human's
+  own action.
+- **I24. The markdown renderer strips HTML comments.** Escaping foreign markup and displaying
+  service comments are different things; inside fenced code, comments stay (there they are
+  content). Fix it in the renderer — one node covers all present and future markers.
+
+**Window, port, outcomes, process (I25–I31):**
+
+- **I25. There are exactly three outcomes, all visible in the process log:** decision recorded ·
+  page closed without an answer · interrupted by the human. "He's probably still thinking" is not
+  an outcome.
+- **I26. A separate app window (`--app=`), never a tab** in the human's working browser window —
+  both the owner's explicit ask and a technical truth: auto-close is only possible in a window the
+  script itself opened.
+- **I27. Auto-close is an ATTEMPT, not a promise:** ~2 s after the answer is recorded; if the
+  browser refuses, the page honestly says "please close me" — never a silent "hangs as it was".
+- **I28. The voice call by name is the DEFAULT level,** not an option for the brave: a voice built
+  but switched off by a setting exists only on paper.
+- **I29. One document — one window.** A lock with pid and address; a second launch prints the live
+  address and exits. Two windows are two calls AND two different drafts — the port is part of the
+  web origin, so a draft written in one window is invisible to the other.
+- **I30. A free port (`listen(0)`), never a fixed one.** On a fixed port a live old server
+  silently wins the race, `curl` returns 200, and the human reads a STALE page; the `pkill`
+  temptation (which kills the page open in front of the human) disappears with it.
+- **I31. Process termination is the answer-delivery channel.** The agent starts the contour as a
+  TRACKED background task and subscribes to its termination; a bare `&` is not tracked by the
+  harness and no notification ever comes.
+
+**The call (I32–I36):**
+
+- **I32. The call never blocks the contour.** Speech synthesis takes seconds; a synchronous call
+  steals them from the page server — the human stares at an empty window instead of questions.
+- **I33. Chain order matters: instant sound → banner → voice.** A parallel launch lays the beep
+  over the speech. Default beeps: 880 Hz/160 ms → 660/160 → 990/260, then the voice.
+- **I34. The sound path must not depend on user OS settings.** Native notifications get muted
+  silently with a success exit code; the beep goes through the sound card; delivery is confirmed
+  WITH THE HUMAN, never by exit code.
+- **I35. The voice falls back honestly to the system one.** No engine on this machine (other box,
+  removed venv) — the approval contour has no right to break over timbre; make route choice a pure
+  function so both branches sit under guards regardless of the machine running the checks.
+- **I36. Text normalization for speech lives in the ENGINE, not in the project.** The call phrase
+  almost always carries a number ("interview #16"); without normalization digits get swallowed or
+  spelled out. Heavy shared resources (the TTS model, its venv) belong to the MACHINE, not the
+  project: the project calls a ready command and falls back honestly when it is absent.
+
+## The named class: "handling the human's work"
+
+Every defect the owner catches personally is a defect of handling their TIME and WORK, not of
+rendering — and none of them is found by any mechanical self-check. The class is therefore
+verified BY ROSTER, walking the field-paid cases one by one, not by self-tests: no-timeout
+waiting (I9) · loud refusal (I10) · rescue ring (I11) · browser draft (I12) · both pulses
+(I13/I14) · app window, not a tab (I26) · auto-close attempt (I27) · voice by default (I28) ·
+project name in the header (page element P9). Accepting a contour = walking this roster.
+
+## Page elements by name (P1–P9) — one style across projects
+
+- **P1** — question widget with a 4–5 px state stripe on the left edge; the stripe's color IS the
+  state (waiting / answered): one detail carries two meanings — separates and informs.
+- **P2** — explicit state tags on every question: answered / unanswered / awaits you.
+- **P3** — selection clearable by a second click (a native radio cannot return to "none"): state
+  remembered on `mousedown` (before browser activation), cleared on the field's own click,
+  label-target events skipped — otherwise a text click clears twice, i.e. never.
+- **P4** — no "who answers" question on a one-owner project; the server still stamps `by` —
+  remove the QUESTION, not the RECORD, or the archive is unreadable months later.
+- **P5** — both OS themes via `prefers-color-scheme`, colors as variables, contrast measured in
+  pixels from day one.
+- **P6** — embedded media: `data:` URIs for audio and images, `srcdoc` iframes for live mockups (a
+  `file://` link from an http page is blocked — embedding is the only working path). A choice
+  among four mockups opens as a SEPARATE window (opened by script → closable by script); the
+  inline frame is for quick previews of smaller decisions.
+- **P7** — a comment field per question AND a document-wide comment at the bottom; the latter is a
+  legitimate review outcome on its own ("no answers, but something to say"), appended as a dated
+  block — comments accumulate, never overwrite.
+- **P8** — a markdown mini-renderer (~120 lines), zero dependencies, escaping as the FIRST action.
+- **P9** — the project name in the page header: the owner runs several projects, and the document
+  title alone does not say WHO is asking.
 
 ## The name contract (candidate, field-tested on four product routines)
 
@@ -4598,9 +4806,11 @@ what makes the archive readable months later.
    and delivery is confirmed WITH THE HUMAN, not by exit code.
 4. **Fixtures don't catch live documents** — three renderer defects surfaced only on the project's
    real files. A run over ALL existing live documents is a handover condition for the tool.
-5. **A false alarm in a guard is worse than a miss** — it teaches ignoring the tool; close each
-   with its own guard. Expect ~10 false hits per real one for a text-rule guard; exceptions are
-   explicit, with the reason on the line.
+5. **A principle, not a tip: a false alarm in a guard is worse than a miss** — it teaches ignoring
+   the tool, and it is violated most eagerly exactly while building guards; close each with its
+   own guard. Expect ~10 false hits per real one for a text-rule guard; exceptions are explicit,
+   with the reason on the line. Guess-heuristics ("option letters must run A, B, C") don't go into
+   guards — precision is held by a frozen etalon, not by plausibility.
 6. **Both OS themes** — dark-on-dark code blocks were caught by the owner, not by self-checks.
 7. **Non-ASCII regexes:** in Node `\w`/`\b` are ASCII-only even with `u` — use `\p{L}` /
    `(?!\p{L})` with the `u` flag, or the guard silently misses its own language.
