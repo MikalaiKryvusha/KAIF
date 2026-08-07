@@ -26,7 +26,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   normalize, bodyHash, parseQuestions, recordDecision, readDecision, checkApproval,
 } from './lib/review-core.mjs';
-import { serveContour } from './review.mjs';
+import { serveContour, enqueue, readQueue, pendingNotices } from './review.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ETALON_PATH = join(ROOT, 'tools', 'verify-contour.etalon.json');
@@ -376,6 +376,52 @@ async function main() {
       process.emit('SIGINT');
       const r = await Promise.race([livePromise, sleep(3000).then(() => null)]);
       check('живой контур завершён прерыванием (исход в логе, I25)', r !== null && r.outcome === 'interrupted by the human');
+    }
+
+    block('10н. Класс «сообщение» в ЖИВОМ браузере: пометка КЛИКОМ (I37/I38, задача T10)');
+    {
+      // Ветка страничного JS, которую нельзя снять прямым POST: у сообщения нет ни одного
+      // заполненного поля, и проверка «нечего записывать» обязана НЕ сработать — доказать это
+      // может только настоящий клик по настоящей кнопке.
+      const noticeRel = 'reports/notice_qa.md';
+      mkdirSync(join(fixtureRoot, 'reports'), { recursive: true });
+      const noticeBody = '# Отчёт для QA-прогона\n\nТело сообщения, которое человек читает.\n';
+      writeFileSync(join(fixtureRoot, noticeRel), noticeBody, 'utf8');
+      enqueue(fixtureRoot, noticeRel, { kind: 'notice' });
+      let noticeUrl = null;
+      serveContour._onUp = (u) => { noticeUrl = u; };
+      const noticePromise = serveContour(fixtureRoot, { docPath: noticeRel, notice: true },
+        { open: false, signal: false, log: logSilent });
+      while (!noticeUrl) await sleep(50);
+      const page = await attachPage(browser.cdp, noticeUrl);
+      const probe = await page.evaluate([
+        "(function(){var b=document.querySelector('#save');return {",
+        " radios:document.querySelectorAll('input[type=radio]').length,",
+        " btn:b?b.textContent:null, chip:!!document.querySelector('.tag.notice'),",
+        " body:document.body.textContent.indexOf('Тело сообщения')>=0,",
+        " commentEmpty:document.querySelector('textarea[data-draft]').value===''}})()",
+      ].join(''));
+      check('на странице сообщения НЕТ ни одной радиокнопки', probe.radios === 0, 'найдено ' + probe.radios);
+      check('кнопка пометки — «ОК, прочитано»', probe.btn === 'ОК, прочитано', 'фактически «' + probe.btn + '»');
+      check('чип класса «ответа не ждёт» на месте', probe.chip);
+      check('тело сообщения человеку видно', probe.body);
+      check('поле комментария пустое — пометка обязана пройти и без него', probe.commentEmpty);
+      await page.evaluate("(function(){document.querySelector('#save').click();return true})()");
+      const served = await Promise.race([noticePromise, sleep(8000).then(() => null)]);
+      check('КЛИК по кнопке дал ШТАТНЫЙ исход «прочитано» (I37, а не «закрыто без ответа»)',
+        served !== null && served.outcome === 'notice read', served ? served.outcome : 'не завершился за 8 с');
+      check('исход несёт код успеха (0), как у записанного решения', served !== null && served.exitCode === 0);
+      check('пометка доказуема полем readAt в очереди (I38)',
+        readQueue(fixtureRoot).some((i) => i.doc === noticeRel && i.readAt));
+      check('прочитанное сообщение ушло из очереди повторной доставки',
+        pendingNotices(fixtureRoot).every((i) => i.doc !== noticeRel));
+      const dec = readDecision(fixtureRoot, noticeRel);
+      check('запись решения помечена классом notice', dec !== null && dec.kind === 'notice',
+        dec ? 'kind=' + dec.kind : 'записи нет');
+      check('документ владельца НЕ тронут побайтно (писать было нечего)',
+        readFileSync(join(fixtureRoot, noticeRel), 'utf8') === noticeBody);
+      check('консоль страницы сообщения чистая', page.events.console.length === 0, page.events.console[0]);
+      await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
     }
 
     block('QA3. Оба сценария «страница ушла»: перезагрузка — ЖИВЁТ, закрытие — УМИРАЕТ');

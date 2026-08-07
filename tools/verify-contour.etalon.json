@@ -43,5 +43,15 @@
     "questions": 3,
     "parsedOptions": 11,
     "candidateLines": 11
+  },
+  "interviews/interview_010_scope_after_epic_o.md": {
+    "questions": 2,
+    "parsedOptions": 7,
+    "candidateLines": 7
+  },
+  "interviews/interview_011_scope_tasks_T1_T9.md": {
+    "questions": 2,
+    "parsedOptions": 7,
+    "candidateLines": 7
   }
 }
