@@ -1,0 +1,74 @@
+[
+  {
+    "key": "plans/17_kaif_1.7_guardrail_tools.md#559657dd42cd9b5cc4e5a2b016aa00caee757086",
+    "file": "plans/17_kaif_1.7_guardrail_tools.md",
+    "kind": "место вопросов",
+    "excerpt": "- [ ] Развилки владельцу: кодовое имя 1.7; место `kaif-provenance` (ядро vs опциональный"
+  },
+  {
+    "key": "plans/23_kaif_2.1_epic_b_update_field_fixes.md#da967b8ce301fac8e538fa4d6adc3b33a029ae08",
+    "file": "plans/23_kaif_2.1_epic_b_update_field_fixes.md",
+    "kind": "место вопросов",
+    "excerpt": "- [ ] Отчёт владельцу: можно катить 2.0+фиксы на парк (или дождаться релиза 2.1 — его решение)."
+  },
+  {
+    "key": "researches/05_kaif_1.5_implementation_report.md#8b891e5295c51087538457c776a56697c140e60b",
+    "file": "researches/05_kaif_1.5_implementation_report.md",
+    "kind": "место вопросов",
+    "excerpt": "# Research 05 — Сводный отчёт владельцу: как реализован KAIF 1.5 — Tested KAIF"
+  },
+  {
+    "key": "researches/06_readme_visual_face.md#6954cac7ee88fa4743b21b38efac0e115332db40",
+    "file": "researches/06_readme_visual_face.md",
+    "kind": "место вопросов",
+    "excerpt": "## 7. Открытые вопросы — уходят владельцу в интервью"
+  },
+  {
+    "key": "researches/15_kaif_2.2_scope_metasynthesis.md#a417fe8ba2e7776631f57e57efd56c3697406d85",
+    "file": "researches/15_kaif_2.2_scope_metasynthesis.md",
+    "kind": "место вопросов",
+    "excerpt": "Развилки владельцу: схема (все? кроме вендоренных fable-*? lifecycle `/kaif-*` уже с префиксом) +"
+  },
+  {
+    "key": "ideas/01_DONE_framework_validator.md#6a59eda18208ebca23cf282231b3b66b08fd3d83",
+    "file": "ideas/01_DONE_framework_validator.md",
+    "kind": "место вопросов",
+    "excerpt": "## Открытые вопросы / что требует ответа владельца"
+  },
+  {
+    "key": "ideas/02_DONE_other_agents_support.md#6a59eda18208ebca23cf282231b3b66b08fd3d83",
+    "file": "ideas/02_DONE_other_agents_support.md",
+    "kind": "место вопросов",
+    "excerpt": "## Открытые вопросы / что требует ответа владельца"
+  },
+  {
+    "key": "ideas/08_competitor_research_and_pareto_vision.md#2bbf31fa2d7acdfe80207616ae0d71f435a0e450",
+    "file": "ideas/08_competitor_research_and_pareto_vision.md",
+    "kind": "место вопросов",
+    "excerpt": "## Open questions / what needs the human's answer"
+  },
+  {
+    "key": "ideas/09_DONE_experience_memory_decision_log.md#2bbf31fa2d7acdfe80207616ae0d71f435a0e450",
+    "file": "ideas/09_DONE_experience_memory_decision_log.md",
+    "kind": "место вопросов",
+    "excerpt": "## Open questions / what needs the human's answer"
+  },
+  {
+    "key": "ideas/10_DONE_optional_enforcement_hooks.md#2bbf31fa2d7acdfe80207616ae0d71f435a0e450",
+    "file": "ideas/10_DONE_optional_enforcement_hooks.md",
+    "kind": "место вопросов",
+    "excerpt": "## Open questions / what needs the human's answer"
+  },
+  {
+    "key": "ideas/11_DONE_progressive_context_loading.md#2bbf31fa2d7acdfe80207616ae0d71f435a0e450",
+    "file": "ideas/11_DONE_progressive_context_loading.md",
+    "kind": "место вопросов",
+    "excerpt": "## Open questions / what needs the human's answer"
+  },
+  {
+    "key": "STATUS.md#d9661782b3659384ceb0344e5e2a3508148db2fe",
+    "file": "STATUS.md",
+    "kind": "место вопросов",
+    "excerpt": "## ❓ Ожидает владельца"
+  }
+]
