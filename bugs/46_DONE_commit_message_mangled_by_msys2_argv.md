@@ -1,7 +1,6 @@
 # Bug 46 — сообщение коммита исковеркано MSYS2-конвертацией argv (git-bash → commit.mjs)
 
-**Status:** 🔧 fix pending verification (фикс отгружен; проверка — следующий коммит `--msg-file`
-читается обратно побайтно чистым)
+**Status:** ✅ DONE (2026-08-07)
 **Version/build:** build 135 (коммит `dbe2db1`) · **When/context:** 2026-08-07, фикс-коммит
 закрытия фазы N3, вызов `node tools/commit.mjs "<кириллица + слэши>"` из git-bash
 **Fix accepted when (observable):** (1) `node tools/commit.mjs "тест: кириллица"` из git-bash
@@ -60,6 +59,13 @@
    ёлочки, тире).
 3. Внутренний транспорт переведён на `git commit -F` и для ASCII-режима тоже — один путь
    вместо двух.
+
+## ✅ STATUS: DONE (2026-08-07)
+
+Оба условия «Fix accepted when» исполнены наблюдением: (1) страж argv красный на кириллице —
+«✋ non-ASCII commit message via argv…», exit 1, HEAD и build не изменились; (2) фикс-коммит
+`b8cb1c7` через `--msg-file` — `git log -1 --format=%B` побайтно равен файлу-источнику
+(скрипт-сверка: «byte-equal: true», следов конвертации нет). Класс закрыт по построению.
 
 ## Links
 
