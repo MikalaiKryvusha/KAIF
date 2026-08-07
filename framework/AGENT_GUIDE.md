@@ -673,7 +673,8 @@ gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks a
 Model split (mark it in skills and task items): mechanical steps — running linters and gates,
 renames, arithmetic, re-syncs — any model; judgment steps — deriving the styleguide, canon wording,
 acceptance calls — a strong model only. Everything machine-checkable is checked by CODE; LLMs keep
-the judgment.
+the judgment — this split is the operational face of one principle, `PHILOSOPHY.md` → «Code before
+cognition» (80% deterministic / 20% the model); it is stated once there and applied here.
 
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended

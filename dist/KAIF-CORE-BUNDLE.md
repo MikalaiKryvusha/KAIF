@@ -754,7 +754,8 @@ gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks a
 Model split (mark it in skills and task items): mechanical steps — running linters and gates,
 renames, arithmetic, re-syncs — any model; judgment steps — deriving the styleguide, canon wording,
 acceptance calls — a strong model only. Everything machine-checkable is checked by CODE; LLMs keep
-the judgment.
+the judgment — this split is the operational face of one principle, `PHILOSOPHY.md` → «Code before
+cognition» (80% deterministic / 20% the model); it is stated once there and applied here.
 
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
@@ -865,6 +866,18 @@ decision. When any of them conflicts with the prime directive, the prime directi
 Roughly 80% of the value comes from 20% of the effort. Aim to deliver the most useful result for the least
 optimal spend of time, effort, and resources. Find the vital few things that move the outcome and do those
 first; don't polish the trivial many. "Good and shipped" beats "perfect and late."
+
+### Code before cognition — determinism first, the model second
+Anything that can be done by code, do by code; the model is called in only where creativity or
+reasoning is genuinely needed. The working proportion to hold: **80% of automation deterministic,
+20% the model.** Code is repeatable, fast, free on re-run and reviewable line by line — and it does
+not hallucinate; a model asked to do a script's job is slower, costlier and non-reproducible, and
+its answer drifts between runs. In practice: guards, linters, counters, sorting, diffs, migrations,
+roster checks — code; taste, canon wording, judgement on acceptance — the model. Everything
+machine-checkable is checked by CODE; judgement is what remains for the model (`AGENT_GUIDE.md` →
+strictness modes, the division by model strength). This is Occam applied to the workforce: never
+spend cognition where determinism suffices — and the 20% left for the model is not a shortfall but
+the part that actually needs a mind.
 
 ### Murphy's Law — anything unforeseen tends to happen
 If a risk isn't accounted for, it has a good chance of being exactly what bites you. You can't defend

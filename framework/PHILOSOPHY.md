@@ -70,6 +70,18 @@ Roughly 80% of the value comes from 20% of the effort. Aim to deliver the most u
 optimal spend of time, effort, and resources. Find the vital few things that move the outcome and do those
 first; don't polish the trivial many. "Good and shipped" beats "perfect and late."
 
+### Code before cognition — determinism first, the model second
+Anything that can be done by code, do by code; the model is called in only where creativity or
+reasoning is genuinely needed. The working proportion to hold: **80% of automation deterministic,
+20% the model.** Code is repeatable, fast, free on re-run and reviewable line by line — and it does
+not hallucinate; a model asked to do a script's job is slower, costlier and non-reproducible, and
+its answer drifts between runs. In practice: guards, linters, counters, sorting, diffs, migrations,
+roster checks — code; taste, canon wording, judgement on acceptance — the model. Everything
+machine-checkable is checked by CODE; judgement is what remains for the model (`AGENT_GUIDE.md` →
+strictness modes, the division by model strength). This is Occam applied to the workforce: never
+spend cognition where determinism suffices — and the 20% left for the model is not a shortfall but
+the part that actually needs a mind.
+
 ### Murphy's Law — anything unforeseen tends to happen
 If a risk isn't accounted for, it has a good chance of being exactly what bites you. You can't defend
 against every risk in the universe, so tier them: **(a)** the highest risks — take seriously and build

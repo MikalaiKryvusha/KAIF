@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 671,
+  "moduleCount": 672,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -224,10 +224,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "2007e758c0ecff437fcc1f118ec9101b1d2e11bd373c852ab5ae493de5b6edda",
+        "sha256": "18c0ce20cf416933cf2a637ef3232ce24a6b1cf2b24e394ae6c47ac1d5bd115b",
         "lines": [
           583,
-          683
+          684
         ]
       },
       {
@@ -235,8 +235,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          684,
-          698
+          685,
+          699
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          699,
-          711
+          700,
+          712
         ]
       }
     ],
@@ -305,12 +305,21 @@
         ]
       },
       {
+        "signature": "### Code before cognition — determinism first, the model second",
+        "class": "static",
+        "sha256": "d941fcec6d0e4688355750eb1c912452d005d1653cda638cf4d3972cec26bc98",
+        "lines": [
+          73,
+          84
+        ]
+      },
+      {
         "signature": "### Murphy's Law — anything unforeseen tends to happen",
         "class": "static",
         "sha256": "a390d457efe399b53a568cf0f376c7dfc44b5e52fdfb3cddb7b7aa4d984e5bbb",
         "lines": [
-          73,
-          79
+          85,
+          91
         ]
       },
       {
@@ -318,8 +327,8 @@
         "class": "static",
         "sha256": "afd2b4f84aad03bcbd6b5d1828ae499dc7d80ebb246d1cef5311c58b783ded4f",
         "lines": [
-          80,
-          85
+          92,
+          97
         ]
       },
       {
@@ -327,8 +336,8 @@
         "class": "static",
         "sha256": "5a8909e9e7719bddab57ab24ae4fe794f0b12b41d3a0253437c48940a79681cc",
         "lines": [
-          86,
-          96
+          98,
+          108
         ]
       },
       {
@@ -336,8 +345,8 @@
         "class": "static",
         "sha256": "9410bb10dccb1661fedcca3edde970ca121a8f2683b7a1197910446507fd3664",
         "lines": [
-          97,
-          102
+          109,
+          114
         ]
       },
       {
@@ -345,8 +354,8 @@
         "class": "static",
         "sha256": "c5ab1e27e4aacd2826492f04e8c0243dd85b9719c2e908b853be78f25f2dace0",
         "lines": [
-          103,
-          107
+          115,
+          119
         ]
       },
       {
@@ -354,8 +363,8 @@
         "class": "static",
         "sha256": "b1ea5e02037cda1107dc42b32669d85766bd5633a2f7cfd818cc8e6466dafeba",
         "lines": [
-          108,
-          113
+          120,
+          125
         ]
       },
       {
@@ -363,8 +372,8 @@
         "class": "static",
         "sha256": "f441d4b91e43821ed2a8a17277b3e22a3bd79c7521e514a27aa656c8650f5452",
         "lines": [
-          114,
-          121
+          126,
+          133
         ]
       },
       {
@@ -372,8 +381,8 @@
         "class": "static",
         "sha256": "4d1c950dd4713c2db6495e9a4dd2387743524f790c2b2a2a54f85cc24b157781",
         "lines": [
-          122,
-          130
+          134,
+          142
         ]
       },
       {
@@ -381,8 +390,8 @@
         "class": "static",
         "sha256": "bcb9b0d6abaeef2ac1700efe80d752b0c8776f0eeff3091e1b3d7dca2e1554d0",
         "lines": [
-          131,
-          144
+          143,
+          156
         ]
       },
       {
@@ -390,8 +399,8 @@
         "class": "static",
         "sha256": "d1013fff19dc40b98e193cd1cdefa2e84077c84b79a7706b253359d03928154a",
         "lines": [
-          145,
-          149
+          157,
+          161
         ]
       },
       {
@@ -399,8 +408,8 @@
         "class": "static",
         "sha256": "896fce9dd3e53cbbc489f11075ab5ca0d1c1c9bd306790ddc4b7fec8a7815230",
         "lines": [
-          150,
-          154
+          162,
+          166
         ]
       },
       {
@@ -408,8 +417,8 @@
         "class": "static",
         "sha256": "2729cbf0b01244a7ef42ee854eeab51f72d3d693a8531ea8bbba80f5ef41bffd",
         "lines": [
-          155,
-          162
+          167,
+          174
         ]
       },
       {
@@ -417,8 +426,8 @@
         "class": "static",
         "sha256": "5137504fc6aea1fcfbdde8bb97c6e3b435c3a803961e9e70bdc35198d0efc049",
         "lines": [
-          163,
-          173
+          175,
+          185
         ]
       },
       {
@@ -426,8 +435,8 @@
         "class": "static",
         "sha256": "15502381e89442e396a23717a74fbea4b5d8b29ecbdbfeba9de2b15d1f298d7c",
         "lines": [
-          174,
-          186
+          186,
+          198
         ]
       },
       {
@@ -435,8 +444,8 @@
         "class": "static",
         "sha256": "9ef8eaffe036fb9256c9094b298b526ee9463a75e2ad0c9f93c40f737efadd6d",
         "lines": [
-          187,
-          202
+          199,
+          214
         ]
       },
       {
@@ -444,8 +453,8 @@
         "class": "static",
         "sha256": "de3849bd509c78e924e2b64276ae18ddda07921fa935c35f80b176136792a5f8",
         "lines": [
-          203,
-          212
+          215,
+          224
         ]
       }
     ],
