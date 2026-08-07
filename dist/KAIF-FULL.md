@@ -4795,6 +4795,156 @@ Decision record: `kind, document, by, at, comment` + `artifacts: {<id>: {status,
 drafts / `answers: {Q1: {choice, text, comment}}` for interviews. `by` is not decoration — it is
 what makes the archive readable months later.
 
+## The executable build contract (C1–C13) — assemble by steps, don't re-invent
+
+The agent on ANY project assembles the contour from THIS contract — step by step, never
+re-derived from loose requirements. The contract itself is the packaging: the contour travels
+between projects as this text, never as copy-pasted tool files — a copy is a second truth with
+two places to fix. And a reminder stands AT THE DECISION POINT, not in a list of rules: each
+tool prints its own warning where the temptation arises — the render command ends by printing
+`RENDER IS NOT YET A SHOW` plus the ready-to-run open command, exactly where the temptation to
+hand over a path is born (I15).
+
+- **C1. What you build — four tools and one shared module.** Zero external dependencies — only
+  your platform's stdlib and the browser that is already there (names below are the field
+  convention; the ROLES are the contract):
+
+  ```
+  tools/
+    questions-guard       the place-of-questions guard (step 1)
+    lib/review-core       the CORE: normalization, hash, parsing, decision writes
+    review                the review page, server, signal, queue
+    review-gate           the send gate, fail-closed
+    send-outbound         the gate's real consumer
+    verify-<contour>      the QA run in a live browser (step 6)
+  interviews/
+    decisions/            machine memory of decisions (+ archive/, queue.json)
+  ```
+
+- **C2. The order of the six steps is the Build order above, the guard FIRST** — confirmed in
+  the field by execution: not one step had to be moved. Before any code, MEASURE: grep the
+  working directories for candidate markers and hand-triage how many are real — that number is
+  your debt, and it shapes the guard.
+- **C3. The normalization-and-hash contract is written FIRST, before either side:**
+  `normalize(s)` = strip BOM → CRLF/CR to LF → strip the trailing whitespace tail → exactly one
+  final newline; `hash = sha256(normalize(bytes))`. One function, one module, both sides call
+  it. The self-test must assert that four FACES of one text give ONE hash — CRLF, BOM, extra
+  trailing blank lines, missing final newline — and that a different text gives a different
+  one. (This is the mechanics behind I3.)
+- **C4. Five parsing rules — written against live text, not fixtures:** (1) a question block is
+  closed not only by the next heading but also by a horizontal rule `---` — otherwise the rule
+  lands inside the answer text and an empty question turns "answered"; (2) a field labeled as a
+  counter-question is NOT an answer; (3) an answer option parses MULTILINE — collect the item
+  with its indented continuations first, only then look for the closing `**`; (4) the truth
+  about whether an interview is closed is the DOCUMENT STATUS, never field fullness; (5)
+  regexes take `\p{L}` with the `u` flag — `\w`/`\b` stay ASCII-only even with `u` (rake 7),
+  and the guard silently misses its own language.
+- **C5. The page** — the elements are named above (P1–P9); the contract adds nothing on top.
+- **C6. Decision writes — the three places of I2, with derived names:** back into the source md
+  with a provenance comment · `<doc-base>.decision.json` beside it · an archive copy
+  `<doc-base>--<time>.json` that is never overwritten. The owner's already-written answer is
+  untouchable — new text arrives as a dated follow-up field; the document-wide comment appends
+  as a dated block at the END of the file.
+- **C7. The send gate — one function `checkApproval(document, artifact)`, called by BOTH the
+  gate and the sender.** Refusal on: no decision · status not approved · artifact not declared ·
+  body missing · hash drifted · any unexpected error. It never throws — it returns a refusal
+  (I4). The sender must have a REAL addressee and refuses even under an explicit `--apply`:
+  without a real consumer the gate is decoration.
+- **C8. The signal:** strictly AFTER the page is up (I5) · sound first and always (I33/I34) ·
+  the voice is a parameter, the phrase = document type + its name, the type taken from the
+  metadata block or the directory · quiet hours override everything, and the midnight-crossing
+  window gets its own self-test (I6) · the text rides to the synthesizer as a FILE and the
+  command itself is ASCII-only · print plain text to the console — the exit code does not prove
+  the human heard.
+- **C9. Accumulation — and immediately I8.** The queue is a state file; live documents are
+  never moved (I7). Any save closes the contour; if the queue still holds unanswered items,
+  re-raising the page is the agent's duty (I8). The command that holds the server MUST have a
+  build-and-exit flag (`--no-serve`) — otherwise any synchronous caller, your own QA run first
+  of all, hangs forever; and every child call inside the guard carries a hard deadline.
+- **C10. The QA run in a live browser — eleven blocks, the minimal field set that caught
+  everything:**
+
+  | Block | What it asserts |
+  |---|---|
+  | Core self-test | normalization, quiet hours, parsing, render, metadata block |
+  | **Before the click** | the answer is in NONE of the three places — without this pair, "answer found" paints any prehistory green |
+  | Gate before approval | refuses; the sender refuses under `--apply` |
+  | Page × 2 themes × 2 widths | cards, options, tables, the state stripe in PIXELS and COLOR, contrast, no horizontal overflow, a clean console |
+  | Selection | a click highlights · **a second click clears** · a third selects again · a neighbor extinguishes the previous |
+  | One-click answer | reached all three places · `by`/`at` provenance · **the source answer not clobbered** · follow-up as a separate field |
+  | **The wake-up** | the contour terminated on its own after the save |
+  | Gate after approval | passes · text drift voids the approval · **CRLF+BOM do NOT break it** |
+  | **Option count** | candidate lines = parsed options across ALL live documents |
+  | A live document | a real interview, not a fixture; zero external loads |
+  | Cleanup | the run writes decisions and cleans up after itself, with a "trace removed" check |
+
+  Prove it by mutations — the field's set: killed the dark theme → 2 targeted failures ·
+  disabled the md write → 4 · restored single-line option parsing → 5 (that one also exposed
+  the defect eating an option in one more live interview) · the guard's three mutations.
+- **C11. What NOT to do — seven points:** don't take a static-site generator or a UI framework
+  (the temptation is large, the win is zero) · don't write `|| true` in a check — a check that
+  cannot fail ASSERTS and steers the next diagnosis away · don't bind checks to the mutable
+  state of live data ("question X awaits an answer" turns red the moment the tool succeeds) ·
+  don't move live documents for the queue's sake · don't keep artifact bodies as copy-paste in
+  the document — only a file link, or the approval loses its binding to bytes · don't take
+  `exit 0` as proof of signal delivery (rake 3) · and above all — don't retell the question in
+  chat once the contour is built: the cure is one, the owner's queue opens as a PAGE, not as a
+  paragraph (rake 2).
+- **C12. Platform traps — the catalog below (T1–T11).**
+- **C13. Price and time, a planning reference from the field:** ~1,700 lines in 5 files, zero
+  dependencies; 118 live-browser checks + 40 self-test checks, 5 mutations; one session —
+  including 7 defects and 6 owner corrections along the way. What paid off first was the GUARD,
+  before the page even existed.
+
+### Platform traps (T1–T11) — warned in advance, each paid for in the field
+
+- **T1 (browser).** `window.close()` is not allowed to every window → raise the window with
+  `--app=`; keep closing an ATTEMPT with an honest notice (I27).
+- **T2 (browser, QA).** Headless proves the WRONG thing: there `window.close()` is always
+  allowed → verify window behavior on a VISIBLE window, on a throwaway profile.
+- **T3 (browser).** `pagehide` fires on reload and navigation too → mark intentional departures
+  with flags; after a beacon the server waits ~3 s for the page to come back.
+- **T4 (browser).** Background-window timers get throttled (down to once a minute; intensive
+  throttling after 5 min) → a silence threshold with a large margin (~3 min) plus the beacon as
+  the fast path.
+- **T5 (OS).** Machine sleep stops the timers on BOTH sides → two strikes: the first check only
+  marks a suspicion, the second (a tick later) decides.
+- **T6 (browser).** The port is part of the web origin — the draft "vanishes" on a new port →
+  a lock per document, never a second window, restore the draft on load (I29, I12).
+- **T7 (JS templating).** A backtick inside a template string of the page builder drops the
+  module with a syntax error in an UNRELATED place → only typographic quotes inside the block;
+  print the warning in the file itself.
+- **T8 (self-checks).** A self-check tripping on its own text: the phrase in a comment rides to
+  the page together with the code → never repeat verbatim the thing whose absence you guard.
+- **T9 (Node, imports).** A guard that others import must not execute on import (guard the
+  entry: `import.meta.url === process.argv[1]`) — otherwise the page kills itself with the
+  guard's `process.exit`.
+- **T10 (Node, paths).** Resolve document paths with `resolve`, not `join` — or the first
+  document outside the repository greets the human with a raw stack.
+- **T11 (Windows / PowerShell).** Searching for a process by command-line substring finds the
+  search itself → filter by process NAME first.
+
+The remaining platform traps — text travels through FILES, not CLI arguments; backticks inside
+double quotes; CRLF-tolerant regexes; re-reading after any machine edit of non-ASCII text — are
+already project canon (`AGENT_GUIDE.md` → document & text hygiene): the contract references
+them, never duplicates.
+
+### Canonical defaults (DEF1–DEF8)
+
+Canonical defaults, an owner-approved envelope; a project departs from them only on its OWNER's
+word.
+
+| # | Constant | Canonical default |
+|---|---|---|
+| DEF1 | Call beeps | 880 Hz/160 ms → 660/160 → 990/260, then the voice |
+| DEF2 | Window auto-close | `window.close()` attempt 2000 ms after the record; the fallback "please close me" notice is cancelled by `pagehide`, with a 2000 ms reserve for the case closing is refused |
+| DEF3 | Server death after the record | 2500 ms — a technical pause so the window can leave; not a user constant |
+| DEF4 | Page → server pulse (`/alive`) | default 15 s; allowed envelope 10–60 s |
+| DEF5 | Waiting for the human | timeout 0 (none); `--timeout N` is for automation only and means tolerated SILENCE; the silence check ticks every 15 s |
+| DEF6 | Reverse pulse | `sendBeacon('/closed')` on `pagehide` + a silence watch; silence threshold 3 min; ~3 s wait after the beacon (a reload is not a close); 2 strikes against machine sleep |
+| DEF7 | Call timings | the beep's child call carries a hard 8 s deadline; the voice — a 60 s timeout; the first cold call takes up to ~11 s — the beep-first order covers the pause (pre-warming is advice, not a requirement) |
+| DEF8 | Window | `--app=<url>` + `--window-size=1100,900`; fallback order: Edge → Chrome → a plain tab with the honest "please close it yourself" |
+
 ## Rakes to warn about (in falling price order)
 
 1. Hash without a normalization agreement → the gate refuses always, on green self-tests (I3).

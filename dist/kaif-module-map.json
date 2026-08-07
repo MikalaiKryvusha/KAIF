@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 645,
+  "moduleCount": 648,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -2992,12 +2992,39 @@
         ]
       },
       {
+        "signature": "## The executable build contract (C1–C13) — assemble by steps, don't re-invent",
+        "class": "static",
+        "sha256": "89eb3dabcdf773e0342baf7d27ae3350d3e5d35beb3b3c208aef19bb326e1bec",
+        "lines": [
+          233,
+          333
+        ]
+      },
+      {
+        "signature": "### Platform traps (T1–T11) — warned in advance, each paid for in the field",
+        "class": "static",
+        "sha256": "81674bb4e07934a8bf603b61358af949ac4b315f59df859ac67a669df96c24b1",
+        "lines": [
+          334,
+          366
+        ]
+      },
+      {
+        "signature": "### Canonical defaults (DEF1–DEF8)",
+        "class": "static",
+        "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
+        "lines": [
+          367,
+          382
+        ]
+      },
+      {
         "signature": "## Rakes to warn about (in falling price order)",
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          233,
-          252
+          383,
+          402
         ]
       },
       {
@@ -3005,8 +3032,8 @@
         "class": "static",
         "sha256": "75154dacc1ca33671a8ac80af4d5ab7c6cb23e09ce7a501873c3d2dd3261c9df",
         "lines": [
-          253,
-          262
+          403,
+          412
         ]
       }
     ],

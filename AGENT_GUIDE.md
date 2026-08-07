@@ -257,7 +257,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 13 ключевых документов +
-6 README + 34 навыка + 1 распаковщик = 54; бандл 147 блоков; карта — 645 модулей) — не переписывай эти
+6 README + 34 навыка + 1 распаковщик = 54; бандл 147 блоков; карта — 648 модулей) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.
@@ -350,8 +350,8 @@ consumer. Слабая сессия обновляет ту сторону, ко
 |---|---|---|
 | `framework/skills/fable-method,fable-judge` (вендорено, EN) | `.claude/skills/…` (побайтовые копии) | `diff framework/skills/fable-method/SKILL.md .claude/skills/fable-method/SKILL.md && diff framework/skills/fable-judge/SKILL.md .claude/skills/fable-judge/SKILL.md` |
 | `framework/*` (источник) | корневые генерированные копии + `dist/*` | `node tools/build-framework.mjs && git diff --stat` (дифф генератов после пересборки = дрейф) |
-| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 54; бандл 147 блоков; карта — 645 модулей' AGENT_GUIDE.md` |
-| Состав навыков `framework/skills/` | таблицы README (EN+RU половины) | `test $(ls framework/skills | wc -l) -eq 34 && test $(grep -c '^| [*\`]*\`/' README.md) -eq 68` |
+| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 54; бандл 147 блоков; карта — 648 модулей' AGENT_GUIDE.md` |
+| Состав навыков `framework/skills/` | таблицы README (EN+RU половины) | `test $(ls framework/skills | wc -l) -eq 34 && test $(grep -c '^| [*.]*./' README.md) -eq 68` |
 | Счётчик ритуалов в SVG (генератор) | alt-тексты README | `grep -o '34 repeatable' assets/layers-en-light.svg && grep -c '34 повторяемых ритуала\|34 repeatable rituals' README.md` |
 | Состав навыков `framework/skills/` | ключи 9 языковых пакетов | `node -e "const{readdirSync,readFileSync}=require('fs');const n=readdirSync('framework/skills').length;for(const l of readdirSync('framework/templates/languages')){const k=Object.keys(JSON.parse(readFileSync('framework/templates/languages/'+l+'/skill-triggers.json','utf8'))).length;if(k!==n){console.error(l,k,'!=',n);process.exit(1)}}console.log('ok',n)"` |
 
