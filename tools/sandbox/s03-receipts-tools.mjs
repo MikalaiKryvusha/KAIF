@@ -165,6 +165,10 @@ ok(!taskIds.includes('for'), 'S12 сканер чекпоинтов не лов�
 // фиктивный id из прозы должен отвергаться и командой
 r = run(S12, 'checkpoint for');
 ok(r.code !== 0 && /unknown item id/.test(r.out), 'S12 checkpoint for — отвергнут (якорь на командную форму)');
+// L5/bugs/41: пункт project-name обязателен с 2.2 — его чекпоинт ИСПОЛНЯЕТ гейт и отказывает,
+// пока канонное имя не записано; честный поток записывает имя командой (иначе тик — самоаттестация)
+r = run(S12, 'project-name "S12 Sandbox"');
+ok(r.code === 0, 'S12 канонное имя записано командой project-name (новый шаг потока 2.2)', r.out);
 for (const id of taskIds) {
   const extra = id === 'judge' ? ' --verdict "VERIFIED: sandbox pass, gates observed green"' : '';
   r = run(S12, `checkpoint ${id}${extra}`);

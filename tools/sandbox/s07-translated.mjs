@@ -257,7 +257,9 @@ const fillCanon = (dir, skipPh = []) => {
       if (n.endsWith('.md')) fill(join(dir, '.kaif', 'spheres', n));
 };
 fillCanon(T8);
-// проставить все чекпоинты адаптационного задания (механика, не суждение)
+// проставить все чекпоинты адаптационного задания (механика, не суждение);
+// L5/bugs/41: чекпоинт project-name исполняет гейт — канонное имя сначала записывается командой
+run(T8, 'project-name "T8 Sandbox"');
 const taskIds = [...new Set([...readFileSync(join(T8, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of taskIds) run(T8, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
@@ -271,6 +273,7 @@ ok(r.code === 0, 'Д2+K6: CRLF-задание с чекпоинтами; verify 
 const T8b = join(ROOT, 't8b'); mkdirSync(T8b); seed(T8b);
 run(T8b, 'install');
 fillCanon(T8b, ["<YOUR AGENT'S noreply EMAIL>"]);   // всё заполнено, КРОМЕ email-слота
+run(T8b, 'project-name "T8b Sandbox"');   // L5/bugs/41: гейт project-name требует записанного имени
 const idsB = [...new Set([...readFileSync(join(T8b, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of idsB) run(T8b, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);

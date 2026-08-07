@@ -32,6 +32,17 @@
 шёл синтетический baseline / обновление исполнило старое ядро. Сшивка с решением №42
 (квитанция расширяется вердиктом — правится тем же заходом).
 
+## Разведка кода (L5, шаг 1 — 2026-08-07)
+
+- Постановка метки: `cmdInstall` шаг 5 (`KAIF-CORE.mjs` ~:1598–1604) — `writeReceipt({route:
+  'legacy-bootstrap'})` + `appendHistory(…, 'legacy-bootstrap')` БЕЗУСЛОВНО при любом
+  version-move через бутстрап; фактический путь классификации известен ровно там:
+  `cls.baselineOld` (~:1488) — живой `deploy-manifest` (без флага) vs синтетический baseline
+  (`synthetic: true`, ~:671) vs `cls === null` (классический adopt-everything).
+- `cmdUpdate` (~:1111) пишет `route: 'core-update'` — не трогать.
+- Сшивка с решением №42: квитанция уже расширена вердиктом судьи (checkpoint judge →
+  receipt), `update-verify` штампует `verifiedAt` (~:1424) — правка метки не задевает эти поля.
+
 ## Decisions made without the owner
 
 *Заполняется при закрытии.* Триаж: выделен отдельным доком (не класс — один проект), потому

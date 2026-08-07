@@ -81,6 +81,8 @@ let r = run(S13, 'install --mode anonymous');
 ok(r.code === 0, 'S13 install --mode anonymous exit 0', r.out);
 fillAll(S13);
 r = run(S13, 'sync');
+// L5/bugs/41: чекпоинт project-name исполняет гейт — канонное имя сначала записывается командой
+run(S13, 'project-name "S13 Sandbox"');
 const adaptIds = [...new Set([...readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md'), 'utf8').matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
 r = run(S13, 'verify-final');

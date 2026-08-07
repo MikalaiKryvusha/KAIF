@@ -214,6 +214,7 @@ function lineDiff(oldText, newText) {
 function ensureIgnoreFirst() {
   const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK,
                   'KAIF_UPDATE_TASK.superseded.md', 'KAIF_ADAPTATION_TASK.superseded.md',
+                  '.kaif/backup-*/',        // pre-update backups are rollback material, never history (field ask)
                   '.kaif/heartbeat.log'];   // the guarded loop's pulse is runtime state, not history
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
@@ -283,14 +284,47 @@ function applyLanguage(files) {
   return { deploy: out, translated: overrides.size, aliased };
 }
 
+// The pack boundary is DECLARED at deploy time, not discovered post-factum (field: a new skill
+// arrived as "a raw English body with a localized alias line glued on" and read as a defect;
+// the packs are owner-doc-only BY DESIGN — the framework is English-first). One honest line
+// names exactly what arrives in English and needs manual transfer if the owner wants it local.
+function logPackHonesty(files, deploy) {
+  if (LANG === 'en') return;
+  const prefix = `templates/languages/${LANG}/`.toLowerCase();
+  let hasPack = false;
+  const packed = new Set();
+  for (const f of files) {
+    const lower = f.path.toLowerCase();
+    if (!lower.startsWith(prefix)) continue;
+    hasPack = true;
+    if (lower !== prefix + 'skill-triggers.json') packed.add(f.path.slice(prefix.length));
+  }
+  if (!hasPack) return;   // no pack for this language at all — the task's `language` item owns the honesty
+  const enDocs = deploy.filter((f) => f.path.endsWith('.md') && !packed.has(f.path)
+    && !/^\.claude\/skills\//.test(f.path) && !f.path.startsWith('.kaif/spheres/')
+    && !f.path.startsWith('templates/languages/')).map((f) => f.path).sort();
+  const skills = deploy.filter((f) => skillName(f.path)).length;
+  log(`⟳ language pack "${LANG}" is INCOMPLETE BY DESIGN (the framework is English-first): it localizes ${packed.size} owner doc(s). Arriving in ENGLISH and needing manual transfer if you want them localized: ${enDocs.join(', ')} + all ${skills} skill bodies (their trigger aliases ARE localized).`);
+}
+
 // ---------------------------------------------------------------------------- placeholder autofill
 // Detect real project values mechanically. Undetected placeholders stay literal and
 // are listed in the adaptation task (they are the agent's cognitive work, not ours).
+// The project's CANONICAL name lives in the CANON — the marker's `projectName`, recorded via
+// the project-name command — never in a technical identifier (field: package.json/folder names
+// are lowercase tech ids and landed in H1 headings: "# klas — Project History" while the
+// project's own canon said KLAS; identity is the owner's, so it is RECORDED, not guessed).
+function canonicalName() {
+  try { const n = readJson(KAIF_JSON).projectName; if (n && String(n).trim()) return String(n).trim(); }
+  catch { /* not deployed yet */ }
+  return null;
+}
+
 function detectValues() {
   let pkg = null;
   try { pkg = readJson('package.json'); } catch { /* none */ }
   const dir = process.cwd().replace(/\\/g, '/').split('/').filter(Boolean).pop() || 'project';
-  const name = (pkg && pkg.name) || dir;
+  const name = canonicalName() || (pkg && pkg.name) || dir;
   const licenseFile = existsSync('LICENSE') ? readFileSync('LICENSE', 'utf8').split(/\r?\n/, 1)[0].trim() : '';
   return {
     '<PROJECT_NAME>': name,
@@ -317,7 +351,18 @@ function snapshotValues() {
   try { return okOnDisk(DEPLOY_MANIFEST) ? (readJson(DEPLOY_MANIFEST).values || {}) : {}; }
   catch { return {}; }
 }
-const stableValues = () => ({ ...detectValues(), ...snapshotValues() });
+const stableValues = () => {
+  const v = { ...detectValues(), ...snapshotValues() };
+  // The canon outranks the frozen snapshot: recording `projectName` HEALS the placeholder map
+  // on the next pass instead of freezing the tech id forever (the frozen-values doctrine of
+  // bug 26 guards against re-DETECTION drift, not against the owner's explicit word).
+  const canon = canonicalName();
+  if (canon) {
+    if (v['<SHORT_NAME>'] === v['<PROJECT_NAME>']) v['<SHORT_NAME>'] = canon;   // a distinct short form stays the owner's
+    v['<PROJECT_NAME>'] = canon;
+  }
+  return v;
+};
 
 function fillPlaceholders(content, values, unresolved) {
   let out = content;
@@ -393,15 +438,84 @@ function expectedAgentArtifacts(skillNames) {
   return want;
 }
 
+// The task's placeholder item must name REAL addresses — the static text used to send the
+// agent to ".claude/skills/" while the live slots sat in a sphere library or nowhere at all
+// ("the first step toward ticking boxes without looking", three field reports). The scan lists
+// deployed files that LITERALLY carry each slot; foreign sphere libraries are reference
+// material and never gate (only the DECLARED sphere is a working surface), so only it may appear.
+function unresolvedOnDisk(unresolved, deploy) {
+  let declared = null;
+  try { const s = readJson(KAIF_JSON).sphere; if (s && s !== 'TODO') declared = `.kaif/spheres/${s}.md`; } catch { /* no marker yet */ }
+  return [...unresolved].map((ph) => ({
+    ph,
+    paths: deploy.filter((f) => f.path.endsWith('.md') && okOnDisk(f.path)
+      && (!f.path.startsWith('.kaif/spheres/') || f.path === declared)
+      && readFileSync(f.path, 'utf8').includes(ph)).map((f) => f.path),
+  })).filter((u) => u.paths.length);
+}
+// Honest cap per slot: name the first paths outright, count the rest (never a silent cut).
+const fmtSlots = (list) => list.map((u) =>
+  `${u.ph} → ${u.paths.slice(0, 6).join(', ')}${u.paths.length > 6 ? ` (+${u.paths.length - 6} more — grep it)` : ''}`).join(' · ');
+
+// The non-machine work scopes an update must NAME (field: template-sphere sections never
+// reached a locally-authored sphere; a project's own skeleton validator "knew 12 documents
+// and 26 skills" two updates in a row) — computed against whatever baseline is in hand,
+// silent when the baseline cannot honestly tell.
+function updateScopes(old, deploy, deployedPaths, marker) {
+  const oldTpl = (old && old.templateShas) || {};
+  const SPHERE_TPL = '.kaif/spheres/_template.md';
+  let sphereSync = null;
+  const sphere = marker && marker.sphere;
+  if (sphere && sphere !== 'TODO' && !deploy.some((f) => f.path === `.kaif/spheres/${sphere}.md`)
+      && okOnDisk(`.kaif/spheres/${sphere}.md`) && Object.keys(oldTpl).length) {
+    const tplNew = deploy.find((f) => f.path === SPHERE_TPL);
+    if (tplNew && oldTpl[SPHERE_TPL] !== normSha(tplNew.content)) sphereSync = { sphere };
+  }
+  let skeletonDelta = null;
+  const oldSkills = new Set(((old && old.paths) || []).map(skillName).filter(Boolean));
+  if (oldSkills.size) {
+    const newSkills = new Set(deployedPaths.map(skillName).filter(Boolean));
+    const added = [...newSkills].filter((n) => !oldSkills.has(n)).sort();
+    const removed = [...oldSkills].filter((n) => !newSkills.has(n)).sort();
+    if (added.length || removed.length) skeletonDelta = { added, removed };
+  }
+  return { sphereSync, skeletonDelta };
+}
+
+// Pre-update backup (field ask): the framework surface as it stood BEFORE this interval's
+// writes goes to .kaif/backup-<from>-<to>/ — zero-knowledge rollback material that works
+// mid-merge too (git protects only committed states). Git-ignored (ignore-first); only the
+// CURRENT interval's backup is kept — the previous one is replaced.
+function backupTree(deploy, fromVer, toVer) {
+  const dir = `.kaif/backup-${fromVer || 'unknown'}-${toVer}`;
+  try {
+    if (existsSync('.kaif')) for (const n of readdirSync('.kaif'))
+      if (n.startsWith('backup-') && `.kaif/${n}` !== dir) rmSync(`.kaif/${n}`, { recursive: true, force: true });
+    let copied = 0;
+    for (const f of deploy) {
+      if (!okOnDisk(f.path)) continue;
+      const to = join(dir, f.path);
+      mkdirSync(dirname(to), { recursive: true });
+      writeFileSync(to, readFileSync(f.path));
+      copied++;
+    }
+    if (copied) log(`+ pre-update backup: ${copied} file(s) → ${dir}/ (rollback material; git-ignored, replaced next interval)`);
+  } catch (e) { log(`⚠ pre-update backup skipped: ${e.message}`); }
+}
+
 // ---------------------------------------------------------------------------- adaptation task
 // The ONE cognitive deliverable left to the AI agent. Every item ends in a forced
 // checkpoint line (the fable-method lesson: weak models follow rules at decision
 // points, not rules in lists) that verify-final greps for mechanically.
-function writeAdaptationTask(unresolved, translated, meta) {
+function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   const needTranslate = LANG !== 'en' && translated === 0;
   const items = [];
   items.push(['study', 'Study the project gradually and record findings (what it is, build/test commands, architecture) — this replaces the old KAIF_DEPLOYMENT_PLAN.md.']);
-  if (unresolved.size) items.push(['placeholders', `Fill the remaining placeholders everywhere they occur (grep each): ${[...unresolved].join(' ')}`]);
+  // Identity before content: the canonical name feeds every later fill, and identity is the
+  // OWNER's — a lowercase package/folder name seeded into H1 headings misnames the project.
+  if (!canonicalName() && values['<PROJECT_NAME>'])
+    items.push(['project-name', `<PROJECT_NAME> was auto-filled with "${values['<PROJECT_NAME>']}" from a technical identifier (package.json/folder name) — a lowercase tech id is NOT the project's canonical name, and identity is the OWNER's, never the machinery's guess. Confirm the canonical name with the owner, record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\` (the marker and future fills heal), then correct any seeded headings carrying the wrong form.`]);
+  if (unresolvedLive.length) items.push(['placeholders', `Fill the remaining placeholders at their REAL locations (each verified on disk at generation time; grep to be sure): ${fmtSlots(unresolvedLive)}`]);
   items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection. Keep them SHORT; write in 2-3 small edits, not one giant write.']);
   items.push(['goal-plan', 'If GOAL.md is empty, seed it and ask the owner; derive MASTER_PLAN.md from GOAL.md (skill: /revision).']);
   items.push(['sphere', 'Pick the project\'s sphere (libraries ship in .kaif/spheres/; do NOT author a new document unless none fits) and record it by running `node .kaif/kaif-core.mjs sphere <name>` (e.g. `sphere programming`) — never edit .kaif/kaif.json by hand.']);
@@ -554,18 +668,26 @@ function policyInterval(meta, fromVersion) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
+  // Checklists and decision tables inside framework files often carry the OWNER's recorded
+  // state (ticked boxes, decision rows) — a merge that "cleans them up" erases his record.
+  const OWNER_LINES = "Careful: checklists/tables in these files may carry the OWNER'S recorded state (ticked boxes, decision rows) — fold the template changes around them, never reset them.";
   const items = [];
   if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
-  if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}`]);
-  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below)` : p).join(' · ')}`]);
+  if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}. ${OWNER_LINES}`]);
+  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below)` : p).join(' · ')}. ${OWNER_LINES}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
   // New templates may arrive carrying deploy-time slots the machinery cannot fill (bug 28: the
-  // update used to learn about them only when the FINAL gate failed, after "I'm done").
-  if (unresolved.length) items.push(['placeholders', `New templates carry deploy-time slots the machinery could not fill — fill each in the canonical .claude/skills/ copy (mirrors re-sync at update-verify): ${unresolved.join(' · ')}`]);
+  // update used to learn about them only when the FINAL gate failed, after "I'm done"). The
+  // item names each slot's REAL on-disk addresses — the static ".claude/skills/" pointer sent
+  // three field agents to files that carried no slot at all.
+  if (unresolved.length) items.push(['placeholders', `New templates carry deploy-time slots the machinery could not fill — fill each at its REAL location(s), verified on disk at generation time (canonical copies; mirrors re-sync at update-verify): ${fmtSlots(unresolved)}`]);
+  if (sphereSync) items.push(['sphere-sync', `Your declared sphere "${sphereSync.sphere}" is locally authored, and the framework's sphere TEMPLATE changed in this interval — the machinery never edits a local sphere: read the updated .kaif/spheres/_template.md and carry its new/changed sections into .kaif/spheres/${sphereSync.sphere}.md.`]);
+  if (skeletonDelta) items.push(['local-inventories', `This release changes the framework skeleton: skills added: ${skeletonDelta.added.join(', ') || 'none'}; removed: ${skeletonDelta.removed.join(', ') || 'none'}. If this project keeps its OWN validators or inventories of the skeleton (doc/skill lists or counts in local tooling), update them — the machinery cannot know your tools; the machine-readable inventory is .kaif/deploy-manifest.json → "paths".`]);
+  if (nameFallback) items.push(['project-name', `This deployment's <PROJECT_NAME> ("${nameFallback}") came from a technical identifier (package.json/folder), not from the canon — if the canonical name differs (a lowercase tech id in H1 headings is the symptom), record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\`, then correct mis-seeded headings (git grep the old form).`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
   // stale-claims comes AFTER review-news: the news carry the history-migration instruction, and
   // the scan once flagged the very STATUS lines that migration moves two items later (bugs/35,
@@ -1028,6 +1150,7 @@ async function cmdUpdate() {
   const old = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], agents: [], shas: {} };
   const { files, meta } = parseBundle(bundlePath);
   const { deploy } = applyLanguage(files);           // LANG defaults handled below
+  logPackHonesty(files, deploy);                     // the pack boundary is declared, not discovered
   const values = stableValues();                     // frozen deploy values win over re-detection (bug 26)
   const unresolved = new Set();
   // The previous release's own artifact provides the OLD template texts — the missing half of
@@ -1038,6 +1161,7 @@ async function cmdUpdate() {
   // "the doubling is visible in a size summary at once, and invisible in 43 merged-lines").
   const sizeBefore = {};
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
+  backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
     classifyAndApply(deploy, old, values, unresolved, cur, oldBase);
   const sizeJumps = deploy
@@ -1093,9 +1217,10 @@ async function cmdUpdate() {
   // The task lists only slots that are LITERALLY on disk after the pass (judge finding: the raw
   // `unresolved` set collects every null-valued slot seen in incoming templates — on a fully
   // filled deployment that would put a phantom `placeholders` item into EVERY update task, and
-  // a noisy guard teaches the agent to ignore it).
-  const liveUnresolved = [...unresolved].filter((ph) =>
-    deploy.some((f) => f.path.endsWith('.md') && okOnDisk(f.path) && readFileSync(f.path, 'utf8').includes(ph)));
+  // a noisy guard teaches the agent to ignore it), each with its real addresses.
+  const liveUnresolved = unresolvedOnDisk(unresolved, deploy);
+  const scopes = updateScopes(old, deploy, deployedPaths, marker);
+  const nameFallback = !canonicalName() && values['<PROJECT_NAME>'] ? values['<PROJECT_NAME>'] : null;
   const nModDiverged = Object.values(divergedModules).reduce((a, l) => a + l.length, 0);
   // The honest size of the work (field ask: the log said "161 modules merged", the task said
   // "2 await you" — the real answer to "how much do I read" is "the framework changed N of M").
@@ -1104,7 +1229,8 @@ async function cmdUpdate() {
     ? deploy.filter((f) => !isSkippedAnon(f.path) && (!oldTpl[f.path] || oldTpl[f.path] !== normSha(f.content))).length : null;
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved });
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved,
+      sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — Unliminium §4). Survives self-clean; update-verify stamps it when the gates pass.
@@ -1442,6 +1568,7 @@ async function cmdInstall() {
     try { const j = readJson(KAIF_JSON); if (j.language) LANG = String(j.language).toLowerCase(); } catch { /* CLI default stands */ }
   }
   const { deploy, translated, aliased } = applyLanguage(files);
+  logPackHonesty(files, deploy);   // the pack boundary is declared, not discovered post-factum
   const values = stableValues();   // a re-run/bootstrap over an existing deploy keeps ITS values (bug 26)
   const unresolved = new Set();
 
@@ -1478,6 +1605,7 @@ async function cmdInstall() {
   let adopted = [];
   let cls = null;
   if (legacyOld) {
+    if (legacyOld.version !== meta.version) backupTree(deploy, legacyOld.version, meta.version); // rollback material BEFORE any write
     let baseline = null;
     if (okOnDisk(DEPLOY_MANIFEST)) {
       try { const mOld = readJson(DEPLOY_MANIFEST); if (mOld.templateShas) baseline = mOld; } catch { /* unreadable — try synthetic */ }
@@ -1595,12 +1723,19 @@ async function cmdInstall() {
     // Receipt/history are written only for a REAL version move: a same-version re-run must not
     // pad the history with `X → X` noise, and must never clobber a previous update's verified
     // receipt — that receipt is the permanent proof bug 17 exists to provide (review-caught).
+    // The route label answers "HOW was this classified", not "how old is the deployment"
+    // (field: a 2.0→2.1 pass with a LIVE manifest v2 got labeled legacy-bootstrap, and "the
+    // next session reading the receipt draws the wrong conclusion about the route"). A
+    // bootstrap that classified with the fresh core against the SURVIVING manifest took the
+    // ordinary modular road — 'bootstrap'; 'legacy-bootstrap' stays reserved for the weaker
+    // grounds (synthetic baseline / adopt-everything), which the receipt must confess.
+    const bootRoute = cls && cls.baselineOld && !cls.baselineOld.synthetic ? 'bootstrap' : 'legacy-bootstrap';
     if (legacyOld.version !== meta.version) {
-      writeReceipt({ from: legacyOld.version, to: meta.version, route: 'legacy-bootstrap',
+      writeReceipt({ from: legacyOld.version, to: meta.version, route: bootRoute,
         counters: cls ? { replaced: cls.replaced, mergedModules: cls.mergedModules, added: cls.added, kept: cls.kept, adopted: adopted.length }
                       : { adopted: adopted.length },
         classified: !!cls });
-      appendHistory(marker, legacyOld.version, meta.version, 'legacy-bootstrap');
+      appendHistory(marker, legacyOld.version, meta.version, bootRoute);
       writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
     }
     // A re-run must not clobber recorded progress (bug 14, field: a second bootstrap wiped the
@@ -1634,9 +1769,11 @@ async function cmdInstall() {
       const dep = cls ? handleDeprecations(meta, cls.baselineOld || {}) : { removed: 0, items: [] };
       const staleClaims = rerun ? [] : scanStaleClaims(legacyOld.version, meta.version,
         okOnDisk(DEPLOY_MANIFEST) ? (() => { try { return readJson(DEPLOY_MANIFEST).templateShas || null; } catch { return null; } })() : null);
-      // Only slots literally on disk make the task item (judge finding — see cmdUpdate).
-      const liveUnresolved = [...unresolved].filter((ph) =>
-        deploy.some((f) => f.path.endsWith('.md') && okOnDisk(f.path) && readFileSync(f.path, 'utf8').includes(ph)));
+      // Only slots literally on disk make the task item (judge finding — see cmdUpdate),
+      // each with its real addresses; scopes/name mirror the core-update road.
+      const liveUnresolved = unresolvedOnDisk(unresolved, deploy);
+      const scopes = updateScopes(cls ? cls.baselineOld : null, deploy, deployedPaths, marker);
+      const nameFallback = !canonicalName() && values['<PROJECT_NAME>'] ? values['<PROJECT_NAME>'] : null;
       // A CLASSIFIED bootstrap (surviving manifest / synthetic baseline) hands over exactly what
       // a core update would: per-module diffs and honest counters — not "merge everything".
       writeUpdateTask(cls ? cls.diverged : [], meta, rerun
@@ -1644,8 +1781,9 @@ async function cmdInstall() {
         : cls
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved }
-            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved });
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved,
+                sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback }
+            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback });
     }
     if (existsSync(TASK_FILE)) {
       // Judge finding (L3): an adaptation IN PROGRESS (recorded checkpoints/verdict) must not
@@ -1659,7 +1797,7 @@ async function cmdInstall() {
       } else { unlinkSync(TASK_FILE); log(`- removed stale ${TASK_FILE} (this is an update, not an adaptation)`); }
     }
   } else {
-    writeAdaptationTask(unresolved, translated, meta);
+    writeAdaptationTask(unresolvedOnDisk(unresolved, deploy), translated, meta, values);
     if (existsSync(UPDATE_TASK)) { unlinkSync(UPDATE_TASK); log(`- removed stale ${UPDATE_TASK}`); }
   }
 
@@ -1783,6 +1921,30 @@ function cmdSphere() {
   log(`✔ sphere recorded: ${name}`);
 }
 
+// project-name "<Name>" — the file-edit-free way to record the project's CANONICAL name
+// (identity belongs to the owner: <PROJECT_NAME> used to be seeded from package.json/folder —
+// a lowercase tech id — and landed in H1 headings; "# klas" while the project's canon said
+// KLAS). Heals the deploy manifest's frozen fill map too, or the tech id tiles forever.
+function cmdProjectName() {
+  const name = args[1];
+  if (!name || name.startsWith('--')) die('usage: kaif-core project-name "<Canonical Name>"   (the OWNER\'s form, e.g. "KLAS" — confirm it with the owner, never guess)');
+  if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
+  const j = readJson(KAIF_JSON);
+  j.projectName = name;
+  writeFileSync(KAIF_JSON, JSON.stringify(j, null, 2) + '\n');
+  if (okOnDisk(DEPLOY_MANIFEST)) {
+    try {
+      const m = readJson(DEPLOY_MANIFEST);
+      m.values = m.values || {};
+      if (m.values['<SHORT_NAME>'] === m.values['<PROJECT_NAME>']) m.values['<SHORT_NAME>'] = name;
+      m.values['<PROJECT_NAME>'] = name;
+      if (m.marker) m.marker.projectName = name;   // the pristine snapshot must not resurrect the tech id (healMarker)
+      writeFileSync(DEPLOY_MANIFEST, JSON.stringify(m, null, 2) + '\n');
+    } catch { /* unreadable manifest — `check` flags it separately */ }
+  }
+  log(`✔ canonical project name recorded: ${name} — future fills use it; already-seeded headings need your correction (git grep the old form)`);
+}
+
 // checkpoint <id> — the file-edit-free way to record a finished task item (field lesson,
 // ДЗ-02 run 4: weak models corrupt files when forced to edit them via diff tools; a shell
 // command they run reliably). Appends the forced line to the live task file itself.
@@ -1830,6 +1992,14 @@ function cmdCheckpoint() {
     const bad = scanPlaceholders();
     if (bad) die(`checkpoint placeholders REFUSED: ${bad} literal placeholder(s) remain on disk (listed above) — fill them in the canonical copies, then re-run`);
     log('✔ placeholder scan ran clean (executed by the checkpoint itself; mirrors re-synced first)');
+  }
+  if (id === 'project-name') {
+    // The item's contract is "record the canonical name" — an unrecorded name is objective,
+    // exactly like an unfilled placeholder (identity is the owner's; the tick may not attest it).
+    let recorded = null;
+    try { recorded = readJson(KAIF_JSON).projectName; } catch { /* refused below */ }
+    if (!recorded) die('checkpoint project-name REFUSED: no projectName in .kaif/kaif.json — confirm the canonical name with the owner and record it first: node .kaif/kaif-core.mjs project-name "<Canonical Name>"');
+    log(`✔ canonical name on record: ${recorded} (executed by the checkpoint itself)`);
   }
   if (id === 'stale-claims') {
     try {
@@ -2029,8 +2199,9 @@ const COMMANDS = {
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true }, pos: 0 },
   'update-verify': { fn: cmdUpdateVerify, mutating: true, desc: 'final gates of an update; self-cleans on green', flags: {}, pos: 0 },
   'verify-final':  { fn: cmdVerifyFinal,  mutating: true, desc: 'final gates of an install; self-cleans on green', flags: {}, pos: 0 },
-  checkpoint:      { fn: cmdCheckpoint,   mutating: true, desc: 'record a finished task item (recheck/placeholders EXECUTE their gates)', flags: { '--verdict': true, '--verdict-file': true }, pos: 1 },
+  checkpoint:      { fn: cmdCheckpoint,   mutating: true, desc: 'record a finished task item (recheck/placeholders/project-name EXECUTE their gates)', flags: { '--verdict': true, '--verdict-file': true }, pos: 1 },
   sphere:          { fn: cmdSphere,       mutating: true, desc: "record the project's sphere in the deploy marker", flags: {}, pos: 1 },
+  'project-name':  { fn: cmdProjectName,  mutating: true, desc: "record the project's CANONICAL name (identity is the owner's; heals the marker and the fill map)", flags: {}, pos: 1 },
   sync:            { fn: cmdSync,         mutating: true, desc: 're-sync per-system skill mirrors from .claude/skills/', flags: {}, pos: 0 },
   'adopt-current': { fn: cmdAdoptCurrent, mutating: true, desc: 'rebuild the snapshot after a manual migration', flags: {}, pos: 0 },
 };

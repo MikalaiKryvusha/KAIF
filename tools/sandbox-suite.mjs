@@ -24,6 +24,11 @@
 //         fixture (adjacency, quotes/journals/mirrors/owner docs, file cap "shown N of M",
 //         item order after review-news), translated module audit (localized ≠ ABSENT),
 //         declared-sphere-only placeholder scope, the STATUS soft-length warning guard
+//   s11 — L5 remaining field asks (plan 44): placeholder items name REAL addresses (declared
+//         sphere included, foreign spheres excluded), sphere-sync/local-inventories scopes,
+//         canonical project-name (command + executing checkpoint + fill-map healing),
+//         honest route label (bootstrap vs legacy-bootstrap), language-pack honesty line,
+//         pre-update backup tree, owner-lines warning on merge items
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -33,7 +38,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
                 's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
-                's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs'];
+                's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs'];
 let failed = 0;
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);

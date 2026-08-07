@@ -50,6 +50,24 @@ Q13 интервью 007.
 - вариант «докомплектовать» — против решения №17 и канона «многоязычность — при распаковке»;
   без слова владельца не расширяем.
 
+## Разведка кода (L5, шаг 1 — 2026-08-07)
+
+- `applyLanguage` (`KAIF-CORE.mjs` ~:254): пакет = overrides по префиксу
+  `templates/languages/<lang>/`; `translated = overrides.size`; НИКАКОЙ печати границы пакета.
+  Состав каждого из 9 пакетов: 8 локализуемых документов (GOAL.md, KAIF_FRAMEWORK.md,
+  6× `<dir>/README.md`) + `skill-triggers.json`.
+- Точки печати честной неполноты: сводка `cmdInstall` (~:1669) и `cmdUpdate` (после
+  applyLanguage ~:1030).
+- Дом стража протухания: `tools/check-framework.mjs` (сборочная сторона истока). Пары:
+  `framework/templates/languages/<lang>/{GOAL.md, KAIF_FRAMEWORK.md, <dir>/README.md}` ↔
+  `framework/{GOAL.md, KAIF_FRAMEWORK.md, readmes/<dir>.md}`. Нужен пин-реестр sha EN-истоков
+  (новый файл в `framework/templates/languages/` ВНЕ языковых директорий — applyLanguage
+  матчит только префикс `<lang>/`, наружу такой файл не едет).
+- Полевой экземпляр дрейфа ПОДТВЕРЖДЁН разведкой: абзац «Taste-class homework»
+  (framework/readmes/homeworks.md:17–22, появился в 2.1) отсутствует в RU-пакете (и, по
+  отчёту KLAS, во всех девяти) — чинится ресинком пакетов ДО пина, иначе страж благословит
+  известный дрейф.
+
 ## Decisions made without the owner
 
 *Заполняется при закрытии.* Триаж: судьба объёма НЕ решена самовольно — развилка Q13 (владелец
