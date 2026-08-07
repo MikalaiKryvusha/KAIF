@@ -382,6 +382,30 @@ wave is SMALLER. If the waves don't shrink, the remedies aren't working — revi
 by the canon, per `BUG_FIXING_FRAMEWORK.md`. The agent keeps its own bug backlog — one doc per defect,
 nothing lost.
 
+**A defect in KAIF ITSELF — the five-step contour** (an owner's field decision, adopted as canon:
+*"if the AI agent noticed a defect in the KAIF work methodology, fix it in the local KAIF — and file
+a bug report to the neighboring KAIF project, to the AI agent developing KAIF; it will then be fixed
+in KAIF in a coming update"*). When the rake exists because of how the framework itself is worded or
+behaves — not because of this project's code:
+
+1. **Prove it is a CLASS, not a one-off:** reproduce it deterministically and search where else the
+   same mechanism bites (the twin check; neighbor deployments on disk are read-only evidence — never
+   edit them).
+2. **Fix it LOCALLY, without waiting for upstream:** patch the deployed wrapper here (the doc, skill
+   or guardrail that misled you); a guard born from the fix is proved by mutation — it must go red on
+   the broken version first (`BUG_FIXING_FRAMEWORK.md` → Guards).
+3. **File the signal** — skill `/report-bug`, its framework branch: `bugs/KAIF/` by template A (bug
+   report) / B (improvement request), dedup attestation first; delivery follows the deployment's
+   tracking mode (origin — on the owner's behalf through the send gate; anonymous — local only,
+   never reach for the origin).
+4. **Point the ticket at the local fix** (its "Local remediation" field): your local divergence and
+   the upstream fix must be reconcilable at the next `/kaif-update` — a noted divergence is a merge
+   the update sees coming; a silent one is a conflict it steps into.
+5. **Close the loop at home:** capture the reusable lesson in `EXPERIENCE.md` (skill `/experience` —
+   the same discipline as after any meaningful failure), keep the defect visible in `bugs/KAIF/`
+   until an update actually retires it, and add a `STATUS.md` line if it changes how the next
+   session works.
+
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
 human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
 agent's idea is a contribution to the product VISION → implement ONLY after the human approves.

@@ -83,6 +83,21 @@ fillAll(S13);
 r = run(S13, 'sync');
 // L5/bugs/41: чекпоинт project-name исполняет гейт — канонное имя сначала записывается командой
 run(S13, 'project-name "S13 Sandbox"');
+// M3 (plans/50, критерии 4 и 6, красным-вперёд): задание адаптации ставит отчёт об установке
+// (скелет шаблона D — researches/18 §8) той же механикой чекпоинта; анонимный профиль — отчёт
+// ЛОКАЛЬНЫЙ, пункт не тянется к origin (инвариант §2 п. 7 researches/18; риск 2 плана 50).
+const at13 = readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md'), 'utf8');
+const fr13s = at13.indexOf('- **field-report**');
+const fr13e = at13.indexOf('When done, run:', fr13s);
+const fr13 = fr13s >= 0 && fr13e > fr13s ? at13.slice(fr13s, fr13e) : '';
+ok(fr13.includes('reports/KAIF_UPDATES/') && fr13.includes('_INSTALL_REPORT.md'),
+   'S13-M3 задание адаптации несёт пункт field-report (скелет шаблона D)');
+ok(fr13 !== '' && !/origin|github|issues?\b|\bgh\b/i.test(fr13),
+   'S13-M3 анонимный профиль: пункт отчёта НЕ тянется к origin');
+const v13 = JSON.parse(readFileSync(join(S13, '.kaif', 'kaif.json'), 'utf8')).version;
+mkdirSync(join(S13, 'reports', 'KAIF_UPDATES'), { recursive: true });
+writeFileSync(join(S13, 'reports', 'KAIF_UPDATES', `S13_KAIF_${v13}_INSTALL_REPORT.md`),
+  '# Field report: KAIF install sandbox\n\n## 4. Final state and judge verdict\nVERIFIED\n');
 const adaptIds = [...new Set([...readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md'), 'utf8').matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
 r = run(S13, 'verify-final');

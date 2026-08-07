@@ -524,6 +524,30 @@ wave is SMALLER. If the waves don't shrink, the remedies aren't working — revi
 by the canon, per `BUG_FIXING_FRAMEWORK.md`. The agent keeps its own bug backlog — one doc per defect,
 nothing lost.
 
+**A defect in KAIF ITSELF — the five-step contour** (an owner's field decision, adopted as canon:
+*"if the AI agent noticed a defect in the KAIF work methodology, fix it in the local KAIF — and file
+a bug report to the neighboring KAIF project, to the AI agent developing KAIF; it will then be fixed
+in KAIF in a coming update"*). When the rake exists because of how the framework itself is worded or
+behaves — not because of this project's code:
+
+1. **Prove it is a CLASS, not a one-off:** reproduce it deterministically and search where else the
+   same mechanism bites (the twin check; neighbor deployments on disk are read-only evidence — never
+   edit them).
+2. **Fix it LOCALLY, without waiting for upstream:** patch the deployed wrapper here (the doc, skill
+   or guardrail that misled you); a guard born from the fix is proved by mutation — it must go red on
+   the broken version first (`BUG_FIXING_FRAMEWORK.md` → Guards).
+3. **File the signal** — skill `/report-bug`, its framework branch: `bugs/KAIF/` by template A (bug
+   report) / B (improvement request), dedup attestation first; delivery follows the deployment's
+   tracking mode (origin — on the owner's behalf through the send gate; anonymous — local only,
+   never reach for the origin).
+4. **Point the ticket at the local fix** (its "Local remediation" field): your local divergence and
+   the upstream fix must be reconcilable at the next `/kaif-update` — a noted divergence is a merge
+   the update sees coming; a silent one is a conflict it steps into.
+5. **Close the loop at home:** capture the reusable lesson in `EXPERIENCE.md` (skill `/experience` —
+   the same discipline as after any meaningful failure), keep the defect visible in `bugs/KAIF/`
+   until an update actually retires it, and add a `STATUS.md` line if it changes how the next
+   session works.
+
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
 human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
 agent's idea is a contribution to the product VISION → implement ONLY after the human approves.
@@ -1771,8 +1795,10 @@ Parses the bundle; applies the language pack (`--lang`; §7.4); autofills the ca
 placeholders from project reality (package.json, git config, LICENSE); writes files respectfully
 (`writeIfNew`: an existing non-empty file is ADOPTED, never clobbered); deploys per-system skill
 mirrors; wires the marker, npm handles and the deploy manifest (v2, §12.2); writes ONE cognitive
-deliverable — `KAIF_ADAPTATION_TASK.md`, whose items close only via `checkpoint <id>` commands;
-`verify-final` runs the final gates (§7.5) and self-cleans the installer.
+deliverable — `KAIF_ADAPTATION_TASK.md`, whose items close only via `checkpoint <id>` commands
+(the `field-report` item requires the mandatory field install report to exist in
+`reports/KAIF_UPDATES/` before it ticks); `verify-final` runs the final gates (§7.5) and
+self-cleans the installer.
 
 ### 7.3 Agent systems
 
@@ -1849,7 +1875,9 @@ it. New template modules insert by template order.
 `KAIF_UPDATE_TASK.md` lists: per-module merges with diffs · whole-file merges · owner-convention
 transfers · deprecations carrying local edits · stale claims (lines still asserting the OLD
 version anywhere in the project) · the news interval · executing checkpoints (`recheck` runs the
-actual check; `judge` requires `--verdict` with evidence).
+actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
+field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an
+update does not verify green without its report).
 
 ### 10.4 Legacy and anonymous roads
 
@@ -2849,7 +2877,7 @@ default** — it's cheap and prevents repeated mistakes.
 ``````md
 ---
 name: report-bug
-description: File a bug document in bugs/ by the project's rules, when the agent hits a defect during development/testing (a crash, wrong behavior, regression, library defect). The agent keeps its OWN bug backlog — one md per noticed bug, by the canon of the existing bugs/ docs. Invoked by the agent when it finds a bug (including inside autoloops) AND by the human ("file a bug", "report this bug", "report-bug", "write this bug down", "заведи баг", "зарепорти баг").
+description: File a bug document in bugs/ by the project's rules, when the agent hits a defect during development/testing (a crash, wrong behavior, regression, library defect). The agent keeps its OWN bug backlog — one md per noticed bug, by the canon of the existing bugs/ docs. Branches for a defect of the KAIF framework ITSELF (a doc/skill/machinery rake) — bugs/KAIF/ with templates A/B, dedup against existing tickets, origin delivery by tracking mode. Invoked by the agent when it finds a bug (including inside autoloops) AND by the human ("file a bug", "report this bug", "report-bug", "write this bug down", "заведи баг", "зарепорти баг").
 ---
 
 # /report-bug — file a bug document in bugs/ (the agent keeps its own bug backlog)
@@ -2872,6 +2900,90 @@ can be returned to (or handed to `/bug-research`).
   file it with the source noted ("tossed by the owner, <date>"), confirm in one line, return to the
   current task.
 - NOT for a "stuck-from-misunderstanding" stall (that's `PHILOSOPHY.md`) and not instead of fixing a trivial typo.
+
+## Branch first — a defect of the FRAMEWORK itself, not the project
+
+If the rake exists because of how **KAIF itself** is worded or behaves — a guiding doc/skill/machinery
+step misled you, a gate lied green, a guardrail that would have prevented the mistake is missing — the
+signal is addressed to the KAIF developer, not to this project's backlog (the "defect in KAIF itself"
+contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPORT):
+
+1. **Classify:** a defect → template A (bug report); a gap or wish — including a battle-tested
+   principle proposal (or dropping a non-working one) → template B (improvement request).
+2. **Dedup BEFORE filing** (the attestation line in the body is mandatory — a search claim without
+   the command behind it is empty): grep the local registry —
+   `grep -ri "<surface>" bugs/KAIF/ | grep -i "<symptom-class>"`; on an origin-tracked deployment
+   (`tracking: origin` in `.kaif/kaif.json`) also search open origin issues:
+   `gh issue list --repo <origin> --state open --search "<surface> <symptom-class>"`.
+   A match on surface + symptom-class (the version is NOT part of the key) = the SAME signal →
+   append a "+1 observation" comment there (conditions, environment, version, steps, expected/got;
+   new version of the same class → "reproduced on vX.Y") — do NOT open a new ticket.
+3. **File locally:** `bugs/KAIF/NN_*.md` by template A/B below (create the directory on first use).
+4. **Deliver by tracking mode:** `origin` — also file/append the origin issue ON THE OWNER'S
+   BEHALF, and only through the project's send gate / with the owner's quotable standing
+   authorization; `anonymous` — the signal stays LOCAL, never reach for the origin.
+5. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
+   quote-evidence; blameless wording (a weak model's failure is described as a missing guardrail,
+   never as "the model is dumb").
+
+Both templates open with the machine-grepable fingerprint
+`kaif-fp: <surface> :: <symptom-class> :: v<major.minor>` — surface is the canonical delivery path
+(doc, skill, tool, module anchor); symptom-class is a short slug from an open dictionary.
+
+### Template A — KAIF bug report
+
+```markdown
+# KAIF bug: <one-line defect statement>
+
+kaif-fp: <surface> :: <symptom-class> :: v<major.minor>
+**Autocapture** (from `.kaif/kaif.json` + update receipt): KAIF <version> · project <name | anonymized> ·
+sphere <…> · language <…> · i18n <…> · tracking <origin | none> · agent system <…> · OS <…> · Node <…>
+**Dedup attestation:** searched `bugs/KAIF/` (<command → result>) and open origin issues
+(`gh issue list --search "…"` → <result>). No match found. <!-- match found → comment there, no new ticket -->
+
+## Expected per canon
+<verbatim quote of the KAIF doc/skill/tool output that promises the behavior> — <file / section>
+
+## Got in the field
+<verbatim evidence: log lines, diff, command output — never a paraphrase>
+
+## Repro (deterministic)
+1. <smallest step sequence; sandbox recipe if the live project cannot be shared>
+
+## Cost and violated invariant
+<what it broke or nearly broke (near-miss counts); which framework invariant it violates:
+owner-work-safety / honest-green / owner-decisions / cold-start / memory / autonomy / universality-anonymity / self-sufficiency / simplicity>
+
+## What in KAIF led to this
+<the mechanism or assumption that produced the defect — point at the module, not the symptom>
+
+## Local remediation (per the "defect in KAIF itself" contour, if applied)
+<local fix + whether it is mutation-proved; "none" if not applicable>
+```
+
+### Template B — KAIF improvement request
+
+```markdown
+# KAIF improvement request: <one-line proposal>
+
+kaif-fp: <surface> :: <symptom-class> :: v<major.minor>
+**Autocapture:** <same line as template A>
+**Dedup attestation:** <same as template A>
+
+## Gap
+<what KAIF lacks or does clumsily — with a verbatim quote of the current canon/tool output that shows the gap>
+
+## Field evidence
+<the episode(s) that paid for this proposal: project, date, what happened; ≥1 verbatim artifact.
+For principle proposals (battle-tested methodology — or dropping a non-working one): where it is
+proven in production — projects, hours, sources. The owner of KAIF decides the proposal's fate.>
+
+## Proposed change (smallest that closes the gap)
+<doc/skill/tool + sketch of wording or behavior>
+
+## Expected effect and its check
+<observable verification that the change worked; which framework invariant it serves>
+```
 
 ## What to do
 
@@ -4544,11 +4656,21 @@ diverged places. Your cognitive work is that task, not the migration.
    `node .kaif/kaif-core.mjs check`, and finish with a `/fable-judge` pass over the update. Tick each
    item AND append its `KAIF-UPDATE: <id> done` checkpoint.
 
-5. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
+5. **Field report — MANDATORY** (the framework's feedback loop; written even when the update went
+   smoothly — deviations lead it, smooth is one line in the finale): the task's `field-report` item
+   gives the skeleton — `reports/KAIF_UPDATES/<PROJECT>_KAIF_<to>_UPDATE_REPORT.md`, strictly EN,
+   every number a command's output, every rake with verbatim evidence, the judge verdict quoted
+   verbatim in the final section (decision #46). Its checkpoint EXECUTES the file check — the update
+   does not verify green without the report. A rake that is an explicit framework defect/improvement
+   also gets its own ticket: skill `/report-bug`, templates A/B (delivery upstream follows the
+   deployment's tracking mode — an anonymous deployment never reaches for the origin).
+
+6. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
    removes the transient installer files.
 
-6. **Report & commit.** Summarize: replaced/added/kept counts, what you merged by hand, anything left
-   for the human. Commit `chore: update KAIF to X.Y`.
+7. **Report & commit.** Summarize in the chat: replaced/added/kept counts, what you merged by hand,
+   anything left for the human (the durable record is the field report from step 5). Commit
+   `chore: update KAIF to X.Y`.
 
 ## Notes
 - The guiding word is **respectful**: the project must stay whole and working at every step; owner
@@ -4605,6 +4727,10 @@ version is in the project and whether a newer one exists upstream.
 - If `.kaif/kaif.json` is missing, KAIF may not be deployed here (or the marker was lost) — say so and
   point to `KAIF.md` for (re)deployment.
 - Read-only skill: it never changes the project. Updates go through `/kaif-update`.
+- **Feedback channel** (epic M): defects and improvement wishes for KAIF itself live in `bugs/KAIF/`
+  (skill `/report-bug`, templates A/B — with dedup attestation); an origin-tracked deployment also
+  checks open origin issues for the same class before filing. Field update/install reports live in
+  `reports/KAIF_UPDATES/` — mention any unreported ones when reporting the version.
 ``````
 
 ### `.claude/skills/owner-reviews/SKILL.md`

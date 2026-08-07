@@ -521,6 +521,12 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   items.push(['sphere', 'Pick the project\'s sphere (libraries ship in .kaif/spheres/; do NOT author a new document unless none fits) and record it by running `node .kaif/kaif-core.mjs sphere <name>` (e.g. `sphere programming`) — never edit .kaif/kaif.json by hand.']);
   if (needTranslate) items.push(['language', `Translate the owner-facing docs (GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs) into "${LANG}" — no bundled template for this language yet. Keep agent-only docs in English.`]);
   items.push(['kaif-framework', 'Write KAIF_FRAMEWORK.md from its template: "KAIF, deployed here" + the deployment record (version, date, language, sphere, agents, mode).']);
+  // Epic M (feedback loop): the install report is MANDATORY and written even when everything went
+  // smoothly (deviations lead it, smooth is one line). Section SKELETON only — the genre canon
+  // lives in reports/README.md; a full template body here would bloat the task (the field rake:
+  // a 352-line task with 80 useful). The item deliberately never mentions the origin — report
+  // delivery upstream is the skills' business and must not leak into an anonymous deployment.
+  items.push(['field-report', `MANDATORY field install report (the framework's feedback loop — written even when the install went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_INSTALL_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers · 2. Friction and rakes (verbatim evidence; an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What confused a cold agent (top 3) · 4. Final state and judge verdict (run a /fable-judge pass over the install; every number is a command's output).`]);
   items.push(['verify', 'Run `node .kaif/kaif-core.mjs verify-final` — it checks these checkpoints and self-cleans the installer. Then commit `chore: deploy KAIF`.']);
 
   const lines = [
@@ -695,7 +701,13 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // NDim гр.4); the checkpoint re-runs the scanner, so the post-migration state is what counts.
   if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — after the history migration from the news above, update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
-  items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real), then run `node .kaif/kaif-core.mjs update-verify`.']);
+  items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
+  // Epic M (feedback loop): the update report is MANDATORY, even for a smooth pass (deviations
+  // lead it). Skeleton sections only (genre canon: reports/README.md — the 352-line-task rake);
+  // sits between the judge pass and update-verify/commit so the report can QUOTE the verdict and
+  // the gate greps its checkpoint. Never mentions the origin: delivery upstream is the skills'
+  // business and must not leak into an anonymous deployment's task text.
+  items.push(['field-report', `MANDATORY field update report (the framework's feedback loop — written even when the update went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_UPDATE_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers (machinery counters, gates) · 2. Rakes — each with severity, verbatim evidence, cost, repro (an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What was exercised vs NOT (honest list) · 4. Wishes for the next version (by cost, descending) · 5. Final state and the judge verdict quoted verbatim (decision #46). Every number is a command's output; every rake carries verbatim evidence. Then run \`node .kaif/kaif-core.mjs update-verify\`.`]);
   const news = newsInterval(meta, fromVersion);
   const diffSections = [];
   for (const p of modFiles) {
@@ -2021,6 +2033,24 @@ function cmdCheckpoint() {
         else log('✔ stale-claims scan ran clean (executed by the checkpoint itself)');
       } else log('⚠ stale-claims scan skipped: no update receipt with from/to versions — tick records on your word');
     } catch (e) { log(`⚠ stale-claims scan errored (${e.message}) — tick records on your word`); }
+  }
+  if (id === 'field-report') {
+    // Epic M / decision #46: an update or install is not green without its field report. The
+    // item's contract is objective — the report FILE exists in reports/KAIF_UPDATES/ under the
+    // version this pass delivered (writing it well is the agent's judgement; existing is not).
+    // Version pin: a stale report from a PREVIOUS interval must not satisfy this pass's tick.
+    const kind = tag === 'KAIF-UPDATE' ? 'UPDATE' : 'INSTALL';
+    let ver = null;
+    try { ver = tag === 'KAIF-UPDATE' ? readJson(LAST_UPDATE).to : readJson(KAIF_JSON).version; }
+    catch { /* no receipt/marker readable — the pin relaxes to the kind suffix below */ }
+    const dir = join('reports', 'KAIF_UPDATES');
+    const pin = ver
+      ? new RegExp(`_KAIF_${String(ver).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}_${kind}_REPORT\\.md$`)
+      : new RegExp(`_${kind}_REPORT\\.md$`);
+    const found = existsSync(dir) ? readdirSync(dir).filter((f) => pin.test(f)) : [];
+    if (!found.length)
+      die(`checkpoint field-report REFUSED: no *_KAIF_${ver || '<version>'}_${kind}_REPORT.md in ${dir}/ — write the field report first (its sections are in the task item; genre canon: reports/README.md)`);
+    log(`✔ field report on disk: ${join(dir, found[0])} (executed by the checkpoint itself)`);
   }
   let verdictLine = null;
   if (id === 'judge') {

@@ -109,6 +109,18 @@ ok(task.includes('owner-conventions') && task.includes('EXPERIENCE.md'), 'кон
 ok(!/merge-modules[^\n]*PHILOSOPHY\.md/.test(task), 'локализованный модуль БЕЗ апстрим-правки не шумит в задаче (KPOT F2: «делать нечего» не показывается)');
 ok(/UPSTREAM ADDITION 9\.9 \(pause\)/.test(pauseTxt) && !/merge-modules[^\n]*pause/.test(task), 'pause: апстрим-модуль влит, локальный не требует мержа — файла нет в merge-modules');
 
+// M3 (plans/50, критерии 3 и 6, красным-вперёд): задание обновления НЕСЁТ обязательный пункт
+// полевого отчёта (скелет шаблона C — researches/18 §8) с именем файла, пиненным на ЦЕЛЕВУЮ
+// версию; скелет — секции с якорями, не полное тело (риск 1 плана 50: пункт ≤ 30 строк —
+// грабля NDim «352 строки задания, полезных 80»).
+const frS = task.indexOf('- **field-report**');
+const frE = task.indexOf('When done, run:', frS);
+const frBlock = frS >= 0 && frE > frS ? task.slice(frS, frE) : '';
+ok(frBlock.includes('reports/KAIF_UPDATES/') && frBlock.includes('_KAIF_9.9_UPDATE_REPORT.md') &&
+   /judge verdict/i.test(frBlock), 'M3: задание update несёт пункт field-report со скелетом шаблона C (файл пинен на 9.9)');
+ok(frBlock !== '' && frBlock.split('\n').length <= 30,
+   'M3: пункт field-report ≤ 30 строк (скелет, не полное тело)', String(frBlock.split('\n').length));
+
 // цикл №2 — 9.9 → 9.10 (тот же контент): локализация обязана пережить И ЕГО (класс NDim F1).
 // Задание цикла №1 сбрасываем СОЗНАТЕЛЬНО: с bugs/25 update отказывает поверх неотработанного
 // задания (fail-closed), а этот свод стережёт локализацию, не дисциплину заданий (её стережёт s07/T9).

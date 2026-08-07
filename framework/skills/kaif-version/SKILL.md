@@ -41,3 +41,7 @@ version is in the project and whether a newer one exists upstream.
 - If `.kaif/kaif.json` is missing, KAIF may not be deployed here (or the marker was lost) — say so and
   point to `KAIF.md` for (re)deployment.
 - Read-only skill: it never changes the project. Updates go through `/kaif-update`.
+- **Feedback channel** (epic M): defects and improvement wishes for KAIF itself live in `bugs/KAIF/`
+  (skill `/report-bug`, templates A/B — with dedup attestation); an origin-tracked deployment also
+  checks open origin issues for the same class before filing. Field update/install reports live in
+  `reports/KAIF_UPDATES/` — mention any unreported ones when reporting the version.

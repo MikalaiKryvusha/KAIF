@@ -169,6 +169,21 @@ ok(r.code !== 0 && /unknown item id/.test(r.out), 'S12 checkpoint for — отв
 // пока канонное имя не записано; честный поток записывает имя командой (иначе тик — самоаттестация)
 r = run(S12, 'project-name "S12 Sandbox"');
 ok(r.code === 0, 'S12 канонное имя записано командой project-name (новый шаг потока 2.2)', r.out);
+// M3 (plans/50, критерий 3, красным-вперёд): задание несёт пункт field-report, а его чекпоинт
+// ИСПОЛНЯЕТ проверку файла отчёта в reports/KAIF_UPDATES/ — тик без файла невозможен; файл под
+// ЧУЖУЮ версию не засчитывается (пин на версию расписки); с файлом под целевую — записывается.
+const t12m3 = readFileSync(join(S12, 'KAIF_UPDATE_TASK.md'), 'utf8');
+ok(t12m3.includes('- **field-report**'), 'S12-M3 задание update несёт пункт field-report');
+r = run(S12, 'checkpoint field-report');
+ok(r.code !== 0 && /field-report REFUSED/.test(r.out), 'S12-M3 checkpoint field-report БЕЗ файла — отказ (исполняющий гейт)', r.out);
+mkdirSync(join(S12, 'reports', 'KAIF_UPDATES'), { recursive: true });
+writeFileSync(join(S12, 'reports', 'KAIF_UPDATES', 'SBX_KAIF_1.0_UPDATE_REPORT.md'), '# Field report: wrong version\n');
+r = run(S12, 'checkpoint field-report');
+ok(r.code !== 0 && /field-report REFUSED/.test(r.out), 'S12-M3 файл под ЧУЖУЮ версию (1.0) не засчитан — отказ', r.out);
+writeFileSync(join(S12, 'reports', 'KAIF_UPDATES', 'SBX_KAIF_9.9_UPDATE_REPORT.md'),
+  '# Field report: KAIF update sandbox\n\n## 5. Final state and judge verdict\nVERIFIED\n');
+r = run(S12, 'checkpoint field-report');
+ok(r.code === 0 && /field report on disk/.test(r.out), 'S12-M3 checkpoint field-report С файлом под 9.9 — записан', r.out);
 for (const id of taskIds) {
   const extra = id === 'judge' ? ' --verdict "VERIFIED: sandbox pass, gates observed green"' : '';
   r = run(S12, `checkpoint ${id}${extra}`);

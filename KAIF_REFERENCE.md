@@ -143,8 +143,10 @@ Parses the bundle; applies the language pack (`--lang`; §7.4); autofills the ca
 placeholders from project reality (package.json, git config, LICENSE); writes files respectfully
 (`writeIfNew`: an existing non-empty file is ADOPTED, never clobbered); deploys per-system skill
 mirrors; wires the marker, npm handles and the deploy manifest (v2, §12.2); writes ONE cognitive
-deliverable — `KAIF_ADAPTATION_TASK.md`, whose items close only via `checkpoint <id>` commands;
-`verify-final` runs the final gates (§7.5) and self-cleans the installer.
+deliverable — `KAIF_ADAPTATION_TASK.md`, whose items close only via `checkpoint <id>` commands
+(the `field-report` item requires the mandatory field install report to exist in
+`reports/KAIF_UPDATES/` before it ticks); `verify-final` runs the final gates (§7.5) and
+self-cleans the installer.
 
 ### 7.3 Agent systems
 
@@ -221,7 +223,9 @@ it. New template modules insert by template order.
 `KAIF_UPDATE_TASK.md` lists: per-module merges with diffs · whole-file merges · owner-convention
 transfers · deprecations carrying local edits · stale claims (lines still asserting the OLD
 version anywhere in the project) · the news interval · executing checkpoints (`recheck` runs the
-actual check; `judge` requires `--verdict` with evidence).
+actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
+field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an
+update does not verify green without its report).
 
 ### 10.4 Legacy and anonymous roads
 

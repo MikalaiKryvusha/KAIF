@@ -60,11 +60,21 @@ diverged places. Your cognitive work is that task, not the migration.
    `node .kaif/kaif-core.mjs check`, and finish with a `/fable-judge` pass over the update. Tick each
    item AND append its `KAIF-UPDATE: <id> done` checkpoint.
 
-5. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
+5. **Field report — MANDATORY** (the framework's feedback loop; written even when the update went
+   smoothly — deviations lead it, smooth is one line in the finale): the task's `field-report` item
+   gives the skeleton — `reports/KAIF_UPDATES/<PROJECT>_KAIF_<to>_UPDATE_REPORT.md`, strictly EN,
+   every number a command's output, every rake with verbatim evidence, the judge verdict quoted
+   verbatim in the final section (decision #46). Its checkpoint EXECUTES the file check — the update
+   does not verify green without the report. A rake that is an explicit framework defect/improvement
+   also gets its own ticket: skill `/report-bug`, templates A/B (delivery upstream follows the
+   deployment's tracking mode — an anonymous deployment never reaches for the origin).
+
+6. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
    removes the transient installer files.
 
-6. **Report & commit.** Summarize: replaced/added/kept counts, what you merged by hand, anything left
-   for the human. Commit `chore: update KAIF to X.Y`.
+7. **Report & commit.** Summarize in the chat: replaced/added/kept counts, what you merged by hand,
+   anything left for the human (the durable record is the field report from step 5). Commit
+   `chore: update KAIF to X.Y`.
 
 ## Notes
 - The guiding word is **respectful**: the project must stay whole and working at every step; owner
