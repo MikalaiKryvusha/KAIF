@@ -13,3 +13,10 @@ continua.
 — escreva aqui um homework com passos claros, mínimos e numerados e um lugar para os resultados do humano,
 depois continue com outro trabalho. Quando o humano reportar, incorpore os resultados e marque o arquivo
 com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework da classe «gosto»** (o critério de aceitação é um adjetivo de percepção — `AGENT_GUIDE.md` →
+"The taste class"): o agente entrega ao humano um ARTEFATO para perceber, nunca um link nem um benchmark
+alheio; todos os candidatos sobre UM MESMO material, rótulos cegos, a chave ao lado. Dois campos fixos em
+cada documento desse tipo: **«Pronto para ver/ouvir agora mesmo»** (caminhos para os artefatos) e
+**«Veredictos já dados»** (as decisões do proprietário, registradas literalmente — um veredicto é cânone
+e nunca é perguntado duas vezes).

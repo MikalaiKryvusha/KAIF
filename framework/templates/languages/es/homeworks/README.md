@@ -13,3 +13,10 @@ notas y continúa.
 atasque — escriba aquí un homework con pasos claros, mínimos y numerados y un lugar para los resultados del
 humano, y luego continúe con otro trabajo. Cuando el humano informe, incorpore los resultados y etiquete el
 archivo con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework de clase «gusto»** (el criterio de aceptación es un adjetivo de percepción — `AGENT_GUIDE.md` →
+"The taste class"): el agente entrega al humano un ARTEFACTO para percibir, nunca un enlace ni un
+benchmark ajeno; todos los candidatos sobre UN MISMO material, etiquetas ciegas, la clave al lado. Dos
+campos fijos en cada documento de este tipo: **«Listo para ver/escuchar ahora mismo»** (rutas a los
+artefactos) y **«Veredictos ya emitidos»** (las decisiones del propietario, registradas literalmente —
+un veredicto es canon y nunca se pregunta dos veces).

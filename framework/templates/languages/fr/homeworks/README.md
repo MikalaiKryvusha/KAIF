@@ -14,3 +14,10 @@ l'agent lit vos notes et continue.
 ne calez pas — écrivez ici un homework avec des étapes claires, minimales et numérotées et une place pour
 les résultats de l'humain, puis continuez avec un autre travail. Quand l'humain rapporte, intégrez les
 résultats et étiquetez le fichier `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework de la classe « goût »** (le critère d'acceptation est un adjectif de perception —
+`AGENT_GUIDE.md` → "The taste class") : l'agent remet à l'humain un ARTEFACT à percevoir, jamais un lien
+ni un benchmark étranger ; tous les candidats sur UN MÊME matériau, étiquettes à l'aveugle, la clé à
+côté. Deux champs permanents dans chaque document de ce type : **« Prêt à voir/écouter tout de suite »**
+(chemins vers les artefacts) et **« Verdicts déjà rendus »** (les décisions du propriétaire, consignées
+mot pour mot — un verdict est canon et n'est jamais demandé deux fois).

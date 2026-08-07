@@ -201,6 +201,60 @@ if (skills.includes('release')) {
   } catch { errors.push('bundle lint: framework/skills/check-backlog/SKILL.md unreadable'); }
 }
 
+// 5f. The pack-staleness guard (bugs/44, решение №44): реестр пар «истина↔зеркало»,
+//     применённый к языковым пакетам. Файл пакета — ЛОКАЛИЗАЦИЯ EN-шаблона; когда EN-сторона
+//     меняется, дрейф раньше не ловил никто (поле: «абзац Taste-class есть в английском
+//     homeworks/README.md и отсутствует во ВСЕХ ДЕВЯТИ языковых пакетах»). Sha EN-истоков
+//     ПИНУЮТСЯ в framework/templates/_lang-pack-source-shas.json (ВНЕ languages/ — всё под
+//     languages/ встраивается в бандл, а пин-реестр — внутренность истока, не поставка);
+//     изменившийся EN-шаблон краснит сборку, пока пакеты не ресинканы (или пин сознательно
+//     передвинут ТЕМ ЖЕ коммитом — та самая «сознательная» правка, которой требует доктрина
+//     реестра пар). Пер-файловые пары без порогов — вырожденных N не существует (EXP-0019).
+{
+  const { createHash: ch5f } = await import('node:crypto');
+  const { statSync: st5f } = await import('node:fs');
+  const langRoot5f = join(ROOT, 'framework', 'templates', 'languages');
+  const PIN_PATH = join(ROOT, 'framework', 'templates', '_lang-pack-source-shas.json');
+  const normSha5f = (p) => ch5f('sha256').update(readFileSync(p, 'utf8').replace(/\r\n/g, '\n')).digest('hex');
+  const srcOf = (dest) => dest.endsWith('/README.md') ? `readmes/${dest.slice(0, -'/README.md'.length)}.md` : dest;
+  const destLangs = new Map();   // dest (pack-relative) → [langs carrying it]
+  if (existsSync(langRoot5f)) {
+    for (const lang of readdirSync(langRoot5f)) {
+      const ldir = join(langRoot5f, lang);
+      if (!st5f(ldir).isDirectory()) continue;
+      const walk = (dir, rel) => {
+        for (const n of readdirSync(dir)) {
+          const p = join(dir, n);
+          const r = rel ? `${rel}/${n}` : n;
+          if (st5f(p).isDirectory()) { walk(p, r); continue; }
+          if (r === 'skill-triggers.json') continue;   // машинерия алиасов, не локализация шаблона
+          if (!destLangs.has(r)) destLangs.set(r, []);
+          destLangs.get(r).push(lang);
+        }
+      };
+      walk(ldir, '');
+    }
+  }
+  if (destLangs.size) {
+    let pins = null;
+    if (!existsSync(PIN_PATH)) errors.push('pack-staleness (bugs/44): framework/templates/_lang-pack-source-shas.json missing — pin the EN sources of every localized template');
+    else { try { pins = JSON.parse(readFileSync(PIN_PATH, 'utf8')); } catch { errors.push('pack-staleness: _lang-pack-source-shas.json is not valid JSON'); } }
+    if (pins) {
+      for (const [dest, inLangs] of [...destLangs.entries()].sort()) {
+        const src = srcOf(dest);
+        const srcAbs = join(ROOT, 'framework', ...src.split('/'));
+        if (!existsSync(srcAbs)) { errors.push(`pack-staleness: pack file "${dest}" has no EN source at framework/${src}`); continue; }
+        const sha = normSha5f(srcAbs);
+        if (!pins[dest]) errors.push(`pack-staleness (bugs/44): no pin for "${dest}" — sync its ${inLangs.length} pack file(s), then add to _lang-pack-source-shas.json: "${dest}": "${sha}"`);
+        else if (pins[dest] !== sha)
+          errors.push(`pack-staleness (bugs/44): EN template framework/${src} changed since the packs were last synced — re-sync its localization in ${inLangs.length} pack(s) [${inLangs.join(', ')}] (or consciously re-pin) and update _lang-pack-source-shas.json in the SAME commit: "${dest}": "${sha}"`);
+      }
+      for (const k of Object.keys(pins)) if (!destLangs.has(k))
+        errors.push(`pack-staleness: orphan pin "${k}" in _lang-pack-source-shas.json — no pack carries this file anymore`);
+    }
+  }
+}
+
 // 6. dist/ — the Thin-KAIF install artifacts (1.5+). Validated when present (the build
 //    always emits them; a checkout missing dist/ predates 1.5 and skips cleanly).
 const distDir = join(ROOT, 'dist');

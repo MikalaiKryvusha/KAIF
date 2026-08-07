@@ -5992,6 +5992,12 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 **لوكيل الذكاء الاصطناعي:** حين تُحاصَر بشيء لا يقدر عليه إلا إنسان ذو جسد، لا تتوقف — اكتب هنا
 واجبًا بخطوات واضحة مرقّمة في حدها الأدنى ومكانٍ لنتائج الإنسان، ثم واصل عملًا آخر. وعندما يبلّغ
 الإنسان، أدرج النتائج ووسم الملف بـ `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**واجب من فئة «الذوق»** (حين يكون معيار القبول صفةَ إدراكٍ حسّي — `AGENT_GUIDE.md` →
+"The taste class"): يسلّم الوكيل الإنسانَ أثرًا (ARTIFACT) يُدرَك بالحواس، لا رابطًا ولا معيارَ
+قياسٍ غريبًا أبدًا؛ جميع المرشّحين على المادة نفسها، بعلامات عمياء، والمفتاح بجانبها. حقلان ثابتان
+في كل وثيقة من هذا النوع: **«جاهز للمشاهدة/الاستماع الآن»** (مسارات الآثار) و**«أحكام صدرت
+بالفعل»** (قرارات المالك مدوَّنة حرفيًا — الحكم قانونٌ (canon) ولا يُسأل عنه مرتين أبدًا).
 ``````
 
 > **FILE: `templates/languages/ar/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -6270,6 +6276,13 @@ zurück — der Agent liest Ihre Notizen und macht weiter.
 nicht stecken — schreibe hier ein Homework mit klaren, minimalen, nummerierten Schritten und einem Platz
 für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Wenn der Mensch berichtet, arbeite
 die Ergebnisse ein und markiere die Datei mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework der Geschmacksklasse** (das Abnahmekriterium ist ein Wahrnehmungsadjektiv — `AGENT_GUIDE.md` →
+"The taste class"): Der Agent übergibt dem Menschen ein ARTEFAKT zum Wahrnehmen, niemals einen Link oder
+einen fremden Benchmark; alle Kandidaten auf EIN UND DEMSELBEN Material, blinde Labels, der Schlüssel
+daneben. Zwei feste Felder in jedem solchen Dokument: **„Jetzt sofort zu sehen/zu hören"** (Pfade zu den
+Artefakten) und **„Bereits gefällte Urteile"** (die Entscheidungen des Eigentümers, wörtlich
+festgehalten — ein Urteil ist Kanon und wird nie zweimal erfragt).
 ``````
 
 > **FILE: `templates/languages/de/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -6561,6 +6574,13 @@ notas y continúa.
 atasque — escriba aquí un homework con pasos claros, mínimos y numerados y un lugar para los resultados del
 humano, y luego continúe con otro trabajo. Cuando el humano informe, incorpore los resultados y etiquete el
 archivo con `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework de clase «gusto»** (el criterio de aceptación es un adjetivo de percepción — `AGENT_GUIDE.md` →
+"The taste class"): el agente entrega al humano un ARTEFACTO para percibir, nunca un enlace ni un
+benchmark ajeno; todos los candidatos sobre UN MISMO material, etiquetas ciegas, la clave al lado. Dos
+campos fijos en cada documento de este tipo: **«Listo para ver/escuchar ahora mismo»** (rutas a los
+artefactos) y **«Veredictos ya emitidos»** (las decisiones del propietario, registradas literalmente —
+un veredicto es canon y nunca se pregunta dos veces).
 ``````
 
 > **FILE: `templates/languages/es/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -6853,6 +6873,13 @@ l'agent lit vos notes et continue.
 ne calez pas — écrivez ici un homework avec des étapes claires, minimales et numérotées et une place pour
 les résultats de l'humain, puis continuez avec un autre travail. Quand l'humain rapporte, intégrez les
 résultats et étiquetez le fichier `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework de la classe « goût »** (le critère d'acceptation est un adjectif de perception —
+`AGENT_GUIDE.md` → "The taste class") : l'agent remet à l'humain un ARTEFACT à percevoir, jamais un lien
+ni un benchmark étranger ; tous les candidats sur UN MÊME matériau, étiquettes à l'aveugle, la clé à
+côté. Deux champs permanents dans chaque document de ce type : **« Prêt à voir/écouter tout de suite »**
+(chemins vers les artefacts) et **« Verdicts déjà rendus »** (les décisions du propriétaire, consignées
+mot pour mot — un verdict est canon et n'est jamais demandé deux fois).
 ``````
 
 > **FILE: `templates/languages/fr/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7141,6 +7168,12 @@ compréhension grandit.
 स्पष्ट, न्यूनतम, क्रमांकित चरणों और मानव के परिणामों के लिए जगह के साथ homework लिखें, फिर दूसरा काम
 जारी रखें। मानव के बताने पर परिणाम शामिल करें और फ़ाइल को `DONE` टैग दें
 (`git mv NN_x.md NN_DONE_x.md`)।
+
+**«स्वाद» वर्ग का homework** (जब स्वीकृति मानदंड बोध का विशेषण हो — `AGENT_GUIDE.md` →
+"The taste class"): एजेंट मानव को बोध के लिए स्वयं आर्टिफ़ैक्ट सौंपता है — कभी लिंक या पराया बेंचमार्क
+नहीं; सभी उम्मीदवार एक ही सामग्री पर, अंधे लेबल, कुंजी पास में। ऐसे हर दस्तावेज़ में दो स्थायी क्षेत्र:
+**«अभी देखने/सुनने के लिए तैयार»** (आर्टिफ़ैक्ट के पथ) और **«दिए जा चुके निर्णय»** (स्वामी के फ़ैसले,
+शब्दशः दर्ज — निर्णय canon है और दोबारा कभी नहीं पूछा जाता)।
 ``````
 
 > **FILE: `templates/languages/hi/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7424,6 +7457,13 @@ DONE टैग नहीं मिलता।
 明確で最小限の番号付きステップと、人間の結果を書く場所を備えた homework をここに書き、その後は
 他の作業を続けること。人間が報告したら、結果を取り込み、ファイルに `DONE` タグを付ける
 （`git mv NN_x.md NN_DONE_x.md`）。
+
+**「好み」クラスの homework**（受け入れ基準が知覚の形容詞である場合 — `AGENT_GUIDE.md` →
+"The taste class"）：エージェントは人間に、知覚するための「アーティファクト」そのものを渡すこと —
+リンクや他者のベンチマークは決して渡さない。すべての候補を同一の素材の上で、ブラインドのラベルで、
+対応表を傍らに。この種の各文書には 2 つの常設フィールドを置く：**「今すぐ見られる／聴けるもの」**
+（アーティファクトへのパス）と**「すでに下された評決」**（オーナーの判断を逐語で記録 — 評決は
+カノンであり、二度と尋ね直さない）。
 ``````
 
 > **FILE: `templates/languages/ja/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7710,6 +7750,13 @@ continua.
 — escreva aqui um homework com passos claros, mínimos e numerados e um lugar para os resultados do humano,
 depois continue com outro trabalho. Quando o humano reportar, incorpore os resultados e marque o arquivo
 com `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework da classe «gosto»** (o critério de aceitação é um adjetivo de percepção — `AGENT_GUIDE.md` →
+"The taste class"): o agente entrega ao humano um ARTEFATO para perceber, nunca um link nem um benchmark
+alheio; todos os candidatos sobre UM MESMO material, rótulos cegos, a chave ao lado. Dois campos fixos em
+cada documento desse tipo: **«Pronto para ver/ouvir agora mesmo»** (caminhos para os artefatos) e
+**«Veredictos já dados»** (as decisões do proprietário, registradas literalmente — um veredicto é cânone
+e nunca é perguntado duas vezes).
 ``````
 
 > **FILE: `templates/languages/pt/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -7996,6 +8043,13 @@ compreensão cresce.
 **Для ИИ-агента:** заблокирован на том, что может сделать только человек-с-телом, — не застревай: заведи
 homework с ясными минимальными пронумерованными шагами и местом для результатов человека, затем продолжай
 другую работу. Получив ответ человека, учти результаты и пометь файл `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework класса «вкус»** (критерий приёмки — прилагательное восприятия; `AGENT_GUIDE.md` →
+"The taste class"): агент отдаёт человеку АРТЕФАКТ для восприятия — никогда не ссылку и не чужой
+бенчмарк; все кандидаты на ОДНОМ и том же материале, слепые метки, расшифровка рядом. Два постоянных
+поля в каждом таком документе: **«Что уже можно смотреть/слушать прямо сейчас»** (пути к артефактам)
+и **«Вынесенные вердикты»** (решения владельца, записанные дословно — вердикт является каноном и
+никогда не спрашивается дважды).
 ``````
 
 > **FILE: `templates/languages/ru/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8268,6 +8322,11 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 **给 AI 代理：** 当被只有"有身体的人类"才能做的事情卡住时，不要停滞 —— 在这里写一份 homework，
 给出清晰、最少、编号的步骤和留给人类填写结果的位置，然后继续其他工作。人类反馈后，纳入结果并给
 文件打上 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）。
+
+**「品味」类 homework**（验收标准是感知类形容词 —— `AGENT_GUIDE.md` → "The taste class"）：
+代理交给人类的是可感知的"制品"本身，绝不是链接或他人的基准测试；所有候选都基于同一份材料、
+盲标签、对照表放在旁边。此类每份文档都有两个常设字段：**「现在就能看/能听的」**（制品路径）和
+**「已给出的裁决」**（所有者的判定，逐字记录 —— 裁决即是正典，绝不二次询问）。
 ``````
 
 > **FILE: `templates/languages/zh-Hans/ideas/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang

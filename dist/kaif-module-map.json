@@ -4449,10 +4449,10 @@
       {
         "signature": "# `homeworks/` — مهام من الوكيل إلى الإنسان",
         "class": "static",
-        "sha256": "aac1219207df7817e1dfe6da76b9e682501f661c9a26bb9c9a444d55bcfaf19a",
+        "sha256": "e8a2b18fa637b7daa1a0398ab83e07e9dfbb0e83dd12f50092b47f32a90c64f6",
         "lines": [
           1,
-          14
+          20
         ]
       }
     ],
@@ -4636,10 +4636,10 @@
       {
         "signature": "# `homeworks/` — Aufgaben vom Agenten an den Menschen",
         "class": "static",
-        "sha256": "a4baa7e0d1e41ee9834120da9a13230a2a7b11e24b906c7f4ed8e90dde78ba57",
+        "sha256": "34d45b4983907149fd487d94d9a82c44cc9caf004c40ad7f0fd0fe962231cddd",
         "lines": [
           1,
-          17
+          24
         ]
       }
     ],
@@ -4823,10 +4823,10 @@
       {
         "signature": "# `homeworks/` — tareas del agente para el humano",
         "class": "static",
-        "sha256": "b26589f14043b53b75599788ddf1e873ee9906c4a847ff247951fc6dfe0f839b",
+        "sha256": "c5c7a6f5d80f40536693d78f6f0008c129e6d5633011007bae83127e7fb78e5d",
         "lines": [
           1,
-          16
+          23
         ]
       }
     ],
@@ -5010,10 +5010,10 @@
       {
         "signature": "# `homeworks/` — tâches de l'agent pour l'humain",
         "class": "static",
-        "sha256": "0ab9b6ee3c021b12bf142719bc9f6b3e3993bce830447431212f60ffe1a2a28d",
+        "sha256": "d7685fbc0ca318cc69076f5b9f5ece7c6c55beb796128f38bb638b0156fe4061",
         "lines": [
           1,
-          17
+          24
         ]
       }
     ],
@@ -5197,10 +5197,10 @@
       {
         "signature": "# `homeworks/` — एजेंट की ओर से मानव के लिए कार्य",
         "class": "static",
-        "sha256": "2a69eb07185e6cc141930f02ea6eb7627aac1e34dca388e182c424d048aa588c",
+        "sha256": "f99a5edb14f3f115c324c3aa6bb5c78cc98aa7f282a4783042ef50ac3aa869ea",
         "lines": [
           1,
-          15
+          21
         ]
       }
     ],
@@ -5384,10 +5384,10 @@
       {
         "signature": "# `homeworks/` — エージェントから人間への宿題",
         "class": "static",
-        "sha256": "3e390537840b453d183bdf5db045253f5237d5244ee75af7f61b5f93fef11caf",
+        "sha256": "fd1bc1f7a94f960e644240ce9c8662318edea3d3da0c1db4a7c5ac2e1bbca206",
         "lines": [
           1,
-          16
+          23
         ]
       }
     ],
@@ -5571,10 +5571,10 @@
       {
         "signature": "# `homeworks/` — tarefas do agente para o humano",
         "class": "static",
-        "sha256": "456159363d6addece273ce96e6b67081e6a7ba7da37486830db508f8c01b504d",
+        "sha256": "5fe378fcb5240cb6421c7f9bba9c58ca5fdd3cf0985d3aed5bbdbb02a39e0eb8",
         "lines": [
           1,
-          16
+          23
         ]
       }
     ],
@@ -5758,10 +5758,10 @@
       {
         "signature": "# `homeworks/` — задания от агента человеку",
         "class": "static",
-        "sha256": "9512d324f80455c158046e7920eb5bbd33e6a741aa618b5c1aea6666affeada3",
+        "sha256": "ac60a0354784dc34ec917dce7cc844eb0b10f76fe3e16550d738c65a57a59b80",
         "lines": [
           1,
-          15
+          22
         ]
       }
     ],
@@ -5945,10 +5945,10 @@
       {
         "signature": "# `homeworks/` —— 代理布置给人类的任务",
         "class": "static",
-        "sha256": "5eee4623b954089d9b7e437e34924b73e946dec73d1808caafc88a506b914c55",
+        "sha256": "f46fbd5942ebf56f1db6af34f0d1f2d00a828616b53a1b77b5fac1c07aa294a3",
         "lines": [
           1,
-          13
+          18
         ]
       }
     ],

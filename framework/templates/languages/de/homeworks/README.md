@@ -14,3 +14,10 @@ zurück — der Agent liest Ihre Notizen und macht weiter.
 nicht stecken — schreibe hier ein Homework mit klaren, minimalen, nummerierten Schritten und einem Platz
 für die Ergebnisse des Menschen, dann mach mit anderer Arbeit weiter. Wenn der Mensch berichtet, arbeite
 die Ergebnisse ein und markiere die Datei mit `DONE` (`git mv NN_x.md NN_DONE_x.md`).
+
+**Homework der Geschmacksklasse** (das Abnahmekriterium ist ein Wahrnehmungsadjektiv — `AGENT_GUIDE.md` →
+"The taste class"): Der Agent übergibt dem Menschen ein ARTEFAKT zum Wahrnehmen, niemals einen Link oder
+einen fremden Benchmark; alle Kandidaten auf EIN UND DEMSELBEN Material, blinde Labels, der Schlüssel
+daneben. Zwei feste Felder in jedem solchen Dokument: **„Jetzt sofort zu sehen/zu hören"** (Pfade zu den
+Artefakten) und **„Bereits gefällte Urteile"** (die Entscheidungen des Eigentümers, wörtlich
+festgehalten — ein Urteil ist Kanon und wird nie zweimal erfragt).
