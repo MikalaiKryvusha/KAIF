@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// review.mjs — страница вычитки, сервер, окно (фаза K5, plans/48 шаг 2; роль C1 «review»).
+// review.mjs — страница вычитки, сервер, сигнал, очередь (фаза K5, plans/48 шаги 2–3; роль C1 «review»).
 // [TESTED: 2026-08-07 · живой пилот + QA-прогон verify-contour]
 //
 // ⚠️ T7 (ловушка платформы): внутри шаблонных строк этого файла НЕ ДОЛЖНО БЫТЬ обратных
@@ -7,15 +7,17 @@
 // JS страницы написан одинарными кавычками и конкатенацией; в текстах — только «ёлочки».
 //
 // Инварианты контракта, живущие здесь:
-//   I1  — md источник, HTML производное (страница строится из документа, руками не правится);
-//   I5  — сигнал зовётся ПОСЛЕ поднявшейся страницы (цепочка — в review-signal, шаг 3);
-//   I8  — записанное решение ЗАВЕРШАЕТ контур: агент узнаёт о событии завершением процесса;
-//   I9  — ожидание человека без таймаута (дефолт 0; --timeout N — только автоматизация);
+//   I1  — md источник, HTML производное; I5 — сигнал ПОСЛЕ поднявшейся страницы;
+//   I6  — тихие часы поверх всего (autoloop → тихие часы → настройка), окно через полночь;
+//   I7  — очередь — ФАЙЛ СОСТОЯНИЯ (queue.json), живые документы не переносятся;
+//   I8  — записанное решение ЗАВЕРШАЕТ контур; очередь не пуста → перезапуск пачки — долг АГЕНТА;
+//   I9  — ожидание без таймаута (дефолт 0; --timeout N — только автоматизация, терпимая ТИШИНА);
 //   I10/I11/I12/I13 — громкий отказ · спасательный круг · черновик в браузере · пульс /alive;
-//   I25 — ровно три исхода, все видимы в логе процесса;
-//   I26/I27 — отдельное окно --app=, автозакрытие — ПОПЫТКА с честным «закройте меня»;
-//   I29/I30 — один документ = одно окно (замок с pid и адресом); свободный порт listen(0);
-//   I31 — запускать как ОТСЛЕЖИВАЕМУЮ фоновую задачу (голый & харнесс не отслеживает);
+//   I14 — обратный пульс: маячок /closed (быстрый путь) + тишина-вахта 3 мин, два страйка (T5);
+//   I25 — три исхода в логе; I26/I27 — окно --app=, автозакрытие — попытка; I29/I30 — замок/порт;
+//   I31 — запускать ОТСЛЕЖИВАЕМОЙ фоновой задачей; I32 — зов не блокирует контур (async-цепочка);
+//   I33/I34 — писки 880/660/990 через звуковую карту ПЕРВЫМИ, доставка не доказывается exit-кодом;
+//   I35/I36 — голос честно падает на системный; текст в синтезатор ФАЙЛОМ, команда ASCII;
 //   M8  — рендер без показа печатает «RENDER IS NOT YET A SHOW» + готовую команду открытия.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
@@ -23,21 +25,92 @@ import { createServer } from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readdirSync } from 'node:fs';
 import {
-  PROJECT_NAME, OWNER_NAME, DECISIONS_DIR, normalize, bodyHash, provenance,
+  PROJECT_NAME, DECISIONS_DIR, normalize, bodyHash, provenance, inQuietHours,
   parseMetaBlock, parseQuestions, docStatus, renderMd, recordDecision,
 } from './lib/review-core.mjs';
 
 // ── Константы (канонические дефолты DEF; конверт владельца — отступать только его словом) ──
 const ALIVE_INTERVAL_MS = 15000;      // DEF4: пульс страница→сервер, конверт 10–60 с
 const AUTOCLOSE_DELAY_MS = 2000;      // DEF2: попытка window.close() после записи
-const AUTOCLOSE_RESERVE_MS = 2000;    // DEF2: запас на случай отказа закрытия → честная просьба
+const AUTOCLOSE_RESERVE_MS = 2000;    // DEF2: запас на отказ закрытия → честная просьба
 const SERVER_DEATH_MS = 2500;         // DEF3: смерть сервера после записи (окно успевает уйти)
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 с после маячка — отличить перезагрузку от закрытия
+const SILENCE_THRESHOLD_MS = 180000;  // DEF6: порог тишины 3 мин (фон-вкладки троттлятся, T4)
+const SILENCE_TICK_MS = 15000;        // DEF5: вахта тишины тикает каждые 15 с
+const SILENCE_STRIKES_TO_DIE = 2;     // DEF6/T5: два страйка против сна машины
+const BEEP_DEADLINE_MS = 8000;        // DEF7: жёсткий срок дочернего вызова писка
+const VOICE_TIMEOUT_MS = 60000;       // DEF7: таймаут голоса
 const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130; // I25: три исхода
+const QUEUE_FILE = 'interviews/decisions/queue.json'; // I7: очередь — файл состояния
+const TMP_DIR = 'tools/.review-tmp';
 
-// ── Сборка страницы (I1: только из документа) ──────────────────────────────────────────────
+// ── Сигнал (C8/I33): писк → консоль → голос; тихие часы поверх всего (I6) ──────────────────
+export function signalCall(root, phrase, { quiet = inQuietHours(), log = console.log } = {}) {
+  log('СИГНАЛ: ' + phrase); // C8: простой текст в консоль — exit-код не доказывает, что человек услышал
+  if (quiet) { log('Тихие часы (I6) — писк и голос подавлены; страница поднята молча.'); return; }
+  // Писки — через звуковую карту (I34), команда ASCII, жёсткий срок DEF7; затем — голос.
+  const beep = spawn('powershell.exe',
+    ['-NoProfile', '-Command', '[console]::beep(880,160);[console]::beep(660,160);[console]::beep(990,260)'],
+    { stdio: 'ignore', timeout: BEEP_DEADLINE_MS });
+  beep.on('exit', () => {
+    // Голос: текст едет ФАЙЛОМ (C8/I36; UTF-8 с BOM — PowerShell 5.1 читает кодировку по BOM),
+    // движок — системный SAPI (I35: честный фолбэк; тембр — дело машины, не проекта).
+    const dir = resolve(root, TMP_DIR);
+    mkdirSync(dir, { recursive: true });
+    const phraseFile = join(dir, 'call-phrase.txt');
+    writeFileSync(phraseFile, '﻿' + phrase, 'utf8');
+    spawn('powershell.exe', ['-NoProfile', '-Command',
+      'Add-Type -AssemblyName System.Speech; ' +
+      '$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
+      "$s.Speak([IO.File]::ReadAllText('" + phraseFile.replace(/\\/g, '\\\\').replace(/'/g, "''") + "'))"],
+      { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS }).on('error', () => {});
+  });
+  beep.on('error', () => {}); // сигнал никогда не роняет контур (I32)
+}
+
+// ── Очередь (I7): файл состояния; живые документы остаются на местах ───────────────────────
+export function readQueue(root) {
+  const p = resolve(root, QUEUE_FILE);
+  if (!existsSync(p)) return [];
+  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, '')); } catch { return []; }
+}
+export function writeQueue(root, items) {
+  mkdirSync(resolve(root, DECISIONS_DIR), { recursive: true });
+  writeFileSync(resolve(root, QUEUE_FILE), JSON.stringify(items, null, 2) + '\n', 'utf8');
+}
+export function enqueue(root, docPath) {
+  const items = readQueue(root);
+  const rel = relative(root, resolve(root, docPath)).replace(/\\/g, '/');
+  if (!items.some((i) => i.doc === rel)) {
+    items.push({ doc: rel, addedAt: provenance().at });
+    writeQueue(root, items);
+  }
+  return items;
+}
+
+// Все документы с неотвеченными вопросами: скан interviews/ (живые документы на местах) + очередь.
+export function pendingDocs(root) {
+  const seen = new Set();
+  const out = [];
+  const push = (rel) => {
+    if (seen.has(rel) || !existsSync(resolve(root, rel))) return;
+    seen.add(rel);
+    const md = readFileSync(resolve(root, rel), 'utf8');
+    const unanswered = parseQuestions(md).filter((q) => !q.answered);
+    if (unanswered.length > 0 || docStatus(md) === 'waiting') out.push({ doc: rel, unanswered: unanswered.length });
+  };
+  const ivDir = resolve(root, 'interviews');
+  if (existsSync(ivDir))
+    for (const f of readdirSync(ivDir).filter((x) => /^interview_\d+.*\.md$/.test(x)).sort())
+      push('interviews/' + f);
+  for (const item of readQueue(root)) push(item.doc);
+  return out;
+}
+
+// ── Сборка страниц (I1: только из документов) ──────────────────────────────────────────────
 export function buildPage(root, docPath) {
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const meta = parseMetaBlock(md);
@@ -46,19 +119,77 @@ export function buildPage(root, docPath) {
     (rel.startsWith('interviews/') ? 'интервью' : rel.startsWith('homeworks/') ? 'домашка' : 'документ');
   const title = (meta && meta.title) || (normalize(md).match(/^#\s+(.+)$/m) || [])[1] || basename(docPath);
   const questions = parseQuestions(md).map((q) => ({
-    id: q.id, title: q.title, answered: q.answered,
+    doc: rel, id: q.id, title: q.title, answered: q.answered,
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text) })),
     existing: q.answers.filter((a) => a.text).map((a) => a.text),
   }));
   const docHash = bodyHash(md);
   const body = renderMd(md);
-  return { html: pageHtml({ kind, title, rel, body, questions, docHash }), questions, docHash, kind, title };
+  const html = pageShell({
+    title, kind,
+    heading: '<span class="kind">' + kind + '</span><span>' + esc(title) + '</span>',
+    main: '<div class="doc">' + body + '</div><h2>Вопросы</h2>' +
+      (questions.map((q) => qCard(q)).join('\n') ||
+        '<p>Вопросов в документе нет — можно оставить общий комментарий.</p>') +
+      docCommentBlock(rel),
+    questions,
+  });
+  return { html, questions, docHash, kind, title, rel };
 }
 
-function pageHtml({ kind, title, rel, body, questions, docHash }) {
+// Пачечная страница «Накопилось N» (I7): карточка на документ, ссылка = имя документа;
+// запись по ОДНОМУ документу закрывает контур (I8) — остаток пачки перезапускает агент.
+export function buildQueuePage(root, docs) {
+  const groups = docs.map(({ doc }) => {
+    const page = buildPage(root, doc);
+    const pending = page.questions.filter((q) => !q.answered);
+    return { doc, title: page.title, kind: page.kind, pending };
+  });
+  const total = groups.reduce((s, g) => s + g.pending.length, 0);
+  const main = groups.map((g) =>
+    '<section class="group"><h2>' + esc(g.title) + ' <small class="kind">' + esc(g.doc) + '</small></h2>' +
+    (g.pending.map((q) => qCard(q)).join('\n') || '<p>Неотвеченных вопросов нет — документ ждёт статусом.</p>') +
+    docCommentBlock(g.doc) +
+    '<p><button type="button" class="savedoc" data-doc="' + esc(g.doc) + '">Записать решения по этому документу</button></p>' +
+    '</section>').join('\n<hr>\n');
+  const questions = groups.flatMap((g) => g.pending);
+  const html = pageShell({
+    title: 'Накопилось: ' + docs.length + ' документ(ов), ' + total + ' вопрос(ов)',
+    kind: 'очередь',
+    heading: '<span class="kind">очередь</span><span>Накопилось: ' + docs.length +
+      ' документ(ов) · ' + total + ' неотвеченных вопрос(ов)</span>',
+    main, questions, batch: true,
+  });
+  return { html, questions, total };
+}
+
+const esc = (s) => String(s).replace(/</g, '&lt;');
+const docCommentBlock = (rel) =>
+  '<h3>Комментарий по документу целиком</h3>' + // P7: легитимный исход вычитки сам по себе
+  '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="3" ' +
+  'placeholder="Можно без ответов — просто сказать (запишется датированным блоком в конец документа)"></textarea></p>';
+
+function qCard(q) {
+  const tag = q.answered ? '<span class="tag done">answered</span>'
+    : '<span class="tag wait">unanswered</span> <span class="tag you">awaits you</span>';
+  const opts = q.answered ? '' : q.options.map((o) =>
+    '<label class="opt"><input type="radio" data-draft name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
+    '<div>' + o.html + '</div></label>').join('');
+  const existing = q.existing.map((t) => '<p><strong>Ответ:</strong> ' + esc(t) + '</p>').join('');
+  const inputs = q.answered ? '' :
+    '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="Свой вариант / текст ответа (D)"></p>' +
+    '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Комментарий к вопросу (P7)"></textarea></p>';
+  return '<section class="qcard' + (q.answered ? ' done' : '') + '">' +
+    '<div><strong>' + q.id + '.</strong> ' + esc(q.title) + ' ' + tag + '</div>' +
+    existing + opts + inputs + '</section>';
+}
+
+function pageShell({ title, kind, heading, main, questions, batch = false }) {
   const qjson = JSON.stringify(questions).replace(/</g, '\\u003c');
-  const cfg = JSON.stringify({ docHash, rel, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS })
-    .replace(/</g, '\\u003c');
+  const cfg = JSON.stringify({
+    batch, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
+    draftKey: 'owner-review:' + (batch ? 'queue' : (questions[0] && questions[0].doc) || title),
+  }).replace(/</g, '\\u003c');
   // P5: обе темы через prefers-color-scheme, цвета — переменные; контраст заложен в парах.
   const css = `
   :root { --bg:#f7f7f5; --card:#ffffff; --ink:#1d1d1f; --muted:#6b6b70; --line:#d9d9de;
@@ -69,8 +200,8 @@ function pageHtml({ kind, title, rel, body, questions, docHash }) {
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink);
     font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
   header { position:sticky; top:0; background:var(--card); border-bottom:1px solid var(--line);
-    padding:10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5 }
-  header .project { font-weight:700; color:var(--accent) } header .kind { color:var(--muted) }
+    padding:10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
+  header .project { font-weight:700; color:var(--accent) } .kind { color:var(--muted) }
   main { max-width:900px; margin:0 auto; padding:16px 20px 120px }
   .doc { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 22px; overflow-x:auto }
   .doc pre { background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px; overflow-x:auto }
@@ -101,7 +232,7 @@ function pageHtml({ kind, title, rel, body, questions, docHash }) {
     "var $=function(s){return document.querySelector(s)};",
     "function status(msg,cls){var s=$('#status');s.textContent=msg;s.className=cls||''}",
     // I12: черновик в браузере — каждое поле в localStorage, восстановление с заметкой
-    "var DK='owner-review:'+CFG.rel+':';",
+    "var DK=CFG.draftKey+':';",
     "function saveDraft(el){try{localStorage.setItem(DK+el.name,el.type==='radio'?(el.checked?el.value:''):el.value)}catch(e){}}",
     "function restoreDraft(){var n=0;var els=document.querySelectorAll('[data-draft]');",
     " for(var i=0;i<els.length;i++){var el=els[i];var v=null;try{v=localStorage.getItem(DK+el.name)}catch(e){}",
@@ -113,100 +244,87 @@ function pageHtml({ kind, title, rel, body, questions, docHash }) {
     "document.addEventListener('click',function(e){var t=e.target;if(!t||t.type!=='radio')return;",
     " if(t.dataset.was==='1'){t.checked=false;saveDraft(t)}else{saveDraft(t)}delete t.dataset.was},true);",
     "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft'))saveDraft(e.target)});",
-    // Сбор ответов
-    "function collect(){var answers={};for(var i=0;i<QS.length;i++){var q=QS[i];if(q.answered)continue;",
-    " var chosen='';var rs=document.getElementsByName('choice:'+q.id);",
+    // Сбор ответов по документу (пачка шлёт свой doc; одиночная страница — единственный)
+    "function fieldVal(name){var el=document.getElementsByName(name)[0];return el?el.value:''}",
+    "function collect(doc){var answers={};for(var i=0;i<QS.length;i++){var q=QS[i];",
+    " if(q.answered||q.doc!==doc)continue;",
+    " var chosen='';var rs=document.getElementsByName('choice:'+doc+':'+q.id);",
     " for(var j=0;j<rs.length;j++)if(rs[j].checked)chosen=rs[j].value;",
-    " var own=($('[name=\"text:'+q.id+'\"]')||{}).value||'';var com=($('[name=\"comment:'+q.id+'\"]')||{}).value||'';",
+    " var own=fieldVal('text:'+doc+':'+q.id);var com=fieldVal('comment:'+doc+':'+q.id);",
     " if(chosen||own.trim()||com.trim())answers[q.id]={choice:chosen,text:own.trim(),comment:com.trim()}}",
-    " return {answers:answers,comment:($('#doccomment')||{}).value||''}}",
+    " return {doc:doc,answers:answers,comment:fieldVal('doccomment:'+doc)}}",
     // I10/I11: громкий отказ + спасательный круг; кнопка снова активна, текст возвращается человеку
     "function rescue(payload,msg){status('ОШИБКА ЗАПИСИ: '+msg,'err');var r=$('#rescue');r.style.display='block';",
-    " $('#rescuetext').value=JSON.stringify(payload,null,2);$('#save').disabled=false}",
-    "function doSave(){var p=collect();",
-    " if(Object.keys(p.answers).length===0&&!p.comment.trim()){status('Нечего записывать: ни ответа, ни комментария','err');return}",
-    " $('#save').disabled=true;status('Записываю…');",
+    " $('#rescuetext').value=JSON.stringify(payload,null,2);enableButtons(true)}",
+    "function enableButtons(on){var bs=document.querySelectorAll('button');",
+    " for(var i=0;i<bs.length;i++)bs[i].disabled=!on}",
+    "var saved=false,closeTimer=null,lastPayload=null;",
+    "function doSave(doc){var p=collect(doc);lastPayload=p;",
+    " if(Object.keys(p.answers).length===0&&!(p.comment||'').trim()){status('Нечего записывать: ни ответа, ни комментария','err');return}",
+    " enableButtons(false);status('Записываю…');",
     " fetch('/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})",
     " .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})",
-    " .then(function(res){if(!res.ok||!res.j.ok){rescue(p,res.j.reason||('HTTP '+res.j.status));return}",
+    " .then(function(res){if(!res.ok||!res.j.ok){rescue(p,res.j.reason||'сервер отказал');return}",
     "  saved=true;status('Записано: '+res.j.written+'. Окно закроется само…','okmsg');",
-    "  try{var ks=Object.keys(localStorage);for(var i=0;i<ks.length;i++)if(ks[i].indexOf(DK)===0)localStorage.removeItem(ks[i])}catch(e){}",
+    "  try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));",
+    "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: автозакрытие — ПОПЫТКА; отказ → честное «закройте меня»; отменяется pagehide
     "  setTimeout(function(){window.close();closeTimer=setTimeout(function(){",
     "   status('Браузер не дал закрыть окно — закройте его, пожалуйста, сами','err')},CFG.reserveMs)},CFG.closeMs)})",
     " .catch(function(e){rescue(p,String(e))})}",
-    "var saved=false,closeTimer=null;",
-    "$('#save').addEventListener('click',doSave);",
-    "$('#retry').addEventListener('click',doSave);",
-    "$('#copybtn').addEventListener('click',function(){var t=$('#rescuetext');t.select();",
+    "document.addEventListener('click',function(e){var t=e.target;",
+    " if(t&&t.classList&&t.classList.contains('savedoc'))doSave(t.getAttribute('data-doc'));",
+    " if(t&&t.id==='retry'&&lastPayload)doSave(lastPayload.doc)});",
+    "var single=$('#save');if(single)single.addEventListener('click',function(){doSave(single.getAttribute('data-doc'))});",
+    "var cp=$('#copybtn');if(cp)cp.addEventListener('click',function(){var t=$('#rescuetext');t.select();",
     " try{document.execCommand('copy');status('Скопировано в буфер','okmsg')}catch(e){status('Выделите и скопируйте вручную','err')}});",
     // I13/DEF4: пульс страница→сервер — о смерти сервера человек узнаёт СРАЗУ и вслух
     "function pulse(){fetch('/alive').then(function(r){if(!r.ok)throw 0;$('#banner').style.display='none'})",
     " .catch(function(){var b=$('#banner');b.style.display='block';",
     "  b.textContent='СЕРВЕР КОНТУРА НЕДОСТУПЕН — ответ НЕ уйдёт. Черновик сохранён в браузере; скопируйте текст (кнопка ниже) или перезапустите контур.';",
-    "  var r=$('#rescue');r.style.display='block';$('#rescuetext').value=JSON.stringify(collect(),null,2);$('#save').disabled=false})}",
-    "setInterval(pulse,CFG.aliveMs);",
+    "  var r=$('#rescue');r.style.display='block';",
+    "  if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2);enableButtons(true)})}",
+    "setInterval(pulse,CFG.aliveMs);pulse();",
     // I14/DEF6: закрытие страницы — СОБЫТИЕ для сервера (быстрый путь — маячок)
     "window.addEventListener('pagehide',function(){if(closeTimer)clearTimeout(closeTimer);",
     " try{navigator.sendBeacon('/closed',saved?'saved':'unsaved')}catch(e){}});",
     "restoreDraft();",
   ].join('\n');
 
-  const qcards = questions.map((q) => {
-    const tag = q.answered ? '<span class="tag done">answered</span>'
-      : '<span class="tag wait">unanswered</span> <span class="tag you">awaits you</span>';
-    const opts = q.answered ? '' : q.options.map((o) =>
-      '<label class="opt"><input type="radio" data-draft name="choice:' + q.id + '" value="' + o.letter + '">' +
-      '<div>' + o.html + '</div></label>').join('');
-    const existing = q.existing.map((t) => '<p><strong>Ответ:</strong> ' + t.replace(/</g, '&lt;') + '</p>').join('');
-    const inputs = q.answered ? '' :
-      '<p><input type="text" data-draft name="text:' + q.id + '" placeholder="Свой вариант / текст ответа (D)"></p>' +
-      '<p><textarea data-draft name="comment:' + q.id + '" rows="2" placeholder="Комментарий к вопросу (P7)"></textarea></p>';
-    return '<section class="qcard' + (q.answered ? ' done' : '') + '" id="card-' + q.id + '">' +
-      '<div><strong>' + q.id + '.</strong> ' + q.title.replace(/</g, '&lt;') + ' ' + tag + '</div>' +
-      existing + opts + inputs + '</section>';
-  }).join('\n');
+  const singleDoc = !batch && questions[0] ? questions[0].doc : null;
+  const saveBar = batch
+    ? '<div class="bar"><div id="status">Кнопка записи — у каждого документа своя; запись закрывает контур, остаток пачки агент поднимет снова (I8).</div></div>'
+    : '<div class="bar"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">Записать решение</button>' +
+      '<div id="status">Ответы уйдут в документ, решение — в ' + DECISIONS_DIR + '/</div></div>';
 
   return '<!doctype html>\n<html lang="ru"><head><meta charset="utf-8">' +
-    '<title>' + PROJECT_NAME + ' · ' + title.replace(/</g, '&lt;') + '</title>' +
+    '<title>' + PROJECT_NAME + ' · ' + esc(title) + '</title>' +
     '<link rel="icon" href="data:,"><style>' + css + '</style></head><body>' +
-    '<header><span class="project">' + PROJECT_NAME + '</span>' + // P9: имя проекта в шапке
-    '<span class="kind">' + kind + '</span><span>' + title.replace(/</g, '&lt;') + '</span></header>' +
-    '<div id="banner"></div><main>' +
-    '<div class="doc">' + body + '</div>' +
-    '<h2>Вопросы</h2>' + (qcards || '<p>Вопросов в документе нет — можно оставить общий комментарий.</p>') +
+    '<header><span class="project">' + PROJECT_NAME + '</span>' + heading + '</header>' + // P9
+    '<div id="banner"></div><main>' + main +
     '<div id="rescue"><p class="err">Спасательный круг (I11): запись не прошла — ваш текст ниже, он не потерян.</p>' +
     '<textarea id="rescuetext" rows="8"></textarea>' +
     '<p><button class="ghost" id="copybtn" type="button">Скопировать</button> ' +
     '<button class="ghost" id="retry" type="button">Повторить запись</button></p></div>' +
-    '<h2>Комментарий по документу целиком</h2>' + // P7: легитимный исход вычитки сам по себе
-    '<p><textarea id="doccomment" data-draft name="doccomment" rows="3" ' +
-    'placeholder="Можно без ответов — просто сказать (запишется датированным блоком в конец документа)"></textarea></p>' +
-    '</main><div class="bar"><button id="save" type="button">Записать решение</button>' +
-    '<div id="status">Ответы уйдут в документ, решение — в ' + DECISIONS_DIR + '/</div></div>' +
-    '<script>' + js + '</script></body></html>';
+    '</main>' + saveBar + '<script>' + js + '</script></body></html>';
 }
 
 // ── Окно (DEF8: Edge → Chrome → вкладка с честной просьбой) ────────────────────────────────
 function openWindow(url) {
-  const tryApp = (exe) => {
-    const r = spawnSync('cmd.exe', ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE],
-      { stdio: 'ignore', timeout: 8000 });
-    return r.status === 0;
-  };
+  const tryApp = (exe) => spawnSync('cmd.exe',
+    ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE],
+    { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0;
   if (tryApp('msedge')) return 'edge --app';
   if (tryApp('chrome')) return 'chrome --app';
-  spawnSync('cmd.exe', ['/c', 'start', '', url], { stdio: 'ignore', timeout: 8000 });
+  spawnSync('cmd.exe', ['/c', 'start', '', url], { stdio: 'ignore', timeout: BEEP_DEADLINE_MS });
   console.log('Окно-приложение поднять не удалось — открыл обычной вкладкой; закройте её, пожалуйста, сами (DEF8).');
   return 'tab';
 }
 
 // ── Замок «один документ — одно окно» (I29) ────────────────────────────────────────────────
-function lockPath(root, docPath) {
-  return resolve(root, DECISIONS_DIR, basename(docPath).replace(/\.md$/u, '') + '.lock');
-}
-function checkLock(root, docPath) {
-  const p = lockPath(root, docPath);
+const lockPath = (root, key) => resolve(root, DECISIONS_DIR, key.replace(/\.md$/u, '') + '.lock');
+function checkLock(root, key) {
+  const p = lockPath(root, key);
   if (!existsSync(p)) return null;
   try {
     const lock = JSON.parse(readFileSync(p, 'utf8'));
@@ -215,39 +333,44 @@ function checkLock(root, docPath) {
   } catch { rmSync(p, { force: true }); return null; } // протухший замок — снимаем
 }
 
-// ── Сервер: поднять → показать → ждать → записать → умереть (I8) ───────────────────────────
-export function serveDoc(root, docPath, { open = true, log = console.log } = {}) {
+// ── Сервер: поднять → показать → позвать → ждать → записать → умереть (I8) ─────────────────
+export function serveContour(root, { docPath = null, batch = false }, opts = {}) {
+  const { open = true, signal = true, timeoutMs = 0, log = console.log } = opts; // I9: дефолт 0 — без таймаута
   return new Promise((resolveP) => {
-    const page = buildPage(root, docPath);
-    const held = checkLock(root, docPath);
+    const build = () => batch ? buildQueuePage(root, pendingDocs(root)) : buildPage(root, docPath);
+    const first = build();
+    const lockKey = batch ? '_queue' : basename(docPath);
+    const held = checkLock(root, lockKey);
     if (held) {
-      log('Документ уже открыт этим контуром: ' + held.url + ' (pid ' + held.pid + ') — второе окно не поднимаю (I29).');
+      log('Уже открыто этим контуром: ' + held.url + ' (pid ' + held.pid + ') — второе окно не поднимаю (I29).');
       resolveP({ outcome: 'already-open', url: held.url, exitCode: EXIT_DECIDED });
       return;
     }
-    let outcome = null, beaconTimer = null, lastAlive = Date.now();
+    let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0;
+    const startedAt = Date.now();
     const server = createServer((req, res) => {
       const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
       if (req.method === 'GET' && req.url === '/') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end(buildPage(root, docPath).html); // I1: всегда свежая сборка из md
+        res.end(build().html); // I1: всегда свежая сборка из md
       } else if (req.method === 'GET' && req.url === '/alive') {
-        lastAlive = Date.now();
+        lastAlive = Date.now(); strikes = 0;
         if (beaconTimer) { clearTimeout(beaconTimer); beaconTimer = null; } // страница вернулась (T3)
-        ok({ ok: true, docHash: page.docHash });
+        ok({ ok: true });
       } else if (req.method === 'POST' && req.url === '/decide') {
         let body = '';
         req.on('data', (c) => { body += c; });
         req.on('end', () => {
           try { // I10: любой отказ — громкий, с причиной на страницу
             const payload = JSON.parse(body);
-            const record = recordDecision(root, docPath, {
-              kind: page.kind, answers: payload.answers, comment: payload.comment,
-            });
+            const doc = batch ? payload.doc : relative(root, resolve(root, docPath)).replace(/\\/g, '/');
+            const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment });
             const nAns = Object.keys(record.answers || {}).length;
-            ok({ ok: true, written: 'md + decision.json + архив (' + nAns + ' ответ(ов))' });
+            ok({ ok: true, written: doc + ' + decision.json + архив (' + nAns + ' ответ(ов))' });
             outcome = 'decision recorded';
-            log('Исход: решение записано (' + nAns + ' ответов, by ' + record.by + ') — завершаю контур (I8).');
+            const rest = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
+            log('Исход: решение записано (' + doc + ', ' + nAns + ' ответов, by ' + record.by + ') — завершаю контур (I8).' +
+              (rest > 0 ? ' В очереди осталось документов: ' + rest + ' — перезапуск пачки за агентом.' : ''));
             setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED); // DEF3: окно успевает закрыться
           } catch (e) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -261,9 +384,8 @@ export function serveDoc(root, docPath, { open = true, log = console.log } = {})
         req.on('end', () => {
           ok({ ok: true });
           if (outcome) return; // уже записано — смерть по расписанию DEF3
-          // T3: перезагрузка тоже шлёт pagehide — ждём, вернётся ли страница
           if (beaconTimer) clearTimeout(beaconTimer);
-          beaconTimer = setTimeout(() => {
+          beaconTimer = setTimeout(() => { // T3: ~3 с — вернётся ли страница после перезагрузки
             outcome = 'page closed without an answer';
             log('Исход: страница закрыта без ответа — завершаю контур (I14, быстрый путь маячка).');
             finish(EXIT_CLOSED);
@@ -271,10 +393,28 @@ export function serveDoc(root, docPath, { open = true, log = console.log } = {})
         });
       } else { res.writeHead(404); res.end(); }
     });
+    // I14/DEF6: тишина-вахта — терпение живо, пока жива страница; два страйка против сна (T5)
+    const watch = setInterval(() => {
+      if (outcome) return;
+      if (Date.now() - lastAlive > SILENCE_THRESHOLD_MS) {
+        strikes += 1; // первый страйк — только подозрение; решает второй, тиком позже
+        if (strikes >= SILENCE_STRIKES_TO_DIE) {
+          outcome = 'page closed without an answer';
+          log('Исход: страница молчит дольше порога (' + (SILENCE_THRESHOLD_MS / 60000) + ' мин, два страйка) — завершаю контур (I14, тишина-вахта).');
+          finish(EXIT_CLOSED);
+        }
+      } else strikes = 0;
+      if (timeoutMs > 0 && Date.now() - startedAt > timeoutMs) { // DEF5: только автоматизация
+        outcome = 'page closed without an answer';
+        log('Исход: терпимая ТИШИНА исчерпана (--timeout, только для автоматизации; это не дедлайн на раздумья) — завершаю.');
+        finish(EXIT_CLOSED);
+      }
+    }, SILENCE_TICK_MS);
     const finish = (code) => {
-      rmSync(lockPath(root, docPath), { force: true });
-      server.close(() => resolveP({ outcome, exitCode: code, docHash: page.docHash }));
-      setTimeout(() => resolveP({ outcome, exitCode: code, docHash: page.docHash }), 1000).unref();
+      clearInterval(watch);
+      rmSync(lockPath(root, lockKey), { force: true });
+      server.close(() => resolveP({ outcome, exitCode: code }));
+      setTimeout(() => resolveP({ outcome, exitCode: code }), 1000).unref();
     };
     process.once('SIGINT', () => { // I25: третий исход — прерван человеком
       outcome = 'interrupted by the human';
@@ -284,10 +424,16 @@ export function serveDoc(root, docPath, { open = true, log = console.log } = {})
     server.listen(0, '127.0.0.1', () => { // I30: свободный порт, никогда фиксированный
       const url = 'http://127.0.0.1:' + server.address().port + '/';
       mkdirSync(resolve(root, DECISIONS_DIR), { recursive: true });
-      writeFileSync(lockPath(root, docPath), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
-      log('Страница поднята: ' + url + ' (' + page.title + ')');
-      if (open) log('Окно: ' + openWindow(url)); // показ — действие агента (I15); сигнал — ПОСЛЕ (I5, шаг 3)
-      serveDoc._onUp && serveDoc._onUp(url); // хук для QA-прогона
+      writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
+      log('Страница поднята: ' + url + (batch ? ' (очередь)' : ' (' + first.title + ')'));
+      if (open) log('Окно: ' + openWindow(url)); // показ — действие агента (I15)
+      if (signal) { // I5: зов — ПОСЛЕ поднявшейся страницы; I32: не блокирует контур
+        const phrase = batch
+          ? 'Криник, накопились вопросы КАИФ: документов ' + pendingDocs(root).length + '. Страница открыта.'
+          : 'Криник, ' + first.kind + ' «' + first.title + '» ждёт вычитки. Страница открыта.';
+        signalCall(root, phrase, { log });
+      }
+      serveContour._onUp && serveContour._onUp(url); // хук для QA-прогона
     });
   });
 }
@@ -295,15 +441,28 @@ export function serveDoc(root, docPath, { open = true, log = console.log } = {})
 // ── Точка входа (T9) ───────────────────────────────────────────────────────────────────────
 if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
   const args = process.argv.slice(2);
-  const docPath = args.find((a) => !a.startsWith('--'));
-  if (!docPath) {
-    console.error('usage: node tools/review.mjs <документ.md> [--no-serve] [--no-open]');
-    process.exit(1);
-  }
+  const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
+  const docPath = args.find((a) => !a.startsWith('--') && a !== opt('--timeout'));
   const root = process.cwd();
-  if (args.includes('--no-serve')) { // C9: обязательный флаг «собрать и выйти» — иначе QA виснет
+  const opts = {
+    open: !args.includes('--no-open'),
+    signal: !args.includes('--silent'),
+    timeoutMs: Number(opt('--timeout') || 0) * 1000, // I9: дефолт 0 — терпение машины бесконечно
+  };
+  if (args.includes('--enqueue')) { // I7: очередь — файл состояния; документ остаётся на месте
+    if (!docPath) { console.error('usage: node tools/review.mjs --enqueue <документ.md>'); process.exit(1); }
+    const items = enqueue(root, docPath);
+    console.log('В очереди: ' + items.length + ' поз. — покажется пачкой: node tools/review.mjs --queue');
+    process.exit(0);
+  }
+  if (args.includes('--queue')) { // пачечная страница «Накопилось N» — зов ОДИН раз на пачку (I7)
+    const docs = pendingDocs(root);
+    if (docs.length === 0) { console.log('Неотвеченных вопросов нет — очередь пуста, страница не нужна.'); process.exit(0); }
+    serveContour(root, { batch: true }, opts).then((r) => process.exit(r.exitCode));
+  } else if (args.includes('--no-serve')) { // C9: «собрать и выйти» — иначе синхронный вызывающий виснет
+    if (!docPath) { console.error('usage: node tools/review.mjs <документ.md> --no-serve'); process.exit(1); }
     const page = buildPage(root, docPath);
-    const outDir = resolve(root, 'tools/.review-tmp');
+    const outDir = resolve(root, TMP_DIR);
     mkdirSync(outDir, { recursive: true });
     const out = join(outDir, basename(docPath).replace(/\.md$/u, '') + '.html');
     writeFileSync(out, page.html, 'utf8');
@@ -311,6 +470,12 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     console.log('RENDER IS NOT YET A SHOW'); // M8: напоминание в точке соблазна отдать путь
     console.log('Показ — действие: node tools/review.mjs ' + docPath);
     process.exit(0);
+  } else if (docPath) {
+    serveContour(root, { docPath }, opts).then((r) => process.exit(r.exitCode));
+  } else {
+    console.error('usage: node tools/review.mjs <документ.md> [--no-serve|--silent|--no-open|--timeout N]\n' +
+      '       node tools/review.mjs --queue | --enqueue <документ.md>\n' +
+      'Запускать ОТСЛЕЖИВАЕМОЙ фоновой задачей (I31): голый & харнесс не отслеживает — уведомление не придёт.');
+    process.exit(1);
   }
-  serveDoc(root, docPath, { open: !args.includes('--no-open') }).then((r) => process.exit(r.exitCode));
 }
