@@ -1,0 +1,349 @@
+#!/usr/bin/env node
+// review-core.mjs — ЯДРО интерактивного контура (фаза K5, plans/48 шаг 2; роль C1 «lib/review-core»).
+// [TESTED: 2026-08-07 · селфтест «четыре лица — один хеш», полночь тихих часов, разбор, рендер]
+//
+// Одна библиотека ОБЕИМ сторонам (C3/C7: страница и гейт зовут одни и те же функции —
+// «четыре лица — один хеш», checkApproval один на всех). Ноль внешних зависимостей.
+// Построено по вендоренному контракту /owner-reviews:
+//   C3 — normalize: BOM → CRLF/CR в LF → срез хвостовых пробелов/пустых строк → ровно один \n;
+//        hash = sha256(normalize). Самотест: четыре лица одного текста дают ОДИН хеш.
+//   C4 — пять правил разбора живого текста (линейка --- закрывает блок · контрвопрос не ответ ·
+//        варианты многострочны · истина закрытости — СТАТУС документа · \p{L} с флагом u).
+//   C6/I2 — ответ пишется в ТРИ места с производными именами; ответ владельца неприкосновенен —
+//        новый текст только датированным дополнением; общий комментарий — датированным блоком в КОНЕЦ.
+//   C7/I4 — checkApproval: отказ на любое сомнение, никогда не бросает; гейт fail-closed.
+//   I6  — тихие часы с окном ЧЕРЕЗ ПОЛНОЧЬ (наивное from<=now<=to молчит днём и орёт ночью).
+//   I22/I23 — провенанс в двух представлениях (ISO машине · локальное время словами человеку).
+//   I24 — рендер вырезает HTML-комментарии ВНЕ код-блоков (внутри fenced — это контент).
+//   P8  — markdown-мини-рендер, ноль зависимостей, экранирование ПЕРВЫМ действием.
+
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { join, resolve, basename } from 'node:path';
+import { createHash } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
+
+// ── Константы проекта (никаких магических значений) ────────────────────────────────────────
+export const PROJECT_NAME = 'KAIF'; // P9: имя проекта в шапке страницы — владелец ведёт несколько проектов
+export const OWNER_NAME = 'Mikalai Kryvusha (KOT KRINIK)'; // P4: вопрос «кто отвечает» убран, ЗАПИСЬ by остаётся
+export const DECISIONS_DIR = 'interviews/decisions'; // машинная память решений (коммитится)
+export const ARCHIVE_DIR = 'interviews/decisions/archive'; // копии «никогда не перезаписываются»
+export const QUIET_FROM = '23:00'; // тихие часы проекта (I6); окно пересекает полночь
+export const QUIET_TO = '09:00';
+
+// ── C3: нормализация и хеш — одна функция обеим сторонам ───────────────────────────────────
+export function normalize(s) {
+  return String(s)
+    .replace(/^﻿/, '')        // BOM
+    .replace(/\r\n?/g, '\n')       // CRLF и одиночный CR → LF
+    .replace(/[ \t\n]+$/, '')      // хвост пробельного мусора и пустых строк
+    + '\n';                        // ровно один финальный перевод строки
+}
+export const bodyHash = (s) => createHash('sha256').update(normalize(s), 'utf8').digest('hex');
+export const sha256hex = (s) => createHash('sha256').update(s, 'utf8').digest('hex');
+
+// ── I22/I23: провенанс в двух представлениях ───────────────────────────────────────────────
+const RU_MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+export function provenance(now = new Date()) {
+  const pad = (n) => String(n).padStart(2, '0');
+  const offMin = -now.getTimezoneOffset();
+  const off = (offMin >= 0 ? '+' : '-') + pad(Math.floor(Math.abs(offMin) / 60)) + ':' + pad(Math.abs(offMin) % 60);
+  const atHuman = `${now.getDate()} ${RU_MONTHS[now.getMonth()]} ${now.getFullYear()}, ` +
+    `${pad(now.getHours())}:${pad(now.getMinutes())} (${off})`; // локальное время словами — человеку
+  return { at: now.toISOString(), atHuman };
+}
+
+// ── I6: тихие часы — окно пересекает полночь ───────────────────────────────────────────────
+export function inQuietHours(now = new Date(), from = QUIET_FROM, to = QUIET_TO) {
+  const mins = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+  const n = now.getHours() * 60 + now.getMinutes();
+  const f = mins(from), t = mins(to);
+  return f <= t ? (n >= f && n < t) : (n >= f || n < t); // вторая ветвь — окно через полночь
+}
+
+// ── Метаданные документа (контракт имён): fenced-блок в голове документа ───────────────────
+// ```owner-review\n title: … \n kind: … \n artifacts:\n  - id: …\n    target: …\n    format: …\n    body_file: …\n```
+export function parseMetaBlock(md) {
+  const m = normalize(md).match(/^```owner-review\n([\s\S]*?)\n```/m);
+  if (!m) return null;
+  const meta = { artifacts: [] };
+  let cur = null;
+  for (const raw of m[1].split('\n')) {
+    const art = raw.match(/^\s*-\s+id:\s*(.+)$/u);
+    if (art) { cur = { id: art[1].trim() }; meta.artifacts.push(cur); continue; }
+    const kv = raw.match(/^(\s*)([\w_]+):\s*(.*)$/u);
+    if (!kv) continue;
+    if (kv[1].length > 0 && cur) cur[kv[2]] = kv[3].trim();
+    else if (kv[2] !== 'artifacts') meta[kv[2]] = kv[3].trim();
+  }
+  return meta;
+}
+
+// ── Статус документа (C4, правило 4: истина закрытости — СТАТУС, не заполненность полей) ───
+const STATUS_CLOSED_RE = /✅|🟢|STATUS:\s*DONE|ANSWERS\s+RECEIVED|ОТВЕЧЕНО/iu;
+const STATUS_WAITING_RE = /🟡|awaiting|ждёт\s+ответ|ожидает\s+ответ/iu;
+export function docStatus(md) {
+  const head = normalize(md).split('\n').slice(0, 30).join('\n');
+  if (STATUS_CLOSED_RE.test(head)) return 'closed';
+  if (STATUS_WAITING_RE.test(head)) return 'waiting';
+  return 'none';
+}
+
+// ── C4: разбор вопросов живого текста ──────────────────────────────────────────────────────
+const QUESTION_HEADING_RE = /^(#{2,4})\s+((Q|В)\d+)\.?\s*(.*)$/u;
+const ANSWER_LABEL_RE = /^\s*\*{0,2}(?:Answer|Ответ(?:\s+владельца)?)\s*(?:\((?<mod>[^)]*)\))?\s*:\*{0,2}\s*(?<rest>.*)$/iu;
+const COUNTER_LABEL_RE = /встречн\p{L}*\s+вопрос|counter-?question/iu; // правило 2: контрвопрос — НЕ ответ
+const TARGET_LABEL_RE = /^\s*\*{0,2}Адресат\s+ответа\s*:?\*{0,2}\s*(.*)$/iu;
+const OPTION_START_RE = /^\s*-\s+\*\*([A-ZА-Я])\)/u;
+
+export function parseQuestions(md) {
+  const lines = normalize(md).split('\n');
+  const closed = docStatus(md) === 'closed';
+  const questions = [];
+  let cur = null, curLevel = 0, inFence = false;
+
+  const flush = () => { if (cur) { finishQuestion(cur, closed); questions.push(cur); cur = null; } };
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*(```|~~~)/.test(line)) { inFence = !inFence; if (cur) cur.body.push(line); continue; }
+    if (inFence) { if (cur) cur.body.push(line); continue; }
+    const qh = line.match(QUESTION_HEADING_RE);
+    const anyHeading = line.match(/^(#{1,6})\s/);
+    // Правило 1: блок закрывает не только следующий заголовок, но и горизонтальная линейка ---
+    if (/^---\s*$/.test(line)) { flush(); continue; }
+    if (qh) { flush(); cur = { id: qh[2], title: qh[4].trim(), line: i + 1, body: [] }; curLevel = qh[1].length; continue; }
+    if (anyHeading && anyHeading[1].length <= curLevel) { flush(); continue; }
+    if (cur) cur.body.push(line);
+  }
+  flush();
+  return questions;
+}
+
+function finishQuestion(q, docClosed) {
+  q.options = [];
+  q.answers = [];      // все распознанные поля ответа (текст может быть многострочным ниже метки)
+  q.target = null;
+  let curOpt = null;
+  for (let j = 0; j < q.body.length; j++) {
+    const line = q.body[j];
+    const opt = line.match(OPTION_START_RE);
+    if (opt) {
+      // Правило 3: вариант МНОГОСТРОЧЕН — собираем пункт с продолжениями по отступу,
+      // только потом ищем закрывающие ** (метку варианта).
+      curOpt = { letter: opt[1], lines: [line] };
+      q.options.push(curOpt);
+      continue;
+    }
+    if (curOpt && /^\s{2,}\S/.test(line)) { curOpt.lines.push(line); continue; }
+    curOpt = null;
+    const t = line.match(TARGET_LABEL_RE);
+    if (t) { q.target = t[1].trim(); continue; }
+    const a = line.match(ANSWER_LABEL_RE);
+    if (a && !COUNTER_LABEL_RE.test(line)) {
+      let text = (a.groups.rest || '').trim();
+      if (!text) { // текст ответа может лежать первой непустой строкой ниже метки
+        for (let k = j + 1; k < q.body.length; k++) {
+          const nl = q.body[k].trim();
+          if (!nl) continue;
+          if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k]) || OPTION_START_RE.test(q.body[k])) break;
+          text = nl; break;
+        }
+      }
+      q.answers.push({ line: j, text, followUp: Boolean(a.groups.mod) });
+    }
+  }
+  for (const o of q.options) {
+    const full = o.lines.join('\n');
+    const label = full.match(/\*\*([^*]+)\*\*/u); // закрывающие ** ищем ПОСЛЕ сборки пункта
+    o.label = label ? label[1].trim() : o.letter + ')';
+    o.text = full.replace(/^\s*-\s+/, '');
+  }
+  q.answered = docClosed || q.answers.some((a) => a.text); // правило 4
+}
+
+// ── P8 + I24: markdown-мини-рендер (экранирование — ПЕРВОЕ действие) ───────────────────────
+const escapeHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function inline(s) {
+  // порядок: код-спаны раньше прочего, чтобы разметка внутри них осталась буквальной
+  return s
+    .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+export function renderMd(md) {
+  const src = normalize(md).split('\n');
+  const out = [];
+  let inFence = false, fenceBuf = [], listOpen = false, quoteOpen = false, tableBuf = [];
+  const closeList = () => { if (listOpen) { out.push('</ul>'); listOpen = false; } };
+  const closeQuote = () => { if (quoteOpen) { out.push('</blockquote>'); quoteOpen = false; } };
+  const flushTable = () => {
+    if (!tableBuf.length) return;
+    const rows = tableBuf.map((r) => r.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim()));
+    let html = '<table>';
+    rows.forEach((cells, ri) => {
+      if (ri === 1 && cells.every((c) => /^:?-{2,}:?$/.test(c))) return;
+      const tag = ri === 0 ? 'th' : 'td';
+      html += '<tr>' + cells.map((c) => '<' + tag + '>' + inline(escapeHtml(c)) + '</' + tag + '>').join('') + '</tr>';
+    });
+    out.push(html + '</table>');
+    tableBuf = [];
+  };
+  for (const raw of src) {
+    if (/^\s*```/.test(raw)) {
+      if (inFence) { out.push('<pre><code>' + escapeHtml(fenceBuf.join('\n')) + '</code></pre>'); fenceBuf = []; }
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) { fenceBuf.push(raw); continue; } // внутри fenced комментарии — контент (I24)
+    const line = raw.replace(/<!--[\s\S]*?-->/g, '').replace(/[ \t]+$/, ''); // I24: срез HTML-комментариев вне кода
+    if (/^\s*\|.*\|\s*$/.test(line)) { closeList(); closeQuote(); tableBuf.push(line); continue; }
+    flushTable();
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if (h) { closeList(); closeQuote(); out.push(`<h${h[1].length}>` + inline(escapeHtml(h[2])) + `</h${h[1].length}>`); continue; }
+    if (/^---+\s*$/.test(line)) { closeList(); closeQuote(); out.push('<hr>'); continue; }
+    const q = line.match(/^>\s?(.*)$/);
+    if (q) { closeList(); if (!quoteOpen) { out.push('<blockquote>'); quoteOpen = true; } out.push('<p>' + inline(escapeHtml(q[1])) + '</p>'); continue; }
+    closeQuote();
+    const li = line.match(/^\s*[-*+]\s+(.*)$/);
+    if (li) { if (!listOpen) { out.push('<ul>'); listOpen = true; } out.push('<li>' + inline(escapeHtml(li[1])) + '</li>'); continue; }
+    closeList();
+    if (line.trim()) out.push('<p>' + inline(escapeHtml(line)) + '</p>');
+  }
+  flushTable(); closeList(); closeQuote();
+  return out.join('\n');
+}
+
+// ── C6/I2: запись решения в ТРИ места с производными именами ───────────────────────────────
+export function decisionPaths(root, docPath) {
+  const base = basename(docPath).replace(/\.md$/u, '');
+  return {
+    decision: resolve(root, DECISIONS_DIR, base + '.decision.json'),
+    archive: (at) => resolve(root, ARCHIVE_DIR, base + '--' + at.replace(/[:.]/g, '-') + '.json'),
+  };
+}
+
+export function recordDecision(root, docPath, payload, now = new Date()) {
+  const { at, atHuman } = provenance(now);
+  const abs = resolve(root, docPath);
+  const record = {
+    kind: payload.kind || 'interview',
+    document: docPath.replace(/\\/g, '/'),
+    by: payload.by || OWNER_NAME, // P4: сервер штампует by — вопрос убран, запись остаётся
+    at, atHuman,
+    comment: payload.comment || '',
+    ...(payload.answers ? { answers: payload.answers } : {}),
+    ...(payload.artifacts ? { artifacts: payload.artifacts } : {}),
+  };
+
+  // Место 1: обратно в исходный md (следующая сессия читает документ).
+  const src = readFileSync(abs, 'utf8');
+  const eol = /\r\n/.test(src) ? '\r\n' : '\n';
+  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const questions = parseQuestions(src);
+  const prov = `<!-- owner-review: by ${record.by} · ${atHuman} -->`;
+  for (const [qid, ans] of Object.entries(payload.answers || {})) {
+    const q = questions.find((x) => x.id === qid);
+    if (!q) continue;
+    const text = [ans.choice ? ans.choice + ')' : '', ans.text || ''].filter(Boolean).join(' — ').trim() || '(без текста)';
+    const qStart = q.line; // 1-based строка заголовка вопроса
+    const emptyAns = q.answers.find((a) => !a.text);
+    if (emptyAns !== undefined) {
+      lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + text + ' ' + prov;
+    } else {
+      // Ответ владельца НЕПРИКОСНОВЕНЕН: новый текст — только датированным дополнением (I2)
+      const lastAns = q.answers[q.answers.length - 1];
+      const insertAt = lastAns ? qStart + lastAns.line + 1 : qStart + q.body.length;
+      lines.splice(insertAt, 0, '', `**Answer (дополнение, ${atHuman}):** ${text} ${prov}`);
+    }
+    if (ans.comment) {
+      const q2 = parseQuestions(lines.join('\n')).find((x) => x.id === qid); // строки уже сдвинулись
+      lines.splice(q2.line + q2.body.length, 0, '', `**Комментарий владельца (${atHuman}):** ${ans.comment} ${prov}`);
+    }
+  }
+  if (record.comment) { // общий комментарий — датированным блоком в КОНЕЦ файла (C6)
+    while (lines.length && lines[lines.length - 1] === '') lines.pop();
+    lines.push('', '---', '', `**Комментарий владельца (${atHuman}):** ${record.comment} ${prov}`, '');
+  }
+  writeFileSync(abs, lines.join(eol), 'utf8');
+
+  // Место 2: <база>.decision.json рядом (машинная проверка перед отправкой).
+  const p = decisionPaths(root, docPath);
+  mkdirSync(resolve(root, ARCHIVE_DIR), { recursive: true });
+  writeFileSync(p.decision, JSON.stringify(record, null, 2) + '\n', 'utf8');
+  // Место 3: копия в архиве решений — никогда не перезаписывается (имя несёт время).
+  writeFileSync(p.archive(at), JSON.stringify(record, null, 2) + '\n', 'utf8');
+  return record;
+}
+
+export function readDecision(root, docPath) {
+  const p = decisionPaths(root, docPath).decision;
+  if (!existsSync(p)) return null;
+  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, '')); } catch { return null; }
+}
+
+// ── C7/I4: гейт отправки — одна функция обеим сторонам, никогда не бросает ─────────────────
+export function checkApproval(root, docPath, artifactId) {
+  try {
+    const decision = readDecision(root, docPath);
+    if (!decision) return { ok: false, reason: 'решения нет — вычитка не проводилась' };
+    const art = (decision.artifacts || {})[artifactId];
+    if (!art) return { ok: false, reason: `артефакт «${artifactId}» не объявлен в решении` };
+    if (art.status !== 'approved') return { ok: false, reason: `статус артефакта — «${art.status}», не approved` };
+    const meta = parseMetaBlock(readFileSync(resolve(root, docPath), 'utf8'));
+    const decl = (meta && meta.artifacts.find((a) => a.id === artifactId)) || null;
+    if (!decl || !decl.body_file) return { ok: false, reason: 'артефакт не объявлен в метаблоке документа или без body_file' };
+    const bodyPath = resolve(root, decl.body_file); // T10: resolve, не join
+    if (!existsSync(bodyPath)) return { ok: false, reason: `тело артефакта отсутствует: ${decl.body_file}` };
+    const actual = bodyHash(readFileSync(bodyPath, 'utf8'));
+    if (actual !== art.sha256) return { ok: false, reason: 'текст изменился после одобрения — одобрение НЕДЕЙСТВИТЕЛЬНО (I3)' };
+    return { ok: true, reason: 'approved, хеш совпал' };
+  } catch (e) {
+    return { ok: false, reason: 'неожиданная ошибка проверки: ' + e.message }; // любое сомнение = отказ
+  }
+}
+
+// ── Селфтест ядра (QA-блок 1) ──────────────────────────────────────────────────────────────
+function selftest() {
+  let n = 0, bad = 0;
+  const ok = (cond, name) => { n++; if (!cond) { bad++; console.log('✗ ' + name); } else console.log('✓ ' + name); };
+
+  // C3: четыре лица — один хеш
+  const base = 'Строка один\nСтрока два\n';
+  const faces = ['﻿' + base, base.replace(/\n/g, '\r\n'), base + '\n\n', base.replace(/\n$/, '')];
+  ok(new Set(faces.map(bodyHash)).size === 1, 'нормализация: четыре лица (BOM/CRLF/хвост/без \\n) — один хеш');
+  ok(bodyHash('другой текст') !== bodyHash(base), 'нормализация: другой текст — другой хеш');
+
+  // I6: тихие часы через полночь
+  const at = (h, m) => new Date(2026, 7, 7, h, m);
+  ok(inQuietHours(at(23, 30), '23:00', '09:00') && inQuietHours(at(3, 0), '23:00', '09:00'), 'тихие часы: 23:30 и 03:00 внутри окна 23:00–09:00');
+  ok(!inQuietHours(at(12, 0), '23:00', '09:00'), 'тихие часы: полдень вне окна через полночь');
+  ok(inQuietHours(at(13, 0), '12:00', '14:00') && !inQuietHours(at(15, 0), '12:00', '14:00'), 'тихие часы: обычное окно без полуночи');
+
+  // C4: разбор — линейка закрывает блок; контрвопрос не ответ; многострочный вариант; статус решает
+  const fx = '# Interview #099\n\n> Status: **🟡 awaiting**\n\n### Q1. Вопрос?\n\n- **A) (Рекомендовано)** первая строка\n  вторая строка варианта\n- **B)** короткий\n\n**Answer:**\n\n---\nхвост после линейки\n\n### Q2. Второй?\n\n**Встречный вопрос:** а вам зачем?\n\n**Answer:** А\n';
+  const qs = parseQuestions(fx);
+  ok(qs.length === 2, 'разбор: два вопроса');
+  ok(qs[0].options.length === 2 && qs[0].options[0].text.includes('вторая строка'), 'разбор: вариант собран многострочно (правило 3)');
+  ok(!qs[0].answered, 'разбор: пустой Answer не отвечен, линейка закрыла блок (правило 1)');
+  ok(qs[1].answered && qs[1].answers.length === 1, 'разбор: контрвопрос не посчитан ответом (правило 2)');
+  ok(parseQuestions(fx.replace('🟡 awaiting', '✅ ANSWERS RECEIVED'))[0].answered, 'разбор: закрытый статус закрывает и пустой вопрос (правило 4)');
+
+  // P8/I24: рендер — экранирование первым, комментарии вне кода вырезаны, в коде сохранены
+  const html = renderMd('# Заголовок <b>\n\nтекст <!-- секрет --> дальше\n\n```\nвнутри <!-- контент -->\n```\n');
+  ok(html.includes('&lt;b&gt;'), 'рендер: экранирование — первое действие');
+  ok(!html.includes('секрет') && html.includes('внутри &lt;!-- контент --&gt;'), 'рендер: комментарий вне кода вырезан, в коде остался (I24)');
+
+  // Метаблок
+  const meta = parseMetaBlock('```owner-review\ntitle: Черновик\nkind: outbound draft\nartifacts:\n  - id: msg1\n    target: github · issue 2\n    format: markdown\n    body_file: tools/.review-tmp/msg1.md\n```\nтело');
+  ok(meta && meta.kind === 'outbound draft' && meta.artifacts[0].body_file === 'tools/.review-tmp/msg1.md', 'метаблок: kind и артефакт с body_file разобраны');
+
+  console.log(bad ? `СЕЛФТЕСТ КРАСНЫЙ: ${bad} из ${n}` : `селфтест ядра зелёный: ${n} проверок`);
+  if (bad) process.exit(1);
+}
+
+// T9: исполняемся только прямым запуском, не импортом
+if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
+  if (process.argv.includes('--selftest')) selftest();
+  else console.log('review-core: библиотека контура; запуск проверок — --selftest');
+}

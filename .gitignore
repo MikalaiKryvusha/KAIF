@@ -12,4 +12,9 @@ tools/package-lock.json
 *.stackdump
 scratchpad/
 
+# Интерактивный контур (K5): транзиенты — замки окон и временные рендеры;
+# сами решения (decisions/*.json + archive/) — коммитимая машинная память.
+interviews/decisions/*.lock
+tools/.review-tmp/
+
 # Note: README.pdf and FRAMEWORK.md are committed deliverables (generated, but tracked).
