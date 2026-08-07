@@ -47,7 +47,7 @@
 10. Comment your code/tools; keep docs accurate   # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAMEWORK.md)
 11. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
 12. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
-13. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md and improve them
+13. Periodically re-read PHILOSOPHY.md / AGENT_GUIDE.md / STATUS.md / TESTING_FRAMEWORK.md and improve them
 14. Narrate in the chat what you're doing
 15. Документы от владельца        # СНАЧАЛА закоммить оригинал дословно (git add + commit), только потом —
                                   # правка следующим коммитом; голос и каждая мысль владельца сохраняются,
@@ -306,7 +306,10 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 **Каждый документ отвечает на свой вопрос — и берёт форму у своей родни.** README: *«что это и как
 этим пользоваться»* (продукт, настоящее время). Релиз-ноты: *«что изменилось в ЭТОЙ версии, нужно
 ли обновляться»* (строго дельта; всё общее — ССЫЛКОЙ на README; механическая проверка: абзац,
-который можно без изменений вставить в README, — место в README). `STATUS.md`: *«где мы сейчас»*.
+который можно без изменений вставить в README, — место в README). `STATUS.md`: *«где мы сейчас»*
+— живая СВОДКА настоящего (мягкий ориентир ~200 строк; `check` машинерии предупреждает выше).
+`PROJECT_HISTORY.md`: *«закрытое прошлое»* — дописываемая летопись: закрытые сессии/фазы/релизы
+ПЕРЕЕЗЖАЮТ туда дословно (стрижка бонсая в `/end-chat`), а не копятся в STATUS.
 `EXPERIENCE.md` и директории знаний: *«почему / как это было»*. Обновляешь README — вдохновляйся
 текущим README и соседними витринами владельца (единый почерк витрины, не почерк агента);
 обновляешь ноты — прошлыми нотами ЭТОГО проекта (`gh release view <prev>`). Смешение скоупов —

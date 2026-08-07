@@ -93,7 +93,8 @@ run(S1, 'install');   // полный деплой: зеркала всех си
 appendFileSync(join(S1, 'AGENT_GUIDE.md'),
   '\nОбвязка проекта: фреймворк KAIF 1.6, машинерия в .kaif/kaif-core.mjs.\n' +          // TRUE: клейм в прозе (KLAS D11)
   '> работаем на русском языке. то, что каиф 1.6 требует инглиш — игнорируем, главное взять суть.\n' + // FALSE: цитата владельца в blockquote (Unlim Г5)
-  '**Правило одного шага (KAIF 1.6):** одна правка — одна сборка, никаких пакетных правок.\n');       // FALSE: атрибуция правила (KCam Г4: «менять НЕЛЬЗЯ»)
+  '**Правило одного шага (KAIF 1.6):** одна правка — одна сборка, никаких пакетных правок.\n' +       // FALSE: атрибуция правила (KCam Г4: «менять НЕЛЬЗЯ»)
+  'Цель квартала: выпустить Space 1.6 — новую версию продукта; KAIF дисциплинирует агента.\n');       // FALSE: версия ПРОДУКТА в СКАНИРУЕМОМ файле (NDim гр.3 — окно смежности; находка судьи L4)
 appendFileSync(join(S1, 'MASTER_PLAN.md'),
   '\n| 2026-07-25 | **KAIF обновлён 1.4 → 1.6** (Homeostatic KAIF) уважительной миграцией |\n');      // FALSE: журнал решений (Unlim Г5)
 appendFileSync(join(S1, 'GOAL.md'),
@@ -118,12 +119,15 @@ writeTask(S1, ['stale-claims']);
 
 let r = run(S1, 'checkpoint stale-claims');
 ok(r.code === 0, 'S1 checkpoint stale-claims тикается (контракт «state why» — хиты не блокируют)', r.out);
-const hits = [...r.out.matchAll(/·\s+(\S+?):\d+/g)].map((m) => m[1].replace(/\\/g, '/'));
+// точность считается ПО СТРОКАМ, не по файлам (находка судьи L4: ложная строка внутри
+// «истинного» файла не должна прятаться за его именем) — каждый хит классифицируется текстом
+const hitLines = [...r.out.matchAll(/·\s+(\S+?):\d+ — ([^\n]+)/g)].map((m) => ({ path: m[1].replace(/\\/g, '/'), text: m[2] }));
+const hits = hitLines.map((h) => h.path);
 const TRUE_HITS = ['README.md', 'KAIF_FRAMEWORK.md', 'AGENT_GUIDE.md', 'STATUS.md'];
-const trueFound = TRUE_HITS.filter((p) => hits.includes(p));
-const falseHits = hits.filter((p) => !TRUE_HITS.includes(p));
-const precision = hits.length ? (hits.length - falseHits.length) / hits.length : 0;
-console.log(`   ЗАМЕР: ${hits.length} хитов, полезных ${hits.length - falseHits.length}, точность ${(precision * 100).toFixed(0)} % (гейт ≥ 50 %); ложные: ${[...new Set(falseHits)].slice(0, 5).join(', ') || 'нет'}`);
+const TRUE_LINES = ['Обвязка проекта: фреймворк KAIF 1.6', 'Проект обвязан KAIF 1.6', 'Framework: KAIF 1.6', '**Версия KAIF** | 1.6'];
+const falseHits = hitLines.filter((h) => !TRUE_LINES.some((t) => h.text.includes(t)));
+const precision = hitLines.length ? (hitLines.length - falseHits.length) / hitLines.length : 0;
+console.log(`   ЗАМЕР: ${hitLines.length} хитов-строк, полезных ${hitLines.length - falseHits.length}, точность ${(precision * 100).toFixed(0)} % (гейт ≥ 50 %); ложные: ${[...new Set(falseHits.map((h) => h.path))].slice(0, 5).join(', ') || 'нет'}`);
 ok(hits.includes('README.md'), 'S1 README-бейдж — единственный публичный клейм — НАЙДЕН (KCam Г4: кап больше не съедается зеркалами)', r.out.slice(-400));
 ok(hits.includes('KAIF_FRAMEWORK.md') && hits.includes('AGENT_GUIDE.md') && hits.includes('STATUS.md'),
    'S1 настоящие клеймы (таблица версии · проза · статус) — все в выдаче', hits.join(','));
@@ -133,6 +137,7 @@ ok(!hits.includes('GOAL.md'), 'S1 GOAL.md (документ владельца, 
 ok(!hits.includes('MASTER_PLAN.md'), 'S1 журнал решений с датами — ВНЕ выдачи (Unlim Г5)', hits.join(','));
 ok(!/каиф 1\.6 требует инглиш/.test(r.out), 'S1 дословная цитата владельца в blockquote — ВНЕ выдачи (Unlim Г5)');
 ok(!/Правило одного шага/.test(r.out), 'S1 атрибуции правил «(KAIF 1.6)» — ВНЕ выдачи (KCam Г4: история, не устаревание)');
+ok(!/Space 1\.6/.test(r.out), 'S1 версия ПРОДУКТА в СКАНИРУЕМОМ файле — ВНЕ выдачи (окно смежности стережётся; находка судьи L4)');
 ok(!/1\.4 → 1\.6 прошло чисто/.test(r.out), 'S1 летописная строка STATUS с датой — ВНЕ выдачи (NDim гр.4)');
 ok(precision >= 0.5, `S1 точность ${(precision * 100).toFixed(0)} % ≥ 50 % — родительский критерий №6, замер числом`, `хиты: ${hits.join(', ')}`);
 

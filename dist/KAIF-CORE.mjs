@@ -454,6 +454,11 @@ function newsInterval(meta, fromVersion) {
 // precision was ≈19 % and the noise trained operators to ignore the one guard written for the
 // public storefront): a stale CLAIM is the FRAMEWORK's version token ADJACENT to a framework
 // marker, outside the owner's quotes, dated journals and derivative mirrors.
+// DELIBERATE RECALL TRADE (bugs/35 closure, L4 judge): precision is the gate here — a claim
+// that is dated, quoted, parenthesized or far from the marker is now SKIPPED by construction
+// (a real dated claim, a blockquote tagline, prose staleness far from the marker — the KLAS
+// D11 "(с 1.5)" class — will be missed). The scan is an ADVISOR, not a blocker: the task item
+// says "update each or state why", and the judge verdict carries the reasoning (decision #42).
 function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   if (!fromVersion || fromVersion === toVersion) return [];
   // Knowledge directories and EXPERIENCE/HISTORY are JOURNALS OF THE PAST by definition — a line
@@ -1832,7 +1837,9 @@ function cmdCheckpoint() {
       const man = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : null;
       if (rec && rec.from && rec.to) {
         const hits = scanStaleClaims(rec.from, rec.to, man && man.templateShas);
-        if (hits.length) { log(`⚠ stale-claims scan re-ran: ${hits.length} line(s) still assert the old version — the tick records anyway (stating why a line is correct is a legal completion):`); for (const h of hits) log('    · ' + h); }
+        // the "shown N of M" truncation notice is a service line, not a hit — count real ones
+        const real = hits.filter((h) => !h.startsWith('shown ')).length;
+        if (real) { log(`⚠ stale-claims scan re-ran: ${real} line(s) still assert the old version — the tick records anyway (stating why a line is correct is a legal completion):`); for (const h of hits) log('    · ' + h); }
         else log('✔ stale-claims scan ran clean (executed by the checkpoint itself)');
       } else log('⚠ stale-claims scan skipped: no update receipt with from/to versions — tick records on your word');
     } catch (e) { log(`⚠ stale-claims scan errored (${e.message}) — tick records on your word`); }

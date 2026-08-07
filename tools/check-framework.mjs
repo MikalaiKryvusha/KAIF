@@ -130,8 +130,8 @@ if (skills.includes('release')) {
   }
 }
 
-// 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (8 findings) and green
-//     after the content fixes — see bugs/38]
+// 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
+//     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]
 //     The BUNDLE lint (bugs/38): the truth↔mirror pairs registry, applied to the bundle itself.
 //     The 2.1 field audit (KLAS D10) found eight desyncs INSIDE one shipped delivery: a doc
 //     introduced a norm its leading skill never learned, the canon didn't know a new entity,
@@ -143,6 +143,10 @@ if (skills.includes('release')) {
   // "document/notes norm → the file that must carry it" — tokens are FULL unique strings
   // (a short pattern happily matches someone else's line and stays green while truth rots)
   const PAIRS = [
+    // BOTH sides of the leading pair are pinned (judge finding: a one-sided lint reads only
+    // the mirror — editing the TRUTH doc would leave a dead pair green)
+    ['EXPERIENCE.md norms (truth side)', 'framework/EXPERIENCE.md',
+      ['REQUIRED since 2.1', '**Trigger:**', 'mechanized: <the tool>']],
     ['EXPERIENCE.md norms ↔ /experience skill', 'framework/skills/experience/SKILL.md',
       ['REQUIRED since 2.1', '**Trigger:**', 'mechanized: <the tool>']],
     ['re-read list ↔ TESTING_FRAMEWORK (KLAS D10: the doc ships but the list forgot it)', 'framework/AGENT_GUIDE.md',
@@ -157,6 +161,8 @@ if (skills.includes('release')) {
       ['/plan-task', '/plan-epic']],
     ['task-choice entry points ↔ the planning ladder', 'framework/skills/what-next/SKILL.md',
       ['/plan-task', '/plan-epic']],
+    ['autonomy entry point ↔ /guarded-loop (2.1 skill must stay wired)', 'framework/AGENT_GUIDE.md',
+      ['/guarded-loop']],
   ];
   for (const [pair, file, tokens] of PAIRS) {
     let body; try { body = readT(file); } catch { errors.push(`bundle lint: ${file} unreadable (pair "${pair}")`); continue; }
@@ -169,10 +175,18 @@ if (skills.includes('release')) {
     [/\(idea \d+ §\d+\)|\(drive-by, idea \d+/, "the source repo's internal backlog numbering"],
     [/plans\/homework_/, 'the pre-homeworks/ homework path (superseded by the homeworks/ directory)'],
   ];
+  // the sweep walks the WHOLE payload (judge finding: docs+readmes+skills alone left spheres/
+  // adapters/templates/installer unguarded — a future leak there would ship silently)
+  const { statSync: statS, readdirSync: readdirS } = await import('node:fs');
   const payloadBodies = [];
-  for (const d of docs) payloadBodies.push([`framework/${d}`, readFileSync(join(ROOT, 'framework', d), 'utf8')]);
-  for (const r of readmes) payloadBodies.push([`framework/readmes/${r}.md`, readFileSync(join(readmesDir, `${r}.md`), 'utf8')]);
-  for (const s of skills) payloadBodies.push([`framework/skills/${s}/SKILL.md`, readFileSync(join(skillsDir, s, 'SKILL.md'), 'utf8')]);
+  const walkPayload = (dir) => {
+    for (const n of readdirS(join(ROOT, dir))) {
+      const rel = `${dir}/${n}`;
+      if (statS(join(ROOT, rel)).isDirectory()) { walkPayload(rel); continue; }
+      if (/\.(md|mjs)$/i.test(n)) payloadBodies.push([rel, readFileSync(join(ROOT, rel), 'utf8')]);
+    }
+  };
+  walkPayload('framework');
   for (const [name, body] of payloadBodies)
     for (const [re, why] of FORBIDDEN)
       if (re.test(body)) errors.push(`bundle lint (bugs/38): ${name} leaks ${why} (${re})`);
