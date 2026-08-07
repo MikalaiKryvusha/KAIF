@@ -55,10 +55,10 @@ hook-контура (опционального); (4) проект досье о
 |---|---|---|
 | **Claude Code** | полный (см. 1.1) | референс: оба контура целиком |
 | **Cursor** | ✅ **КОНТРАКТ СНЯТ ЖИВЬЁМ 2026-08-07** — подробности в §1.3 | образцы конфига — фаза O5 |
-| **OpenAI Codex** | `.codex/hooks.json`: `SessionStart`, `UserPromptSubmit`, `Stop`, `PreCompact`/`PostCompact` (май 2026) | аналог референса; скрипты в `.codex/hooks/` |
-| **GitHub Copilot** | agent hooks (public preview; JetBrains GA-волна 2026-03): `userPromptSubmitted`, `preToolUse`, `postToolUse` | частично; `sessionStart`-аналог не подтверждён |
-| **Windsurf/Cascade** | pre/post-action триггеры (вторичный источник) | частично; проверить при авторинге адаптер-хуков |
-| **Cline** | lifecycle-хуки (путь «Memory Bank → хуки», предсказан в §11.3 researches/15) | частично |
+| **OpenAI Codex** | ✅ **КОНТРАКТ СНЯТ ЖИВЬЁМ 2026-08-07** — ближайший аналог: те же имена полей и тот же матчер `compact\|clear`. §1.3 | образец `.codex/hooks.json` — фаза O5 |
+| **GitHub Copilot** | ✅ **КОНТРАКТ СНЯТ ЖИВЬЁМ 2026-08-07** — прежняя строка устарела: **`sessionStart` и `preCompact` ЕСТЬ**, плюс поддержана PascalCase/snake_case конвенция Claude Code; но впрыск разрешён не на всех событиях. §1.3 | образец `.github/hooks/*.json`, один хук из трёх |
+| **Windsurf/Cascade** | ⛔ **СНЯТО ЖИВЬЁМ 2026-08-07:** хуки есть, но впрыска контекста нет ВОВСЕ (только exit-коды); ни старта сессии, ни компакции. Доки переехали на `docs.devin.ai`. §1.3 | не поддержано — честный markdown-фолбэк |
+| **Cline** | ⛔ **СНЯТО ЖИВЬЁМ 2026-08-07:** хуки — программные плагины SDK (TS/JS в массиве `extensions`), не конфиг с командами; впрыска нет. §1.3 | не поддержано — честный markdown-фолбэк |
 | **Zoo Code** (приоритет №1!) | хуков в доке НЕТ — только allow/deny-листы команд и auto-approve гейты | **честный фолбэк: только markdown-ритуал** |
 | **Google Antigravity CLI** | ✅ **КОНТРАКТ СНЯТ ЖИВЬЁМ 2026-08-07** — частичный (нет старта сессии и компакции); **Gemini CLI ЗАКРЫТ 2026-06-18**, адаптера под Google у KAIF нет вовсе. Подробности — §1.3 | образец таймера + стража STATUS — фаза O5; адаптер под Antigravity — новая работа |
 | **Meta Muse Code** | ✅ **СИСТЕМА НАЙДЕНА 2026-08-07** — терминальный агент Meta Superintelligence Labs, бета **2026-08-05** (двумя днями ранее), модель Muse Spark 1.2; **хуки заявлены** (событие отправки промпта, правка файла, вызов инструмента/MCP) со своей моделью доверия. Первичной доки с контрактом пока нет. Подробности — §1.3 | образец НЕ пишется до вендорской доки — строка «контракт не верифицирован» |
@@ -173,14 +173,94 @@ Muse Spark 1.2 (macOS и Linux; многоагентный, с воспроиз�
   и заведено: соблазн «событие отправки промпта же есть, значит таймер напишем» — и есть
   образец-гипотеза.
 
-**Заметка о переносимости, родившаяся из этих двух снимков:** три наших скрипта написаны под
-ОДНУ форму вывода (Claude Code). Cursor и Antigravity впрыскивают контекст под другими именами
-полей (`additional_context`, `injectSteps`) и в других событиях. Значит у фазы O5 есть развилка
-формы, которую надо решить ДО письма образцов: (а) тонкий адаптер вывода внутри каждого скрипта
-по переменной окружения/аргументу, (б) отдельные тонкие обёртки на систему, (в) образцы только
-там, где форма совпадает, остальным — честное «не поддержано». Решение — в плане `plans/60`
-шагом 2, по Оккаму и с оглядкой на то, что скрипт обязан молча выходить при любой внутренней
-ошибке.
+#### OpenAI Codex — ✅ подтверждён 2026-08-07: БЛИЖАЙШИЙ АНАЛОГ, скрипты работают без единой правки
+
+- **Носитель:** `<repo>/.codex/hooks.json` или `~/.codex/hooks.json` (плюс инлайн-таблицы
+  `[hooks]` в `config.toml`). Структура — **тот же объект `"hooks"` в корне**, что у Claude Code.
+- **События:** `SessionStart` · `SessionEnd` · `SubagentStart` · `PreToolUse` ·
+  `PermissionRequest` · `PostToolUse` · **`PreCompact` · `PostCompact`** · `UserPromptSubmit` ·
+  `SubagentStop` · `Stop`.
+- **Матчер `SessionStart` — по полю `source` со значениями `startup` · `resume` · **`clear`** ·
+  **`compact`**: буква в букву наш матчер `compact|clear`.
+- **Впрыск контекста — ТЕ ЖЕ ИМЕНА ПОЛЕЙ:** `"hookSpecificOutput": {"additionalContext": "…"}`
+  (а простой текст на stdout тоже принимается как developer-контекст). Для `SessionStart` и
+  `UserPromptSubmit` — то есть под оба наших впрыскивающих хука.
+- **Вход:** snake_case, как у Claude Code — `session_id`, `transcript_path`, `cwd`,
+  `hook_event_name`, `model`, `permission_mode`.
+- **Экзит-коды:** 0 — успех, 2 — блокирующий сигнал (причина в stderr), прочее — фейл. Таймаут по
+  умолчанию 600 с.
+- **Вывод для O5:** образец = наш `hooks`-объект в другом файле. Единственное непроверенное —
+  форма вывода у `Stop` (наш страж печатает `decision`/`reason`; дока Codex описывает блокировку
+  через exit 2 + stderr). Пометить как «два хука подтверждены, страж STATUS — не верифицирован».
+
+#### GitHub Copilot — ✅ подтверждён 2026-08-07: частичный, но с приятным сюрпризом совместимости
+
+- **Носитель:** `.github/hooks/*.json` (репозиторий) · `~/.copilot/hooks/*.json` (пользователь) ·
+  инлайн в `.github/copilot/settings.json`; формат `{"version": 1, "hooks": {"<событие>": [...]}}`.
+- **События:** `sessionStart` · `sessionEnd` · `userPromptSubmitted` · `userPromptTransformed` ·
+  `preToolUse` · `postToolUse` · `postToolUseFailure` · **`preCompact`** · `permissionRequest` ·
+  `notification` · `agentStop` · `subagentStart` · `subagentStop` · `errorOccurred`. То есть
+  прежняя строка карты («аналог `sessionStart` не подтверждён») **устарела — событие есть**.
+- **Сюрприз:** поддержаны ДВЕ конвенции имён — camelCase-события с camelCase-полями И
+  **PascalCase-события со snake_case-полями, то есть ровно конвенция Claude Code**.
+- ⚠️ **Впрыск `additionalContext` разрешён не везде:** только на `postToolUse`,
+  `postToolUseFailure`, `notification`, **`sessionStart`**, `subagentStart`. На
+  `userPromptSubmitted` и `agentStop` — нет. Значит из трёх наших хуков ложится один
+  (приказ после сжатия), таймер и страж STATUS — нет.
+- **Экзит-коды:** 0 — успех (stdout парсится), 2 — предупреждение (для `preToolUse`/
+  `permissionRequest` — отказ), прочее — fail-open, кроме fail-closed `preToolUse`.
+
+#### Windsurf / Cascade — ⛔ НЕ ПОДДЕРЖИВАЕТСЯ нашим модулем (и сменил дом)
+
+- **Ландшафт:** `docs.windsurf.com/windsurf/cascade/hooks` теперь **редиректит на
+  `docs.devin.ai/desktop/cascade/hooks`** — продукт переехал под Devin. Адаптер `windsurf.md`
+  (снимок 2026-07-03) этого не видит.
+- **Хуки есть:** `.windsurf/hooks.json` (+ системный и пользовательский уровни), структура
+  `{"hooks": {"<СОБЫТИЕ>": [{"command", "powershell", "show_output", "working_directory"}]}}` —
+  кстати, единственная система с явным полем под Windows-команду.
+- **События (snake_case):** `pre_read_code` · `pre_write_code` · `pre_run_command` ·
+  `pre_mcp_tool_use` · `pre_user_prompt` · `post_read_code` · `post_write_code` ·
+  `post_run_command` · `post_mcp_tool_use` · `post_cascade_response` ·
+  `post_cascade_response_with_transcript` · `post_setup_worktree`.
+- ⛔ **Ни события старта сессии, ни компакции; и главное — хуки НЕ УМЕЮТ впрыскивать контекст
+  вовсе:** общение с агентом только через exit-коды (0 — дальше, 2 — блок у pre-хуков).
+  Наш модуль стоит на впрыске приказа, поэтому здесь честное «не поддержано», а не «частично».
+
+#### Cline — ⛔ НЕ ПОДДЕРЖИВАЕТСЯ нашим модулем (хуки есть, но другого рода)
+
+Хуки Cline — **программные плагины SDK**: объекты TypeScript/JavaScript, передаваемые массивом
+`extensions` в конфигурацию, а не файл конфига с shell-командами. События — `beforeRun`/
+`afterRun` · `beforeTool`/`afterTool` · `beforeModel`/`afterModel` · `onEvent`; старта сессии и
+компакции нет, впрыска контекста в рассуждение модели тоже нет. Наш модуль поставляет
+Node-скрипты, вызываемые системой по конфигу, — форма несовместима. Честное «не поддержано»;
+работает markdown-ритуал.
+
+### 1.4 Сводный вердикт разведки O5 (снято 2026-08-07)
+
+| Система | Впрыск после сжатия | Таймер | Страж STATUS | Что делает O5 |
+|---|---|---|---|---|
+| **Claude Code** | ✅ `additionalContext` | ✅ | ✅ `decision`/`reason` | референс, уже подключён |
+| **OpenAI Codex** | ✅ те же поля, матчер `compact\|clear` | ✅ те же поля | ⚠️ форма `Stop` не верифицирована | образец `.codex/hooks.json` |
+| **Cursor** | ✅ `additional_context` в `sessionStart` | ⛔ `beforeSubmitPrompt` не впрыскивает | ⛔ `stop` → авто-промпт | образец `.cursor/hooks.json`, один хук из трёх |
+| **Google Antigravity** | ⛔ события нет вовсе | ✅ `PreInvocation` → `injectSteps` | ✅ `Stop` → `decision`/`reason` | образец `.agents/hooks.json`, два из трёх |
+| **GitHub Copilot** | ✅ `additionalContext` в `sessionStart` | ⛔ не разрешён на `userPromptSubmitted` | ⛔ не разрешён на `agentStop` | образец `.github/hooks/*.json`, один из трёх |
+| **Grok Build** | ✅ читает наш `.claude/settings.json` | ✅ тем же путём | ✅ тем же путём | образца НЕ пишем; строка «читает конфиг Claude Code», впрыск на совместимом пути не верифицирован |
+| **Meta Muse Code** | ⛔ события нет | 🟡 событие промпта есть | ⛔ | ждём вендорскую доку; образца нет |
+| **Windsurf / Cascade** | ⛔ | ⛔ | ⛔ | не поддержано — впрыска нет по построению |
+| **Cline** | ⛔ | ⛔ | ⛔ | не поддержано — хуки только SDK-плагинами |
+| **Zoo Code** | ⛔ | ⛔ | ⛔ | markdown-ритуал (штатный фолбэк) |
+
+**Главный вывод разведки — единой формы вывода не существует.** Три наших скрипта печатают
+форму Claude Code. Codex принимает её дословно; Cursor ждёт плоский `additional_context`;
+Antigravity — `injectSteps`; Copilot — `additionalContext`, но только на разрешённых событиях.
+Значит развилка формы (шаг 2 `plans/60`) решается так: **явный флаг формы в самом образце
+конфига** (`--emit claude|codex|cursor|antigravity|copilot`), а не автоопределение по входу.
+Причины: (1) предикатная логика — ценная часть скриптов — остаётся ОДНА, обёртки её бы
+размножили; (2) автоопределение по форме stdin — это догадка, а хук обязан молча выходить при
+любой неясности, то есть тихо перестал бы работать; (3) образец, называющий свою форму явно,
+читается человеком и проверяется сводом полигона. Вариант «писать образцы только там, где форма
+совпадает» отвергнут: он выбросил бы Cursor, Antigravity и Copilot, которые впрыск поддерживают
+— просто иначе.
 
 ## 2. Проект markdown-контура (обязательного) — правило освежения + свидетельство
 
