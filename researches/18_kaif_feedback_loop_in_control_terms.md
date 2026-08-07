@@ -11,7 +11,7 @@
 > (заметка владельца в `AGENT_GUIDE.md`).
 > Индустриальная база — `researches/15` §11.1; постановка владельца — `ideas/20` пп. 8, 10, 11, 14
 > (+ решение NDim п. 1.11); натурные образцы жанра — 4 отчёта
-> `ideas/ai_agents_reports/2.1_update_reports/`.
+> `reports/KAIF_UPDATES/` (мигрировано из `ideas/ai_agents_reports/` — №41).
 
 ---
 
@@ -443,7 +443,7 @@ curl -sL -o dotu_2011.pdf "https://vodaspb.ru/arhive/vp_sssr/knigi/dotu_2011/dot
 ## Приложение B — ретро-прогон шаблона C на отчёте NDim 2.1 (критерий 5 плана)
 
 Наблюдение (не мнение): каждая секция живого отчёта
-`ideas/ai_agents_reports/2.1_update_reports/NDim_KAIF_2.1_UPDATE_REPORT.md` находит своё место в
+`reports/KAIF_UPDATES/NDim_KAIF_2.1_UPDATE_REPORT.md` находит своё место в
 шаблоне C, потерь смысла нет.
 
 | Живой отчёт NDim | Секция шаблона C | Факт |

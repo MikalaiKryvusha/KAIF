@@ -18,11 +18,11 @@
 > 2. `D:\work\unliminiumProject\bugs\54_interview_page_hangs_and_eats_answers.md` — критический
 >    инцидент «инструмент съел работу владельца» (И1–И5 с починкой и headless-рецептом);
 >    репозиторий HEAD `272a813`, коммит бага `f09c577`.
-> 3. `ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md` (замер 55 % по
+> 3. `reports/25_answer_propagation_gap_field_report_from_ndim.md` (замер 55 % по
 >    трём проектам, референс questions-guard) + `D:\work\ai_sandbox\ndim\bugs\112_DONE_review_marker_leaks_and_time_invisible.md`.
 > 4. GitHub issue #2 (Nogamelabs, второй отчёт) — тело + оба комментария; дословный снапшот
 >    закоммичен ДО этого анализа (чек-лист, шаг 15):
->    `ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`.
+>    `reports/26_issue2_interactive_contour_second_report_nogamelabs.md`.
 >
 > Вспомогательные входы: `ideas/20_kaif_2.2_scope.md` (нумерация И1–И15, пп. 1.0–1.12) ·
 > `framework/skills/owner-reviews/SKILL.md` (действующие I1–I7) · `MASTER_PLAN.md` §7 (решения
@@ -77,11 +77,13 @@ Issue #2 подтверждает их силу явно: «Инварианты
   говорит «A queue flag parks the document in a pending folder», а поле NDim §12 прямо
   опровергает перенос («ломает все ссылки», см. C9). Канон K1: **очередь — файл состояния,
   живые документы НЕ переносятся**; K2 обязан поправить текст I7 в навыке (оба слоя) — механика
-  очереди меняется, суть I7 («копят, не блокируются») остаётся.
-  — Цитата [`framework/skills/owner-reviews/SKILL.md`]: «A queue flag parks the document in a pending»
+  очереди меняется, суть I7 («копят, не блокируются») остаётся. *(Исполнено K2: старая буква
+  «A queue flag parks the document in a pending folder» заменена — до-K2 цитата в истории git;
+  ниже — действующая строка.)*
+  — Цитата [`framework/skills/owner-reviews/SKILL.md`]: «The queue is a STATE FILE — never move live»
 - **Уточнение I2 из поля** (NDim §9.4, → C6): уже записанный ответ владельца неприкосновенен.
 - **D1 issue #2 → I5** (слияние, нового номера нет).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Зов — следствие успешно открытой страницы»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Зов — следствие успешно открытой страницы»
 
 ---
 
@@ -124,7 +126,7 @@ Issue #2 подтверждает их силу явно: «Инварианты
   видимой плашкой; страховка не хранится в том, от чего страхует. Карта: скоуп И4 → I12 ·
   issue A2 → I12 · bug54 починка. Судьба: K2 — инварианты; K3 — контракт страницы; K4 — QA7.
   — Цитата [`ideas/20_kaif_2.2_scope.md`]: «Страховку нельзя хранить в том, от чего страхуешься: сервер — это как раз то, что умирает.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «восстановление при загрузке с видимой плашкой «подхвачено полей: N»»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «восстановление при загрузке с видимой плашкой «подхвачено полей: N»»
 
 - **I13 — пульс приёмника (страница → сервер).** Страница опрашивает `/alive` и говорит вслух,
   как только сервер замолчал, — человек узнаёт о беде сразу, а не в момент клика; единственный из
@@ -138,9 +140,9 @@ Issue #2 подтверждает их силу явно: «Инварианты
   браузера); бесконечное терпение I9 правильно только пока жив адресат. Отработал в поле.
   Карта: issue §0 → I14 · issue C2 → I14. Числа — DEF6; ловушки — T3/T4/T5. Судьба: K2 —
   инварианты + «три исхода» (I25); K3 — контракт; K4 — страж обратного пульса + QA3.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «пусть сервер полит периодически, есть ли страница, открыта ли она.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Два канала: маячок `sendBeacon('/closed')` на `pagehide` (быстрый) + опрос по тишине»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «обратный пульс отработал в поле, а не в пробе»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «пусть сервер полит периодически, есть ли страница, открыта ли она.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Два канала: маячок `sendBeacon('/closed')` на `pagehide` (быстрый) + опрос по тишине»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «обратный пульс отработал в поле, а не в пробе»
   ⚠️ В коде донора NDim (`review.mjs` на `4aa1756`) обратного пульса НЕТ (проверено грепом
   `sendBeacon|/closed`): требование моложе донора, канонические числа берутся из issue #2.
 
@@ -157,7 +159,7 @@ Issue #2 подтверждает их силу явно: «Инварианты
 по времени» — это ложная симметрия.
   — Цитата [`ideas/20_kaif_2.2_scope.md`]: «Это ложная симметрия: умирать он обязан ПО СОБЫТИЮ (ответ получен), и никогда — ПО ЧАСАМ.»
   — Цитата [`ideas/20_kaif_2.2_scope.md`]: «Стоит записать оба инварианта рядом, именно потому что один провоцирует ошибочное прочтение другого»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «если контур умеет замечать смерть партнёра в одну сторону — обязан замечать и в обратную.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «если контур умеет замечать смерть партнёра в одну сторону — обязан замечать и в обратную.»
 
 ### §2.2. Показ (I15–I17)
 
@@ -172,7 +174,7 @@ Issue #2 подтверждает их силу явно: «Инварианты
   контура открывает ЛЮБОЙ markdown, поле общего комментария даёт человеку ответить или промолчать.
   Карта: скоуп И7 → I16 · комм.1 §7.1 (второе следствие) → I16. Судьба: K2 — навык + `AGENT_GUIDE`.
   — Цитата [`ideas/20_kaif_2.2_scope.md`]: «страница согласований уже умеет рендерить и открывать ЛЮБОЙ markdown, не только интервью»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Контур обязан открывать ЛЮБОЙ документ, а не только документ с вопросами.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Контур обязан открывать ЛЮБОЙ документ, а не только документ с вопросами.»
 
 - **I17 — механическая проверка показа.** Греп собственного ответа на формулы «двойным кликом /
   открывается офлайн / см. файл / лежит по пути» рядом с расширением артефакта; правило держится
@@ -180,26 +182,26 @@ Issue #2 подтверждает их силу явно: «Инварианты
   (коллизия с NDim-I8 снята) · issue §3.8 → I17 (подтверждение). Судьба: K4 — страж; K2 — строка
   в ритуалах.
   — Цитата [`ideas/20_kaif_2.2_scope.md`]: «Совпало — значит показ подменён ссылкой.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Лечится только **исполнимой командой, показывающей нарушение**»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Лечится только **исполнимой командой, показывающей нарушение**»
 
 ### §2.3. Разнос ответов (I18–I21)
 
 - **I18 — у вопроса есть адресат ответа, и он пишется вместе с вопросом.** Обязательное поле
   шаблона вопроса `/interview` (шаг 2): агент знает заблокированную строку ровно в момент,
   когда спрашивает. Карта: скоуп И9 → I18 · отчёт 25 §4-И9. Судьба: K2 — шаблон `/interview`.
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «пишется в момент написания вопроса, а не в момент его закрытия.»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Поле дешевле любой памяти.»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «пишется в момент написания вопроса, а не в момент его закрытия.»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Поле дешевле любой памяти.»
 
 - **I19 — закрытие интервью — это разнос, а не смена статуса.** Каждый адресат цитирует «интервью
   №NNN, ВN» и приведён в соответствие; разнести = ещё и УБРАТЬ отменённое ответом; смена статуса —
   последнее действие. Карта: скоуп И10 → I19 · отчёт 25 §4-И10. Судьба: K2 — `/interview` шаг 5
   чеклистом.
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «разнести — значит и УБРАТЬ то, что ответ отменил.»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Закрытие интервью — это разнос, а не смена статуса»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «разнести — значит и УБРАТЬ то, что ответ отменил.»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Закрытие интервью — это разнос, а не смена статуса»
   Кап формы (негативная половина нормы): одна цитата в документе, который стоял на ответе, —
   не таблица трассировки и не отдельный реестр.
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Не превращать ссылку в бюрократию.»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Не таблица трассировки, не отдельный реестр»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Не превращать ссылку в бюрократию.»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Не таблица трассировки, не отдельный реестр»
 
 - **I20 — страж обратного плеча с базовой линией и двуплечим итогом.** По каждому ОТВЕЧЕННОМУ
   вопросу проверяется цитирование адресатами; унаследованный долг — в baseline (ключ
@@ -207,15 +209,15 @@ Issue #2 подтверждает их силу явно: «Инварианты
   докладывает оба плеча; единица — вопрос, не интервью. Карта: скоуп И11 → I20 · отчёт 25 §4-И11 ·
   NDim §3.1 (ratchet). Судьба: K4 — норма стража (референс `questions-guard.mjs` половина 3,
   доказан мутацией); K2 — строка в навыке.
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Страж, красный с рождения, приучает себя игнорировать»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Итог докладывает ОБА плеча.»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Проверка по имени файла интервью бесполезна»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Страж, красный с рождения, приучает себя игнорировать»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Итог докладывает ОБА плеча.»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Проверка по имени файла интервью бесполезна»
 
 - **I21 — для старых интервью без адресата — эвристика, не отказ.** «Хотя бы одна ссылка где
   угодно вне `interviews/`»; нулевая миграция, историю не переписывать. Карта: скоуп И12 → I21 ·
   отчёт 25 §4-И12. Судьба: K4 — норма стража.
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Это слабее, но ловит именно тот класс, который был замерен»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «ретро-разметка — работа ради работы»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «Это слабее, но ловит именно тот класс, который был замерен»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «ретро-разметка — работа ради работы»
 
 ### §2.4. Провенанс (I22–I24)
 
@@ -242,65 +244,65 @@ Issue #2 подтверждает их силу явно: «Инварианты
 - **I25 — исходов ровно три, и все видны в логе процесса.** Решение записано · страница закрыта
   без ответа · прервано человеком; «он, наверное, ещё думает» — не исход. Карта: issue C1 → I25.
   Судьба: K2 — навык («три исхода ожидания»); K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «решение записано · страница закрыта без ответа · прервано человеком»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «решение записано · страница закрыта без ответа · прервано человеком»
 
 - **I26 — отдельное окно-приложение, не вкладка.** `--app=`; и просьба владельца, и техническая
   правда: автозакрытие возможно только в окне, открытом скриптом. Карта: issue B1 → I26. Судьба:
   K2 — элементы; K3 — контракт открытия (DEF8).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «открывает их в отдельном окне браузера, чтобы не занимать мои основные окна»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «**автозакрытие физически возможно только в таком окне**»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «открывает их в отдельном окне браузера, чтобы не занимать мои основные окна»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «**автозакрытие физически возможно только в таком окне**»
 
 - **I27 — автозакрытие — попытка, а не обещание.** Через ~2 с после ответа; не дал браузер —
   честная плашка «закройте сами», никогда молчаливое «висит как было». Карта: issue B2 → I27 ·
   скоуп 1.4 · NDim §4 (правка владельца). Числа — DEF2. Судьба: K2 — элементы; K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Контур обязан убирать за собой»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Контур обязан убирать за собой»
   — Цитата [`ideas/20_kaif_2.2_scope.md`]: «Можно через 2 секунды автоматически закрывать.»
 
 - **I28 — зов голосом по имени — уровень по умолчанию.** Не опция «для смелых»: выключенный
   настройкой голос существует только на бумаге. Карта: issue B3 → I28. Судьба: K2 — сигнал;
   K3 — контракт сигнала.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «существовал только на бумаге, пока владелец не сравнил с чужим контуром»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «существовал только на бумаге, пока владелец не сравнил с чужим контуром»
 
 - **I29 — один документ — одно окно.** Замок с pid и адресом; второй запуск печатает адрес живого
   и выходит: два окна = два зова и два разных черновика (порт входит в origin). Карта: issue B5 →
   I29. Сшивка: T6. Судьба: K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «порт входит в origin, поэтому написанное в одном окне второму не видно»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «порт входит в origin, поэтому написанное в одном окне второму не видно»
 
 - **I30 — свободный порт (`listen(0)`), не фиксированный.** Живой прошлый сервер молча выигрывает
   у нового; исчезает соблазн `pkill`, убивающего открытую у человека страницу. Карта: issue C3 →
   I30. Судьба: K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «живой прошлый сервер молча выигрывает у нового, `curl` отдаёт 200, а человек читает УСТАРЕВШУЮ страницу»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «живой прошлый сервер молча выигрывает у нового, `curl` отдаёт 200, а человек читает УСТАРЕВШУЮ страницу»
 
 - **I31 — завершение процесса — канал доставки ответа.** Контур запускается ОТСЛЕЖИВАЕМОЙ фоновой
   задачей с подпиской на завершение; `&` не отслеживается харнессом. Карта: issue C4 → I31.
   Судьба: K2 — навык (ритуалы запуска); K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Агент обязан запускать контур ОТСЛЕЖИВАЕМОЙ фоновой задачей и подписываться на это завершение»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Агент обязан запускать контур ОТСЛЕЖИВАЕМОЙ фоновой задачей и подписываться на это завершение»
 
 ### §2.6. Зов (I32–I36; D1 → I5, см. §1)
 
 - **I32 — зов не блокирует контур.** Синтез речи занимает секунды; синхронный вызов крадёт их у
   сервера страницы — человек смотрит в пустое окно. Карта: issue D2 → I32. Судьба: K3 — контракт
   сигнала.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Синтез речи занимает секунды; синхронный вызов крадёт их у сервера страницы»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Синтез речи занимает секунды; синхронный вызов крадёт их у сервера страницы»
 
 - **I33 — порядок цепочки значим: мгновенный звук → баннер → голос.** Параллель накладывает писк
   на речь. Карта: issue D3 → I33 · NDim §11 («звук первым и всегда»). Судьба: K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «мгновенный звук → баннер → голос. Параллельный запуск накладывает писк на речь»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «мгновенный звук → баннер → голос. Параллельный запуск накладывает писк на речь»
 
 - **I34 — тракт звука не зависит от настроек ОС.** Уведомления глушатся молча и с успешным кодом;
   звук — через звуковую карту; доставка подтверждается человеком, не exit-кодом (сшивка: грабли
   №3 навыка). Карта: issue D4 → I34. Судьба: K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Тракт звука не должен зависеть от пользовательских настроек ОС.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Тракт звука не должен зависеть от пользовательских настроек ОС.»
 
 - **I35 — голос с честным откатом на системный.** Нет движка — контур зовёт системным голосом и
   не ломается из-за тембра; выбор тракта — чистая функция, обе ветки под стражем. Карта: issue
   D5 → I35 · NDim §5 (заимствование командой). Судьба: K3 — контракт.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «контур согласования не имеет права ломаться из-за тембра»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «контур согласования не имеет права ломаться из-за тембра»
 
 - **I36 — нормализация текста для речи живёт в движке, а не в проекте.** Фраза зова почти всегда
   несёт номер; движок глобален — второй проект не переоткрывает урок. Карта: issue D6 → I36.
   Судьба: K3 — контракт (сшивка M6).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Нормализация текста для речи живёт в ДВИЖКЕ, а не в проекте»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Нормализация текста для речи живёт в ДВИЖКЕ, а не в проекте»
 
 ---
 
@@ -310,51 +312,51 @@ Issue #2 подтверждает их силу явно: «Инварианты
   ловил владелец сам, — дефекты обращения с его временем и работой; класс проверяется не
   самотестами, а перечнем оплаченных полем случаев (A-группа, И1–И5, B-группа). Карта: issue
   «Итог одним абзацем» → M1. Судьба: K2 — именованный класс в навыке (`plans/27` K2 дословно).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «он проверяется не самотестами, а перечнем оплаченных полем случаев»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Ни один из них не находится ни одной механической проверкой»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «он проверяется не самотестами, а перечнем оплаченных полем случаев»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Ни один из них не находится ни одной механической проверкой»
 
 - **M2 — симметрия наблюдения за смертью партнёра.** Контур, замечающий смерть одной стороны,
   обязан замечать и другой; асимметрия выглядит нормальной ровно до полевого случая. Карта:
   issue §0 → M2 (родитель пары I13/I14). Судьба: K2 — оговорка при I13/I14.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «если контур умеет замечать смерть партнёра в одну сторону — обязан замечать и в обратную.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «если контур умеет замечать смерть партнёра в одну сторону — обязан замечать и в обратную.»
 
 - **M3 — Оккам не применяется к тому, что человек видит и слышит.** Экономия сущностей законна
   внутри машинерии; на воспринимаемом экономит не агент. Карта: issue §5.2 → M3. Судьба: K2 —
   `PHILOSOPHY.md` (оба слоя), одним заходом с задачей T7 (координация — зонтик `plans/26` §6).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Экономия сущностей законна ВНУТРИ машинерии; на том, что человек видит и слышит, экономит не агент.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Экономия сущностей законна ВНУТРИ машинерии; на том, что человек видит и слышит, экономит не агент.»
 
 - **M4 — разведка донора: его баги → его план → его код; плюс EXPERIENCE и очередь в апстрим.**
   Названное владельцем вслух — то, что он заметил как пользователь; выстраданное лежит в bugs/;
   разбор не закончен без файла уроков и очереди в апстрим. Заимствуют интерфейс и bugs/, не файлы.
   Карта: issue §5.1 → M4 · комм.1 §7 (уточнение) · NDim §5. Судьба: K2 — навык (порядок разведки
   донора; `researches/15` дайджест K2).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Порядок чтения донора: его баги → его план → его код.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «разбор донора не закончен, пока не прочитаны его `EXPERIENCE.md` и его очередь в апстрим»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Порядок чтения донора: его баги → его план → его код.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «разбор донора не закончен, пока не прочитаны его `EXPERIENCE.md` и его очередь в апстрим»
   — Цитата [`D:\work\ai_sandbox\ndim\researches\28_owner_reviews_contour_field_report.md`]: «интерфейс, а не файлы: копия даёт две правды и два места починки.»
 
 - **M5 — класс вкуса: перцептивное прилагательное в просьбе = запрет на самостоятельный вывод.**
   Уже канон KAIF 2.1 (`AGENT_GUIDE` «Класс "вкус"») — поле подтвердило и дало общую формулу.
   Карта: комм.1 §7.6 → M5 (подтверждение). Судьба: сшивка-ссылка в K2, канон не дублировать.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «перцептивное прилагательное в просьбе = запрет на самостоятельный вывод агента + требование макета.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «перцептивное прилагательное в просьбе = запрет на самостоятельный вывод агента + требование макета.»
 
 - **M6 — тяжёлые общие ресурсы — предмет машины, а не проекта.** Модель TTS, venv ставятся
   глобально; проект зовёт готовую команду и честно откатывается (I35). Карта: issue §3.6
   (требование-часть) → M6. Судьба: K3 — контракт (состав поставки/окружение).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «тяжёлые общие ресурсы (модель TTS, venv) — предмет МАШИНЫ, а не проекта»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «тяжёлые общие ресурсы (модель TTS, venv) — предмет МАШИНЫ, а не проекта»
 
 - **M7 — вопрос владельцу — утверждение о состоянии канона, и проверяется как утверждение.**
   Три подкласса до показа: отрицание требует доказательства по всему источнику · цитата требует
   взгляда на маркер провенанса · каждое имя в вариантах обязано существовать. Карта: комм.1
   §7.2 → M7 (исполнение — G4). Судьба: K2 — `/interview`; K4 — страж содержания.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «контур обязан проверять СОДЕРЖАНИЕ вопроса, а не только его вёрстку»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «человек физически не может ответить, и вопрос сгорает впустую»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «контур обязан проверять СОДЕРЖАНИЕ вопроса, а не только его вёрстку»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «человек физически не может ответить, и вопрос сгорает впустую»
 
 - **M8 — напоминание стоит в точке решения, а не в списке правил.** Команда рендера печатает
   предупреждение и готовую команду открытия там, где рождается соблазн отдать путь. Карта:
   комм.1 §7.1 (третье следствие) → M8. Судьба: K3 — контракт (печать в инструментах); сшивка с
   принципом принудительных артефактов fable.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Напоминание стоит В ТОЧКЕ РЕШЕНИЯ, а не в списке правил.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «готовую команду открытия — там, где рождается соблазн отдать путь»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Напоминание стоит В ТОЧКЕ РЕШЕНИЯ, а не в списке правил.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «готовую команду открытия — там, где рождается соблазн отдать путь»
 
 ---
 
@@ -396,7 +398,7 @@ Issue #2 подтверждает их силу явно: «Инварианты
   — Цитата [`D:\work\ai_sandbox\ndim\researches\28_owner_reviews_contour_field_report.md`]: «Мини-рендерер markdown (~120 строк): заголовки, списки с продолжениями, таблицы, цитаты»
   — Цитата [`D:\work\ai_sandbox\ndim\researches\28_owner_reviews_contour_field_report.md`]: «Экранирование ПЕРВЫМ действием.»
 - **P9 — имя проекта в шапке страницы.** Владелец ведёт несколько проектов. Карта: issue B4 → P9.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Владелец ведёт несколько проектов; по заголовку документа не видно, КТО спрашивает»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Владелец ведёт несколько проектов; по заголовку документа не видно, КТО спрашивает»
 
 ---
 
@@ -424,38 +426,38 @@ Issue #2 подтверждает их силу явно: «Инварианты
   про будущее); отрицание доказанным — только в открытых вопросах; ответ владельца не проверяется
   никогда; проверять только то, у чего есть источник правды; стоит в точке показа и НЕ блокирует.
   Карта: комм.1 §7.2 + комм.2 §2 → G4. Судьба: K4 — норматив стража (M7 — его принцип).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Такой страж запрещает спрашивать про будущее.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Ответ владельца не проверяется никогда.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверять только то, у чего есть источник правды.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Блокирующий гейт здесь был бы третьей формой того же вредительства.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Такой страж запрещает спрашивать про будущее.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Ответ владельца не проверяется никогда.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверять только то, у чего есть источник правды.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Блокирующий гейт здесь был бы третьей формой того же вредительства.»
   Калибровка отрицаний: ловятся только СИЛЬНЫЕ формы; слабое «нет» в страж не берётся — утонет.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «сильные формы отрицания встретились в 5 местах на 16 документов, все настоящие»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «сильные формы отрицания встретились в 5 местах на 16 документов, все настоящие»
 - **G5 — правилу место на фикстуре, живым данным — только инварианты.** Признак дефекта:
   конкретное число или имя живого документа в тексте проверки; такие проверки краснеют в момент
   успеха инструмента. Карта: комм.1 §7.3 → G5 · NDim §6 (вывод 2).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Правилу место на фикстуре; живым данным — только утверждения, верные при ЛЮБОМ их состоянии»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «покраснели ровно в тот час, когда владелец ответил»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Правилу место на фикстуре; живым данным — только утверждения, верные при ЛЮБОМ их состоянии»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «покраснели ровно в тот час, когда владелец ответил»
 - **G6 — распознавание строится отрицательно.** «Буква, за которой НЕ идёт …» вместо перечня
   разрешённых разделителей: перечислить — значит однажды не перечислить. Карта: комм.1 §7.4 → G6.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Перечислять разрешённое — значит однажды не перечислить»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «два варианта из трёх молча не показывались, при зелёной счётной проверке»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Перечислять разрешённое — значит однажды не перечислить»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «два варианта из трёх молча не показывались, при зелёной счётной проверке»
 - **G7 — независимый признак + замороженный эталон, просмотренный глазами.** «Нашёл столько же,
   сколько искал» — не доказательство; признак другой природы, ложные срабатывания у него
   разрешены — их гасит эталон; новый документ намеренно роняет прогон до пересмотра эталона.
   Карта: issue §3.1 + комм.2 §1 (ловушка №1) → G7. Судьба: K4 — норма приёмки (QA4).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Счётная проверка была ЗЕЛЁНОЙ: она считала совпадения того же выражения, которое и промахивалось.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «проверка обязана быть НЕЗАВИСИМА от проверяемого»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «это не измерение, а самоподтверждение»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Счётная проверка была ЗЕЛЁНОЙ: она считала совпадения того же выражения, которое и промахивалось.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «проверка обязана быть НЕЗАВИСИМА от проверяемого»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «это не измерение, а самоподтверждение»
 - **G8 — локализация сравнения внутри блоков вопросов.** Общий счёт по документу топит сигнал в
   шуме. Карта: комм.2 §1 → G8. Спутник (отчёт 25 §5.2): результат замера «100 %» или «0 %» —
   прежде всего повод заподозрить сам инструмент, а не сенсация.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Общий счёт по документу для этого класса бесполезен.»
-  — Цитата [`ideas/ai_agents_reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «прежде всего повод заподозрить инструмент»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Общий счёт по документу для этого класса бесполезен.»
+  — Цитата [`reports/25_answer_propagation_gap_field_report_from_ndim.md`]: «прежде всего повод заподозрить инструмент»
 - **G9 — «ложная тревога опаснее пропуска» — в ранг принципа.** Приучает игнорировать вывод;
   нарушается охотнее всего при постройке стражей; эвристики-догадки (порядок букв A,B,C) не
   вписывать — точность держит эталон. Карта: комм.2 §1 → G9 (грабли №5 навыка — повышение ранга).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Ложная тревога опаснее пропуска: она приучает игнорировать вывод стража»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «стоит поднять до уровня принципа»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Ложная тревога опаснее пропуска: она приучает игнорировать вывод стража»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «стоит поднять до уровня принципа»
 - **G10 — мутация с предсказанием; привязка к своему объекту; синтаксис, не слово.** Половина
   стражей контура не умела краснеть до проверки мутацией; страж по всему файлу закрывается
   соседним объектом — привязывать строкой к своему; искать `owner-review:` с двоеточием, не слово.
@@ -471,12 +473,12 @@ Issue #2 подтверждает их силу явно: «Инварианты
 - **G12 — фикстура вёрстки: и короткий, и длинный вариант.** Замещаемый элемент во флекс-строке
   сжимается длинным соседом; на коротком примере дефект не воспроизводится. Карта: комм.1 §7.5 →
   G12.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «иначе она зелёная по построению — на коротком примере дефект не воспроизводится вовсе»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «иначе она зелёная по построению — на коротком примере дефект не воспроизводится вовсе»
 - **G13 — самопросмотр кадра с предметом: сравнение однотипных элементов.** Смотреть как
   сравниватель геометрии, а не как читатель; обязательный снимок страницы в артефакты задачи.
   Карта: issue §3.2 + комм.1 §7.5 → G13. Судьба: K4 — пункт приёмки.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «при самопросмотре кадра сравнивай ОДНОТИПНЫЕ элементы между собой»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «весь список вариантов печатались ДВАЖДЫ — каждая копия по отдельности выглядела нормально»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «при самопросмотре кадра сравнивай ОДНОТИПНЫЕ элементы между собой»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «весь список вариантов печатались ДВАЖДЫ — каждая копия по отдельности выглядела нормально»
 
 ---
 
@@ -484,35 +486,35 @@ Issue #2 подтверждает их силу явно: «Инварианты
 
 - **T1** ← Л1: `window.close()` разрешён не всякому окну → поднимать `--app=`, закрытие — попытка
   с честной плашкой.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Поднимать окно режимом `--app=`; закрытие всё равно оставлять попыткой с честной плашкой»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Поднимать окно режимом `--app=`; закрытие всё равно оставлять попыткой с честной плашкой»
 - **T2** ← Л2: headless доказывает НЕ ТО — там `close()` разрешён всегда → поведение окна
   проверять на видимом окне, выброшенный профиль.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «В headless `window.close()` разрешён всегда»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверять поведение окна на ВИДИМОМ окне, на выброшенном профиле»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «В headless `window.close()` разрешён всегда»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверять поведение окна на ВИДИМОМ окне, на выброшенном профиле»
 - **T3** ← Л3: `pagehide` срабатывает и на перезагрузке/навигации → штатные уходы с флагами;
   сервер после маячка ждёт ~3 с возврата.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Штатные уходы помечать флагами; сервер после маячка ждёт ~3 с»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Штатные уходы помечать флагами; сервер после маячка ждёт ~3 с»
 - **T4** ← Л4: браузер душит таймеры скрытого окна (до 1/мин; intensive throttling после 5 мин) →
   порог тишины с большим запасом (3 мин) + маячок как быстрый путь.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Порог с большим запасом (у нас 3 минуты) + маячок как быстрый путь»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Порог с большим запасом (у нас 3 минуты) + маячок как быстрый путь»
 - **T5** ← Л5: сон машины останавливает таймеры обеих сторон → два страйка: первая проверка —
   подозрение, вторая решает.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Два страйка: первая проверка только помечает подозрение, вторая (такт позже) решает»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Два страйка: первая проверка только помечает подозрение, вторая (такт позже) решает»
 - **T6** ← Л6: порт входит в origin — черновик «пропадает» при новом порте → замок на документ,
   не поднимать второе окно, восстановление при загрузке (сшивка I29).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Замок на документ; не поднимать второе окно; черновик восстанавливать при загрузке»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Замок на документ; не поднимать второе окно; черновик восстанавливать при загрузке»
 - **T7** ← Л7 (+NDim §15): обратная кавычка внутри шаблонной строки сборщика роняет модуль в
   непохожем месте → внутри блока только «ёлочки», предупреждение печатать в самом файле.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Модуль падает синтаксической ошибкой в НЕПОХОЖЕМ месте»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Модуль падает синтаксической ошибкой в НЕПОХОЖЕМ месте»
 - **T8** ← Л8: самопроверка на свой же текст — фраза в комментарии уезжает на страницу вместе с
   кодом → не повторять дословно то, отсутствие чего стережёшь.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Не повторять дословно в комментариях то, отсутствие чего стережёшь»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Не повторять дословно в комментариях то, отсутствие чего стережёшь»
 - **T9** ← комм.2 §3: страж, который импортируют, не исполняется при импорте (`import.meta.url ===
   process.argv[1]`) — иначе страница убивает себя его `process.exit`.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Страж, который импортируют, не должен исполняться при импорте.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Страж, который импортируют, не должен исполняться при импорте.»
 - **T10** ← комм.2 §3: путь документа — через `resolve`, не `join`, иначе сырой стек на первом
   документе вне репозитория.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «обязан использовать `resolve`, а не `join`»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «обязан использовать `resolve`, а не `join`»
 - **T11** ← NDim §15: поиск процесса по подстроке командной строки находит сам поиск → сначала
   фильтр по имени процесса.
   — Цитата [`D:\work\ai_sandbox\ndim\researches\28_owner_reviews_contour_field_report.md`]: «сначала фильтруйте по имени процесса»
@@ -595,21 +597,21 @@ Issue #2 подтверждает их силу явно: «Инварианты
 
 - **QA1 — живая приёмка в настоящем браузере**: поднять → открыть → кликнуть → сохранить →
   ответ во всех местах, процесс завершился.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «поднять контур, открыть, кликнуть, сохранить, проверить, что ответ лёг во все места и процесс завершился»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «поднять контур, открыть, кликнуть, сохранить, проверить, что ответ лёг во все места и процесс завершился»
 - **QA2 — поведение окна на видимом окне**, отдельным прогоном (T2).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Поведение окна — на ВИДИМОМ окне»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Поведение окна — на ВИДИМОМ окне»
 - **QA3 — оба сценария «страница ушла»**: перезагрузка — контур живёт; закрытие — гаснет.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «перезагрузка (контур обязан ЖИТЬ) и закрытие (обязан ГАСНУТЬ)»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверять только второй — значит не заметить, что убиваешь живые страницы»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «перезагрузка (контур обязан ЖИТЬ) и закрытие (обязан ГАСНУТЬ)»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверять только второй — значит не заметить, что убиваешь живые страницы»
 - **QA4 — замороженный эталон разбора по живым документам** с намеренным падением на новом (G7).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Замороженный эталон разбора»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «с намеренным падением на новом документе»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Замороженный эталон разбора»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «с намеренным падением на новом документе»
 - **QA5 — доказательство мутацией**: сломанный разбор роняет прогон.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «сломанный разбор обязан ронять прогон»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверка, которую нельзя провалить, — не проверка.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «сломанный разбор обязан ронять прогон»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Проверка, которую нельзя провалить, — не проверка.»
 - **QA6 — уборка за собой**: отладочные окна и профили гасятся; владелец работает за той же
   машиной.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «отладочные окна и профили браузера гасить в конце прогона»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «отладочные окна и профили браузера гасить в конце прогона»
 - **QA7 — headless-проверка мёртвого сервера** (критерий 2 эпика): снять страницу → убить сервер
   → вписать ответ → кликнуть → прочитать DOM; эталон «после починки» бага 54: спасательный блок
   true · кнопка разблокирована true · ответ в выдаче true · черновик true · статус честный.
@@ -646,7 +648,7 @@ Issue #2 подтверждает их силу явно: «Инварианты
   — Цитата [`D:\work\ai_sandbox\ndim\tools\review.mjs`]: «Терпение бесконечно: часов нет, страница ждёт столько, сколько нужно человеку.»
   — Цитата [`D:\work\unliminiumProject\bugs\54_interview_page_hangs_and_eats_answers.md`]: «Страница спрашивает `/alive` раз в 15 секунд и говорит вслух»
   — Цитата [`D:\work\unliminiumProject\bugs\54_interview_page_hangs_and_eats_answers.md`]: «Достаточно часто, чтобы автор узнал до того, как напишет абзац»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Нейросетевой синтез: 2.5 с прогретый, до 11 с первый»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Нейросетевой синтез: 2.5 с прогретый, до 11 с первый»
 
 **Спецификация звука снята с кода (критерий 5): расхождений частот со скоупом НЕТ** — 880/660/990
 Гц подтверждены; скоуп не знал длительностей (160/160/260 мс) и порядка писков — сняты с кода и
@@ -761,20 +763,20 @@ Issue #2 подтверждает их силу явно: «Инварианты
   в `plans/27`: команда «покажи неотвеченные вопросы» — фаза K5 единым инструментом); полная
   форма «человек инициирует показ, не заходя в терминал» — **осознанный дефер** (нерешённое и у
   Nogamelabs; кандидат после полевой обкатки K5).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Окно-приложение без адресной строки: закрыл — адрес потерян, поднять заново может только агент.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «он владелец, а не оператор»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Окно-приложение без адресной строки: закрыл — адрес потерян, поднять заново может только агент.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «он владелец, а не оператор»
 - **O2 — нет «что я решил за неделю» глазами** (issue §3.4). Судьба: **осознанный дефер** —
   страница-сводка архива дешева, но не входит ни в один из трёх полевых инцидентов 🔴; кандидат
   идеи после 2.2.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Архив решений (`reviews/*.json`) пишется с `by`/`at` с самого начала, но читается только грепом.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Архив решений (`reviews/*.json`) пишется с `by`/`at` с самого начала, но читается только грепом.»
 - **O3 — первый холодный зов ~11 с** (issue §3.5). Судьба: **осознанный дефер** — писк первым
   (I33) уже закрывает паузу по канону; предзагрев — совет в C8, не требование.
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Человек слышит писк сразу, а голос через ~11 с.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Человек слышит писк сразу, а голос через ~11 с.»
 - **O4 — контур не упакован для переиспользования** (issue §3.6). Судьба: ресурсная половина —
   **требование M6** (предмет машины); половина «перенос контура между проектами» — **закрыта
   решением №34**: упаковкой становится сам исполнимый контракт K3, вендоренный в навык
   (копипаст файла инструмента не канонизируется).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «в следующий проект переносится копипастом — как переносился к нам»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «в следующий проект переносится копипастом — как переносился к нам»
 
 ---
 
@@ -796,8 +798,8 @@ Issue #2 подтверждает их силу явно: «Инварианты
     комментария 1 — выполнена этим документом).
 11. Полевые числа issue (39 фикстурных → 0 находок; 16 живых → 2 потери; 281 проверка) учтены в
     нормах приёмки как обоснование QA4 (цитируются навыком, не пересчитываются).
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Сводить лучше вместе, а не как два независимых входа.»
-  — Цитата [`ideas/ai_agents_reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «39 фикстурных проверок → 0 находок; первый прогон по 16 живым документам»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «Сводить лучше вместе, а не как два независимых входа.»
+  — Цитата [`reports/26_issue2_interactive_contour_second_report_nogamelabs.md`]: «39 фикстурных проверок → 0 находок; первый прогон по 16 живым документам»
 
 ---
 
@@ -851,7 +853,7 @@ Issue #2 подтверждает их силу явно: «Инварианты
    альтернатива (И-нумерация скоупа как канон) отвергнута: серия I уже живёт в payload-навыке.
 3. **Слияния дублей** (A1→I9, A2→I12, A3→I10+I11, A4→I13, D1→I5, C2→I14): по совпадению
    существа, зафиксированы в §10 — судья проверяет, что слияние не съело оттенков.
-4. **Снапшот issue #2** закоммичен в `ideas/ai_agents_reports/26` дословно — для проверяемости
+4. **Снапшот issue #2** закоммичен в `reports/26` дословно — для проверяемости
    цитат и офлайн-доступа будущих сессий (issue живёт только на GitHub).
 5. **Фиксация чисел DEF** внутри конверта №38 (владелец утвердил классы констант; расхождения
    источников перечислены в §9 и разрешены в пользу: буквы слова владельца → полевого консенсуса
