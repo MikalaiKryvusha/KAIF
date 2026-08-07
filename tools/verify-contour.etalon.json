@@ -1,0 +1,37 @@
+{
+  "interviews/interview_001_DONE_framework_vision.md": {
+    "questions": 0,
+    "parsedOptions": 0,
+    "candidateLines": 0
+  },
+  "interviews/interview_002_thin_kaif_and_fable_method.md": {
+    "questions": 7,
+    "parsedOptions": 0,
+    "candidateLines": 0
+  },
+  "interviews/interview_003_readme_visual_face.md": {
+    "questions": 6,
+    "parsedOptions": 0,
+    "candidateLines": 0
+  },
+  "interviews/interview_004_kaif_2.0.md": {
+    "questions": 6,
+    "parsedOptions": 0,
+    "candidateLines": 0
+  },
+  "interviews/interview_005_kaif_2.1.md": {
+    "questions": 8,
+    "parsedOptions": 0,
+    "candidateLines": 0
+  },
+  "interviews/interview_006_readme_manual.md": {
+    "questions": 2,
+    "parsedOptions": 8,
+    "candidateLines": 8
+  },
+  "interviews/interview_007_kaif_2.2.md": {
+    "questions": 15,
+    "parsedOptions": 45,
+    "candidateLines": 45
+  }
+}
