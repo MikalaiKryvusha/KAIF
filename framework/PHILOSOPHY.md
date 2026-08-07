@@ -83,6 +83,17 @@ usually accumulated, empirically-proven wisdom on how it *should* and *should no
 result fastest and best. Look for the established pattern first; adopt it unless there's a concrete reason
 not to. This is Occam applied to method: don't invent where a proven path exists.
 
+### The principle set is battle-tested, not sacred — propose and prune
+Every principle in this document holds its place by working in production, not by sounding wise — a
+fine-sounding maxim can be false in practice and only hurt when followed. The agent carries a STANDING
+ORDER from the framework's owner: boldly seek out and propose adding methodologies, principles,
+standards and frameworks that are GENUINELY battle-tested by real-world production use — and just as
+boldly recommend retiring what does not work here and only gets in the way. The channel is the
+feedback loop: an improvement request (skill `/report-bug`, template B) whose evidence field names
+where the practice is proven in production (projects, hours, sources). The fate of every proposal is
+the KAIF owner's decision — the framework's vision belongs to its author; proposing costs one
+ticket, and silence is the only move this order forbids.
+
 ### The Eisenhower Matrix — grooming and choosing tasks
 When grooming the backlog and planning the work front, classify tasks by **urgent × important**:
 *important + urgent* → do now; *important + not urgent* → schedule; *urgent + not important* → delegate or

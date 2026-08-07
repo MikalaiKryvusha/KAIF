@@ -98,6 +98,21 @@ const v13 = JSON.parse(readFileSync(join(S13, '.kaif', 'kaif.json'), 'utf8')).ve
 mkdirSync(join(S13, 'reports', 'KAIF_UPDATES'), { recursive: true });
 writeFileSync(join(S13, 'reports', 'KAIF_UPDATES', `S13_KAIF_${v13}_INSTALL_REPORT.md`),
   '# Field report: KAIF install sandbox\n\n## 4. Final state and judge verdict\nVERIFIED\n');
+// M5 (plans/51, критерий 3): эвал-ловушка дедупа — симулированный дефект с СУЩЕСТВУЮЩИМ
+// fingerprint. Семантика документированной процедуры (/report-bug: совпадение surface +
+// symptom-class = тот же сигнал → «+1 наблюдение»; версия НЕ в ключе): существующий класс
+// обязан находиться, чужой класс — нет (иначе наблюдение клеилось бы к чужому тикету).
+// Анонимный профиль: дедуп ТОЛЬКО локальный (режим 8.2) — фикстура не тянется к origin.
+mkdirSync(join(S13, 'bugs', 'KAIF'), { recursive: true });
+writeFileSync(join(S13, 'bugs', 'KAIF', '01_stale_claims_noise.md'),
+  '# KAIF bug: stale-claims scanner noise on dated journal lines\n\nkaif-fp: installer/KAIF-CORE.mjs::stale-claims :: stale-claims-noise :: v2.1\n');
+const dedupScan = (surface, cls) => readdirSync(join(S13, 'bugs', 'KAIF'))
+  .filter((f) => f.endsWith('.md'))
+  .filter((f) => { const t = readFileSync(join(S13, 'bugs', 'KAIF', f), 'utf8'); return t.includes(surface) && t.includes(cls); });
+ok(dedupScan('installer/KAIF-CORE.mjs::stale-claims', 'stale-claims-noise').length === 1,
+   'S13-M5 эвал-ловушка дедупа: существующий fingerprint НАЙДЕН по surface+class («+1 наблюдение», не новый тикет)');
+ok(dedupScan('installer/KAIF-CORE.mjs::stale-claims', 'scanner-false-green').length === 0,
+   'S13-M5 эвал-ловушка дедупа: чужой symptom-class НЕ матчится (негативный контроль — новый сигнал = новый тикет)');
 const adaptIds = [...new Set([...readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md'), 'utf8').matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
 r = run(S13, 'verify-final');

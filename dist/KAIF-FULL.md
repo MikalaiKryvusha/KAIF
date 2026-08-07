@@ -548,6 +548,16 @@ behaves — not because of this project's code:
    until an update actually retires it, and add a `STATUS.md` line if it changes how the next
    session works.
 
+**Proposing principles — a standing order.** The owner of KAIF explicitly directs deployed agents
+to bring new methodologies, principles, standards and frameworks into KAIF when they are GENUINELY
+battle-tested by real-world production use — and to recommend retiring what does not work in
+practice and only gets in the way (`PHILOSOPHY.md` → "The principle set is battle-tested, not
+sacred"). The channel is the same feedback loop: an improvement request (skill `/report-bug`,
+template B) whose field evidence names where the practice is proven (projects, hours, sources);
+the fate of every proposal is the KAIF owner's decision — the framework's vision belongs to its
+author. The frame is blameless: a weak model's failure is a signal of a missing guardrail, never
+"the model is dumb".
+
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
 human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
 agent's idea is a contribution to the product VISION → implement ONLY after the human approves.
@@ -772,6 +782,17 @@ Almost any task — or one cognitively/methodologically like it — has been sol
 usually accumulated, empirically-proven wisdom on how it *should* and *should not* be done to reach the
 result fastest and best. Look for the established pattern first; adopt it unless there's a concrete reason
 not to. This is Occam applied to method: don't invent where a proven path exists.
+
+### The principle set is battle-tested, not sacred — propose and prune
+Every principle in this document holds its place by working in production, not by sounding wise — a
+fine-sounding maxim can be false in practice and only hurt when followed. The agent carries a STANDING
+ORDER from the framework's owner: boldly seek out and propose adding methodologies, principles,
+standards and frameworks that are GENUINELY battle-tested by real-world production use — and just as
+boldly recommend retiring what does not work here and only gets in the way. The channel is the
+feedback loop: an improvement request (skill `/report-bug`, template B) whose evidence field names
+where the practice is proven in production (projects, hours, sources). The fate of every proposal is
+the KAIF owner's decision — the framework's vision belongs to its author; proposing costs one
+ticket, and silence is the only move this order forbids.
 
 ### The Eisenhower Matrix — grooming and choosing tasks
 When grooming the backlog and planning the work front, classify tasks by **urgent × important**:

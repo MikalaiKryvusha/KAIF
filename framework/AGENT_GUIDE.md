@@ -406,6 +406,16 @@ behaves — not because of this project's code:
    until an update actually retires it, and add a `STATUS.md` line if it changes how the next
    session works.
 
+**Proposing principles — a standing order.** The owner of KAIF explicitly directs deployed agents
+to bring new methodologies, principles, standards and frameworks into KAIF when they are GENUINELY
+battle-tested by real-world production use — and to recommend retiring what does not work in
+practice and only gets in the way (`PHILOSOPHY.md` → "The principle set is battle-tested, not
+sacred"). The channel is the same feedback loop: an improvement request (skill `/report-bug`,
+template B) whose field evidence names where the practice is proven (projects, hours, sources);
+the fate of every proposal is the KAIF owner's decision — the framework's vision belongs to its
+author. The frame is blameless: a weak model's failure is a signal of a missing guardrail, never
+"the model is dumb".
+
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
 human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
 agent's idea is a contribution to the product VISION → implement ONLY after the human approves.
