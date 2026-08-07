@@ -89,6 +89,9 @@ const OWNER_SEEDED = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.
 const SOURCES = { release: `${ORIGIN}/releases/latest/download`,
                   main: 'https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/dist' };
 const UPDATE_TASK = 'KAIF_UPDATE_TASK.md';
+// The owner's soft target for STATUS.md length (decision #27, 2.1): a SUMMARY of "now", not a
+// chronicle; `check` warns above this (bugs/37 — the promised guard now exists as code).
+const STATUS_SOFT_LINES = 200;
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
@@ -447,18 +450,34 @@ function newsInterval(meta, fromVersion) {
   return vers.map((v) => [`**${v}:**`, ...byVer[v].map((n) => `- ${n}`)].join('\n')).join('\n\n');
 }
 
-// The "assertion surface" scan (plan 21 §3.5, field gap П9 — Unliminium counted 12 documents
-// still asserting the OLD version after a green update, 3 of them on the public storefront):
-// any line that mentions KAIF together with the old version number and not the new one is a
-// stale claim the machinery can FIND for the agent, even in files it does not own.
+// The "assertion surface" scan (plan 21 §3.5, field gap П9; re-cut in bugs/35 — the 2.1 field
+// precision was ≈19 % and the noise trained operators to ignore the one guard written for the
+// public storefront): a stale CLAIM is the FRAMEWORK's version token ADJACENT to a framework
+// marker, outside the owner's quotes, dated journals and derivative mirrors.
 function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   if (!fromVersion || fromVersion === toVersion) return [];
-  const hits = [];
   // Knowledge directories and EXPERIENCE/HISTORY are JOURNALS OF THE PAST by definition — a line
   // "we updated to <old>" cannot be "updated to <new>" without lying; half the field scan's hits
   // were exactly that (bug 23 / ndim K5), and a noisy guard teaches the agent to ignore it.
-  const SKIP_DIRS = ['.git', 'node_modules', '.kaif', 'researches', 'interviews', 'homeworks', 'bugs', 'ideas'];
-  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs', 'EXPERIENCE.md', 'PROJECT_HISTORY.md'];
+  // Agent-system mirrors are DERIVATIVE — the machinery itself re-syncs them from the canon,
+  // yet they once ate 44 of 46 hits and the whole cap (bugs/35, KCam Г4).
+  const SKIP_DIRS = ['.git', 'node_modules', '.kaif', 'researches', 'interviews', 'homeworks', 'bugs', 'ideas',
+                     '.agents', '.grok', '.cline', '.roo'];
+  // GOAL.md and the declared canon artifacts are the OWNER's documents: the scan once proposed
+  // editing GOAL.md — a file the machinery itself declares untouchable (bugs/35, NDim гр.3).
+  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs', 'EXPERIENCE.md', 'PROJECT_HISTORY.md', 'GOAL.md'];
+  try { for (const c of readJson(KAIF_JSON).canonArtifacts || []) SKIP_FILES.push(String(c).replace(/\\/g, '/')); }
+  catch { /* no readable marker — nothing to widen */ }
+  // A claim = the version token within a few characters of the framework marker. Mere
+  // co-occurrence on one line is NOT a claim: "building Product 2.0 … KAIF leads the process"
+  // is the PRODUCT's version — a project whose own version matches a KAIF release number once
+  // turned this scanner into a false-positive generator (bugs/35, NDim гр.3).
+  const escVer = fromVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // the negative guards reject a LONGER version number ("21.6", "1.6.3", "1.60"), never a
+  // sentence period right after the token ("… KAIF 1.6." is a claim, sandbox-caught)
+  const ADJACENT = new RegExp(`(?:kaif|каиф)[^\\n]{0,16}${escVer}(?!\\d|\\.\\d)|(?<!\\d)(?<!\\d\\.)${escVer}[^\\n]{0,16}(?:kaif|каиф)`, 'i');
+  const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
+  const byFile = new Map();  // directory before the walk reached the only real public claim (KCam Г4)
   const walk = (dir) => {
     for (const n of readdirSync(dir)) {
       const p = (dir === '.' ? '' : dir + '/') + n;
@@ -473,16 +492,25 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;
       const lines = readFileSync(p, 'utf8').split('\n');
       for (let i = 0; i < lines.length; i++) {
-        if (p === 'STATUS.md' && /предыдущ|previous/i.test(lines[i])) continue;   // history, not a claim
-        if (/kaif|каиф/i.test(lines[i]) && lines[i].includes(fromVersion) && !lines[i].includes(toVersion)) {
-          hits.push(`${p}:${i + 1} — ${lines[i].trim().slice(0, 100)}`);
-          if (hits.length >= 40) return hits;
-        }
+        const line = lines[i];
+        if (!line.includes(fromVersion) || line.includes(toVersion)) continue;
+        if (/^\s*>/.test(line)) continue;          // blockquote = the owner's quoted word (bugs/35, Unlim Г5)
+        if (/\b\d{4}-\d{2}/.test(line)) continue;  // a dated record = journal/chronicle/decision row, not a claim (Unlim Г5, NDim гр.4)
+        if (p === 'STATUS.md' && /предыдущ|previous/i.test(line)) continue;   // history, not a claim
+        // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
+        // staleness (KCam Г4: rewriting them would forge it); judge the line with its
+        // parenthesized segments removed, so only unparenthesized adjacency counts as a claim.
+        if (!ADJACENT.test(line.replace(/\([^)]*\)/g, ''))) continue;
+        if (!byFile.has(p)) byFile.set(p, []);
+        byFile.get(p).push(`${p}:${i + 1} — ${line.trim().slice(0, 100)}`);
       }
     }
-    return hits;
   };
   try { walk('.'); } catch { /* best-effort scan */ }
+  const files = [...byFile.keys()];
+  const hits = files.slice(0, CAP_FILES).flatMap((p) => byFile.get(p));
+  if (files.length > CAP_FILES)   // honest truncation: "shown N of M", never a silent cut (KCam Г4)
+    hits.push(`shown ${CAP_FILES} of ${files.length} file(s) with hits — fix these, then re-run the scan (checkpoint stale-claims re-runs it)`);
   return hits;
 }
 
@@ -530,11 +558,14 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below)` : p).join(' · ')}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
-  if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
   // New templates may arrive carrying deploy-time slots the machinery cannot fill (bug 28: the
   // update used to learn about them only when the FINAL gate failed, after "I'm done").
   if (unresolved.length) items.push(['placeholders', `New templates carry deploy-time slots the machinery could not fill — fill each in the canonical .claude/skills/ copy (mirrors re-sync at update-verify): ${unresolved.join(' · ')}`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
+  // stale-claims comes AFTER review-news: the news carry the history-migration instruction, and
+  // the scan once flagged the very STATUS lines that migration moves two items later (bugs/35,
+  // NDim гр.4); the checkpoint re-runs the scanner, so the post-migration state is what counts.
+  if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — after the history migration from the news above, update each or state why it is correct:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real), then run `node .kaif/kaif-core.mjs update-verify`.']);
   const news = newsInterval(meta, fromVersion);
@@ -1110,7 +1141,13 @@ function scanPlaceholders() {
   for (const base of ['.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills'])
     if (existsSync(base)) for (const n of readdirSync(base)) { const p = `${base}/${n}/SKILL.md`; if (existsSync(p)) scan.add(p); }
   if (existsSync('.roo/commands')) for (const n of readdirSync('.roo/commands').filter((f) => f.endsWith('.md'))) scan.add(`.roo/commands/${n}`);
-  if (existsSync('.kaif/spheres')) for (const n of readdirSync('.kaif/spheres').filter((f) => f.endsWith('.md'))) scan.add(`.kaif/spheres/${n}`);
+  // Sphere libraries: only the DECLARED sphere is a working surface — the others are reference
+  // libraries that carry template slots BY DESIGN (bugs/36, Unlim Г11: a literal <BUILD_COMMAND>
+  // in a FOREIGN sphere's library blocked the whole acceptance).
+  try {
+    const declared = readJson(KAIF_JSON).sphere;
+    if (declared && declared !== 'TODO' && okOnDisk(`.kaif/spheres/${declared}.md`)) scan.add(`.kaif/spheres/${declared}.md`);
+  } catch { /* no readable marker — no sphere surface to scan */ }
   for (const p of scan) {
     const t = readFileSync(p, 'utf8');
     for (const ph of PLACEHOLDERS) if (t.includes(ph)) { console.error(`✖ placeholder ${ph} still in ${p}`); issues++; }
@@ -1335,22 +1372,41 @@ function moduleAudit() {
   if (!okOnDisk(DEPLOY_MANIFEST)) return;
   let m; try { m = readJson(DEPLOY_MANIFEST); } catch { return; }
   if (!m.moduleShas) return;
-  let identical = 0, differs = 0, absent = 0, ours = 0;
+  // i18n: translated (bugs/36): a wholesale-translated file matches NO template signature BY
+  // CONSTRUCTION — 218/290/216 "MODULE ABSENT" lines in three field projects were 100 % false
+  // and indistinguishable from a real loss ("teaches the operator to ignore the audit"). A file
+  // whose absences coincide with a body in the owner's script is classified `localized`;
+  // absence in a file that stayed English remains a REAL loss and stays visible.
+  let script = null;
+  try { const j = readJson(KAIF_JSON); if (String(j.i18n || '').toLowerCase() === 'translated') script = SCRIPTS[String(j.language || '').toLowerCase()] || null; }
+  catch { /* marker unreadable — the audit stays literal */ }
+  let identical = 0, differs = 0, absent = 0, ours = 0, localized = 0;
   const lines = [];
   for (const [p, mods] of Object.entries(m.moduleShas)) {
     if (!okOnDisk(p)) continue;
-    const disk = splitModules(normEol(readFileSync(p, 'utf8')));
+    const raw = readFileSync(p, 'utf8');
+    const disk = splitModules(normEol(raw));
     const diskBySig = new Map(disk.map((d) => [d.signature, normSha(modText(d))]));
-    let fileClean = true;
+    let fileClean = true, absentInFile = 0;
+    const fileLines = [];
     for (const e of mods) {
       const got = diskBySig.get(e.signature);
-      if (got === undefined) { absent++; fileClean = false; lines.push(`  MODULE ABSENT: ${p} :: ${e.signature} (${e.class})`); }
+      if (got === undefined) { absentInFile++; fileClean = false; fileLines.push(`  MODULE ABSENT: ${p} :: ${e.signature} (${e.class})`); }
       else if (got !== e.sha256) { differs++; fileClean = false; }
     }
-    for (const d of disk) if (!mods.some((e) => e.signature === d.signature)) { ours++; fileClean = false; }
+    if (absentInFile && script && script.test(raw)) {
+      // the owner's script on disk + template signatures gone = a translation, not a loss;
+      // its own headings are the translation itself, so they are not counted as "yours" either
+      localized++;
+      lines.push(`  localized: ${p} — translated wholesale, by-signature comparison not applicable (${absentInFile} template signature(s) absent by construction)`);
+    } else {
+      absent += absentInFile;
+      lines.push(...fileLines);
+      for (const d of disk) if (!mods.some((e) => e.signature === d.signature)) { ours++; fileClean = false; }
+    }
     if (fileClean) identical++;
   }
-  log(`module audit: ${identical} files match their deployed cut; ${differs} modules differ, ${absent} template modules absent, ${ours} modules are yours`);
+  log(`module audit: ${identical} files match their deployed cut; ${differs} modules differ, ${absent} template modules absent, ${ours} modules are yours${localized ? `, ${localized} file(s) localized (translated — not a defect)` : ''}`);
   for (const l of lines.slice(0, 10)) log(l);
   if (absent) log('  (an ABSENT template module usually means its signature drifted — see bug 26; eyeball the file)');
  } catch (e) { log(`⚠ module audit skipped: ${e.message}`); }
@@ -1691,6 +1747,14 @@ function cmdCheck() {
     if (drifted) console.error(`⚠ ${drifted} mirror copies lag the canon${drifted > 3 ? ` (${drifted - 3} more not listed)` : ''} — normal until re-sync; run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
   }
   warnSphereLibrary();
+  // The STATUS soft-length guard (bugs/37, decision #27): the 2.1 release PROMISED a warning at
+  // the ~200-line soft target and shipped prose only — field STATUS files grew to 1647/1928
+  // lines because "there was no one to warn". A warning, never a failure.
+  if (okOnDisk('STATUS.md')) {
+    const n = readFileSync('STATUS.md', 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
+    if (n > STATUS_SOFT_LINES)
+      console.error(`⚠ STATUS.md: ${n} lines against the soft target of ~${STATUS_SOFT_LINES} — time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat rules)`);
+  }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }
 
