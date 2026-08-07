@@ -18,9 +18,14 @@
 //   I31 — запускать ОТСЛЕЖИВАЕМОЙ фоновой задачей; I32 — зов не блокирует контур (async-цепочка);
 //   I33/I34 — писки 880/660/990 через звуковую карту ПЕРВЫМИ, доставка не доказывается exit-кодом;
 //   I35/I36 — голос честно падает на системный; текст в синтезатор ФАЙЛОМ, команда ASCII;
+//   I37 — класс «сообщение» (--notice): зовёт как вопрос, но ответа не ждёт; пометка «прочитано» —
+//        ШТАТНЫЙ исход (код 0), а не «закрыто без ответа»;
+//   I38 — доставлено = ЯВНАЯ пометка человека; без пометки сообщение НЕ доставлено и повторно
+//        показывается в каждой следующей пачке (повторная доставка — долг агента);
 //   M8  — рендер без показа печатает «RENDER IS NOT YET A SHOW» + готовую команду открытия.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { createServer } from 'node:http';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative } from 'node:path';
@@ -52,6 +57,30 @@ const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130; // I25: три исхода
 const QUEUE_FILE = 'interviews/decisions/queue.json'; // I7: очередь — файл состояния
 const TMP_DIR = 'tools/.review-tmp';
+// Класс «сообщение» (I37/I38; идея 21 → задача T10). Строки — именованные константы: их
+// стережёт селфтест, и совпадение по случайной подстроке недопустимо (норма стражей).
+const KIND_NOTICE = 'notice';                             // машинное имя класса в очереди и записи
+const NOTICE_KIND_LABEL = 'сообщение';                    // человеку — на языке владельца
+const NOTICE_READ_LABEL = 'ОК, прочитано';                // ЯВНАЯ пометка (слово владельца, №009 Q1)
+const NOTICE_GROUP_TITLE = 'Сообщения — ответа не ждут';  // заголовок группы ПОД вопросами (№009 Q2)
+const NOTICE_NO_ANSWER_NOTE = 'ответа не ждёт';           // и в фразе зова, и в чипсе страницы
+
+// ── Фраза зова — ЧИСТАЯ функция (её содержание стережёт селфтест, а не наблюдение на слух) ──
+// Человек решает «идти сейчас или после дела» ДО чтения страницы, поэтому фраза называет КЛАСС
+// и ЧИСЛА. Сообщения зовут так же громко, как вопросы (№009 Q3 = B) — различает не громкость,
+// а слова «ответа не ждёт».
+export function callPhrase(ctx) {
+  if (ctx.notice) // строка класса — ИЗ константы: у чипса страницы и у голоса одна правда
+    return 'Криник, ' + NOTICE_KIND_LABEL + ' КАИФ: «' + ctx.title + '» — ' +
+      NOTICE_NO_ANSWER_NOTE + ', только прочитать. Страница открыта.';
+  if (ctx.batch) {
+    const parts = ['документов ' + ctx.nDocs, 'вопросов без ответа ' + ctx.nQuestions];
+    if (ctx.nNotices > 0) parts.push('сообщений непрочитанных ' + ctx.nNotices);
+    return 'Криник, накопилось в КАИФ: ' + parts.join(', ') + '. Страница открыта.';
+  }
+  return 'Криник, ' + ctx.kind + ' «' + ctx.title + '» ждёт вычитки' +
+    (ctx.nWait ? ': вопросов без ответа ' + ctx.nWait : '') + '. Страница открыта.';
+}
 
 // ── Сигнал (C8/I33): писк → консоль → голос; тихие часы поверх всего (I6) ──────────────────
 export function signalCall(root, rawPhrase, { quiet = inQuietHours(), log = console.log } = {}) {
@@ -99,22 +128,56 @@ export function writeQueue(root, items) {
   mkdirSync(resolve(root, DECISIONS_DIR), { recursive: true });
   writeFileSync(resolve(root, QUEUE_FILE), JSON.stringify(items, null, 2) + '\n', 'utf8');
 }
-export function enqueue(root, docPath) {
+const relDoc = (root, docPath) => relative(root, resolve(root, docPath)).replace(/\\/g, '/');
+export const isNoticeItem = (item) => item.kind === KIND_NOTICE; // позиции без kind — вопросы (легаси)
+
+export function enqueue(root, docPath, { kind = 'question' } = {}) {
   const items = readQueue(root);
-  const rel = relative(root, resolve(root, docPath)).replace(/\\/g, '/');
-  if (!items.some((i) => i.doc === rel)) {
-    items.push({ doc: rel, addedAt: provenance().at });
-    writeQueue(root, items);
+  const rel = relDoc(root, docPath);
+  const found = items.find((i) => i.doc === rel);
+  if (found) {
+    // Повторный зов сообщения по тому же документу — НОВАЯ доставка: пометка «прочитано»
+    // снимается, иначе агент не смог бы сообщить дважды по одному живому отчёту (I38).
+    if (kind === KIND_NOTICE) {
+      found.kind = KIND_NOTICE;
+      delete found.readAt;
+      found.addedAt = provenance().at;
+      writeQueue(root, items);
+    }
+    return items;
   }
+  items.push({ doc: rel, kind, addedAt: provenance().at });
+  writeQueue(root, items);
   return items;
 }
 
-// Все документы с неотвеченными вопросами: скан interviews/ (живые документы на местах) + очередь.
+// I38: пометка «прочитано» — ЕДИНСТВЕННОЕ доказательство доставки; живёт в файле состояния
+// очереди, а не в теле документа (тело — контент владельца, пометка — состояние контура).
+export function markNoticeRead(root, docPath, now = new Date()) {
+  const items = readQueue(root);
+  const item = items.find((i) => i.doc === relDoc(root, docPath) && isNoticeItem(i));
+  if (!item) return false;
+  item.readAt = provenance(now).at;
+  writeQueue(root, items);
+  return true;
+}
+
+// Непрочитанные сообщения: копятся в той же очереди (№009 Q2), показываются отдельной группой.
+export function pendingNotices(root) {
+  return readQueue(root)
+    .filter((i) => isNoticeItem(i) && !i.readAt && existsSync(resolve(root, i.doc)))
+    .map((i) => ({ doc: i.doc, addedAt: i.addedAt }));
+}
+
+// Все документы с неотвеченными ВОПРОСАМИ: скан interviews/ (живые документы на местах) + очередь.
+// Сообщения сюда не попадают ни одним путём — у них своя группа (иначе отчёт-сообщение,
+// положенный в interviews/, показался бы дважды и в чужом классе).
 export function pendingDocs(root) {
+  const noticeDocs = new Set(readQueue(root).filter(isNoticeItem).map((i) => i.doc));
   const seen = new Set();
   const out = [];
   const push = (rel) => {
-    if (seen.has(rel) || !existsSync(resolve(root, rel))) return;
+    if (seen.has(rel) || noticeDocs.has(rel) || !existsSync(resolve(root, rel))) return;
     seen.add(rel);
     const md = readFileSync(resolve(root, rel), 'utf8');
     const unanswered = parseQuestions(md).filter((q) => !q.answered);
@@ -124,7 +187,7 @@ export function pendingDocs(root) {
   if (existsSync(ivDir))
     for (const f of readdirSync(ivDir).filter((x) => /^interview_\d+.*\.md$/.test(x)).sort())
       push('interviews/' + f);
-  for (const item of readQueue(root)) push(item.doc);
+  for (const item of readQueue(root)) if (!isNoticeItem(item)) push(item.doc);
   return out;
 }
 
@@ -190,30 +253,66 @@ export function buildPage(root, docPath) {
   return { html, questions, docHash, kind, title, rel };
 }
 
+// Заголовок документа: метаблок → первый H1 → имя файла (одна лестница на все формы страниц).
+function docTitle(md, docPath, meta = parseMetaBlock(md)) {
+  return (meta && meta.title) || (normalize(md).match(/^#\s+(.+)$/m) || [])[1] || basename(docPath);
+}
+
+// I37: страница-СООБЩЕНИЕ — тело документа целиком, поле комментария и ЯВНАЯ пометка «прочитано».
+// Вопросов здесь нет по построению: класс существует ровно для того, чтобы ничего не спрашивать.
+export function buildNoticePage(root, docPath) {
+  const md = readFileSync(resolve(root, docPath), 'utf8');
+  const rel = relDoc(root, docPath);
+  const title = docTitle(md, docPath);
+  const html = pageShell({
+    title, kind: NOTICE_KIND_LABEL,
+    heading: '<span class="kind">' + NOTICE_KIND_LABEL + '</span><span>' + esc(title) + '</span>' +
+      ' <span class="tag notice">' + NOTICE_NO_ANSWER_NOTE + '</span>',
+    main: '<div class="doc">' + renderMd(md) + '</div>' + noticeCommentBlock(rel),
+    questions: [], notices: [rel], noticeDoc: rel,
+  });
+  return { html, questions: [], docHash: bodyHash(md), kind: NOTICE_KIND_LABEL, title, rel };
+}
+
 // Пачечная страница «Накопилось N» (I7): карточка на документ, ссылка = имя документа;
 // запись по ОДНОМУ документу закрывает контур (I8) — остаток пачки перезапускает агент.
-export function buildQueuePage(root, docs) {
+// Сообщения (I37) идут ОТДЕЛЬНОЙ ГРУППОЙ СТРОГО ПОД вопросами: вопросы блокируют работу,
+// сообщения нет — порядок на странице и есть это различие, показанное человеку (№009 Q2).
+export function buildQueuePage(root, docs, notices = pendingNotices(root)) {
   const groups = docs.map(({ doc }) => {
     const page = buildPage(root, doc);
     const pending = page.questions.filter((q) => !q.answered);
     return { doc, title: page.title, kind: page.kind, pending };
   });
   const total = groups.reduce((s, g) => s + g.pending.length, 0);
-  const main = groups.map((g) =>
+  const questionsMain = groups.map((g) =>
     '<section class="group"><h2>' + esc(g.title) + ' <small class="kind">' + esc(g.doc) + '</small></h2>' +
     (g.pending.map((q) => qCard(q)).join('\n') || '<p>Неотвеченных вопросов нет — документ ждёт статусом.</p>') +
     docCommentBlock(g.doc) +
     '<p><button type="button" class="savedoc" data-doc="' + esc(g.doc) + '">Записать решения по этому документу</button></p>' +
     '</section>').join('\n<hr>\n');
+  const noticesMain = notices.length
+    ? '\n<hr>\n<h2 class="noticehead">' + NOTICE_GROUP_TITLE + ' (' + notices.length + ')</h2>\n' +
+      notices.map(({ doc }) => {
+        const md = readFileSync(resolve(root, doc), 'utf8');
+        return '<section class="group notice"><h3>' + esc(docTitle(md, doc)) +
+          ' <small class="kind">' + esc(doc) + '</small></h3>' +
+          '<div class="doc">' + renderMd(md) + '</div>' + noticeCommentBlock(doc) +
+          '<p><button type="button" class="savedoc" data-doc="' + esc(doc) + '">' +
+          NOTICE_READ_LABEL + '</button></p></section>';
+      }).join('\n<hr>\n')
+    : '';
   const questions = groups.flatMap((g) => g.pending);
+  const counts = docs.length + notices.length + ' документ(ов) · ' + total + ' неотвеченных вопрос(ов)' +
+    (notices.length ? ' · ' + notices.length + ' непрочитанных сообщени(й)' : '');
   const html = pageShell({
-    title: 'Накопилось: ' + docs.length + ' документ(ов), ' + total + ' вопрос(ов)',
+    title: 'Накопилось: ' + counts,
     kind: 'очередь',
-    heading: '<span class="kind">очередь</span><span>Накопилось: ' + docs.length +
-      ' документ(ов) · ' + total + ' неотвеченных вопрос(ов)</span>',
-    main, questions, batch: true,
+    heading: '<span class="kind">очередь</span><span>Накопилось: ' + counts + '</span>',
+    main: questionsMain + noticesMain, questions, batch: true,
+    notices: notices.map((n) => n.doc),
   });
-  return { html, questions, total };
+  return { html, questions, total, notices: notices.length };
 }
 
 const esc = (s) => String(s).replace(/</g, '&lt;');
@@ -221,6 +320,14 @@ const docCommentBlock = (rel) =>
   '<h3>Комментарий по документу целиком</h3>' + // P7: легитимный исход вычитки сам по себе
   '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="3" ' +
   'placeholder="Можно без ответов — просто сказать (запишется датированным блоком в конец документа)"></textarea></p>';
+
+// I37: у сообщения поле комментария НЕОБЯЗАТЕЛЬНО — заполненное уходит в документ вместе с
+// пометкой, пустое законно (нажатая кнопка «ОК, прочитано» и есть пометка, №009 Q1).
+const noticeCommentBlock = (rel) =>
+  '<h3>Комментарий (по желанию)</h3>' +
+  '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="3" ' +
+  'placeholder="Можно ничего не писать — достаточно пометки «' + NOTICE_READ_LABEL +
+  '»; написанное ляжет датированным блоком в конец документа"></textarea></p>';
 
 function qCard(q) {
   // Язык интерфейса = язык владельца (слово владельца, пилот 008): интервью на русском —
@@ -253,11 +360,12 @@ function qCard(q) {
     existing + opts + inputs + '</section>';
 }
 
-function pageShell({ title, kind, heading, main, questions, batch = false }) {
+function pageShell({ title, kind, heading, main, questions, batch = false, notices = [], noticeDoc = null }) {
   const qjson = JSON.stringify(questions).replace(/</g, '\\u003c');
   const cfg = JSON.stringify({
     batch, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
-    draftKey: 'owner-review:' + (batch ? 'queue' : (questions[0] && questions[0].doc) || title),
+    notices, // I37: документы этого класса шлют пометку «прочитано», а не ответы
+    draftKey: 'owner-review:' + (batch ? 'queue' : (questions[0] && questions[0].doc) || noticeDoc || title),
   }).replace(/</g, '\\u003c');
   // P5: обе темы через prefers-color-scheme, цвета — переменные; контраст заложен в парах.
   const css = `
@@ -286,6 +394,10 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
   .qcard.done .addcomment { opacity:1 }
   .tag { font-size:12px; padding:2px 8px; border-radius:99px; color:#fff } /* P2 */
   .tag.wait { background:var(--wait) } .tag.done { background:var(--done) } .tag.you { background:var(--you) }
+  /* I37: сообщение — свой чип и своя группа; полоса слева нейтральная (не «ждёт вас») */
+  .tag.notice { background:var(--muted) }
+  .noticehead { margin-top:28px; padding-top:10px; border-top:2px solid var(--line) }
+  .group.notice { border-left:5px solid var(--muted); border-radius:10px; padding-left:14px }
   /* Полевые правки пилота 008: радио большие и выразительные; текст варианта на одной линии
      с кнопкой (маргины абзацев внутри флекса роняли текст ниже кнопки — «вёрстка разъехалась») */
   .opt { display:flex; gap:12px; align-items:flex-start; margin:10px 0; cursor:pointer }
@@ -350,8 +462,11 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
     "function enableButtons(on){var bs=document.querySelectorAll('button');",
     " for(var i=0;i<bs.length;i++)bs[i].disabled=!on}",
     "var saved=false,closeTimer=null,lastPayload=null;",
-    "function doSave(doc){var p=collect(doc);lastPayload=p;",
-    " if(Object.keys(p.answers).length===0&&!(p.comment||'').trim()){status('Нечего записывать: ни ответа, ни комментария','err');return}",
+    // I37: сообщение помечается прочитанным и БЕЗ единого заполненного поля — пустая пометка
+    // здесь законна, поэтому проверка «нечего записывать» её не касается.
+    "function isNotice(doc){var n=CFG.notices||[];for(var i=0;i<n.length;i++)if(n[i]===doc)return true;return false}",
+    "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;lastPayload=p;",
+    " if(!p.read&&Object.keys(p.answers).length===0&&!(p.comment||'').trim()){status('Нечего записывать: ни ответа, ни комментария','err');return}",
     " enableButtons(false);status('Записываю…');",
     " fetch('/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})",
     " .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})",
@@ -383,10 +498,15 @@ function pageShell({ title, kind, heading, main, questions, batch = false }) {
   ].join('\n');
 
   const singleDoc = !batch && questions[0] ? questions[0].doc : null;
-  const saveBar = batch
-    ? '<div class="bar"><div id="status">Кнопка записи — у каждого документа своя; запись закрывает контур, остаток пачки агент поднимет снова (I8).</div></div>'
-    : '<div class="bar"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">Записать решение</button>' +
-      '<div id="status">Ответы уйдут в документ, решение — в ' + DECISIONS_DIR + '/</div></div>';
+  // Одиночное сообщение: в липкой полосе — та самая ЯВНАЯ пометка (длинный отчёт прокручивают,
+  // и кнопка обязана оставаться на виду); в пачке кнопка своя у каждого сообщения.
+  const saveBar = noticeDoc
+    ? '<div class="bar"><button id="save" type="button" data-doc="' + esc(noticeDoc) + '">' + NOTICE_READ_LABEL + '</button>' +
+      '<div id="status">Ответа не ждёт. Без пометки сообщение считается НЕ доставленным и придёт снова.</div></div>'
+    : batch
+      ? '<div class="bar"><div id="status">Кнопка записи — у каждого документа своя; запись закрывает контур, остаток пачки агент поднимет снова (I8).</div></div>'
+      : '<div class="bar"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">Записать решение</button>' +
+        '<div id="status">Ответы уйдут в документ, решение — в ' + DECISIONS_DIR + '/</div></div>';
 
   return '<!doctype html>\n<html lang="ru"><head><meta charset="utf-8">' +
     '<title>' + PROJECT_NAME + ' · ' + esc(title) + '</title>' +
@@ -425,10 +545,11 @@ function checkLock(root, key) {
 }
 
 // ── Сервер: поднять → показать → позвать → ждать → записать → умереть (I8) ─────────────────
-export function serveContour(root, { docPath = null, batch = false }, opts = {}) {
+export function serveContour(root, { docPath = null, batch = false, notice = false }, opts = {}) {
   const { open = true, signal = true, timeoutMs = 0, log = console.log } = opts; // I9: дефолт 0 — без таймаута
   return new Promise((resolveP) => {
-    const build = () => batch ? buildQueuePage(root, pendingDocs(root)) : buildPage(root, docPath);
+    const build = () => batch ? buildQueuePage(root, pendingDocs(root))
+      : notice ? buildNoticePage(root, docPath) : buildPage(root, docPath);
     const first = build();
     const lockKey = batch ? '_queue' : basename(docPath);
     const held = checkLock(root, lockKey);
@@ -439,6 +560,13 @@ export function serveContour(root, { docPath = null, batch = false }, opts = {})
     }
     let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0;
     const startedAt = Date.now();
+    // I38: у сообщения «закрыто без пометки» — это НЕ отказ и НЕ отсутствие ответа, а НЕ
+    // ДОСТАВЛЕНО; исход обязан называть это своим именем, иначе лог врёт следующей сессии.
+    const noticeMode = notice && !batch;
+    const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
+    const unreadSuffix = noticeMode
+      ? ' Сообщение НЕ доставлено (нет пометки «' + NOTICE_READ_LABEL + '», I38) — повторю в следующей пачке.'
+      : '';
     const server = createServer((req, res) => {
       const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
       if (req.method === 'GET' && req.url === '/') {
@@ -455,6 +583,22 @@ export function serveContour(root, { docPath = null, batch = false }, opts = {})
           try { // I10: любой отказ — громкий, с причиной на страницу
             const payload = JSON.parse(body);
             const doc = batch ? payload.doc : relative(root, resolve(root, docPath)).replace(/\\/g, '/');
+            // Класс определяет СЕРВЕР по файлу состояния (клиентскому флагу верим только как
+            // подсказке): пометка сообщения не должна зависеть от того, что прислала страница.
+            const asNotice = (notice && !batch) || readQueue(root).some((i) => i.doc === doc && isNoticeItem(i));
+            if (asNotice) { // I37: пометка «прочитано» — ШТАТНЫЙ исход, код 0
+              const record = recordDecision(root, doc, { kind: KIND_NOTICE, comment: payload.comment });
+              markNoticeRead(root, doc); // I38: доставка доказывается пометкой, и только ею
+              const withComment = record.comment ? ' + комментарий' : '';
+              ok({ ok: true, written: NOTICE_KIND_LABEL + ' прочитано: ' + doc + withComment });
+              outcome = 'notice read';
+              const restN = pendingNotices(root).length;
+              log('Исход: ' + NOTICE_KIND_LABEL + ' прочитано (' + doc + ', by ' + record.by + withComment +
+                ') — завершаю контур (I8).' +
+                (restN > 0 ? ' Непрочитанных сообщений осталось: ' + restN + ' — перезапуск пачки за агентом.' : ''));
+              setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED);
+              return;
+            }
             const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment });
             const nAns = Object.keys(record.answers || {}).length;
             ok({ ok: true, written: doc + ' + decision.json + архив (' + nAns + ' ответ(ов))' });
@@ -477,8 +621,8 @@ export function serveContour(root, { docPath = null, batch = false }, opts = {})
           if (outcome) return; // уже записано — смерть по расписанию DEF3
           if (beaconTimer) clearTimeout(beaconTimer);
           beaconTimer = setTimeout(() => { // T3: ~3 с — вернётся ли страница после перезагрузки
-            outcome = 'page closed without an answer';
-            log('Исход: страница закрыта без ответа — завершаю контур (I14, быстрый путь маячка).');
+            outcome = unreadOutcome();
+            log('Исход: страница закрыта без ответа — завершаю контур (I14, быстрый путь маячка).' + unreadSuffix);
             finish(EXIT_CLOSED);
           }, BEACON_RELOAD_GRACE_MS);
         });
@@ -490,14 +634,14 @@ export function serveContour(root, { docPath = null, batch = false }, opts = {})
       if (Date.now() - lastAlive > SILENCE_THRESHOLD_MS) {
         strikes += 1; // первый страйк — только подозрение; решает второй, тиком позже
         if (strikes >= SILENCE_STRIKES_TO_DIE) {
-          outcome = 'page closed without an answer';
-          log('Исход: страница молчит дольше порога (' + (SILENCE_THRESHOLD_MS / 60000) + ' мин, два страйка) — завершаю контур (I14, тишина-вахта).');
+          outcome = unreadOutcome();
+          log('Исход: страница молчит дольше порога (' + (SILENCE_THRESHOLD_MS / 60000) + ' мин, два страйка) — завершаю контур (I14, тишина-вахта).' + unreadSuffix);
           finish(EXIT_CLOSED);
         }
       } else strikes = 0;
       if (timeoutMs > 0 && Date.now() - startedAt > timeoutMs) { // DEF5: только автоматизация
-        outcome = 'page closed without an answer';
-        log('Исход: терпимая ТИШИНА исчерпана (--timeout, только для автоматизации; это не дедлайн на раздумья) — завершаю.');
+        outcome = unreadOutcome();
+        log('Исход: терпимая ТИШИНА исчерпана (--timeout, только для автоматизации; это не дедлайн на раздумья) — завершаю.' + unreadSuffix);
         finish(EXIT_CLOSED);
       }
     }, SILENCE_TICK_MS);
@@ -519,19 +663,73 @@ export function serveContour(root, { docPath = null, batch = false }, opts = {})
       log('Страница поднята: ' + url + (batch ? ' (очередь)' : ' (' + first.title + ')'));
       if (open) log('Окно: ' + openWindow(url)); // показ — действие агента (I15)
       if (signal) { // I5: зов — ПОСЛЕ поднявшейся страницы; I32: не блокирует контур
-        // Фраза называет тип, имя и ЧИСЛО вопросов без ответа (урок KLAS: человек решает
-        // «идти сейчас или после дела» ДО чтения страницы).
         const nWait = first.questions ? first.questions.filter((q) => !q.answered).length : 0;
-        const phrase = batch
-          ? 'Криник, накопились вопросы КАИФ: документов ' + pendingDocs(root).length +
-            ', вопросов без ответа ' + (first.total || 0) + '. Страница открыта.'
-          : 'Криник, ' + first.kind + ' «' + first.title + '» ждёт вычитки' +
-            (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.';
-        signalCall(root, phrase, { log });
+        signalCall(root, callPhrase({
+          batch, notice: noticeMode, kind: first.kind, title: first.title, nWait,
+          nDocs: batch ? pendingDocs(root).length + (first.notices || 0) : 1,
+          nQuestions: first.total || 0, nNotices: first.notices || 0,
+        }), { log });
       }
       serveContour._onUp && serveContour._onUp(url); // хук для QA-прогона
     });
   });
+}
+
+// ── Селфтест класса «сообщение» (I37/I38) — машина состояний и порядок групп ────────────────
+// Стережёт ровно то, что нельзя увидеть глазами на живой странице: пометка «прочитано» как
+// ШТАТНЫЙ исход, отсутствие пометки как «не доставлено», и позицию группы сообщений ПОД
+// вопросами (порядок доказывается индексом в HTML, а не впечатлением от скриншота).
+export function selftest() {
+  let n = 0, bad = 0;
+  const ok = (cond, name) => { n++; if (!cond) { bad++; console.log('✗ ' + name); } else console.log('✓ ' + name); };
+  const root = mkdtempSync(join(tmpdir(), 'kaif-notice-'));
+  mkdirSync(join(root, 'interviews'), { recursive: true });
+  mkdirSync(join(root, 'reports'), { recursive: true });
+  const IV = 'interviews/interview_001_selftest.md';
+  writeFileSync(join(root, IV),
+    '# Interview #001 — свод\n\n> Status: **🟡 awaiting**\n\n### Q1. Вопрос?\n\n' +
+    '- **A) (Рекомендовано)** первый\n- **B)** второй\n\n**Answer:**\n', 'utf8');
+  const NOTICE = 'reports/notice_selftest.md';
+  writeFileSync(join(root, NOTICE), '# Отчёт ночного цикла\n\nЗакрыто три пункта беклога.\n', 'utf8');
+
+  // 1. Регистрация сообщения: своя группа, и НИ ОДНОГО пересечения с классом вопросов
+  enqueue(root, NOTICE, { kind: KIND_NOTICE });
+  ok(pendingNotices(root).length === 1, 'сообщение зарегистрировано и числится непрочитанным');
+  ok(!pendingDocs(root).some((d) => d.doc === NOTICE), 'сообщение НЕ попадает в группу вопросов');
+  ok(pendingDocs(root).some((d) => d.doc === IV), 'документ с вопросом по-прежнему виден как вопрос');
+
+  // 2. Форма страницы сообщения: пометка есть, выбора вариантов нет по построению
+  const page = buildNoticePage(root, NOTICE);
+  ok(page.html.includes(NOTICE_READ_LABEL), 'страница-сообщение несёт пометку «' + NOTICE_READ_LABEL + '»');
+  ok(!page.html.includes('type="radio"'), 'страница-сообщение не предлагает выбор варианта (ответа не ждёт)');
+  ok(page.html.includes('Закрыто три пункта беклога'), 'тело сообщения отрисовано (читать есть что)');
+
+  // 3. Порядок групп: сообщения СТРОГО ПОД вопросами (№009 Q2)
+  const q = buildQueuePage(root, pendingDocs(root));
+  const lastCard = q.html.lastIndexOf('class="qcard');
+  const noticeHead = q.html.indexOf(NOTICE_GROUP_TITLE);
+  ok(lastCard >= 0 && noticeHead > lastCard, 'в пачке группа сообщений идёт ПОД последней карточкой вопроса');
+  ok(q.notices === 1 && q.total === 1, 'пачка считает оба класса раздельно (вопросов 1, сообщений 1)');
+
+  // 4. Пометка «прочитано» — штатный исход; без пометки сообщение остаётся недоставленным (I38)
+  ok(markNoticeRead(root, NOTICE) === true, 'пометка «прочитано» проставлена');
+  ok(pendingNotices(root).length === 0, 'прочитанное сообщение уходит из очереди повторной доставки');
+  ok(readQueue(root).some((i) => i.doc === NOTICE && i.readAt), 'пометка доказуема полем readAt в файле состояния');
+  enqueue(root, NOTICE, { kind: KIND_NOTICE }); // новый повод сообщить по тому же документу
+  ok(pendingNotices(root).length === 1, 'повторный зов по тому же документу снимает старую пометку');
+
+  // 5. Фраза зова называет класс и числа (человек решает «идти сейчас?» ДО чтения страницы)
+  ok(callPhrase({ notice: true, title: 'Отчёт' }).includes(NOTICE_NO_ANSWER_NOTE),
+    'фраза сообщения говорит «' + NOTICE_NO_ANSWER_NOTE + '»');
+  const batchPhrase = callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 });
+  ok(batchPhrase.includes('вопросов без ответа 1') && batchPhrase.includes('сообщений непрочитанных 1'),
+    'фраза пачки называет ОБА числа раздельно');
+  ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }).includes('сообщений'),
+    'без сообщений фраза пачки о них не заикается');
+
+  rmSync(root, { recursive: true, force: true });
+  console.log(bad ? 'СЕЛФТЕСТ КРАСНЫЙ: ' + bad + ' из ' + n : 'селфтест класса «сообщение» зелёный: ' + n + ' проверок');
+  if (bad) process.exit(1);
 }
 
 // ── Точка входа (T9) ───────────────────────────────────────────────────────────────────────
@@ -545,16 +743,27 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     signal: !args.includes('--silent'),
     timeoutMs: Number(opt('--timeout') || 0) * 1000, // I9: дефолт 0 — терпение машины бесконечно
   };
+  const asNotice = args.includes('--notice'); // I37: класс «сообщение»
+  if (args.includes('--selftest')) { selftest(root); process.exit(0); }
   if (args.includes('--enqueue')) { // I7: очередь — файл состояния; документ остаётся на месте
-    if (!docPath) { console.error('usage: node tools/review.mjs --enqueue <документ.md>'); process.exit(1); }
-    const items = enqueue(root, docPath);
-    console.log('В очереди: ' + items.length + ' поз. — покажется пачкой: node tools/review.mjs --queue');
+    if (!docPath) { console.error('usage: node tools/review.mjs --enqueue <документ.md> [--notice]'); process.exit(1); }
+    const items = enqueue(root, docPath, { kind: asNotice ? KIND_NOTICE : 'question' });
+    console.log('В очереди: ' + items.length + ' поз.' + (asNotice ? ' (' + NOTICE_KIND_LABEL + ')' : '') +
+      ' — покажется пачкой: node tools/review.mjs --queue');
     process.exit(0);
   }
   if (args.includes('--queue')) { // пачечная страница «Накопилось N» — зов ОДИН раз на пачку (I7)
     const docs = pendingDocs(root);
-    if (docs.length === 0) { console.log('Неотвеченных вопросов нет — очередь пуста, страница не нужна.'); process.exit(0); }
+    const notices = pendingNotices(root);
+    if (docs.length === 0 && notices.length === 0) {
+      console.log('Неотвеченных вопросов и непрочитанных сообщений нет — очередь пуста, страница не нужна.');
+      process.exit(0);
+    }
     serveContour(root, { batch: true }, opts).then((r) => process.exit(r.exitCode));
+  } else if (asNotice) { // сообщение: зарегистрировать в очереди И показать сейчас (I37/I38)
+    if (!docPath) { console.error('usage: node tools/review.mjs <документ.md> --notice'); process.exit(1); }
+    enqueue(root, docPath, { kind: KIND_NOTICE }); // без пометки останется в очереди на повтор
+    serveContour(root, { docPath, notice: true }, opts).then((r) => process.exit(r.exitCode));
   } else if (args.includes('--no-serve')) { // C9: «собрать и выйти» — иначе синхронный вызывающий виснет
     if (!docPath) { console.error('usage: node tools/review.mjs <документ.md> --no-serve'); process.exit(1); }
     const page = buildPage(root, docPath);
@@ -570,7 +779,8 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     serveContour(root, { docPath }, opts).then((r) => process.exit(r.exitCode));
   } else {
     console.error('usage: node tools/review.mjs <документ.md> [--no-serve|--silent|--no-open|--timeout N]\n' +
-      '       node tools/review.mjs --queue | --enqueue <документ.md>\n' +
+      '       node tools/review.mjs <документ.md> --notice   (сообщение: ответа не ждёт, ждёт пометки «' + NOTICE_READ_LABEL + '»)\n' +
+      '       node tools/review.mjs --queue | --enqueue <документ.md> [--notice] | --selftest\n' +
       'Запускать ОТСЛЕЖИВАЕМОЙ фоновой задачей (I31): голый & харнесс не отслеживает — уведомление не придёт.');
     process.exit(1);
   }

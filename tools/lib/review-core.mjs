@@ -17,7 +17,8 @@
 //   I24 — рендер вырезает HTML-комментарии ВНЕ код-блоков (внутри fenced — это контент).
 //   P8  — markdown-мини-рендер, ноль зависимостей, экранирование ПЕРВЫМ действием.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, resolve, basename } from 'node:path';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -253,6 +254,10 @@ export function recordDecision(root, docPath, payload, now = new Date()) {
   // ПОЛЕВОЙ БАГ пилота 008: вставка комментария сдвигает строки НИЖЕ себя, и позиции следующих
   // вопросов протухают (хвост Q4 уехал в строку варианта D). Лечение по классу: вопросы
   // обрабатываются СНИЗУ ВВЕРХ — сплайсы не трогают ещё не обработанные позиции выше.
+  // Документ владельца не трогается, когда писать в него нечего (класс «сообщение»: пометка
+  // «прочитано» без комментария — легальная запись БЕЗ единой правки текста). Пустая перезапись
+  // выглядит безобидно, но срезает BOM и штампует mtime чужому файлу.
+  let touched = false;
   const entries = Object.entries(payload.answers || {})
     .map(([qid, ans]) => ({ qid, ans, q: questions.find((x) => x.id === qid) }))
     .filter((e) => e.q)
@@ -261,11 +266,14 @@ export function recordDecision(root, docPath, payload, now = new Date()) {
     const answerText = [ans.choice ? ans.choice + ')' : '', ans.text || ''].filter(Boolean).join(' — ').trim();
     const qStart = q.line; // 1-based строка заголовка вопроса
     // Комментарий — ПЕРВЫМ (в конец блока): сплайс ниже строки ответа её не сдвигает.
-    if (ans.comment)
+    if (ans.comment) {
       lines.splice(qStart + q.body.length, 0, '', `**Комментарий владельца (${atHuman}):** ${ans.comment} ${prov}`, '');
+      touched = true;
+    }
     // «Только комментарий» — НЕ ответ: поле Answer не трогаем, вопрос остаётся открытым (пилот 008).
     if (!answerText) continue;
     const emptyAns = q.answers.find((a) => !a.text);
+    touched = true;
     if (emptyAns !== undefined) {
       lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + answerText + ' ' + prov;
     } else {
@@ -278,8 +286,9 @@ export function recordDecision(root, docPath, payload, now = new Date()) {
   if (record.comment) { // общий комментарий — датированным блоком в КОНЕЦ файла (C6)
     while (lines.length && lines[lines.length - 1] === '') lines.pop();
     lines.push('', '---', '', `**Комментарий владельца (${atHuman}):** ${record.comment} ${prov}`, '');
+    touched = true;
   }
-  writeFileSync(abs, lines.join(eol), 'utf8');
+  if (touched) writeFileSync(abs, lines.join(eol), 'utf8');
 
   // Место 2: <база>.decision.json рядом (машинная проверка перед отправкой).
   const p = decisionPaths(root, docPath);
@@ -353,6 +362,18 @@ function selftest() {
   // Метаблок
   const meta = parseMetaBlock('```owner-review\ntitle: Черновик\nkind: outbound draft\nartifacts:\n  - id: msg1\n    target: github · issue 2\n    format: markdown\n    body_file: tools/.review-tmp/msg1.md\n```\nтело');
   ok(meta && meta.kind === 'outbound draft' && meta.artifacts[0].body_file === 'tools/.review-tmp/msg1.md', 'метаблок: kind и артефакт с body_file разобраны');
+
+  // C6: запись БЕЗ единой правки (пометка «прочитано» без комментария — класс «сообщение», I37)
+  // не имеет права трогать документ владельца: пустая перезапись срезала бы BOM и штампанула mtime.
+  const tdir = mkdtempSync(join(tmpdir(), 'kaif-core-'));
+  const before = '﻿# Отчёт\r\n\r\nтело сообщения\r\n';
+  writeFileSync(join(tdir, 'notice.md'), before, 'utf8');
+  recordDecision(tdir, 'notice.md', { kind: 'notice', comment: '' });
+  ok(readFileSync(join(tdir, 'notice.md'), 'utf8') === before,
+    'запись без ответов и комментария НЕ трогает документ владельца (побайтно, с BOM и CRLF)');
+  recordDecision(tdir, 'notice.md', { kind: 'notice', comment: 'прочитал' });
+  ok(readFileSync(join(tdir, 'notice.md'), 'utf8').includes('прочитал'),
+    'запись С комментарием документ трогает — датированный блок на месте');
 
   console.log(bad ? `СЕЛФТЕСТ КРАСНЫЙ: ${bad} из ${n}` : `селфтест ядра зелёный: ${n} проверок`);
   if (bad) process.exit(1);

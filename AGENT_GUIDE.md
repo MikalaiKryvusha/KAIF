@@ -619,6 +619,7 @@ HTML = md = чат).
 | Страж места вопросов (нарушения + оба плеча разноса + долг ratchet) | `node tools/questions-guard.mjs` |
 | Покажи неотвеченные вопросы СТРАНИЦЕЙ (очередь «Накопилось N») | `node tools/review.mjs --queue` |
 | Показать любой md владельцу (показ — действие, не ссылка) | `node tools/review.mjs <документ.md>` |
+| **Сообщить** владельцу (класс «сообщение», I37/I38: зовёт, но ответа не ждёт) | `node tools/review.mjs <документ.md> --notice` · только в очередь: `--enqueue <док> --notice` |
 | Гейт отправки / реальный отправитель (issue от имени владельца) | `node tools/review-gate.mjs <док> <id>` · `node tools/send-outbound.mjs <док> <id> --apply` |
 | Приёмочный QA-прогон контура в живом браузере | `node tools/verify-contour.mjs` (+ `--visible` для QA2) |
 

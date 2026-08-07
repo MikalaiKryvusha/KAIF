@@ -5198,9 +5198,11 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I36. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I38. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
-a show replaced by a file path · an answered question re-asked two days later).
+a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
+notice class and arrived differently — not after an incident, but on the owner's request that the
+contour be able to TELL, not only to ask.
 
 - **I1. md is the source, HTML is derived. Always.** The page is built from the document and never
   hand-edited — otherwise a second truth appears and the next empty-context session misses
@@ -5349,6 +5351,26 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   almost always carries a number ("interview #16"); without normalization digits get swallowed or
   spelled out. Heavy shared resources (the TTS model, its venv) belong to the MACHINE, not the
   project: the project calls a ready command and falls back honestly when it is absent.
+
+**The notice class (I37–I38) — the contour also has something to SAY:**
+
+- **I37. "Notice" is a named class, not a question with no options.** A contour that can only call
+  when the agent NEEDS something (an answer, a proofread, an approval) has no home for the second
+  legitimate reason to call: the agent has something to TELL — a night-cycle result, an important
+  finding, a long job finished. Without the class, such a page either waits for an answer nobody
+  owes it, or the news goes into a chat the human never has to read. The class carries its own
+  form (the document body plus an explicit mark, never answer options), its own call phrase that
+  says "no answer expected" so the human decides whether to go BEFORE reading, and its own normal
+  outcome: **read** — success, exit code 0, never "closed without an answer".
+- **I38. Delivered = an EXPLICIT mark by the human, and nothing else.** A page that was opened,
+  scrolled, or auto-closed proves nothing about a human having read it; the only evidence is a
+  deliberate act — a "read" button, a radio, or a filled comment. Until that mark exists the notice
+  is NOT delivered: it stays in the queue and is shown again with every batch the agent raises, and
+  **re-delivery is the agent's debt, not the human's memory**. The mark is contour STATE, so it
+  lives in the queue file, never inside the owner's document — and a notice marked read with no
+  comment must leave that document byte-for-byte untouched. Unread notices accumulate under the
+  questions, never above them: questions block work, notices do not, and the page order is where
+  the human sees that difference.
 
 ## The named class: "handling the human's work"
 

@@ -29,7 +29,7 @@ const check = (name, cond, detail = '') => {
 
 // ── Ростер слоёв: [префикс токена, число позиций, конструктор регэкспа] ────────────────────
 const LAYERS = [
-  ['I', 36, (n) => new RegExp('\\*\\*I' + n + '\\.')],
+  ['I', 38, (n) => new RegExp('\\*\\*I' + n + '\\.')], // I37/I38 — класс «сообщение» (задача T10)
   ['P', 9, (n) => new RegExp('\\*\\*P' + n + '\\*\\*')],
   ['G', 13, (n) => new RegExp('\\*\\*G' + n + '\\.')],
   ['T', 11, (n) => new RegExp('\\*\\*T' + n + '\\s*\\(')], // «**T1 (browser).» — скобка отсекает T1/T10-коллизию
@@ -86,10 +86,18 @@ const run = (label, args) => {
   try { execFileSync(process.execPath, args.map((a) => join(ROOT, a) === a ? a : a), { cwd: ROOT, stdio: 'pipe', timeout: 30000 }); return true; }
   catch { return false; }
 };
-check('селфтест ядра контура зелёный', run('core', ['tools/lib/review-core.mjs', '--selftest']));
-check('селфтест стража места вопросов зелёный (6 мутаций)', run('guard', ['tools/questions-guard.mjs', '--selftest']));
-check('самопроверка падучести QA-счёта зелёная (мутация Б краснит)', run('qa', ['tools/verify-contour.mjs', '--selfcheck']));
+// Список — источник истины И для прогона, И для счётчика в итоговой строке (EXP-0025: число
+// селфтестов прозой протухает молча; здесь оно вычисляется из того же массива).
+const TOOL_SELFTESTS = [
+  ['селфтест ядра контура зелёный', ['tools/lib/review-core.mjs', '--selftest']],
+  ['селфтест стража места вопросов зелёный (6 мутаций)', ['tools/questions-guard.mjs', '--selftest']],
+  ['самопроверка падучести QA-счёта зелёная (мутация Б краснит)', ['tools/verify-contour.mjs', '--selfcheck']],
+  // Класс «сообщение» (I37/I38, задача T10): машина состояний пометки и порядок групп в пачке —
+  // то, чего не видно ни на скриншоте, ни в ростере контракта.
+  ['селфтест класса «сообщение» зелёный (пометка · повтор · порядок групп)', ['tools/review.mjs', '--selftest']],
+];
+for (const [label, args] of TOOL_SELFTESTS) check(label, run(label, args));
 
 // ── Итог (счёт печатает сам свод — EXP-0025) ───────────────────────────────────────────────
 if (FAIL) { console.error(`s12: ${FAIL} of ${PASS + FAIL} checks FAILED`); process.exit(1); }
-console.log(`s12 contour canon: all ${PASS} checks green (roster ${ROSTER_TOTAL} positions × dist EN + RU mirror, red-proof, 3 tool selftests)`);
+console.log(`s12 contour canon: all ${PASS} checks green (roster ${ROSTER_TOTAL} positions × dist EN + RU mirror, red-proof, ${TOOL_SELFTESTS.length} tool selftests)`);

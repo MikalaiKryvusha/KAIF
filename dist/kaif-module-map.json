@@ -3088,10 +3088,10 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "24c69504141bade9b754778d342a4f5a09426a2d56f3bde41fa3362c20e43b1c",
+        "sha256": "7540c3c89663cb0002093b629afb7ae916536f1871f87bfbec88b274dd261d67",
         "lines": [
           40,
-          193
+          215
         ]
       },
       {
@@ -3099,8 +3099,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          194,
-          205
+          216,
+          227
         ]
       },
       {
@@ -3108,8 +3108,8 @@
         "class": "static",
         "sha256": "34a1ddfa9aadb128da970f5db8df5b28a44f654051d466fd09d286dfecdd9458",
         "lines": [
-          206,
-          238
+          228,
+          260
         ]
       },
       {
@@ -3117,8 +3117,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          239,
-          248
+          261,
+          270
         ]
       },
       {
@@ -3126,8 +3126,8 @@
         "class": "static",
         "sha256": "00a9322b97b28da62f0169e9a1240c4f37197c9c9b134b1b29f10c1bfeeb4b73",
         "lines": [
-          249,
-          360
+          271,
+          382
         ]
       },
       {
@@ -3135,8 +3135,8 @@
         "class": "static",
         "sha256": "81674bb4e07934a8bf603b61358af949ac4b315f59df859ac67a669df96c24b1",
         "lines": [
-          361,
-          393
+          383,
+          415
         ]
       },
       {
@@ -3144,8 +3144,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          394,
-          409
+          416,
+          431
         ]
       },
       {
@@ -3153,8 +3153,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          410,
-          480
+          432,
+          502
         ]
       },
       {
@@ -3162,8 +3162,8 @@
         "class": "static",
         "sha256": "0d1a55845743246bd68df0b614d8e790d24a27f07d90693220b64f3da04e0600",
         "lines": [
-          481,
-          501
+          503,
+          523
         ]
       },
       {
@@ -3171,8 +3171,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          502,
-          521
+          524,
+          543
         ]
       },
       {
@@ -3180,8 +3180,8 @@
         "class": "static",
         "sha256": "75154dacc1ca33671a8ac80af4d5ab7c6cb23e09ce7a501873c3d2dd3261c9df",
         "lines": [
-          522,
-          531
+          544,
+          553
         ]
       }
     ],
