@@ -37,6 +37,9 @@ Then stop. No further actions, no background work.
 ## Notes
 
 - The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- The RETURN from a pause is a refresh trigger (`AGENT_GUIDE.md` → Context refresh): before resuming
+  the parked work, re-read the re-read core and update the witness (marker + quote) — the parking
+  note says WHERE to continue; the refresh makes sure you continue by the CURRENT canon.
 - If the pause unexpectedly becomes permanent (the human never returns to this chat), nothing is
   lost: the local commit holds the work, and the next session's `/resume` reads the tree and
   `git log` as usual.

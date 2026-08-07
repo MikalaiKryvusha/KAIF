@@ -49,7 +49,8 @@
 10. Comment your code/tools; keep docs accurate   # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAMEWORK.md)
 11. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
 12. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
-13. Periodically re-read the KEY canon docs   # ядро перечитывания (см. «Таксономия документов»): PHILOSOPHY /
+13. Periodically re-read the KEY canon docs   # ядро перечитывания (см. «Таксономия документов»;
+                                  # триггеры и свидетельство — «Освежение контекста»): PHILOSOPHY /
                                   # AGENT_GUIDE / STATUS / GOAL / MASTER_PLAN / REQUIREMENTS_FRAMEWORK /
                                   # TESTING_FRAMEWORK / BUG_FIXING_FRAMEWORK / PROJECT_STRUCTURE_EXTERNAL_MAP —
                                   # и улучшай их
@@ -112,6 +113,35 @@
 5. **Рабочие документы проекта.** Всё, что принадлежит самому проекту владельца, — код, ассеты,
    документы вне фреймворка. KAIF управляет тем, КАК агент над ними работает, а не тем, что они
    такое.
+
+### Освежение контекста — правило перечитывания и его свидетельство
+
+Правила, прочитанные один раз на старте сессии, тают по мере заполнения и сжатия контекста —
+длинная сессия держит в голове пересказ канона, а не канон. Поэтому ядро перечитывания (ярус 1
+таксономии выше) ПЕРЕЧИТЫВАЕТСЯ, а не вспоминается, по четырём триггерам:
+
+1. **Час:** в живой сессии прошло больше 60 минут с последнего освежения — освежайся минимум
+   раз в час.
+2. **Тяжёлая задача:** перед стартом задачи, проходящей тест тяжести («Дисциплина планирования»
+   ниже), в том же долгоживущем чате.
+3. **После сжатия/паузы:** после компакции контекста, возврата из `/pause`, длинного простоя.
+4. **Точки ритуалов:** `/resume` (полный проход канона), `/refresh-context` и каждая итерация
+   длинных циклов (`/autoloop` · `/dayloop` · `/nightloop` · `/guarded-loop`).
+
+Освежение — ПРОВЕРЯЕМОЕ ДЕЙСТВИЕ, а не заявление: пересказ правила не доказывает следования
+ему. Свидетельство двухчастное, обе части обязательны:
+
+- **Маркер** — `.kaif/refresh-marker.json`: `{ "at": "<ISO-метка>", "docs": [<что перечитано>],
+  "trigger": "hour|heavy-task|compaction|ritual:<имя>" }`, перезаписывается агентом в момент
+  освежения. Состояние сессии, не история проекта: строка в `.gitignore` (в поставке — в
+  ignore-first наборе машинерии). Машиночитаем по построению: судья и хук читают возраст
+  маркера одной командой.
+- **Цитата-приёмка** — обновление маркера легально ТОЛЬКО вместе с цитатой в чате одной
+  конкретной строки из перечитанного, релевантной текущей задаче («освежил: STATUS п. 1 —
+  „…“»). Цитата доказывает, что чтение дошло до задачи; маркер делает факт проверяемым позже.
+
+Маркер без цитаты — или заявленное освежение при протухшем маркере — фрод класса ложного
+`[TESTED]`: `/fable-judge` охотится на него (охота «refresh-witness»).
 
 ### Шапка-мета документов — первый экран отвечает «что это»
 
@@ -328,7 +358,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 34 навыка + 1 распаковщик = 56; бандл 150 блоков; карта — 665 модулей) — не переписывай эти
+7 README + 34 навыка + 1 распаковщик = 56; бандл 150 блоков; карта — 666 модулей) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.
@@ -427,7 +457,7 @@ consumer. Слабая сессия обновляет ту сторону, ко
 |---|---|---|
 | `framework/skills/fable-method,fable-judge` (вендорено, EN) | `.claude/skills/…` (побайтовые копии) | `diff framework/skills/fable-method/SKILL.md .claude/skills/fable-method/SKILL.md && diff framework/skills/fable-judge/SKILL.md .claude/skills/fable-judge/SKILL.md` |
 | `framework/*` (источник) | корневые генерированные копии + `dist/*` | `node tools/build-framework.mjs && git diff --stat` (дифф генератов после пересборки = дрейф) |
-| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 56; бандл 150 блоков; карта — 665 модулей' AGENT_GUIDE.md` |
+| Вывод сборки (счётчики) | строка счётчиков в этом документе (раздел «Тестирование») | `grep -q '= 56; бандл 150 блоков; карта — 666 модулей' AGENT_GUIDE.md` |
 | Состав навыков `framework/skills/` | таблицы README (EN+RU половины) | `test $(ls framework/skills | wc -l) -eq 34 && test $(grep -c '^| [*.]*./' README.md) -eq 68` |
 | Счётчик ритуалов в SVG (генератор) | alt-тексты README | `grep -o '34 repeatable' assets/layers-en-light.svg && grep -c '34 повторяемых ритуала\|34 repeatable rituals' README.md` |
 | Состав навыков `framework/skills/` | ключи 9 языковых пакетов | `node -e "const{readdirSync,readFileSync}=require('fs');const n=readdirSync('framework/skills').length;for(const l of readdirSync('framework/templates/languages')){const k=Object.keys(JSON.parse(readFileSync('framework/templates/languages/'+l+'/skill-triggers.json','utf8'))).length;if(k!==n){console.error(l,k,'!=',n);process.exit(1)}}console.log('ok',n)"` |

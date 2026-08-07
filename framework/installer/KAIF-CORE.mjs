@@ -210,12 +210,14 @@ function lineDiff(oldText, newText) {
 // they hit the tree, so a `git add -A` during the manual-merge window between update and
 // update-verify cannot drag a 425 KB bundle into history (field-caught on NDim, which trapped
 // exactly that). The lines stay useful after self-clean — updates recur.
-// [TESTED: 2026-07-27 · sandboxes S1 (entries present right after install) + S4 (idempotent on update)]
+// [TESTED: 2026-08-07 · npm run test:core all 13 suites green — S1 (entries present right after
+// install) + S4 (idempotent on update), re-run with the refresh-marker entry added]
 function ensureIgnoreFirst() {
   const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK,
                   'KAIF_UPDATE_TASK.superseded.md', 'KAIF_ADAPTATION_TASK.superseded.md',
                   '.kaif/backup-*/',        // pre-update backups are rollback material, never history (field ask)
-                  '.kaif/heartbeat.log'];   // the guarded loop's pulse is runtime state, not history
+                  '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
+                  '.kaif/refresh-marker.json']; // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
   const add = wanted.filter((w) => !have.has(w) && !have.has(w.replace(/\/$/, '')));

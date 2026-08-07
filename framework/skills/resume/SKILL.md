@@ -35,6 +35,10 @@ If relevant to open questions:
 > slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
 > here is exactly what makes the lazy slices safe afterwards. Never "optimize" one with the other.
 
+The full pass IS a context refresh (`AGENT_GUIDE.md` → Context refresh): on completing it, rewrite
+`.kaif/refresh-marker.json` (trigger `ritual:/resume`); the Step-2 announcement doubles as the
+quote-acceptance when it cites at least one concrete line from the read — quote it.
+
 ## Step 2. Synthesize — choose the one main thing
 
 Pick a single direction for this session. Priority (descending):

@@ -60,7 +60,10 @@ list covers it since 2.1) — never commit the pulse.
 
 Run backlog items exactly per `/autoloop`: same item selection, same fable-loop execution, the
 mandatory judge pass per item, drive-by notes to the backlog, a HEAVY unplanned item →
-`/plan-epic` first. Context/limits are the harness's concern, never a stop condition.
+`/plan-epic` first. Context/limits are the harness's concern, never a stop condition. The
+context-refresh rule rides the wake-ups (`AGENT_GUIDE.md` → Context refresh): a wake-up past the
+hour since the last refresh — or a HEAVY item next — starts with the core re-read and the
+witness update.
 
 ## Step 4 — waking up: restart policy
 

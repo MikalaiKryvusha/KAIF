@@ -108,7 +108,8 @@ relies entirely on this document to get to work.
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
 14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
 15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below):
+16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below;
+    triggers & witness — Context refresh below):
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
@@ -183,6 +184,37 @@ document — re-read it, know it, follow its regulation, or leave it alone:
 5. **Project working documents.** Everything of the owner's project itself — code, assets,
    documents that are not the framework's. KAIF governs how the agent works on them, not what
    they are.
+
+### Context refresh — the re-read rule and its witness
+
+Rules read once at session start decay as the context fills and compacts — a long session ends up
+holding a summary of the canon instead of the canon. The re-read core (tier 1 of the Document
+taxonomy above) is therefore RE-READ, not remembered, at four triggers:
+
+1. **The hour:** more than 60 minutes in a live session since the last refresh — refresh at least
+   once per hour.
+2. **A heavy task:** before starting a task that passes the heaviness test (Planning discipline
+   below) in the same long-lived chat.
+3. **After compaction / pause:** after a context compaction, a return from `/pause`, or a long
+   idle gap.
+4. **Ritual points:** `/resume` (the full canon pass), `/refresh-context`, and every iteration of
+   the long loops (`/autoloop` · `/dayloop` · `/nightloop` · `/guarded-loop`).
+
+A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it.
+The witness has two parts, both mandatory:
+
+- **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
+  re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten by the agent at
+  the moment of the refresh. Session state, never project history: its `.gitignore` line ships
+  with the machinery's ignore-first set. Machine-readable by design — a judge or a hook reads the
+  marker's age in one command.
+- **The quote-acceptance** — updating the marker is legal ONLY together with quoting in the chat
+  one concrete line from the re-read that is relevant to the current task ("refreshed: STATUS
+  item 1 — '…'"). The quote proves the reading reached the task; the marker makes the fact
+  checkable later.
+
+A marker without the quote — or a claimed refresh with a stale marker — is fraud of the
+false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 
 ### Document header meta — the first screen answers "what is this"
 
@@ -2442,6 +2474,9 @@ without those resources.
 ## Self-pacing (so the loop runs LONG)
 
 - Go task after task without stopping for confirmations (unless a task is destructive).
+- The context-refresh rule applies inside the series (`AGENT_GUIDE.md` → Context refresh): more than
+  60 minutes since the last refresh, or a HEAVY item next — re-read the core and update the witness
+  (`/refresh-context` executes both) before taking the item.
 - If you're waiting on a background operation (a long build) — continue when ready; don't ping the human.
 - If you need to "continue on a timer", use the harness's loop mechanism (`ScheduleWakeup`/`/loop`) with
   a reasonable interval, passing this same skill back so the cycle resumes.
@@ -2770,7 +2805,9 @@ when the current one is exhausted (see step 8).
 - **Don't go interactive:** the human is busy — no questions in chat with waiting for an answer.
   Human-level decisions — file in `interviews/` + mark STATUS, take another task.
 - **Change safety:** small verified commits; if you break something, fix it or revert via git history.
-- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`.
+- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`; the hour rule
+  applies (`AGENT_GUIDE.md` → Context refresh): >60 min since the last refresh, or a HEAVY item
+  next → refresh now, with the marker + quote witness.
 - **🧹 Occasionally revise the backlog** — every few iterations (not every) call `/check-backlog`.
 - **🐞 Hit a bug** you won't fix right now — file it with `/report-bug`.
 - **💡 A worthwhile NEW idea** (in line with the master plan/vision) — file it with `/propose-idea` and
@@ -3108,8 +3145,9 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
-> KAIF 2.1 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
-> **mutation addressivity** (judgment boundaries · the guarded loop · craft prostheses). In KAIF rituals this
+> KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
+> **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
+> prostheses · the context-refresh contour). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -3144,6 +3182,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Identity without an author (KAIF 2.1).** Any shipped NAME — a release codename, a product/feature name, a slogan, a brand string humans read first — must carry its source artifact (*owner · channel · date*, `/release` Step 0). A name with no source is an agent-invented identity: a finding regardless of how broad the owner's action approval was ("permission to act" never transfers "authorship of identity" — `AGENT_GUIDE.md`).
    - **Timer-fed heartbeat (KAIF 2.1).** In a guarded loop (`/guarded-loop`), a `.kaif/heartbeat.log` pulse must correspond to a COMPLETED step — cross-check pulse lines against the actual work trail (commits, task ticks). A pulse written on a schedule while no work landed is the exact fraud the watchdog exists to catch: it keeps a hung agent looking alive.
    - **Mutation addressivity (KAIF 2.1).** A guard proven by mutation must name its addressees BEFORE the run: *mutant M → exactly checks P₁…Pₙ go red, and only they; intact code → 0 red*. A mutation that reddens only side checks — or a guard "proven" with no named addressees — proves nothing (field: a green smoke that forgave the entire error class it was supposed to catch).
+   - **Refresh witness (KAIF 2.2).** A claimed context refresh must carry its two-part witness (`AGENT_GUIDE.md` → Context refresh): `.kaif/refresh-marker.json` rewritten at the claimed moment AND a chat quote of one concrete line from the re-read. A marker without the quote — or a refresh claimed against a stale marker — is fraud of the false-`[TESTED]` class.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -3715,7 +3754,10 @@ list covers it since 2.1) — never commit the pulse.
 
 Run backlog items exactly per `/autoloop`: same item selection, same fable-loop execution, the
 mandatory judge pass per item, drive-by notes to the backlog, a HEAVY unplanned item →
-`/plan-epic` first. Context/limits are the harness's concern, never a stop condition.
+`/plan-epic` first. Context/limits are the harness's concern, never a stop condition. The
+context-refresh rule rides the wake-ups (`AGENT_GUIDE.md` → Context refresh): a wake-up past the
+hour since the last refresh — or a HEAVY item next — starts with the core re-read and the
+witness update.
 
 ## Step 4 — waking up: restart policy
 
@@ -4357,7 +4399,9 @@ Until one fires — don't stop, don't wait for confirmations, work.
   decisions (UX/brand/architecture) — defer with a note, don't decide alone.
 - **Change safety:** small verified commits; if you break something, fix it or revert via git history.
 - **⏰ Watch the time** (`date "+%H:%M"`) so you don't miss the wake hour (stop condition).
-- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`.
+- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`; the hour rule
+  applies (`AGENT_GUIDE.md` → Context refresh): >60 min since the last refresh, or a HEAVY item
+  next → refresh now, with the marker + quote witness.
 - **🧹 Occasionally revise the backlog** — every few iterations call `/check-backlog`.
 - **🐞 Hit a bug** you won't fix now — file it with `/report-bug`.
 - **💡 A worthwhile NEW idea** — file it with `/propose-idea` and continue with OTHER tasks. **Don't
@@ -5068,6 +5112,9 @@ Then stop. No further actions, no background work.
 ## Notes
 
 - The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- The RETURN from a pause is a refresh trigger (`AGENT_GUIDE.md` → Context refresh): before resuming
+  the parked work, re-read the re-read core and update the witness (marker + quote) — the parking
+  note says WHERE to continue; the refresh makes sure you continue by the CURRENT canon.
 - If the pause unexpectedly becomes permanent (the human never returns to this chat), nothing is
   lost: the local commit holds the work, and the next session's `/resume` reads the tree and
   `git log` as usual.
@@ -5328,6 +5375,11 @@ restores it quickly and forms a current backlog.
    - `BUG_FIXING_FRAMEWORK.md` — how to fix bugs.
    - `PHILOSOPHY.md` — the simplicity principle (KISS + Occam).
    - `EXPERIENCE.md` — recall accumulated lessons (grep by the current task's tags) before diving back in.
+
+   Steps 1–2 together must cover the re-read core (`AGENT_GUIDE.md` → Document taxonomy, tier 1).
+   Finish the re-read by updating the two-part refresh witness (`AGENT_GUIDE.md` → Context refresh):
+   rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
+   the current work.
 
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
@@ -5716,6 +5768,10 @@ If relevant to open questions:
 > **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
 > slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
 > here is exactly what makes the lazy slices safe afterwards. Never "optimize" one with the other.
+
+The full pass IS a context refresh (`AGENT_GUIDE.md` → Context refresh): on completing it, rewrite
+`.kaif/refresh-marker.json` (trigger `ritual:/resume`); the Step-2 announcement doubles as the
+quote-acceptance when it cites at least one concrete line from the read — quote it.
 
 ## Step 2. Synthesize — choose the one main thing
 

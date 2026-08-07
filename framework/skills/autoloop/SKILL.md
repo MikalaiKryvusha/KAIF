@@ -81,6 +81,9 @@ without those resources.
 ## Self-pacing (so the loop runs LONG)
 
 - Go task after task without stopping for confirmations (unless a task is destructive).
+- The context-refresh rule applies inside the series (`AGENT_GUIDE.md` → Context refresh): more than
+  60 minutes since the last refresh, or a HEAVY item next — re-read the core and update the witness
+  (`/refresh-context` executes both) before taking the item.
 - If you're waiting on a background operation (a long build) — continue when ready; don't ping the human.
 - If you need to "continue on a timer", use the harness's loop mechanism (`ScheduleWakeup`/`/loop`) with
   a reasonable interval, passing this same skill back so the cycle resumes.

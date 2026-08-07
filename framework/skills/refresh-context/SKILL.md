@@ -21,6 +21,11 @@ restores it quickly and forms a current backlog.
    - `PHILOSOPHY.md` — the simplicity principle (KISS + Occam).
    - `EXPERIENCE.md` — recall accumulated lessons (grep by the current task's tags) before diving back in.
 
+   Steps 1–2 together must cover the re-read core (`AGENT_GUIDE.md` → Document taxonomy, tier 1).
+   Finish the re-read by updating the two-part refresh witness (`AGENT_GUIDE.md` → Context refresh):
+   rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
+   the current work.
+
 3. **Walk the backlog and rebuild it:**
    - `ls bugs/` — take everything NOT tagged `DONE` (open bugs).
    - `ls ideas/` — take everything NOT tagged `DONE` (open ideas/features).

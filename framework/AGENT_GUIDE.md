@@ -36,7 +36,8 @@ relies entirely on this document to get to work.
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
 14. Reflect on bugs in bugs/      # one md per bug; follow BUG_FIXING_FRAMEWORK.md
 15. Capture experience            # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)
-16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below):
+16. Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below;
+    triggers & witness — Context refresh below):
     - PHILOSOPHY.md   ← the simplicity principle; if stuck, go here first
     - AGENT_GUIDE.md
     - STATUS.md
@@ -111,6 +112,37 @@ document — re-read it, know it, follow its regulation, or leave it alone:
 5. **Project working documents.** Everything of the owner's project itself — code, assets,
    documents that are not the framework's. KAIF governs how the agent works on them, not what
    they are.
+
+### Context refresh — the re-read rule and its witness
+
+Rules read once at session start decay as the context fills and compacts — a long session ends up
+holding a summary of the canon instead of the canon. The re-read core (tier 1 of the Document
+taxonomy above) is therefore RE-READ, not remembered, at four triggers:
+
+1. **The hour:** more than 60 minutes in a live session since the last refresh — refresh at least
+   once per hour.
+2. **A heavy task:** before starting a task that passes the heaviness test (Planning discipline
+   below) in the same long-lived chat.
+3. **After compaction / pause:** after a context compaction, a return from `/pause`, or a long
+   idle gap.
+4. **Ritual points:** `/resume` (the full canon pass), `/refresh-context`, and every iteration of
+   the long loops (`/autoloop` · `/dayloop` · `/nightloop` · `/guarded-loop`).
+
+A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it.
+The witness has two parts, both mandatory:
+
+- **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
+  re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten by the agent at
+  the moment of the refresh. Session state, never project history: its `.gitignore` line ships
+  with the machinery's ignore-first set. Machine-readable by design — a judge or a hook reads the
+  marker's age in one command.
+- **The quote-acceptance** — updating the marker is legal ONLY together with quoting in the chat
+  one concrete line from the re-read that is relevant to the current task ("refreshed: STATUS
+  item 1 — '…'"). The quote proves the reading reached the task; the marker makes the fact
+  checkable later.
+
+A marker without the quote — or a claimed refresh with a stale marker — is fraud of the
+false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 
 ### Document header meta — the first screen answers "what is this"
 

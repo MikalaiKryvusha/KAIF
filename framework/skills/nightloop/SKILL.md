@@ -69,7 +69,9 @@ Until one fires — don't stop, don't wait for confirmations, work.
   decisions (UX/brand/architecture) — defer with a note, don't decide alone.
 - **Change safety:** small verified commits; if you break something, fix it or revert via git history.
 - **⏰ Watch the time** (`date "+%H:%M"`) so you don't miss the wake hour (stop condition).
-- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`.
+- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`; the hour rule
+  applies (`AGENT_GUIDE.md` → Context refresh): >60 min since the last refresh, or a HEAVY item
+  next → refresh now, with the marker + quote witness.
 - **🧹 Occasionally revise the backlog** — every few iterations call `/check-backlog`.
 - **🐞 Hit a bug** you won't fix now — file it with `/report-bug`.
 - **💡 A worthwhile NEW idea** — file it with `/propose-idea` and continue with OTHER tasks. **Don't

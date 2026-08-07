@@ -17,4 +17,7 @@ scratchpad/
 interviews/decisions/*.lock
 tools/.review-tmp/
 
+# Освежение контекста (O2): маркер-свидетельство — состояние сессии, не история проекта
+.kaif/refresh-marker.json
+
 # Note: README.pdf and FRAMEWORK.md are committed deliverables (generated, but tracked).

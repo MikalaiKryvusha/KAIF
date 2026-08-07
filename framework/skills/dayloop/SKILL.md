@@ -82,7 +82,9 @@ when the current one is exhausted (see step 8).
 - **Don't go interactive:** the human is busy — no questions in chat with waiting for an answer.
   Human-level decisions — file in `interviews/` + mark STATUS, take another task.
 - **Change safety:** small verified commits; if you break something, fix it or revert via git history.
-- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`.
+- **🔄 Periodically refresh context** — every few iterations call `/refresh-context`; the hour rule
+  applies (`AGENT_GUIDE.md` → Context refresh): >60 min since the last refresh, or a HEAVY item
+  next → refresh now, with the marker + quote witness.
 - **🧹 Occasionally revise the backlog** — every few iterations (not every) call `/check-backlog`.
 - **🐞 Hit a bug** you won't fix right now — file it with `/report-bug`.
 - **💡 A worthwhile NEW idea** (in line with the master plan/vision) — file it with `/propose-idea` and
