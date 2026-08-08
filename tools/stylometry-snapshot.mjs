@@ -77,8 +77,31 @@ function isPublishableSpan(span, line, allow) {
   return true;
 }
 
-/** Схлопывание неразрешённых спанов + обезличивание адресов. Возвращает строку и счётчики. */
-function scrubLine(line, allow, stats) {
+// Приватные имена проектов владельца: тот же список, что кормит `tools/private-names-guard.mjs`,
+// и та же честная граница — НЕТ СПИСКА, НЕТ ЗАМЕНЫ. Приватное ядро называет проекты своими
+// именами по делу (правило АП22 требует называть вещи рабочими именами, и примеры в нём —
+// настоящие), но слепок ПУБЛИЧЕН: имя, полезное внутри, снаружи сообщает посторонним, над чем
+// владелец работает. Пять таких имён доехало до публичного слепка версии 1.0 — их нашёл не
+// человек, а страж поставки, когда ему добавили эту зону.
+const PRIVATE_LIST = join(ROOT, '.kaif', 'private-names.json');
+
+function loadPrivateNames() {
+  if (!existsSync(PRIVATE_LIST)) return [];
+  const cfg = JSON.parse(readFileSync(PRIVATE_LIST, 'utf8'));
+  // Длинные имена раньше коротких: иначе «Unlim» съел бы начало «Unliminium».
+  return Object.entries(cfg.names || {})
+    .sort((a, b) => b[0].length - a[0].length)
+    .map(([name, alias]) => ({
+      name,
+      alias,
+      // В путях и составных токенах пробел ломает адрес, поэтому там едет слаг.
+      slug: alias.toLowerCase().replace(/\s+/g, '-'),
+      re: new RegExp(`(?<![\\p{L}\\d])${name}(?![\\p{L}\\d])`, 'giu'),
+    }));
+}
+
+/** Схлопывание неразрешённых спанов + обезличивание адресов и приватных имён. */
+function scrubLine(line, allow, stats, privateNames = []) {
   let out = line.replace(/«([^«»]+)»/g, (full, inner) => {
     if (isPublishableSpan(inner, line, allow)) return full;
     stats.elided.push({ span: inner, line });
@@ -88,6 +111,15 @@ function scrubLine(line, allow, stats) {
     stats.anonymized += 1;
     return `${num}_*.md`;
   });
+  for (const p of privateNames) {
+    out = out.replace(p.re, (match, offset, whole) => {
+      stats.privateNames = (stats.privateNames || 0) + 1;
+      const before = whole[offset - 1] || '';
+      const after = whole[offset + match.length] || '';
+      const inPath = before === '/' || before === '_' || after === '/' || after === '_';
+      return inPath ? p.slug : p.alias;
+    });
+  }
   return out;
 }
 
@@ -146,8 +178,9 @@ function sourceProvenance(sourcePath) {
 /** Сборка слепка. */
 function build(sourcePath, cfg) {
   const src = readFileSync(sourcePath, 'utf8').split(/\r?\n/);
-  const stats = { rules: 0, evidenceGroups: 0, publicQuotes: 0, elided: [], anonymized: 0, dropped: [] };
+  const stats = { rules: 0, evidenceGroups: 0, publicQuotes: 0, elided: [], anonymized: 0, privateNames: 0, dropped: [] };
   const allow = cfg.allowSpans || [];
+  const privateNames = loadPrivateNames();
   const out = [];
 
   // Секции, которые целиком НЕ едут: их место занимает объявление (пустых секций не бывает —
@@ -189,7 +222,7 @@ function build(sourcePath, cfg) {
     // Адрес доказательства — едет обезличенным, как ссылка в приватное ядро.
     const addrHit = line.match(EVIDENCE_ADDR);
     if (addrHit) {
-      const addr = scrubLine(addrHit[1].trim(), allow, stats).replace(/`/g, '');
+      const addr = scrubLine(addrHit[1].trim(), allow, stats, privateNames).replace(/`/g, '');
       stats.evidenceGroups += 1;
       out.push(`> — доказательство в приватном ядре: \`krinik-stylometry:${addr}\``);
       continue;
@@ -200,7 +233,7 @@ function build(sourcePath, cfg) {
     if (ruleHit) {
       stats.rules += 1;
       pendingRuleId = ruleHit[1];
-      out.push(scrubLine(line, allow, stats));
+      out.push(scrubLine(line, allow, stats, privateNames));
       const ev = (cfg.publicEvidence || {})[pendingRuleId];
       if (ev && ev.length) {
         out.push('');
@@ -216,7 +249,7 @@ function build(sourcePath, cfg) {
       continue;
     }
 
-    out.push(scrubLine(line, allow, stats));
+    out.push(scrubLine(line, allow, stats, privateNames));
   }
 
   // Схлопываем подряд идущие пустые строки, оставшиеся после вырезанных цитат.
