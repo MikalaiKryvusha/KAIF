@@ -1,0 +1,50 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_015_blind_test_stylometry.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-08-08T18:46:55.848Z",
+  "atHuman": "8 августа 2026, 21:46 (+03:00)",
+  "comment": "",
+  "answers": {
+    "В1": {
+      "choice": "А",
+      "text": "",
+      "comment": ""
+    },
+    "В2": {
+      "choice": "Б",
+      "text": "",
+      "comment": ""
+    },
+    "В3": {
+      "choice": "Б",
+      "text": "",
+      "comment": ""
+    },
+    "В4": {
+      "choice": "Б",
+      "text": "",
+      "comment": ""
+    },
+    "В5": {
+      "choice": "А",
+      "text": "",
+      "comment": ""
+    },
+    "В6": {
+      "choice": "В",
+      "text": "",
+      "comment": ""
+    },
+    "В7": {
+      "choice": "Б",
+      "text": "",
+      "comment": ""
+    },
+    "В8": {
+      "choice": "В",
+      "text": "",
+      "comment": ""
+    }
+  }
+}

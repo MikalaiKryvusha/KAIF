@@ -121,14 +121,25 @@ function pullPublicQuote(address) {
 function sourceProvenance(sourcePath) {
   const dir = sourcePath.replace(/\/[^/]+$/, '');
   const file = sourcePath.replace(/^.*\//, '');
+
+  // Версия ядра — ЕСЛИ ядро её объявляет. Выдумывать номер запрещено (правило трёх дверей):
+  // до 2026-08-08 ядро версии не несло вовсе, и слепок честно писал «не объявляет».
+  let version = null;
+  try {
+    const v = JSON.parse(readFileSync(join(dir, 'version.json'), 'utf8'));
+    if (v && v.version) version = v;
+  } catch {
+    /* версии нет — не ошибка: слепок скажет об этом вслух */
+  }
+
   try {
     const out = execFileSync('git', ['-C', dir, 'log', '-1', '--format=%h|%cI', '--', file], {
       encoding: 'utf8',
     }).trim();
     const [sha, date] = out.split('|');
-    return { sha, date };
+    return { sha, date, version };
   } catch {
-    return { sha: 'неизвестен', date: 'неизвестна' };
+    return { sha: 'неизвестен', date: 'неизвестна', version };
   }
 }
 
@@ -323,6 +334,12 @@ for (const list of Object.values(cfg.publicEvidence || {})) {
 const allowForCheck = [...(cfg.allowSpans || []), ...publicQuoteTexts];
 
 const header = readFileSync(HEADER_PATH, 'utf8')
+  .replace(
+    '{{CORE_VERSION}}',
+    prov.version
+      ? `**${prov.version.name} ${prov.version.version}** (объявлена ядром, ${prov.version.released}; статус — \`${prov.version.status}\`)`
+      : '⚠️ ядро версии НЕ ОБЪЯВЛЯЕТ (ни файла версии, ни тега на момент слепка) — привязка идёт к коммиту; выдуманный номер хуже отсутствующего'
+  )
   .replace('{{SOURCE_SHA}}', prov.sha)
   .replace('{{SOURCE_DATE}}', prov.date)
   .replace('{{RULES}}', String(stats.rules))
