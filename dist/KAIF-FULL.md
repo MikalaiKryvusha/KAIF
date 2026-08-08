@@ -610,6 +610,15 @@ Companions: after ANY machine edit of a non-ASCII document — READ THE RESULT B
 caught otherwise); prefer the file tools (Write/Edit) over the shell for editing text — the shell
 runs processes, it does not carry content.
 
+**The rule binds the ARGUMENT, not the document.** It covers ANY non-ASCII in argv — including the
+agent's own housekeeping strings: a `print()`/`echo` reporting progress from a throwaway script, a
+run label, a debug message. The temptation to file those under "not covered" is strong (no document
+is edited, nothing ships) — and that is exactly how sessions that KNOW the rule break it. The cost
+is asymmetric: the tool succeeds, the exit code is 0, the files are intact — the only thing
+corrupted is the output a HUMAN reads, so the agent never sees its own violation and hears about it
+from the owner. Keep argv of throwaway scripts ASCII-only; when the output must carry non-ASCII,
+print it from the body of a script FILE.
+
 **The truth↔mirror pairs registry.** The costliest field defects were not complex code but DRIFT
 between a source of truth and its mirror: a deploy manifest pinning an old engine version while
 prod ran a newer one, a comment contradicting the compose file it describes, a producer's contract

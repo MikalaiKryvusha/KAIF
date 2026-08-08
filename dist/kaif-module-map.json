@@ -188,10 +188,10 @@
       {
         "signature": "## Document & text hygiene (field-paid rules)",
         "class": "static",
-        "sha256": "c23b3387d59c94743944d7f9a0b3dd59c4b91e0a7cb333194c3d0198b1a6e322",
+        "sha256": "b6a2dced788d07d27fff9a301efa8826e3567e20f55e60532bce3ca2a80b929f",
         "lines": [
           433,
-          501
+          510
         ]
       },
       {
@@ -199,8 +199,8 @@
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          502,
-          509
+          511,
+          518
         ]
       },
       {
@@ -208,8 +208,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          510,
-          520
+          519,
+          529
         ]
       },
       {
@@ -217,8 +217,8 @@
         "class": "static",
         "sha256": "91ef0d6cae41c2f3c1d78495d25ad908036eba23639224ba2d25a91eb04d17ac",
         "lines": [
-          521,
-          607
+          530,
+          616
         ]
       },
       {
@@ -226,8 +226,8 @@
         "class": "static",
         "sha256": "18c0ce20cf416933cf2a637ef3232ce24a6b1cf2b24e394ae6c47ac1d5bd115b",
         "lines": [
-          608,
-          709
+          617,
+          718
         ]
       },
       {
@@ -235,8 +235,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          710,
-          724
+          719,
+          733
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          725,
-          737
+          734,
+          746
         ]
       }
     ],
