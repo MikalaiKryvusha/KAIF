@@ -594,7 +594,12 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
                      '.agents', '.grok', '.cline', '.roo'];
   // GOAL.md and the declared canon artifacts are the OWNER's documents: the scan once proposed
   // editing GOAL.md — a file the machinery itself declares untouchable (bugs/35, NDim гр.3).
-  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs', 'EXPERIENCE.md', 'PROJECT_HISTORY.md', 'GOAL.md'];
+  // AUTHOR_STYLOMETRY.md is the same class (bugs/54): the owner's voice portrait is written by the
+  // agent but ACCEPTED by the owner, and it LEGALLY carries version tokens — the corpus registry
+  // names its sources' versions and the history journal records the versions the portrait changed
+  // in. Declaring it in canonArtifacts also works (the line below), but that needs a manual owner
+  // action and is unset by default — so the portrait is skipped by construction, not by opt-in.
+  const SKIP_FILES = [UPDATE_TASK, TASK_FILE, 'KAIF.md', 'KAIF-LOADER.mjs', 'EXPERIENCE.md', 'PROJECT_HISTORY.md', 'GOAL.md', 'AUTHOR_STYLOMETRY.md'];
   try { for (const c of readJson(KAIF_JSON).canonArtifacts || []) SKIP_FILES.push(String(c).replace(/\\/g, '/')); }
   catch { /* no readable marker — nothing to widen */ }
   // A claim = the version token within a few characters of the framework marker. Mere
