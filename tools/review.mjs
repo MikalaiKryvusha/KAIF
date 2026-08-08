@@ -227,7 +227,8 @@ export function buildPage(root, docPath) {
   const questions = parsed.map((q) => ({
     doc: rel, id: q.id, title: q.title, answered: q.answered, target: q.target,
     bodyHtml: proseOf(q),
-    options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text) })),
+    recommended: q.recommended,
+    options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text), recommended: o.letter === q.recommended })),
     // I24 в узле показа (класс NDim bug 112 — «просочились некрасивые комментарии», пилот 008):
     // провенанс-маркер живёт в md, но НИКОГДА не показывается человеку.
     existing: q.answers.filter((a) => a.text)
@@ -349,8 +350,7 @@ export function buildIndexPage(root, docs, notices = []) {
   const total = docs.reduce((s, d) => s + d.unanswered, 0);
   const counts = (docs.length + notices.length) + ' документ(ов) · ' + total + ' неотвеченных вопрос(ов)' +
     (notices.length ? ' · ' + notices.length + ' непрочитанных сообщени(й)' : '');
-  const main = '<p class="lead">Каждый документ открывается СВОИМ окном — запись по одному не трогает остальные.</p>' +
-    '<div class="cards">' + qCards.join('\n') +
+  const main = '<div class="cards">' + qCards.join('\n') +
     (nCards.length ? '<h2 class="noticehead">' + NOTICE_GROUP_TITLE + ' (' + nCards.length + ')</h2>' + nCards.join('\n') : '') +
     '</div>' +
     (qCards.length + nCards.length === 0 ? '<p>Очередь пуста — отвечать нечего.</p>' : '');
@@ -367,15 +367,14 @@ const esc = (s) => String(s).replace(/</g, '&lt;');
 const docCommentBlock = (rel) =>
   '<h3>Комментарий по документу целиком</h3>' + // P7: легитимный исход вычитки сам по себе
   '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="3" ' +
-  'placeholder="Можно без ответов — просто сказать (запишется датированным блоком в конец документа)"></textarea></p>';
+  'placeholder="Можно без ответов — просто сказать"></textarea></p>';
 
 // I37: у сообщения поле комментария НЕОБЯЗАТЕЛЬНО — заполненное уходит в документ вместе с
 // пометкой, пустое законно (нажатая кнопка «ОК, прочитано» и есть пометка, №009 Q1).
 const noticeCommentBlock = (rel) =>
   '<h3>Комментарий (по желанию)</h3>' +
   '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="3" ' +
-  'placeholder="Можно ничего не писать — достаточно пометки «' + NOTICE_READ_LABEL +
-  '»; написанное ляжет датированным блоком в конец документа"></textarea></p>';
+  'placeholder="Можно ничего не писать — достаточно пометки «' + NOTICE_READ_LABEL + '»"></textarea></p>';
 
 function qCard(q) {
   // Язык интерфейса = язык владельца (слово владельца, пилот 008): интервью на русском —
@@ -386,20 +385,21 @@ function qCard(q) {
   // уводится в серый (слово владельца, пилот 008); выбранный вариант помечен, поля выключены.
   const chosenLetter = q.answered && q.existing[0]
     ? (q.existing[0].match(/^([A-ZА-Я])\)/u) || [])[1] || null : null;
+  // Рекомендация видна НА варианте: человек не переводит букву из абзаца в кнопку глазами.
   const opts = q.options.map((o) =>
-    '<label class="opt"><input type="radio" ' +
+    '<label class="opt' + (o.recommended ? ' rec' : '') + '"><input type="radio" ' +
     (q.answered ? 'disabled' + (o.letter === chosenLetter ? ' checked' : '')
       : 'data-draft') +
     ' name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
-    '<div>' + o.html + '</div></label>').join('');
+    '<div>' + (o.recommended ? '<span class="tag rec">рекомендую</span> ' : '') + o.html + '</div></label>').join('');
   const existing = q.existing.map((t) => '<p><strong>Ответ:</strong> ' + esc(t) + '</p>').join('');
   // У отвеченного вопроса остаётся поле комментария (слово владельца, пилот 009): дописать
   // мысль по уже решённому можно всегда; сам ответ неприкосновенен — комментарий ляжет
   // датированным блоком в конец вопроса.
   const inputs = q.answered
-    ? '<p class="addcomment"><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Дополнительный комментарий к уже отвеченному (запишется датированным блоком, ответ не тронет)"></textarea></p>'
-    : '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="Свой вариант / текст ответа (D)"></p>' +
-      '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Комментарий к вопросу (P7)"></textarea></p>';
+    ? '<p class="addcomment"><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Дополнить комментарием — ваш ответ останется как есть"></textarea></p>'
+    : '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="Свой вариант или текст ответа"></p>' +
+      '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="Комментарий"></textarea></p>';
   const meta = q.target
     ? '<div class="qmeta">Адресат ответа: ' + esc(q.target).replace(/`/g, '') + '</div>' : '';
   return '<section class="qcard' + (q.answered ? ' done' : '') + '">' +
@@ -420,10 +420,13 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
   // P5: обе темы через prefers-color-scheme, цвета — переменные; контраст заложен в парах.
   const css = `
   :root { --bg:#f7f7f5; --card:#ffffff; --ink:#1d1d1f; --muted:#6b6b70; --line:#d9d9de;
-    --wait:#d97706; --done:#16a34a; --you:#2563eb; --danger:#dc2626; --accent:#2563eb; }
+    --wait:#d97706; --done:#16a34a; --you:#2563eb; --danger:#dc2626; --accent:#2563eb;
+    --tagink:#0b1020; --tagwait:#fbbf24; --tagdone:#4ade80; --tagyou:#93c5fd; --tagrec:#86efac;
+    --recbg:rgba(22,163,74,.10); }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#17171a; --card:#212126; --ink:#ececf0; --muted:#a0a0a8; --line:#3a3a42;
-      --wait:#f59e0b; --done:#22c55e; --you:#60a5fa; --danger:#f87171; --accent:#60a5fa; } }
+      --wait:#f59e0b; --done:#22c55e; --you:#60a5fa; --danger:#f87171; --accent:#60a5fa;
+      --tagink:#0b1020; --tagwait:#f59e0b; --tagdone:#22c55e; --tagyou:#60a5fa; } }
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink);
     font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
   header { position:sticky; top:0; background:var(--card); border-bottom:1px solid var(--line);
@@ -442,8 +445,16 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
   .qcard.done { border-left-color:var(--done) }
   .qcard.done > * { opacity:.72 }
   .qcard.done .addcomment { opacity:1 }
-  .tag { font-size:12px; padding:2px 8px; border-radius:99px; color:#fff } /* P2 */
-  .tag.wait { background:var(--wait) } .tag.done { background:var(--done) } .tag.you { background:var(--you) }
+  /* Чипы: ТЁМНЫЕ чернила на ярком фоне. Белым по светло-зелёному/голубому цифры не читаются —
+     замерено, а не прикинуто: белый на фоне тёмной темы давал 2.15–2.54 при норме WCAG 4.5 для
+     мелкого текста; тёмные чернила дают 7.4–11.3 на всех шести фонах обеих тем. Фоны чипов —
+     СВОИ токены, а не семантические --wait/--done/--you: те же цвета нужны насыщенными для
+     полос и рамок, а под мелкий текст должны быть светлее. Оплачено словами владельца:
+     «плохой контраст, я не вижу цифр» (2026-08-08 07:38). */
+  .tag { font-size:12px; padding:2px 8px; border-radius:99px; color:var(--tagink); font-weight:600 }
+  .tag.wait { background:var(--tagwait) } .tag.done { background:var(--tagdone) } .tag.you { background:var(--tagyou) }
+  .tag.rec { background:var(--tagrec) }
+  .opt.rec { background:var(--recbg); border-radius:10px; padding:6px 10px; margin-left:-10px }
   /* I37: сообщение — свой чип и своя группа; полоса слева нейтральная (не «ждёт вас») */
   .tag.notice { background:var(--muted) }
   .noticehead { margin-top:28px; padding-top:10px; border-top:2px solid var(--line) }
@@ -569,20 +580,25 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
   const singleDoc = !batch && questions[0] ? questions[0].doc : null;
   // Одиночное сообщение: в липкой полосе — та самая ЯВНАЯ пометка (длинный отчёт прокручивают,
   // и кнопка обязана оставаться на виду); в пачке кнопка своя у каждого сообщения.
+  // Полоса говорит человеку о ЕГО действии и его последствиях — и молчит про устройство контура.
+  // Пояснения агента о собственной машинерии (пути файлов, коды инвариантов, «как это устроено»)
+  // на рабочем экране владельца запрещены: это не его забота и не его словарь. Слова, оплатившие
+  // правило: «нахуя мне в моём рабочем инструменте твои вот такие высеры?» (2026-08-08 07:35).
+  // Полоса витрины пуста, но присутствует в DOM: через неё говорят ошибки записи.
   const saveBar = index
-    ? '<div class="bar"><div id="status">Кликните карточку — документ откроется своим окном. Это окно остаётся: закроете его — контур завершится.</div></div>'
+    ? '<div class="bar" style="display:none"><div id="status"></div></div>'
     : noticeDoc
       ? '<div class="bar"><button id="save" type="button" data-doc="' + esc(noticeDoc) + '">' + NOTICE_READ_LABEL + '</button>' +
-        '<div id="status">Ответа не ждёт. Без пометки сообщение считается НЕ доставленным и придёт снова.</div></div>'
+        '<div id="status">Без пометки сообщение придёт снова.</div></div>'
       : '<div class="bar"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">Записать решение</button>' +
-        '<div id="status">Ответы уйдут в документ, решение — в ' + DECISIONS_DIR + '/</div></div>';
+        '<div id="status"></div></div>';
 
   return '<!doctype html>\n<html lang="ru"><head><meta charset="utf-8">' +
     '<title>' + PROJECT_NAME + ' · ' + esc(title) + '</title>' +
     '<link rel="icon" href="data:,"><style>' + css + '</style></head><body>' +
     '<header><span class="project">' + PROJECT_NAME + '</span>' + heading + '</header>' + // P9
     '<div id="banner"></div><main>' + main +
-    '<div id="rescue"><p class="err">Спасательный круг (I11): запись не прошла — ваш текст ниже, он не потерян.</p>' +
+    '<div id="rescue"><p class="err">Запись не прошла — ваш текст ниже, он не потерян.</p>' +
     '<textarea id="rescuetext" rows="8"></textarea>' +
     '<p><button class="ghost" id="copybtn" type="button">Скопировать</button> ' +
     '<button class="ghost" id="retry" type="button">Повторить запись</button></p></div>' +

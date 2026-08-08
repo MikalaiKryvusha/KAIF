@@ -569,6 +569,53 @@ async function main() {
         check('закрытие ВХОДНОЙ страницы завершает контур', fin !== null);
       } finally { rmTolerant(qRoot); }
     }
+    // ── QA9. Интерфейс владельца: контраст СЧИТАЕТСЯ, внутренности НЕ показываются ───────────
+    // Оба класса найдены владельцем на живой странице 2026-08-08 (07:35 и 07:38) и оба
+    // машинно-проверяемы — значит, проверяет их КОД, а не следующий взгляд человека.
+    block('QA9. Интерфейс: контраст чипов ≥ 4.5 и ноль внутренних кодов в тексте страницы');
+    {
+      const page = buildPage(fixtureRoot, 'interviews/interview_101_fixture.md').html;
+      // (а) Контраст: тёмный/светлый текст чипа против его фона в ОБЕИХ темах (WCAG 2.1, мелкий
+      //     текст 4.5:1). Белым по светлому чип давал 2.15 — цифры не читались.
+      const tok = (name) => [...page.matchAll(new RegExp('--' + name + ':\\s*(#[0-9a-f]{6})', 'gi'))].map((m) => m[1]);
+      const hx = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+      const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+      const lum = (h) => { const [r, g, b] = hx(h).map(lin); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+      const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+      const inks = tok('tagink');
+      const worst = [];
+      for (const kind of ['tagwait', 'tagdone', 'tagyou']) {
+        const bgs = tok(kind);
+        check('токены чипа --' + kind + ' объявлены для обеих тем', bgs.length >= 2, JSON.stringify(bgs));
+        bgs.forEach((bg, i) => worst.push({ kind, bg, r: ratio(inks[Math.min(i, inks.length - 1)] || '#000000', bg) }));
+      }
+      const bad = worst.filter((w) => w.r < 4.5);
+      check('контраст КАЖДОГО чипа ≥ 4.5:1 в обеих темах (цифры читаются)', bad.length === 0,
+        bad.map((b) => b.kind + '/' + b.bg + ' = ' + b.r.toFixed(2)).join(', '));
+      // (б) Ноль внутренних кодов в ВИДИМОМ тексте. Фикстура своих кодов не содержит, значит
+      //     любое совпадение пришло из обвязки страницы — то есть агент заговорил с человеком
+      //     своим служебным словарём.
+      const visible = page.replace(/<script[\s\S]*?<\/script>/g, ' ').replace(/<style[\s\S]*?<\/style>/g, ' ')
+        .replace(/<[^>]+>/g, ' ');
+      const codes = [...new Set((visible.match(/\b(?:I|P|G|C|DEF|QA)\d+\b/g) || []))];
+      check('интерфейс не говорит внутренними кодами (I11/P7/G3/DEF2…)', codes.length === 0, codes.join(', '));
+      // (в) И не пересказывает человеку устройство контура: слова машинерии на его экране.
+      const jargon = ['контур завершится', 'завершает контур', 'перезапуск пачки', 'decision.json',
+        'датированным блоком', 'interviews/decisions'].filter((w) => visible.includes(w));
+      check('интерфейс не пересказывает владельцу устройство машинерии', jargon.length === 0, jargon.join(' · '));
+      // (г) Рекомендация видна НА варианте, а не только прозой: букву из абзаца в кнопку человек
+      //     переводить не должен. Проверяем на ЖИВОМ интервью, где рекомендация объявлена прозой.
+      const liveRec = buildPage(ROOT, 'interviews/interview_013_language_packs_scope.md');
+      const withRec = liveRec.questions.filter((q) => q.recommended);
+      check('рекомендация распознана в прозе вопросов живого документа', withRec.length > 0);
+      const misplaced = withRec.filter((q) => {
+        const marked = q.options.filter((o) => o.recommended);
+        return marked.length !== 1 || marked[0].letter !== q.recommended;
+      });
+      check('чип «рекомендую» стоит ровно на одном варианте — том самом', misplaced.length === 0,
+        misplaced.map((q) => q.id).join(', '));
+      check('чип рекомендации доезжает до HTML страницы', /class="tag rec"/.test(liveRec.html));
+    }
   } finally {
     block('11. Уборка (C10-блок 11, QA6)');
     if (browser) { browser.proc.kill('SIGKILL'); check('браузер погашен', true); }
