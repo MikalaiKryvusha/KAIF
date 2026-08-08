@@ -111,11 +111,18 @@ function pullPublicQuote(address) {
   return text;
 }
 
-/** Момент снятия слепка — из git приватного ядра: коммит и его дата. Наблюдение, не память. */
+/**
+ * Момент снятия слепка — из git приватного ядра: коммит и его дата. Наблюдение, не память.
+ * Якорь взят по САМОМУ ФАЙЛУ портрета, а не по HEAD репозитория: ядро живёт своей жизнью
+ * (README, корпуса, методология), и коммит, не тронувший портрет, не имеет права объявлять
+ * слепок протухшим. Оплачено сразу: правка README ядра в день рождения инструмента заставила бы
+ * сверку краснеть на изменении, к портрету не относящемся.
+ */
 function sourceProvenance(sourcePath) {
   const dir = sourcePath.replace(/\/[^/]+$/, '');
+  const file = sourcePath.replace(/^.*\//, '');
   try {
-    const out = execFileSync('git', ['-C', dir, 'log', '-1', '--format=%h|%cI'], {
+    const out = execFileSync('git', ['-C', dir, 'log', '-1', '--format=%h|%cI', '--', file], {
       encoding: 'utf8',
     }).trim();
     const [sha, date] = out.split('|');
@@ -272,7 +279,9 @@ function versionCheck(sourcePath) {
   let ahead = '';
   try {
     const dir = sourcePath.replace(/\/[^/]+$/, '');
-    const n = execFileSync('git', ['-C', dir, 'rev-list', '--count', `${snapSha}..HEAD`], {
+    const file = sourcePath.replace(/^.*\//, '');
+    // Счёт — тоже ТОЛЬКО по портрету: сколько раз он менялся с момента слепка.
+    const n = execFileSync('git', ['-C', dir, 'rev-list', '--count', `${snapSha}..HEAD`, '--', file], {
       encoding: 'utf8',
     }).trim();
     if (n && n !== '0') ahead = `, ядро ушло вперёд на ${n} коммит(ов)`;
