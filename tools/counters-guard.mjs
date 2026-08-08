@@ -62,6 +62,15 @@ function liveNumbers() {
   // языковые пакеты. Их числа жили в тексте рукописными и разошлись молча — «девять адаптеров»
   // при десяти файлах, «шесть README директорий» при семи. Оба берутся из каталога, как всё
   // остальное на этой оси: счётчик прозы имеет право быть только ЦИТАТОЙ артефакта.
+  // Контуры и принципы: числа с ВИТРИННЫХ бейджей (просьба владельца 2026-08-09). Живые источники —
+  // инвентарь контуров во внутренней карте и заголовки принципов в PHILOSOPHY; бейдж с рукописным
+  // числом протух бы первым, потому что его никто не перечитывает.
+  const mapText = readFileSync(join(ROOT, 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), 'utf8');
+  const contours = (mapText.match(/^\| \*\*[^*]*онтур[^*]*\*\*/gm) || [])
+    .filter((l) => !/\| \*\*Контур\*\*/.test(l)).length;   // строка-заголовок таблицы не контур
+  // Принципы: прайм-директива простоты (KISS + Оккам) плюс заголовки расширенного набора.
+  const principles = (readFileSync(join(ROOT, 'PHILOSOPHY.md'), 'utf8').match(/^### /gm) || []).length + 1;
+
   const adaptersDir = join(fw, 'adapters');
   const adapters = readdirSync(adaptersDir)
     .filter((n) => n.endsWith('.md') && !n.startsWith('_')).length;   // _index/_template — не адаптеры
@@ -72,7 +81,7 @@ function liveNumbers() {
   const suitesBlock = suite.match(/const SUITES = \[([\s\S]*?)\];/);
   const suites = suitesBlock ? (suitesBlock[1].match(/'s\d+/g) || []).length : 0;
 
-  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites, adapters, langs };
+  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites, adapters, langs, contours, principles };
 }
 
 // --- зеркала ----------------------------------------------------------------
@@ -96,6 +105,11 @@ const MIRRORS = [
   // §8.2 раскладки репозитория — ОБЕ половины. Числа здесь переведены в цифры намеренно:
   // прописью их пришлось бы стеречь словарём на двух языках, а цифра сверяется одним регэкспом.
   // Это дешевле и честнее — зеркало, которое трудно проверить, не проверяют вовсе.
+  // Бейджи витрины: число стоит В URL картинки, поэтому паттерн ловит его там.
+  { name: 'README EN — бейдж контуров', file: 'README.md', re: /badge\/Contours-(\d+)-/, keys: ['contours'] },
+  { name: 'README RU — бейдж контуров', file: 'README.md', re: /badge\/Контуров-(\d+)-/, keys: ['contours'] },
+  { name: 'README EN — бейдж принципов', file: 'README.md', re: /badge\/Principles-(\d+)-/, keys: ['principles'] },
+  { name: 'README RU — бейдж принципов', file: 'README.md', re: /badge\/Принципов-(\d+)-/, keys: ['principles'] },
   { name: 'README EN — §8.2 README директорий', file: 'README.md',
     re: /(\d+) directory READMEs/, keys: ['readmes'] },
   { name: 'README RU — §8.2 README директорий', file: 'README.md',
