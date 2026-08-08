@@ -2852,7 +2852,7 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 ``````md
 ---
 name: code-revision
-description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code by axis, run parallel reviewers each armed with the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. The run leaves audit reports in `reports/KAIF_AUDIT/` grouped by finding family, each finding written as a contract a weaker model can execute. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or on the cadence the project sets (e.g., every N weeks); distilled from two field audits (KLAS and NDim) that found every real defect OUTSIDE what gates could see.
+description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code by axis, run parallel reviewers each armed with the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. The run leaves audit reports in `reports/KAIF_AUDIT/` grouped by finding family, each finding written as a contract a weaker model can execute. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or on the cadence the project sets (e.g., every N weeks); distilled from two field audits (project C and project A) that found every real defect OUTSIDE what gates could see.
 ---
 
 # /code-revision — the periodic reading revision
@@ -3755,7 +3755,7 @@ Verification has two halves, and a third when you fixed a defect:
 - **(b)** the surrounding system still works: existing tests, build, or lint for the touched area. A green targeted check with a broken build is a failed verification.
 - **(c) Twin check, whenever you fixed a defect.** A bug found in one place is presumed to recur elsewhere until you have searched. Name the exact wrong construct, search the whole project for it, and write one line that must appear verbatim in your report: `TWINS: searched <the pattern> - found <N> other sites: <files, or "none">`. Fix them or list them; a completeness claim with no search behind it is failure mode 14.
 
-**KAIF patch — the craft slots (KAIF 2.1, not upstream; distilled from two independent field audits, KLAS + NDim).** Weak sessions fail on CRAFT, not on intent: the rule they need exists in some list, but no one asks it at the moment of writing. Each slot below fires only on its trigger, and then its line appears verbatim in the report:
+**KAIF patch — the craft slots (KAIF 2.1, not upstream; distilled from two independent field audits, project C + project A).** Weak sessions fail on CRAFT, not on intent: the rule they need exists in some list, but no one asks it at the moment of writing. Each slot below fires only on its trigger, and then its line appears verbatim in the report:
 
 - `TWINS-MECH:` — alongside every `TWINS:` line: state the defect's MECHANISM in one sentence with NO property/function names, list every syntax that mechanism can wear, grep each. A grep for the fixed line finds copies of the line, not copies of the defect (field: `drop-shadow` got fixed while `text-shadow`/`box-shadow` of the same mechanism survived).
 - **Moved logic owes a removal table.** Any refactor that extracts/moves logic produces the list of the OLD path's consumers (grep) with a verdict per row: *switched / removed / consciously kept*. Without the table the move is NOT complete — weak models fill tables reliably and "remember about duplicates" never (field: an extracted normalization layer left the old guard alive on the live path, resurrecting a closed bug).
@@ -4884,7 +4884,7 @@ Until one fires — don't stop, don't wait for confirmations, work.
 ``````md
 ---
 name: owner-reviews
-description: Deploy the interactive review contour "agent ↔ owner" — everything the agent wants from the owner (forks, reviews, approvals, answers) rendered as local HTML pages with recorded one-click decisions, a send-side approval gate, signaling, and accumulation for autonomous loops. Optional sugar on top of the hard canon rule "the place of questions is interviews/" (AGENT_GUIDE.md). Use when the owner asks to move approvals to rendered pages ("render my interviews", "set up owner reviews", "сделай вычитку страницей") or when a project adopts the place-of-questions practice with tooling. KAIF fixes the methodology (what must hold); the project's agent builds the tools (how). Field-proven contour (Nogamelabs: "Мне нравится. Получилось удобно").
+description: Deploy the interactive review contour "agent ↔ owner" — everything the agent wants from the owner (forks, reviews, approvals, answers) rendered as local HTML pages with recorded one-click decisions, a send-side approval gate, signaling, and accumulation for autonomous loops. Optional sugar on top of the hard canon rule "the place of questions is interviews/" (AGENT_GUIDE.md). Use when the owner asks to move approvals to rendered pages ("render my interviews", "set up owner reviews", "сделай вычитку страницей") or when a project adopts the place-of-questions practice with tooling. KAIF fixes the methodology (what must hold); the project's agent builds the tools (how). Field-proven contour (project E: "Мне нравится. Получилось удобно").
 ---
 
 # /owner-reviews — the owner-review contour
@@ -5441,7 +5441,7 @@ server that outlives the silence threshold → red.
 ``````md
 ---
 name: owner-voice
-description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
+description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (project B, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
 ---
 
 # /owner-voice — the owner's voice
@@ -7127,7 +7127,7 @@ function cmdSelftest() {
 //    deployments seed "canonArtifacts": [] — the conscious "no canon yet" state)
 // Localized mark pairs (translated wrappers) — also in .kaif/kaif.json:
 //   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog open tags; closers are
-//   derived ([ИИ] → [/ИИ]); the English pair is always recognized too (bug 34, Unliminium Г8).
+//   derived ([ИИ] → [/ИИ]); the English pair is always recognized too (bug 34, project B Г8).
 // Exit codes: 0 = gate ran green · 1 = violations · 3 = SKIPPED (no canonArtifacts KEY —
 //   nothing was proven; check and report agree on this, bug 34 / field report KCam Г7).
 //
@@ -7166,7 +7166,7 @@ const EXIT_SKIPPED = 3;
 // The deployment's marker carries the whole convention: the canon declaration AND the
 // LOCALIZED mark pairs. A wholesale-translated wrapper marks its text [ИИ]…[/ИИ], and a
 // scanner that knows only the English pair reports "✅ no AI text awaits acceptance" over 91
-// waiting blocks — the worst failure direction (bug 34, Unliminium Г8). Declare in kaif.json:
+// waiting blocks — the worst failure direction (bug 34, project B Г8). Declare in kaif.json:
 //   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog OPEN tags; closers are
 //                                       derived ([ИИ] → [/ИИ]); the English pair always works.
 function readMarker() {
@@ -7293,7 +7293,7 @@ function parseMarks(path) {
 
 // The machinery's own transients (tasks, the thin entry point) legally QUOTE the mark
 // convention while describing release news — scanning them red-flagged the gate on the
-// machinery's own output (bug 34, Unliminium Г7).
+// machinery's own output (bug 34, project B Г7).
 const TRANSIENTS = ['KAIF.md', 'KAIF_UPDATE_TASK.md', 'KAIF_ADAPTATION_TASK.md', 'KAIF_UPDATE_TASK.superseded.md'];
 function* walkMd(dir = '.') {
   for (const n of readdirSync(dir)) {

@@ -4,8 +4,8 @@
   "released": "2026-08-08",
   "codename": "Yolden KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "39443722f3b39037c977da289060f2ca0117fd611c8f314e8b148d60cb84f289",
-    "KAIF-CORE-BUNDLE.md": "4dfc28e7c8751227fdf7b7c3cbec1cf524c654523cabf9a9faaffa1285e2be28"
+    "KAIF-CORE.mjs": "8d1045b5f046c895fc54c77fa7013f95552d337bc44a652ecf2f490e626166a0",
+    "KAIF-CORE-BUNDLE.md": "ff22da3828d293e8382c51b4b2351007d5336299ee3139014de6cb171169c39c"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

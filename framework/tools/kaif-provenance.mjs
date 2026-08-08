@@ -21,7 +21,7 @@
 //    deployments seed "canonArtifacts": [] — the conscious "no canon yet" state)
 // Localized mark pairs (translated wrappers) — also in .kaif/kaif.json:
 //   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog open tags; closers are
-//   derived ([ИИ] → [/ИИ]); the English pair is always recognized too (bug 34, Unliminium Г8).
+//   derived ([ИИ] → [/ИИ]); the English pair is always recognized too (bug 34, project B Г8).
 // Exit codes: 0 = gate ran green · 1 = violations · 3 = SKIPPED (no canonArtifacts KEY —
 //   nothing was proven; check and report agree on this, bug 34 / field report KCam Г7).
 //
@@ -60,7 +60,7 @@ const EXIT_SKIPPED = 3;
 // The deployment's marker carries the whole convention: the canon declaration AND the
 // LOCALIZED mark pairs. A wholesale-translated wrapper marks its text [ИИ]…[/ИИ], and a
 // scanner that knows only the English pair reports "✅ no AI text awaits acceptance" over 91
-// waiting blocks — the worst failure direction (bug 34, Unliminium Г8). Declare in kaif.json:
+// waiting blocks — the worst failure direction (bug 34, project B Г8). Declare in kaif.json:
 //   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog OPEN tags; closers are
 //                                       derived ([ИИ] → [/ИИ]); the English pair always works.
 function readMarker() {
@@ -187,7 +187,7 @@ function parseMarks(path) {
 
 // The machinery's own transients (tasks, the thin entry point) legally QUOTE the mark
 // convention while describing release news — scanning them red-flagged the gate on the
-// machinery's own output (bug 34, Unliminium Г7).
+// machinery's own output (bug 34, project B Г7).
 const TRANSIENTS = ['KAIF.md', 'KAIF_UPDATE_TASK.md', 'KAIF_ADAPTATION_TASK.md', 'KAIF_UPDATE_TASK.superseded.md'];
 function* walkMd(dir = '.') {
   for (const n of readdirSync(dir)) {
