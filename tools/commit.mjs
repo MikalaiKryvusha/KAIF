@@ -48,7 +48,17 @@ const v = JSON.parse(readFileSync(vf, 'utf8'));
 v.build = (v.build || 0) + 1;
 writeFileSync(vf, JSON.stringify(v, null, 2) + '\n');
 
-const trailer = 'Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>';
+// Со-авторский трейлер несёт ФАКТИЧЕСКОЕ имя работающей модели — решение владельца №54
+// (интервью №012, Q1 = B, 2026-08-08 06:48 +03:00): «по git log видно, кто что делал».
+// Имя приходит ИЗВНЕ — от сессии, которая одна его и знает: `--as "<имя>"` или KAIF_AGENT_MODEL.
+// Зашитой константы больше нет по построению: имя модели протухает, а зашитое протухает молча
+// (тот же механизм, что вскрыла T1 на счётчиках, EXP-0044).
+// Имени не дали — трейлер НЕ ПИШЕТСЯ и инструмент говорит об этом вслух: выдуманное авторство
+// хуже отсутствующего (PHILOSOPHY → правило трёх дверей: пробел не закрывается правдоподобной
+// выдумкой). Коммит при этом проходит — гейт авторства не должен останавливать работу.
+const asIdx = process.argv.indexOf('--as');
+const agentName = (asIdx >= 0 ? process.argv[asIdx + 1] : process.env.KAIF_AGENT_MODEL || '').trim();
+const trailer = agentName ? `Co-Authored-By: ${agentName} <noreply@anthropic.com>` : '';
 const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
 
 run('git add -A');
@@ -60,7 +70,11 @@ const tmpMsg = join(tmpdir(), `kaif-commit-msg-${process.pid}.txt`);
 // случай: трейлер с ДРУГИМ именем модели проскакивал мимо `includes` и коммит уходил с двумя
 // со-авторами, один из которых работу не делал).
 // [TESTED: 2026-08-08 · коммит bugs/50 нёс трейлер «Claude Opus 5» — в git log он один]
-writeFileSync(tmpMsg, /^Co-Authored-By:/mi.test(msg) ? msg + '\n' : msg + '\n\n' + trailer + '\n');
+if (!trailer && !/^Co-Authored-By:/mi.test(msg)) {
+  console.error('⚠️  имя модели не передано — коммит уйдёт БЕЗ Co-Authored-By (решение №54: пишем ' +
+    'фактическое имя, выдумывать запрещено). Передай: --as "<имя модели>" или KAIF_AGENT_MODEL=<имя>.');
+}
+writeFileSync(tmpMsg, (/^Co-Authored-By:/mi.test(msg) || !trailer) ? msg + '\n' : msg + '\n\n' + trailer + '\n');
 try {
   run(`git commit -F "${tmpMsg}"`);
 } finally {

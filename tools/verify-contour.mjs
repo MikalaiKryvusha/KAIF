@@ -520,6 +520,55 @@ async function main() {
     } catch (e) {
       check('QA7 исполнился', false, e.message); // причина падения — в строку, не в маску
     }
+    // ── QA8. Форма ОЧЕРЕДИ: входная страница-карточки → документ своим окном (bugs/52) ────────
+    // Постановка владельца (2026-08-08 ≈07:08 +03:00). Прогон живой: поднимаем контур на
+    // фикстуре из ДВУХ документов и проверяем то, что прежняя форма ломала, — что запись по
+    // одному документу не уносит с экрана остальные. Проверок формы здесь нет: проверяется
+    // ПОВЕДЕНИЕ на настоящем сервере, потому что прошлый дефект пережил и своды, и приёмку.
+    block('QA8. Очередь: карточки → документ своим окном; запись одного не рушит остальные (bugs/52)');
+    {
+      const qRoot = join(tmpdir(), 'kaif-verify-queue');
+      rmSync(qRoot, { recursive: true, force: true });
+      mkdirSync(join(qRoot, 'interviews'), { recursive: true });
+      const hdr = (n) => `# Interview #${n} — фикстура очереди ${n}\n\n> Topic: форма очереди.\n> Status: **🟡 WAITING FOR OWNER**\n\n`;
+      const qq = (id) => `## ${id}. Вопрос ${id}?\n\n| Вариант | Что означает |\n|---|---|\n| **A** | первый |\n| **B** | второй |\n\n`;
+      writeFileSync(join(qRoot, 'interviews', 'interview_201_a.md'), hdr(201) + qq('Q1') + qq('Q2'));
+      writeFileSync(join(qRoot, 'interviews', 'interview_202_b.md'), hdr(202) + qq('Q1'));
+      let qUrl = null;
+      serveContour._onUp = (u) => { qUrl = u; };
+      const qDone = serveContour(qRoot, { batch: true }, { open: false, signal: false, log: () => {} });
+      while (!qUrl) await sleep(40);
+      const base = qUrl.replace(/\/$/, '');
+      const get = async (p) => (await fetch(base + p)).text();
+      const post = async (p, b) => (await fetch(base + p,
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) })).json();
+      try {
+        const idx = await get('/');
+        const cards = [...idx.matchAll(/href="\/d\/([^"]+)"/g)].map((m) => decodeURIComponent(m[1]));
+        check('входная страница: карточка на документ (2 из 2)', cards.length === 2, JSON.stringify(cards));
+        check('входная страница НЕ несёт вопросов (ноль радиокнопок)', !/type="radio"/.test(idx));
+        check('карточка открывает документ ОТДЕЛЬНЫМ окном (target=_blank)', /target="_blank"/.test(idx));
+        const docA = await get('/d/' + encodeURIComponent('interviews/interview_201_a.md'));
+        check('страница документа: 4 радиокнопки (2 вопроса × 2 варианта)',
+          (docA.match(/type="radio"/g) || []).length === 4);
+        const bad = await fetch(base + '/d/' + encodeURIComponent('../../secrets.md'));
+        check('путь вне очереди отвергнут (адресная строка не читает репозиторий)', bad.status === 404);
+        const r1 = await post('/decide', { doc: 'interviews/interview_201_a.md', answers: { Q1: { choice: 'A' }, Q2: { choice: 'B' } }, comment: '' });
+        check('запись первого документа прошла и назвала остаток', r1.ok === true && r1.more === 1, JSON.stringify(r1));
+        await fetch(base + '/closed', { method: 'POST', body: 'doc:saved' });
+        await sleep(700);
+        let alive = false;
+        try { alive = (await fetch(base + '/alive')).ok; } catch { alive = false; }
+        check('КОНТУР ЖИВ после записи одного документа и закрытия его окна (bugs/52)', alive);
+        const idx2 = await get('/');
+        const cards2 = [...idx2.matchAll(/href="\/d\/([^"]+)"/g)].map((m) => decodeURIComponent(m[1]));
+        check('отвеченный документ ушёл с витрины владельца, остался второй',
+          cards2.length === 1 && cards2[0] === 'interviews/interview_202_b.md', JSON.stringify(cards2));
+        await fetch(base + '/closed', { method: 'POST', body: 'index:unsaved' });
+        const fin = await Promise.race([qDone, sleep(9000).then(() => null)]);
+        check('закрытие ВХОДНОЙ страницы завершает контур', fin !== null);
+      } finally { rmTolerant(qRoot); }
+    }
   } finally {
     block('11. Уборка (C10-блок 11, QA6)');
     if (browser) { browser.proc.kill('SIGKILL'); check('браузер погашен', true); }

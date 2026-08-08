@@ -180,8 +180,13 @@ export function pendingDocs(root) {
     if (seen.has(rel) || noticeDocs.has(rel) || !existsSync(resolve(root, rel))) return;
     seen.add(rel);
     const md = readFileSync(resolve(root, rel), 'utf8');
-    const unanswered = parseQuestions(md).filter((q) => !q.answered);
-    if (unanswered.length > 0 || docStatus(md) === 'waiting') out.push({ doc: rel, unanswered: unanswered.length });
+    const qs = parseQuestions(md);
+    const unanswered = qs.filter((q) => !q.answered);
+    // `questions` — полное число вопросов документа: по нему отличается «владелец ещё не ответил»
+    // от «ответил, а статус не обновлён» (долг АГЕНТА, его ловит questions-guard). Витрине
+    // владельца нужно первое, стражу — оба.
+    if (unanswered.length > 0 || docStatus(md) === 'waiting')
+      out.push({ doc: rel, unanswered: unanswered.length, questions: qs.length });
   };
   const ivDir = resolve(root, 'interviews');
   if (existsSync(ivDir))
@@ -319,6 +324,45 @@ export function buildQueuePage(root, docs, notices = pendingNotices(root)) {
   return { html, questions, total, notices: notices.length };
 }
 
+// ── ВХОДНАЯ СТРАНИЦА ОЧЕРЕДИ: только карточки (bugs/52, форма задана владельцем) ────────────
+// Постановка владельца дословно (чат 2026-08-08 ≈07:08 +03:00): «Должна быть входная страница -
+// которая показывает документы только в виде карточек - из неё я кликаю по карточке документа и
+// открываю обычное интервью интерактивное в отдельном браузере».
+// Почему прежняя форма (все документы одной простынёй) была неверна не только на вкус: запись по
+// одному документу закрывала ОКНО ЦЕЛИКОМ, унося с экрана ещё не отвеченные документы, а очистка
+// черновиков шла по ключу всей пачки — набранное по соседним документам стиралось. Карточки
+// разводят документы по отдельным окнам, и работа человека перестаёт зависеть от чужого исхода.
+export function buildIndexPage(root, docs, notices = []) {
+  const card = (rel, kindLabel, pendingLabel, cls) => {
+    const md = readFileSync(resolve(root, rel), 'utf8');
+    const meta = parseMetaBlock(md);
+    return '<a class="card ' + cls + '" href="/d/' + encodeURIComponent(rel) + '" target="_blank" rel="noopener">' +
+      '<span class="ckind">' + esc(kindLabel) + '</span>' +
+      '<span class="ctitle">' + esc((meta && meta.title) || docTitle(md, rel)) + '</span>' +
+      '<span class="cmeta">' + esc(rel) + '</span>' +
+      '<span class="cpend">' + esc(pendingLabel) + '</span>' +
+      '<span class="cgo">открыть →</span></a>';
+  };
+  const qCards = docs.map((d) => card(d.doc, 'интервью', d.unanswered > 0
+    ? d.unanswered + ' вопрос(ов) без ответа' : 'ждёт статусом', 'wait'));
+  const nCards = notices.map((n) => card(n.doc, NOTICE_KIND_LABEL, 'не прочитано', 'notice'));
+  const total = docs.reduce((s, d) => s + d.unanswered, 0);
+  const counts = (docs.length + notices.length) + ' документ(ов) · ' + total + ' неотвеченных вопрос(ов)' +
+    (notices.length ? ' · ' + notices.length + ' непрочитанных сообщени(й)' : '');
+  const main = '<p class="lead">Каждый документ открывается СВОИМ окном — запись по одному не трогает остальные.</p>' +
+    '<div class="cards">' + qCards.join('\n') +
+    (nCards.length ? '<h2 class="noticehead">' + NOTICE_GROUP_TITLE + ' (' + nCards.length + ')</h2>' + nCards.join('\n') : '') +
+    '</div>' +
+    (qCards.length + nCards.length === 0 ? '<p>Очередь пуста — отвечать нечего.</p>' : '');
+  const html = pageShell({
+    title: 'Накопилось: ' + counts,
+    kind: 'очередь',
+    heading: '<span class="kind">очередь</span><span>Накопилось: ' + counts + '</span>',
+    main, questions: [], index: true,
+  });
+  return { html, questions: [], total, notices: notices.length };
+}
+
 const esc = (s) => String(s).replace(/</g, '&lt;');
 const docCommentBlock = (rel) =>
   '<h3>Комментарий по документу целиком</h3>' + // P7: легитимный исход вычитки сам по себе
@@ -364,12 +408,14 @@ function qCard(q) {
     existing + opts + inputs + '</section>';
 }
 
-function pageShell({ title, kind, heading, main, questions, batch = false, notices = [], noticeDoc = null }) {
+function pageShell({ title, kind, heading, main, questions, batch = false, notices = [], noticeDoc = null, index = false }) {
   const qjson = JSON.stringify(questions).replace(/</g, '\\u003c');
   const cfg = JSON.stringify({
-    batch, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
+    batch, index, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
     notices, // I37: документы этого класса шлют пометку «прочитано», а не ответы
-    draftKey: 'owner-review:' + (batch ? 'queue' : (questions[0] && questions[0].doc) || noticeDoc || title),
+    // Ключ черновиков — ПО ДОКУМЕНТУ, никогда по пачке (bugs/52): общий ключ означал, что запись
+    // одного документа стирает набранное по соседним.
+    draftKey: 'owner-review:' + ((questions[0] && questions[0].doc) || noticeDoc || (index ? 'index' : title)),
   }).replace(/</g, '\\u003c');
   // P5: обе темы через prefers-color-scheme, цвета — переменные; контраст заложен в парах.
   const css = `
@@ -404,6 +450,20 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
   .group.notice { border-left:5px solid var(--muted); border-radius:10px; padding-left:14px }
   /* Полевые правки пилота 008: радио большие и выразительные; текст варианта на одной линии
      с кнопкой (маргины абзацев внутри флекса роняли текст ниже кнопки — «вёрстка разъехалась») */
+  /* Входная страница очереди (bugs/52): карточка — крупная кликабельная цель, а не ссылка-строка;
+     статус ожидания виден без открытия документа. */
+  .lead { color:var(--muted); margin:0 0 18px }
+  .cards { display:grid; gap:14px }
+  .card { display:grid; gap:6px; padding:18px 20px; background:var(--card); border:1px solid var(--line);
+    border-left:6px solid var(--wait); border-radius:12px; text-decoration:none; color:var(--ink) }
+  .card:hover { border-color:var(--accent); border-left-color:var(--accent) }
+  .card.notice { border-left-color:var(--you) }
+  .ckind { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted) }
+  .ctitle { font-size:19px; font-weight:600; line-height:1.35 }
+  .cmeta { font-size:13px; color:var(--muted); font-family:ui-monospace,Consolas,monospace }
+  .cpend { font-size:14px; color:var(--wait); font-weight:600 }
+  .card.notice .cpend { color:var(--you) }
+  .cgo { font-size:14px; color:var(--accent) }
   .opt { display:flex; gap:12px; align-items:flex-start; margin:10px 0; cursor:pointer }
   .opt input[type=radio] { width:22px; height:22px; flex:0 0 auto; margin-top:0;
     accent-color:var(--accent); cursor:pointer }
@@ -496,19 +556,24 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
     "  if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2);enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
     // I14/DEF6: закрытие страницы — СОБЫТИЕ для сервера (быстрый путь — маячок)
+    // Маячок называет РОЛЬ окна (bugs/52): контур завершает закрытие ВХОДНОЙ страницы, а закрытое
+    // окно документа — обычное событие внутри сессии, а не её конец.
     "window.addEventListener('pagehide',function(){if(closeTimer)clearTimeout(closeTimer);",
-    " try{navigator.sendBeacon('/closed',saved?'saved':'unsaved')}catch(e){}});",
+    " try{navigator.sendBeacon('/closed',(CFG.index?'index':'doc')+':'+(saved?'saved':'unsaved'))}catch(e){}});",
+    // Входная страница перечитывается при возврате фокуса — отвеченный документ уходит с неё сам,
+    // и человеку не нужно догадываться, обновилась ли очередь.
+    "if(CFG.index)window.addEventListener('focus',function(){location.reload()});",
     "restoreDraft();",
   ].join('\n');
 
   const singleDoc = !batch && questions[0] ? questions[0].doc : null;
   // Одиночное сообщение: в липкой полосе — та самая ЯВНАЯ пометка (длинный отчёт прокручивают,
   // и кнопка обязана оставаться на виду); в пачке кнопка своя у каждого сообщения.
-  const saveBar = noticeDoc
-    ? '<div class="bar"><button id="save" type="button" data-doc="' + esc(noticeDoc) + '">' + NOTICE_READ_LABEL + '</button>' +
-      '<div id="status">Ответа не ждёт. Без пометки сообщение считается НЕ доставленным и придёт снова.</div></div>'
-    : batch
-      ? '<div class="bar"><div id="status">Кнопка записи — у каждого документа своя; запись закрывает контур, остаток пачки агент поднимет снова (I8).</div></div>'
+  const saveBar = index
+    ? '<div class="bar"><div id="status">Кликните карточку — документ откроется своим окном. Это окно остаётся: закроете его — контур завершится.</div></div>'
+    : noticeDoc
+      ? '<div class="bar"><button id="save" type="button" data-doc="' + esc(noticeDoc) + '">' + NOTICE_READ_LABEL + '</button>' +
+        '<div id="status">Ответа не ждёт. Без пометки сообщение считается НЕ доставленным и придёт снова.</div></div>'
       : '<div class="bar"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">Записать решение</button>' +
         '<div id="status">Ответы уйдут в документ, решение — в ' + DECISIONS_DIR + '/</div></div>';
 
@@ -552,8 +617,16 @@ function checkLock(root, key) {
 export function serveContour(root, { docPath = null, batch = false, notice = false }, opts = {}) {
   const { open = true, signal = true, timeoutMs = 0, log = console.log } = opts; // I9: дефолт 0 — без таймаута
   return new Promise((resolveP) => {
-    const build = () => batch ? buildQueuePage(root, pendingDocs(root))
+    // В режиме очереди корневая страница — ВХОДНАЯ (карточки); тела документов живут на /d/<rel>.
+    // Витрина владельца показывает то, что ждёт ЕГО: документ, где он уже ответил на все вопросы,
+    // уходит с неё сразу — иначе он приглашён отвечать дважды. Документ без вопросов, но со
+    // статусом «ждёт», остаётся: его ожидание адресовано именно человеку.
+    const forOwner = () => pendingDocs(root).filter((d) => !(d.questions > 0 && d.unanswered === 0));
+    const build = () => batch ? buildIndexPage(root, forOwner(), pendingNotices(root))
       : notice ? buildNoticePage(root, docPath) : buildPage(root, docPath);
+    // Страница одного документа внутри режима очереди: класс определяет файл состояния, а не URL.
+    const buildDoc = (rel) => (readQueue(root).some((i) => i.doc === rel && isNoticeItem(i))
+      ? buildNoticePage(root, rel) : buildPage(root, rel));
     const first = build();
     const lockKey = batch ? '_queue' : basename(docPath);
     const held = checkLock(root, lockKey);
@@ -576,6 +649,16 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       if (req.method === 'GET' && req.url === '/') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(build().html); // I1: всегда свежая сборка из md
+      } else if (req.method === 'GET' && batch && req.url.startsWith('/d/')) {
+        // Документ отдельным окном (bugs/52). Путь принимается ТОЛЬКО из текущей очереди —
+        // иначе адресная строка стала бы способом прочитать любой файл репозитория.
+        const rel = decodeURIComponent(req.url.slice('/d/'.length));
+        const allowed = pendingDocs(root).some((d) => d.doc === rel) ||
+          pendingNotices(root).some((n) => n.doc === rel);
+        if (!allowed) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('Документа нет в очереди: ' + rel); return; }
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(buildDoc(rel).html);
       } else if (req.method === 'GET' && req.url === '/alive') {
         lastAlive = Date.now(); strikes = 0;
         if (beaconTimer) { clearTimeout(beaconTimer); beaconTimer = null; } // страница вернулась (T3)
@@ -605,11 +688,24 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             }
             const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment });
             const nAns = Object.keys(record.answers || {}).length;
-            ok({ ok: true, written: doc + ' + decision.json + архив (' + nAns + ' ответ(ов))' });
-            outcome = 'decision recorded';
             const rest = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
-            log('Исход: решение записано (' + doc + ', ' + nAns + ' ответов, by ' + record.by + ') — завершаю контур (I8).' +
-              (rest > 0 ? ' В очереди осталось документов: ' + rest + ' — перезапуск пачки за агентом.' : ''));
+            // ПАЧКА НЕ ЗАКРЫВАЕТСЯ НА ПЕРВОМ ЖЕ ДОКУМЕНТЕ (bugs/52). Полевой отказ владельца
+            // 2026-08-08 ≈07:05 +03:00: «я нажал запись решений по документу — закрылся весь
+            // браузер, а там ещё ниже вопросы были». Прежняя ветка завершала контур ВСЕГДА и
+            // перекладывала перезапуск на агента — со стороны человека это выглядит как исчезнувшее
+            // окно посреди работы, то есть ровно то, чего вектор цели 2.2 обещает не допускать.
+            // Теперь: остались документы с неотвеченными вопросами → сервер ЖИВЁТ, страница
+            // перечитывается и показывает остаток; контур завершается, когда отвечать больше нечего.
+            ok({ ok: true, written: doc + ' + decision.json + архив (' + nAns + ' ответ(ов))', more: rest, doc });
+            outcome = 'decision recorded';
+            if (rest > 0) {
+              log('Записано: ' + doc + ' (' + nAns + ' ответов, by ' + record.by +
+                '). В очереди осталось документов: ' + rest + ' — страница ОСТАЁТСЯ открытой, контур ждёт.');
+              outcome = null;  // контур не завершён: исход ещё впереди
+              return;
+            }
+            log('Исход: решение записано (' + doc + ', ' + nAns + ' ответов, by ' + record.by +
+              ') — очередь пуста, завершаю контур (I8).');
             setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED); // DEF3: окно успевает закрыться
           } catch (e) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -623,6 +719,13 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         req.on('end', () => {
           ok({ ok: true });
           if (outcome) return; // уже записано — смерть по расписанию DEF3
+          // bugs/52: в режиме очереди контур завершает только закрытие ВХОДНОЙ страницы. Окно
+          // документа закрывается штатно (после записи или без неё) и сессию не оканчивает —
+          // иначе человек, закрывший одно интервью, терял бы всю очередь.
+          if (batch && !String(body).startsWith('index')) {
+            log('Окно документа закрыто — входная страница очереди остаётся, контур ждёт.');
+            return;
+          }
           if (beaconTimer) clearTimeout(beaconTimer);
           beaconTimer = setTimeout(() => { // T3: ~3 с — вернётся ли страница после перезагрузки
             outcome = unreadOutcome();
