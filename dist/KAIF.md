@@ -23,14 +23,15 @@
    Add, if you wish:
    - **Working language** (default English): *"Working language: Russian."* — owner-facing docs come
      out in your language; agent-internal docs stay English (LLMs read it best).
-   - **Install mode** (default standard): *"Install mode: anonymous."* — deploys with no origin
-     tracking and no author references, by design.
 3. The machinery deploys everything (docs, skills for **five agent systems at once** — Claude Code,
    Codex, Grok Build, Cline, Zoo Code — plus a universal `AGENTS.md`), then your agent performs one
    final adaptation pass (understanding your project) and self-cleans the installer.
 
 **`GOAL.md` — write it first if you can**: your one-paragraph vision (what you want, for whom). The
 agent orients the whole deployment around it; a template is seeded if it's missing.
+
+<sub>Deploying without any tie to the origin: add `--mode anonymous` to the loader call in step 3. No
+origin tracking, no author references — and no network updates afterwards.</sub>
 
 ## 2. For the AI agent — the bootstrap (three steps, each with a checkpoint)
 
@@ -50,7 +51,7 @@ content of the `FILE:` block below (verbatim — the label is law). Then print:
 **Step 3 — hand over.** Run (substituting the owner's parameters; omit what they didn't set):
 
 ```bash
-node KAIF-LOADER.mjs --lang <code> --mode <standard|anonymous>
+node KAIF-LOADER.mjs --lang <code>
 ```
 
 The loader fetches the machinery from the origin (sha256-verified), and the machinery deploys KAIF

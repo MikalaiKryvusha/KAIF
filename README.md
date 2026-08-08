@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.1-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.2-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Field-certified](https://img.shields.io/badge/Field--certified-12B%20local%20model-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
 [![Guardrails](https://img.shields.io/badge/Guardrails-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-en)
@@ -30,6 +30,20 @@
 This document is the user manual of the framework: it describes what KAIF is and how to use it.
 The project's history lives in the [releases](https://github.com/MikalaiKryvusha/KAIF/releases)
 and in section 8.1.
+
+<p align="center">
+  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 «Yolden KAIF» — an ouroboros with an eye at its centre" width="560">
+</p>
+
+<p align="center"><strong>Version 2.2 — «Yolden KAIF»</strong> · 2026-08-08</p>
+
+> A very large-scale version, the one that endows KAIF with the power of an intelligent system that
+> develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for
+> completeness; the eye stands for KAIF now being under the observation of the projects that use it —
+> and those projects being under the observation of KAIF. Every cycle closes, the metaphorical ones
+> and the technical ones alike.
+>
+> — *Mikalai Kryvusha, on the symbolism of the version*
 
 <a id="excellent-en"></a>
 
@@ -117,19 +131,14 @@ and in section 8.1.
    forced checkpoint command. The procedure is field-certified end-to-end on a local
    12-billion-parameter model (homework 02).
 
-### 2.3. Install mode: origin by default, anonymity on request
+<sub>An installation is tracked to the origin by default — that is what makes version checks,
+respectful updates and the field-report loop work out of the box. Deploying with no tie to the
+origin at all: add `--mode anonymous` to the loader call. Such a deployment carries no origin
+tracking and no author references (origin-tied skills are skipped, the author's note is stripped
+mechanically, a final grep-gate refuses to finish while any identity leak remains) and it refuses
+to update over the network. No update ever converts a deployment between the two modes.</sub>
 
-An installation is **standard** unless the owner asks otherwise: the deployment is tracked to the
-origin, so version checks, respectful updates and the field-report loop work out of the box.
-Anonymity is a conscious choice, never a default — it is entered only by the explicit
-`--mode anonymous`.
-
-In that mode the deployment carries no origin tracking and no author references: origin-tied
-skills are skipped, the author's note is stripped mechanically, and a final grep-gate refuses to
-finish while any identity leak remains. An update never converts a deployment between the two
-modes: an anonymous deployment refuses to update over the network and says so.
-
-### 2.4. Offline installation
+### 2.3. Offline installation
 
 Every release attaches **`KAIF-FULL.md`** — the classic self-contained core. It is unpacked
 without network access and yields the same deployment; the thin path is preferred where the
@@ -479,7 +488,7 @@ project. Thank you, and pleasant work!
 </p>
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-2.1-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.2-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Полевая сертификация](https://img.shields.io/badge/Полевая%20сертификация-локальная%2012B-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
 [![Гвардрейлы](https://img.shields.io/badge/Гвардрейлы-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-ru)
@@ -494,6 +503,19 @@ project. Thank you, and pleasant work!
 Настоящий документ является руководством пользователя фреймворка: он описывает, чем KAIF является
 и как им пользоваться. История проекта живёт в
 [релизах](https://github.com/MikalaiKryvusha/KAIF/releases) и в разделе 8.1.
+
+<p align="center">
+  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 «Yolden KAIF» — уроборос с глазом в центре" width="560">
+</p>
+
+<p align="center"><strong>Версия 2.2 — «Yolden KAIF»</strong> · 2026-08-08</p>
+
+> Очень масштабная версия, наделяющая KAIF силой самостоятельно развивающейся по циклу обратной
+> связи умной системы. Уроборос символизирует замыкание цикла и совершенство, глаз символизирует то,
+> что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им
+> пользуются, — под наблюдением KAIF. Все и метафорические, и технические циклы замыкаются.
+>
+> — *Николай Кривуша, о символике версии*
 
 <a id="excellent-ru"></a>
 
@@ -582,20 +604,14 @@ project. Thank you, and pleasant work!
    принудительную чекпоинт-команду. Порядок сертифицирован в поле насквозь на локальной модели в
    12 миллиардов параметров (домашка 02).
 
-### 2.3. Режим установки: origin по умолчанию, анонимность по просьбе
+<sub>Установка по умолчанию привязана к origin — именно этим работают проверка версии, уважительные
+обновления и петля полевых отчётов. Развернуть вообще без привязки к origin: добавьте
+`--mode anonymous` к вызову загрузчика. Такое развёртывание не несёт ни трекинга origin, ни
+упоминаний автора (привязанные к origin навыки пропускаются, записка автора вырезается механически,
+финальный греп-гейт не даёт завершиться, пока остаётся утечка идентичности) и отказывается
+обновляться по сети. Обновление никогда не переводит развёртывание из режима в режим.</sub>
 
-Установка является **обычной**, пока владелец не попросил иного: развёртывание привязано к
-origin, поэтому проверка версии, уважительные обновления и петля полевых отчётов работают из
-коробки. Анонимность — осознанный выбор, а не режим по умолчанию: в неё входят только явным
-`--mode anonymous`.
-
-В этом режиме развёртывание не несёт ни трекинга origin, ни упоминаний автора: навыки,
-привязанные к origin, пропускаются, записка автора вырезается механически, и финальный греп-гейт
-отказывается завершаться, пока остаётся хотя бы одна утечка идентичности. Обновление никогда не
-переводит развёртывание из режима в режим: анонимное развёртывание отказывается обновляться по
-сети и называет причину.
-
-### 2.4. Офлайн-установка
+### 2.3. Офлайн-установка
 
 К каждому релизу прикладывается **`KAIF-FULL.md`** — классическое самодостаточное ядро. Оно
 распаковывается без сети и даёт то же развёртывание; при наличии сети предпочтителен тонкий путь.
