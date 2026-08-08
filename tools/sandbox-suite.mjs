@@ -45,7 +45,8 @@
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
-import { dirname, join, resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
 
@@ -69,7 +70,25 @@ if (proofFails.length || fixedNames.length) {
   console.error(`\n❌ preflight: ${proofFails.length} selfproof failures, ${fixedNames.length} fixed temp names — take the root via tools/lib/temp-root.mjs`);
   process.exit(1);
 }
-console.log(`✅ preflight: run roots are unique by construction (temp-root guard red-proven, ${SUITES.length} suites)`);
+// Preflight guard (bugs/55 F5): no suite may carry an assertion whose disjunction ends in a
+// CONSTANT TRUE — such an assert is true for any operands, so the engine never even evaluates the
+// check, and the suite prints ✅ over a broken path. The project already WROTE this rule as prose
+// (tools/verify-contour.mjs C11) and then broke it in a neighbouring tool; prose does not enforce.
+// The needle is assembled from parts on purpose, so this guard is not its own violation and the
+// acceptance grep of bugs/55 F5 stays literally green across every file it scans.
+const TAUTOLOGY = ['||', 'true'].join(' ');
+const tautologies = [];
+for (const s of [...SUITES.map((n) => join(HERE, n)), fileURLToPath(import.meta.url)]) {
+  readFileSync(s, 'utf8').split(/\r?\n/).forEach((line, i) => {
+    if (line.includes(TAUTOLOGY)) tautologies.push(`${basename(s)}:${i + 1} — ${line.trim()}`);
+  });
+}
+for (const t of tautologies) console.error('✖ tautological assert (bugs/55 F5): ' + t);
+if (tautologies.length) {
+  console.error(`\n❌ preflight: ${tautologies.length} assertion(s) that can never be false — a check that cannot fail proves nothing`);
+  process.exit(1);
+}
+console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail (${SUITES.length} suites)`);
 
 let failed = 0;
 for (const s of SUITES) {

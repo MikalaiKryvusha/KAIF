@@ -43,7 +43,10 @@ function liveNumbers() {
   const docs = DOC_NAMES.filter((d) => existsSync(join(fw, d))).length;
   const readmes = readdirSync(join(fw, 'readmes')).filter((n) => n.endsWith('.md')).length;
   const skillsDir = join(fw, 'skills');
-  const skills = readdirSync(skillsDir).filter((n) => existsSync(join(skillsDir, n, 'SKILL.md'))).length;
+  // ИМЕНА, не только счёт (bugs/55 F1): переименование навыка счёт не меняет, поэтому страж,
+  // знающий лишь длину списка, зеленеет на витрине, документирующей мёртвую команду.
+  const skillNames = readdirSync(skillsDir).filter((n) => existsSync(join(skillsDir, n, 'SKILL.md'))).sort();
+  const skills = skillNames.length;
   const unpackers = existsSync(join(fw, 'kaif-unpack.mjs')) ? 1 : 0;
   const embedded = docs + readmes + skills + unpackers;
 
@@ -59,7 +62,7 @@ function liveNumbers() {
   const suitesBlock = suite.match(/const SUITES = \[([\s\S]*?)\];/);
   const suites = suitesBlock ? (suitesBlock[1].match(/'s\d+/g) || []).length : 0;
 
-  return { docs, readmes, skills, unpackers, embedded, blocks, modules, suites };
+  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites };
 }
 
 // --- зеркала ----------------------------------------------------------------
@@ -101,7 +104,40 @@ const SKILL_MIRRORS = [
 
 // Таблица 3 — по строке на навык В КАЖДОЙ половине README. Пропущенную строку не видит НИ ОДИН
 // счётчик прозы: числа сойдутся, а навыка в таблице не будет. Поэтому строки пересчитываются.
-const TABLE_ROW_RE = /^\| \**`\/[a-z-]+`\**\s*\|/gm;
+//
+// СЧЁТА МАЛО (bugs/55 F1). Мощность множества — ПРОКСИ, а свойство — ТОЖДЕСТВО множеств: после
+// переименования навыка строк остаётся столько же, и обе половины витрины документируют мёртвую
+// команду при зелёном страже. Поэтому слаг ЗАХВАЧЕН группой и сверяется поимённо — по КАЖДОЙ
+// половине отдельно (дубль в одной половине и пропажа в другой дают ту же сумму). Ширина
+// паттерна не менялась: группа добавлена внутрь уже существовавшего класса символов.
+const TABLE_ROW_RE = /^\| \**`\/([a-z-]+)`\**\s*\|/;
+// Половины витрины (EN, затем RU) разделяются разрывом в номерах строк: внутри таблицы строки
+// идут подряд, между таблицами лежит весь остальной README.
+const HALF_GAP_LINES = 10;
+const HALF_LABELS = ['EN', 'RU'];
+
+/** Слаги строк Таблицы 3, разложенные по половинам витрины. */
+function tableRowSlugs(readmeText) {
+  const hits = [];
+  readmeText.split(/\r?\n/).forEach((line, i) => {
+    const m = TABLE_ROW_RE.exec(line);
+    if (m) hits.push({ line: i + 1, slug: m[1] });
+  });
+  const halves = [[]];
+  hits.forEach((h, i) => {
+    if (i > 0 && h.line - hits[i - 1].line > HALF_GAP_LINES) halves.push([]);
+    halves[halves.length - 1].push(h.slug);
+  });
+  return { total: hits.length, halves: hits.length ? halves : [] };
+}
+
+/** Симметрическая разность двух ростеров навыков — поимённо, обе стороны. */
+function rosterDiff(where, actual, expected, findings) {
+  const dupes = new Set(actual.filter((s, i) => actual.indexOf(s) !== i));
+  for (const d of dupes) findings.push(`${where}: «/${d}» встречается дважды`);
+  for (const s of actual) if (!expected.includes(s)) findings.push(`${where}: строка без навыка — /${s} (в framework/skills/ такого нет)`);
+  for (const s of expected) if (!actual.includes(s)) findings.push(`${where}: навык без строки — /${s}`);
+}
 
 // Пропись — четыре места («Thirty-five skills» в README EN и KAIF_REFERENCE; «тридцать пять
 // навыков» в README RU и AGENT_GUIDE). Карта намеренно узкая: ВНЕ диапазона страж honestly
@@ -129,10 +165,16 @@ function checkSkillAxis(live, findings) {
     if (found !== live.skills) findings.push(`${m.name} (${m.file}): skills — ожидалось ${live.skills}, найдено ${found}`);
   }
 
-  // строки Таблицы 3 — обе половины README, по строке на навык
-  const rows = (readFileSync(join(ROOT, 'README.md'), 'utf8').match(TABLE_ROW_RE) || []).length;
+  // строки Таблицы 3 — обе половины README: сначала СЧЁТ (ловит дубли), затем ИМЕНА (ловит
+  // переименование, которое счёт пропускает). Проверка имён ДОБАВЛЕНА к счёту, а не заменила его.
+  const { total: rows, halves } = tableRowSlugs(readFileSync(join(ROOT, 'README.md'), 'utf8'));
   if (rows !== live.skills * 2) {
     findings.push(`README — строк Таблицы 3: ожидалось ${live.skills * 2} (${live.skills} × две половины), найдено ${rows} — у навыка нет строки в одной из таблиц`);
+  }
+  if (halves.length !== HALF_LABELS.length) {
+    findings.push(`README — Таблица 3: ожидалось ${HALF_LABELS.length} половины витрины, найдено кластеров строк — ${halves.length} (страж ослеп: почини разбиение или паттерн)`);
+  } else {
+    halves.forEach((half, i) => rosterDiff(`README ${HALF_LABELS[i]} — Таблица 3`, half, live.skillNames, findings));
   }
 
   // пропись
@@ -155,6 +197,28 @@ function checkSkillAxis(live, findings) {
   }
 }
 
+// --- ось ЯЗЫКОВЫХ ПАКЕТОВ (bugs/55, третье вхождение класса) -------------------
+// Пара реестра «состав навыков ↔ ключи 9 языковых пакетов» сверялась однострочником, который
+// сравнивал ГОЛЫЙ СЧЁТ ключей. Тот же прокси, что F1: переименование навыка счёт не меняет, а
+// пакет остаётся с алиасами мёртвой команды. `check-framework` §5f эти файлы намеренно пропускает
+// («машинерия алиасов, не локализация шаблона») — значит по именам их не сверял никто.
+const LANG_ROOT = ['framework', 'templates', 'languages'];
+const TRIGGERS_FILE = 'skill-triggers.json';
+
+function checkLanguagePacks(live, findings) {
+  const root = join(ROOT, ...LANG_ROOT);
+  if (!existsSync(root)) { findings.push(`языковые пакеты: каталога нет — ${LANG_ROOT.join('/')}`); return 0; }
+  const langs = readdirSync(root).filter((l) => existsSync(join(root, l, TRIGGERS_FILE)));
+  if (!langs.length) { findings.push(`языковые пакеты: ни одного ${TRIGGERS_FILE} — страж ослеп`); return 0; }
+  for (const lang of langs) {
+    let keys;
+    try { keys = Object.keys(JSON.parse(readFileSync(join(root, lang, TRIGGERS_FILE), 'utf8'))); }
+    catch (e) { findings.push(`языковой пакет ${lang}: ${TRIGGERS_FILE} не читается — ${e.message}`); continue; }
+    rosterDiff(`языковой пакет ${lang}`, keys, live.skillNames, findings);
+  }
+  return langs.length;
+}
+
 function check() {
   const live = liveNumbers();
   const findings = [];
@@ -169,6 +233,7 @@ function check() {
     });
   }
   checkSkillAxis(live, findings);
+  const langs = checkLanguagePacks(live, findings);
   console.log(`counters: ${live.embedded} embedded (${live.docs} docs + ${live.readmes} readmes + ` +
               `${live.skills} skills + ${live.unpackers} tools) · bundle ${live.blocks} blocks · ` +
               `${live.modules} modules · polygon ${live.suites} suites`);
@@ -177,8 +242,10 @@ function check() {
     console.error(`\n❌ counters-guard: ${findings.length} расхождений — числа в прозе обязаны быть ЦИТАТОЙ вывода инструментов (EXP-0025, bugs/49)`);
     return 1;
   }
-  const mirrorCount = MIRRORS.length + SKILL_MIRRORS.length + 1 /* строки Таблицы 3 */ + WORD_FILES.length;
-  console.log(`✅ counters OK — ${mirrorCount} зеркал сверены с живыми числами (в т.ч. ось навыков: alt-тексты, SVG, пропись, строки Таблицы 3)`);
+  // Зеркала считаются, а не пишутся прозой: языковые пакеты приходят из каталога, поэтому
+  // заморозка или оживление пакета (решения №56/№57) сдвинет число само.
+  const mirrorCount = MIRRORS.length + SKILL_MIRRORS.length + 1 /* строки Таблицы 3 */ + WORD_FILES.length + langs;
+  console.log(`✅ counters OK — ${mirrorCount} зеркал сверены с живыми числами (в т.ч. ось навыков ПОИМЁННО: alt-тексты, SVG, пропись, строки Таблицы 3 обеих половин, ключи ${langs} языковых пакетов)`);
   return 0;
 }
 
@@ -200,8 +267,11 @@ function selftest() {
   const guide = readFileSync(join(ROOT, 'AGENT_GUIDE.md'), 'utf8');
   // Оригиналы всех мутируемых зеркал в одном месте: страж читает три файла, значит все три
   // обязаны существовать в песочнице — иначе «чистая копия» покраснела бы от отсутствия файла.
+  // Плюс один языковой пакет — ось ключей мутируется тем же механизмом (bugs/55, вхождение 3).
+  const PACK_REL = 'framework/templates/languages/ru/skill-triggers.json';
   const ORIGINALS = { 'README.md': readme, 'AGENT_GUIDE.md': guide,
-                      'STATUS.md': readFileSync(join(ROOT, 'STATUS.md'), 'utf8') };
+                      'STATUS.md': readFileSync(join(ROOT, 'STATUS.md'), 'utf8'),
+                      [PACK_REL]: readFileSync(join(ROOT, PACK_REL), 'utf8') };
   const run = () => {
     try { execFileSync(process.execPath, [join(HERE, 'counters-guard.mjs'), '--root', SBX], { stdio: 'pipe' }); return 0; }
     catch (e) { return e.status ?? 1; }
@@ -216,6 +286,16 @@ function selftest() {
   };
   const restore = () => { for (const [f, src] of Object.entries(ORIGINALS)) writeFileSync(join(SBX, f), src); };
 
+  // Цель мутации в РУССКОЙ прозе берётся ИЗ ТЕКСТА тем же паттерном, каким её ищет сверка, а не
+  // собирается конкатенацией с угаданным окончанием: числительное согласуется («161 блок», но
+  // «157 блоков»), и зашитая форма молча разъезжается с текстом при переходе через 1/2–4/5–20 —
+  // селфтест начинает падать на «цель мутации не найдена» там, где ничего не ломали (bugs/60).
+  // Мутируется ЧИСЛО, словоформа сохраняется дословно.
+  const retarget = (text, re) => text.match(re);
+  const g = retarget(guide, /бандл (\d+) (блок\S*)/);
+  const rSuites = retarget(readme, /полигон \((\d+) (свод\S*)\)/);
+  const sModules = retarget(ORIGINALS['STATUS.md'], /\*\*(\d+) (модул\S*)\*\*/);
+
   // (1) нетронутая копия — зелёный
   restore();
   const clean = run();
@@ -223,11 +303,11 @@ function selftest() {
   const hitEn = mutate('README.md', `${live.modules} modules`, `${live.modules + 4} modules`);
   const brokenEn = run(); restore();
   // (3) испорченное число сводов в README RU — обязан покраснеть
-  const hitRu = mutate('README.md', `полигон (${live.suites} сводов)`, `полигон (${live.suites - 1} сводов)`);
+  const hitRu = Boolean(rSuites) && mutate('README.md', rSuites[0], `полигон (${live.suites - 1} ${rSuites[2]})`);
   const brokenRu = run(); restore();
   // (4) испорченное число блоков в AGENT_GUIDE — зеркало, РАДИ которого страж и писался
   //     (находка судьи O3: selftest доказывал 2 зеркала из 5 и заявлял «на обоих»)
-  const hitGuide = mutate('AGENT_GUIDE.md', `бандл ${live.blocks} блоков`, `бандл ${live.blocks + 7} блоков`);
+  const hitGuide = Boolean(g) && mutate('AGENT_GUIDE.md', g[0], `бандл ${live.blocks + 7} ${g[2]}`);
   const brokenGuide = run(); restore();
   // (5) ось НАВЫКОВ, зеркало 1 — alt-текст ритуалов в README EN (план 62 / T1)
   const hitAlt = mutate('README.md', `Commands (${live.skills} repeatable rituals`,
@@ -242,8 +322,17 @@ function selftest() {
   const hitWord = Boolean(w && wPrev) && mutate('AGENT_GUIDE.md', w[1], wPrev[1]);
   const brokenWord = run(); restore();
   // (8) STATUS — зеркало, которое до плана 62 не сверялось ничем и успело протухнуть по-настоящему
-  const hitStatus = mutate('STATUS.md', `**${live.modules} модулей**`, `**${live.modules - 8} модулей**`);
+  const hitStatus = Boolean(sModules) && mutate('STATUS.md', sModules[0], `**${live.modules - 8} ${sModules[2]}**`);
   const brokenStatus = run(); restore();
+  // (9) ось НАВЫКОВ, зеркало 4 — ПЕРЕИМЕНОВАННЫЙ навык (bugs/55 F1). Единственный кейс, который
+  //     ловит расхождение ИМЁН: строк остаётся столько же, все числа сходятся, а обе половины
+  //     витрины документируют мёртвую команду. Ломаем ОДНУ половину — счёт при этом честно 70.
+  const hitRename = mutate('README.md', '| `/what-next` | Rank', '| `/whats-next` | Rank');
+  const brokenRename = run(); restore();
+  // (10) ось НАВЫКОВ, зеркало 5 — ключ языкового пакета (bugs/55, третье вхождение класса):
+  //      реестр сверял голый счёт ключей, и переименование навыка проходило мимо всех девяти.
+  const hitPack = mutate(PACK_REL, '"what-next"', '"whats-next"');
+  const brokenPack = run(); restore();
 
   const results = [
     [clean === 0, 'чистая копия — зелёный'],
@@ -254,10 +343,12 @@ function selftest() {
     [hitRow && brokenRow === 1, 'выломанная строка Таблицы 3 — КРАСНЫЙ'],
     [hitWord && brokenWord === 1, 'протухшая пропись числа навыков в AGENT_GUIDE — КРАСНЫЙ'],
     [hitStatus && brokenStatus === 1, 'испорченное число модулей в STATUS — КРАСНЫЙ'],
+    [hitRename && brokenRename === 1, 'ПЕРЕИМЕНОВАННЫЙ навык в Таблице 3 (счёт сходится) — КРАСНЫЙ'],
+    [hitPack && brokenPack === 1, 'ПЕРЕИМЕНОВАННЫЙ ключ языкового пакета (счёт сходится) — КРАСНЫЙ'],
   ];
   for (const [pass, name] of results) console.log(`${pass ? '✅' : '❌'} selftest: ${name}`);
   const ok = results.every(([p]) => p);
-  console.log(ok ? `✅ counters-guard selftest OK — страж доказан красным на ${results.length - 1} зеркалах: README EN/RU + AGENT_GUIDE + STATUS (ось поставки) и alt-текст + строка Таблицы 3 + пропись (ось навыков)`
+  console.log(ok ? `✅ counters-guard selftest OK — страж доказан красным на ${results.length - 1} зеркалах: README EN/RU + AGENT_GUIDE + STATUS (ось поставки) и alt-текст + строка Таблицы 3 + пропись + ПЕРЕИМЕНОВАНИЕ навыка в витрине и в языковом пакете (ось навыков — счёт И имена)`
                  : '❌ counters-guard selftest ПРОВАЛЕН');
   return ok ? 0 : 1;
 }
