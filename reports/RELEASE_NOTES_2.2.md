@@ -65,6 +65,26 @@ a release chronicle statistics tool. The permanent sandbox polygon grew to **14 
 
 ---
 
+### 🎲 Interesting facts — what this version cost
+
+Measured at **2026-08-08 23:41 +03:00** (`node tools/kaif-stats.mjs --since
+"2026-08-07T00:00:00+03:00"`), counted from the moment the work actually started rather than from
+the previous tag:
+
+- **2.0 calendar days · 27.8 hours of active work** — 137 commits, 185 files created from nothing.
+- **308 692 handwritten words** of prose ≈ 3.9 novels, at 11 115 words per active hour.
+- **2 867 007 579 tokens** ≈ 17 919 novels read and written again; the models' own writing ≈ 87 novels.
+- The same volume by human hands: **813–2 034 person-hours** — five engineers for 20–51 working days.
+- Actually paid: **≈ $16.51** (a subscription share). The same work at public API prices: **$3 418**.
+
+Three boundaries hold this block honest, and the full table lives in the
+[README](https://github.com/MikalaiKryvusha/KAIF#85-interesting-facts--what-version-22-cost): the
+money is not the owner's bill but an API-price estimate, the person-hours are an estimate with
+visible rates, and the energy figure is somebody else's measurement of other models — Anthropic
+publishes no watt-hours per token.
+
+---
+
 ### 📦 Installation
 
 Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and
@@ -141,6 +161,25 @@ lifecycle-хуками (приказ перечитать после сжати�
 построению временный корень прогона, страж немых команд полигона, линтер шапки документов, генератор
 слепка стилометрии с приватностью по умолчанию и инструмент летописной статистики релиза. Постоянный
 песочный полигон вырос до **14 сводов**.
+
+---
+
+### 🎲 Интересные факты — во что обошлась эта версия
+
+Замер на **2026-08-08 23:41 +03:00** (`node tools/kaif-stats.mjs --since
+"2026-08-07T00:00:00+03:00"`), считано от момента, когда работа реально началась, а не от прошлого
+тега:
+
+- **2,0 календарных суток · 27,8 часа активной работы** — 137 коммитов, 185 файлов создано с нуля.
+- **308 692 рукописных слова** прозы ≈ 3,9 романа, темп 11 115 слов в активный час.
+- **2 867 007 579 токенов** ≈ 17 919 романов прочитано и написано заново; собственно написано моделями ≈ 87 романов.
+- Тот же объём руками человека: **813–2 034 человеко-часа** — пять инженеров на 20–51 рабочий день.
+- Фактически оплачено: **≈ $16,51** (доля подписки). Та же работа по публичному API-прайсу: **$3 418**.
+
+Блок держат три границы, а полная таблица живёт в
+[README](https://github.com/MikalaiKryvusha/KAIF#85-интересные-факты--во-что-обошлась-версия-22):
+деньги — не счёт владельца, а оценка по API-прайсу; человеко-часы — оценка с видимыми ставками;
+энергия — чужой замер других моделей, потому что Anthropic Вт·ч на токен не публикует.
 
 ---
 

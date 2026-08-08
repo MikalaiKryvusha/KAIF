@@ -58,11 +58,21 @@ function liveNumbers() {
   const modules = Array.isArray(map.modules) ? map.modules.length
     : Object.values(map.files || map).reduce((a, v) => a + (Array.isArray(v) ? v.length : 0), 0);
 
+  // Инвентарь поставки, который витрина перечисляет ПРОЗОЙ в §8.2 (задача T11): адаптеры и
+  // языковые пакеты. Их числа жили в тексте рукописными и разошлись молча — «девять адаптеров»
+  // при десяти файлах, «шесть README директорий» при семи. Оба берутся из каталога, как всё
+  // остальное на этой оси: счётчик прозы имеет право быть только ЦИТАТОЙ артефакта.
+  const adaptersDir = join(fw, 'adapters');
+  const adapters = readdirSync(adaptersDir)
+    .filter((n) => n.endsWith('.md') && !n.startsWith('_')).length;   // _index/_template — не адаптеры
+  const langs = readdirSync(join(fw, 'templates', 'languages'), { withFileTypes: true })
+    .filter((e) => e.isDirectory()).length;
+
   const suite = readFileSync(join(ROOT, 'tools', 'sandbox-suite.mjs'), 'utf8');
   const suitesBlock = suite.match(/const SUITES = \[([\s\S]*?)\];/);
   const suites = suitesBlock ? (suitesBlock[1].match(/'s\d+/g) || []).length : 0;
 
-  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites };
+  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites, adapters, langs };
 }
 
 // --- зеркала ----------------------------------------------------------------
@@ -83,6 +93,21 @@ const MIRRORS = [
     re: /полигон \((\d+) свод\S*\)/, keys: ['suites'] },
   // STATUS сам объявляет себя зеркалом («цифры печатает сборка — не переписывай руками»), но до
   // плана 62 его не сверял никто: строка спокойно простояла на 671 модуле при фактических 672.
+  // §8.2 раскладки репозитория — ОБЕ половины. Числа здесь переведены в цифры намеренно:
+  // прописью их пришлось бы стеречь словарём на двух языках, а цифра сверяется одним регэкспом.
+  // Это дешевле и честнее — зеркало, которое трудно проверить, не проверяют вовсе.
+  { name: 'README EN — §8.2 README директорий', file: 'README.md',
+    re: /(\d+) directory READMEs/, keys: ['readmes'] },
+  { name: 'README RU — §8.2 README директорий', file: 'README.md',
+    re: /(\d+) README директорий/, keys: ['readmes'] },
+  { name: 'README EN — §8.2 адаптеры систем', file: 'README.md',
+    re: /(\d+) agent-system adapters/, keys: ['adapters'] },
+  { name: 'README RU — §8.2 адаптеры систем', file: 'README.md',
+    re: /(\d+) адаптер\S* агентских систем/, keys: ['adapters'] },
+  { name: 'README EN — §8.2 языковые пакеты', file: 'README.md',
+    re: /(\d+) language packs/, keys: ['langs'] },
+  { name: 'README RU — §8.2 языковые пакеты', file: 'README.md',
+    re: /(\d+) языков\S* пакет\S*/, keys: ['langs'] },
   { name: 'STATUS — строка «актуальная сборка»', file: 'STATUS.md',
     re: /\*\*(\d+) навы[а-я]*\*\* \/ (\d+) блок[а-я]* FULL \/ \*\*(\d+) бандла\*\* \/ \*\*(\d+) модул[а-я]*\*\*/,
     keys: ['skills', 'embedded', 'blocks', 'modules'] },
@@ -100,6 +125,13 @@ const SKILL_MIRRORS = [
   { name: 'AGENT_GUIDE — навыки в строке счётчиков', file: 'AGENT_GUIDE.md', re: /(\d+) навык\S* \+ 1 распаковщик/ },
   { name: 'README EN — навыки в строке счётчиков', file: 'README.md', re: /(\d+) skills \+ 1 unpacker/ },
   { name: 'README RU — навыки в строке счётчиков', file: 'README.md', re: /(\d+) навык\S* \+ 1 распаковщик/ },
+  // Седьмое и восьмое зеркала, найденные при письме витрины 2.2 (задача T11): раскладка репозитория
+  // в §8.2 ОБЕИХ половин («skills/ NN шаблонов навыков»). Они прожили весь план 62 непокрытыми и
+  // молча врали «34» при живых 35 — ровно то, ради чего эта ось существует. Урок класса: инвентарь
+  // зеркал, собранный грепом по ЧИСЛУ, пропускает вхождения, где число стоит в другой формулировке;
+  // ищи по ПОНЯТИЮ («навык», «skill»), а не по цифре.
+  { name: 'README EN — §8.2 шаблоны навыков в раскладке', file: 'README.md', re: /(\d+) skill templates/ },
+  { name: 'README RU — §8.2 шаблоны навыков в раскладке', file: 'README.md', re: /(\d+) шаблон\S* навыков/ },
 ];
 
 // Таблица 3 — по строке на навык В КАЖДОЙ половине README. Пропущенную строку не видит НИ ОДИН

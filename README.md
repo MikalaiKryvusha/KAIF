@@ -214,6 +214,11 @@ Table 2 — Knowledge directories
 3. The update closes with `update-verify`: per-system skill copies are re-synced from the
    canonical `.claude/skills/`, placeholders are re-scanned, the deploy marker self-heals, and a
    receipt is written to `.kaif/last-update.json`.
+4. `.kaif/hooks/` holds the optional **refresh-hooks** module for harnesses with lifecycle hooks:
+   an order to re-read the canon after a context compaction, a timer on the age of the refresh
+   marker, and a soft `STATUS.md` guard once per session. Activation is the owner's explicit
+   opt-in — the machinery never edits somebody else's `settings.json`, and a deployment without
+   hooks does not redden any gate.
 
 ## 4. The skills
 
@@ -322,6 +327,22 @@ re-runs the claims adversarially before the work counts as done.
 3. A guard of a text rule runs at ~10 false hits per real one; exceptions are explicit, with the
    reason on the line. A false `[TESTED]` marker is fraud for the judge.
 
+### 5.6. Fresh context
+
+1. Rules read once at the start of a session melt as the context fills and is compacted: a long
+   session holds a retelling of the canon, not the canon. So the re-reading core is re-read rather
+   than recalled, on four triggers — an hour of live work, the start of a heavy task, a compaction
+   or a long pause, and the ritual points (`/resume`, `/refresh-context`, every iteration of the
+   loops).
+2. A refresh is a verifiable act, not a claim. Its witness has two halves and both are required:
+   the marker `.kaif/refresh-marker.json` (the moment, what was re-read, which trigger) and an
+   acceptance quote in the chat — one concrete line out of what was re-read, relevant to the task
+   in hand. A marker without a quote is fraud of the same class as a false `[TESTED]`.
+3. The agent learns its own machine from its own probes instead of remembering it: the environment
+   dossier in `AGENT_GUIDE.md` records what the shells, the toolchain and the encodings actually
+   are, keeps the probe command next to every fact, and declares facts older than four weeks to be
+   hypotheses again.
+
 ## 6. Updating, forking, removing
 
 ### 6.1. Basic provisions
@@ -371,6 +392,10 @@ science · design · business; a new sphere is authored at deploy time from the 
 Skills are generated for five systems at once: Claude Code (`.claude/skills/`, canonical) · Codex
 (`.agents/skills/`) · Grok Build (`.grok/skills/`) · Cline (`.cline/skills/`) · Zoo Code
 (`.roo/commands/`) — plus the universal `AGENTS.md`; Cursor/Copilot/Windsurf ride the fallback.
+The refresh-hooks module carries sample hook configurations only for the harnesses whose hook
+contract was read off live vendor documentation — Codex, Cursor, Copilot, Antigravity; Grok Build
+matches the Claude Code contract and needs no sample of its own. Where a vendor has no hook
+mechanism, the module says so in one line instead of guessing a path.
 
 <a id="lang-en"></a>
 
@@ -402,6 +427,7 @@ Table 5 — Versions
 | v1.6 | Homeostatic KAIF | 2026-07-24 | Guardrails for weak models: observation over conjecture, the three doors, the judge before every push, provenance marks `[AI]…[/AI]`. |
 | v2.0 | Excellent KAIF | 2026-07-28 | Updates by machinery, not by mind: the module map, template-vs-disk shas, update receipts, the `KAIF_REFERENCE.md` reference, the permanent sandbox polygon. |
 | v2.1 | Strong KAIF | 2026-07-31 | The owner contour: the place-of-questions rule with `/owner-reviews`, the owner's voice portrait `/owner-voice`, craft prostheses for weak sessions (`/code-revision`, craft slots, `/guarded-loop`), the planning ladder, the `PROJECT_HISTORY.md` chronicle. |
+| v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour makes a question to the owner a channel rather than a hope, the field→origin signal path becomes five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` resumes work in flight without a round trip. |
 
 ### 8.2. Repository layout
 
@@ -417,13 +443,14 @@ KAIF.jpg                              the logo
 framework/                            the canonical universal templates (the payload)
   _intro.md                           the narrative of the full core
   installer/                          KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
-  skills/                             34 skill templates (one directory per skill)
+  skills/                             35 skill templates (one directory per skill)
   spheres/                            sphere libraries: programming · science · design · business · _template · _index
-  adapters/                           agent-system adapters (nine: five skill-target systems + fallback/archived ones)
+  adapters/                           10 agent-system adapters (five skill-target systems + fallback and archived ones)
   templates/_owner-voice-template.md  the owner-voice portrait skeleton (ships to .kaif/)
   templates/languages/                9 language packs (owner-facing docs + skill trigger aliases; English is the source)
-  tools/                              optional tool modules: provenance gate · canon linter
-  readmes/                            the six directory READMEs
+  tools/                              optional tool modules: provenance gate · canon linter · requirements linter
+  hooks/                              the optional refresh-hooks module (3 scripts + sample configs → .kaif/hooks/)
+  readmes/                            7 directory READMEs
   AGENT_GUIDE.md … KAIF_REFERENCE.md  the fourteen key-document templates
 dist/                                 generated distribution (never hand-edited)
   KAIF.md                             the thin entry point
@@ -462,6 +489,47 @@ artifacts are never hand-edited.
 5. Counters in this manual (14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded
    files; 161 bundle blocks; 689 modules) are printed by `node tools/build-framework.mjs` and are
    current as of the 2.2 development line.
+
+### 8.5. Interesting facts — what version 2.2 cost
+
+Measured at **2026-08-08 23:41 +03:00** by `node tools/kaif-stats.mjs --since
+"2026-08-07T00:00:00+03:00"`. The window opens at the moment the owner named as the start of the
+work, not at the previous release tag: between 2.1 and 2.2 the park was being updated in the field,
+and that is a different kind of work. Every number below is a quote of that run, and the block
+carries the moment it is true for — a measurement that includes its own publication cannot be exact
+by construction.
+
+Table 6 — what went into 2.2
+
+| Measured | Value | In everyday terms |
+|----------|-------|-------------------|
+| Calendar | **2.0 days** | the whole version fits between two midnights |
+| Active work of the pair | **27.8 h** | the sum of gaps no longer than 5 minutes between records |
+| Commits · files · lines | 137 · 411 · +44 044 / −1 763 | 185 files created from nothing |
+| Handwritten (generated output excluded) | prose 27 767 lines / **308 692 words** · code 9 803 lines | ≈ **3.9 novels** of 80 000 words, at 11 115 words per active hour |
+| Tokens | **2 867 007 579** (output 13.9 M · cache reads 2.81 B) | ≈ **17 919 novels** read and written again; the model's own writing ≈ **87 novels** |
+| Models | Fable 5 — 4 729 requests · Opus 5 — 4 615 | the owner measured the share of his weekly limit: Fable 5 — 50 % (personal limit burnt to 100 %), Opus 5 — 20 % |
+| Sessions · requests | 29 · 9 346 | ≈ 322 model requests per session |
+| Knowledge in the repository | 62 plans · 63 bugs (58 closed) · 24 ideas · 19 recon docs · 16 interviews · 13 reports · 64 owner decisions · 66 lessons · 35 skills | — |
+| At the public API price | **$3 418** (Fable 5 — $2 429 · Opus 5 — $988) | ≈ **578 hamburgers** at $5.91 — or 1.1 monthly salaries of an engineer |
+| Actually paid | **≈ $16.51** — the share of a $250/month subscription for two days | the same work at API prices is **×207** of that share |
+| The same volume by human hands | **813–2 034 person-hours** | a team of **five engineers for 20–51 working days straight**; payroll at $3 000/month — **$14 526–$36 314** |
+| Energy | **5.9–118 kWh**, median ≈ 17.8 | an ordinary flat spends that in **0.6–12 days** |
+| Compression | 813–2 034 person-hours → **27.8 active hours** | **and this is the main fact of the block, not the money** |
+
+Three boundaries stay in this text, because without them the block reads beautifully and lies:
+
+1. **The money is not the owner's bill.** The work ran on a Claude Max subscription; $3 418 is an
+   estimate of what the same work would have cost through the public API. The two are never mixed,
+   and the ×207 is not a saving — a subscription has weekly limits and gives none of the API's
+   guarantees.
+2. **The person-hours are an estimate with visible assumptions**, not a measurement: prose at
+   200–500 words per hour, code at 20–50 lines per hour. Both rates are named in the tool's source,
+   so anyone can substitute their own and get their own answer.
+3. **The energy is somebody else's estimate.** Anthropic does not publish watt-hours per token; the
+   range comes from public measurements of inference on other models and other hardware. Hence the
+   ×20 spread — there is nothing to narrow it with, and the honest order of magnitude here is
+   kilowatt-hours, not gigawatts.
 
 ## License
 
@@ -686,6 +754,10 @@ project. Thank you, and pleasant work!
 3. Обновление завершается проверкой `update-verify`: посистемные копии навыков ресинкаются с
    канонических `.claude/skills/`, плейсхолдеры пересканируются, маркер развёртывания
    самовосстанавливается, и рядом остаётся расписка `.kaif/last-update.json`.
+4. В `.kaif/hooks/` лежит опциональный модуль **refresh-hooks** для харнессов с lifecycle-хуками:
+   приказ перечитать канон после сжатия контекста, таймер возраста маркера освежения и мягкий страж
+   `STATUS.md` раз в сессию. Подключение — явный опт-ин владельца: машинерия не редактирует чужие
+   `settings.json`, а развёртывание без хуков не краснит ни один гейт.
 
 ## 4. Навыки
 
@@ -795,6 +867,21 @@ project. Thank you, and pleasant work!
 3. Страж текстового правила работает с шумом ~10 ложных срабатываний на 1 настоящее; исключения
    явные, с причиной в строке. Ложный маркер `[TESTED]` является фродом для судьи.
 
+### 5.6. Свежий контекст
+
+1. Правила, прочитанные один раз на старте сессии, тают по мере заполнения и сжатия контекста:
+   длинная сессия держит в голове пересказ канона, а не канон. Поэтому ядро перечитывания
+   перечитывается, а не вспоминается, по четырём триггерам — час живой работы, старт тяжёлой
+   задачи, сжатие контекста или длинный простой, и точки ритуалов (`/resume`,
+   `/refresh-context`, каждая итерация циклов).
+2. Освежение является проверяемым действием, а не заявлением. Свидетельство двухчастное, и обе
+   части обязательны: маркер `.kaif/refresh-marker.json` (момент, что перечитано, какой триггер) и
+   цитата-приёмка в чате — одна конкретная строка из перечитанного, относящаяся к задаче в работе.
+   Маркер без цитаты является фродом того же класса, что ложный `[TESTED]`.
+3. Агент знает свою машину из собственных проб, а не из памяти: досье окружения в `AGENT_GUIDE.md`
+   фиксирует, чем на самом деле являются шеллы, тулчейн и кодировки, держит рядом с каждым фактом
+   команду пробы и объявляет факты старше четырёх недель снова гипотезами.
+
 ## 6. Обновление, форк, удаление
 
 ### 6.1. Основные положения
@@ -847,6 +934,10 @@ origin и удаление выполняются своими навыками 
 Навыки генерируются сразу для пяти систем: Claude Code (`.claude/skills/`, канонические) · Codex
 (`.agents/skills/`) · Grok Build (`.grok/skills/`) · Cline (`.cline/skills/`) · Zoo Code
 (`.roo/commands/`) — плюс универсальный `AGENTS.md`; Cursor/Copilot/Windsurf едут на фолбэке.
+Модуль refresh-hooks несёт образцы хук-конфигов только для тех харнессов, чей хук-контракт снят с
+живой вендорской документации, — Codex, Cursor, Copilot, Antigravity; Grok Build совпадает с
+контрактом Claude Code и своего образца не требует. Там, где у вендора хук-механизма нет, модуль
+говорит это одной строкой вместо угаданного пути.
 
 <a id="lang-ru"></a>
 
@@ -878,6 +969,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v1.6 | Homeostatic KAIF | 2026-07-24 | Гвардрейлы для слабых моделей: наблюдение вместо домысла, три двери, судья перед каждым пушем, пометки провенанса `[AI]…[/AI]`. |
 | v2.0 | Excellent KAIF | 2026-07-28 | Обновление машинерией, а не разумом: карта модулей, template-vs-disk sha, расписки обновления, записка `KAIF_REFERENCE.md`, постоянный песочный полигон. |
 | v2.1 | Strong KAIF | 2026-07-31 | Контур владельца: правило места вопросов с `/owner-reviews`, портрет голоса `/owner-voice`, ремесленные протезы для слабых сессий (`/code-revision`, craft-слоты, `/guarded-loop`), лестница планирования, летопись `PROJECT_HISTORY.md`. |
+| v2.2 | Yolden KAIF | 2026-08-08 | Цикл замыкается: интерактивный контур делает вопрос к владельцу каналом, а не надеждой; путь сигнала «поле → исток» становится пятью предписанными шагами; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` возобновляет начатую работу без обмена репликами. |
 
 ### 8.2. Структура репозитория
 
@@ -893,13 +985,14 @@ KAIF.jpg                              логотип
 framework/                            канонические универсальные шаблоны (полезная нагрузка)
   _intro.md                           нарратив полного ядра
   installer/                          KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · нарратив тонкого ядра
-  skills/                             34 шаблона навыков (по директории на навык)
+  skills/                             35 шаблонов навыков (по директории на навык)
   spheres/                            библиотеки сфер: programming · science · design · business · _template · _index
-  adapters/                           адаптеры агентских систем (девять: пять целевых для навыков + фолбэки/архивные)
+  adapters/                           10 адаптеров агентских систем (пять целевых для навыков + фолбэки и архивные)
   templates/_owner-voice-template.md  скелет портрета голоса владельца (едет в .kaif/)
   templates/languages/                9 языковых пакетов (документы владельца + алиасы навыков; английский — исходник)
-  tools/                              опциональные tool-модули: гейт провенанса · линтер канона
-  readmes/                            шесть README директорий
+  tools/                              опциональные tool-модули: гейт провенанса · линтер канона · линтер требований
+  hooks/                              опциональный модуль refresh-hooks (3 скрипта + образцы конфигов → .kaif/hooks/)
+  readmes/                            7 README директорий
   AGENT_GUIDE.md … KAIF_REFERENCE.md  шаблоны четырнадцати ключевых документов
 dist/                                 генерируемая поставка (руками не правится)
   KAIF.md                             тонкая точка входа
@@ -938,6 +1031,44 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 5. Счётчики настоящего руководства (14 документов + 7 README + 35 навыков + 1 распаковщик = 57
    встроенных файлов; 161 блок бандла; 689 модулей) печатаются командой
    `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
+
+### 8.5. Интересные факты — во что обошлась версия 2.2
+
+Замер на **2026-08-08 23:41 +03:00**, команда `node tools/kaif-stats.mjs --since
+"2026-08-07T00:00:00+03:00"`. Окно открывается моментом, который владелец назвал началом работ, а не
+прошлым релизным тегом: между 2.1 и 2.2 шло обновление парка в поле, и это работа другого рода.
+Каждое число ниже — цитата того прогона, а блок несёт момент, на который он верен: замер,
+включающий собственную публикацию, точным не бывает по построению.
+
+Таблица 6 — что вошло в 2.2
+
+| Измерено | Значение | Переложено на быт |
+|----------|----------|-------------------|
+| Календарь | **2,0 суток** | вся версия уместилась между двумя полуночами |
+| Активная работа пары | **27,8 ч** | сумма пауз не длиннее 5 минут между записями |
+| Коммиты · файлы · строки | 137 · 411 · +44 044 / −1 763 | 185 файлов создано с нуля |
+| Рукописное (генераты исключены) | проза 27 767 строк / **308 692 слова** · код 9 803 строки | ≈ **3,9 романа** по 80 000 слов, темп 11 115 слов в активный час |
+| Токены | **2 867 007 579** (выход 13,9 млн · чтение кэша 2,81 млрд) | ≈ **17 919 романов** прочитано и написано заново; собственно написано моделью ≈ **87 романов** |
+| Модели | Fable 5 — 4 729 запросов · Opus 5 — 4 615 | владелец замерил долю своего недельного лимита: Fable 5 — 50 % (личный лимит выжжен на 100 %), Opus 5 — 20 % |
+| Сессии · запросы | 29 · 9 346 | ≈ 322 запроса к модели на сессию |
+| Знание в репозитории | 62 плана · 63 бага (58 закрыто) · 24 идеи · 19 разведок · 16 интервью · 13 отчётов · 64 решения владельца · 66 уроков · 35 навыков | — |
+| По публичному API-прайсу | **$3 418** (Fable 5 — $2 429 · Opus 5 — $988) | ≈ **578 гамбургеров** по $5,91 — или 1,1 месячной зарплаты инженера |
+| Фактически оплачено | **≈ $16,51** — доля подписки $250/мес за двое суток | та же работа по API-прайсу — **×207** от этой доли |
+| Тот же объём руками человека | **813–2 034 человеко-часа** | команда из **пяти инженеров на 20–51 рабочий день подряд**; фонд оплаты при 3 000 $/мес — **$14 526–$36 314** |
+| Энергия | **5,9–118 кВт·ч**, медиана ≈ 17,8 | обычная квартира тратит столько за **0,6–12 суток** |
+| Сжатие | 813–2 034 человеко-часа → **27,8 активных часа** | **и это главный факт блока, а не деньги** |
+
+Три границы остаются в тексте, потому что без них блок читается красиво и врёт:
+
+1. **Деньги — не счёт владельца.** Работа шла по подписке Claude Max; $3 418 — оценка того, во
+   что та же работа обошлась бы через публичный API. Смешивать эти два числа нельзя, и ×207 не
+   является экономией: у подписки недельные лимиты и ни одной гарантии API.
+2. **Человеко-часы — оценка с видимыми допущениями**, а не измерение: проза 200–500 слов в час,
+   код 20–50 строк в час. Обе ставки названы прямо в исходнике инструмента, чтобы читатель
+   подставил свои и получил свой ответ.
+3. **Энергия — чужая оценка.** Anthropic не публикует Вт·ч на токен; вилка взята из публичных
+   измерений инференса других моделей на другом железе. Отсюда и разброс в двадцать раз — сузить
+   его нечем, а честный порядок здесь киловатт-часы, не гигаватты.
 
 ## Лицензия
 
