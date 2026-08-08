@@ -39,11 +39,11 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 ### 🎲 Interesting facts — what this version cost
 
-Measured at **2026-08-09 00:46 +03:00** (`node tools/kaif-stats.mjs --since "2026-08-07T00:00:00+03:00"`). The window is two days: from 2026-08-07 at 00:00 +03:00 to the moment of the measurement:
+The window is two days: from 2026-08-07 at 00:00 +03:00 to 2026-08-09 at 00:46 +03:00.
 
 - **2.0 calendar days · 29 hours of active work** — 141 commits, 190 files created from nothing.
-- **316 764 handwritten words** of prose ≈ 4 novels, at 10 936 words per active hour; the knowledge directories hold **2 149 834 characters** — 3.7 more novels of accompanying documentation.
-- **3 011 949 062 tokens** ≈ 18 825 novels read and written again; the models' own writing ≈ 90 novels.
+- **316 764 handwritten words** of prose ≈ 3.9 novels, at 10 936 words per active hour; the knowledge directories hold **2 149 895 characters** — 3.7 more novels of accompanying documentation.
+- **3 011 949 062 tokens** ≈ 17 919 novels read and written again; the models' own writing ≈ 87 novels.
 - The same volume by human hands: **5 517 person-hours** — five engineers for 138 working days.
 - Paid by subscription: **≈ $16.89** for two days of a Claude Max plan. At Anthropic's public API prices the same volume of work would cost **$3 509**.
 
@@ -100,11 +100,11 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 ### 🎲 Интересные факты — во что обошлась эта версия
 
-Замер **09.08.2026 в 00:46 +03:00** (`node tools/kaif-stats.mjs --since "2026-08-07T00:00:00+03:00"`). Окно — двое суток: с 00:00 07.08.2026 до момента замера:
+Окно — двое суток: с 00:00 07.08.2026 до 00:46 09.08.2026.
 
 - **2,0 календарных суток · 29 часов активной работы** — 141 коммит, 190 файлов создано с нуля.
-- **316 764 рукописных слова** прозы ≈ 4 романа, темп 10 936 слов в активный час; в директориях знания лежит **2 149 834 символа** — ещё 3,7 романа сопроводительной документации.
-- **3 011 949 062 токена** ≈ 18 825 романов прочитано и написано заново; написано моделями ≈ 90 романов.
+- **316 764 рукописных слова** прозы ≈ 3,9 романа, темп 10 936 слов в активный час; в директориях знания лежит **2 149 895 символов** — ещё 3,7 романа сопроводительной документации.
+- **3 011 949 062 токена** ≈ 17 919 романов прочитано и написано заново; написано моделями ≈ 87 романов.
 - Тот же объём руками людей: **5 517 человеко-часов** — пять инженеров на 138 рабочих дней.
 - Заплачено по подписке: **≈ $16,89** за двое суток плана Claude Max. По публичному прайсу API Anthropic такой же объём работы стоил бы **$3 509**.
 

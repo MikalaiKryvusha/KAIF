@@ -92,6 +92,17 @@ const CLASSES = [
     ],
   },
   {
+    id: 'TOOLPROOF',
+    level: HARD,
+    name: 'внутренняя команда истока показана читателю как доказательство',
+    fix: 'убери команду: `node tools/…` есть только в репозитории фреймворка, у читателя её нет',
+    // Команды УСТАНОВКИ адресованы читателю и законны (`--mode anonymous`, `/kaif-update`,
+    // `npm run kaif:*`). Незаконна команда СОБСТВЕННОЙ машинерии истока, приведённая рядом с
+    // числом как подтверждение замера: читатель не может её выполнить, и она сообщает ему
+    // только то, что автор оправдывается.
+    forms: [/\(`?node\s+tools\/[^)]*\)/g],
+  },
+  {
     id: 'CALQUE',
     level: HARD,
     name: 'калька: английская фраза русскими словами (АП27)',
@@ -280,6 +291,74 @@ function checkHalves(text) {
   return hits;
 }
 
+/**
+ * Механическая половина ГЕЙТА ПУБЛИКАЦИИ (EXP-0071, лекарство Q5): тело релиза на GitHub
+ * СОХРАНЯЕТ одиночный перевод строки, поэтому врап «для читаемости в репозитории» превращается на
+ * публичной странице в рваный текст — союз повисает один на строке, фраза обрывается посреди.
+ * README этим не страдает: там одиночный перенос склеивается в пробел. Примета простая и точная:
+ * две непустые строки подряд вне блоков кода, таблиц и HTML — это врап, который уедет разрывом.
+ * Вторая половина гейта машине недоступна и остаётся шагом 6.9 навыка `/release`: открыть
+ * опубликованную страницу и прочитать первый экран глазами.
+ */
+function checkReleaseBodyWrap(text) {
+  const hits = [];
+  let inCode = false;
+  // HTML-комментарий не рендерится вовсе, поэтому врап внутри него разрывом не станет. Пропуск
+  // обязателен: сам файл нот открывается таким комментарием — объяснением этого самого правила,
+  // и страж на первом же прогоне покраснел на нём.
+  let inComment = false;
+  const ls = text.split(/\r?\n/);
+  const isStructural = (s) => !s.trim() || /^\s*[|>#<-]/.test(s) || /^\s*\d+\.\s/.test(s) || /^\s*\*\*\d/.test(s);
+  ls.forEach((line, i) => {
+    if (/<!--/.test(line)) inComment = true;
+    const commentEndsHere = inComment && /-->/.test(line);
+    if (inComment) { if (commentEndsHere) inComment = false; return; }
+    if (/^\s*```/.test(line)) { inCode = !inCode; return; }
+    if (inCode || i === 0) return;
+    const prev = ls[i - 1];
+    if (isStructural(line) || isStructural(prev)) return;
+    hits.push({ level: HARD, id: 'WRAP',
+                name: 'две непустые строки подряд — на странице релиза это станет разрывом',
+                fix: 'пиши абзац ОДНОЙ строкой: тело релиза на GitHub сохраняет переводы строк',
+                n: i + 1, quote: line.slice(0, 60).trim() });
+  });
+  return hits;
+}
+
+/**
+ * Числа релиз-нот обязаны быть ТЕМИ ЖЕ, что в README. Витрина рассказывает про одну и ту же работу
+ * двумя документами, и это классическая пара «истина↔зеркало»: ноты пишутся раньше, README потом
+ * дополняется, и расходятся они молча. Поймано в фазе Q: ноты обещали «≈ 18 825 романов» и
+ * «2 149 834 символа», README — «17 919» и «2 149 895»; оба числа описывали ОДИН замер одного окна.
+ * Проверяются числа от трёх значащих цифр: мелкие («2,0 суток», «5 шагов») дают шум без сигнала.
+ */
+function checkNotesVsReadme(notesText, readmeText) {
+  const norm = (s) => s.replace(/[   ]/g, '');
+  const readme = norm(readmeText);
+  const hits = [];
+
+  notesText.split(/\r?\n/).forEach((line, i) => {
+    if (!/^[-*]\s|\*\*/.test(line)) return;                       // числа фактов живут в списках
+    for (const m of line.matchAll(/\d[\d   ]*(?:[.,]\d+)?/g)) {
+      const raw = m[0].trim();
+      const digits = norm(raw).replace(/[.,]/g, '');
+      if (digits.length < 3) continue;
+      if (/^\d{4}$/.test(digits) || /^20\d{2}/.test(digits)) continue;   // годы и даты
+      // ИДЕНТИФИКАТОР, А НЕ ЗАМЕР: номер стандарта или спеки («ISO/IEC/IEEE 29148», «RFC 2119»)
+      // — это имя вещи, и в README ему совпадать не обязано. Примета — аббревиатура заглавными
+      // вплотную слева. Поймано первым же прогоном на живых нотах (EXP-0069: первый прогон
+      // текстового стража есть калибровка стража, а не список находок).
+      if (/[A-Z][A-Z/]{1,}\s*$/.test(line.slice(0, m.index))) continue;
+      if (readme.includes(norm(raw))) continue;
+      hits.push({ level: HARD, id: 'NOTES-VS-README',
+                  name: 'число релиз-нот не найдено в README — зеркала одного замера разошлись',
+                  fix: 'перемерь один раз и поставь одно и то же число в оба документа',
+                  n: i + 1, quote: `${raw} — в README нет` });
+    }
+  });
+  return hits;
+}
+
 // ── Отчёт ──────────────────────────────────────────────────────────────────────────────────────
 function report(file, text) {
   const hits = [...checkText(text), ...checkHalves(text)];
@@ -333,6 +412,7 @@ function selftest() {
     ['PASSIVE', clean.replace('1. Положите файл в корень проекта.', '1. Файл помещается в корень проекта.')],
     ['JARGON', clean.replace('| Время работы над версией | 2,0 суток |', '| Календарь | 2,0 суток |')],
     ['RANGE', clean + '\n\n| Электроэнергии израсходовано | 5,9–118 кВт·ч |'],
+    ['TOOLPROOF', clean + '\n\nЗамер 09.08.2026 (`node tools/kaif-stats.mjs --since "…"`).'],
   ];
 
   let bad = 0;
@@ -360,6 +440,27 @@ function selftest() {
   const narrowOk = narrowHits.length === 0;
   console.log(`${narrowOk ? '✅' : '❌'} граница RANGE: «2025–2026» и «18–20» молчат (находок ${narrowHits.length}, ждали 0)`);
   if (!narrowOk) bad++;
+
+  // 2d. Ось WRAP: врап абзаца краснеет, абзац одной строкой и таблица молчат.
+  const wrapBad = 'Абзац, разорванный врапом\nна второй строке, уедет разрывом.\n';
+  const wrapOk = 'Абзац одной строкой, как и надо телу релиза.\n\n| Что | Значение |\n|---|---|\n| Строка | 1 |\n';
+  const wrapFired = checkReleaseBodyWrap(wrapBad).length > 0;
+  const wrapQuiet = checkReleaseBodyWrap(wrapOk).length === 0;
+  console.log(`${wrapFired ? '✅' : '❌'} WRAP: врап абзаца краснеет`);
+  console.log(`${wrapQuiet ? '✅' : '❌'} WRAP: абзац одной строкой и таблица молчат`);
+  if (!wrapFired) bad++;
+  if (!wrapQuiet) bad++;
+
+  // 2c. Ось «ноты ↔ README»: расхождение краснеет, совпадение молчит.
+  const readmeFix = 'Слов прозы **316 764**, символов **2 149 895**, романов **17 919**.';
+  const notesOk = '- **316 764 слова** прозы; символов **2 149 895**; ≈ **17 919 романов**.';
+  const notesBad = '- **316 764 слова** прозы; символов **2 149 834**; ≈ **18 825 романов**.';
+  const driftOk = checkNotesVsReadme(notesOk, readmeFix).length === 0;
+  const driftBad = checkNotesVsReadme(notesBad, readmeFix).length === 2;
+  console.log(`${driftOk ? '✅' : '❌'} ноты↔README: совпадающие числа молчат`);
+  console.log(`${driftBad ? '✅' : '❌'} ноты↔README: два разошедшихся числа краснеют (ровно два)`);
+  if (!driftOk) bad++;
+  if (!driftBad) bad++;
 
   // 3. Класс PASSIVE НЕ запускается вне секции-инструкции: возвратный залог в описательном разделе
   // законен, и страж, который этого не знает, заставил бы переписать здоровый текст.
@@ -400,9 +501,30 @@ if (!files.length) {
 }
 
 let hard = 0;
+const readmeText = fs.existsSync('README.md') ? fs.readFileSync('README.md', 'utf8') : '';
 for (const f of files) {
   if (!fs.existsSync(f)) { console.log(`❌ файла нет — ${f}`); hard++; continue; }
-  hard += report(f, fs.readFileSync(f, 'utf8')).hard;
+  const text = fs.readFileSync(f, 'utf8');
+  hard += report(f, text).hard;
+  // Ось «ноты ↔ README» запускается только на нотах и только при наличии README.
+  if (/RELEASE_NOTES_/.test(f)) {
+    const wrap = checkReleaseBodyWrap(text);
+    if (wrap.length) {
+      console.log(`  ❌ WRAP — ${wrap[0].name} (${wrap.length})`);
+      for (const h of wrap) console.log(`      стр. ${h.n}: …${h.quote}…`);
+      console.log(`      → ${wrap[0].fix}`);
+      hard += wrap.length;
+    }
+  }
+  if (/RELEASE_NOTES_/.test(f) && readmeText) {
+    const drift = checkNotesVsReadme(text, readmeText);
+    if (drift.length) {
+      console.log(`  ❌ NOTES-VS-README — ${drift[0].name} (${drift.length})`);
+      for (const h of drift) console.log(`      стр. ${h.n}: ${h.quote}`);
+      console.log(`      → ${drift[0].fix}`);
+      hard += drift.length;
+    }
+  }
 }
 
 console.log(hard
