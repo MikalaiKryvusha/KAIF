@@ -42,7 +42,9 @@ Structure (keep it to one screen where possible):
 **Steps:**
 - [ ] <step — small enough to verify on its own>
 - [ ] ...
-**Verification:** <how each claim will be observed: run, render, measurement, guard>
+**Verification:** <BY WHICH TEST ARTIFACTS each claim is observed AND WHERE THEY LIVE — the suite/
+case/fixture/guard and its path in the repo; artifacts are produced BY THIS PLAN, in the same steps,
+never "later" (TESTING_FRAMEWORK.md → "The work produces its own means of checking")>
 **Risks:** <top 1-3, each with the reaction if it fires — Murphy ranking from PHILOSOPHY.md>
 ```
 

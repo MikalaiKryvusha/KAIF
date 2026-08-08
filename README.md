@@ -450,7 +450,7 @@ artifacts are never hand-edited.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. Counters in this manual (14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded
-   files; 160 bundle blocks; 679 modules) are printed by `node tools/build-framework.mjs` and are
+   files; 160 bundle blocks; 680 modules) are printed by `node tools/build-framework.mjs` and are
    current as of the 2.2 development line.
 
 ## License
@@ -918,7 +918,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. Счётчики настоящего руководства (14 документов + 7 README + 35 навыков + 1 распаковщик = 57
-   встроенных файлов; 160 блоков бандла; 679 модулей) печатаются командой
+   встроенных файлов; 160 блоков бандла; 680 модулей) печатаются командой
    `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
 
 ## Лицензия

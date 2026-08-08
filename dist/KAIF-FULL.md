@@ -1216,6 +1216,9 @@ Principles:
   stay green while the real thing rots.
 - **Byte-exact goldens for refactors:** capture the output BEFORE the change, diff AFTER. "Looks like
   the same numbers" is not evidence; an empty diff is.
+- **The same obligation runs forward, not only after a defect:** new code is born with the artifacts
+  that check it (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). A guard is
+  what a defect leaves behind; a test suite is what the work brings with it.
 
 ---
 
@@ -1352,6 +1355,27 @@ of the project language:
 Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
 marker preserves that fact **across sessions**, for future agents and posterity — who else will know the
 foundation was load-tested?
+
+## The work produces its own means of checking
+
+"Raw deserves no trust" binds the PRODUCER, not only the checker: building something includes
+building what checks it — a test suite, a check-list, test cases, a fixture, a guard. They are
+planned WITH the work and land in the SAME step, never "later": verification postponed to a later
+step is verification that never happens, and verification that lives only in a session's scratchpad
+dies with the session. This is principle 3 (early testing) applied to production rather than to
+inspection, and it is why the harness section below exists — the harness is what makes the checking
+repeatable once it exists.
+
+Two operational consequences, one on each side of the work:
+
+- **New behaviour is born with the check that watches it** — and the check is proven on the broken
+  version before its green is trusted (gate 5 below; `BUG_FIXING_FRAMEWORK.md` → Guards).
+- **A closed defect is born with the guard for its CLASS** — that rule already lives in
+  `BUG_FIXING_FRAMEWORK.md` ("a fix without a guard is a fix on credit") and is not restated here.
+
+The triviality gate applies: a trivial change verified by its one obvious check needs no ceremony
+beyond the usual comment and marker. What is never legal is finishing non-trivial work with nothing
+that can re-check it.
 
 ## Green tests ≠ working — the observation gates
 
@@ -6025,7 +6049,10 @@ mechanical quote check (a finding is not a finding until verified).
 Detail ONLY the upcoming phase (R&D · testing · mock-ups · development · debugging · acceptance —
 whichever apply): steps with checkboxes, per-step verification, risks. The operational plan
 inherits the opening block — the phase's own goal vector + acceptance criteria first
-(`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
+(`REQUIREMENTS_FRAMEWORK.md`). A **testing phase is planned against the test artifacts the
+producing phases WROTE** — suites, cases, check-lists, fixtures, named with their paths; a testing
+phase whose artifacts do not exist yet is a phase that will invent its own verification at the
+last moment (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
 The child's file is named **`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's
@@ -6099,7 +6126,9 @@ Structure (keep it to one screen where possible):
 **Steps:**
 - [ ] <step — small enough to verify on its own>
 - [ ] ...
-**Verification:** <how each claim will be observed: run, render, measurement, guard>
+**Verification:** <BY WHICH TEST ARTIFACTS each claim is observed AND WHERE THEY LIVE — the suite/
+case/fixture/guard and its path in the repo; artifacts are produced BY THIS PLAN, in the same steps,
+never "later" (TESTING_FRAMEWORK.md → "The work produces its own means of checking")>
 **Risks:** <top 1-3, each with the reaction if it fires — Murphy ranking from PHILOSOPHY.md>
 ```
 

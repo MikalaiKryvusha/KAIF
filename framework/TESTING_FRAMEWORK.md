@@ -57,6 +57,27 @@ Markers are the persistent memory of verification: fable-method's Step 5 verifie
 marker preserves that fact **across sessions**, for future agents and posterity — who else will know the
 foundation was load-tested?
 
+## The work produces its own means of checking
+
+"Raw deserves no trust" binds the PRODUCER, not only the checker: building something includes
+building what checks it — a test suite, a check-list, test cases, a fixture, a guard. They are
+planned WITH the work and land in the SAME step, never "later": verification postponed to a later
+step is verification that never happens, and verification that lives only in a session's scratchpad
+dies with the session. This is principle 3 (early testing) applied to production rather than to
+inspection, and it is why the harness section below exists — the harness is what makes the checking
+repeatable once it exists.
+
+Two operational consequences, one on each side of the work:
+
+- **New behaviour is born with the check that watches it** — and the check is proven on the broken
+  version before its green is trusted (gate 5 below; `BUG_FIXING_FRAMEWORK.md` → Guards).
+- **A closed defect is born with the guard for its CLASS** — that rule already lives in
+  `BUG_FIXING_FRAMEWORK.md` ("a fix without a guard is a fix on credit") and is not restated here.
+
+The triviality gate applies: a trivial change verified by its one obvious check needs no ceremony
+beyond the usual comment and marker. What is never legal is finishing non-trivial work with nothing
+that can re-check it.
+
 ## Green tests ≠ working — the observation gates
 
 A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible

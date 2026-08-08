@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.1",
   "released": "2026-07-31",
-  "moduleCount": 679,
+  "moduleCount": 680,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -480,10 +480,10 @@
       {
         "signature": "## Guards — every fix births a check, and the check itself is checked",
         "class": "static",
-        "sha256": "4fc05d5cae5c430fe2310cca7dcad3321200912402120e515eaa54d2c588e2f4",
+        "sha256": "efda5a95181b2224286a94fba92f2accd0acd5cb8cb0436a3f2042601e77b37f",
         "lines": [
           94,
-          107
+          110
         ]
       },
       {
@@ -491,8 +491,8 @@
         "class": "static",
         "sha256": "f436890bf798822fc6e475a74b4ba0f27217f927d62dd3dd69db7a6504a6842a",
         "lines": [
-          108,
-          122
+          111,
+          125
         ]
       },
       {
@@ -500,8 +500,8 @@
         "class": "static",
         "sha256": "5e4ed7c405088b63f8bce7ee3db476837d3a7a6a580f1a81d256218782ba9e4c",
         "lines": [
-          123,
-          132
+          126,
+          135
         ]
       },
       {
@@ -509,8 +509,8 @@
         "class": "static",
         "sha256": "a5b138f59cc7095ebc7cbcc3ae6b42bebb24b5c28455ab228ae8f7232d82f466",
         "lines": [
-          133,
-          171
+          136,
+          174
         ]
       },
       {
@@ -518,8 +518,8 @@
         "class": "static",
         "sha256": "11b59801227bf6666400bb367a330dabadddc07cb1d0c9f9549b207abd662da0",
         "lines": [
-          172,
-          177
+          175,
+          180
         ]
       }
     ],
@@ -552,12 +552,21 @@
         ]
       },
       {
+        "signature": "## The work produces its own means of checking",
+        "class": "static",
+        "sha256": "77ebd33a43fedf05cdcbe2cf0aa82f55c210e3418444522152964a3dd0afc1fc",
+        "lines": [
+          60,
+          80
+        ]
+      },
+      {
         "signature": "## Green tests ≠ working — the observation gates",
         "class": "static",
         "sha256": "4828c62c61427e56c023e74e3264c680da8903e07fbaa917e7ca61b31ce08ed6",
         "lines": [
-          60,
-          79
+          81,
+          100
         ]
       },
       {
@@ -565,8 +574,8 @@
         "class": "static",
         "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
         "lines": [
-          80,
-          88
+          101,
+          109
         ]
       },
       {
@@ -574,8 +583,8 @@
         "class": "static",
         "sha256": "89d243c12007bd73d3c709681da0f4cb038545ff9809fcaaa3c1c0ed529eb502",
         "lines": [
-          89,
-          106
+          110,
+          127
         ]
       }
     ],
@@ -3429,10 +3438,10 @@
       {
         "signature": "## Rung 3 — operational plan for the NEXT phase only",
         "class": "static",
-        "sha256": "ae82dadefed90c151484a10fbb953506ab4dd49a69097916ceceaa5721f00f08",
+        "sha256": "797cfda916153005aa6c64af08970168ca899d67342ca74c7c2ae699d4f4fede",
         "lines": [
           52,
-          63
+          66
         ]
       },
       {
@@ -3440,8 +3449,8 @@
         "class": "static",
         "sha256": "02eb6cda82ca615ba6d5a32df75f1861190d7f8a430cbcd66926f4f4571de004",
         "lines": [
-          64,
-          73
+          67,
+          76
         ]
       },
       {
@@ -3449,8 +3458,8 @@
         "class": "static",
         "sha256": "dea38a30df721585fadd74966c51fae422ffc109ce9960be610597949b599b05",
         "lines": [
-          74,
-          80
+          77,
+          83
         ]
       }
     ],
@@ -3494,10 +3503,10 @@
       {
         "signature": "## Step 2 — write the plan",
         "class": "static",
-        "sha256": "7f80775ca07454090091c05c0155cdc46a95b65c745a5f838bfa2dcbeb575208",
+        "sha256": "bd99d8d1e42cfd140b172723f6dd2f725ea801f843b638c261a9fd8f3895e6ff",
         "lines": [
           34,
-          62
+          64
         ]
       },
       {
@@ -3505,8 +3514,8 @@
         "class": "static",
         "sha256": "086d4fe0dbf3db280fc6682a5f8d56ad515fa4c1195b143ab6eb8d1f6895d2e0",
         "lines": [
-          63,
-          69
+          65,
+          71
         ]
       },
       {
@@ -3514,8 +3523,8 @@
         "class": "static",
         "sha256": "41843d36a144da89b42869b748b963360472b4176c05069451a5765f3eabbda2",
         "lines": [
-          70,
-          77
+          72,
+          79
         ]
       }
     ],

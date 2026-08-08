@@ -54,7 +54,10 @@ mechanical quote check (a finding is not a finding until verified).
 Detail ONLY the upcoming phase (R&D · testing · mock-ups · development · debugging · acceptance —
 whichever apply): steps with checkboxes, per-step verification, risks. The operational plan
 inherits the opening block — the phase's own goal vector + acceptance criteria first
-(`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
+(`REQUIREMENTS_FRAMEWORK.md`). A **testing phase is planned against the test artifacts the
+producing phases WROTE** — suites, cases, check-lists, fixtures, named with their paths; a testing
+phase whose artifacts do not exist yet is a phase that will invent its own verification at the
+last moment (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
 The child's file is named **`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's

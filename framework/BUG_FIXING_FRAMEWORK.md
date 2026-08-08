@@ -102,6 +102,9 @@ Principles:
   stay green while the real thing rots.
 - **Byte-exact goldens for refactors:** capture the output BEFORE the change, diff AFTER. "Looks like
   the same numbers" is not evidence; an empty diff is.
+- **The same obligation runs forward, not only after a defect:** new code is born with the artifacts
+  that check it (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). A guard is
+  what a defect leaves behind; a test suite is what the work brings with it.
 
 ---
 
