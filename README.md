@@ -17,9 +17,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-2.2-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
-[![Field-certified](https://img.shields.io/badge/Field--certified-12B%20local%20model-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
-[![Guardrails](https://img.shields.io/badge/Guardrails-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-en)
-[![Languages](https://img.shields.io/badge/Owner%20docs-10%20languages-2C7BE5.svg?style=flat-square)](#lang-en)
 
 <p align="center">
   <a href="#1-general">General</a> · <a href="#2-installation">Installation</a> · <a href="#3-the-deployed-framework">Deployed framework</a> · <a href="#4-the-skills">Skills</a> · <a href="#5-working-on-a-project">Working</a> · <a href="#6-updating-forking-removing">Updating</a> · <a href="#8-reference">Reference</a>
@@ -571,9 +568,6 @@ project. Thank you, and pleasant work!
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
 [![Версия](https://img.shields.io/badge/Версия-2.2-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
-[![Полевая сертификация](https://img.shields.io/badge/Полевая%20сертификация-локальная%2012B-FFB300.svg?style=flat-square)](homeworks/02_DONE_field_test_thin_install_on_weak_llm.md)
-[![Гвардрейлы](https://img.shields.io/badge/Гвардрейлы-Homeostatic%20KAIF-8E44AD.svg?style=flat-square)](#guardrails-ru)
-[![Языки](https://img.shields.io/badge/Документы%20владельца-10%20языков-2C7BE5.svg?style=flat-square)](#lang-ru)
 
 <p align="center">
   <a href="#1-общие-сведения">Общие сведения</a> · <a href="#2-установка">Установка</a> · <a href="#3-устройство-развёрнутого-фреймворка">Устройство</a> · <a href="#4-навыки">Навыки</a> · <a href="#5-работа-над-проектом">Работа</a> · <a href="#6-обновление-форк-удаление">Обновление</a> · <a href="#8-справочные-сведения">Справка</a>
