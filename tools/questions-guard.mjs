@@ -26,7 +26,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSy
 import { join, relative, resolve } from 'node:path'; // T10: resolve, не join, для внешних путей
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { tmpdir } from 'node:os';
+import { tempRoot } from './lib/temp-root.mjs';
 // Разбор интервью — ЕДИНЫМ парсером ядра (пилот 008: дубль парсера в страже разошёлся с ядром
 // на «комментарий ≠ ответ» — класс «две истины» закрыт формой: один парсер обеим сторонам).
 import { parseQuestions, docStatus } from './lib/review-core.mjs';
@@ -240,7 +240,9 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
 
 // ── Селфтест: мутации с предсказанием (G10) на временной фикстуре (G5: правилам место на фикстуре) ──
 function selftest() {
-  const box = join(tmpdir(), 'kaif-questions-guard-selftest');
+  // Корень фикстуры УНИКАЛЕН по построению (bugs/59); уборку держит сам помощник: зелёный
+  // прогон каталог сносит, красный — ОСТАВЛЯЕТ и печатает путь.
+  const box = tempRoot('questions-guard-selftest');
   const noop = () => {};
   let n = 0;
   const mut = (name, prediction, setup, expectRed, expectKind) => {
@@ -291,7 +293,6 @@ function selftest() {
     },
     false, '');
 
-  rmSync(box, { recursive: true, force: true });
   console.log(process.exitCode ? 'СЕЛФТЕСТ КРАСНЫЙ' : `селфтест зелёный: все ${n} мутаций сбылись по предсказанию`);
 }
 

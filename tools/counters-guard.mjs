@@ -20,11 +20,11 @@
 //   node tools/counters-guard.mjs --selftest   # ДОКАЗАТЬ, что страж умеет краснеть
 //
 // Гоняется в /end-chat и /release вместе с остальным реестром пар.
-import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync, rmSync, cpSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync, cpSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tmpdir } from 'node:os';
+import { tempRoot } from './lib/temp-root.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(process.argv.includes('--root')
@@ -185,8 +185,9 @@ function check() {
 // --- selftest: страж, который ни разу не краснел, ничего не доказывает -------
 // Копируем ровно то, что читает страж, портим ОДНО число в README и требуем красного.
 function selftest() {
-  const SBX = join(tmpdir(), 'kaif-counters-guard-selftest');
-  rmSync(SBX, { recursive: true, force: true });
+  // Корень УНИКАЛЕН по построению (bugs/59): `--selftest` рядом с обычным прогоном — ровно тот
+  // сценарий, в котором фиксированное имя в общем OS-temp давало ложный красный.
+  const SBX = tempRoot('counters-guard-selftest');
   mkdirSync(join(SBX, 'tools'), { recursive: true });
   // assets/ нужен оси навыков: SVG-генератор — одно из её зеркал (без копии страж
   // отчитался бы «файла нет» и красный зачёлся бы там, где ничего не ломали)

@@ -6,7 +6,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync } fr
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tmpdir } from 'node:os';
+import { tempRoot } from '../lib/temp-root.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -14,8 +14,10 @@ const DIST = join(REPO, 'dist');
 // полигон на релизном бампе 2.0 при нуле продуктовых дефектов
 const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 // абсолютный корень: аргумент node внутри execSync резолвится от cwd песочницы
-const ROOT = resolve(process.argv[2] || join(tmpdir(), 'kaif-sbx-field'));
-rmSync(ROOT, { recursive: true, force: true });
+// Корень прогона УНИКАЛЕН по построению (bugs/59): каталог с фиксированным именем в общем
+// OS-temp — разделяемый ресурс без владельца, и два одновременных прогона сносили его друг у
+// друга, давая ЛОЖНЫЙ КРАСНЫЙ в главном гейте проекта. Явный путь аргументом по-прежнему жив.
+const ROOT = tempRoot('field', process.argv[2]);
 mkdirSync(ROOT, { recursive: true });
 
 let failures = 0;

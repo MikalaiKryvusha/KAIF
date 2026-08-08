@@ -47,14 +47,16 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, statSync, existsSync, a
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tmpdir } from 'node:os';
+import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
-const ROOT = resolve(process.argv[2] || join(tmpdir(), 'kaif-sbx-l2-faces'));
-rmSync(ROOT, { recursive: true, force: true });
+// Корень прогона УНИКАЛЕН по построению (bugs/59): каталог с фиксированным именем в общем
+// OS-temp — разделяемый ресурс без владельца, и два одновременных прогона сносили его друг у
+// друга, давая ЛОЖНЫЙ КРАСНЫЙ в главном гейте проекта. Явный путь аргументом по-прежнему жив.
+const ROOT = tempRoot('l2-faces', process.argv[2]);
 mkdirSync(ROOT, { recursive: true });
 
 let failures = 0;

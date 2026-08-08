@@ -21,7 +21,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
+import { tempRoot } from './lib/temp-root.mjs';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   normalize, bodyHash, parseQuestions, recordDecision, readDecision, checkApproval,
@@ -137,8 +137,11 @@ async function attachPage(cdp, url) {
 }
 
 // ── Фикстура (G5): временный корень с интервью и исходящим черновиком ──────────────────────
-function makeFixtureRoot() {
-  const root = join(tmpdir(), 'kaif-verify-contour');
+// Корень фикстуры УНИКАЛЕН по построению (bugs/59): фиксированное имя в общем OS-temp роняло
+// прогон, когда рядом шёл второй (headless + `--visible`, две сессии, CI рядом с локальным).
+// Корень передаётся ПАРАМЕТРОМ, потому что функция служит и «пересоздай ту же фикстуру заново»
+// (QA7): без параметра уникальный корень тихо разъехался бы с уже открытой `fixtureRoot`.
+function makeFixtureRoot(root = tempRoot('verify-contour')) {
   rmSync(root, { recursive: true, force: true });
   mkdirSync(join(root, 'interviews'), { recursive: true });
   mkdirSync(join(root, 'drafts', 'bodies'), { recursive: true });
@@ -200,8 +203,7 @@ const FILL_AND_SAVE_JS = [
 // ── Основной headless-прогон ───────────────────────────────────────────────────────────────
 async function main() {
   const fixtureRoot = makeFixtureRoot();
-  const profile = join(tmpdir(), 'kaif-verify-profile');
-  rmSync(profile, { recursive: true, force: true });
+  const profile = tempRoot('verify-profile');
   let browser = null;
   const logSilent = () => {};
 
@@ -469,7 +471,8 @@ async function main() {
 
     block('QA7. Мёртвый сервер headless: пять эталонных true');
     try {
-      makeFixtureRoot(); // свежая фикстура: Q1 снова не отвечен (блок 6 уже записал ответ в старую)
+      makeFixtureRoot(fixtureRoot); // свежая фикстура В ТОМ ЖЕ корне: Q1 снова не отвечен
+                                    // (блок 6 уже записал ответ в старую)
       // Отдельный ПРОЦЕСС сервера — убиваем его внезапно, страница остаётся в браузере
       const child = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), 'interviews/interview_101_fixture.md',
         '--no-open', '--silent'], { cwd: fixtureRoot, stdio: ['ignore', 'pipe', 'ignore'] });
@@ -527,8 +530,7 @@ async function main() {
     // ПОВЕДЕНИЕ на настоящем сервере, потому что прошлый дефект пережил и своды, и приёмку.
     block('QA8. Очередь: карточки → документ своим окном; запись одного не рушит остальные (bugs/52)');
     {
-      const qRoot = join(tmpdir(), 'kaif-verify-queue');
-      rmSync(qRoot, { recursive: true, force: true });
+      const qRoot = tempRoot('verify-queue');
       mkdirSync(join(qRoot, 'interviews'), { recursive: true });
       const hdr = (n) => `# Interview #${n} — фикстура очереди ${n}\n\n> Topic: форма очереди.\n> Status: **🟡 WAITING FOR OWNER**\n\n`;
       const qq = (id) => `## ${id}. Вопрос ${id}?\n\n| Вариант | Что означает |\n|---|---|\n| **A** | первый |\n| **B** | второй |\n\n`;
@@ -659,8 +661,7 @@ function liveOptionCounts() {
 // ── QA2 (--visible): поведение окна на ВИДИМОМ окне (T2 — headless доказывает не то) ───────
 async function visibleRun() {
   const fixtureRoot = makeFixtureRoot();
-  const profile = join(tmpdir(), 'kaif-verify-profile-visible');
-  rmSync(profile, { recursive: true, force: true });
+  const profile = tempRoot('verify-profile-visible');
   let url = null;
   serveContour._onUp = (u) => { url = u; };
   const servePromise = serveContour(fixtureRoot, { docPath: 'interviews/interview_101_fixture.md' },

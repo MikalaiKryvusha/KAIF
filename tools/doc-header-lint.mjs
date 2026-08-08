@@ -37,7 +37,7 @@ import { readFileSync, readdirSync, existsSync, mkdirSync, rmSync, writeFileSync
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import { tmpdir } from 'node:os';
+import { tempRoot } from './lib/temp-root.mjs';
 
 // ── Константы (никаких магических значений) ────────────────────────────────────────────────
 // Скоуп — top-level *.md рабочих директорий знаний; поддиректории (ideas/academic_style,
@@ -313,8 +313,9 @@ function runRequirementsDict(root) {
 
 // ── Селфтест: красный доказан на сломанной фикстуре, зелёный — на чистой (G10) ─────────────
 function selftest() {
-  const fx = join(tmpdir(), 'kaif-doc-header-lint-fx');
-  rmSync(fx, { recursive: true, force: true });
+  // Корень фикстуры УНИКАЛЕН по построению (bugs/59); уборку держит сам помощник: зелёный
+  // прогон каталог сносит, красный — ОСТАВЛЯЕТ и печатает путь, чтобы улику было где смотреть.
+  const fx = tempRoot('doc-header-lint-fx');
   for (const d of [...FULL_DIRS, BUGS_DIR, INTERVIEWS_DIR]) mkdirSync(join(fx, d), { recursive: true });
   // Чистая blockquote-шапка для нормо-эпохных фикстур (в них ломается БЛОК, не шапка).
   const CLEAN_HEADER = '> **Создан:** 2026-08-07. **Родитель:** `plans/30`. **Статус:** в работе. **Вовне:** —.\n';
@@ -391,7 +392,6 @@ function selftest() {
     console.error(`СЕЛФТЕСТ ПРОВАЛЕН (композиция): словарь обязан найти подложенное «быстро» (exit 1), получили ${dictExit}`);
     process.exit(1);
   }
-  rmSync(fx, { recursive: true, force: true });
   console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат, композиция со словарём находит стоп-слово`);
 }
 

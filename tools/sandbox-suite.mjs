@@ -47,12 +47,30 @@
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
+const REPO = resolve(HERE, '..', '..');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
                 's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
                 's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs',
                 's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs'];
+// ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
+// OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
+// sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a
+// local run) delete it from under each other and the main gate goes FALSELY red. A false alarm is
+// worse than a miss — it teaches the operator to re-run instead of looking. The guard proves
+// itself red on a synthetic mutation first: a check that never failed proves nothing.
+const proofFails = selfProof();
+const fixedNames = auditFixedTempNames(REPO);
+for (const f of proofFails) console.error('✖ temp-root selfproof: ' + f);
+for (const v of fixedNames) console.error('✖ fixed temp name (bugs/59): ' + v);
+if (proofFails.length || fixedNames.length) {
+  console.error(`\n❌ preflight: ${proofFails.length} selfproof failures, ${fixedNames.length} fixed temp names — take the root via tools/lib/temp-root.mjs`);
+  process.exit(1);
+}
+console.log(`✅ preflight: run roots are unique by construction (temp-root guard red-proven, ${SUITES.length} suites)`);
+
 let failed = 0;
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);
