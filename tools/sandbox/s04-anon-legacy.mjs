@@ -262,5 +262,76 @@ const task14d = readFileSync(join(S14d, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task14d.includes('deprecations') && task14d.includes('help-kaif'),
    'S14d правленный упразднённый вынесен пунктом задачи');
 
+// ------------------------------------------------- S14e: bugs/57 — ДВА интервала bootstrap подряд
+// Ветка «задача несёт чек-поинты — не перезаписываем» (bugs/14) была завязана на НАЛИЧИЕ
+// чек-поинтов, а не на интервал версий: прерванный bootstrap на 2.2 с одним чек-поинтом делал
+// следующий bootstrap на 2.3 МОЛЧАЛИВОЙ потерей — задача оставалась от 2.2, поставка интервала
+// 2.3 (policy-changes, новости, диффы конфликтных модулей) не писалась НИКУДА, а маркер,
+// расписка и history уже переезжали на 2.3, после чего update-verify зеленел по ЧУЖОМУ
+// чек-листу. Для анонимных и pre-1.5 развёртываний bootstrap — единственная дорога обновления.
+console.log('\n=== S14e: два интервала bootstrap подряд — чек-поинт прошлого не съедает поставку нового (bugs/57) ===');
+// два синтетических апстрима с РАЗНЫМИ приметами: примета обязана быть уникальной для СВОЕГО
+// интервала, иначе ассерт «поставка доехала» зеленел бы на новостях соседа
+const mkSrcE = (ver, marker) => {
+  const d = join(ROOT, 'src-e-' + ver); mkdirSync(d);
+  let b = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
+  b = editBundleModule(b, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', marker));
+  const patched = b.replace(`"version": "${CUR}"`, `"version": "${ver}"`);
+  if (patched === b) throw new Error(`bundle meta version patch was a NO-OP for ${ver}`);
+  writeFileSync(join(d, 'KAIF-CORE-BUNDLE.md'), patched);
+  cpSync(join(DIST, 'KAIF-CORE.mjs'), join(d, 'KAIF-CORE.mjs'));
+  return d;
+};
+const SRC_E1 = mkSrcE('9.6', 'UPSTREAM-NEWS-E1');
+const SRC_E2 = mkSrcE('9.7', 'UPSTREAM-NEWS-E2');
+const S14e = join(ROOT, 's14e'); mkdirSync(S14e); seed(S14e);
+run(S14e, 'install');
+// законная дивергенция владельца в том же модуле, который меняет апстрим → конфликт в обоих интервалах
+const P14e = join(S14e, 'PHILOSOPHY.md');
+const p14e = splitModules(readFileSync(P14e, 'utf8'));
+p14e[2].lines.push('', 'LOCAL OWNER EDIT (S14e)');
+writeFileSync(P14e, joinModules(p14e));
+seed(S14e, SRC_E1);
+r = run(S14e, 'install');
+ok(r.code === 0, 'S14e bootstrap → 9.6 exit 0', r.out);
+const taskE1 = readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md'), 'utf8');
+ok(taskE1.includes('UPSTREAM-NEWS-E1'), 'S14e поставка первого интервала доехала до задачи');
+r = run(S14e, 'checkpoint review-news');
+ok(r.code === 0, 'S14e чек-поинт записан (сессия прервалась ровно здесь)', r.out);
+// второй интервал приезжает поверх ПРЕРВАННОЙ задачи
+seed(S14e, SRC_E2);
+r = run(S14e, 'install');
+ok(r.code === 0, 'S14e bootstrap → 9.7 exit 0', r.out);
+const taskE2 = readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md'), 'utf8');
+// критерий приёмки bugs/57, исход A. Примета — H1 задачи И поставка интервала В ЗАДАЧЕ:
+// голый grep по дереву зеленел бы мимо фикса, потому что бандл-источник в .kaif/install/
+// несёт ту же строку по построению (поймано замером ДО правки)
+ok(taskE2.split('\n')[0].includes('finish the update to 9.7'),
+   '🔴 S14e задача перегенерирована под НОВЫЙ интервал (H1 говорит 9.7, не 9.6)', taskE2.split('\n')[0]);
+ok(taskE2.includes('UPSTREAM-NEWS-E2'),
+   '🔴 S14e поставка ВТОРОГО интервала доехала до задачи (была потеряна молча)');
+// и ничего не потеряно из первого: чек-поинт и его поставка живут в superseded-копии
+const asideE = join(S14e, 'KAIF_UPDATE_TASK.superseded.md');
+ok(existsSync(asideE), '🔴 S14e прерванная задача сохранена superseded-копией');
+const asideTxt = existsSync(asideE) ? readFileSync(asideE, 'utf8') : '';
+ok(asideTxt.includes('KAIF-UPDATE: review-news done') && asideTxt.includes('UPSTREAM-NEWS-E1'),
+   '🔴 S14e superseded-копия несёт И записанный чек-поинт, И поставку первого интервала');
+ok(/WITH recorded checkpoints/.test(r.out),
+   'S14e лог называет РОД сохранённого — задача с записанными чек-поинтами, а не просто «unfinished»', r.out.slice(-400));
+const mkE = JSON.parse(readFileSync(join(S14e, '.kaif', 'kaif.json'), 'utf8'));
+const luE = JSON.parse(readFileSync(join(S14e, '.kaif', 'last-update.json'), 'utf8'));
+ok(mkE.version === '9.7' && luE.to === '9.7' && luE.from === '9.6',
+   'S14e маркер и расписка согласны с задачей (9.6 → 9.7)', `${mkE.version} · ${luE.from}→${luE.to}`);
+// «не трогать» соседей: re-run ТОЙ ЖЕ версии с чек-поинтами обязан сохранять задачу побайтно
+const beforeRerun = readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md'));
+run(S14e, 'checkpoint recheck');
+const withTick = readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md'));
+seed(S14e, SRC_E2);
+r = run(S14e, 'install');
+ok(r.out.includes('carries recorded checkpoints') && readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md')).equals(withTick),
+   '🔴 S14e «не трогать»: re-run ТОЙ ЖЕ версии по-прежнему сохраняет задачу побайтно (bugs/14)',
+   r.out.slice(-300));
+ok(!beforeRerun.equals(withTick), 'S14e контроль фикстуры: чек-поинт действительно изменил задачу');
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.5 зелёные'}`);
 process.exit(failures ? 1 : 0);

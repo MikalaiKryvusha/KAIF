@@ -85,8 +85,11 @@ ok(ISO_MOMENT_RE.test(mk.history[0]?.date || ''),
 rmSync(join(S9, 'KAIF_UPDATE_TASK.md'), { force: true });
 r = run(S9, `update --source ${SRC2}`);
 mk = JSON.parse(readFileSync(join(S9, '.kaif', 'kaif.json'), 'utf8'));
+// Улика приложена к ассерту, а не выброшена: этот ассерт был пойман КРАСНЫМ один раз и зелёным
+// на перепрогоне без единой правки дерева (2026-08-08). Без вывода второго update причину
+// такого красного назвать нечем — а «прошло само» диагнозом не является (EXP-0052).
 ok(mk.history.length === 2 && mk.history[1].from === '9.9' && mk.history[1].to === '9.10',
-   'S9 история растёт: 2 записи после второго update');
+   'S9 история растёт: 2 записи после второго update', `code=${r.code} · ${r.out.slice(-500)}`);
 
 // ---------------------------------------------------------------- S10: adopt-current
 console.log('\n=== S10: ручная миграция → adopt-current → машинный путь жив ===');
@@ -229,6 +232,48 @@ ok(rc12.verifiedAt, 'S12 расписка проштампована verifiedAt 
 // T8: verifiedAt — третья квитанция машинерии, и она подчиняется той же конвенции момента.
 ok(ISO_MOMENT_RE.test(rc12.verifiedAt || ''),
    'S12 T8: verifiedAt — момент (локальный ISO 8601 со смещением)', `verifiedAt=${rc12.verifiedAt}`);
+
+// ------------------------------- S12b: bugs/58 — собственный навык проекта и зеркала многосистемного развёртывания
+// `resyncCopies` писала зеркала СЫРЫМ writeFileSync без mkdir, а каталог зеркала заводит только
+// `deployAgentSystems` — и только для навыков ИЗ БАНДЛА. Проект, заведший собственный навык (канон
+// прямо это предписывает: KAIF_REFERENCE §7.3), получал необработанный ENOENT из `sync`, обоих
+// чек-поинтов и ОБОИХ финальных гейтов: установку было НЕЧЕМ закрыть при нормальном дереве.
+console.log('\n=== S12b: собственный навык проекта не роняет зеркала и финальный гейт (bugs/58) ===');
+const S12b = join(ROOT, 's12b'); mkdirSync(S12b); seed(S12b);
+r = run(S12b, 'install');          // дефолт --agents = все пять систем: профиль многосистемный
+ok(r.code === 0, 'S12b install (все пять систем) exit 0', r.out.slice(-400));
+const OWN = 'my-project-skill';
+mkdirSync(join(S12b, '.claude', 'skills', OWN), { recursive: true });
+writeFileSync(join(S12b, '.claude', 'skills', OWN, 'SKILL.md'),
+  `---\nname: ${OWN}\ndescription: a skill authored by the project itself\n---\n\n# Own skill\n`);
+r = run(S12b, 'sync');
+ok(r.code === 0 && /re-synced \d+ system skill copies/.test(r.out),
+   '🔴 S12b sync с собственным навыком проекта — код 0 и зеркала раскатаны', r.out.slice(-400));
+ok(!/ENOENT/.test(r.out), '🔴 S12b sync не выбрасывает сырой ENOENT наружу', r.out.slice(-400));
+// зеркало заведено В КАЖДОЙ системе маркера, включая плоскую zoo-code-ветку
+for (const [sys, p] of [['codex', `.agents/skills/${OWN}/SKILL.md`], ['grok-build', `.grok/skills/${OWN}/SKILL.md`],
+                        ['cline', `.cline/skills/${OWN}/SKILL.md`], ['zoo-code', `.roo/commands/${OWN}.md`]])
+  ok(existsSync(join(S12b, p)), `🔴 S12b зеркало собственного навыка заведено для ${sys} (${p})`);
+// и главное: финальный гейт ДОХОДИТ до своей диагностики вместо стектрейса Node
+r = run(S12b, 'verify-final');
+ok(!/ENOENT/.test(r.out) && /verify-final (FAILED|OK)/.test(r.out),
+   '🔴 S12b verify-final доходит до собственного вердикта, а не падает стектрейсом', r.out.slice(-400));
+// чек-поинт recheck зовёт тот же resyncCopies первым делом — он тоже обязан пережить свой навык
+r = run(S12b, 'checkpoint recheck');
+ok(!/ENOENT/.test(r.out), '🔴 S12b checkpoint recheck переживает собственный навык проекта', r.out.slice(-400));
+// ВТОРАЯ половина фикса bugs/58 — лечение самого семейства 12, а не симптома: отказ, которому
+// mkdir помочь НЕ МОЖЕТ, обязан назвать путь и команду восстановления, а не улететь стектрейсом
+// Node из финального гейта. Ставим на место зеркала каталог: writeFileSync по нему невозможен.
+rmSync(join(S12b, '.agents', 'skills', OWN, 'SKILL.md'), { force: true });
+mkdirSync(join(S12b, '.agents', 'skills', OWN, 'SKILL.md'), { recursive: true });
+r = run(S12b, 'sync');
+ok(r.code === 0 && !/Node\.js v/.test(r.out),
+   '🔴 S12b непочинимая запись зеркала НЕ роняет команду сырым стектрейсом', r.out.slice(-400));
+ok(new RegExp(`system skill cop\\w+ could not be written[\\s\\S]*\\.agents/skills/${OWN}/SKILL\\.md`).test(r.out)
+   && /re-run `node \.kaif\/kaif-core\.mjs sync`/.test(r.out),
+   '🔴 S12b отказ называет ПУТЬ и КОМАНДУ восстановления (семейство 12)', r.out.slice(-400));
+ok(existsSync(join(S12b, '.grok', 'skills', OWN, 'SKILL.md')),
+   'S12b отказ на одном зеркале не отменил остальные', r.out.slice(-300));
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.4 зелёные'}`);
 process.exit(failures ? 1 : 0);

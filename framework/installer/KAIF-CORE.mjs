@@ -1404,6 +1404,21 @@ function healMarker() {
   } catch { /* marker unreadable — leave for the check to flag */ }
 }
 
+// One mirror write — the ONLY way this file writes a per-system copy (bugs/58, family 12
+// "a refusal that does not name the right move"). Two guarantees, both paid for by a live repro:
+//   1. the DIRECTORY is created here, the same way writeIfNew does it (line 407). The canon
+//      instructs every project to author its own skills in .claude/skills/ (KAIF_REFERENCE §7.3);
+//      for such a skill the mirror directory is created by NOBODY — deployAgentSystems mkdirs
+//      only for skills that came from the bundle, while resyncCopies walks .claude/skills/ whole.
+//   2. a write that still fails is reported as a NAMED path plus the command that repairs it —
+//      never as a raw ENOENT thrown out of a final gate, which left the install with nothing at
+//      all to close it (`sync`, both checkpoints and BOTH final gates died on one stacktrace).
+// The canonical skills are never at risk here: this function only propagates them outward.
+function writeMirror(to, content, failures) {
+  try { mkdirSync(dirname(to) || '.', { recursive: true }); writeFileSync(to, content); return true; }
+  catch (e) { failures.push(`${to} (${e.code || e.message})`); return false; }
+}
+
 // Re-sync the per-system skill copies from the canonical .claude/skills/ — cognitive work
 // (adaptation fills, update merges, owner customizations) lands in the canon only; machinery
 // propagates it so no copy is ever edited by hand (bug 05 and its empty-project tail).
@@ -1423,15 +1438,18 @@ function resyncCopies() {
   }
   const copies = { codex: '.agents/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
   let synced = 0;
+  const failed = [];
   for (const [sys, base] of Object.entries(copies)) {
     if (!agents.includes(sys)) continue;
-    for (const f of canon) { writeFileSync(f.path.replace('.claude/skills', base), f.content); synced++; }
+    for (const f of canon) if (writeMirror(f.path.replace('.claude/skills', base), f.content, failed)) synced++;
   }
   if (agents.includes('zoo-code')) for (const f of canon) {
     const n = skillName(f.path);
-    if (n) { writeFileSync(`.roo/commands/${n}.md`, f.content.replace(/^name:[^\n]*\n/m, '')); synced++; }
+    if (n && writeMirror(`.roo/commands/${n}.md`, f.content.replace(/^name:[^\n]*\n/m, ''), failed)) synced++;
   }
   if (synced) log(`↻ re-synced ${synced} system skill copies from the canon`);
+  // The refusal names the right move (bugs/58): what failed, and the one command that retries it.
+  if (failed.length) log(`⚠ ${failed.length} system skill cop${failed.length === 1 ? 'y' : 'ies'} could not be written — the canonical skills in .claude/skills/ are intact, only these mirrors lag: ${failed.join(' · ')}. Fix the path or permission, then re-run \`node .kaif/kaif-core.mjs sync\`.`);
 }
 
 // self-clean: the deployment step is done; the project is driven by the skills from here on.
@@ -1783,7 +1801,14 @@ async function cmdInstall() {
     }
     // A re-run must not clobber recorded progress (bug 14, field: a second bootstrap wiped the
     // checkpoints and wrote a meaningless "legacy update 1.6 → 1.6" context line).
-    if (existsSync(UPDATE_TASK) && /^KAIF-UPDATE: /m.test(readFileSync(UPDATE_TASK, 'utf8'))) {
+    // The question this branch answers is "is this the SAME interval?", never "are there
+    // checkpoints?" (bugs/57): keyed on checkpoints alone it also swallowed a NEW interval —
+    // the previous interval's task was kept, the new interval's delivery (policy changes, news,
+    // conflicting-module diffs) was written NOWHERE, while marker, receipt and history had
+    // already moved, so update-verify then went green against a FOREIGN checklist. A
+    // checkpointed task from an OLDER interval takes the superseded road below, like any other.
+    if (legacyOld.version === meta.version
+        && existsSync(UPDATE_TASK) && /^KAIF-UPDATE: /m.test(readFileSync(UPDATE_TASK, 'utf8'))) {
       log(`= kept existing ${UPDATE_TASK} (it carries recorded checkpoints — not overwritten)`);
     } else if (existsSync(UPDATE_TASK) && legacyOld.version === meta.version) {
       // Bug 33 / KrinikCam Г1 — THE field data loss: a same-version re-run used to REGENERATE
@@ -1802,8 +1827,14 @@ async function cmdInstall() {
       // it aside; a same-version re-run regenerates the equivalent task and needs no ceremony.
       if (!rerun && existsSync(UPDATE_TASK)) {
         const aside = 'KAIF_UPDATE_TASK.superseded.md';
+        // Since bugs/57 this road also carries tasks that ALREADY have checkpoints, so the line
+        // says which kind was set aside: recorded items are work someone did, and a session that
+        // reads "unfinished" alone would redo them. A previous aside that was never mined is
+        // replaced here — say so out loud rather than let a second interval erase it silently.
+        const had = /^KAIF-UPDATE: /m.test(normEol(readFileSync(UPDATE_TASK, 'utf8')));
+        const over = existsSync(aside) ? ` (this REPLACES an earlier ${aside} that was never mined — recover it from git if it mattered)` : '';
         writeFileSync(aside, readFileSync(UPDATE_TASK));
-        log(`⚠ an unfinished ${UPDATE_TASK} from a previous interval was preserved as ${aside} — mine it for unmerged diffs, then delete it`);
+        log(`⚠ an unfinished ${UPDATE_TASK}${had ? ' WITH recorded checkpoints' : ''} from a previous interval was preserved as ${aside}${over} — mine it for unmerged diffs${had ? ' and for the items it already records' : ''}, then delete it`);
       }
       const nMod = cls ? Object.values(cls.divergedModules).reduce((a, l) => a + l.length, 0) : 0;
       const why = legacyOld.tracking === 'anonymous'
