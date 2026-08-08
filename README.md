@@ -163,8 +163,9 @@ below; the numbers inside it are printed by the build.
 
 ### 3.2. The key documents
 
-Fourteen key documents are deployed to the project root. Their purposes and maintainers are given
-in Table 1.
+Fourteen key documents are deployed to the project root, and one more is optional — it appears only
+where the owner's voice portrait was actually taken. Their purposes and maintainers are given in
+Table 1.
 
 Table 1 — Key documents of a deployment
 
@@ -184,6 +185,7 @@ Table 1 — Key documents of a deployment
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The internal map: abstractions and their interactions | Agent maintains |
 | `KAIF_FRAMEWORK.md` | The deployment record: which KAIF is deployed here and how | Agent writes after injection |
 | `KAIF_REFERENCE.md` (at `.kaif/`) | The complete framework reference; `/help-kaif` cites its sections | Deployed verbatim |
+| `AUTHOR_STYLOMETRY.md` — **optional** | The portrait of the owner's written voice: registers, rules, an anti-portrait of AI markers, a self-check list. Text the owner signs is held to it | Taken by `/owner-voice` from the owner's own texts; the owner accepts it. A deployment without a portrait reddens no gate |
 
 ### 3.3. The knowledge directories
 
@@ -330,15 +332,14 @@ re-runs the claims adversarially before the work counts as done.
 ### 5.6. Fresh context
 
 1. Rules read once at the start of a session melt as the context fills and is compacted: a long
-   session holds a retelling of the canon, not the canon. So the re-reading core is re-read rather
-   than recalled, on four triggers — an hour of live work, the start of a heavy task, a compaction
+   session holds a retelling of the canon. So the re-reading core is re-read on four triggers — an hour of live work, the start of a heavy task, a compaction
    or a long pause, and the ritual points (`/resume`, `/refresh-context`, every iteration of the
    loops).
-2. A refresh is a verifiable act, not a claim. Its witness has two halves and both are required:
+2. A refresh is a verifiable act. Its witness has two halves and both are required:
    the marker `.kaif/refresh-marker.json` (the moment, what was re-read, which trigger) and an
    acceptance quote in the chat — one concrete line out of what was re-read, relevant to the task
    in hand. A marker without a quote is fraud of the same class as a false `[TESTED]`.
-3. The agent learns its own machine from its own probes instead of remembering it: the environment
+3. The agent learns its own machine from its own probes: the environment
    dossier in `AGENT_GUIDE.md` records what the shells, the toolchain and the encodings actually
    are, keeps the probe command next to every fact, and declares facts older than four weeks to be
    hypotheses again.
@@ -427,7 +428,7 @@ Table 5 — Versions
 | v1.6 | Homeostatic KAIF | 2026-07-24 | Guardrails for weak models: observation over conjecture, the three doors, the judge before every push, provenance marks `[AI]…[/AI]`. |
 | v2.0 | Excellent KAIF | 2026-07-28 | Updates by machinery, not by mind: the module map, template-vs-disk shas, update receipts, the `KAIF_REFERENCE.md` reference, the permanent sandbox polygon. |
 | v2.1 | Strong KAIF | 2026-07-31 | The owner contour: the place-of-questions rule with `/owner-reviews`, the owner's voice portrait `/owner-voice`, craft prostheses for weak sessions (`/code-revision`, craft slots, `/guarded-loop`), the planning ladder, the `PROJECT_HISTORY.md` chronicle. |
-| v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour makes a question to the owner a channel rather than a hope, the field→origin signal path becomes five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` resumes work in flight without a round trip. |
+| v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour turns a question to the owner into a working channel, the field→origin signal path becomes five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` resumes work in flight without a round trip. |
 
 ### 8.2. Repository layout
 
@@ -493,37 +494,62 @@ artifacts are never hand-edited.
 ### 8.5. Interesting facts — what version 2.2 cost
 
 Measured at **2026-08-08 23:41 +03:00** by `node tools/kaif-stats.mjs --since
-"2026-08-07T00:00:00+03:00"`. The window opens at the moment the owner named as the start of the
-work, not at the previous release tag: between 2.1 and 2.2 the park was being updated in the field,
-and that is a different kind of work. Every number below is a quote of that run, and the block
-carries the moment it is true for — a measurement that includes its own publication cannot be exact
-by construction.
+"2026-08-07T00:00:00+03:00"`. The window is two days: from 2026-08-07 at 00:00 +03:00 to the moment of
+the measurement. Every number below is a quote of that run.
 
-Table 6 — what went into 2.2
+Table 6 — Metrics of KAIF 2.2
 
-| Measured | Value | In everyday terms |
-|----------|-------|-------------------|
-| Calendar | **2.0 days** | the whole version fits between two midnights |
-| Active work of the pair | **27.8 h** | the sum of gaps no longer than 5 minutes between records |
-| Commits · files · lines | 137 · 411 · +44 044 / −1 763 | 185 files created from nothing |
-| Handwritten (generated output excluded) | prose 27 767 lines / **308 692 words** · code 9 803 lines | ≈ **3.9 novels** of 80 000 words, at 11 115 words per active hour |
-| Tokens | **2 867 007 579** (output 13.9 M · cache reads 2.81 B) | ≈ **17 919 novels** read and written again; the model's own writing ≈ **87 novels** |
-| Models | Fable 5 — 4 729 requests · Opus 5 — 4 615 | the owner measured the share of his weekly limit: Fable 5 — 50 % (personal limit burnt to 100 %), Opus 5 — 20 % |
-| Sessions · requests | 29 · 9 346 | ≈ 322 model requests per session |
-| Knowledge in the repository | 62 plans · 63 bugs (58 closed) · 24 ideas · 19 recon docs · 16 interviews · 13 reports · 64 owner decisions · 66 lessons · 35 skills | — |
-| At the public API price | **$3 418** (Fable 5 — $2 429 · Opus 5 — $988) | ≈ **578 hamburgers** at $5.91 — or 1.1 monthly salaries of an engineer |
-| Actually paid | **≈ $16.51** — the share of a $250/month subscription for two days | the same work at API prices is **×207** of that share |
-| The same volume by human hands | **813–2 034 person-hours** | a team of **five engineers for 20–51 working days straight**; payroll at $3 000/month — **$14 526–$36 314** |
-| Energy | **5.9–118 kWh**, median ≈ 17.8 | an ordinary flat spends that in **0.6–12 days** |
-| Compression | 813–2 034 person-hours → **27.8 active hours** | **and this is the main fact of the block, not the money** |
+| What was measured | Value | What it equals |
+|-------------------|-------|----------------|
+| Time spent on the version | **2.0 days** | the whole version was built on 7 and 8 August 2026 |
+| Active working time of the human + AI-agent pair | **27.8 hours** | about 3.5 full 8-hour working days |
+| Commits in git | 137 | about 5 commits per hour of active work |
+| Files touched | 411 | — |
+| Files created from nothing | 185 | — |
+| Lines added | +44 044 | — |
+| Lines removed | −1 763 | 25 times more added than removed |
+| Prose written by hand | 27 767 lines | — |
+| Words of prose written by hand | **308 692** | about **3.9 novels** of 80 000 words |
+| Code written by hand | 9 803 lines | — |
+| Writing pace | 11 115 words per hour of active work | a human writes that many in 22–56 hours |
+| Tokens spent by the models in total | **2 867 007 579** | about **17 919 novels** read and written again |
+| Of those, written by the models themselves | 13 894 817 tokens | about **87 novels** |
+| Requests made by Fable 5 | 4 729 | it spent 50 % of the owner's weekly limit — that model's personal limit burnt out completely |
+| Requests made by Opus 5 | 4 615 | it spent 20 % of the owner's weekly limit |
+| Requests to the models in total | 9 346 | about 322 requests per session |
+| Chat sessions | 29 | — |
+| Plans written | 62 | — |
+| Bugs filed | 63 | 58 of them closed |
+| Ideas proposed | 24 | — |
+| Research documents produced | 19 | — |
+| Owner interviews | 16 | — |
+| Reports written | 13 | — |
+| Files in the knowledge directories in total | **228** | counting the directory READMEs and the reports in nested folders |
+| Characters in those documents | **2 149 895** | — |
+| Words in those documents | **299 632** | about **3.7 novels** of 80 000 words worth of accompanying documentation, and the next session of the agent reads every page |
+| Owner decisions recorded | 64 | — |
+| Experience lessons written | 66 | — |
+| Skills in the delivery | 35 | — |
+| What Fable 5's work would cost if paid at Anthropic's public API prices | $2 429 | this money was NOT paid |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | $988 | this money was NOT paid |
+| What all the work would cost if paid at Anthropic's public API prices | **$3 418** | about **578 hamburgers** at $5.91 — or 1.1 monthly salaries of a software engineer |
+| **What the owner actually paid** | **≈ $16.51** | the share of a Claude Max subscription ($250 per month) that falls on two days of work. There were no API bills |
+| How many times API prices exceed that subscription share | **207 times** | — |
+| If living people had written KAIF 2.2, their work would have amounted to | **813–2 034 person-hours** | a team of **five engineers would work 20–51 working days straight** |
+| Payroll for those people | **$14 526–$36 314** | at an engineer's salary of $3 000 per month |
+| Electricity spent on the computation | **5.9–118 kWh** | an ordinary flat spends that much in **0.6–12 days** |
+| Mid-estimate of the electricity spent | ≈ 17.8 kWh | — |
+| How much human work falls on one hour of the pair's work | **29–73 person-hours** | one hour of a human working with the agent does what a human alone would do in 29–73 hours |
 
-Three boundaries stay in this text, because without them the block reads beautifully and lies:
+Active work means the hours when work was actually happening: sleep and long pauses do not count.
+
+Three boundaries of these numbers:
 
 1. **The money is not the owner's bill.** The work ran on a Claude Max subscription; $3 418 is an
    estimate of what the same work would have cost through the public API. The two are never mixed,
    and the ×207 is not a saving — a subscription has weekly limits and gives none of the API's
    guarantees.
-2. **The person-hours are an estimate with visible assumptions**, not a measurement: prose at
+2. **The person-hours are an estimate with visible assumptions:** prose at
    200–500 words per hour, code at 20–50 lines per hour. Both rates are named in the tool's source,
    so anyone can substitute their own and get their own answer.
 3. **The energy is somebody else's estimate.** Anthropic does not publish watt-hours per token; the
@@ -703,7 +729,9 @@ project. Thank you, and pleasant work!
 
 ### 3.2. Ключевые документы
 
-В корень проекта разворачиваются четырнадцать ключевых документов. Их назначение и ведущие приведены
+В корень проекта разворачиваются четырнадцать ключевых документов, и ещё один является
+опциональным — он появляется только там, где портрет голоса владельца действительно снят. Их
+назначение и ведущие приведены
 в Таблице 1.
 
 Таблица 1 — Ключевые документы развёртывания
@@ -724,6 +752,7 @@ project. Thank you, and pleasant work!
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внутренняя карта: абстракции и их взаимодействия | Ведёт агент |
 | `KAIF_FRAMEWORK.md` | Запись о развёртывании: какой KAIF здесь развёрнут и как | Агент пишет после инъекции |
 | `KAIF_REFERENCE.md` (в `.kaif/`) | Полная пояснительная записка фреймворка; `/help-kaif` цитирует её разделы | Разворачивается дословно |
+| `AUTHOR_STYLOMETRY.md` — **опциональный** | Портрет письменного голоса владельца: регистры, правила, анти-портрет ИИ-маркеров, чек-лист самопроверки. Текст, который владелец подписывает, держится по нему | Снимает `/owner-voice` с собственных текстов владельца; принимает владелец. Развёртывание без портрета не краснит ни один гейт |
 
 ### 3.3. Директории знаний
 
@@ -870,15 +899,15 @@ project. Thank you, and pleasant work!
 ### 5.6. Свежий контекст
 
 1. Правила, прочитанные один раз на старте сессии, тают по мере заполнения и сжатия контекста:
-   длинная сессия держит в голове пересказ канона, а не канон. Поэтому ядро перечитывания
-   перечитывается, а не вспоминается, по четырём триггерам — час живой работы, старт тяжёлой
+   длинная сессия держит в голове пересказ канона. Поэтому ядро перечитывания
+   перечитывается по четырём триггерам — час живой работы, старт тяжёлой
    задачи, сжатие контекста или длинный простой, и точки ритуалов (`/resume`,
    `/refresh-context`, каждая итерация циклов).
-2. Освежение является проверяемым действием, а не заявлением. Свидетельство двухчастное, и обе
+2. Освежение является проверяемым действием. Свидетельство двухчастное, и обе
    части обязательны: маркер `.kaif/refresh-marker.json` (момент, что перечитано, какой триггер) и
    цитата-приёмка в чате — одна конкретная строка из перечитанного, относящаяся к задаче в работе.
    Маркер без цитаты является фродом того же класса, что ложный `[TESTED]`.
-3. Агент знает свою машину из собственных проб, а не из памяти: досье окружения в `AGENT_GUIDE.md`
+3. Агент знает свою машину из собственных проб: досье окружения в `AGENT_GUIDE.md`
    фиксирует, чем на самом деле являются шеллы, тулчейн и кодировки, держит рядом с каждым фактом
    команду пробы и объявляет факты старше четырёх недель снова гипотезами.
 
@@ -969,7 +998,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v1.6 | Homeostatic KAIF | 2026-07-24 | Гвардрейлы для слабых моделей: наблюдение вместо домысла, три двери, судья перед каждым пушем, пометки провенанса `[AI]…[/AI]`. |
 | v2.0 | Excellent KAIF | 2026-07-28 | Обновление машинерией, а не разумом: карта модулей, template-vs-disk sha, расписки обновления, записка `KAIF_REFERENCE.md`, постоянный песочный полигон. |
 | v2.1 | Strong KAIF | 2026-07-31 | Контур владельца: правило места вопросов с `/owner-reviews`, портрет голоса `/owner-voice`, ремесленные протезы для слабых сессий (`/code-revision`, craft-слоты, `/guarded-loop`), лестница планирования, летопись `PROJECT_HISTORY.md`. |
-| v2.2 | Yolden KAIF | 2026-08-08 | Цикл замыкается: интерактивный контур делает вопрос к владельцу каналом, а не надеждой; путь сигнала «поле → исток» становится пятью предписанными шагами; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` возобновляет начатую работу без обмена репликами. |
+| v2.2 | Yolden KAIF | 2026-08-08 | Цикл замыкается: интерактивный контур делает вопрос к владельцу рабочим каналом; путь сигнала «поле → исток» становится пятью предписанными шагами; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` возобновляет начатую работу без обмена репликами. |
 
 ### 8.2. Структура репозитория
 
@@ -1034,36 +1063,63 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 ### 8.5. Интересные факты — во что обошлась версия 2.2
 
-Замер на **2026-08-08 23:41 +03:00**, команда `node tools/kaif-stats.mjs --since
-"2026-08-07T00:00:00+03:00"`. Окно открывается моментом, который владелец назвал началом работ, а не
-прошлым релизным тегом: между 2.1 и 2.2 шло обновление парка в поле, и это работа другого рода.
-Каждое число ниже — цитата того прогона, а блок несёт момент, на который он верен: замер,
-включающий собственную публикацию, точным не бывает по построению.
+Замер на **2026-08-08 23:41 +03:00** командой `node tools/kaif-stats.mjs --since
+"2026-08-07T00:00:00+03:00"`. Окно — двое суток: с 00:00 07.08.2026 до момента замера. Каждое число
+ниже является цитатой этого прогона.
 
-Таблица 6 — что вошло в 2.2
+Таблица 6 — Метрики версии KAIF 2.2
 
-| Измерено | Значение | Переложено на быт |
-|----------|----------|-------------------|
-| Календарь | **2,0 суток** | вся версия уместилась между двумя полуночами |
-| Активная работа пары | **27,8 ч** | сумма пауз не длиннее 5 минут между записями |
-| Коммиты · файлы · строки | 137 · 411 · +44 044 / −1 763 | 185 файлов создано с нуля |
-| Рукописное (генераты исключены) | проза 27 767 строк / **308 692 слова** · код 9 803 строки | ≈ **3,9 романа** по 80 000 слов, темп 11 115 слов в активный час |
-| Токены | **2 867 007 579** (выход 13,9 млн · чтение кэша 2,81 млрд) | ≈ **17 919 романов** прочитано и написано заново; собственно написано моделью ≈ **87 романов** |
-| Модели | Fable 5 — 4 729 запросов · Opus 5 — 4 615 | владелец замерил долю своего недельного лимита: Fable 5 — 50 % (личный лимит выжжен на 100 %), Opus 5 — 20 % |
-| Сессии · запросы | 29 · 9 346 | ≈ 322 запроса к модели на сессию |
-| Знание в репозитории | 62 плана · 63 бага (58 закрыто) · 24 идеи · 19 разведок · 16 интервью · 13 отчётов · 64 решения владельца · 66 уроков · 35 навыков | — |
-| По публичному API-прайсу | **$3 418** (Fable 5 — $2 429 · Opus 5 — $988) | ≈ **578 гамбургеров** по $5,91 — или 1,1 месячной зарплаты инженера |
-| Фактически оплачено | **≈ $16,51** — доля подписки $250/мес за двое суток | та же работа по API-прайсу — **×207** от этой доли |
-| Тот же объём руками человека | **813–2 034 человеко-часа** | команда из **пяти инженеров на 20–51 рабочий день подряд**; фонд оплаты при 3 000 $/мес — **$14 526–$36 314** |
-| Энергия | **5,9–118 кВт·ч**, медиана ≈ 17,8 | обычная квартира тратит столько за **0,6–12 суток** |
-| Сжатие | 813–2 034 человеко-часа → **27,8 активных часа** | **и это главный факт блока, а не деньги** |
+| Что измерено | Значение | Чему это равно |
+|--------------|----------|----------------|
+| Время работы над версией | **2,0 суток** | версия целиком сделана 7 и 8 августа 2026 года |
+| Время активной работы тандема «человек + ИИ-агент» | **27,8 часа** | примерно 3,5 полных рабочих дня по 8 часов |
+| Коммитов в git | 137 | примерно 5 коммитов на каждый час активной работы |
+| Файлов затронуто | 411 | — |
+| Файлов создано с нуля | 185 | — |
+| Строк добавлено | +44 044 | — |
+| Строк удалено | −1 763 | добавленного в 25 раз больше, чем удалённого |
+| Прозы написано руками | 27 767 строк | — |
+| Слов прозы написано руками | **308 692** | примерно **3,9 романа** по 80 000 слов |
+| Кода написано руками | 9 803 строки | — |
+| Темп письма | 11 115 слов за час активной работы | человек пишет столько за 22–56 часов |
+| Токенов израсходовано моделями всего | **2 867 007 579** | примерно **17 919 романов** прочитано и написано заново |
+| Из них написано самими моделями | 13 894 817 токенов | около **87 романов** |
+| Запросов сделала модель Fable 5 | 4 729 | израсходовала 50 % недельного лимита владельца — личный лимит этой модели выжжен полностью |
+| Запросов сделала модель Opus 5 | 4 615 | израсходовала 20 % недельного лимита владельца |
+| Запросов к моделям всего | 9 346 | примерно 322 запроса на одну сессию |
+| Сессий работы в чате | 29 | — |
+| Планов написано | 62 | — |
+| Багов заведено | 63 | из них закрыто 58 |
+| Идей предложено | 24 | — |
+| Исследований проведено | 19 | — |
+| Интервью с владельцем | 16 | — |
+| Отчётов написано | 13 | — |
+| Файлов в директориях знания всего | **228** | считая README директорий и отчёты во вложенных папках |
+| Символов в этих документах | **2 149 895** | — |
+| Слов в этих документах | **299 632** | примерно **3,7 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
+| Решений владельца зафиксировано | 64 | — |
+| Уроков опыта записано | 66 | — |
+| Навыков в поставке | 35 | — |
+| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | эти деньги НЕ платились |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $988 | эти деньги НЕ платились |
+| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$3 418** | примерно **578 гамбургеров** по $5,91 — или 1,1 месячной зарплаты инженера-программиста |
+| **Заплачено владельцем в действительности** | **≈ $16,51** | это доля подписки Claude Max ($250 в месяц), пришедшаяся на двое суток работы. Счетов за API не было |
+| Во сколько раз прайс API дороже доли подписки за тот же срок | **207 раз** | — |
+| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **813–2 034 человеко-часа** | команда из **пяти инженеров работала бы 20–51 рабочий день подряд** |
+| Фонд оплаты труда этих людей | **$14 526–$36 314** | при зарплате инженера 3 000 $ в месяц |
+| Электроэнергии израсходовано на вычисления | **5,9–118 кВт·ч** | столько обычная квартира расходует за **0,6–12 суток** |
+| Серединная оценка расхода электроэнергии | ≈ 17,8 кВт·ч | — |
+| Сколько работы людей приходится на один час работы тандема | **29–73 человеко-часа** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 29–73 часа |
 
-Три границы остаются в тексте, потому что без них блок читается красиво и врёт:
+Активной работой считаются те часы, когда работа действительно шла: сон и длинные паузы в подсчёт
+не идут.
+
+Три границы этих чисел:
 
 1. **Деньги — не счёт владельца.** Работа шла по подписке Claude Max; $3 418 — оценка того, во
    что та же работа обошлась бы через публичный API. Смешивать эти два числа нельзя, и ×207 не
    является экономией: у подписки недельные лимиты и ни одной гарантии API.
-2. **Человеко-часы — оценка с видимыми допущениями**, а не измерение: проза 200–500 слов в час,
+2. **Человеко-часы — оценка с видимыми допущениями:** проза 200–500 слов в час,
    код 20–50 строк в час. Обе ставки названы прямо в исходнике инструмента, чтобы читатель
    подставил свои и получил свой ответ.
 3. **Энергия — чужая оценка.** Anthropic не публикует Вт·ч на токен; вилка взята из публичных
