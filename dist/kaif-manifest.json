@@ -1,11 +1,11 @@
 {
   "framework": "KAIF",
-  "version": "2.1",
-  "released": "2026-07-31",
-  "codename": "Strong KAIF",
+  "version": "2.2",
+  "released": "2026-08-08",
+  "codename": "Yolden KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "39443722f3b39037c977da289060f2ca0117fd611c8f314e8b148d60cb84f289",
-    "KAIF-CORE-BUNDLE.md": "8a8475c0fe30b7290aafb9e90d87860291c572b6798c543bc1a7272f6881889c"
+    "KAIF-CORE-BUNDLE.md": "f4328be5ca10129c6b1641b17d5ac3e908612757a3ee972e48525e0a5db16fa8"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
