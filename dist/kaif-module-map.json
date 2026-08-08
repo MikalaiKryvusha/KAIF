@@ -3718,10 +3718,10 @@
       {
         "signature": "## Step 2. Refresh README (all languages)",
         "class": "static",
-        "sha256": "b5661cbcd98f9ea62dc545584dc7d7ee8dc3255197a59e394223a528cad1b7dc",
+        "sha256": "4502b7b00beacdc87f5a51a1c7b6d498966a1429e0af5a86e1f74ea7b9869757",
         "lines": [
           57,
-          62
+          69
         ]
       },
       {
@@ -3729,8 +3729,8 @@
         "class": "static",
         "sha256": "b115d50d3328db37655d59f177be203f3babb2f37764dc6ce536eaa5f299c595",
         "lines": [
-          63,
-          67
+          70,
+          74
         ]
       },
       {
@@ -3738,8 +3738,8 @@
         "class": "static",
         "sha256": "80d3f9e73f162ea83660e4e54add72fdcce716026df4d5ecba9bf73f3b994cf1",
         "lines": [
-          68,
-          72
+          75,
+          79
         ]
       },
       {
@@ -3747,8 +3747,8 @@
         "class": "static",
         "sha256": "13ebed9d3b903561cfc2dc176f856e56ba284246b18c696734b526b59cec764d",
         "lines": [
-          73,
-          81
+          80,
+          88
         ]
       },
       {
@@ -3756,8 +3756,8 @@
         "class": "adaptive",
         "sha256": "4e99f760961b854c5d3c07763b423ae49689d66b05b2ae3c14f81f57e38e3d1b",
         "lines": [
-          82,
-          86
+          89,
+          93
         ]
       },
       {
@@ -3765,8 +3765,8 @@
         "class": "static",
         "sha256": "3019009c113c500556c6a8203677ae4d418eb3fca0dedfb90b45801ff431101f",
         "lines": [
-          87,
-          118
+          94,
+          125
         ]
       },
       {
@@ -3774,8 +3774,8 @@
         "class": "static",
         "sha256": "8445434fe3dade7d70beb20108a586a8ea97f789ab7fc71d9b1ee054c03401ee",
         "lines": [
-          119,
-          137
+          126,
+          144
         ]
       },
       {
@@ -3783,8 +3783,8 @@
         "class": "static",
         "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
         "lines": [
-          138,
-          145
+          145,
+          152
         ]
       },
       {
@@ -3792,8 +3792,8 @@
         "class": "static",
         "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
         "lines": [
-          146,
-          153
+          153,
+          160
         ]
       }
     ],

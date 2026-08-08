@@ -60,6 +60,13 @@ Bring `README.md` in line with reality: phase status, working features, instruct
 both languages in sync. Don't invent — reflect only what's actually done and verified (cross-check
 `STATUS.md` and the closed `bugs/`/`ideas/` `*_DONE_*`).
 
+**The README and the release notes are the OWNER'S artifacts — the showcase they sign.** So if the
+project has a voice portrait (`AUTHOR_STYLOMETRY.md`, `/owner-voice`), OPEN it now and run its
+self-check before handing the text over; no portrait, no obligation, and its absence never reddens
+the release. A DRAFT portrait (thresholds unmet, no blind test passed) is written BY, never rewritten
+FROM: rewrite mode does not start from a draft. Either way the verdict "this sounds like me" belongs
+to the owner — the taste class is never judged by the agent (`TESTING_FRAMEWORK.md`).
+
 ## Step 3. Regenerate rendered docs
 
 `<Regenerate any rendered artifacts, e.g. README.pdf (node tools/readme-pdf.mjs). For this framework's
