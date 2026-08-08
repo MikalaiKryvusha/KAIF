@@ -11,7 +11,7 @@ agent will structure it. Browse this directory to see known defects and their st
 `/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. The bug doc carries an
 observable fix-acceptance criterion — what will be SEEN working after the fix
 (`REQUIREMENTS_FRAMEWORK.md`). While open, no `DONE` tag. When fixed
-**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
+**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
 
 **The `bugs/KAIF/` subdirectory** — defects and improvement requests about the KAIF **framework

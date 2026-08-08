@@ -194,6 +194,43 @@ function lintPlanNaming(root, findings) {
   return children;
 }
 
+// ── Ось МЕТОК ВРЕМЕНИ (задача T8, решение владельца №49) ───────────────────────────────────
+// «Метка должна иметь И ДАТУ И ВРЕМЯ — это КАНОН соглашений KAIF» (слово владельца дословно,
+// принято 2026-08-07 ≈10:05 +03:00). Голая дата теряет порядок ВНУТРИ дня — а день ровно там,
+// где решения проекта сталкиваются.
+//
+// Скоуп задаёт САМА МЕТКА, а не список файлов (по прецеденту оси имён T2):
+//   ПРИМЕТА — узкий глагол принятия/фиксации/закрытия ВПЛОТНУЮ к дате (окно символов), причём
+//     только в формах, помечающих ОДИН момент. Существительные («закрытие», «закрытии») не
+//     метки, а проза о событии; МНОЖЕСТВЕННОЕ «закрыты» — сводка о НАБОРЕ, и требовать одно
+//     время у четырёх закрытий бессмысленно: метка каждого стоит у него самого.
+//   ПОРОГ — собственная дата метки. Канон действует ВПЕРЁД (плана 26 §7 п. 4: летопись
+//     ретроспективно не переписывается), поэтому старые метки молчат по построению — без
+//     базовой линии, которую надо вести и сокращать. Порог — СЛЕДУЮЩИЙ день после принятия:
+//     метку датой самого дня принятия невозможно отличить от написанной за час ДО правила,
+//     а страж, краснеющий на тексте, который правилу не подчинялся, — ложная тревога.
+const CANON_STAMP_SINCE = '2026-08-08'; // канон принят 2026-08-07 10:09 +03:00 (решение №49)
+const STAMP_WINDOW = 24;                // символов между глаголом и датой (вплотную, не «где-то в абзаце»)
+// Группы: 1 глагол · 2 промежуток · 3 честное «≈» · 4 дата · 5 время · 6 смещение зоны.
+const STAMP_RE = new RegExp(
+  '(принято|зафиксировано|закрыт(?:а|о)?)(?![\\p{L}])' +
+  '([^0-9\\n]{0,' + STAMP_WINDOW + '}?)' +
+  '(≈\\s*)?(\\d{4}-\\d{2}-\\d{2})(\\s+\\d{2}:\\d{2})?(\\s*[+-]\\d{2}:\\d{2})?', 'giu');
+
+function lintStamps(relPath, lines, findings) {
+  const body = lines.join('\n');
+  STAMP_RE.lastIndex = 0;
+  let m;
+  while ((m = STAMP_RE.exec(body))) {
+    const [full, , , , date, time, zone] = m;
+    if (date < CANON_STAMP_SINCE) continue; // история — не переписывается (канон вперёд)
+    if (time && zone) continue;
+    const what = !time ? 'без времени' : 'со временем, но без смещения зоны';
+    findings.push([relPath, `метка «${full.replace(/\s+/g, ' ').trim()}» — ${what} ` +
+      `(канон T8: \`ГГГГ-ММ-ДД ЧЧ:ММ ±ЧЧ:ММ\`, локальное время владельца)`]);
+  }
+}
+
 function lintInterview(relPath, lines, findings) {
   const head = lines.slice(0, HEAD_LINES).join('\n');
   if (!/^# /.test(lines[0] || '')) findings.push([relPath, 'нет H1 первой строкой']);
@@ -224,21 +261,28 @@ function run(root, { all = false } = {}) {
     const lines = readLines(join(root, dir, f));
     scanned++; lintFull(rel, lines, findings);
     lintGoalVector(dir, rel, lines, findings);
+    lintStamps(rel, lines, findings);
   }
   for (const f of listMd(join(root, BUGS_DIR))) {
     const rel = `${BUGS_DIR}/${f}`;
     if (!inScope(rel)) continue;
-    scanned++; lintBugs(rel, readLines(join(root, BUGS_DIR, f)), findings);
+    const lines = readLines(join(root, BUGS_DIR, f));
+    scanned++; lintBugs(rel, lines, findings);
+    lintStamps(rel, lines, findings);
   }
   for (const f of listMd(join(root, INTERVIEWS_DIR))) {
     const rel = `${INTERVIEWS_DIR}/${f}`;
     if (!inScope(rel)) continue;
-    scanned++; lintInterview(rel, readLines(join(root, INTERVIEWS_DIR, f)), findings);
+    const lines = readLines(join(root, INTERVIEWS_DIR, f));
+    scanned++; lintInterview(rel, lines, findings);
+    lintStamps(rel, lines, findings);
   }
   for (const f of ROOT_DOCS) {
     const p = join(root, f);
     if (!existsSync(p)) continue;
-    scanned++; lintRoot(f, readLines(p), findings);
+    const lines = readLines(p);
+    scanned++; lintRoot(f, lines, findings);
+    lintStamps(f, lines, findings);
   }
   // Конвенция имён plans/ — directory-level, вне пофайлового обхода и вне фильтра DONE.
   const planChildren = lintPlanNaming(root, findings);
@@ -311,7 +355,19 @@ function selftest() {
   //   ожидаем: 1 — план 27 в фикстуре назван `27_with_block.md`, а не `27_EPIC_*`
   writeFileSync(join(fx, 'plans', '37_epic99_orphan.md'), planBody('План 37 — родителя нет вовсе'));
   //   ожидаем: 1 — плана 99 в фикстуре не существует
-  const expected = 14; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (конвенция имён plans/)
+  // Ось МЕТОК ВРЕМЕНИ (T8). Один файл держит ВСЕ состояния оси — и красные, и молчащие:
+  // молчание проверяется здесь же, иначе страж «работает», просто краснея на всём подряд.
+  writeFileSync(join(fx, 'plans', '38_epic29_stamps.md'), planBody('План 38 — метки времени') +
+    '\n## Вехи\n' +
+    '- ЗАКРЫТА 2026-08-09 — красная: дата после принятия канона, времени нет.\n' +
+    '- принято 2026-08-09 14:30 — красная: время есть, смещения зоны нет.\n' +
+    '- зафиксировано 2026-08-09 14:30 +03:00 — зелёная: полная метка.\n' +
+    '- ЗАКРЫТА 2026-08-06 — МОЛЧИТ: история до порога канона, переписывать запрещено.\n' +
+    '- Закрытие фазы 2026-08-09 — МОЛЧИТ: существительное, это проза о событии, не метка.\n' +
+    '- T1 и T2 закрыты 2026-08-09 — МОЛЧИТ: сводка о НАБОРЕ, метка каждого стоит у него самого.\n' +
+    '- зафиксировано ≈ 2026-08-09 14:30 +03:00 — зелёная: честное «≈» метку не ломает.\n');
+  //   ожидаем: 2 (первые две строки), остальные пять молчат
+  const expected = 16; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (имена plans/) + 2 (метки времени T8)
   const res = run(fx, { all: false });
   console.log('— селфтест, сломанная фикстура —');
   report(res);

@@ -12,7 +12,7 @@ estado.
 según el canon (habilidad: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — incluso los pequeños.
 El documento del bug lleva un criterio de aceptación observable de la corrección — qué se VERÁ
 funcionando tras el fix (`REQUIREMENTS_FRAMEWORK.md`). Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
-`git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha)`. Tras 3 intentos ciegos
+`git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha y hora)`. Tras 3 intentos ciegos
 fallidos de corrección, pare y pase a investigación (`/bug-research`).
 
 **El subdirectorio `bugs/KAIF/`** — defectos y solicitudes de mejora sobre el **propio

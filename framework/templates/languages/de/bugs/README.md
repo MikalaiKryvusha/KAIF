@@ -12,7 +12,7 @@ Defekte und ihren Status zu sehen.
 Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kleine. Das Bug-Dokument
 trägt ein beobachtbares Abnahmekriterium des Fixes — was nach dem Fix SICHTBAR funktionieren wird
 (`REQUIREMENTS_FRAMEWORK.md`). Solange offen, kein `DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
-`## ✅ STATUS: DONE (Datum)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
+`## ✅ STATUS: DONE (Datum + Uhrzeit)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
 zur Recherche (`/bug-research`).
 
 **Das Unterverzeichnis `bugs/KAIF/`** — Defekte und Verbesserungsanträge zum

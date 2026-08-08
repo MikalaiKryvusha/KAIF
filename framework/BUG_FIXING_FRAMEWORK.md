@@ -164,7 +164,7 @@ Canonical structure (see `/report-bug` for the full template):
 ```
 
 When the bug is confirmed fixed and verified, mark it DONE by the `DONE`-tag convention (rename
-`bugs/NN_x.md` → `bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section). See
+`bugs/NN_x.md` → `bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section). See
 `AGENT_GUIDE.md` → "Backlog & the DONE tag" and the `/check-backlog` skill.
 
 ---

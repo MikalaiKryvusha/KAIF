@@ -158,7 +158,7 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
    - Commit (in autoloops, by the usual discipline): run `<COMMIT_COMMAND>` with `<msg>` = `docs(bugNN): …`.
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
-   `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section (what was
+   `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section (what was
    done / how verified). Backlog revision — the `/check-backlog` skill.
 
 ## Notes

@@ -11,7 +11,7 @@
 （スキル: `/report-bug`。方法: `BUG_FIXING_FRAMEWORK.md`）— 小さなものでも。バグ文書には修正の
 観察可能な受け入れ基準を書く — 修正後に何が動いて見えるか（`REQUIREMENTS_FRAMEWORK.md`）。
 オープンな間は `DONE` タグなし。修正**かつ検証**されたら、`git mv NN_x.md NN_DONE_x.md` し、
-`## ✅ STATUS: DONE (日付)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
+`## ✅ STATUS: DONE (日付と時刻)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
 切り替える（`/bug-research`）。
 
 **サブディレクトリ `bugs/KAIF/`** — このプロジェクトではなく **KAIF フレームワーク自体**の

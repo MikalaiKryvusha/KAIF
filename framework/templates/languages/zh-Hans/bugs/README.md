@@ -9,7 +9,7 @@
 **给 AI 代理：** 在工作/测试中碰到缺陷时，按准则在这里登记（技能：`/report-bug`；方法：
 `BUG_FIXING_FRAMEWORK.md`）—— 即使是小缺陷。Bug 文档带有可观察的修复验收标准 —— 修复后将看到
 什么在工作（`REQUIREMENTS_FRAMEWORK.md`）。开放期间不打 `DONE` 标签。修复**并验证**后，
-`git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期)` 部分。3 次盲目修复尝试失败后，
+`git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期和时间)` 部分。3 次盲目修复尝试失败后，
 停止并转入研究（`/bug-research`）。
 
 **子目录 `bugs/KAIF/`** — 关于 **KAIF 框架本身**(而非本项目)的缺陷与改进请求。当一次

@@ -555,6 +555,29 @@ A mirrored/generated surface is edited at its SOURCE and rebuilt — never patch
 patch dies on the next rebuild, and the pair drifts again).
 Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
 
+**A stamp carries the DATE AND THE TIME.** A bare date answers "which day" and loses the ordering
+inside it — and the day is exactly where a project's decisions collide: three decisions on one date
+read as simultaneous, a closure looks like it preceded the decision that caused it, and the session
+that rebuilds the story guesses the order. So every stamp of a MOMENT carries both, in the owner's
+local time:
+
+- **Prose:** `YYYY-MM-DD HH:MM ±HH:MM` (`2026-08-08 07:13 +03:00`). **Machine receipts:** the same
+  moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
+- **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
+  written down or committed. They differ, and the difference is often the interesting part.
+- **Unlogged precision is never invented.** The exact minute was not captured? Write an honest
+  `≈ 2026-08-07 10:05 +03:00`. An invented number is worse than a missing one (the three-doors rule
+  in `PHILOSOPHY.md`).
+- **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
+  receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
+  noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
+  (the date inside an `EXPERIENCE` entry key among them), and dates of EXTERNAL events (a vendor's
+  release, a third-party deprecation) — those are not moments of our decision.
+- **Forward-only, by construction.** The convention binds from the moment the project adopts it;
+  older date-only stamps are history and are NEVER rewritten (append-only — a correction is a new
+  entry). A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the
+  adoption stay silent without any baseline file to maintain.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
@@ -1189,7 +1212,7 @@ Canonical structure (see `/report-bug` for the full template):
 ```
 
 When the bug is confirmed fixed and verified, mark it DONE by the `DONE`-tag convention (rename
-`bugs/NN_x.md` → `bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section). See
+`bugs/NN_x.md` → `bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section). See
 `AGENT_GUIDE.md` → "Backlog & the DONE tag" and the `/check-backlog` skill.
 
 ---
@@ -1718,11 +1741,14 @@ closer to GOAL.md. Keep it high-level; detailed step plans go in plans/NN_*.md.>
 
 ## Decision log
 
-`<Dated, one line each: significant decisions and why — so a future session doesn't relitigate them.>`
+`<Stamped, one line each: significant decisions and why — so a future session doesn't relitigate
+them. A stamp is a MOMENT: date AND time in the owner's local clock (AGENT_GUIDE → Document & text
+hygiene). Decided and recorded are two moments — tell them apart when they differ; write an honest
+`≈` rather than an invented minute.>`
 
-| Date | Decision | Why |
+| Stamp | Decision | Why |
 |------|----------|-----|
-| `<YYYY-MM-DD>` | `<what was decided>` | `<the reason>` |
+| `<YYYY-MM-DD HH:MM ±HH:MM>` | `<what was decided>` | `<the reason>` |
 
 ---
 
@@ -2238,7 +2264,7 @@ the owner's name is not a leak.
 | `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
 | `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
 | `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
-| `history` | Update history: `{from, to, route, date}` entries. |
+| `history` | Update history: `{from, to, route, date}` entries; `date` is a moment — local ISO 8601 with the offset (§12.3). |
 
 Commands never require the CLI to restate what the marker already records. The marker is edited
 only through commands (`sphere`, updates) — never by hand.
@@ -2257,7 +2283,9 @@ reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-
 `from`, `to`, `route` (`core-update` | `legacy-bootstrap`), `date`, `counters`, `diverged`,
 `divergedModules`, `ownerConvention`, `judgeVerdict` (the full judge verdict recorded by
 `checkpoint judge` — the committable proof of the update's judging), `verifiedAt` (stamped by
-`update-verify`).
+`update-verify`). `date` and `verifiedAt` are MOMENTS, so both carry the time and the offset in
+the owner's local clock — full ISO 8601 (`2026-08-08T07:13:00+03:00`), never a bare date: on a
+day carrying two updates a date-only receipt cannot say which one it proves.
 
 ## 13. Conventions
 
@@ -2403,7 +2431,7 @@ agent will structure it. Browse this directory to see known defects and their st
 `/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. The bug doc carries an
 observable fix-acceptance criterion — what will be SEEN working after the fix
 (`REQUIREMENTS_FRAMEWORK.md`). While open, no `DONE` tag. When fixed
-**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
+**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
 
 **The `bugs/KAIF/` subdirectory** — defects and improvement requests about the KAIF **framework
@@ -2743,7 +2771,7 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
      `<NN>_DONE_<name>.md`).
    - **Append a status section inside the document**, e.g.:
      ```
-     ## ✅ STATUS: DONE (<date>)
+     ## ✅ STATUS: DONE (<date + time>)
      What was done: <short summary of the fix/implementation>.
      How verified: <build/harness/measurement/commit hash/loop iteration>.
      ```
@@ -4120,7 +4148,7 @@ Sequence:
   register. For old interviews that never declared targets, the soft heuristic applies (at least
   one citation anywhere outside `interviews/`; history is not rewritten — I21).
 - Only AFTER the propagation pass: add the "Decisions" table and change status to
-  `✅ ANSWERS RECEIVED <date>` — the status change is the LAST action, not the first.
+  `✅ ANSWERS RECEIVED <date + time>` — the status change is the LAST action, not the first.
 - **Stale-status check** (the guard's second half): status says "awaiting" while no answer field
   is empty ⇒ THE STATUS IS STALE — fix it and look for what else never propagated. In the field an
   interview hung "awaiting" for two days over twelve filled answers.
@@ -5964,7 +5992,7 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
    - Commit (in autoloops, by the usual discipline): run `<COMMIT_COMMAND>` with `<msg>` = `docs(bugNN): …`.
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
-   `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section (what was
+   `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section (what was
    done / how verified). Backlog revision — the `/check-backlog` skill.
 
 ## Notes
@@ -7861,7 +7889,7 @@ Which corpus wins on divergence; what to do with the owner's own variability.
 **لوكيل الذكاء الاصطناعي:** حين تصطدم بعيب أثناء العمل/الاختبار، سجّله هنا وفق القانون (المهارة:
 `/report-bug`؛ المنهج: `BUG_FIXING_FRAMEWORK.md`) — حتى الصغير منها. وثيقة الخطأ تحمل معيار قبول
 ملموسًا للإصلاح — ما الذي سيُرى يعمل بعد الإصلاح (`REQUIREMENTS_FRAMEWORK.md`). ما دام مفتوحًا فلا وسم `DONE`.
-وعند إصلاحه **والتحقق منه**: `git mv NN_x.md NN_DONE_x.md` وأضف قسم `## ✅ STATUS: DONE (التاريخ)`.
+وعند إصلاحه **والتحقق منه**: `git mv NN_x.md NN_DONE_x.md` وأضف قسم `## ✅ STATUS: DONE (التاريخ والوقت)`.
 بعد 3 محاولات إصلاح عمياء فاشلة، توقف وانتقل إلى البحث (`/bug-research`).
 
 **المجلد الفرعي `bugs/KAIF/`** — عيوب وطلبات تحسين تخص **إطار KAIF نفسه**، لا هذا
@@ -8166,7 +8194,7 @@ Defekte und ihren Status zu sehen.
 Kanon an (Skill: `/report-bug`; Methode: `BUG_FIXING_FRAMEWORK.md`) — auch kleine. Das Bug-Dokument
 trägt ein beobachtbares Abnahmekriterium des Fixes — was nach dem Fix SICHTBAR funktionieren wird
 (`REQUIREMENTS_FRAMEWORK.md`). Solange offen, kein `DONE`-Tag. Wenn behoben **und verifiziert**: `git mv NN_x.md NN_DONE_x.md` und einen Abschnitt
-`## ✅ STATUS: DONE (Datum)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
+`## ✅ STATUS: DONE (Datum + Uhrzeit)` anhängen. Nach 3 fehlgeschlagenen blinden Fix-Versuchen: Stopp und Wechsel
 zur Recherche (`/bug-research`).
 
 **Das Unterverzeichnis `bugs/KAIF/`** — Defekte und Verbesserungsanträge zum
@@ -8498,7 +8526,7 @@ estado.
 según el canon (habilidad: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — incluso los pequeños.
 El documento del bug lleva un criterio de aceptación observable de la corrección — qué se VERÁ
 funcionando tras el fix (`REQUIREMENTS_FRAMEWORK.md`). Mientras esté abierto, sin etiqueta `DONE`. Cuando esté corregido **y verificado**,
-`git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha)`. Tras 3 intentos ciegos
+`git mv NN_x.md NN_DONE_x.md` y añada una sección `## ✅ STATUS: DONE (fecha y hora)`. Tras 3 intentos ciegos
 fallidos de corrección, pare y pase a investigación (`/bug-research`).
 
 **El subdirectorio `bugs/KAIF/`** — defectos y solicitudes de mejora sobre el **propio
@@ -8826,7 +8854,7 @@ leur statut.
 canon (compétence : `/report-bug` ; méthode : `BUG_FIXING_FRAMEWORK.md`) — même les petits. Le document
 du bug porte un critère d'acceptation observable du correctif — ce qu'on VERRA fonctionner après le
 fix (`REQUIREMENTS_FRAMEWORK.md`). Tant qu'il est ouvert, pas d'étiquette `DONE`. Une fois corrigé **et vérifié**, `git mv NN_x.md NN_DONE_x.md` et ajoutez
-une section `## ✅ STATUS: DONE (date)`. Après 3 tentatives aveugles de correction échouées, arrêtez et
+une section `## ✅ STATUS: DONE (date et heure)`. Après 3 tentatives aveugles de correction échouées, arrêtez et
 passez à la recherche (`/bug-research`).
 
 **Le sous-répertoire `bugs/KAIF/`** — défauts et demandes d'amélioration concernant le
@@ -9157,7 +9185,7 @@ compréhension grandit.
 **AI एजेंट के लिए:** काम/परीक्षण के दौरान दोष मिलने पर उसे कैनन के अनुसार यहाँ दर्ज करें (स्किल:
 `/report-bug`; विधि: `BUG_FIXING_FRAMEWORK.md`) — छोटे दोष भी। बग-दस्तावेज़ में सुधार की स्वीकृति का
 अवलोकनीय मानदंड होता है — फ़िक्स के बाद क्या काम करता हुआ दिखेगा (`REQUIREMENTS_FRAMEWORK.md`)। खुला रहते हुए `DONE` टैग नहीं। ठीक
-**और सत्यापित** होने पर `git mv NN_x.md NN_DONE_x.md` करें और `## ✅ STATUS: DONE (तिथि)` खंड जोड़ें।
+**और सत्यापित** होने पर `git mv NN_x.md NN_DONE_x.md` करें और `## ✅ STATUS: DONE (तिथि और समय)` खंड जोड़ें।
 3 असफल अंधे सुधार-प्रयासों के बाद रुकें और शोध पर जाएँ (`/bug-research`)।
 
 **उपनिर्देशिका `bugs/KAIF/`** — **स्वयं KAIF फ्रेमवर्क** के दोष और सुधार-अनुरोध, इस
@@ -9472,7 +9500,7 @@ DONE टैग नहीं मिलता।
 （スキル: `/report-bug`。方法: `BUG_FIXING_FRAMEWORK.md`）— 小さなものでも。バグ文書には修正の
 観察可能な受け入れ基準を書く — 修正後に何が動いて見えるか（`REQUIREMENTS_FRAMEWORK.md`）。
 オープンな間は `DONE` タグなし。修正**かつ検証**されたら、`git mv NN_x.md NN_DONE_x.md` し、
-`## ✅ STATUS: DONE (日付)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
+`## ✅ STATUS: DONE (日付と時刻)` セクションを追記。盲目的な修正が 3 回失敗したら、停止して調査に
 切り替える（`/bug-research`）。
 
 **サブディレクトリ `bugs/KAIF/`** — このプロジェクトではなく **KAIF フレームワーク自体**の
@@ -9793,7 +9821,7 @@ status.
 cânone (habilidade: `/report-bug`; método: `BUG_FIXING_FRAMEWORK.md`) — mesmo os pequenos. O documento
 do bug carrega um critério de aceitação observável da correção — o que se VERÁ funcionando após o
 fix (`REQUIREMENTS_FRAMEWORK.md`). Enquanto aberto, sem tag `DONE`. Quando corrigido **e verificado**, `git mv NN_x.md NN_DONE_x.md` e acrescente uma seção
-`## ✅ STATUS: DONE (data)`. Após 3 tentativas cegas falhadas de correção, pare e mude para pesquisa
+`## ✅ STATUS: DONE (data e hora)`. Após 3 tentativas cegas falhadas de correção, pare e mude para pesquisa
 (`/bug-research`).
 
 **O subdiretório `bugs/KAIF/`** — defeitos e pedidos de melhoria sobre o **próprio
@@ -10118,7 +10146,7 @@ compreensão cresce.
 **Для ИИ-агента:** наткнулся на дефект в работе/тестах — заводи документ по канону (навык `/report-bug`;
 метод — `BUG_FIXING_FRAMEWORK.md`), даже мелкий. Документ бага несёт наблюдаемый критерий приёмки
 фикса — что будет ВИДНО работающим после фикса (`REQUIREMENTS_FRAMEWORK.md`). Пока открыт — без тега `DONE`. Починен **и проверен** —
-`git mv NN_x.md NN_DONE_x.md` и добавь раздел `## ✅ STATUS: DONE (дата)`. После 3 неудачных слепых попыток
+`git mv NN_x.md NN_DONE_x.md` и добавь раздел `## ✅ STATUS: DONE (дата и время)`. После 3 неудачных слепых попыток
 фикса — стоп и переход к исследованию (`/bug-research`).
 
 **Поддиректория `bugs/KAIF/`** — дефекты и запросы на улучшение о **самом фреймворке
@@ -10432,7 +10460,7 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
 **给 AI 代理：** 在工作/测试中碰到缺陷时，按准则在这里登记（技能：`/report-bug`；方法：
 `BUG_FIXING_FRAMEWORK.md`）—— 即使是小缺陷。Bug 文档带有可观察的修复验收标准 —— 修复后将看到
 什么在工作（`REQUIREMENTS_FRAMEWORK.md`）。开放期间不打 `DONE` 标签。修复**并验证**后，
-`git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期)` 部分。3 次盲目修复尝试失败后，
+`git mv NN_x.md NN_DONE_x.md` 并追加 `## ✅ STATUS: DONE (日期和时间)` 部分。3 次盲目修复尝试失败后，
 停止并转入研究（`/bug-research`）。
 
 **子目录 `bugs/KAIF/`** — 关于 **KAIF 框架本身**(而非本项目)的缺陷与改进请求。当一次

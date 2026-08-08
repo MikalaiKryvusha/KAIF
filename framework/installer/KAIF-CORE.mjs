@@ -1260,16 +1260,31 @@ async function cmdUpdate() {
   log(`\n✅ KAIF updated mechanically to ${man.version} — finish ${UPDATE_TASK}, then: node .kaif/kaif-core.mjs update-verify`);
 }
 
+// A stamp carries the DATE AND THE TIME (AGENT_GUIDE → Document & text hygiene): a bare date
+// loses the ordering INSIDE the day, and forensics on a busy day is exactly where these receipts
+// are read. Local ISO 8601 with the offset — the owner's own clock, not UTC: a receipt is read by
+// the human whose day it belongs to. Node has no local-ISO formatter, so the offset is composed
+// from getTimezoneOffset (minutes WEST of UTC — hence the inverted sign).
+function localStamp(d = new Date()) {
+  const pad = (n) => String(n).padStart(2, '0');
+  const offMin = -d.getTimezoneOffset();
+  const sign = offMin < 0 ? '-' : '+';
+  const abs = Math.abs(offMin);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` +
+         `T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` +
+         `${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
+}
+
 const LAST_UPDATE = '.kaif/last-update.json';
 function writeReceipt(r) {
-  const receipt = { ...r, date: new Date().toISOString().slice(0, 10) };
+  const receipt = { ...r, date: localStamp() };
   writeFileSync(LAST_UPDATE, JSON.stringify(receipt, null, 2) + '\n');
   log(`+ wrote ${LAST_UPDATE} (the update receipt — proof that outlives the self-clean)`);
 }
 // The marker keeps a compact update history (field ask T9): where the deployment came from and
 // by which route — /kaif-version gets real memory, forensics gets a machine-readable trail.
 function appendHistory(marker, from, to, route) {
-  marker.history = [...(marker.history || []), { from: from || '?', to, route, date: new Date().toISOString().slice(0, 10) }];
+  marker.history = [...(marker.history || []), { from: from || '?', to, route, date: localStamp() }];
 }
 
 // ---------------------------------------------------------------------------- final gates
@@ -1573,7 +1588,7 @@ function cmdUpdateVerify() {
   if (okOnDisk(LAST_UPDATE)) {
     try {
       const r = readJson(LAST_UPDATE);
-      r.verifiedAt = new Date().toISOString().slice(0, 10);
+      r.verifiedAt = localStamp();
       writeFileSync(LAST_UPDATE, JSON.stringify(r, null, 2) + '\n');
       log(`↻ stamped ${LAST_UPDATE} (verifiedAt)`);
     } catch { /* unreadable receipt — nothing to stamp */ }

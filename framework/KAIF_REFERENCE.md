@@ -320,7 +320,7 @@ the owner's name is not a leak.
 | `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
 | `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
 | `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
-| `history` | Update history: `{from, to, route, date}` entries. |
+| `history` | Update history: `{from, to, route, date}` entries; `date` is a moment — local ISO 8601 with the offset (§12.3). |
 
 Commands never require the CLI to restate what the marker already records. The marker is edited
 only through commands (`sphere`, updates) — never by hand.
@@ -339,7 +339,9 @@ reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-
 `from`, `to`, `route` (`core-update` | `legacy-bootstrap`), `date`, `counters`, `diverged`,
 `divergedModules`, `ownerConvention`, `judgeVerdict` (the full judge verdict recorded by
 `checkpoint judge` — the committable proof of the update's judging), `verifiedAt` (stamped by
-`update-verify`).
+`update-verify`). `date` and `verifiedAt` are MOMENTS, so both carry the time and the offset in
+the owner's local clock — full ISO 8601 (`2026-08-08T07:13:00+03:00`), never a bare date: on a
+day carrying two updates a date-only receipt cannot say which one it proves.
 
 ## 13. Conventions
 

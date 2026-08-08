@@ -65,9 +65,19 @@ ok(r.code === 0, 'S9 update →9.9 exit 0', r.out);
 const rc1 = JSON.parse(readFileSync(join(S9, '.kaif', 'last-update.json'), 'utf8'));
 ok(rc1.from === CUR && rc1.to === '9.9' && rc1.route === 'core-update' && rc1.date && rc1.counters,
    'S9 расписка: from/to/route/date/counters', JSON.stringify(rc1).slice(0, 200));
+// T8 (plans/26 §7, решение владельца №49): штамп квитанции — МОМЕНТ, а не день. Голая дата не
+// отвечает, какое из двух обновлений одного дня доказывает эта расписка. Форма — полный
+// локальный ISO 8601 со смещением зоны (часы владельца, не UTC: расписку читает человек, чей
+// это день). Стережём ФОРМУ, а не конкретное значение — время прогона недетерминировано.
+const ISO_MOMENT_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/;
+ok(ISO_MOMENT_RE.test(rc1.date || ''),
+   'S9 T8: дата расписки — момент (локальный ISO 8601 со смещением), не голый день', `date=${rc1.date}`);
 let mk = JSON.parse(readFileSync(join(S9, '.kaif', 'kaif.json'), 'utf8'));
 ok(Array.isArray(mk.history) && mk.history.length === 1 && mk.history[0].to === '9.9',
    'S9 история маркера: 1 запись после первого update');
+ok(ISO_MOMENT_RE.test(mk.history[0]?.date || ''),
+   'S9 T8: дата записи истории — тот же момент-формат (одна конвенция на обе квитанции)',
+   `date=${mk.history[0]?.date}`);
 // Сознательный сброс задания №1: с bugs/25 update отказывает поверх неотработанного задания;
 // этот свод стережёт расписку и историю, дисциплину заданий стережёт s07/T9.
 rmSync(join(S9, 'KAIF_UPDATE_TASK.md'), { force: true });
@@ -206,6 +216,9 @@ ok(!existsSync(join(S12, 'KAIF_UPDATE_TASK.md')) && !existsSync(join(S12, '.kaif
    'S12 самоочистка отработала');
 const rc12 = JSON.parse(readFileSync(join(S12, '.kaif', 'last-update.json'), 'utf8'));
 ok(rc12.verifiedAt, 'S12 расписка проштампована verifiedAt и пережила самоочистку');
+// T8: verifiedAt — третья квитанция машинерии, и она подчиняется той же конвенции момента.
+ok(ISO_MOMENT_RE.test(rc12.verifiedAt || ''),
+   'S12 T8: verifiedAt — момент (локальный ISO 8601 со смещением)', `verifiedAt=${rc12.verifiedAt}`);
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.4 зелёные'}`);
 process.exit(failures ? 1 : 0);

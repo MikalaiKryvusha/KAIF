@@ -474,6 +474,29 @@ A mirrored/generated surface is edited at its SOURCE and rebuilt — never patch
 patch dies on the next rebuild, and the pair drifts again).
 Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
 
+**A stamp carries the DATE AND THE TIME.** A bare date answers "which day" and loses the ordering
+inside it — and the day is exactly where a project's decisions collide: three decisions on one date
+read as simultaneous, a closure looks like it preceded the decision that caused it, and the session
+that rebuilds the story guesses the order. So every stamp of a MOMENT carries both, in the owner's
+local time:
+
+- **Prose:** `YYYY-MM-DD HH:MM ±HH:MM` (`2026-08-08 07:13 +03:00`). **Machine receipts:** the same
+  moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
+- **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
+  written down or committed. They differ, and the difference is often the interesting part.
+- **Unlogged precision is never invented.** The exact minute was not captured? Write an honest
+  `≈ 2026-08-07 10:05 +03:00`. An invented number is worse than a missing one (the three-doors rule
+  in `PHILOSOPHY.md`).
+- **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
+  receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
+  noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
+  (the date inside an `EXPERIENCE` entry key among them), and dates of EXTERNAL events (a vendor's
+  release, a third-party deprecation) — those are not moments of our decision.
+- **Forward-only, by construction.** The convention binds from the moment the project adopts it;
+  older date-only stamps are history and are NEVER rewritten (append-only — a correction is a new
+  entry). A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the
+  adoption stay silent without any baseline file to maintain.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth

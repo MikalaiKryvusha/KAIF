@@ -41,7 +41,7 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
      `<NN>_DONE_<name>.md`).
    - **Append a status section inside the document**, e.g.:
      ```
-     ## ✅ STATUS: DONE (<date>)
+     ## ✅ STATUS: DONE (<date + time>)
      What was done: <short summary of the fix/implementation>.
      How verified: <build/harness/measurement/commit hash/loop iteration>.
      ```

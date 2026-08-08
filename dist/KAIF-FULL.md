@@ -619,6 +619,29 @@ A mirrored/generated surface is edited at its SOURCE and rebuilt — never patch
 patch dies on the next rebuild, and the pair drifts again).
 Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
 
+**A stamp carries the DATE AND THE TIME.** A bare date answers "which day" and loses the ordering
+inside it — and the day is exactly where a project's decisions collide: three decisions on one date
+read as simultaneous, a closure looks like it preceded the decision that caused it, and the session
+that rebuilds the story guesses the order. So every stamp of a MOMENT carries both, in the owner's
+local time:
+
+- **Prose:** `YYYY-MM-DD HH:MM ±HH:MM` (`2026-08-08 07:13 +03:00`). **Machine receipts:** the same
+  moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
+- **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
+  written down or committed. They differ, and the difference is often the interesting part.
+- **Unlogged precision is never invented.** The exact minute was not captured? Write an honest
+  `≈ 2026-08-07 10:05 +03:00`. An invented number is worse than a missing one (the three-doors rule
+  in `PHILOSOPHY.md`).
+- **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
+  receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
+  noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
+  (the date inside an `EXPERIENCE` entry key among them), and dates of EXTERNAL events (a vendor's
+  release, a third-party deprecation) — those are not moments of our decision.
+- **Forward-only, by construction.** The convention binds from the moment the project adopts it;
+  older date-only stamps are history and are NEVER rewritten (append-only — a correction is a new
+  entry). A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the
+  adoption stay silent without any baseline file to maintain.
+
 ## Push / GitHub authentication
 
 `<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
@@ -1255,7 +1278,7 @@ Canonical structure (see `/report-bug` for the full template):
 ```
 
 When the bug is confirmed fixed and verified, mark it DONE by the `DONE`-tag convention (rename
-`bugs/NN_x.md` → `bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section). See
+`bugs/NN_x.md` → `bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section). See
 `AGENT_GUIDE.md` → "Backlog & the DONE tag" and the `/check-backlog` skill.
 
 ---
@@ -1791,11 +1814,14 @@ closer to GOAL.md. Keep it high-level; detailed step plans go in plans/NN_*.md.>
 
 ## Decision log
 
-`<Dated, one line each: significant decisions and why — so a future session doesn't relitigate them.>`
+`<Stamped, one line each: significant decisions and why — so a future session doesn't relitigate
+them. A stamp is a MOMENT: date AND time in the owner's local clock (AGENT_GUIDE → Document & text
+hygiene). Decided and recorded are two moments — tell them apart when they differ; write an honest
+`≈` rather than an invented minute.>`
 
-| Date | Decision | Why |
+| Stamp | Decision | Why |
 |------|----------|-----|
-| `<YYYY-MM-DD>` | `<what was decided>` | `<the reason>` |
+| `<YYYY-MM-DD HH:MM ±HH:MM>` | `<what was decided>` | `<the reason>` |
 
 ---
 
@@ -2315,7 +2341,7 @@ the owner's name is not a leak.
 | `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
 | `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
 | `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
-| `history` | Update history: `{from, to, route, date}` entries. |
+| `history` | Update history: `{from, to, route, date}` entries; `date` is a moment — local ISO 8601 with the offset (§12.3). |
 
 Commands never require the CLI to restate what the marker already records. The marker is edited
 only through commands (`sphere`, updates) — never by hand.
@@ -2334,7 +2360,9 @@ reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-
 `from`, `to`, `route` (`core-update` | `legacy-bootstrap`), `date`, `counters`, `diverged`,
 `divergedModules`, `ownerConvention`, `judgeVerdict` (the full judge verdict recorded by
 `checkpoint judge` — the committable proof of the update's judging), `verifiedAt` (stamped by
-`update-verify`).
+`update-verify`). `date` and `verifiedAt` are MOMENTS, so both carry the time and the offset in
+the owner's local clock — full ISO 8601 (`2026-08-08T07:13:00+03:00`), never a bare date: on a
+day carrying two updates a date-only receipt cannot say which one it proves.
 
 ## 13. Conventions
 
@@ -2499,7 +2527,7 @@ agent will structure it. Browse this directory to see known defects and their st
 `/report-bug`; method: `BUG_FIXING_FRAMEWORK.md`) — even small ones. The bug doc carries an
 observable fix-acceptance criterion — what will be SEEN working after the fix
 (`REQUIREMENTS_FRAMEWORK.md`). While open, no `DONE` tag. When fixed
-**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section. After 3
+**and verified**, `git mv NN_x.md NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section. After 3
 failed blind fix attempts, stop and switch to research (`/bug-research`).
 
 **The `bugs/KAIF/` subdirectory** — defects and improvement requests about the KAIF **framework
@@ -3215,7 +3243,7 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
      `<NN>_DONE_<name>.md`).
    - **Append a status section inside the document**, e.g.:
      ```
-     ## ✅ STATUS: DONE (<date>)
+     ## ✅ STATUS: DONE (<date + time>)
      What was done: <short summary of the fix/implementation>.
      How verified: <build/harness/measurement/commit hash/loop iteration>.
      ```
@@ -3474,7 +3502,7 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
    - Commit (in autoloops, by the usual discipline): run `<COMMIT_COMMAND>` with `<msg>` = `docs(bugNN): …`.
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
-   `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date)` section (what was
+   `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section (what was
    done / how verified). Backlog revision — the `/check-backlog` skill.
 
 ## Notes
@@ -3769,7 +3797,7 @@ Sequence:
   register. For old interviews that never declared targets, the soft heuristic applies (at least
   one citation anywhere outside `interviews/`; history is not rewritten — I21).
 - Only AFTER the propagation pass: add the "Decisions" table and change status to
-  `✅ ANSWERS RECEIVED <date>` — the status change is the LAST action, not the first.
+  `✅ ANSWERS RECEIVED <date + time>` — the status change is the LAST action, not the first.
 - **Stale-status check** (the guard's second half): status says "awaiting" while no answer field
   is empty ⇒ THE STATUS IS STALE — fix it and look for what else never propagated. In the field an
   interview hung "awaiting" for two days over twelve filled answers.
@@ -6118,8 +6146,8 @@ cannot anchor in the parent is scope drift, caught before the diff.
   trailer naming the agent. Commit small and often — progress is never lost to a crash or context reset.
 - **Git workflow.** Simple default (this framework's own): work only in `main`, no feature branches; undo
   via git history. State the chosen policy in `AGENT_GUIDE.md`.
-- **Comment the code; narrate progress; read fresh logs; use absolute dates; build your own harness;** keep
-  the living docs (`AGENT_GUIDE.md`/`STATUS.md`/the maps) accurate as you work.
+- **Comment the code; narrate progress; read fresh logs; stamp moments with the absolute date AND time;
+  build your own harness;** keep the living docs (`AGENT_GUIDE.md`/`STATUS.md`/the maps) accurate as you work.
 
 ---
 

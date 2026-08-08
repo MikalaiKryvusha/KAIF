@@ -166,7 +166,7 @@
 ```
 
 Когда баг подтверждённо починен и проверен, помечай его DONE по соглашению о теге `DONE` (переименуй
-`bugs/NN_x.md` → `bugs/NN_DONE_x.md` и добавь секцию `## ✅ STATUS: DONE (date)`). См.
+`bugs/NN_x.md` → `bugs/NN_DONE_x.md` и добавь секцию `## ✅ STATUS: DONE (дата + время)`). См.
 `AGENT_GUIDE.md` → «Беклог и тег DONE» и навык `/check-backlog`.
 
 ---

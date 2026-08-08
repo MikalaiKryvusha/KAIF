@@ -127,7 +127,7 @@ Sequence:
   register. For old interviews that never declared targets, the soft heuristic applies (at least
   one citation anywhere outside `interviews/`; history is not rewritten — I21).
 - Only AFTER the propagation pass: add the "Decisions" table and change status to
-  `✅ ANSWERS RECEIVED <date>` — the status change is the LAST action, not the first.
+  `✅ ANSWERS RECEIVED <date + time>` — the status change is the LAST action, not the first.
 - **Stale-status check** (the guard's second half): status says "awaiting" while no answer field
   is empty ⇒ THE STATUS IS STALE — fix it and look for what else never propagated. In the field an
   interview hung "awaiting" for two days over twelve filled answers.

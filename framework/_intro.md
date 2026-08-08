@@ -253,8 +253,8 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
   trailer naming the agent. Commit small and often — progress is never lost to a crash or context reset.
 - **Git workflow.** Simple default (this framework's own): work only in `main`, no feature branches; undo
   via git history. State the chosen policy in `AGENT_GUIDE.md`.
-- **Comment the code; narrate progress; read fresh logs; use absolute dates; build your own harness;** keep
-  the living docs (`AGENT_GUIDE.md`/`STATUS.md`/the maps) accurate as you work.
+- **Comment the code; narrate progress; read fresh logs; stamp moments with the absolute date AND time;
+  build your own harness;** keep the living docs (`AGENT_GUIDE.md`/`STATUS.md`/the maps) accurate as you work.
 
 ---
 

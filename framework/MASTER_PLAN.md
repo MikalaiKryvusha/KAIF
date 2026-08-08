@@ -37,11 +37,14 @@ closer to GOAL.md. Keep it high-level; detailed step plans go in plans/NN_*.md.>
 
 ## Decision log
 
-`<Dated, one line each: significant decisions and why — so a future session doesn't relitigate them.>`
+`<Stamped, one line each: significant decisions and why — so a future session doesn't relitigate
+them. A stamp is a MOMENT: date AND time in the owner's local clock (AGENT_GUIDE → Document & text
+hygiene). Decided and recorded are two moments — tell them apart when they differ; write an honest
+`≈` rather than an invented minute.>`
 
-| Date | Decision | Why |
+| Stamp | Decision | Why |
 |------|----------|-----|
-| `<YYYY-MM-DD>` | `<what was decided>` | `<the reason>` |
+| `<YYYY-MM-DD HH:MM ±HH:MM>` | `<what was decided>` | `<the reason>` |
 
 ---
 
