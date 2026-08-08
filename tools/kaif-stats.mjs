@@ -390,7 +390,7 @@ if (args.includes('--json')) {
     console.log('     а не часы полной занятости человека: сон исключён дырой, а дневные часы');
     console.log('     2026-08-07 владелец вёл параллельно со своей основной работой (его слово).');
     console.log(`  по КАЛЕНДАРЮ (${calendarHours.toFixed(0)} ч, включая сон и паузы): ×${kCalLow.toFixed(0)}–×${kCalHigh.toFixed(0)} — это ${Math.round(kCalLow * 100)}–${Math.round(kCalHigh * 100)} % производительности человеческой команды`);
-    console.log(`  по АКТИВНЫМ ЧАСАМ (${sess.activeHours.toFixed(1)} ч за клавиатурой): ×${kActLow.toFixed(0)}–×${kActHigh.toFixed(0)} — ${Math.round(kActLow * 100)}–${Math.round(kActHigh * 100)} %`);
+    console.log(`  по АКТИВНЫМ ЧАСАМ (${sess.activeHours.toFixed(1)} ч, когда шла работа): ×${kActLow.toFixed(0)}–×${kActHigh.toFixed(0)} — ${Math.round(kActLow * 100)}–${Math.round(kActHigh * 100)} %`);
     console.log('  ⚠️ читается так: столько ЧЕЛОВЕКО-часов работы сжато в один календарный/активный час.');
     console.log('     Это сжатие ТРУДОЗАТРАТ, а не заявление «модель в N раз умнее человека»:');
     console.log('     объём считается по написанному, а качество написанного меряют гейты и ревизии, не эта метрика.');
