@@ -16,3 +16,14 @@ H1 vient l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut 
 fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
 (`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
 fermable) n'est pas étiqueté DONE.
+
+**Nommage — un épique se voit dans le backlog rien qu'au nom de fichier.** Le travail lourd,
+composite et long est planifié comme un **épique** (`/plan-epic`), et son fichier porte la marque :
+**`NN_EPIC_<nom>.md`**. Le fichier de l'épique contient l'architecture par phases de la feuille de
+route — *et aucun détail opérationnel*. Le détail vit chez ses **enfants** : un plan opérationnel
+par phase (R&D, tests, implémentation, recette), et chaque enfant nomme son parent dans son propre
+nom de fichier — **`NN_epicMM_<phase>_<nom>.md`**, où `MM` est le numéro de l'épique parent. Seule
+la phase la plus proche est détaillée ; le plan de la phase N+1 s'écrit à la clôture de la phase N.
+Un travail qui n'a jamais eu besoin d'épique reste un plan **autonome** : `NN_<nom>.md`. La
+convention vaut vers l'avant — ne renommez pas les anciens plans : leurs numéros sont déjà cités
+dans toute l'historique.

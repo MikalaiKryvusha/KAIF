@@ -54,6 +54,12 @@ changing them is an edit, not a failure.
 Placement: a small task's plan lives as a **section inside its idea/bug document**; a larger one
 gets its own `plans/NN_<name>.md`. Either way the plan is committed before the work starts.
 
+**Planning a PHASE of an epic?** Then this plan is that epic's child, and it declares its parent
+twice over: in its **filename** — `NN_epicMM_<phase>_<name>.md`, `MM` being the parent epic's
+number (`plans/README.md` → Naming) — and in its **steps**, each quoting the meta-plan's anchor
+line it executes. The name links the family; the quote proves the step is in scope. A step you
+cannot anchor in the parent is scope drift, caught before the diff.
+
 ## Step 3 — clearance, then go
 
 - The plan crosses owner territory (brand, UX, architecture, canon content)? Surface the fork

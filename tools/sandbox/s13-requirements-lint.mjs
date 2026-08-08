@@ -7,7 +7,7 @@
 // нечего (класс bugs/34). Обвязочная половина (N5): tools/doc-header-lint.mjs — селфтест с
 // предсказанными находками, блок «Вектор цели»/«Критерии приёмки» нормо-эпохи через --root,
 // консультативная формулировка в выводе (антипаттерн DoR — критерий эпика 7).
-import { writeFileSync, mkdirSync, rmSync, cpSync } from 'node:fs';
+import { writeFileSync, mkdirSync, rmSync, cpSync, renameSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -123,8 +123,8 @@ const runWrapper = (args) => {
 // --- селфтест обвязочного линтера: красный доказан предсказанными находками (шапка + блок
 // вектора + bugs-диалект Fix accepted when) и композиция со словарём находит стоп-слово
 r = runWrapper('--selftest');
-ok(r.code === 0 && /selftest: ok — 12 предсказанных/.test(r.out) && /композиция со словарём находит стоп-слово/.test(r.out),
-  's13 обвязочный линтер — селфтест: 12 предсказанных находок + композиция со словарём', r.out);
+ok(r.code === 0 && /selftest: ok — 14 предсказанных/.test(r.out) && /композиция со словарём находит стоп-слово/.test(r.out),
+  's13 обвязочный линтер — селфтест: 14 предсказанных находок + композиция со словарём', r.out);
 
 // --- нормо-эпохный план БЕЗ блока: красный, обе находки названы, вывод КОНСУЛЬТИРУЕТ
 const FX2 = join(ROOT, 'wrapper-fx');
@@ -144,6 +144,32 @@ writeFileSync(join(FX2, 'plans', '30_probe.md'), '# План 30 — с блок�
 r = runWrapper(`--root ${FX2}`);
 ok(r.code === 0 && /findings 0 — all headers green/.test(r.out) && /0 findings/.test(r.out),
   's13 обвязочный — блок присутствует, словарь чист: зелёный целиком (exit 0)', r.out);
+ok(/plan-naming \(T2\): детей эпиков 0/.test(r.out),
+  's13 конвенция имён — фикстура без детей эпиков честно печатает 0, а не молчит', r.out);
+
+// --- ось ИМЁН plans/ (задача T2): ребёнок `NN_epicMM_*` обязан иметь родителя `MM_EPIC_*`.
+// Проверяется на ЖИВОМ корне, а не только селфтестом: три состояния одной парой файлов —
+// сирота (родителя нет) · родитель есть, но не эпик · семья корректна и страж молчит.
+const planBodyT2 = (title) => `# ${title}\n\n` + FX2_HEADER +
+  '\n## Вектор цели\n\nДостичь X, наблюдаемого прогоном Y (Achieve).\n' +
+  '\n## Критерии приёмки (готово, когда)\n\n1. Сборка проходит за ≤ 60 с на референс-машине CI.\n';
+writeFileSync(join(FX2, 'plans', '41_epic99_orphan.md'), planBodyT2('План 41 — родителя нет'));
+r = runWrapper(`--root ${FX2}`);
+ok(r.code === 1 && /41_epic99_orphan\.md — имя ссылается на эпик 99, но плана с номером 99 нет/.test(r.out),
+  's13 конвенция имён — ребёнок без родителя пойман (конвенция T2)', r.out);
+rmSync(join(FX2, 'plans', '41_epic99_orphan.md'), { force: true });
+
+writeFileSync(join(FX2, 'plans', '42_epic30_bad_parent.md'), planBodyT2('План 42 — родитель не эпик'));
+r = runWrapper(`--root ${FX2}`);
+ok(r.code === 1 && /42_epic30_bad_parent\.md — родитель 30 — «30_probe\.md», это не `30_EPIC_\*`/.test(r.out),
+  's13 конвенция имён — родитель существует, но назван плоско: пойман (конвенция T2)', r.out);
+
+// Тот же ребёнок, но родитель переименован по конвенции — страж обязан замолчать: проверка,
+// которая не умеет зеленеть на исправленном, стерегла бы не то (парадокс пестицида наоборот).
+renameSync(join(FX2, 'plans', '30_probe.md'), join(FX2, 'plans', '30_EPIC_probe.md'));
+r = runWrapper(`--root ${FX2}`);
+ok(r.code === 0 && /plan-naming \(T2\): детей эпиков 1/.test(r.out) && !/конвенция T2/.test(r.out),
+  's13 конвенция имён — семья корректна: страж зелёный и считает ребёнка', r.out);
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница requirements-lint зелёная (payload-модуль + обвязочный линтер)'}`);
 process.exit(failures ? 1 : 0);

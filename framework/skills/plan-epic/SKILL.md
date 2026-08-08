@@ -34,8 +34,10 @@ Close the doc with: findings → implications for THIS epic → open forks for t
 source material is large, extraction may be delegated — but only with verbatim-quote schemas and a
 mechanical quote check (a finding is not a finding until verified).
 
-## Rung 2 — the meta-plan (one document in `plans/`)
+## Rung 2 — the meta-plan (one `plans/NN_EPIC_<name>.md`)
 
+- **Write it into a file named `NN_EPIC_<name>.md`** — the marker is what makes an epic visible in
+  the backlog by filename alone, before anyone opens it (`plans/README.md` → Naming).
 - The meta-plan OPENS with the epic's goal vector — *what pain we solve and where we want to
   be* — and the epic's acceptance criteria (observable, countable where possible), written by
   `REQUIREMENTS_FRAMEWORK.md`; vector and criteria may be modified as phases teach — changing
@@ -55,10 +57,16 @@ inherits the opening block — the phase's own goal vector + acceptance criteria
 (`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
+The child's file is named **`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's
+number: a child of an epic names its parent in its own filename, so the family is readable from a
+directory listing without opening a single document. (`/plan-task` writes these children.)
+
 ## Rung 4 — trace and execute
 
 - Every operational step cites its meta-plan anchor line (the citing rule, checklist step 8);
-  a step you cannot anchor is scope drift caught before the diff.
+  a step you cannot anchor is scope drift caught before the diff. Filename and quote carry the
+  trace together: the child's name says WHICH epic it serves, the quoted anchor says WHICH line of
+  it this step executes.
 - Execute each phase by the fable loop; a `/fable-judge` pass closes a phase before the next
   one's operational plan is written.
 - Tick the meta-plan as phases close; on epic close, fill "Decisions made without the owner".

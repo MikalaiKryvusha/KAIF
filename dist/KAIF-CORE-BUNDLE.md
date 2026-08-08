@@ -2346,6 +2346,16 @@ change as the work teaches. Right after the H1 comes the lintable header meta �
 **Parent:** · **Status:** (with milestones) · **Outbound:** (`AGENT_GUIDE.md` → Document header
 meta). Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
+
+**Naming — an epic is visible in the backlog by its filename.** Heavy, composite, long work is
+planned as an **epic** (`/plan-epic`), and its file carries the marker: **`NN_EPIC_<name>.md`**. The
+epic file holds the phase-by-phase architecture of the roadmap — *and no operational detail*. The
+detail lives in its **children**: one operational plan per phase (R&D, testing, implementation,
+acceptance), and every child names its parent in its own filename —
+**`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's number. Only the nearest phase is
+detailed; the plan for phase N+1 is written when phase N closes. Work that never needed an epic
+stays a **standalone** plan: `NN_<name>.md`. The convention runs forward only — do not rename older
+plans, since their numbers are already quoted across the history.
 ``````
 
 > **FILE: `ideas/README.md`** — create the directory and drop this README
@@ -5363,8 +5373,10 @@ Close the doc with: findings → implications for THIS epic → open forks for t
 source material is large, extraction may be delegated — but only with verbatim-quote schemas and a
 mechanical quote check (a finding is not a finding until verified).
 
-## Rung 2 — the meta-plan (one document in `plans/`)
+## Rung 2 — the meta-plan (one `plans/NN_EPIC_<name>.md`)
 
+- **Write it into a file named `NN_EPIC_<name>.md`** — the marker is what makes an epic visible in
+  the backlog by filename alone, before anyone opens it (`plans/README.md` → Naming).
 - The meta-plan OPENS with the epic's goal vector — *what pain we solve and where we want to
   be* — and the epic's acceptance criteria (observable, countable where possible), written by
   `REQUIREMENTS_FRAMEWORK.md`; vector and criteria may be modified as phases teach — changing
@@ -5384,10 +5396,16 @@ inherits the opening block — the phase's own goal vector + acceptance criteria
 (`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
+The child's file is named **`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's
+number: a child of an epic names its parent in its own filename, so the family is readable from a
+directory listing without opening a single document. (`/plan-task` writes these children.)
+
 ## Rung 4 — trace and execute
 
 - Every operational step cites its meta-plan anchor line (the citing rule, checklist step 8);
-  a step you cannot anchor is scope drift caught before the diff.
+  a step you cannot anchor is scope drift caught before the diff. Filename and quote carry the
+  trace together: the child's name says WHICH epic it serves, the quoted anchor says WHICH line of
+  it this step executes.
 - Execute each phase by the fable loop; a `/fable-judge` pass closes a phase before the next
   one's operational plan is written.
 - Tick the meta-plan as phases close; on epic close, fill "Decisions made without the owner".
@@ -5458,6 +5476,12 @@ changing them is an edit, not a failure.
 
 Placement: a small task's plan lives as a **section inside its idea/bug document**; a larger one
 gets its own `plans/NN_<name>.md`. Either way the plan is committed before the work starts.
+
+**Planning a PHASE of an epic?** Then this plan is that epic's child, and it declares its parent
+twice over: in its **filename** — `NN_epicMM_<phase>_<name>.md`, `MM` being the parent epic's
+number (`plans/README.md` → Naming) — and in its **steps**, each quoting the meta-plan's anchor
+line it executes. The name links the family; the quote proves the step is in scope. A step you
+cannot anchor in the parent is scope drift, caught before the diff.
 
 ## Step 3 — clearance, then go
 
@@ -8046,6 +8070,15 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 **الحالة:** (مع المعالم) · **إلى الخارج:** (`AGENT_GUIDE.md` → Document header meta).
 رقّم الملفات (`NN_<name>.md`). الخطة المكتملة والمتحقَّق منها تحصل على وسم `DONE` في اسمها
 (`git mv NN_x.md NN_DONE_x.md`) مع قسم حالة. المواد المرجعية (ليست مهمة قابلة للإغلاق) لا تُوسم بـ DONE.
+
+**التسمية — المَلحمة تُرى في قائمة العمل من اسم ملفّها وحده.** العمل الثقيل المركّب الطويل يُخطَّط
+بوصفه **مَلحمة** (`/plan-epic`)، ويحمل ملفّها العلامة: **`NN_EPIC_<name>.md`**. ملف الملحمة يحوي
+البنية المعمارية للخارطة مرحلةً مرحلة — *وبلا أي تفصيل تنفيذي*. التفصيل يعيش في **أبنائها**: خطة
+تنفيذية لكل مرحلة (بحث وتطوير، اختبار، تنفيذ، قبول)، وكل ابن يسمّي أباه في اسم ملفّه هو —
+**`NN_epicMM_<phase>_<name>.md`**، حيث `MM` رقم الملحمة الأب. تُفصَّل المرحلة الأقرب فقط؛ وخطة
+المرحلة N+1 تُكتب عند إغلاق المرحلة N. أما العمل الذي لم يحتج ملحمة قط فيبقى خطة **مستقلة**:
+`NN_<name>.md`. والقاعدة تسري إلى الأمام فحسب — لا تُعِد تسمية الخطط القديمة، فأرقامها مقتبَسة
+بالفعل عبر التاريخ كلّه.
 ``````
 
 > **FILE: `templates/languages/ar/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8364,6 +8397,17 @@ folgt die lintbare Kopf-Meta — **Erstellt:** · **Eltern:** · **Status:** (mi
 Dateien (`NN_<name>.md`). Ein abgeschlossener, verifizierter Plan bekommt das `DONE`-Tag im
 Dateinamen (`git mv NN_x.md NN_DONE_x.md`) plus einen Statusabschnitt. Referenzmaterial (keine schließbare
 Aufgabe) wird nicht mit DONE markiert.
+
+**Benennung — ein Epic ist im Backlog schon am Dateinamen erkennbar.** Schwere, zusammengesetzte,
+lange Arbeit wird als **Epic** geplant (`/plan-epic`), und seine Datei trägt die Markierung:
+**`NN_EPIC_<name>.md`**. Die Epic-Datei enthält die phasenweise Architektur der Roadmap — *und
+keinerlei operative Detaillierung*. Das Detail lebt in ihren **Kindern**: ein operativer Plan pro
+Phase (R&D, Testen, Implementierung, Abnahme), und jedes Kind nennt seinen Elternteil im eigenen
+Dateinamen — **`NN_epicMM_<phase>_<name>.md`**, wobei `MM` die Nummer des Eltern-Epics ist. Nur die
+nächste Phase wird detailliert; der Plan für Phase N+1 wird beim Schließen von Phase N geschrieben.
+Arbeit, die nie ein Epic brauchte, bleibt ein **eigenständiger** Plan: `NN_<name>.md`. Die
+Konvention gilt nur nach vorn — benenne ältere Pläne nicht um, ihre Nummern sind bereits über die
+gesamte Historie zitiert.
 ``````
 
 > **FILE: `templates/languages/de/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -8682,6 +8726,16 @@ va la cabecera meta lintable — **Creado:** · **Padre:** · **Estado:** (con h
 archivos (`NN_<nombre>.md`). Un plan terminado y verificado recibe la etiqueta `DONE` en su nombre
 (`git mv NN_x.md NN_DONE_x.md`) más una sección de estado. El material de referencia (no una tarea
 cerrable) no se etiqueta con DONE.
+
+**Nomenclatura — un épico se ve en el backlog por su nombre de archivo.** El trabajo pesado,
+compuesto y largo se planifica como un **épico** (`/plan-epic`), y su archivo lleva la marca:
+**`NN_EPIC_<nombre>.md`**. El archivo del épico contiene la arquitectura por fases de la hoja de
+ruta — *y ningún detalle operativo*. El detalle vive en sus **hijos**: un plan operativo por fase
+(I+D, pruebas, implementación, aceptación), y cada hijo nombra a su padre en su propio nombre de
+archivo — **`NN_epicMM_<fase>_<nombre>.md`**, donde `MM` es el número del épico padre. Solo se
+detalla la fase más próxima; el plan de la fase N+1 se escribe al cerrar la fase N. El trabajo que
+nunca necesitó un épico se queda como plan **autónomo**: `NN_<nombre>.md`. La convención rige hacia
+adelante — no renombre los planes antiguos: sus números ya están citados a lo largo de la historia.
 ``````
 
 > **FILE: `templates/languages/es/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -9004,6 +9058,17 @@ H1 vient l'en-tête méta lintable — **Créé :** · **Parent :** · **Statut 
 fichiers (`NN_<nom>.md`). Un plan terminé et vérifié reçoit l'étiquette `DONE` dans son nom
 (`git mv NN_x.md NN_DONE_x.md`) plus une section de statut. Le matériel de référence (pas une tâche
 fermable) n'est pas étiqueté DONE.
+
+**Nommage — un épique se voit dans le backlog rien qu'au nom de fichier.** Le travail lourd,
+composite et long est planifié comme un **épique** (`/plan-epic`), et son fichier porte la marque :
+**`NN_EPIC_<nom>.md`**. Le fichier de l'épique contient l'architecture par phases de la feuille de
+route — *et aucun détail opérationnel*. Le détail vit chez ses **enfants** : un plan opérationnel
+par phase (R&D, tests, implémentation, recette), et chaque enfant nomme son parent dans son propre
+nom de fichier — **`NN_epicMM_<phase>_<nom>.md`**, où `MM` est le numéro de l'épique parent. Seule
+la phase la plus proche est détaillée ; le plan de la phase N+1 s'écrit à la clôture de la phase N.
+Un travail qui n'a jamais eu besoin d'épique reste un plan **autonome** : `NN_<nom>.md`. La
+convention vaut vers l'avant — ne renommez pas les anciens plans : leurs numéros sont déjà cités
+dans toute l'historique.
 ``````
 
 > **FILE: `templates/languages/fr/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -9311,6 +9376,16 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 Document header meta)। फ़ाइलों को क्रमांकित करें (`NN_<naam>.md`)। पूर्ण और सत्यापित योजना के नाम में `DONE` टैग जोड़ें
 (`git mv NN_x.md NN_DONE_x.md`) और स्थिति खंड जोड़ें। संदर्भ सामग्री (बंद करने योग्य कार्य नहीं) को
 DONE टैग नहीं मिलता।
+
+**नामकरण — एपिक बैकलॉग में सिर्फ़ फ़ाइल-नाम से दिख जाता है।** भारी, संयुक्त, लंबा काम **एपिक** के
+रूप में योजित होता है (`/plan-epic`), और उसकी फ़ाइल पर निशान रहता है: **`NN_EPIC_<naam>.md`**।
+एपिक फ़ाइल में रोडमैप की चरण-दर-चरण वास्तुकला रहती है — *और कोई संचालनात्मक विवरण नहीं*। विवरण
+उसके **बच्चों** में रहता है: प्रति चरण एक संचालन योजना (R&D, परीक्षण, कार्यान्वयन, स्वीकृति), और
+हर बच्चा अपने ही फ़ाइल-नाम में अपने मूल का नाम लेता है — **`NN_epicMM_<charan>_<naam>.md`**, जहाँ
+`MM` मूल एपिक का क्रमांक है। केवल निकटतम चरण का विवरण लिखें; चरण N+1 की योजना चरण N के बंद होने पर
+लिखी जाती है। जिस काम को एपिक की ज़रूरत ही नहीं पड़ी, वह **स्वतंत्र** योजना रहता है:
+`NN_<naam>.md`। यह परिपाटी आगे की ओर ही लागू है — पुरानी योजनाओं का नाम न बदलें: उनके क्रमांक पूरे
+इतिहास में पहले ही उद्धृत हैं।
 ``````
 
 > **FILE: `templates/languages/hi/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -9622,6 +9697,15 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 ファイルには番号を付ける（`NN_<名前>.md`）。完了し検証済みの計画はファイル名に `DONE` タグを入れ
 （`git mv NN_x.md NN_DONE_x.md`）、ステータスセクションを追記する。参照資料（クローズできる
 タスクではないもの）には DONE タグを付けない。
+
+**命名 — エピックはファイル名だけでバックログ上から見分けられる。** 重く、複合的で、長い作業は
+**エピック**として計画し（`/plan-epic`）、そのファイルは印を帯びる — **`NN_EPIC_<名前>.md`**。
+エピックのファイルにはロードマップのフェーズ単位のアーキテクチャを書く — *操作レベルの詳細は
+書かない*。詳細は**子**に住む：フェーズごとに 1 つの操作計画（R&D・テスト・実装・受け入れ）。
+そして子はいずれも自分のファイル名で親を名指す — **`NN_epicMM_<フェーズ>_<名前>.md`**、`MM` は
+親エピックの番号。詳細化するのは直近のフェーズだけ。フェーズ N+1 の計画はフェーズ N が閉じた
+ときに書く。エピックを必要としなかった作業は**単独**の計画のままでよい：`NN_<名前>.md`。この
+規約は前向きにのみ効く — 古い計画は改名しないこと。その番号はすでに履歴全体で引用されている。
 ``````
 
 > **FILE: `templates/languages/ja/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -9936,6 +10020,16 @@ cabeçalho meta lintável — **Criado:** · **Pai:** · **Estado:** (com marcos
 arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
 (`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
 não recebe a tag DONE.
+
+**Nomenclatura — um épico aparece no backlog pelo nome do arquivo.** Trabalho pesado, composto e
+longo é planejado como um **épico** (`/plan-epic`), e seu arquivo carrega a marca:
+**`NN_EPIC_<nome>.md`**. O arquivo do épico contém a arquitetura por fases do roteiro — *e nenhum
+detalhe operacional*. O detalhe vive nos seus **filhos**: um plano operacional por fase (P&D,
+testes, implementação, aceitação), e cada filho nomeia o pai no próprio nome de arquivo —
+**`NN_epicMM_<fase>_<nome>.md`**, onde `MM` é o número do épico pai. Somente a fase mais próxima é
+detalhada; o plano da fase N+1 é escrito no fechamento da fase N. O trabalho que nunca precisou de
+um épico continua um plano **autônomo**: `NN_<nome>.md`. A convenção vale para frente — não renomeie
+planos antigos: seus números já estão citados por toda a história.
 ``````
 
 > **FILE: `templates/languages/pt/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -10243,6 +10337,16 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 **Статус:** (с вехами) · **Вовне:** (`AGENT_GUIDE.md` → Document header meta). Нумеруй файлы
 (`NN_<имя>.md`). Завершённый и проверенный план получает тег `DONE` в имени (`git mv NN_x.md
 NN_DONE_x.md`) плюс раздел статуса. Справочные документы (не закрываемые задачи) тегом не помечаются.
+
+**Именование — эпик виден в беклоге по имени файла.** Тяжёлая, составная, долгая работа планируется
+**эпиком** (`/plan-epic`), и его файл несёт пометку: **`NN_EPIC_<имя>.md`**. Файл эпика держит
+пофазовое архитектурное описание дорожной карты — *и никакой операционной детализации*. Детализация
+живёт у **детей**: по операционному плану на фазу (R&D, тестирование, имплементация, приёмка), и
+каждый ребёнок называет родителя в собственном имени — **`NN_epicMM_<фаза>_<имя>.md`**, где `MM` —
+номер родительского эпика. Детализируется только ближайшая фаза; план фазы N+1 пишется на закрытии
+фазы N. Работа, которой эпик не потребовался, остаётся **самостоятельным** планом: `NN_<имя>.md`.
+Конвенция действует вперёд — старые планы не переименовываются: их номера уже процитированы по всей
+истории.
 ``````
 
 > **FILE: `templates/languages/ru/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
@@ -10530,6 +10634,14 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 Document header meta）。给文件编号（`NN_<名称>.md`）。
 完成且验证过的计划在文件名中加 `DONE` 标签（`git mv NN_x.md NN_DONE_x.md`）并附上状态部分。
 参考资料（不可关闭的任务）不打 DONE 标签。
+
+**命名 —— 史诗只看文件名就能在待办里认出来。** 繁重、复合、漫长的工作按**史诗**规划
+（`/plan-epic`），其文件带上标记：**`NN_EPIC_<名称>.md`**。史诗文件承载路线图的分阶段架构 ——
+*不写任何操作层面的细节*。细节住在它的**子计划**里：每个阶段一份操作计划（研发、测试、实现、
+验收），并且每个子计划都在自己的文件名里点出父级 —— **`NN_epicMM_<阶段>_<名称>.md`**，其中 `MM`
+是父史诗的编号。只细化最近的一个阶段；阶段 N+1 的计划在阶段 N 关闭时才写。从不需要史诗的工作
+仍是**独立**计划：`NN_<名称>.md`。该约定只向前生效 —— 不要重命名旧计划，它们的编号已被整段历史
+引用。
 ``````
 
 > **FILE: `templates/languages/zh-Hans/researches/README.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang

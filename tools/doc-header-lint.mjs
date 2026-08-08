@@ -166,6 +166,34 @@ function lintGoalVector(dir, relPath, lines, findings) {
   }
 }
 
+// Конвенция имён plans/ (задача T2, п. 9 идеи 20): эпик = `NN_EPIC_<имя>.md`, его операционный
+// ребёнок называет родителя в СВОЁМ имени — `NN_epicMM_<фаза>_<имя>.md`. Проверка directory-level
+// (не по файлу): у каждого ребёнка обязан существовать родитель MM, и родитель обязан быть
+// эпиком. Обратную сторону («этот план — на самом деле эпик, а назван плоско») машина решить не
+// может — по имени эпик не опознать, и выдумывать признак запрещено (правило трёх дверей).
+// Скоуп задаёт САМ ПАТТЕРН: конвенция родилась в 2.2, старые планы её не используют и потому
+// молчат — отдельный порог по номеру был бы константой без работы. DONE-тег терпится с обеих
+// сторон пары (`NN_DONE_epicMM_…` ↔ `MM_DONE_EPIC_…`).
+const PLAN_CHILD_RE = /^(\d+)_(?:DONE_)?epic(\d+)_/;
+const planParentRe = (mm) => new RegExp('^' + mm + '_(?:DONE_)?EPIC_');
+function lintPlanNaming(root, findings) {
+  const files = listMd(join(root, 'plans'));
+  let children = 0;
+  for (const f of files) {
+    const m = f.match(PLAN_CHILD_RE);
+    if (!m) continue;
+    children++;
+    const mm = m[2];
+    const parent = files.find((p) => p.startsWith(mm + '_'));
+    if (!parent) {
+      findings.push([`plans/${f}`, `имя ссылается на эпик ${mm}, но плана с номером ${mm} нет (конвенция T2)`]);
+    } else if (!planParentRe(mm).test(parent)) {
+      findings.push([`plans/${f}`, `родитель ${mm} — «${parent}», это не \`${mm}_EPIC_*\` (конвенция T2)`]);
+    }
+  }
+  return children;
+}
+
 function lintInterview(relPath, lines, findings) {
   const head = lines.slice(0, HEAD_LINES).join('\n');
   if (!/^# /.test(lines[0] || '')) findings.push([relPath, 'нет H1 первой строкой']);
@@ -212,11 +240,14 @@ function run(root, { all = false } = {}) {
     if (!existsSync(p)) continue;
     scanned++; lintRoot(f, readLines(p), findings);
   }
-  return { findings, scanned };
+  // Конвенция имён plans/ — directory-level, вне пофайлового обхода и вне фильтра DONE.
+  const planChildren = lintPlanNaming(root, findings);
+  return { findings, scanned, planChildren };
 }
 
-function report({ findings, scanned }) {
+function report({ findings, scanned, planChildren }) {
   for (const [file, msg] of findings) console.log(`  ${file} — ${msg}`);
+  console.log(`plan-naming (T2): детей эпиков ${planChildren ?? 0} — у каждого проверен родитель \`MM_EPIC_*\``);
   console.log(`doc-header-lint: scanned ${scanned}, findings ${findings.length}${findings.length
     ? ' — консультативно: поправь или оправдай на месте, старт работы не блокируется'
     : ' — all headers green'}`);
@@ -268,7 +299,19 @@ function selftest() {
   writeFileSync(join(fx, 'ideas', '23_with_vector.md'),
     '# Идея 23 — нормо-эпохная с вектором (EN-форма шаблона)\n\n' + CLEAN_HEADER +
     '\n## Goal vector — the pain it solves + how we check\n\nPain: owners re-type answers after a restart. Check: the draft survives a page restart.\n');
-  const expected = 12; // 4 + 1 + 2 + 1 + 1 + 2 + 1
+  // Конвенция имён plans/ (T2). Блок требований у нормо-эпохных фикстур чист, чтобы находки
+  // приходили ТОЛЬКО от имени файла — иначе страж зеленел бы за чужой счёт.
+  const planBody = (title) => `# ${title}\n\n` + CLEAN_HEADER +
+    '\n## Вектор цели\n\nДостичь X, наблюдаемого прогоном Y (Achieve).\n' +
+    '\n## Критерии приёмки (готово, когда)\n\n1. Сборка проходит за ≤ 60 с на референс-машине CI.\n';
+  writeFileSync(join(fx, 'plans', '29_EPIC_clean.md'), planBody('Эпик 29 — чистый родитель'));
+  writeFileSync(join(fx, 'plans', '35_epic29_phase1_ok.md'), planBody('План 35 — чистый ребёнок эпика 29'));
+  //   ожидаем: 0 — родитель 29 существует и назван `29_EPIC_*`
+  writeFileSync(join(fx, 'plans', '36_epic27_bad_parent.md'), planBody('План 36 — родитель есть, но не эпик'));
+  //   ожидаем: 1 — план 27 в фикстуре назван `27_with_block.md`, а не `27_EPIC_*`
+  writeFileSync(join(fx, 'plans', '37_epic99_orphan.md'), planBody('План 37 — родителя нет вовсе'));
+  //   ожидаем: 1 — плана 99 в фикстуре не существует
+  const expected = 14; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (конвенция имён plans/)
   const res = run(fx, { all: false });
   console.log('— селфтест, сломанная фикстура —');
   report(res);

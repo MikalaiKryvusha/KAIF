@@ -1431,10 +1431,10 @@
       {
         "signature": "# `plans/` — detailed step plans",
         "class": "static",
-        "sha256": "ad94d4669be5732a329fc816d299a70d21f0d6e68713e24a43dfed25927d937d",
+        "sha256": "e8fcd68124a3148e2ac0733b4a848913e6295e10b0da9c26f7367c247cd20514",
         "lines": [
           1,
-          17
+          27
         ]
       }
     ],
@@ -3418,30 +3418,30 @@
         ]
       },
       {
-        "signature": "## Rung 2 — the meta-plan (one document in `plans/`)",
+        "signature": "## Rung 2 — the meta-plan (one `plans/NN_EPIC_<name>.md`)",
         "class": "static",
-        "sha256": "3ee39f7f5584a52bbfcf623e14723ac11a4ade382e9ad79ff54930bafd6dbdc9",
+        "sha256": "89073c4d3f224e0968a635e83b2e83111c5ce96b1e14155bf577d1430437122e",
         "lines": [
           37,
-          49
+          51
         ]
       },
       {
         "signature": "## Rung 3 — operational plan for the NEXT phase only",
         "class": "static",
-        "sha256": "2175593a7d278179a648acb26372bdbaacb4c16e096d326ba739205ad6d3c7cb",
+        "sha256": "ae82dadefed90c151484a10fbb953506ab4dd49a69097916ceceaa5721f00f08",
         "lines": [
-          50,
-          57
+          52,
+          63
         ]
       },
       {
         "signature": "## Rung 4 — trace and execute",
         "class": "static",
-        "sha256": "0981b11c8c9fe2ebe9b12817f341505c57e88a1a0bf96264cc7fd36fb658c609",
+        "sha256": "02eb6cda82ca615ba6d5a32df75f1861190d7f8a430cbcd66926f4f4571de004",
         "lines": [
-          58,
-          65
+          64,
+          73
         ]
       },
       {
@@ -3449,8 +3449,8 @@
         "class": "static",
         "sha256": "dea38a30df721585fadd74966c51fae422ffc109ce9960be610597949b599b05",
         "lines": [
-          66,
-          72
+          74,
+          80
         ]
       }
     ],
@@ -3494,10 +3494,10 @@
       {
         "signature": "## Step 2 — write the plan",
         "class": "static",
-        "sha256": "bd5acf076c59a855bbd99f4711703f3712cd353d636e3da05577a864172da08d",
+        "sha256": "7f80775ca07454090091c05c0155cdc46a95b65c745a5f838bfa2dcbeb575208",
         "lines": [
           34,
-          56
+          62
         ]
       },
       {
@@ -3505,8 +3505,8 @@
         "class": "static",
         "sha256": "086d4fe0dbf3db280fc6682a5f8d56ad515fa4c1195b143ab6eb8d1f6895d2e0",
         "lines": [
-          57,
-          63
+          63,
+          69
         ]
       },
       {
@@ -3514,8 +3514,8 @@
         "class": "static",
         "sha256": "41843d36a144da89b42869b748b963360472b4176c05069451a5765f3eabbda2",
         "lines": [
-          64,
-          71
+          70,
+          77
         ]
       }
     ],
@@ -4879,10 +4879,10 @@
       {
         "signature": "# `plans/` — خطط مفصّلة خطوة بخطوة",
         "class": "static",
-        "sha256": "2dc565bb1b21e668014b93ea1f7ec35c9602d2d681ce19378ef41c73aeebf9e6",
+        "sha256": "782eb9c8d85f10db1fdadcf32862fafa2014bba30591f690ad28e63860ac770d",
         "lines": [
           1,
-          16
+          25
         ]
       }
     ],
@@ -5066,10 +5066,10 @@
       {
         "signature": "# `plans/` — detaillierte Schritt-für-Schritt-Pläne",
         "class": "static",
-        "sha256": "14c1d7e9d5481a67c153307ff957e9c0bcd63ff84339ab761f4a52d206954e3a",
+        "sha256": "3b4070f7b89b0815f155691b03ca000ebcd715985e59dff37973b39d7ff29a96",
         "lines": [
           1,
-          19
+          30
         ]
       }
     ],
@@ -5253,10 +5253,10 @@
       {
         "signature": "# `plans/` — planes detallados paso a paso",
         "class": "static",
-        "sha256": "4be0eab0e52e40cc6258ac886a8b13baa7d9fcdb0bb8176e045ed5bbd069f8e4",
+        "sha256": "35ef2868d5d4fd7db08b4f10e3a003a74cd0d6a1d0759f83df81e69f203cb41c",
         "lines": [
           1,
-          19
+          29
         ]
       }
     ],
@@ -5440,10 +5440,10 @@
       {
         "signature": "# `plans/` — plans détaillés pas à pas",
         "class": "static",
-        "sha256": "8f20a2aa6240da15c4563f88bbe094e7ff91268a5a2fbace62b563a376be942f",
+        "sha256": "86648a73c21178648ccb871971a13013b0cf332626c5dc0385587258c6a57681",
         "lines": [
           1,
-          19
+          30
         ]
       }
     ],
@@ -5627,10 +5627,10 @@
       {
         "signature": "# `plans/` — विस्तृत चरण-दर-चरण योजनाएँ",
         "class": "static",
-        "sha256": "1ce83331468dd2e2d6ad08a78c744bc459f64c016532fc7cc8381599f7651192",
+        "sha256": "bad0b79b503bc47ac91b04bcd0e4773597442b97a76764f6da31669d00173c0f",
         "lines": [
           1,
-          18
+          28
         ]
       }
     ],
@@ -5814,10 +5814,10 @@
       {
         "signature": "# `plans/` — 詳細なステップバイステップの計画",
         "class": "static",
-        "sha256": "b5dd4e6c16ca2fda964a0c9c8cdd114e5138ea7edcd24f35f13e5b985c3dcb77",
+        "sha256": "fa249616bb97b3e5b0f0e33b2818b37e95a711b6dda60e0bb642486bc357d23f",
         "lines": [
           1,
-          18
+          27
         ]
       }
     ],
@@ -6001,10 +6001,10 @@
       {
         "signature": "# `plans/` — planos detalhados passo a passo",
         "class": "static",
-        "sha256": "eeab58ab192309c7607d1f50134263e2f46578301c135ca3d57834d70f5b3f5a",
+        "sha256": "c71964abf7ac20bcd50604355eaeebf2a44dface33535181042ef191cbd5ab5c",
         "lines": [
           1,
-          19
+          29
         ]
       }
     ],
@@ -6188,10 +6188,10 @@
       {
         "signature": "# `plans/` — детальные пошаговые планы",
         "class": "static",
-        "sha256": "1c9d959c30dd114b60b0f9fa31af0297ee201fc7e3b389b0dfcd304a2dd26847",
+        "sha256": "3762a91299483bab753477a78c3a1b06858a15ad59a416195dd33d4157b33093",
         "lines": [
           1,
-          16
+          26
         ]
       }
     ],
@@ -6375,10 +6375,10 @@
       {
         "signature": "# `plans/` —— 详细的分步计划",
         "class": "static",
-        "sha256": "e3c393acc38a3fc1ab0c6fe0d6255b2e1e5b3ccc1f4da0773467d5f590b2b70c",
+        "sha256": "9a92a5d96951cc34c252157fd10714f1ad565fafeaf7327c6e1329588ebae8fa",
         "lines": [
           1,
-          15
+          23
         ]
       }
     ],

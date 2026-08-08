@@ -2440,6 +2440,16 @@ change as the work teaches. Right after the H1 comes the lintable header meta �
 **Parent:** · **Status:** (with milestones) · **Outbound:** (`AGENT_GUIDE.md` → Document header
 meta). Number files (`NN_<name>.md`). A finished, verified plan gets the `DONE` tag in its filename (`git mv NN_x.md
 NN_DONE_x.md`) plus a status section. Reference material (not a closable task) is not DONE-tagged.
+
+**Naming — an epic is visible in the backlog by its filename.** Heavy, composite, long work is
+planned as an **epic** (`/plan-epic`), and its file carries the marker: **`NN_EPIC_<name>.md`**. The
+epic file holds the phase-by-phase architecture of the roadmap — *and no operational detail*. The
+detail lives in its **children**: one operational plan per phase (R&D, testing, implementation,
+acceptance), and every child names its parent in its own filename —
+**`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's number. Only the nearest phase is
+detailed; the plan for phase N+1 is written when phase N closes. Work that never needed an epic
+stays a **standalone** plan: `NN_<name>.md`. The convention runs forward only — do not rename older
+plans, since their numbers are already quoted across the history.
 ``````
 
 
@@ -5960,8 +5970,10 @@ Close the doc with: findings → implications for THIS epic → open forks for t
 source material is large, extraction may be delegated — but only with verbatim-quote schemas and a
 mechanical quote check (a finding is not a finding until verified).
 
-## Rung 2 — the meta-plan (one document in `plans/`)
+## Rung 2 — the meta-plan (one `plans/NN_EPIC_<name>.md`)
 
+- **Write it into a file named `NN_EPIC_<name>.md`** — the marker is what makes an epic visible in
+  the backlog by filename alone, before anyone opens it (`plans/README.md` → Naming).
 - The meta-plan OPENS with the epic's goal vector — *what pain we solve and where we want to
   be* — and the epic's acceptance criteria (observable, countable where possible), written by
   `REQUIREMENTS_FRAMEWORK.md`; vector and criteria may be modified as phases teach — changing
@@ -5981,10 +5993,16 @@ inherits the opening block — the phase's own goal vector + acceptance criteria
 (`REQUIREMENTS_FRAMEWORK.md`). Later phases stay as skeletons in the meta-plan. **The operational plan for phase N+1 is written when phase N closes** —
 with everything phase N taught folded in.
 
+The child's file is named **`NN_epicMM_<phase>_<name>.md`**, where `MM` is the parent epic's
+number: a child of an epic names its parent in its own filename, so the family is readable from a
+directory listing without opening a single document. (`/plan-task` writes these children.)
+
 ## Rung 4 — trace and execute
 
 - Every operational step cites its meta-plan anchor line (the citing rule, checklist step 8);
-  a step you cannot anchor is scope drift caught before the diff.
+  a step you cannot anchor is scope drift caught before the diff. Filename and quote carry the
+  trace together: the child's name says WHICH epic it serves, the quoted anchor says WHICH line of
+  it this step executes.
 - Execute each phase by the fable loop; a `/fable-judge` pass closes a phase before the next
   one's operational plan is written.
 - Tick the meta-plan as phases close; on epic close, fill "Decisions made without the owner".
@@ -6057,6 +6075,12 @@ changing them is an edit, not a failure.
 
 Placement: a small task's plan lives as a **section inside its idea/bug document**; a larger one
 gets its own `plans/NN_<name>.md`. Either way the plan is committed before the work starts.
+
+**Planning a PHASE of an epic?** Then this plan is that epic's child, and it declares its parent
+twice over: in its **filename** — `NN_epicMM_<phase>_<name>.md`, `MM` being the parent epic's
+number (`plans/README.md` → Naming) — and in its **steps**, each quoting the meta-plan's anchor
+line it executes. The name links the family; the quote proves the step is in scope. A step you
+cannot anchor in the parent is scope drift, caught before the diff.
 
 ## Step 3 — clearance, then go
 

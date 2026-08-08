@@ -16,3 +16,13 @@ cabeçalho meta lintável — **Criado:** · **Pai:** · **Estado:** (com marcos
 arquivos (`NN_<nome>.md`). Um plano terminado e verificado recebe a tag `DONE` no nome
 (`git mv NN_x.md NN_DONE_x.md`) mais uma seção de status. Material de referência (não uma tarefa fechável)
 não recebe a tag DONE.
+
+**Nomenclatura — um épico aparece no backlog pelo nome do arquivo.** Trabalho pesado, composto e
+longo é planejado como um **épico** (`/plan-epic`), e seu arquivo carrega a marca:
+**`NN_EPIC_<nome>.md`**. O arquivo do épico contém a arquitetura por fases do roteiro — *e nenhum
+detalhe operacional*. O detalhe vive nos seus **filhos**: um plano operacional por fase (P&D,
+testes, implementação, aceitação), e cada filho nomeia o pai no próprio nome de arquivo —
+**`NN_epicMM_<fase>_<nome>.md`**, onde `MM` é o número do épico pai. Somente a fase mais próxima é
+detalhada; o plano da fase N+1 é escrito no fechamento da fase N. O trabalho que nunca precisou de
+um épico continua um plano **autônomo**: `NN_<nome>.md`. A convenção vale para frente — não renomeie
+planos antigos: seus números já estão citados por toda a história.
