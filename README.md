@@ -42,7 +42,7 @@ and in section 8.1.
 > and those projects being under the observation of KAIF. Every cycle closes — the metaphorical ones
 > and the technical ones alike.
 >
-> — *Mikalai Kryvusha, on the symbolism of the version*
+> — *Mikalai Kryvusha on KAIF 2.2*
 
 <a id="excellent-en"></a>
 
@@ -594,7 +594,7 @@ project. Thank you, and pleasant work!
 > то, что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им
 > пользуются, — под наблюдением KAIF. Все циклы — и метафорические, и технические — замыкаются.
 >
-> — *Николай Кривуша, о символике версии*
+> — *Николай Кривуша о версии KAIF 2.2*
 
 <a id="excellent-ru"></a>
 
