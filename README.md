@@ -32,15 +32,15 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 «Yolden KAIF» — an ouroboros with an eye at its centre" width="560">
+  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF — an ouroboros with an eye at its centre" width="560">
 </p>
 
-<p align="center"><strong>Version 2.2 — «Yolden KAIF»</strong> · 2026-08-08</p>
+<p align="center"><strong>Version 2.2 — Yolden KAIF</strong> · 2026-08-08</p>
 
 > A very large-scale version, the one that endows KAIF with the power of an intelligent system that
 > develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for
-> completeness; the eye stands for KAIF now being under the observation of the projects that use it —
-> and those projects being under the observation of KAIF. Every cycle closes, the metaphorical ones
+> completeness. The eye stands for KAIF now being under the observation of the projects that use it —
+> and those projects being under the observation of KAIF. Every cycle closes — the metaphorical ones
 > and the technical ones alike.
 >
 > — *Mikalai Kryvusha, on the symbolism of the version*
@@ -573,15 +573,15 @@ project. Thank you, and pleasant work!
 [релизах](https://github.com/MikalaiKryvusha/KAIF/releases) и в разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 «Yolden KAIF» — уроборос с глазом в центре" width="560">
+  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.2 — «Yolden KAIF»</strong> · 2026-08-08</p>
+<p align="center"><strong>Версия 2.2 — Yolden KAIF</strong> · 2026-08-08</p>
 
-> Очень масштабная версия, наделяющая KAIF силой самостоятельно развивающейся по циклу обратной
-> связи умной системы. Уроборос символизирует замыкание цикла и совершенство, глаз символизирует то,
-> что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им
-> пользуются, — под наблюдением KAIF. Все и метафорические, и технические циклы замыкаются.
+> Очень масштабная версия, наделяющая KAIF силой умной системы, самостоятельно развивающейся по
+> циклу обратной связи. Уроборос символизирует замыкание цикла и совершенство. Глаз символизирует
+> то, что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им
+> пользуются, — под наблюдением KAIF. Все циклы — и метафорические, и технические — замыкаются.
 >
 > — *Николай Кривуша, о символике версии*
 
