@@ -50,6 +50,9 @@
       "fable patches (vendored skills): /fable-method Step 5 gained the CRAFT SLOTS (TWINS-MECH mechanism-not-string grep, the removal table for moved logic, AFTER-WORK, BOTH-WAYS, the deleted-text sweep, craft questions by diff type); /fable-judge gained the hunts identity-without-an-author, timer-fed heartbeat, mutation addressivity (a guard proven by mutation names its addressees BEFORE the run); spheres gained Craft recipes + Owner's voice sections + the \"Voice without a corpus\" fraud row",
       "Update machinery hardened by the 2.0 field reports: translated deployments (\"i18n\": \"translated\") merge correctly, the first-update prediction is honest, CRLF-resaved cores unpack, a missing owner-seeded doc re-seeds on update, the stale-claims scan skips chronicles; the sandbox polygon grew suite s07",
       "Release codename for this version: KAIF 2.1 — Strong KAIF"
+    ],
+    "2.2": [
+      "The owner's voice portrait now has a CANONICAL name: AUTHOR_STYLOMETRY.md in the project root — an OPTIONAL canon document (it exists only where a portrait was actually taken; a deployment without one never reddens `check`). The skeleton still ships to .kaif/_owner-voice-template.md and is COPIED to that name, never filled in place. The skeleton gained a corpus-registry module, an append-only PORTRAIT JOURNAL (date+time · what changed · source · who asked; supersede-style, never edited backdated) and an anchored-module rule, so re-synthesising one module leaves its neighbours untouched; feeding a NEW owner source is the standard /owner-voice procedure — one more analyst pass plus a re-synthesis of the affected modules and a journal row, never a restart. MIGRATION — agent work, not machinery: if your project already keeps a portrait under a name of its own, rename that FILE with your VCS rename (so the history follows), re-point every reference to it (grep the whole tree, scripts and pipeline prompts included) and pull a corpus registry that lives OUTSIDE the portrait into the registry module; the portrait's CONTENT is not touched and nothing is re-synthesized. KAIF never renames it for you — the portrait is an owner-class artifact, and only a template-sha match authorizes the machinery to replace a file. No portrait taken? Nothing to do"
     ]
   },
   "deprecations": [],
@@ -138,8 +141,9 @@ relies entirely on this document to get to work.
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
 19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
-    copy) → open the owner's voice portrait if one is taken (/owner-voice) and run its checklist before
-    handover; no portrait after a second style rejection → propose taking one
+    copy) → open the owner's voice portrait `AUTHOR_STYLOMETRY.md` when the project has one
+    (/owner-voice) and run its checklist before handover; no portrait after a second style
+    rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -159,7 +163,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
-| Writing into the owner's artifact (text the human signs or reads as their own) | the owner's voice portrait, if one is taken (`/owner-voice`) · the artifact's styleguide |
+| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`) · the artifact's styleguide |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -334,7 +338,8 @@ observation (a session that "remembers" a domain invents it):
   A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
   but it cannot argue with a row.
 
-Adjacent, but NOT a fourth type: the **owner's voice portrait** (`/owner-voice`). It replaces the same
+Adjacent, but NOT a fourth type: the **owner's voice portrait** — `AUTHOR_STYLOMETRY.md`, taken by
+`/owner-voice`. It replaces the same
 kind of invention with observation — the owner's own texts instead of a session "remembering" their
 style — but it is a CANON document the owner accepts, and it is routed by task type ("writing into the
 owner's artifact"), not by external truth.
@@ -2057,6 +2062,12 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `KAIF_FRAMEWORK.md` | "KAIF, deployed here": the deployment record page. | Agent, after injection. |
 | `KAIF_REFERENCE.md` (this document, at `.kaif/`) | The complete framework reference. | Deployed verbatim. |
 
+One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR_STYLOMETRY.md`** in
+the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
+own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
+as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
+history is kept INSIDE the file, append-only (§9 of the skeleton).
+
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
 research notes and reports are living records and are never tagged.
@@ -2086,7 +2097,8 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
 - **Owner contour (2.1):** `owner-voice` (a stylometric portrait of the owner's written voice from
   their own texts; portrait and rewrite modes, the skeleton ships as
-  `.kaif/_owner-voice-template.md`) · `owner-reviews` (the optional review contour: interviews and
+  `.kaif/_owner-voice-template.md`, and the filled portrait lives at the project root as the
+  optional `AUTHOR_STYLOMETRY.md`) · `owner-reviews` (the optional review contour: interviews and
   outbound drafts as local HTML pages, decisions recorded with `by`/`at`, sends gated fail-closed;
   the hard place-of-questions rule itself lives in AGENT_GUIDE).
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
@@ -5233,7 +5245,7 @@ server that outlives the silence threshold → red.
 ``````md
 ---
 name: owner-voice
-description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md.
+description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
 ---
 
 # /owner-voice — the owner's voice
@@ -5242,8 +5254,20 @@ A styleguide is a set of bans and structure demands: it answers "what not to wri
 restore a voice — a whole field epic went through a full styleguide pipeline and the owner still
 said "this is not my language". The cure is a different instrument class: a POSITIVE portrait
 ("a stylistic LoRA") taken from the owner's own texts, where every rule is proven by their quote.
-The portrait is a CANON document: the agent writes it, the owner accepts it. The methodology is
-the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freestyle.
+The portrait is a CANON document with a canonical name — **`AUTHOR_STYLOMETRY.md`** in the project
+root: the agent writes it, the owner accepts it, and every later agent finds it without asking. It is
+OPTIONAL — no portrait taken, no file, and no check reddens for its absence. The methodology is the
+shipped skeleton `.kaif/_owner-voice-template.md`: **COPY it to `AUTHOR_STYLOMETRY.md` and fill the
+copy**, never freestyle and never fill the skeleton in place — the blank and the portrait are two
+different files.
+
+**Why a portrait at all — the owner's own "soup" metaphor:** live human speech is a soup —
+nourishing solids (meaning, connotation) generously wrapped in warm water, the optional "sugar" of
+speech that makes it soft to swallow. An LLM is strongest exactly at MEANING, so its native text is
+the strained solids alone: correct, densely packed — and no longer a soup but a porridge one can
+choke on. A human proofreader feels that strain in every sentence, and the strain is what makes AI
+text obvious. The portrait pours the OWNER's own water back — not random water, but his way of
+thinking and speaking.
 
 ## When to invoke
 
@@ -5280,6 +5304,15 @@ the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freesty
 6. **Upkeep:** the portrait is alive and versioned, never DONE. Every owner edit at review is
    input: a rejected wording becomes an anti-portrait row; a rule rejected twice is deleted, not
    defended. Ripened machine heuristics graduate into a guard.
+   **Feeding — the standing procedure, two entrances:** a NEW owner source, or the owner's "this is
+   not my language" against a concrete place. Both run by the late-additions rule of step 1 above —
+   it is stated there once and not restated here: a source is first written as a ROW into the corpus
+   registry (with the owner's verbatim restriction) and then gets its analyst pass; a remark starts with an
+   anti-portrait pass on the rejected place. Re-synthesis touches ONLY the modules that pass hit —
+   a portrait is edited module by module, never regenerated, and a new genre is a new REGISTER
+   inside the file, never a second document. Every feeding closes with a row in the portrait journal
+   (§9): append-only, an older row superseded and never rewritten. A corpus from a genre the
+   portrait has not covered is honest new ground — say so aloud in the new register.
 
 ## Mode `rewrite` — re-voicing an artifact
 
@@ -7798,10 +7831,18 @@ try {
 process.exit(0);
 ``````
 
-> **FILE: `.kaif/_owner-voice-template.md`** — the owner-voice portrait skeleton — optional; /owner-voice portrait mode fills it
+> **FILE: `.kaif/_owner-voice-template.md`** — the owner-voice portrait skeleton — optional; /owner-voice copies it to AUTHOR_STYLOMETRY.md and fills the copy
 
 ``````md
 # The Owner's Voice Portrait — <OWNER> ("the stylistic LoRA" of <PROJECT_NAME>)
+
+> **Canonical file: `AUTHOR_STYLOMETRY.md`, in the project root** — the DEFAULT name for a KAIF
+> deployment, so that every reference (router, checklist, pipeline prompt) points at ONE string and
+> any later agent finds the portrait without asking. What you are reading is the empty SKELETON
+> shipped to `.kaif/_owner-voice-template.md`: COPY it to the canonical name and fill the copy —
+> never fill the skeleton in place. The portrait is OPTIONAL: no portrait taken, no file, and
+> `check` never reddens for its absence. A deployment that keeps a different name RECORDS that name
+> in `KAIF_FRAMEWORK.md` — the machinery never renames an owner-class file.
 
 > **Status: a BINDING instruction** for any agent writing <the owner's target artifact>. It acts
 > together with the styleguide (if one exists): STRUCTURE lives in the styleguide, LANGUAGE lives
@@ -7810,6 +7851,17 @@ process.exit(0);
 > Written in the LANGUAGE OF THE ARTIFACT; a bilingual owner gets one portrait per language —
 > rules never transfer between languages without their own quotes (features are language-bound).
 >
+> Living document — versioned, never DONE-tagged. A rule the owner rejects twice in practice is
+> DELETED, not defended — and the deletion is a row in the **portrait journal** (§9): the history of
+> this document is never rewritten in place.
+
+## Corpus registry
+
+The registry lives HERE, inside the portrait — never in a foreign document: a registry kept
+elsewhere is orphaned the moment its host is renamed or closed (field: a portrait pointing at a
+registry inside another epic's closed idea file). Rows are APPENDED, never rewritten — a source that
+lost weight is marked, not deleted — and a new row is written together with its journal entry (§9).
+
 > **Corpus registry** (filled by `/owner-voice` portrait mode, via `/interview`):
 > | source path | what it is | weight | what we take from it (the owner's own words, verbatim) | confirmed by owner |
 > |---|---|---|---|---|
@@ -7820,9 +7872,6 @@ process.exit(0);
 > one in the target artifact's genre. Less corpus → this document is DRAFT OBSERVATIONS, never
 > cited as canon, and rewrite mode does not start. No historical texts → the "innate" mark is not
 > used at all (there is no separator), and the portrait says so aloud.
->
-> Living document — versioned, never DONE-tagged. A rule the owner rejects twice in practice is
-> DELETED, not defended.
 
 ## 1. How to read this document
 
@@ -7830,6 +7879,15 @@ Five points, filled: binding force · the work boundary (rewrite only inside pro
 register choice (which register applies to which artifact) · the self-check checklist before any
 handover · calibration by the before/after pairs (§6) — the hand is calibrated on pairs, not on
 descriptions.
+
+**Modules and addresses.** Every section is a MODULE addressed by its full heading line — the
+signature anchor the framework already uses for its templates: nothing is added to the document, and
+line numbers are never cited. Hence: one rule = one `###` heading carrying a STABLE ID (`R7`, `M12`);
+headings stay unique inside the file; a second or third register keeps its own anti-portrait, its own
+before/after pairs and its own checklist layer as its OWN `###` modules in the same series; an ID is
+never renumbered and a retired ID is never reused — the rules cross-reference each other by ID, so
+renumbering is exactly what makes one edit reach every other module. A module is edited ALONE, and
+the file GROWS by adding modules (a new register, a genre profile), never by rewriting its neighbours.
 
 ## 2. The portrait — register <PRIMARY>
 
@@ -7890,6 +7948,24 @@ actually moves a model — descriptions alone do not.
 each names its legal exceptions. For inflected languages the pattern covers word forms, or the
 grep stays silent. These graduate into a project guard once calibrated on the live artifact
 (warning mode first; noise above signal = no guard).
+
+## 9. Portrait journal — how this document changed (append-only)
+
+The portrait lives for years and keeps being fed; without a journal only the VCS remembers why a rule
+reads the way it does. Every change lands here as a NEW row, newest on top — a recorded row is never
+edited to say something else, and a correction is a NEW row that references and supersedes the old
+one (the same chronicle discipline as `PROJECT_HISTORY.md` — do not restate it here). Nothing to
+record IS a record: name a quiet period aloud.
+
+| when | what changed | source | who asked |
+|---|---|---|---|
+| `<YYYY-MM-DD HH:MM ±HH:MM>` | `<the heading anchors touched — "§2 R7 added · §5 M12 superseded by M18">` | `<the corpus source fed in, or the owner's remark, quoted>` | `<owner (verbatim) / agent / blind test>` |
+
+One row per: a corpus source fed in (its registry row is written in the same minute) · a rule added,
+narrowed or DELETED (a deleted rule's ID is retired, never reused) · an owner remark that re-voiced a
+place · a blind-test round and its verdict. A stamp is a MOMENT — date AND time in the owner's local
+clock (`AGENT_GUIDE.md` → "A stamp carries the DATE AND THE TIME"); an unlogged minute is an honest
+`≈ …`, never an invented one.
 
 ## Appendix: the hierarchy when in doubt
 

@@ -1,6 +1,6 @@
 ---
 name: owner-voice
-description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md.
+description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
 ---
 
 # /owner-voice — the owner's voice
@@ -9,8 +9,20 @@ A styleguide is a set of bans and structure demands: it answers "what not to wri
 restore a voice — a whole field epic went through a full styleguide pipeline and the owner still
 said "this is not my language". The cure is a different instrument class: a POSITIVE portrait
 ("a stylistic LoRA") taken from the owner's own texts, where every rule is proven by their quote.
-The portrait is a CANON document: the agent writes it, the owner accepts it. The methodology is
-the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freestyle.
+The portrait is a CANON document with a canonical name — **`AUTHOR_STYLOMETRY.md`** in the project
+root: the agent writes it, the owner accepts it, and every later agent finds it without asking. It is
+OPTIONAL — no portrait taken, no file, and no check reddens for its absence. The methodology is the
+shipped skeleton `.kaif/_owner-voice-template.md`: **COPY it to `AUTHOR_STYLOMETRY.md` and fill the
+copy**, never freestyle and never fill the skeleton in place — the blank and the portrait are two
+different files.
+
+**Why a portrait at all — the owner's own "soup" metaphor:** live human speech is a soup —
+nourishing solids (meaning, connotation) generously wrapped in warm water, the optional "sugar" of
+speech that makes it soft to swallow. An LLM is strongest exactly at MEANING, so its native text is
+the strained solids alone: correct, densely packed — and no longer a soup but a porridge one can
+choke on. A human proofreader feels that strain in every sentence, and the strain is what makes AI
+text obvious. The portrait pours the OWNER's own water back — not random water, but his way of
+thinking and speaking.
 
 ## When to invoke
 
@@ -47,6 +59,15 @@ the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freesty
 6. **Upkeep:** the portrait is alive and versioned, never DONE. Every owner edit at review is
    input: a rejected wording becomes an anti-portrait row; a rule rejected twice is deleted, not
    defended. Ripened machine heuristics graduate into a guard.
+   **Feeding — the standing procedure, two entrances:** a NEW owner source, or the owner's "this is
+   not my language" against a concrete place. Both run by the late-additions rule of step 1 above —
+   it is stated there once and not restated here: a source is first written as a ROW into the corpus
+   registry (with the owner's verbatim restriction) and then gets its analyst pass; a remark starts with an
+   anti-portrait pass on the rejected place. Re-synthesis touches ONLY the modules that pass hit —
+   a portrait is edited module by module, never regenerated, and a new genre is a new REGISTER
+   inside the file, never a second document. Every feeding closes with a row in the portrait journal
+   (§9): append-only, an older row superseded and never rewritten. A corpus from a genre the
+   portrait has not covered is honest new ground — say so aloud in the new register.
 
 ## Mode `rewrite` — re-voicing an artifact
 

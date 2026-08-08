@@ -179,11 +179,40 @@ if (skills.includes('release')) {
       ['/plan-task', '/plan-epic']],
     ['autonomy entry point ↔ /guarded-loop (2.1 skill must stay wired)', 'framework/AGENT_GUIDE.md',
       ['/guarded-loop']],
+    // T4 (2.2, owner decision #39): the portrait's canonical filename must be reachable from EVERY
+    // surface that routes an agent to it — a nameless portrait shipped twice in the field under two
+    // different names (nikolai_stylometry.md and OWNER_VOICE.md, same owner, two deployments)
+    ['portrait canon name ↔ /owner-voice (payload)', 'framework/skills/owner-voice/SKILL.md',
+      ['AUTHOR_STYLOMETRY.md']],
+    ['portrait canon name ↔ /owner-voice (wrapper)', '.claude/skills/owner-voice/SKILL.md',
+      ['AUTHOR_STYLOMETRY.md']],
+    ['portrait canon name ↔ the shipped skeleton header', 'framework/templates/_owner-voice-template.md',
+      ['AUTHOR_STYLOMETRY.md']],
+    ['portrait canon name ↔ AGENT_GUIDE router (payload)', 'framework/AGENT_GUIDE.md',
+      ['AUTHOR_STYLOMETRY.md']],
+    ['portrait canon name ↔ AGENT_GUIDE router (wrapper)', 'AGENT_GUIDE.md',
+      ['AUTHOR_STYLOMETRY.md']],
+    ['portrait canon name ↔ KAIF_REFERENCE', 'framework/KAIF_REFERENCE.md',
+      ['AUTHOR_STYLOMETRY.md']],
+    ['portrait canon name ↔ README (both halves)', 'README.md',
+      ['AUTHOR_STYLOMETRY.md']],
   ];
   for (const [pair, file, tokens] of PAIRS) {
     let body; try { body = readT(file); } catch { errors.push(`bundle lint: ${file} unreadable (pair "${pair}")`); continue; }
     for (const t of tokens) if (!body.includes(t))
       errors.push(`bundle lint (bugs/38): pair "${pair}" broken — ${file} does not carry "${t}"`);
+  }
+  // T4, the NEGATIVE half of criterion 1 ("a grep of the old nameless description = 0"). Kept out
+  // of FORBIDDEN on purpose: that sweep walks framework/** only, while the nameless formula also
+  // lives in the wrapper. Full literal strings, not short patterns — the routers must NAME the file.
+  const NAMELESS = [
+    ['framework/AGENT_GUIDE.md', ['portrait if one is taken', 'portrait, if one is taken']],
+    ['AGENT_GUIDE.md', ['портрет голоса владельца, если он снят', 'портрет голоса владельца, если снят']],
+  ];
+  for (const [file, olds] of NAMELESS) {
+    let body; try { body = readT(file); } catch { errors.push(`T4 lint: ${file} unreadable`); continue; }
+    for (const o of olds) if (body.includes(o))
+      errors.push(`T4 (plans/34): ${file} still carries the NAMELESS portrait formula "${o}" — the router must name AUTHOR_STYLOMETRY.md`);
   }
   // The source repo's internal coordinates must not leak downstream: a backlog number or a
   // superseded path is a dangling reference in every deployed project (KLAS D10).

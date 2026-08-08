@@ -202,8 +202,9 @@ relies entirely on this document to get to work.
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
 19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
-    copy) → open the owner's voice portrait if one is taken (/owner-voice) and run its checklist before
-    handover; no portrait after a second style rejection → propose taking one
+    copy) → open the owner's voice portrait `AUTHOR_STYLOMETRY.md` when the project has one
+    (/owner-voice) and run its checklist before handover; no portrait after a second style
+    rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -223,7 +224,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
-| Writing into the owner's artifact (text the human signs or reads as their own) | the owner's voice portrait, if one is taken (`/owner-voice`) · the artifact's styleguide |
+| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`) · the artifact's styleguide |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -398,7 +399,8 @@ observation (a session that "remembers" a domain invents it):
   A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
   but it cannot argue with a row.
 
-Adjacent, but NOT a fourth type: the **owner's voice portrait** (`/owner-voice`). It replaces the same
+Adjacent, but NOT a fourth type: the **owner's voice portrait** — `AUTHOR_STYLOMETRY.md`, taken by
+`/owner-voice`. It replaces the same
 kind of invention with observation — the owner's own texts instead of a session "remembering" their
 style — but it is a CANON document the owner accepts, and it is routed by task type ("writing into the
 owner's artifact"), not by external truth.
@@ -2134,6 +2136,12 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `KAIF_FRAMEWORK.md` | "KAIF, deployed here": the deployment record page. | Agent, after injection. |
 | `KAIF_REFERENCE.md` (this document, at `.kaif/`) | The complete framework reference. | Deployed verbatim. |
 
+One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR_STYLOMETRY.md`** in
+the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
+own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
+as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
+history is kept INSIDE the file, append-only (§9 of the skeleton).
+
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
 research notes and reports are living records and are never tagged.
@@ -2163,7 +2171,8 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
 - **Owner contour (2.1):** `owner-voice` (a stylometric portrait of the owner's written voice from
   their own texts; portrait and rewrite modes, the skeleton ships as
-  `.kaif/_owner-voice-template.md`) · `owner-reviews` (the optional review contour: interviews and
+  `.kaif/_owner-voice-template.md`, and the filled portrait lives at the project root as the
+  optional `AUTHOR_STYLOMETRY.md`) · `owner-reviews` (the optional review contour: interviews and
   outbound drafts as local HTML pages, decisions recorded with `by`/`at`, sends gated fail-closed;
   the hard place-of-questions rule itself lives in AGENT_GUIDE).
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·
@@ -5878,7 +5887,7 @@ server that outlives the silence threshold → red.
 ``````md
 ---
 name: owner-voice
-description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md.
+description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (Unliminium, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
 ---
 
 # /owner-voice — the owner's voice
@@ -5887,8 +5896,20 @@ A styleguide is a set of bans and structure demands: it answers "what not to wri
 restore a voice — a whole field epic went through a full styleguide pipeline and the owner still
 said "this is not my language". The cure is a different instrument class: a POSITIVE portrait
 ("a stylistic LoRA") taken from the owner's own texts, where every rule is proven by their quote.
-The portrait is a CANON document: the agent writes it, the owner accepts it. The methodology is
-the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freestyle.
+The portrait is a CANON document with a canonical name — **`AUTHOR_STYLOMETRY.md`** in the project
+root: the agent writes it, the owner accepts it, and every later agent finds it without asking. It is
+OPTIONAL — no portrait taken, no file, and no check reddens for its absence. The methodology is the
+shipped skeleton `.kaif/_owner-voice-template.md`: **COPY it to `AUTHOR_STYLOMETRY.md` and fill the
+copy**, never freestyle and never fill the skeleton in place — the blank and the portrait are two
+different files.
+
+**Why a portrait at all — the owner's own "soup" metaphor:** live human speech is a soup —
+nourishing solids (meaning, connotation) generously wrapped in warm water, the optional "sugar" of
+speech that makes it soft to swallow. An LLM is strongest exactly at MEANING, so its native text is
+the strained solids alone: correct, densely packed — and no longer a soup but a porridge one can
+choke on. A human proofreader feels that strain in every sentence, and the strain is what makes AI
+text obvious. The portrait pours the OWNER's own water back — not random water, but his way of
+thinking and speaking.
 
 ## When to invoke
 
@@ -5925,6 +5946,15 @@ the shipped skeleton `.kaif/_owner-voice-template.md` — fill it, never freesty
 6. **Upkeep:** the portrait is alive and versioned, never DONE. Every owner edit at review is
    input: a rejected wording becomes an anti-portrait row; a rule rejected twice is deleted, not
    defended. Ripened machine heuristics graduate into a guard.
+   **Feeding — the standing procedure, two entrances:** a NEW owner source, or the owner's "this is
+   not my language" against a concrete place. Both run by the late-additions rule of step 1 above —
+   it is stated there once and not restated here: a source is first written as a ROW into the corpus
+   registry (with the owner's verbatim restriction) and then gets its analyst pass; a remark starts with an
+   anti-portrait pass on the rejected place. Re-synthesis touches ONLY the modules that pass hit —
+   a portrait is edited module by module, never regenerated, and a new genre is a new REGISTER
+   inside the file, never a second document. Every feeding closes with a row in the portrait journal
+   (§9): append-only, an older row superseded and never rewritten. A corpus from a genre the
+   portrait has not covered is honest new ground — say so aloud in the new register.
 
 ## Mode `rewrite` — re-voicing an artifact
 

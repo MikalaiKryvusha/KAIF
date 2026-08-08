@@ -8,6 +8,8 @@
 // The suites cover the FIELD PROFILE MATRIX of researches/07 §1 (eight real 1.6-update reports),
 // plus the optional tool modules of plan 20 phase 5:
 //   s01 — fresh/anonymous/legacy installs, ignore-first, honest logs   (profiles 03, 06; GH #1)
+//         + T4: портрет владельца — опциональный канон-файл (скелет едет, его удаление = MISSING;
+//           AUTHOR_STYLOMETRY.md не едет никогда и переживает update побайтно)
 //   s02 — modular update: NDim two-cycle localization, KPOT merges, i18n, splitter pin (05, 03)
 //   s03 — receipts/history, adopt-current (manual migration), diff, executing checkpoints (07, 04)
 //   s04 — anonymous mechanical bootstrap, synthetic legacy baseline, news interval (01, 02, 06, 08)

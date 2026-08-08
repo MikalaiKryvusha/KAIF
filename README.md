@@ -236,7 +236,7 @@ Table 3 — The skills
 | `/bug-research` | Deep investigation without code edits — mandatory after 3 failed blind fixes. |
 | `/propose-idea` | Propose a feature as an `ideas/` document — implemented only after the owner's approval. |
 | `/interview` | Ask the owner the fateful A/B/C/D questions — vision decisions are never guessed. |
-| `/owner-voice` | A stylometric portrait of the owner's written voice, taken from their own texts; AI text in the owner's artifacts is then written or re-voiced to sound like the owner, under machine-checkable invariants. |
+| `/owner-voice` | A stylometric portrait of the owner's written voice, taken from their own texts into the optional `AUTHOR_STYLOMETRY.md`; AI text in the owner's artifacts is then written or re-voiced to sound like the owner, under machine-checkable invariants. |
 | `/owner-reviews` | The optional review contour: interviews and outbound drafts rendered as local HTML pages, decisions recorded with author and time, sends mechanically gated by approval — fail-closed. |
 | `/fix-vision` | Capture the owner's vision-level chat messages into the docs before they evaporate. |
 | `/what-next` | Rank the next steps by value toward the vision when the owner asks "what now?". |
@@ -283,7 +283,8 @@ starts from an empty context and is productive immediately.
    owner answers right in the document. An answer given on a rendered page, in the document, or in
    chat carries equal force and is recorded with author and time.
 3. The owner's written voice is reproducible: `/owner-voice` takes a stylometric portrait from the
-   owner's own texts, and AI text in the owner's artifacts is then held to it.
+   owner's own texts into `AUTHOR_STYLOMETRY.md` (an optional canon file in the project root), and
+   AI text in the owner's artifacts is then held to it.
 
 ### 5.3. Autonomy loops
 
@@ -450,7 +451,7 @@ artifacts are never hand-edited.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. Counters in this manual (14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded
-   files; 160 bundle blocks; 680 modules) are printed by `node tools/build-framework.mjs` and are
+   files; 160 bundle blocks; 682 modules) are printed by `node tools/build-framework.mjs` and are
    current as of the 2.2 development line.
 
 ## License
@@ -700,7 +701,7 @@ origin, поэтому проверка версии, уважительные �
 | `/bug-research` | Глубокое исследование без правок кода — обязательно после 3 неудачных слепых фиксов. |
 | `/propose-idea` | Предложить фичу документом в `ideas/` — реализация только после одобрения владельца. |
 | `/interview` | Задать владельцу судьбоносные вопросы A/B/C/D — решения видения не угадываются. |
-| `/owner-voice` | Стилометрический портрет письменного голоса владельца, снятый с его же текстов; дальше ИИ-текст в артефактах владельца пишется или перепевается так, чтобы звучать как владелец, — под машинно-проверяемыми инвариантами. |
+| `/owner-voice` | Стилометрический портрет письменного голоса владельца, снятый с его же текстов в опциональный `AUTHOR_STYLOMETRY.md`; дальше ИИ-текст в артефактах владельца пишется или перепевается так, чтобы звучать как владелец, — под машинно-проверяемыми инвариантами. |
 | `/owner-reviews` | Опциональный контур согласований: интервью и исходящие черновики рендерятся локальными HTML-страницами, решения фиксируются с автором и временем, отправки механически загейчены одобрением — fail-closed. |
 | `/fix-vision` | Зафиксировать визионерские сообщения владельца из чата в документы, пока не испарились. |
 | `/what-next` | Ранжировать следующие шаги по ценности к видению, когда владелец спрашивает «что дальше?». |
@@ -747,7 +748,8 @@ origin, поэтому проверка версии, уважительные �
    документе. Ответ на отрендеренной странице, в документе или в чате обладает равной силой и
    фиксируется с автором и временем.
 3. Письменный голос владельца воспроизводим: `/owner-voice` снимает стилометрический портрет с
-   собственных текстов владельца, и ИИ-текст в артефактах владельца дальше держится по нему.
+   собственных текстов владельца в `AUTHOR_STYLOMETRY.md` (опциональный канон-файл в корне), и
+   ИИ-текст в артефактах владельца дальше держится по нему.
 
 ### 5.3. Автономные циклы
 
@@ -918,7 +920,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. Счётчики настоящего руководства (14 документов + 7 README + 35 навыков + 1 распаковщик = 57
-   встроенных файлов; 160 блоков бандла; 680 модулей) печатаются командой
+   встроенных файлов; 160 блоков бандла; 682 модуля) печатаются командой
    `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
 
 ## Лицензия

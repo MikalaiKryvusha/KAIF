@@ -89,6 +89,12 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `KAIF_FRAMEWORK.md` | "KAIF, deployed here": the deployment record page. | Agent, after injection. |
 | `KAIF_REFERENCE.md` (this document, at `.kaif/`) | The complete framework reference. | Deployed verbatim. |
 
+One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR_STYLOMETRY.md`** in
+the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
+own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
+as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
+history is kept INSIDE the file, append-only (§9 of the skeleton).
+
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
 research notes and reports are living records and are never tagged.
@@ -118,7 +124,8 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Knowledge:** `experience` · `report-bug` · `bug-research` · `propose-idea` · `interview`.
 - **Owner contour (2.1):** `owner-voice` (a stylometric portrait of the owner's written voice from
   their own texts; portrait and rewrite modes, the skeleton ships as
-  `.kaif/_owner-voice-template.md`) · `owner-reviews` (the optional review contour: interviews and
+  `.kaif/_owner-voice-template.md`, and the filled portrait lives at the project root as the
+  optional `AUTHOR_STYLOMETRY.md`) · `owner-reviews` (the optional review contour: interviews and
   outbound drafts as local HTML pages, decisions recorded with `by`/`at`, sends gated fail-closed;
   the hard place-of-questions rule itself lives in AGENT_GUIDE).
 - **Planning:** `plan-task` (one operational plan for an ordinary task; runs the heaviness test) ·

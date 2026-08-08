@@ -57,8 +57,9 @@ relies entirely on this document to get to work.
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
 19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
-    copy) → open the owner's voice portrait if one is taken (/owner-voice) and run its checklist before
-    handover; no portrait after a second style rejection → propose taking one
+    copy) → open the owner's voice portrait `AUTHOR_STYLOMETRY.md` when the project has one
+    (/owner-voice) and run its checklist before handover; no portrait after a second style
+    rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -78,7 +79,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
-| Writing into the owner's artifact (text the human signs or reads as their own) | the owner's voice portrait, if one is taken (`/owner-voice`) · the artifact's styleguide |
+| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`) · the artifact's styleguide |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -253,7 +254,8 @@ observation (a session that "remembers" a domain invents it):
   A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
   but it cannot argue with a row.
 
-Adjacent, but NOT a fourth type: the **owner's voice portrait** (`/owner-voice`). It replaces the same
+Adjacent, but NOT a fourth type: the **owner's voice portrait** — `AUTHOR_STYLOMETRY.md`, taken by
+`/owner-voice`. It replaces the same
 kind of invention with observation — the owner's own texts instead of a session "remembering" their
 style — but it is a CANON document the owner accepts, and it is routed by task type ("writing into the
 owner's artifact"), not by external truth.

@@ -237,6 +237,12 @@ const TEMPLATE_NOTES_BY_VERSION = {
     // frozen literal: a dynamic version()/codename() here would rename HISTORY on the next bump
     'Release codename for this version: KAIF 2.1 — Strong KAIF',
   ],
+  // INERT until the release bump: newsInterval prints (from, meta.version] and meta.version is 2.1,
+  // and the codename gate reads only the CURRENT version's notes (check-framework.mjs). Phase R
+  // APPENDS to this array and adds the frozen 2.2 codename line — it never recreates the key.
+  '2.2': [
+    'The owner\'s voice portrait now has a CANONICAL name: AUTHOR_STYLOMETRY.md in the project root — an OPTIONAL canon document (it exists only where a portrait was actually taken; a deployment without one never reddens `check`). The skeleton still ships to .kaif/_owner-voice-template.md and is COPIED to that name, never filled in place. The skeleton gained a corpus-registry module, an append-only PORTRAIT JOURNAL (date+time · what changed · source · who asked; supersede-style, never edited backdated) and an anchored-module rule, so re-synthesising one module leaves its neighbours untouched; feeding a NEW owner source is the standard /owner-voice procedure — one more analyst pass plus a re-synthesis of the affected modules and a journal row, never a restart. MIGRATION — agent work, not machinery: if your project already keeps a portrait under a name of its own, rename that FILE with your VCS rename (so the history follows), re-point every reference to it (grep the whole tree, scripts and pipeline prompts included) and pull a corpus registry that lives OUTSIDE the portrait into the registry module; the portrait\'s CONTENT is not touched and nothing is re-synthesized. KAIF never renames it for you — the portrait is an owner-class artifact, and only a template-sha match authorizes the machinery to replace a file. No portrait taken? Nothing to do',
+  ],
 };
 // Flat notes for the CURRENT version stay in the meta for older cores reading a newer bundle.
 const TEMPLATE_NOTES = TEMPLATE_NOTES_BY_VERSION[version()] || [];
@@ -316,7 +322,7 @@ function bundleBlocks() {
   // Dest is .kaif/ (NOT .kaif/spheres/ — it would be read as a sphere library; field report 22).
   if (existsSync(join(FW, 'templates', '_owner-voice-template.md')))
     blocks.push(embedBundle('framework/templates/_owner-voice-template.md', '.kaif/_owner-voice-template.md',
-      'the owner-voice portrait skeleton — optional; /owner-voice portrait mode fills it'));
+      'the owner-voice portrait skeleton — optional; /owner-voice copies it to AUTHOR_STYLOMETRY.md and fills the copy'));
   // language packs: owner-facing doc overrides + skill trigger aliases per language.
   // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
   // override their destination paths; others are ignored.

@@ -91,6 +91,33 @@ writeFileSync(mkPath, mk0);
 r = run(S1, 'check');
 ok(r.code === 0, 'S1 схема маркера: восстановлено — зелёный');
 
+// ── T4 (2.2): портрет владельца — ОПЦИОНАЛЬНЫЙ канон-файл AUTHOR_STYLOMETRY.md ──────────────
+// Критерий 2 плана 34: «отсутствие не краснит check — подтвердить сводом». Стережём ТРИ вещи
+// порознь: имя доезжает до поля поставкой · машинерия портрет НЕ рождает · снятый вручную
+// портрет не краснит check. Четвёртый ассерт — КОНТРАСТ: скелет ПОСТАВКИ обязателен, и его
+// пропажу check видит; без него первые три зеленели бы и на сломанной поставке.
+// [TESTED: 2026-08-08 · красный доказан мутацией назначения эмбеда скелета на AUTHOR_STYLOMETRY.md]
+const skelPath = join(S1, '.kaif', '_owner-voice-template.md');
+const skel0 = readFileSync(skelPath, 'utf8');
+ok(skel0.includes('AUTHOR_STYLOMETRY.md')
+   && readFileSync(join(S1, '.claude', 'skills', 'owner-voice', 'SKILL.md'), 'utf8').includes('AUTHOR_STYLOMETRY.md'),
+   'S1 T4: канон-имя портрета доехало до поля — и в скелете, и в навыке');
+ok(!existsSync(join(S1, 'AUTHOR_STYLOMETRY.md')),
+   'S1 T4: машинерия портрет НЕ рождает (портрет — owner-класс, его пишут владелец с агентом)');
+// портрет, снятый вручную: намеренно ДВА H1 и НИ ОДНОГО токена версии «KAIF x.y» —
+// иначе скан протухших утверждений втянет владельческий файл в задание обновления (S4)
+writeFileSync(join(S1, 'AUTHOR_STYLOMETRY.md'),
+  '# Owner voice portrait\n\n# Register CODEX\n\n### R1. A rule with its quote\n');
+r = run(S1, 'check');
+ok(r.code === 0, 'S1 T4: снятый вручную портрет не краснит check (опциональный канон-документ)', r.out.slice(-300));
+rmSync(skelPath);
+r = run(S1, 'check');
+ok(r.code !== 0 && /_owner-voice-template\.md/.test(r.out),
+   'S1 T4 КОНТРАСТ: пропажа СКЕЛЕТА поставки — красный (файл поставки обязателен, портрет — нет)', r.out.slice(-300));
+writeFileSync(skelPath, skel0);  // побайтно: иначе template-sha разойдётся и S4 объявит модуль расходящимся
+r = run(S1, 'check');
+ok(r.code === 0, 'S1 T4: скелет восстановлен побайтно — снова зелёный');
+
 // ---------------------------------------------------------------- S2: анонимный check при живом бандле (GH#1)
 console.log('\n=== S2: анонимная установка — check без флага при живом бандле ===');
 const S2 = join(ROOT, 's2'); mkdirSync(S2); seedBundle(S2);
@@ -164,6 +191,11 @@ const gi4 = readFileSync(join(S1, '.gitignore'), 'utf8');
 ok((gi4.match(/\.kaif\/install\//g) || []).length === 1, 'S4 ignore-first идемпотентен (нет дублей строк)');
 const marker4 = JSON.parse(readFileSync(join(S1, '.kaif', 'kaif.json'), 'utf8'));
 ok(marker4.version === '9.9', 'S4 версия маркера продвинута');
+// T4 (2.2): портрет — owner-класс, вне манифеста. Update не имеет права его тронуть: право
+// механической замены даёт ТОЛЬКО совпадение template-sha, а у портрета шаблона нет вовсе.
+ok(readFileSync(join(S1, 'AUTHOR_STYLOMETRY.md'), 'utf8')
+     === '# Owner voice portrait\n\n# Register CODEX\n\n### R1. A rule with its quote\n',
+   'S4 T4: портрет пережил update ПОБАЙТНО — машинерия owner-файл не переписывает и не переименовывает');
 ok(existsSync(join(S1, 'KAIF_UPDATE_TASK.md')), 'S4 update-задача написана');
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
