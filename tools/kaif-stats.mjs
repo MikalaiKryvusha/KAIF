@@ -18,10 +18,18 @@
 //     рецензируемых работ по ДРУГИМ моделям и другому железу; диапазон, а не число).
 //
 // Использование:
-//   node tools/kaif-stats.mjs                 # статистика от прошлого релиза до HEAD
+//   node tools/kaif-stats.mjs --since 2026-08-07T00:00:00+03:00   # ← ПРАВИЛЬНЫЙ способ для релиза
+//   node tools/kaif-stats.mjs                 # от прошлого релизного тега (см. предупреждение ниже)
 //   node tools/kaif-stats.mjs --from v2.0     # от другого тега
 //   node tools/kaif-stats.mjs --all           # за всю историю проекта
 //   node tools/kaif-stats.mjs --json          # машинный вывод
+//
+// ⚠️ ТЕГ ПРОШЛОГО РЕЛИЗА — НЕ НАЧАЛО РАБОТ НАД СЛЕДУЮЩИМ. Между релизом и стартом следующей
+// версии живёт полевая работа: обновления парка проектов, отчёты, разбор обратной связи. Дефолт
+// «от прошлого тега» удобен, но для витринного числа он ЗАВЫШАЕТ срок разработки — и ровно на
+// этом инструмент соврал в день рождения: он показал «8,5 суток» для 2.2, тогда как владелец
+// начал работу в 00:00 07.08.2026 и реальный срок вдвое короче. Считаешь срок релиза — спроси
+// у владельца дату старта и передай её `--since`, а не выводи из тега.
 //
 // [TESTED: 2026-08-08 · прогон по репозиторию; числа сверены с ручными командами git и wc]
 
@@ -270,8 +278,27 @@ function sessionStats(sinceISO) {
 const args = process.argv.slice(2);
 const all = args.includes('--all');
 const fromIdx = args.indexOf('--from');
-const from = all ? null : fromIdx >= 0 ? args[fromIdx + 1] : previousTag();
-const sinceISO = from ? git('show', '-s', '--format=%cI', from) : null;
+const sinceIdx = args.indexOf('--since');
+
+let from = null;
+let sinceISO = null;
+
+if (all) {
+  // вся история
+} else if (sinceIdx >= 0 && args[sinceIdx + 1]) {
+  // ДАТА СТАРТА РАБОТ, названная владельцем. Границей диффа становится РОДИТЕЛЬ первого
+  // коммита, попавшего в окно: сам первый коммит — часть работы и должен войти в замер.
+  sinceISO = args[sinceIdx + 1];
+  const firstInWindow = git('log', `--since=${sinceISO}`, '--format=%H', '--reverse').split('\n').filter(Boolean)[0];
+  if (!firstInWindow) {
+    console.error(`в окне с ${sinceISO} нет коммитов`);
+    process.exit(1);
+  }
+  from = `${firstInWindow}^`;
+} else {
+  from = fromIdx >= 0 ? args[fromIdx + 1] : previousTag();
+  sinceISO = git('show', '-s', '--format=%cI', from);
+}
 
 const repo = repoStats(from);
 const docs = docStats();
@@ -281,7 +308,12 @@ if (args.includes('--json')) {
   console.log(JSON.stringify({ from, sinceISO, repo, docs, sessions: sess }, null, 2));
 } else {
   const f = (n) => n.toLocaleString('ru-RU');
-  console.log(`ОКНО: ${from ? `после ${from} (${sinceISO})` : 'вся история проекта'} → HEAD (${repo.last})`);
+  const window = all
+    ? 'вся история проекта'
+    : sinceIdx >= 0
+      ? `с ${sinceISO} — ДАТА СТАРТА РАБОТ, названная владельцем`
+      : `после тега ${from} (${sinceISO}) — ⚠️ тег релиза ≠ начало работ над следующей версией`;
+  console.log(`ОКНО: ${window} → HEAD (${repo.last})`);
   console.log('');
   console.log('— ИЗМЕРЕНО: репозиторий —');
   console.log(`  коммитов ${f(repo.commits)} · файлов затронуто ${f(repo.files)} · строк +${f(repo.insertions)} / −${f(repo.deletions)} · создано файлов ${f(repo.created)}`);
