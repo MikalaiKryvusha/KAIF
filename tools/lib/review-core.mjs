@@ -101,6 +101,15 @@ const COUNTER_LABEL_RE = /встречн\p{L}*\s+вопрос|counter-?question/
 const COMMENT_LABEL_RE = /^\s*\*{0,2}Комментарий\s+владельца/iu; // комментарий — НЕ текст ответа (пилот 008)
 const TARGET_LABEL_RE = /^\s*\*{0,2}Адресат\s+ответа\s*:?\*{0,2}\s*(.*)$/iu;
 const OPTION_START_RE = /^\s*-\s+\*\*([A-ZА-Я])\)/u;
+// ВТОРАЯ легальная форма варианта — СТРОКА ТАБЛИЦЫ (bugs/51). Полевой факт: таблица
+// «Вариант | Что означает | Цена» — естественная запись развилки, и её выбрали ДВА независимых
+// автора подряд (интервью №012 и №013); парсер знал только список, возвращал ноль вариантов, и
+// страница молча отдавала текстовое поле вместо радиокнопок — «зелёное без содержания».
+// Признак строки-варианта, узкий по построению: ячейка-буква (одна A–Z/А–Я, опционально жирная,
+// опционально с точкой или скобкой) + хотя бы одна содержательная ячейка справа. Шапка
+// («Вариант») и разделитель (`---`) под него не подходят и отсеиваются сами.
+const OPTION_ROW_RE = /^\s*\|\s*\*{0,2}([A-ZА-Я])[.)]?\*{0,2}\s*\|(.+)$/u;
+const isOptionLine = (line) => OPTION_START_RE.test(line) || OPTION_ROW_RE.test(line);
 
 export function parseQuestions(md) {
   const lines = normalize(md).split('\n');
@@ -125,8 +134,39 @@ export function parseQuestions(md) {
   return questions;
 }
 
+// Таблица вариантов (bugs/51) разбирается ДО построчного цикла — одним решением на весь блок,
+// чтобы радиокнопки и проза карточки видели одно и то же: строки, ставшие вариантами, из прозы
+// исчезают, иначе таблица показалась бы дважды. Порог «≥2 строки-варианта в одном непрерывном
+// блоке» отсекает случайную таблицу данных, у которой первая ячейка — одна буква: развилка с
+// одним вариантом не развилка, а таблица с одной буквенной строкой — почти наверняка данные.
+const MIN_TABLE_OPTIONS = 2;
+function scanOptionTables(body) {
+  const lines = new Set();
+  const options = [];
+  let run = [];
+  const flushRun = () => {
+    const rows = run.filter((r) => r.m);
+    if (rows.length >= MIN_TABLE_OPTIONS) {
+      for (const r of run) lines.add(r.j);                    // весь блок, включая шапку и разделитель
+      for (const r of rows) {
+        const cells = r.m[2].replace(/\|\s*$/, '').split('|').map((c) => c.trim()).filter(Boolean);
+        options.push({ letter: r.m[1], lines: [], row: cells });
+      }
+    }
+    run = [];
+  };
+  for (let j = 0; j < body.length; j++) {
+    if (/^\s*\|/.test(body[j])) { run.push({ j, m: body[j].match(OPTION_ROW_RE) }); continue; }
+    flushRun();
+  }
+  flushRun();
+  return { lines, options };
+}
+
 function finishQuestion(q, docClosed) {
-  q.options = [];
+  const table = scanOptionTables(q.body);
+  q.optionTableLines = table.lines;   // читает и карточка страницы — разбор один на всех
+  q.options = [...table.options];
   q.answers = [];      // все распознанные поля ответа (текст может быть многострочным ниже метки)
   q.target = null;
   let curOpt = null;
@@ -140,6 +180,7 @@ function finishQuestion(q, docClosed) {
       q.options.push(curOpt);
       continue;
     }
+    if (q.optionTableLines.has(j)) { curOpt = null; continue; } // таблица разобрана до цикла
     if (curOpt && /^\s{2,}\S/.test(line)) { curOpt.lines.push(line); continue; }
     curOpt = null;
     const t = line.match(TARGET_LABEL_RE);
@@ -154,7 +195,7 @@ function finishQuestion(q, docClosed) {
           // ПОЛЕВОЙ БАГ пилота 008: «Комментарий владельца» ниже пустого Answer читался как
           // текст ответа — вопрос ложно закрывался, а G3 ложно кричал «статус протух».
           if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k]) ||
-              OPTION_START_RE.test(q.body[k]) || COMMENT_LABEL_RE.test(q.body[k])) break;
+              isOptionLine(q.body[k]) || COMMENT_LABEL_RE.test(q.body[k])) break;
           text = nl; break;
         }
       }
@@ -162,6 +203,16 @@ function finishQuestion(q, docClosed) {
     }
   }
   for (const o of q.options) {
+    if (o.row) {
+      // Табличная форма. БУКВА ОБЯЗАНА ОСТАТЬСЯ В ТЕКСТЕ варианта: у списочной формы она видна
+      // сама собой («- **A)** …»), а здесь жила в отдельной ячейке — и, склеив только остальные
+      // ячейки, я стирал её с экрана. Полевой отказ владельца, 2026-08-08 ≈07:00 +03:00: «как мне
+      // предлагаешь выбирать варианты, если они не именованы?» — рекомендация «вариант C» не
+      // ложится ни на одну кнопку, когда у кнопок нет имён (bugs/51, вторая итерация).
+      o.label = o.letter + ')';
+      o.text = '**' + o.letter + ')** ' + o.row.join(' — ');
+      continue;
+    }
     const full = o.lines.join('\n');
     const label = full.match(/\*\*([^*]+)\*\*/u); // закрывающие ** ищем ПОСЛЕ сборки пункта
     o.label = label ? label[1].trim() : o.letter + ')';

@@ -26,7 +26,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   normalize, bodyHash, parseQuestions, recordDecision, readDecision, checkApproval,
 } from './lib/review-core.mjs';
-import { serveContour, enqueue, readQueue, pendingNotices } from './review.mjs';
+import { serveContour, enqueue, readQueue, pendingNotices, buildPage } from './review.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ETALON_PATH = join(ROOT, 'tools', 'verify-contour.etalon.json');
@@ -36,7 +36,14 @@ const BROWSERS = [ // DEF8-порядок; пути стандартные, по
 ];
 const STEP_TIMEOUT_MS = 10000;   // C9: жёсткий срок каждого шага CDP
 const LAUNCH_TIMEOUT_MS = 15000; // C9: срок старта браузера
-const OPTION_LINE_RE = /^\s*-\s+\*\*[A-ZА-Я]\)/u; // G7: независимая примета счёта вариантов
+// G7/G11: независимая примета счёта вариантов. ОБЕ легальные формы (bugs/51) — списочная и
+// табличная. Урок дефекта: примета обязана быть независима от ПАРСЕРА, но раньше она делила с ним
+// слепое пятно (знала только список), поэтому на документах с табличными вариантами сверка давала
+// 0 == 0 и зеленела — страж против «молча съеденного варианта» съел его сам. Независимость — это
+// про ДРУГОЙ способ счёта, а не про другую строку кода с тем же допущением.
+const OPTION_LIST_LINE_RE = /^\s*-\s+\*\*[A-ZА-Я]\)/u;
+const OPTION_TABLE_LINE_RE = /^\s*\|\s*\*{0,2}[A-ZА-Я][.)]?\*{0,2}\s*\|.+$/u;
+const OPTION_LINE_RE = new RegExp(OPTION_LIST_LINE_RE.source + '|' + OPTION_TABLE_LINE_RE.source, 'u');
 
 // ── Счётчик проверок ───────────────────────────────────────────────────────────────────────
 let PASS = 0, FAIL = 0;
@@ -352,6 +359,23 @@ async function main() {
         check('строки-кандидаты == разобранные варианты (G11, молча съеденный вариант невозможен)',
           mism.length === 0, JSON.stringify(mism));
       }
+      // Проверка ГЛАЗАМИ ЧЕЛОВЕКА, а не механизма (bugs/51, вторая итерация). Счёт радиокнопок
+      // говорит, что выбор ЕСТЬ; он ничего не говорит о том, можно ли им ВОСПОЛЬЗОВАТЬСЯ.
+      // Полевой отказ: кнопки отрисовались, но табличная форма потеряла букву варианта — и
+      // рекомендация «вариант C» не ложилась ни на одну кнопку. Проверяем то, что человек ЧИТАЕТ:
+      // в подписи каждого варианта обязана стоять его буква.
+      const unnamed = [];
+      for (const file of Object.keys(liveOptionCounts())) {
+        for (const q of buildPage(ROOT, file).questions) {
+          for (const o of q.options) {
+            const plain = o.html.replace(/<[^>]+>/g, ' ');
+            if (!new RegExp('(^|[^\\p{L}])' + o.letter + '[.)]', 'u').test(plain))
+              unnamed.push(file + ':' + q.id + ':' + o.letter);
+          }
+        }
+      }
+      check('каждая радиокнопка НАЗВАНА своей буквой (подпись читаема человеком, не только счётчиком)',
+        unnamed.length === 0, 'варианты без буквы в подписи: ' + unnamed.join(', '));
     }
 
     block('10. Живой документ: реальное интервью, ноль внешних загрузок (C10-блок 10)');
@@ -598,6 +622,25 @@ function selfcheck() {
   console.log('  мутация Б (варианты только неотвеченных): ' + broken + ' против настоящих ' + real);
   check('мутация Б ДАЁТ РАСХОЖДЕНИЕ по предсказанию (проверка умеет краснеть)', broken !== real,
     'мутация выжила — проверка не способна упасть (C11)');
+
+  // Мутация В (класс bugs/51: примета делит слепое пятно с парсером). Берём корпус, где варианты
+  // записаны ТАБЛИЦЕЙ, и считаем кандидатов ТОЛЬКО списочной формой — так примета выглядела до
+  // фикса. Предсказание ДО прогона: кандидатов 0 при настоящих 8, то есть сверка обязана
+  // разойтись. Почему это важнее прочих мутаций: до фикса расхождения НЕ БЫЛО — парсер тоже
+  // возвращал 0, сверка давала 0 == 0 и зеленела. Мутация доказывает, что примета больше не
+  // слепа ровно там же, где слеп разбор.
+  const tableMd = readFileSync(join(ROOT, 'interviews', 'interview_013_language_packs_scope.md'), 'utf8');
+  const tableReal = parseQuestions(tableMd).reduce((s, q) => s + q.options.length, 0);
+  let listOnly = 0, inFence2 = false;
+  for (const line of normalize(tableMd).split('\n')) {
+    if (/^\s*```/.test(line)) { inFence2 = !inFence2; continue; }
+    if (!inFence2 && OPTION_LIST_LINE_RE.test(line)) listOnly++;
+  }
+  console.log('  мутация В (примета знает только список): кандидатов ' + listOnly +
+    ' против настоящих ' + tableReal + ' на корпусе с ТАБЛИЧНЫМИ вариантами');
+  check('мутация В ДАЁТ РАСХОЖДЕНИЕ (примета не слепа там же, где разбор — bugs/51)',
+    listOnly !== tableReal && tableReal >= 2,
+    'мутация выжила — примета по-прежнему делит слепое пятно с парсером');
 }
 
 // ── Точка входа (T9) ───────────────────────────────────────────────────────────────────────

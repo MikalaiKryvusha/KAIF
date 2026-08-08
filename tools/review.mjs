@@ -205,7 +205,11 @@ export function buildPage(root, docPath) {
   const proseOf = (q) => {
     const keep = [];
     let inOpt = false;
-    for (const line of q.body) {
+    for (let j = 0; j < q.body.length; j++) {
+      const line = q.body[j];
+      // Строки таблицы вариантов (bugs/51) уже стали радиокнопками — из прозы их убирает ТОТ ЖЕ
+      // разбор, что их и нашёл: два независимых детектора разошлись бы, и таблица показалась бы дважды.
+      if (q.optionTableLines && q.optionTableLines.has(j)) { inOpt = false; continue; }
       if (/^\s*-\s+\*\*[A-ZА-Я]\)/u.test(line)) { inOpt = true; continue; }
       if (inOpt && /^\s{2,}\S/.test(line)) continue;
       inOpt = false;

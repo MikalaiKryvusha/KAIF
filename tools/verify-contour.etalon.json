@@ -53,5 +53,15 @@
     "questions": 2,
     "parsedOptions": 7,
     "candidateLines": 7
+  },
+  "interviews/interview_012_commit_trailer_model_name.md": {
+    "questions": 2,
+    "parsedOptions": 5,
+    "candidateLines": 5
+  },
+  "interviews/interview_013_language_packs_scope.md": {
+    "questions": 3,
+    "parsedOptions": 8,
+    "candidateLines": 8
   }
 }
