@@ -67,6 +67,12 @@ the release. A DRAFT portrait (thresholds unmet, no blind test passed) is writte
 FROM: rewrite mode does not start from a draft. Either way the verdict "this sounds like me" belongs
 to the owner — the taste class is never judged by the agent (`TESTING_FRAMEWORK.md`).
 
+**Being the owner's artifacts does NOT put provenance marks into them** (`AGENT_GUIDE.md` →
+provenance marks, the showcase exemption): `README` and the release notes ship as-is, so they never
+carry `[AI]…[/AI]`. Their acceptance queue is the owner's PROOFREADING, and it is just as mandatory —
+file the request as homework and say plainly, in the release report, that the showcase text is not
+yet proofread if it is not.
+
 ## Step 3. Regenerate rendered docs
 
 `<Regenerate any rendered artifacts, e.g. README.pdf (node tools/readme-pdf.mjs). For this framework's

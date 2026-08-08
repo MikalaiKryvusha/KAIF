@@ -5,6 +5,12 @@
 version.json 2.1 → 2.2 и публикации страницы релиза v2.2 БЕЗ артефактов (задача T11, черновая
 витрина к дате 08.08.2026)
 
+**Fix accepted when (observable):** у релиза текущей версии ЕСТЬ ассеты (`gh api
+repos/MikalaiKryvusha/KAIF/releases/tags/v2.2 -q '.assets|length'` > 0), и прогон свода
+`node tools/sandbox/s03-receipts-tools.mjs` НЕ печатает строку `no baseline artifact reachable for
+v2.2` — то есть обновление идёт модульным путём, а не legacy. Отдельно наблюдаемо для гипотезы 3:
+вывод свода, ходившего в сеть, называет это вслух.
+
 ## Symptom
 
 Два независимых симптома одного механизма.

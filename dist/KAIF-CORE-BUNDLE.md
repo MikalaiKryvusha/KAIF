@@ -776,6 +776,18 @@ IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
 `accept <file>` strips marks into the registry and carries the OWNER'S word only.
 
+**The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never
+carry provenance marks (owner's decision, quoted: *"README and the release notes are not subject to
+the mandatory provenance-mark rules `[AI]`"*). The reason is mechanical, not aesthetic: these two are
+PUBLISHED as-is, so a mark inside them ships scaffolding to every reader and reads as unfinished
+work — while a mark's whole purpose is to be an internal acceptance queue. The queue for the showcase
+is a different one and it stays mandatory: the owner PROOFREADS it (file the request as homework),
+and until they do, the text is unaccepted exactly as a marked block would be. Two boundaries keep
+this from eating the rule: the exemption lists FILES, never a category ("public documents" would
+swallow the whole canon), and it covers only text ABOUT the product — the owner's own words quoted
+inside the showcase stay their words and are edited only mechanically (orthography, links,
+arithmetic).
+
 **Strictness modes — slow is fine when it is visible.** Name the mode a piece of writing runs under:
 - **draft** — fast, OUTSIDE the owner's canon: sketches, research notes, ideas, spikes. No
   styleguide, no marks, no canon linter — cheap by design. A draft never silently becomes canon.
@@ -5989,6 +6001,12 @@ self-check before handing the text over; no portrait, no obligation, and its abs
 the release. A DRAFT portrait (thresholds unmet, no blind test passed) is written BY, never rewritten
 FROM: rewrite mode does not start from a draft. Either way the verdict "this sounds like me" belongs
 to the owner — the taste class is never judged by the agent (`TESTING_FRAMEWORK.md`).
+
+**Being the owner's artifacts does NOT put provenance marks into them** (`AGENT_GUIDE.md` →
+provenance marks, the showcase exemption): `README` and the release notes ship as-is, so they never
+carry `[AI]…[/AI]`. Their acceptance queue is the owner's PROOFREADING, and it is just as mandatory —
+file the request as homework and say plainly, in the release report, that the showcase text is not
+yet proofread if it is not.
 
 ## Step 3. Regenerate rendered docs
 

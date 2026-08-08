@@ -1,0 +1,15 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_016_provenance_marks_on_the_showcase.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-08-08T21:14:07.536Z",
+  "atHuman": "9 августа 2026, 00:14 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "",
+      "text": "README и релиз ноутсы не попадают под обязательные правила пометов провенанса [AI]",
+      "comment": ""
+    }
+  }
+}
