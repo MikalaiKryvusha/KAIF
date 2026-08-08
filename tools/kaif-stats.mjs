@@ -1,0 +1,363 @@
+#!/usr/bin/env node
+// tools/kaif-stats.mjs — счётчик ЛЕТОПИСНОЙ статистики релиза: сколько стоила версия.
+//
+// Зачем (слово владельца, 2026-08-08 23:40 +03:00): «подними всю статистику, посчитай экономику,
+// трудозатраты в человеко часах. электроэнергию. Будет интересно это всё собрать в Интересные
+// факты по версии 2.2» — блок «Интересные факты» на витрине и в релиз-нотах (задача T11).
+//
+// ПОЧЕМУ ЭТО ИНСТРУМЕНТ, А НЕ АБЗАЦ ПРОЗЫ. Класс «протухший счётчик прозы» проект уже оплатил
+// дважды (bugs/09, bugs/49, урок EXP-0025): число, вписанное руками, врёт со следующего коммита.
+// Витринные числа тем более: их читает посторонний человек, и проверить их он не может.
+// Поэтому каждое число здесь СЧИТАЕТСЯ из наблюдаемого источника — git, файлы репозитория,
+// транскрипты сессий, — а прайс и энергия объявлены константами с указанием источника.
+//
+// ЧТО ИЗМЕРЕНО, А ЧТО ОЦЕНЕНО — граница проведена явно и печатается в выводе:
+//   · ИЗМЕРЕНО: коммиты, файлы, строки, документы, токены, время активной работы;
+//   · ОЦЕНЕНО ПО ПУБЛИЧНОМУ ПРАЙСУ: деньги (это НЕ счёт владельца — он на подписке);
+//   · ЧУЖАЯ ОЦЕНКА: энергия (Anthropic не публикует Вт·ч на токен — цифра взята из
+//     рецензируемых работ по ДРУГИМ моделям и другому железу; диапазон, а не число).
+//
+// Использование:
+//   node tools/kaif-stats.mjs                 # статистика от прошлого релиза до HEAD
+//   node tools/kaif-stats.mjs --from v2.0     # от другого тега
+//   node tools/kaif-stats.mjs --all           # за всю историю проекта
+//   node tools/kaif-stats.mjs --json          # машинный вывод
+//
+// [TESTED: 2026-08-08 · прогон по репозиторию; числа сверены с ручными командами git и wc]
+
+import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { homedir } from 'node:os';
+
+const ROOT = process.cwd();
+
+// ── Прайс-лист (источник: навык claude-api, кэш справочника 2026-06-24) ─────────
+// Цены за 1 млн токенов. Кэш: чтение ≈0.1× входной цены; запись 2× при TTL 1 час
+// (в этих сессиях действует часовой TTL). Прайс — ПУБЛИЧНЫЙ API-прайс; работа шла по
+// подписке, поэтому это оценка «во что обошлась бы та же работа через API», а не счёт.
+const PRICE = {
+  'claude-fable-5': { in: 10, out: 50 },
+  'claude-opus-5': { in: 5, out: 25 },
+  'claude-sonnet-5': { in: 3, out: 15 },
+  'claude-haiku-4-5': { in: 1, out: 5 },
+};
+const CACHE_READ_FACTOR = 0.1;
+const CACHE_WRITE_FACTOR = 2; // TTL 1 час
+
+// ── Энергия: ЧУЖАЯ ОЦЕНКА, не наш замер и не данные Anthropic ──────────────────
+// Anthropic не публикует Вт·ч на токен. Диапазон ниже — из публичных работ по инференсу
+// LLM (эмпирические измерения на других моделях и другом железе), поэтому он приводится
+// как ВИЛКА, а не как число, и никогда не выдаётся за наш замер.
+const WH_PER_TOKEN_LOW = 0.0001;
+const WH_PER_TOKEN_MID = 0.0003;
+const WH_PER_TOKEN_HIGH = 0.002;
+
+// Порог простоя для «активного времени»: пауза длиннее — человек отошёл, а не работает.
+const IDLE_GAP_MINUTES = 5;
+
+// ── Человеко-часы «а сколько бы это заняло без агента» — ОЦЕНКА С ВИДИМЫМИ ДОПУЩЕНИЯМИ ──
+// Это не измерение и не притязание на точность: это арифметика по объёму, где обе ставки
+// названы явно, чтобы читатель мог подставить свои и получить свой ответ. Скрытая ставка
+// внутри красивого числа — то же самое, что выдуманное число; видимая — проверяемая оценка.
+const WORDS_PER_HOUR = [200, 500]; // вычитанная техническая проза: обдумывание + письмо + правка
+const CODE_LINES_PER_HOUR = [20, 50]; // код инструмента с комментариями и проверками
+// Объём считается ТОЛЬКО по рукописному: генераты (`dist/`, корневые копии) исключены —
+// иначе одна пересборка добавляла бы «человеко-месяцы», которых никто не работал.
+const GENERATED_EXCLUDES = [':(exclude)dist/*', ':(exclude)KAIF.md', ':(exclude)KAIF_REFERENCE.md'];
+
+// ── Переводы «в бытовую реальность» — чтобы миллиарды и киловатт-часы стали представимы ──
+// Каждая константа названа вместе с источником: витринное число без источника — баг по
+// определению (`PHILOSOPHY.md` → правило трёх дверей), а «понятный обывателю» пересчёт
+// подставного числа врёт вдвойне — он ещё и запоминается.
+const HUMAN = {
+  // Средняя цена Big Mac в США, 2026 — по данным более чем 13 500 ресторанов (bigmacindex).
+  burgerUsd: 5.91,
+  // Зарплата инженера-программиста — ЧИСЛО ВЛАДЕЛЬЦА (его слово, 2026-08-08): 3000 $/мес.
+  salaryUsdMonth: 3000,
+  workHoursMonth: 168, // 21 рабочий день × 8 часов
+  // Средний дом ЕС: 3,6 МВт·ч в год ≈ 9,9 кВт·ч в сутки (Eurostat / ODYSSEE-MURE).
+  householdKwhDay: 9.9,
+  // Роман среднего объёма — 80 000 слов; в русском тексте ≈2 токена на слово,
+  // то есть книга ≈160 000 токенов. Обе величины — объявленные допущения, не замер.
+  bookWords: 80000,
+  tokensPerWord: 2,
+};
+
+const TRANSCRIPTS = join(homedir(), '.claude', 'projects', 'd--work-ai-sandbox-KAIF');
+const KNOWLEDGE_DIRS = ['plans', 'bugs', 'ideas', 'researches', 'interviews', 'homeworks', 'reports'];
+
+// maxBuffer поднят намеренно: полный дифф релиза — десятки мегабайт, и дефолтный буфер
+// node (1 МБ) роняет инструмент исключением ровно на самом крупном релизе, ради которого он и нужен.
+const git = (...args) =>
+  execFileSync('git', args, { encoding: 'utf8', cwd: ROOT, maxBuffer: 512 * 1024 * 1024 }).trim();
+const num = (s) => Number(String(s).replace(/[^\d]/g, '')) || 0;
+
+/** Предыдущий релизный тег — точка отсчёта по умолчанию. */
+function previousTag() {
+  const tags = git('tag', '-l', '--sort=-creatordate').split('\n').filter(Boolean);
+  return tags[0] || null;
+}
+
+/** Статистика git за окно: коммиты, файлы, строки, авторы-модели. */
+function repoStats(from) {
+  const range = from ? `${from}..HEAD` : '';
+  const commits = num(range ? git('rev-list', range, '--count') : git('rev-list', 'HEAD', '--count'));
+  const shortstat = range ? git('diff', '--shortstat', range) : '';
+  const files = num((shortstat.match(/(\d+) files? changed/) || [])[1]);
+  const insertions = num((shortstat.match(/(\d+) insertions?/) || [])[1]);
+  const deletions = num((shortstat.match(/(\d+) deletions?/) || [])[1]);
+  const created = range
+    ? git('diff', '--name-status', range).split('\n').filter((l) => l.startsWith('A')).length
+    : 0;
+
+  // Кто коммитил — по со-авторскому трейлеру (решение №54: имя работающей модели).
+  const byModel = {};
+  const body = range ? git('log', range, '--format=%b') : git('log', '--format=%b');
+  for (const m of body.matchAll(/Co-Authored-By:\s*([^<\n]+?)\s*</g)) {
+    const name = m[1].trim();
+    byModel[name] = (byModel[name] || 0) + 1;
+  }
+
+  const first = range ? git('log', range, '--format=%cI', '--reverse').split('\n')[0] : git('log', '--format=%cI', '--reverse').split('\n')[0];
+  const last = git('log', '-1', '--format=%cI');
+
+  // Рукописный объём: проза и код отдельно, генераты исключены.
+  let proseLines = 0;
+  let proseWords = 0;
+  let codeLines = 0;
+  if (range) {
+    const proseStat = git('diff', '--shortstat', range, '--', '*.md', ...GENERATED_EXCLUDES);
+    proseLines = num((proseStat.match(/(\d+) insertions?/) || [])[1]);
+    const proseDiff = git('diff', range, '--', '*.md', ...GENERATED_EXCLUDES);
+    proseWords = proseDiff
+      .split('\n')
+      .filter((l) => l.startsWith('+') && !l.startsWith('+++'))
+      .join(' ')
+      .split(/\s+/)
+      .filter(Boolean).length;
+    const codeStat = git('diff', '--shortstat', range, '--', '*.mjs');
+    codeLines = num((codeStat.match(/(\d+) insertions?/) || [])[1]);
+  }
+
+  const days = (Date.parse(last) - Date.parse(first)) / 86400000;
+  return { commits, files, insertions, deletions, created, byModel, first, last, proseLines, proseWords, codeLines, days };
+}
+
+/** Документы знаний и канон-артефакты — считаем файлы, а не помним числа. */
+function docStats() {
+  const dirs = {};
+  for (const d of KNOWLEDGE_DIRS) {
+    const p = join(ROOT, d);
+    dirs[d] = existsSync(p) ? readdirSync(p).filter((f) => f.endsWith('.md') && f !== 'README.md').length : 0;
+  }
+  const bugsDone = existsSync(join(ROOT, 'bugs'))
+    ? readdirSync(join(ROOT, 'bugs')).filter((f) => /DONE/.test(f)).length
+    : 0;
+  const decisions = (readFileSync(join(ROOT, 'MASTER_PLAN.md'), 'utf8').match(/^\|\s*\d+\s*\|/gm) || []).length;
+  const lessons = (readFileSync(join(ROOT, 'EXPERIENCE.md'), 'utf8').match(/^### EXP-/gm) || []).length;
+  const skills = existsSync(join(ROOT, 'framework', 'skills'))
+    ? readdirSync(join(ROOT, 'framework', 'skills')).length
+    : 0;
+  return { dirs, bugsDone, decisions, lessons, skills };
+}
+
+/**
+ * Токены и активное время из транскриптов сессий.
+ * Активное время — сумма пауз между соседними записями, НЕ превышающих порог простоя:
+ * это время, когда пара «человек + агент» реально работала, а не время от первого до
+ * последнего коммита. Метод объявлен, чтобы число можно было пересчитать иначе.
+ */
+function sessionStats(sinceISO) {
+  if (!existsSync(TRANSCRIPTS)) return null;
+  const files = readdirSync(TRANSCRIPTS).filter((f) => f.endsWith('.jsonl'));
+  const byModel = {};
+  let requests = 0;
+  const stampsBySession = new Map();
+
+  for (const f of files) {
+    let lines;
+    try {
+      lines = readFileSync(join(TRANSCRIPTS, f), 'utf8').split('\n');
+    } catch {
+      continue;
+    }
+    for (const line of lines) {
+      if (!line.includes('"timestamp"')) continue;
+      let j;
+      try {
+        j = JSON.parse(line);
+      } catch {
+        continue;
+      }
+      if (!j.timestamp) continue;
+      if (sinceISO && j.timestamp < sinceISO) continue;
+
+      // Отметки времени — для активного времени (любая запись, не только запрос к модели).
+      if (!stampsBySession.has(f)) stampsBySession.set(f, []);
+      stampsBySession.get(f).push(Date.parse(j.timestamp));
+
+      const u = j.message && j.message.usage;
+      if (!u) continue;
+      const model = (j.message && j.message.model) || '(не указана)';
+      byModel[model] = byModel[model] || { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, requests: 0 };
+      const a = byModel[model];
+      a.input += u.input_tokens || 0;
+      a.output += u.output_tokens || 0;
+      a.cacheRead += u.cache_read_input_tokens || 0;
+      a.cacheWrite += u.cache_creation_input_tokens || 0;
+      a.requests += 1;
+      requests += 1;
+    }
+  }
+
+  let activeMs = 0;
+  const gapLimit = IDLE_GAP_MINUTES * 60 * 1000;
+  for (const stamps of stampsBySession.values()) {
+    stamps.sort((a, b) => a - b);
+    for (let i = 1; i < stamps.length; i += 1) {
+      const gap = stamps[i] - stamps[i - 1];
+      if (gap > 0 && gap <= gapLimit) activeMs += gap;
+    }
+  }
+
+  const totals = Object.values(byModel).reduce(
+    (s, a) => ({
+      input: s.input + a.input,
+      output: s.output + a.output,
+      cacheRead: s.cacheRead + a.cacheRead,
+      cacheWrite: s.cacheWrite + a.cacheWrite,
+    }),
+    { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }
+  );
+  totals.all = totals.input + totals.output + totals.cacheRead + totals.cacheWrite;
+
+  let cost = 0;
+  const costByModel = {};
+  for (const [model, a] of Object.entries(byModel)) {
+    const p = PRICE[model];
+    if (!p) continue;
+    const c =
+      (a.input * p.in + a.output * p.out + a.cacheRead * p.in * CACHE_READ_FACTOR + a.cacheWrite * p.in * CACHE_WRITE_FACTOR) /
+      1e6;
+    costByModel[model] = c;
+    cost += c;
+  }
+
+  // Энергия считается по СЧИТАННЫМ токенам (выход + вход + запись кэша): чтение кэша
+  // пропускает основную часть вычислений, поэтому в базу не входит — это занижает оценку
+  // осознанно, чтобы не раздувать чужую и без того широкую вилку.
+  const computeTokens = totals.input + totals.output + totals.cacheWrite;
+
+  return {
+    requests,
+    byModel,
+    totals,
+    cost,
+    costByModel,
+    activeHours: activeMs / 3.6e6,
+    sessions: stampsBySession.size,
+    energyWh: {
+      low: computeTokens * WH_PER_TOKEN_LOW,
+      mid: computeTokens * WH_PER_TOKEN_MID,
+      high: computeTokens * WH_PER_TOKEN_HIGH,
+      base: computeTokens,
+    },
+  };
+}
+
+// ── CLI ─────────────────────────────────────────────────────────────────────
+const args = process.argv.slice(2);
+const all = args.includes('--all');
+const fromIdx = args.indexOf('--from');
+const from = all ? null : fromIdx >= 0 ? args[fromIdx + 1] : previousTag();
+const sinceISO = from ? git('show', '-s', '--format=%cI', from) : null;
+
+const repo = repoStats(from);
+const docs = docStats();
+const sess = sessionStats(sinceISO);
+
+if (args.includes('--json')) {
+  console.log(JSON.stringify({ from, sinceISO, repo, docs, sessions: sess }, null, 2));
+} else {
+  const f = (n) => n.toLocaleString('ru-RU');
+  console.log(`ОКНО: ${from ? `после ${from} (${sinceISO})` : 'вся история проекта'} → HEAD (${repo.last})`);
+  console.log('');
+  console.log('— ИЗМЕРЕНО: репозиторий —');
+  console.log(`  коммитов ${f(repo.commits)} · файлов затронуто ${f(repo.files)} · строк +${f(repo.insertions)} / −${f(repo.deletions)} · создано файлов ${f(repo.created)}`);
+  for (const [m, n] of Object.entries(repo.byModel).sort((a, b) => b[1] - a[1])) {
+    console.log(`  коммитов с трейлером «${m}»: ${f(n)}`);
+  }
+  console.log('');
+  console.log(`  РУКОПИСНОГО (генераты исключены): прозы ${f(repo.proseLines)} строк / ${f(repo.proseWords)} слов · кода ${f(repo.codeLines)} строк`);
+  console.log(`  календарных суток: ${repo.days.toFixed(1)}`);
+  console.log('');
+  console.log('— ИЗМЕРЕНО: документы (текущее состояние репозитория) —');
+  console.log(`  ${Object.entries(docs.dirs).map(([d, n]) => `${d} ${n}`).join(' · ')}`);
+  console.log(`  багов закрыто (тег DONE): ${docs.bugsDone} · решений владельца: ${docs.decisions} · уроков опыта: ${docs.lessons} · навыков: ${docs.skills}`);
+  console.log('');
+  if (!sess) {
+    console.log('— транскрипты сессий недоступны на этой машине: токены, деньги, время и энергия не считаются —');
+  } else {
+    console.log('— ИЗМЕРЕНО: работа моделей —');
+    console.log(`  сессий ${sess.sessions} · запросов к модели ${f(sess.requests)}`);
+    console.log(`  токенов ВСЕГО ${f(sess.totals.all)} (вход ${f(sess.totals.input)} · выход ${f(sess.totals.output)} · чтение кэша ${f(sess.totals.cacheRead)} · запись кэша ${f(sess.totals.cacheWrite)})`);
+    for (const [m, a] of Object.entries(sess.byModel).sort((x, y) => y[1].output - x[1].output)) {
+      console.log(`    ${m}: запросов ${f(a.requests)} · выход ${f(a.output)} · чтение кэша ${f(a.cacheRead)}`);
+    }
+    console.log('');
+    console.log('— ИЗМЕРЕНО: время —');
+    console.log(`  активной работы ${sess.activeHours.toFixed(1)} ч (сумма пауз между записями не длиннее ${IDLE_GAP_MINUTES} мин)`);
+    console.log('');
+    console.log('— ОЦЕНКА ПО ПУБЛИЧНОМУ API-ПРАЙСУ (не счёт владельца: работа шла по подписке) —');
+    for (const [m, c] of Object.entries(sess.costByModel).sort((x, y) => y[1] - x[1])) {
+      console.log(`  ${m}: $${c.toFixed(2)}`);
+    }
+    console.log(`  ИТОГО: $${sess.cost.toFixed(2)}`);
+    console.log('');
+    const hLow = repo.proseWords / WORDS_PER_HOUR[1] + repo.codeLines / CODE_LINES_PER_HOUR[1];
+    const hHigh = repo.proseWords / WORDS_PER_HOUR[0] + repo.codeLines / CODE_LINES_PER_HOUR[0];
+    console.log('— ОЦЕНКА С ВИДИМЫМИ ДОПУЩЕНИЯМИ: столько же работы руками человека —');
+    console.log(`  допущения: проза ${WORDS_PER_HOUR[0]}–${WORDS_PER_HOUR[1]} слов/час · код ${CODE_LINES_PER_HOUR[0]}–${CODE_LINES_PER_HOUR[1]} строк/час (подставь свои — арифметика видна)`);
+    console.log(`  вилка: ${Math.round(hLow)}–${Math.round(hHigh)} человеко-часов ≈ ${(hLow / 8).toFixed(0)}–${(hHigh / 8).toFixed(0)} рабочих дней ≈ ${(hLow / 168).toFixed(1)}–${(hHigh / 168).toFixed(1)} человеко-месяцев`);
+    console.log(`  фактически парой «человек + агент»: ${sess.activeHours.toFixed(1)} ч активной работы за ${repo.days.toFixed(1)} суток`);
+    console.log(`  отношение: ×${Math.round(hLow / sess.activeHours)}–×${Math.round(hHigh / sess.activeHours)}`);
+    console.log('');
+    console.log('— ЧУЖАЯ ОЦЕНКА: энергия (Anthropic Вт·ч на токен НЕ публикует) —');
+    console.log(`  база: ${f(sess.energyWh.base)} вычисленных токенов (чтение кэша исключено намеренно)`);
+    console.log(`  вилка: ${(sess.energyWh.low / 1000).toFixed(2)}–${(sess.energyWh.high / 1000).toFixed(2)} кВт·ч, медиана ≈ ${(sess.energyWh.mid / 1000).toFixed(2)} кВт·ч`);
+    console.log('  источник вилки — публичные измерения инференса ДРУГИХ моделей на другом железе;');
+    console.log('  выдавать это за наш замер или за данные Anthropic нельзя.');
+
+    // ── Переводы в бытовую реальность ──
+    const bookTokens = HUMAN.bookWords * HUMAN.tokensPerWord;
+    const burgers = sess.cost / HUMAN.burgerUsd;
+    const salaryHour = HUMAN.salaryUsdMonth / HUMAN.workHoursMonth;
+    const payrollLow = (hLow * salaryHour) / 1000;
+    const payrollHigh = (hHigh * salaryHour) / 1000;
+    const teamDaysLow = hLow / 8 / 5; // пятеро инженеров по 8 часов
+    const teamDaysHigh = hHigh / 8 / 5;
+    const homeDaysLow = sess.energyWh.low / 1000 / HUMAN.householdKwhDay;
+    const homeDaysHigh = sess.energyWh.high / 1000 / HUMAN.householdKwhDay;
+
+    console.log('');
+    console.log('— ПЕРЕВОД В БЫТОВУЮ РЕАЛЬНОСТЬ (константы названы выше в исходнике) —');
+    console.log(`  ДЕНЬГИ: $${sess.cost.toFixed(0)} ≈ ${Math.round(burgers)} гамбургеров ($${HUMAN.burgerUsd} за штуку) — ` +
+      `или ${(sess.cost / HUMAN.salaryUsdMonth).toFixed(1)} месячных зарплаты инженера`);
+    console.log(`  ТРУД: ${Math.round(hLow)}–${Math.round(hHigh)} человеко-часов — это команда из ПЯТИ инженеров, ` +
+      `работающая ${Math.round(teamDaysLow)}–${Math.round(teamDaysHigh)} рабочих дней подряд`);
+    console.log(`  ФОНД ОПЛАТЫ той же работы при ${HUMAN.salaryUsdMonth} $/мес: ` +
+      `$${(payrollLow * 1000).toFixed(0)}–$${(payrollHigh * 1000).toFixed(0)} ` +
+      `(${payrollLow.toFixed(1)}–${payrollHigh.toFixed(1)} тыс. долларов)`);
+    console.log(`  ЭНЕРГИЯ: ${(sess.energyWh.low / 1000).toFixed(1)}–${(sess.energyWh.high / 1000).toFixed(0)} кВт·ч — ` +
+      `столько обычная квартира тратит за ${homeDaysLow.toFixed(1)}–${homeDaysHigh.toFixed(0)} суток ` +
+      `(${HUMAN.householdKwhDay} кВт·ч в сутки)`);
+    console.log(`  ТОКЕНЫ: ${f(sess.totals.all)} ≈ ${Math.round(sess.totals.all / bookTokens)} романов по ${f(HUMAN.bookWords)} слов, ` +
+      `прочитанных и написанных заново`);
+    console.log(`    из них НАПИСАНО моделью: ${f(sess.totals.output)} токенов ≈ ${Math.round(sess.totals.output / bookTokens)} романа(ов)`);
+    console.log(`  ПРОЗА В РЕПОЗИТОРИИ: ${f(repo.proseWords)} слов ≈ ${(repo.proseWords / HUMAN.bookWords).toFixed(1)} романа — ` +
+      `написано за ${repo.days.toFixed(1)} суток`);
+    console.log(`  ТЕМП: ${Math.round(repo.proseWords / sess.activeHours)} слов в час активной работы ` +
+      `(человек столько пишет за ${(repo.proseWords / sess.activeHours / WORDS_PER_HOUR[1]).toFixed(1)}–${(repo.proseWords / sess.activeHours / WORDS_PER_HOUR[0]).toFixed(1)} часа)`);
+  }
+}
