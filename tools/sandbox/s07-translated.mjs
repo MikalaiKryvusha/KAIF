@@ -22,6 +22,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -126,7 +127,7 @@ ok(readFileSync(join(T1, 'PROJECT_HISTORY.md'), 'utf8').includes('OWNER CHRONICL
 // ---------------------------------------------------------------- T2: i18n translated — диффы есть, EN-файлы живут
 console.log('\n=== T2 (K2): i18n translated — не слепота, а «не заменять, но анализировать» ===');
 const T2 = join(ROOT, 't2'); mkdirSync(T2); seed(T2);
-run(T2, 'install --lang ru');
+must(run, T2, 'install --lang ru');
 const mk = JSON.parse(readFileSync(join(T2, '.kaif', 'kaif.json'), 'utf8'));
 mk.i18n = 'translated';
 writeFileSync(join(T2, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n');
@@ -192,7 +193,7 @@ ok(readFileSync(join(T3, 'package.json'), 'utf8') === pkgText, 'K4: package.json
 // ---------------------------------------------------------------- T5: diff --source на v1-манифесте
 console.log('\n=== T5 (K3): первое обновление не слепо — diff работает и на v1-манифесте ===');
 const T5 = join(ROOT, 't5'); mkdirSync(T5); seed(T5);
-run(T5, 'install');
+must(run, T5, 'install');
 const dmPath = join(T5, '.kaif', 'deploy-manifest.json');
 const dm = JSON.parse(readFileSync(dmPath, 'utf8'));
 delete dm.templateShas; delete dm.moduleShas; dm.manifestVersion = 1;   // симуляция развёртывания 1.x
@@ -261,7 +262,7 @@ const fillCanon = (dir, skipPh = []) => {
 fillCanon(T8);
 // проставить все чекпоинты адаптационного задания (механика, не суждение);
 // L5/bugs/41: чекпоинт project-name исполняет гейт — канонное имя сначала записывается командой
-run(T8, 'project-name "T8 Sandbox"');
+must(run, T8, 'project-name "T8 Sandbox"');
 // M3 (plans/50): чекпоинт field-report исполняет проверку файла отчёта — фикстуре нужен файл
 // (сам гейт стережётся в s03/s04; здесь — только поддержка потока)
 const v8 = JSON.parse(readFileSync(join(T8, '.kaif', 'kaif.json'), 'utf8')).version;
@@ -278,9 +279,9 @@ r = run(T8, 'verify-final');
 ok(r.code === 0, 'Д2+K6: CRLF-задание с чекпоинтами; verify ресинкает зеркала и ЗЕЛЕНЕЕТ', r.out);
 // Д3, слепой слот: свежая установка, заполнен ТОЛЬКО <YOUR AGENT/MODEL> — гейт обязан краснеть на email-слоте
 const T8b = join(ROOT, 't8b'); mkdirSync(T8b); seed(T8b);
-run(T8b, 'install');
+must(run, T8b, 'install');
 fillCanon(T8b, ["<YOUR AGENT'S noreply EMAIL>"]);   // всё заполнено, КРОМЕ email-слота
-run(T8b, 'project-name "T8b Sandbox"');   // L5/bugs/41: гейт project-name требует записанного имени
+must(run, T8b, 'project-name "T8b Sandbox"');   // L5/bugs/41: гейт project-name требует записанного имени
 // M3: файл отчёта для чекпоинта field-report (гейт стережётся в s03/s04)
 const v8b = JSON.parse(readFileSync(join(T8b, '.kaif', 'kaif.json'), 'utf8')).version;
 mkdirSync(join(T8b, 'reports', 'KAIF_UPDATES'), { recursive: true });

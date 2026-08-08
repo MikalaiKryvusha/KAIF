@@ -47,6 +47,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -140,7 +141,7 @@ const U1 = join(ROOT, 'u1'); mkdirSync(U1); seed(U1);
 r = run(U1, 'install');
 ok(r.code === 0, 'U1 install exit 0', r.out);
 fillCanon(U1);                                     // канон и скиллы заполнены; сферы — нет
-run(U1, 'sphere programming');                     // объявленная сфера несёт литеральный <BUILD_COMMAND>
+must(run, U1, 'sphere programming');           // объявленная сфера несёт литеральный <BUILD_COMMAND>
 unlinkSync(join(U1, 'KAIF_ADAPTATION_TASK.md'));   // адаптация «завершена» — задание не мешает update
 // Диверженция для merge-пункта — в ТОМ ЖЕ модуле PHILOSOPHY, который меняет 9.9 (индекс 2):
 // правка чужого модуля или файла с неизменным шаблоном пункта не рождает по построению
@@ -182,7 +183,7 @@ const U2 = join(ROOT, 'u2'); mkdirSync(U2); seed(U2);
 r = run(U2, 'install');
 ok(r.code === 0, 'U2 install exit 0', r.out);
 fillCanon(U2, { spheres: true });                 // всё заполнено — пункта placeholders быть не должно
-run(U2, 'sphere game-design');
+must(run, U2, 'sphere game-design');
 writeFileSync(join(U2, '.kaif', 'spheres', 'game-design.md'), '# Sphere: game-design (local)\n\nlocally authored.\n');
 unlinkSync(join(U2, 'KAIF_ADAPTATION_TASK.md'));
 { // хирургия манифеста: (а) шаблон сферы «менялся в интервале»; (б) старый деплой не знал скилл experience

@@ -38,6 +38,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -88,7 +89,7 @@ const writeTask = (dir, ids = []) => writeFileSync(join(dir, 'KAIF_UPDATE_TASK.m
 // ══════════════════ S1: точность stale-claims на полевой фикстуре 4 отчётов ══════════════════
 console.log(`\n=== S1: stale-claims — полевая фикстура (NDim/Unlim/KLAS/KCam), замер точности числом ===`);
 const S1 = join(ROOT, 's1'); mkdirSync(S1); seed(S1);
-run(S1, 'install');   // полный деплой: зеркала всех систем существуют, templateShas сняты
+must(run, S1, 'install');   // полный деплой: зеркала всех систем существуют, templateShas сняты
 
 // —— полевые строки; from=1.6, to=CUR. Классы дословно из отчётов (реестр plans/36). ——
 // ИСТИННЫЕ клеймы (обязаны быть в выдаче после фикса):
@@ -146,7 +147,7 @@ ok(precision >= 0.5, `S1 точность ${(precision * 100).toFixed(0)} % ≥ 
 // ══════════════════ S1cap: кап по ФАЙЛАМ с честным «shown N of M» ══════════════════
 console.log(`\n=== S1cap: кап по файлам, «shown N of M» (KCam Г4) ===`);
 const S1C = join(ROOT, 's1cap'); mkdirSync(S1C); seed(S1C);
-run(S1C, 'install --agents claude-code');
+must(run, S1C, 'install --agents claude-code');
 mkdirSync(join(S1C, 'docs'));
 for (let i = 1; i <= 25; i++)
   writeFileSync(join(S1C, 'docs', `claim-${String(i).padStart(2, '0')}.md`), `# doc ${i}\n\nПроект обвязан KAIF 1.6.\n`);
@@ -183,7 +184,7 @@ man.sha256['KAIF-CORE-BUNDLE.md'] = createHash('sha256').update(readFileSync(joi
 writeFileSync(join(SRC, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
 
 const S2 = join(ROOT, 's2'); mkdirSync(S2); seed(S2);
-run(S2, 'install --agents claude-code');
+must(run, S2, 'install --agents claude-code');
 appendFileSync(join(S2, 'STATUS.md'), `\nПроект обвязан KAIF ${CUR}.\n`);   // живой клейм → пункт stale-claims появится
 r = run(S2, `update --source ${SRC}`);
 ok(r.code === 0, 'S2 update → 9.9 exit 0', r.out);
@@ -196,7 +197,7 @@ ok(iStale > 0 && iNews > 0 && iStale > iNews,
 // ══════════════════ S3: module audit на i18n:translated — localized ≠ ABSENT ══════════════════
 console.log(`\n=== S3: module audit — переведённый файл честно localized, реальная потеря видна (KCam Г13) ===`);
 const S3 = join(ROOT, 's3'); mkdirSync(S3); seed(S3);
-run(S3, 'install --lang ru --agents claude-code');
+must(run, S3, 'install --lang ru --agents claude-code');
 // переведённый целиком PHILOSOPHY (заголовки + тело на русском — как в трёх полевых проектах)
 writeFileSync(join(S3, 'PHILOSOPHY.md'), [
   '# ФИЛОСОФИЯ — как агент мыслит', '',
@@ -222,7 +223,7 @@ ok(/MODULE ABSENT: TESTING_FRAMEWORK\.md/.test(r.out),
 // ══════════════════ S4: плейсхолдеры — только объявленная сфера ══════════════════
 console.log(`\n=== S4: placeholder-гейт — чужая сфера не блокирует, объявленная стережётся (Unlim Г11 · KCam) ===`);
 const S4 = join(ROOT, 's4'); mkdirSync(S4); seed(S4);
-run(S4, 'install --agents claude-code');
+must(run, S4, 'install --agents claude-code');
 const mk4 = readMarker(S4); mk4.sphere = 'programming'; writeMarker(S4, mk4);
 fillCanon(S4, { spheres: false });
 fill(join(S4, '.kaif', 'spheres', 'programming.md'));    // объявленная сфера заполнена
@@ -241,7 +242,7 @@ ok(r.code !== 0 && /programming\.md/.test(r.out),
 // ══════════════════ S5: warning-guard длины STATUS в check ══════════════════
 console.log(`\n=== S5: check предупреждает о разросшемся STATUS (KLAS D9 · Unlim Г10, решение №27) ===`);
 const S5 = join(ROOT, 's5'); mkdirSync(S5); seed(S5);
-run(S5, 'install --agents claude-code');
+must(run, S5, 'install --agents claude-code');
 const longStatus = ['# STATUS', ''];
 for (let i = 1; i <= 258; i++) longStatus.push(`- запись ${i}: строка летописи, которой место в PROJECT_HISTORY.`);
 writeFileSync(join(S5, 'STATUS.md'), longStatus.join('\n') + '\n');

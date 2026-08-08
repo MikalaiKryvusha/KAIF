@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -61,7 +62,7 @@ writeFileSync(join(SRC2, 'kaif-manifest.json'), JSON.stringify({ ...man, version
 // ---------------------------------------------------------------- S9: расписка + история
 console.log('\n=== S9: last-update.json + marker.history ===');
 const S9 = join(ROOT, 's9'); mkdirSync(S9); seed(S9);
-run(S9, 'install');
+must(run, S9, 'install');
 let r = run(S9, `update --source ${SRC}`);
 ok(r.code === 0, 'S9 update →9.9 exit 0', r.out);
 const rc1 = JSON.parse(readFileSync(join(S9, '.kaif', 'last-update.json'), 'utf8'));
@@ -84,17 +85,18 @@ ok(ISO_MOMENT_RE.test(mk.history[0]?.date || ''),
 // этот свод стережёт расписку и историю, дисциплину заданий стережёт s07/T9.
 rmSync(join(S9, 'KAIF_UPDATE_TASK.md'), { force: true });
 r = run(S9, `update --source ${SRC2}`);
+// bugs/61: у ПЕРВОГО update код возврата судился ассертом, у второго — нет, и его падение
+// вылезало красным СОСЕДА («история не выросла») с выброшенным выводом. Симметрия восстановлена:
+// причина называется первой же строкой, следствие судится следующей.
+ok(r.code === 0, 'S9 второй update →9.10 exit 0', r.out);
 mk = JSON.parse(readFileSync(join(S9, '.kaif', 'kaif.json'), 'utf8'));
-// Улика приложена к ассерту, а не выброшена: этот ассерт был пойман КРАСНЫМ один раз и зелёным
-// на перепрогоне без единой правки дерева (2026-08-08). Без вывода второго update причину
-// такого красного назвать нечем — а «прошло само» диагнозом не является (EXP-0052).
 ok(mk.history.length === 2 && mk.history[1].from === '9.9' && mk.history[1].to === '9.10',
    'S9 история растёт: 2 записи после второго update', `code=${r.code} · ${r.out.slice(-500)}`);
 
 // ---------------------------------------------------------------- S10: adopt-current
 console.log('\n=== S10: ручная миграция → adopt-current → машинный путь жив ===');
 const S10 = join(ROOT, 's10'); mkdirSync(S10); seed(S10);
-run(S10, 'install');
+must(run, S10, 'install');
 // «ручная миграция»: владелец руками переписал модуль PHILOSOPHY (тот самый [2]) и весь TESTING_FRAMEWORK
 const P10 = join(S10, 'PHILOSOPHY.md');
 const p10 = splitModules(readFileSync(P10, 'utf8'));
@@ -119,7 +121,7 @@ ok(task10.includes('merge-modules') && /PHILOSOPHY\.md/.test(task10) && task10.i
 // ---------------------------------------------------------------- S10c: adopt-current на v1-манифесте (блокер ревью)
 console.log('\n=== S10c: adopt-current на v1-манифесте — правки усыновляются ДО пересъёмки sha ===');
 const S10c = join(ROOT, 's10c'); mkdirSync(S10c); seed(S10c);
-run(S10c, 'install');
+must(run, S10c, 'install');
 // деградируем манифест до v1: убираем templateShas/moduleShas/manifestVersion
 const dmPath = join(S10c, '.kaif', 'deploy-manifest.json');
 const dmv1 = JSON.parse(readFileSync(dmPath, 'utf8'));
@@ -131,8 +133,10 @@ ok(r.code === 0, 'S10c adopt-current на v1 exit 0', r.out);
 const dm10c = JSON.parse(readFileSync(dmPath, 'utf8'));
 ok(dm10c.kept.includes('PHILOSOPHY.md'), 'S10c v1: ручная правка усыновлена (не «противоположное назначению»)');
 r = run(S10c, `update --source ${SRC}`);
+// Улика команды приложена к ассерту (bugs/61): ассерт судит ПОБОЧНЫЙ ЭФФЕКТ update — содержимое
+// файла, — и без вывода самого update его красный не отличить от «update вообще не отработал».
 ok(readFileSync(join(S10c, 'PHILOSOPHY.md'), 'utf8').includes('MANUAL V1 EDIT'),
-   'S10c v1: следующий update НЕ затёр ручную правку');
+   'S10c v1: следующий update НЕ затёр ручную правку', `update exit=${r.code} · ${r.out.slice(-300)}`);
 // bugs/55 F5: здесь стоял ассерт, дизъюнкция которого заканчивалась КОНСТАНТНОЙ ИСТИНОЙ, то есть
 // была истинной при любых операндах — движок даже не вычислял проверку. А это ЕДИНСТВЕННОЕ место
 // полигона, где `diff` вообще гоняется на
@@ -147,7 +151,7 @@ ok(r.code === 0 && /1 diverged file/.test(r.out) && r.out.includes('≠ PHILOSOP
 // ---------------------------------------------------------------- S11: diff
 console.log('\n=== S11: diff — аудит и превью ===');
 const S11 = join(ROOT, 's11'); mkdirSync(S11); seed(S11);
-run(S11, 'install');
+must(run, S11, 'install');
 const P11 = join(S11, 'PHILOSOPHY.md');
 writeFileSync(P11, readFileSync(P11, 'utf8') + '\nLOCAL AUDIT EDIT\n');
 r = run(S11, 'diff');
@@ -162,7 +166,7 @@ ok(r.out.split('\n').filter((l) => l.includes('Δ')).length === 1,
 // ---------------------------------------------------------------- S12: чекпоинты + полный update-verify
 console.log('\n=== S12: исполняющие чекпоинты, judge-вердикт, полный update-verify ===');
 const S12 = join(ROOT, 's12'); mkdirSync(S12); seed(S12);
-run(S12, 'install');
+must(run, S12, 'install');
 r = run(S12, `update --source ${SRC}`);
 ok(r.code === 0, 'S12 update exit 0', r.out);
 r = run(S12, 'checkpoint judge');

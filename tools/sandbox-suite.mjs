@@ -49,6 +49,7 @@ import { readFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
+import { scanSuite } from './sandbox-mute-guard.mjs';
 
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const REPO = resolve(HERE, '..', '..');
@@ -88,7 +89,27 @@ if (tautologies.length) {
   console.error(`\n❌ preflight: ${tautologies.length} assertion(s) that can never be false — a check that cannot fail proves nothing`);
   process.exit(1);
 }
-console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail (${SUITES.length} suites)`);
+// Preflight guard (bugs/61): no suite may carry a MUTE command — one whose result reaches no
+// assert at all. A suite is commands (which bring the tree to a state) plus asserts (which judge
+// the state); when a mute command fails, the red belongs to a NEIGHBOUR assert and speaks about
+// the symptom ("history did not grow") while the cause — the exit code and output of the command
+// that actually failed — is discarded. That is literally how bugs/61 was born: a red that could
+// not be reproduced in 108 isolated iterations or 12 full suite runs, because nothing kept the
+// evidence. Two legal moves, both visible in the source: judge the result inside `ok(...)`, or
+// wrap the setup step in `must(run, …)` from tools/lib/sandbox-run.mjs. Debt is ZERO by
+// construction — all 30 sites were converted the day the guard was born, so this is a GATE.
+const mute = [];
+for (const s of SUITES) {
+  const { findings } = scanSuite(readFileSync(join(HERE, s), 'utf8'));
+  for (const x of findings) mute.push(`${s}:${x.line} — ${x.kind}: ${x.src}`);
+}
+for (const m of mute) console.error('✖ mute command (bugs/61): ' + m);
+if (mute.length) {
+  console.error(`\n❌ preflight: ${mute.length} command(s) whose result no assert ever sees — judge the result` +
+                ' inside ok(...), or wrap the setup step in must(run, …) from tools/lib/sandbox-run.mjs');
+  process.exit(1);
+}
+console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command (${SUITES.length} suites)`);
 
 let failed = 0;
 for (const s of SUITES) {

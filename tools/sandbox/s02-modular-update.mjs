@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -136,7 +137,7 @@ ok(phil.includes('UPSTREAM ADDITION 9.9 (philosophy)'), 'апстримная п
 // ---------------------------------------------------------------- S6: диффы там, где апстрим менял ЛОКАЛЬНО правленный модуль
 console.log('\n=== S6: конфликт (локальная правка + апстрим в ОДНОМ модуле) → дифф в задаче ===');
 const S6 = join(ROOT, 's6'); mkdirSync(S6); seed(S6);
-run(S6, 'install');
+must(run, S6, 'install');
 const P6 = join(S6, 'PHILOSOPHY.md');
 const p6 = splitModules(readFileSync(P6, 'utf8'));
 p6[2].lines.push('', 'LOCAL EDIT in the SAME module upstream changes'); // тот же модуль [2], что менял 9.9
@@ -158,7 +159,7 @@ ok(task6.includes('merge-modules') && task6.includes('PHILOSOPHY.md') && task6.i
 // (Аналитическая половина — диффы в задании, EN-файлы под флагом — стережётся s07-translated.)
 console.log('\n=== S7: маркер i18n: translated — переведённый файл не заменяется ===');
 const S7 = join(ROOT, 's7'); mkdirSync(S7); seed(S7);
-run(S7, 'install --lang ru');
+must(run, S7, 'install --lang ru');
 const mk = JSON.parse(readFileSync(join(S7, '.kaif', 'kaif.json'), 'utf8'));
 mk.i18n = 'translated';
 writeFileSync(join(S7, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n');

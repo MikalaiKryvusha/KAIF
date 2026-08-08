@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -82,9 +83,9 @@ writeFileSync(join(S13, 'package.json'), JSON.stringify({ name: 's13', scripts: 
 let r = run(S13, 'install --mode anonymous');
 ok(r.code === 0, 'S13 install --mode anonymous exit 0', r.out);
 fillAll(S13);
-r = run(S13, 'sync');
+must(run, S13, 'sync');   // раскатка зеркал — установочный шаг; свой ассерт у `sync` ниже, после самоочистки
 // L5/bugs/41: чекпоинт project-name исполняет гейт — канонное имя сначала записывается командой
-run(S13, 'project-name "S13 Sandbox"');
+must(run, S13, 'project-name "S13 Sandbox"');
 // M3 (plans/50, критерии 4 и 6, красным-вперёд): задание адаптации ставит отчёт об установке
 // (скелет шаблона D — researches/18 §8) той же механикой чекпоинта; анонимный профиль — отчёт
 // ЛОКАЛЬНЫЙ, пункт не тянется к origin (инвариант §2 п. 7 researches/18; риск 2 плана 50).
@@ -170,7 +171,7 @@ const dm14 = JSON.parse(readFileSync(join(S14, '.kaif', 'deploy-manifest.json'),
 ok(dm14.manifestVersion === 2 && dm14.templateShas, 'S14 манифест регенерирован в v2 — дальше проект живёт штатно');
 // недоступный baseline → честный фолбэк на классику
 const S14b = join(ROOT, 's14b'); mkdirSync(S14b); seed(S14b);
-run(S14b, 'install');
+must(run, S14b, 'install');
 unlinkSync(join(S14b, '.kaif', 'deploy-manifest.json'));
 seed(S14b, SRC);
 r = run(S14b, `install --baseline ${join(ROOT, 'no-such-dir')}`);
@@ -180,7 +181,7 @@ ok(r.code === 0 && /no baseline artifact reachable/.test(r.out) && /adopt-everyt
 // ---------------------------------------------------------------- S14c: конфликт на bootstrap-пути + интервал новостей
 console.log('\n=== S14c: конфликтный модуль на слепочном пути → дифф в задаче; новости интервалом ===');
 const S14c = join(ROOT, 's14c'); mkdirSync(S14c); seed(S14c);
-run(S14c, 'install');
+must(run, S14c, 'install');
 unlinkSync(join(S14c, '.kaif', 'deploy-manifest.json'));
 // маркер прикидываемся 1.4 — интервал (1.4, 9.9] обязан напечатать И 1.5, И 1.6 блоки новостей
 const mk14c = JSON.parse(readFileSync(join(S14c, '.kaif', 'kaif.json'), 'utf8'));
@@ -248,7 +249,7 @@ const manD = JSON.parse(readFileSync(join(SRC, 'kaif-manifest.json'), 'utf8'));
 manD.sha256['KAIF-CORE-BUNDLE.md'] = sha256(readFileSync(join(SRCD, 'KAIF-CORE-BUNDLE.md')));
 writeFileSync(join(SRCD, 'kaif-manifest.json'), JSON.stringify(manD, null, 2) + '\n');
 const S14d = join(ROOT, 's14d'); mkdirSync(S14d); seed(S14d);
-run(S14d, 'install');
+must(run, S14d, 'install');
 // help-kaif правим локально (должен уцелеть и попасть в задачу), what-next не трогаем (должен удалиться)
 const HK = join(S14d, '.claude/skills/help-kaif/SKILL.md');
 writeFileSync(HK, readFileSync(HK, 'utf8') + '\nLOCAL EDIT ON DEPRECATED\n');
@@ -285,7 +286,7 @@ const mkSrcE = (ver, marker) => {
 const SRC_E1 = mkSrcE('9.6', 'UPSTREAM-NEWS-E1');
 const SRC_E2 = mkSrcE('9.7', 'UPSTREAM-NEWS-E2');
 const S14e = join(ROOT, 's14e'); mkdirSync(S14e); seed(S14e);
-run(S14e, 'install');
+must(run, S14e, 'install');
 // законная дивергенция владельца в том же модуле, который меняет апстрим → конфликт в обоих интервалах
 const P14e = join(S14e, 'PHILOSOPHY.md');
 const p14e = splitModules(readFileSync(P14e, 'utf8'));
@@ -324,7 +325,7 @@ ok(mkE.version === '9.7' && luE.to === '9.7' && luE.from === '9.6',
    'S14e маркер и расписка согласны с задачей (9.6 → 9.7)', `${mkE.version} · ${luE.from}→${luE.to}`);
 // «не трогать» соседей: re-run ТОЙ ЖЕ версии с чек-поинтами обязан сохранять задачу побайтно
 const beforeRerun = readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md'));
-run(S14e, 'checkpoint recheck');
+must(run, S14e, 'checkpoint recheck');
 const withTick = readFileSync(join(S14e, 'KAIF_UPDATE_TASK.md'));
 seed(S14e, SRC_E2);
 r = run(S14e, 'install');

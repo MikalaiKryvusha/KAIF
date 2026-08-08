@@ -7,6 +7,7 @@ import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
+import { must } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -144,7 +145,7 @@ r = run(S2, 'update');
 ok(r.code !== 0 && /anonymous install tracks no origin/.test(r.out),
    'S2 T5: update на анонимном развёртывании отказывается (режим не меняется молча)', r.out.slice(-300));
 // сфера без библиотеки → громкое предупреждение (оно в stderr — сливаем потоки)
-run(S2, 'sphere game-design');
+must(run, S2, 'sphere game-design');
 r = run(S2, 'check 2>&1');
 ok(r.code === 0 && r.out.includes('sphere "game-design" has no library'),
    'S2 предупреждение о несуществующей библиотеке сферы', r.out.slice(-400));
@@ -172,7 +173,7 @@ const marker3 = JSON.parse(readFileSync(join(S3, '.kaif', 'kaif.json'), 'utf8'))
 ok(!('agent' in marker3) && !('agentsSupported' in marker3) && JSON.stringify(marker3.agents) === '["claude-code"]',
    'S3 маркер: устаревшие поля сняты, agents наследован');
 // повторный прогон не стирает чекпоинты
-run(S3, 'checkpoint review-news');
+must(run, S3, 'checkpoint review-news');
 r = run(S3, `install --baseline ${join(ROOT, 'no-baseline-here')}`);
 const task3b = readFileSync(join(S3, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task3b.includes('KAIF-UPDATE: review-news done'), 'S3 повторный bootstrap НЕ стёр чекпоинты');
