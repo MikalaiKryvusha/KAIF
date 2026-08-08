@@ -6,7 +6,7 @@
 //   node tools/commit.mjs --msg-file <path>   ← ОБЯЗАТЕЛЕН для сообщений с не-ASCII
 // [TESTED: 2026-08-07 · страж argv красный на кириллице (наблюдение); --msg-file — сообщение
 // в git log побайтно чистое (фикс-коммит bugs/46 прочитан обратно)]
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -39,6 +39,27 @@ if (fileIdx >= 0) {
 if (!msg) {
   console.error('usage: node tools/commit.mjs "<ASCII message>"  |  --msg-file <path>');
   process.exit(1);
+}
+
+// ПРЕПОЛЁТ: страж отката рабочей копии (bugs/45, два наблюдения — 2026-08-07 и 2026-08-09).
+// Файл, чья рабочая копия побайтно равна ПРОШЛОЙ ревизии, потерял свою свежую правку на диске, и
+// коммит увековечил бы потерю. Ритуал «git diff --stat перед коммитом» этот класс ловит, но
+// держится на внимании сессии; здесь он становится гейтом. Намеренный откат проходит флагом
+// `--allow-revert` — он же передаётся стражу пофайлово (`--allow`).
+{
+  const allowIdx = process.argv.indexOf('--allow-revert');
+  const allowed = [];
+  for (let i = allowIdx; i >= 0 && i + 1 < process.argv.length; i++) {
+    if (process.argv[i] === '--allow-revert') allowed.push(process.argv[i + 1]);
+  }
+  const guard = join(ROOT, 'tools', 'revert-guard.mjs');
+  const args = allowed.flatMap((f) => ['--allow', f]);
+  try {
+    execFileSync(process.execPath, [guard, ...args], { cwd: ROOT, stdio: 'inherit' });
+  } catch {
+    console.error('\n✋ коммит остановлен преполётом revert-guard (bugs/45). Разбери находки выше.');
+    process.exit(1);
+  }
 }
 
 // Bump the internal build counter, preserving every other field of version.json.

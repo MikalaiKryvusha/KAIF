@@ -26,7 +26,6 @@
 
 **KAIF — Krinik AI Framework — a context-resilient, fundamental strategic-operational methodological framework for AI agents: resilience to context loss and discipline of autonomy.**
 
-This document is the user manual of the framework: it describes what KAIF is and how to use it.
 The project's history lives in the [releases](https://github.com/MikalaiKryvusha/KAIF/releases)
 and in section 8.1.
 
@@ -110,9 +109,8 @@ and in section 8.1.
    localizes the owner-facing documents, wires the auto-context pointers, validates itself against
    a sha256 manifest, and self-cleans. The agent's only cognitive work is the short
    `KAIF_ADAPTATION_TASK.md`: study the project, fill the maps, derive the plan.
-3. The thin install replaces reading the full core: 10 KB (`KAIF.md`, 10 207 bytes) instead of
-   339 KB (`KAIF-FULL.md`, 346 920 bytes) — ×34 less reading. Cognitive writing shrinks ×66
-  .
+3. The agent reads 10 KB instead of 339 KB: the thin install takes the full core off its hands.
+   The text it has to write in its own words shrinks by the same order — ×66.
 
 <a id="tested-en"></a>
 
@@ -130,8 +128,7 @@ and in section 8.1.
 4. Answer the adaptation questions the agent brings (project goal, sphere, language). Fill
    `GOAL.md` — the one document that is the owner's to write.
 5. Any model strength works: the machinery does the structure, and every adaptation item carries a
-   forced checkpoint command. The procedure is field-certified end-to-end on a local
-   12-billion-parameter model (homework 02).
+   forced checkpoint command.
 
 <sub>An installation is tracked to the origin by default — that is what makes version checks,
 respectful updates and the field-report loop work out of the box. Deploying with no tie to the
@@ -165,9 +162,8 @@ below.
 
 ### 3.2. The key documents
 
-Fourteen key documents are deployed to the project root, and one more is optional — it appears only
-where the owner's voice portrait was actually taken. Their purposes and maintainers are given in
-Table 1.
+Fourteen key documents are deployed to the project root. A fifteenth, the owner's voice portrait,
+is optional and appears where the portrait has been taken.
 
 Table 1 — Key documents of a deployment
 
@@ -191,9 +187,9 @@ Table 1 — Key documents of a deployment
 
 ### 3.3. The knowledge directories
 
-Seven knowledge directories are deployed, each with its own README. Their purposes are
-given in Table 2. Closed items in `bugs/`, `ideas/`, `plans/`, and `homeworks/` receive the `DONE`
-tag in the filename; the living references are never tagged.
+Seven knowledge directories are deployed, each with its own README. Closed items in `bugs/`,
+`ideas/`, `plans/`, and `homeworks/` receive the `DONE` tag in the filename; the living references
+are never tagged.
 
 Table 2 — Knowledge directories
 
@@ -323,8 +319,8 @@ re-runs the claims adversarially before the work counts as done.
 ### 5.5. Guardrails and provenance
 
 1. Observation beats conjecture: claims trace to sources, and a gap in the canon opens exactly
-   three doors — find it in an existing source of truth, ask the owner, and inventing is
-   forbidden.
+   three doors — find the answer in an existing source of truth, ask the owner, invent something
+   plausible. The third door is shut.
 2. AI-written text in the owner's canon artifacts carries provenance marks `[AI]…[/AI]`; only the
    owner's word removes a mark. Optional machine tools (the provenance gate, the canon linter)
    ship as modules and are wired on request.
@@ -334,9 +330,9 @@ re-runs the claims adversarially before the work counts as done.
 ### 5.6. Fresh context
 
 1. Rules read once at the start of a session melt as the context fills and is compacted: a long
-   session holds a retelling of the canon. So the re-reading core is re-read on four triggers — an hour of live work, the start of a heavy task, a compaction
-   or a long pause, and the ritual points (`/resume`, `/refresh-context`, every iteration of the
-   loops).
+   session holds a retelling of the canon. So the agent re-reads the canon core on four triggers —
+   an hour of live work, the start of a heavy task, a compaction or a long pause, and the ritual
+   points (`/resume`, `/refresh-context`, every iteration of the loops).
 2. A refresh is a verifiable act. Its witness has two halves and both are required:
    the marker `.kaif/refresh-marker.json` (the moment, what was re-read, which trigger) and an
    acceptance quote in the chat — one concrete line out of what was re-read, relevant to the task
@@ -376,10 +372,9 @@ Table 4 — The `npm run kaif:*` handles
 
 ### 6.3. Updating old deployments
 
-A pre-1.5 project updates by dropping the fresh thin `KAIF.md` on top and asking for an update:
-the installer detects the existing deployment and adopts everything it finds as local.
-Field-tested on a real 1.4 project — the owner's content survived byte-for-byte
-([homework 03](homeworks/03_DONE_field_test_update_real_14_project.md)).
+Drop the fresh thin `KAIF.md` on top of a pre-1.5 deployment and ask the agent for an update. The
+installer detects the existing deployment and adopts everything it finds as local; the owner's
+content survives such an update byte-for-byte.
 
 ## 7. Spheres, agent systems, languages
 
@@ -487,16 +482,14 @@ artifacts are never hand-edited.
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
-5. The manual counts 14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded files;
+5. The delivery holds 14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded files;
    161 bundle blocks; 689 modules.
 
 ### 8.5. Interesting facts
 
 #### 8.5.1. Metrics of the work on KAIF 2.2
 
-Measured at **2026-08-09 00:46 +03:00** by `node tools/kaif-stats.mjs --since
-"2026-08-07T00:00:00+03:00"`. The window is two days: from 2026-08-07 at 00:00 +03:00 to the moment of
-the measurement.
+The window is two days: from 2026-08-07 at 00:00 +03:00 to 2026-08-09 at 00:46 +03:00.
 
 Table 6 — Metrics of KAIF 2.2
 
@@ -515,8 +508,8 @@ Table 6 — Metrics of KAIF 2.2
 | Writing pace | 10 936 words per hour of active work | a human writes that many in 87 hours |
 | Tokens spent by the models in total | **3 011 949 062** | about **17 919 novels** read and written again |
 | Of those, written by the models themselves | 14 368 418 tokens | about **87 novels** |
-| Requests made by Fable 5 | 4 729 | it spent 50 % of the owner's weekly limit — that model's personal limit burnt out completely |
-| Requests made by Opus 5 | 4 945 | it spent 20 % of the owner's weekly limit |
+| Requests made by Fable 5 | 4 729 | it burnt that model's weekly limit down to zero |
+| Requests made by Opus 5 | 4 945 | it spent a fifth of that model's weekly limit |
 | Requests to the models in total | 9 676 | about 322 requests per session |
 | Chat sessions | 29 | — |
 | Plans written | 62 | — |
@@ -525,23 +518,23 @@ Table 6 — Metrics of KAIF 2.2
 | Research documents produced | 19 | — |
 | Owner interviews | 17 | — |
 | Reports written | 13 | — |
-| Files in the knowledge directories in total | **228** | counting the directory READMEs and the reports in nested folders |
+| Files in the knowledge directories in total | **228** | — |
 | Characters in those documents | **2 149 895** | — |
 | Words in those documents | **299 632** | about **3.7 novels** of 80 000 words worth of accompanying documentation, and the next session of the agent reads every page |
 | Owner decisions recorded | 65 | — |
 | Experience lessons written | 71 | — |
 | Skills in the delivery | 35 | — |
 | What Fable 5's work would cost if paid at Anthropic's public API prices | $2 429 | — |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | this money was NOT paid |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | — |
 | What all the work would cost if paid at Anthropic's public API prices | **$3 509** | about **594 hamburgers** at $5.91 — or 1.1 monthly salaries of a software engineer |
 | **Paid by subscription** | **≈ $16.89** | the share of a Claude Max subscription ($250 per month) that falls on two days of work |
 | How many times API prices exceed that subscription share | **208 times** | — |
-| If living people had written KAIF 2.2, their work would have amounted to | **5 517 person-hours** | a team of **five engineers working 138 days straight**. The rates are industry ones: 125 words per hour for technical prose, 27 lines of code per working day |
+| If living people had written KAIF 2.2, their work would have amounted to | **5 517 person-hours** | a team of **five engineers working 138 days straight** |
 | Payroll for those people | **$98 517** | at an engineer's salary of $3 000 per month |
-| Electricity spent on the computation | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days**. The rate is 0.0003 Wh per token — the median measurement of GPT-4o |
+| Electricity spent on the computation | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
 | How much human work falls on one hour of the pair's work | **190 person-hours** | one hour of a human working with the agent does what a human alone would do in 190 hours |
 
-Active work means the hours when work was actually happening: sleep and long pauses do not count.
+Active work means the hours when work was going on: sleep and long pauses do not count.
 
 ## License
 
@@ -549,8 +542,8 @@ Active work means the hours when work was actually happening: sleep and long pau
 The execution-discipline skills (`fable-*`) are vendored from
 [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
 
-Use it, copy it, modify it, ship it — including, as this repository shows, on the framework's own
-project. Thank you, and pleasant work!
+Use it, copy it, modify it, ship it — including on the framework's own project. Thank you, and
+pleasant work!
 
 ---
 ---
@@ -579,9 +572,8 @@ project. Thank you, and pleasant work!
 
 **КАИФ — Криник АИ Фреймворк — контекстоустойчивый фундаментальный стратегическо-операционный методологический фреймворк для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 
-Настоящий документ является руководством пользователя фреймворка: он описывает, чем KAIF является
-и как им пользоваться. История проекта живёт в
-[релизах](https://github.com/MikalaiKryvusha/KAIF/releases) и в разделе 8.1.
+История проекта живёт в [релизах](https://github.com/MikalaiKryvusha/KAIF/releases) и в
+разделе 8.1.
 
 <p align="center">
   <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="560">
@@ -602,23 +594,22 @@ project. Thank you, and pleasant work!
 
 ### 1.1. Основные положения
 
-1. KAIF (Krinik AI Framework) является методологическим фреймворком для ИИ-агентов: внешняя память
-   и дисциплина проекта, упакованные в markdown-файлы, которые агент читает и ведёт.
-2. Фреймворк не является кодом. Фреймворк является рабочим процессом, зафиксированным файлами:
-   ключевые документы, конвенции директорий и повторяемые навыки. Фреймворк применяется с любым
-   языком, любым стеком и в любой сфере — программирование, наука, дизайн, бизнес.
-3. Фреймворк устраняет два хронических отказа ИИ-агентов. Потеря контекста: без внешней памяти
-   каждая новая сессия заново открывает архитектуру, решения и недоделанную работу. Дрейф:
-   оставленный автономным, агент либо буксует, либо принимает решения, которые принимать не
-   вправе.
-4. Человек остаётся визионером; агент исполняет. Решения, формирующие продукт, — бренд, UX,
-   архитектура, нейминг — принимаются владельцем через документы интервью; всё, что дёшево
-   откатить, агент решает автономно.
-5. Сырому доверия нет. Исполнение ведётся по fable-циклу, всё созданное несёт маркер тест-статуса
-   (`[NOT-TESTED]` / `[TESTED: …]`), и состязательный судья перепроверяет заявления прежде, чем
-   работа считается сделанной.
-6. Фреймворк обладает полным жизненным циклом: развёртывание → обновление → форк → удаление.
-   Обновление выполняется механически и уважает каждую локальную правку (раздел 6).
+1. KAIF (Krinik AI Framework) — методологический фреймворк для ИИ-агентов: внешняя память и
+   дисциплина проекта, упакованные в markdown-файлы, которые агент читает и ведёт.
+2. Кода во фреймворке нет. Фреймворк — рабочий процесс, записанный файлами: ключевые документы,
+   конвенции директорий и повторяемые навыки. Он подходит любому языку, любому стеку и любой
+   сфере — программированию, науке, дизайну, бизнесу.
+3. Фреймворк лечит два хронических отказа ИИ-агентов. Потеря контекста: без внешней памяти каждая
+   новая сессия заново открывает архитектуру, решения и недоделанную работу. Дрейф: агент,
+   оставленный без присмотра, либо буксует, либо берётся за решения, которые принимать не вправе.
+4. Человек остаётся визионером, агент исполняет. Решения, которые формируют продукт — бренд, UX,
+   архитектуру, нейминг, — владелец принимает через документы интервью; всё, что дёшево откатить,
+   агент решает сам.
+5. Сырому доверия нет. Работа идёт по fable-циклу, всё созданное несёт маркер тест-статуса
+   (`[NOT-TESTED]` / `[TESTED: …]`), а состязательный судья перепроверяет заявления, прежде чем
+   работу засчитают сделанной.
+6. У фреймворка полный жизненный цикл: развёртывание → обновление → форк → удаление. Обновление
+   идёт механически и уважает каждую локальную правку (раздел 6).
 
 <p align="center">
   <picture>
@@ -634,21 +625,20 @@ project. Thank you, and pleasant work!
 - **Владелец** — человек, которому принадлежит проект; визионер. Владелец заполняет `GOAL.md`,
   отвечает на интервью и выносит вердикты по вопросам класса «вкус».
 - **Агент** — ИИ-система, работающая в проекте (Claude или любая другая); исполнитель.
-- **Навык** — повторяемый ритуал, выполняемый агентом по команде (`/resume`, `/release`, …);
-  глаголы работы над проектом. Полный набор приведён в Таблице 3.
-- **Сфера** — библиотека предметной области (программирование, наука, дизайн, бизнес),
-  адаптирующая дисциплину фреймворка к терминологии, правилам свидетельств и таблице фродов
+- **Навык** — повторяемый ритуал, который агент выполняет по команде (`/resume`, `/release`, …);
+  глаголы работы над проектом. Полный набор — Таблица 3.
+- **Сфера** — библиотека предметной области (программирование, наука, дизайн, бизнес). Она
+  подгоняет дисциплину фреймворка под терминологию, правила свидетельств и таблицу фродов этого
   домена.
 - **Канон** — обязывающие документы развёртывания (Таблица 1); при расхождении канона и
   импровизации побеждает канон.
 
 ### 1.3. Границы применения
 
-1. Фреймворк применяется к когнитивным проектам, которые ведёт ИИ-агент под человеком-владельцем.
-   Фреймворк не применяется как runtime-библиотека: внутри целевого продукта ничего не
-   исполняется.
-2. Дисциплина держится на документах, ритуалах и опциональных машинных стражах — не на памяти
-   модели. Развёртывание, в котором агент не читает канон перед задачами, пользы не получает.
+1. Фреймворк работает на когнитивных проектах, которые ведёт ИИ-агент под человеком-владельцем.
+   Runtime-библиотекой он не служит: внутри целевого продукта ничего не исполняется.
+2. Дисциплину держат документы, ритуалы и опциональные машинные стражи. Память модели её не
+   держит: развёртывание, где агент не читает канон перед задачами, пользы не получает.
 3. Фреймворк не принимает решений владельца ни при какой широте делегирования: идентичность
    (имена, слоганы, брендовые строки) и вкусовые вердикты остаются только за человеком.
 
@@ -656,35 +646,33 @@ project. Thank you, and pleasant work!
 
 ### 2.1. Основные положения
 
-1. Точкой входа является один файл: **[`KAIF.md`](KAIF.md)** (10 КБ). Агент читает его и выполняет
-   три шага бутстрапа с принудительными чекпоинтами; файл получает установочную машинерию из
-   настоящего репозитория, и машинерия развёртывает всё механически.
+1. Вход один — файл **[`KAIF.md`](KAIF.md)** (10 КБ). Агент читает его и выполняет три шага
+   бутстрапа с принудительными чекпоинтами; файл скачивает установочную машинерию из этого
+   репозитория, и машинерия развёртывает всё механически.
 2. Машинерия распаковывает документы, генерирует навыки сразу для пяти агентских систем,
    локализует документы владельца, подключает указатели автоконтекста, сверяет себя по
    sha256-манифесту и самоочищается. Единственная когнитивная работа агента — короткое задание
    `KAIF_ADAPTATION_TASK.md`: изучить проект, заполнить карты, вывести план.
-3. Тонкая установка заменяет чтение полного ядра: 10 КБ (`KAIF.md`, 10 207 байт) вместо 339 КБ
-   (`KAIF-FULL.md`, 346 920 байт) — чтения меньше в 34 раза. Когнитивное письмо сокращается в
-   66 раз.
+3. Агент читает 10 КБ вместо 339 КБ: тонкая установка снимает с него чтение полного ядра. Текста,
+   который он пишет своими словами, тоже становится меньше — в 66 раз.
 
 <a id="tested-ru"></a>
 
 ### 2.2. Порядок установки
 
-1. Файл [`KAIF.md`](KAIF.md) помещается в корень проекта.
-2. Агенту говорится:
+1. Положите [`KAIF.md`](KAIF.md) в корень проекта.
+2. Скажите агенту:
 
    > *«Разверни KAIF из KAIF.md»*
 
-   Агенту требуются рабочий Node.js и сетевой доступ к настоящему репозиторию.
-3. Если харнесс агента просит одобрить запуск полученного установщика — это штатное срабатывание
-   на паттерн «скачай и исполни»; одобряется один раз. Установщик сверяет каждый полученный
-   артефакт по `kaif-manifest.json` (sha256) до запуска.
-4. Владельцем даются ответы на вопросы адаптации (цель проекта, сфера, язык) и заполняется
-   `GOAL.md` — единственный документ, который пишет владелец.
-5. Сила модели значения не имеет: структуру делает машинерия, и каждый пункт адаптации несёт
-   принудительную чекпоинт-команду. Порядок сертифицирован в поле насквозь на локальной модели в
-   12 миллиардов параметров (домашка 02).
+   Агенту понадобятся рабочий Node.js и доступ в сеть к этому репозиторию.
+3. Одобрите запуск установщика, если харнесс агента об этом спросит. Он срабатывает на «скачай и
+   исполни» и спрашивает один раз; установщик сверяет каждый скачанный файл с
+   `kaif-manifest.json` по sha256 ещё до запуска.
+4. Ответьте на вопросы адаптации — цель проекта, сфера, язык — и заполните `GOAL.md`. Это
+   единственный документ, который пишете вы.
+5. Берите любую модель. Структуру строит машинерия, и каждый пункт адаптации несёт принудительную
+   чекпоинт-команду.
 
 <sub>Установка по умолчанию привязана к origin — именно этим работают проверка версии, уважительные
 обновления и петля полевых отчётов. Развернуть вообще без привязки к origin: добавьте
@@ -704,8 +692,7 @@ project. Thank you, and pleasant work!
 
 Развёртывание состоит из четырёх слоёв: команды (навыки, вызываемые человеком по имени),
 состояние и знание (живые документы, которые ведёт агент), правила работы (канон) и механика
-(`.kaif/` — контрольные суммы, обновление по происхождению, сферы). Слои показаны на схеме ниже;
-слои показаны на схеме ниже.
+(`.kaif/` — контрольные суммы, обновление по происхождению, сферы). Слои показаны на схеме ниже.
 
 <p align="center">
   <picture>
@@ -717,10 +704,8 @@ project. Thank you, and pleasant work!
 
 ### 3.2. Ключевые документы
 
-В корень проекта разворачиваются четырнадцать ключевых документов, и ещё один является
-опциональным — он появляется только там, где портрет голоса владельца действительно снят. Их
-назначение и ведущие приведены
-в Таблице 1.
+В корень проекта разворачиваются четырнадцать ключевых документов. Пятнадцатый, портрет голоса
+владельца, опционален и появляется там, где портрет снят.
 
 Таблица 1 — Ключевые документы развёртывания
 
@@ -744,9 +729,9 @@ project. Thank you, and pleasant work!
 
 ### 3.3. Директории знаний
 
-Разворачиваются шесть директорий знаний, каждая со своим локализованным README. Их назначение
-приведено в Таблице 2 (директорий — семь). Закрытые единицы в `bugs/`, `ideas/`, `plans/` и `homeworks/` получают тег
-`DONE` в имени файла; живые справочники тегом не помечаются.
+Разворачиваются семь директорий знаний, каждая со своим локализованным README. Закрытые единицы в
+`bugs/`, `ideas/`, `plans/` и `homeworks/` получают тег `DONE` в имени файла; живые справочники
+тегом не помечаются.
 
 Таблица 2 — Директории знаний
 
@@ -765,9 +750,9 @@ project. Thank you, and pleasant work!
 1. В `.kaif/` находятся маркер развёртывания (`kaif.json`), машинерия (`kaif-core.mjs`, на которой
    держатся ручки `npm run kaif:*`), библиотеки сфер и поставляемые шаблоны (например, скелет
    портрета голоса владельца `_owner-voice-template.md`).
-2. Каждый развёрнутый файл классифицируется по происхождению: template-sha фиксирует, каким был
-   шаблон, disk-sha — каким файл является сейчас. Машинерия обновления (раздел 6) сливает по этой
-   классификации, помодульно.
+2. Машинерия разбирает каждый развёрнутый файл по происхождению: template-sha помнит, каким был
+   шаблон, disk-sha — каков файл сейчас. По этому разбору обновление (раздел 6) и сливает файлы,
+   модуль за модулем.
 3. Обновление завершается проверкой `update-verify`: посистемные копии навыков ресинкаются с
    канонических `.claude/skills/`, плейсхолдеры пересканируются, маркер развёртывания
    самовосстанавливается, и рядом остаётся расписка `.kaif/last-update.json`.
@@ -785,7 +770,7 @@ project. Thank you, and pleasant work!
    тела навыков остаются английскими.
 2. Навыки генерируются сразу для пяти агентских систем — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.claude/skills/`.
-3. Разворачиваются тридцать пять навыков. Каждому отведена своя строка Таблицы 3.
+3. Разворачиваются тридцать пять навыков.
 
 Таблица 3 — Навыки
 
@@ -846,8 +831,8 @@ project. Thank you, and pleasant work!
 
 ### 5.2. Роли и интервью
 
-1. Владелец является визионером: заполняет `GOAL.md`, кладёт идеи в `ideas/`, отвечает на
-   интервью, выносит вкусовые вердикты. Агент является исполнителем: всё остальное.
+1. Владелец — визионер: заполняет `GOAL.md`, кладёт идеи в `ideas/`, отвечает на интервью,
+   выносит вкусовые вердикты. Агент — исполнитель: за ним всё остальное.
 2. Всё, чего агент хочет ОТ владельца — развилка, вычитка, одобрение, ответ, — живёт только в
    `interviews/`; вопросы закрытые A/B/C/D с рекомендацией первой, и владелец отвечает прямо в
    документе. Ответ на отрендеренной странице, в документе или в чате обладает равной силой и
@@ -865,38 +850,37 @@ project. Thank you, and pleasant work!
 
 ### 5.4. Дисциплина исполнения
 
-Любая нетривиальная задача исполняется по fable-циклу: классифицируй запрос → определи «готово» →
+Любую нетривиальную задачу агент ведёт по fable-циклу: классифицируй запрос → определи «готово» →
 собери свидетельства → реши → действуй хирургически → проверь наблюдением → доложи
 результатом-вперёд, с принудительными артефактами на точках решения. Когда работа объявлена
-завершённой — своя или чужая, — `/fable-judge` состязательно перепроверяет заявления прежде, чем
-работа считается сделанной.
+завершённой — своя или чужая, — `/fable-judge` состязательно перепроверяет заявления, прежде чем
+работу засчитают сделанной.
 
 <a id="guardrails-ru"></a>
 
 ### 5.5. Гвардрейлы и провенанс
 
-1. Наблюдение побеждает домысел: заявления возводятся к источникам, а пробел в каноне открывает
-   ровно три двери — найти в существующем источнике истины, спросить владельца; выдумать
-   запрещено.
+1. Наблюдение побеждает домысел: у каждого заявления назван источник, а пробел в каноне открывает
+   ровно три двери — найти ответ в существующем источнике истины, спросить владельца, выдумать
+   правдоподобное. Третья дверь закрыта.
 2. ИИ-текст в канон-артефактах владельца несёт пометки провенанса `[AI]…[/AI]`; пометку снимает
    только слово владельца. Опциональные машинные инструменты (гейт провенанса, линтер канона)
    поставляются модулями и подключаются по запросу.
 3. Страж текстового правила работает с шумом ~10 ложных срабатываний на 1 настоящее; исключения
-   явные, с причиной в строке. Ложный маркер `[TESTED]` является фродом для судьи.
+   явные, с причиной в строке. Ложный маркер `[TESTED]` судья считает фродом.
 
 ### 5.6. Свежий контекст
 
 1. Правила, прочитанные один раз на старте сессии, тают по мере заполнения и сжатия контекста:
-   длинная сессия держит в голове пересказ канона. Поэтому ядро перечитывания
-   перечитывается по четырём триггерам — час живой работы, старт тяжёлой
-   задачи, сжатие контекста или длинный простой, и точки ритуалов (`/resume`,
-   `/refresh-context`, каждая итерация циклов).
-2. Освежение является проверяемым действием. Свидетельство двухчастное, и обе
-   части обязательны: маркер `.kaif/refresh-marker.json` (момент, что перечитано, какой триггер) и
-   цитата-приёмка в чате — одна конкретная строка из перечитанного, относящаяся к задаче в работе.
-   Маркер без цитаты является фродом того же класса, что ложный `[TESTED]`.
+   длинная сессия держит в голове пересказ канона. Поэтому агент перечитывает ядро канона по
+   четырём триггерам — час живой работы, старт тяжёлой задачи, сжатие контекста или длинный
+   простой, и точки ритуалов (`/resume`, `/refresh-context`, каждая итерация циклов).
+2. Освежение — проверяемое действие. Свидетельство двухчастное, и обе части обязательны: маркер
+   `.kaif/refresh-marker.json` (момент, что перечитано, какой триггер) и цитата-приёмка в чате —
+   одна конкретная строка из перечитанного, относящаяся к задаче в работе. Маркер без цитаты —
+   фрод того же класса, что ложный `[TESTED]`.
 3. Агент знает свою машину из собственных проб: досье окружения в `AGENT_GUIDE.md`
-   фиксирует, чем на самом деле являются шеллы, тулчейн и кодировки, держит рядом с каждым фактом
+   фиксирует, чем являются шеллы, тулчейн и кодировки этой машины, держит рядом с каждым фактом
    команду пробы и объявляет факты старше четырёх недель снова гипотезами.
 
 ## 6. Обновление, форк, удаление
@@ -917,8 +901,8 @@ project. Thank you, and pleasant work!
 
 ### 6.2. Ручки
 
-Механические ручки, устанавливаемые в `package.json`, приведены в Таблице 4. Форк, переключение
-origin и удаление выполняются своими навыками — они спрашиваются у агента.
+Механические ручки, которые ставятся в `package.json`, собраны в Таблице 4. Форк, переключение
+origin и удаление делают свои навыки — попросите их у агента.
 
 Таблица 4 — Ручки `npm run kaif:*`
 
@@ -930,11 +914,9 @@ origin и удаление выполняются своими навыками 
 
 ### 6.3. Обновление старых развёртываний
 
-Проект с развёртыванием старше 1.5 обновляется так: свежий тонкий `KAIF.md` кладётся поверх, и у
-агента запрашивается обновление — установщик обнаруживает существующее развёртывание и принимает
-всё найденное как локальное. Проверено в поле на реальном проекте с 1.4 — содержимое владельца
-пережило обновление байт в байт
-([домашка 03](homeworks/03_DONE_field_test_update_real_14_project.md)).
+Положите свежий тонкий `KAIF.md` поверх развёртывания старше 1.5 и попросите агента обновиться.
+Установщик найдёт существующее развёртывание и примет всё найденное как локальное; содержимое
+владельца переживает такое обновление байт в байт.
 
 ## 7. Сферы, агентские системы, языки
 
@@ -970,8 +952,8 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 
 ### 8.1. Вехи
 
-История в одной таблице; каждое кодовое имя является дисциплиной, которую фреймворк выучил.
-Полные ноты (с 1.1) живут в [релизах](https://github.com/MikalaiKryvusha/KAIF/releases).
+История в одной таблице; каждое кодовое имя — дисциплина, которую фреймворк выучил. Полные ноты
+(с 1.1) живут в [релизах](https://github.com/MikalaiKryvusha/KAIF/releases).
 
 Таблица 5 — Версии
 
@@ -993,7 +975,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 ```
 KAIF.md                               ⭐ тонкая точка входа (бутстрап + встроенный загрузчик), генерируется
 KAIF_REFERENCE.md                     полная пояснительная записка (генерируется из framework/KAIF_REFERENCE.md)
-README.md                             настоящее руководство (EN+RU)
+README.md                             это руководство (EN+RU)
 README.pdf                            его отрендеренная копия
 LICENSE                               MIT
 KAIF.jpg                              логотип
@@ -1026,9 +1008,9 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 ### 8.3. Этот репозиторий фрактален
 
-Настоящий репозиторий является фреймворком и обёрнут фреймворком — он использует сам себя. В
-корне живут настоящие `AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/` и директории знаний,
-описывающие разработку самого фреймворка. Развёртывание в другой проект начинается только с
+Этот репозиторий и есть фреймворк, и он же обёрнут фреймворком — он применяет себя к себе. В корне
+живут рабочие `AGENT_GUIDE.md`, `STATUS.md`, `.claude/skills/` и директории знаний, по которым
+идёт разработка самого фреймворка. Развёртывание в другой проект начинается только с
 `KAIF.md` — не с файлов обвязки этого репозитория. Всё нужное развёртыванию машинерия берёт из
 `dist/`, который генерируется из `framework/` командой `node tools/build-framework.mjs`;
 сгенерированные артефакты руками не правятся.
@@ -1043,15 +1025,14 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
-5. В руководстве описаны 14 документов + 7 README + 35 навыков + 1 распаковщик = 57 встроенных
-   файлов; 161 блок бандла; 689 модулей.
+5. В поставке 14 документов + 7 README + 35 навыков + 1 распаковщик = 57 встроенных файлов;
+   161 блок бандла; 689 модулей.
 
 ### 8.5. Интересные факты
 
 #### 8.5.1. Метрики работ по версии KAIF 2.2
 
-Замер 09.08.2026 в 00:46 +03:00 командой `node tools/kaif-stats.mjs --since
-"2026-08-07T00:00:00+03:00"`. Окно — двое суток: с 00:00 07.08.2026 до момента замера.
+Окно — двое суток: с 00:00 07.08.2026 до 00:46 09.08.2026.
 
 Таблица 6 — Метрики версии KAIF 2.2
 
@@ -1070,8 +1051,8 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Темп письма | 10 936 слов за час активной работы | человек пишет столько за 87 часов |
 | Токенов израсходовано моделями всего | **3 011 949 062** | примерно **17 919 романов** прочитано и написано заново |
 | Из них написано самими моделями | 14 368 418 токенов | около **87 романов** |
-| Запросов сделала модель Fable 5 | 4 729 | израсходовала 50 % недельного лимита владельца — личный лимит этой модели выжжен полностью |
-| Запросов сделала модель Opus 5 | 4 945 | израсходовала 20 % недельного лимита владельца |
+| Запросов сделала модель Fable 5 | 4 729 | выжгла недельный лимит этой модели до нуля |
+| Запросов сделала модель Opus 5 | 4 945 | израсходовала пятую часть недельного лимита этой модели |
 | Запросов к моделям всего | 9 676 | примерно 322 запроса на одну сессию |
 | Сессий работы в чате | 29 | — |
 | Планов написано | 62 | — |
@@ -1080,24 +1061,23 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Исследований проведено | 19 | — |
 | Интервью с владельцем | 17 | — |
 | Отчётов написано | 13 | — |
-| Файлов в директориях знания всего | **228** | считая README директорий и отчёты во вложенных папках |
+| Файлов в директориях знания всего | **228** | — |
 | Символов в этих документах | **2 149 895** | — |
 | Слов в этих документах | **299 632** | примерно **3,7 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
 | Решений владельца зафиксировано | 65 | — |
 | Уроков опыта записано | 71 | — |
 | Навыков в поставке | 35 | — |
 | Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | — |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | эти деньги НЕ платились |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | — |
 | Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$3 509** | примерно **594 гамбургера** по $5,91 — или 1,1 месячной зарплаты инженера-программиста |
 | **Заплачено по подписке** | **≈ $16,89** | доля подписки Claude Max ($250 в месяц), пришедшаяся на двое суток работы |
 | Во сколько раз прайс API дороже доли подписки за тот же срок | **208 раз** | — |
-| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **5 517 человеко-часов** | команда из **пяти инженеров работала бы 138 дней подряд**. Ставки взяты отраслевые: 125 слов в час для технической прозы, 27 строк кода за рабочий день |
+| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **5 517 человеко-часов** | команда из **пяти инженеров работала бы 138 дней подряд** |
 | Фонд оплаты труда этих людей | **$98 517** | при зарплате инженера 3 000 $ в месяц |
-| Электроэнергии израсходовано на вычисления | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток**. Ставка — 0,0003 Вт·ч на токен, медианный замер GPT-4o |
+| Электроэнергии израсходовано на вычисления | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток** |
 | Сколько работы людей приходится на один час работы тандема | **190 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 190 часов |
 
-Активной работой считаются те часы, когда работа действительно шла: сон и длинные паузы в подсчёт
-не идут.
+Активная работа — часы, когда работа шла: сон и длинные паузы в подсчёт не идут.
 
 ## Лицензия
 
@@ -1105,5 +1085,5 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 Навыки дисциплины исполнения (`fable-*`) вендорены из
 [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
 
-Используйте, копируйте, меняйте, поставляйте — в том числе, как показывает настоящий репозиторий,
-на проекте самого фреймворка. Спасибо и приятной работы!
+Используйте, копируйте, меняйте, поставляйте — в том числе на проекте самого фреймворка. Спасибо и
+приятной работы!
