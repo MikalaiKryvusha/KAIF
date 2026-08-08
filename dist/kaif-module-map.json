@@ -1346,12 +1346,12 @@
         ]
       },
       {
-        "signature": "### 11.3 Anonymity",
+        "signature": "### 11.3 Install mode: origin by default, anonymity on request",
         "class": "static",
-        "sha256": "dcc15859ba7b566f94d75aee2cfb8101a78c5244ef0fc5a85088882cfaebbc5d",
+        "sha256": "8debd5a1abab165b5f2c6b6ba8e64954415fafd9cb15d95154ef535a7e8672e6",
         "lines": [
           292,
-          299
+          306
         ]
       },
       {
@@ -1359,17 +1359,17 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          300,
-          301
+          307,
+          308
         ]
       },
       {
         "signature": "### 12.1 The marker (`.kaif/kaif.json`)",
         "class": "static",
-        "sha256": "197191373a9da4adf45b9a1c94de6fb2c3e51a15f4ba3358ba340a098d22809d",
+        "sha256": "ea97ef82db114753b1edbed90a93c439ddf7dd8ff55bf3ce79eb130c38a54d58",
         "lines": [
-          302,
-          320
+          309,
+          327
         ]
       },
       {
@@ -1377,8 +1377,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          321,
-          329
+          328,
+          336
         ]
       },
       {
@@ -1386,8 +1386,8 @@
         "class": "static",
         "sha256": "bbbe655e8707eb05712b6dead34ce3a290bc637b696deec73cba7993565c415c",
         "lines": [
-          330,
-          336
+          337,
+          343
         ]
       },
       {
@@ -1395,8 +1395,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          337,
-          353
+          344,
+          360
         ]
       },
       {
@@ -1404,8 +1404,8 @@
         "class": "static",
         "sha256": "005f6f41a8ef92d09ae48dc5080200ad744b295e05acbfde295f9a7c5d24cbaa",
         "lines": [
-          354,
-          388
+          361,
+          395
         ]
       },
       {
@@ -1413,8 +1413,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          389,
-          401
+          396,
+          408
         ]
       },
       {
@@ -1422,8 +1422,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          402,
-          410
+          409,
+          417
         ]
       }
     ],

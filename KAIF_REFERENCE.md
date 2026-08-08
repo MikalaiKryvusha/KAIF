@@ -290,7 +290,14 @@ lies on disk, refreshed post-merge). Authority to replace derives ONLY from temp
 an adaptation that survived one update cannot die in the next. Template and module hashes are
 EOL-normalized; the disk snapshot (`shas`) is byte-exact.
 
-### 11.3 Anonymity
+### 11.3 Install mode: origin by default, anonymity on request
+
+The install mode defaults to `standard`, which records `tracking: "origin"` together with the
+origin URL: version checks, respectful updates and the feedback loop are available to a fresh
+deployment without further configuration. Anonymity is never reached by default — only by the
+explicit flag. The default is guarded by the sandbox polygon (suite `s01`), which asserts the
+marker of a flag-free install rather than the wording of the help text: help is prose, the marker
+is behaviour.
 
 `--mode anonymous`: origin-tied skills are skipped, author regions stripped, the acronym
 de-expanded; no origin field, no core kept after self-clean. The deploy manifest carries no origin
@@ -306,7 +313,7 @@ the owner's name is not a leak.
 |---|---|
 | `framework` | Always `"KAIF"`. |
 | `version`, `released` | Deployed version and its release date. |
-| `tracking` | `"origin"` or `"anonymous"`. |
+| `tracking` | `"origin"` (the default, §11.3) or `"anonymous"`. |
 | `origin` | The origin URL (absent on anonymous). |
 | `sphere` | The project's sphere; its library shall exist at `.kaif/spheres/<sphere>.md`. |
 | `agents` | The declared agent systems (array). |

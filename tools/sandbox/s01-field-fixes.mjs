@@ -67,6 +67,19 @@ const reqFw = join(S1, 'REQUIREMENTS_FRAMEWORK.md');
 ok(existsSync(reqFw), 'S1 REQUIREMENTS_FRAMEWORK: свежая установка кладёт 14-й ключевой документ');
 ok(existsSync(reqFw) && readFileSync(reqFw, 'utf8').includes('goal vector'),
    'S1 REQUIREMENTS_FRAMEWORK: несёт дисциплину goal vector + acceptance criteria');
+// T5 (plans/26 §4, решение владельца №53): ДЕФОЛТНАЯ УСТАНОВКА = ORIGIN.
+// Факт кода («--mode standard (default)» → tracking origin) задачу не закрывает — закрывает
+// СТРАЖ: без него следующая правка машинерии уводит дефолт в анонимность молча, и поле теряет
+// обновления, отчёты и петлю обратной связи из коробки. Стережём НАБЛЮДАЕМЫЙ результат
+// (маркер после установки без единого флага), а не строку помощи: помощь — проза, маркер — поведение.
+// [TESTED: 2026-08-08 · красный доказан мутацией дефолта `val('--mode') || 'anonymous'` в
+//  framework/installer/KAIF-CORE.mjs → оба ассерта S1 красные, S2 остаётся зелёным]
+const mkT5 = JSON.parse(readFileSync(join(S1, '.kaif', 'kaif.json'), 'utf8'));
+ok(mkT5.tracking === 'origin', 'S1 T5: установка БЕЗ флагов даёт tracking=origin (дефолт не анонимный)',
+   `tracking=${mkT5.tracking}`);
+ok(mkT5.origin === 'https://github.com/MikalaiKryvusha/KAIF',
+   'S1 T5: маркер несёт адрес origin (обновления и петля обратной связи работают из коробки)',
+   `origin=${mkT5.origin}`);
 // схема маркера (Reference §12.1): битое поле — красный, восстановление — зелёный
 const mkPath = join(S1, '.kaif', 'kaif.json');
 const mk0 = readFileSync(mkPath, 'utf8');
@@ -88,6 +101,19 @@ r = run(S2, 'check'); // БЕЗ --mode — репро issue #1: старый к�
 ok(r.code === 0, 'S2 check БЕЗ --mode зелёный (ANON выведен из маркера) — фикс GH#1', r.out.slice(-600));
 r = run(S2, 'check --mode standard'); // явный CLI-override побеждает — ожидаемо красный
 ok(r.code !== 0 && /MISSING/.test(r.out), 'S2 check --mode standard красный (явный флаг сильнее маркера — контраст)');
+// T5 (plans/26 §4): анонимность — ОСОЗНАННЫЙ ВЫБОР по явной просьбе, вторая половина стража.
+// Ассерт «origin по умолчанию» без этой пары доказывает только полдела: дефолт мог бы стать
+// origin оттого, что анонимный путь сломан. Здесь стережём, что явный флаг всё ещё работает
+// и что поля origin в анонимном маркере НЕТ (анонимность по построению, не подчисткой прозы).
+const mkT5anon = JSON.parse(readFileSync(join(S2, '.kaif', 'kaif.json'), 'utf8'));
+ok(mkT5anon.tracking === 'anonymous', 'S2 T5: --mode anonymous даёт tracking=anonymous (явная просьба работает)',
+   `tracking=${mkT5anon.tracking}`);
+ok(!('origin' in mkT5anon), 'S2 T5: анонимный маркер НЕ несёт origin (анонимность по построению)');
+// И обновление НЕ переводит режим молча: анонимное развёртывание отказывается обновляться
+// по сети и называет причину — режим существующего проекта менять может только владелец.
+r = run(S2, 'update');
+ok(r.code !== 0 && /anonymous install tracks no origin/.test(r.out),
+   'S2 T5: update на анонимном развёртывании отказывается (режим не меняется молча)', r.out.slice(-300));
 // сфера без библиотеки → громкое предупреждение (оно в stderr — сливаем потоки)
 run(S2, 'sphere game-design');
 r = run(S2, 'check 2>&1');

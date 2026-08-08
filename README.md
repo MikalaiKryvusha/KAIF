@@ -117,11 +117,17 @@ and in section 8.1.
    forced checkpoint command. The procedure is field-certified end-to-end on a local
    12-billion-parameter model (homework 02).
 
-### 2.3. Anonymous installation
+### 2.3. Install mode: origin by default, anonymity on request
 
-If the install mode is anonymous, the deployment carries no origin tracking and no author
-references: origin-tied skills are skipped, the author's note is stripped mechanically, and a
-final grep-gate refuses to finish while any identity leak remains.
+An installation is **standard** unless the owner asks otherwise: the deployment is tracked to the
+origin, so version checks, respectful updates and the field-report loop work out of the box.
+Anonymity is a conscious choice, never a default — it is entered only by the explicit
+`--mode anonymous`.
+
+In that mode the deployment carries no origin tracking and no author references: origin-tied
+skills are skipped, the author's note is stripped mechanically, and a final grep-gate refuses to
+finish while any identity leak remains. An update never converts a deployment between the two
+modes: an anonymous deployment refuses to update over the network and says so.
 
 ### 2.4. Offline installation
 
@@ -575,11 +581,18 @@ project. Thank you, and pleasant work!
    принудительную чекпоинт-команду. Порядок сертифицирован в поле насквозь на локальной модели в
    12 миллиардов параметров (домашка 02).
 
-### 2.3. Анонимная установка
+### 2.3. Режим установки: origin по умолчанию, анонимность по просьбе
 
-Если выбран анонимный режим, развёртывание не несёт ни трекинга origin, ни упоминаний автора:
-навыки, привязанные к origin, пропускаются, записка автора вырезается механически, и финальный
-греп-гейт отказывается завершаться, пока остаётся хотя бы одна утечка идентичности.
+Установка является **обычной**, пока владелец не попросил иного: развёртывание привязано к
+origin, поэтому проверка версии, уважительные обновления и петля полевых отчётов работают из
+коробки. Анонимность — осознанный выбор, а не режим по умолчанию: в неё входят только явным
+`--mode anonymous`.
+
+В этом режиме развёртывание не несёт ни трекинга origin, ни упоминаний автора: навыки,
+привязанные к origin, пропускаются, записка автора вырезается механически, и финальный греп-гейт
+отказывается завершаться, пока остаётся хотя бы одна утечка идентичности. Обновление никогда не
+переводит развёртывание из режима в режим: анонимное развёртывание отказывается обновляться по
+сети и называет причину.
 
 ### 2.4. Офлайн-установка
 
