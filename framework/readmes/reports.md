@@ -14,7 +14,9 @@ in git):
   Origin-tracked deployments also send them upstream; detached ones keep them local only.
 - **`KAIF_AUDIT/`** — comprehensive audit reports by strong models (agentic codebase review),
   grouped one document per finding class/family, with rich accompanying meta (links, dates,
-  document names) so that weaker models can later execute the fixes.
+  document names) so that weaker models can later execute the fixes. Written by `/code-revision`;
+  the skeletons and the per-finding field contract live in that skill's
+  `references/audit-report-template.md`.
 
 **For the human (owner):** browse here for milestone write-ups and field evidence; reports are
 records, not opinions — every claim carries a command or a quote behind it.

@@ -2109,7 +2109,10 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Code quality (2.1):** `code-revision` — the periodic reading revision of the codebase by the
   strongest model: zoned parallel reviewers armed with the project's paid-for failure classes
   (EXPERIENCE + bugs), verbatim quote per finding, adversarial skeptic with the default verdict
-  "not a defect"; survivors become bug docs and feed the guardrails.
+  "not a defect"; survivors become bug docs and feed the guardrails. Since 2.2 the run also leaves
+  audit reports in `reports/KAIF_AUDIT/` — one document per finding family plus a summary with the
+  coverage map and the limits — and each finding is written as an eight-field contract a weaker
+  model can execute (skeletons: the skill's `references/audit-report-template.md`).
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
@@ -2565,7 +2568,9 @@ in git):
   Origin-tracked deployments also send them upstream; detached ones keep them local only.
 - **`KAIF_AUDIT/`** — comprehensive audit reports by strong models (agentic codebase review),
   grouped one document per finding class/family, with rich accompanying meta (links, dates,
-  document names) so that weaker models can later execute the fixes.
+  document names) so that weaker models can later execute the fixes. Written by `/code-revision`;
+  the skeletons and the per-finding field contract live in that skill's
+  `references/audit-report-template.md`.
 
 **For the human (owner):** browse here for milestone write-ups and field evidence; reports are
 records, not opinions — every claim carries a command or a quote behind it.
@@ -2831,7 +2836,7 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 ``````md
 ---
 name: code-revision
-description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code by axis, run parallel reviewers each armed with the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or on the cadence the project sets (e.g., every N weeks); distilled from two field audits (KLAS and NDim) that found every real defect OUTSIDE what gates could see.
+description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code by axis, run parallel reviewers each armed with the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. The run leaves audit reports in `reports/KAIF_AUDIT/` grouped by finding family, each finding written as a contract a weaker model can execute. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or on the cadence the project sets (e.g., every N weeks); distilled from two field audits (KLAS and NDim) that found every real defect OUTSIDE what gates could see.
 ---
 
 # /code-revision — the periodic reading revision
@@ -2844,11 +2849,27 @@ model buys: one strong hour closes weeks of accumulated weak-session gaps — an
 `EXPERIENCE.md` and the sphere's craft recipes, which is what makes the WEAK sessions smarter
 afterwards.
 
-## Step 0 — scope and cadence
+> The output artifact — report skeletons, the finding contract, excluded classes, the noise budget
+> — loads on demand: `references/audit-report-template.md` (a reviewer handed bloated instructions
+> silently drops part of them). Steps marked *[judgment]* need the strong model; *[mechanical]*
+> ones are code at any strength (`AGENT_GUIDE.md` → "Strictness modes", the model split).
+
+## Step 0 — scope, cadence, and the ground before the hunt
 
 Owner-triggered or on the project's recorded cadence. Scope: the zones touched since the last
 revision (git log since the last revision's record), or the whole codebase on the first run.
-Record the run's scope line in the chat before starting.
+Record the run's scope line in the chat before starting. What is hunted is wider than bugs —
+**defects · vulnerabilities · frauds · contradictions · omissions**, including the omission of
+something the canon promised; what is NOT hunted is named just as explicitly (excluded classes,
+reference §5), because a revision reporting everything is ignored entirely.
+
+- **Map the ground** *[judgment]*: subsystems, boundaries, contracts, what each zone is FOR, before
+  any hunting — a reviewer who does not know a boundary reports crossing it as a defect. The map
+  goes into the report's methodology table, so the next run inherits it.
+- **Run the code first** *[mechanical]*: linters, guards, pairs-registry commands, the greps that
+  encode already-paid classes. Mechanical checks precede any LLM judgment
+  (`BUG_FIXING_FRAMEWORK.md` → "A finding is not a finding until verified", point 1); their output
+  is evidence, and what code can find the model must not be spent on.
 
 ## Step 1 — zone and arm the reviewers
 
@@ -2869,6 +2890,12 @@ Record the run's scope line in the chat before starting.
 Every finding carries a verbatim quote (file:line + the exact text). A finding without its quote
 does not exist — this single rule kept both field audits' reports checkable by script.
 
+The full card is eight fields (reference §3); the three that decide whether a WEAKER model can
+execute the fix are the repro stated as a class condition, the verification command inside the
+card, and the link to a paid class. Every finding is also marked against the baseline — `new` /
+`known: <id>` / `regression of <id>` — reusing the feedback loop's deduplication fingerprint and
+its attestation line, never a second key minted here.
+
 ## Step 3 — the adversarial skeptic (mandatory, not optional)
 
 Every finding goes to a SEPARATE skeptic whose job is to REFUTE it and whose default verdict is
@@ -2881,7 +2908,9 @@ move forward.
 
 - Each surviving finding is verified by REPRODUCTION before any fix (a finding is not a finding
   until verified — `BUG_FIXING_FRAMEWORK.md`).
-- Survivors become `bugs/` documents (same-class findings → ONE class doc with a full inventory).
+- Survivors become `bugs/` documents (same-class findings → ONE class doc with a full inventory)
+  AND land in the run's audit reports: one document per family, plus a summary carrying the verdict
+  first, the coverage map and the limits (reference §§1–2).
 - Fixes are a separate pass from the revision (separate commits; every fix proves itself with an
   ADDRESSED mutation: *mutant M → exactly checks P₁…Pₙ red, and only they; intact code → 0 red*).
 - Refuted findings are recorded WITH their refutation reason — otherwise the next revision "finds"
@@ -2891,11 +2920,12 @@ move forward.
 
 - Every confirmed class appends an `EXPERIENCE.md` lesson **with its Repro line and Trigger
   point**; a class seen for the SECOND time must leave as a mechanism (linter/guard/gate), not as
-  a third reminder.
+  a third reminder — a finding the model raised twice is the specification for a grep guard.
 - New craft gaps go into the sphere's craft recipes (the guardian skeleton, platform patterns) —
   that is the amplification: the strong model's reading becomes the weak models' recipes.
 - Record the revision (date, scope, found/refuted/fixed counts) so the next run knows its
-  baseline.
+  baseline, and name what the NEXT run must change — one pass finds roughly half, and an identical
+  pass finds the same half.
 
 ## What this skill refuses to do
 
@@ -2903,6 +2933,149 @@ move forward.
 - Skip the skeptic — unrefuted findings are half false, and false findings become false work.
 - Treat "the gates are green" as a reason not to read — the gates not lying is exactly what both
   audits confirmed, and every real defect was outside them anyway.
+- Report a finding a weaker model cannot act on, or claim coverage the coverage map does not show.
+``````
+
+> **FILE: `.claude/skills/code-revision/references/audit-report-template.md`** — verbatim
+
+``````md
+# The audit report — the output contract of `/code-revision`
+
+Loaded on demand by the skill. The body of `/code-revision` describes the PROCEDURE; this file
+describes the ARTIFACT the procedure must leave behind. Copy the skeletons below; do not restate
+them from memory.
+
+Why the artifact is specified at all: in the field, revision reports carried the verdict and the
+class table but pushed every piece of forensics into other documents — so the report could not be
+re-checked line by line, and a weaker session could not act on it without the author. A finding
+that a weaker executor cannot execute is an unfinished finding.
+
+## 1. Where it goes
+
+Reports live in `reports/KAIF_AUDIT/`, whose genre is fixed by `reports/README.md` — records, not
+tasks: never `DONE`-tagged, never rewritten, corrections appended. One run produces:
+
+| File | Audience | Holds |
+|---|---|---|
+| `<date>_<scope>_SUMMARY.md` | the owner, and the next revision | verdict first · scope & methodology · coverage map · family table · inventory of confirmed/refuted · limits |
+| `<date>_<scope>_<family-slug>.md` | the executors who will fix | one FAMILY: its mechanism, then a finding card per occurrence |
+
+One document per finding family — never one per finding, and never one per subsystem. The family
+is the unit because a class is what a fix must close (`BUG_FIXING_FRAMEWORK.md` → "Close the class,
+not the instance"), and because it lets the next revision recognise a NEW FACE of a known class
+rather than only a repeated line.
+
+## 2. SUMMARY skeleton
+
+```markdown
+# Audit <NN> — <scope in five words> (<date>)
+
+**Verdict (before the evidence):** <2-4 sentences: what the gates did or did not miss, how many
+findings were raised, how many survived the skeptic, and the one thing the owner should know.>
+
+## Scope and methodology
+| Field | Value |
+|---|---|
+| Commit / tree state | <sha + dirty?> |
+| Slice | <whole base · zones touched since <date/sha> · named subsystems> |
+| Axes run | <the axes; the standing set plus this project's own> |
+| Model / reviewers | <which model, how many parallel reviewers, how many skeptics> |
+| Deterministic layer | <which greps, linters, guards, pair-registry commands ran FIRST, and their output> |
+| Excluded classes | <the noisy classes deliberately not hunted — see §5> |
+| Run | <n of a planned series; a single run finds roughly half> |
+
+## Coverage map
+| Zone | Looked at | Not looked at | Why |
+
+## Families found
+| # | Family | Occurrences | Mechanism (one sentence, no property names) |
+
+## Inventory
+**Confirmed (<n>):** `<family-doc#F1>` (<one line>, <severity>) · …
+**Refuted (<n>), and why that is also the result:** `<claim>` — refuted because <the decision
+document, guard or observation that killed it> · …
+
+## Limits (honesty)
+- What this run did NOT cover.
+- "Confirmed" means "the skeptic failed to refute it", not "true".
+- Which findings sit on the defect/hygiene border and are called out as such.
+```
+
+The **Limits** section is not decoration: without it a report silently upgrades "not refuted" to
+"true", which is the same fraud class as a false `[TESTED]` (`TESTING_FRAMEWORK.md`).
+
+## 3. FAMILY document and the finding card
+
+```markdown
+# Audit <NN> · Family: <name> (<date>)
+
+**Mechanism:** <one sentence describing HOW the failure happens — never the name of a property,
+never a symptom.>
+**Already guarded by:** <tool/suite/assert, or "not guarded" — this is what tells the reader
+whether a new guard is owed.>
+**Occurrences:** F1 … Fn, ordered by cost, descending.
+
+## F<n> — <a CLAIM about what is broken and with what effect>
+```
+
+Each card carries these fields, and a card missing one is not shippable:
+
+| # | Field | Must contain | Fails when |
+|---|---|---|---|
+| 1 | **Quote** | `path:line` plus the exact text, byte-for-byte | paraphrase, ellipsis, or a line that does not exist — no quote, no finding |
+| 2 | **Failure scenario** | concrete inputs/state → the wrong output, as it would actually occur | the word "theoretically"; a scenario nobody can reach |
+| 3 | **Severity** | impact × likelihood, plus the decision: **Act** (fix now) / **Attend** (fix in the cycle) / **Track** (watch) | a bare label with no impact and no likelihood behind it |
+| 4 | **Baseline** | `new` · `known: <bugs/NN or EXP-NNNN>` · `regression of <id>` — with the attestation line naming what was grepped | claiming novelty without the search behind it |
+| 5 | **Fix sketch** | the mechanism, executable without the finder present — or an honest direction if the fix needs a decision | "be more careful"; a fix only its author could apply |
+| 6 | **Fix accepted when** | a machine-checkable *fit criterion* (`REQUIREMENTS_FRAMEWORK.md`): the command, grep or test, and the output that means "fixed" | an unmeasurable criterion — that is a wish, not an acceptance test |
+| 7 | **Do not touch** | the neighbouring behaviour that must stay as it is, and why | absent — the executor then "fixes" the surroundings too |
+| 8 | **Meta** | dates, related findings, the decision documents read, the paid class this belongs to | a finding floating free of the project's own history |
+
+Field 4 uses the feedback loop's EXISTING deduplication key and its attestation rule — do not mint
+a second one. Field 6 is a fit criterion under its canonical name. Field 3's severity is the
+finding's own; the VERDICT vocabulary for whether a finding survived is the judge's
+(VERIFIED / VERIFIED WITH CAVEATS / REFUTED) — no parallel scale is invented here.
+
+## 4. What makes a card executable by a weaker model
+
+Three fields carry that weight, and field evidence is what put them here:
+
+- **The repro stated as a CLASS condition**, not as one incident: "any project where <condition>"
+  rather than "on my machine at 14:20". The class form is what lets a session that never saw the
+  original run reach the same state.
+- **The verification command inside the card**, so the claim can be re-checked without reading the
+  codebase — the same discipline the deterministic layer runs under.
+- **The link to a paid class** (`bugs/NN`, `EXP-NNNN`). A finding attached to a class the project
+  already paid for is recognised; a free-floating finding is re-litigated.
+
+Findings are written blameless: a weak model's failure is a missing guardrail, never a stupid
+model. That framing is the feedback loop's, and it applies unchanged here.
+
+## 5. Excluded classes and the noise budget
+
+A revision that reports everything is ignored entirely. Name the excluded classes in the report's
+methodology table, so exclusion is a stated decision rather than a silent gap. Start from this
+list and let the project add its own:
+
+- style, formatting and naming preferences with no behavioural effect;
+- theoretical resource exhaustion with no reachable trigger;
+- generic input-validation observations not tied to a concrete misuse;
+- duplication that the project has recorded as a deliberate trade;
+- anything already carried as a named, dated, deferred debt.
+
+**Effective false positive** = a finding on which the executor took no action. It is the metric
+that decides whether the next revision gets read at all: past roughly one in ten, operators start
+ignoring the tool, and a report nobody reads is worse than no report. Count it on the NEXT run —
+findings from the previous report that produced no action — and record the number in the summary.
+A noisy reviewer is repaired like any other noisy scanner: with a labelled fixture and a precision
+number before and after, never with one more ad-hoc exclusion.
+
+## 6. Series, not a single run
+
+One pass finds roughly half of what is there, and repeating the same pass finds the same half —
+the pesticide paradox in `TESTING_FRAMEWORK.md`. So the coverage map is mandatory, and the summary
+closes by naming what the NEXT run should change: a different axis, a different slice, different
+data. A revision recorded without its coverage map cannot be continued, only repeated.
 ``````
 
 > **FILE: `.claude/skills/dayloop/SKILL.md`** — replace the command placeholders with the project's real commands

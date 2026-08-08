@@ -137,7 +137,10 @@ mirrored into every declared agent system (§7.3). Groups:
 - **Code quality (2.1):** `code-revision` — the periodic reading revision of the codebase by the
   strongest model: zoned parallel reviewers armed with the project's paid-for failure classes
   (EXPERIENCE + bugs), verbatim quote per finding, adversarial skeptic with the default verdict
-  "not a defect"; survivors become bug docs and feed the guardrails.
+  "not a defect"; survivors become bug docs and feed the guardrails. Since 2.2 the run also leaves
+  audit reports in `reports/KAIF_AUDIT/` — one document per finding family plus a summary with the
+  coverage map and the limits — and each finding is written as an eight-field contract a weaker
+  model can execute (skeletons: the skill's `references/audit-report-template.md`).
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.

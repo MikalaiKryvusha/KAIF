@@ -244,7 +244,7 @@ Table 3 — The skills
 | `/plan-epic` | Plan a heavy epic by the full ladder: industry web-recon + local recon → research doc → meta-plan with phases → operational plan of the NEXT phase only. |
 | `/revision` | Re-derive `MASTER_PLAN.md` from `GOAL.md` and the current state. |
 | `/derive-styleguide` | Derive the owner's style guide from THEIR OWN sample — approved once, then machine-lintable rules guard it. |
-| `/code-revision` | A periodic reading revision of the codebase by the strongest model: parallel reviewers armed with the project's own paid-for failure classes; every finding needs a verbatim quote and survives an adversarial skeptic — or dies. |
+| `/code-revision` | A periodic reading revision of the codebase by the strongest model: parallel reviewers armed with the project's own paid-for failure classes; every finding needs a verbatim quote and survives an adversarial skeptic — or dies. The run leaves audit reports in `reports/KAIF_AUDIT/`, grouped by finding family, each finding a contract a weaker model can execute. |
 | **`/fable-method`** | The execution loop: classify → define done → evidence → act → verify → report. *(vendored from [fable-method](https://github.com/Sahir619/fable-method), MIT)* |
 | **`/fable-loop`** | Orchestrated run: parallel evidence, surgical execution, adversarial verifiers. |
 | **`/fable-judge`** | Adversarial verification of any "done" claim: VERIFIED / CAVEATS / REFUTED. |
@@ -451,7 +451,7 @@ artifacts are never hand-edited.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. Counters in this manual (14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded
-   files; 160 bundle blocks; 682 modules) are printed by `node tools/build-framework.mjs` and are
+   files; 161 bundle blocks; 689 modules) are printed by `node tools/build-framework.mjs` and are
    current as of the 2.2 development line.
 
 ## License
@@ -709,7 +709,7 @@ origin, поэтому проверка версии, уважительные �
 | `/plan-epic` | Спланировать тяжёлый эпик полной лестницей: разведка индустрии + локальная разведка → research-документ → мета-план с фазами → операционный план только ближайшей фазы. |
 | `/revision` | Перевывести `MASTER_PLAN.md` из `GOAL.md` и текущего состояния. |
 | `/derive-styleguide` | Вывести стайлгайд владельца из ЕГО ЖЕ образца — утверждён однажды, дальше его стерегут машинные правила. |
-| `/code-revision` | Периодическая читающая ревизия кодовой базы сильнейшей моделью: параллельные ревьюеры, вооружённые оплаченными классами провалов самого проекта; каждой находке — дословная цитата, и каждая переживает адверсарного скептика — или умирает. |
+| `/code-revision` | Периодическая читающая ревизия кодовой базы сильнейшей моделью: параллельные ревьюеры, вооружённые оплаченными классами провалов самого проекта; каждой находке — дословная цитата, и каждая переживает адверсарного скептика — или умирает. Прогон оставляет аудит-отчёты в `reports/KAIF_AUDIT/`, сгруппированные по семействам находок, где каждая находка — контракт, исполнимый более слабой моделью. |
 | **`/fable-method`** | Цикл исполнения: классифицируй → «готово» → свидетельства → действуй → проверь → доложи. *(вендорено из [fable-method](https://github.com/Sahir619/fable-method), MIT)* |
 | **`/fable-loop`** | Оркестрованный прогон: параллельные свидетельства, хирургическое исполнение, адверсарные верификаторы. |
 | **`/fable-judge`** | Адверсарная проверка любого «готово»: VERIFIED / CAVEATS / REFUTED. |
@@ -920,7 +920,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. Счётчики настоящего руководства (14 документов + 7 README + 35 навыков + 1 распаковщик = 57
-   встроенных файлов; 160 блоков бандла; 682 модуля) печатаются командой
+   встроенных файлов; 161 блок бандла; 689 модулей) печатаются командой
    `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
 
 ## Лицензия
