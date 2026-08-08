@@ -81,12 +81,12 @@ Each card carries these fields, and a card missing one is not shippable:
 
 | # | Field | Must contain | Fails when |
 |---|---|---|---|
-| 1 | **Quote** | `path:line` plus the exact text, byte-for-byte | paraphrase, ellipsis, or a line that does not exist — no quote, no finding |
+| 1 | **Quote** | `path:line` plus the exact text, byte-for-byte; if the FIX lands somewhere other than the defect site, name those files too | paraphrase, ellipsis, or a line that does not exist — no quote, no finding |
 | 2 | **Failure scenario** | concrete inputs/state → the wrong output, as it would actually occur | the word "theoretically"; a scenario nobody can reach |
 | 3 | **Severity** | impact × likelihood, plus the decision: **Act** (fix now) / **Attend** (fix in the cycle) / **Track** (watch) | a bare label with no impact and no likelihood behind it |
 | 4 | **Baseline** | `new` · `known: <bugs/NN or EXP-NNNN>` · `regression of <id>` — with the attestation line naming what was grepped | claiming novelty without the search behind it |
 | 5 | **Fix sketch** | the mechanism, executable without the finder present — or an honest direction if the fix needs a decision | "be more careful"; a fix only its author could apply |
-| 6 | **Fix accepted when** | a machine-checkable *fit criterion* (`REQUIREMENTS_FRAMEWORK.md`): the command, grep or test, and the output that means "fixed" | an unmeasurable criterion — that is a wish, not an acceptance test |
+| 6 | **Fix accepted when** | a machine-checkable *fit criterion* (`REQUIREMENTS_FRAMEWORK.md`): the command, grep or test, the output that means "fixed" — AND today's MEASURED state, so the executor knows the criterion is reachable | an unmeasurable criterion (a wish, not an acceptance test); or a criterion whose current state was never measured, so nobody knows whether it is red today for a second reason |
 | 7 | **Do not touch** | the neighbouring behaviour that must stay as it is, and why | absent — the executor then "fixes" the surroundings too |
 | 8 | **Meta** | dates, related findings, the decision documents read, the paid class this belongs to | a finding floating free of the project's own history |
 
@@ -94,6 +94,13 @@ Field 4 uses the feedback loop's EXISTING deduplication key and its attestation 
 a second one. Field 6 is a fit criterion under its canonical name. Field 3's severity is the
 finding's own; the VERDICT vocabulary for whether a finding survived is the judge's
 (VERIFIED / VERIFIED WITH CAVEATS / REFUTED) — no parallel scale is invented here.
+
+**Read fields 6 and 7 against each other before shipping the card.** They are the two halves of one
+sentence — what must change and what must not — and a card whose acceptance criterion requires
+changing something its own "do not touch" freezes is defective, whichever half is wrong. The
+executor cannot resolve that contradiction: they will either guess or stop, and both cost more than
+the minute it takes the author to check. This rule exists because the first executability test of
+this very template hit exactly that contradiction and had to proceed on a guess.
 
 ## 4. What makes a card executable by a weaker model
 

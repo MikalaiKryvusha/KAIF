@@ -1822,10 +1822,10 @@
       {
         "signature": "## 3. FAMILY document and the finding card",
         "class": "static",
-        "sha256": "c061ed4c0bebcbfc799031594242a121187526adbe9a49a34814b1501ff8ed53",
+        "sha256": "bf2f1ace7ee1db19c6039e556a94870db584c4ec0a94d2806cd01e91a21fde06",
         "lines": [
           66,
-          97
+          104
         ]
       },
       {
@@ -1833,8 +1833,8 @@
         "class": "static",
         "sha256": "7359128040da0eea59b0e089eb0900ab8d2cb42f5fd57e02306236bf4d9b128a",
         "lines": [
-          98,
-          112
+          105,
+          119
         ]
       },
       {
@@ -1842,8 +1842,8 @@
         "class": "static",
         "sha256": "91d1b88c85358a95763ef9e5b192cb58dbf5c74645b64b205a4408058f400fde",
         "lines": [
-          113,
-          131
+          120,
+          138
         ]
       },
       {
@@ -1851,8 +1851,8 @@
         "class": "static",
         "sha256": "1b3023308093df37aabfa370a0570c9914ec8975e11baf817ed22ad68b21ab5d",
         "lines": [
-          132,
-          138
+          139,
+          145
         ]
       }
     ],
