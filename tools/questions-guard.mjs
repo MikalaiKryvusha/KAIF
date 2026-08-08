@@ -47,6 +47,12 @@ const EXCLUDE_SUBPATHS = ['ideas/ai_agents_reports', 'ideas/updade_kaif_field_re
 const INTERVIEWS_DIR = 'interviews';
 const BASELINE_DEFAULT = 'tools/questions-guard.baseline.json';
 const ADDRESS_WINDOW_CHARS = 40; // G1: адресация — в первых ~40 символах содержимого строки
+// I20 (bugs/56): цитата разноса — ОДНА совместная примета «интервью №NNN, QN» в окне, а не два
+// независимых теста существования по всему файлу. Окно снято ЗАМЕРОМ живых пар, не выведено из
+// головы: у всех 11 пар (интервью 008–011) разрыв между номером и идентификатором вопроса — 1–2
+// символа. 40 взято с запасом на законные вставки внутри цитаты («интервью №008 (контур K5), Q3»),
+// оставаясь на два порядка уже прежнего «где угодно в файле».
+const CITATION_WINDOW_CHARS = 40;
 
 // Примета A (G1): ЗАГОЛОВОК-очередь вопросов владельцу. Узко: две компоненты в одной строке.
 const QUEUE_HEADING_RE =
@@ -68,6 +74,14 @@ const sha1 = (s) => createHash('sha1').update(s, 'utf8').digest('hex');
 const stripBom = (s) => s.replace(/^﻿/, '');
 const readLines = (p) => stripBom(readFileSync(p, 'utf8')).split(/\r?\n/); // CRLF-терпимо
 const rel = (root, p) => relative(root, p).replace(/\\/g, '/');
+// Снять МЯГКИЙ перенос строки перед проверкой совместной приметы I20 (bugs/56): проза врапается,
+// и врап не должен ослеплять стража — прецедент класса живёт в `tools/counters-guard.mjs`. Замер
+// живого дерева: одна пара из одиннадцати (интервью 008 Q3 → `plans/48`) разорвана ровно так —
+// «…ПОДТВЕРЖДЕНО: интервью» / «   №008, Q3 …», и жёсткое окно одной строки покрасило бы её зря.
+// Схлопывается ТОЛЬКО продолжение (перенос, за которым идёт непустая строка) вместе с отступом и
+// маркером цитаты; пустая строка остаётся границей абзаца, поэтому окно `[^\n]{0,N}` не
+// перепрыгивает через абзацы.
+const unwrap = (s) => s.replace(/\r?\n[ \t]*(?:>[ \t]*)?(?=\S)/g, ' ');
 
 function* mdFiles(root) {
   for (const d of SCAN_DIRS) {
@@ -163,8 +177,8 @@ function scanInterviews(root) {
       out.stale.push({ file: iv.file, key: iv.file + '#stale' });
 
     if (!iv.num) continue;
-    const numRe = new RegExp(
-      `(?:интервью|interview)[_\\s#№]*0*${Number(iv.num)}(?!\\d)`, 'iu');
+    const NUM_SRC = `(?:интервью|interview)[_\\s#№]*0*${Number(iv.num)}(?!\\d)`;
+    const numRe = new RegExp(NUM_SRC, 'iu'); // используется эвристикой I21 — её поведение не меняем
 
     for (const q of iv.questions.filter((x) => x.answered)) {
       if (q.targets.length > 0) {
@@ -177,7 +191,18 @@ function scanInterviews(root) {
           // читаем его с диска напрямую — цитата «интервью №NNN, QN» живёт и в комментариях кода.
           if (docs.length === 0 && hint && existsSync(resolve(root, m[1])))
             docs = [{ file: m[1], text: readLines(resolve(root, m[1])).join('\n') }];
-          const cited = docs.some((c) => numRe.test(c.text) && c.text.includes(q.id));
+          // bugs/56: было `numRe.test(text) && text.includes(q.id)` — ДВА независимых теста
+          // существования по всему файлу. Номер интервью в одном абзаце и голое «QN» в другом —
+          // в том числе оба из цитат ПОСТОРОННИХ интервью — зачитывали долг, которого никто не
+          // отдавал; `includes('Q1')` вдобавок было истинно внутри «Q12». Спека (навык
+          // `/owner-reviews`, I19) требует ОДНОЙ цитаты «интервью №NNN, QN» — совместной приметы,
+          // а не двух токенов. Оба порядка следования законны; граница `(?![0-9])` убивает
+          // подкласс «Q1 закрыт цитатой про Q12».
+          const qSrc = `\\b${q.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![0-9])`;
+          const jointRe = new RegExp(
+            `${NUM_SRC}[^\\n]{0,${CITATION_WINDOW_CHARS}}?${qSrc}` +
+            `|${qSrc}[^\\n]{0,${CITATION_WINDOW_CHARS}}?${NUM_SRC}`, 'iu');
+          const cited = docs.some((c) => jointRe.test(unwrap(c.text)));
           if (!cited)
             out.propagation.push({
               file: iv.file, q: q.id, target: tgt,
@@ -290,6 +315,35 @@ function selftest() {
       w('interviews/interview_091_test.md',
         '# Interview #091\n\n> Status: **✅ ANSWERS RECEIVED 2026-08-07**\n\n### Q1. Вопрос?\n\n**Адресат ответа:** `plans/02` §1\n\n**Answer:** А\n');
       w('plans/02_target.md', '# План 02\n\nПо ответу интервью №091, Q1 — делаем А.\n');
+    },
+    false, '');
+
+  // bugs/56: три мутации СОВМЕСТНОЙ приметы. Прежняя проверка (два независимых теста существования
+  // по всему файлу) проходила первые две из них зелёной — то есть зачитывала долг, которого никто
+  // не отдавал. Третья — контрольная: страж, краснеющий на врапе, стерёг бы не то.
+  const IV_091 = '# Interview #091\n\n> Status: **✅ ANSWERS RECEIVED 2026-08-07**\n\n### Q1. Вопрос?\n\n**Адресат ответа:** `plans/02` §1\n\n**Answer:** А\n';
+  mut('адресат цитирует ЧУЖОЕ интервью с тем же id вопроса → красный (bugs/56)',
+    'долг разноса Q1: номер СВОЕГО интервью и «Q1» есть, но врозь и из разных цитат',
+    () => {
+      w('interviews/interview_091_test.md', IV_091);
+      w('plans/02_target.md', '# План 02\n\nПо ответу интервью №091 — общий абзац без идентификатора вопроса.\n\n' +
+        'Отдельным абзацем, про ЧУЖОЕ решение: по ответу интервью №010 Q1 = B.\n');
+    },
+    true, 'разнос');
+  mut('«Q1» закрыт цитатой про «Q12» → красный (bugs/56)',
+    'долг разноса Q1: включение Q1 внутрь Q12 больше не считается цитатой',
+    () => {
+      w('interviews/interview_091_test.md', IV_091);
+      w('plans/02_target.md', '# План 02\n\nПо ответу интервью №091, Q12 — делаем А.\n');
+    },
+    true, 'разнос');
+  mut('цитата разорвана мягким переносом строки → зелёный (bugs/56)',
+    '0 нарушений: врап прозы не имеет права ослеплять стража',
+    () => {
+      w('interviews/interview_091_test.md', IV_091);
+      w('plans/02_target.md', '# План 02\n\n' +
+        '3. Длинный пункт списка, где решение владельца подтверждено — ПОДТВЕРЖДЕНО: интервью\n' +
+        '   №091, Q1 (перенос строки ровно как в живом `plans/48`).\n');
     },
     false, '');
 
