@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.2",
   "released": "2026-08-08",
-  "moduleCount": 689,
+  "moduleCount": 691,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -188,10 +188,19 @@
       {
         "signature": "## Document & text hygiene (field-paid rules)",
         "class": "static",
-        "sha256": "b6a2dced788d07d27fff9a301efa8826e3567e20f55e60532bce3ca2a80b929f",
+        "sha256": "11c00c8a73874000e118c346327f6e02fc51b73950f970c6d016d7b74eca3a72",
         "lines": [
           433,
-          510
+          446
+        ]
+      },
+      {
+        "signature": "### The storefront — text a stranger reads",
+        "class": "static",
+        "sha256": "03de902fd612982c9d26888dbe54306b8af45725575b8f71c9146f6b37a20888",
+        "lines": [
+          447,
+          558
         ]
       },
       {
@@ -199,8 +208,8 @@
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          511,
-          518
+          559,
+          566
         ]
       },
       {
@@ -208,8 +217,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          519,
-          529
+          567,
+          577
         ]
       },
       {
@@ -217,8 +226,8 @@
         "class": "static",
         "sha256": "91ef0d6cae41c2f3c1d78495d25ad908036eba23639224ba2d25a91eb04d17ac",
         "lines": [
-          530,
-          616
+          578,
+          664
         ]
       },
       {
@@ -226,8 +235,8 @@
         "class": "static",
         "sha256": "9f598824214e09a96bfee63c7e024ec954f5cb284e8e21717d08b14b25a3f61c",
         "lines": [
-          617,
-          730
+          665,
+          778
         ]
       },
       {
@@ -235,8 +244,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          731,
-          745
+          779,
+          793
         ]
       },
       {
@@ -244,8 +253,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          746,
-          758
+          794,
+          806
         ]
       }
     ],
@@ -3718,10 +3727,10 @@
       {
         "signature": "## Step 2. Refresh README (all languages)",
         "class": "static",
-        "sha256": "6ce399f7b07fb0e9f63b9f308abd567caaeec858f777927f666abb991068cc3c",
+        "sha256": "df71eb511c3516b1cf237ba06def4ab798bf898d03ce3e6cad4778dded66e908",
         "lines": [
           57,
-          75
+          82
         ]
       },
       {
@@ -3729,8 +3738,8 @@
         "class": "static",
         "sha256": "b115d50d3328db37655d59f177be203f3babb2f37764dc6ce536eaa5f299c595",
         "lines": [
-          76,
-          80
+          83,
+          87
         ]
       },
       {
@@ -3738,8 +3747,8 @@
         "class": "static",
         "sha256": "80d3f9e73f162ea83660e4e54add72fdcce716026df4d5ecba9bf73f3b994cf1",
         "lines": [
-          81,
-          85
+          88,
+          92
         ]
       },
       {
@@ -3747,8 +3756,8 @@
         "class": "static",
         "sha256": "13ebed9d3b903561cfc2dc176f856e56ba284246b18c696734b526b59cec764d",
         "lines": [
-          86,
-          94
+          93,
+          101
         ]
       },
       {
@@ -3756,8 +3765,8 @@
         "class": "adaptive",
         "sha256": "4e99f760961b854c5d3c07763b423ae49689d66b05b2ae3c14f81f57e38e3d1b",
         "lines": [
-          95,
-          99
+          102,
+          106
         ]
       },
       {
@@ -3765,8 +3774,8 @@
         "class": "static",
         "sha256": "3019009c113c500556c6a8203677ae4d418eb3fca0dedfb90b45801ff431101f",
         "lines": [
-          100,
-          131
+          107,
+          138
         ]
       },
       {
@@ -3774,8 +3783,17 @@
         "class": "static",
         "sha256": "8445434fe3dade7d70beb20108a586a8ea97f789ab7fc71d9b1ee054c03401ee",
         "lines": [
-          132,
-          150
+          139,
+          157
+        ]
+      },
+      {
+        "signature": "## Step 6.9. PUBLICATION GATE — open the rendered page and read the first screen WITH YOUR EYES",
+        "class": "static",
+        "sha256": "10fb165fc5c806066346365bf1d5ad3b8a822dffdd9083264d198449e0692aab",
+        "lines": [
+          158,
+          175
         ]
       },
       {
@@ -3783,8 +3801,8 @@
         "class": "static",
         "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
         "lines": [
-          151,
-          158
+          176,
+          183
         ]
       },
       {
@@ -3792,8 +3810,8 @@
         "class": "static",
         "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
         "lines": [
-          159,
-          166
+          184,
+          191
         ]
       }
     ],

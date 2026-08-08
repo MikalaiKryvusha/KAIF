@@ -73,6 +73,13 @@ carry `[AI]…[/AI]`. Their acceptance queue is the owner's PROOFREADING, and it
 file the request as homework and say plainly, in the release report, that the showcase text is not
 yet proofread if it is not.
 
+**The showcase is judged by a MACHINE, not by memory.** The storefront rules live in
+`AGENT_GUIDE.md` → "The storefront — text a stranger reads": no text about the document itself, no
+excuses next to a number, no hint of a backstage, no denial undermining a figure, no calque, no
+impersonal voice in a procedure, no internal label as a table row name, no estimate range wider
+than its source, and the two language halves must match in skeleton. `<If the project has a
+storefront linter, run it here; otherwise walk the ten rules by hand before handing the text over.>`
+
 ## Step 3. Regenerate rendered docs
 
 `<Regenerate any rendered artifacts, e.g. README.pdf (node tools/readme-pdf.mjs). For this framework's
@@ -147,6 +154,24 @@ because skipping it took down a real prod:
 5. **Prod-run document.** After the deploy, update the repo's "production run" document — the single
    source of truth for how prod is actually launched. A prod config living only inside a running
    process is a mine the next session steps on.
+
+## Step 6.9. PUBLICATION GATE — open the rendered page and read the first screen WITH YOUR EYES
+
+Checking the SOURCE is not checking the PUBLICATION. Rendering rules belong to the foreign medium,
+and they differ: **a GitHub release body preserves single line breaks** (a 100-column wrap becomes
+ragged text), **a README joins them**, **a PDF re-flows to its own width**. Field case: a release
+page shipped with a conjunction hanging alone on a line and a sentence cut in half, while the
+source file had passed four green tools — the defect arrived as a screenshot from the owner.
+
+```bash
+gh release view vX.Y --web   # open the PUBLISHED page, not the notes file
+```
+Read the first screen: paragraphs intact, breaks where you intended them, image in place, links
+clickable. The mechanical half of the gate runs before publishing: the notes body file must have
+**no two non-empty lines in a row** outside code blocks and tables.
+
+The rule is wider than releases and applies to any foreign medium — an issue, an email, a chat bot,
+a slide: learn its wrapping rule BEFORE writing, open the result AFTER shipping.
 
 ## Step 7. Verify and report
 

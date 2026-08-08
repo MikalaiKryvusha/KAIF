@@ -444,6 +444,54 @@ Updating the README — draw on the current README and the owner's other repo st
 storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
 notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style choice.
 
+### The storefront — text a stranger reads
+
+The storefront (README, release notes, a release page, a landing page) differs from a working
+document in one way: it is read by someone who took no part in the work and is not obliged to know
+a single one of our words. The rules below are paid for by a wave of twenty-odd defects the owner
+found by eye in a single pass, and by the owner's own root diagnosis: "it reads as if you write
+English in Russian words."
+
+1. **A translated half is written FROM THE MEANING, never from the draft.** Having written a
+   paragraph in the second language, read every sentence aloud: would a living person say this? If
+   it reads as a translation, throw it out and say the same thought again without looking at the
+   first version. Calque comes from the source language's syntax, not its lexicon, so a glossary
+   does not cure it.
+2. **An instruction addresses the reader; it does not describe the universe.** "Drop", "Tell",
+   "Approve", "Fill in" — imperative. Impersonal "the file is placed", "the agent is told" turns a
+   manual into a rulebook for nobody. The rule applies in procedure sections; in descriptive
+   sections the passive is legitimate, because there the actor is the machinery.
+3. **No text ABOUT THE DOCUMENT ITSELF.** "Each skill has a row of its own in Table 3", "the manual
+   counts 14 documents", "this document is the user manual" — the reader sees the table and the
+   document with their own eyes. A navigation pointer to a section is fine; a description of how
+   the text is built is not.
+4. **A number stands without excuses.** Provenance of a number lives in the working document; the
+   storefront carries the number. "(measured in epic 1.5 against exact artifact sizes)", "every
+   number below is a quote of this run", a counting method inside a table cell — these defend the
+   author against a suspicion of lying, and they tell the reader that the author is making excuses.
+   Exactly one exception: the WINDOW BOUNDARIES of a metric over a period — without them a correct
+   number lies.
+5. **Direct statement: no hint of a second level, no denial next to a number.** "In reality", "as a
+   matter of fact", "strictly speaking" tell the reader there is a backstage and invite them in.
+   "The same work would have cost $3 509, and that money was not paid" — the second half undermines
+   the first. Two facts side by side beat any explanation between them.
+6. **An internal word expands into a human name.** "Calendar" → "Time spent on the version",
+   "the pair" → "the human + agent tandem", "Tokens" → "Tokens spent by the models". A project term
+   that genuinely belongs is named at first use. In table row labels, compressing meaning is never
+   allowed.
+7. **One quantity, one row.** Metrics glued into one cell save space and cost readability; a table
+   is allowed to grow threefold.
+8. **An estimate stands on a NAMED rate.** Every estimate constant carries an external source in
+   the comment next to it, and the range is never wider than the source allows. A twentyfold spread
+   is not an estimate — it is an admission of not knowing, and it does not ship.
+9. **Private names do not ship.** Names of the owner's projects, clients and internal systems are
+   replaced by a pseudonym that preserves the COUNT of independent witnesses; the list of private
+   names lives in an ignored file, because a list of private names is itself private data.
+10. **Checking the SOURCE is not checking the PUBLICATION.** Rendering rules belong to the foreign
+    medium: a GitHub release body preserves line breaks, a README joins them, a PDF re-flows to its
+    own width. Once shipped — OPEN the result and read the first screen with your eyes; make it a
+    step of the release ritual, not a wish.
+
 **TEXT TRAVELS THROUGH FILES, NEVER THROUGH COMMAND-LINE ARGUMENTS.** Feeding a tool Cyrillic (or
 any non-ASCII), curly quotes, emoji, multi-line content, markdown, JSON? Write a UTF-8 file and
 pass the PATH. No `python -c "…text…"`, no `-m "…"`, no `echo "…" > file` with non-ASCII. One

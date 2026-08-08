@@ -13,6 +13,10 @@
 //                      той же формулой, что и check-framework;
 //   блоки бандла     — число `> **FILE:` в dist/KAIF-CORE-BUNDLE.md;
 //   модули карты     — число записей в dist/kaif-module-map.json;
+// ⚠️ РУССКОЕ ЗЕРКАЛО НЕСЁТ СКЛОНЯЕМОЕ СУЩЕСТВИТЕЛЬНОЕ: «691 модуль», но «689 модулей». Приметы
+// стража нарочно терпимы к окончанию (`модул\S*`), поэтому механическая замена одного числа на
+// другое оставляет зелёный прогон при ИСПОРЧЕННОЙ грамматике. Поменял число — прочитай строку
+// вслух: согласование числительного машина не проверяет и не должна.
 //   своды полигона   — длина списка SUITES в tools/sandbox-suite.mjs.
 //
 // Использование:
@@ -306,7 +310,13 @@ function selftest() {
   // отчитался бы «файла нет» и красный зачёлся бы там, где ничего не ломали)
   for (const rel of ['framework', 'dist', 'assets']) cpSync(join(ROOT, rel), join(SBX, rel), { recursive: true });
   cpSync(join(ROOT, 'tools', 'sandbox-suite.mjs'), join(SBX, 'tools', 'sandbox-suite.mjs'));
-  cpSync(join(ROOT, 'AGENT_GUIDE.md'), join(SBX, 'AGENT_GUIDE.md'));
+  // ЧИТАЕМЫЕ СТРАЖЕМ КОРНЕВЫЕ ФАЙЛЫ — список один на всю песочницу и растёт вместе с осями.
+  // Оси бейджей (контуры, принципы) добавили сюда внутреннюю карту и PHILOSOPHY, а копия — нет:
+  // селфтест валился на `ENOENT` внутри первой же проверки «чистая копия — зелёный», то есть
+  // страж перестал уметь доказывать свой красный, и заметил это не он сам, а прогон соседней
+  // задачи. Отсюда правило: завёл живой источник — впиши файл СЮДА тем же движением.
+  const ROOT_FILES = ['AGENT_GUIDE.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PHILOSOPHY.md'];
+  for (const f of ROOT_FILES) cpSync(join(ROOT, f), join(SBX, f));
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
   const live = liveNumbers();
 
