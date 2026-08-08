@@ -54,12 +54,19 @@ const CACHE_READ_FACTOR = 0.1;
 const CACHE_WRITE_FACTOR = 2; // TTL 1 час
 
 // ── Энергия: ЧУЖАЯ ОЦЕНКА, не наш замер и не данные Anthropic ──────────────────
-// Anthropic не публикует Вт·ч на токен. Диапазон ниже — из публичных работ по инференсу
-// LLM (эмпирические измерения на других моделях и другом железе), поэтому он приводится
-// как ВИЛКА, а не как число, и никогда не выдаётся за наш замер.
-const WH_PER_TOKEN_LOW = 0.0001;
-const WH_PER_TOKEN_MID = 0.0003;
-const WH_PER_TOKEN_HIGH = 0.002;
+// Anthropic Вт·ч на токен не публикует, поэтому ставка берётся из публичных измерений
+// инференса на других моделях и другом железе.
+// СТАВКА СВЕДЕНА К ОДНОМУ ЧИСЛУ по слову владельца (2026-08-09 ≈00:45 +03:00: «мне не нравятся
+// такие сильные разбросы! Нужно уточнить в сети интернет, если ты не уверен, свести к примерно
+// одному числу»). Прежняя вилка 0,0001–0,002 давала разброс в двадцать раз — это признание
+// незнания, а не оценка.
+// ЯКОРЬ: медианный замер GPT-4o — около 0,3 Вт·ч на запрос, что даёт ≈3·10⁻⁴ Вт·ч на токен
+// (обзор эмпирических измерений инференса, 2025–2026: arxiv.org/abs/2505.09598 «How Hungry is
+// AI?», Joule «Energy use of AI inference, efficiency pathways, and test-time scaling»).
+// Крайние значения оставлены В КОДЕ как границы чувствительности — на витрину едет одно число.
+const WH_PER_TOKEN = 0.0003;
+const WH_PER_TOKEN_LOW = 0.0001;   // нижняя граница чувствительности (мелкие модели, оптимизированный движок)
+const WH_PER_TOKEN_HIGH = 0.002;   // верхняя (крупные reasoning-модели с длинной генерацией)
 
 // Порог простоя для «активного времени»: пауза длиннее — человек отошёл, а не работает.
 const IDLE_GAP_MINUTES = 5;
@@ -68,8 +75,20 @@ const IDLE_GAP_MINUTES = 5;
 // Это не измерение и не притязание на точность: это арифметика по объёму, где обе ставки
 // названы явно, чтобы читатель мог подставить свои и получить свой ответ. Скрытая ставка
 // внутри красивого числа — то же самое, что выдуманное число; видимая — проверяемая оценка.
-const WORDS_PER_HOUR = [200, 500]; // вычитанная техническая проза: обдумывание + письмо + правка
-const CODE_LINES_PER_HOUR = [20, 50]; // код инструмента с комментариями и проверками
+// СТАВКИ СВЕДЕНЫ К ОДНОМУ ЧИСЛУ КАЖДАЯ, и обе взяты из отраслевых источников, а не из головы
+// (слово владельца — там же, где про энергию). Прежние вилки 200–500 слов/час и 20–50 строк/час
+// были догадкой агента и давали разброс в 2,5 раза.
+// ПРОЗА: отраслевой ориентир технического писателя — около 1 000 слов средней сложности за
+// восьмичасовой день (allthingsdocs.com, «Productivity metrics for technical writers»), то есть
+// 125 слов в час с обдумыванием, правкой и вычиткой. Столько же дают общие обзоры ставок
+// технического письма; «500–1 500 слов в час» из тех же обзоров относится к ЧЕРНОВОМУ письму без
+// проверки, а здесь считается сдаваемый текст.
+const WORDS_PER_HOUR = 125;
+// КОД: Кейперс Джонс по многим методологиям — 325–750 строк в месяц на разработчика, то есть
+// 16–38 строк за рабочий день; берётся середина 27 строк в день при восьмичасовом дне.
+// Цифра ПОЛНОГО цикла: она включает проектирование, отладку, ревью и тесты, а не только набор.
+const CODE_LINES_PER_DAY = 27;
+const WORK_HOURS_PER_DAY = 8;
 // Объём считается ТОЛЬКО по рукописному: генераты (`dist/`, корневые копии) исключены —
 // иначе одна пересборка добавляла бы «человеко-месяцы», которых никто не работал.
 const GENERATED_EXCLUDES = [':(exclude)dist/*', ':(exclude)KAIF.md', ':(exclude)KAIF_REFERENCE.md'];
@@ -280,8 +299,8 @@ function sessionStats(sinceISO) {
     activeHours: activeMs / 3.6e6,
     sessions: stampsBySession.size,
     energyWh: {
+      value: computeTokens * WH_PER_TOKEN,
       low: computeTokens * WH_PER_TOKEN_LOW,
-      mid: computeTokens * WH_PER_TOKEN_MID,
       high: computeTokens * WH_PER_TOKEN_HIGH,
       base: computeTokens,
     },
@@ -369,11 +388,15 @@ if (args.includes('--json')) {
     console.log('  ⚠️ это НЕ «экономия»: подписка ограничена недельными лимитами и не даёт гарантий API.');
     console.log('     Правильное чтение: столько работы было сделано, если мерить её токенами по публичной цене.');
     console.log('');
-    const hLow = repo.proseWords / WORDS_PER_HOUR[1] + repo.codeLines / CODE_LINES_PER_HOUR[1];
-    const hHigh = repo.proseWords / WORDS_PER_HOUR[0] + repo.codeLines / CODE_LINES_PER_HOUR[0];
-    console.log('— ОЦЕНКА С ВИДИМЫМИ ДОПУЩЕНИЯМИ: столько же работы руками человека —');
-    console.log(`  допущения: проза ${WORDS_PER_HOUR[0]}–${WORDS_PER_HOUR[1]} слов/час · код ${CODE_LINES_PER_HOUR[0]}–${CODE_LINES_PER_HOUR[1]} строк/час (подставь свои — арифметика видна)`);
-    console.log(`  вилка: ${Math.round(hLow)}–${Math.round(hHigh)} человеко-часов ≈ ${(hLow / 8).toFixed(0)}–${(hHigh / 8).toFixed(0)} рабочих дней ≈ ${(hLow / 168).toFixed(1)}–${(hHigh / 168).toFixed(1)} человеко-месяцев`);
+    // ОДНО число на каждую ставку (см. константы выше): отраслевой ориентир техписателя и
+    // Кейперс Джонс по коду. Обе ставки печатаются рядом с результатом — читатель подставит свои.
+    const hProse = repo.proseWords / WORDS_PER_HOUR;
+    const hCode = (repo.codeLines / CODE_LINES_PER_DAY) * WORK_HOURS_PER_DAY;
+    const humanHours = hProse + hCode;
+    console.log('— ОЦЕНКА ПО ОТРАСЛЕВЫМ СТАВКАМ: столько же работы руками людей —');
+    console.log(`  ставки: проза ${WORDS_PER_HOUR} слов/час (1 000 слов за 8-часовой день, ориентир техписателя) · код ${CODE_LINES_PER_DAY} строк за рабочий день (Кейперс Джонс, 325–750 строк в месяц)`);
+    console.log(`  проза: ${Math.round(hProse)} ч · код: ${Math.round(hCode)} ч`);
+    console.log(`  ИТОГО ≈ ${Math.round(humanHours)} человеко-часов ≈ ${Math.round(humanHours / 8)} рабочих дней ≈ ${(humanHours / 168).toFixed(1)} человеко-месяцев`);
     console.log(`  фактически парой «человек + агент»: ${sess.activeHours.toFixed(1)} ч активной работы за ${repo.days.toFixed(1)} суток`);
     console.log('');
     // ── МЕТРИКА ЭФФЕКТИВНОСТИ ──
@@ -381,23 +404,22 @@ if (args.includes('--json')) {
     // активные часы — только время за работой. Календарный множитель СКРОМНЕЕ и потому честнее
     // как витринное число; активный отвечает на другой вопрос — «во сколько раз плотнее час».
     const calendarHours = repo.days * 24;
-    const kCalLow = hLow / calendarHours;
-    const kCalHigh = hHigh / calendarHours;
-    const kActLow = hLow / sess.activeHours;
-    const kActHigh = hHigh / sess.activeHours;
+    const kCal = humanHours / calendarHours;
+    const kAct = humanHours / sess.activeHours;
     console.log('— ЭФФЕКТИВНОСТЬ: пара «человек + агент» против команды людей —');
     console.log('  ⚠️ «активные часы» = время, когда ШЛА РАБОТА (человек, агент или оба вместе),');
     console.log('     а не часы полной занятости человека: сон исключён дырой, а дневные часы');
     console.log('     2026-08-07 владелец вёл параллельно со своей основной работой (его слово).');
-    console.log(`  по КАЛЕНДАРЮ (${calendarHours.toFixed(0)} ч, включая сон и паузы): ×${kCalLow.toFixed(0)}–×${kCalHigh.toFixed(0)} — это ${Math.round(kCalLow * 100)}–${Math.round(kCalHigh * 100)} % производительности человеческой команды`);
-    console.log(`  по АКТИВНЫМ ЧАСАМ (${sess.activeHours.toFixed(1)} ч, когда шла работа): ×${kActLow.toFixed(0)}–×${kActHigh.toFixed(0)} — ${Math.round(kActLow * 100)}–${Math.round(kActHigh * 100)} %`);
+    console.log(`  по КАЛЕНДАРЮ (${calendarHours.toFixed(0)} ч, включая сон и паузы): ×${kCal.toFixed(0)} — это ${Math.round(kCal * 100)} % производительности человеческой команды`);
+    console.log(`  по АКТИВНЫМ ЧАСАМ (${sess.activeHours.toFixed(1)} ч, когда шла работа): ×${kAct.toFixed(0)} — ${Math.round(kAct * 100)} %`);
     console.log('  ⚠️ читается так: столько ЧЕЛОВЕКО-часов работы сжато в один календарный/активный час.');
     console.log('     Это сжатие ТРУДОЗАТРАТ, а не заявление «модель в N раз умнее человека»:');
     console.log('     объём считается по написанному, а качество написанного меряют гейты и ревизии, не эта метрика.');
     console.log('');
     console.log('— ЧУЖАЯ ОЦЕНКА: энергия (Anthropic Вт·ч на токен НЕ публикует) —');
     console.log(`  база: ${f(sess.energyWh.base)} вычисленных токенов (чтение кэша исключено намеренно)`);
-    console.log(`  вилка: ${(sess.energyWh.low / 1000).toFixed(2)}–${(sess.energyWh.high / 1000).toFixed(2)} кВт·ч, медиана ≈ ${(sess.energyWh.mid / 1000).toFixed(2)} кВт·ч`);
+    console.log(`  ≈ ${(sess.energyWh.value / 1000).toFixed(1)} кВт·ч при ставке ${WH_PER_TOKEN} Вт·ч на токен (медианный замер GPT-4o, ≈0,3 Вт·ч на запрос)`);
+    console.log(`  границы чувствительности ставки: ${(sess.energyWh.low / 1000).toFixed(1)}–${(sess.energyWh.high / 1000).toFixed(0)} кВт·ч — на витрину едет одно число`);
     console.log('  источник вилки — публичные измерения инференса ДРУГИХ моделей на другом железе;');
     console.log('  выдавать это за наш замер или за данные Anthropic нельзя.');
 
@@ -405,24 +427,20 @@ if (args.includes('--json')) {
     const bookTokens = HUMAN.bookWords * HUMAN.tokensPerWord;
     const burgers = sess.cost / HUMAN.burgerUsd;
     const salaryHour = HUMAN.salaryUsdMonth / HUMAN.workHoursMonth;
-    const payrollLow = (hLow * salaryHour) / 1000;
-    const payrollHigh = (hHigh * salaryHour) / 1000;
-    const teamDaysLow = hLow / 8 / 5; // пятеро инженеров по 8 часов
-    const teamDaysHigh = hHigh / 8 / 5;
-    const homeDaysLow = sess.energyWh.low / 1000 / HUMAN.householdKwhDay;
-    const homeDaysHigh = sess.energyWh.high / 1000 / HUMAN.householdKwhDay;
+    const payrollUsd = humanHours * salaryHour;
+    const teamDays = humanHours / 8 / 5; // пятеро инженеров по 8 часов
+    const homeDays = sess.energyWh.value / 1000 / HUMAN.householdKwhDay;
 
     console.log('');
     console.log('— ПЕРЕВОД В БЫТОВУЮ РЕАЛЬНОСТЬ (константы названы выше в исходнике) —');
     console.log(`  ДЕНЬГИ: $${sess.cost.toFixed(0)} ≈ ${Math.round(burgers)} гамбургеров ($${HUMAN.burgerUsd} за штуку) — ` +
       `или ${(sess.cost / HUMAN.salaryUsdMonth).toFixed(1)} месячных зарплаты инженера`);
-    console.log(`  ТРУД: ${Math.round(hLow)}–${Math.round(hHigh)} человеко-часов — это команда из ПЯТИ инженеров, ` +
-      `работающая ${Math.round(teamDaysLow)}–${Math.round(teamDaysHigh)} рабочих дней подряд`);
+    console.log(`  ТРУД: ${Math.round(humanHours)} человеко-часов — это команда из ПЯТИ инженеров, ` +
+      `работающая ${Math.round(teamDays)} рабочих дней подряд`);
     console.log(`  ФОНД ОПЛАТЫ той же работы при ${HUMAN.salaryUsdMonth} $/мес: ` +
-      `$${(payrollLow * 1000).toFixed(0)}–$${(payrollHigh * 1000).toFixed(0)} ` +
-      `(${payrollLow.toFixed(1)}–${payrollHigh.toFixed(1)} тыс. долларов)`);
-    console.log(`  ЭНЕРГИЯ: ${(sess.energyWh.low / 1000).toFixed(1)}–${(sess.energyWh.high / 1000).toFixed(0)} кВт·ч — ` +
-      `столько обычная квартира тратит за ${homeDaysLow.toFixed(1)}–${homeDaysHigh.toFixed(0)} суток ` +
+      `$${payrollUsd.toFixed(0)} (${(payrollUsd / 1000).toFixed(1)} тыс. долларов)`);
+    console.log(`  ЭНЕРГИЯ: ≈ ${(sess.energyWh.value / 1000).toFixed(1)} кВт·ч — ` +
+      `столько обычная квартира тратит за ${homeDays.toFixed(1)} суток ` +
       `(${HUMAN.householdKwhDay} кВт·ч в сутки)`);
     console.log(`  ТОКЕНЫ: ${f(sess.totals.all)} ≈ ${Math.round(sess.totals.all / bookTokens)} романов по ${f(HUMAN.bookWords)} слов, ` +
       `прочитанных и написанных заново`);
@@ -430,6 +448,6 @@ if (args.includes('--json')) {
     console.log(`  ПРОЗА В РЕПОЗИТОРИИ: ${f(repo.proseWords)} слов ≈ ${(repo.proseWords / HUMAN.bookWords).toFixed(1)} романа — ` +
       `написано за ${repo.days.toFixed(1)} суток`);
     console.log(`  ТЕМП: ${Math.round(repo.proseWords / sess.activeHours)} слов в час активной работы ` +
-      `(человек столько пишет за ${(repo.proseWords / sess.activeHours / WORDS_PER_HOUR[1]).toFixed(1)}–${(repo.proseWords / sess.activeHours / WORDS_PER_HOUR[0]).toFixed(1)} часа)`);
+      `(человек столько пишет за ${(repo.proseWords / sess.activeHours / WORDS_PER_HOUR).toFixed(1)} часа)`);
   }
 }

@@ -113,15 +113,18 @@ and in section 8.1.
    `KAIF_ADAPTATION_TASK.md`: study the project, fill the maps, derive the plan.
 3. The thin install replaces reading the full core: 10 KB (`KAIF.md`, 10 207 bytes) instead of
    339 KB (`KAIF-FULL.md`, 346 920 bytes) — ×34 less reading. Cognitive writing shrinks ×66
-   (measured during the 1.5 epic on exact artifact sizes; the chronicle keeps the byte counts).
+  .
 
 <a id="tested-en"></a>
 
 ### 2.2. Installation procedure
 
 1. Drop [`KAIF.md`](KAIF.md) into the project root.
-2. Tell the agent: *"Deploy KAIF from KAIF.md"*. The agent needs a working Node.js and network
-   access to this repository.
+2. Tell the agent:
+
+   > *"Deploy KAIF from KAIF.md"*
+
+   The agent needs a working Node.js and network access to this repository.
 3. If the agent's harness asks to approve running the fetched installer — that is the
    download-and-execute pattern being flagged, as it should be; approve it once. The installer
    verifies every fetched artifact against `kaif-manifest.json` (sha256) before running.
@@ -151,7 +154,7 @@ network exists.
 A deployment consists of four layers: commands (the skills the human invokes by name), state and
 knowledge (living documents the agent maintains), rules of work (the canon), and machinery
 (`.kaif/` — checksums, provenance-driven updates, spheres). The layers are shown in the diagram
-below; the numbers inside it are printed by the build.
+below.
 
 <p align="center">
   <picture>
@@ -231,14 +234,14 @@ Table 2 — Knowledge directories
    are appended at deploy time; the skill bodies stay English.
 2. Skills are generated for five agent systems at once — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.claude/skills/`.
-3. Thirty-five skills are deployed. Each is given its own row in Table 3.
+3. Thirty-five skills are deployed.
 
 Table 3 — The skills
 
 | Skill | Purpose |
 |-------|---------|
 | `/resume` | Start a session: read the canon docs, pick the one main thing, announce it, begin. |
-| `/kaif-go` | The kick (short alias `/go`): resume work already in flight, with no "shall I continue?" round trip — never a blanket yes to vision forks, the write-gate or an `AUTH:` line. |
+| `/kaif-go` | The slash-command form of saying "carry on" (short alias `/go`): continue the work in the current chat. It is never a blanket yes to vision forks, the write-gate or an `AUTH:` line. |
 | `/pause` | Soft-park the chat: reach a logical stopping point, keep the tree green, continue HERE later — no pushes, no ceremony. |
 | `/end-chat` | Fully close the chat: update `STATUS.md`, rebuild artifacts, commit AND push, hand the baton to other chats. |
 | `/autoloop` | A long autonomous series over the backlog; every item ends with a mandatory judge pass. |
@@ -428,11 +431,9 @@ Table 5 — Versions
 | v1.6 | Homeostatic KAIF | 2026-07-24 | Guardrails for weak models: observation over conjecture, the three doors, the judge before every push, provenance marks `[AI]…[/AI]`. |
 | v2.0 | Excellent KAIF | 2026-07-28 | Updates by machinery, not by mind: the module map, template-vs-disk shas, update receipts, the `KAIF_REFERENCE.md` reference, the permanent sandbox polygon. |
 | v2.1 | Strong KAIF | 2026-07-31 | The owner contour: the place-of-questions rule with `/owner-reviews`, the owner's voice portrait `/owner-voice`, craft prostheses for weak sessions (`/code-revision`, craft slots, `/guarded-loop`), the planning ladder, the `PROJECT_HISTORY.md` chronicle. |
-| v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour turns a question to the owner into a working channel, the field→origin signal path becomes five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` resumes work in flight without a round trip. |
+| v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour turns a question to the owner into a working channel, the field-to-origin signal path gained five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` is the slash-command form of saying "carry on": a simple way to continue the work in the current chat. |
 
 ### 8.2. Repository layout
-
-Every directory and document of the framework repository is given its own line.
 
 ```
 KAIF.md                               ⭐ the THIN entry point (bootstrap + embedded loader), generated
@@ -487,15 +488,16 @@ artifacts are never hand-edited.
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
-5. Counters in this manual (14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded
-   files; 161 bundle blocks; 689 modules) are printed by `node tools/build-framework.mjs` and are
-   current as of the 2.2 development line.
+5. The manual counts 14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded files;
+   161 bundle blocks; 689 modules.
 
-### 8.5. Interesting facts — what version 2.2 cost
+### 8.5. Interesting facts
+
+#### 8.5.1. Metrics of the work on KAIF 2.2
 
 Measured at **2026-08-08 23:41 +03:00** by `node tools/kaif-stats.mjs --since
 "2026-08-07T00:00:00+03:00"`. The window is two days: from 2026-08-07 at 00:00 +03:00 to the moment of
-the measurement. Every number below is a quote of that run.
+the measurement.
 
 Table 6 — Metrics of KAIF 2.2
 
@@ -542,20 +544,6 @@ Table 6 — Metrics of KAIF 2.2
 | How much human work falls on one hour of the pair's work | **29–73 person-hours** | one hour of a human working with the agent does what a human alone would do in 29–73 hours |
 
 Active work means the hours when work was actually happening: sleep and long pauses do not count.
-
-Three boundaries of these numbers:
-
-1. **The money is not the owner's bill.** The work ran on a Claude Max subscription; $3 418 is an
-   estimate of what the same work would have cost through the public API. The two are never mixed,
-   and the ×207 is not a saving — a subscription has weekly limits and gives none of the API's
-   guarantees.
-2. **The person-hours are an estimate with visible assumptions:** prose at
-   200–500 words per hour, code at 20–50 lines per hour. Both rates are named in the tool's source,
-   so anyone can substitute their own and get their own answer.
-3. **The energy is somebody else's estimate.** Anthropic does not publish watt-hours per token; the
-   range comes from public measurements of inference on other models and other hardware. Hence the
-   ×20 spread — there is nothing to narrow it with, and the honest order of magnitude here is
-   kilowatt-hours, not gigawatts.
 
 ## License
 
@@ -680,15 +668,18 @@ project. Thank you, and pleasant work!
    `KAIF_ADAPTATION_TASK.md`: изучить проект, заполнить карты, вывести план.
 3. Тонкая установка заменяет чтение полного ядра: 10 КБ (`KAIF.md`, 10 207 байт) вместо 339 КБ
    (`KAIF-FULL.md`, 346 920 байт) — чтения меньше в 34 раза. Когнитивное письмо сокращается в
-   66 раз (измерено в эпике 1.5 по точным размерам артефактов; байты — в летописи).
+   66 раз.
 
 <a id="tested-ru"></a>
 
 ### 2.2. Порядок установки
 
 1. Файл [`KAIF.md`](KAIF.md) помещается в корень проекта.
-2. Агенту говорится: *«Разверни KAIF из KAIF.md»*. Агенту требуются рабочий Node.js и сетевой
-   доступ к настоящему репозиторию.
+2. Агенту говорится:
+
+   > *«Разверни KAIF из KAIF.md»*
+
+   Агенту требуются рабочий Node.js и сетевой доступ к настоящему репозиторию.
 3. Если харнесс агента просит одобрить запуск полученного установщика — это штатное срабатывание
    на паттерн «скачай и исполни»; одобряется один раз. Установщик сверяет каждый полученный
    артефакт по `kaif-manifest.json` (sha256) до запуска.
@@ -717,7 +708,7 @@ project. Thank you, and pleasant work!
 Развёртывание состоит из четырёх слоёв: команды (навыки, вызываемые человеком по имени),
 состояние и знание (живые документы, которые ведёт агент), правила работы (канон) и механика
 (`.kaif/` — контрольные суммы, обновление по происхождению, сферы). Слои показаны на схеме ниже;
-числа в ней печатает сборка.
+слои показаны на схеме ниже.
 
 <p align="center">
   <picture>
@@ -804,7 +795,7 @@ project. Thank you, and pleasant work!
 | Навык | Назначение |
 |-------|------------|
 | `/resume` | Начать сессию: прочитать канон-документы, выбрать одно главное, объявить и приступить. |
-| `/kaif-go` | Пинок (короткий алиас `/go`): возобновить уже начатую работу без обмена репликами «продолжать ли» — но никогда не бланковое «да» на развилки видения, write-gate и строки `AUTH:`. |
+| `/kaif-go` | Слеш-команда «продолжай» (короткий алиас `/go`): продолжить работу в текущем чате. Никогда не бланковое «да» на развилки видения, write-gate и строки `AUTH:`. |
 | `/pause` | Мягко припарковать чат: дойти до логической точки, оставить дерево зелёным, продолжить ЗДЕСЬ позже — без пушей и церемоний. |
 | `/end-chat` | Полностью закрыть чат: обновить `STATUS.md`, пересобрать артефакты, закоммитить И запушить, передать эстафету другим чатам. |
 | `/autoloop` | Длинная автономная серия по беклогу; каждый пункт завершается обязательным judge-проходом. |
@@ -998,11 +989,9 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v1.6 | Homeostatic KAIF | 2026-07-24 | Гвардрейлы для слабых моделей: наблюдение вместо домысла, три двери, судья перед каждым пушем, пометки провенанса `[AI]…[/AI]`. |
 | v2.0 | Excellent KAIF | 2026-07-28 | Обновление машинерией, а не разумом: карта модулей, template-vs-disk sha, расписки обновления, записка `KAIF_REFERENCE.md`, постоянный песочный полигон. |
 | v2.1 | Strong KAIF | 2026-07-31 | Контур владельца: правило места вопросов с `/owner-reviews`, портрет голоса `/owner-voice`, ремесленные протезы для слабых сессий (`/code-revision`, craft-слоты, `/guarded-loop`), лестница планирования, летопись `PROJECT_HISTORY.md`. |
-| v2.2 | Yolden KAIF | 2026-08-08 | Цикл замыкается: интерактивный контур делает вопрос к владельцу рабочим каналом; путь сигнала «поле → исток» становится пятью предписанными шагами; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` возобновляет начатую работу без обмена репликами. |
+| v2.2 | Yolden KAIF | 2026-08-08 | Цикл замыкается: интерактивный контур делает вопрос к владельцу рабочим каналом; у пути сигнала «поле → исток» появились пять предписанных шагов; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` — это слеш-команда «продолжай»: простой способ продолжить работу в текущем чате. |
 
 ### 8.2. Структура репозитория
-
-Каждой директории и каждому документу репозитория фреймворка отведена своя строка.
 
 ```
 KAIF.md                               ⭐ тонкая точка входа (бутстрап + встроенный загрузчик), генерируется
@@ -1057,15 +1046,15 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
-5. Счётчики настоящего руководства (14 документов + 7 README + 35 навыков + 1 распаковщик = 57
-   встроенных файлов; 161 блок бандла; 689 модулей) печатаются командой
-   `node tools/build-framework.mjs` и актуальны на линии разработки 2.2.
+5. В руководстве описаны 14 документов + 7 README + 35 навыков + 1 распаковщик = 57 встроенных
+   файлов; 161 блок бандла; 689 модулей.
 
-### 8.5. Интересные факты — во что обошлась версия 2.2
+### 8.5. Интересные факты
+
+#### 8.5.1. Метрики работ по версии KAIF 2.2
 
 Замер на **2026-08-08 23:41 +03:00** командой `node tools/kaif-stats.mjs --since
-"2026-08-07T00:00:00+03:00"`. Окно — двое суток: с 00:00 07.08.2026 до момента замера. Каждое число
-ниже является цитатой этого прогона.
+"2026-08-07T00:00:00+03:00"`. Окно — двое суток: с 00:00 07.08.2026 до момента замера.
 
 Таблица 6 — Метрики версии KAIF 2.2
 
@@ -1113,18 +1102,6 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 Активной работой считаются те часы, когда работа действительно шла: сон и длинные паузы в подсчёт
 не идут.
-
-Три границы этих чисел:
-
-1. **Деньги — не счёт владельца.** Работа шла по подписке Claude Max; $3 418 — оценка того, во
-   что та же работа обошлась бы через публичный API. Смешивать эти два числа нельзя, и ×207 не
-   является экономией: у подписки недельные лимиты и ни одной гарантии API.
-2. **Человеко-часы — оценка с видимыми допущениями:** проза 200–500 слов в час,
-   код 20–50 строк в час. Обе ставки названы прямо в исходнике инструмента, чтобы читатель
-   подставил свои и получил свой ответ.
-3. **Энергия — чужая оценка.** Anthropic не публикует Вт·ч на токен; вилка взята из публичных
-   измерений инференса других моделей на другом железе. Отсюда и разброс в двадцать раз — сузить
-   его нечем, а честный порядок здесь киловатт-часы, не гигаватты.
 
 ## Лицензия
 
