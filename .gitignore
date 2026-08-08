@@ -20,4 +20,10 @@ tools/.review-tmp/
 # Освежение контекста (O2): маркер-свидетельство — состояние сессии, не история проекта
 .kaif/refresh-marker.json
 
+# Защищённый цикл (G4): пульс, взвод сторожа и его транзиенты — runtime-состояние прогона,
+# не история проекта. Пульс (.kaif/heartbeat.log) и журнал тревог уже кроет *.log выше.
+.kaif/watchdog-state.json
+.kaif/watchdog.lock
+.kaif/watchdog-popup.txt
+
 # Note: README.pdf and FRAMEWORK.md are committed deliverables (generated, but tracked).
