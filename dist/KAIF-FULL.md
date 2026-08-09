@@ -6682,7 +6682,7 @@ Replace these throughout the guidance docs and skills during unpacking:
 | `<LICENSE>` | The project's license. |
 | `<BUILD_COMMAND>` | The exact command to build the project. |
 | `<TEST_HARNESS>` | How the agent runs/observes/drives the software without a human. |
-| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A && git commit -m "<msg>" && git push`); skills never append the message as an extra argument — they tell you what `<msg>` to use. |
+| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A && git commit -m "<msg>" && git push`); skills never append the message as an extra argument — they tell you what `<msg>` to use. **If the project has a commit tool with a staging gate, name THAT tool here, never raw `git`.** A sweeping `git add -A` written into a skill is a second commit route that bypasses whatever gate the project built — and the gate then guards one route while work travels the other. This is not hypothetical: a swept commit carried two of the owner's files into origin under the agent's message a minute after he put them in the tree, and the same raw line survived inside a skill long after the gate that was supposed to prevent it existed. |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
 | `<OWNER_LANGUAGE>` | The owner's working language (the AGENT_GUIDE language-policy note). |
 

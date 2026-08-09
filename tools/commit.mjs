@@ -40,7 +40,7 @@ const newFilesOutsideIntent = (porcelainZ, { only, withNew }) => {
 // и вызов с девятью путями уехал с тремя файлами. Поймала печать набора; молчаливое проглатывание
 // закрывается здесь. В argv-режиме проверка не запускается: там позиционные слова И ЕСТЬ сообщение.
 const FLAGS = { '--msg-file': true, '--as': true, '--only': true, '--allow-revert': true,
-                '--with-new': false, '--selftest': false };
+                '--with-new': false, '--selftest': false, '--no-push': false };
 const strayArgs = (argv) => {
   const stray = [];
   for (let i = 2; i < argv.length; i++) {
@@ -234,10 +234,20 @@ try {
 } finally {
   rmSync(tmpMsg, { force: true }); // finally — нетеряющая уборка (EXP-0027)
 }
-try {
-  run('git push');
-} catch {
-  console.error('⚠️  push failed — try: gh auth setup-git ; git pull --rebase ; git push');
-  process.exit(1);
+// `--no-push` — локальный коммит без отправки. Заведён ради `/pause`: мягкая парковка обязана
+// сохранить работу, но пуш там запрещён намеренно («пуш — акт закрытия сессии, он принадлежит
+// `/end-chat`»). Прежде эту потребность закрывал голый `git add -A` прямо в тексте навыка — то
+// есть ВТОРОЙ коммит-маршрут репозитория, на котором гейта неожиданного файла нет вовсе и
+// полевой инцидент `bugs/79` воспроизводится один в один. Флаг убирает причину обходить
+// инструмент: у парковки теперь есть свой законный ход ВНУТРИ гейта.
+if (process.argv.includes('--no-push')) {
+  console.log(`✅ committed locally, NOT pushed (build ${v.build}) — пуш принадлежит /end-chat`);
+} else {
+  try {
+    run('git push');
+  } catch {
+    console.error('⚠️  push failed — try: gh auth setup-git ; git pull --rebase ; git push');
+    process.exit(1);
+  }
+  console.log(`✅ committed & pushed (build ${v.build})`);
 }
-console.log(`✅ committed & pushed (build ${v.build})`);
