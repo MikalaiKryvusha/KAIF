@@ -345,7 +345,10 @@ const sess = sessionStats(sinceISO);
 if (args.includes('--json')) {
   console.log(JSON.stringify({ from, sinceISO, repo, docs, sessions: sess }, null, 2));
 } else {
-  const f = (n) => n.toLocaleString('ru-RU');
+  // Разряды разделяются ЗАПЯТОЙ — слово владельца 2026-08-09: «в больших числах разделение трёх
+  // порядков не пробелом, а запятой». Локаль `ru-RU` ставит неразрывный пробел, и следующий замер
+  // приехал бы на витрину в чужом формате, молча разойдясь с уже опубликованными числами.
+  const f = (n) => n.toLocaleString('en-US');
   const window = all
     ? 'вся история проекта'
     : sinceIdx >= 0
