@@ -547,7 +547,6 @@ Use it, copy it, modify it, ship it — including on the framework's own project
 pleasant work!
 
 ---
----
 
 <a id="russian"></a>
 
