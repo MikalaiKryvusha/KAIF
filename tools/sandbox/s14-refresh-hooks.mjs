@@ -11,7 +11,7 @@
 // поверхности проверяется то же свойство, что у оригинала).
 // Красный доказан против HEAD-бандла ДО поставки модуля (в нём FILE-блоков .kaif/hooks нет —
 // деплой-ассерты падали; наблюдение зафиксировано в plans/57).
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, utimesSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, utimesSync, readdirSync } from 'node:fs';
 import { execSync, execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -192,6 +192,72 @@ for (const [sys, file, emit, must, mustNot] of SAMPLES) {
 // Codex — единственный, кто читает форму Claude Code дословно: флага формы у него быть НЕ должно
 ok(!sampleTxt('sample-codex-hooks.json').includes('--emit'),
    's14/O5 Codex: флага формы нет — контракт совпадает с референсом дословно');
+
+// ------------------------------------------------- ОСЬ ИМЁН СОБЫТИЙ (bugs/66 №4)
+// Критерий 3 плана 60 — «имена событий совпадают с подтверждённым контрактом» — не стерёг НИКТО.
+// Все ассерты выше читают ЗНАЧЕНИЯ ключей command/bash/powershell, то есть ЧЕМ хук запускается, и
+// ни один не читает КЛЮЧИ, то есть КОГДА он запускается. Подмена регистра `sessionStart` →
+// `SessionStart` у Cursor и подмена события `PreInvocation` → `PreToolUse` у Antigravity проходили
+// зелёными — а конфиг с чужим именем события НЕ СРАБОТАЕТ НИКОГДА, причём молча, неотличимо от
+// неподключённого модуля.
+//
+// Охват ВЫЧИСЛЯЕТСЯ: судятся все образцы, найденные в развёрнутом модуле, и образец без
+// названного контракта ПАДАЕТ, а не пропускается, — новый образец краснеет ровно до тех пор, пока
+// его события не выписаны. Ожидаемые имена взяты из `researches/19` (контракт снят живым fetch
+// 2026-08-07), а НЕ из самих образцов: проверка, читающая проверяемое, делит с ним слепое пятно
+// (EXP-0047, и ровно этот механизм породил вхождение №1 этого же бага).
+console.log('\n=== s14/O5: имена событий образцов против подтверждённого контракта (bugs/66 №4) ===');
+const EVENT_CONTRACT = {
+  'sample-codex-hooks.json':       ['SessionStart', 'UserPromptSubmit'],  // researches/19 §OpenAI Codex
+  'sample-cursor-hooks.json':      ['sessionStart'],                      // researches/19 §Cursor
+  'sample-copilot-hooks.json':     ['sessionStart'],                      // researches/19 §GitHub Copilot
+  'sample-antigravity-hooks.json': ['PreInvocation'],                     // researches/19 §Google Antigravity
+};
+// `hooks` — структурный контейнер конфигов формы Claude Code, никогда не имя события.
+const CONTAINER_KEYS = new Set(['hooks']);
+const eventNamesOf = (node, acc = new Set()) => {
+  if (Array.isArray(node)) { node.forEach((n) => eventNamesOf(n, acc)); return acc; }
+  if (!node || typeof node !== 'object') return acc;
+  for (const [k, v] of Object.entries(node)) {
+    if (k.startsWith('_')) continue;                        // пояснительные ключи образца — проза
+    if (!CONTAINER_KEYS.has(k) && Array.isArray(v) && v.length && v.every((e) => e && typeof e === 'object')) acc.add(k);
+    eventNamesOf(v, acc);
+  }
+  return acc;
+};
+const contractDiff = (file, json) => {
+  const want = [...(EVENT_CONTRACT[file] || [])].sort();
+  const got = [...eventNamesOf(json)].sort();
+  return { want, got, extra: got.filter((e) => !want.includes(e)), missing: want.filter((e) => !got.includes(e)) };
+};
+const samplesOnDisk = readdirSync(join(S, '.kaif', 'hooks')).filter((n) => /^sample-.*\.json$/.test(n)).sort();
+ok(samplesOnDisk.length > 0, `s14/O5 ось имён: образцы найдены в развёрнутом модуле (${samplesOnDisk.length})`);
+for (const f of samplesOnDisk) {
+  if (!EVENT_CONTRACT[f]) {
+    ok(false, `s14/O5 ось имён: у образца ${f} НЕ НАЗВАН контракт событий — выпиши его из researches/19`);
+    continue;
+  }
+  const d = contractDiff(f, readJson(join(S, '.kaif', 'hooks', f)));
+  ok(d.extra.length === 0 && d.missing.length === 0,
+     `s14/O5 ось имён ${f}: события совпадают с контрактом (${d.want.join(', ')})`,
+     `лишние: [${d.extra.join(', ')}] · недостающие: [${d.missing.join(', ')}]`);
+}
+// Мутационное доказательство живёт В СВОДЕ, а не в сессии: смертный скретчпад = смертная
+// верификация (EXP-0016). Адресаты названы ДО прогона (EXP-0059) — обе формы из bugs/66 Repro п. 4:
+// подмена РЕГИСТРА и подмена на ЧУЖОЕ СУЩЕСТВУЮЩЕЕ событие той же системы. Мутируем разобранную
+// КОПИЮ в памяти — файл образца не трогается (EXP-0077).
+for (const [f, from, to] of [['sample-cursor-hooks.json', 'sessionStart', 'SessionStart'],
+                             ['sample-antigravity-hooks.json', 'PreInvocation', 'PreToolUse']]) {
+  const p = join(S, '.kaif', 'hooks', f);
+  const bytesBefore = readFileSync(p);
+  const mutated = JSON.parse(JSON.stringify(readJson(p)).split(`"${from}"`).join(`"${to}"`));
+  const d = contractDiff(f, mutated);
+  ok(d.extra.includes(to) && d.missing.includes(from),
+     `s14/O5 ось имён: мутация ${f} (${from} → ${to}) КРАСНАЯ — ось читает ключи, а не значения`,
+     `лишние: [${d.extra.join(', ')}] · недостающие: [${d.missing.join(', ')}]`);
+  ok(Buffer.compare(bytesBefore, readFileSync(p)) === 0,
+     `s14/O5 ось имён: доказательство не тронуло сам образец ${f} (побайтная сверка до/после)`);
+}
 
 // поведение форм: один приказ, четыре конверта (проверяется на РАЗВЁРНУТЫХ копиях)
 const emitOut = (script, args, input) => {

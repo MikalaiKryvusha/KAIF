@@ -44,7 +44,15 @@ const DOC_NAMES = ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md',
 
 function liveNumbers() {
   const fw = join(ROOT, 'framework');
-  const docs = DOC_NAMES.filter((d) => existsSync(join(fw, d))).length;
+  // ИМЕНА ключевых документов, а не только их счёт (bugs/66 №5): Таблица 1 витрины перечисляет
+  // документы ПОИМЁННО, и подмена имени в строке счёт не меняет — тот же прокси, что F1 у навыков.
+  const docNames = DOC_NAMES.filter((d) => existsSync(join(fw, d))).sort();
+  const docs = docNames.length;
+  // Пятнадцатая строка Таблицы 1 — портрет голоса владельца. Он ОПЦИОНАЛЕН в развёртывании, но
+  // строка витрины обязана быть ровно тогда, когда скелет портрета едет ПОСТАВКОЙ: иначе удаление
+  // обеих строк проходит зелёным (Repro п. 5 bugs/66), а прозе «пятнадцатый, опциональный»
+  // становится нечего описывать. Условие ЖИВОЕ — уедет скелет, уедет и требование.
+  const docOptional = existsSync(join(fw, 'templates', '_owner-voice-template.md')) ? ['AUTHOR_STYLOMETRY.md'] : [];
   const readmes = readdirSync(join(fw, 'readmes')).filter((n) => n.endsWith('.md')).length;
   const skillsDir = join(fw, 'skills');
   // ИМЕНА, не только счёт (bugs/55 F1): переименование навыка счёт не меняет, поэтому страж,
@@ -98,7 +106,7 @@ function liveNumbers() {
     showcaseClasses = JSON.parse(out).lineClasses;
   } catch { /* инструмента нет — ось честно молчит, а не зеленеет выдумкой */ }
 
-  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites,
+  return { docs, docNames, docOptional, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites,
            adapters, langs, contours, principles, toolModules, showcaseClasses };
 }
 
@@ -286,6 +294,79 @@ function checkSkillAxis(live, findings) {
   }
 }
 
+// --- ось КЛЮЧЕВЫХ ДОКУМЕНТОВ (bugs/66 №5) ------------------------------------
+// У живого числа `docs` не было НИ ОДНОГО зеркала, кроме порядкового номера пояснительной
+// записки: Таблица 1 витрины — та самая, что перечисляет поимённо все ключевые документы
+// развёртывания, — не была названа зоной вовсе. Удаление обеих строк `AUTHOR_STYLOMETRY.md` или
+// подмена «14 documents» → «9 documents» проходили зелёными у обоих стражей витрины.
+//
+// Форма та же, что у навыков, и по той же причине: СЧЁТА МАЛО. Строки сверяются ПОИМЁННО и по
+// КАЖДОЙ половине отдельно — «нашлось где-то в файле» узаконило бы пропажу строки из одной
+// половины (класс bugs/55 F1).
+//
+// Пятнадцатая строка — `AUTHOR_STYLOMETRY.md` — ОПЦИОНАЛЬНА по построению (портрет есть не в
+// каждом развёртывании), поэтому она разрешена, но не требуется: витрина сама объявляет её
+// «пятнадцатой, опциональной». Ось судит обязательные четырнадцать.
+const DOC_ROW_RE = /^\| \**`([A-Z_]+\.md)`\**/;
+// Пропись числа ключевых документов — обе половины витрины. Карта узкая намеренно, как у навыков:
+// вне диапазона страж ГОВОРИТ, что пропись не стережётся, вместо молчаливого зелёного.
+const DOC_WORDS = {
+  13: ['Thirteen key documents', 'тринадцать ключевых документов'],
+  14: ['Fourteen key documents', 'четырнадцать ключевых документов'],
+  15: ['Fifteen key documents', 'пятнадцать ключевых документов'],
+  16: ['Sixteen key documents', 'шестнадцать ключевых документов'],
+};
+
+/** Имена документов из строк Таблицы 1, разложенные по половинам витрины. */
+function docTableRows(readmeText) {
+  const hits = [];
+  readmeText.split(/\r?\n/).forEach((line, i) => {
+    const m = DOC_ROW_RE.exec(line);
+    if (m) hits.push({ line: i + 1, name: m[1] });
+  });
+  const halves = [[]];
+  hits.forEach((h, i) => {
+    if (i > 0 && h.line - hits[i - 1].line > HALF_GAP_LINES) halves.push([]);
+    halves[halves.length - 1].push(h.name);
+  });
+  return { total: hits.length, halves: hits.length ? halves : [] };
+}
+
+function checkDocAxis(live, findings) {
+  const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
+  const { halves } = docTableRows(readme);
+  if (halves.length !== HALF_LABELS.length) {
+    findings.push(`README — Таблица 1: ожидалось ${HALF_LABELS.length} половины витрины, найдено кластеров строк — ${halves.length} (страж ослеп: почини разбиение или паттерн)`);
+  } else {
+    const expected = [...live.docNames, ...live.docOptional];
+    halves.forEach((half, i) => {
+      const where = `README ${HALF_LABELS[i]} — Таблица 1`;
+      const dupes = new Set(half.filter((s, j) => half.indexOf(s) !== j));
+      for (const d of dupes) findings.push(`${where}: «${d}» встречается дважды`);
+      for (const n of half)
+        if (!expected.includes(n))
+          findings.push(`${where}: строка без документа — ${n} (в framework/ такого ключевого документа нет)`);
+      for (const n of expected)
+        if (!half.includes(n)) findings.push(`${where}: документ без строки — ${n}`);
+    });
+  }
+  // пропись числа документов — обе половины, включая протухшие варианты
+  const words = DOC_WORDS[live.docs];
+  if (!words) {
+    console.log(`⚠️  пропись числа ключевых документов НЕ СТЕРЕЖЁТСЯ при ${live.docs}: расширь карту DOC_WORDS в tools/counters-guard.mjs`);
+    return;
+  }
+  const flatReadme = flat(readme);
+  const wrong = Object.entries(DOC_WORDS).filter(([n]) => Number(n) !== live.docs);
+  for (const [i, want] of words.entries()) {
+    if (!flatReadme.includes(want)) findings.push(`пропись документов (README, ${HALF_LABELS[i]}): не найдено «${want}»`);
+  }
+  for (const [n, w] of wrong) {
+    for (const stale of w)
+      if (flatReadme.includes(stale)) findings.push(`пропись документов (README): протухшая пропись «${stale}» (ключевых документов ${live.docs}, не ${n})`);
+  }
+}
+
 // --- ось ЯЗЫКОВЫХ ПАКЕТОВ (bugs/55, третье вхождение класса) -------------------
 // Пара реестра «состав навыков ↔ ключи 9 языковых пакетов» сверялась однострочником, который
 // сравнивал ГОЛЫЙ СЧЁТ ключей. Тот же прокси, что F1: переименование навыка счёт не меняет, а
@@ -354,6 +435,7 @@ function check() {
     });
   }
   checkSkillAxis(live, findings);
+  checkDocAxis(live, findings);
   const layoutMirrors = checkLayoutAxis(live, findings);
   const langs = checkLanguagePacks(live, findings);
   console.log(`counters: ${live.embedded} embedded (${live.docs} docs + ${live.readmes} readmes + ` +
@@ -366,8 +448,9 @@ function check() {
   }
   // Зеркала считаются, а не пишутся прозой: языковые пакеты приходят из каталога, поэтому
   // заморозка или оживление пакета (решения №56/№57) сдвинет число само.
-  const mirrorCount = MIRRORS.length + SKILL_MIRRORS.length + 1 /* строки Таблицы 3 */ + WORD_FILES.length + langs + layoutMirrors;
-  console.log(`✅ counters OK — ${mirrorCount} зеркал сверены с живыми числами (в т.ч. ось навыков ПОИМЁННО: alt-тексты, SVG, пропись, строки Таблицы 3 обеих половин, ключи ${langs} языковых пакетов)`);
+  // +2 — ось документов: строки Таблицы 1 каждой половины (пропись входит в те же две зоны).
+  const mirrorCount = MIRRORS.length + SKILL_MIRRORS.length + 1 /* строки Таблицы 3 */ + WORD_FILES.length + langs + layoutMirrors + HALF_LABELS.length;
+  console.log(`✅ counters OK — ${mirrorCount} зеркал сверены с живыми числами (в т.ч. ось навыков ПОИМЁННО: alt-тексты, SVG, пропись, строки Таблицы 3 обеих половин, ключи ${langs} языковых пакетов; ось документов: строки Таблицы 1 обеих половин + пропись)`);
   return 0;
 }
 
@@ -473,6 +556,29 @@ function selftest() {
   // (12) ось РАСКЛАДКИ — перечисление tool-модулей ПО ИМЕНАМ: счёт остаётся тем же, имя чужое.
   const hitModule = mutate('AGENT_GUIDE.md', 'kaif-requirements-lint', 'kaif-requirements-linter');
   const brokenModule = run(); restore();
+  // (13) ось ДОКУМЕНТОВ (bugs/66 №5) — ПРОПАВШАЯ строка Таблицы 1 в ОДНОЙ половине. До этой оси
+  //      Таблица 1 не была зоной вовсе: удаление строки не видел ни counters-guard, ни
+  //      showcase-lint. Ломаем русскую половину — английская остаётся целой, и именно поэтому
+  //      сверка «нашлось где-то в файле» была бы зелёной.
+  const hitDocRow = mutate('README.md', '| `EXPERIENCE.md` | Греп-дружелюбный',
+                                        '| ЖУРНАЛ-ОПЫТА | Греп-дружелюбный');
+  const brokenDocRow = run(); restore();
+  // (14) ось ДОКУМЕНТОВ — ПЕРЕИМЕНОВАННЫЙ документ: строк столько же, все числа сходятся, а
+  //      витрина посылает читателя к файлу, которого в поставке нет (класс bugs/55 F1).
+  const hitDocRename = mutate('README.md', '| `MASTER_PLAN.md` | The phased roadmap',
+                                           '| `MASTERPLAN.md` | The phased roadmap');
+  const brokenDocRename = run(); restore();
+  // (15) ось ДОКУМЕНТОВ — протухшая ПРОПИСЬ числа ключевых документов: цифра сойдётся, слово соврёт.
+  const dw = DOC_WORDS[live.docs], dwPrev = DOC_WORDS[live.docs - 1];
+  const hitDocWord = Boolean(dw && dwPrev) && mutate('README.md', dw[0], dwPrev[0]);
+  const brokenDocWord = run(); restore();
+  // (16) ось ДОКУМЕНТОВ — ДОСЛОВНОЕ репро п. 5 из bugs/66: обе строки портрета удалены из
+  //      Таблицы 1. Обе половины остаются симметричными, поэтому симметрия витрины молчит; строка
+  //      обязана требоваться, пока скелет портрета едет поставкой.
+  const portraitRow = /^\| `AUTHOR_STYLOMETRY\.md`[^\n]*\n/gm;
+  writeFileSync(join(SBX, 'README.md'), readme.replace(portraitRow, ''));
+  const hitPortrait = (readme.match(portraitRow) || []).length === HALF_LABELS.length;
+  const brokenPortrait = run(); restore();
 
   const results = [
     [clean === 0, 'чистая копия — зелёный'],
@@ -487,10 +593,14 @@ function selftest() {
     [hitPack && brokenPack === 1, 'ПЕРЕИМЕНОВАННЫЙ ключ языкового пакета (счёт сходится) — КРАСНЫЙ'],
     [hitTree && brokenTree === 1, 'протухший счётчик в ДЕРЕВЕ канон-карты (ось раскладки) — КРАСНЫЙ'],
     [hitModule && brokenModule === 1, 'ПЕРЕИМЕНОВАННЫЙ tool-модуль в перечислении карты — КРАСНЫЙ'],
+    [hitDocRow && brokenDocRow === 1, 'ПРОПАВШАЯ строка Таблицы 1 в одной половине (ось документов) — КРАСНЫЙ'],
+    [hitDocRename && brokenDocRename === 1, 'ПЕРЕИМЕНОВАННЫЙ ключевой документ в Таблице 1 (счёт сходится) — КРАСНЫЙ'],
+    [hitDocWord && brokenDocWord === 1, 'протухшая пропись числа ключевых документов — КРАСНЫЙ'],
+    [hitPortrait && brokenPortrait === 1, 'ОБЕ строки портрета удалены из Таблицы 1 (репро bugs/66 п. 5) — КРАСНЫЙ'],
   ];
   for (const [pass, name] of results) console.log(`${pass ? '✅' : '❌'} selftest: ${name}`);
   const ok = results.every(([p]) => p);
-  console.log(ok ? `✅ counters-guard selftest OK — страж доказан красным на ${results.length - 1} зеркалах: README EN/RU + AGENT_GUIDE + STATUS (ось поставки) и alt-текст + строка Таблицы 3 + пропись + ПЕРЕИМЕНОВАНИЕ навыка в витрине и в языковом пакете (ось навыков — счёт И имена)`
+  console.log(ok ? `✅ counters-guard selftest OK — страж доказан красным на ${results.length - 1} зеркалах: README EN/RU + AGENT_GUIDE + STATUS (ось поставки) · alt-текст + строка Таблицы 3 + пропись + ПЕРЕИМЕНОВАНИЕ навыка в витрине и в языковом пакете (ось навыков — счёт И имена) · строка Таблицы 1 + переименование документа + пропись (ось документов)`
                  : '❌ counters-guard selftest ПРОВАЛЕН');
   return ok ? 0 : 1;
 }
