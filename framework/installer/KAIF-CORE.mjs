@@ -279,6 +279,25 @@ function parseBundle(src, loose = false) {
 const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
 const isSkippedAnon = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 
+// The "N skills trigger-aliased" summary counts what is ON DISK, never what was planned
+// (bugs/65 №1). The planning site (`applyLanguage`) cannot know the anonymity filter — that
+// filter lives BELOW it, at the write — so an intent counter reported 35 while an anonymous
+// install had written 31, and the same log four lines earlier admitted skipping the four
+// ORIGIN_TIED skills. A counter incremented next to the write would drift again the moment a
+// new filter appears between plan and write; reading the deployed skills back is the only
+// form that cannot: the property is "the skill carries its alias line", so it is measured
+// where that line either exists or does not.
+const countAliasedOnDisk = () => {
+  const dir = join('.claude', 'skills');
+  if (!existsSync(dir)) return 0;
+  let n = 0;
+  for (const name of readdirSync(dir)) {
+    const p = join(dir, name, 'SKILL.md');
+    if (okOnDisk(p) && readFileSync(p, 'utf8').includes(`Trigger aliases (${LANG}):`)) n++;
+  }
+  return n;
+};
+
 // Language templates live in the bundle under templates/languages/<lang>/<dest-path>.
 // For the chosen language they OVERRIDE the English default at <dest-path> (owner-facing
 // docs: GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs). A special member,
@@ -298,23 +317,21 @@ function applyLanguage(files) {
     else overrides.set(f.path.slice(prefix.length), f.content);
   }
   const out = [];
-  // The aliased counter counts APPLIED rewrites, not the pack's key count (bug 34 / project C D3:
-  // "34 skills trigger-aliased" while 23 carried aliases on disk — a counter that reports
-  // intent teaches the agent to trust work that never happened).
-  let aliased = 0;
+  // No alias counter lives here. The pack's key count was the first proxy (bug 34 / project C D3:
+  // "34 skills trigger-aliased" while 23 carried aliases on disk); counting APPLIED rewrites here
+  // was the second, and it drifted the same way as soon as the anonymity filter appeared below
+  // this function (bugs/65 №1). The summary reads the deployed skills back — `countAliasedOnDisk`.
   for (const f of files) {
     if (f.path.startsWith('templates/languages/')) continue;          // templates are inputs, not outputs
     let entry = overrides.has(f.path) ? { path: f.path, content: overrides.get(f.path) } : { ...f };
     const skill = skillName(entry.path);
     if (skill && triggers && triggers[skill]) {
-      const before = entry.content;
       entry.content = entry.content.replace(/^(description:[^\n]*?)(\s*)$/m,
         (_, d) => `${d.replace(/\s+$/, '')} Trigger aliases (${LANG}): ${triggers[skill]}`);
-      if (entry.content !== before) aliased++;
     }
     out.push(entry);
   }
-  return { deploy: out, translated: overrides.size, aliased };
+  return { deploy: out, translated: overrides.size };
 }
 
 // The pack boundary is DECLARED at deploy time, not discovered post-factum (field: a new skill
@@ -1673,7 +1690,7 @@ async function cmdInstall() {
   if (okOnDisk(KAIF_JSON) && !val('--lang')) {
     try { const j = readJson(KAIF_JSON); if (j.language) LANG = String(j.language).toLowerCase(); } catch { /* CLI default stands */ }
   }
-  const { deploy, translated, aliased } = applyLanguage(files);
+  const { deploy, translated } = applyLanguage(files);
   logPackHonesty(files, deploy);   // the pack boundary is declared, not discovered post-factum
   const values = stableValues();   // a re-run/bootstrap over an existing deploy keeps ITS values (bug 26)
   const unresolved = new Set();
@@ -1923,6 +1940,7 @@ async function cmdInstall() {
   // 6) validate what we just did (the required task file depends on the mode)
   const bad = validate(deploy, skillFiles, legacyOld ? UPDATE_TASK : TASK_FILE);
   if (bad) die(`install INCOMPLETE: ${bad} artifacts missing — re-run, or fix and \`check\``);
+  const aliased = countAliasedOnDisk();   // read back AFTER validate(): every write is done by here
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translated ? ` · ${translated} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
   // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
   // are absent from it, and the first thing the human sees when trying one is "no such command" —
