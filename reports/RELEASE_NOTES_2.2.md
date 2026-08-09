@@ -41,10 +41,10 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00. The full table lives in the README.
 
-- **Three days · ≈ 40 hours of active work** — 204 commits.
-- **≈ 396,000 words of prose written into the repository** — about five novels, at ≈ 10,000 words per active hour.
-- The agent **read ≈ 4.5 billion tokens** and **wrote ≈ 17.8 million** — about 28,000 novels read and 111 written.
-- The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
+- **Three days · ≈ 40 hours of active work** — 204 commits.
+- **≈ 396,000 words of prose written during the work on the version** — about five novels; ≈ 104,000 of them went into the KAIF 2.2 core itself.
+- The agent **read ≈ 4.5 billion tokens** and **wrote ≈ 17.8 million** — about 28,000 novels read and 111 written.
+- The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
 - Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,500**.
 
 The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#85-interesting-facts).
@@ -53,13 +53,17 @@ The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#85-
 
 ### 📦 Installation
 
-Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent:
+Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent in your own words. Any of the requests below works, and each one changes exactly one thing:
 
-> *"Deploy KAIF from KAIF.md"*
+> *"Deploy KAIF from KAIF.md"* — the plain one. The documents arrive in English and the deployment is tracked to the origin: version checks, respectful updates and field reports all work.
 
-The agent runs three bootstrap steps and the machinery does the rest.
+> *"Deploy KAIF from KAIF.md, my working language is Russian"* — the documents you read and fill in come out in your language. The payload itself stays English: that is the language of the core, not yours.
 
-<sub>An installation is tracked to the origin by default. Want no tie to the origin — tell the agent: *"Deploy KAIF from KAIF.md in anonymous mode"*.</sub>
+> *"Deploy KAIF from KAIF.md, I have already written GOAL.md"* — the agent reads your goal from the file instead of asking about it after the installation.
+
+> *"Deploy KAIF from KAIF.md in anonymous mode"* — no origin tracking and no author references: origin-tied skills are skipped, the author's note is stripped, and such a deployment never updates over the network.
+
+Your agent needs a working Node.js and network access to this repository. It then runs three bootstrap steps and the machinery does the rest.
 
 ### ⬆️ Updating from 2.0 / 2.1
 
@@ -103,8 +107,8 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 20:00. Полная таблица — в README.
 
 - **Трое суток · ≈ 40 часов активной работы** — 204 коммита.
-- **≈ 396 000 слов прозы написано в репозиторий** — примерно пять романов, темп ≈ 10 000 слов в активный час.
-- Агент **прочитал ≈ 4,5 миллиарда токенов** и **написал ≈ 17,8 миллиона** — это примерно 28 000 прочитанных романов и 111 написанных.
+- **≈ 396 000 слов прозы написано за время работы над версией** — примерно пять романов; в само ядро KAIF 2.2 из них вошло ≈ 104 000 слов.
+- Агент **прочитал ≈ 4,5 миллиарда токенов** и **написал ≈ 17,8 миллиона** — это примерно 28 000 прочитанных романов и 111 написанных.
 - Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
 - Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
 
@@ -114,13 +118,17 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 ### 📦 Установка
 
-Положите [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) в корень проекта и скажите агенту:
+Положите [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) в корень проекта и скажите агенту своими словами. Годится любая просьба ниже, и каждая меняет ровно одно:
 
-> *«Разверни KAIF из KAIF.md»*
+> *«Разверни KAIF из KAIF.md»* — простая. Документы приедут на английском, развёртывание будет привязано к origin: работают проверка версии, уважительные обновления и отправка полевых отчётов.
 
-Агент выполняет три шага бутстрапа, остальное делает машинерия.
+> *«Разверни KAIF из KAIF.md, мой рабочий язык русский»* — документы, которые читаете и заполняете вы, выйдут на вашем языке. Сама поставка остаётся английской: это язык ядра, а не ваш.
 
-<sub>Установка по умолчанию привязана к origin. Нужно без привязки к origin — скажите агенту: *«Разверни KAIF из KAIF.md в анонимном режиме»*.</sub>
+> *«Разверни KAIF из KAIF.md, цель проекта я уже написал в GOAL.md»* — агент прочитает вашу цель в файле, вместо того чтобы спрашивать о ней после установки.
+
+> *«Разверни KAIF из KAIF.md в анонимном режиме»* — без привязки к origin и без упоминаний автора: привязанные к origin навыки пропускаются, записка автора вырезается, и такое развёртывание не обновляется по сети.
+
+Агенту понадобятся рабочий Node.js и доступ в сеть к этому репозиторию. Дальше он выполняет три шага бутстрапа, а остальное делает машинерия.
 
 ### ⬆️ Обновление с 2.0 / 2.1
 

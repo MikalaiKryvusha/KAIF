@@ -133,10 +133,11 @@ and in section 8.1.
 3. If the agent's harness asks to approve running the fetched installer — that is the
    download-and-execute pattern being flagged, as it should be; approve it once. The installer
    verifies every fetched artifact against `kaif-manifest.json` (sha256) before running.
-4. That is the whole of your part. KAIF installs itself: nothing is asked of you during the
-   installation, and no form is filled in.
-5. Afterwards the agent asks about one thing only — the goal of your project, if `GOAL.md` is
-   still empty. That is a question about where the project is going, not about the installation.
+4. That is the whole of your part — from here KAIF installs itself.
+5. Afterwards the agent asks about one thing only — the goal of your project, if you have not
+   written `GOAL.md` yourself before installing KAIF. `GOAL.md` is what tells your AI agent which
+   project it is working on and what you want to achieve in the end. That question is about how
+   to adapt KAIF to your project.
 
 <sub>An installation is tracked to the origin by default — that is what makes version checks,
 respectful updates and the field-report loop work out of the box. Want a deployment with no tie to
@@ -505,21 +506,24 @@ Table 6 — Metrics of KAIF 2.2
 | What was measured | Value | What it equals |
 |-------------------|-------|----------------|
 | Time spent on the version | **three days** | 7, 8 and 9 August 2026 |
-| Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
+| Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
 | Commits in git | **204** | each commit is a saved state of the project — any of them can be returned to |
-| Lines written into the repository, prose and code together | **≈ 52,000** | a thick book of about 1,700 pages |
-| Prose written into the repository — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | about 1,200 typed pages |
-| Words of prose written into the repository | **≈ 396,000** | about **five novels** of 80,000 words each |
-| Code written into the repository | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
-| Writing pace | **≈ 10,000 words** per hour of active work | to write that much a human needs about 80 hours of uninterrupted writing |
-| The agent read | **≈ 4.5 billion tokens** | about 28,000 novels |
-| The agent wrote | **≈ 17.8 million tokens** | about 111 novels |
-| Man-hours the same work would have taken living people | **≈ 7,400** | a team of five engineers working 186 days straight |
+| Lines written during the work on the version, prose and code together | **≈ 52,000** | a book of about 2,000 typed pages |
+| Prose written during the work on the version — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | about 1,500 typed pages |
+| Words of prose written during the work on the version | **≈ 396,000** | about **five novels** of 80,000 words each |
+| Code written during the work on the version | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
+| Words of prose in the KAIF 2.2 core itself — this is what your project receives | **≈ 104,000** | about one 80,000-word novel and a third more |
+| Lines of prose in the KAIF 2.2 core itself | **≈ 10,400** | about 380 typed pages |
+| Lines of machinery code in the KAIF 2.2 core itself | **≈ 3,400** | about a twelfth of the source code of Doom (1993) |
+| Writing pace | **≈ 10,000 words** per hour of active work | to write that much a human needs about 80 hours of uninterrupted writing |
+| The agent read | **≈ 4.5 billion tokens** | about 28,000 novels |
+| The agent wrote | **≈ 17.8 million tokens** | about 111 novels |
+| Man-hours the same work would have taken living people | **≈ 7,400** | a team of five engineers working 186 days straight |
 | Payroll for those people | **≈ $133,000** | about 26,000 hamburgers at $5 |
-| Electricity spent on the work of the AI agents | **≈ 22 kWh** | an ordinary flat spends that much in two days |
-| How much human work falls on one hour of the human + agent pair's work | **≈ 190 person-hours** | one hour with the agent does what a human alone would do in 190 hours — 24 working days of 8 hours |
-| Requests to the models in total | **≈ 13,000** | about 650 ordinary chatbot conversations of 20 messages each |
-| Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
+| Electricity spent on the work of the AI agents | **≈ 22 kWh** | an ordinary flat spends that much in two days |
+| How much human work falls on one hour of the human + agent pair's work | **≈ 190 person-hours** | one hour with the agent does what a human alone would do in 190 hours — 24 working days of 8 hours |
+| Requests to the models in total | **≈ 13,000** | about 650 ordinary chatbot conversations of 20 messages each |
+| Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
 | What Fable 5's work would cost if paid at Anthropic's public API prices | **≈ $2,400** | about 480 hamburgers at $5 |
 | What Opus 5's work would cost if paid at Anthropic's public API prices | **≈ $2,000** | about 400 hamburgers at $5 |
 | What all the work would cost if paid at Anthropic's public API prices | **≈ $4,500** | about 900 hamburgers at $5 |
@@ -665,10 +669,11 @@ pleasant work!
 3. Одобрите запуск установщика, если харнесс агента об этом спросит. Он срабатывает на «скачай и
    исполни» и спрашивает один раз; установщик сверяет каждый скачанный файл с
    `kaif-manifest.json` по sha256 ещё до запуска.
-4. На этом ваша часть кончается. KAIF ставит себя сам: во время установки у вас ничего не
-   спрашивают и никакие поля заполнять не нужно.
-5. После установки агент спросит об одном — о цели вашего проекта, если `GOAL.md` ещё пуст. Это
-   вопрос о том, куда идёт проект, а не об установке.
+4. На этом ваша часть кончается — дальше KAIF ставит себя сам.
+5. После установки агент спросит об одном — о цели вашего проекта, если `GOAL.md` не был написан
+   вами заранее, до установки KAIF. `GOAL.md` нужен, чтобы ваш ИИ-агент понимал, над каким
+   проектом идёт работа и чего вы хотите достичь в итоге. Этот вопрос — о том, как адаптировать
+   KAIF под ваш проект.
 
 <sub>Установка по умолчанию привязана к origin — именно этим работают проверка версии, уважительные
 обновления и петля полевых отчётов. Нужно развернуть без привязки к origin — скажите агенту на
@@ -1039,19 +1044,22 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Время работы над версией | **трое суток** | 7, 8 и 9 августа 2026 года |
 | Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
 | Коммитов в git | **204** | каждый коммит — сохранённое состояние проекта, к любому можно вернуться |
-| Строк написано в репозиторий, проза и код вместе | **≈ 52 000** | толстая книга примерно в 1 700 страниц |
-| Прозы написано в репозиторий (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | примерно 1 200 машинописных страниц |
-| Слов прозы написано в репозиторий | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |
-| Кода написано в репозиторий | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
+| Строк написано за время работы над версией, проза и код вместе | **≈ 52 000** | книга примерно в 2 000 машинописных страниц |
+| Прозы написано за время работы над версией (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | примерно 1 500 машинописных страниц |
+| Слов прозы написано за время работы над версией | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |
+| Кода написано за время работы над версией | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
+| Слов прозы в самом ядре KAIF 2.2 — это и получает ваш проект | **≈ 104 000** | примерно роман по 80 000 слов и ещё треть сверху |
+| Строк прозы в самом ядре KAIF 2.2 | **≈ 10 400** | примерно 380 машинописных страниц |
+| Строк кода машинерии в самом ядре KAIF 2.2 | **≈ 3 400** | примерно двенадцатая часть исходного кода игры Doom 1993 года |
 | Темп письма | **≈ 10 000 слов** за час активной работы | чтобы написать столько, человеку в среднем нужно около 80 часов непрерывного письма |
 | Агент прочитал | **≈ 4,5 миллиарда токенов** | примерно 28 000 романов |
 | Агент написал | **≈ 17,8 миллиона токенов** | примерно 111 романов |
 | Трудозатраты, если бы ту же работу делали живые люди | **≈ 7 400 человеко-часов** | команда из пяти инженеров работала бы 186 дней подряд |
-| Фонд оплаты труда этих людей | **≈ $133 000** | примерно 26 000 гамбургеров по 5 $ |
+| Фонд оплаты труда этих людей | **≈ $133 000** | примерно 26 000 гамбургеров по 5 $ |
 | Электроэнергии израсходовано на работу ИИ-агентов | **≈ 22 кВт·ч** | столько обычная квартира расходует за двое суток |
 | Сколько работы людей приходится на один час работы тандема Человек-Агент | **≈ 190 человеко-часов** | один час с агентом делает столько, сколько человек в одиночку делал бы 190 часов — 24 рабочих дня по 8 часов |
 | Запросов к моделям всего | **≈ 13 000** | примерно 650 обычных чатов с чат-ботом по 20 сообщений в каждом |
-| Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
+| Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
 | Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | **≈ $2 400** | примерно 480 гамбургеров по 5 $ |
 | Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | **≈ $2 000** | примерно 400 гамбургеров по 5 $ |
 | Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **≈ $4 500** | примерно 900 гамбургеров по 5 $ |
