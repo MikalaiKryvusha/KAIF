@@ -1536,6 +1536,25 @@ function selfCleanArtifacts(taskFile, anonDeploy) {
   }
 }
 
+/**
+ * Objective predicate of the field report: the report FILE exists in reports/KAIF_UPDATES/ under
+ * the version THIS pass delivered. Writing it well is the agent's judgement; existing is not.
+ * Version pin: a stale report from a PREVIOUS interval must not satisfy this pass.
+ * Lives in one place because two callers need it — the checkpoint and the final gates.
+ */
+function fieldReportOnDisk(tag) {
+  const kind = tag === 'KAIF-UPDATE' ? 'UPDATE' : 'INSTALL';
+  let ver = null;
+  try { ver = tag === 'KAIF-UPDATE' ? readJson(LAST_UPDATE).to : readJson(KAIF_JSON).version; }
+  catch { /* no receipt/marker readable — the pin relaxes to the kind suffix below */ }
+  const dir = join('reports', 'KAIF_UPDATES');
+  const pin = ver
+    ? new RegExp(`_KAIF_${String(ver).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}_${kind}_REPORT\\.md$`)
+    : new RegExp(`_${kind}_REPORT\\.md$`);
+  const found = existsSync(dir) ? readdirSync(dir).filter((f) => pin.test(f)) : [];
+  return { found, dir, ver, kind };
+}
+
 // Shared closing sequence: checkpoint grep on the live task file, then the gates, in order.
 function runFinalGates(taskFile, tag, verb) {
   if (!okOnDisk(taskFile)) die(`${taskFile} not found — nothing to verify (or already cleaned)`);
@@ -1549,6 +1568,26 @@ function runFinalGates(taskFile, tag, verb) {
   // (sandbox-caught the day it was written).
   for (const id of [...new Set([...task.matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))])
     if (!new RegExp(`^${tag}: ${id} done$`, 'm').test(task)) { console.error(`✖ checkpoint missing: ${tag}: ${id} done  (record it: node .kaif/kaif-core.mjs checkpoint ${id}${id === 'judge' ? ' --verdict-file <path-to-verdict.md>' : ''})`); missing++; }
+  // THE FIELD REPORT IS REQUIRED BY THE DELIVERED VERSION, NOT BY THE TASK'S PROSE.
+  // The required-checkpoint list above is derived from the task TEXT — and on the normal update
+  // route that text is written by the OLD, already-deployed core, which knows nothing about an
+  // item introduced later. So a 2.0/2.1 → 2.2 update produced a task WITHOUT `field-report` and
+  // verified green without any report: the mandatory feedback loop of 2.2 silently skipped the
+  // whole existing fleet — exactly the class where a proxy (what the prose happens to list)
+  // replaces the property (what this version demands). The core running this gate IS the
+  // delivered one — `update` swaps `.kaif/kaif-core.mjs` before `update-verify` runs — so it can
+  // and must state its own requirement. Only when the task never asked for it: otherwise the
+  // loop above already covers the tick, and this would double-report the same miss.
+  if (!/kaif-core\.mjs checkpoint field-report/.test(task)) {
+    const r = fieldReportOnDisk(tag);
+    if (!r.found.length) {
+      console.error(`✖ field report missing: no *_KAIF_${r.ver || '<version>'}_${r.kind}_REPORT.md in ${r.dir}/`);
+      console.error(`  (mandatory since 2.2, decision #46 — this ${verb} was driven by an older core whose task did not list the item; the requirement comes from the version you just installed, not from that task. Genre canon: reports/README.md)`);
+      missing++;
+    } else {
+      log(`✔ field report on disk: ${join(r.dir, r.found[0])} (required by the delivered version, not by the task text)`);
+    }
+  }
   // The judge tick must carry its verdict (bug 17: four free ticks used to pass the gate).
   if (task.includes('checkpoint judge') && new RegExp(`^${tag}: judge done$`, 'm').test(task) &&
       !new RegExp(`^${tag}: judge verdict: `, 'm').test(task)) {
@@ -2189,18 +2228,10 @@ function cmdCheckpoint() {
     // item's contract is objective — the report FILE exists in reports/KAIF_UPDATES/ under the
     // version this pass delivered (writing it well is the agent's judgement; existing is not).
     // Version pin: a stale report from a PREVIOUS interval must not satisfy this pass's tick.
-    const kind = tag === 'KAIF-UPDATE' ? 'UPDATE' : 'INSTALL';
-    let ver = null;
-    try { ver = tag === 'KAIF-UPDATE' ? readJson(LAST_UPDATE).to : readJson(KAIF_JSON).version; }
-    catch { /* no receipt/marker readable — the pin relaxes to the kind suffix below */ }
-    const dir = join('reports', 'KAIF_UPDATES');
-    const pin = ver
-      ? new RegExp(`_KAIF_${String(ver).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}_${kind}_REPORT\\.md$`)
-      : new RegExp(`_${kind}_REPORT\\.md$`);
-    const found = existsSync(dir) ? readdirSync(dir).filter((f) => pin.test(f)) : [];
-    if (!found.length)
-      die(`checkpoint field-report REFUSED: no *_KAIF_${ver || '<version>'}_${kind}_REPORT.md in ${dir}/ — write the field report first (its sections are in the task item; genre canon: reports/README.md)`);
-    log(`✔ field report on disk: ${join(dir, found[0])} (executed by the checkpoint itself)`);
+    const r = fieldReportOnDisk(tag);
+    if (!r.found.length)
+      die(`checkpoint field-report REFUSED: no *_KAIF_${r.ver || '<version>'}_${r.kind}_REPORT.md in ${r.dir}/ — write the field report first (its sections are in the task item; genre canon: reports/README.md)`);
+    log(`✔ field report on disk: ${join(r.dir, r.found[0])} (executed by the checkpoint itself)`);
   }
   let verdictLine = null;
   if (id === 'judge') {

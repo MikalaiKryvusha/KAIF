@@ -80,12 +80,24 @@ const fillCanon = (dir, { spheres = true } = {}) => {
 };
 // Минимальное задание обновления: ровно один пункт-чекпоинт (для checkpoint stale-claims)
 // или ноль пунктов (для голого update-verify) + секция чекпоинтов.
-const writeTask = (dir, ids = []) => writeFileSync(join(dir, 'KAIF_UPDATE_TASK.md'), [
-  `# KAIF update task — finish the update to ${CUR}`, '',
-  '> sandbox-crafted minimal task.',
-  ...ids.map((id) => `- **${id}** — sandbox item. When done, run: \`node .kaif/kaif-core.mjs checkpoint ${id}\``),
-  '', '## Checkpoints (append below as you finish items)', '',
-].join('\n'));
+//
+// ПОЛЕВОЙ ОТЧЁТ КЛАДЁТСЯ РЯДОМ С ЗАДАНИЕМ, и это не уступка тесту. С круга R2 обязательность
+// отчёта вычисляется из ПОСТАВЛЕННОЙ ВЕРСИИ, а не из текста задания: на штатном маршруте
+// 2.0/2.1 → 2.2 задание пишет СТАРОЕ ядро, пункта `field-report` в нём нет, и раньше приёмка
+// зеленела без отчёта у всего парка. Синтетическое задание этого свода — ровно такой случай
+// (пунктов ноль или один), поэтому и здесь отчёт обязан существовать: фикстура, которой
+// позволено меньше, чем полю, стерегла бы не то. Прецедент — s07, где отчёт кладут так же.
+const writeTask = (dir, ids = []) => {
+  writeFileSync(join(dir, 'KAIF_UPDATE_TASK.md'), [
+    `# KAIF update task — finish the update to ${CUR}`, '',
+    '> sandbox-crafted minimal task.',
+    ...ids.map((id) => `- **${id}** — sandbox item. When done, run: \`node .kaif/kaif-core.mjs checkpoint ${id}\``),
+    '', '## Checkpoints (append below as you finish items)', '',
+  ].join('\n'));
+  const rdir = join(dir, 'reports', 'KAIF_UPDATES');
+  mkdirSync(rdir, { recursive: true });
+  writeFileSync(join(rdir, `SANDBOX_KAIF_${CUR}_UPDATE_REPORT.md`), '# Field report: sandbox update\n');
+};
 
 // ══════════════════ S1: точность stale-claims на полевой фикстуре 4 отчётов ══════════════════
 console.log(`\n=== S1: stale-claims — полевая фикстура (NDim/Unlim/KLAS/KCam), замер точности числом ===`);
@@ -284,6 +296,39 @@ ok(/STATUS\.md: 260 lines/.test(r.out) && /~200/.test(r.out),
 writeFileSync(join(S5, 'STATUS.md'), longStatus.slice(0, 150).join('\n') + '\n');
 r = run(S5, 'check');
 ok(!/lines .*~200|~200 .*lines/.test(r.out), 'S5 короткий STATUS — без предупреждения (тишина по умолчанию)', r.out.slice(-200));
+
+// ══════════════════ S6: обязательность полевого отчёта — от ВЕРСИИ, не от текста задания ══════════════════
+//
+// Круг R2, блокер. Список обязательных чекпоинтов приёмка выводила регуляркой ИЗ ТЕКСТА задания,
+// а на штатном маршруте обновления задание пишет СТАРОЕ, уже развёрнутое ядро — оно про пункт,
+// появившийся в 2.2, ничего не знает. Итог: весь парк 2.0/2.1 обновлялся до 2.2 и получал
+// «✅ update-verify passed» БЕЗ единого полевого отчёта, то есть головная петля обратной связи
+// версии молча не включалась ни у кого. Прокси («что задание перечислило») подменял свойство
+// («чего требует поставленная версия»).
+//
+// Фикстура воспроизводит ровно этот маршрут: задание БЕЗ пункта field-report. Судятся оба ответа —
+// красный без отчёта и зелёный с ним, — иначе гейт, который нельзя провалить, ничего не доказывает.
+console.log(`\n=== S6: полевой отчёт требуется ВЕРСИЕЙ даже когда задание о нём не знает (круг R2) ===`);
+const S6 = join(ROOT, 's6'); mkdirSync(S6); seed(S6);
+must(run, S6, 'install --agents claude-code');
+// Задание «старого ядра»: пунктов-чекпоинтов нет вовсе, отчёта на диске нет.
+writeFileSync(join(S6, 'KAIF_UPDATE_TASK.md'), [
+  `# KAIF update task — finish the update to ${CUR}`, '',
+  '> задание, написанное СТАРЫМ ядром: пункта field-report в нём нет по построению.',
+  '', '## Checkpoints (append below as you finish items)', '',
+].join('\n'));
+rmSync(join(S6, 'reports', 'KAIF_UPDATES'), { recursive: true, force: true });
+r = run(S6, 'update-verify');
+ok(r.code !== 0 && /field report missing/.test(r.out),
+   'S6 БЕЗ отчёта приёмка КРАСНАЯ, хотя задание пункта не несёт (требует версия, не текст)', r.out.slice(-400));
+ok(/decision #46/.test(r.out) && /older core/.test(r.out),
+   'S6 отказ НАЗЫВАЕТ причину: старое ядро писало задание, требование — от поставленной версии', r.out.slice(-400));
+// Тот же прогон с отчётом на диске обязан замолчать — иначе гейт краснеет всегда.
+mkdirSync(join(S6, 'reports', 'KAIF_UPDATES'), { recursive: true });
+writeFileSync(join(S6, 'reports', 'KAIF_UPDATES', `S6_KAIF_${CUR}_UPDATE_REPORT.md`), '# Field report: sandbox\n');
+r = run(S6, 'update-verify');
+ok(!/field report missing/.test(r.out),
+   'S6 С отчётом на диске эта ось молчит (гейт, краснеющий всегда, — сломанный гейт)', r.out.slice(-400));
 
 console.log(failures ? `\n❌ s10: ${failures} guard(s) failed` : '\n✅ s10: all green');
 process.exit(failures ? 1 : 0);
