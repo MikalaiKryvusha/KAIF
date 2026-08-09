@@ -43,7 +43,7 @@ Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00.
 
 - **Three days · ≈ 40 hours of active work** — 204 commits.
 - **≈ 396,000 words of prose written during the work on the version** — more than Anna Karenina; ≈ 104,000 of them went into the KAIF 2.2 core itself, a little more than The Hobbit.
-- The agent **read ≈ 4.5 billion tokens** and **wrote ≈ 17.8 million** — like reading the entire Harry Potter series two thousand times and writing fifteen copies of War and Peace.
+- The agent **read ≈ 4.5 billion tokens** and **wrote ≈ 17.8 million** — about 28,000 novels read and 111 written: like reading the entire Harry Potter series two thousand times and writing fifteen copies of War and Peace.
 - The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
 - Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,500**.
 
@@ -108,7 +108,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 - **Трое суток · ≈ 40 часов активной работы** — 204 коммита.
 - **≈ 396 000 слов прозы написано за время работы над версией** — больше, чем «Анна Каренина»; в само ядро KAIF 2.2 из них вошло ≈ 104 000 слов, чуть больше «Хоббита».
-- Агент **прочитал ≈ 4,5 миллиарда токенов** и **написал ≈ 17,8 миллиона** — это как две тысячи раз прочитать всё семикнижие «Гарри Поттера» и написать пятнадцать «Войн и миров».
+- Агент **прочитал ≈ 4,5 миллиарда токенов** и **написал ≈ 17,8 миллиона** — это примерно 28 000 прочитанных романов и 111 написанных: как две тысячи раз прочитать всё семикнижие «Гарри Поттера» и написать пятнадцать «Войн и миров».
 - Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
 - Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
 
