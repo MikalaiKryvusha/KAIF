@@ -211,24 +211,116 @@ function lintPlanNaming(root, findings) {
 //     а страж, краснеющий на тексте, который правилу не подчинялся, — ложная тревога.
 const CANON_STAMP_SINCE = '2026-08-08'; // канон принят 2026-08-07 10:09 +03:00 (решение №49)
 const STAMP_WINDOW = 24;                // символов между глаголом и датой (вплотную, не «где-то в абзаце»)
-// Группы: 1 глагол · 2 промежуток · 3 честное «≈» · 4 дата · 5 время · 6 смещение зоны.
+// Глаголы — ПО ФОРМАМ, В КОТОРЫХ ПРАВИЛО РЕАЛЬНО НАРУШАЛИ (EXP-0074: обобщение ловит воздух).
+// «снят» добавлен по живому экземпляру `ideas/24` — «✅ **Блокер снят 2026-08-08**» (bugs/67).
+const STAMP_VERBS = '(?:принято|зафиксировано|закрыт(?:а|о)?|снят(?:а|о)?)';
+// Время: допускается ДИАПАЗОН («07:13–07:20 +03:00») — замер по корпусу показал, что это живая и
+// законная форма, а наивная примета объявляла её нарушением (класс ложной тревоги: страж, который
+// красит верное, обесценивает свой красный).
+const TIME_PART = '(\\s+\\d{2}:\\d{2}(?:\\s*[–—-]\\s*\\d{2}:\\d{2})?)';
+const ZONE_PART = '(\\s*[+-]\\d{2}:\\d{2})';
+// Группы: 1 промежуток · 2 честное «≈» · 3 дата · 4 время (возможно диапазон) · 5 зона.
 const STAMP_RE = new RegExp(
-  '(принято|зафиксировано|закрыт(?:а|о)?)(?![\\p{L}])' +
+  STAMP_VERBS + '(?![\\p{L}])' +
   '([^0-9\\n]{0,' + STAMP_WINDOW + '}?)' +
-  '(≈\\s*)?(\\d{4}-\\d{2}-\\d{2})(\\s+\\d{2}:\\d{2})?(\\s*[+-]\\d{2}:\\d{2})?', 'giu');
+  '(≈\\s*)?(\\d{4}-\\d{2}-\\d{2})' + TIME_PART + '?' + ZONE_PART + '?', 'giu');
+
+// ── Веха в поле «Статус:» — вторая законная форма метки (bugs/67) ──────────────────────────
+// Канон называет меткой не только глагол: «решения, закрытия задач/фаз/багов, ВЕХИ В ПОЛЕ
+// „Статус:“ документа, квитанции машинерии» (AGENT_GUIDE → канон T8). Доминирующая форма
+// закрытия в этом репозитории БЕЗГЛАГОЛЬНА — `**Статус:** ✅ DONE 2026-08-09` — и старой примете
+// была невидима по построению: 105 таких меток жили вне охвата.
+//
+// Скоуп — ЗНАЧЕНИЕ поля, а не вся строка. Диалект bugs пакует в одну строку три поля через «·»
+// (`**Status:** ✅ DONE · **Version/build:** … · **When/context:** найден 2026-08-05`), и дата
+// из `When/context:` меткой НЕ является: канон прямо исключает поля схемы. Замер по корпусу до
+// правки: наивная примета «вся строка» дала 11 попаданий при ОДНОМ настоящем нарушении.
+const STATUS_FIELD_RE = /^\s*(?:>|#{1,4})?\s*\*{0,2}(?:Статус|Status)\s*:?\*{0,2}\s*(.*)$/iu;
+const FIELD_SEPARATOR = /\s+·\s+\*{0,2}\w/u;   // начало СЛЕДУЮЩЕГО поля в упакованной строке
+const STATUS_DATE_RE = new RegExp('(\\d{4}-\\d{2}-\\d{2})' + TIME_PART + '?' + ZONE_PART + '?', 'gu');
+
+// Изъятия — ровно те, что уже названы каноном, плюс одно, оплаченное этой же задачей.
+// Канон требований формулирует принцип дословно: «Стоп-слово внутри цитаты, ❌-примера или
+// названного оправдания легально — страж охотится на непроверяемые ТРЕБОВАНИЯ, а не на лексику».
+// У оси меток такого изъятия не было, и первый же документ, ОПИСЫВАЮЩИЙ форму метки (`bugs/67`),
+// стал ложным красным.
+const FORMAT_TALK_RE = /ГГГГ-ММ-ДД|YYYY-MM-DD/u;      // строка говорит О ФОРМАТЕ, а не ставит метку
+const EXEMPT_MARK_RE = /<!--\s*t8-ok\b/u;              // явное оправдание на месте, с причиной рядом
+
+/** Строки внутри огороженных блоков кода — не проза документа, меток там нет. */
+function fencedMask(lines) {
+  const mask = new Array(lines.length).fill(false);
+  let inFence = false;
+  lines.forEach((l, i) => {
+    if (/^\s*(```|~~~|``````)/.test(l)) { inFence = !inFence; mask[i] = true; return; }
+    mask[i] = inFence;
+  });
+  return mask;
+}
+
+/** Дата внутри обратных кавычек — образец формата, а не метка момента. */
+function insideCode(line, index) {
+  const before = line.slice(0, index);
+  return (before.match(/`/g) || []).length % 2 === 1;
+}
 
 function lintStamps(relPath, lines, findings) {
-  const body = lines.join('\n');
-  STAMP_RE.lastIndex = 0;
-  let m;
-  while ((m = STAMP_RE.exec(body))) {
-    const [full, , , , date, time, zone] = m;
-    if (date < CANON_STAMP_SINCE) continue; // история — не переписывается (канон вперёд)
-    if (time && zone) continue;
+  const fenced = fencedMask(lines);
+  const complain = (line, full, date, time, zone) => {
+    if (date < CANON_STAMP_SINCE) return;           // история — не переписывается (канон вперёд)
+    if (time && zone) return;
     const what = !time ? 'без времени' : 'со временем, но без смещения зоны';
     findings.push([relPath, `метка «${full.replace(/\s+/g, ' ').trim()}» — ${what} ` +
       `(канон T8: \`ГГГГ-ММ-ДД ЧЧ:ММ ±ЧЧ:ММ\`, локальное время владельца)`]);
+  };
+
+  // Ось 1 — глагол принятия/фиксации/закрытия вплотную к дате. Текст СКЛЕЕН, потому что метка
+  // вправе перенестись на следующую строку («…РАЗРЕЗАНА НА ДВА КРУГА 2026-08-08\n23:10 +03:00»),
+  // и врап документа не должен превращаться в находку.
+  // Маркер блок-цитаты снимается перед склейкой: он разметка, а не часть метки. Иначе перенос
+  // «…06:00\n> +03:00» читается как метка без зоны — ложный красный на ПОЛНОЙ метке (plans/62).
+  const joinable = lines.filter((_, i) => !fenced[i]).map((l) => l.replace(/^\s*>\s?/, '')).join('\n');
+  STAMP_RE.lastIndex = 0;
+  let m;
+  while ((m = STAMP_RE.exec(joinable))) {
+    const [full, , , date, time, zone] = m;
+    const lineStart = joinable.lastIndexOf('\n', m.index) + 1;
+    const lineText = joinable.slice(lineStart, joinable.indexOf('\n', m.index) + 1 || undefined);
+    if (FORMAT_TALK_RE.test(lineText) || EXEMPT_MARK_RE.test(lineText)) continue;
+    if (insideCode(lineText, m.index - lineStart)) continue;
+    complain(lineText, full, date, time, zone);
   }
+
+  // Ось 2 — веха в ЗНАЧЕНИИ поля «Статус:».
+  lines.forEach((line, i) => {
+    if (fenced[i]) return;
+    const fm = line.match(STATUS_FIELD_RE);
+    if (!fm) return;
+    if (FORMAT_TALK_RE.test(line) || EXEMPT_MARK_RE.test(line)) return;
+    let value = fm[1];
+    const cut = value.search(FIELD_SEPARATOR);       // отрезаем соседние поля упакованной строки
+    if (cut >= 0) value = value.slice(0, cut);
+    // Метка вправе перенестись на следующую строку — но склейка ТОЧНАЯ, а не «прихвати соседа»:
+    // продолжение приклеивается, только если значение обрывается СРАЗУ ПОСЛЕ ДАТЫ, а следующая
+    // строка НАЧИНАЕТСЯ со времени. Первая редакция клеила любую следующую строку и потому
+    // вытаскивала дату из соседнего поля `When/context:` — двенадцать ложных красных на моих же
+    // свежих баг-доках поймала первая же прогонка по корпусу.
+    // Значение обрывается на дате ИЛИ на дате со временем — продолжение начинается со времени
+    // или со смещения зоны. Обе формы переноса живые: «…2026-08-09\n> 06:00 +03:00» и
+    // «…2026-08-09 06:00\n> +03:00».
+    const endsMidStamp = /\d{4}-\d{2}-\d{2}(?:\s+\d{2}:\d{2}(?:\s*[–—-]\s*\d{2}:\d{2})?)?\s*$/.test(value);
+    const nextStartsStamp = /^\s*>?\s*(?:\d{2}:\d{2}|[+-]\d{2}:\d{2})/.test(lines[i + 1] || '');
+    if (endsMidStamp && i + 1 < lines.length && !fenced[i + 1] && nextStartsStamp) {
+      value += ' ' + String(lines[i + 1]).replace(/^\s*>\s?/, '');
+    }
+    STATUS_DATE_RE.lastIndex = 0;
+    let d;
+    while ((d = STATUS_DATE_RE.exec(value))) {
+      const [full, date, time, zone] = d;
+      if (insideCode(value, d.index)) continue;
+      complain(line, full, date, time, zone);
+    }
+  });
 }
 
 function lintInterview(relPath, lines, findings) {
@@ -255,9 +347,27 @@ function run(root, { all = false } = {}) {
     if (!all && DONE_RE.test(rel)) return false;
     return true;
   };
+  // ОСЬ МЕТОК смотрит и в `_DONE_`-файлы, даже без `--all` (bugs/67). Причина не вкусовая:
+  // `BUG_FIXING_FRAMEWORK.md` предписывает закрывать баг ОДНИМ действием — переименованием в
+  // `NN_DONE_x.md` ВМЕСТЕ с секцией `## ✅ STATUS: DONE (дата + время)`. То есть метка закрытия
+  // РОЖДАЕТСЯ уже вне дефолтного скоупа, и строка реестра пар, обещавшая сверять «метки в
+  // plans/bugs/ideas/researches/interviews», по построению не смотрела в половину зеркала:
+  // 114 документов из 199. Ось и так скоупится СОБСТВЕННОЙ датой метки, поэтому история молчит
+  // без всякого фильтра имён.
+  const inStampScope = (rel) => {
+    if (EXCLUDE_NAMES.has(rel.split('/').pop())) return false;
+    if (OWNER_ORIGINALS.some((re) => re.test(rel))) return false;
+    return true;
+  };
+  // Ось меток идёт СВОИМ обходом, по своему скоупу; остальные оси — по прежнему.
+  const stampPass = (rel, path) => {
+    if (!inStampScope(rel)) return;
+    if (inScope(rel)) return;                 // уже просканирован основным обходом
+    lintStamps(rel, readLines(path), findings);
+  };
   for (const dir of FULL_DIRS) for (const f of listMd(join(root, dir))) {
     const rel = `${dir}/${f}`;
-    if (!inScope(rel)) continue;
+    if (!inScope(rel)) { stampPass(rel, join(root, dir, f)); continue; }
     const lines = readLines(join(root, dir, f));
     scanned++; lintFull(rel, lines, findings);
     lintGoalVector(dir, rel, lines, findings);
@@ -265,14 +375,14 @@ function run(root, { all = false } = {}) {
   }
   for (const f of listMd(join(root, BUGS_DIR))) {
     const rel = `${BUGS_DIR}/${f}`;
-    if (!inScope(rel)) continue;
+    if (!inScope(rel)) { stampPass(rel, join(root, BUGS_DIR, f)); continue; }
     const lines = readLines(join(root, BUGS_DIR, f));
     scanned++; lintBugs(rel, lines, findings);
     lintStamps(rel, lines, findings);
   }
   for (const f of listMd(join(root, INTERVIEWS_DIR))) {
     const rel = `${INTERVIEWS_DIR}/${f}`;
-    if (!inScope(rel)) continue;
+    if (!inScope(rel)) { stampPass(rel, join(root, INTERVIEWS_DIR, f)); continue; }
     const lines = readLines(join(root, INTERVIEWS_DIR, f));
     scanned++; lintInterview(rel, lines, findings);
     lintStamps(rel, lines, findings);
@@ -366,9 +476,23 @@ function selftest() {
     '- ЗАКРЫТА 2026-08-06 — МОЛЧИТ: история до порога канона, переписывать запрещено.\n' +
     '- Закрытие фазы 2026-08-09 — МОЛЧИТ: существительное, это проза о событии, не метка.\n' +
     '- T1 и T2 закрыты 2026-08-09 — МОЛЧИТ: сводка о НАБОРЕ, метка каждого стоит у него самого.\n' +
-    '- зафиксировано ≈ 2026-08-09 14:30 +03:00 — зелёная: честное «≈» метку не ломает.\n');
-  //   ожидаем: 2 (первые две строки), остальные пять молчат
-  const expected = 16; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (имена plans/) + 2 (метки времени T8)
+    '- зафиксировано ≈ 2026-08-09 14:30 +03:00 — зелёная: честное «≈» метку не ломает.\n' +
+    // bugs/67 — формы, которых ось не видела вовсе, и формы, на которых она ложно краснела.
+    '- снят 2026-08-09 — красная: глагол волны, форма из живого `ideas/24`.\n' +
+    '\n> **Статус:** ✅ DONE 2026-08-09 — красная: БЕЗГЛАГОЛЬНАЯ веха в поле «Статус:»,\n' +
+    '> доминирующая форма закрытия в этом репозитории (105 таких меток были невидимы).\n' +
+    '\n> **Статус:** ✅ ОТВЕЧЕНО 2026-08-09 07:13–07:20 +03:00 — МОЛЧИТ: диапазон времени\n' +
+    '> с одной зоной в конце — живая и законная форма.\n' +
+    '\n> **Статус:** ✅ ЗАКРЫТ 2026-08-09 06:00\n' +
+    '> +03:00 — МОЛЧИТ: метка ПОЛНАЯ, просто перенесена на следующую строку.\n' +
+    '\n**Status:** ✅ DONE · **When/context:** найден 2026-08-09 — МОЛЧИТ: дата принадлежит\n' +
+    'полю схемы `When/context:`, а канон поля схемы меткой не считает.\n' +
+    '\n- формат метки — `ГГГГ-ММ-ДД ЧЧ:ММ ±ЧЧ:ММ`, и эта строка МОЛЧИТ: она говорит О ФОРМАТЕ.\n' +
+    '- ЗАКРЫТА 2026-08-09 — МОЛЧИТ: изъятие на месте. <!-- t8-ok: фикстура примера, не метка -->\n' +
+    '- `закрыта 2026-08-09` — МОЛЧИТ: дата внутри обратных кавычек — образец, не метка.\n');
+  //   ожидаем от блока меток: 4 красных (нет времени · нет зоны · «снят» · безглагольная веха),
+  //   восемь форм молчат — молчание проверяется наравне с краснотой (EXP-0059).
+  const expected = 18; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (имена plans/) + 4 (метки времени T8)
   const res = run(fx, { all: false });
   console.log('— селфтест, сломанная фикстура —');
   report(res);
