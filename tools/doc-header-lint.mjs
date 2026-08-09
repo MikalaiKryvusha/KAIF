@@ -36,7 +36,7 @@
 import { readFileSync, readdirSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
+import { spawnSync, execFileSync } from 'node:child_process';
 import { tempRoot } from './lib/temp-root.mjs';
 
 // ── Константы (никаких магических значений) ────────────────────────────────────────────────
@@ -323,6 +323,100 @@ function lintStamps(relPath, lines, findings) {
   });
 }
 
+// ── Ось ПРАВДИВОСТИ метки (bugs/78) ────────────────────────────────────────────────────────
+// Две оси выше судят ФОРМУ: есть ли у метки дата, время и смещение зоны. Правдивость они не
+// проверяют по построению — и дефект пришёл ровно оттуда: агент снял время пробой ОДИН раз в
+// начале сессии и дальше подставлял правдоподобные значения. Все девять выдуманных меток были
+// ИДЕАЛЬНО КАНОНИЧНЫ по форме, линтер печатал «findings 0», а нашёл расхождение ЧЕЛОВЕК —
+// «на часах 10 частв, не понимаю, о каких 12 ты говоришь». Расхождение доросло до двух часов и
+// попало в семь баг-доков, вердикт круга R1 и в САМО СВИДЕТЕЛЬСТВО освежения.
+//
+// Примета выбрана так, чтобы ложных срабатываний не было ПО ПОСТРОЕНИЮ, а не по подбору порога:
+// **момент нельзя записать раньше, чем он наступил**. Метка, объявляющая время ПОЗЖЕ коммита,
+// который эту строку внёс, невозможна физически — это либо выдумка, либо опечатка. Обратное
+// направление законно и не судится вовсе: документ вправе описывать давно прошедший момент.
+//
+// Источник истины — АВТОРСКОЕ время коммита (`author-time`), а не коммиттерское: ребейз
+// переписывает committer-date, и ось начала бы краснеть на честных метках после каждого
+// `git pull --rebase` (в день письма этой оси их было два).
+//
+// Цена прогона — ОДИН `git blame` на файл, а не один `git log` на метку: у сотни меток второй
+// вариант стоил бы сотню процессов.
+const STAMP_FUTURE_TOLERANCE_MIN = 5;   // округление до минуты + расхождение часов машины и git
+const NOT_COMMITTED = /^0{40}/;         // строка ещё не в истории — судить нечего, это не находка
+
+/** Карта «номер строки → author-time (мс)» для файла. `null`, если git недоступен/файл вне истории. */
+function blameTimes(root, relPath) {
+  let out;
+  try {
+    out = execFileSync('git', ['blame', '--line-porcelain', '--', relPath],
+      { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'ignore'] });
+  } catch { return null; }               // не git-дерево или файл не отслеживается — ось молчит
+  const times = new Map();
+  let line = 0, at = null, uncommitted = false;
+  for (const row of out.split('\n')) {
+    const head = row.match(/^([0-9a-f]{40}) \d+ (\d+)/);
+    if (head) { line = Number(head[2]); at = null; uncommitted = NOT_COMMITTED.test(head[1]); continue; }
+    if (row.startsWith('author-time ')) at = Number(row.slice(12)) * 1000;
+    if (row.startsWith('\t') && at !== null && !uncommitted) times.set(line, at);
+  }
+  return times;
+}
+
+/** Найденные в файле метки: номер строки + объявленный момент. Только ПОЛНЫЕ метки (дата+время+зона). */
+function stampMoments(lines) {
+  const fenced = fencedMask(lines);
+  const found = [];
+  const FULL_STAMP = new RegExp('(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}:\\d{2})\\s*([+-]\\d{2}:\\d{2})', 'g');
+  lines.forEach((line, i) => {
+    if (fenced[i]) return;
+    if (FORMAT_TALK_RE.test(line) || EXEMPT_MARK_RE.test(line)) return;
+    FULL_STAMP.lastIndex = 0;
+    let m;
+    while ((m = FULL_STAMP.exec(line))) {
+      if (insideCode(line, m.index)) continue;
+      const ms = Date.parse(`${m[1]}T${m[2]}:00${m[3]}`);
+      if (!Number.isNaN(ms)) found.push({ n: i + 1, ms, text: m[0] });
+    }
+  });
+  return found;
+}
+
+// РАТЧЕТ. Первый же прогон оси нашёл 58 меток в 29 файлах — задолженность прошлых сессий того же
+// класса, что владелец поймал глазами. Чинить их сплошняком нельзя: канон различает *принято* и
+// *зафиксировано*, а истинный момент ПРИНЯТИЯ по git не восстанавливается — известно лишь, что он
+// не позже коммита. Подставить туда время коммита значило бы заменить одну выдумку другой.
+// Поэтому известная задолженность фиксируется базовой линией и печатается ОДНОЙ строкой, а всё
+// новое кричит поимённо: страж, который каждый прогон печатает 58 находок, учит оператора не
+// смотреть — и следующая настоящая утонет в шуме (норма шума стража текстового правила).
+// Базовая линия КОММИТИТСЯ (это долг проекта, а не состояние сессии) и только УМЕНЬШАЕТСЯ:
+// разобрал метку — убери строку, вернуться она уже не сможет.
+const STAMP_BASELINE = join(dirname(fileURLToPath(import.meta.url)), 'doc-header-lint.stamp-baseline.json');
+const stampKey = (rel, text) => `${rel} :: ${text}`;
+
+function loadStampBaseline() {
+  try { return new Set(JSON.parse(readFileSync(STAMP_BASELINE, 'utf8')).known || []); }
+  catch { return new Set(); }
+}
+
+function lintStampTruth(root, relPath, lines, findings, baseline, debt) {
+  const stamps = stampMoments(lines);
+  if (!stamps.length) return;
+  const times = blameTimes(root, relPath);
+  if (!times) return;                    // источника истины нет — ось честно молчит, а не зеленеет
+  const tolerance = STAMP_FUTURE_TOLERANCE_MIN * 60 * 1000;
+  for (const s of stamps) {
+    const committed = times.get(s.n);
+    if (committed === undefined) continue;             // строка ещё не закоммичена — не история
+    if (s.ms <= committed + tolerance) continue;       // метка не в будущем — законно
+    if (baseline && baseline.has(stampKey(relPath, s.text))) { debt.push(stampKey(relPath, s.text)); continue; }
+    const aheadMin = Math.round((s.ms - committed) / 60000);
+    findings.push([relPath, `метка «${s.text}» опережает СВОЙ коммит на ${aheadMin} мин ` +
+      `(строка внесена ${new Date(committed).toISOString()}) — момент нельзя записать раньше, ` +
+      `чем он наступил: сними время пробой \`date\` в тот же ход, что и запись (bugs/78, EXP-0078)`]);
+  }
+}
+
 function lintInterview(relPath, lines, findings) {
   const head = lines.slice(0, HEAD_LINES).join('\n');
   if (!/^# /.test(lines[0] || '')) findings.push([relPath, 'нет H1 первой строкой']);
@@ -340,6 +434,8 @@ function lintRoot(relPath, lines, findings) {
 // ── Прогон ─────────────────────────────────────────────────────────────────────────────────
 function run(root, { all = false } = {}) {
   const findings = [];
+  const stampBaseline = loadStampBaseline();
+  const stampDebt = [];
   let scanned = 0;
   const inScope = (rel) => {
     if (EXCLUDE_NAMES.has(rel.split('/').pop())) return false;
@@ -363,7 +459,9 @@ function run(root, { all = false } = {}) {
   const stampPass = (rel, path) => {
     if (!inStampScope(rel)) return;
     if (inScope(rel)) return;                 // уже просканирован основным обходом
-    lintStamps(rel, readLines(path), findings);
+    const stampLines = readLines(path);
+    lintStamps(rel, stampLines, findings);
+    lintStampTruth(root, rel, stampLines, findings, stampBaseline, stampDebt);
   };
   for (const dir of FULL_DIRS) for (const f of listMd(join(root, dir))) {
     const rel = `${dir}/${f}`;
@@ -372,6 +470,7 @@ function run(root, { all = false } = {}) {
     scanned++; lintFull(rel, lines, findings);
     lintGoalVector(dir, rel, lines, findings);
     lintStamps(rel, lines, findings);
+    lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
   }
   for (const f of listMd(join(root, BUGS_DIR))) {
     const rel = `${BUGS_DIR}/${f}`;
@@ -379,6 +478,7 @@ function run(root, { all = false } = {}) {
     const lines = readLines(join(root, BUGS_DIR, f));
     scanned++; lintBugs(rel, lines, findings);
     lintStamps(rel, lines, findings);
+    lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
   }
   for (const f of listMd(join(root, INTERVIEWS_DIR))) {
     const rel = `${INTERVIEWS_DIR}/${f}`;
@@ -386,6 +486,7 @@ function run(root, { all = false } = {}) {
     const lines = readLines(join(root, INTERVIEWS_DIR, f));
     scanned++; lintInterview(rel, lines, findings);
     lintStamps(rel, lines, findings);
+    lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
   }
   for (const f of ROOT_DOCS) {
     const p = join(root, f);
@@ -393,14 +494,19 @@ function run(root, { all = false } = {}) {
     const lines = readLines(p);
     scanned++; lintRoot(f, lines, findings);
     lintStamps(f, lines, findings);
+    lintStampTruth(root, f, lines, findings, stampBaseline, stampDebt);
   }
   // Конвенция имён plans/ — directory-level, вне пофайлового обхода и вне фильтра DONE.
   const planChildren = lintPlanNaming(root, findings);
-  return { findings, scanned, planChildren };
+  return { findings, scanned, planChildren, stampDebt };
 }
 
-function report({ findings, scanned, planChildren }) {
+function report({ findings, scanned, planChildren, stampDebt = [] }) {
   for (const [file, msg] of findings) console.log(`  ${file} — ${msg}`);
+  if (stampDebt.length) {
+    console.log(`ось правдивости меток (bugs/78): известный долг ${stampDebt.length} — базовая линия ` +
+      'tools/doc-header-lint.stamp-baseline.json, она только УМЕНЬШАЕТСЯ; всё новое печатается поимённо выше');
+  }
   console.log(`plan-naming (T2): детей эпиков ${planChildren ?? 0} — у каждого проверен родитель \`MM_EPIC_*\``);
   console.log(`doc-header-lint: scanned ${scanned}, findings ${findings.length}${findings.length
     ? ' — консультативно: поправь или оправдай на месте, старт работы не блокируется'
@@ -516,7 +622,57 @@ function selftest() {
     console.error(`СЕЛФТЕСТ ПРОВАЛЕН (композиция): словарь обязан найти подложенное «быстро» (exit 1), получили ${dictExit}`);
     process.exit(1);
   }
-  console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат, композиция со словарём находит стоп-слово`);
+  // ── Ось ПРАВДИВОСТИ метки (bugs/78) ──────────────────────────────────────────────────────
+  // Её нельзя доказать на обычной фикстуре: источник истины — git-история строки, а в каталоге
+  // без репозитория `blameTimes` честно возвращает null и ось молчит. Поэтому доказательство
+  // идёт в НАСТОЯЩЕМ репозитории, созданном тут же: коммит ставит момент, а метки в файле
+  // объявляют один момент ДО него (законный) и один ПОСЛЕ (невозможный).
+  const gitFx = tempRoot('doc-header-lint-git');
+  mkdirSync(join(gitFx, 'plans'), { recursive: true });
+  const git = (...a) => spawnSync('git', a, { cwd: gitFx, encoding: 'utf8' });
+  git('init', '-q');
+  git('config', 'user.email', 'selftest@example.invalid');
+  git('config', 'user.name', 'selftest');
+  // Момент коммита назначается ЯВНО, а не берётся у часов: иначе проверка зависела бы от
+  // скорости прогона, а «примерно сейчас» — не доказательство (детерминизм, канон-порядок).
+  const COMMIT_AT = '2026-08-09T12:00:00+03:00';
+  const past = '2026-08-09 11:00 +03:00';    // метка ДО своего коммита — законна всегда
+  const future = '2026-08-09 12:30 +03:00';  // метка ПОСЛЕ своего коммита — невозможна
+  writeFileSync(join(gitFx, 'plans', '40_EPIC_stamp_truth.md'),
+    '# Эпик 40 — правдивость метки\n\n' + CLEAN_HEADER +
+    '\n## Вектор цели\n\nДостичь X, наблюдаемого прогоном Y (Achieve).\n' +
+    '\n## Критерии приёмки (готово, когда)\n\n1. Сборка проходит за ≤ 60 с на референс-машине CI.\n' +
+    `\n## Вехи\n- зафиксировано ${past} — МОЛЧИТ: момент раньше своего коммита, это законно.\n` +
+    `- зафиксировано ${future} — КРАСНАЯ: момент позже коммита, записать его было нечем.\n`);
+  git('add', '-A');
+  git('-c', `user.name=selftest`, 'commit', '-q', '-m', 'fixture',
+    '--date', COMMIT_AT, ...['-c', `committer.date=${COMMIT_AT}`].slice(0, 0));
+  // author-date задаётся флагом `--date`; committer-date — переменной окружения, но ось читает
+  // ИМЕННО author-time (ребейз переписывает committer-date и краснил бы честные метки).
+  const truth = run(gitFx, { all: false });
+  const ahead = truth.findings.filter(([, msg]) => msg.includes('опережает СВОЙ коммит'));
+  if (ahead.length !== 1) {
+    console.error(`СЕЛФТЕСТ ПРОВАЛЕН (правдивость метки): ожидали 1 находку про опережение, получили ${ahead.length}`);
+    for (const [f, m] of truth.findings) console.error(`   ${f} — ${m}`);
+    process.exit(1);
+  }
+  if (!ahead[0][1].includes(future)) {
+    console.error(`СЕЛФТЕСТ ПРОВАЛЕН (правдивость метки): покраснела не та метка — ${ahead[0][1]}`);
+    process.exit(1);
+  }
+  // Вторая половина доказательства: ратчет ГЛУШИТ ровно известную метку и ничего сверх неё.
+  const savedBaseline = STAMP_BASELINE;
+  const debtProbe = [];
+  lintStampTruth(gitFx, 'plans/40_EPIC_stamp_truth.md',
+    readLines(join(gitFx, 'plans', '40_EPIC_stamp_truth.md')), [],
+    new Set([`plans/40_EPIC_stamp_truth.md :: ${future}`]), debtProbe);
+  if (debtProbe.length !== 1) {
+    console.error(`СЕЛФТЕСТ ПРОВАЛЕН (ратчет): известная метка обязана уйти в долг, получили ${debtProbe.length}`);
+    process.exit(1);
+  }
+  void savedBaseline;
+
+  console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат, композиция со словарём находит стоп-слово, ось правдивости краснеет на метке ПОЗЖЕ своего коммита и молчит на более ранней, ратчет глушит ровно известную`);
 }
 
 // ── Точка входа ────────────────────────────────────────────────────────────────────────────
