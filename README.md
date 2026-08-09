@@ -30,7 +30,7 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF — an ouroboros with an eye at its centre" width="560">
+  <img src="assets/KAIF_2.2_GitHub_LOGO_v2.webp" alt="KAIF 2.2 Yolden KAIF — an ouroboros with an eye at its centre" width="560">
 </p>
 
 <p align="center"><strong>Version 2.2 — Yolden KAIF</strong> · 2026-08-08</p>
@@ -581,7 +581,7 @@ pleasant work!
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="560">
+  <img src="assets/KAIF_2.2_GitHub_LOGO_v2.webp" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="560">
 </p>
 
 <p align="center"><strong>Версия 2.2 — Yolden KAIF</strong> · 08.08.2026</p>

@@ -7,7 +7,7 @@
   подряд вне блоков кода и таблиц.
 -->
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF" width="620">
+  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.2_GitHub_LOGO_v2.webp" alt="KAIF 2.2 Yolden KAIF" width="620">
 </p>
 
 > **Release date: 2026-08-08** · Minsk.
@@ -71,7 +71,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 ## Русский · [English](#english)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.2_GH_RELEASE_PAGE_LOGO.jpg" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="620">
+  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.2_GitHub_LOGO_v2.webp" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="620">
 </p>
 
 > **Дата релиза: 08.08.2026** · Минск.
