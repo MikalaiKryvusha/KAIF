@@ -521,10 +521,8 @@ Table 6 — Metrics of KAIF 2.2
 | How much human work falls on one hour of the human + agent pair's work | **≈ 190 person-hours** | one hour with the agent does what a human alone would do in 190 hours — 24 working days of 8 hours |
 | Requests to the models in total | **≈ 13,000** | about 650 ordinary chatbot conversations of 20 messages each |
 | Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
-| What Fable 5's work would cost if paid at Anthropic's public API prices | **≈ $2,400** | about 480 hamburgers at $5 |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | **≈ $2,000** | about 400 hamburgers at $5 |
 | What all the work would cost if paid at Anthropic's public API prices | **≈ $4,500** | about 900 hamburgers at $5 |
-| **Actually paid by subscription** | **$55** | 11 hamburgers at $5 |
+| **Actually paid for the Claude Max subscription** | **$55** | 11 hamburgers at $5 |
 
 ## License
 
@@ -1054,10 +1052,8 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Сколько работы людей приходится на один час работы тандема Человек-Агент | **≈ 190 человеко-часов** | один час с агентом делает столько, сколько человек в одиночку делал бы 190 часов — 24 рабочих дня по 8 часов |
 | Запросов к моделям всего | **≈ 13 000** | примерно 650 обычных чатов с чат-ботом по 20 сообщений в каждом |
 | Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
-| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | **≈ $2 400** | примерно 480 гамбургеров по 5 $ |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | **≈ $2 000** | примерно 400 гамбургеров по 5 $ |
 | Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **≈ $4 500** | примерно 900 гамбургеров по 5 $ |
-| **Фактически заплачено по подписке** | **$55** | 11 гамбургеров по 5 $ |
+| **Фактически заплачено по подписке Claude Max** | **$55** | 11 гамбургеров по 5 $ |
 
 ## Лицензия
 
