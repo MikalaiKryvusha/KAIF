@@ -187,7 +187,12 @@ function parseInterview(root, p) {
   const num = (name.match(/interview_(\d+)/) || [])[1] || null;
   const st = docStatus(md);
   const questions = parseQuestions(md).map((q) => ({
-    id: q.id, answered: q.answered, targets: q.target ? [q.target] : [],
+    // Адресат ответа — ПЕРЕЧЕНЬ, а не один документ (круг R2, ось G): ядро копит все строки
+    // поля через перевод строки, и каждая строка судится отдельно. Прежде поле было одной
+    // строкой, а разбор адреса брал в ней ПЕРВОЕ вхождение пути — второй и третий адресат
+    // разноса не получали и числились нулём долга.
+    id: q.id, answered: q.answered,
+    targets: q.target ? q.target.split('\n').map((s) => s.trim()).filter(Boolean) : [],
     // Ось «вопрос ОТВЕЧАЕМ» (bugs/62): сколько вариантов ПАРСЕР увидел в этом вопросе — ровно
     // столько радиокнопок нарисует страница. Не «сколько букв написал автор»: буквы, набранные
     // формой, которой парсер не знает, для владельца не существуют.
@@ -206,7 +211,8 @@ function parseInterview(root, p) {
 
 function scanInterviews(root) {
   const dir = join(root, INTERVIEWS_DIR);
-  const out = { unanswered: [], stale: [], propagation: [], unanswerable: [] };
+  // unresolvedTargets — СПРАВКА, не нарушение: адрес назван, но ни во что не разрешается.
+  const out = { unanswered: [], stale: [], propagation: [], unanswerable: [], unresolvedTargets: [] };
   if (!existsSync(dir)) return out;
   const files = readdirSync(dir).filter((f) => /^interview_\d+.*\.md$/.test(f)).sort();
 
@@ -261,15 +267,44 @@ function scanInterviews(root) {
 
     for (const q of iv.questions.filter((x) => x.answered)) {
       if (q.targets.length > 0) {
-        // I20: каждый объявленный адресат цитирует «интервью №NNN, QN».
+        // I20: КАЖДЫЙ объявленный адресат цитирует «интервью №NNN, QN».
+        // «Каждый» здесь буквально: в одной строке поля адресов может быть названо несколько
+        // документов («`ideas/22` (шапка «Вовне») и `plans/26` §1»), и прежде разбор брал ПЕРВОЕ
+        // вхождение пути, а остальные молча выпадали из проверки. В живом дереве многоадресными
+        // оказались все одиннадцать полей, поэтому дыра покрывала весь корпус (круг R2, ось G).
+        const addresses = [];
         for (const tgt of q.targets) {
-          const m = tgt.match(/([\p{L}\d_./-]+\/[\p{L}\d_.-]+|[A-Z_]+\.md)/u);
-          const hint = m ? m[1].replace(/\.md$/, '') : null;
-          let docs = hint ? corpus.filter((c) => c.file.startsWith(hint)) : [];
+          for (const m of tgt.matchAll(/([\p{L}\d_./-]+\/[\p{L}\d_.-]+|[A-Z_]+\.md)/gu)) {
+            if (!addresses.some((a) => a.path === m[1])) addresses.push({ path: m[1], tgt });
+          }
+        }
+        for (const { path: addrPath, tgt } of addresses) {
+          const hint = addrPath.replace(/\.md$/, '');
+          let docs = corpus.filter((c) => c.file.startsWith(hint));
           // Адресат может быть КОДОВЫМ файлом вне корпуса скана (tools/*.mjs — пилот 008):
           // читаем его с диска напрямую — цитата «интервью №NNN, QN» живёт и в комментариях кода.
-          if (docs.length === 0 && hint && existsSync(resolve(root, m[1])))
-            docs = [{ file: m[1], text: readLines(resolve(root, m[1])).join('\n') }];
+          if (docs.length === 0 && existsSync(resolve(root, addrPath)))
+            docs = [{ file: addrPath, text: readLines(resolve(root, addrPath)).join('\n') }];
+          // АДРЕС, КОТОРЫЙ НИ ВО ЧТО НЕ РАЗРЕШАЕТСЯ, — НЕ АДРЕС. Примета пути ловит и пару
+          // констант в скобках («константы QUIET_FROM/QUIET_TO»), и слэш внутри прозы; требовать
+          // цитату от несуществующего документа значит красить гейт там, где риска нет, — а гейт,
+          // краснеющий без риска, отключают (EXP-0080). Молчать о таком тоже нельзя: это либо
+          // опечатка в адресе, либо адресат, которого ещё не создали. Поэтому — отдельной
+          // справочной строкой, не нарушением.
+          if (docs.length === 0) {
+            out.unresolvedTargets.push({ file: iv.file, q: q.id, addr: addrPath, line: tgt,
+              why: 'такого документа нет' });
+            continue;
+          }
+          // МАШИННЫЙ ФАЙЛ ДАННЫХ прозаической цитаты не несёт по своей природе: базовая линия
+          // стража — массив записей долга, и «интервью №NNN, QN» вписать туда некуда. Требовать
+          // от него цитату значит краснеть там, где исполнить требование нельзя, — и такой гейт
+          // обходят, а не чинят. Разнос сюда судится глазами, и страж говорит это вслух.
+          if (/\.(?:json|lock|csv|svg|png|jpe?g|pdf)$/i.test(addrPath)) {
+            out.unresolvedTargets.push({ file: iv.file, q: q.id, addr: addrPath, line: tgt,
+              why: 'машинный файл данных — прозаической цитаты не несёт' });
+            continue;
+          }
           // bugs/56: было `numRe.test(text) && text.includes(q.id)` — ДВА независимых теста
           // существования по всему файлу. Номер интервью в одном абзаце и голое «QN» в другом —
           // в том числе оба из цитат ПОСТОРОННИХ интервью — зачитывали долг, которого никто не
@@ -284,8 +319,10 @@ function scanInterviews(root) {
           const cited = docs.some((c) => jointRe.test(unwrap(c.text)));
           if (!cited)
             out.propagation.push({
-              file: iv.file, q: q.id, target: tgt,
-              key: iv.file + '#' + q.id + '#' + sha1(tgt),
+              file: iv.file, q: q.id, target: addrPath,
+              // Ключ долга — ПО АДРЕСУ, а не по тексту всей строки: иначе два адресата одной
+              // строки делили бы один ключ, и второй долг был бы невидим ратчету по построению.
+              key: iv.file + '#' + q.id + '#' + sha1(addrPath),
             });
         }
       }
@@ -355,6 +392,13 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
     for (const v of fresh) log(`  ✗ [${v.kind}] ${v.file}${v.line ? ':' + v.line : ''} — ${v.text}`);
   } else {
     log('— Новых нарушений: 0');
+  }
+  // Справка, а не нарушение: страж НАЗЫВАЕТ адреса, которых не нашёл, вместо того чтобы молча
+  // их пропустить. Молчаливый пропуск сделал бы охват уже объявленного, а красный на паре
+  // констант в скобках — ложной тревогой (норма G9: ложная тревога опаснее пропуска).
+  if ((iv.unresolvedTargets || []).length) {
+    log(`— Адресаты, не разрешённые в документ: ${iv.unresolvedTargets.length} (справка, не нарушение)`);
+    for (const u of iv.unresolvedTargets) log(`  · ${u.file} ${u.q} → «${u.addr}» — ${u.why}`);
   }
   return { newViolations: fresh, inherited: inherited.length, unanswered: iv.unanswered };
 }
@@ -513,6 +557,48 @@ function selftest() {
       w('plans/02_target.md', '# План 02\n\n' +
         '3. Длинный пункт списка, где решение владельца подтверждено — ПОДТВЕРЖДЕНО: интервью\n' +
         '   №091, Q1 (перенос строки ровно как в живом `plans/48`).\n');
+    },
+    false, '');
+
+  // ── Круг R2, ось G: у вопроса НЕСКОЛЬКО адресатов, и судится КАЖДЫЙ ──────────────────────
+  // Прежде адресат физически не мог быть больше одного: каждая следующая строка «Адресат
+  // ответа:» затирала предыдущую, а внутри строки разбор брал ПЕРВОЕ вхождение пути. В живом
+  // дереве многоадресными оказались ВСЕ одиннадцать полей — то есть дыра покрывала весь корпус,
+  // и долг разноса второго адресата числился нулём по построению.
+  const IV_MULTI = '# Interview #093\n\n> Status: **✅ ANSWERS RECEIVED 2026-08-07**\n\n' +
+    '### Q1. Вопрос?\n\n**Адресат ответа:** `plans/02` §1 и `plans/03` §2\n\n**Answer:** А\n';
+  mut('ДВА адресата в ОДНОЙ строке, второй НЕ цитирует → красный (R2/ось G)',
+    'долг разноса Q1 по второму адресату: первое вхождение пути больше не съедает остальные',
+    () => {
+      w('interviews/interview_093_test.md', IV_MULTI);
+      w('plans/02_target.md', '# План 02\n\nПо ответу интервью №093, Q1 — делаем А.\n');
+      w('plans/03_target.md', '# План 03\n\nПро другое, без цитаты.\n');
+    },
+    true, 'разнос');
+  mut('ДВА адресата в одной строке, оба цитируют → зелёный (R2/ось G)', '0 нарушений',
+    () => {
+      w('interviews/interview_093_test.md', IV_MULTI);
+      w('plans/02_target.md', '# План 02\n\nПо ответу интервью №093, Q1 — делаем А.\n');
+      w('plans/03_target.md', '# План 03\n\nПо ответу интервью №093, Q1 — и здесь тоже.\n');
+    },
+    false, '');
+  mut('ДВА адресата ДВУМЯ строками, первый НЕ цитирует → красный (R2/ось G)',
+    'долг разноса Q1 по первому адресату: вторая строка поля больше не затирает первую',
+    () => {
+      w('interviews/interview_093_test.md',
+        '# Interview #093\n\n> Status: **✅ ANSWERS RECEIVED 2026-08-07**\n\n### Q1. Вопрос?\n\n' +
+        '**Адресат ответа:** `plans/02` §1\n**Адресат ответа:** `plans/03` §2\n\n**Answer:** А\n');
+      w('plans/02_target.md', '# План 02\n\nПро другое, без цитаты.\n');
+      w('plans/03_target.md', '# План 03\n\nПо ответу интервью №093, Q1 — делаем А.\n');
+    },
+    true, 'разнос');
+  mut('адрес, не разрешающийся в документ → зелёный (R2/ось G)',
+    '0 нарушений: пара констант в скобках — не адрес, красный на ней был бы ложной тревогой',
+    () => {
+      w('interviews/interview_093_test.md',
+        '# Interview #093\n\n> Status: **✅ ANSWERS RECEIVED 2026-08-07**\n\n### Q1. Вопрос?\n\n' +
+        '**Адресат ответа:** `plans/02` §1 (константы QUIET_FROM/QUIET_TO)\n\n**Answer:** А\n');
+      w('plans/02_target.md', '# План 02\n\nПо ответу интервью №093, Q1 — делаем А.\n');
     },
     false, '');
 

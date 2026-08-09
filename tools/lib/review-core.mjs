@@ -209,6 +209,7 @@ function finishQuestion(q, docClosed) {
   q.answers = [];      // все распознанные поля ответа (текст может быть многострочным ниже метки)
   q.target = null;
   let curOpt = null;
+  let targetOpen = false;   // поле «Адресат ответа:» открыто — следующая строка с отступом его продолжает
   for (let j = 0; j < q.body.length; j++) {
     const line = q.body[j];
     const opt = line.match(OPTION_START_RE);
@@ -222,8 +223,17 @@ function finishQuestion(q, docClosed) {
     if (q.optionTableLines.has(j)) { curOpt = null; continue; } // таблица разобрана до цикла
     if (curOpt && /^\s{2,}\S/.test(line)) { curOpt.lines.push(line); continue; }
     curOpt = null;
+    // АДРЕСАТОВ У ВОПРОСА МОЖЕТ БЫТЬ НЕСКОЛЬКО (круг R2, ось G). Прежде каждая следующая строка
+    // «Адресат ответа:» ЗАТИРАЛА предыдущую, а список, завёрнутый на вторую строку, терялся
+    // целиком — поле читается построчно. В живых интервью многоадресными оказались ВСЕ поля,
+    // и страж разноса числил ноль долга там, где второй адресат ответа не получал.
+    // Копим, а не перезаписываем; разделитель — перевод строки, чтобы разбор адресов ниже видел
+    // каждую строку целиком.
     const t = line.match(TARGET_LABEL_RE);
-    if (t) { q.target = t[1].trim(); continue; }
+    if (t) { const v = t[1].trim(); q.target = q.target ? q.target + '\n' + v : v; targetOpen = true; continue; }
+    // Продолжение поля: строка с отступом сразу под меткой — часть того же перечня адресатов.
+    if (targetOpen && /^\s{2,}\S/.test(line)) { q.target += '\n' + line.trim(); continue; }
+    targetOpen = false;
     const a = line.match(ANSWER_LABEL_RE);
     if (a && !COUNTER_LABEL_RE.test(line)) {
       let text = (a.groups.rest || '').trim();
