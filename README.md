@@ -511,7 +511,7 @@ Table 6 — Metrics of KAIF 2.2
 | Files created from nothing | 163 | a file that did not exist before — **every fourteen minutes** |
 | Lines added | **≈ +37,000** | about 16 lines a minute of active work |
 | Lines removed | **≈ −1,800** | 21 times more added than removed |
-| Prose written into the repository | **≈ 23,700 lines** | five of every seven written lines are prose, not code |
+| Prose written into the repository | **≈ 23,700 lines** | for every seven lines written, five are prose and two are code |
 | Words of prose written into the repository | **≈ 253,000** | about **three novels** of 80,000 words |
 | Code written into the repository | **≈ 9,500 lines** | about 4 lines of code a minute of active work |
 | Writing pace | **≈ 6,500 words** per hour of active work | a human writes that many in 52 hours |
@@ -1048,7 +1048,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Файлов создано с нуля | 163 | файл, которого раньше не было, — **каждые четырнадцать минут** |
 | Строк добавлено | **≈ +37 000** | примерно 16 строк в минуту активной работы |
 | Строк удалено | **≈ −1 800** | добавленного в 21 раз больше, чем удалённого |
-| Прозы написано в репозиторий | **≈ 23 700 строк** | из каждых семи написанных строк пять — проза, а не код |
+| Прозы написано в репозиторий | **≈ 23 700 строк** | на каждые семь написанных строк — пять прозы и две кода |
 | Слов прозы написано в репозиторий | **≈ 253 000** | примерно **три романа** по 80 000 слов |
 | Кода написано в репозиторий | **≈ 9 500 строк** | примерно 4 строки кода в минуту активной работы |
 | Темп письма | **≈ 6 500 слов** за час активной работы | человек пишет столько за 52 часа |
