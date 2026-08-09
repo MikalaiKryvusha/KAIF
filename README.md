@@ -529,7 +529,7 @@ Table 6 — Metrics of KAIF 2.2
 | What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | the remaining third |
 | What all the work would cost if paid at Anthropic's public API prices | **$3 509** | about **594 hamburgers** at $5.91 — or 1.1 monthly salaries of a software engineer |
 | **Paid by subscription** | **≈ $16.89** | the share of a Claude Max subscription ($250 per month) that falls on two days of work |
-| How many times API prices exceed that subscription share | **208 times** | for every dollar actually paid, 208 at list price |
+| How many times API prices exceed that subscription share | **208 times** | for every dollar paid, 208 at list price |
 | If living people had written KAIF 2.2, their work would have amounted to | **5 517 person-hours** | a team of **five engineers working 138 days straight** |
 | Payroll for those people | **$98 517** | at an engineer's salary of $3 000 per month |
 | Electricity spent on the computation | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
