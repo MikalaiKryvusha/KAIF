@@ -551,11 +551,7 @@ pleasant work!
 
 <a id="russian"></a>
 
-<p align="center">
-  <img src="KAIF.jpg" alt="KAIF — Криник АИ Фреймворк" width="640">
-</p>
-
-# KAIF — Krinik AI Framework
+# КАИФ — Криник АИ Фреймворк
 
 <h3 align="center"><em>Внешняя память и дисциплина для ИИ-агентов — в одном самораскрывающемся файле.</em></h3>
 
