@@ -38,17 +38,36 @@ const ROOT = process.cwd();
 // Строка витрины → как её число зовётся в выводе `kaif-stats --json`.
 // Обе половины перечислены ЯВНО и проверяются КАЖДАЯ: счёт «нашлось где-то в файле» узаконил бы
 // пропажу строки из одной половины (bugs/55 F1 — тот же класс на другом артефакте).
+// Названия строк ПЕРЕИМЕНОВАНЫ судейским проходом релиза 2.2 (кластер A): прежние —
+// «Plans written», «Багов заведено» — читались как продукция ОКНА версии, тогда как число под
+// ними всеисторическое, и раздел объявляет окно. Теперь заголовок говорит «в репозитории», а
+// продукция окна названа в соседней колонке. Страж пинит ИМЯ строки, поэтому имена обновлены
+// вместе с витриной: сверяемое свойство то же (живое число против витринного), изменилась
+// подпись, а не проверка.
 const ROWS = [
-  { key: 'plans',      en: 'Plans written',                              ru: 'Планов написано' },
-  { key: 'bugs',       en: 'Bugs filed',                                 ru: 'Багов заведено' },
-  { key: 'ideas',      en: 'Ideas proposed',                             ru: 'Идей предложено' },
-  { key: 'researches', en: 'Research documents produced',                ru: 'Исследований проведено' },
-  { key: 'interviews', en: 'Owner interviews',                           ru: 'Интервью с владельцем' },
-  { key: 'reports',    en: 'Reports written',                            ru: 'Отчётов написано' },
+  { key: 'plans',      en: 'Plans in the repository',                    ru: 'Планов в репозитории' },
+  { key: 'bugs',       en: 'Bugs in the repository',                     ru: 'Багов в репозитории' },
+  { key: 'ideas',      en: 'Ideas in the repository',                    ru: 'Идей в репозитории' },
+  { key: 'researches', en: 'Research documents in the repository',       ru: 'Исследований в репозитории' },
+  { key: 'interviews', en: 'Owner interviews in the repository',         ru: 'Интервью с владельцем в репозитории' },
+  { key: 'reports',    en: 'Reports in the repository',                  ru: 'Отчётов в репозитории' },
   { key: 'knowledge',  en: 'Files in the knowledge directories in total', ru: 'Файлов в директориях знания всего' },
-  { key: 'decisions',  en: 'Owner decisions recorded',                   ru: 'Решений владельца зафиксировано' },
-  { key: 'lessons',    en: 'Experience lessons written',                 ru: 'Уроков опыта записано' },
+  { key: 'decisions',  en: 'Owner decisions recorded in total',          ru: 'Решений владельца зафиксировано всего' },
+  { key: 'lessons',    en: 'Experience lessons in total',                ru: 'Уроков опыта всего' },
   { key: 'skills',     en: 'Skills in the delivery',                     ru: 'Навыков в поставке' },
+];
+
+// Числа, живущие НЕ в колонке значения, а внутри пояснения «чему это равно». Их не видит
+// `readRow`, который якорится подписью строки, — и потому счёт закрытых багов не сверялся никем:
+// он протух (77 при живых 78) ВНУТРИ того же коммита, который его записал, и поймал это судья
+// релиза, а не страж. Ось узкая по построению: примета — полная фраза вокруг числа, а не голая
+// цифра, иначе она поймала бы соседнее число той же клетки.
+const CELL_ROWS = [
+  {
+    key: 'bugsDone',
+    en: { re: /(\d+)\s+of them closed/u, what: 'closed bugs inside the «Bugs in the repository» row' },
+    ru: { re: /из них закрыто\s+(\d+)/u, what: 'число закрытых багов внутри строки «Багов в репозитории»' },
+  },
 ];
 
 // Строки, которые страж НЕ судит, и почему — перечень нужен, чтобы «не проверено» не читалось
@@ -76,6 +95,7 @@ function liveStats(root = ROOT) {
     decisions: d.decisions,
     lessons: d.lessons,
     skills: d.skills,
+    bugsDone: d.bugsDone,
   };
 }
 
@@ -100,6 +120,16 @@ function checkFile(path, live) {
       const got = readRow(text, label);
       if (got === null) { findings.push(`${half}: строки «${label}» нет в таблице`); continue; }
       if (got !== live[row.key]) findings.push(`${half}: «${label}» — на витрине ${got}, живое ${live[row.key]}`);
+    }
+  }
+  // Вторая ось: числа внутри пояснения. Отсутствие фразы — ОТДЕЛЬНАЯ находка, а не ноль:
+  // пропавшая строка и неверное число лечатся по-разному, и путать их нельзя.
+  for (const row of CELL_ROWS) {
+    for (const [half, spec] of [['EN', row.en], ['RU', row.ru]]) {
+      const m = text.match(spec.re);
+      if (!m) { findings.push(`${half}: не найдено — ${spec.what}`); continue; }
+      const got = Number(m[1]);
+      if (got !== live[row.key]) findings.push(`${half}: ${spec.what} — на витрине ${got}, живое ${live[row.key]}`);
     }
   }
   return findings;

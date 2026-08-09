@@ -39,7 +39,7 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 ### 🎲 Interesting facts — what this version cost
 
-The window runs from the release of 2.1 — tag `v2.1`, 2026-07-31 at 11:09 +03:00 — to the measurement taken at 2026-08-09 at 18:03 +03:00, right before publication.
+Everything below was measured between the two releases — `git rev-list v2.1..v2.2` is the window, and the full table with every row lives in the README.
 
 - **9.3 calendar days · 40.7 hours of active work** — 201 commits, 257 files created from nothing.
 - **398,025 words of prose written into the repository** ≈ 5.0 novels, at 9,780 words per active hour; the knowledge directories hold **2,278,916 characters** — 3.9 more novels of accompanying documentation.
@@ -100,7 +100,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 ### 🎲 Интересные факты — во что обошлась эта версия
 
-Окно — от релиза 2.1 (тег `v2.1`, 31.07.2026, 11:09 +03:00) до замера, снятого 09.08.2026 в 18:03 +03:00, прямо перед публикацией.
+Всё, что ниже, измерено между двумя релизами — окно задаёт `git rev-list v2.1..v2.2`, а полная таблица со всеми строками живёт в README.
 
 - **9,3 календарных суток · 40,7 часа активной работы** — 201 коммит, 257 файлов создано с нуля.
 - **398 025 слов прозы написано в репозиторий** ≈ 5,0 романа, темп 9 780 слов в активный час; в директориях знания лежит **2 278 916 символов** — ещё 3,9 романа сопроводительной документации.

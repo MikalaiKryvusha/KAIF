@@ -513,19 +513,20 @@ Table 6 — Metrics of KAIF 2.2
 | Requests made by Fable 5 | 5,382 | about 149 requests per session |
 | Requests made by Opus 5 | 8,025 | about 223 requests per session |
 | Requests to the models in total | 13,412 | about 373 requests per session |
+| Weekly subscription limit spent by the moment of the measurement | **86%** | Opus 5 accounts for 36 of those percentage points |
 | Work sessions — a separate chat each | 36 | about an hour of active work per session |
-| Plans written | 64 | nearly two plans per session |
-| Bugs filed | 103 | 77 of them closed |
-| Ideas proposed | 25 | nearly one per session; none ships without the owner's "yes" |
-| Research documents produced | 19 | 19 times the code waited until a source had been read |
-| Owner interviews | 18 | a question for the human once every two sessions; the rest the agent decided |
-| Reports written | 13 | one report every three sessions of work |
-| Files in the knowledge directories in total | **247** | seven new documents per session |
+| Plans in the repository | 64 | 43 of them written for this version — more than one per session |
+| Bugs in the repository | 103 | 78 of them closed; 73 were filed for this version |
+| Ideas in the repository | 25 | 6 of them proposed for this version; none ships without the owner's "yes" |
+| Research documents in the repository | 19 | 5 of them produced for this version — five times the code waited until a source had been read |
+| Owner interviews in the repository | 18 | 12 of them held for this version — a question for the human once every three sessions; the rest the agent decided |
+| Reports in the repository | 13 | all 13 written for this version — the directory itself was born in it |
+| Files in the knowledge directories in total | **247** | 154 of them created for this version — **4.3 new documents per session** |
 | Characters in those documents | **2,278,916** | **1,266 typed pages** of 1,800 characters |
 | Words in those documents | **315,942** | about **3.9 novels** of 80,000 words worth of accompanying documentation, and the next session of the agent reads every page |
-| Owner decisions recorded | 71 | two human decisions per session |
-| Experience lessons written | 81 | 81 rakes the next session will not step on |
-| Skills in the delivery | 35 | 35 commands the agent gets in a stranger's project on day one |
+| Owner decisions recorded in total | 71 | 40 of them taken for this version — more than one per session |
+| Experience lessons in total | 81 | 62 of them written for this version — 62 rakes the next session will not step on |
+| Skills in the delivery | 35 | one of them added by this version; 35 commands the agent gets in a stranger's project on day one |
 | What Fable 5's work would cost if paid at Anthropic's public API prices | $2,843 | about **569 hamburgers** at $5 |
 | What Opus 5's work would cost if paid at Anthropic's public API prices | $1,886 | about **377 hamburgers** at $5 |
 | What all the work would cost if paid at Anthropic's public API prices | **$4,729** | about **946 hamburgers** at $5 |
@@ -1058,19 +1059,20 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Запросов сделала модель Fable 5 | 5 382 | примерно 149 запросов на одну сессию |
 | Запросов сделала модель Opus 5 | 8 025 | примерно 223 запроса на одну сессию |
 | Запросов к моделям всего | 13 412 | примерно 373 запроса на одну сессию |
+| Недельный лимит подписки, израсходованный к моменту замера | **86 %** | из них 36 процентных пунктов — Opus 5 |
 | Сессий работы — каждая отдельным чатом | 36 | примерно по часу активной работы на каждую сессию |
-| Планов написано | 64 | почти по два плана на каждую сессию |
-| Багов заведено | 103 | из них закрыто 77 |
-| Идей предложено | 25 | почти по идее на каждую сессию; ни одна не идёт в работу без «да» владельца |
-| Исследований проведено | 19 | 19 раз код ждал, пока будет прочитан источник |
-| Интервью с владельцем | 18 | вопрос человеку — раз в две сессии; остальное агент решал сам |
-| Отчётов написано | 13 | по отчёту на каждые три сессии работы |
-| Файлов в директориях знания всего | **247** | семь новых документов за сессию |
+| Планов в репозитории | 64 | из них 43 написаны для этой версии — больше одного на сессию |
+| Багов в репозитории | 103 | из них закрыто 78; заведено для этой версии — 73 |
+| Идей в репозитории | 25 | из них 6 предложены для этой версии; ни одна не идёт в работу без «да» владельца |
+| Исследований в репозитории | 19 | из них 5 проведены для этой версии — пять раз код ждал, пока будет прочитан источник |
+| Интервью с владельцем в репозитории | 18 | из них 12 взяты для этой версии — вопрос человеку раз в три сессии; остальное агент решал сам |
+| Отчётов в репозитории | 13 | все 13 написаны для этой версии — сама директория в ней и родилась |
+| Файлов в директориях знания всего | **247** | из них 154 созданы для этой версии — **4,3 новых документа за сессию** |
 | Символов в этих документах | **2 278 916** | **1 266 машинописных страниц** по 1 800 знаков |
 | Слов в этих документах | **315 942** | примерно **3,9 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
-| Решений владельца зафиксировано | 71 | по два решения человека на каждую сессию |
-| Уроков опыта записано | 81 | 81 грабля, на которую следующая сессия уже не наступит |
-| Навыков в поставке | 35 | 35 команд, которые агент получает в чужом проекте с первого дня |
+| Решений владельца зафиксировано всего | 71 | из них 40 приняты для этой версии — больше одного на сессию |
+| Уроков опыта всего | 81 | из них 62 записаны для этой версии — 62 грабли, на которые следующая сессия уже не наступит |
+| Навыков в поставке | 35 | один из них добавлен этой версией; 35 команд, которые агент получает в чужом проекте с первого дня |
 | Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 843 | примерно **569 гамбургеров** по 5 $ |
 | Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 886 | примерно **377 гамбургеров** по 5 $ |
 | Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$4 729** | примерно **946 гамбургеров** по 5 $ |
