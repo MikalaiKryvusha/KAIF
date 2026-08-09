@@ -17,7 +17,7 @@
 
 **KAIF 2.2 — Yolden KAIF.** A very large-scale version, the one that endows KAIF with the power of an intelligent system that develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for completeness. The eye stands for KAIF now being under the observation of the projects that use it — and those projects being under the observation of KAIF. Every cycle closes — the metaphorical ones and the technical ones alike.
 
-The version grew out of the field: four updates of real projects, each with a field report, became five epics and twelve tasks on top of 2.1 Strong KAIF. What KAIF is and how to use it — the [README](https://github.com/MikalaiKryvusha/KAIF#english). This page is the delta only.
+The version grew out of the field: four updates of real projects, each with a field report, became five epics and twelve tasks on top of 2.1 Strong KAIF. What KAIF is and how to use it — the [README](https://github.com/MikalaiKryvusha/KAIF#english). This page is what is new in this version.
 
 ---
 
@@ -39,13 +39,13 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 ### 🎲 Interesting facts — what this version cost
 
-Everything below was measured between the two releases — `git rev-list v2.1..v2.2` is the window, and the full table with every row lives in the README.
+Everything below was measured from 2026-08-07, 00:00 +03:00 — the hour the owner started the version — and the full table with every row lives in the README.
 
-- **9.3 calendar days · 40.7 hours of active work** — 201 commits, 257 files created from nothing.
-- **398,025 words of prose written into the repository** ≈ 5.0 novels, at 9,780 words per active hour; the knowledge directories hold **2,278,916 characters** — 3.9 more novels of accompanying documentation.
-- **4,482,103,967 tokens** ≈ 28,013 novels read and written again; the models' own writing ≈ 122 novels.
-- The same volume by human hands: **7,489 person-hours** — five engineers for 187 working days.
-- Paid by subscription: **≈ $77.34** for 9.3 days of a Claude Max plan. At Anthropic's public API prices the same volume of work would cost **$4,729**.
+- **2.0 calendar days · 38.7 hours of active work** — 145 commits, 163 files created from nothing.
+- **253,457 words of prose written into the repository** ≈ 3.2 novels, at 6,542 words per active hour.
+- **4,374,165,012 tokens** passed through the models — 27,339 novels' worth, almost all of it re-reading the same context over and over. Of that the models wrote **17,521,282 tokens** — 110 novels: about 250 tokens read for every one written.
+- The same volume by human hands: **4,842 person-hours** — five engineers for 121 working days.
+- Paid: **≈ $55.00** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **$4,371**.
 
 The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#85-interesting-facts).
 
@@ -78,7 +78,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 **KAIF 2.2 — Yolden KAIF.** Очень масштабная версия, наделяющая KAIF силой умной системы, самостоятельно развивающейся по циклу обратной связи. Уроборос символизирует замыкание цикла и совершенство. Глаз символизирует то, что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им пользуются, — под наблюдением KAIF. Все циклы — и метафорические, и технические — замыкаются.
 
-Версия выросла из поля. Четыре обновления реальных проектов, каждое с полевым отчётом, стали пятью эпиками и двенадцатью задачами поверх 2.1 Strong KAIF. Чем KAIF является и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#russian). Эта страница — только дельта.
+Версия выросла из поля. Четыре обновления реальных проектов, каждое с полевым отчётом, стали пятью эпиками и двенадцатью задачами поверх 2.1 Strong KAIF. Чем KAIF является и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#russian). На этой странице — что нового в этой версии.
 
 ---
 
@@ -100,13 +100,13 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 ### 🎲 Интересные факты — во что обошлась эта версия
 
-Всё, что ниже, измерено между двумя релизами — окно задаёт `git rev-list v2.1..v2.2`, а полная таблица со всеми строками живёт в README.
+Всё, что ниже, измерено с 00:00 07.08.2026 — с часа, когда владелец начал версию, — а полная таблица со всеми строками живёт в README.
 
-- **9,3 календарных суток · 40,7 часа активной работы** — 201 коммит, 257 файлов создано с нуля.
-- **398 025 слов прозы написано в репозиторий** ≈ 5,0 романа, темп 9 780 слов в активный час; в директориях знания лежит **2 278 916 символов** — ещё 3,9 романа сопроводительной документации.
-- **4 482 103 967 токена** ≈ 28 013 романов прочитано и написано заново; написано моделями ≈ 122 романа.
-- Тот же объём руками людей: **7 489 человеко-часов** — пять инженеров на 187 рабочих дней.
-- Заплачено по подписке: **≈ $77,34** за 9,3 суток плана Claude Max. По публичному прайсу API Anthropic такой же объём работы стоил бы **$4 729**.
+- **2,0 календарных суток · 38,7 часа активной работы** — 145 коммитов, 163 файла создано с нуля.
+- **253 457 слов прозы написано в репозиторий** ≈ 3,2 романа, темп 6 542 слова в активный час.
+- **4 374 165 012 токенов** прошло через модели — это 27 339 романов, и почти всё это перечитывание одного и того же контекста. Написали модели из них **17 521 282 токена** — 110 романов: на каждое написанное слово приходится около 250 прочитанных.
+- Тот же объём руками людей: **4 842 человеко-часа** — пять инженеров на 121 рабочий день.
+- Заплачено на деле: **≈ $55,00** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **$4 371**.
 
 Полная таблица — в [README](https://github.com/MikalaiKryvusha/KAIF#85-интересные-факты).
 

@@ -119,6 +119,8 @@ const HUMAN = {
   // не ошибка расчёта, а СОДЕРЖАНИЕ факта: столько стоила бы та же работа по токенам.
   subscriptionUsdMonth: 250,
   subscriptionPlan: 'Claude Max',
+  // Подписка меряется НЕДЕЛЬНЫМ лимитом: месяц = четыре недели (слово владельца 2026-08-09).
+  weeksPerMonth: 4,
 };
 
 const TRANSCRIPTS = join(homedir(), '.claude', 'projects', 'd--work-ai-sandbox-KAIF');
@@ -393,10 +395,27 @@ if (args.includes('--json')) {
     console.log(`  ИТОГО: $${sess.cost.toFixed(2)}`);
     console.log('');
     // Фактически оплаченное за окно: подписка — фикс за месяц, делим по календарю окна.
-    const paidActual = (HUMAN.subscriptionUsdMonth / 30) * repo.days;
+    // ПОДПИСКА МЕРЯЕТСЯ НЕДЕЛЬНЫМ ЛИМИТОМ, А НЕ КАЛЕНДАРНЫМИ ДНЯМИ. Прежняя формула делила
+    // месячную цену на 30 суток и умножала на длину окна — модель неверная: владелец платит за
+    // недельную квоту, и работа стоит ровно ту долю квоты, которую сожгла. Слово владельца
+    // (2026-08-09): «я потратил около 90% недельного лимита. В месяце 4 недели. Подписка в
+    // месяц стоит 250 долларов». Долю квоты видит ТОЛЬКО он — в интерфейсе плана; инструмент её
+    // измерить не может и потому не выдумывает: без `--limit-share` печатается цена недели и
+    // честное «доля не названа».
+    const weekPrice = HUMAN.subscriptionUsdMonth / HUMAN.weeksPerMonth;
+    const shareIdx = args.indexOf('--limit-share');
+    const limitShare = shareIdx >= 0 && args[shareIdx + 1] ? Number(args[shareIdx + 1]) / 100 : null;
+    const paidActual = limitShare !== null ? weekPrice * limitShare : null;
     console.log('— ФАКТИЧЕСКИ ОПЛАЧЕНО ВЛАДЕЛЬЦЕМ (подписка, а не API) —');
-    console.log(`  ${HUMAN.subscriptionPlan}: $${HUMAN.subscriptionUsdMonth}/мес → за ${repo.days.toFixed(1)} суток окна ≈ $${paidActual.toFixed(2)}`);
-    console.log(`  та же работа по API-прайсу: $${sess.cost.toFixed(0)} — это ×${Math.round(sess.cost / paidActual)} от доли подписки за тот же срок`);
+    console.log(`  ${HUMAN.subscriptionPlan}: $${HUMAN.subscriptionUsdMonth}/мес = ${HUMAN.weeksPerMonth} недели по $${weekPrice.toFixed(2)}`);
+    if (paidActual !== null) {
+      console.log(`  сожжено ${(limitShare * 100).toFixed(0)} % недельного лимита → заплачено ≈ $${paidActual.toFixed(2)}`);
+      console.log(`  та же работа по API-прайсу: $${sess.cost.toFixed(0)} — это ×${Math.round(sess.cost / paidActual)} от реально заплаченного`);
+    } else {
+      console.log('  доля недельного лимита НЕ НАЗВАНА — заплаченное не считается: её видит только');
+      console.log('  владелец в интерфейсе плана. Передай `--limit-share <проценты>` его словами.');
+      console.log(`  для сравнения: та же работа по API-прайсу стоила бы $${sess.cost.toFixed(0)}`);
+    }
     console.log('  ⚠️ это НЕ «экономия»: подписка ограничена недельными лимитами и не даёт гарантий API.');
     console.log('     Правильное чтение: столько работы было сделано, если мерить её токенами по публичной цене.');
     console.log('');

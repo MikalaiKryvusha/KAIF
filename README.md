@@ -117,18 +117,26 @@ and in section 8.1.
 ### 2.2. Installation procedure
 
 1. Drop [`KAIF.md`](KAIF.md) into the project root.
-2. Tell the agent:
+2. Tell the agent — in your own words. Any of these works, and each one says something different:
 
-   > *"Deploy KAIF from KAIF.md"*
+   > *"Deploy KAIF from KAIF.md"* — the plain one. English payload, tracked to the origin.
+
+   > *"Deploy KAIF from KAIF.md, my working language is Russian"* — the documents you read and
+   > answer in come out in your language; the payload itself stays English.
+
+   > *"Deploy KAIF from KAIF.md, I have already written GOAL.md"* — the agent reads your goal
+   > instead of asking about it afterwards.
+
+   > *"Deploy KAIF from KAIF.md in anonymous mode"* — no origin tracking, no author references.
 
    The agent needs a working Node.js and network access to this repository.
 3. If the agent's harness asks to approve running the fetched installer — that is the
    download-and-execute pattern being flagged, as it should be; approve it once. The installer
    verifies every fetched artifact against `kaif-manifest.json` (sha256) before running.
-4. Answer the adaptation questions the agent brings (project goal, sphere, language). Fill
-   `GOAL.md` — the one document that is the owner's to write.
-5. Any model strength works: the machinery does the structure, and every adaptation item carries a
-   forced checkpoint command.
+4. That is the whole of your part. KAIF installs itself: nothing is asked of you during the
+   installation, and no form is filled in.
+5. Afterwards the agent asks about one thing only — the goal of your project, if `GOAL.md` is
+   still empty. That is a question about where the project is going, not about the installation.
 
 <sub>An installation is tracked to the origin by default — that is what makes version checks,
 respectful updates and the field-report loop work out of the box. Want a deployment with no tie to
@@ -184,7 +192,7 @@ Table 1 — Key documents of a deployment
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The internal map: abstractions and their interactions | Agent maintains |
 | `KAIF_FRAMEWORK.md` | The deployment record: which KAIF is deployed here and how | Agent writes after injection |
 | `KAIF_REFERENCE.md` (at `.kaif/`) | The complete framework reference; `/help-kaif` cites its sections | Deployed verbatim |
-| `AUTHOR_STYLOMETRY.md` — **optional** | The portrait of the owner's written voice: registers, rules, an anti-portrait of AI markers, a self-check list. Text the owner signs is held to it | Taken by `/owner-voice` from the owner's own texts; the owner accepts it. A deployment without a portrait reddens no gate |
+| `AUTHOR_STYLOMETRY.md` — **optional** | The portrait of the owner's written voice: registers, rules, an anti-portrait of AI markers, a self-check list. Text the owner signs is held to it | Taken by `/owner-voice` from the owner's own texts; the owner accepts it |
 
 ### 3.3. The knowledge directories
 
@@ -490,54 +498,38 @@ artifacts are never hand-edited.
 
 #### 8.5.1. Metrics of the work on KAIF 2.2
 
-The window runs from the release of 2.1 — tag `v2.1`, 2026-07-31 at 11:09 +03:00 — to the
-measurement taken at 2026-08-09 at 18:03 +03:00, right before publication.
+The window opens at 2026-08-07, 00:00 +03:00 — the hour the owner started the version — and
+closes at the measurement taken 2026-08-09 at 18:47 +03:00, right before publication.
 
 Table 6 — Metrics of KAIF 2.2
 
 | What was measured | Value | What it equals |
 |-------------------|-------|----------------|
-| Time spent on the version | **9.3 days** | from one release to the next |
-| Active working time of the human + AI-agent pair | **40.7 hours** | about 5.1 full 8-hour working days |
-| Commits in git | 201 | about 5 commits per hour of active work |
-| Files touched | 491 | a file opened **every five minutes** of work |
-| Files created from nothing | 257 | a file that did not exist before — **every ten minutes** |
-| Lines added | +58,896 | **24 lines a minute** of active work |
-| Lines removed | −2,027 | 29 times more added than removed |
-| Prose written into the repository | 37,384 lines | five of every seven written lines are prose, not code |
-| Words of prose written into the repository | **398,025** | about **5.0 novels** of 80,000 words |
-| Code written into the repository | 14,530 lines | **6 lines of code a minute** of active work |
-| Writing pace | 9,780 words per hour of active work | a human writes that many in 78 hours |
-| Tokens spent by the models in total | **4,482,103,967** | about **28,013 novels** read and written again |
-| Of those, written by the models themselves | 19,445,315 tokens | about **122 novels** |
-| Requests made by Fable 5 | 5,382 | about 149 requests per session |
-| Requests made by Opus 5 | 8,025 | about 223 requests per session |
-| Requests to the models in total | 13,412 | about 373 requests per session |
-| Weekly subscription limit spent by the moment of the measurement | **86%** | Opus 5 accounts for 36 of those percentage points |
-| Work sessions — a separate chat each | 36 | about an hour of active work per session |
-| Plans in the repository | 64 | 43 of them written for this version — more than one per session |
-| Bugs in the repository | 103 | 78 of them closed; 73 were filed for this version |
-| Ideas in the repository | 25 | 6 of them proposed for this version; none ships without the owner's "yes" |
-| Research documents in the repository | 19 | 5 of them produced for this version — five times the code waited until a source had been read |
-| Owner interviews in the repository | 18 | 12 of them held for this version — a question for the human once every three sessions; the rest the agent decided |
-| Reports in the repository | 13 | all 13 written for this version — the directory itself was born in it |
-| Files in the knowledge directories in total | **247** | 154 of them created for this version — **4.3 new documents per session** |
-| Characters in those documents | **2,278,916** | **1,266 typed pages** of 1,800 characters |
-| Words in those documents | **315,942** | about **3.9 novels** of 80,000 words worth of accompanying documentation, and the next session of the agent reads every page |
-| Owner decisions recorded in total | 71 | 40 of them taken for this version — more than one per session |
-| Experience lessons in total | 81 | 62 of them written for this version — 62 rakes the next session will not step on |
-| Skills in the delivery | 35 | one of them added by this version; 35 commands the agent gets in a stranger's project on day one |
-| What Fable 5's work would cost if paid at Anthropic's public API prices | $2,843 | about **569 hamburgers** at $5 |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | $1,886 | about **377 hamburgers** at $5 |
-| What all the work would cost if paid at Anthropic's public API prices | **$4,729** | about **946 hamburgers** at $5 |
-| **Paid by subscription** | **≈ $77.34** | about **15 hamburgers** at $5 |
-| How many times API prices exceed that subscription share | **61 times** | for every dollar paid, 61 at list price |
-| If living people had written KAIF 2.2, their work would have amounted to | **7,489 person-hours** | a team of **five engineers working 187 days straight** |
-| Payroll for those people would have amounted to | **$133,739** | about **26,748 hamburgers** at $5 |
-| Electricity spent on the work of the AI agents | **≈ 24.5 kWh** | an ordinary flat spends that much in **2.5 days** |
-| How much human work falls on one hour of the human + agent pair's work | **184 person-hours** | one hour of a human working with the agent does what a human alone would do in 184 hours — **23 working days** of 8 hours |
-
-Active work means the hours when work was going on: sleep and long pauses do not count.
+| Time spent on the version | **two days** | the version was built on 7, 8 and 9 August 2026 |
+| Active working time of the human + AI-agent pair | **38.7 hours** | about 4.8 full 8-hour working days |
+| Commits in git | 145 | about 4 commits per hour of active work |
+| Files touched | 333 | a file opened **every seven minutes** of work |
+| Files created from nothing | 163 | a file that did not exist before — **every fourteen minutes** |
+| Lines added | +36,884 | **16 lines a minute** of active work |
+| Lines removed | −1,799 | 21 times more added than removed |
+| Prose written into the repository | 23,671 lines | five of every seven written lines are prose, not code |
+| Words of prose written into the repository | **253,457** | about **3.2 novels** of 80,000 words |
+| Code written into the repository | 9,498 lines | **4 lines of code a minute** of active work |
+| Writing pace | 6,542 words per hour of active work | a human writes that many in 52 hours |
+| Tokens spent by the models in total | **4,374,165,012** | about **27,339 novels** read and written again |
+| Of those, written by the models — the rest was re-read | 17,521,282 tokens | **110 novels**; about 250 tokens are read for every one written |
+| Requests to the models in total | 12,912 | about 380 requests per session |
+| Weekly subscription limit spent on the version | **88%** | $250 a month is four weeks at $62.50 — that is what the 88% cost |
+| Work sessions — a separate chat each | 34 | about an hour of active work per session |
+| What Fable 5's work would cost if paid at Anthropic's public API prices | $2,429 | about **486 hamburgers** at $5 |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | $1,942 | about **388 hamburgers** at $5 |
+| What all the work would cost if paid at Anthropic's public API prices | **$4,371** | about **874 hamburgers** at $5 |
+| **Paid by subscription** | **≈ $55.00** | about **11 hamburgers** at $5 |
+| How many times API prices exceed what was paid | **79 times** | for every dollar paid, 79 at list price |
+| If living people had written KAIF 2.2, their work would have amounted to | **4,842 person-hours** | a team of **five engineers working 121 days straight** |
+| Payroll for those people would have amounted to | **$86,462** | about **17,292 hamburgers** at $5 |
+| Electricity spent on the work of the AI agents | **≈ 22.3 kWh** | an ordinary flat spends that much in **2.3 days** |
+| How much human work falls on one hour of the human + agent pair's work | **125 person-hours** | one hour of a human working with the agent does what a human alone would do in 125 hours — **16 working days** of 8 hours |
 
 ## License
 
@@ -663,18 +655,26 @@ pleasant work!
 ### 2.2. Порядок установки
 
 1. Положите [`KAIF.md`](KAIF.md) в корень проекта.
-2. Скажите агенту:
+2. Скажите агенту — своими словами. Годится любая из просьб, и каждая говорит своё:
 
-   > *«Разверни KAIF из KAIF.md»*
+   > *«Разверни KAIF из KAIF.md»* — простая. Поставка на английском, привязка к origin.
+
+   > *«Разверни KAIF из KAIF.md, мой рабочий язык русский»* — документы, которые читаете и
+   > заполняете вы, выйдут на вашем языке; сама поставка остаётся английской.
+
+   > *«Разверни KAIF из KAIF.md, цель проекта я уже написал в GOAL.md»* — агент прочитает вашу
+   > цель, вместо того чтобы спрашивать о ней потом.
+
+   > *«Разверни KAIF из KAIF.md в анонимном режиме»* — без привязки к origin и без упоминаний автора.
 
    Агенту понадобятся рабочий Node.js и доступ в сеть к этому репозиторию.
 3. Одобрите запуск установщика, если харнесс агента об этом спросит. Он срабатывает на «скачай и
    исполни» и спрашивает один раз; установщик сверяет каждый скачанный файл с
    `kaif-manifest.json` по sha256 ещё до запуска.
-4. Ответьте на вопросы адаптации — цель проекта, сфера, язык — и заполните `GOAL.md`. Это
-   единственный документ, который пишете вы.
-5. Берите любую модель. Структуру строит машинерия, и каждый пункт адаптации несёт принудительную
-   чекпоинт-команду.
+4. На этом ваша часть кончается. KAIF ставит себя сам: во время установки у вас ничего не
+   спрашивают и никакие поля заполнять не нужно.
+5. После установки агент спросит об одном — о цели вашего проекта, если `GOAL.md` ещё пуст. Это
+   вопрос о том, куда идёт проект, а не об установке.
 
 <sub>Установка по умолчанию привязана к origin — именно этим работают проверка версии, уважительные
 обновления и петля полевых отчётов. Нужно развернуть без привязки к origin — скажите агенту на
@@ -728,7 +728,7 @@ origin, ни упоминаний автора (привязанные к origin
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внутренняя карта: абстракции и их взаимодействия | Ведёт агент |
 | `KAIF_FRAMEWORK.md` | Запись о развёртывании: какой KAIF здесь развёрнут и как | Агент пишет после инъекции |
 | `KAIF_REFERENCE.md` (в `.kaif/`) | Полная пояснительная записка фреймворка; `/help-kaif` цитирует её разделы | Разворачивается дословно |
-| `AUTHOR_STYLOMETRY.md` — **опциональный** | Портрет письменного голоса владельца: регистры, правила, анти-портрет ИИ-маркеров, чек-лист самопроверки. Текст, который владелец подписывает, держится по нему | Снимает `/owner-voice` с собственных текстов владельца; принимает владелец. Развёртывание без портрета не краснит ни один гейт |
+| `AUTHOR_STYLOMETRY.md` — **опциональный** | Портрет письменного голоса владельца: регистры, правила, анти-портрет ИИ-маркеров, чек-лист самопроверки. Текст, который владелец подписывает, держится по нему | Снимает `/owner-voice` с собственных текстов владельца; принимает владелец. |
 
 ### 3.3. Директории знаний
 
@@ -762,7 +762,7 @@ origin, ни упоминаний автора (привязанные к origin
 4. В `.kaif/hooks/` лежит опциональный модуль **refresh-hooks** для харнессов с lifecycle-хуками:
    приказ перечитать канон после сжатия контекста, таймер возраста маркера освежения и мягкий страж
    `STATUS.md` раз в сессию. Подключение — явный опт-ин владельца: машинерия не редактирует чужие
-   `settings.json`, а развёртывание без хуков не краснит ни один гейт.
+   `settings.json`.
 
 ## 4. Навыки
 
@@ -1036,54 +1036,38 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 #### 8.5.1. Метрики работ по версии KAIF 2.2
 
-Окно — от релиза 2.1 (тег `v2.1`, 31.07.2026, 11:09 +03:00) до замера,
-снятого 09.08.2026 в 18:03 +03:00, прямо перед публикацией.
+Окно открывается 07.08.2026 в 00:00 +03:00 — в час, когда владелец начал версию, — и
+закрывается замером, снятым 09.08.2026 в 18:47 +03:00, прямо перед публикацией.
 
 Таблица 6 — Метрики версии KAIF 2.2
 
 | Что измерено | Значение | Чему это равно |
 |--------------|----------|----------------|
-| Время работы над версией | **9,3 суток** | от одного релиза до следующего |
-| Время активной работы тандема «человек + ИИ-агент» | **40,7 часа** | примерно 5,1 полного рабочего дня по 8 часов |
-| Коммитов в git | 201 | примерно 5 коммитов на каждый час активной работы |
-| Файлов затронуто | 491 | новый файл открывался **каждые пять минут** работы |
-| Файлов создано с нуля | 257 | файл, которого раньше не было, — **каждые десять минут** |
-| Строк добавлено | +58 896 | **24 строки в минуту** активной работы |
-| Строк удалено | −2 027 | добавленного в 29 раз больше, чем удалённого |
-| Прозы написано в репозиторий | 37 384 строки | из каждых семи написанных строк пять — проза, а не код |
-| Слов прозы написано в репозиторий | **398 025** | примерно **5,0 романа** по 80 000 слов |
-| Кода написано в репозиторий | 14 530 строк | **6 строк кода в минуту** активной работы |
-| Темп письма | 9 780 слов за час активной работы | человек пишет столько за 78 часов |
-| Токенов израсходовано моделями всего | **4 482 103 967** | примерно **28 013 романов** прочитано и написано заново |
-| Из них написано самими моделями | 19 445 315 токенов | около **122 романов** |
-| Запросов сделала модель Fable 5 | 5 382 | примерно 149 запросов на одну сессию |
-| Запросов сделала модель Opus 5 | 8 025 | примерно 223 запроса на одну сессию |
-| Запросов к моделям всего | 13 412 | примерно 373 запроса на одну сессию |
-| Недельный лимит подписки, израсходованный к моменту замера | **86 %** | из них 36 процентных пунктов — Opus 5 |
-| Сессий работы — каждая отдельным чатом | 36 | примерно по часу активной работы на каждую сессию |
-| Планов в репозитории | 64 | из них 43 написаны для этой версии — больше одного на сессию |
-| Багов в репозитории | 103 | из них закрыто 78; заведено для этой версии — 73 |
-| Идей в репозитории | 25 | из них 6 предложены для этой версии; ни одна не идёт в работу без «да» владельца |
-| Исследований в репозитории | 19 | из них 5 проведены для этой версии — пять раз код ждал, пока будет прочитан источник |
-| Интервью с владельцем в репозитории | 18 | из них 12 взяты для этой версии — вопрос человеку раз в три сессии; остальное агент решал сам |
-| Отчётов в репозитории | 13 | все 13 написаны для этой версии — сама директория в ней и родилась |
-| Файлов в директориях знания всего | **247** | из них 154 созданы для этой версии — **4,3 новых документа за сессию** |
-| Символов в этих документах | **2 278 916** | **1 266 машинописных страниц** по 1 800 знаков |
-| Слов в этих документах | **315 942** | примерно **3,9 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
-| Решений владельца зафиксировано всего | 71 | из них 40 приняты для этой версии — больше одного на сессию |
-| Уроков опыта всего | 81 | из них 62 записаны для этой версии — 62 грабли, на которые следующая сессия уже не наступит |
-| Навыков в поставке | 35 | один из них добавлен этой версией; 35 команд, которые агент получает в чужом проекте с первого дня |
-| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 843 | примерно **569 гамбургеров** по 5 $ |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 886 | примерно **377 гамбургеров** по 5 $ |
-| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$4 729** | примерно **946 гамбургеров** по 5 $ |
-| **Заплачено по подписке** | **≈ $77,34** | примерно **15 гамбургеров** по 5 $ |
-| Во сколько раз прайс API дороже доли подписки за тот же срок | **61 раз** | на каждый заплаченный доллар по прайсу пришлось бы 61 |
-| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **7 489 человеко-часов** | команда из **пяти инженеров работала бы 187 дней подряд** |
-| Фонд оплаты труда этих людей составил бы | **$133 739** | примерно **26 748 гамбургеров** по 5 $ |
-| Электроэнергии израсходовано на работу ИИ-агентов | **≈ 24,5 кВт·ч** | столько обычная квартира расходует за **2,5 суток** |
-| Сколько работы людей приходится на один час работы тандема Человек-Агент | **184 человеко-часа** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 184 часа — **23 рабочих дня** по 8 часов |
-
-Активная работа — часы, когда работа шла: сон и длинные паузы в подсчёт не идут.
+| Время работы над версией | **двое суток** | версия сделана 7, 8 и 9 августа 2026 года |
+| Время активной работы тандема «человек + ИИ-агент» | **38,7 часа** | примерно 4,8 полного рабочего дня по 8 часов |
+| Коммитов в git | 145 | примерно 4 коммита на каждый час активной работы |
+| Файлов затронуто | 333 | новый файл открывался **каждые семь минут** работы |
+| Файлов создано с нуля | 163 | файл, которого раньше не было, — **каждые четырнадцать минут** |
+| Строк добавлено | +36 884 | **16 строк в минуту** активной работы |
+| Строк удалено | −1 799 | добавленного в 21 раз больше, чем удалённого |
+| Прозы написано в репозиторий | 23 671 строка | из каждых семи написанных строк пять — проза, а не код |
+| Слов прозы написано в репозиторий | **253 457** | примерно **3,2 романа** по 80 000 слов |
+| Кода написано в репозиторий | 9 498 строк | **4 строки кода в минуту** активной работы |
+| Темп письма | 6 542 слова за час активной работы | человек пишет столько за 52 часа |
+| Токенов израсходовано моделями всего | **4 374 165 012** | примерно **27 339 романов** прочитано и написано заново |
+| Из них написано моделями — остальное перечитано | 17 521 282 токена | **110 романов**; на каждое написанное слово около 250 прочитанных |
+| Запросов к моделям всего | 12 912 | примерно 380 запросов на одну сессию |
+| Недельный лимит подписки, израсходованный на версию | **88 %** | $250 в месяц — это четыре недели по $62,50; столько и стоили эти 88 % |
+| Сессий работы — каждая отдельным чатом | 34 | примерно по часу активной работы на каждую сессию |
+| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | примерно **486 гамбургеров** по 5 $ |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 942 | примерно **388 гамбургеров** по 5 $ |
+| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$4 371** | примерно **874 гамбургера** по 5 $ |
+| **Заплачено по подписке** | **≈ $55,00** | примерно **11 гамбургеров** по 5 $ |
+| Во сколько раз прайс API дороже реально заплаченного | **79 раз** | на каждый заплаченный доллар по прайсу пришлось бы 79 |
+| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **4 842 человеко-часа** | команда из **пяти инженеров работала бы 121 день подряд** |
+| Фонд оплаты труда этих людей составил бы | **$86 462** | примерно **17 292 гамбургера** по 5 $ |
+| Электроэнергии израсходовано на работу ИИ-агентов | **≈ 22,3 кВт·ч** | столько обычная квартира расходует за **2,3 суток** |
+| Сколько работы людей приходится на один час работы тандема Человек-Агент | **125 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 125 часов — **16 рабочих дней** по 8 часов |
 
 ## Лицензия
 
