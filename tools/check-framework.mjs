@@ -8,12 +8,148 @@
 //   2. The 6-backtick fences are balanced, one pair per embedded block.
 //   3. No unreplaced build markers ({{...}}) remain.
 //   4. Every skill in framework/skills/ is embedded in KAIF.md.
-import { readFileSync, readdirSync, existsSync, statSync as statSyncTop } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import { readFileSync, readdirSync, existsSync, statSync as statSyncTop, cpSync, appendFileSync } from 'node:fs';
+import { join, dirname, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tempRoot } from './lib/temp-root.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
+
+// ── Guard 5d — the owner's script must not live in EN payload BODIES ──────────────────────────
+// §9.11 (bug 31): author examples inside pause/kaif-remove blinded the translated-wholesale net in
+// three field projects at once (the net demands "no owner script in the incoming template body";
+// the per-file translation test judges bodies the same way — KAIF-CORE.mjs `localizedAgainst`).
+//
+// COVERAGE IS COMPUTED, NOT ENUMERATED (bugs/66 finding №2). The previous form walked a FIXED LIST
+// of three directories (`hooks`, `spheres`, `adapters`) written on the guard's birthday, so every
+// surface born after it was blind: the narrative spines (`_intro.md`, `installer/_thin-intro.md`),
+// the portrait skeleton, the audit-report template and the three fable-method references — seven
+// addresses in which a Cyrillic line kept the build green. The walk below covers `framework/**`
+// and a surface leaves coverage ONLY through a named exclusion with a reason, so a directory added
+// tomorrow is guarded on the day it appears instead of on the day someone remembers the list.
+const CYR = /[А-Яа-яЁё]/;
+// Owner-seeded doc templates — the author's own voice lives there legitimately (KAIF_FRAMEWORK's
+// birth note); the project fills them with its own state on deployment.
+const OWNER_SEEDED_TPL = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
+  'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
+// Machinery whose Cyrillic IS data rather than leaked prose. Named FILE BY FILE on purpose:
+// excusing "every .mjs" would silently un-guard each script the payload grows next.
+const CYRILLIC_DATA_CARRIERS = [
+  'tools/kaif-provenance.mjs',         // the RU analogues of the [AI]/[AI-ed] marks, as config examples
+  'tools/kaif-requirements-lint.mjs',  // the RU half of the requirements stop-word dictionary
+  'installer/KAIF-CORE.mjs',           // SCRIPTS (the writing-system regexes) + AUTHOR_TOKEN_CLUSTERS, as data
+];
+// The author's own name is an ATTRIBUTION, not a leaked example — it must stay in the bylines of
+// the narrative spines. Exempted as FULL phrases: a bare token ("Кот") would excuse whole sentences.
+const AUTHOR_NAME_RU = ['Николай Кривуша', 'Кот Криник'];
+const stripFrontmatter = (t) => t.replace(/^---\r?\n[^]*?\r?\n---\r?\n/, '');
+
+/** Every payload surface under `fwRoot` that guard 5d judges, as [relativePath, body] pairs. */
+function payloadBodies(fwRoot) {
+  const out = [];
+  const walk = (dir) => {
+    for (const n of readdirSync(dir).sort()) {          // sorted: findings must be order-stable
+      const p = join(dir, n);
+      if (statSyncTop(p).isDirectory()) { walk(p); continue; }
+      const rel = relative(fwRoot, p).split('\\').join('/');
+      // The localized halves themselves — there the owner's script IS the payload.
+      if (rel.startsWith('templates/languages/')) continue;
+      if (OWNER_SEEDED_TPL.includes(rel)) continue;
+      if (CYRILLIC_DATA_CARRIERS.includes(rel)) continue;
+      out.push([rel, stripFrontmatter(readFileSync(p, 'utf8'))]);
+    }
+  };
+  walk(fwRoot);
+  return out;
+}
+
+/** Findings of guard 5d over a framework root. Frontmatter is exempt (localized trigger phrases
+ *  in `description:` are the trigger contract, and the body-based tests never judge the preamble). */
+function scanPayloadCyrillic(fwRoot) {
+  const found = [];
+  for (const [rel, body] of payloadBodies(fwRoot)) {
+    const lines = body.split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      for (const name of AUTHOR_NAME_RU) line = line.split(name).join('');
+      if (!CYR.test(line)) continue;
+      found.push(`Cyrillic in an EN payload BODY: framework/${rel} (body-relative line ${i + 1}) — move the example to a language pack or rephrase (invariant §9.11, bug 31: it blinds the translation net)`);
+      break;                                            // one finding per file: the fix is the file
+    }
+  }
+  return found;
+}
+
+// `--selftest`: a guard that never reddened proves nothing (BUG_FIXING_FRAMEWORK → Guards), and a
+// guard nobody selftests rots by the very drift it watches (EXP-0075). Both answers are demanded
+// (EXP-0059): red on the defect AND silence on what must not be touched. The mutation runs on a
+// COPY in a unique temp root — never in the working tree (EXP-0077), and the canary text comes
+// from this file's BODY, never through argv (AGENT_GUIDE → text travels through files).
+const CANARY = 'Пример из личного черновика владельца — эта строка ослепляет сеть переводов.';
+const CANARY_AUTHOR_ONLY = '> **Author:** Mikalai Kryvusha aka Николай Кривуша aka Кот Криник · MIT';
+const CANARY_AUTHOR_PLUS = '> **Author:** Николай Кривуша — и его личный пример прозы внутри шаблона.';
+// The seven addresses the fixed list could not see (bugs/66 Forensics row 2). Each must redden.
+const FORMERLY_BLIND = [
+  '_intro.md',
+  'installer/_thin-intro.md',
+  'templates/_owner-voice-template.md',
+  'skills/code-revision/references/audit-report-template.md',
+  'skills/fable-method/references/examples.md',
+  'skills/fable-method/references/failure-modes.md',
+  'skills/fable-method/references/flowcharts.md',
+];
+// …and what must STAY silent, or the guard would redden on its own payload.
+const MUST_STAY_SILENT = ['templates/languages/ru/GOAL.md', 'GOAL.md', 'tools/kaif-requirements-lint.mjs'];
+
+function selfProofPayloadCyrillic() {
+  const fails = [];
+  const sandbox = join(tempRoot('check-5d'), 'framework');
+  cpSync(join(ROOT, 'framework'), sandbox, { recursive: true });
+
+  const clean = scanPayloadCyrillic(sandbox);
+  if (clean.length) fails.push(`чистая копия покраснела (${clean.length}): ${clean[0]}`);
+
+  const mutate = (rel, text) => {
+    const p = join(sandbox, ...rel.split('/'));
+    const before = readFileSync(p, 'utf8');
+    appendFileSync(p, `\n${text}\n`);
+    const hit = scanPayloadCyrillic(sandbox).filter((e) => e.includes(`framework/${rel} `));
+    cpSync(join(ROOT, 'framework', ...rel.split('/')), p);   // restore from the pristine source
+    if (readFileSync(p, 'utf8') !== before) fails.push(`восстановление копии не побайтное: ${rel}`);
+    return hit.length;
+  };
+
+  for (const rel of FORMERLY_BLIND) {
+    if (mutate(rel, CANARY) !== 1) fails.push(`бывшая слепая зона НЕ покраснела: ${rel}`);
+  }
+  for (const rel of MUST_STAY_SILENT) {
+    const p = join(sandbox, ...rel.split('/'));
+    const before = readFileSync(p, 'utf8');
+    appendFileSync(p, `\n${CANARY}\n`);
+    const hit = scanPayloadCyrillic(sandbox).filter((e) => e.includes(`framework/${rel} `));
+    cpSync(join(ROOT, 'framework', ...rel.split('/')), p);
+    if (readFileSync(p, 'utf8') !== before) fails.push(`восстановление копии не побайтное: ${rel}`);
+    if (hit.length) fails.push(`объявленное изъятие покраснело: ${rel}`);
+  }
+  // The author-name exemption is a FORM, not a licence: the byline stays silent, the same byline
+  // with an owner sentence glued to it reddens.
+  if (mutate('_intro.md', CANARY_AUTHOR_ONLY) !== 0) fails.push('подпись автора ошибочно покраснела');
+  if (mutate('_intro.md', CANARY_AUTHOR_PLUS) !== 1) fails.push('изъятие имени автора извинило целое предложение');
+  return fails;
+}
+
+if (process.argv.includes('--selftest')) {
+  const fails = selfProofPayloadCyrillic();
+  for (const f of fails) console.error('✖ selfproof 5d: ' + f);
+  if (fails.length) {
+    console.error(`\n❌ check-framework --selftest: ${fails.length} провалов (гард 5d, bugs/66 №2)`);
+    process.exit(1);
+  }
+  const covered = payloadBodies(join(ROOT, 'framework')).length;
+  console.log(`✅ гард 5d: охват ВЫЧИСЛЯЕТСЯ — ${covered} поверхностей поставки; ${FORMERLY_BLIND.length} бывших слепых зон краснеют, ${MUST_STAY_SILENT.length} изъятия молчат, подпись автора не извиняет предложение`);
+  process.exit(0);
+}
 
 // Since 1.5 the root KAIF.md is the THIN entry point; the full self-extracting core
 // (whose embedded blocks these checks validate) is the offline asset dist/KAIF-FULL.md.
@@ -109,42 +245,11 @@ if (skills.includes('release')) {
   }
 }
 
-// 5d. §9.11 (bug 31): the owner's script must not live in the BODIES of EN payload templates —
-//     author examples inside pause/kaif-remove blinded the translated-wholesale net in three
-//     field projects at once (the net demands "no owner script in the incoming template body";
-//     the per-file translation test judges bodies the same way). Frontmatter is exempt:
-//     localized trigger phrases in `description:` are the trigger contract, and the body-based
-//     tests never judge the preamble. Owner-seeded doc templates are exempt too — the author's
-//     own voice lives there legitimately (KAIF_FRAMEWORK's birth note).
-{
-  const OWNER_SEEDED_TPL = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
-    'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
-  const CYR = /[А-Яа-яЁё]/;
-  const stripFrontmatter = (t) => t.replace(/^---\r?\n[^]*?\r?\n---\r?\n/, '');
-  const bodies = [];
-  for (const d of docs) if (!OWNER_SEEDED_TPL.includes(d)) bodies.push([`framework/${d}`, readFileSync(join(ROOT, 'framework', d), 'utf8')]);
-  for (const r of readmes) bodies.push([`framework/readmes/${r}.md`, readFileSync(join(readmesDir, `${r}.md`), 'utf8')]);
-  for (const s of skills) bodies.push([`framework/skills/${s}/SKILL.md`, stripFrontmatter(readFileSync(join(skillsDir, s, 'SKILL.md'), 'utf8'))]);
-  // Every OTHER payload surface that deploys as English prose. Added after a judge proved the
-  // guard blind by mutation: appending a Cyrillic line to `framework/hooks/README.md` kept the
-  // build green, and the module ships into every deployment (epic O, phase O3).
-  // EXCLUDED BY DESIGN — `framework/tools/*.mjs`: the requirements linter carries the RU half of
-  // the stop-word dictionary and the provenance module carries RU mark examples; there the
-  // Cyrillic IS the payload, not an owner's leaked example.
-  for (const [dir, label] of [['hooks', 'hooks'], ['spheres', 'spheres'], ['adapters', 'adapters']]) {
-    const d = join(ROOT, 'framework', dir);
-    if (!existsSync(d)) continue;
-    for (const n of readdirSync(d)) {
-      const p = join(d, n);
-      if (statSyncTop(p).isDirectory()) continue;
-      bodies.push([`framework/${label}/${n}`, stripFrontmatter(readFileSync(p, 'utf8'))]);
-    }
-  }
-  for (const [name, body] of bodies) {
-    const hit = body.split(/\r?\n/).findIndex((l) => CYR.test(l));
-    if (hit >= 0) errors.push(`Cyrillic in an EN template BODY: ${name} (frontmatter-relative line ${hit + 1}) — move the example to a language pack or rephrase (invariant §9.11, bug 31: it blinds the translation net)`);
-  }
-}
+// 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
+//     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the
+//     selftest that proves it has to run before the dist artifacts are read. Here it is only
+//     invoked, so that the ordering of the numbered checks stays readable.
+errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
 
 // 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
 //     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]
