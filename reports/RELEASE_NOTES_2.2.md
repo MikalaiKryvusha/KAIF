@@ -31,7 +31,7 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 **4. Fresh context stopped being a promise.** Rules read once at the start of a session melt as the context fills. So re-reading became a verifiable act: four triggers, a machine-readable witness marker, an acceptance quote in the chat. A marker without a quote is fraud of the same class as a false `[TESTED]`. The delivery carries the optional **`refresh-hooks`** module for harnesses with lifecycle hooks: an order to re-read after a compaction, a timer on the marker's age, a soft STATUS guard. Next to it — hook configs for the other agent systems, read off live vendor documentation. And the **environment dossier**: the agent learns its own machine from its own probes.
 
-**5. The `/go` kick — and eleven more tasks.** `/kaif-go` is the slash-command form of saying "carry on": a simple way to continue the work in the current chat. It understands «дальше», «продолжай», "continue". Alongside it: the timestamp canon (a decision mark carries the date **and** the time), the `EPIC` naming convention with its guard, a revision of `/code-revision` with an audit-report contract, "code before cognition" as a principle (80 % determinism / 20 % AI), the test suite as an obligation of the work that produced it, origin tracking as the install default, the restored definition of what KAIF *is*. And KAIF's own **`AUTHOR_STYLOMETRY.md`**: the origin of the canon file name finally has the file.
+**5. The `/go` kick — and eleven more tasks.** `/kaif-go` is the slash-command form of saying "carry on": a simple way to continue the work in the current chat. It understands «дальше», «продолжай», "continue". Alongside it: the timestamp canon (a decision mark carries the date **and** the time), the `EPIC` naming convention with its guard, a revision of `/code-revision` with an audit-report contract, "code before cognition" as a principle (80 % determinism / 20 % AI), the test suite as an obligation of the work that produced it, origin tracking as the install default, the restored definition of what KAIF *is*. And KAIF's own **`AUTHOR_STYLOMETRY.md`**: the origin of the canon file name finally has the file.
 
 **6. A fix without a guard is a fix on credit — and now that rule ships with a tool.** New in the optional tool modules: **`kaif-requirements-lint`** runs the stop-dictionary over the requirement sections of your plans, bugs and ideas. It advises. The other guards written this version belong to the origin's own machinery and are not part of your deployment — but their verdict is: the permanent sandbox polygon that verifies the deploy and update machinery grew to **14 suites**, and every new guard there is proven red on a broken version before its green is trusted.
 
@@ -42,8 +42,8 @@ The version grew out of the field: four updates of real projects, each with a fi
 Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00.
 
 - **Three days · ≈ 40 hours of active work** — 204 commits.
-- **≈ 396,000 words of prose written during the work on the version** — more than Anna Karenina; ≈ 104,000 of them went into the KAIF 2.2 core itself, a little more than The Hobbit.
-- The agent **read ≈ 4.5 billion tokens** and **wrote ≈ 17.8 million** — about 28,000 novels read and 111 written: like reading the entire Harry Potter series two thousand times and writing fifteen copies of War and Peace.
+- **≈ 396,000 words of prose written during the work on the version** — more than Anna Karenina; ≈ 104,000 of them went into the KAIF 2.2 core itself, a little more than The Hobbit.
+- The agent **read ≈ 4.5 billion tokens** and **wrote ≈ 17.8 million** — about 28,000 novels read and 111 written: like reading the entire Harry Potter series two thousand times and writing fifteen copies of War and Peace.
 - The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
 - Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,500**.
 
@@ -96,7 +96,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 **4. Свежий контекст перестал быть обещанием.** Правила, прочитанные один раз на старте сессии, тают по мере того, как контекст заполняется. Поэтому перечитывание стало действием, которое можно проверить: четыре повода перечитать, машиночитаемая отметка о том, что это сделано, и цитата в чате из перечитанного. Отметка без цитаты — такой же обман, как ложный `[TESTED]`. Для харнессов с хуками в поставку добавлен модуль `refresh-hooks`: он приказывает перечитать канон после сжатия контекста, следит за возрастом отметки и мягко напоминает про `STATUS.md`. Рядом лежат образцы хук-конфигов для других агентских систем, снятые с живой документации вендоров. И ещё агент теперь знает свою машину по собственным пробам, а не по памяти: для этого в канон добавлено досье окружения.
 
-**5. Появилась команда `/go` — и ещё одиннадцать задач.** `/kaif-go` — это слеш-команда «продолжай»: простой способ продолжить работу в текущем чате. Она понимает и «дальше», и «продолжай», и «continue». Рядом с ней: канон меток времени, где решение помечается и датой, и временем; конвенция имён эпиков со стражем; переработанный `/code-revision` с описанным форматом аудит-отчёта; принцип «код прежде когниции» — 80 % работы делает детерминированный код, 20 % остаётся уму; test suite как часть той же работы, которая его породила; привязка к origin по умолчанию при установке; вернувшееся определение того, чем KAIF является. И собственная `AUTHOR_STYLOMETRY.md`: у истока канон-имени наконец появился сам файл.
+**5. Появилась команда `/go` — и ещё одиннадцать задач.** `/kaif-go` — это слеш-команда «продолжай»: простой способ продолжить работу в текущем чате. Она понимает и «дальше», и «продолжай», и «continue». Рядом с ней: канон меток времени, где решение помечается и датой, и временем; конвенция имён эпиков со стражем; переработанный `/code-revision` с описанным форматом аудит-отчёта; принцип «код прежде когниции» — 80 % работы делает детерминированный код, 20 % остаётся уму; test suite как часть той же работы, которая его породила; привязка к origin по умолчанию при установке; вернувшееся определение того, чем KAIF является. И собственная `AUTHOR_STYLOMETRY.md`: у истока канон-имени наконец появился сам файл.
 
 **6. Фикс без стража — это фикс в кредит, и теперь у правила есть инструмент.** Среди опциональных модулей поставки появился `kaif-requirements-lint`: он проходит по секциям требований в ваших планах, багах и идеях и показывает непроверяемые формулировки. Он советует, решение остаётся за вами. Остальные стражи, написанные в этой версии, работают в самом истоке и в ваше развёртывание не попадают. Про них важно другое: песочный полигон, который проверяет установку и обновление, вырос до **14 сводов**, и каждый новый страж там сначала показывают на сломанной версии — и только потом верят его зелёному.
 
@@ -106,11 +106,11 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 20:00.
 
-- **Трое суток · ≈ 40 часов активной работы** — 204 коммита.
-- **≈ 396 000 слов прозы написано за время работы над версией** — больше, чем «Анна Каренина»; в само ядро KAIF 2.2 из них вошло ≈ 104 000 слов, чуть больше «Хоббита».
+- **Трое суток · ≈ 40 часов активной работы** — 204 коммита.
+- **≈ 396 000 слов прозы написано за время работы над версией** — больше, чем «Анна Каренина»; в само ядро KAIF 2.2 из них вошло ≈ 104 000 слов, чуть больше «Хоббита».
 - Агент **прочитал ≈ 4,5 миллиарда токенов** и **написал ≈ 17,8 миллиона** — это примерно 28 000 прочитанных романов и 111 написанных: как две тысячи раз прочитать всё семикнижие «Гарри Поттера» и написать пятнадцать «Войн и миров».
-- Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
-- Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
+- Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
+- Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
 
 Полная таблица — в [README](https://github.com/MikalaiKryvusha/KAIF#85-интересные-факты).
 
