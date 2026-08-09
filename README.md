@@ -509,16 +509,13 @@ Table 6 — Metrics of KAIF 2.2
 | Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
 | Commits in git | **204** | a commit every 12 minutes of work; a human developer makes 1–3 commits a working day |
 | Lines in a single commit, prose and code together | **≈ 250** | a typical commit in the industry is 16 to 100 lines |
-| Lines written during the work on the version, prose and code together | **≈ 52,000** | a book of about 2,000 typed pages |
-| Prose written during the work on the version — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | about 1,500 typed pages |
-| Words of prose written during the work on the version | **≈ 396,000** | about **five novels** of 80,000 words each |
+| Words of prose written during the work on the version | **≈ 396,000** | more than Anna Karenina — 350,000 words |
 | Code written during the work on the version | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
 | Words of prose in the delivered KAIF 2.2 core | **≈ 104,000** | a little more than Tolkien's The Hobbit — 95,000 words |
-| Lines of prose in the delivered KAIF 2.2 core | **≈ 10,400** | about 380 typed pages |
 | Lines of machinery code in the delivered KAIF 2.2 core | **≈ 3,400** | about a twelfth of the source code of Doom (1993) |
 | Writing pace | **≈ 10,000 words** per hour of active work | to write that much a human needs about 80 hours of uninterrupted writing |
-| The agent read | **≈ 4.5 billion tokens** | about 28,000 novels |
-| The agent wrote | **≈ 17.8 million tokens** | about 111 novels |
+| The agent read | **≈ 4.5 billion tokens** | like reading the entire Harry Potter series two thousand times |
+| The agent wrote | **≈ 17.8 million tokens** | like writing fifteen copies of War and Peace |
 | Man-hours the same work would have taken living people | **≈ 7,400** | a team of five engineers working 186 days straight |
 | Payroll for those people | **≈ $133,000** | about 26,000 hamburgers at $5 |
 | Electricity spent on the work of the AI agents | **≈ 22 kWh** | an ordinary flat spends that much in two days |
@@ -1046,16 +1043,13 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
 | Коммитов в git | **204** | коммит каждые 12 минут работы; живой разработчик делает 1–3 коммита за рабочий день |
 | Строк в одном коммите, проза и код вместе | **≈ 250** | у живых команд типичный коммит — от 16 до 100 строк |
-| Строк написано за время работы над версией, проза и код вместе | **≈ 52 000** | книга примерно в 2 000 машинописных страниц |
-| Прозы написано за время работы над версией (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | примерно 1 500 машинописных страниц |
-| Слов прозы написано за время работы над версией | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |
+| Слов прозы написано за время работы над версией | **≈ 396 000** | больше, чем «Анна Каренина» — в ней 350 000 слов |
 | Кода написано за время работы над версией | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
 | Слов прозы в ядре поставки KAIF 2.2 | **≈ 104 000** | чуть больше, чем в «Хоббите» Толкина — там 95 000 слов |
-| Строк прозы в ядре поставки KAIF 2.2 | **≈ 10 400** | примерно 380 машинописных страниц |
 | Строк кода машинерии в ядре поставки KAIF 2.2 | **≈ 3 400** | примерно двенадцатая часть исходного кода игры Doom 1993 года |
 | Темп письма | **≈ 10 000 слов** за час активной работы | чтобы написать столько, человеку в среднем нужно около 80 часов непрерывного письма |
-| Агент прочитал | **≈ 4,5 миллиарда токенов** | примерно 28 000 романов |
-| Агент написал | **≈ 17,8 миллиона токенов** | примерно 111 романов |
+| Агент прочитал | **≈ 4,5 миллиарда токенов** | это как две тысячи раз прочитать всё семикнижие «Гарри Поттера» |
+| Агент написал | **≈ 17,8 миллиона токенов** | это как написать пятнадцать «Войн и миров» |
 | Трудозатраты, если бы ту же работу делали живые люди | **≈ 7 400 человеко-часов** | команда из пяти инженеров работала бы 186 дней подряд |
 | Фонд оплаты труда этих людей | **≈ $133 000** | примерно 26 000 гамбургеров по 5 $ |
 | Электроэнергии израсходовано на работу ИИ-агентов | **≈ 22 кВт·ч** | столько обычная квартира расходует за двое суток |
