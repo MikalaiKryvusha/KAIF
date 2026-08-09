@@ -509,7 +509,7 @@ Table 6 — Metrics of KAIF 2.2
 | Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
 | Commits in git | **204** | a commit every 12 minutes of work; a human developer makes 1–3 commits a working day |
 | Lines in a single commit, prose and code together | **≈ 250** | a typical commit in the industry is 16 to 100 lines |
-| Words of prose written during the work on the version | **≈ 396,000** | more than Anna Karenina — 350,000 words |
+| Words of prose — rules, conventions and the KAIF canon, not code — written during the work on the version | **≈ 396,000** | more than Anna Karenina — 350,000 words |
 | Code written during the work on the version | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
 | Words of prose in the delivered KAIF 2.2 core | **≈ 104,000** | a little more than Tolkien's The Hobbit — 95,000 words |
 | Lines of machinery code in the delivered KAIF 2.2 core | **≈ 3,400** | about a twelfth of the source code of Doom (1993) |
@@ -1043,7 +1043,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
 | Коммитов в git | **204** | коммит каждые 12 минут работы; живой разработчик делает 1–3 коммита за рабочий день |
 | Строк в одном коммите, проза и код вместе | **≈ 250** | у живых команд типичный коммит — от 16 до 100 строк |
-| Слов прозы написано за время работы над версией | **≈ 396 000** | больше, чем «Анна Каренина» — в ней 350 000 слов |
+| Слов прозы (правила, соглашения и канон KAIF, не код) написано за время работы над версией | **≈ 396 000** | больше, чем «Анна Каренина» — в ней 350 000 слов |
 | Кода написано за время работы над версией | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
 | Слов прозы в ядре поставки KAIF 2.2 | **≈ 104 000** | чуть больше, чем в «Хоббите» Толкина — там 95 000 слов |
 | Строк кода машинерии в ядре поставки KAIF 2.2 | **≈ 3 400** | примерно двенадцатая часть исходного кода игры Doom 1993 года |
