@@ -351,6 +351,57 @@ async function main() {
       writeFileSync(bodyPath, '﻿' + body.replace(/\n/g, '\r\n') + '\n\n', 'utf8');
       check('CRLF+BOM+хвост НЕ рушат одобрение (C3: четыре лица — один хеш)',
         checkApproval(fixtureRoot, draft, 'msg1').ok);
+      writeFileSync(bodyPath, body, 'utf8'); // фикстура возвращается к исходному телу
+    }
+
+    // ── Блок 8б: СТРАНИЦА обязана уметь ПОРОДИТЬ одобрение (круг R2, ось A) ─────────────────
+    // Блок 8 писал decision.json РУКАМИ и доказывал этим только то, что гейт умеет читать
+    // правильный файл. Кто этот файл создаёт — он не спрашивал, а ответ был «никто»: в странице
+    // не существовало ни одного элемента, порождающего `status: approved`, поэтому гейт отправки
+    // был недостижим по построению, а `send-outbound` за всю жизнь наблюдался только отказом.
+    // Прокси («гейт зелёный на подложенном решении») и свойство («человек может одобрить»)
+    // совпадали ровно до первого живого исходящего.
+    block('8б. Одобрение РОЖДАЕТСЯ страницей, а не подкладывается рукой (R2/ось A)');
+    {
+      rmSync(join(fixtureRoot, 'interviews/decisions/reply_fixture.decision.json'), { force: true });
+      const built = buildPage(fixtureRoot, draft);
+      check('карточка исходящего артефакта построена', built.artifacts.length === 1,
+        'артефактов: ' + built.artifacts.length);
+      check('на странице есть выбор «одобряю»', /value="approved"/.test(built.html));
+      check('на странице есть выбор «отклоняю» (несогласный обязан иметь ход, иначе он молчит)',
+        /value="rejected"/.test(built.html));
+      check('тело исходящего ПОКАЗАНО человеку, а не названо файлом',
+        built.html.includes('Тело исходящего сообщения для гейта'));
+      check('хеш тела считает СЕРВЕР и кладёт в конфиг страницы',
+        built.artifacts[0].sha256 === bodyHash(readFileSync(join(fixtureRoot, 'drafts/bodies/msg1.md'), 'utf8')));
+
+      // Ключ документа: собранное решение сверяется с ним (`a.doc !== doc` → пропуск), поэтому
+      // пустой ключ МОЛЧА выбрасывает одобрение. У черновика вопросов нет, и ключ, взятый только
+      // из первого вопроса, выходил пустым: человек нажимал «одобряю» и получал «нечего
+      // записывать» (полевой отказ владельца 2026-08-09 на первой же живой отправке).
+      const dataDoc = (built.html.match(/id="save"[^>]*data-doc="([^"]*)"/) || [])[1];
+      check('кнопка записи несёт НЕПУСТОЙ ключ документа', dataDoc === draft, 'data-doc = «' + dataDoc + '»');
+
+      // Метаблок — машинная разметка: страница его СЪЕДАЕТ (полевой отказ владельца 2026-08-09).
+      check('метаблок НЕ отрендерен человеку кодом', !/<pre><code>/.test(built.html));
+      check('служебные поля метаблока не просочились в показ',
+        !/kind: outbound draft/.test(built.html) && !/body_file:/.test(built.html));
+
+      // Полный путь: то, что СОБИРАЕТ страница → recordDecision → checkApproval → отправитель.
+      const payload = { artifacts: { msg1: { status: 'approved', sha256: built.artifacts[0].sha256, comment: '' } } };
+      recordDecision(fixtureRoot, draft, payload);
+      check('решение страницы ДОВОДИТ гейт до зелёного', checkApproval(fixtureRoot, draft, 'msg1').ok);
+      const sent = spawnSync(process.execPath, [join(ROOT, 'tools/send-outbound.mjs'), draft, 'msg1'],
+        { cwd: fixtureRoot, encoding: 'utf8', timeout: STEP_TIMEOUT_MS });
+      check('отправитель принимает одобрение страницы (dry-run зелёный)', sent.status === 0,
+        (sent.stdout || '') + (sent.stderr || ''));
+
+      // Обратный ход: отклонение НЕ является одобрением — иначе кнопка «отклоняю» была бы
+      // украшением, а гейт открывался бы любым касанием страницы.
+      recordDecision(fixtureRoot, draft,
+        { artifacts: { msg1: { status: 'rejected', sha256: built.artifacts[0].sha256, comment: 'не то' } } });
+      const rej = checkApproval(fixtureRoot, draft, 'msg1');
+      check('отклонение НЕ открывает гейт', !rej.ok && /rejected/u.test(rej.reason), rej.reason);
     }
 
     etalonBlock();

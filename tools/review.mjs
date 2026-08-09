@@ -254,23 +254,57 @@ export function buildPage(root, docPath) {
   for (const q of parsed)
     for (let i = q.line - 1; i <= q.line - 1 + q.body.length && i < normLines.length; i++) drop.add(i);
   normLines.forEach((l, i) => { if (/^#{1,3}\s+(QUESTIONS|Вопросы)\b/iu.test(l)) drop.add(i); });
+  // МЕТАБЛОК СЪЕДАЕТСЯ СТРАНИЦЕЙ. Он машинная разметка — его уже разобрал parseMetaBlock, и
+  // человеку он не показывается никогда: тот же класс, что провенанс-маркер I24 (полевые слова
+  // владельца, 2026-08-09: «что это за некрасивое дерьмо сверху? Код. Зачем он мне здесь?»).
+  // Вырезает его ТОТ ЖЕ разбор, что его и нашёл, — второй независимый детектор разошёлся бы.
+  if (meta) {
+    for (let i = 0; i < normLines.length; i++) {
+      if (!/^```owner-review\s*$/.test(normLines[i])) continue;
+      for (let j = i; j < normLines.length; j++) { drop.add(j); if (j > i && /^```\s*$/.test(normLines[j])) break; }
+      break;
+    }
+  }
   const body = renderMd(normLines.filter((_, i) => !drop.has(i)).join('\n'));
+  // ИСХОДЯЩИЕ АРТЕФАКТЫ — решение, которого страница прежде не умела принимать вовсе.
+  // checkApproval ждёт `decision.artifacts[id].status === 'approved'`, recordDecision это поле
+  // проносит — а UI, который его порождает, не существовал: в review.mjs не было ни одного
+  // упоминания approve/artifact. Поэтому гейт отправки был недостижим по построению, и
+  // `send-outbound` за всю свою жизнь наблюдался ТОЛЬКО отказом (круг R2, ось A).
+  // Хеш тела считает СЕРВЕР и кладёт в решение: одобряется не «артефакт вообще», а конкретный
+  // текст — правка после одобрения обязана его аннулировать (I3).
+  const artifacts = ((meta && meta.artifacts) || []).map((a) => {
+    const abs = a.body_file ? resolve(root, a.body_file) : null;
+    const exists = !!(abs && existsSync(abs));
+    const text = exists ? readFileSync(abs, 'utf8') : '';
+    return {
+      doc: rel, id: a.id, target: a.target || '', format: a.format || '', bodyFile: a.body_file || '',
+      exists, sha256: exists ? bodyHash(text) : null,
+      // Тело показывается ЗДЕСЬ: человек одобряет то, что прочитал, а не имя файла.
+      bodyHtml: exists ? renderMd(text) : '',
+      bytes: exists ? Buffer.byteLength(text, 'utf8') : 0,
+    };
+  });
   const nAns = questions.filter((q) => q.answered).length;
   const nWait = questions.length - nAns;
   const summary = questions.length
     ? ' <span class="tag done">отвечено ' + nAns + '</span>' +
       (nWait ? ' <span class="tag you">ждут вас ' + nWait + '</span>' : ' <span class="tag done">все отвечены</span>')
     : '';
+  const artSection = artifacts.length
+    ? '<h2>Исходящее — нужно ваше решение</h2>' + artifacts.map((a) => aCard(a)).join('\n') : '';
+  // У документа с артефактом вопросов может не быть вовсе, и «вопросов нет» тогда — не пустота,
+  // а неверная подпись: решение по нему есть, оно просто другого рода.
+  const qSection = questions.length
+    ? '<h2>Вопросы</h2>' + questions.map((q) => qCard(q)).join('\n')
+    : (artifacts.length ? '' : '<h2>Вопросы</h2><p>Вопросов в документе нет — можно оставить общий комментарий.</p>');
   const html = pageShell({
     title, kind,
     heading: '<span class="kind">' + kind + '</span><span>' + esc(title) + '</span>' + summary,
-    main: '<div class="doc">' + body + '</div><h2>Вопросы</h2>' +
-      (questions.map((q) => qCard(q)).join('\n') ||
-        '<p>Вопросов в документе нет — можно оставить общий комментарий.</p>') +
-      docCommentBlock(rel),
-    questions,
+    main: '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel),
+    questions, artifacts,
   });
-  return { html, questions, docHash, kind, title, rel };
+  return { html, questions, artifacts, docHash, kind, title, rel };
 }
 
 // Заголовок документа: метаблок → первый H1 → имя файла (одна лестница на все формы страниц).
@@ -418,14 +452,46 @@ function qCard(q) {
     existing + opts + inputs + '</section>';
 }
 
-function pageShell({ title, kind, heading, main, questions, batch = false, notices = [], noticeDoc = null, index = false }) {
+// Карточка ИСХОДЯЩЕГО артефакта: то, что уйдёт наружу от имени владельца, и решение по нему.
+// Два решения, а не одно: «отклоняю» обязано быть таким же одним кликом, как «одобряю», иначе
+// человек, который НЕ согласен, остаётся без хода и молчит — а молчание гейт прочитает как
+// «решения нет» и будет ждать вечно.
+function aCard(a) {
+  const where = a.target ? '<span class="tag you">' + esc(a.target).replace(/`/g, '') + '</span>' : '';
+  if (!a.exists) {
+    return '<section class="qcard danger"><div><strong>' + esc(a.id) + '.</strong> ' + where +
+      ' <span class="tag wait">тела нет</span></div>' +
+      '<p>Файл <code>' + esc(a.bodyFile) + '</code> не найден — одобрять нечего. Это дефект, а не ваш выбор.</p></section>';
+  }
+  const opt = (val, label, cls) =>
+    '<label class="opt' + (cls ? ' ' + cls : '') + '"><input type="radio" data-draft name="art:' +
+    esc(a.doc) + ':' + esc(a.id) + '" value="' + val + '"><div>' + label + '</div></label>';
+  return '<section class="qcard">' +
+    '<div><strong>' + esc(a.id) + '.</strong> Уйдёт наружу ' + where +
+    ' <span class="tag wait">ждёт вас</span></div>' +
+    '<div class="qmeta">' + esc(a.format || 'markdown') + ' · ' + a.bytes + ' байт · ' + esc(a.bodyFile) + '</div>' +
+    '<div class="qbody outbox">' + a.bodyHtml + '</div>' +
+    opt('approved', '<strong>Одобряю</strong> — отправить как есть', 'rec') +
+    opt('rejected', '<strong>Отклоняю</strong> — не отправлять') +
+    '<p><textarea data-draft name="artcomment:' + esc(a.doc) + ':' + esc(a.id) + '" rows="2" ' +
+    'placeholder="Что поправить (при отклонении — обязательно по смыслу, иначе агент не знает, что менять)"></textarea></p>' +
+    '</section>';
+}
+
+function pageShell({ title, kind, heading, main, questions, artifacts = [], batch = false, notices = [], noticeDoc = null, index = false }) {
   const qjson = JSON.stringify(questions).replace(/</g, '\\u003c');
   const cfg = JSON.stringify({
     batch, index, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
     notices, // I37: документы этого класса шлют пометку «прочитано», а не ответы
+    // Исходящие: страница ПОРОЖДАЕТ одобрение, которого гейт ждёт (круг R2, ось A). В конфиг
+    // едет только то, чем клиент пользуется, — тело письма уже отрисовано в карточке, и второй
+    // его экземпляр в JSON лишь удваивал вес страницы.
+    artifacts: artifacts.map((a) => ({ doc: a.doc, id: a.id, exists: a.exists, sha256: a.sha256 })),
     // Ключ черновиков — ПО ДОКУМЕНТУ, никогда по пачке (bugs/52): общий ключ означал, что запись
-    // одного документа стирает набранное по соседним.
-    draftKey: 'owner-review:' + ((questions[0] && questions[0].doc) || noticeDoc || (index ? 'index' : title)),
+    // одного документа стирает набранное по соседним. Артефакт участвует в лестнице наравне с
+    // вопросом — иначе черновик исходящего живёт под ключом ЗАГОЛОВКА и теряется при его правке.
+    draftKey: 'owner-review:' + ((questions[0] && questions[0].doc) || (artifacts[0] && artifacts[0].doc) ||
+      noticeDoc || (index ? 'index' : title)),
   }).replace(/</g, '\\u003c');
   // P5: обе темы через prefers-color-scheme, цвета — переменные; контраст заложен в парах.
   const css = `
@@ -491,6 +557,11 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
   .opt div p { margin:2px 0 }
   .qbody p { margin:6px 0 }
   .qmeta { font-size:13px; color:var(--muted); margin:6px 0 }
+  /* Тело исходящего — то, что уйдёт наружу дословно: отбито рамкой, чтобы человек видел границу
+     между «текст письма» и «страница про письмо», и прокручивается, когда письмо длинное. */
+  .outbox { background:var(--bg); border:1px solid var(--line); border-radius:10px;
+    padding:10px 14px; margin:10px 0; max-height:60vh; overflow:auto }
+  .qcard.danger { border-left-color:var(--danger) }
   textarea, input[type=text] { width:100%; background:var(--bg); color:var(--ink);
     border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit }
   .bar { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--line);
@@ -540,7 +611,16 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
     " for(var j=0;j<rs.length;j++)if(rs[j].checked)chosen=rs[j].value;",
     " var own=fieldVal('text:'+doc+':'+q.id);",
     " if(chosen||own.trim()||com.trim())answers[q.id]={choice:chosen,text:own.trim(),comment:com.trim()}}",
-    " return {doc:doc,answers:answers,comment:fieldVal('doccomment:'+doc)}}",
+    // Исходящие артефакты: хеш берётся ИЗ КОНФИГА (его посчитал сервер по файлу), а не
+    // пересчитывается страницей — одобряется ровно тот текст, который человек прочитал.
+    " var arts={};var A=CFG.artifacts||[];",
+    " for(var k=0;k<A.length;k++){var a=A[k];if(a.doc!==doc||!a.exists)continue;",
+    "  var st='';var ars=document.getElementsByName('art:'+doc+':'+a.id);",
+    "  for(var m=0;m<ars.length;m++)if(ars[m].checked)st=ars[m].value;",
+    "  if(st)arts[a.id]={status:st,sha256:a.sha256,comment:fieldVal('artcomment:'+doc+':'+a.id).trim()}}",
+    " var p={doc:doc,answers:answers,comment:fieldVal('doccomment:'+doc)};",
+    " for(var z in arts){p.artifacts=arts;break}",
+    " return p}",
     // I10/I11: громкий отказ + спасательный круг; кнопка снова активна, текст возвращается человеку
     "function rescue(payload,msg){status('ОШИБКА ЗАПИСИ: '+msg,'err');var r=$('#rescue');r.style.display='block';",
     " $('#rescuetext').value=JSON.stringify(payload,null,2);enableButtons(true)}",
@@ -550,8 +630,13 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
     // I37: сообщение помечается прочитанным и БЕЗ единого заполненного поля — пустая пометка
     // здесь законна, поэтому проверка «нечего записывать» её не касается.
     "function isNotice(doc){var n=CFG.notices||[];for(var i=0;i<n.length;i++)if(n[i]===doc)return true;return false}",
+    // Подпись отказа обязана называть НЕДОСТАЮЩЕЕ действие: «нечего записывать» на странице
+    // с исходящим — ложь, там записывать есть что, просто решение не принято.
+    "function hasArtifacts(doc){var A=CFG.artifacts||[];",
+    " for(var i=0;i<A.length;i++)if(A[i].doc===doc&&A[i].exists)return true;return false}",
     "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;lastPayload=p;",
-    " if(!p.read&&Object.keys(p.answers).length===0&&!(p.comment||'').trim()){status('Нечего записывать: ни ответа, ни комментария','err');return}",
+    " if(!p.read&&Object.keys(p.answers).length===0&&!(p.comment||'').trim()&&!p.artifacts){",
+    "  status(hasArtifacts(doc)?'Нужно решение по исходящему: одобряю или отклоняю':'Нечего записывать: ни ответа, ни комментария','err');return}",
     " enableButtons(false);status('Записываю…');",
     " fetch('/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})",
     " .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})",
@@ -587,7 +672,12 @@ function pageShell({ title, kind, heading, main, questions, batch = false, notic
     "restoreDraft();",
   ].join('\n');
 
-  const singleDoc = !batch && questions[0] ? questions[0].doc : null;
+  // Ключ одиночной страницы — ДОКУМЕНТ, и брать его только из первого ВОПРОСА нельзя: у
+  // исходящего черновика вопросов нет вовсе, ключ выходил пустым, и собранное одобрение
+  // отбрасывалось сравнением `a.doc !== doc` — человек нажимал «одобряю» и получал «нечего
+  // записывать» (полевой отказ владельца 2026-08-09, первая же живая отправка).
+  const singleDoc = batch ? null
+    : ((questions[0] && questions[0].doc) || (artifacts[0] && artifacts[0].doc) || noticeDoc || null);
   // Одиночное сообщение: в липкой полосе — та самая ЯВНАЯ пометка (длинный отчёт прокручивают,
   // и кнопка обязана оставаться на виду); в пачке кнопка своя у каждого сообщения.
   // Полоса говорит человеку о ЕГО действии и его последствиях — и молчит про устройство контура.
@@ -712,8 +802,11 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
               setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED);
               return;
             }
-            const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment });
+            const record = recordDecision(root, doc,
+              { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts });
             const nAns = Object.keys(record.answers || {}).length;
+            const arts = Object.entries(record.artifacts || {});
+            const nApproved = arts.filter(([, a]) => a.status === 'approved').length;
             const rest = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
             // ПАЧКА НЕ ЗАКРЫВАЕТСЯ НА ПЕРВОМ ЖЕ ДОКУМЕНТЕ (bugs/52). Полевой отказ владельца
             // 2026-08-08 ≈07:05 +03:00: «я нажал запись решений по документу — закрылся весь
@@ -722,8 +815,13 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             // окно посреди работы, то есть ровно то, чего вектор цели 2.2 обещает не допускать.
             // Теперь: остались документы с неотвеченными вопросами → сервер ЖИВЁТ, страница
             // перечитывается и показывает остаток; контур завершается, когда отвечать больше нечего.
-            ok({ ok: true, written: doc + ' + decision.json + архив (' + nAns + ' ответ(ов))', more: rest, doc });
+            const artWord = arts.length
+              ? ', исходящих решено ' + arts.length + ' (одобрено ' + nApproved + ')' : '';
+            ok({ ok: true, written: doc + ' + decision.json + архив (' + nAns + ' ответ(ов)' + artWord + ')', more: rest, doc });
             outcome = 'decision recorded';
+            if (arts.length) log('Решение по исходящему: ' +
+              arts.map(([id, a]) => id + ' — ' + a.status).join(', ') +
+              '. Отправка — отдельным шагом агента через send-outbound (гейт зовёт ту же checkApproval).');
             if (rest > 0) {
               log('Записано: ' + doc + ' (' + nAns + ' ответов, by ' + record.by +
                 '). В очереди осталось документов: ' + rest + ' — страница ОСТАЁТСЯ открытой, контур ждёт.');
