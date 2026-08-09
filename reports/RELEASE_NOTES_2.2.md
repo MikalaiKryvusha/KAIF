@@ -43,7 +43,7 @@ Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00. 
 
 - **Three days · ≈ 40 hours of active work** — 204 commits.
 - **≈ 396,000 words of prose written into the repository** — about five novels, at ≈ 10,000 words per active hour.
-- The agent **read ≈ 28,000 novels** and **wrote 111** — one written for every 255 read.
+- The agent **read ≈ 28,000 novels** and **wrote 111** — it reads 255 times more than it writes.
 - The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
 - Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,500**.
 
@@ -104,7 +104,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 - **Трое суток · ≈ 40 часов активной работы** — 204 коммита.
 - **≈ 396 000 слов прозы написано в репозиторий** — примерно пять романов, темп ≈ 10 000 слов в активный час.
-- Агент **прочитал ≈ 28 000 романов** и **написал 111** — одно написанное на 255 прочитанных.
+- Агент **прочитал ≈ 28 000 романов** и **написал 111** — читает в 255 раз больше, чем пишет.
 - Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
 - Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
 
