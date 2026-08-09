@@ -516,7 +516,7 @@ Table 6 — Metrics of KAIF 2.2
 | The agent wrote | **≈ 17.8 million tokens** | about 111 novels — it reads 255 times more than it writes |
 | Requests to the models in total | **≈ 13,000** | about 650 ordinary chatbot conversations of 20 messages each |
 | Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
-| Work sessions — a separate chat each | 34 | about 385 messages in each — twenty ordinary chats of 20 messages |
+| Work sessions — a separate chat each | 34 | about twenty ordinary chatbot conversations of 20 messages per session |
 | What Fable 5's work would cost if paid at Anthropic's public API prices | **≈ $2,400** | about 480 hamburgers at $5 |
 | What Opus 5's work would cost if paid at Anthropic's public API prices | **≈ $2,000** | about 400 hamburgers at $5 |
 | What all the work would cost if paid at Anthropic's public API prices | **≈ $4,500** | about 900 hamburgers at $5 |
@@ -1050,7 +1050,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Агент написал | **≈ 17,8 миллиона токенов** | примерно 111 романов: агент читает в 255 раз больше, чем пишет |
 | Запросов к моделям всего | **≈ 13 000** | примерно 650 обычных чатов с чат-ботом по 20 сообщений в каждом |
 | Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
-| Сессий работы — каждая отдельным чатом | 34 | по 385 сообщений в каждом — это двадцать обычных чатов по 20 сообщений |
+| Сессий работы — каждая отдельным чатом | 34 | примерно двадцать обычных чатов с чат-ботом по 20 сообщений на каждую сессию |
 | Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | **≈ $2 400** | примерно 480 гамбургеров по 5 $ |
 | Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | **≈ $2 000** | примерно 400 гамбургеров по 5 $ |
 | Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **≈ $4 500** | примерно 900 гамбургеров по 5 $ |
