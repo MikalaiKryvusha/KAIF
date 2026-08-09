@@ -161,9 +161,40 @@ const moduleEntries = (dest, content, overrides) => splitModules(content).map((m
 const SCRIPTS = { ru: /[А-Яа-яЁё]/, uk: /[А-Яа-я]/, be: /[А-Яа-я]/, 'zh-hans': /[一-鿿]/,
                   zh: /[一-鿿]/, ja: /[぀-ヿ一-鿿]/, ar: /[؀-ۿ]/,
                   hi: /[ऀ-ॿ]/ };
+
+// SCRIPTS answers "is the owner's writing system present" — exact, cheap, and blind BY
+// CONSTRUCTION for every language written in the Latin alphabet. Four Latin packs SHIP (de, es,
+// fr, pt) and none of them had a row, so a German deployment had no protection at all: the
+// wholesale net, the per-file freeze, the automatic `i18n` flag and the audit's `localized` class
+// were every one of them off (bugs/66 №3). The table cannot be completed for those languages,
+// because their writing system IS Latin — so the property has to be MEASURED, not looked up.
+//
+// The second axis measures what the net actually needs: does this text still speak the template's
+// language? Prose-vocabulary overlap — the share of the disk's distinct words that also occur in
+// the incoming template. Measured on the source repository before the threshold was chosen:
+//   de/es/fr/pt packs vs their English source        0.059 … 0.346   (32 files)
+//   English disk 2 releases old vs today's template  0.985 … 1.000   (11 files × v2.0 and v2.1)
+// The threshold sits inside that gap, far from both sides. The axis runs ONLY where the table is
+// silent AND the deployment is not English, so an English project keeps its previous behaviour
+// byte for byte; and it errs toward "localized", i.e. toward KEEPING the owner's file, which is
+// the safe direction for a net whose whole purpose is "no silent English takeover".
+const OVERLAP_LOCALIZED_BELOW = 0.6;
+const OVERLAP_MIN_WORDS = 12;      // below this a body carries no evidence either way — abstain
+const PROSE_WORD = /[\p{L}][\p{L}\p{M}'-]{2,}/gu;
+const distinctWords = (t) => new Set(String(t).toLowerCase().match(PROSE_WORD) || []);
+function proseOverlap(diskText, newText) {
+  const disk = distinctWords(diskText);
+  if (disk.size < OVERLAP_MIN_WORDS) return 1;          // no evidence → reads as the template
+  const tpl = distinctWords(newText);
+  let shared = 0;
+  for (const w of disk) if (tpl.has(w)) shared++;
+  return shared / disk.size;
+}
 function localizedAgainst(diskText, newText) {
   const re = SCRIPTS[LANG];
-  return !!re && re.test(diskText) && !re.test(newText);
+  if (re) return re.test(diskText) && !re.test(newText);
+  if (!LANG || LANG === 'en') return false;
+  return proseOverlap(diskText, newText) < OVERLAP_LOCALIZED_BELOW;
 }
 
 // The whole-file variant of the test is BLIND on skills (bug 31): machinery-appended trigger
@@ -847,7 +878,6 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   // Bodies exclude <preamble> on purpose: machinery-appended trigger aliases put the owner's
   // script into every skill's frontmatter and would blind the test.
   const nonPre = (list) => list.filter((x) => x.signature !== '<preamble>');
-  const script = SCRIPTS[LANG];
   const bodyOf = (mods) => nonPre(mods).map(modText).join('\n');
   const baseFound = nonPre(oldMods).filter((e) => diskMods.some((d) => d.signature === e.signature)).length;
   // On a TINY base (directory READMEs cut into 1 module) "≤1 matched" degenerates: an intact base
@@ -858,7 +888,9 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   // "≤1" ceiling read project C's 2-survivors-of-21 translation as English and doubled it (bug 31).
   const baseN = nonPre(oldMods).length;
   const wholesaleCeiling = baseN <= 2 ? 0 : Math.max(1, Math.floor(baseN * WHOLESALE_SURVIVOR_SHARE));
-  if (baseN && baseFound <= wholesaleCeiling && script && script.test(bodyOf(diskMods)) && !script.test(bodyOf(newMods)))
+  // One predicate for both axes (bugs/66 №3) — the net used to re-implement the script test
+  // inline, so widening `localizedAgainst` alone would have left this site Latin-blind.
+  if (baseN && baseFound <= wholesaleCeiling && localizedAgainst(bodyOf(diskMods), bodyOf(newMods)))
     return { translatedWholesale: true };
   let replaced = 0;
   const divergedList = [];
@@ -1570,9 +1602,17 @@ function moduleAudit() {
   // and indistinguishable from a real loss ("teaches the operator to ignore the audit"). A file
   // whose absences coincide with a body in the owner's script is classified `localized`;
   // absence in a file that stayed English remains a REAL loss and stays visible.
-  let script = null;
-  try { const j = readJson(KAIF_JSON); if (String(j.i18n || '').toLowerCase() === 'translated') script = SCRIPTS[String(j.language || '').toLowerCase()] || null; }
-  catch { /* marker unreadable — the audit stays literal */ }
+  // The audit sees only the disk file — there is no incoming template here, so the prose axis
+  // (which needs BOTH sides) cannot run. For a language the table does not know, the computed
+  // substitute is the SHAPE of the absence: a wholesale translation loses every template
+  // signature by construction, while a damaged English file loses some of them. Demanding
+  // totality keeps real losses visible instead of hiding them behind a language flag (bugs/66 №3).
+  let script = null, translatedDeploy = false;
+  try {
+    const j = readJson(KAIF_JSON);
+    translatedDeploy = String(j.i18n || '').toLowerCase() === 'translated';
+    if (translatedDeploy) script = SCRIPTS[String(j.language || '').toLowerCase()] || null;
+  } catch { /* marker unreadable — the audit stays literal */ }
   let identical = 0, differs = 0, absent = 0, ours = 0, localized = 0;
   const lines = [];
   for (const [p, mods] of Object.entries(m.moduleShas)) {
@@ -1587,7 +1627,11 @@ function moduleAudit() {
       if (got === undefined) { absentInFile++; fileClean = false; fileLines.push(`  MODULE ABSENT: ${p} :: ${e.signature} (${e.class})`); }
       else if (got !== e.sha256) { differs++; fileClean = false; }
     }
-    if (absentInFile && script && script.test(raw)) {
+    // `<preamble>` is machinery's, not the owner's (bug 43): translations keep it byte for byte,
+    // so it never counts toward totality.
+    const judged = mods.filter((e) => e.signature !== '<preamble>').length;
+    const localizedFile = translatedDeploy && (script ? script.test(raw) : judged > 0 && absentInFile >= judged);
+    if (absentInFile && localizedFile) {
       // the owner's script on disk + template signatures gone = a translation, not a loss;
       // its own headings are the translation itself, so they are not counted as "yours" either
       localized++;

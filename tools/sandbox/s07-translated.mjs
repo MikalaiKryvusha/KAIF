@@ -304,5 +304,40 @@ ok(unp.code === 0 && !/no FILE: blocks/.test(unp.out), 'K6: CRLF-ядро рас
 ok(existsSync(join(T10, 'AGENT_GUIDE.md')) && !readFileSync(join(T10, 'AGENT_GUIDE.md'), 'utf8').includes('\r'),
    'K6: распакованное из CRLF-ядра нормализовано в LF');
 
+// ------------------------------------------------- T11 (bugs/66 №3): ЛАТИНСКИЙ язык под защитой
+// Четыре латинских пакета (de/es/fr/pt) ОТГРУЖАЮТСЯ, а строки в таблице письменностей у них не
+// было — значит немецкое развёртывание не имело защиты ВООБЩЕ: ни сетки «переведён целиком», ни
+// per-file заморозки, ни авто-флага i18n. Таблицу для них не дописать (письменность у них —
+// латиница), поэтому свойство МЕРИТСЯ: доля слов диска, встречающихся во входящем шаблоне.
+// Свод судит ОБА ответа (EXP-0059): перевод обязан быть узнан, а сосед, оставшийся английским,
+// обязан обновиться механически — иначе «защита» была бы просто заморозкой всего подряд.
+console.log('\n=== T11 (bugs/66 №3): латинский язык (de) — перевод узнан, английский сосед обновлён ===');
+const T11 = join(ROOT, 't11'); mkdirSync(T11); seed(T11);
+r = run(T11, 'install --lang de');
+ok(r.code === 0, 'T11 install --lang de exit 0', r.out);
+const CB11 = join(T11, '.claude/skills/check-backlog/SKILL.md');
+const cb11 = readFileSync(CB11, 'utf8');
+// «перевод целиком» по-немецки: преамбула байт в байт, все заголовки и тексты — немецкие
+writeFileSync(CB11, cb11.slice(0, cb11.search(/^# /m)) +
+  '# /check-backlog — Durchsicht des Rückstands\n\nGehe durch bugs/ und plans/ und finde alles Offene.\n\n' +
+  '## Vorgehen\n\nSchritte der Durchsicht auf Deutsch beschrieben.\n\n' +
+  '## Hinweise\n\nHinweise auf Deutsch für die nächste Sitzung.\n');
+const cb11Before = statSync(CB11).size;
+const tf11Before = sha256(readFileSync(join(T11, 'TESTING_FRAMEWORK.md')));
+r = run(T11, `update --source ${SRC}`);
+ok(r.code === 0, 'T11 update →9.9 exit 0', r.out);
+const cb11Txt = readFileSync(CB11, 'utf8');
+ok(!/^# \/check-backlog — [A-Z][a-z]+ the/m.test(cb11Txt) && !cb11Txt.includes('UPSTREAM ADDITION 9.9 (check-backlog)'),
+   'bugs/66 №3: немецкий перевод НЕ затёрт английским шаблоном (латиница больше не слепая зона)');
+ok(cb11Txt.includes('Durchsicht des Rückstands'), 'bugs/66 №3: немецкий текст владельца цел');
+ok(statSync(CB11).size <= cb11Before * 1.5, `bugs/66 №3: файл не удвоен (${cb11Before} → ${statSync(CB11).size} байт)`);
+ok(/translated wholesale/.test(readFileSync(join(T11, 'KAIF_UPDATE_TASK.md'), 'utf8')),
+   'bugs/66 №3: задание называет немецкий файл «translated wholesale»');
+ok(String(JSON.parse(readFileSync(join(T11, '.kaif', 'kaif.json'), 'utf8')).i18n || '').toLowerCase() === 'translated',
+   'bugs/66 №3: маркер записал i18n: translated для латинского развёртывания');
+ok(readFileSync(join(T11, 'TESTING_FRAMEWORK.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (testing)'),
+   'bugs/66 №3: английский сосед в том же de-развёртывании обновлён МЕХАНИЧЕСКИ (защита не заморозка)',
+   'sha до=' + tf11Before.slice(0, 12));
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ s07: все стражи зелёные'}`);
 process.exit(failures ? 1 : 0);

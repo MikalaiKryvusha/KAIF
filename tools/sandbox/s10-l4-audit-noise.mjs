@@ -220,6 +220,36 @@ ok(/localized/.test(r.out) && /PHILOSOPHY\.md/.test(r.out),
 ok(/MODULE ABSENT: TESTING_FRAMEWORK\.md/.test(r.out),
    'S3 РЕАЛЬНАЯ потеря модуля в EN-файле осталась видимой (честность не куплена слепотой)', r.out.slice(-400));
 
+// ═════════ S3de (bugs/66 №3): то же самое для ЛАТИНСКОГО языка, у которого письменности нет ════
+// Классификация `localized` опиралась на таблицу письменностей, а у четырёх ОТГРУЖАЕМЫХ пакетов
+// (de/es/fr/pt) строки в ней нет и быть не может: письменность у них — латиница. Аудит немецкого
+// развёртывания печатал переведённый файл как дефект «MODULE ABSENT» — ровно тот шум, ради
+// которого написан S3. У аудита нет входящего шаблона, поэтому вместо письменности он мерит ФОРМУ
+// пропажи: перевод теряет ВСЕ сигнатуры шаблона по построению, повреждённый английский файл —
+// часть. Свод судит обе стороны: перевод назван localized, реальная потеря осталась видимой.
+console.log(`\n=== S3de (bugs/66 №3): аудит латинского развёртывания — перевод localized, потеря видна ===`);
+const S3de = join(ROOT, 's3de'); mkdirSync(S3de); seed(S3de);
+must(run, S3de, 'install --lang de --agents claude-code');
+writeFileSync(join(S3de, 'PHILOSOPHY.md'), [
+  '# PHILOSOPHIE — wie der Agent denkt', '',
+  '## Der Kerngedanke', '', 'Einfach heißt richtig. KISS und Ockhams Rasiermesser.', '',
+  '## Die Regel beim Feststecken', '', 'Drei Versuche, dann halte an und überdenke die Aufgabe.', '',
+].join('\n'));
+const tfDePath = join(S3de, 'TESTING_FRAMEWORK.md');
+const tfDeMods = splitModules(readFileSync(tfDePath, 'utf8'));
+writeFileSync(tfDePath, joinModules(tfDeMods.slice(0, -1)));   // РЕАЛЬНАЯ потеря в EN-файле
+const mkDe = readMarker(S3de); mkDe.i18n = 'translated'; writeMarker(S3de, mkDe);
+fillCanon(S3de);
+writeTask(S3de, []);
+r = run(S3de, 'update-verify');
+ok(r.code === 0, 'S3de update-verify exit 0', r.out);
+ok(!/MODULE ABSENT: PHILOSOPHY\.md/.test(r.out),
+   'bugs/66 №3: немецкий перевод НЕ печатается дефектом «MODULE ABSENT»', r.out.slice(-400));
+ok(/localized/.test(r.out) && /PHILOSOPHY\.md/.test(r.out),
+   'bugs/66 №3: немецкий перевод честно назван localized (письменности нет — судится форма пропажи)', r.out.slice(-400));
+ok(/MODULE ABSENT: TESTING_FRAMEWORK\.md/.test(r.out),
+   'bugs/66 №3: реальная потеря модуля в EN-файле осталась видимой (честность не куплена слепотой)', r.out.slice(-400));
+
 // ══════════════════ S4: плейсхолдеры — только объявленная сфера ══════════════════
 console.log(`\n=== S4: placeholder-гейт — чужая сфера не блокирует, объявленная стережётся (Unlim Г11 · KCam) ===`);
 const S4 = join(ROOT, 's4'); mkdirSync(S4); seed(S4);

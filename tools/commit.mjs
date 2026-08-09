@@ -82,7 +82,35 @@ const agentName = (asIdx >= 0 ? process.argv[asIdx + 1] : process.env.KAIF_AGENT
 const trailer = agentName ? `Co-Authored-By: ${agentName} <noreply@anthropic.com>` : '';
 const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
 
-run('git add -A');
+// ПРЕПОЛЁТ 2: набор файлов НАЗЫВАЕТСЯ ВСЛУХ до коммита (bugs/79). Правило канона —
+// «`git diff --stat` перед каждым коммитом; всё, чего ты не намеревался менять, — СТОП» — было
+// НЕИСПОЛНИМО, пока `git add -A` расширял набор ПОСЛЕ проверки: агент смотрел один индекс,
+// коммит уносил другой. В поле это увело в origin два чужих файла, появившихся в дереве за минуту
+// до коммита, под чужим сообщением. Лечится не бдительностью, а формой:
+//   • `--only <путь> [--only <путь>…]` — коммитим ровно названное, ничего сверх;
+//   • без `--only` набор берётся весь (прежнее поведение), но ПЕЧАТАЕТСЯ построчно, всегда:
+//     агент не видит того, о чём инструмент промолчал.
+{
+  const only = [];
+  for (let i = 0; i < process.argv.length - 1; i++) {
+    if (process.argv[i] === '--only') only.push(process.argv[i + 1]);
+  }
+  if (only.length) {
+    // version.json приписывается всегда: его номер сборки поднял САМ инструмент шагом выше —
+    // забыть его в списке значило бы оставить в дереве правку без автора.
+    execFileSync('git', ['add', '--', ...only, 'version.json'], { cwd: ROOT, stdio: 'inherit' });
+  } else {
+    run('git add -A');
+  }
+  // Что реально уедет: имена из ИНДЕКСА после стейджинга — то самое множество, а не прошлое.
+  const staged = execFileSync('git', ['diff', '--cached', '--name-status'], { cwd: ROOT, encoding: 'utf8' })
+    .split('\n').filter(Boolean);
+  console.log(`— коммит несёт ${staged.length} файл(ов)${only.length ? ' (--only)' : ''}:`);
+  for (const l of staged) console.log('   ' + l);
+  if (!only.length && staged.length) {
+    console.log('   (не то множество? → node tools/commit.mjs --only <путь> … — уедет ровно названное)');
+  }
+}
 // Сообщение идёт через `git commit -F <файл>` — текст вообще не попадает в argv/шелл
 // (лекарство класса bugs/46; -m с не-ASCII запрещён по построению).
 const tmpMsg = join(tmpdir(), `kaif-commit-msg-${process.pid}.txt`);
