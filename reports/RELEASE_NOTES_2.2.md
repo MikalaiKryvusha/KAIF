@@ -39,13 +39,13 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 ### 🎲 Interesting facts — what this version cost
 
-Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 18:47. The full table lives in the README.
+Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00. The full table lives in the README.
 
-- **Three days · ≈ 40 hours of active work** — 145 commits, 163 files created from nothing.
-- **≈ 253,000 words of prose written into the repository** — about three novels, at ≈ 6,500 words per active hour.
-- The agent **read ≈ 27,000 novels** and **wrote 110** — one written for every 250 read.
-- The same volume by human hands: **≈ 4,800 person-hours** — five engineers for 120 working days.
-- Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,400**.
+- **Three days · ≈ 40 hours of active work** — 204 commits.
+- **≈ 396,000 words of prose written into the repository** — about five novels, at ≈ 10,000 words per active hour.
+- The agent **read ≈ 28,000 novels** and **wrote 111** — one written for every 255 read.
+- The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
+- Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,500**.
 
 The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#85-interesting-facts).
 
@@ -100,13 +100,13 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 ### 🎲 Интересные факты — во что обошлась эта версия
 
-Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 18:47. Полная таблица — в README.
+Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 20:00. Полная таблица — в README.
 
-- **Трое суток · ≈ 40 часов активной работы** — 145 коммитов, 163 файла создано с нуля.
-- **≈ 253 000 слов прозы написано в репозиторий** — примерно три романа, темп ≈ 6 500 слов в активный час.
-- Агент **прочитал ≈ 27 000 романов** и **написал 110** — одно написанное на 250 прочитанных.
-- Тот же объём руками людей: **≈ 4 800 человеко-часов** — пять инженеров на 120 рабочих дней.
-- Заплачено на деле: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 400**.
+- **Трое суток · ≈ 40 часов активной работы** — 204 коммита.
+- **≈ 396 000 слов прозы написано в репозиторий** — примерно пять романов, темп ≈ 10 000 слов в активный час.
+- Агент **прочитал ≈ 28 000 романов** и **написал 111** — одно написанное на 255 прочитанных.
+- Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
+- Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
 
 Полная таблица — в [README](https://github.com/MikalaiKryvusha/KAIF#85-интересные-факты).
 

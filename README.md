@@ -498,37 +498,34 @@ artifacts are never hand-edited.
 
 #### 8.5.1. Metrics of the work on KAIF 2.2
 
-Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 18:47.
+Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00.
 
 Table 6 — Metrics of KAIF 2.2
 
 | What was measured | Value | What it equals |
 |-------------------|-------|----------------|
 | Time spent on the version | **three days** | 7, 8 and 9 August 2026 |
-| Active working time of the human + AI-agent pair | **≈ 40 hours** | about five full 8-hour working days |
-| Commits in git | 145 | about 4 commits per hour of active work |
-| Files touched | 333 | a file opened **every seven minutes** of work |
-| Files created from nothing | 163 | a file that did not exist before — **every fourteen minutes** |
-| Lines added | **≈ +37,000** | about 16 lines a minute of active work |
-| Lines removed | **≈ −1,800** | 21 times more added than removed |
-| Prose written into the repository | **≈ 23,700 lines** | for every seven lines written, five are prose and two are code |
-| Words of prose written into the repository | **≈ 253,000** | about **three novels** of 80,000 words |
-| Code written into the repository | **≈ 9,500 lines** | about 4 lines of code a minute of active work |
-| Writing pace | **≈ 6,500 words** per hour of active work | a human writes that many in 52 hours |
-| The agent read | **≈ 27,000 novels** | ≈ 4.4 billion tokens |
-| The agent wrote | **110 novels** | ≈ 17.5 million tokens — one written for every 250 read |
-| Requests to the models in total | **≈ 13,000** | about 380 requests per session |
-| Weekly subscription limit spent on the version | **88%** | $250 a month is four weeks at $62.50 — that is what the 88% cost |
-| Work sessions — a separate chat each | 34 | about an hour of active work per session |
+| Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
+| Commits in git | **204** | about 5 commits per hour of active work |
+| Lines written into the repository | **≈ 52,000** | prose plus code, at about 22 lines a minute of active work |
+| Prose written into the repository — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | five lines of prose for every two of code |
+| Words of prose written into the repository | **≈ 396,000** | about **five novels** of 80,000 words each |
+| Code written into the repository | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
+| Writing pace | **≈ 10,000 words** per hour of active work | to write that much a human needs about 80 hours of uninterrupted writing |
+| The agent read | **≈ 4.5 billion tokens** | about 28,000 novels |
+| The agent wrote | **≈ 17.8 million tokens** | about 111 novels — one written for every 255 read |
+| Requests to the models in total | **≈ 13,000** | about 385 requests per session |
+| Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
+| Work sessions — a separate chat each | 34 | about 385 messages in each — twenty ordinary chats of 20 messages |
 | What Fable 5's work would cost if paid at Anthropic's public API prices | **≈ $2,400** | about 480 hamburgers at $5 |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | **≈ $1,900** | about 380 hamburgers at $5 |
-| What all the work would cost if paid at Anthropic's public API prices | **≈ $4,400** | about 880 hamburgers at $5 |
-| **Paid by subscription** | **$55** | 11 hamburgers at $5 |
-| How many times API prices exceed what was paid | **≈ 80 times** | for every dollar paid, 80 at list price |
-| If living people had written KAIF 2.2, their work would have amounted to | **≈ 4,800 person-hours** | a team of five engineers working 120 days straight |
-| Payroll for those people would have amounted to | **≈ $86,000** | about 17,000 hamburgers at $5 |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | **≈ $2,000** | about 400 hamburgers at $5 |
+| What all the work would cost if paid at Anthropic's public API prices | **≈ $4,500** | about 900 hamburgers at $5 |
+| **Actually paid by subscription** | **$55** | 11 hamburgers at $5 |
+| How many times API prices exceed what was paid | **≈ 80 times** | for every dollar paid, 80 dollars at list price |
+| Man-hours the same work would have taken living people | **≈ 7,400** | a team of five engineers working 186 days straight |
+| Payroll for those people | **≈ $133,000** | about 26,000 hamburgers at $5 |
 | Electricity spent on the work of the AI agents | **≈ 22 kWh** | an ordinary flat spends that much in two days |
-| How much human work falls on one hour of the human + agent pair's work | **125 person-hours** | one hour of a human working with the agent does what a human alone would do in 125 hours — **16 working days** of 8 hours |
+| How much human work falls on one hour of the human + agent pair's work | **≈ 190 person-hours** | one hour with the agent does what a human alone would do in 190 hours — 24 working days of 8 hours |
 
 ## License
 
@@ -1035,37 +1032,34 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 #### 8.5.1. Метрики работ по версии KAIF 2.2
 
-Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 18:47.
+Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 20:00.
 
 Таблица 6 — Метрики версии KAIF 2.2
 
 | Что измерено | Значение | Чему это равно |
 |--------------|----------|----------------|
 | Время работы над версией | **трое суток** | 7, 8 и 9 августа 2026 года |
-| Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | примерно пять полных рабочих дней по 8 часов |
-| Коммитов в git | 145 | примерно 4 коммита на каждый час активной работы |
-| Файлов затронуто | 333 | новый файл открывался **каждые семь минут** работы |
-| Файлов создано с нуля | 163 | файл, которого раньше не было, — **каждые четырнадцать минут** |
-| Строк добавлено | **≈ +37 000** | примерно 16 строк в минуту активной работы |
-| Строк удалено | **≈ −1 800** | добавленного в 21 раз больше, чем удалённого |
-| Прозы написано в репозиторий | **≈ 23 700 строк** | на каждые семь написанных строк — пять прозы и две кода |
-| Слов прозы написано в репозиторий | **≈ 253 000** | примерно **три романа** по 80 000 слов |
-| Кода написано в репозиторий | **≈ 9 500 строк** | примерно 4 строки кода в минуту активной работы |
-| Темп письма | **≈ 6 500 слов** за час активной работы | человек пишет столько за 52 часа |
-| Агент прочитал | **≈ 27 000 романов** | ≈ 4,4 миллиарда токенов |
-| Агент написал | **110 романов** | ≈ 17,5 миллиона токенов — одно написанное на 250 прочитанных |
-| Запросов к моделям всего | **≈ 13 000** | примерно 380 запросов на одну сессию |
-| Недельный лимит подписки, израсходованный на версию | **88 %** | $250 в месяц — это четыре недели по $62,50; столько и стоили эти 88 % |
-| Сессий работы — каждая отдельным чатом | 34 | примерно по часу активной работы на каждую сессию |
+| Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
+| Коммитов в git | **204** | примерно 5 коммитов на каждый час активной работы |
+| Строк написано в репозиторий | **≈ 52 000** | проза плюс код, примерно 22 строки в минуту активной работы |
+| Прозы написано в репозиторий (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | пять строк прозы на каждые две строки кода |
+| Слов прозы написано в репозиторий | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |
+| Кода написано в репозиторий | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
+| Темп письма | **≈ 10 000 слов** за час активной работы | чтобы написать столько, человеку в среднем нужно около 80 часов непрерывного письма |
+| Агент прочитал | **≈ 4,5 миллиарда токенов** | примерно 28 000 романов |
+| Агент написал | **≈ 17,8 миллиона токенов** | примерно 111 романов — одно написанное на 255 прочитанных |
+| Запросов к моделям всего | **≈ 13 000** | примерно 385 запросов на одну сессию |
+| Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
+| Сессий работы — каждая отдельным чатом | 34 | по 385 сообщений в каждом — это двадцать обычных чатов по 20 сообщений |
 | Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | **≈ $2 400** | примерно 480 гамбургеров по 5 $ |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | **≈ $1 900** | примерно 380 гамбургеров по 5 $ |
-| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **≈ $4 400** | примерно 880 гамбургеров по 5 $ |
-| **Заплачено по подписке** | **$55** | 11 гамбургеров по 5 $ |
-| Во сколько раз прайс API дороже реально заплаченного | **≈ 80 раз** | на каждый заплаченный доллар по прайсу пришлось бы 80 |
-| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **≈ 4 800 человеко-часов** | команда из пяти инженеров работала бы 120 дней подряд |
-| Фонд оплаты труда этих людей составил бы | **≈ $86 000** | примерно 17 000 гамбургеров по 5 $ |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | **≈ $2 000** | примерно 400 гамбургеров по 5 $ |
+| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **≈ $4 500** | примерно 900 гамбургеров по 5 $ |
+| **Фактически заплачено по подписке** | **$55** | 11 гамбургеров по 5 $ |
+| Во сколько раз прайс API дороже заплаченного | **≈ 80 раз** | на каждый заплаченный доллар пришлось бы заплатить 80 долларов по прайсу |
+| Трудозатраты, если бы ту же работу делали живые люди | **≈ 7 400 человеко-часов** | команда из пяти инженеров работала бы 186 дней подряд |
+| Фонд оплаты труда этих людей | **≈ $133 000** | примерно 26 000 гамбургеров по 5 $ |
 | Электроэнергии израсходовано на работу ИИ-агентов | **≈ 22 кВт·ч** | столько обычная квартира расходует за двое суток |
-| Сколько работы людей приходится на один час работы тандема Человек-Агент | **125 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 125 часов — **16 рабочих дней** по 8 часов |
+| Сколько работы людей приходится на один час работы тандема Человек-Агент | **≈ 190 человеко-часов** | один час с агентом делает столько, сколько человек в одиночку делал бы 190 часов — 24 рабочих дня по 8 часов |
 
 ## Лицензия
 
