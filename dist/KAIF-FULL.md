@@ -861,6 +861,16 @@ reply for "double-click / opens offline / see file / lies at" next to an artifac
 hit means the show was replaced by a link. Field words that paid for this rule: "I will NOT open
 it by double-click! You are forcing me to dig through project files again!"
 
+**A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
+covers artifacts; a question is not an artifact, and the gap let the same grievance return through
+it: an agent wrote "the goals are listed in `researches/18`" and believed it had shown them. It had
+not. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
+variants — is QUOTED INTO the question as a table, a list, or a citation, however long that makes
+it. A reference alongside the quoted content is legitimate: it confirms rather than dispatches.
+A reference INSTEAD of the content is the defect, and it is guarded mechanically, because the owner
+had already said it many times before it was written down: "do not send me digging through MD
+documents! An open question must be sufficient for me to understand the matter being decided!"
+
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
 lies a third class: the acceptance criterion is a PERCEPTION adjective (beautiful, natural,

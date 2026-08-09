@@ -463,6 +463,38 @@ function lintClosureVsBody(relPath, lines, findings) {
   }
 }
 
+// ── Ось «PENDING без СУДЬБЫ» (bugs/72) ───────────────────────────────────────────────────────
+// Канон (`AGENT_GUIDE.md`): «Неразрешённые допущения (строки fable `PENDING:`) закрываются здесь
+// же: каждое — подтверждено / опровергнуто / спрошено, ни одно не выпадает молча». Правило жило
+// текстом, и шесть обязательств эпика M провисели два дня под формулировкой «вынесены в Фазу R» —
+// АДРЕС выглядит судьбой, но приёмник о них не знал: слова PENDING в плане Фазы R не было вовсе.
+//
+// Стережётся ФОРМА маркера, а не слово (EXP-0074): `PENDING` вплотную к `:` или `→` — то есть
+// живое обязательство, а не рассказ О КОНВЕНЦИИ. Слово в обратных кавычках, внутри кода и в
+// строке-отрицании («PENDING нет») молчит по построению. Судьба ищется на самой строке и на
+// следующей: пометка часто переносится по ширине.
+const PENDING_MARK_RE = /(?<!`)\*?PENDING\*?\s*(?::|→)/u;
+const PENDING_FATE_RE = /подтвержден|подтверждён|опроверг|спрошен|снят\S*\s+владельц|interviews\//iu;
+const PENDING_DENIAL_RE = /PENDING[^\n]{0,40}(?:нет|не осталось)/iu;
+
+function lintPendingFate(relPath, lines, findings) {
+  const fenced = fencedMask(lines);
+  const hits = [];
+  lines.forEach((line, i) => {
+    if (fenced[i] || insideCode(line, i)) return;
+    if (!PENDING_MARK_RE.test(line) || PENDING_DENIAL_RE.test(line)) return;
+    const near = [line, lines[i + 1] || ''].join(' ');
+    if (PENDING_FATE_RE.test(near) || CLOSED_EXEMPT_RE.test(line)) return;
+    hits.push(i + 1);
+  });
+  if (hits.length) {
+    findings.push([relPath, `живых PENDING без СУДЬБЫ — ${hits.length} (строки ${hits.slice(0, 5).join(', ')}` +
+      `${hits.length > 5 ? ', …' : ''}): у каждого обязана быть судьба — подтверждено / опровергнуто / ` +
+      'спрошено (адрес интервью). «Вынесено в <фазу>» судьбой НЕ является: это адрес, и приёмник о ' +
+      'нём может не знать (bugs/72)']);
+  }
+}
+
 function lintInterview(relPath, lines, findings) {
   const head = lines.slice(0, HEAD_LINES).join('\n');
   if (!/^# /.test(lines[0] || '')) findings.push([relPath, 'нет H1 первой строкой']);
@@ -509,6 +541,7 @@ function run(root, { all = false } = {}) {
     lintStamps(rel, stampLines, findings);
     lintStampTruth(root, rel, stampLines, findings, stampBaseline, stampDebt);
     lintClosureVsBody(rel, stampLines, findings);
+    lintPendingFate(rel, stampLines, findings);
   };
   for (const dir of FULL_DIRS) for (const f of listMd(join(root, dir))) {
     const rel = `${dir}/${f}`;
@@ -519,6 +552,7 @@ function run(root, { all = false } = {}) {
     lintStamps(rel, lines, findings);
     lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
     lintClosureVsBody(rel, lines, findings);
+    lintPendingFate(rel, lines, findings);
   }
   for (const f of listMd(join(root, BUGS_DIR))) {
     const rel = `${BUGS_DIR}/${f}`;
@@ -528,6 +562,7 @@ function run(root, { all = false } = {}) {
     lintStamps(rel, lines, findings);
     lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
     lintClosureVsBody(rel, lines, findings);
+    lintPendingFate(rel, lines, findings);
   }
   for (const f of listMd(join(root, INTERVIEWS_DIR))) {
     const rel = `${INTERVIEWS_DIR}/${f}`;
@@ -537,6 +572,7 @@ function run(root, { all = false } = {}) {
     lintStamps(rel, lines, findings);
     lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
     lintClosureVsBody(rel, lines, findings);
+    lintPendingFate(rel, lines, findings);
   }
   for (const f of ROOT_DOCS) {
     const p = join(root, f);
@@ -546,6 +582,7 @@ function run(root, { all = false } = {}) {
     lintStamps(f, lines, findings);
     lintStampTruth(root, f, lines, findings, stampBaseline, stampDebt);
     lintClosureVsBody(f, lines, findings);
+    lintPendingFate(f, lines, findings);
   }
   // Конвенция имён plans/ — directory-level, вне пофайлового обхода и вне фильтра DONE.
   const planChildren = lintPlanNaming(root, findings);
@@ -649,7 +686,18 @@ function selftest() {
     '- `закрыта 2026-08-09` — МОЛЧИТ: дата внутри обратных кавычек — образец, не метка.\n');
   //   ожидаем от блока меток: 4 красных (нет времени · нет зоны · «снят» · безглагольная веха),
   //   восемь форм молчат — молчание проверяется наравне с краснотой (EXP-0059).
-  const expected = 18; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (имена plans/) + 4 (метки времени T8)
+  // Ось «PENDING без СУДЬБЫ» (bugs/72). Один файл держит все состояния: красное — обязательство
+  // с АДРЕСОМ вместо судьбы (та самая форма, что провисела два дня), и четыре формы молчания.
+  writeFileSync(join(fx, 'plans', '39_epic29_pendings.md'), planBody('План 39 — судьбы допущений') +
+    '\n## Решения\n' +
+    '1. Место отчётов — тут. — *PENDING → приёмка эпика M.* — КРАСНАЯ: «вынесено в …» есть АДРЕС,\n' +
+    '   а не судьба; приёмник о нём может не знать.\n' +
+    '2. Порядок целей — такой. — *PENDING: подтверждено владельцем 2026-08-09.* — МОЛЧИТ.\n' +
+    '3. Оговорки истока — оставить. — *PENDING: спрошено, interviews/interview_017.* — МОЛЧИТ.\n' +
+    '4. Неразрешённых допущений (PENDING) нет: все три проверены. — МОЛЧИТ: строка-отрицание.\n' +
+    '5. Строки-артефакты: `INTENT:`, `AUTH:`, `PENDING:` — МОЛЧИТ: рассказ о конвенции.\n');
+  //   ожидаем: 1 красная, четыре формы молчат
+  const expected = 19; // 4 + 1 + 2 + 1 + 1 + 2 + 1 + 2 (имена plans/) + 4 (метки T8) + 1 (PENDING)
   const res = run(fx, { all: false });
   console.log('— селфтест, сломанная фикстура —');
   report(res);
@@ -723,7 +771,7 @@ function selftest() {
   }
   void savedBaseline;
 
-  console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат, композиция со словарём находит стоп-слово, ось правдивости краснеет на метке ПОЗЖЕ своего коммита и молчит на более ранней, ратчет глушит ровно известную`);
+  console.log(`selftest: ok — ${expected} предсказанных находок на сломанной фикстуре, +1 под --all, чистые файлы молчат, композиция со словарём находит стоп-слово, ось правдивости краснеет на метке ПОЗЖЕ своего коммита и молчит на более ранней, ратчет глушит ровно известную, ось PENDING краснеет на адресе вместо судьбы и молчит на четырёх законных формах`);
 }
 
 // ── Точка входа ────────────────────────────────────────────────────────────────────────────
