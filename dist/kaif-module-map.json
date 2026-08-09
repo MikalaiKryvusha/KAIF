@@ -197,10 +197,10 @@
       {
         "signature": "### The storefront — text a stranger reads",
         "class": "static",
-        "sha256": "03de902fd612982c9d26888dbe54306b8af45725575b8f71c9146f6b37a20888",
+        "sha256": "8371e7c7ef9075d1867a6ed2d40129a4bdb36e723960bb287677d680ef353afb",
         "lines": [
           447,
-          558
+          561
         ]
       },
       {
@@ -208,8 +208,8 @@
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          559,
-          566
+          562,
+          569
         ]
       },
       {
@@ -217,8 +217,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          567,
-          577
+          570,
+          580
         ]
       },
       {
@@ -226,8 +226,8 @@
         "class": "static",
         "sha256": "91ef0d6cae41c2f3c1d78495d25ad908036eba23639224ba2d25a91eb04d17ac",
         "lines": [
-          578,
-          664
+          581,
+          667
         ]
       },
       {
@@ -235,8 +235,8 @@
         "class": "static",
         "sha256": "9f598824214e09a96bfee63c7e024ec954f5cb284e8e21717d08b14b25a3f61c",
         "lines": [
-          665,
-          778
+          668,
+          781
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          779,
-          793
+          782,
+          796
         ]
       },
       {
@@ -253,8 +253,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          794,
-          806
+          797,
+          809
         ]
       }
     ],
@@ -3727,10 +3727,10 @@
       {
         "signature": "## Step 2. Refresh README (all languages)",
         "class": "static",
-        "sha256": "df71eb511c3516b1cf237ba06def4ab798bf898d03ce3e6cad4778dded66e908",
+        "sha256": "28788dd5d192285e5e5fe5ca310c652e054e0df48f5aadc39c7c434c4b637a11",
         "lines": [
           57,
-          82
+          84
         ]
       },
       {
@@ -3738,8 +3738,8 @@
         "class": "static",
         "sha256": "b115d50d3328db37655d59f177be203f3babb2f37764dc6ce536eaa5f299c595",
         "lines": [
-          83,
-          87
+          85,
+          89
         ]
       },
       {
@@ -3747,8 +3747,8 @@
         "class": "static",
         "sha256": "80d3f9e73f162ea83660e4e54add72fdcce716026df4d5ecba9bf73f3b994cf1",
         "lines": [
-          88,
-          92
+          90,
+          94
         ]
       },
       {
@@ -3756,8 +3756,8 @@
         "class": "static",
         "sha256": "13ebed9d3b903561cfc2dc176f856e56ba284246b18c696734b526b59cec764d",
         "lines": [
-          93,
-          101
+          95,
+          103
         ]
       },
       {
@@ -3765,8 +3765,8 @@
         "class": "adaptive",
         "sha256": "4e99f760961b854c5d3c07763b423ae49689d66b05b2ae3c14f81f57e38e3d1b",
         "lines": [
-          102,
-          106
+          104,
+          108
         ]
       },
       {
@@ -3774,8 +3774,8 @@
         "class": "static",
         "sha256": "3019009c113c500556c6a8203677ae4d418eb3fca0dedfb90b45801ff431101f",
         "lines": [
-          107,
-          138
+          109,
+          140
         ]
       },
       {
@@ -3783,8 +3783,8 @@
         "class": "static",
         "sha256": "8445434fe3dade7d70beb20108a586a8ea97f789ab7fc71d9b1ee054c03401ee",
         "lines": [
-          139,
-          157
+          141,
+          159
         ]
       },
       {
@@ -3792,8 +3792,8 @@
         "class": "static",
         "sha256": "10fb165fc5c806066346365bf1d5ad3b8a822dffdd9083264d198449e0692aab",
         "lines": [
-          158,
-          175
+          160,
+          177
         ]
       },
       {
@@ -3801,8 +3801,8 @@
         "class": "static",
         "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
         "lines": [
-          176,
-          183
+          178,
+          185
         ]
       },
       {
@@ -3810,8 +3810,8 @@
         "class": "static",
         "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
         "lines": [
-          184,
-          191
+          186,
+          193
         ]
       }
     ],

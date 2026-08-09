@@ -59,7 +59,7 @@ Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into
 
 The agent runs three bootstrap steps and the machinery does the rest.
 
-<sub>An installation is tracked to the origin by default. Deploying with no tie to the origin: add `--mode anonymous` to the loader call in step 3.</sub>
+<sub>An installation is tracked to the origin by default. Want no tie to the origin — tell the agent: *"Deploy KAIF from KAIF.md in anonymous mode"*.</sub>
 
 ### ⬆️ Updating from 2.0 / 2.1
 
@@ -120,7 +120,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 Агент выполняет три шага бутстрапа, остальное делает машинерия.
 
-<sub>Установка по умолчанию привязана к origin. Развернуть без привязки к origin: добавьте `--mode anonymous` к вызову загрузчика на третьем шаге.</sub>
+<sub>Установка по умолчанию привязана к origin. Нужно без привязки к origin — скажите агенту: *«Разверни KAIF из KAIF.md в анонимном режиме»*.</sub>
 
 ### ⬆️ Обновление с 2.0 / 2.1
 

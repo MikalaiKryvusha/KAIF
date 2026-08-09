@@ -131,11 +131,12 @@ and in section 8.1.
    forced checkpoint command.
 
 <sub>An installation is tracked to the origin by default — that is what makes version checks,
-respectful updates and the field-report loop work out of the box. Deploying with no tie to the
-origin at all: add `--mode anonymous` to the loader call. Such a deployment carries no origin
-tracking and no author references (origin-tied skills are skipped, the author's note is stripped
-mechanically, a final grep-gate refuses to finish while any identity leak remains) and it refuses
-to update over the network. No update ever converts a deployment between the two modes.</sub>
+respectful updates and the field-report loop work out of the box. Want a deployment with no tie to
+the origin at all — tell the agent in step 2: *"Deploy KAIF from KAIF.md in anonymous mode"*. Such a
+deployment carries no origin tracking and no author references (origin-tied skills are skipped, the
+author's note is stripped mechanically, a final grep-gate refuses to finish while any identity leak
+remains) and it refuses to update over the network. No update ever converts a deployment between
+the two modes.</sub>
 
 ### 2.3. Offline installation
 
@@ -498,37 +499,37 @@ Table 6 — Metrics of KAIF 2.2
 | Time spent on the version | **2.0 days** | the whole version was built on 7 and 8 August 2026 |
 | Active working time of the human + AI-agent pair | **29.0 hours** | about 3.6 full 8-hour working days |
 | Commits in git | 141 | about 5 commits per hour of active work |
-| Files touched | 416 | — |
-| Files created from nothing | 190 | — |
-| Lines added | +44 893 | — |
+| Files touched | 416 | a file opened **every four minutes** of work |
+| Files created from nothing | 190 | a file that did not exist before — **every nine minutes** |
+| Lines added | +44 893 | **26 lines a minute**, for two days straight |
 | Lines removed | −1 774 | 25 times more added than removed |
-| Prose written by hand | 28 284 lines | — |
+| Prose written by hand | 28 284 lines | three of every four written lines are prose, not code |
 | Words of prose written by hand | **316 764** | about **3.9 novels** of 80 000 words |
-| Code written by hand | 10 067 lines | — |
+| Code written by hand | 10 067 lines | **6 lines of code a minute** of active work |
 | Writing pace | 10 936 words per hour of active work | a human writes that many in 87 hours |
 | Tokens spent by the models in total | **3 011 949 062** | about **17 919 novels** read and written again |
 | Of those, written by the models themselves | 14 368 418 tokens | about **87 novels** |
 | Requests made by Fable 5 | 4 729 | it burnt that model's weekly limit down to zero |
 | Requests made by Opus 5 | 4 945 | it spent a fifth of that model's weekly limit |
 | Requests to the models in total | 9 676 | about 322 requests per session |
-| Chat sessions | 29 | — |
-| Plans written | 62 | — |
+| Chat sessions | 29 | one hour of active work per session |
+| Plans written | 62 | two plans per session |
 | Bugs filed | 63 | 58 of them closed |
-| Ideas proposed | 24 | — |
-| Research documents produced | 19 | — |
-| Owner interviews | 17 | — |
-| Reports written | 13 | — |
-| Files in the knowledge directories in total | **228** | — |
-| Characters in those documents | **2 149 895** | — |
+| Ideas proposed | 24 | nearly one per session; none ships without the owner's "yes" |
+| Research documents produced | 19 | 19 times the code waited until a source had been read |
+| Owner interviews | 17 | a question for the human once every two sessions; the rest the agent decided |
+| Reports written | 13 | one report every two sessions of work |
+| Files in the knowledge directories in total | **228** | eight new documents per session |
+| Characters in those documents | **2 149 895** | **1 194 typed pages** of 1 800 characters |
 | Words in those documents | **299 632** | about **3.7 novels** of 80 000 words worth of accompanying documentation, and the next session of the agent reads every page |
-| Owner decisions recorded | 65 | — |
-| Experience lessons written | 71 | — |
-| Skills in the delivery | 35 | — |
-| What Fable 5's work would cost if paid at Anthropic's public API prices | $2 429 | — |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | — |
+| Owner decisions recorded | 65 | two human decisions per session |
+| Experience lessons written | 71 | 71 rakes the next session will not step on |
+| Skills in the delivery | 35 | 35 commands the agent gets in a stranger's project on day one |
+| What Fable 5's work would cost if paid at Anthropic's public API prices | $2 429 | two thirds of the total price-list bill |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | the remaining third |
 | What all the work would cost if paid at Anthropic's public API prices | **$3 509** | about **594 hamburgers** at $5.91 — or 1.1 monthly salaries of a software engineer |
 | **Paid by subscription** | **≈ $16.89** | the share of a Claude Max subscription ($250 per month) that falls on two days of work |
-| How many times API prices exceed that subscription share | **208 times** | — |
+| How many times API prices exceed that subscription share | **208 times** | for every dollar actually paid, 208 at list price |
 | If living people had written KAIF 2.2, their work would have amounted to | **5 517 person-hours** | a team of **five engineers working 138 days straight** |
 | Payroll for those people | **$98 517** | at an engineer's salary of $3 000 per month |
 | Electricity spent on the computation | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
@@ -679,11 +680,12 @@ pleasant work!
    чекпоинт-команду.
 
 <sub>Установка по умолчанию привязана к origin — именно этим работают проверка версии, уважительные
-обновления и петля полевых отчётов. Развернуть вообще без привязки к origin: добавьте
-`--mode anonymous` к вызову загрузчика. Такое развёртывание не несёт ни трекинга origin, ни
-упоминаний автора (привязанные к origin навыки пропускаются, записка автора вырезается механически,
-финальный греп-гейт не даёт завершиться, пока остаётся утечка идентичности) и отказывается
-обновляться по сети. Обновление никогда не переводит развёртывание из режима в режим.</sub>
+обновления и петля полевых отчётов. Нужно развернуть без привязки к origin — скажите агенту на
+шаге 2: *«Разверни KAIF из KAIF.md в анонимном режиме»*. Такое развёртывание не несёт ни трекинга
+origin, ни упоминаний автора (привязанные к origin навыки пропускаются, записка автора вырезается
+механически, финальный греп-гейт не даёт завершиться, пока остаётся утечка идентичности) и
+отказывается обновляться по сети. Обновление никогда не переводит развёртывание из режима в
+режим.</sub>
 
 ### 2.3. Офлайн-установка
 
@@ -1046,37 +1048,37 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Время работы над версией | **2,0 суток** | версия целиком сделана 07.08.2026 и 08.08.2026 |
 | Время активной работы тандема «человек + ИИ-агент» | **29,0 часа** | примерно 3,6 полных рабочих дня по 8 часов |
 | Коммитов в git | 141 | примерно 5 коммитов на каждый час активной работы |
-| Файлов затронуто | 416 | — |
-| Файлов создано с нуля | 190 | — |
-| Строк добавлено | +44 893 | — |
+| Файлов затронуто | 416 | новый файл открывался **каждые четыре минуты** работы |
+| Файлов создано с нуля | 190 | файл, которого раньше не было, — **каждые девять минут** |
+| Строк добавлено | +44 893 | **26 строк в минуту**, и так двое суток подряд |
 | Строк удалено | −1 774 | добавленного в 25 раз больше, чем удалённого |
-| Прозы написано руками | 28 284 строки | — |
+| Прозы написано руками | 28 284 строки | из каждых четырёх написанных строк три — проза, а не код |
 | Слов прозы написано руками | **316 764** | примерно **3,9 романа** по 80 000 слов |
-| Кода написано руками | 10 067 строк | — |
+| Кода написано руками | 10 067 строк | **6 строк кода в минуту** активной работы |
 | Темп письма | 10 936 слов за час активной работы | человек пишет столько за 87 часов |
 | Токенов израсходовано моделями всего | **3 011 949 062** | примерно **17 919 романов** прочитано и написано заново |
 | Из них написано самими моделями | 14 368 418 токенов | около **87 романов** |
 | Запросов сделала модель Fable 5 | 4 729 | выжгла недельный лимит этой модели до нуля |
 | Запросов сделала модель Opus 5 | 4 945 | израсходовала пятую часть недельного лимита этой модели |
 | Запросов к моделям всего | 9 676 | примерно 322 запроса на одну сессию |
-| Сессий работы в чате | 29 | — |
-| Планов написано | 62 | — |
+| Сессий работы в чате | 29 | по часу активной работы на каждую сессию |
+| Планов написано | 62 | по два плана на каждую сессию |
 | Багов заведено | 63 | из них закрыто 58 |
-| Идей предложено | 24 | — |
-| Исследований проведено | 19 | — |
-| Интервью с владельцем | 17 | — |
-| Отчётов написано | 13 | — |
-| Файлов в директориях знания всего | **228** | — |
-| Символов в этих документах | **2 149 895** | — |
+| Идей предложено | 24 | почти по идее на каждую сессию; ни одна не идёт в работу без «да» владельца |
+| Исследований проведено | 19 | 19 раз код ждал, пока будет прочитан источник |
+| Интервью с владельцем | 17 | вопрос человеку — раз в две сессии; остальное агент решал сам |
+| Отчётов написано | 13 | по отчёту на каждые две сессии работы |
+| Файлов в директориях знания всего | **228** | восемь новых документов за сессию |
+| Символов в этих документах | **2 149 895** | **1 194 машинописные страницы** по 1 800 знаков |
 | Слов в этих документах | **299 632** | примерно **3,7 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
-| Решений владельца зафиксировано | 65 | — |
-| Уроков опыта записано | 71 | — |
-| Навыков в поставке | 35 | — |
-| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | — |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | — |
+| Решений владельца зафиксировано | 65 | по два решения человека на каждую сессию |
+| Уроков опыта записано | 71 | 71 грабля, на которую следующая сессия уже не наступит |
+| Навыков в поставке | 35 | 35 команд, которые агент получает в чужом проекте с первого дня |
+| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | две трети общего счёта по прайсу |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | оставшаяся треть |
 | Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$3 509** | примерно **594 гамбургера** по $5,91 — или 1,1 месячной зарплаты инженера-программиста |
 | **Заплачено по подписке** | **≈ $16,89** | доля подписки Claude Max ($250 в месяц), пришедшаяся на двое суток работы |
-| Во сколько раз прайс API дороже доли подписки за тот же срок | **208 раз** | — |
+| Во сколько раз прайс API дороже доли подписки за тот же срок | **208 раз** | на каждый заплаченный доллар по прайсу пришлось бы 208 |
 | Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **5 517 человеко-часов** | команда из **пяти инженеров работала бы 138 дней подряд** |
 | Фонд оплаты труда этих людей | **$98 517** | при зарплате инженера 3 000 $ в месяц |
 | Электроэнергии израсходовано на вычисления | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток** |

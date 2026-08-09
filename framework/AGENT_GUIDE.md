@@ -460,7 +460,10 @@ English in Russian words."
 2. **An instruction addresses the reader; it does not describe the universe.** "Drop", "Tell",
    "Approve", "Fill in" — imperative. Impersonal "the file is placed", "the agent is told" turns a
    manual into a rulebook for nobody. The rule applies in procedure sections; in descriptive
-   sections the passive is legitimate, because there the actor is the machinery.
+   sections the passive is legitimate, because there the actor is the machinery. And the
+   instruction must be EXECUTABLE BY THE ONE IT ADDRESSES: "add `--mode anonymous` to the loader
+   call" is addressed to a human who never calls the loader — the agent does. Write what the human
+   SAYS to the agent instead.
 3. **No text ABOUT THE DOCUMENT ITSELF.** "Each skill has a row of its own in Table 3", "the manual
    counts 14 documents", "this document is the user manual" — the reader sees the table and the
    document with their own eyes. A navigation pointer to a section is fine; a description of how
