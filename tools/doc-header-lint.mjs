@@ -586,16 +586,53 @@ function run(root, { all = false } = {}) {
   }
   // Конвенция имён plans/ — directory-level, вне пофайлового обхода и вне фильтра DONE.
   const planChildren = lintPlanNaming(root, findings);
-  return { findings, scanned, planChildren, stampDebt };
+  const decisions = lintDecisionNumbers(root, findings);
+  return { findings, scanned, planChildren, stampDebt, decisions };
 }
 
-function report({ findings, scanned, planChildren, stampDebt = [] }) {
+// ── Ось НОМЕРОВ ЖУРНАЛА РЕШЕНИЙ (круг R2, ось E) ───────────────────────────────────────────
+//
+// Номер решения владельца — АДРЕС: на него ссылаются планы, баги, летопись и сам канон. Адрес,
+// выданный дважды, ломает адресацию молча — ссылки продолжают выглядеть исправными, а ведут в
+// два разных места. Так и случилось: №66 достался и «фазе Q», и «месту install-отчётов», и в
+// репозитории жили ссылки ОБОИХ смыслов.
+//
+// Примета арифметическая и потому без ложных срабатываний: номера строк журнала обязаны быть
+// уникальны. Пропуск номера — тоже находка, но МЯГКАЯ: он означает потерянное решение либо
+// опечатку, и его печатают отдельной строкой, не смешивая с дублем.
+const DECISION_ROW_RE = /^\|\s*(\d+)\s*\|/u;
+function lintDecisionNumbers(root, findings) {
+  const rel = 'MASTER_PLAN.md';
+  const p = join(root, rel);
+  if (!existsSync(p)) return 0;
+  const nums = [];
+  for (const line of readLines(p)) {
+    const m = line.match(DECISION_ROW_RE);
+    if (m) nums.push(Number(m[1]));
+  }
+  const seen = new Map();
+  for (const n of nums) seen.set(n, (seen.get(n) || 0) + 1);
+  for (const [n, count] of [...seen].sort((a, b) => a[0] - b[0])) {
+    if (count > 1) findings.push([rel, `журнал решений: номер №${n} выдан ${count} раза — ` +
+      'адрес решения неоднозначен, ссылки на него ведут в разные места (круг R2, ось E)']);
+  }
+  const sorted = [...seen.keys()].sort((a, b) => a - b);
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] !== sorted[i - 1] + 1) findings.push([rel,
+      `журнал решений: пропуск номеров между №${sorted[i - 1]} и №${sorted[i]} — ` +
+      'решение потеряно либо номер опечатан']);
+  }
+  return nums.length;
+}
+
+function report({ findings, scanned, planChildren, stampDebt = [], decisions = 0 }) {
   for (const [file, msg] of findings) console.log(`  ${file} — ${msg}`);
   if (stampDebt.length) {
     console.log(`ось правдивости меток (bugs/78): известный долг ${stampDebt.length} — базовая линия ` +
       'tools/doc-header-lint.stamp-baseline.json, она только УМЕНЬШАЕТСЯ; всё новое печатается поимённо выше');
   }
   console.log(`plan-naming (T2): детей эпиков ${planChildren ?? 0} — у каждого проверен родитель \`MM_EPIC_*\``);
+  console.log(`журнал решений (R2/ось E): строк ${decisions} — номера проверены на дубли и пропуски`);
   console.log(`doc-header-lint: scanned ${scanned}, findings ${findings.length}${findings.length
     ? ' — консультативно: поправь или оправдай на месте, старт работы не блокируется'
     : ' — all headers green'}`);
