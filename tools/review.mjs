@@ -42,8 +42,18 @@ const AUTOCLOSE_DELAY_MS = 2000;      // DEF2: попытка window.close() п�
 const AUTOCLOSE_RESERVE_MS = 2000;    // DEF2: запас на отказ закрытия → честная просьба
 const SERVER_DEATH_MS = 2500;         // DEF3: смерть сервера после записи (окно успевает уйти)
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 с после маячка — отличить перезагрузку от закрытия
-const SILENCE_THRESHOLD_MS = 180000;  // DEF6: порог тишины 3 мин (фон-вкладки троттлятся, T4)
-const SILENCE_TICK_MS = 15000;        // DEF5: вахта тишины тикает каждые 15 с
+// Пороги вахты тишины СЖИМАЮТСЯ окружением — и только сжимаются (bugs/65 №4). Смерть контура
+// объявлена по ДВУМ каналам (быстрый путь маячка и вахта тишины), а стерёгся один: второй
+// измеряется минутами, и проверить его наблюдением было нельзя, поэтому его не проверял никто —
+// мутация `SILENCE_STRIKES_TO_DIE = 999999` не красила ни одного ассерта. Дефолты остаются
+// каноном DEF5/DEF6: значение из окружения принимается, только если оно СТРОЖЕ дефолта, — так
+// проверка получает свой канал, а поле не может стать терпеливее, чем сказал владелец.
+const stricterMs = (envName, canon) => {
+  const v = Number(process.env[envName]);
+  return Number.isFinite(v) && v > 0 && v < canon ? v : canon;
+};
+const SILENCE_THRESHOLD_MS = stricterMs('KAIF_CONTOUR_SILENCE_MS', 180000); // DEF6: порог тишины 3 мин (фон-вкладки троттлятся, T4)
+const SILENCE_TICK_MS = stricterMs('KAIF_CONTOUR_TICK_MS', 15000);          // DEF5: вахта тишины тикает каждые 15 с
 const SILENCE_STRIKES_TO_DIE = 2;     // DEF6/T5: два страйка против сна машины
 const BEEP_DEADLINE_MS = 8000;        // DEF7: жёсткий срок дочернего вызова писка
 const VOICE_TIMEOUT_MS = 60000;       // DEF7: таймаут голоса (первый холодный зов ~11 с — писки прикрывают)

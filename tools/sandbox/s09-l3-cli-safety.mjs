@@ -47,7 +47,7 @@
 // G18 — `help install` молча глотал аргумент.
 //
 // В tools/sandbox-suite.mjs свод вписывается ВМЕСТЕ с фиксами, когда зеленеет.
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, appendFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, appendFileSync, readdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -221,7 +221,7 @@ ok(r.code === 0 && existsSync(join(D0, 'KAIF_ADAPTATION_TASK.superseded.md'))
    'G15 (судья L3): адаптационное задание с чекпоинтами пережило bootstrap superseded-копией (CHECKPOINT LOST мёртв)', r.out.slice(-300));
 
 // ================================================================ G10: счётчик алиасов считает ЗАПИСЬ, не намерение
-console.log('\n=== G10 (KLAS D3): «N skills trigger-aliased» — применённые алиасы, не ключи пакета ===');
+console.log('\n=== G10 (KLAS D3 + bugs/65 №1): «N skills trigger-aliased» — навыки НА ДИСКЕ, не ключи и не план ===');
 const D10 = join(ROOT, 'd10'); mkdirSync(D10);
 mkdirSync(join(D10, '.kaif', 'install'), { recursive: true });
 let b10 = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
@@ -233,15 +233,67 @@ b10 = editBundleFile(b10, 'templates/languages/ru/skill-triggers.json', (json) =
 writeFileSync(join(D10, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b10);
 copy(join(DIST, 'KAIF-CORE.mjs'), join(D10, '.kaif', 'kaif-core.mjs'));
 r = run(D10, 'install --lang ru');
-// Ожидание берётся из САМОЙ ПОСТАВКИ, а не зашивается числом: зашитое «34» было ещё одним
-// незамеченным зеркалом счётчика навыков и покраснело бы на каждом новом навыке (план 62/T1).
-// Страж от этого только крепче: он теперь заодно требует, чтобы применённых алиасов было ровно
-// столько, сколько навыков ЕДЕТ В БАНДЛЕ, — а разрыв с ключами пакета (2 фантома) сохранён.
+// Ожидание снимается С ДИСКА ПЕСОЧНИЦЫ. Прежде оно бралось из бандла — и это был ПРОКСИ: бандл
+// есть ПЛАН установки, он совпадает с диском ровно до первого фильтра между планом и записью.
+// Фильтр существует (`--mode anonymous` не пишет навыки, привязанные к origin), и на нём ассерт
+// «счётчик == навыки в бандле» зеленел, пока установка печатала 35 при 31 на диске — bugs/65 №1.
+// Зашивать число тоже нельзя: «34» было ещё одним незамеченным зеркалом счётчика (план 62/T1).
+const aliasedOnDisk = (dir, lang) => {
+  const sk = join(dir, '.claude', 'skills');
+  if (!existsSync(sk)) return 0;
+  return readdirSync(sk).filter((n) => {
+    const p = join(sk, n, 'SKILL.md');
+    return existsSync(p) && readFileSync(p, 'utf8').includes(`Trigger aliases (${lang}):`);
+  }).length;
+};
+const loggedAliased = (out) => { const m = out.match(/(\d+) skills trigger-aliased/); return m ? Number(m[1]) : null; };
 const SKILLS_IN_BUNDLE = (readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8')
   .match(/^> \*\*FILE: `\.claude\/skills\/[^/]+\/SKILL\.md`/gm) || []).length;
-const aliasedM = r.out.match(/(\d+) skills trigger-aliased/);
-ok(r.code === 0 && SKILLS_IN_BUNDLE > 0 && aliasedM && aliasedM[1] === String(SKILLS_IN_BUNDLE),
-   `G10: счётчик алиасов = ${SKILLS_IN_BUNDLE} применённых, а не ${SKILLS_IN_BUNDLE + 2} ключей пакета (лог: ${aliasedM ? aliasedM[1] : '?'})`, r.out.slice(-200));
+const disk10 = aliasedOnDisk(D10, 'ru');
+ok(r.code === 0 && disk10 > 0 && loggedAliased(r.out) === disk10,
+   `G10: standard — счётчик == ${disk10} навыков С АЛИАСОМ НА ДИСКЕ (2 фантомных ключа пакета в счёт не идут; лог: ${loggedAliased(r.out)})`, r.out.slice(-200));
+
+// G10b/G10c — тот же счётчик в режиме, где план и запись РАСХОДЯТСЯ. Список привязанных к origin
+// навыков ВЫЧИСЛЯЕТСЯ из самой машинерии, а не перечисляется здесь: перечень в своде стал бы
+// вторым зеркалом, которое некому сверять (класс bugs/49).
+const ORIGIN_TIED = ((readFileSync(join(DIST, 'KAIF-CORE.mjs'), 'utf8')
+  .match(/^const ORIGIN_TIED = \[([^\]]*)\]/m) || [, ''])[1])
+  .split(',').map((s) => s.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
+const tiedAliased = ORIGIN_TIED.filter((n) => {
+  const p = join(D10, '.claude', 'skills', n, 'SKILL.md');
+  return existsSync(p) && readFileSync(p, 'utf8').includes('Trigger aliases (ru):');
+}).length;
+const D10a = join(ROOT, 'd10a'); mkdirSync(D10a); seed(D10a);
+const rAnon = run(D10a, 'install --lang ru --mode anonymous');
+const diskA = aliasedOnDisk(D10a, 'ru');
+ok(rAnon.code === 0 && diskA > 0 && loggedAliased(rAnon.out) === diskA,
+   `G10b (bugs/65 №1): anonymous — счётчик == ${diskA} навыков на диске (лог: ${loggedAliased(rAnon.out)})`, rAnon.out.slice(-200));
+// Ассерт выше не был бы доказательством, если бы диск и бандл совпадали и в анонимном режиме:
+// эта строка требует, чтобы разрыв БЫЛ и был равен числу изъятых навыков — иначе прежняя
+// зелёная ложь («== навыки в бандле») прошла бы и здесь.
+ok(tiedAliased > 0 && SKILLS_IN_BUNDLE > diskA && diskA === disk10 - tiedAliased,
+   `G10c (bugs/65 №1): разрыв план↔диск ДОКАЗАН — бандл ${SKILLS_IN_BUNDLE}, диск ${diskA}, изъято ${tiedAliased} (${ORIGIN_TIED.join(',')})`,
+   `disk10=${disk10} diskA=${diskA} tied=${tiedAliased}`);
+
+// G10d/G10e — негативный контроль ЗАПИСАН ФИКСТУРОЙ, а не прогоном сессии: свод сам возвращает
+// прежнюю, ПЛАНОВУЮ форму счётчика в копию машинерии и требует, чтобы она разошлась с диском.
+// Однажды показанный в чате красный умирает вместе с сессией; здесь ось доказывает, что
+// различает две формы, на КАЖДОМ прогоне. Мутируется копия внутри песочницы — рабочее дерево
+// и dist/ не трогаются вовсе (EXP-0077).
+const D10c = join(ROOT, 'd10c'); mkdirSync(D10c); seed(D10c);
+const CORE_C = join(D10c, '.kaif', 'kaif-core.mjs');
+const coreSrc = readFileSync(CORE_C, 'utf8');
+const DISK_SIDE = 'const aliased = countAliasedOnDisk();';
+const PLAN_SIDE = 'const aliased = deploy.filter((f) => skillName(f.path) && /Trigger aliases \\(/.test(f.content)).length;';
+ok(coreSrc.includes(DISK_SIDE),
+   'G10d (bugs/65 №1): машинерия несёт ДИСКОВЫЙ счётчик — иначе мутировать нечего и G10e ничего не доказывает');
+writeFileSync(CORE_C, coreSrc.replace(DISK_SIDE, PLAN_SIDE));
+const rMut = run(D10c, 'install --lang ru --mode anonymous');
+const diskC = aliasedOnDisk(D10c, 'ru');
+const logC = loggedAliased(rMut.out);
+ok(rMut.code === 0 && logC !== null && diskC > 0 && logC !== diskC,
+   `G10e (bugs/65 №1): плановая форма счётчика РАСХОДИТСЯ с диском (лог ${logC} ≠ диск ${diskC}) — ровно то, на чём G10b обязан краснеть`,
+   rMut.out.slice(-200));
 
 // ================================================================ D1: update-эра — защита задания, чекпоинты-исполнители, вердикт файлом
 console.log('\n=== D1 (bugs/33 Г1 + 34 D5 + 39): задание неприкосновенно, чекпоинты исполняют, вердикт файлом ===');

@@ -36,6 +36,10 @@ const BROWSERS = [ // DEF8-порядок; пути стандартные, по
 ];
 const STEP_TIMEOUT_MS = 10000;   // C9: жёсткий срок каждого шага CDP
 const LAUNCH_TIMEOUT_MS = 15000; // C9: срок старта браузера
+// Бюджет ожидания смерти по вахте тишины: порог 400 мс + два страйка тиками по 150 мс + запас
+// на старт процесса. Не «побольше на всякий случай» — иначе зависший контур читался бы как
+// медленный, а ассерт ждал бы минуту вместо секунды (bugs/65 №4).
+const SILENCE_DEATH_BUDGET_MS = 8000;
 // G7/G11: независимая примета счёта вариантов. ОБЕ легальные формы (bugs/51) — списочная и
 // табличная. Урок дефекта: примета обязана быть независима от ПАРСЕРА, но раньше она делила с ним
 // слепое пятно (знала только список), поэтому на документах с табличными вариантами сверка давала
@@ -433,6 +437,46 @@ async function main() {
       const closed = await Promise.race([p2, sleep(6000).then(() => null)]);
       check('закрытие: контур УМЕР быстрым путём маячка (I14)',
         closed !== null && closed.outcome === 'page closed without an answer', closed ? closed.outcome : 'жив спустя 6 с');
+
+      // ВТОРОЙ объявленный канал той же смерти — вахта тишины (I14/DEF6). Он стоял в контракте
+      // и не стерёгся ничем: `SILENCE_STRIKES_TO_DIE = 999999` не красил ни одного ассерта
+      // (bugs/65 №4), потому что канал измеряется минутами и наблюдать его было нечем. Пороги
+      // сжимаются окружением (review.mjs принимает только БОЛЕЕ СТРОГОЕ значение), страница не
+      // открывается вовсе — пульса нет по построению, поэтому смерть обязана прийти от вахты и
+      // назвать себя в логе. У каждого объявленного канала своя мутация (EXP-0059).
+      {
+        const silent = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), fxDoc, '--no-open', '--silent'],
+          { cwd: fixtureRoot, stdio: ['ignore', 'pipe', 'ignore'],
+            env: { ...process.env, KAIF_CONTOUR_SILENCE_MS: '400', KAIF_CONTOUR_TICK_MS: '150' } });
+        // Убитый процесс ДОЖИДАЕТСЯ — его рабочим каталогом служит фикстура, а Windows не удаляет
+        // каталог, пока он чей-то cwd: без ожидания следующий блок падал на EPERM при пересоздании
+        // фикстуры, и красным становился он, а не виновник.
+        const reap = async (ch) => { ch.kill('SIGKILL'); await new Promise((res) => ch.on('exit', res)); };
+        let silentOut = '';
+        silent.stdout.on('data', (d) => { silentOut += d; });
+        const silentCode = await Promise.race([
+          new Promise((res) => silent.on('exit', (c) => res(c))),
+          sleep(SILENCE_DEATH_BUDGET_MS).then(() => null),
+        ]);
+        if (silentCode === null) await reap(silent);
+        check('вахта ТИШИНЫ убивает контур сама и называет себя (I14, второй канал — bugs/65 №4)',
+          silentCode === 2 && /тишина-вахта/.test(silentOut),
+          `code=${silentCode} log=${silentOut.slice(-200)}`);
+
+        // Второй ответ мутанта (EXP-0059): без сжатия порога смерти БЫТЬ НЕ ДОЛЖНО. Без этой
+        // строки ассерт выше зеленел бы и от постороннего пути выхода — «умер» читалось бы как
+        // «умер от тишины». Терпение контура к молчащему человеку — обещание владельцу, и оно
+        // тоже стережётся: три минуты канона против восьми секунд ожидания здесь.
+        const patient = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), fxDoc, '--no-open', '--silent'],
+          { cwd: fixtureRoot, stdio: ['ignore', 'pipe', 'ignore'] });
+        const patientCode = await Promise.race([
+          new Promise((res) => patient.on('exit', (c) => res(c))),
+          sleep(SILENCE_DEATH_BUDGET_MS).then(() => null),
+        ]);
+        check('без сжатия порога контур ЖИВ — терпение к молчанию не сокращается само (DEF6)',
+          patientCode === null, `процесс завершился кодом ${patientCode} раньше канонического порога`);
+        await reap(patient);
+      }
     }
 
     block('QA7. Мёртвый сервер headless: пять эталонных true');

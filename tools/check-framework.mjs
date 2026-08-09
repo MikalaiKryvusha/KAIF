@@ -81,6 +81,26 @@ function scanPayloadCyrillic(fwRoot) {
   return found;
 }
 
+// A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
+// file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
+// from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
+// documents have halves is COMPUTED from the `<a id="russian">` anchor (the same landmark
+// showcase-lint and build-story-card split on), so a bilingual file added to the registry later
+// gets the per-half check without anyone remembering to flag it, and a single-language file keeps
+// being read as one whole.
+const RU_ANCHOR = '<a id="russian">';
+const segmentsOf = (body) => {
+  const i = body.indexOf(RU_ANCHOR);
+  return i < 0 ? [['', body]] : [[' (EN half)', body.slice(0, i)], [' (RU half)', body.slice(i)]];
+};
+/** Tokens absent from `body`, each labelled with the half it is missing from. */
+function missingTokens(body, tokens) {
+  const out = [];
+  for (const [where, text] of segmentsOf(body))
+    for (const t of tokens) if (!text.includes(t)) out.push({ where, token: t });
+  return out;
+}
+
 // `--selftest`: a guard that never reddened proves nothing (BUG_FIXING_FRAMEWORK → Guards), and a
 // guard nobody selftests rots by the very drift it watches (EXP-0075). Both answers are demanded
 // (EXP-0059): red on the defect AND silence on what must not be touched. The mutation runs on a
@@ -139,15 +159,47 @@ function selfProofPayloadCyrillic() {
   return fails;
 }
 
+// The per-half proof for guard 5e (bugs/65 №2). The mutation lives in a STRING read from the real
+// README — the file is never written, so there is nothing to restore and nothing to lose
+// (EXP-0077). Both sides are separate fixtures: a name deleted from one half must be named by the
+// half it left, and the very rename the field produced (AUTHOR_STYLOMETRY.md → OWNER_VOICE.md,
+// same owner, two deployments) is what gets applied.
+const HALF_TOKEN = 'AUTHOR_STYLOMETRY.md';
+function selfProofHalves() {
+  const fails = [];
+  const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
+  const i = readme.indexOf(RU_ANCHOR);
+  if (i < 0) { fails.push('README потерял якорь половин — ось ослепла по построению'); return fails; }
+  if (missingTokens(readme, [HALF_TOKEN]).length) fails.push('чистый README покраснел');
+  const en = readme.slice(0, i), ru = readme.slice(i);
+  const strip = (s) => s.split(HALF_TOKEN).join('OWNER_VOICE.md');
+  const goneFromEn = missingTokens(strip(en) + ru, [HALF_TOKEN]);
+  const goneFromRu = missingTokens(en + strip(ru), [HALF_TOKEN]);
+  if (!(goneFromEn.length === 1 && goneFromEn[0].where.includes('EN')))
+    fails.push(`вымарывание из EN-половины не названо ею: ${JSON.stringify(goneFromEn)}`);
+  if (!(goneFromRu.length === 1 && goneFromRu[0].where.includes('RU')))
+    fails.push(`вымарывание из RU-половины не названо ею: ${JSON.stringify(goneFromRu)}`);
+  // …и второй ответ (EXP-0059): одноязычный документ читается ЦЕЛИКОМ, ось не удваивает на нём
+  // ни находки, ни молчание.
+  if (missingTokens(`no anchor here, routes to ${HALF_TOKEN}`, [HALF_TOKEN]).length)
+    fails.push('одноязычный документ с токеном ложно покраснел');
+  if (missingTokens('no anchor here, no token', [HALF_TOKEN]).length !== 1)
+    fails.push('одноязычный документ БЕЗ токена не покраснел');
+  return fails;
+}
+
 if (process.argv.includes('--selftest')) {
   const fails = selfProofPayloadCyrillic();
   for (const f of fails) console.error('✖ selfproof 5d: ' + f);
-  if (fails.length) {
-    console.error(`\n❌ check-framework --selftest: ${fails.length} провалов (гард 5d, bugs/66 №2)`);
+  const halfFails = selfProofHalves();
+  for (const f of halfFails) console.error('✖ selfproof 5e (bugs/65 №2): ' + f);
+  if (fails.length || halfFails.length) {
+    console.error(`\n❌ check-framework --selftest: ${fails.length + halfFails.length} провалов (гард 5d — bugs/66 №2, гард 5e — bugs/65 №2)`);
     process.exit(1);
   }
   const covered = payloadBodies(join(ROOT, 'framework')).length;
   console.log(`✅ гард 5d: охват ВЫЧИСЛЯЕТСЯ — ${covered} поверхностей поставки; ${FORMERLY_BLIND.length} бывших слепых зон краснеют, ${MUST_STAY_SILENT.length} изъятия молчат, подпись автора не извиняет предложение`);
+  console.log(`✅ гард 5e: половины судятся ПОРОЗНЬ — вымарывание «${HALF_TOKEN}» краснеет из КАЖДОЙ половины README поимённо, одноязычный документ читается целиком`);
   process.exit(0);
 }
 
@@ -302,10 +354,12 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
     ['portrait canon name ↔ README (both halves)', 'README.md',
       ['AUTHOR_STYLOMETRY.md']],
   ];
+  // Per-half judging (bugs/65 №2) — `missingTokens`/`segmentsOf` and their `--selftest` live at
+  // the top of this file, so the proof runs before any dist artifact is read.
   for (const [pair, file, tokens] of PAIRS) {
     let body; try { body = readT(file); } catch { errors.push(`bundle lint: ${file} unreadable (pair "${pair}")`); continue; }
-    for (const t of tokens) if (!body.includes(t))
-      errors.push(`bundle lint (bugs/38): pair "${pair}" broken — ${file} does not carry "${t}"`);
+    for (const { where, token } of missingTokens(body, tokens))
+      errors.push(`bundle lint (bugs/38): pair "${pair}" broken — ${file}${where} does not carry "${token}"`);
   }
   // T4, the NEGATIVE half of criterion 1 ("a grep of the old nameless description = 0"). Kept out
   // of FORBIDDEN on purpose: that sweep walks framework/** only, while the nameless formula also
