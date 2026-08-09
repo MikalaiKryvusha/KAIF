@@ -1,4 +1,4 @@
-<p align="center">
+3<p align="center">
   <img src="KAIF.jpg" alt="KAIF — Krinik AI Framework" width="640">
 </p>
 
@@ -6,7 +6,7 @@
 
 # KAIF — Krinik AI Framework
 
-<h3 align="center"><em>External memory and discipline for AI coding agents — in one self-deploying file.</em></h3>
+<h3 align="center"><em>External memory and discipline for AI agents — in one self-deploying file.</em></h3>
 
 <p align="center">
   <a href="#english"><img src="https://img.shields.io/badge/English-2C7BE5?style=for-the-badge" alt="English"></a>
