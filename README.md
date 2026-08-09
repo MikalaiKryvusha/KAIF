@@ -1,4 +1,4 @@
-3<p align="center">
+<p align="center">
   <img src="KAIF.jpg" alt="KAIF — Krinik AI Framework" width="640">
 </p>
 
