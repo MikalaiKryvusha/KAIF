@@ -18,6 +18,11 @@ KAIF/
 ├── README.md                              # EN (primary) + RU
 ├── README.pdf                             # rendered README (generated, но КОММИТИТСЯ — решение владельца)
 ├── assets/                                # СГЕНЕРИРОВАННЫЕ схемы README (3 × light/dark × EN/RU), из build-diagrams.mjs
+│                                          # + промо-материалы владельца (постеры, обложки) — коммитятся,
+│                                          # но ПОТРЕБИТЕЛЯМ НЕ ПОСТАВЛЯЮТСЯ (слово владельца 2026-08-09):
+│                                          # поставку задаёт framework/ → KAIF.md + dist/, и assets/ в неё
+│                                          # не входит по построению — встраиваются только ключевые доки,
+│                                          # README директорий, навыки и распаковщик (счёт стережёт check-framework)
 ├── LICENSE                                # MIT
 ├── version.json                           # { name, major, minor, codename, released, origin, build } → версия = major.minor
 ├── .gitignore

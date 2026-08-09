@@ -182,6 +182,7 @@ README; в поставке с 2.2, эпик O): приказ перечитат
 | `tar` | PS: `system32\tar.exe` (bsdtar) · bash: `/usr/bin/tar` (GNU) — **РАЗНЫЕ программы** | PS: `Get-Command tar` · bash: `type -p tar` |
 | `curl` | PS 5.1: **Alias на `Invoke-WebRequest`** (другая программа; у алиаса `.Source` пуст — смотри `CommandType`) · bash: `/mingw64/bin/curl` | PS: `Get-Command curl` · bash: `type -p curl` |
 | `find` | PS: `system32\find.exe` (Windows-фильтр строк!) · bash: `/usr/bin/find` (GNU) | PS: `Get-Command find` · bash: `type -p find` |
+| `$TMPDIR` | git-bash: **ПУСТ** (задан только `$TMP`) → `"$TMPDIR/run.log"` схлопывается в `/run.log`, а MSYS2 разворачивает это в `C:\Program Files\Git\run.log` — файл уезжает в каталог установки Git, прогон при этом ЗЕЛЁНЫЙ. Так туда натекло 19 агентских черновиков за месяц (убраны 2026-08-09). Пиши в скретчпад сессии полным путём либо бери `os.tmpdir()`/`tools/lib/temp-root.mjs` | bash: `echo "[$TMPDIR]"` · `node -e "console.log(require('os').tmpdir())"` |
 | Пакетные менеджеры | winget 1.29.280 · chocolatey установлен · scoop нет | PS: `winget --version` · `Get-Command choco` |
 | Оплаченные грабли | EXP-0005 (CRLF в регэкспах) · EXP-0007 (BOM PS5.1) · EXP-0026 (экранирование в командах доков) · EXP-0027 (сигналы/keep-alive Windows) · EXP-0032 (`grep -i` не кейс-фолдит кириллицу — следствие пустой локали) · EXP-0034 (MSYS2 конвертирует argv) | `grep 'EXP-00' EXPERIENCE.md` |
 

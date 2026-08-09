@@ -1,0 +1,25 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_017_epic_M_pending_acceptance.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-08-09T10:45:05.654Z",
+  "atHuman": "9 августа 2026, 13:45 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q2": {
+      "choice": "",
+      "text": "",
+      "comment": "покажи мне этот порядок в контексте задаваемого вопроса! не отправляй меня капаться в MD документах! Тысячу раз об этом просил! Открытый вопрос должен быть достаточен для моего понимания решаемого вопроса!"
+    },
+    "Q3": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    }
+  }
+}
