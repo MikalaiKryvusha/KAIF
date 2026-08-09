@@ -76,7 +76,12 @@
   },
   "interviews/interview_016_provenance_marks_on_the_showcase.md": {
     "questions": 1,
-    "parsedOptions": 3,
-    "candidateLines": 3
+    "parsedOptions": 4,
+    "candidateLines": 4
+  },
+  "interviews/interview_017_epic_M_pending_acceptance.md": {
+    "questions": 3,
+    "parsedOptions": 8,
+    "candidateLines": 8
   }
 }

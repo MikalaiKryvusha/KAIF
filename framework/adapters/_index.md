@@ -44,7 +44,13 @@ capability that decides whether rule-enforcement modules can be wired at all.
 | System | Session-start / post-compaction | Per-turn | On-stop |
 |---|---|---|---|
 | Claude Code · OpenAI Codex | ✅ (`hookSpecificOutput.additionalContext`) | ✅ | ✅ / ⚠️ Codex unverified |
-| Grok Build | ✅ reads `.claude/settings.json` directly | ✅ same path | ✅ same path |
+<!-- Two outcomes only, never three: a contract is either CONFIRMED against a live vendor doc or
+     it says "not verified" (epic O5, criterion 5). "Reads the config" is not "honours the output":
+     Grok Build runs the same file, and its NATIVE contract calls these events passive ("stdout is
+     ignored"), so the injection half stays unverified until someone reads it back from a live
+     session. A ✅ there would send a field owner to wire a contour that silently drops its output. -->
+
+| Grok Build | ⚠️ reads `.claude/settings.json`; **injection not verified** | ⚠️ same path, same gap | ⚠️ same path, same gap |
 | Cursor | ✅ `sessionStart` → `additional_context` | ❌ | ❌ auto-submits a followup prompt |
 | GitHub Copilot | ✅ `sessionStart` → `additionalContext` | ❌ not permitted on that event | ❌ |
 | Google Antigravity | ❌ no such event | ✅ `PreInvocation` → `injectSteps` | ⚠️ field names match, values unverified |

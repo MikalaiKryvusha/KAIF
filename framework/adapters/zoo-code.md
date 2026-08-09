@@ -48,6 +48,11 @@ and additive; with no hooks everything still works on prose.
   editing a template), `no-context-self-stop` (don't end an autonomous loop on "context full" — `bugs/02`),
   `status-before-pause` (update `STATUS.md` before finishing), `no-rename-on-deploy` (canonical filenames
   are law — `bugs/01`).
+- **The shipped `.kaif/hooks/` module does NOT apply here, and that is a statement about the host,
+  not about the module** (recon O5, 2026-08-07): Zoo Code's docs describe no hook mechanism at all —
+  only allow/deny lists and auto-approve gates, which can block an action but cannot inject context
+  into the agent. So the refresh contour on this host is the **markdown ritual, and it is complete by
+  itself** (`/resume`, the four refresh triggers, `.kaif/refresh-marker.json`) — not a degraded mode.
 - Where a rule can't be hook-enforced on this host, fall back to reinforced prose in `.roo/rules/kaif.md`.
 
 ## Deploy checklist

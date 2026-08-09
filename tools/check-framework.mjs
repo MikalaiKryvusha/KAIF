@@ -353,6 +353,22 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['AUTHOR_STYLOMETRY.md']],
     ['portrait canon name ↔ README (both halves)', 'README.md',
       ['AUTHOR_STYLOMETRY.md']],
+    // O5 criterion 5, TWO outcomes only (bugs/72): a hook contract is either CONFIRMED against a
+    // live vendor doc or it says "not verified" — "probably works" is the retired third outcome.
+    // Grok Build runs our config and its NATIVE contract calls these events passive, so the
+    // injection half is unverified; both tables that a field owner reads must SAY so, in the cell
+    // he scans and not in prose twelve lines below it. The retired ✅ form is forbidden below.
+    ['Grok Build injection caveat ↔ hooks module README', 'framework/hooks/README.md',
+      ['injection not verified']],
+    ['Grok Build injection caveat ↔ adapters index', 'framework/adapters/_index.md',
+      ['injection not verified']],
+    // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
+    // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
+    // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to
+    // write. Guarded from the map's side, because the delivery's side is already asserted by s14.
+    ['recon map ↔ delivery (Antigravity STATUS guard is NOT shipped)',
+      'researches/19_epic_O_refresh_mechanisms_and_env_dossier.md',
+      ['блокирующее значение не верифицировано']],
   ];
   // Per-half judging (bugs/65 №2) — `missingTokens`/`segmentsOf` and their `--selftest` live at
   // the top of this file, so the proof runs before any dist artifact is read.
@@ -378,6 +394,12 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
   const FORBIDDEN = [
     [/\(idea \d+ §\d+\)|\(drive-by, idea \d+/, "the source repo's internal backlog numbering"],
     [/plans\/homework_/, 'the pre-homeworks/ homework path (superseded by the homeworks/ directory)'],
+    // A retired decision becomes a FORBIDDEN formulation (BUG_FIXING_FRAMEWORK → Guards). This one
+    // read "✅ same path" in two capability tables and told a field owner that Grok Build's context
+    // injection is confirmed, while the research it came from records the opposite as an open
+    // question (bugs/72). The positive half — the literal "injection not verified" — is a guarded
+    // pair above; this is its negative half, so the row cannot quietly go back to a ✅.
+    [/✅ same path/, 'the retired third outcome for an unverified hook contract ("probably works" — O5 criterion 5, bugs/72)'],
   ];
   // the sweep walks the WHOLE payload (judge finding: docs+readmes+skills alone left spheres/
   // adapters/templates/installer unguarded — a future leak there would ship silently)
