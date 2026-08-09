@@ -506,7 +506,7 @@ Table 6 — Metrics of KAIF 2.2
 |-------------------|-------|----------------|
 | Time spent on the version | **three days** | 7, 8 and 9 August 2026 |
 | Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
-| Commits in git | **204** | a human programmer would need about four and a half working days for each of these commits |
+| Commits in git | **204** | each commit is a saved state of the project — any of them can be returned to |
 | Lines written into the repository, prose and code together | **≈ 52,000** | a thick book of about 1,700 pages |
 | Prose written into the repository — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | about 1,200 typed pages |
 | Words of prose written into the repository | **≈ 396,000** | about **five novels** of 80,000 words each |
@@ -1038,7 +1038,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 |--------------|----------|----------------|
 | Время работы над версией | **трое суток** | 7, 8 и 9 августа 2026 года |
 | Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
-| Коммитов в git | **204** | на каждый такой коммит живому программисту понадобилось бы примерно четыре с половиной рабочих дня |
+| Коммитов в git | **204** | каждый коммит — сохранённое состояние проекта, к любому можно вернуться |
 | Строк написано в репозиторий, проза и код вместе | **≈ 52 000** | толстая книга примерно в 1 700 страниц |
 | Прозы написано в репозиторий (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | примерно 1 200 машинописных страниц |
 | Слов прозы написано в репозиторий | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |

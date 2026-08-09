@@ -52,34 +52,41 @@ const C = {
 };
 
 // ОТБОР — вкусовое решение, вынесенное в одно место. Ключ — начало названия строки Таблицы 6.
+//
+// ⚠️ ИМЕНА СТРОК — ЖИВОЕ ЗЕРКАЛО ВИТРИНЫ, а не список, который живёт своей жизнью. Волна правок
+// владельца 2026-08-09 (`plans/69`) переименовала и удалила половину Таблицы 6, и здесь осталось
+// шесть имён, которых на витрине больше нет («Строк добавлено», «Слов прозы написано руками»,
+// «Токенов израсходовано моделями всего», «Заплачено по подписке» и их английские двойники).
+// Мёртвые имена убраны по слову владельца («убрать код из стража»). Промах имени валит прогон
+// с адресом строки по построению — см. pickRows ниже.
 const PICK = {
   ru: [
     'Время работы над версией',
     'Время активной работы тандема',
-    'Строк добавлено',
-    'Слов прозы написано руками',
-    'Токенов израсходовано моделями всего',
-    'Если бы версию KAIF 2.2 писали живые люди',
+    'Строк написано в репозиторий',
+    'Слов прозы написано в репозиторий',
+    'Агент прочитал',
+    'Трудозатраты, если бы ту же работу делали живые люди',
     'Сколько работы людей приходится на один час работы тандема',
-    'Заплачено по подписке',
+    'Фактически заплачено по подписке',
     'Стоила бы вся работа',
   ],
   en: [
     'Time spent on the version',
     'Active working time of the human',
-    'Lines added',
-    'Words of prose written by hand',
-    'Tokens spent by the models in total',
-    'If living people had written KAIF 2.2',
+    'Lines written into the repository',
+    'Words of prose written into the repository',
+    'The agent read',
+    'Man-hours the same work would have taken living people',
     'How much human work falls on one hour',
-    'Paid by subscription',
+    'Actually paid by subscription',
     'What all the work would cost',
   ],
 };
 
 const TITLE = {
-  ru: { top: 'KAIF 2.2 — Yolden KAIF', sub: 'Во что обошлась версия', foot: 'Двое суток · 07–09.08.2026' },
-  en: { top: 'KAIF 2.2 — Yolden KAIF', sub: 'What this version cost', foot: 'Two days · 7–9 Aug 2026' },
+  ru: { top: 'KAIF 2.2 — Yolden KAIF', sub: 'Во что обошлась версия', foot: 'Трое суток · 07–09.08.2026' },
+  en: { top: 'KAIF 2.2 — Yolden KAIF', sub: 'What this version cost', foot: 'Three days · 7–9 Aug 2026' },
 };
 
 /** Разметка markdown прочь: карточку рисует CSS, а не звёздочки. */
