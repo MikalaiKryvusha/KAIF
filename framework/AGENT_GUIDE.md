@@ -411,9 +411,14 @@ so the agent doesn't improvise.>`
 
 **Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
 
-- **`git diff --stat` before every commit.** Anything in the diff you did not intend to change — STOP
-  and explain it first. This includes diffs *your tools* generated (lock files, manifests, formatters):
-  an agent trusts its tools even more blindly than itself — read those diffs line by line.
+- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you
+  did not intend to change — STOP and explain it first. This includes diffs *your tools* generated
+  (lock files, manifests, formatters): an agent trusts its tools even more blindly than itself — read
+  those diffs line by line. The rule is only executable if the set you inspect is the set that ships:
+  a commit tool that stages everything (`git add -A`) AFTER your inspection makes the two different
+  sets, and the field cost was two of the owner's files leaving under an agent's message minutes
+  after he dropped them into the tree. So the tool NAMES its set out loud before committing, and a
+  NEW file in the tree stops a sweeping commit rather than riding along — declare the set instead.
 - **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
   after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
   caught by the owner is a failure of the framework.

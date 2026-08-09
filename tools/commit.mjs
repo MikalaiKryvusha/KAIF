@@ -14,6 +14,77 @@ import { tmpdir } from 'node:os';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
+// ── Гейт неожиданного файла (bugs/79) ────────────────────────────────────────────────────────
+// Намерение вызывающего — это `--only`. Когда его нет, намерением считаются уже ОТСЛЕЖИВАЕМЫЕ
+// файлы (правки самой сессии; их отдельно стережёт revert-guard), а НОВЫЙ файл в дереве не
+// является намерением никогда: ровно так в origin уехали два чужих ассета, появившихся за минуту
+// до коммита, под чужим сообщением. Новый файл проходит, только если его НАЗВАЛИ — поимённо
+// (`--only <путь>`) или разом (`--with-new`).
+// Функция чистая, поэтому её и доказывает `--selftest`: гейт судится синтетическим вводом за
+// миллисекунды, без временного репозитория, без сети и без единого коммита (страж, который ни
+// разу не краснел, ничего не доказывает — BUG_FIXING_FRAMEWORK → Стражи).
+// Ось запускается ТОЛЬКО в режиме подметания (`git add -A`) — там, где живёт риск. При `--only`
+// набор объявлен целиком и стейджится поимённо, поэтому посторонний файл не может уехать по
+// определению, и предупреждение о нём было бы шумом; шумный гейт первым идёт под нож.
+const newFilesOutsideIntent = (porcelainZ, { only, withNew }) => {
+  if (withNew || only.length) return [];
+  return porcelainZ.split('\0').filter(Boolean)
+    .filter((e) => e.startsWith('?? '))
+    .map((e) => e.slice(3));
+};
+
+// Известные флаги: имя → берёт ли значение. Всё остальное в режиме `--msg-file` — ПОСТОРОННИЙ
+// аргумент, и он ОСТАНАВЛИВАЕТ прогон (bugs/79, вторая половина класса). Канон установщика
+// (bugs/33) требует этого дословно — «stray arguments REFUSE instead of being silently ignored»,
+// — а этот инструмент восемь путей `--only` проглотил молча: `--only` берёт ОДИН путь на флаг,
+// и вызов с девятью путями уехал с тремя файлами. Поймала печать набора; молчаливое проглатывание
+// закрывается здесь. В argv-режиме проверка не запускается: там позиционные слова И ЕСТЬ сообщение.
+const FLAGS = { '--msg-file': true, '--as': true, '--only': true, '--allow-revert': true,
+                '--with-new': false, '--selftest': false };
+const strayArgs = (argv) => {
+  const stray = [];
+  for (let i = 2; i < argv.length; i++) {
+    const a = argv[i];
+    if (!(a in FLAGS)) { stray.push(a); continue; }
+    if (FLAGS[a]) i++;                              // значение флага — не посторонний аргумент
+  }
+  return stray;
+};
+
+if (process.argv.includes('--selftest')) {
+  const fails = [];
+  const T = (name, cond) => { if (!cond) fails.push(name); };
+  const Z = (...e) => e.join('\0') + '\0';
+  const owner = 'assets/poster.png', mine = 'tools/x.mjs';
+  // Красный: в режиме подметания чужой новый файл называется — ровно полевой инцидент.
+  T('чужой новый файл назван, когда набор подметается',
+    newFilesOutsideIntent(Z(`?? ${owner}`, ` M ${mine}`), { only: [], withNew: false })[0] === owner);
+  T('названы ВСЕ новые, а не первый',
+    newFilesOutsideIntent(Z(`?? ${owner}`, '?? assets/b.webp'), { only: [], withNew: false }).length === 2);
+  // Молчание там, где риска нет (второй ответ мутанта, EXP-0059).
+  T('правки отслеживаемых файлов гейт не трогает',
+    newFilesOutsideIntent(Z(` M ${mine}`, 'A  tools/y.mjs'), { only: [], withNew: false }).length === 0);
+  T('объявленное намерение (--only) снимает ось — подметания нет',
+    newFilesOutsideIntent(Z(`?? ${owner}`), { only: [mine], withNew: false }).length === 0);
+  T('--with-new берёт новые разом',
+    newFilesOutsideIntent(Z(`?? ${owner}`), { only: [], withNew: true }).length === 0);
+  T('путь с пробелами и кириллицей не рвётся (порционный -z, без кавычек)',
+    newFilesOutsideIntent(Z('?? assets/КАИФ постер — копия.png'), { only: [], withNew: false })[0]
+      === 'assets/КАИФ постер — копия.png');
+  // Посторонний аргумент — и ровно тот, что увёл этот инструмент: пути после первого --only.
+  T('пути после первого --only названы посторонними',
+    strayArgs(['n', 'c', '--msg-file', 'm.txt', '--only', 'a.mjs', 'b.mjs', 'c.mjs']).join(',') === 'b.mjs,c.mjs');
+  T('корректный вызов посторонних не имеет',
+    strayArgs(['n', 'c', '--msg-file', 'm.txt', '--as', 'Model X', '--only', 'a.mjs', '--only', 'b.mjs']).length === 0);
+  T('опечатка флага не проглатывается',
+    strayArgs(['n', 'c', '--msg-file', 'm.txt', '--onlyy', 'a.mjs']).includes('--onlyy'));
+  for (const f of fails) console.error('✖ selftest commit-gate: ' + f);
+  if (fails.length) { console.error(`\n❌ commit --selftest: ${fails.length} провалов (bugs/79)`); process.exit(1); }
+  console.log('✅ commit --selftest: гейт неожиданного файла краснеет на чужом новом файле и молчит на ' +
+              'названном; посторонний аргумент назван поимённо (bugs/79)');
+  process.exit(0);
+}
+
 // Два режима входа. Страж класса «текст-через-CLI» (bugs/46, AGENT_GUIDE → Гигиена, симптом 5):
 // не-ASCII/слэши в argv коверкаются шелл-слоями ДО программы (git-bash/MSYS2 конвертирует
 // «/»→«\», «:»→«;», «/Word»→«C:\Program Files\Git\Word»; PowerShell/cmd портят кодировкой) —
@@ -24,6 +95,13 @@ if (fileIdx >= 0) {
   const p = process.argv[fileIdx + 1];
   if (!p) {
     console.error('usage: node tools/commit.mjs --msg-file <path>');
+    process.exit(1);
+  }
+  const stray = strayArgs(process.argv);
+  if (stray.length) {
+    console.error(`✋ посторонние аргументы (${stray.length}): ${stray.join(' ')}`);
+    console.error('   Молча проглоченный аргумент — самый дорогой вид прогона: он выглядит удавшимся.');
+    console.error('   `--only` берёт ОДИН путь на флаг — повтори флаг: --only <путь> --only <путь> …');
     process.exit(1);
   }
   msg = readFileSync(p, 'utf8').replace(/^\uFEFF/, '').trim(); // BOM-терпимо (EXP-0007)
@@ -62,6 +140,28 @@ if (!msg) {
   }
 }
 
+// ПРЕПОЛЁТ 1b: гейт неожиданного файла (bugs/79) — новый файл, которого нет в намерении,
+// останавливает коммит и НАЗЫВАЕТ СЕБЯ. Стоит ДО первого побочного эффекта: отказ после бампа
+// version.json оставил бы в дереве поднятый номер сборки без коммита — тот же класс «проверка и
+// действие смотрят на разные множества», ради которого гейт и написан. Ошибка несёт готовый верный
+// ход (EXP-0008): в этот момент ходов ровно три, и все три законны.
+const only = [];
+for (let i = 0; i < process.argv.length - 1; i++) {
+  if (process.argv[i] === '--only') only.push(process.argv[i + 1]);
+}
+{
+  const unexpected = newFilesOutsideIntent(
+    execFileSync('git', ['status', '--porcelain', '-z', '--untracked-files=all'], { cwd: ROOT, encoding: 'utf8' }),
+    { only, withNew: process.argv.includes('--with-new') });
+  if (unexpected.length) {
+    console.error(`✋ в дереве ${unexpected.length} новых файл(ов) вне намерения коммита:`);
+    for (const p of unexpected) console.error('   ?? ' + p);
+    console.error('   Молчаливый `git add -A` уводил такие файлы в origin под чужим сообщением (bugs/79).');
+    console.error('   Верные ходы: --only <путь> (каждый своим флагом) · --with-new (взять все) · оставить в дереве.');
+    process.exit(1);
+  }
+}
+
 // Bump the internal build counter, preserving every other field of version.json.
 // (The version shown anywhere is major.minor only — `build` is an internal counter.)
 const vf = join(ROOT, 'version.json');
@@ -91,14 +191,19 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
 //   • без `--only` набор берётся весь (прежнее поведение), но ПЕЧАТАЕТСЯ построчно, всегда:
 //     агент не видит того, о чём инструмент промолчал.
 {
-  const only = [];
-  for (let i = 0; i < process.argv.length - 1; i++) {
-    if (process.argv[i] === '--only') only.push(process.argv[i + 1]);
-  }
   if (only.length) {
     // version.json приписывается всегда: его номер сборки поднял САМ инструмент шагом выше —
     // забыть его в списке значило бы оставить в дереве правку без автора.
-    execFileSync('git', ['add', '--', ...only, 'version.json'], { cwd: ROOT, stdio: 'inherit' });
+    try {
+      execFileSync('git', ['add', '--', ...only, 'version.json'], { cwd: ROOT, stdio: 'inherit' });
+    } catch {
+      // Несуществующий путь в намерении — обычная опечатка или уже переименованный файл (после
+      // `git mv` старого имени на диске нет, а переименование уже в индексе). Стек-трейс Node
+      // здесь ничего не сообщает; git выше уже назвал конкретный pathspec.
+      console.error('✋ `git add` отверг один из путей `--only` (см. строку git выше).');
+      console.error('   Частая причина: файл уже переименован через `git mv` — называй только НОВОЕ имя.');
+      process.exit(1);
+    }
   } else {
     run('git add -A');
   }
