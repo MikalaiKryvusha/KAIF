@@ -85,13 +85,52 @@ function liveNumbers() {
   const suitesBlock = suite.match(/const SUITES = \[([\s\S]*?)\];/);
   const suites = suitesBlock ? (suitesBlock[1].match(/'s\d+/g) || []).length : 0;
 
-  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites, adapters, langs, contours, principles };
+  // Опциональные tool-модули поставки: сверяются по ИМЕНАМ, а не по счёту (bugs/55 F1 — счёт
+  // ловит пропажу, но не переименование; а перечисления в картах именно перечисляют).
+  const toolModules = readdirSync(join(fw, 'tools'))
+    .filter((n) => n.endsWith('.mjs')).map((n) => n.replace(/\.mjs$/, '')).sort();
+
+  // Классы стража витрины — ЦИТАТА его собственного самоописания (`--classes`), а не рукопись.
+  let showcaseClasses = 0;
+  try {
+    const out = execFileSync(process.execPath, [join(ROOT, 'tools', 'showcase-lint.mjs'), '--classes'],
+      { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    showcaseClasses = JSON.parse(out).lineClasses;
+  } catch { /* инструмента нет — ось честно молчит, а не зеленеет выдумкой */ }
+
+  return { docs, readmes, skills, skillNames, unpackers, embedded, blocks, modules, suites,
+           adapters, langs, contours, principles, toolModules, showcaseClasses };
 }
 
 // --- зеркала ----------------------------------------------------------------
 // Каждое зеркало: имя · файл · регэксп по НОРМАЛИЗОВАННОМУ тексту (переносы строк схлопнуты —
 // проза врапается, и врап не должен ослеплять стража) · какие живые числа обязаны совпасть.
 const flat = (s) => s.replace(/\r?\n>?\s*/g, ' ').replace(/\s+/g, ' ');
+
+// --- ось «раскладка репозитория» (bugs/68) -----------------------------------
+// Класс «протухший счётчик прозы» был объявлен убитым формой в `bugs/09` со словами «Found: 0
+// других вхождений класса» — и вернулся НА ТОМ ЖЕ адресе: дерево репозитория в `AGENT_GUIDE.md`
+// простояло на «the 28 skill templates» при 35 и на «the six directory-README templates» при
+// семи. Причина промаха названа в EXP-0070: инвентарь зеркал собирали грепом по ЦИФРЕ, а те же
+// понятия записаны другой формулировкой. Здесь зеркала собраны грепом по ПОНЯТИЮ.
+// Пропись в этих строках намеренно переведена в цифры — по прецеденту §8.2 (зеркало, которое
+// трудно проверить, не проверяют вовсе).
+const LAYOUT_MIRRORS = [
+  { name: 'AGENT_GUIDE — дерево: шаблоны навыков', file: 'AGENT_GUIDE.md',
+    re: /the (\d+) skill templates/, keys: ['skills'] },
+  { name: 'AGENT_GUIDE — дерево: README директорий', file: 'AGENT_GUIDE.md',
+    re: /the (\d+) directory-README templates/, keys: ['readmes'] },
+  { name: 'AGENT_GUIDE — дерево: своды полигона', file: 'AGENT_GUIDE.md',
+    re: /sandbox\/s01–s(\d+)/, keys: ['suites'] },
+  { name: 'внешняя карта — дерево: шаблоны README', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
+    re: /(\d+) шаблон\S* README директорий/, keys: ['readmes'] },
+  { name: 'внешняя карта — дерево: своды полигона', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
+    re: /sandbox\/s01…s(\d+)/, keys: ['suites'] },
+  { name: 'внешняя карта — порядковый номер пояснительной записки', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
+    re: /\((\d+)-й ключевой документ/, keys: ['docs'] },
+  { name: 'AGENT_GUIDE — реестр стражей: классы showcase-lint', file: 'AGENT_GUIDE.md',
+    re: /Страж ВИТРИНЫ[^|]*?(\d+) классов волны/, keys: ['showcaseClasses'] },
+];
 
 const MIRRORS = [
   { name: 'AGENT_GUIDE — строка счётчиков', file: 'AGENT_GUIDE.md',
@@ -269,6 +308,38 @@ function checkLanguagePacks(live, findings) {
   return langs.length;
 }
 
+/**
+ * Ось раскладки (bugs/68): числа в деревьях канон-карт + перечисления tool-модулей ПО ИМЕНАМ.
+ * Перечисление проверяется именами, а не длиной: карта, потерявшая один модуль из трёх, и карта,
+ * назвавшая три чужих, для счётчика одинаковы.
+ */
+function checkLayoutAxis(live, findings) {
+  for (const m of LAYOUT_MIRRORS) {
+    const path = join(ROOT, m.file);
+    if (!existsSync(path)) { findings.push(`${m.name}: файла нет — ${m.file}`); continue; }
+    const hit = flat(readFileSync(path, 'utf8')).match(m.re);
+    if (!hit) { findings.push(`${m.name}: строка НЕ НАЙДЕНА в ${m.file} (переформулирована? — страж ослеп, почини паттерн)`); continue; }
+    m.keys.forEach((k, i) => {
+      const found = Number(hit[i + 1]);
+      if (found !== live[k]) findings.push(`${m.name} (${m.file}): ${k} — ожидалось ${live[k]}, найдено ${found}`);
+    });
+  }
+  // Перечисления опциональных модулей поставки — по ИМЕНАМ.
+  for (const file of ['AGENT_GUIDE.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md']) {
+    const path = join(ROOT, file);
+    if (!existsSync(path)) continue;
+    const text = readFileSync(path, 'utf8');
+    // Имя ищется ЦЕЛЫМ токеном, а не вхождением: `kaif-requirements-linter` содержит
+    // `kaif-requirements-lint` подстрокой, и проверка `includes` зеленела бы на переименовании —
+    // ровно тот «короткий паттерн», от которого предостерегает `BUG_FIXING_FRAMEWORK.md`.
+    // Поймано собственной мутацией селфтеста, а не рассуждением.
+    const named = (n) => new RegExp(`(?<![\\w-])${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`).test(text);
+    const missing = live.toolModules.filter((n) => !named(n));
+    if (missing.length) findings.push(`перечисление tool-модулей (${file}): не названы — ${missing.join(', ')}`);
+  }
+  return LAYOUT_MIRRORS.length + 3;
+}
+
 function check() {
   const live = liveNumbers();
   const findings = [];
@@ -283,6 +354,7 @@ function check() {
     });
   }
   checkSkillAxis(live, findings);
+  const layoutMirrors = checkLayoutAxis(live, findings);
   const langs = checkLanguagePacks(live, findings);
   console.log(`counters: ${live.embedded} embedded (${live.docs} docs + ${live.readmes} readmes + ` +
               `${live.skills} skills + ${live.unpackers} tools) · bundle ${live.blocks} blocks · ` +
@@ -294,7 +366,7 @@ function check() {
   }
   // Зеркала считаются, а не пишутся прозой: языковые пакеты приходят из каталога, поэтому
   // заморозка или оживление пакета (решения №56/№57) сдвинет число само.
-  const mirrorCount = MIRRORS.length + SKILL_MIRRORS.length + 1 /* строки Таблицы 3 */ + WORD_FILES.length + langs;
+  const mirrorCount = MIRRORS.length + SKILL_MIRRORS.length + 1 /* строки Таблицы 3 */ + WORD_FILES.length + langs + layoutMirrors;
   console.log(`✅ counters OK — ${mirrorCount} зеркал сверены с живыми числами (в т.ч. ось навыков ПОИМЁННО: alt-тексты, SVG, пропись, строки Таблицы 3 обеих половин, ключи ${langs} языковых пакетов)`);
   return 0;
 }
@@ -315,8 +387,13 @@ function selftest() {
   // селфтест валился на `ENOENT` внутри первой же проверки «чистая копия — зелёный», то есть
   // страж перестал уметь доказывать свой красный, и заметил это не он сам, а прогон соседней
   // задачи. Отсюда правило: завёл живой источник — впиши файл СЮДА тем же движением.
-  const ROOT_FILES = ['AGENT_GUIDE.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PHILOSOPHY.md'];
+  // Ось раскладки (bugs/68) добавила внешнюю карту — и правило выше сработало НЕМЕДЛЕННО:
+  // селфтест покраснел «чистая копия — зелёный» ровно на том, что нового файла в песочнице нет.
+  const ROOT_FILES = ['AGENT_GUIDE.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PHILOSOPHY.md',
+                      'PROJECT_STRUCTURE_EXTERNAL_MAP.md'];
   for (const f of ROOT_FILES) cpSync(join(ROOT, f), join(SBX, f));
+  // Той же оси нужен САМ страж витрины: его `--classes` — живой источник числа классов.
+  cpSync(join(ROOT, 'tools', 'showcase-lint.mjs'), join(SBX, 'tools', 'showcase-lint.mjs'));
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
   const live = liveNumbers();
 
@@ -389,6 +466,13 @@ function selftest() {
   //      реестр сверял голый счёт ключей, и переименование навыка проходило мимо всех девяти.
   const hitPack = mutate(PACK_REL, '"what-next"', '"whats-next"');
   const brokenPack = run(); restore();
+  // (11) ось РАСКЛАДКИ (bugs/68) — счётчик в ДЕРЕВЕ канон-карты. Раньше эта поверхность не
+  //      стереглась вовсе: «the 28 skill templates» простояло при 35, а страж был зелёным.
+  const hitTree = mutate('AGENT_GUIDE.md', 'the 35 skill templates', 'the 34 skill templates');
+  const brokenTree = run(); restore();
+  // (12) ось РАСКЛАДКИ — перечисление tool-модулей ПО ИМЕНАМ: счёт остаётся тем же, имя чужое.
+  const hitModule = mutate('AGENT_GUIDE.md', 'kaif-requirements-lint', 'kaif-requirements-linter');
+  const brokenModule = run(); restore();
 
   const results = [
     [clean === 0, 'чистая копия — зелёный'],
@@ -401,6 +485,8 @@ function selftest() {
     [hitStatus && brokenStatus === 1, 'испорченное число модулей в STATUS — КРАСНЫЙ'],
     [hitRename && brokenRename === 1, 'ПЕРЕИМЕНОВАННЫЙ навык в Таблице 3 (счёт сходится) — КРАСНЫЙ'],
     [hitPack && brokenPack === 1, 'ПЕРЕИМЕНОВАННЫЙ ключ языкового пакета (счёт сходится) — КРАСНЫЙ'],
+    [hitTree && brokenTree === 1, 'протухший счётчик в ДЕРЕВЕ канон-карты (ось раскладки) — КРАСНЫЙ'],
+    [hitModule && brokenModule === 1, 'ПЕРЕИМЕНОВАННЫЙ tool-модуль в перечислении карты — КРАСНЫЙ'],
   ];
   for (const [pass, name] of results) console.log(`${pass ? '✅' : '❌'} selftest: ${name}`);
   const ok = results.every(([p]) => p);

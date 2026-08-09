@@ -30,12 +30,12 @@ KAIF/
 │   ├── STATUS.md PROJECT_HISTORY.md EXPERIENCE.md GOAL.md MASTER_PLAN.md           # шаблоны состояния/летописи/опыта/видения/плана
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md PROJECT_ARCHITECTURE_INTERNAL_MAP.md      # шаблоны карт
 │   ├── KAIF_FRAMEWORK.md                  # шаблон пост-инжекционного документа
-│   ├── KAIF_REFERENCE.md                  # пояснительная записка (12-й ключевой документ; dest → .kaif/)
-│   ├── readmes/<dir>.md                   # 6 шаблонов README директорий
+│   ├── KAIF_REFERENCE.md                  # пояснительная записка (14-й ключевой документ; dest → .kaif/)
+│   ├── readmes/<dir>.md                   # 7 шаблонов README директорий
 │   ├── skills/<name>/SKILL.md             # шаблоны навыков (число печатает сборка; generic, плейсхолдеры команд)
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
-│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint → .kaif/tools/)
+│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint → .kaif/tools/)
 │   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
 │   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
@@ -57,7 +57,7 @@ KAIF/
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
 │   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s14
-│   ├── sandbox/s01…s09*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3)
+│   ├── sandbox/s01…s14*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf
 │   ├── commit.mjs                         # bump build, commit, push
