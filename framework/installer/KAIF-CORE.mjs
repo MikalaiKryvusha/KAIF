@@ -2048,9 +2048,38 @@ function cmdSphere() {
 // (identity belongs to the owner: <PROJECT_NAME> used to be seeded from package.json/folder —
 // a lowercase tech id — and landed in H1 headings; "# project C" while the project's canon said
 // project C). Heals the deploy manifest's frozen fill map too, or the tech id tiles forever.
+// ── ONE door for every piece of HUMAN text on the command line (bugs/75) ─────────────────────
+// The canon rule binds the ARGUMENT, not the document: "TEXT TRAVELS THROUGH FILES, NEVER THROUGH
+// COMMAND-LINE ARGUMENTS." It had been applied to ONE command (`checkpoint --verdict`) and never
+// became a property of the CLASS — so `project-name`, born later, arrived uncovered, and its own
+// help text says the value is the OWNER's ("confirm it with the owner, never guess"). A mangled
+// name here is not merely lost, it is WRITTEN DOWN: into the deploy marker, into the
+// <PROJECT_NAME>/<SHORT_NAME> fill map and into every document seeded from it.
+//
+// Every human-text input goes through this door, so the NEXT such command is covered on the day
+// it is written instead of on the day someone remembers the rule.
+//   · file variant wins and is BOM-tolerant, EOL-normalized — it honours the canon;
+//   · inline variant WARNS on non-ASCII, never refuses: ASCII one-liners are legitimate, and
+//     refusing would break field flows that already work on shells where argv survives;
+//   · both at once is an error — two sources of one truth is the drift class itself.
+function readOwnerText(inline, filePath, what) {
+  if (filePath && inline) die(`pass either --${what}-file or the inline value, not both — two sources of one truth drift apart`);
+  if (filePath) {
+    if (!existsSync(filePath)) die(`${what} file not found: ${filePath}`);
+    const full = normEol(readFileSync(filePath, 'utf8').replace(/^﻿/, '')).trim();
+    if (!full) die(`${what} file is empty: ${filePath}`);
+    return { full, firstLine: full.split('\n').find((l) => l.trim()).trim(), fromFile: true };
+  }
+  if (inline && /[^\x20-\x7E]/.test(inline)) {
+    log(`⚠ non-ASCII text in the ${what} argument travels through the shell and can be silently mangled on some profiles (PowerShell 5.1, MSYS2 argv conversion) — prefer --${what}-file: text travels through files`);
+  }
+  return { full: inline || null, firstLine: inline || null, fromFile: false };
+}
+
 function cmdProjectName() {
-  const name = args[1];
-  if (!name || name.startsWith('--')) die('usage: kaif-core project-name "<Canonical Name>"   (the OWNER\'s form, e.g. "project C" — confirm it with the owner, never guess)');
+  const { full: name } = readOwnerText(
+    args[1] && !args[1].startsWith('--') ? args[1] : null, val('--name-file'), 'name');
+  if (!name) die('usage: kaif-core project-name "<Canonical Name>" | --name-file <path>   (the OWNER\'s form, e.g. "project C" — confirm it with the owner, never guess; non-ASCII belongs in a file)');
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
   const j = readJson(KAIF_JSON);
   j.projectName = name;
@@ -2157,25 +2186,10 @@ function cmdCheckpoint() {
   }
   let verdictLine = null;
   if (id === 'judge') {
-    const vf = val('--verdict-file');
-    const vs = val('--verdict');
-    if (vf && vs) die('pass either --verdict-file or --verdict, not both');
-    let fullText = null;
-    let v = vs;
-    if (vf) {
-      // The file path honors the canon the CLI argument breaks (bug 39): a multiline verdict
-      // in the owner's language survives every shell — BOM-tolerant, EOL-normalized.
-      if (!existsSync(vf)) die(`verdict file not found: ${vf}`);
-      fullText = normEol(readFileSync(vf, 'utf8').replace(/^﻿/, '')).trim();
-      if (!fullText) die(`verdict file is empty: ${vf}`);
-      v = fullText.split('\n').find((l) => l.trim()).trim();
-    }
+    // Same door as project-name (bugs/75): the warning and the file variant belong to the CLASS
+    // of human text, not to one command that happened to be written first.
+    const { full: fullText, firstLine: v } = readOwnerText(val('--verdict'), val('--verdict-file'), 'verdict');
     if (!v) die('checkpoint judge requires --verdict-file <path> (multiline, any language — text travels through files, never through command-line arguments) or --verdict "<ascii one-liner>" — an unevidenced tick is exactly the fraud /fable-judge hunts');
-    // Non-ASCII через argv survives on lucky shells and is silently mangled on others (bug 39,
-    // PowerShell 5.1 profile) — warn, do not refuse: RU one-liners printed by 2.1 field tasks
-    // stay workable where they already worked.
-    if (vs && /[^\x20-\x7E]/.test(vs))
-      log('⚠ non-ASCII text in --verdict travels through the shell and can be silently mangled on some profiles (PowerShell 5.1) — prefer --verdict-file: text travels through files');
     verdictLine = `${tag}: judge verdict: ${v}`;
     // Decision #42: the verdict rides the COMMITTABLE receipt — the task file is transient.
     if (okOnDisk(LAST_UPDATE)) {
@@ -2342,7 +2356,7 @@ const COMMANDS = {
   'verify-final':  { fn: cmdVerifyFinal,  mutating: true, desc: 'final gates of an install; self-cleans on green', flags: {}, pos: 0 },
   checkpoint:      { fn: cmdCheckpoint,   mutating: true, desc: 'record a finished task item (recheck/placeholders/project-name EXECUTE their gates)', flags: { '--verdict': true, '--verdict-file': true }, pos: 1 },
   sphere:          { fn: cmdSphere,       mutating: true, desc: "record the project's sphere in the deploy marker", flags: {}, pos: 1 },
-  'project-name':  { fn: cmdProjectName,  mutating: true, desc: "record the project's CANONICAL name (identity is the owner's; heals the marker and the fill map)", flags: {}, pos: 1 },
+  'project-name':  { fn: cmdProjectName,  mutating: true, desc: "record the project's CANONICAL name (identity is the owner's; heals the marker and the fill map)", flags: { '--name-file': true }, pos: 1 },
   sync:            { fn: cmdSync,         mutating: true, desc: 're-sync per-system skill mirrors from .claude/skills/', flags: {}, pos: 0 },
   'adopt-current': { fn: cmdAdoptCurrent, mutating: true, desc: 'rebuild the snapshot after a manual migration', flags: {}, pos: 0 },
 };
