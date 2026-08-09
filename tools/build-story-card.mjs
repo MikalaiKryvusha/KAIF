@@ -53,9 +53,9 @@ const SCALE = 2;                       // итоговый PNG — 2160×3840
 
 // Кегли (в CSS-пикселях кадра шириной 1080). Это НИЖНЯЯ граница читаемости с телефона, а не
 // пожелание: именно её нарушала первая версия, подгонявшая шрифт под число строк.
-const CELL = 32;                       // текст ячейки
-const VALUE = 36;                      // значение — акцент строки
-const COLHEAD = 26;                    // шапка колонок
+const CELL = 28;                       // текст ячейки
+const VALUE = 30;                      // значение — акцент строки
+const COLHEAD = 24;                    // шапка колонок
 
 // Палитра тёмной темы GitHub — та же среда, в которой владелец читает витрину.
 const C = {
@@ -76,7 +76,7 @@ const TITLE = {
         cols: ['What was measured', 'Value', 'What it equals'], foot: 'Three days · 7–9 Aug 2026' },
 };
 
-const NB = ' ';
+const NB = String.fromCharCode(160);   // неразрывный пробел — КОДОМ, а не символом (EXP-0082)
 const SHORT_WORD = /(^|[\s(«"])([А-Яа-яЁёA-Za-z]{1,3})\s+/g;   // короткое слово не остаётся в конце строки
 
 /** Типографика кадра: картинку читатель не поправит, поэтому правила жёстче, чем в тексте. */
@@ -108,15 +108,21 @@ function readTable(lang) {
     if (!line.startsWith('|')) break;                       // таблица кончилась
     const cells = line.split('|').slice(1, -1);
     if (cells.length < 3) continue;
-    rows.push({ label: typo(cells[0]), value: typo(cells[1]), equals: typo(cells[2]) });
+    rows.push({ label: typo(cells[0]), value: typo(cells[1]).replace(/‑/g, '-').replace(/ /g, ' '), equals: typo(cells[2]) });
   }
   if (!rows.length) throw new Error(`Таблица 6 (${lang}) пуста — проверь разметку витрины`);
   return rows;
 }
 
-/** HTML одного кадра: заголовок, таблица из трёх колонок, подпись с номером страницы. */
-function html(lang, rows, page, pages) {
+/**
+ * HTML одного кадра: мелкий строгий заголовок и таблица из трёх колонок. Множитель `k` растит
+ * кегли под готовую раскладку — им пользуется подбор в `paginate`.
+ * Подписи внизу нет по слову владельца: «трое суток и ссылку на мой гитхаб - убрать».
+ */
+function html(lang, rows, page, pages, k = 1) {
   const t = TITLE[lang];
+  const cell = Math.round(CELL * k), value = Math.round(VALUE * k), colhead = Math.round(COLHEAD * k);
+  const pad = Math.round(14 * k), padX = Math.round(16 * k);
   const body = rows.map((r, i) => `
     <tr${i % 2 ? ' class="alt"' : ''}>
       <td class="label">${r.label}</td>
@@ -132,31 +138,25 @@ function html(lang, rows, page, pages) {
     display:flex; flex-direction:column; padding:52px 40px;
     hyphens:none; overflow-wrap:normal; word-break:normal;
   }
-  .brand { font-size:34px; font-weight:700; letter-spacing:.5px; color:${C.pink}; }
-  .sub   { font-size:52px; font-weight:800; margin-top:10px; line-height:1.12; }
-  .rule  { height:5px; width:130px; background:${C.blue}; margin:24px 0 28px; border-radius:3px; }
-  table  { width:100%; table-layout:fixed; border-collapse:collapse; border:2px solid ${C.line}; border-radius:8px; }
-  th     { font-size:${COLHEAD}px; font-weight:700; color:${C.dim}; text-align:left;
-           background:${C.head}; padding:16px 18px; border:2px solid ${C.line};
-           text-transform:none; white-space:nowrap; }
-  td     { font-size:${CELL}px; line-height:1.28; padding:14px 16px; border:2px solid ${C.line};
+  .wrap  { flex:1; display:flex; }
+  .sub   { font-size:28px; font-weight:600; color:${C.dim}; letter-spacing:.2px; margin-bottom:24px; }
+  table  { width:100%; flex:1; table-layout:fixed; border-collapse:collapse; border:2px solid ${C.line}; }
+  th     { font-size:${colhead}px; font-weight:700; color:${C.dim}; text-align:left;
+           background:${C.head}; padding:${pad}px ${padX}px; border:2px solid ${C.line};
+           white-space:nowrap; }
+  td     { font-size:${cell}px; line-height:1.28; padding:${pad}px ${padX}px; border:2px solid ${C.line};
            vertical-align:top; }
   tr.alt td { background:${C.zebra}; }
-  .label  { color:${C.text}; width:34%; }
-  .value  { color:#FFFFFF; font-weight:800; font-size:${VALUE}px; width:30%; }
-  .equals { color:${C.dim}; width:36%; }
-  .foot  { display:flex; justify-content:space-between; align-items:baseline; gap:16px;
-           font-size:30px; color:${C.dim}; margin-top:auto; padding-top:26px; }
-  .foot .url { color:${C.blue}; font-weight:600; white-space:nowrap; }
+  .label  { color:${C.text}; width:42%; }
+  .value  { color:#FFFFFF; font-weight:800; font-size:${value}px;  }
+  .equals { color:${C.text}; width:45%; }
   </style></head><body>
-    <div class="brand">${t.top}</div>
     <div class="sub">${t.sub}${pages > 1 ? ` · ${page}/${pages}` : ''}</div>
-    <div class="rule"></div>
-    <table>
+    <div class="wrap"><table>
+      <colgroup><col style="width:40%"><col style="width:16%"><col style="width:44%"></colgroup>
       <thead><tr><th>${t.cols[0]}</th><th>${t.cols[1]}</th><th>${t.cols[2]}</th></tr></thead>
       <tbody>${body}</tbody>
-    </table>
-    <div class="foot"><span>${t.foot}</span><span class="url">github.com/MikalaiKryvusha/KAIF</span></div>
+    </table></div>
   </body></html>`;
 }
 
@@ -166,6 +166,17 @@ function html(lang, rows, page, pages) {
  * ещё помещается в 1920 px.
  */
 async function paginate(page, lang, rows) {
+  // ОДИН КАДР — ПРИОРИТЕТ. Слово владельца: «уменьшаем шрифты, стараемся впихнуть в один кадр».
+  // Сначала ищется самый крупный кегль, при котором ВСЯ таблица помещается в одну картинку;
+  // деление на страницы остаётся запасным путём — на случай, когда таблица вырастет настолько,
+  // что единственный кадр станет нечитаемым (порог назван явно: ячейка мельче 16 px).
+  const MIN_CELL = 16;
+  for (let k = 1; k * CELL >= MIN_CELL; k = +(k - 0.02).toFixed(2)) {
+    await page.setContent(html(lang, rows, 1, 1, k), { waitUntil: 'load' });
+    const h = await page.evaluate(() => document.body.scrollHeight);
+    if (h <= HEIGHT) return { chunks: [rows], k };
+  }
+
   const pages = [];
   let rest = rows.slice();
   while (rest.length) {
@@ -180,7 +191,36 @@ async function paginate(page, lang, rows) {
     pages.push(rest.slice(0, take));
     rest = rest.slice(take);
   }
-  return pages;
+
+  // РОВНЫЕ КАДРЫ. Жадный набор даёт последнюю страницу-огрызок (8 + 7 + 3), и в ленте она читается
+  // как обрыв. Число страниц уже известно и от перераспределения не растёт, поэтому строки
+  // раскладываются поровну — а каждый получившийся кадр всё равно проверяется замером.
+  const per = Math.ceil(rows.length / pages.length);
+  const even = [];
+  for (let i = 0; i < rows.length; i += per) even.push(rows.slice(i, i + per));
+  for (const chunk of even) {
+    await page.setContent(html(lang, chunk, 1, even.length), { waitUntil: 'load' });
+    const h = await page.evaluate(() => document.body.scrollHeight);
+    if (h > HEIGHT) return { chunks: pages, k: 1 };   // ровная раскладка не влезла — оставляем жадную
+  }
+
+  // КЕГЛЬ РАСТЁТ ПОД ГОТОВУЮ РАСКЛАДКУ. После выравнивания в кадре остаётся воздух — а пустой
+  // низ на витрине читается как недоделка, и текст при этом мельче, чем мог бы быть. Число
+  // кадров уже зафиксировано, поэтому шрифт увеличивается, пока САМЫЙ ПЛОТНЫЙ кадр ещё
+  // помещается. Проверяются все кадры, а не первый: строки разной длины, и «влезло у одного»
+  // ничего не говорит про остальные.
+  let k = 1;
+  for (let step = 1.05; step <= 1.75; step += 0.05) {
+    let fits = true;
+    for (const chunk of even) {
+      await page.setContent(html(lang, chunk, 1, even.length, step), { waitUntil: 'load' });
+      const h = await page.evaluate(() => document.body.scrollHeight);
+      if (h > HEIGHT) { fits = false; break; }
+    }
+    if (!fits) break;
+    k = +step.toFixed(2);
+  }
+  return { chunks: even, k };
 }
 
 async function render(lang) {
@@ -197,16 +237,16 @@ async function render(lang) {
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: WIDTH, height: HEIGHT, deviceScaleFactor: SCALE });
-    const chunks = await paginate(page, lang, rows);
+    const { chunks, k } = await paginate(page, lang, rows);
 
     for (let i = 0; i < chunks.length; i++) {
       const out = join(OUT_DIR, `story-2.2-${lang}-${i + 1}.png`);
-      await page.setContent(html(lang, chunks[i], i + 1, chunks.length), { waitUntil: 'load' });
+      await page.setContent(html(lang, chunks[i], i + 1, chunks.length, k), { waitUntil: 'load' });
       const h = await page.evaluate(() => document.body.scrollHeight);
       if (h > HEIGHT) throw new Error(`кадр ${i + 1} не влез: ${h}px против ${HEIGHT}px`);
       await page.screenshot({ path: out, type: 'png', clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT } });
       const kb = Math.round(statSync(out).size / 1024);
-      console.log(`✅ ${out} — ${WIDTH * SCALE}×${HEIGHT * SCALE} PNG, ${kb} КБ, строк ${chunks[i].length}`);
+      console.log(`✅ ${out} — ${WIDTH * SCALE}×${HEIGHT * SCALE} PNG, ${kb} КБ, строк ${chunks[i].length}, кегль ${Math.round(CELL * k)}px`);
       made.push(out);
     }
   } finally {
@@ -218,7 +258,9 @@ async function render(lang) {
 
 const argv = process.argv.slice(2);
 const langIdx = argv.indexOf('--lang');
-const langs = langIdx >= 0 ? [argv[langIdx + 1]] : ['ru', 'en'];
+// По слову владельца (2026-08-09) рендерится ТОЛЬКО русская половина: «en не рендерим,
+// только RU». Английскую можно собрать явно — `--lang en`.
+const langs = langIdx >= 0 ? [argv[langIdx + 1]] : ['ru'];
 
 const made = [];
 for (const lang of langs) made.push(...await render(lang));
