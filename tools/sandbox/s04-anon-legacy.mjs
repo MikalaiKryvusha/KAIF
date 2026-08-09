@@ -107,8 +107,38 @@ writeFileSync(join(S13, 'reports', 'KAIF_UPDATES', `S13_KAIF_${v13}_INSTALL_REPO
 // обязан находиться, чужой класс — нет (иначе наблюдение клеилось бы к чужому тикету).
 // Анонимный профиль: дедуп ТОЛЬКО локальный (режим 8.2) — фикстура не тянется к origin.
 mkdirSync(join(S13, 'bugs', 'KAIF'), { recursive: true });
+
+// ── Ловушка меряет ПОСТАВЛЕННУЮ процедуру, а не саму себя (bugs/65 №3) ─────────────────────
+// БЫЛО: `dedupScan` объявлялся здесь же замыканием и читал каталог, созданный этим же тестом
+// тремя строками выше. Продукт в проверку не входил вовсе: вырезание ВСЕГО KAIF-ветвления
+// навыка /report-bug из бандла (4503 символа — дедуп, fingerprint, шаблоны A/B, гейт
+// отправителя) оставляло оба ассерта зелёными. Классический «страж мерит прокси, а не свойство».
+// СТАЛО: контракт читается из РАЗВЁРНУТОГО навыка, а формат отпечатка ВЫВОДИТСЯ из него же —
+// поэтому потеря контракта в поставке красит ловушку, а смена формата ведёт её за собой.
+const deployedSkill = join(S13, '.claude', 'skills', 'report-bug', 'SKILL.md');
+ok(existsSync(deployedSkill), 'S13-M5 навык /report-bug развёрнут установкой (носитель процедуры дедупа)');
+const skillText = existsSync(deployedSkill) ? readFileSync(deployedSkill, 'utf8') : '';
+
+// Полные уникальные строки контракта — короткое вхождение зеленело бы от случайного совпадения
+// (`BUG_FIXING_FRAMEWORK.md` → Стражи).
+const DEDUP_RULE = 'A match on surface + symptom-class (the version is NOT part of the key) = the SAME signal';
+const FP_TEMPLATE = 'kaif-fp: <surface> :: <symptom-class> :: v<major.minor>';
+ok(skillText.includes(DEDUP_RULE),
+   'S13-M5 поставка НЕСЁТ правило дедупа (совпадение surface+class = тот же сигнал, версия не в ключе)');
+ok(skillText.includes(FP_TEMPLATE),
+   'S13-M5 поставка НЕСЁТ формат отпечатка kaif-fp');
+
+// Разделитель полей ВЫВОДИТСЯ из шаблона поставки, а не зашивается в тест.
+const sepMatch = FP_TEMPLATE.match(/<surface>(.*?)<symptom-class>/);
+const SEP = skillText.includes(FP_TEMPLATE) && sepMatch ? sepMatch[1] : ' :: ';
+const FP_PREFIX = FP_TEMPLATE.slice(0, FP_TEMPLATE.indexOf('<surface>'));   // «kaif-fp: »
+const fpLine = (surface, cls, ver) => `${FP_PREFIX}${surface}${SEP}${cls}${SEP}v${ver}`;
+
 writeFileSync(join(S13, 'bugs', 'KAIF', '01_stale_claims_noise.md'),
-  '# KAIF bug: stale-claims scanner noise on dated journal lines\n\nkaif-fp: installer/KAIF-CORE.mjs::stale-claims :: stale-claims-noise :: v2.1\n');
+  '# KAIF bug: stale-claims scanner noise on dated journal lines\n\n' +
+  fpLine('installer/KAIF-CORE.mjs::stale-claims', 'stale-claims-noise', '2.1') + '\n');
+
+// Сама процедура: та же, что описана в поставке — grep по surface, затем по symptom-class.
 const dedupScan = (surface, cls) => readdirSync(join(S13, 'bugs', 'KAIF'))
   .filter((f) => f.endsWith('.md'))
   .filter((f) => { const t = readFileSync(join(S13, 'bugs', 'KAIF', f), 'utf8'); return t.includes(surface) && t.includes(cls); });
