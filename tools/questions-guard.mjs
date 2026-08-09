@@ -196,7 +196,13 @@ function scanInterviews(root) {
       out.stale.push({ file: iv.file, key: iv.file + '#stale' });
 
     // bugs/62: живой вопрос обязан быть ОТВЕЧАЕМЫМ в один клик — или объявить себя свободным.
-    if (iv.waiting) for (const q of empty) {
+    //
+    // bugs/70: ось скоупится СОБСТВЕННЫМ свойством вопроса (поле `**Answer:**` пусто), а не чужим
+    // предикатом `iv.waiting`. Прежде один и тот же прогон в одном проходе называл вопрос ждущим
+    // (строка выше, `out.unanswered`) и НЕ проверял его (здесь) — две правды об одном вопросе.
+    // Дыра была достижима интервью без строки статуса: контур уже показывает его владельцу без
+    // радиокнопок, а страж молчит. Скоуп теперь ровно тот же, что у отчёта «Ждут ответа».
+    for (const q of empty) {
       if (q.open || q.options >= MIN_OPTIONS) continue;
       out.unanswerable.push({ file: iv.file, q: q.id, options: q.options,
         key: `${iv.file}#${q.id}#unanswerable` });
