@@ -525,15 +525,15 @@ Table 6 — Metrics of KAIF 2.2
 | Owner decisions recorded | 65 | two human decisions per session |
 | Experience lessons written | 71 | 71 rakes the next session will not step on |
 | Skills in the delivery | 35 | 35 commands the agent gets in a stranger's project on day one |
-| What Fable 5's work would cost if paid at Anthropic's public API prices | $2 429 | two thirds of the total price-list bill |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | the remaining third |
-| What all the work would cost if paid at Anthropic's public API prices | **$3 509** | about **594 hamburgers** at $5.91 — or 1.1 monthly salaries of a software engineer |
-| **Paid by subscription** | **≈ $16.89** | the share of a Claude Max subscription ($250 per month) that falls on two days of work |
+| What Fable 5's work would cost if paid at Anthropic's public API prices | $2 429 | about **486 hamburgers** at $5 |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | $1 079 | about **216 hamburgers** at $5 |
+| What all the work would cost if paid at Anthropic's public API prices | **$3 509** | about **702 hamburgers** at $5 |
+| **Paid by subscription** | **≈ $16.89** | about **3 hamburgers** at $5 |
 | How many times API prices exceed that subscription share | **208 times** | for every dollar paid, 208 at list price |
 | If living people had written KAIF 2.2, their work would have amounted to | **5 517 person-hours** | a team of **five engineers working 138 days straight** |
 | Payroll for those people would have amounted to | **$98 517** | about **19 700 hamburgers** at $5 |
 | Electricity spent on the work of the AI agents | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
-| How much human work falls on one hour of the human + agent pair's work | **190 person-hours** | one hour of a human working with the agent does what a human alone would do in 190 hours |
+| How much human work falls on one hour of the human + agent pair's work | **190 person-hours** | one hour of a human working with the agent does what a human alone would do in 190 hours — almost **24 working days** of 8 hours |
 
 Active work means the hours when work was going on: sleep and long pauses do not count.
 
@@ -1069,15 +1069,15 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Решений владельца зафиксировано | 65 | по два решения человека на каждую сессию |
 | Уроков опыта записано | 71 | 71 грабля, на которую следующая сессия уже не наступит |
 | Навыков в поставке | 35 | 35 команд, которые агент получает в чужом проекте с первого дня |
-| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | две трети общего счёта по прайсу |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | оставшаяся треть |
-| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$3 509** | примерно **594 гамбургера** по $5,91 — или 1,1 месячной зарплаты инженера-программиста |
-| **Заплачено по подписке** | **≈ $16,89** | доля подписки Claude Max ($250 в месяц), пришедшаяся на двое суток работы |
+| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | примерно **486 гамбургеров** по 5 $ |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | примерно **216 гамбургеров** по 5 $ |
+| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$3 509** | примерно **702 гамбургера** по 5 $ |
+| **Заплачено по подписке** | **≈ $16,89** | примерно **3 гамбургера** по 5 $ |
 | Во сколько раз прайс API дороже доли подписки за тот же срок | **208 раз** | на каждый заплаченный доллар по прайсу пришлось бы 208 |
 | Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **5 517 человеко-часов** | команда из **пяти инженеров работала бы 138 дней подряд** |
 | Фонд оплаты труда этих людей составил бы | **$98 517** | примерно **19 700 гамбургеров** по 5 $ |
 | Электроэнергии израсходовано на работу ИИ-агентов | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток** |
-| Сколько работы людей приходится на один час работы тандема Человек-Агент | **190 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 190 часов |
+| Сколько работы людей приходится на один час работы тандема Человек-Агент | **190 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 190 часов — почти **24 рабочих дня** по 8 часов |
 
 Активная работа — часы, когда работа шла: сон и длинные паузы в подсчёт не идут.
 
