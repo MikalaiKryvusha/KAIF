@@ -43,7 +43,7 @@ Everything below was measured from 2026-08-07, 00:00 +03:00 — the hour the own
 
 - **2.0 calendar days · 38.7 hours of active work** — 145 commits, 163 files created from nothing.
 - **253,457 words of prose written into the repository** ≈ 3.2 novels, at 6,542 words per active hour.
-- **4,374,165,012 tokens** passed through the models — 27,339 novels' worth, almost all of it re-reading the same context over and over. Of that the models wrote **17,521,282 tokens** — 110 novels: about 250 tokens read for every one written.
+- The agent **read 27,229 novels** and **wrote 110** — one written for every 249 read.
 - The same volume by human hands: **4,842 person-hours** — five engineers for 121 working days.
 - Paid: **≈ $55.00** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **$4,371**.
 
@@ -104,7 +104,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 - **2,0 календарных суток · 38,7 часа активной работы** — 145 коммитов, 163 файла создано с нуля.
 - **253 457 слов прозы написано в репозиторий** ≈ 3,2 романа, темп 6 542 слова в активный час.
-- **4 374 165 012 токенов** прошло через модели — это 27 339 романов, и почти всё это перечитывание одного и того же контекста. Написали модели из них **17 521 282 токена** — 110 романов: на каждое написанное слово приходится около 250 прочитанных.
+- Агент **прочитал 27 229 романов** и **написал 110** — одно написанное на 249 прочитанных.
 - Тот же объём руками людей: **4 842 человеко-часа** — пять инженеров на 121 рабочий день.
 - Заплачено на деле: **≈ $55,00** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **$4 371**.
 

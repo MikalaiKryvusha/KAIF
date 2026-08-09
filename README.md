@@ -516,8 +516,8 @@ Table 6 — Metrics of KAIF 2.2
 | Words of prose written into the repository | **253,457** | about **3.2 novels** of 80,000 words |
 | Code written into the repository | 9,498 lines | **4 lines of code a minute** of active work |
 | Writing pace | 6,542 words per hour of active work | a human writes that many in 52 hours |
-| Tokens spent by the models in total | **4,374,165,012** | about **27,339 novels** read and written again |
-| Of those, written by the models — the rest was re-read | 17,521,282 tokens | **110 novels**; about 250 tokens are read for every one written |
+| The agent read | **27,229 novels** | 4,356,643,730 tokens |
+| The agent wrote | **110 novels** | 17,521,282 tokens — one written for every 249 read |
 | Requests to the models in total | 12,912 | about 380 requests per session |
 | Weekly subscription limit spent on the version | **88%** | $250 a month is four weeks at $62.50 — that is what the 88% cost |
 | Work sessions — a separate chat each | 34 | about an hour of active work per session |
@@ -1054,8 +1054,8 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Слов прозы написано в репозиторий | **253 457** | примерно **3,2 романа** по 80 000 слов |
 | Кода написано в репозиторий | 9 498 строк | **4 строки кода в минуту** активной работы |
 | Темп письма | 6 542 слова за час активной работы | человек пишет столько за 52 часа |
-| Токенов израсходовано моделями всего | **4 374 165 012** | примерно **27 339 романов** прочитано и написано заново |
-| Из них написано моделями — остальное перечитано | 17 521 282 токена | **110 романов**; на каждое написанное слово около 250 прочитанных |
+| Агент прочитал | **27 229 романов** | 4 356 643 730 токенов |
+| Агент написал | **110 романов** | 17 521 282 токена — одно написанное на 249 прочитанных |
 | Запросов к моделям всего | 12 912 | примерно 380 запросов на одну сессию |
 | Недельный лимит подписки, израсходованный на версию | **88 %** | $250 в месяц — это четыре недели по $62,50; столько и стоили эти 88 % |
 | Сессий работы — каждая отдельным чатом | 34 | примерно по часу активной работы на каждую сессию |
