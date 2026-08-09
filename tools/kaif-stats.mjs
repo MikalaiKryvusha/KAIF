@@ -354,7 +354,7 @@ if (args.includes('--json')) {
     console.log(`  коммитов с трейлером «${m}»: ${f(n)}`);
   }
   console.log('');
-  console.log(`  РУКОПИСНОГО (генераты исключены): прозы ${f(repo.proseLines)} строк / ${f(repo.proseWords)} слов · кода ${f(repo.codeLines)} строк`);
+  console.log(`  НАПИСАНО В РЕПОЗИТОРИЙ (генераты исключены): прозы ${f(repo.proseLines)} строк / ${f(repo.proseWords)} слов · кода ${f(repo.codeLines)} строк`);
   console.log(`  календарных суток: ${repo.days.toFixed(1)}`);
   console.log('');
   console.log('— ИЗМЕРЕНО: документы (текущее состояние репозитория) —');

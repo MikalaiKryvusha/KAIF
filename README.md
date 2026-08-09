@@ -503,16 +503,16 @@ Table 6 — Metrics of KAIF 2.2
 | Files created from nothing | 190 | a file that did not exist before — **every nine minutes** |
 | Lines added | +44 893 | **26 lines a minute**, for two days straight |
 | Lines removed | −1 774 | 25 times more added than removed |
-| Prose written by hand | 28 284 lines | three of every four written lines are prose, not code |
-| Words of prose written by hand | **316 764** | about **3.9 novels** of 80 000 words |
-| Code written by hand | 10 067 lines | **6 lines of code a minute** of active work |
+| Prose written into the repository | 28 284 lines | three of every four written lines are prose, not code |
+| Words of prose written into the repository | **316 764** | about **3.9 novels** of 80 000 words |
+| Code written into the repository | 10 067 lines | **6 lines of code a minute** of active work |
 | Writing pace | 10 936 words per hour of active work | a human writes that many in 87 hours |
 | Tokens spent by the models in total | **3 011 949 062** | about **17 919 novels** read and written again |
 | Of those, written by the models themselves | 14 368 418 tokens | about **87 novels** |
 | Requests made by Fable 5 | 4 729 | it burnt that model's weekly limit down to zero |
 | Requests made by Opus 5 | 4 945 | it spent a fifth of that model's weekly limit |
 | Requests to the models in total | 9 676 | about 322 requests per session |
-| Chat sessions | 29 | one hour of active work per session |
+| Work sessions — a separate chat each | 29 | one hour of active work per session |
 | Plans written | 62 | two plans per session |
 | Bugs filed | 63 | 58 of them closed |
 | Ideas proposed | 24 | nearly one per session; none ships without the owner's "yes" |
@@ -531,9 +531,9 @@ Table 6 — Metrics of KAIF 2.2
 | **Paid by subscription** | **≈ $16.89** | the share of a Claude Max subscription ($250 per month) that falls on two days of work |
 | How many times API prices exceed that subscription share | **208 times** | for every dollar paid, 208 at list price |
 | If living people had written KAIF 2.2, their work would have amounted to | **5 517 person-hours** | a team of **five engineers working 138 days straight** |
-| Payroll for those people | **$98 517** | at an engineer's salary of $3 000 per month |
-| Electricity spent on the computation | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
-| How much human work falls on one hour of the pair's work | **190 person-hours** | one hour of a human working with the agent does what a human alone would do in 190 hours |
+| Payroll for those people would have amounted to | **$98 517** | about **19 700 hamburgers** at $5 |
+| Electricity spent on the work of the AI agents | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
+| How much human work falls on one hour of the human + agent pair's work | **190 person-hours** | one hour of a human working with the agent does what a human alone would do in 190 hours |
 
 Active work means the hours when work was going on: sleep and long pauses do not count.
 
@@ -1047,16 +1047,16 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Файлов создано с нуля | 190 | файл, которого раньше не было, — **каждые девять минут** |
 | Строк добавлено | +44 893 | **26 строк в минуту**, и так двое суток подряд |
 | Строк удалено | −1 774 | добавленного в 25 раз больше, чем удалённого |
-| Прозы написано руками | 28 284 строки | из каждых четырёх написанных строк три — проза, а не код |
-| Слов прозы написано руками | **316 764** | примерно **3,9 романа** по 80 000 слов |
-| Кода написано руками | 10 067 строк | **6 строк кода в минуту** активной работы |
+| Прозы написано в репозиторий | 28 284 строки | из каждых четырёх написанных строк три — проза, а не код |
+| Слов прозы написано в репозиторий | **316 764** | примерно **3,9 романа** по 80 000 слов |
+| Кода написано в репозиторий | 10 067 строк | **6 строк кода в минуту** активной работы |
 | Темп письма | 10 936 слов за час активной работы | человек пишет столько за 87 часов |
 | Токенов израсходовано моделями всего | **3 011 949 062** | примерно **17 919 романов** прочитано и написано заново |
 | Из них написано самими моделями | 14 368 418 токенов | около **87 романов** |
 | Запросов сделала модель Fable 5 | 4 729 | выжгла недельный лимит этой модели до нуля |
 | Запросов сделала модель Opus 5 | 4 945 | израсходовала пятую часть недельного лимита этой модели |
 | Запросов к моделям всего | 9 676 | примерно 322 запроса на одну сессию |
-| Сессий работы в чате | 29 | по часу активной работы на каждую сессию |
+| Сессий работы — каждая отдельным чатом | 29 | по часу активной работы на каждую сессию |
 | Планов написано | 62 | по два плана на каждую сессию |
 | Багов заведено | 63 | из них закрыто 58 |
 | Идей предложено | 24 | почти по идее на каждую сессию; ни одна не идёт в работу без «да» владельца |
@@ -1075,9 +1075,9 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | **Заплачено по подписке** | **≈ $16,89** | доля подписки Claude Max ($250 в месяц), пришедшаяся на двое суток работы |
 | Во сколько раз прайс API дороже доли подписки за тот же срок | **208 раз** | на каждый заплаченный доллар по прайсу пришлось бы 208 |
 | Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **5 517 человеко-часов** | команда из **пяти инженеров работала бы 138 дней подряд** |
-| Фонд оплаты труда этих людей | **$98 517** | при зарплате инженера 3 000 $ в месяц |
-| Электроэнергии израсходовано на вычисления | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток** |
-| Сколько работы людей приходится на один час работы тандема | **190 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 190 часов |
+| Фонд оплаты труда этих людей составил бы | **$98 517** | примерно **19 700 гамбургеров** по 5 $ |
+| Электроэнергии израсходовано на работу ИИ-агентов | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток** |
+| Сколько работы людей приходится на один час работы тандема Человек-Агент | **190 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 190 часов |
 
 Активная работа — часы, когда работа шла: сон и длинные паузы в подсчёт не идут.
 
