@@ -490,50 +490,51 @@ artifacts are never hand-edited.
 
 #### 8.5.1. Metrics of the work on KAIF 2.2
 
-The window is two days: from 2026-08-07 at 00:00 +03:00 to 2026-08-09 at 00:46 +03:00.
+The window runs from the release of 2.1 — tag `v2.1`, 2026-07-31 at 11:09 +03:00 — to the
+measurement taken at 2026-08-09 at 18:03 +03:00, right before publication.
 
 Table 6 — Metrics of KAIF 2.2
 
 | What was measured | Value | What it equals |
 |-------------------|-------|----------------|
-| Time spent on the version | **2.0 days** | the whole version was built on 7 and 8 August 2026 |
-| Active working time of the human + AI-agent pair | **29.0 hours** | about 3.6 full 8-hour working days |
-| Commits in git | 141 | about 5 commits per hour of active work |
-| Files touched | 416 | a file opened **every four minutes** of work |
-| Files created from nothing | 190 | a file that did not exist before — **every nine minutes** |
-| Lines added | +44,893 | **26 lines a minute**, for two days straight |
-| Lines removed | −1,774 | 25 times more added than removed |
-| Prose written into the repository | 28,284 lines | three of every four written lines are prose, not code |
-| Words of prose written into the repository | **316,764** | about **3.9 novels** of 80,000 words |
-| Code written into the repository | 10,067 lines | **6 lines of code a minute** of active work |
-| Writing pace | 10,936 words per hour of active work | a human writes that many in 87 hours |
-| Tokens spent by the models in total | **3,011,949,062** | about **17,919 novels** read and written again |
-| Of those, written by the models themselves | 14,368,418 tokens | about **87 novels** |
-| Requests made by Fable 5 | 4,729 | it burnt that model's weekly limit down to zero |
-| Requests made by Opus 5 | 4,945 | it spent a fifth of that model's weekly limit |
-| Requests to the models in total | 9,676 | about 322 requests per session |
-| Work sessions — a separate chat each | 29 | one hour of active work per session |
-| Plans written | 62 | two plans per session |
-| Bugs filed | 63 | 58 of them closed |
-| Ideas proposed | 24 | nearly one per session; none ships without the owner's "yes" |
+| Time spent on the version | **9.3 days** | from one release to the next |
+| Active working time of the human + AI-agent pair | **40.7 hours** | about 5.1 full 8-hour working days |
+| Commits in git | 201 | about 5 commits per hour of active work |
+| Files touched | 491 | a file opened **every five minutes** of work |
+| Files created from nothing | 257 | a file that did not exist before — **every ten minutes** |
+| Lines added | +58,896 | **24 lines a minute** of active work |
+| Lines removed | −2,027 | 29 times more added than removed |
+| Prose written into the repository | 37,384 lines | five of every seven written lines are prose, not code |
+| Words of prose written into the repository | **398,025** | about **5.0 novels** of 80,000 words |
+| Code written into the repository | 14,530 lines | **6 lines of code a minute** of active work |
+| Writing pace | 9,780 words per hour of active work | a human writes that many in 78 hours |
+| Tokens spent by the models in total | **4,482,103,967** | about **28,013 novels** read and written again |
+| Of those, written by the models themselves | 19,445,315 tokens | about **122 novels** |
+| Requests made by Fable 5 | 5,382 | about 149 requests per session |
+| Requests made by Opus 5 | 8,025 | about 223 requests per session |
+| Requests to the models in total | 13,412 | about 373 requests per session |
+| Work sessions — a separate chat each | 36 | about an hour of active work per session |
+| Plans written | 64 | nearly two plans per session |
+| Bugs filed | 103 | 77 of them closed |
+| Ideas proposed | 25 | nearly one per session; none ships without the owner's "yes" |
 | Research documents produced | 19 | 19 times the code waited until a source had been read |
-| Owner interviews | 17 | a question for the human once every two sessions; the rest the agent decided |
-| Reports written | 13 | one report every two sessions of work |
-| Files in the knowledge directories in total | **228** | eight new documents per session |
-| Characters in those documents | **2,149,895** | **1,194 typed pages** of 1,800 characters |
-| Words in those documents | **299,632** | about **3.7 novels** of 80,000 words worth of accompanying documentation, and the next session of the agent reads every page |
-| Owner decisions recorded | 65 | two human decisions per session |
-| Experience lessons written | 71 | 71 rakes the next session will not step on |
+| Owner interviews | 18 | a question for the human once every two sessions; the rest the agent decided |
+| Reports written | 13 | one report every three sessions of work |
+| Files in the knowledge directories in total | **247** | seven new documents per session |
+| Characters in those documents | **2,278,916** | **1,266 typed pages** of 1,800 characters |
+| Words in those documents | **315,942** | about **3.9 novels** of 80,000 words worth of accompanying documentation, and the next session of the agent reads every page |
+| Owner decisions recorded | 71 | two human decisions per session |
+| Experience lessons written | 81 | 81 rakes the next session will not step on |
 | Skills in the delivery | 35 | 35 commands the agent gets in a stranger's project on day one |
-| What Fable 5's work would cost if paid at Anthropic's public API prices | $2,429 | about **486 hamburgers** at $5 |
-| What Opus 5's work would cost if paid at Anthropic's public API prices | $1,079 | about **216 hamburgers** at $5 |
-| What all the work would cost if paid at Anthropic's public API prices | **$3,509** | about **702 hamburgers** at $5 |
-| **Paid by subscription** | **≈ $16.89** | about **3 hamburgers** at $5 |
-| How many times API prices exceed that subscription share | **208 times** | for every dollar paid, 208 at list price |
-| If living people had written KAIF 2.2, their work would have amounted to | **5,517 person-hours** | a team of **five engineers working 138 days straight** |
-| Payroll for those people would have amounted to | **$98,517** | about **19,700 hamburgers** at $5 |
-| Electricity spent on the work of the AI agents | **≈ 18.1 kWh** | an ordinary flat spends that much in **1.8 days** |
-| How much human work falls on one hour of the human + agent pair's work | **190 person-hours** | one hour of a human working with the agent does what a human alone would do in 190 hours — almost **24 working days** of 8 hours |
+| What Fable 5's work would cost if paid at Anthropic's public API prices | $2,843 | about **569 hamburgers** at $5 |
+| What Opus 5's work would cost if paid at Anthropic's public API prices | $1,886 | about **377 hamburgers** at $5 |
+| What all the work would cost if paid at Anthropic's public API prices | **$4,729** | about **946 hamburgers** at $5 |
+| **Paid by subscription** | **≈ $77.34** | about **15 hamburgers** at $5 |
+| How many times API prices exceed that subscription share | **61 times** | for every dollar paid, 61 at list price |
+| If living people had written KAIF 2.2, their work would have amounted to | **7,489 person-hours** | a team of **five engineers working 187 days straight** |
+| Payroll for those people would have amounted to | **$133,739** | about **26,748 hamburgers** at $5 |
+| Electricity spent on the work of the AI agents | **≈ 24.5 kWh** | an ordinary flat spends that much in **2.5 days** |
+| How much human work falls on one hour of the human + agent pair's work | **184 person-hours** | one hour of a human working with the agent does what a human alone would do in 184 hours — **23 working days** of 8 hours |
 
 Active work means the hours when work was going on: sleep and long pauses do not count.
 
@@ -1034,50 +1035,51 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 #### 8.5.1. Метрики работ по версии KAIF 2.2
 
-Окно — двое суток: с 00:00 07.08.2026 до 00:46 09.08.2026.
+Окно — от релиза 2.1 (тег `v2.1`, 31.07.2026, 11:09 +03:00) до замера,
+снятого 09.08.2026 в 18:03 +03:00, прямо перед публикацией.
 
 Таблица 6 — Метрики версии KAIF 2.2
 
 | Что измерено | Значение | Чему это равно |
 |--------------|----------|----------------|
-| Время работы над версией | **2,0 суток** | версия целиком сделана 07.08.2026 и 08.08.2026 |
-| Время активной работы тандема «человек + ИИ-агент» | **29,0 часа** | примерно 3,6 полных рабочих дня по 8 часов |
-| Коммитов в git | 141 | примерно 5 коммитов на каждый час активной работы |
-| Файлов затронуто | 416 | новый файл открывался **каждые четыре минуты** работы |
-| Файлов создано с нуля | 190 | файл, которого раньше не было, — **каждые девять минут** |
-| Строк добавлено | +44 893 | **26 строк в минуту**, и так двое суток подряд |
-| Строк удалено | −1 774 | добавленного в 25 раз больше, чем удалённого |
-| Прозы написано в репозиторий | 28 284 строки | из каждых четырёх написанных строк три — проза, а не код |
-| Слов прозы написано в репозиторий | **316 764** | примерно **3,9 романа** по 80 000 слов |
-| Кода написано в репозиторий | 10 067 строк | **6 строк кода в минуту** активной работы |
-| Темп письма | 10 936 слов за час активной работы | человек пишет столько за 87 часов |
-| Токенов израсходовано моделями всего | **3 011 949 062** | примерно **17 919 романов** прочитано и написано заново |
-| Из них написано самими моделями | 14 368 418 токенов | около **87 романов** |
-| Запросов сделала модель Fable 5 | 4 729 | выжгла недельный лимит этой модели до нуля |
-| Запросов сделала модель Opus 5 | 4 945 | израсходовала пятую часть недельного лимита этой модели |
-| Запросов к моделям всего | 9 676 | примерно 322 запроса на одну сессию |
-| Сессий работы — каждая отдельным чатом | 29 | по часу активной работы на каждую сессию |
-| Планов написано | 62 | по два плана на каждую сессию |
-| Багов заведено | 63 | из них закрыто 58 |
-| Идей предложено | 24 | почти по идее на каждую сессию; ни одна не идёт в работу без «да» владельца |
+| Время работы над версией | **9,3 суток** | от одного релиза до следующего |
+| Время активной работы тандема «человек + ИИ-агент» | **40,7 часа** | примерно 5,1 полного рабочего дня по 8 часов |
+| Коммитов в git | 201 | примерно 5 коммитов на каждый час активной работы |
+| Файлов затронуто | 491 | новый файл открывался **каждые пять минут** работы |
+| Файлов создано с нуля | 257 | файл, которого раньше не было, — **каждые десять минут** |
+| Строк добавлено | +58 896 | **24 строки в минуту** активной работы |
+| Строк удалено | −2 027 | добавленного в 29 раз больше, чем удалённого |
+| Прозы написано в репозиторий | 37 384 строки | из каждых семи написанных строк пять — проза, а не код |
+| Слов прозы написано в репозиторий | **398 025** | примерно **5,0 романа** по 80 000 слов |
+| Кода написано в репозиторий | 14 530 строк | **6 строк кода в минуту** активной работы |
+| Темп письма | 9 780 слов за час активной работы | человек пишет столько за 78 часов |
+| Токенов израсходовано моделями всего | **4 482 103 967** | примерно **28 013 романов** прочитано и написано заново |
+| Из них написано самими моделями | 19 445 315 токенов | около **122 романов** |
+| Запросов сделала модель Fable 5 | 5 382 | примерно 149 запросов на одну сессию |
+| Запросов сделала модель Opus 5 | 8 025 | примерно 223 запроса на одну сессию |
+| Запросов к моделям всего | 13 412 | примерно 373 запроса на одну сессию |
+| Сессий работы — каждая отдельным чатом | 36 | примерно по часу активной работы на каждую сессию |
+| Планов написано | 64 | почти по два плана на каждую сессию |
+| Багов заведено | 103 | из них закрыто 77 |
+| Идей предложено | 25 | почти по идее на каждую сессию; ни одна не идёт в работу без «да» владельца |
 | Исследований проведено | 19 | 19 раз код ждал, пока будет прочитан источник |
-| Интервью с владельцем | 17 | вопрос человеку — раз в две сессии; остальное агент решал сам |
-| Отчётов написано | 13 | по отчёту на каждые две сессии работы |
-| Файлов в директориях знания всего | **228** | восемь новых документов за сессию |
-| Символов в этих документах | **2 149 895** | **1 194 машинописные страницы** по 1 800 знаков |
-| Слов в этих документах | **299 632** | примерно **3,7 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
-| Решений владельца зафиксировано | 65 | по два решения человека на каждую сессию |
-| Уроков опыта записано | 71 | 71 грабля, на которую следующая сессия уже не наступит |
+| Интервью с владельцем | 18 | вопрос человеку — раз в две сессии; остальное агент решал сам |
+| Отчётов написано | 13 | по отчёту на каждые три сессии работы |
+| Файлов в директориях знания всего | **247** | семь новых документов за сессию |
+| Символов в этих документах | **2 278 916** | **1 266 машинописных страниц** по 1 800 знаков |
+| Слов в этих документах | **315 942** | примерно **3,9 романа** по 80 000 слов сопроводительной документации, и каждую страницу читает следующая сессия агента |
+| Решений владельца зафиксировано | 71 | по два решения человека на каждую сессию |
+| Уроков опыта записано | 81 | 81 грабля, на которую следующая сессия уже не наступит |
 | Навыков в поставке | 35 | 35 команд, которые агент получает в чужом проекте с первого дня |
-| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 429 | примерно **486 гамбургеров** по 5 $ |
-| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 079 | примерно **216 гамбургеров** по 5 $ |
-| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$3 509** | примерно **702 гамбургера** по 5 $ |
-| **Заплачено по подписке** | **≈ $16,89** | примерно **3 гамбургера** по 5 $ |
-| Во сколько раз прайс API дороже доли подписки за тот же срок | **208 раз** | на каждый заплаченный доллар по прайсу пришлось бы 208 |
-| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **5 517 человеко-часов** | команда из **пяти инженеров работала бы 138 дней подряд** |
-| Фонд оплаты труда этих людей составил бы | **$98 517** | примерно **19 700 гамбургеров** по 5 $ |
-| Электроэнергии израсходовано на работу ИИ-агентов | **≈ 18,1 кВт·ч** | столько обычная квартира расходует за **1,8 суток** |
-| Сколько работы людей приходится на один час работы тандема Человек-Агент | **190 человеко-часов** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 190 часов — почти **24 рабочих дня** по 8 часов |
+| Стоила бы работа Fable 5, если платить по публичному прайсу API Anthropic | $2 843 | примерно **569 гамбургеров** по 5 $ |
+| Стоила бы работа Opus 5, если платить по публичному прайсу API Anthropic | $1 886 | примерно **377 гамбургеров** по 5 $ |
+| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **$4 729** | примерно **946 гамбургеров** по 5 $ |
+| **Заплачено по подписке** | **≈ $77,34** | примерно **15 гамбургеров** по 5 $ |
+| Во сколько раз прайс API дороже доли подписки за тот же срок | **61 раз** | на каждый заплаченный доллар по прайсу пришлось бы 61 |
+| Если бы версию KAIF 2.2 писали живые люди, объём их работы составил бы | **7 489 человеко-часов** | команда из **пяти инженеров работала бы 187 дней подряд** |
+| Фонд оплаты труда этих людей составил бы | **$133 739** | примерно **26 748 гамбургеров** по 5 $ |
+| Электроэнергии израсходовано на работу ИИ-агентов | **≈ 24,5 кВт·ч** | столько обычная квартира расходует за **2,5 суток** |
+| Сколько работы людей приходится на один час работы тандема Человек-Агент | **184 человеко-часа** | один час работы человека с агентом делает столько, сколько человек в одиночку делал бы 184 часа — **23 рабочих дня** по 8 часов |
 
 Активная работа — часы, когда работа шла: сон и длинные паузы в подсчёт не идут.
 

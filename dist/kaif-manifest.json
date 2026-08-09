@@ -5,7 +5,7 @@
   "codename": "Yolden KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "4924f56260630f944b9b56273c59638dece0ec3e7c3c46475b68aacccf81fc94",
-    "KAIF-CORE-BUNDLE.md": "7c280c724c2c6513775a9c1705eba6d3c60a363c95b19d6b337148420462f5f7"
+    "KAIF-CORE-BUNDLE.md": "fb07b47f133c6d99146d280ecad41106212e86c2c63aa04df4b86ab9cf68a5e6"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

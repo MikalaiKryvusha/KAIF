@@ -39,13 +39,13 @@ The version grew out of the field: four updates of real projects, each with a fi
 
 ### 🎲 Interesting facts — what this version cost
 
-The window is two days: from 2026-08-07 at 00:00 +03:00 to 2026-08-09 at 00:46 +03:00.
+The window runs from the release of 2.1 — tag `v2.1`, 2026-07-31 at 11:09 +03:00 — to the measurement taken at 2026-08-09 at 18:03 +03:00, right before publication.
 
-- **2.0 calendar days · 29 hours of active work** — 141 commits, 190 files created from nothing.
-- **316,764 handwritten words** of prose ≈ 3.9 novels, at 10,936 words per active hour; the knowledge directories hold **2,149,895 characters** — 3.7 more novels of accompanying documentation.
-- **3,011,949,062 tokens** ≈ 17,919 novels read and written again; the models' own writing ≈ 87 novels.
-- The same volume by human hands: **5,517 person-hours** — five engineers for 138 working days.
-- Paid by subscription: **≈ $16.89** for two days of a Claude Max plan. At Anthropic's public API prices the same volume of work would cost **$3,509**.
+- **9.3 calendar days · 40.7 hours of active work** — 201 commits, 257 files created from nothing.
+- **398,025 words of prose written into the repository** ≈ 5.0 novels, at 9,780 words per active hour; the knowledge directories hold **2,278,916 characters** — 3.9 more novels of accompanying documentation.
+- **4,482,103,967 tokens** ≈ 28,013 novels read and written again; the models' own writing ≈ 122 novels.
+- The same volume by human hands: **7,489 person-hours** — five engineers for 187 working days.
+- Paid by subscription: **≈ $77.34** for 9.3 days of a Claude Max plan. At Anthropic's public API prices the same volume of work would cost **$4,729**.
 
 The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#85-interesting-facts).
 
@@ -100,13 +100,13 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 
 ### 🎲 Интересные факты — во что обошлась эта версия
 
-Окно — двое суток: с 00:00 07.08.2026 до 00:46 09.08.2026.
+Окно — от релиза 2.1 (тег `v2.1`, 31.07.2026, 11:09 +03:00) до замера, снятого 09.08.2026 в 18:03 +03:00, прямо перед публикацией.
 
-- **2,0 календарных суток · 29 часов активной работы** — 141 коммит, 190 файлов создано с нуля.
-- **316 764 рукописных слова** прозы ≈ 3,9 романа, темп 10 936 слов в активный час; в директориях знания лежит **2 149 895 символов** — ещё 3,7 романа сопроводительной документации.
-- **3 011 949 062 токена** ≈ 17 919 романов прочитано и написано заново; написано моделями ≈ 87 романов.
-- Тот же объём руками людей: **5 517 человеко-часов** — пять инженеров на 138 рабочих дней.
-- Заплачено по подписке: **≈ $16,89** за двое суток плана Claude Max. По публичному прайсу API Anthropic такой же объём работы стоил бы **$3 509**.
+- **9,3 календарных суток · 40,7 часа активной работы** — 201 коммит, 257 файлов создано с нуля.
+- **398 025 слов прозы написано в репозиторий** ≈ 5,0 романа, темп 9 780 слов в активный час; в директориях знания лежит **2 278 916 символов** — ещё 3,9 романа сопроводительной документации.
+- **4 482 103 967 токена** ≈ 28 013 романов прочитано и написано заново; написано моделями ≈ 122 романа.
+- Тот же объём руками людей: **7 489 человеко-часов** — пять инженеров на 187 рабочих дней.
+- Заплачено по подписке: **≈ $77,34** за 9,3 суток плана Claude Max. По публичному прайсу API Anthropic такой же объём работы стоил бы **$4 729**.
 
 Полная таблица — в [README](https://github.com/MikalaiKryvusha/KAIF#85-интересные-факты).
 
