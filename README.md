@@ -513,7 +513,7 @@ Table 6 — Metrics of KAIF 2.2
 | Prose written during the work on the version — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | about 1,500 typed pages |
 | Words of prose written during the work on the version | **≈ 396,000** | about **five novels** of 80,000 words each |
 | Code written during the work on the version | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
-| Words of prose in the delivered KAIF 2.2 core | **≈ 104,000** | about one novel |
+| Words of prose in the delivered KAIF 2.2 core | **≈ 104,000** | a little more than Tolkien's The Hobbit — 95,000 words |
 | Lines of prose in the delivered KAIF 2.2 core | **≈ 10,400** | about 380 typed pages |
 | Lines of machinery code in the delivered KAIF 2.2 core | **≈ 3,400** | about a twelfth of the source code of Doom (1993) |
 | Writing pace | **≈ 10,000 words** per hour of active work | to write that much a human needs about 80 hours of uninterrupted writing |
@@ -1050,7 +1050,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 | Прозы написано за время работы над версией (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | примерно 1 500 машинописных страниц |
 | Слов прозы написано за время работы над версией | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |
 | Кода написано за время работы над версией | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
-| Слов прозы в ядре поставки KAIF 2.2 | **≈ 104 000** | примерно один роман |
+| Слов прозы в ядре поставки KAIF 2.2 | **≈ 104 000** | чуть больше, чем в «Хоббите» Толкина — там 95 000 слов |
 | Строк прозы в ядре поставки KAIF 2.2 | **≈ 10 400** | примерно 380 машинописных страниц |
 | Строк кода машинерии в ядре поставки KAIF 2.2 | **≈ 3 400** | примерно двенадцатая часть исходного кода игры Doom 1993 года |
 | Темп письма | **≈ 10 000 слов** за час активной работы | чтобы написать столько, человеку в среднем нужно около 80 часов непрерывного письма |
