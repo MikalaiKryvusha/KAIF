@@ -348,14 +348,16 @@ async function main() {
     {
       let liveUrl = null;
       serveContour._onUp = (u) => { liveUrl = u; };
-      const livePromise = serveContour(ROOT, { docPath: 'interviews/interview_007_kaif_2.2.md' },
+      const richest = pickLiveDoc('questions');     // имя и число — из эталона, не из текста проверки
+      const livePromise = serveContour(ROOT, { docPath: richest.path },
         { open: false, signal: false, log: logSilent });
       while (!liveUrl) await sleep(50);
       const page = await attachPage(browser.cdp, liveUrl);
       const probe = await page.evaluate(
         "(function(){return {title:document.title,cards:document.querySelectorAll('.qcard').length}})()");
-      check('живое интервью 007 отрендерено (заголовок с именем проекта, P9)', probe.title.startsWith('KAIF'));
-      check('карточки вопросов живого документа на месте', probe.cards === 15, 'фактически ' + probe.cards);
+      check(`живой документ отрендерен (${richest.path}; заголовок с именем проекта, P9)`, probe.title.startsWith('KAIF'));
+      check(`карточки вопросов живого документа на месте (эталон: ${richest.questions})`,
+        probe.cards === richest.questions, 'фактически ' + probe.cards);
       const foreign = page.events.requests.filter((u) => !u.startsWith(liveUrl) && !u.startsWith('data:'));
       check('ноль внешних загрузок', foreign.length === 0, foreign[0]);
       check('консоль живой страницы чистая', page.events.console.length === 0, page.events.console[0]);
@@ -571,7 +573,7 @@ async function main() {
       check('интерфейс не пересказывает владельцу устройство машинерии', jargon.length === 0, jargon.join(' · '));
       // (г) Рекомендация видна НА варианте, а не только прозой: букву из абзаца в кнопку человек
       //     переводить не должен. Проверяем на ЖИВОМ интервью, где рекомендация объявлена прозой.
-      const liveRec = buildPage(ROOT, 'interviews/interview_013_language_packs_scope.md');
+      const liveRec = buildPage(ROOT, pickLiveDoc('recommended').path);
       const withRec = liveRec.questions.filter((q) => q.recommended);
       check('рекомендация распознана в прозе вопросов живого документа', withRec.length > 0);
       const misplaced = withRec.filter((q) => {
@@ -612,6 +614,45 @@ const rmTolerant = (p) => { try { rmSync(p, { recursive: true, force: true, maxR
  * ритуале. Дешёвая половина обязана гоняться часто (`/end-chat`), дорогая — редко (`/release`).
  * Норма, чей сигнал никто не читает, эквивалентна отсутствию нормы.
  */
+// ── Живой документ выбирается ПО СВОЙСТВУ, а не по имени (bugs/69, находка `g5-live-numbers`) ──
+// Пять сценариев прогона обращались к живым интервью ЗАШИТЫМИ именами и числом карточек
+// (`interview_007`, `interview_013`, `probe.cards === 15`). Это нарушало собственную норму G5
+// этого же прогона — «живым данным только инварианты» — и, что дороже, лежало ВНЕ пути
+// регенерации `--write-etalon`: канонное обновление эталона чинит счёт, а зашитое число остаётся
+// и роняет прогон ЛОЖНЫМ красным. Ложный красный опаснее пропуска: он учит оператора
+// перезапускать и не смотреть.
+//
+// Теперь и имя, и число берутся ИЗ ЭТАЛОНА — то есть из того же артефакта, который `--write-etalon`
+// и пересматривает. Выбор ДЕТЕРМИНИРОВАН (канон-порядок для всего сравниваемого): максимум по
+// свойству, при равенстве — первый по имени. Максимум взят не ради красоты: сценарию нужна
+// страница, где карточек заведомо больше одной, а разбору — документ, где вариантов заведомо
+// много.
+// Свойства `questions`/`parsedOptions` лежат в самом эталоне. Свойство `recommended` — нет, и
+// подменять его близким («больше всего вариантов») нельзя: первая редакция фикса так и сделала,
+// и полный прогон немедленно покраснел двумя проверками — выбранный документ рекомендации в прозе
+// не объявлял вовсе. Урок записан прямо здесь: документ выбирается по ТОМУ свойству, которое
+// сценарий проверяет, а не по соседнему, которое удобнее достать.
+const LIVE_PROPS = {
+  questions: (row) => row.questions,
+  parsedOptions: (row) => row.parsedOptions,
+  recommended: (row) => parseQuestions(readFileSync(join(ROOT, row.path), 'utf8'))
+    .filter((q) => q.recommended).length,
+};
+
+function pickLiveDoc(what) {
+  const measure = LIVE_PROPS[what];
+  if (!measure) throw new Error(`неизвестное свойство живого документа: ${what}`);
+  const etalon = existsSync(ETALON_PATH) ? JSON.parse(readFileSync(ETALON_PATH, 'utf8')) : {};
+  const rows = Object.entries(etalon)
+    .map(([path, e]) => ({ path, ...e }))
+    .filter((r) => existsSync(join(ROOT, r.path)))
+    .map((r) => ({ ...r, score: measure(r) }))
+    .filter((r) => r.score > 0)
+    .sort((a, b) => (b.score - a.score) || (a.path < b.path ? -1 : 1));
+  if (!rows.length) throw new Error(`эталон не знает ни одного живого документа со свойством «${what}» — прогон не может выбрать документ, не выдумывая его`);
+  return rows[0];
+}
+
 function etalonBlock() {
   block('9. Счётная сверка вариантов по ВСЕМ живым документам против замороженного эталона (C10-блок 9, G7/G11/QA4)');
   const live = liveOptionCounts();
@@ -712,7 +753,7 @@ const AUTOCLOSE_WAIT_MS = 5500; // DEF2: 2000 попытка + 2000 запас +
 // ── QA5 (--selfcheck): сломанный разбор ОБЯЗАН уронить счётную сверку ──────────────────────
 function selfcheck() {
   block('QA5. Самопроверка падучести: сломанный разбор должен разойтись со счётом кандидатов');
-  const md = readFileSync(join(ROOT, 'interviews', 'interview_007_kaif_2.2.md'), 'utf8');
+  const md = readFileSync(join(ROOT, pickLiveDoc('questions').path), 'utf8');
   const qs = parseQuestions(md);
   const real = qs.reduce((s, q) => s + q.options.length, 0);
   // Мутация А (донорская, «однострочный разбор»): на НАШЕМ корпусе ВЫЖИВАЕТ — жирная метка
@@ -738,7 +779,7 @@ function selfcheck() {
   // разойтись. Почему это важнее прочих мутаций: до фикса расхождения НЕ БЫЛО — парсер тоже
   // возвращал 0, сверка давала 0 == 0 и зеленела. Мутация доказывает, что примета больше не
   // слепа ровно там же, где слеп разбор.
-  const tableMd = readFileSync(join(ROOT, 'interviews', 'interview_013_language_packs_scope.md'), 'utf8');
+  const tableMd = readFileSync(join(ROOT, pickLiveDoc('recommended').path), 'utf8');
   const tableReal = parseQuestions(tableMd).reduce((s, q) => s + q.options.length, 0);
   let listOnly = 0, inFence2 = false;
   for (const line of normalize(tableMd).split('\n')) {
