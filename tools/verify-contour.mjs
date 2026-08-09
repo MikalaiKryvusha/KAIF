@@ -342,43 +342,7 @@ async function main() {
         checkApproval(fixtureRoot, draft, 'msg1').ok);
     }
 
-    block('9. Счётная сверка вариантов по ВСЕМ живым документам против замороженного эталона (C10-блок 9, G7/G11/QA4)');
-    {
-      const live = liveOptionCounts();
-      const etalon = existsSync(ETALON_PATH) ? JSON.parse(readFileSync(ETALON_PATH, 'utf8')) : null;
-      check('эталон существует (заморожен и пересмотрен глазами)', etalon !== null);
-      if (etalon) {
-        for (const [file, c] of Object.entries(live)) {
-          const e = etalon[file];
-          check('эталон: ' + file, Boolean(e) && e.candidateLines === c.candidateLines &&
-            e.parsedOptions === c.parsedOptions && e.questions === c.questions,
-            e ? ('живое ' + JSON.stringify(c) + ' ≠ эталон ' + JSON.stringify(e))
-              : 'НОВЫЙ живой документ — намеренный красный до пересмотра эталона (G7)');
-        }
-        for (const file of Object.keys(etalon))
-          check('эталонный файл жив: ' + file, Boolean(live[file]), 'исчез с диска');
-        const mism = Object.values(live).filter((c) => c.candidateLines !== c.parsedOptions);
-        check('строки-кандидаты == разобранные варианты (G11, молча съеденный вариант невозможен)',
-          mism.length === 0, JSON.stringify(mism));
-      }
-      // Проверка ГЛАЗАМИ ЧЕЛОВЕКА, а не механизма (bugs/51, вторая итерация). Счёт радиокнопок
-      // говорит, что выбор ЕСТЬ; он ничего не говорит о том, можно ли им ВОСПОЛЬЗОВАТЬСЯ.
-      // Полевой отказ: кнопки отрисовались, но табличная форма потеряла букву варианта — и
-      // рекомендация «вариант C» не ложилась ни на одну кнопку. Проверяем то, что человек ЧИТАЕТ:
-      // в подписи каждого варианта обязана стоять его буква.
-      const unnamed = [];
-      for (const file of Object.keys(liveOptionCounts())) {
-        for (const q of buildPage(ROOT, file).questions) {
-          for (const o of q.options) {
-            const plain = o.html.replace(/<[^>]+>/g, ' ');
-            if (!new RegExp('(^|[^\\p{L}])' + o.letter + '[.)]', 'u').test(plain))
-              unnamed.push(file + ':' + q.id + ':' + o.letter);
-          }
-        }
-      }
-      check('каждая радиокнопка НАЗВАНА своей буквой (подпись читаема человеком, не только счётчиком)',
-        unnamed.length === 0, 'варианты без буквы в подписи: ' + unnamed.join(', '));
-    }
+    etalonBlock();
 
     block('10. Живой документ: реальное интервью, ноль внешних загрузок (C10-блок 10)');
     {
@@ -638,6 +602,54 @@ async function main() {
 const rmTolerant = (p) => { try { rmSync(p, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch { /* остаток поймает check уборки */ } };
 
 // Счёт вариантов по всем живым интервью (G11): независимая примета — строка-кандидат
+/**
+ * Блок 9 — сверка живых документов с ЗАМОРОЖЕННЫМ эталоном. Браузера не требует вовсе, поэтому
+ * вынесен из `main()` отдельной функцией и доступен режимом `--etalon-only` (bugs/69).
+ *
+ * ЗАЧЕМ ОТДЕЛЬНЫЙ РЕЖИМ. Намеренный красный G7 на новом живом документе — самая ценная примета
+ * этого прогона и одновременно самая скоропортящаяся: он сработал ТРИЖДЫ за двое суток и не был
+ * увиден никем, потому что весь прогон поднимает живой браузер и потому не стоял ни в одном
+ * ритуале. Дешёвая половина обязана гоняться часто (`/end-chat`), дорогая — редко (`/release`).
+ * Норма, чей сигнал никто не читает, эквивалентна отсутствию нормы.
+ */
+function etalonBlock() {
+  block('9. Счётная сверка вариантов по ВСЕМ живым документам против замороженного эталона (C10-блок 9, G7/G11/QA4)');
+  const live = liveOptionCounts();
+  const etalon = existsSync(ETALON_PATH) ? JSON.parse(readFileSync(ETALON_PATH, 'utf8')) : null;
+  check('эталон существует (заморожен и пересмотрен глазами)', etalon !== null);
+  if (etalon) {
+    for (const [file, c] of Object.entries(live)) {
+      const e = etalon[file];
+      check('эталон: ' + file, Boolean(e) && e.candidateLines === c.candidateLines &&
+        e.parsedOptions === c.parsedOptions && e.questions === c.questions,
+        e ? ('живое ' + JSON.stringify(c) + ' ≠ эталон ' + JSON.stringify(e))
+          : 'НОВЫЙ живой документ — намеренный красный до пересмотра эталона (G7)');
+    }
+    for (const file of Object.keys(etalon))
+      check('эталонный файл жив: ' + file, Boolean(live[file]), 'исчез с диска');
+    const mism = Object.values(live).filter((c) => c.candidateLines !== c.parsedOptions);
+    check('строки-кандидаты == разобранные варианты (G11, молча съеденный вариант невозможен)',
+      mism.length === 0, JSON.stringify(mism));
+  }
+  // Проверка ГЛАЗАМИ ЧЕЛОВЕКА, а не механизма (bugs/51, вторая итерация). Счёт радиокнопок
+  // говорит, что выбор ЕСТЬ; он ничего не говорит о том, можно ли им ВОСПОЛЬЗОВАТЬСЯ.
+  // Полевой отказ: кнопки отрисовались, но табличная форма потеряла букву варианта — и
+  // рекомендация «вариант C» не ложилась ни на одну кнопку. Проверяем то, что человек ЧИТАЕТ:
+  // в подписи каждого варианта обязана стоять его буква.
+  const unnamed = [];
+  for (const file of Object.keys(live)) {
+    for (const q of buildPage(ROOT, file).questions) {
+      for (const o of q.options) {
+        const plain = o.html.replace(/<[^>]+>/g, ' ');
+        if (!new RegExp('(^|[^\\p{L}])' + o.letter + '[.)]', 'u').test(plain))
+          unnamed.push(file + ':' + q.id + ':' + o.letter);
+      }
+    }
+  }
+  check('каждая радиокнопка НАЗВАНА своей буквой (подпись читаема человеком, не только счётчиком)',
+    unnamed.length === 0, 'варианты без буквы в подписи: ' + unnamed.join(', '));
+}
+
 function liveOptionCounts() {
   const out = {};
   const dir = join(ROOT, 'interviews');
@@ -748,7 +760,8 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
       (FAIL ? ' — КОНТУР НЕ ПРИНЯТ' : ' — все проверки прогона зелёные'));
     process.exit(FAIL ? 1 : 0);
   };
-  if (args.includes('--selfcheck')) { selfcheck(); finish(); }
+  if (args.includes('--etalon-only')) { etalonBlock(); finish(); }   // дешёвая половина для частых ритуалов (bugs/69)
+  else if (args.includes('--selfcheck')) { selfcheck(); finish(); }
   else if (args.includes('--visible')) { visibleRun().then(finish).catch((e) => { console.error('ПРОГОН УПАЛ: ' + e.message); process.exit(1); }); }
   else if (args.includes('--write-etalon')) { // G7: снять эталон → пересмотреть ГЛАЗАМИ → закоммитить
     writeFileSync(ETALON_PATH, JSON.stringify(liveOptionCounts(), null, 2) + '\n', 'utf8');

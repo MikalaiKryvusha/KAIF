@@ -63,5 +63,20 @@
     "questions": 3,
     "parsedOptions": 8,
     "candidateLines": 8
+  },
+  "interviews/interview_014_stylometry_snapshot_in_public_repo.md": {
+    "questions": 3,
+    "parsedOptions": 8,
+    "candidateLines": 8
+  },
+  "interviews/interview_015_blind_test_stylometry.md": {
+    "questions": 8,
+    "parsedOptions": 24,
+    "candidateLines": 24
+  },
+  "interviews/interview_016_provenance_marks_on_the_showcase.md": {
+    "questions": 1,
+    "parsedOptions": 3,
+    "candidateLines": 3
   }
 }
