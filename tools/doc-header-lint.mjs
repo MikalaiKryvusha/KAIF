@@ -417,6 +417,52 @@ function lintStampTruth(root, relPath, lines, findings, baseline, debt) {
   }
 }
 
+// ── Ось «закрытие против тела» (bugs/76) ───────────────────────────────────────────────────
+// Закрытие фиксируется ШТАМПОМ В ШАПКЕ, а тело документа остаётся в состоянии «до». Дефект
+// невидим при чтении диффа — он виден только при сверке заявления с телом, и именно поэтому его
+// не поймал ни один прогон: `doc-header-lint` линтовал ФОРМУ шапки, а не её правдивость.
+// Канон не запрещает снять критерий — он запрещает снять его МОЛЧА (легальная форма живёт рядом,
+// в том же plans/26: T5.2 и T7 сняты видимой правкой строки).
+//
+// Примета узкая: документ ОБЪЯВЛЯЕТ себя закрытым И несёт незакрытые чекбоксы `- [ ]`.
+// Изъятия названы, потому что оба — законные жанры, а не недосмотр:
+//   · «Пул автономного беклога» и подобные списки-хранилища: незакрытый пункт там и есть
+//     содержание, а не долг закрытого документа;
+//   · строка с явной пометкой `<!-- closed-ok: причина -->` — то же изъятие на месте, что у оси
+//     меток: правило текстового стража обязано иметь дверь для законного исключения.
+const CLOSED_CLAIM_RE = /(?:✅\s*(?:DONE|ЗАКРЫТ|ЗАКРЫТА|ЗАКРЫТО)|^\s*\*\*Status:\*\*\s*✅)/u;
+const OPEN_BOX_RE = /^\s*[-*]\s*\[ \]/;
+const CLOSED_EXEMPT_RE = /<!--\s*closed-ok\b/u;
+const BACKLOG_SECTION_RE = /(?:пул|беклог|backlog|задел|хвост|автономн)/iu;
+
+function lintClosureVsBody(relPath, lines, findings) {
+  const fenced = fencedMask(lines);
+  const head = lines.slice(0, HEAD_LINES).join('\n');
+  if (!CLOSED_CLAIM_RE.test(head)) return;          // документ себя закрытым не объявляет
+  let section = '';
+  let sectionExempt = false;
+  const open = [];
+  lines.forEach((line, i) => {
+    if (fenced[i]) return;
+    const h = line.match(/^#{1,6}\s+(.*)$/);
+    // Изъятие принимается и НА ЗАГОЛОВКЕ — тогда оно накрывает секцию. Это нужно истории:
+    // у закрытых до этой оси документов чекбоксы плана остались неотмеченными десятками, и
+    // отмечать их задним числом значило бы УТВЕРЖДАТЬ за прошлые сессии то, чего не наблюдал.
+    // Канон на этот случай отвечает append-only: поправка — новая запись, а не правка старой.
+    if (h) { section = h[1]; sectionExempt = CLOSED_EXEMPT_RE.test(line); return; }
+    if (!OPEN_BOX_RE.test(line)) return;
+    if (CLOSED_EXEMPT_RE.test(line) || sectionExempt) return;
+    if (BACKLOG_SECTION_RE.test(section)) return;   // список-хранилище: незакрытый пункт — содержание
+    open.push(i + 1);
+  });
+  if (open.length) {
+    findings.push([relPath, `документ объявляет себя ЗАКРЫТЫМ, а в теле ${open.length} невыполненн` +
+      `${open.length === 1 ? 'ый пункт' : 'ых пунктов'} \`- [ ]\` (строки ${open.slice(0, 5).join(', ')}` +
+      `${open.length > 5 ? ', …' : ''}) — снять критерий можно, снять его МОЛЧА нельзя (bugs/76): ` +
+      'вычеркни пункт явной правкой с причиной или отметь `<!-- closed-ok: причина -->`']);
+  }
+}
+
 function lintInterview(relPath, lines, findings) {
   const head = lines.slice(0, HEAD_LINES).join('\n');
   if (!/^# /.test(lines[0] || '')) findings.push([relPath, 'нет H1 первой строкой']);
@@ -462,6 +508,7 @@ function run(root, { all = false } = {}) {
     const stampLines = readLines(path);
     lintStamps(rel, stampLines, findings);
     lintStampTruth(root, rel, stampLines, findings, stampBaseline, stampDebt);
+    lintClosureVsBody(rel, stampLines, findings);
   };
   for (const dir of FULL_DIRS) for (const f of listMd(join(root, dir))) {
     const rel = `${dir}/${f}`;
@@ -471,6 +518,7 @@ function run(root, { all = false } = {}) {
     lintGoalVector(dir, rel, lines, findings);
     lintStamps(rel, lines, findings);
     lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
+    lintClosureVsBody(rel, lines, findings);
   }
   for (const f of listMd(join(root, BUGS_DIR))) {
     const rel = `${BUGS_DIR}/${f}`;
@@ -479,6 +527,7 @@ function run(root, { all = false } = {}) {
     scanned++; lintBugs(rel, lines, findings);
     lintStamps(rel, lines, findings);
     lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
+    lintClosureVsBody(rel, lines, findings);
   }
   for (const f of listMd(join(root, INTERVIEWS_DIR))) {
     const rel = `${INTERVIEWS_DIR}/${f}`;
@@ -487,6 +536,7 @@ function run(root, { all = false } = {}) {
     scanned++; lintInterview(rel, lines, findings);
     lintStamps(rel, lines, findings);
     lintStampTruth(root, rel, lines, findings, stampBaseline, stampDebt);
+    lintClosureVsBody(rel, lines, findings);
   }
   for (const f of ROOT_DOCS) {
     const p = join(root, f);
@@ -495,6 +545,7 @@ function run(root, { all = false } = {}) {
     scanned++; lintRoot(f, lines, findings);
     lintStamps(f, lines, findings);
     lintStampTruth(root, f, lines, findings, stampBaseline, stampDebt);
+    lintClosureVsBody(f, lines, findings);
   }
   // Конвенция имён plans/ — directory-level, вне пофайлового обхода и вне фильтра DONE.
   const planChildren = lintPlanNaming(root, findings);

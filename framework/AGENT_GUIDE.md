@@ -269,9 +269,18 @@ lines at decision points — rules at decision points, not rules in lists, are w
 follow). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
 the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
 run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
-These three skills are vendored verbatim from [fable-method](https://github.com/Sahir619/fable-method)
-(Sahir619, MIT) — see their headers for the sync ritual; the project's sphere library plays the role of
-their domain adapters.
+**KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:**
+verification is not only *observed*, it is *produced*. New behaviour ships together with the artifact
+that checks it — test suite, checklist, fixture, guard — planned in the SAME step, never "later"
+(`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Step 5 of the vendored loop
+asks you to observe a check; this line is what obliges you to have made one.
+
+The addition lives here on purpose. These skills are vendored **verbatim** from
+[fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
+the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
+KAIF-specific clause into their text would fork the vendor and quietly break that ritual — so the
+project's own obligations attach at the CALL POINT, which is this section. The sphere library plays the
+role of their domain adapters for the same reason.
 
 ### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
 

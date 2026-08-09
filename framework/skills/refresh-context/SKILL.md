@@ -18,10 +18,16 @@ restores it quickly and forms a current backlog.
    - `AGENT_GUIDE.md` — the rules (git workflow, style, tools, build).
    - `STATUS.md` — current state, what's in progress, "where to continue", "awaiting human review".
    - `BUG_FIXING_FRAMEWORK.md` — how to fix bugs.
+   - `TESTING_FRAMEWORK.md` — how you test what you make: the `[NOT-TESTED]`/`[TESTED]` contract.
+   - `REQUIREMENTS_FRAMEWORK.md` — how requirements and acceptance criteria are written and checked.
    - `PHILOSOPHY.md` — the simplicity principle (KISS + Occam).
+   - `GOAL.md` — the owner's vision: what all of this is ultimately for.
    - `EXPERIENCE.md` — recall accumulated lessons (grep by the current task's tags) before diving back in.
 
    Steps 1–2 together must cover the re-read core (`AGENT_GUIDE.md` → Document taxonomy, tier 1).
+   The list above IS that core, spelled out — because a weak session executes bullets, not pointers:
+   this skill once claimed full coverage while naming six documents of the nine, and all four
+   autonomous loops delegate their refresh to exactly this skill.
    Finish the re-read by updating the two-part refresh witness (`AGENT_GUIDE.md` → Context refresh):
    rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
    the current work.
