@@ -506,14 +506,14 @@ Table 6 — Metrics of KAIF 2.2
 |-------------------|-------|----------------|
 | Time spent on the version | **three days** | 7, 8 and 9 August 2026 |
 | Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
-| Commits in git | **204** | about four and a half working days of a human programmer behind every commit |
-| Lines written into the repository | **≈ 52,000** | prose plus code: 37,000 lines of prose and 14,400 lines of code |
+| Commits in git | **204** | a human programmer would need about four and a half working days for each of these commits |
+| Lines written into the repository, prose and code together | **≈ 52,000** | a thick book of about 1,700 pages |
 | Prose written into the repository — rules, conventions and the KAIF canon, not code | **≈ 37,000 lines** | about 1,200 typed pages |
 | Words of prose written into the repository | **≈ 396,000** | about **five novels** of 80,000 words each |
 | Code written into the repository | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
 | Writing pace | **≈ 10,000 words** per hour of active work | to write that much a human needs about 80 hours of uninterrupted writing |
 | The agent read | **≈ 4.5 billion tokens** | about 28,000 novels |
-| The agent wrote | **≈ 17.8 million tokens** | about 111 novels — it reads 255 times more than it writes |
+| The agent wrote | **≈ 17.8 million tokens** | about 111 novels |
 | Requests to the models in total | **≈ 13,000** | about 650 ordinary chatbot conversations of 20 messages each |
 | Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
 | Work sessions — a separate chat each | 34 | about twenty ordinary chatbot conversations of 20 messages per session |
@@ -1040,14 +1040,14 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 |--------------|----------|----------------|
 | Время работы над версией | **трое суток** | 7, 8 и 9 августа 2026 года |
 | Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
-| Коммитов в git | **204** | за каждым коммитом — примерно четыре с половиной рабочих дня живого программиста |
-| Строк написано в репозиторий | **≈ 52 000** | проза плюс код: 37 000 строк прозы и 14 400 строк кода |
+| Коммитов в git | **204** | на каждый такой коммит живому программисту понадобилось бы примерно четыре с половиной рабочих дня |
+| Строк написано в репозиторий, проза и код вместе | **≈ 52 000** | толстая книга примерно в 1 700 страниц |
 | Прозы написано в репозиторий (правила, соглашения и канон KAIF, не код) | **≈ 37 000 строк** | примерно 1 200 машинописных страниц |
 | Слов прозы написано в репозиторий | **≈ 396 000** | примерно **пять романов** по 80 000 слов каждый |
 | Кода написано в репозиторий | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
 | Темп письма | **≈ 10 000 слов** за час активной работы | чтобы написать столько, человеку в среднем нужно около 80 часов непрерывного письма |
 | Агент прочитал | **≈ 4,5 миллиарда токенов** | примерно 28 000 романов |
-| Агент написал | **≈ 17,8 миллиона токенов** | примерно 111 романов: агент читает в 255 раз больше, чем пишет |
+| Агент написал | **≈ 17,8 миллиона токенов** | примерно 111 романов |
 | Запросов к моделям всего | **≈ 13 000** | примерно 650 обычных чатов с чат-ботом по 20 сообщений в каждом |
 | Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
 | Сессий работы — каждая отдельным чатом | 34 | примерно двадцать обычных чатов с чат-ботом по 20 сообщений на каждую сессию |
