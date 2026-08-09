@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// [TESTED: 2026-08-09 · прогон: «12 diagram files written to assets/ (all labels width-checked)»; git diff по assets/ пуст — генерация детерминирована]
 // tools/build-diagrams.mjs
 // Generates the README diagrams into assets/ — 3 diagrams x 2 themes x 2 languages = 12 SVG files.
 //

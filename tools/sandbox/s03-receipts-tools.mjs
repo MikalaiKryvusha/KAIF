@@ -1,4 +1,5 @@
 // sandboxes3.mjs — песочницы Фазы 5.4: расписка last-update + история маркера ·
+// [TESTED: 2026-08-09 · зелёный в составе полигона — «sandbox suite: all 14 suites green» (npm run test:core)]
 // adopt-current (ручная миграция не убивает машинный путь) · diff (аудит и превью) ·
 // исполняющие чекпоинты + judge-вердикт + полный update-verify c самоочисткой.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, readdirSync } from 'node:fs';

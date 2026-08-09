@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// [TESTED: 2026-08-09 · голый прогон печатает запись развёртывания из .kaif/kaif.json и верный указатель на /kaif-version]
 // tools/kaif.mjs — KAIF lifecycle handles (idea 04), exposed via `npm run kaif:*`.
 //   version | check  — fully implemented.
 //   update | fork | switch-origin | remove | remove-all — print the respectful procedure and defer the

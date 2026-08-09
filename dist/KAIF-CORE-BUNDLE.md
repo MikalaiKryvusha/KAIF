@@ -790,10 +790,16 @@ the command (the owner doesn't and shouldn't). "Lies at path…", "opens by doub
 file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
 footnote of where it landed — never as an errand. No separate show tool: the review contour opens
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. The rule is guarded mechanically — grep your own
-reply for "double-click / opens offline / see file / lies at" next to an artifact extension: a
-hit means the show was replaced by a link. Field words that paid for this rule: "I will NOT open
-it by double-click! You are forcing me to dig through project files again!"
+contour, open the file with the system opener. **The executor of this check is THE AGENT ITSELF at
+the moment of sending, and that is said plainly:** before sending a reply, grep it for
+"double-click / opens offline / see file / lies at" next to an artifact extension — a hit means the
+show was replaced by a link. No machine can do it: the text being checked is your reply, it never
+lands on disk, and no repository tool can see it. An earlier wording of this line claimed the rule
+was "guarded mechanically" — indicative, about a check that did not exist, and a weak session reads
+such a sentence as a guarantee already met. Exactly one mechanical half exists and it is named:
+questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
+document". Field words that paid for this rule: "I will NOT open it by double-click! You are
+forcing me to dig through project files again!"
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
 covers artifacts; a question is not an artifact, and the gap let the same grievance return through
@@ -2656,7 +2662,11 @@ in git):
 - **`KAIF_UPDATES/`** — field reports on KAIF lifecycle runs. Every framework **update** and the
   initial **install** MUST finish with a short report here — terse, bullet-style, **strictly in
   English** (they address the KAIF developer, whatever the project's working language).
-  Origin-tracked deployments also send them upstream; detached ones keep them local only.
+  **A report stays LOCAL until the owner says otherwise** — there is no automatic delivery
+  upstream, and this line used to promise one (`bugs/71`). Sending is a deliberate act on the same
+  path a `/report-bug` ticket takes: the agent prepares the text, the owner approves it, and it
+  goes out under the owner's own account. Origin-tracked deployments are where that path is
+  available at all; detached ones have nowhere to send.
 - **`KAIF_AUDIT/`** — comprehensive audit reports by strong models (agentic codebase review),
   grouped one document per finding class/family, with rich accompanying meta (links, dates,
   document names) so that weaker models can later execute the fixes. Written by `/code-revision`;

@@ -1,4 +1,5 @@
 // sandboxes4.mjs — песочницы Фазы 5.5: анонимный путь становится механическим
+// [TESTED: 2026-08-09 · зелёный в составе полигона — «sandbox suite: all 14 suites green» (npm run test:core)]
 // (манифест переживает самоочистку → bootstrap-update классифицирует), легаси без манифеста
 // получает синтетический слепок из релизного артефакта старой версии (--baseline).
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, readdirSync, unlinkSync } from 'node:fs';

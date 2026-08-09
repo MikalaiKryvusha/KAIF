@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// [TESTED: 2026-08-09 · прогон npm run test:core: три преполёта зелёные, «all 14 suites green»]
 // tools/sandbox-suite.mjs — the PERMANENT sandbox polygon of the update machinery (plan 21 §5.6).
 // Runs every core sandbox suite end-to-end in the OS temp dir. Mandatory before a release and
 // after any change to framework/installer/* or tools/build-framework.mjs — verification that
@@ -45,7 +46,7 @@
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
@@ -109,7 +110,36 @@ if (mute.length) {
                 ' inside ok(...), or wrap the setup step in must(run, …) from tools/lib/sandbox-run.mjs');
   process.exit(1);
 }
-console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command (${SUITES.length} suites)`);
+// Preflight guard (bugs/71 №3): every machinery file carries a TEST-STATUS MARKER. The canon has
+// demanded this since 2.0 (AGENT_GUIDE checklist, step 10: raw work is `[NOT-TESTED]`, work
+// verified by observation is `[TESTED: date · how]`) — and 20 files out of 44 carried neither,
+// precisely the ones edited most often. A rule that only lives in a checklist is a rule the
+// checklist reader believes is already satisfied: that is the `[TESTED]` fraud one level up, at
+// the rule rather than the artifact. Debt is ZERO by construction — all 20 were marked BY
+// OBSERVATION the day this gate was born (one of them honestly `[NOT-TESTED]`, because its
+// toolchain is not installed in this tree) — so this is a GATE, not an adviser.
+const MARKER_RE = /\[TESTED:|\[NOT-TESTED\]/;
+const unmarked = [];
+{
+  const dirs = [['tools', REPO], ['tools/lib', REPO], ['tools/sandbox', REPO]];
+  for (const [rel] of dirs) {
+    const dir = join(REPO, rel);
+    if (!existsSync(dir)) continue;
+    for (const n of readdirSync(dir)) {
+      if (!n.endsWith('.mjs')) continue;
+      const p = join(dir, n);
+      if (statSync(p).isDirectory()) continue;
+      if (!MARKER_RE.test(readFileSync(p, 'utf8'))) unmarked.push(`${rel}/${n}`);
+    }
+  }
+}
+for (const u of unmarked) console.error('✖ no test-status marker (bugs/71): ' + u);
+if (unmarked.length) {
+  console.error(`\n❌ preflight: ${unmarked.length} machinery file(s) without a test-status marker — add` +
+                ' `[TESTED: <date> · <what was observed>]` or an honest `[NOT-TESTED]`; never stamp one without a run');
+  process.exit(1);
+}
+console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker (${SUITES.length} suites)`);
 
 let failed = 0;
 for (const s of SUITES) {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// [NOT-TESTED] — md-to-pdf в этом дереве не разрешается (require.resolve → MODULE_NOT_FOUND), прогон НЕ наблюдался; ставить [TESTED] без наблюдения запрещено (TESTING_FRAMEWORK)
 // tools/readme-pdf.mjs
 // Render README.md → README.pdf using md-to-pdf (headless Chromium).
 // First run downloads Chromium via puppeteer. Requires: cd tools && npm install

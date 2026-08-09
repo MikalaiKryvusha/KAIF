@@ -1,4 +1,5 @@
 // s05-provenance.mjs — песочница опционального модуля kaif-provenance (план 20 Фаза 5,
+// [TESTED: 2026-08-09 · зелёный в составе полигона — «sandbox suite: all 14 suites green» (npm run test:core)]
 // решение владельца №19). Проверяет grep-гейт: парность пометок, «пометки живут только в
 // объявленных канон-артефактах», report, accept с реестром; красные исходы доказаны.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync } from 'node:fs';

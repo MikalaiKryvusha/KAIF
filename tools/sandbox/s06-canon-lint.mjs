@@ -1,4 +1,5 @@
 // s06-canon-lint.mjs — песочница опционального линтера канона (план 20 Фаза 5, ideas/15 §2.6):
+// [TESTED: 2026-08-09 · зелёный в составе полигона — «sandbox suite: all 14 suites green» (npm run test:core)]
 // запрещённые формулировки, стерегомые полные строки, selftest «страж умеет краснеть».
 import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync } from 'node:fs';
 import { execSync } from 'node:child_process';

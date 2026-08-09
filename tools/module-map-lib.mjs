@@ -1,4 +1,5 @@
 // tools/module-map-lib.mjs — the module-map core shared by build-framework.mjs (generation)
+// [TESTED: 2026-08-09 · пересплит карты в check-framework: «module map OK (691 modules / 140 md files, core pin ok)»]
 // and check-framework.mjs (validation). ONE splitter, ONE classifier — two copies would drift
 // (plan 21 §3.1; the spike proved the algorithm: 124 files → 517 modules, byte-identical rejoin).
 //

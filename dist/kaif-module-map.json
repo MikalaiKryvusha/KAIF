@@ -233,10 +233,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "01dec02d19de7d3ebb6726ad45256ca6e017e7d36b51cb48525a0626b57e335e",
+        "sha256": "ed3b3ba96cfac5ec190bb8bc1afe98a98870bf6909adaea6b972b3e44d1b4a16",
         "lines": [
           682,
-          805
+          811
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          806,
-          820
+          812,
+          826
         ]
       },
       {
@@ -253,8 +253,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          821,
-          833
+          827,
+          839
         ]
       }
     ],
@@ -1515,10 +1515,10 @@
       {
         "signature": "# `reports/` — the agent's reports on cognitively heavy work",
         "class": "static",
-        "sha256": "e83790dcb52fb21d538f086ec653efb1dc14a6dde29306c25545463e6a0f7b5c",
+        "sha256": "007faf90b92e8cb9b4e1494a72f95b0498b8e4e09016077b373235f3e7b7fe52",
         "lines": [
           1,
-          27
+          31
         ]
       }
     ],
