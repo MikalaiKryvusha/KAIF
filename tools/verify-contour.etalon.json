@@ -83,5 +83,10 @@
     "questions": 3,
     "parsedOptions": 8,
     "candidateLines": 8
+  },
+  "interviews/interview_018_kaif_2.3_shape.md": {
+    "questions": 4,
+    "parsedOptions": 11,
+    "candidateLines": 11
   }
 }

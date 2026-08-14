@@ -297,3 +297,15 @@ PROJECT_ARCHITECTURE_INTERNAL_MAP.md:65:| **Контур требований** 
 **Состояние на 2026-08-09.** Адрес на месте построчно: `tools/counters-guard.mjs:418` — та самая
 строка `const named = …`. `AGENT_GUIDE.md:377` и `PROJECT_ARCHITECTURE_INTERNAL_MAP.md:31` на
 месте, распределение вхождений имени (2 / 2 / 1) сохранилось. Мутации не перезапускались.
+
+## Триаж 2.3 (фаза S, 2026-08-14)
+
+> Вердикты двухступенчатого триажа (механика на HEAD → скептик, дефолт REFUTED; сводная таблица — `reports/KAIF_AUDIT/2026-08-14_r2_triage_SUMMARY.md`).
+
+| № | Вердикт | Тяжесть | Эпик | Улика триажа |
+|---|---|---|---|---|
+| 1 | CONFIRMED | substantial | T | release/SKILL.md:87 «десять классов» (10 имён), живой showcase-lint --classes даёт lineClasses:13 (ADDRESSEE, TOOLPROOF, NBSP в навыке отсутствуют); counters-guard.mjs:141 стережёт только AGENT_GUIDE.md. Коммит 88282d5 обновил AGENT_GUIDE:668 до 13, навык не тронут — расхождение расширилось 10↔13. Не дизайн: число подано как факт о страже релиза. |
+| 2 | CONFIRMED | substantial | T | bugs/68:119-120 несёт [x] «внести в реестр пар строку framework/tools/+framework/hooks/ ↔ карты», но grep framework/hooks по AGENT_GUIDE даёт лишь дерево :378, пары нет; grep hook по counters-guard.mjs пуст; check-framework.mjs:516-520 считает файлы hooks лишь для суммы бандла. «Three hooks» (adapters/claude-code.md:32-33) сегодня истинно, но обещанный и «сданный» страж не существует — не дизайн, а неисполненное обещание. |
+| 3 | CONFIRMED | substantial | T | AGENT_GUIDE.md:668 заявляет «13 классов, каждый записан формой», но перечислены 11 имён; grep ADDRESSEE·TOOLPROOF по AGENT_GUIDE и release/SKILL.md пуст — строка противоречит себе. counters-guard:141 сверяет только цифру; состав «Nine language packs» (KAIF_REFERENCE:181/182) и дерево _thin-intro:77-88 не судятся. 88282d5 добавил NBSP, но два класса не названы нигде в каноне. |
+| 4 | CONFIRMED | substantial | T | counters-guard.mjs:10 «со ВСЕМИ зеркалами разом»; зеркало STATUS (:177-179) ловит 4 ключа, а «14 документов / 7 README» (STATUS:50) и «14 сводов» (:52) вне паттерна при живом приглашении «не переписывай руками» (:51). Довод «намеренный дизайн» (комментарий MIRRORS о переводе прописи в цифры) отклонён: цифровые зеркала STATUS тоже не стерегутся, а пропись AGENT_GUIDE:14 и :503 не сконвертирована и не стережётся. Пробы кругов зеленели. |
+| 5 | CONFIRMED | substantial | T | counters-guard.mjs:418-420: named() тестирует text ВСЕГО файла, finding зовётся «перечисление tool-модулей» — то есть проверка позиционируется стражем перечисления. Второе вхождение kaif-requirements-lint вне перечисления (AGENT_GUIDE:658, внутр. карта :65) маскирует дрейф строк дерева обоих главных файлов (распределение 2/2/1 подтверждено). Пробы M3a/M3b/T2 exit 0, контроль T3 exit 1 — слепое пятно доказано мутацией. |

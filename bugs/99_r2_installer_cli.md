@@ -148,3 +148,13 @@ verified` в середине вывода.
 
 **Состояние на 2026-08-09.** Адрес на месте, наблюдаемое воспроизводится дословно; версия в строке
 `machinery … verified` — 2.1, как и в исходной находке.
+
+## Триаж 2.3 (фаза S, 2026-08-14)
+
+> Вердикты двухступенчатого триажа (механика на HEAD → скептик, дефолт REFUTED; сводная таблица — `reports/KAIF_AUDIT/2026-08-14_r2_triage_SUMMARY.md`).
+
+| № | Вердикт | Тяжесть | Эпик | Улика триажа |
+|---|---|---|---|---|
+| 1 | CONFIRMED | substantial | U | KAIF-CORE.mjs:334 `translated: overrides.size` — pack size in the bundle, computed above writeIfNew (:455 'kept existing' returns false without writing) and the OWNER_SEEDED kept-branch (:1094-1098); printed at :1983 as 'N owner docs templated'. Not design: the file's own doctrine comment :282 ('counts what is ON DISK, never what was planned') and the disk-reading sibling counter countAliasedOnDisk (:290, called :1982) define the intended semantics this counter violates. Install over existing GOAL.md/KAIF_FRAMEWORK.md claims 8, writes 6 (doc's sandbox b99b matches the code path). Owner-facing lie, no data loss — substantial. |
+| 2 | CONFIRMED | substantial | U | KAIF-CORE.mjs:356 counts `deploy.filter((f) => skillName(f.path))` without isSkippedAnon, while both real deploy sites filter it (:1245, :1794 `skillName(f.path) && !isSkippedAnon(f.path)`) and anon skips are logged at :1785. The :357 line claims 'Arriving in ENGLISH ... all 35 skill bodies' but in anonymous mode 4 ORIGIN_TIED skills never arrive: same run prints 35 then '31 skills trigger-aliased', 31 dirs on disk. Refutation as 'framework total, not delivery count' fails — the sentence explicitly names what arrives and needs manual transfer. Residual instance of the class bugs/65 declared closed — substantial. |
+| 3 | CONFIRMED | hygiene | U | KAIF-LOADER.mjs:35 `SOURCES[(val('--channel') ·· 'release').toLowerCase()] ·· SOURCES.release` — unknown channel name silently falls to release; no warning anywhere (:38-39 only log/die helpers, die is used for other bad inputs, not this one); KAIF.md:83-86 contracts exactly two names (release, main), mirror KAIF.md:107 byte-identical. Real defect (silent substitution on a misunderstood request, user gets 2.1 instead of main's 2.2), but narrow: only mistyped-channel users, output still names the fetched URL and 'machinery 2.1 verified', default path unaffected — hygiene. |

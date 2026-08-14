@@ -174,7 +174,7 @@ README; в поставке с 2.2, эпик O): приказ перечитат
 | CPU / RAM | AMD Ryzen 7 5700G · 8 ядер / 16 потоков · 32 ГБ | PS: `Get-CimInstance Win32_Processor` |
 | PowerShell | **5.1** Desktop; **pwsh 7 НЕ установлен** | PS: `$PSVersionTable` |
 | git-bash | GNU bash 5.2.21 (MINGW64); **локаль ПУСТАЯ** (`$LANG` не задан) | bash: `echo "[$LANG]"` |
-| Кодировки | консоль 65001 (UTF-8), **ACP 1251** → `Set-Content` без `-Encoding utf8` пишет ANSI | PS: `[Console]::OutputEncoding.CodePage` и `[System.Text.Encoding]::Default.CodePage` |
+| Кодировки | консоль 65001 (UTF-8), **ACP 1251** → `Set-Content` без `-Encoding utf8` пишет ANSI; **ЧТЕНИЕ симметрично:** `Get-Content`/`-Tail` без `-Encoding UTF8` читает UTF-8 как ANSI → мнимый mojibake на здоровом файле (наступлено 2026-08-14 при знании пишущей половины). Файлы читай инструментом Read; шеллом — только с явным `-Encoding UTF8` | PS: `[Console]::OutputEncoding.CodePage` и `[System.Text.Encoding]::Default.CodePage` |
 | node / npm | v24.15.0 / 10.8.2 | `node -v` · `npm -v` |
 | git | 2.43.0.windows.1 · `core.autocrlf=true` · helper `manager` | `git --version` · `git config core.autocrlf` |
 | gh | 2.95.0, аутентифицирован (аккаунт владельца) | `gh --version` · `gh auth status` |
