@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.2",
   "released": "2026-08-08",
-  "moduleCount": 700,
+  "moduleCount": 701,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -662,12 +662,21 @@
         ]
       },
       {
+        "signature": "## The writing checklist — the executable carrier of this canon",
+        "class": "static",
+        "sha256": "d534007d6386d2197b6e7fff9fb8c73444721eb74db22278f59af4607059f38e",
+        "lines": [
+          108,
+          129
+        ]
+      },
+      {
         "signature": "## Boundaries — what this framework is NOT",
         "class": "static",
         "sha256": "2ba6cef24797b4a147d5d11de78ce248bb79b7fa20fb62deef40c5f96b446649",
         "lines": [
-          108,
-          119
+          130,
+          141
         ]
       },
       {
@@ -675,8 +684,8 @@
         "class": "static",
         "sha256": "06dc1ccc79a726183b2ddeccb614335a80e53d791b17f8551c18e99328748636",
         "lines": [
-          120,
-          137
+          142,
+          159
         ]
       }
     ],
