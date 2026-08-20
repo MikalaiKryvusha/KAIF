@@ -545,6 +545,27 @@ Updating the README — draw on the current README and the owner's other repo st
 storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
 notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style choice.
 
+### The form of an obligation — a command, a step, or a checkbox
+
+A weak model under load honours an obligation in proportion to how EXECUTABLE its form is. Field
+measurement (origin issue #22): two rules of equal canonical weight sat in the same context — the
+one that had a command was honoured unprompted; the one stated as prose accumulated debt for 90
+minutes and was paid only when the owner asked. The owner's razor behind this rule lives in
+`PHILOSOPHY.md` → "Code before cognition": models understand guidance, not prohibitions, and
+concrete step-by-step plans, not vague prose.
+
+Therefore every obligation in a canon document carries one of three executable forms:
+
+1. **A command** — a runnable line the agent copies and runs;
+2. **A step** — a numbered plan or checklist entry with a verifiable exit condition;
+3. **A checkbox** — a box a ritual ticks.
+
+Prose stays as the rationale UNDER the carrier: it explains WHY, it never carries the obligation
+alone. Two corollaries: a rule that produces an ARTIFACT names the command that produces it — if
+no command exists, the rule is incomplete, so ship the command rather than phrasing the paragraph
+harder; and a new PROHIBITION enters the canon only restated as positive guidance ("do X" instead
+of "never Y") or moved into a guard that reddens by itself.
+
 ### The storefront — text a stranger reads
 
 The storefront (README, release notes, a release page, a landing page) differs from a working
@@ -1011,6 +1032,16 @@ machine-checkable is checked by CODE; judgement is what remains for the model (`
 strictness modes, the division by model strength). This is Occam applied to the workforce: never
 spend cognition where determinism suffices — and the 20% left for the model is not a shortfall but
 the part that actually needs a mind.
+
+The owner's razor for WHERE each thing lives (his word, distilled): models understand GUIDANCE
+well and PROHIBITIONS poorly; they are weak at precise instruction-following and strong at
+predicting what would be best. Therefore whatever demands strictness and precision is regulated
+and moved into code and hooks; whatever demands the model's creativity and good intuition stays
+as prose and agreements — but written as CONCRETE STEP-BY-STEP PLANS of concrete actions, never
+as vague prose. "Work without bugs" is the vague kind; "write test cases, test against them, file
+the defects" is the executable kind. A prohibition earns its keep only restated as positive
+guidance or moved into a guard that reddens by itself (the form rule for canon obligations —
+`AGENT_GUIDE.md`).
 
 ### Murphy's Law — anything unforeseen tends to happen
 If a risk isn't accounted for, it has a good chance of being exactly what bites you. You can't defend
