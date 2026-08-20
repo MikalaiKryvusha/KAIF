@@ -621,7 +621,14 @@ function pageShell({ title, kind, heading, main, questions, artifacts = [], batc
     " for(var k=0;k<A.length;k++){var a=A[k];if(a.doc!==doc||!a.exists)continue;",
     "  var st='';var ars=document.getElementsByName('art:'+doc+':'+a.id);",
     "  for(var m=0;m<ars.length;m++)if(ars[m].checked)st=ars[m].value;",
-    "  if(st)arts[a.id]={status:st,sha256:a.sha256,comment:fieldVal('artcomment:'+doc+':'+a.id).trim()}}",
+    // issue #19 истока (класс «молча выброшенное поле», три развёртывания построчно): замечание к
+    // артефакту БЕЗ выбранного статуса — тоже слова человека, и часто это его способ ОТВЕРГНУТЬ
+    // предложенное и развернуть работу. Нарисованное поле обязано сохранять содержимое (P7/I10);
+    // прежнее условие if(st) выбрасывало комментарий-без-статуса при отчёте «готово». Пустой
+    // статус решения не выражает: checkApproval пропускает только status==='approved' — «только
+    // замечание» одобрением стать не может по построению.
+    "  var ac=fieldVal('artcomment:'+doc+':'+a.id).trim();",
+    "  if(st||ac)arts[a.id]={status:st,sha256:a.sha256,comment:ac}}",
     " var p={doc:doc,answers:answers,comment:fieldVal('doccomment:'+doc)};",
     " for(var z in arts){p.artifacts=arts;break}",
     " return p}",

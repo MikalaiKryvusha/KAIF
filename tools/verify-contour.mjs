@@ -404,6 +404,76 @@ async function main() {
       check('отклонение НЕ открывает гейт', !rej.ok && /rejected/u.test(rej.reason), rej.reason);
     }
 
+    // ── Блок 8в: комментарий БЕЗ выбора/статуса СОХРАНЯЕТСЯ (issue #19 истока) ──────────────
+    // Класс «молча выброшенное поле»: страница рисует поле комментария, а условие записи его не
+    // включает — человек пишет «переделай так», жмёт «Записать», страница говорит «готово», и
+    // слова исчезают. В поле это ШТАТНЫЙ способ владельца ОТВЕРГНУТЬ варианты и развернуть
+    // работу (issue #19: замер — три развёртывания построчно). Вопросная ветка истока была
+    // чиста, артефактная (`if(st)`) — теряла. Доказать может только НАСТОЯЩИЙ клик: страж,
+    // проверяющий наличие textarea в разметке, негоден по контракту issue («наличие поля и
+    // сохранность содержимого — два разных утверждения»). Адресат мутации: tools/review.mjs,
+    // collect() — обе ветки условия записи.
+    block('8в. Заполнено ТОЛЬКО поле комментария → содержимое в снимке решения (issue #19)');
+    {
+      // Артефактная половина: черновик с исходящим, заполняется только artcomment.
+      rmSync(join(fixtureRoot, 'interviews/decisions'), { recursive: true, force: true });
+      let draftUrl = null;
+      serveContour._onUp = (u) => { draftUrl = u; };
+      const draftPromise = serveContour(fixtureRoot, { docPath: draft }, { open: false, signal: false, log: logSilent });
+      while (!draftUrl) await sleep(50);
+      const page = await attachPage(browser.cdp, draftUrl);
+      await page.evaluate([
+        "(function(){var t=document.getElementsByName('artcomment:" + draft + ":msg1')[0];",
+        " t.value='замечание без статуса — направление работы';t.dispatchEvent(new Event('input',{bubbles:true}));",
+        " document.querySelector('#save').click();return true})()",
+      ].join(''));
+      const served = await Promise.race([draftPromise, sleep(8000).then(() => null)]);
+      check('запись прошла (страница не сказала «нечего записывать»)',
+        served !== null && served.outcome === 'decision recorded', served ? served.outcome : 'не завершился за 8 с');
+      const dec = readDecision(fixtureRoot, draft);
+      const art = dec && dec.artifacts && dec.artifacts.msg1;
+      check('замечание к артефакту БЕЗ статуса сохранено в снимке',
+        !!art && art.comment === 'замечание без статуса — направление работы',
+        art ? JSON.stringify(art) : 'artifacts.msg1 в решении нет');
+      check('«только замечание» НЕ открывает гейт (одобрение — лишь status approved)',
+        !checkApproval(fixtureRoot, draft, 'msg1').ok);
+      await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
+
+      // Вопросная половина: свежий документ с одним НЕотвеченным вопросом, заполняется только
+      // comment. Третье состояние снимка: choice пуст + комментарий = «варианты отвергнуты» —
+      // выбор из текста НЕ выводится, вопрос остаётся открытым (границы issue #19).
+      const qRel = 'interviews/interview_102_comment_only.md';
+      writeFileSync(join(fixtureRoot, qRel), [
+        '# Interview #102 — фикстура комментария без выбора', '',
+        "> Status: **🟡 awaiting the owner's answers**", '',
+        '### Q1. Какой вариант берём?', '',
+        '- **A)** первый', '- **B)** второй', '',
+        '**Answer:**', '',
+      ].join('\n'), 'utf8');
+      let qUrl = null;
+      serveContour._onUp = (u) => { qUrl = u; };
+      const qPromise = serveContour(fixtureRoot, { docPath: qRel }, { open: false, signal: false, log: logSilent });
+      while (!qUrl) await sleep(50);
+      const qPage = await attachPage(browser.cdp, qUrl);
+      await qPage.evaluate([
+        "(function(){var t=document.getElementsByName('comment:" + qRel + ":Q1')[0];",
+        " t.value='варианты не нравятся — переделай';t.dispatchEvent(new Event('input',{bubbles:true}));",
+        " document.querySelector('#save').click();return true})()",
+      ].join(''));
+      const qServed = await Promise.race([qPromise, sleep(8000).then(() => null)]);
+      check('запись прошла и для вопроса без выбора', qServed !== null && qServed.outcome === 'decision recorded',
+        qServed ? qServed.outcome : 'не завершился за 8 с');
+      const qDec = readDecision(fixtureRoot, qRel);
+      check('комментарий-без-выбора в снимке (третье состояние: варианты отвергнуты)',
+        qDec && qDec.answers && qDec.answers.Q1 && qDec.answers.Q1.comment === 'варианты не нравятся — переделай'
+          && qDec.answers.Q1.choice === '',
+        qDec ? JSON.stringify(qDec.answers) : 'решения нет');
+      const qMd = readFileSync(join(fixtureRoot, qRel), 'utf8');
+      check('комментарий разнесён в md, вопрос остался ОТКРЫТЫМ (выбор из текста не выводится)',
+        qMd.includes('варианты не нравятся — переделай') && !parseQuestions(qMd).find((q) => q.id === 'Q1').answered);
+      await browser.cdp.send('Target.closeTarget', { targetId: qPage.targetId }).catch(() => {});
+    }
+
     etalonBlock();
 
     block('10. Живой документ: реальное интервью, ноль внешних загрузок (C10-блок 10)');
