@@ -5,8 +5,10 @@
 > **Родитель:** `ideas/24_kaif_2.3_scope.md` § «Сокращение скоупа» (состав эпика X) + issues
 > origin **#22 · #21 · #18 · #14** (тела issues — первоисточник постановки и research-база:
 > полевые замеры, контракты фиксов, предложения — сняты агентами живых проектов).
-> **Статус:** 🟢 В ИСПОЛНЕНИИ — X0-нулёвка пройдена 2026-08-21 00:25 +03:00 (issues открыты,
-> HEAD `9ebe559`, дополнение владельца от 2026-08-21 00:19 +03:00 включено в X1).
+> **Статус:** ✅ ЭПИК ЗАКРЫТ 2026-08-21 00:48 +03:00 — все пять фаз за одну сессию (X0-нулёвка
+> 00:25 · X1 `f5660d4` 00:29 · X2 `a3679d9` 00:37 · X3 `e79a9e1` 00:39 · X4 `dc6990d` 00:45 ·
+> X5 судья VERIFIED 00:48; полигон 14/14, все линтеры зелёные). Черновики ответов в issues —
+> секцией внутри; отправка — за словом владельца.
 > **Вовне:** payload-канон (`framework/TESTING_FRAMEWORK.md`, `framework/REQUIREMENTS_FRAMEWORK.md`,
 > `framework/PHILOSOPHY.md`, `framework/AGENT_GUIDE.md`, навык `/experience`) — публичный контракт
 > версии; черновики ответов в issues — наружу только через `send-outbound` со словом владельца.
@@ -58,7 +60,7 @@
       владельца (2026-08-21 00:19 +03:00) — вход X1. Дельты против плана нет — план пишется
       этой же сессией.
 
-### X1 — правило формы обязательства (канон, оба слоя) — ✅ закрыта 2026-08-21 (коммит `f5660d4`)
+### X1 — правило формы обязательства (канон, оба слоя) — ✅ закрыта 2026-08-21 00:29 +03:00 (коммит `f5660d4`)
 
 - [x] 1. `framework/PHILOSOPHY.md` → «Код прежде когниции»: дополнен тезисами владельца
       (запреты/руководства; строгость → код и хуки; творчество → структурированная проза
@@ -89,7 +91,7 @@
 - **Гейт X2:** критерии 2 и 5 зелёные — ждёт зелёного `npm run test:core` (сборщик тронут;
   прогон запущен 2026-08-21, лог `scratchpad/testcore-x2.log`).
 
-### X3 — конверсия `REQUIREMENTS_FRAMEWORK.md` (#22) — ✅ закрыта 2026-08-21 (коммит `e79a9e1`)
+### X3 — конверсия `REQUIREMENTS_FRAMEWORK.md` (#22) — ✅ закрыта 2026-08-21 00:39 +03:00 (коммит `e79a9e1`)
 
 - [x] 1. Замер «до» (136 строк · 0 команд · 0 чекбоксов) → новая секция «Чек-лист письма» (шесть
       чекбоксов + команда `kaif-requirements-lint` носителем шага; консультирует, черновик не
@@ -114,14 +116,66 @@
 - **Гейт X4:** ✅ критерий 4 зелёный. [TESTED: 2026-08-21 · selftest оба ответа; живой прогон:
   84 записи · долг 79 · новых 0]
 
-### X5 — закрытие эпика
+### X5 — закрытие эпика — ✅ закрыта 2026-08-21 00:48 +03:00
 
-- [ ] 1. Замеры до/после всех конверсий — в закрытие плана (числа печатают команды, не проза).
-- [ ] 2. Полное дерево: сборка · счётчики · реестр пар · `npm run test:core` · линтеры.
-- [ ] 3. Черновики ответов в issues #22/#21/#18/#14 (файлами; отправка — слово владельца).
-- [ ] 4. Лёгкий судья эпика (№48); уроки в `EXPERIENCE.md`; секция «Решения без владельца»
-      дополнена; **детализация U′ — нулёвкой на его старте** (канон N+1).
-- **Гейт X5 = критерии эпика 1–6 зелёные.**
+- [x] 1. Замеры до/после — в вехах фаз X2/X3 (печатали команды issue #22, не проза): TESTING
+      126→191 строка / 0→30 нумерованных шагов; REQUIREMENTS 136→158 / 0→6 чекбоксов.
+- [x] 2. Полное дерево зелёное: сборка+check (162 блока · 701 модуль) · counters-guard 50 зеркал ·
+      реестр пар (дифф генератов пуст после пересборок) · `npm run test:core` — **all 14 suites
+      green** (лог `scratchpad/testcore-x5.log`) · doc-header-lint 0 · questions-guard 0 новых ·
+      verify-contour эталон 40/0 · showcase-lint чист · experience-lint: 84 записи · долг 79 ·
+      новых 0.
+- [x] 3. Черновики ответов в issues #22/#21/#18/#14 — секцией ниже; отправка — только словом
+      владельца через `send-outbound`.
+- [x] 4. Лёгкий судья эпика (№48): заявления фаз переисполнены прогонами п. 2 в один заход
+      закрытия — вердикт **VERIFIED** (каверз нет; замечание себе: «команды» в конверсии
+      представлены шагами и чекбоксами с одной командной строкой на документ — счёт «cmds 0» в
+      замере честно назван, носителем служит шаг). Урок EXP-0084 записан; «Решения без
+      владельца» дополнены (пп. 4–6); **детализация U′ — нулёвкой на его старте** (канон N+1).
+- **Гейт X5 = критерии эпика 1–6 зелёные. ЭПИК X ЗАКРЫТ.**
+
+## Черновики ответов в issues (X5.3; отправка — ТОЛЬКО словом владельца через `send-outbound`)
+
+**#22 (EN):** Shipped in 2.3, epic X (commits `f5660d4` / `a3679d9` / `e79a9e1`): the form rule
+is now canon — `AGENT_GUIDE.md` → "The form of an obligation": every canon obligation carries a
+command, a numbered step with an exit condition, or a checkbox; prose only explains; a rule that
+produces an artifact names its command; a new prohibition enters only restated as positive
+guidance or as a guard. The two documents with zero executable carriers were converted first:
+`TESTING_FRAMEWORK.md` (126 → 191 lines, 30 numbered steps) and `REQUIREMENTS_FRAMEWORK.md`
+(a six-checkbox writing checklist carrying the shipped linter command). Your suggestion 1 (the
+`canon-form-check` linter) and the conversion of the remaining canon are scheduled for 2.4
+(`ideas/26` §6); suggestion 4 (the debt counter) landed as the shape of the `experience-lint`
+guard (see #14). The owner's razor behind the rule is recorded verbatim in `ideas/24`.
+
+**#21 (EN):** Shipped in 2.3 (`a3679d9`): `TESTING_FRAMEWORK.md` gained "The testing
+activities" — test-basis analysis → design techniques (partitioning · boundaries · decision
+tables · state transitions · pairwise · error guessing) → documentation (plan · suite ·
+checklist · cases) → execution with pass/fail/blocked/skipped → the defect shape handing off to
+`BUG_FIXING_FRAMEWORK.md`. Marker rule 7 makes `[TESTED]` on a FEATURE legal only alongside the
+written case set — one observation flips a case, never the feature (your suggestion 2, the
+smallest change that would have prevented the field cost). The control-run rule is step 5 of the
+chain (suggestion 4). A test-cases template now ships (suggestion 3):
+`.kaif/_testcases-template.md`, copied into the project's test-doc home (default `testcases/`,
+created on first use) — goal vector, EARS table, coverage matrix with explicit holes, cases, and
+MUST control cases, in the shape of your local `TC_AIGF-1779` artifact.
+
+**#18 (EN):** Shipped in 2.3 (`a3679d9`): observation gates 6–7 — after a deploy the gate is
+production itself, entered as a user, by whatever door the product offers (an unauthenticated
+smoke is not evidence about an authenticated product); and artifact integrity before shipping
+(exactly one build identity, asserted mechanically). Both placement rules from your ticket are in
+the canon text verbatim in spirit: the gates belong in the deploy path — one door that runs them
+and fails on any red step, a hook over discipline — and a post-deploy smoke must be able to FAIL
+on a dead product. Hosting-agnostic, as your "what NOT to do" asked.
+
+**#14 (RU):** В 2.3 (`dc6990d`): `/experience` получил шаг 0 — вопрос механизации при ПЕРВОЙ
+записи («можно ли сделать урок ненужным, и во сколько это обойдётся?») с иерархией И2 (устранить
+ловушку → страж, краснеющий сам → и только потом запись); обязательное поле И1 из трёх исходов;
+правило И3 — урок об опасном действии живёт в строке этого действия в реестре инструментов, тег
+`#action:`, и recall получил вторую ось (`grep '#action:'` — ваша дыра 3); маркер И4 (ловушке по
+форме «урок о предмете» недоступен). Страж `tools/experience-lint.mjs` — по вашему исполнимому
+контракту, с baseline на унаследованные записи (только убывает) — стоит в `/end-chat` истока;
+«два раза — механизм» остался крайним сроком, как вы и просили. В payload опциональным
+tool-модулем поедет в 2.4 вместе с `canon-form-check` (#22).
 
 ## Риски
 
@@ -146,6 +200,16 @@
 3. **Линтер формы канона (`canon-form-check`, #22 предложение 1) отложен в 2.4** (`ideas/26`
    п. 6) — в 2.3 форму держат правило + конверсия двух документов с нулём исполнимого; линтер
    осмыслен после полной конверсии корпуса.
+4. **`experience-lint` в 2.3 живёт обвязкой истока, в payload не едет** — навык поставки несёт
+   обязательство ПОЛЯ, но не обещает машинерию, которой поставка не содержит (класс `bugs/71`
+   «механизация без исполнителя»); опциональным tool-модулем поедет в 2.4 вместе с
+   `canon-form-check` — они одно семейство.
+5. **Baseline стража охватывает все 83 записи на дату рождения** — ретроспективная разметка 83
+   уроков полем была бы выдумыванием исходов задним числом; поле обязательно вперёд, долг только
+   убывает.
+6. **Черновики ответов в issues живут секцией этого плана**, а не отдельными файлами — четыре
+   коротких текста не заслуживают четырёх документов (Оккам); отправка остаётся за словом
+   владельца (`send-outbound`).
 
 ## Links
 
