@@ -7,7 +7,11 @@
 > origin **#19 · #15 · #16 · #8 · #10 · #3 · #4 · #6 · #20** (тела issues — первоисточник).
 > **Статус:** 🟢 В ИСПОЛНЕНИИ — нулёвка U′0 пройдена 2026-08-21 01:22 +03:00 (issues #3–#22
 > открыты пробой; твин-чек класса #19 по истоку дал находку — артефактная ветка `review.mjs:624`
-> теряет комментарий без статуса; вопросная ветка `:617` уже чиста).
+> теряет комментарий без статуса; вопросная ветка `:617` уже чиста) · U′1 закрыта 2026-08-21
+> 01:32 +03:00 (контур 149/0, #19+#15) · U′2 закрыта 2026-08-21 02:42 +03:00 (семь пунктов
+> машинерии: #16 сплайс · #8 переход маркера · #10 резолв/формы/libuv · 92.1 `--lang` ·
+> §12.3 наследие T8 · 99.1–99.3 счётчики/канал · crash-журнал + `resume`; коммиты
+> `7bb1753`/`7d9258c`/`555ac5e`, полигон «all 14 suites green»).
 > **Вовне:** машинерия поставки (`framework/installer/`), контракт `/owner-reviews`, канон
 > `/report-bug` — публичные контракты; ответы в issues — только `send-outbound` со словом
 > владельца.
@@ -68,24 +72,54 @@
 - **Гейт U′1:** ✅ [TESTED: 2026-08-21 · контур 149/0 в браузере; мутация 147/2; сборка+счётчики
   зелёные]
 
-### U′2 — машинерия жизненного цикла (#8, #16, #10 + 99.* + `--lang` + crash-safety)
+### U′2 — машинерия жизненного цикла (#8, #16, #10 + 99.* + `--lang` + crash-safety) — ✅ закрыта 2026-08-21 02:42 +03:00
 
-- [ ] 1. **#16:** проводка `kaif:*` пишет ТОЛЬКО ключ `scripts` (точечная правка сериализации,
-      чужое форматирование `package.json` не трогается); свод: рукописно отформатированный
-      манифест переживает проводку байт-в-байт вне `scripts`.
-- [ ] 2. **#8:** явный `--mode standard` на легаси-ветке пишет `tracking`/`origin` и логирует
-      переход; противоречие флага и маркера без явного намерения — отказ с именем команды; свод
-      по строкам репро issue.
-- [ ] 3. **#10:** `diff --source github.com/<o>/<r>` резолвится в `releases/latest/download`;
-      404 печатает ожидаемую форму URL; libuv-аборт после ошибки гасится.
-- [ ] 4. **Валидация `--lang`** (92.1): неизвестный код — отказ со списком; слово — подсказка.
-- [ ] 5. **Квитанция-момент §12.3** (KLAS п. 5): `date`/`verifiedAt` — полный локальный ISO 8601.
-- [ ] 6. **Счётчики финальной строки считают диск** (99.1/99.2) · **неизвестный канал — отказ**
-      (99.3).
-- [ ] 7. **Crash-safety `update`** (KLAS п. 2; самый крупный — последним, нулёвка вправе вынести
-      решением владельца): staging → атомарный swap ЛИБО журнал + `resume`; свод: прогон, убитый
-      на середине, не оставляет полуобновлённого дерева без следов.
-- **Гейт U′2:** каждый пункт — свод, красный на сломанной версии; `test:core` целиком зелёный.
+- [x] 1. **#16:** проводка `kaif:*` сплайсит добавляемое в СОБСТВЕННЫЙ текст манифеста
+      (`jsonTopLevel` + `splicePackageJson`; сплайс доказывает себя — парс результата минус
+      добавленное == оригинал, иначе честный фолбэк с признанием пересериализации в логе);
+      свод s01/S5a+S5b: инвариант «одна непрерывная вставка», компактные строки/CRLF/отсутствие
+      финального перевода строки — байт-в-байт; красный доказан против до-фиксного dist (5
+      красных). Коммит `7bb1753`.
+- [x] 2. **#8:** явный `--mode standard` на легаси-ветке ПИШЕТ переход anonymous → origin в
+      маркер с объявлением в логе; явный `--mode anonymous` против отслеживаемого маркера —
+      отказ ДО первой записи; наследование без флага не тронуто (bug 11). Свод s04/S15+S15b+S15c
+      по строкам репро issue; красный — 4 красных против до-фиксного dist. Коммит `7bb1753`.
+- [x] 3. **#10:** голый `--source github.com/<o>/<r>` резолвится в `releases/latest/download`
+      с объявлением (diff И update); отказ скачивания называет ожидаемые формы `--source`;
+      libuv-аборт погашен КЛАССОМ: пост-сетевые отказы (fetchArtifact, sha256-mismatch, v1-die
+      диффа, main-поток лоадера) идут через `dieSoft` — сентинел + естественный дренаж цикла
+      вместо `process.exit` при живых хэндлах undici. Класс доказан живым пробоем (Node v24.15.0
+      win32, как у репортёра): без фикса ассерция 5/5, `body.cancel()` НЕ лечит, `destroy()`
+      диспетчера НЕ лечит, дренаж — 0/3 (~300 мс провисания); после фикса 404-путь — exit 1 без
+      ассерций, happy-path на живом origin — exit 0 с честным диффом. Свод s09/D6 (красный —
+      прогоном ядра и лоадера из `7bb1753`). Коммит `7d9258c`.
+- [x] 4. **Валидация `--lang`** (92.1): `checkedLang` — слово-имя («Russian») → отказ с
+      подсказкой кода; не-код → отказ со списком пакетов; настоящий ISO 639-1 код без пакета
+      законен (English-first честная строка — дизайн); отравленный маркер прошлой эпохи ловится
+      на всех трёх точках наследования с именем лечащего флага. Свод s09/D7 (красный — 4 против
+      до-фиксного dist: Russian ставился молча по-английски). Коммит `7d9258c`.
+- [x] 5. **Квитанция-момент §12.3** (KLAS п. 5): подтверждён ЗАКРЫТЫМ задачей T8 2.2 по
+      построению — `localStamp()` пишет полный локальный ISO 8601 в `date`/`history.date`/
+      `verifiedAt`, s03 стережёт формат регэкспом `ISO_MOMENT_RE` (S9:77, S9:82, S12:238);
+      правок не потребовалось, наблюдение зафиксировано этим пунктом.
+- [x] 6. **Счётчики финальной строки считают диск** (99.1: `translatedOnDisk` — сверка байтов
+      диска с шаблоном этого прогона; 99.2: `logPackHonesty` под фильтром анонимности — «skill
+      bodies» == «skills trigger-aliased») · **неизвестный канал лоадера — отказ** (99.3,
+      зеркало cmdUpdate). Своды s04/S16+S16b (красный: bodies=35 при aliased=31, «8» при 6
+      записанных) и s09/D6. Коммит `7d9258c`.
+- [x] 7. **Crash-safety `update`** (KLAS п. 2): форма «журнал + `resume`» по факту чтения
+      cmdUpdate (записи интерливлены с классификацией; атомарного мульти-свопа на Windows нет).
+      `.kaif/update-journal.json` после бэкапа и ДО первой мутации (обе дороги: core-update и
+      version-moving bootstrap), снимается последним актом; пока жив — update/bootstrap
+      отказывают с именем `resume`; `resume` возвращает дерево побайтно, удаляет born-файлы,
+      потребляет журнал. Reference §10.7 + новый §12.4 (зеркало команд; 701 → 702 модуля по
+      четырём зеркалам счётчиков). Свод s02/S9-crash — краш НАТУРАЛЬНЫЙ (EISDIR посреди
+      classifyAndApply, без тест-ручек в поставке); красный — 9 против до-фиксного dist.
+      Коммит `555ac5e`.
+- **Гейт U′2:** ✅ [TESTED: 2026-08-21 · каждый пункт — свод, красный доказан на сломанной
+  версии (5+4+D6+4+2+9 красных, п. 5 — наследие T8); `npm run test:core` — «all 14 suites
+  green»; `node tools/counters-guard.mjs` — «50 зеркал OK, 702 модуля»; контур не тронут —
+  verify-contour фазе не нужен]
 
 ### U′3 — канон поставки (#4, #6, #3)
 
@@ -138,6 +172,61 @@
    потому что трогает витрину, которую судят стражи, обновлённые предыдущими фазами.
 3. **Твин #19 в истоке чинится в U′1 вместе с payload-контрактом** — класс закрывается разом по
    всем носителям (BUG_FIXING: инвентарь класса, не экземпляр).
+4. **U′2 п. 7: форма crash-safety — журнал + `resume`, не staging + атомарный swap** — выбор,
+   который план 73 явно делегировал чтению `cmdUpdate`: записи интерливлены с классификацией,
+   а атомарного мульти-свопа файлов на Windows нет; `resume` восстанавливает из уже
+   существующего pre-update бэкапа вместо второй копии дерева (Оккам).
+5. **U′2 п. 4: «известный набор» кодов `--lang` = полный ISO 639-1**, не список пакетов —
+   иначе отказ убил бы спроектированный честный путь «настоящий код без пакета → English-first
+   с честной строкой» (дизайн `logPackHonesty`); отравленные маркеры прошлой эпохи ловятся на
+   всех трёх точках наследования с именем лечащего флага.
+6. **U′2 п. 3: `dieSoft` только для ПОСТ-сетевых отказов**, а не для всего `die` — жёсткий
+   выход до сети безопасен и мгновенен; конверсия всего мира растила бы blast radius без
+   выгоды. Осознанная узость: die внутри `parseBundle` после сетевого fetch (малформный бандл
+   в `diff --source`) оставлен жёстким — экзотика, названа здесь, чтобы не считаться пропуском.
+7. **99.3 исполнен зеркалом**: лоадер получил ДОСЛОВНО тот отказ, который `cmdUpdate` уже несёт
+   (`unknown channel: … — known: release | main`) — одно поведение, две двери, ноль новых форм.
+
+## Черновики ответов в issues (U′2; отправка — ТОЛЬКО `send-outbound` со словом владельца)
+
+**→ issue #16 (проводка package.json):**
+
+> Fixed for the upcoming 2.3 (Subjected KAIF). The wiring now SPLICES only what it adds into
+> your package.json's own text — indentation, key order, compact one-line values and even a
+> missing final newline survive byte-exact, and the log line keeps its promise of an additive
+> edit. A shape the splicer cannot PROVE itself on (parsed result minus the additions must
+> deep-equal the original) falls back to the full re-serialize and then says so out loud:
+> `(file re-serialized — its shape was not splice-safe; whitespace-only diffs outside scripts
+> are expected)` — your option 2, kept for the fallback only. Your expected check now lives in
+> the permanent polygon: a hand-formatted manifest of exactly your field shape passes install
+> with one contiguous insertion (suite s01/S5a–S5b, proven red against the pre-fix machinery).
+> The git-hygiene collision framing named this defect better than any diff could — thank you.
+
+**→ issue #8 (маркер vs --mode на легаси):**
+
+> Fixed for the upcoming 2.3, both halves. (1) An EXPLICIT `--mode standard` on the legacy
+> branch now WRITES the transition: the marker gets `tracking: origin` + the origin URL and the
+> run logs `⟳ marker: tracking anonymous → origin (explicit --mode standard …)` — your
+> six-line repro is a polygon suite now (s04/S15) and lands green with files and marker saying
+> one thing. (2) The mirror contradiction — explicit `--mode anonymous` over a tracked marker —
+> REFUSES before the first write and explains why (the origin-tied skills are already on disk;
+> anonymity is a fresh-deployment choice). The implicit default still inherits the marker, so
+> the bug-11 semantics you quoted are untouched (guarded by S15b). Your hand-edited marker will
+> reconcile cleanly: the upstream fix writes the same values mechanically.
+
+**→ issue #10 (полевой отчёт KAGO):**
+
+> The two secondary observations are fixed for the upcoming 2.3: a bare
+> `github.com/<owner>/<repo>` passed as `--source` now resolves to
+> `<repo>/releases/latest/download` with the resolution announced in the log; a failed download
+> names the EXPECTED `--source` forms instead of only the URL it invented; and the libuv
+> assertion is gone — probed on the same Node v24 win32 pair you reported: the crash reproduced
+> 5/5 before the fix (draining the response body alone does NOT clear it), 0/3 after switching
+> post-network refusals to a soft failure that lets the event loop drain (~300 ms). The main
+> course of your report — the preview naming the module per Δ and treating snapshot-adaptive
+> modules as `kept`, per your `bugs/KAIF/04` — is scheduled for the 2.4 field epic. The praise
+> section reached the bug-33 policy's author; those refusals now also guard `--channel` in the
+> loader.
 
 ## Links
 
