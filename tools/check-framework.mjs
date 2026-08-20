@@ -114,6 +114,7 @@ const FORMERLY_BLIND = [
   '_intro.md',
   'installer/_thin-intro.md',
   'templates/_owner-voice-template.md',
+  'templates/_testcases-template.md',
   'skills/code-revision/references/audit-report-template.md',
   'skills/fable-method/references/examples.md',
   'skills/fable-method/references/failure-modes.md',

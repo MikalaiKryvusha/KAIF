@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.2",
   "released": "2026-08-08",
-  "moduleCount": 692,
+  "moduleCount": 700,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -561,30 +561,39 @@
         ]
       },
       {
-        "signature": "## Test-status markers — the trust contract",
+        "signature": "## The testing activities — the chain that makes \"tested\" mean something",
         "class": "static",
-        "sha256": "cddc3d357061b6ccd12c0cd0664cc7bf2e661f6d3cdfb3bf3d94173ab51b04ba",
+        "sha256": "84821a4d4e11d9ac7dba4789980a5756ce236bd1ca7011210c7e502b909675cd",
         "lines": [
           28,
-          59
+          62
+        ]
+      },
+      {
+        "signature": "## Test-status markers — the trust contract",
+        "class": "static",
+        "sha256": "d68de869bef002cedf8fbe22d2c4ef333c469e317e6abaa431f677f674ff3c1a",
+        "lines": [
+          63,
+          99
         ]
       },
       {
         "signature": "## The work produces its own means of checking",
         "class": "static",
-        "sha256": "77ebd33a43fedf05cdcbe2cf0aa82f55c210e3418444522152964a3dd0afc1fc",
+        "sha256": "dadc23b10ebe5c11b65901da5c773db0e0ffd0b90f634342bc9c6369dbe861c8",
         "lines": [
-          60,
-          80
+          100,
+          124
         ]
       },
       {
         "signature": "## Green tests ≠ working — the observation gates",
         "class": "static",
-        "sha256": "4828c62c61427e56c023e74e3264c680da8903e07fbaa917e7ca61b31ce08ed6",
+        "sha256": "0aba9024ff54aed3901ee6e220a0ef64a8fc55a24fffd628a5caa23866b9801a",
         "lines": [
-          81,
-          100
+          125,
+          161
         ]
       },
       {
@@ -592,17 +601,17 @@
         "class": "static",
         "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
         "lines": [
-          101,
-          109
+          162,
+          170
         ]
       },
       {
         "signature": "## How this composes with the rest of KAIF",
         "class": "static",
-        "sha256": "89d243c12007bd73d3c709681da0f4cb038545ff9809fcaaa3c1c0ed529eb502",
+        "sha256": "2d4e1a24b827272678da0c4c94010d5aa6c88291626c880ce3fb56db078a54b9",
         "lines": [
-          110,
-          127
+          171,
+          192
         ]
       }
     ],
@@ -4826,6 +4835,71 @@
         "lines": [
           134,
           144
+        ]
+      }
+    ],
+    ".kaif/_testcases-template.md": [
+      {
+        "signature": "# Test cases — <FEATURE / ARTIFACT NAME>",
+        "class": "static",
+        "sha256": "d1b7d999795bd12d6bfec6bd8fc10e18ecf8ea26bef40204b3c64da83c71450d",
+        "lines": [
+          1,
+          12
+        ]
+      },
+      {
+        "signature": "## 1. Goal vector",
+        "class": "static",
+        "sha256": "3580d8dcb8b2509d2c40e16f8666f3f6a918b11a6d6e74b0e37f059b85e608c8",
+        "lines": [
+          13,
+          17
+        ]
+      },
+      {
+        "signature": "## 2. Requirements under test — the basis, made testable",
+        "class": "static",
+        "sha256": "b503d1878ce6f7b65ccb111bb6fde772c596d5f07738ee2cb7a28e863fb07073",
+        "lines": [
+          18,
+          23
+        ]
+      },
+      {
+        "signature": "## 3. Coverage matrix — dimensions and holes",
+        "class": "static",
+        "sha256": "525ab43a9cd18db76e5677085a1f5dfbbbf765301fd842f671ee0e199a55a26a",
+        "lines": [
+          24,
+          34
+        ]
+      },
+      {
+        "signature": "## 4. Cases",
+        "class": "static",
+        "sha256": "eafadf55c08594c3ee1921b3673b4a0012fb4fcad44e2477826103159fcafedb",
+        "lines": [
+          35,
+          43
+        ]
+      },
+      {
+        "signature": "## 5. Control cases — MUST",
+        "class": "static",
+        "sha256": "0e908d4022fd75e6a9d316bfaa4c14cd505f1dcbb8d61a5f9f54307a8097f77f",
+        "lines": [
+          44,
+          52
+        ]
+      },
+      {
+        "signature": "## 6. Verdict",
+        "class": "static",
+        "sha256": "34d2d418ecbaef556e6f81047a6a77c4975bfc641c5f0f8aec995fe588cf1c1b",
+        "lines": [
+          53,
+          59
         ]
       }
     ],

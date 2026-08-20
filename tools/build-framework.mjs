@@ -329,6 +329,12 @@ function bundleBlocks() {
   if (existsSync(join(FW, 'templates', '_owner-voice-template.md')))
     blocks.push(embedBundle('framework/templates/_owner-voice-template.md', '.kaif/_owner-voice-template.md',
       'the owner-voice portrait skeleton — optional; /owner-voice copies it to AUTHOR_STYLOMETRY.md and fills the copy'));
+  // the test-cases template (epic X 2.3, issue #21): same delivery shape as the portrait skeleton —
+  // an artifact class with no shipped shape does not get written; the agent COPIES it into the
+  // project's test-doc home (default testcases/), never fills it in place.
+  if (existsSync(join(FW, 'templates', '_testcases-template.md')))
+    blocks.push(embedBundle('framework/templates/_testcases-template.md', '.kaif/_testcases-template.md',
+      'the test-cases template — TESTING_FRAMEWORK activities chain copies it into the project test-doc home and fills the copy'));
   // language packs: owner-facing doc overrides + skill trigger aliases per language.
   // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
   // override their destination paths; others are ignored.
