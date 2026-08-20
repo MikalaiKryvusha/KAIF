@@ -418,5 +418,64 @@ ok(r.code === 0 && readFileSync(MIR1, 'utf8') === readFileSync(join(D1, '.claude
 ok(readFileSync(join(REPO, 'tools', 'commit.mjs'), 'utf8').includes("'--no-push'"),
    'G21: `commit.mjs` несёт `--no-push` — парковке не нужно обходить инструмент ради «без пуша»');
 
+// ================================================================ D6 (issue #10 + bugs/99 №3): формы --source и канал лоадера
+// Полевой отчёт KAGO (issue #10): голый `--source github.com/<o>/<r>` умирал бесполезным 404 на
+// <repo>/kaif-manifest.json (а в оффлайне читался ЛОКАЛЬНОЙ директорией); 404 не называл ожидаемых
+// форм; после die() Windows дорисовывал libuv-ассерцию — одна ошибка, одетая в две. И 99.3: лоадер
+// молча подменял неизвестный канал на release. Ассерты детерминированы в ОБОИХ мирах (online → 404,
+// offline → сетевой отказ тем же dieSoft): резолв печатается ДО сети, код 1 и подсказка форм — всегда.
+// [TESTED: 2026-08-21 · красный доказан прогоном ядра и лоадера из коммита 7bb1753 (до фикса):
+//  голый URL ушёл в локальную ветку без резолва и подсказки; лоадер проглотил --channel stable]
+console.log('\n=== D6 (issue #10 + 99.3): голый URL --source, подсказка форм, канал лоадера ===');
+r = run(D0, 'diff --source github.com/kaif-polygon/absent-repo');
+ok(/--source github\.com\/kaif-polygon\/absent-repo → https:\/\/github\.com\/kaif-polygon\/absent-repo\/releases\/latest\/download/.test(r.out),
+   'D6 (issue #10): голый URL репозитория резолвится в releases/latest/download, резолв назван в логе', r.out.slice(-300));
+ok(r.code !== 0 && /download failed/.test(r.out) && /--source must be a base that serves/.test(r.out),
+   'D6 (issue #10): отказ скачивания называет ОЖИДАЕМЫЕ формы --source', r.out.slice(-300));
+ok(!/Assertion failed/.test(r.out),
+   'D6 (issue #10): одна ошибка не одета в две — libuv-ассерции в выводе нет');
+const D6DIR = join(ROOT, 'd6-empty'); mkdirSync(D6DIR);
+r = run(D0, `diff --source ${D6DIR}`);
+ok(r.code !== 0 && /not found in source/.test(r.out) && /--source must be a base that serves/.test(r.out),
+   'D6 (issue #10): локальный источник без артефактов — тот же отказ с формами, полностью офлайн', r.out.slice(-300));
+// 99.3: лоадер — неизвестный канал это ОТКАЗ до любой сети (зеркало G16 для KAIF-LOADER.mjs).
+// Форма с --source: на сломанной версии канал молча игнорируется и локальная ветка падает
+// БЕЗ слов unknown channel (ровно так красный и был доказан) — сети нет в обоих мирах.
+const LOADER6 = join(ROOT, 'd6-loader.mjs');
+copy(join(REPO, 'framework', 'installer', 'KAIF-LOADER.mjs'), LOADER6);
+let lr6;
+try { lr6 = { code: 0, out: execSync(`node ${LOADER6} --channel stable --source ${D6DIR} 2>&1`, { cwd: ROOT, stdio: 'pipe' }).toString() }; }
+catch (e) { lr6 = { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+ok(lr6.code !== 0 && /unknown channel: stable/.test(lr6.out) && /release \| main/.test(lr6.out),
+   'D6 (99.3): лоадер — неизвестный канал это отказ со списком имён, не тихий release', lr6.out.slice(-300));
+
+// ================================================================ D7 (bugs/92 №1): валидация --lang
+// Полевой класс: `--lang Russian` МОЛЧА выключал языковой пакет — англоязычное дерево, "russian"
+// в маркере и ложное «no bundled template for this language yet» при живом пакете ru в бандле.
+// Контракт: слово-имя языка — отказ с подсказкой кода; не-код — отказ со списком пакетов;
+// НАСТОЯЩИЙ ISO 639-1 код без пакета остаётся законным (честная English-first строка — дизайн);
+// отравленный маркер прошлой эпохи ловится на наследовании с именем лечащей команды.
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки: Russian установился
+//  молча по-английски, xx прошёл без слова, отравленный маркер унаследован без валидации]
+console.log('\n=== D7 (92.1): --lang — слово, не-код, код без пакета, отравленный маркер ===');
+const D7 = join(ROOT, 'd7'); mkdirSync(D7); seed(D7);
+r = run(D7, 'install --lang Russian');
+ok(r.code !== 0 && /ISO 639-1 code is "ru"/.test(r.out),
+   'D7 (92.1): --lang Russian — отказ с подсказкой «код — ru», не молчаливое английское дерево', r.out.slice(-300));
+ok(!existsSync(join(D7, 'AGENT_GUIDE.md')), 'D7 (92.1): отказ случился ДО единой записи в дерево');
+r = run(D7, 'install --lang xx');
+ok(r.code !== 0 && /not an ISO 639-1 code/.test(r.out) && /zh-Hans/.test(r.out),
+   'D7 (92.1): --lang xx — отказ со списком пакетов, не тихий разворот', r.out.slice(-300));
+r = run(D7, 'install --lang uk');
+ok(r.code === 0, 'D7 (92.1): настоящий код БЕЗ пакета (uk) законен — English-first с честной строкой', r.out.slice(-300));
+ok(readMarker(D7).language === 'uk', 'D7 (92.1): маркер несёт код uk');
+// отравленный маркер прошлой эпохи: language: "russian" — наследование обязано отказать с лечением
+const mk7 = readMarker(D7); mk7.language = 'russian'; writeMarker(D7, mk7);
+r = run(D7, 'diff');
+ok(r.code === 0, 'D7 контроль: голый diff (аудит) маркер-языка не наследует и жив', r.out.slice(-200));
+r = run(D7, `diff --source ${join(ROOT, 'd6-empty')}`);
+ok(r.code !== 0 && /language value from the deploy marker/.test(r.out) && /--lang/.test(r.out),
+   'D7 (92.1): отравленный маркер ("russian") пойман на наследовании, лечение названо (--lang <code>)', r.out.slice(-300));
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ s09: все стражи зелёные'}`);
 process.exit(failures ? 1 : 0);

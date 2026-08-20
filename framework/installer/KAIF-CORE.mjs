@@ -48,8 +48,26 @@ const val = (f) => { const i = args.indexOf(f); return i >= 0 && args[i + 1] ? a
 const has = (f) => args.includes(f);
 
 const BUNDLE = val('--bundle') || '.kaif/install/KAIF-CORE-BUNDLE.md';
+// --lang takes an ISO 639-1 code — and a mistyped value used to DISABLE the language pack
+// silently (bug 92.1): `--lang Russian` deployed an all-English tree, wrote "russian" into the
+// marker and printed a false "no bundled template for this language yet" while the ru pack sat
+// in the bundle. Every language value — CLI or inherited from a marker — passes checkedLang:
+// a real code without a pack stays legal (the honest English-first note is the designed path),
+// a language NAME suggests its code, anything else refuses loudly with the bundled-pack list.
+const ISO_639_1 = new Set(('aa ab ae af ak am an ar as av ay az ba be bg bh bi bm bn bo br bs ca ce ch co cr cs cu cv cy da de dv dz ee el en eo es et eu fa ff fi fj fo fr fy ga gd gl gn gu gv ha he hi ho hr ht hu hy hz ia id ie ig ii ik io is it iu ja jv ka kg ki kj kk kl km kn ko kr ks ku kv kw ky la lb lg li ln lo lt lu lv mg mh mi mk ml mn mr ms mt my na nb nd ne ng nl nn no nr nv ny oc oj om or os pa pi pl ps pt qu rm rn ro ru rw sa sc sd se sg si sk sl sm sn so sq sr ss st su sv sw ta te tg th ti tk tl tn to tr ts tt tw ty ug uk ur uz ve vi vo wa wo xh yi yo za zh zu').split(' '));
+const LANG_NAME_HINTS = { english: 'en', russian: 'ru', 'русский': 'ru', arabic: 'ar', german: 'de',
+  deutsch: 'de', spanish: 'es', 'español': 'es', espanol: 'es', french: 'fr', 'français': 'fr',
+  francais: 'fr', hindi: 'hi', japanese: 'ja', portuguese: 'pt', 'português': 'pt', portugues: 'pt',
+  chinese: 'zh-Hans', mandarin: 'zh-Hans' };
+function checkedLang(raw, from) {
+  const v = String(raw).toLowerCase();
+  if (ISO_639_1.has(v.split('-')[0])) return v;   // zh-Hans-style script/region suffixes ride on a valid base
+  const hint = LANG_NAME_HINTS[v];
+  die(`unknown language value from ${from}: "${raw}" — ${hint ? `that is a language NAME; its ISO 639-1 code is "${hint}"` : 'not an ISO 639-1 code'}. ${from === '--lang' ? '' : 'Heal the marker by re-running the command with an explicit --lang <code>. '}Bundled packs: en ar de es fr hi ja pt ru zh-Hans; any other real code deploys English-first with an honest note in the task.`);
+}
 // LANG/AGENTS/MODE are `let`: post-install commands inherit them from the project's
 // .kaif/kaif.json unless explicitly overridden on the CLI (see below for MODE/ANON).
+// The CLI value is validated just below the log/die helpers (checkedLang needs die live).
 let LANG = (val('--lang') || 'en').toLowerCase();
 let MODE = (val('--mode') || 'standard').toLowerCase();
 let ANON = MODE === 'anonymous';
@@ -95,12 +113,22 @@ const STATUS_SOFT_LINES = 200;
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
+// die() is right for sync paths — but process.exit() over LIVE undici handles trips a libuv
+// assertion on win32, and the one real error arrives dressed as two: the printed ✖ plus an
+// "Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)" banner (issue #10; probed 5/5 on
+// Node v24 win32 — draining the response body alone does NOT clear it, only letting the event
+// loop wind down does). Refusals that fire AFTER a network fetch die SOFTLY: same message,
+// then a sentinel the dispatcher catches to set the exit code and let the loop drain (~300 ms).
+const dieSoft = (s) => { console.error('✖ ' + s); const e = new Error(s); e.kaifDie = true; throw e; };
 const okOnDisk = (p) => existsSync(p) && statSync(p).size > 0;
 const sha256 = (data) => createHash('sha256').update(data).digest('hex');
 const fileSha = (p) => sha256(readFileSync(p));
 const sh = (cmd) => { try { return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; } };
 // JSON reader tolerant of a UTF-8 BOM (Windows tools like PowerShell 5 write one).
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+
+// The CLI-passed --lang is validated the moment die() is live (bug 92.1; checkedLang above).
+if (val('--lang')) LANG = checkedLang(val('--lang'), '--lang');
 
 // Anonymity is a property of the DEPLOYMENT, not of the CLI call (bug 11 / GH issue #1,
 // reproduced by three field reports): a bare `check` on an anonymous install reported the
@@ -331,7 +359,10 @@ function applyLanguage(files) {
     }
     out.push(entry);
   }
-  return { deploy: out, translated: overrides.size };
+  // `translated` is the pack size IN THE BUNDLE — the right input for "does a pack exist at
+  // all" (the task's language item). The INSTALL SUMMARY may not print it: it counts the disk
+  // via overridePaths at the summary site (bugs/99 №1 — same doctrine as countAliasedOnDisk).
+  return { deploy: out, translated: overrides.size, overridePaths: [...overrides.keys()] };
 }
 
 // The pack boundary is DECLARED at deploy time, not discovered post-factum (field: a new skill
@@ -353,7 +384,10 @@ function logPackHonesty(files, deploy) {
   const enDocs = deploy.filter((f) => f.path.endsWith('.md') && !packed.has(f.path)
     && !/^\.claude\/skills\//.test(f.path) && !f.path.startsWith('.kaif/spheres/')
     && !f.path.startsWith('templates/languages/')).map((f) => f.path).sort();
-  const skills = deploy.filter((f) => skillName(f.path)).length;
+  // The honest line names what ARRIVES — so it must apply the same anonymity filter the write
+  // sites do (bugs/99 №2: "all 35 skill bodies" one line above "31 skills trigger-aliased" of
+  // the same run; the 4 ORIGIN_TIED skills never land on an anonymous install).
+  const skills = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path)).length;
   log(`⟳ language pack "${LANG}" is INCOMPLETE BY DESIGN (the framework is English-first): it localizes ${packed.size} owner doc(s). Arriving in ENGLISH and needing manual transfer if you want them localized: ${enDocs.join(', ')} + all ${skills} skill bodies (their trigger aliases ARE localized).`);
 }
 
@@ -793,15 +827,39 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   log(`+ wrote ${UPDATE_TASK} (${items.length} items${diverged.length ? `, ${diverged.length} diverged files` : ''}${modFiles.length ? `, ${modFiles.length} files with module diffs` : ''})`);
 }
 
+// A bare github.com/<owner>/<repo> is the first thing a human passes as --source (three field
+// projects did, issue #10) — and by itself it serves no artifacts: the old path died with an
+// unhelpful 404 on <repo>/kaif-manifest.json. Resolve it to the repo's latest-release download
+// base (the exact base `update`'s release channel already uses) and say so out loud.
+function resolveSourceBase(src) {
+  const m = src && src.match(/^(?:https?:\/\/)?(?:www\.)?github\.com\/([^/]+)\/([^/]+?)\/?$/i);
+  if (!m) return src;
+  const base = `https://github.com/${m[1]}/${m[2]}/releases/latest/download`;
+  log(`⟳ --source ${src} → ${base} (a bare repo URL resolves to its latest-release assets)`);
+  return base;
+}
+
+// The failed-download refusal names the EXPECTED forms of --source: a 404 that prints only the
+// URL it invented sends the human to guess the layout of a release page (issue #10 cost half a
+// session naming one). One extra line closes that.
+const SOURCE_FORMS_HINT = `  --source must be a base that serves kaif-manifest.json, KAIF-CORE.mjs and KAIF-CORE-BUNDLE.md directly:\n  a local directory with the three artifacts · ${ORIGIN}/releases/latest/download · ${ORIGIN}/releases/download/v<X.Y> · a bare https://github.com/<owner>/<repo> (auto-resolved to its latest release)`;
+
 // Fetch one artifact for `update` (URL or local dir), mirroring the loader.
 async function fetchArtifact(base, name) {
   if (!/^https?:\/\//.test(base)) {
     const p = join(base, name);
-    if (!existsSync(p)) die(`not found in source: ${p}`);
+    if (!existsSync(p)) dieSoft(`not found in source: ${p}\n${SOURCE_FORMS_HINT}`);
     return readFileSync(p);
   }
-  const res = await fetch(`${base}/${name}`, { redirect: 'follow' });
-  if (!res.ok) die(`download failed (${res.status}) — ${base}/${name}`);
+  let res;
+  try { res = await fetch(`${base}/${name}`, { redirect: 'follow' }); }
+  catch (err) {   // no-network/DNS failure: one refusal, not a raw stack (same issue #10 class)
+    dieSoft(`download failed (${(err && err.cause && err.cause.code) || (err && err.message) || 'network error'}) — ${base}/${name}\n${SOURCE_FORMS_HINT}`);
+  }
+  if (!res.ok) {
+    try { await res.body?.cancel(); } catch { /* draining a dead response is best-effort */ }
+    dieSoft(`download failed (${res.status}) — ${base}/${name}\n${SOURCE_FORMS_HINT}`);
+  }
   return Buffer.from(await res.arrayBuffer());
 }
 
@@ -816,7 +874,8 @@ async function fetchMaybe(base, name) {
       return existsSync(p) ? readFileSync(p) : null;
     }
     const res = await fetch(`${base}/${name}`, { redirect: 'follow', signal: AbortSignal.timeout(BASELINE_FETCH_TIMEOUT_MS) });
-    return res.ok ? Buffer.from(await res.arrayBuffer()) : null;
+    if (!res.ok) { try { await res.body?.cancel(); } catch { /* best-effort */ } return null; }   // same handle-drain as fetchArtifact
+    return Buffer.from(await res.arrayBuffer());
   } catch { return null; }
 }
 
@@ -1188,13 +1247,13 @@ async function cmdUpdate() {
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
   const cur = readJson(KAIF_JSON);
   if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap (the surviving deploy manifest makes that pass mechanical since 2.0)');
-  if (!val('--lang') && cur.language) LANG = String(cur.language).toLowerCase();
+  if (!val('--lang') && cur.language) LANG = checkedLang(cur.language, 'the deploy marker');   // a poisoned pre-92.1 marker refuses with the healing flag named
   if (!val('--agents') && Array.isArray(cur.agents) && cur.agents.length) AGENTS = cur.agents;
   // A mistyped channel VALUE must refuse, not silently become "release" (judge finding, L3 —
   // the same bug-33 class one level below the flag whitelist: form was validated, values not).
   const chan = (val('--channel') || 'release').toLowerCase();
   if (!(chan in SOURCES)) die(`unknown channel: ${chan} — known: ${Object.keys(SOURCES).join(' | ')}`);
-  const base = val('--source') || SOURCES[chan];
+  const base = val('--source') ? resolveSourceBase(val('--source')) : SOURCES[chan];   // bare repo URL → release assets (issue #10)
   log(`update: checking ${base}`);
   const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8'));
   if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
@@ -1211,7 +1270,7 @@ async function cmdUpdate() {
   for (const name of ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md']) {
     bufs[name] = await fetchArtifact(base, name);
     const got = sha256(bufs[name]);
-    if (got !== man.sha256[name]) die(`sha256 mismatch for ${name}: expected ${man.sha256[name]}, got ${got}`);
+    if (got !== man.sha256[name]) dieSoft(`sha256 mismatch for ${name}: expected ${man.sha256[name]}, got ${got}`);   // post-fetch refusal: soft (issue #10)
   }
   const bundlePath = '.kaif/install/KAIF-CORE-BUNDLE.md';
   writeFileSync(bundlePath, bufs['KAIF-CORE-BUNDLE.md']);
@@ -1838,9 +1897,9 @@ async function cmdInstall() {
   // re-running a ru-deployment's bootstrap without --lang used to silently apply English
   // templates and aliases (the same silent-widening class as bug 14's five systems).
   if (okOnDisk(KAIF_JSON) && !val('--lang')) {
-    try { const j = readJson(KAIF_JSON); if (j.language) LANG = String(j.language).toLowerCase(); } catch { /* CLI default stands */ }
+    try { const j = readJson(KAIF_JSON); if (j.language) LANG = checkedLang(j.language, 'the deploy marker'); } catch { /* CLI default stands */ }
   }
-  const { deploy, translated } = applyLanguage(files);
+  const { deploy, translated, overridePaths } = applyLanguage(files);
   logPackHonesty(files, deploy);   // the pack boundary is declared, not discovered post-factum
   const values = stableValues();   // a re-run/bootstrap over an existing deploy keeps ITS values (bug 26)
   const unresolved = new Set();
@@ -2135,7 +2194,18 @@ async function cmdInstall() {
   const bad = validate(deploy, skillFiles, legacyOld ? UPDATE_TASK : TASK_FILE);
   if (bad) die(`install INCOMPLETE: ${bad} artifacts missing — re-run, or fix and \`check\``);
   const aliased = countAliasedOnDisk();   // read back AFTER validate(): every write is done by here
-  log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translated ? ` · ${translated} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
+  // "N owner docs templated" counts what is ON DISK, never the pack size in the bundle
+  // (bugs/99 №1 — the same doctrine as `aliased` above): an install over existing owner docs
+  // keeps them (`= kept existing`), and the plan-sized counter claimed localization the disk
+  // never received. A doc counts when its disk bytes carry THIS run's localized template.
+  const translatedOnDisk = (overridePaths || []).filter((p) => {
+    const f = deploy.find((d) => d.path === p);
+    if (!f || !okOnDisk(p)) return false;
+    let want = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, new Set());
+    if (ANON && !f.path.endsWith('.mjs')) want = anonymize(want);
+    return normEol(readFileSync(p, 'utf8')) === normEol(want);
+  }).length;
+  log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translatedOnDisk ? ` · ${translatedOnDisk} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
   // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
   // are absent from it, and the first thing the human sees when trying one is "no such command" —
   // which reads as "the install failed". Saying it HERE costs one line and prevents that diagnosis.
@@ -2474,12 +2544,13 @@ async function cmdDiff() {
   // templates against a deployed manifest reported phantom deltas (a heading containing
   // <PROJECT_NAME> changes its own signature when filled; sandbox-caught).
   if (!val('--lang') && okOnDisk(KAIF_JSON)) {
-    try { const j = readJson(KAIF_JSON); if (j.language) LANG = String(j.language).toLowerCase(); } catch { /* default stands */ }
+    try { const j = readJson(KAIF_JSON); if (j.language) LANG = checkedLang(j.language, 'the deploy marker'); } catch { /* default stands */ }
   }
-  const man2 = JSON.parse((await fetchArtifact(src, 'kaif-manifest.json')).toString('utf8'));
+  const srcBase = resolveSourceBase(src);   // bare github.com/<o>/<r> → its latest-release assets (issue #10)
+  const man2 = JSON.parse((await fetchArtifact(srcBase, 'kaif-manifest.json')).toString('utf8'));
   mkdirSync('.kaif/install', { recursive: true });
   const tmp = '.kaif/install/DIFF-BUNDLE.md';
-  writeFileSync(tmp, await fetchArtifact(src, 'KAIF-CORE-BUNDLE.md'));
+  writeFileSync(tmp, await fetchArtifact(srcBase, 'KAIF-CORE-BUNDLE.md'));
   const { files, meta } = parseBundle(tmp);
   unlinkSync(tmp);
   const { deploy: otherDeploy } = applyLanguage(files);
@@ -2492,7 +2563,7 @@ async function cmdDiff() {
   if (!mineModShas || !Object.keys(mineModShas).length) {
     const curVer = okOnDisk(KAIF_JSON) ? (() => { try { return readJson(KAIF_JSON).version; } catch { return null; } })() : null;
     const synth = await buildSyntheticBaseline({ version: curVer });
-    if (!synth) die(`this deployment carries a v1 manifest (no template provenance) and no baseline artifact for v${curVer || '?'} is reachable — pass --baseline <dir|url> with that version's release artifacts, or run the next update (it upgrades the manifest to v2)`);
+    if (!synth) dieSoft(`this deployment carries a v1 manifest (no template provenance) and no baseline artifact for v${curVer || '?'} is reachable — pass --baseline <dir|url> with that version's release artifacts, or run the next update (it upgrades the manifest to v2)`);   // post-fetch refusal: soft (issue #10)
     mineModShas = synth.moduleShas;
   }
   let changedFiles = 0, sameFiles = 0;
@@ -2613,5 +2684,12 @@ if (CMD === 'help') {
     die(`no command given — nothing was executed (flags seen: ${args.join(' ')}). The old bare-run default was \`install\`; say the command explicitly.`);
 } else {
   validateArgv(spec);
-  await spec.fn();
+  try { await spec.fn(); }
+  catch (e) {
+    if (!(e && e.kaifDie)) throw e;   // real bugs keep their stack — only the soft-die sentinel is expected
+    // Message already printed by dieSoft. Mark the failure and let the event loop drain
+    // naturally: process.exit() here would trip the win32 libuv assertion the sentinel exists
+    // to avoid (issue #10) — the pooled fetch handles unref within ~300 ms on their own.
+    process.exitCode = 1;
+  }
 }

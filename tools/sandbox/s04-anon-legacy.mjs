@@ -406,5 +406,35 @@ ok(r.code !== 0 && /--mode anonymous contradicts the deployed marker/.test(r.out
 ok(!existsSync(join(S15c, 'AGENT_GUIDE.md')) && !existsSync(join(S15c, '.gitignore')),
    'S15c отказ случился ДО первой записи в дерево');
 
+// ---------------------------------------------------------------- S16 (bugs/99 №1/№2): счётчики финальной строки считают ДИСК
+// 99.1: `translated` брался как размер языкового пакета В БАНДЛЕ — установка поверх живых
+// владельческих GOAL.md/KAIF_FRAMEWORK.md печатала «8 owner docs templated» при 6 записанных
+// (между числом и диском стоят writeIfNew и OWNER_SEEDED). 99.2: logPackHonesty считал по
+// списку НАМЕРЕНИЯ без фильтра анонимности — «all 35 skill bodies» строкой выше честного
+// «31 skills trigger-aliased» одного и того же прогона. Доктрина одна — bugs/65: счётчик
+// сводки читает диск, никогда план.
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки: «8 owner docs
+//  templated» при 6 записанных; bodies=35 при aliased=31]
+console.log('\n=== S16 (99.1/99.2): счётчики установки — диск, не план ===');
+const S16 = join(ROOT, 's16'); mkdirSync(S16); seed(S16);
+writeFileSync(join(S16, 'GOAL.md'), '# OWNER GOAL\n\nThis is the owner. Not a template.\n');
+writeFileSync(join(S16, 'KAIF_FRAMEWORK.md'), '# OWNER FRAMEWORK\n\nOwner text.\n');
+r = run(S16, 'install --lang ru --mode anonymous');
+ok(r.code === 0, 'S16 install exit 0', r.out.slice(-300));
+ok(/= kept existing GOAL\.md/.test(r.out) && /= kept existing KAIF_FRAMEWORK\.md/.test(r.out),
+   'S16 фикстура: оба владельческих файла оставлены как есть');
+ok(/6 owner docs templated/.test(r.out) && !/8 owner docs templated/.test(r.out),
+   'S16 (99.1): «owner docs templated» называет ЗАПИСАННОЕ на диск (6), не размер пакета (8)', r.out.slice(-400));
+const mBodies = r.out.match(/all (\d+) skill bodies/);
+const mAliased = r.out.match(/(\d+) skills trigger-aliased/);
+ok(!!mBodies && !!mAliased && mBodies[1] === mAliased[1],
+   'S16 (99.2): «skill bodies» и «skills trigger-aliased» называют ОДНО число (диск, анонимный фильтр учтён)',
+   `bodies=${mBodies && mBodies[1]} aliased=${mAliased && mAliased[1]}`);
+// контроль: чистая установка — все 8 документов пакета реально записаны, счёт не занижен
+const S16b = join(ROOT, 's16b'); mkdirSync(S16b); seed(S16b);
+r = run(S16b, 'install --lang ru --mode anonymous');
+ok(/8 owner docs templated/.test(r.out),
+   'S16b контроль: чистая установка называет 8 — дисковый счёт не занижает', r.out.slice(-300));
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.5 зелёные'}`);
 process.exit(failures ? 1 : 0);
