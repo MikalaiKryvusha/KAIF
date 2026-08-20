@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.2",
   "released": "2026-08-08",
-  "moduleCount": 701,
+  "moduleCount": 702,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -1348,10 +1348,10 @@
       {
         "signature": "### 10.7 Commands",
         "class": "static",
-        "sha256": "dd02da2e0780b229625c6eb0e4dcd8a6864a4dadeca317c286b68fa5ecc2dfb4",
+        "sha256": "9700796ef1d3109bb8815e204eae466f564198fb10a0553281e9b7ee9bd2d1b8",
         "lines": [
           271,
-          278
+          282
         ]
       },
       {
@@ -1359,8 +1359,8 @@
         "class": "static",
         "sha256": "104d97b9dd44c46088d6bfd4fa8b5c59327fd50831c711a2492d083d5f75c648",
         "lines": [
-          279,
-          286
+          283,
+          290
         ]
       },
       {
@@ -1368,8 +1368,8 @@
         "class": "static",
         "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
         "lines": [
-          287,
-          288
+          291,
+          292
         ]
       },
       {
@@ -1377,8 +1377,8 @@
         "class": "static",
         "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
         "lines": [
-          289,
-          294
+          293,
+          298
         ]
       },
       {
@@ -1386,8 +1386,8 @@
         "class": "static",
         "sha256": "2ac0a888bff20e43e4cc1ab04c648898e525ad70ad501b0a85d1ad8da1d799bf",
         "lines": [
-          295,
-          301
+          299,
+          305
         ]
       },
       {
@@ -1395,8 +1395,8 @@
         "class": "static",
         "sha256": "8debd5a1abab165b5f2c6b6ba8e64954415fafd9cb15d95154ef535a7e8672e6",
         "lines": [
-          302,
-          316
+          306,
+          320
         ]
       },
       {
@@ -1404,8 +1404,8 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          317,
-          318
+          321,
+          322
         ]
       },
       {
@@ -1413,8 +1413,8 @@
         "class": "static",
         "sha256": "abe02cb2a81bb6d438f38f5611287bc435a797759e7f8a0fadf2b8f2453cd56b",
         "lines": [
-          319,
-          337
+          323,
+          341
         ]
       },
       {
@@ -1422,8 +1422,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          338,
-          346
+          342,
+          350
         ]
       },
       {
@@ -1431,8 +1431,17 @@
         "class": "static",
         "sha256": "ebf4c256d3e38aebfcb1e555c7047795d02a8ca469c58ffcf55b7fbb56153d52",
         "lines": [
-          347,
-          355
+          351,
+          359
+        ]
+      },
+      {
+        "signature": "### 12.4 The crash journal (`.kaif/update-journal.json`)",
+        "class": "static",
+        "sha256": "003ce058cd7cc128879e3e00791dcdb65305fe5c5a30b549661d8fde22a90ce9",
+        "lines": [
+          360,
+          369
         ]
       },
       {
@@ -1440,8 +1449,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          356,
-          372
+          370,
+          386
         ]
       },
       {
@@ -1449,8 +1458,8 @@
         "class": "static",
         "sha256": "005f6f41a8ef92d09ae48dc5080200ad744b295e05acbfde295f9a7c5d24cbaa",
         "lines": [
-          373,
-          407
+          387,
+          421
         ]
       },
       {
@@ -1458,8 +1467,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          408,
-          420
+          422,
+          434
         ]
       },
       {
@@ -1467,8 +1476,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          421,
-          429
+          435,
+          443
         ]
       }
     ],

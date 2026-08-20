@@ -3,7 +3,7 @@
 // NDim (локализованный модуль переживает ДВА цикла обновления), KPOT (по-модульный мердж:
 // апстримный модуль заменён, локальный сохранён, диффы только там, где апстрим менял),
 // конвенции owner-шаблонов, i18n: translated, пин-тест сплиттеров ядра и сборки.
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -187,6 +187,57 @@ for (const [p, mods] of Object.entries(libMap.files)) {
     if (c[i].signature !== mods[i].signature || c[i].sha256 !== mods[i].sha256 || c[i].class !== mods[i].class) { pinMismatch++; break; }
 }
 ok(pinMismatch === 0, 'S8 сплиттер ядра == сплиттер сборки (сигнатуры, sha, классы всех 517 модулей)', String(pinMismatch));
+
+// ---------------------------------------------------------------- S9-crash (plan 77 U′2, KLAS п. 2): журнал + resume
+// Записи update интерливлены с классификацией: прогон, убитый на середине, оставлял
+// ПОЛУОБНОВЛЁННОЕ дерево без следов (маркер и манифест старые, файлы частично новые), а
+// наивный повторный прогон классифицировал уже заменённые файлы как owner-diverged. Контракт:
+// журнал пишется ПОСЛЕ бэкапа и ДО первой мутации, снимается ПОСЛЕДНИМ актом; пока он жив —
+// update/bootstrap отказывают с именем resume; resume возвращает дерево побайтно и удаляет
+// рождённые мёртвым прогоном файлы. Краш в своде НАТУРАЛЬНЫЙ: директория на пути файла →
+// EISDIR посреди classifyAndApply — никаких тестовых ручек в поставке.
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки: журнала нет,
+//  re-run слепо крашится снова, resume — unknown command]
+console.log('\n=== S9-crash (U′2 п.7): убитый на середине update — журнал, отказ, resume ===');
+const SC = join(ROOT, 's9crash'); mkdirSync(SC); seed(SC);
+let rcj = run(SC, 'install');
+ok(rcj.code === 0, 'S9c фикстура: свежая установка зелёная', rcj.out.slice(-200));
+const philBefore = readFileSync(join(SC, 'PHILOSOPHY.md'));
+// препятствие: директория на пути файла, который update будет ПИСАТЬ ближе к концу прохода
+rmSync(join(SC, '.claude', 'skills', 'what-next', 'SKILL.md'));
+mkdirSync(join(SC, '.claude', 'skills', 'what-next', 'SKILL.md'));
+rcj = run(SC, `update --source ${SRC}`);
+ok(rcj.code !== 0, 'S9c update убит на середине (EISDIR)', rcj.out.slice(-150));
+ok(readFileSync(join(SC, 'PHILOSOPHY.md'), 'utf8').includes('UPSTREAM ADDITION 9.9'),
+   'S9c дерево реально ПОЛУобновлено: PHILOSOPHY уже несёт 9.9 (краш пришёлся на середину)');
+const JOURNAL = join(SC, '.kaif', 'update-journal.json');
+ok(existsSync(JOURNAL), 'S9c журнал существует — прогон без следов невозможен по построению');
+const jr = existsSync(JOURNAL) ? JSON.parse(readFileSync(JOURNAL, 'utf8')) : {};
+ok(jr.to === '9.9' && jr.backupDir && existsSync(join(SC, jr.backupDir)),
+   'S9c журнал называет интервал и ЖИВОЙ каталог бэкапа', JSON.stringify(jr).slice(0, 160));
+ok(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/.test(jr.startedAt || ''),
+   'S9c startedAt — момент (локальный ISO 8601 со смещением, канон T8)', `startedAt=${jr.startedAt}`);
+rcj = run(SC, `update --source ${SRC}`);
+ok(rcj.code !== 0 && /update journal exists/.test(rcj.out) && /resume/.test(rcj.out),
+   'S9c повторный update при живом журнале — ОТКАЗ с именем resume, не слепой второй заход', rcj.out.slice(-300));
+// владелец убрал препятствие; born-плечо resume проверяется прямо: журналу дописан рождённый файл
+rmSync(join(SC, '.claude', 'skills', 'what-next', 'SKILL.md'), { recursive: true, force: true });
+writeFileSync(join(SC, 'BORN_BY_DEAD_RUN.md'), 'born mid-flight\n');
+jr.born = [...(jr.born || []), 'BORN_BY_DEAD_RUN.md'];
+writeFileSync(JOURNAL, JSON.stringify(jr, null, 2) + '\n');
+rcj = run(SC, 'resume');
+ok(rcj.code === 0, 'S9c resume exit 0', rcj.out.slice(-300));
+ok(readFileSync(join(SC, 'PHILOSOPHY.md')).equals(philBefore),
+   'S9c resume вернул PHILOSOPHY ПОБАЙТНО в состояние до update');
+ok(!existsSync(join(SC, 'BORN_BY_DEAD_RUN.md')), 'S9c resume удалил файл, рождённый мёртвым прогоном');
+ok(!existsSync(JOURNAL), 'S9c журнал потреблён — resume не оставляет вечного флага');
+rcj = run(SC, `update --source ${SRC}`);
+ok(rcj.code === 0 && !existsSync(JOURNAL),
+   'S9c после resume update проходит целиком и журнала НЕ остаётся (снят последним актом)', rcj.out.slice(-300));
+ok(readFileSync(join(SC, 'PHILOSOPHY.md'), 'utf8').includes('UPSTREAM ADDITION 9.9')
+   && existsSync(join(SC, '.claude', 'skills', 'what-next', 'SKILL.md'))
+   && statSync(join(SC, '.claude', 'skills', 'what-next', 'SKILL.md')).isFile(),
+   'S9c финал здоров: 9.9 на месте, what-next снова ФАЙЛ');
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.3 зелёные'}`);
 process.exit(failures ? 1 : 0);

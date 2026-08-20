@@ -271,11 +271,15 @@ meta block's `policyChanges`, keyed by version. The update task prints them in a
 
 ### 10.7 Commands
 
-`update` (mechanical pass) · `diff` (audit: protected vs replace-eligible; `--source`: per-module
-preview against another version — a v1 manifest gets a synthetic baseline of the deployed version,
-`--baseline` overrides its source) · `adopt-current` (after a MANUAL migration: re-adopt reality so
-the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the machinery's
-module cut) · `checkpoint` · `update-verify` · `check` · `version`.
+`update` (mechanical pass; writes a crash journal before its first tree mutation and removes it
+as its last act — a run killed mid-flight stays visible) · `resume` (after a crashed update:
+restore the pre-update tree byte-exact from the journal's backup, remove files the dead run
+created, consume the journal) · `diff` (audit: protected vs replace-eligible; `--source`:
+per-module preview against another version — a v1 manifest gets a synthetic baseline of the
+deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
+resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
+reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
+machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version`.
 
 ### 10.8 Predicting a pass
 
@@ -353,6 +357,16 @@ reconcile the canon by hand) · `marker` (pristine marker snapshot backing self-
 `update-verify`). `date` and `verifiedAt` are MOMENTS, so both carry the time and the offset in
 the owner's local clock — full ISO 8601 (`2026-08-08T07:13:00+03:00`), never a bare date: on a
 day carrying two updates a date-only receipt cannot say which one it proves.
+
+### 12.4 The crash journal (`.kaif/update-journal.json`)
+
+Written by `update` (and a version-moving bootstrap) after the pre-update backup and BEFORE the
+first tree mutation; removed as the run's last act. `from`, `to`, `source`, `route`,
+`startedAt` (a moment, §12.3 convention), `backupDir`, `born` (paths the run will create). A run
+killed mid-flight therefore leaves either an untouched tree or a visible journal — never a
+half-updated tree without a trace. While the journal exists, `update` and the bootstrap refuse
+and name `resume`, which restores every backed-up file byte-exact, removes the `born` files and
+consumes the journal. Git-ignored (ignore-first): it is transient run state, not history.
 
 ## 13. Conventions
 

@@ -89,6 +89,11 @@ const AUTHOR_TOKEN_CLUSTERS = [['Kryvusha', 'Кривуша', 'MikalaiKryvusha']
 const ACRONYM_EXPANSIONS = ['KAIF (Krinik AI Framework)', 'Krinik AI Framework (KAIF)', 'Krinik AI Framework'];
 const KAIF_JSON = '.kaif/kaif.json';
 const DEPLOY_MANIFEST = '.kaif/deploy-manifest.json'; // persisted path list — `check` works after the bundle is cleaned
+// Crash journal (KLAS field ask, plan 77 U′2): written AFTER the backup and BEFORE the first
+// tree mutation of an update, deleted as the update's last act. A run killed mid-flight leaves
+// either an untouched tree or a VISIBLE journal — a half-updated tree without a trace cannot
+// exist by construction. `resume` restores the pre-update tree from the journal's backup.
+const UPDATE_JOURNAL = '.kaif/update-journal.json';
 const TASK_FILE = 'KAIF_ADAPTATION_TASK.md';
 const FENCE = '`'.repeat(6);
 
@@ -275,6 +280,7 @@ function ensureIgnoreFirst() {
   const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK,
                   'KAIF_UPDATE_TASK.superseded.md', 'KAIF_ADAPTATION_TASK.superseded.md',
                   '.kaif/backup-*/',        // pre-update backups are rollback material, never history (field ask)
+                  UPDATE_JOURNAL,           // the crash journal is transient run state; it must be VISIBLE, not committed
                   '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
                   '.kaif/refresh-marker.json']; // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
@@ -587,6 +593,68 @@ function backupTree(deploy, fromVer, toVer) {
     }
     if (copied) log(`+ pre-update backup: ${copied} file(s) → ${dir}/ (rollback material; git-ignored, replaced next interval)`);
   } catch (e) { log(`⚠ pre-update backup skipped: ${e.message}`); }
+}
+
+// ---------------------------------------------------------------------------- crash journal (plan 77 U′2, KLAS п. 2)
+// The update's writes are interleaved with classification, so a run killed mid-flight used to
+// leave a HALF-UPDATED tree with no trace: marker and manifest still old, files partly new —
+// and a naive re-run then classified every already-replaced file as owner-diverged. The journal
+// closes that: written after the backup, BEFORE the first tree mutation; deleted as the last
+// act of a successful run. While it exists, update/bootstrap REFUSE and name `resume`.
+function writeUpdateJournal(from, to, source, route, deploy) {
+  const born = [];
+  for (const f of deploy) if (!isSkippedAnon(f.path) && !existsSync(f.path)) born.push(f.path);
+  for (const p of expectedAgentArtifacts(deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path)).map((f) => skillName(f.path))))
+    if (!existsSync(p)) born.push(p);
+  const j = { from: from || '?', to, source, route, startedAt: localStamp(),
+              backupDir: `.kaif/backup-${from || 'unknown'}-${to}`, born };
+  writeFileSync(UPDATE_JOURNAL, JSON.stringify(j, null, 2) + '\n');
+  log(`+ wrote ${UPDATE_JOURNAL} (crash journal — a run killed mid-flight stays visible; removed on success)`);
+}
+function clearUpdateJournal() {
+  if (existsSync(UPDATE_JOURNAL)) { unlinkSync(UPDATE_JOURNAL); log(`- removed ${UPDATE_JOURNAL} (update completed — nothing to resume)`); }
+}
+function refuseOnJournal() {
+  if (!okOnDisk(UPDATE_JOURNAL)) return;
+  let j = {}; try { j = readJson(UPDATE_JOURNAL); } catch { /* unreadable journal is still a journal */ }
+  die(`an update journal exists (${UPDATE_JOURNAL}): the previous update (${j.from || '?'} → ${j.to || '?'}, started ${j.startedAt || '?'}) died mid-flight and the tree may be half-updated. Run \`node .kaif/kaif-core.mjs resume\` to restore the pre-update tree from its backup, then re-run update — or delete the journal consciously if you already reconciled the tree by hand.`);
+}
+
+// resume — restore the pre-update tree recorded by the crash journal: every backed-up file
+// returns byte-exact, files BORN by the dead run are removed, the journal is consumed.
+function cmdResume() {
+  if (!okOnDisk(UPDATE_JOURNAL)) die(`nothing to resume — no ${UPDATE_JOURNAL} (no crashed update is recorded here)`);
+  const j = readJson(UPDATE_JOURNAL);
+  const backup = j.backupDir;
+  if (!backup || !existsSync(backup)) die(`the journal names backup ${backup || '(none)'}, which does not exist — mechanical restore is impossible; roll back with git (git status / git checkout) and delete ${UPDATE_JOURNAL} consciously.`);
+  const walk = (dir) => {
+    const out = [];
+    for (const n of readdirSync(dir, { withFileTypes: true })) {
+      const p = join(dir, n.name);
+      if (n.isDirectory()) out.push(...walk(p)); else out.push(p);
+    }
+    return out;
+  };
+  const backupAbs = join(process.cwd(), backup);
+  let restored = 0;
+  for (const src of walk(backupAbs)) {
+    const rel = src.slice(backupAbs.length + 1);
+    // A directory squatting on a file path (or vice versa) is an obstruction the crash may have
+    // left — clear it rather than die half-way through a restore.
+    if (existsSync(rel) && statSync(rel).isDirectory()) rmSync(rel, { recursive: true, force: true });
+    mkdirSync(dirname(rel) || '.', { recursive: true });
+    writeFileSync(rel, readFileSync(src));
+    restored++;
+  }
+  let removed = 0;
+  for (const p of j.born || []) {
+    if (!existsSync(p)) continue;
+    rmSync(p, { recursive: true, force: true });
+    removed++;
+  }
+  unlinkSync(UPDATE_JOURNAL);
+  log(`✔ resume: ${restored} file(s) restored byte-exact from ${backup}${removed ? `, ${removed} file(s) born by the dead run removed` : ''}; journal consumed.`);
+  log(`➡ the tree is back at KAIF ${j.from || '?'} — re-run: node .kaif/kaif-core.mjs update`);
 }
 
 // ---------------------------------------------------------------------------- adaptation task
@@ -1245,6 +1313,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
 // in scope at all. Requires the deploy manifest with `shas` (installs since 1.5).
 async function cmdUpdate() {
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
+  refuseOnJournal();   // a crashed previous update stays LOUD until resumed or consciously discarded
   const cur = readJson(KAIF_JSON);
   if (cur.tracking === 'anonymous') die('anonymous install tracks no origin — update by dropping a fresh thin KAIF.md and re-running the bootstrap (the surviving deploy manifest makes that pass mechanical since 2.0)');
   if (!val('--lang') && cur.language) LANG = checkedLang(cur.language, 'the deploy marker');   // a poisoned pre-92.1 marker refuses with the healing flag named
@@ -1292,6 +1361,7 @@ async function cmdUpdate() {
   const sizeBefore = {};
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
+  writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
     classifyAndApply(deploy, old, values, unresolved, cur, oldBase);
   const sizeJumps = deploy
@@ -1371,6 +1441,7 @@ async function cmdUpdate() {
     ownerConvention });
   appendHistory(marker, cur.version, man.version, 'core-update');
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
+  clearUpdateJournal();   // the LAST act: from here there is nothing left to resume
   log(`\n✅ KAIF updated mechanically to ${man.version} — finish ${UPDATE_TASK}, then: node .kaif/kaif-core.mjs update-verify`);
 }
 
@@ -1924,6 +1995,7 @@ async function cmdInstall() {
   if (legacyOld && val('--mode') && ANON && (legacyOld.tracking || 'origin') !== 'anonymous') {
     die(`--mode anonymous contradicts the deployed marker (tracking: ${legacyOld.tracking || 'origin'}) — a tracked deployment cannot be anonymized by install: its origin-tied skills are already on disk, and no command performs tracked → anonymous. Re-run without --mode to keep the deployment as it is; anonymity is a fresh-deployment choice.`);
   }
+  if (legacyOld) refuseOnJournal();   // a crashed previous update/bootstrap stays LOUD until resumed
   // A legacy bootstrap must not silently WIDEN the deployment: the old default (all five
   // systems) handed a two-system project ~80 unrequested files (bug 14, project C). Inherit the
   // marker's agents — the 1.4-era singular `agent` included — and always say what was chosen.
@@ -1946,7 +2018,10 @@ async function cmdInstall() {
   let adopted = [];
   let cls = null;
   if (legacyOld) {
-    if (legacyOld.version !== meta.version) backupTree(deploy, legacyOld.version, meta.version); // rollback material BEFORE any write
+    if (legacyOld.version !== meta.version) {
+      backupTree(deploy, legacyOld.version, meta.version); // rollback material BEFORE any write
+      writeUpdateJournal(legacyOld.version, meta.version, BUNDLE, 'bootstrap', deploy);   // crash journal: same contract as core-update
+    }
     let baseline = null;
     if (okOnDisk(DEPLOY_MANIFEST)) {
       try { const mOld = readJson(DEPLOY_MANIFEST); if (mOld.templateShas) baseline = mOld; } catch { /* unreadable — try synthetic */ }
@@ -2205,6 +2280,7 @@ async function cmdInstall() {
     if (ANON && !f.path.endsWith('.mjs')) want = anonymize(want);
     return normEol(readFileSync(p, 'utf8')) === normEol(want);
   }).length;
+  clearUpdateJournal();   // bootstrap road completed — nothing left to resume
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translatedOnDisk ? ` · ${translatedOnDisk} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
   // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
   // are absent from it, and the first thing the human sees when trying one is "no such command" —
@@ -2627,6 +2703,7 @@ const COMMANDS = {
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly)', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false }, pos: 0 },
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true }, pos: 0 },
+  resume:          { fn: cmdResume,       mutating: true, desc: 'restore the pre-update tree after a crashed update (per .kaif/update-journal.json)', flags: {}, pos: 0 },
   'update-verify': { fn: cmdUpdateVerify, mutating: true, desc: 'final gates of an update; self-cleans on green', flags: {}, pos: 0 },
   'verify-final':  { fn: cmdVerifyFinal,  mutating: true, desc: 'final gates of an install; self-cleans on green', flags: {}, pos: 0 },
   checkpoint:      { fn: cmdCheckpoint,   mutating: true, desc: 'record a finished task item (recheck/placeholders/project-name EXECUTE their gates)', flags: { '--verdict': true, '--verdict-file': true }, pos: 1 },
