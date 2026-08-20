@@ -201,5 +201,75 @@ ok(readFileSync(join(S1, 'AUTHOR_STYLOMETRY.md'), 'utf8')
    'S4 T4: портрет пережил update ПОБАЙТНО — машинерия owner-файл не переписывает и не переименовывает');
 ok(existsSync(join(S1, 'KAIF_UPDATE_TASK.md')), 'S4 update-задача написана');
 
+// ---------------------------------------------------------------- S5: проводка kaif:* — сплайс, не пересериализация (issue #16)
+// Полевой дефект (KUMM): проводка читала package.json, дописывала scripts и писала обратно
+// JSON.stringify(pkg, null, 2) — 24 диффа чужого форматирования под сообщением «+ wired kaif:*»
+// (компактные bin/engines/keywords развёрнуты построчно, добавлен финальный перевод строки).
+// Стережём ИНВАРИАНТ, а не конкретные байты вставки: результат = исходник с РОВНО ОДНОЙ
+// непрерывной вставкой (общий префикс + общий суффикс покрывают исходник целиком).
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки (старый код
+//  пересериализации): оба инварианта S5a/S5b красные; после node tools/build-framework.mjs — зелёные]
+console.log('\n=== S5: проводка kaif:* в package.json — сплайс (issue #16) ===');
+const onePointInsertion = (before, after) => {
+  let p = 0; while (p < before.length && before[p] === after[p]) p++;
+  let s = 0; while (s < before.length - p && s < after.length - p
+    && before[before.length - 1 - s] === after[after.length - 1 - s]) s++;
+  return after.length > before.length && p + s >= before.length;
+};
+// S5a: рукописный компактный манифест КЛАССА полевого (одно-строчные значения, БЕЗ финального
+// перевода строки, ключа scripts нет вовсе) — переживает проводку байт-в-байт вне вставки.
+const S5a = join(ROOT, 's5a'); mkdirSync(S5a); seedBundle(S5a);
+const pkgA0 = [
+  '{',
+  '  "name": "kumm",',
+  '  "version": "1.0.0",',
+  '  "bin": { "kumm": "kumm.mjs" },',
+  '  "engines": { "node": ">=22" },',
+  '  "license": "MIT",',
+  '  "keywords": ["nexusmods", "mods", "modding", "cdp", "cli"],',
+  '  "files": ["kumm.mjs", "README.md", "LICENSE"]',
+  '}',
+].join('\n');                                   // намеренно НЕТ '\n' в конце файла
+writeFileSync(join(S5a, 'package.json'), pkgA0);
+r = run(S5a, 'install');
+ok(r.code === 0, 'S5a install exit 0', r.out.slice(-400));
+const pkgA1 = readFileSync(join(S5a, 'package.json'), 'utf8');
+ok(onePointInsertion(pkgA0, pkgA1),
+   'S5a манифест пережил проводку байт-в-байт вне вставки scripts (одна непрерывная вставка)');
+ok(!pkgA1.endsWith('\n'), 'S5a отсутствовавший финальный перевод строки НЕ добавлен');
+const pkgA = JSON.parse(pkgA1);
+ok(pkgA.scripts && pkgA.scripts['kaif:version'] === 'node .kaif/kaif-core.mjs version'
+   && pkgA.scripts['kaif:check'] === 'node .kaif/kaif-core.mjs check'
+   && pkgA.scripts['kaif:update'] === 'node .kaif/kaif-core.mjs update',
+   'S5a все три kaif:* дописаны и валидны');
+ok(pkgA1.includes('"bin": { "kumm": "kumm.mjs" },') && pkgA1.includes('"keywords": ["nexusmods", "mods", "modding", "cdp", "cli"],'),
+   'S5a компактные строки владельца стоят дословно (не развёрнуты построчно)');
+// повторный прогон: ничего добавлять — файл не трогается вовсе
+r = run(S5a, 'install');
+ok(r.out.includes('kaif:* handles already wired — package.json untouched')
+   && readFileSync(join(S5a, 'package.json'), 'utf8') === pkgA1,
+   'S5a повторная проводка: файл не тронут байт-в-байт');
+// S5b: живой ключ scripts + CRLF — вставка внутрь scripts, стиль концов строк сохранён.
+const S5b = join(ROOT, 's5b'); mkdirSync(S5b); seedBundle(S5b);
+const pkgB0 = [
+  '{',
+  '  "name": "acme",',
+  '  "scripts": {',
+  '    "test": "node test.mjs"',
+  '  },',
+  '  "files": ["a.mjs"]',
+  '}',
+  '',
+].join('\r\n');
+writeFileSync(join(S5b, 'package.json'), pkgB0);
+r = run(S5b, 'install');
+ok(r.code === 0, 'S5b install exit 0', r.out.slice(-400));
+const pkgB1 = readFileSync(join(S5b, 'package.json'), 'utf8');
+ok(onePointInsertion(pkgB0, pkgB1), 'S5b вставка внутрь живого scripts — одна и непрерывная');
+const pkgB = JSON.parse(pkgB1);
+ok(pkgB.scripts.test === 'node test.mjs' && pkgB.scripts['kaif:update'] === 'node .kaif/kaif-core.mjs update',
+   'S5b чужой script уцелел, kaif:* дописаны');
+ok(!/[^\r]\n/.test(pkgB1.slice(1)), 'S5b стиль CRLF сохранён и во вставке');
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
 process.exit(failures ? 1 : 0);

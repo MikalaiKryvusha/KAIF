@@ -365,5 +365,46 @@ ok(r.out.includes('carries recorded checkpoints') && readFileSync(join(S14e, 'KA
    r.out.slice(-300));
 ok(!beforeRerun.equals(withTick), 'S14e контроль фикстуры: чек-поинт действительно изменил задачу');
 
+// ---------------------------------------------------------------- S15: issue #8 — явный --mode на легаси-ветке
+// Полевой дефект (QA_Engineer): update-by-bootstrap АНОНИМНОГО 1.6 с явным --mode standard
+// разворачивал файлы как standard, а маркер наследовал tracking: anonymous без origin — один
+// флаг, два поведения, и все потребители маркера верили маркеру (version отвечал anonymous,
+// update отказывал, петля сигналов оставалась локальной). Явный флаг обязан либо ДВИНУТЬ маркер
+// (anonymous → origin, с переходом в логе), либо отказать ДО первой записи; неявный дефолт
+// по-прежнему наследует маркер (S2-инвариант bug 11 не трогаем).
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки (три ассерта S15/S15c)]
+console.log('\n=== S15: issue #8 — явный --mode на легаси-ветке ===');
+const LEGACY_ANON_16 = { framework: 'KAIF', version: '1.6', released: '2026-07-24',
+  tracking: 'anonymous', sphere: 'programming', agents: ['claude-code'], language: 'en' };
+const S15 = join(ROOT, 's15'); mkdirSync(S15); seed(S15);
+writeFileSync(join(S15, '.kaif', 'kaif.json'), JSON.stringify(LEGACY_ANON_16, null, 2) + '\n');
+r = run(S15, `install --mode standard --agents claude-code --baseline ${join(ROOT, 'no-baseline-s15')}`);
+ok(r.code === 0, 'S15 install --mode standard exit 0', r.out.slice(-400));
+const mk15 = JSON.parse(readFileSync(join(S15, '.kaif', 'kaif.json'), 'utf8'));
+ok(mk15.tracking === 'origin' && mk15.origin === 'https://github.com/MikalaiKryvusha/KAIF',
+   'S15 маркер: переход anonymous → origin ЗАПИСАН (tracking + адрес origin)',
+   `tracking=${mk15.tracking} origin=${mk15.origin || '(нет)'}`);
+ok(/tracking anonymous → origin/.test(r.out), 'S15 переход назван в логе прогона', r.out.slice(-400));
+ok(existsSync(join(S15, '.claude', 'skills', 'kaif-update', 'SKILL.md')),
+   'S15 дерево standard: origin-tied навык развёрнут — файлы и маркер говорят одно');
+// контроль: БЕЗ явного флага анонимное легаси остаётся анонимным (наследование — не переход)
+const S15b = join(ROOT, 's15b'); mkdirSync(S15b); seed(S15b);
+writeFileSync(join(S15b, '.kaif', 'kaif.json'), JSON.stringify(LEGACY_ANON_16, null, 2) + '\n');
+r = run(S15b, `install --agents claude-code --baseline ${join(ROOT, 'no-baseline-s15')}`);
+ok(r.code === 0, 'S15b install без --mode exit 0', r.out.slice(-400));
+const mk15b = JSON.parse(readFileSync(join(S15b, '.kaif', 'kaif.json'), 'utf8'));
+ok(mk15b.tracking === 'anonymous' && !mk15b.origin,
+   'S15b без явного флага маркер остаётся anonymous (наследование не подменено переходом)',
+   `tracking=${mk15b.tracking}`);
+// отказ: явный --mode anonymous поверх ОТСЛЕЖИВАЕМОГО маркера — стоп ДО первой записи
+const S15c = join(ROOT, 's15c'); mkdirSync(S15c); seed(S15c);
+writeFileSync(join(S15c, '.kaif', 'kaif.json'), JSON.stringify({ ...LEGACY_ANON_16,
+  tracking: 'origin', origin: 'https://github.com/MikalaiKryvusha/KAIF' }, null, 2) + '\n');
+r = run(S15c, 'install --mode anonymous --agents claude-code');
+ok(r.code !== 0 && /--mode anonymous contradicts the deployed marker/.test(r.out),
+   'S15c отказ: явный --mode anonymous против tracking origin — стоп с объяснением', r.out.slice(-400));
+ok(!existsSync(join(S15c, 'AGENT_GUIDE.md')) && !existsSync(join(S15c, '.gitignore')),
+   'S15c отказ случился ДО первой записи в дерево');
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.5 зелёные'}`);
 process.exit(failures ? 1 : 0);

@@ -1342,6 +1342,117 @@ function appendHistory(marker, from, to, route) {
   marker.history = [...(marker.history || []), { from: from || '?', to, route, date: localStamp() }];
 }
 
+// ---------------------------------------------------------------------------- package.json splice (issue #16)
+// The kaif:* wiring used to mutate the parsed object and write JSON.stringify(pkg, null, 2)
+// back — re-serializing EVERY key: 24 whitespace-only diff lines in the owner's hand-formatted
+// manifest under a log line promising an additive edit ("+ wired kaif:* handles"), on the
+// deployment's very first commit (field: issue #16; the same tool-diff-wider-than-intent class
+// as bug 22's CRLF rewrite). The wiring now SPLICES only what it adds into the file's own text,
+// so everything outside the inserted entries survives byte-exact (indentation, key order,
+// compact one-line values, a missing final newline). A shape the splicer cannot PROVE itself on
+// falls back to the full re-serialize — and then the log says so instead of promising additivity.
+
+// Top-level tokenizer for a JSON OBJECT text. Returns { entries: [{ key, keyStart, valueStart,
+// valueEnd }], rootOpenIdx, rootCloseIdx } or null when the shape defeats it. The input has
+// already passed JSON.parse, so the null branches are belt-and-suspenders, not a real path.
+function jsonTopLevel(text) {
+  const n = text.length;
+  let i = text.indexOf('{');
+  if (i < 0) return null;
+  const rootOpenIdx = i;
+  i++;
+  const entries = [];
+  const ws = (c) => c === ' ' || c === '\t' || c === '\r' || c === '\n';
+  const skipWs = () => { while (i < n && ws(text[i])) i++; };
+  const readString = () => {          // at '"'; leaves i just past the closing quote
+    i++;
+    while (i < n) { if (text[i] === '\\') i += 2; else if (text[i] === '"') { i++; return true; } else i++; }
+    return false;
+  };
+  const skipValue = () => {           // at the value's first char; leaves i just past its last char
+    const c = text[i];
+    if (c === '"') return readString();
+    if (c === '{' || c === '[') {
+      let d = 0;
+      while (i < n) {
+        const ch = text[i];
+        if (ch === '"') { if (!readString()) return false; continue; }
+        if (ch === '{' || ch === '[') d++;
+        else if (ch === '}' || ch === ']') { d--; if (!d) { i++; return true; } }
+        i++;
+      }
+      return false;
+    }
+    while (i < n && !ws(text[i]) && text[i] !== ',' && text[i] !== '}') i++;   // number/true/false/null
+    return true;
+  };
+  while (i < n) {
+    skipWs();
+    if (text[i] === '}') return { entries, rootOpenIdx, rootCloseIdx: i };
+    if (text[i] === ',') { i++; continue; }
+    if (text[i] !== '"') return null;
+    const keyStart = i;
+    if (!readString()) return null;
+    let key; try { key = JSON.parse(text.slice(keyStart, i)); } catch { return null; }
+    skipWs();
+    if (text[i] !== ':') return null;
+    i++; skipWs();
+    const valueStart = i;
+    if (!skipValue()) return null;
+    entries.push({ key, keyStart, valueStart, valueEnd: i });
+  }
+  return null;
+}
+
+// Splice the missing kaif:* entries (and optionally a missing "name") into package.json TEXT.
+// Returns the new text, or null when the file's shape is not splice-safe (caller falls back).
+function splicePackageJson(raw, addName, addScripts) {
+  const eol = raw.includes('\r\n') ? '\r\n' : '\n';
+  let out = raw;
+  const lastSolid = (s, from) => { let j = from - 1; while (j >= 0 && /\s/.test(s[j])) j--; return j; };
+  const lineIndent = (s, idx) => { const ls = s.lastIndexOf('\n', idx - 1) + 1; return (s.slice(ls, idx).match(/^[ \t]*/) || [''])[0]; };
+  const pairs = Object.entries(addScripts).map(([k, v]) => `${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+
+  if (pairs.length) {
+    const top = jsonTopLevel(out);
+    if (!top) return null;
+    const scripts = top.entries.find((e) => e.key === 'scripts');
+    if (scripts) {
+      const closeAbs = scripts.valueEnd - 1;                       // index of the scripts object's '}'
+      const j = lastSolid(out, closeAbs);                          // last solid char before it
+      if (j === scripts.valueStart) {                              // "scripts": {} — empty object
+        const keyIndent = lineIndent(out, scripts.keyStart);
+        const entryIndent = keyIndent + (keyIndent || '  ');
+        out = out.slice(0, scripts.valueStart)
+          + `{${eol}${entryIndent}${pairs.join(',' + eol + entryIndent)}${eol}${keyIndent}}`
+          + out.slice(scripts.valueEnd);
+      } else if (out.slice(scripts.valueStart, scripts.valueEnd).includes('\n')) {   // multiline object
+        const entryIndent = lineIndent(out, j);                    // match the LAST entry's own line
+        out = out.slice(0, j + 1) + `,${eol}${entryIndent}${pairs.join(',' + eol + entryIndent)}` + out.slice(j + 1);
+      } else {                                                     // compact one-line object with entries
+        out = out.slice(0, j + 1) + `, ${pairs.join(', ')}` + out.slice(j + 1);
+      }
+    } else {
+      const j = lastSolid(out, top.rootCloseIdx);
+      if (j === top.rootOpenIdx) return null;                      // empty {} root — nothing to preserve
+      const rootIndent = top.entries.length ? lineIndent(out, top.entries[0].keyStart) : '  ';
+      const step = rootIndent || '  ';
+      out = out.slice(top.rootOpenIdx, top.rootCloseIdx).includes('\n')
+        ? out.slice(0, j + 1) + `,${eol}${rootIndent}"scripts": {${eol}${rootIndent + step}${pairs.join(',' + eol + rootIndent + step)}${eol}${rootIndent}}` + out.slice(j + 1)
+        : out.slice(0, j + 1) + `, "scripts": { ${pairs.join(', ')} }` + out.slice(j + 1);
+    }
+  }
+  if (addName) {
+    const top = jsonTopLevel(out);                                 // re-scan: offsets moved above
+    if (!top || !top.entries.length) return null;
+    const e0 = top.entries[0];
+    const sep = out.slice(top.rootOpenIdx, top.rootCloseIdx).includes('\n')
+      ? `,${eol}${lineIndent(out, e0.keyStart)}` : ', ';
+    out = out.slice(0, e0.keyStart) + `"name": ${JSON.stringify(addName)}${sep}` + out.slice(e0.keyStart);
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------- final gates
 // The closing guarantees are a property of the DEPLOYED TREE, not of the road taken to it:
 // install's verify-final and update's update-verify run the SAME gate sequence (field-caught
@@ -1745,6 +1856,15 @@ async function cmdInstall() {
     try { legacyOld = readJson(KAIF_JSON); } catch { /* unreadable marker — treat as fresh */ }
     if (legacyOld) log(`⟳ existing KAIF ${legacyOld.version || '?'} detected — running as an UPDATE to ${meta.version} (existing files are kept, new ones added)`);
   }
+  // ONE flag must not split into two behaviours (issue #8): the legacy branch used to honour an
+  // explicit --mode for FILE deployment while the marker inherited the old tracking — a standard
+  // tree labeled anonymous, and every consumer of the marker believed the marker (`version`
+  // answered anonymous, `update` refused, the feedback contour kept signals local). An explicit
+  // --mode either performs a NAMED transition (anonymous → origin, written at the marker below)
+  // or refuses here, BEFORE any write. The implicit default still inherits the marker (bug 11).
+  if (legacyOld && val('--mode') && ANON && (legacyOld.tracking || 'origin') !== 'anonymous') {
+    die(`--mode anonymous contradicts the deployed marker (tracking: ${legacyOld.tracking || 'origin'}) — a tracked deployment cannot be anonymized by install: its origin-tied skills are already on disk, and no command performs tracked → anonymous. Re-run without --mode to keep the deployment as it is; anonymity is a fresh-deployment choice.`);
+  }
   // A legacy bootstrap must not silently WIDEN the deployment: the old default (all five
   // systems) handed a two-system project ~80 unrequested files (bug 14, project C). Inherit the
   // marker's agents — the 1.4-era singular `agent` included — and always say what was chosen.
@@ -1817,6 +1937,15 @@ async function cmdInstall() {
   // of past schemas pile up (bug 19.3: agentsSupported from 1.4 living next to agents).
   // `agents` is always written above — the old spellings are safe to drop unconditionally.
   if (legacyOld) for (const stale of ['agent', 'agentsSupported']) delete marker[stale];
+  // The other half of issue #8: an EXPLICIT --mode standard on the legacy branch WRITES the
+  // transition instead of dropping the flag for the marker while honouring it for files — the
+  // run whose banner says "mode standard" leaves a marker that says the same. `fork` tracking
+  // is untouched (a fork IS a standard deployment; severing it is /kaif-switch-origin's job).
+  if (legacyOld && val('--mode') && !ANON && legacyOld.tracking === 'anonymous') {
+    marker.tracking = 'origin';
+    marker.origin = ORIGIN;
+    log('⟳ marker: tracking anonymous → origin (explicit --mode standard — version checks, updates and the feedback loop are live from here)');
+  }
   // Same auto-record as cmdUpdate (project C D2, bug 31): a legacy bootstrap that just recognized
   // translated-wholesale files on a non-English deployment writes the i18n fact down.
   if (legacyOld && cls && LANG !== 'en' && cls.translatedWholesale.length && String(legacyOld.i18n || '').toLowerCase() !== 'translated') {
@@ -1829,25 +1958,51 @@ async function cmdInstall() {
   // an unreadable file means "skip the handles and say so", not "overwrite the user's file".
   // Anonymous installs get no kaif:* handles at all (they point at the origin-carrying core,
   // which verify-final removes) — the version stays readable in .kaif/kaif.json.
-  let pkg = null;
+  let pkg = null, pkgRaw = null;
   if (ANON) { /* no handles by design */ }
   else if (existsSync('package.json')) {
-    try { pkg = readJson('package.json'); }
-    catch { console.error('⚠ package.json exists but is not parseable JSON — kaif:* handles NOT wired (add them by hand)'); }
+    try { pkgRaw = readFileSync('package.json', 'utf8'); pkg = JSON.parse(pkgRaw.replace(/^﻿/, '')); }
+    catch { pkg = null; console.error('⚠ package.json exists but is not parseable JSON — kaif:* handles NOT wired (add them by hand)'); }
   } else pkg = {};
   if (pkg) {
     // Write ONLY when something was actually added: an unconditional rewrite re-serialized the
     // user's file (CRLF→LF) into a phantom whole-file diff on every install (bug 22 / project A K4).
-    let wired = 0;
-    if (!pkg.name) { pkg.name = values['<PROJECT_NAME>'].toLowerCase().replace(/[^a-z0-9-]+/g, '-'); wired++; }
-    pkg.scripts = pkg.scripts || {};
+    // And when something IS added, it is SPLICED into the owner's text (issue #16): the old
+    // JSON.stringify(pkg) rewrite restyled every hand-formatted key under a log line that
+    // promised an additive edit — the exact diff class the git-hygiene canon tells agents to stop on.
     const handles = { 'kaif:version': 'node .kaif/kaif-core.mjs version', 'kaif:check': 'node .kaif/kaif-core.mjs check',
                       'kaif:update': 'node .kaif/kaif-core.mjs update' };
-    for (const [k, v] of Object.entries(handles)) if (!pkg.scripts[k]) { pkg.scripts[k] = v; wired++; }
-    if (wired) {
-      writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+    const addScripts = Object.entries(handles).filter(([k]) => !(pkg.scripts && pkg.scripts[k]));
+    const addName = pkg.name ? null : values['<PROJECT_NAME>'].toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+    if (!addScripts.length && !addName) log('= kaif:* handles already wired — package.json untouched');
+    else if (pkgRaw == null) {
+      // the file did not exist — a fresh minimal manifest is ours to format
+      writeFileSync('package.json', JSON.stringify({ name: addName, scripts: Object.fromEntries(addScripts) }, null, 2) + '\n');
       log('+ wired kaif:* handles into package.json');
-    } else log('= kaif:* handles already wired — package.json untouched');
+    } else {
+      const next = splicePackageJson(pkgRaw, addName, Object.fromEntries(addScripts));
+      // The splice must PROVE itself before it ships: parsed result carries exactly the additions,
+      // and with them removed it deep-equals the original. Anything less falls back honestly.
+      const sane = (() => {
+        if (next == null) return false;
+        try {
+          const orig = JSON.parse(pkgRaw.replace(/^﻿/, ''));
+          const chk = JSON.parse(next.replace(/^﻿/, ''));
+          for (const [k, v] of addScripts) { if (!chk.scripts || chk.scripts[k] !== v) return false; delete chk.scripts[k]; }
+          if (addName) { if (chk.name !== addName) return false; delete chk.name; }
+          if (addScripts.length && !orig.scripts) { if (Object.keys(chk.scripts).length) return false; delete chk.scripts; }
+          return JSON.stringify(chk) === JSON.stringify(orig);
+        } catch { return false; }
+      })();
+      if (sane) { writeFileSync('package.json', next); log('+ wired kaif:* handles into package.json'); }
+      else {
+        if (addName) pkg.name = addName;
+        pkg.scripts = pkg.scripts || {};
+        for (const [k, v] of addScripts) pkg.scripts[k] = v;
+        writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+        log('+ wired kaif:* handles into package.json (file re-serialized — its shape was not splice-safe; whitespace-only diffs outside scripts are expected)');
+      }
+    }
   }
 
   // 4) persist the deploy manifest so `check` outlives the bundle's cleanup.
