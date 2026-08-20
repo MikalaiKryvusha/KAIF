@@ -2127,19 +2127,19 @@
       {
         "signature": "## Mode A — CAPTURE a lesson (\"add this to experience\")",
         "class": "static",
-        "sha256": "f4949fa081b80f83b9d7f925826be2d4b3ae42aaa27f3147fddba8596e015fb9",
+        "sha256": "8d7bd405aa646f42664978b5dea229cb21c310e0b2bb204748227d0319962749",
         "lines": [
           15,
-          45
+          66
         ]
       },
       {
         "signature": "## Mode B — RECALL lessons (\"recount your experience\")",
         "class": "static",
-        "sha256": "0d4b0da20c96c12de8c7c02105e39bf110196507741378f074c11580d56fd700",
+        "sha256": "86d0ea75a35a79c528542c18f9b76a958c7138d07fc5e575176d83dbff3b96d3",
         "lines": [
-          46,
-          60
+          67,
+          83
         ]
       },
       {
@@ -2147,8 +2147,8 @@
         "class": "static",
         "sha256": "ad84029c18e96905edb2e4974aef873753140099a8d9e0399d54802a32c2f9b0",
         "lines": [
-          61,
-          69
+          84,
+          92
         ]
       }
     ],

@@ -117,6 +117,7 @@ W `plans/75`** — у каждого нулёвка «актуализация �
 | `node tools/refresh-stamp.mjs --trigger <…> --docs <…>` | маркер освежения: момент берёт САМ инструмент |
 | `node tools/build-story-card.mjs` | Таблица 6 витрины → PNG 9:16 для соцсетей: строки читаются из живого README, кегль ищется замером, типографика лечит переносы |
 | `node tools/kaif-stats.mjs` · `voice-lint` · `guarded-watchdog` | статистика релиза · слой 7A портрета · сторож защищённого цикла |
+| `node tools/experience-lint.mjs` (`--selftest`) | поле механизации у новых записей опыта (issue #14, эпик X): mechanized/none-cheap/subject-lesson; ловушка по форме требует первых двух; долг — baseline, только убывает; в `/end-chat` |
 
 **Тронул контур** (`tools/review.mjs`, `tools/lib/review-core.mjs`) → обязателен полный
 `node tools/verify-contour.mjs` в живом браузере; новый живой документ роняет эталон НАМЕРЕННО —
