@@ -5362,9 +5362,22 @@ Accepting a contour = walking this roster.
   `file://` link from an http page is blocked — embedding is the only working path). A choice
   among four mockups opens as a SEPARATE window (opened by script → closable by script); the
   inline frame is for quick previews of smaller decisions.
-- **P7** — a comment field per question AND a document-wide comment at the bottom; the latter is a
-  legitimate review outcome on its own ("no answers, but something to say"), appended as a dated
-  block — comments accumulate, never overwrite.
+- **P7** — a comment field per question AND a document-wide comment at the bottom; EVERY rendered
+  input is a legitimate review outcome ON ITS OWN — a rendered field whose content can be silently
+  discarded is a defect by construction: if the contour draws a field, it owes the human its
+  content (origin issue #19: three deployments repeated the same `if (choice || text)` line and
+  lost the per-question comment — the owner's STANDARD way of answering; on conflict I10 wins —
+  silently dropping typed text is a quiet refusal of the human's work). Comments accumulate,
+  never overwrite. The decision snapshot distinguishes THREE states, not two: *no answer* (the
+  human has not engaged) · *an answer* (a choice or text) · **rejected-with-direction** (no
+  choice, a non-empty comment) — the third is the STRONGEST of the three, because it means the
+  offered options did not fit and the comment is the new direction; the reading agent treats it
+  as a STOP of the work in progress, never as consent. Two boundaries: never derive a choice
+  from the comment text (the decision belongs to the human — an empty choice stays empty), and a
+  document-wide comment never substitutes for a per-question one (they route to different
+  addressees). The build-step guard verifies the CLOSING of the form, not its rendering: the
+  case "only the comment field filled → the answer is recorded" must exist and must have been
+  seen red (a guard that checks the textarea exists in the markup proves nothing about saving).
 - **P8** — a markdown mini-renderer (~120 lines), zero dependencies, escaping as the FIRST action.
 - **P9** — the project name in the page header: the owner runs several projects, and the document
   title alone does not say WHO is asking.
@@ -6414,9 +6427,18 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
    append a "+1 observation" comment there (conditions, environment, version, steps, expected/got;
    new version of the same class → "reproduced on vX.Y") — do NOT open a new ticket.
 3. **File locally:** `bugs/KAIF/NN_*.md` by template A/B below (create the directory on first use).
-4. **Deliver by tracking mode:** `origin` — also file/append the origin issue ON THE OWNER'S
-   BEHALF, and only through the project's send gate / with the owner's quotable standing
-   authorization; `anonymous` — the signal stays LOCAL, never reach for the origin.
+4. **Deliver by tracking mode:** `origin` — file/append the origin issue **autonomously, signed
+   by the agent**; `anonymous` — the signal stays LOCAL, never reach for the origin.
+   TRANSPORT and AUTHORSHIP are two independent axes, and confusing them puts a human into a
+   feedback loop that must not have one. This is the KAIF owner's standing rule, given verbatim
+   in origin issue #15: every KAIF defect an agent finds is reported by the agent to the KAIF
+   GitHub without human participation, and the ticket is signed by the project's agent so it
+   reads as the agent's field report, not the owner's statement — "this is CANON". The transport
+   is whatever account `gh` has — usually the owner's, and that is normal; the AUTHOR is named
+   in the ticket body: state that the text is written by, and answered for by, the project's
+   agent. The `/owner-reviews` send gate exists for a DIFFERENT risk — publishing in a FOREIGN
+   repository or as the owner's own statement — and stays mandatory there; a KAIF-defect signal
+   to the framework's own origin carries neither risk and does not queue on the human.
 5. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
    quote-evidence; blameless wording (a weak model's failure is described as a missing guardrail,
    never as "the model is dumb").
