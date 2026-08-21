@@ -605,6 +605,46 @@ async function main() {
       await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
     }
 
+    block('10б. Ответы ПЕРЕБИВАЮТ протухший notice-класс очереди (bugs/106)');
+    {
+      // Полевая потеря 2026-08-21: документ числился в очереди сообщением с ПРОШЛОГО показа,
+      // с тех пор получил вопросы; страница была вопросной, владелец выбрал варианты и нажал
+      // «Записать» — сервер поверил протухшему kind из файла состояния и записал «прочитано»,
+      // ВЫБРОСИВ ответы. Стережём инвариант: непустые answers → полный путь записи ВСЕГДА.
+      const staleRel = 'reports/stale_notice_qa.md';
+      writeFileSync(join(fixtureRoot, staleRel), [
+        '# Домашка, ставшая вопросной', '',
+        '### Q1. Какой вариант берём?', '',
+        '| Вариант | Что означает |', '|---|---|', '| **A** | первый |', '| **B** | второй |', '',
+        '**Answer:**', '',
+      ].join('\n'), 'utf8');
+      enqueue(fixtureRoot, staleRel, { kind: 'notice' });   // протухший класс из прошлого показа
+      let staleUrl = null;
+      serveContour._onUp = (u) => { staleUrl = u; };
+      const stalePromise = serveContour(fixtureRoot, { docPath: staleRel },
+        { open: false, signal: false, log: logSilent });
+      while (!staleUrl) await sleep(50);
+      const page = await attachPage(browser.cdp, staleUrl);
+      const radios = await page.evaluate("document.querySelectorAll('input[type=radio]').length");
+      check('страница ВОПРОСНАЯ (вопросы в документе сильнее протухшего kind в очереди)', radios === 2,
+        'радио: ' + radios);
+      await page.evaluate([
+        "(function(){var r=document.querySelector('input[name=\"choice:" + staleRel + ":Q1\"][value=\"A\"]');",
+        "r.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true}));",
+        "document.querySelector('#save').click();return true})()",
+      ].join(''));
+      const served = await Promise.race([stalePromise, sleep(8000).then(() => null)]);
+      check('исход — ЗАПИСАННОЕ РЕШЕНИЕ, не «прочитано» (ответ владельца не выброшен)',
+        served !== null && served.outcome === 'decision recorded', served ? served.outcome : 'не завершился за 8 с');
+      const staleMd = readFileSync(join(fixtureRoot, staleRel), 'utf8');
+      check('ответ владельца доехал до документа (Answer несёт выбор A)', /\*\*Answer:\*\*\s*A/.test(staleMd));
+      const decS = readDecision(fixtureRoot, staleRel);
+      check('запись решения НЕ помечена классом notice и несёт ответ', decS !== null && decS.kind !== 'notice'
+        && decS.answers && decS.answers.Q1 && decS.answers.Q1.choice === 'A',
+        decS ? 'kind=' + decS.kind : 'записи нет');
+      await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
+    }
+
     block('QA3. Оба сценария «страница ушла»: перезагрузка — ЖИВЁТ, закрытие — УМИРАЕТ');
     {
       rmSync(join(fixtureRoot, 'interviews/decisions'), { recursive: true, force: true });

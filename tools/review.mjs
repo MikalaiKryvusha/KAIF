@@ -816,7 +816,16 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             const doc = batch ? payload.doc : relative(root, resolve(root, docPath)).replace(/\\/g, '/');
             // Класс определяет СЕРВЕР по файлу состояния (клиентскому флагу верим только как
             // подсказке): пометка сообщения не должна зависеть от того, что прислала страница.
-            const asNotice = (notice && !batch) || readQueue(root).some((i) => i.doc === doc && isNoticeItem(i));
+            // bugs/106: НЕПУСТЫЕ ОТВЕТЫ ПЕРЕБИВАЮТ ЛЮБУЮ КЛАССИФИКАЦИЮ. Документ ДЗ-06 числился
+            // в очереди сообщением с ПРОШЛОГО показа (kind:notice протух — документ с тех пор
+            // получил вопросы), страница была вопросной, владелец выбрал варианты и нажал
+            // «Записать» — а сервер поверил протухшему файлу состояния и записал «прочитано»,
+            // ВЫБРОСИВ его ответы. Ответы человека — его работа: пришли answers → полный путь
+            // записи, какой бы класс ни значился в очереди (первоисточники владельца
+            // неприкосновенны — AGENT_GUIDE, git-гигиена; вектор цели 2.2 №1 — сохранность).
+            const hasAnswers = payload.answers && Object.keys(payload.answers).length > 0;
+            const asNotice = !hasAnswers &&
+              ((notice && !batch) || readQueue(root).some((i) => i.doc === doc && isNoticeItem(i)));
             if (asNotice) { // I37: пометка «прочитано» — ШТАТНЫЙ исход, код 0
               const record = recordDecision(root, doc, { kind: KIND_NOTICE, comment: payload.comment });
               markNoticeRead(root, doc); // I38: доставка доказывается пометкой, и только ею
