@@ -1,0 +1,20 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_019_phase_W_court_scale_and_issue_replies.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-08-21T06:07:24.074Z",
+  "atHuman": "21 августа 2026, 09:07 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": "позовёшь, когда какой режим включать"
+    },
+    "Q2": {
+      "choice": "C",
+      "text": "",
+      "comment": ""
+    }
+  }
+}

@@ -119,9 +119,18 @@ function isPublishableSpan(span, line, allow, privateNames = []) {
 // человек, а страж поставки, когда ему добавили эту зону.
 const PRIVATE_LIST = join(ROOT, '.kaif', 'private-names.json');
 
-function loadPrivateNames() {
-  if (!existsSync(PRIVATE_LIST)) return [];
-  const cfg = JSON.parse(readFileSync(PRIVATE_LIST, 'utf8'));
+function loadPrivateNames(listPath = PRIVATE_LIST, { throwOnMissing = false } = {}) {
+  if (!existsSync(listPath)) {
+    // Fail-closed (находка W2-2 суда W1, 2026-08-21): слепок ПУБЛИЧЕН, и отсутствие карты — не
+    // «нечего заменять», а НЕВОЗМОЖНОСТЬ обезличить. Прежний тихий `return []` писал реальные
+    // имена проектов владельца в публичный файл с exit 0 и зелёной приёмкой. Сверка версий на
+    // чужих машинах карты не требует по построению (`--version-check` выходит раньше).
+    const msg = `карта приватных имён недоступна: ${listPath} — пересборка/приёмка публичного слепка без неё запрещена (fail-closed, суд W1)`;
+    if (throwOnMissing) throw new Error(msg);
+    console.error(`❌ ${msg}`);
+    process.exit(2);
+  }
+  const cfg = JSON.parse(readFileSync(listPath, 'utf8'));
   // Длинные имена раньше коротких: иначе «Unlim» съел бы начало «Unliminium».
   return Object.entries(cfg.names || {})
     .sort((a, b) => b[0].length - a[0].length)
@@ -732,6 +741,37 @@ function selfTest(sourcePath, cfg) {
     red += 1;
   } else {
     console.log('✅ селфтест: чистая копия — приёмка молчит');
+  }
+
+  // K14 (W2-2 суда W1): отсутствие карты приватных имён — ОТКАЗ, не тихий проход. Прежний
+  // fail-open (`return []`) писал реальные имена в публичный слепок с exit 0.
+  let mapMissingRefused = false;
+  try { loadPrivateNames(join(root, 'no-such-map.json'), { throwOnMissing: true }); }
+  catch { mapMissingRefused = true; }
+  if (mapMissingRefused) {
+    console.log('✅ селфтест: K14-нет-карты-имён — отказ (fail-closed)');
+  } else {
+    console.error('❌ селфтест: K14 — карта имён отсутствует, а загрузка прошла молча (fail-open)');
+    red += 1;
+  }
+
+  // K15 (W2-4 суда W1): приёмочная половина фикса #20 — расширение белого списка обезличенными
+  // вариантами — доказывает себя мутацией: БЕЗ расширения легальный спан, чьё тело уже несёт
+  // алиас, обязан краснеть; с расширением — молчать. Зелёный «с» при зелёном «без» = театр.
+  const nm = stPriv[0]; // карта гарантирована: K14 выше держит fail-closed
+  if (!nm) {
+    console.error('❌ селфтест: K15 — карта имён пуста, расширение белого списка недоказуемо');
+    process.exit(1);
+  }
+  const rawSpan = `${nm.name} проверочный спан приёмки суда версии`;
+  const bodyLine = `Иллюстрация: «${anonymizeStr(rawSpan, stPriv)}».`;
+  const withExt = selfCheck(bodyLine, [rawSpan, anonymizeStr(rawSpan, stPriv)]);
+  const withoutExt = selfCheck(bodyLine, [rawSpan]);
+  if (withExt.length === 0 && withoutExt.length > 0) {
+    console.log('✅ селфтест: K15-белый-список — расширение обезличенными работает (без него легальный спан краснеет)');
+  } else {
+    console.error(`❌ селфтест: K15 — расширение белого списка не доказывает себя (с расширением: ${withExt.length}, без: ${withoutExt.length})`);
+    red += 1;
   }
 
   if (red) {
