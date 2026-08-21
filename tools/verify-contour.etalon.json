@@ -88,5 +88,10 @@
     "questions": 4,
     "parsedOptions": 11,
     "candidateLines": 11
+  },
+  "interviews/interview_019_phase_W_court_scale_and_issue_replies.md": {
+    "questions": 2,
+    "parsedOptions": 6,
+    "candidateLines": 6
   }
 }
