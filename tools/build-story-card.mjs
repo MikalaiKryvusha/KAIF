@@ -69,11 +69,15 @@ const C = {
   pink: '#FF1A8C',
 };
 
+// Версия и кодовое имя — из version.json, НЕ строкой в коде (класс пойман в W3 фазы W:
+// зашитое «2.2» + генерация до бампа перезаписали карточку прошлой версии строками новой).
+const V = JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8'));
+const VER = `${V.major}.${V.minor}`;
 const TITLE = {
-  ru: { top: 'KAIF 2.2 — Yolden KAIF', sub: 'Таблица 6 — Метрики версии KAIF 2.2',
-        cols: ['Что измерено', 'Значение', 'Чему это равно'], foot: 'Трое суток · 07–09.08.2026' },
-  en: { top: 'KAIF 2.2 — Yolden KAIF', sub: 'Table 6 — Metrics of KAIF 2.2',
-        cols: ['What was measured', 'Value', 'What it equals'], foot: 'Three days · 7–9 Aug 2026' },
+  ru: { top: `KAIF ${VER} — ${V.codename}`, sub: `Таблица 6 — Метрики версии KAIF ${VER}`,
+        cols: ['Что измерено', 'Значение', 'Чему это равно'], foot: `Релиз ${V.released}` },
+  en: { top: `KAIF ${VER} — ${V.codename}`, sub: `Table 6 — Metrics of KAIF ${VER}`,
+        cols: ['What was measured', 'Value', 'What it equals'], foot: `Released ${V.released}` },
 };
 
 const NB = String.fromCharCode(160);   // неразрывный пробел — КОДОМ, а не символом (EXP-0082)
@@ -102,6 +106,14 @@ function readTable(lang) {
                              : '| What was measured | Value | What it equals |';
   const at = half.indexOf(head);
   if (at < 0) throw new Error(`Таблица 6 (${lang}) не найдена по шапке — витрина изменилась`);
+  // Страж разъезда версий: карточка генерируется ТОЛЬКО когда Таблица 6 несёт версию сборки.
+  // До бампа version.json генерация запрещена — иначе карточка прошлой версии перезаписывается
+  // строками новой (наступлено в W3 фазы W, 2026-08-21; порядок — «бамп → карточка», план 75 W4).
+  const verMark = lang === 'ru' ? `Метрики версии KAIF ${VER}` : `Metrics of KAIF ${VER}`;
+  if (!half.includes(verMark)) {
+    const found = half.match(lang === 'ru' ? /Метрики версии KAIF (\d+\.\d+)/ : /Metrics of KAIF (\d+\.\d+)/);
+    throw new Error(`Таблица 6 (${lang}) несёт версию ${found ? found[1] : '<не найдена>'}, а version.json — ${VER}: карточка генерируется ПОСЛЕ бампа версии (иначе перезаписывается карточка прошлой версии)`);
+  }
 
   const rows = [];
   for (const line of half.slice(at).split(/\r?\n/).slice(2)) {
