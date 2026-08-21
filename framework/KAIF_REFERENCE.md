@@ -166,8 +166,10 @@ placeholders from project reality (package.json, git config, LICENSE); writes fi
 mirrors; wires the marker, npm handles and the deploy manifest (v2, §12.2); writes ONE cognitive
 deliverable — `KAIF_ADAPTATION_TASK.md`, whose items close only via `checkpoint <id>` commands
 (the `field-report` item requires the mandatory field install report to exist in
-`reports/KAIF_UPDATES/` before it ticks); `verify-final` runs the final gates (§7.5) and
-self-cleans the installer.
+`reports/KAIF_UPDATES/` before it ticks; the `owner-voice` item closes the voice-portrait
+question BEFORE any owner-facing text is written — portrait installed, or a canonical
+`no voice portrait` line recorded in the deployed AGENT_GUIDE); `verify-final` runs the final
+gates (§7.5) and self-cleans the installer.
 
 ### 7.3 Agent systems
 

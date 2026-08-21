@@ -269,6 +269,9 @@ must(run, T8, 'project-name "T8 Sandbox"');
 const v8 = JSON.parse(readFileSync(join(T8, '.kaif', 'kaif.json'), 'utf8')).version;
 mkdirSync(join(T8, 'reports', 'KAIF_UPDATES'), { recursive: true });
 writeFileSync(join(T8, 'reports', 'KAIF_UPDATES', `T8_KAIF_${v8}_INSTALL_REPORT.md`), '# Field report: KAIF install sandbox\n');
+// U′3 issue #4: гейт owner-voice объективен — «нет портрета» фиксируется канонической строкой
+writeFileSync(join(T8, 'AGENT_GUIDE.md'),
+  readFileSync(join(T8, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 const taskIds = [...new Set([...readFileSync(join(T8, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of taskIds) run(T8, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
@@ -287,6 +290,9 @@ must(run, T8b, 'project-name "T8b Sandbox"');   // L5/bugs/41: гейт project-
 const v8b = JSON.parse(readFileSync(join(T8b, '.kaif', 'kaif.json'), 'utf8')).version;
 mkdirSync(join(T8b, 'reports', 'KAIF_UPDATES'), { recursive: true });
 writeFileSync(join(T8b, 'reports', 'KAIF_UPDATES', `T8b_KAIF_${v8b}_INSTALL_REPORT.md`), '# Field report: KAIF install sandbox\n');
+// U′3 issue #4: та же каноническая запись для гейта owner-voice
+writeFileSync(join(T8b, 'AGENT_GUIDE.md'),
+  readFileSync(join(T8b, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 const idsB = [...new Set([...readFileSync(join(T8b, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 for (const id of idsB) run(T8b, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);

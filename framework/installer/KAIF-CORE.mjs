@@ -538,12 +538,20 @@ function expectedAgentArtifacts(skillNames) {
 function unresolvedOnDisk(unresolved, deploy) {
   let declared = null;
   try { const s = readJson(KAIF_JSON).sphere; if (s && s !== 'TODO') declared = `.kaif/spheres/${s}.md`; } catch { /* no marker yet */ }
-  return [...unresolved].map((ph) => ({
-    ph,
-    paths: deploy.filter((f) => f.path.endsWith('.md') && okOnDisk(f.path)
+  return [...unresolved].map((ph) => {
+    const paths = deploy.filter((f) => f.path.endsWith('.md') && okOnDisk(f.path)
       && (!f.path.startsWith('.kaif/spheres/') || f.path === declared)
-      && readFileSync(f.path, 'utf8').includes(ph)).map((f) => f.path),
-  })).filter((u) => u.paths.length);
+      && readFileSync(f.path, 'utf8').includes(ph)).map((f) => f.path);
+    // Issue #3 (gate-scope-wider-than-instruction): before the sphere is declared, the libraries
+    // are rightly excluded above — but the ONE the agent will declare (the `sphere` item of this
+    // same task) joins the placeholder gate the moment it is recorded, and a list that omits a
+    // future member teaches the session to distrust the task's other lists. Name it as exactly
+    // what it is: a member that joins later.
+    if (!declared && deploy.some((f) => f.path.startsWith('.kaif/spheres/')
+        && !f.path.endsWith('/_template.md') && f.content.includes(ph)))
+      paths.push('.kaif/spheres/<sphere>.md — YOUR declared library joins this list the moment you run `sphere <name>`');
+    return { ph, paths };
+  }).filter((u) => u.paths.length);
 }
 // Honest cap per slot: name the first paths outright, count the rest (never a silent cut).
 const fmtSlots = (list) => list.map((u) =>
@@ -671,6 +679,13 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
     items.push(['project-name', `<PROJECT_NAME> was auto-filled with "${values['<PROJECT_NAME>']}" from a technical identifier (package.json/folder name) — a lowercase tech id is NOT the project's canonical name, and identity is the OWNER's, never the machinery's guess. Confirm the canonical name with the owner, record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\` (the marker and future fills heal), then correct any seeded headings carrying the wrong form.`]);
   if (unresolvedLive.length) items.push(['placeholders', `Fill the remaining placeholders at their REAL locations (each verified on disk at generation time; grep to be sure): ${fmtSlots(unresolvedLive)}`]);
   items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection. Keep them SHORT; write in 2-3 small edits, not one giant write.']);
+  // Issue #4 (obligation-exists-but-no-deploy-step): the canon routes owner-text writing through
+  // the voice portrait "when the project has one" — and no deployment step ever MADE the project
+  // have one, so a field README shipped before the owner's voice arrived and the owner had to
+  // intervene twice. The item stands BEFORE goal-plan — the first owner-facing text of the pass —
+  // and the ignore decision travels in the same step (ignore-first is already canon: a public
+  // repo + a quote-bearing portrait = the owner's private writing published).
+  items.push(['owner-voice', 'Ask the owner whether a voice portrait exists (`AUTHOR_STYLOMETRY.md`; skill /owner-voice). If YES: install it at the project root, and when the repository is PUBLIC add it to .gitignore in the SAME step — a portrait may quote the owner\'s private writing. If NO: record the canonical line `no voice portrait` (with date) in AGENT_GUIDE.md → "Notes from the human", so no future session re-asks. Either way this item closes BEFORE any owner-facing text (GOAL wording, README) is written.']);
   items.push(['goal-plan', 'If GOAL.md is empty, seed it and ask the owner; derive MASTER_PLAN.md from GOAL.md (skill: /revision).']);
   items.push(['sphere', 'Pick the project\'s sphere (libraries ship in .kaif/spheres/; do NOT author a new document unless none fits) and record it by running `node .kaif/kaif-core.mjs sphere <name>` (e.g. `sphere programming`) — never edit .kaif/kaif.json by hand.']);
   if (needTranslate) items.push(['language', `Translate the owner-facing docs (GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs) into "${LANG}" — no bundled template for this language yet. Keep agent-only docs in English.`]);
@@ -2510,6 +2525,19 @@ function cmdCheckpoint() {
     try { recorded = readJson(KAIF_JSON).projectName; } catch { /* refused below */ }
     if (!recorded) die('checkpoint project-name REFUSED: no projectName in .kaif/kaif.json — confirm the canonical name with the owner and record it first: node .kaif/kaif-core.mjs project-name "<Canonical Name>"');
     log(`✔ canonical name on record: ${recorded} (executed by the checkpoint itself)`);
+  }
+  if (id === 'owner-voice') {
+    // The item's contract is objective on both branches (issue #4): either the portrait is
+    // INSTALLED, or the "owner has none" fact is RECORDED where the next session reads it —
+    // a bare tick attests neither. The record is a canonical English line (like the DONE tag
+    // and the [TESTED] markers) so the gate greps it in any project language; the ignore half
+    // stays the agent's judgement (public vs private repository).
+    const hasPortrait = okOnDisk('AUTHOR_STYLOMETRY.md');
+    const recorded = existsSync('AGENT_GUIDE.md') && readFileSync('AGENT_GUIDE.md', 'utf8').includes('no voice portrait');
+    if (!hasPortrait && !recorded)
+      die('checkpoint owner-voice REFUSED: neither AUTHOR_STYLOMETRY.md on disk nor a `no voice portrait` record in AGENT_GUIDE.md — install the portrait (skill /owner-voice) or record the owner\'s "none" first (canonical line: `no voice portrait`, with date, under "Notes from the human")');
+    log(hasPortrait ? '✔ owner voice portrait on disk: AUTHOR_STYLOMETRY.md (executed by the checkpoint itself)'
+                    : '✔ `no voice portrait` recorded in AGENT_GUIDE.md (executed by the checkpoint itself)');
   }
   if (id === 'stale-claims') {
     try {

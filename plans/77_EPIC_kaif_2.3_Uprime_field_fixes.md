@@ -11,7 +11,10 @@
 > 01:32 +03:00 (контур 149/0, #19+#15) · U′2 закрыта 2026-08-21 02:42 +03:00 (семь пунктов
 > машинерии: #16 сплайс · #8 переход маркера · #10 резолв/формы/libuv · 92.1 `--lang` ·
 > §12.3 наследие T8 · 99.1–99.3 счётчики/канал · crash-журнал + `resume`; коммиты
-> `7bb1753`/`7d9258c`/`555ac5e`, полигон «all 14 suites green»).
+> `7bb1753`/`7d9258c`/`555ac5e`, полигон «all 14 suites green») · U′3 закрыта 2026-08-21
+> 02:59 +03:00 (канон поставки: #4 пункт owner-voice с исполняющим гейтом · #6 язык по
+> аудитории в обоих слоях · #3 сфера названа будущим членом списка placeholders; черновики
+> ответов — секцией ниже).
 > **Вовне:** машинерия поставки (`framework/installer/`), контракт `/owner-reviews`, канон
 > `/report-bug` — публичные контракты; ответы в issues — только `send-outbound` со словом
 > владельца.
@@ -121,15 +124,32 @@
   green»; `node tools/counters-guard.mjs` — «50 зеркал OK, 702 модуля»; контур не тронут —
   verify-contour фазе не нужен]
 
-### U′3 — канон поставки (#4, #6, #3)
+### U′3 — канон поставки (#4, #6, #3) — ✅ закрыта 2026-08-21 02:59 +03:00
 
-- [ ] 1. **#4:** портрет голоса — пункт задания адаптации ДО первого owner-текста, с
-      ignore-решением тем же шагом; «портрета нет» фиксируется в AGENT_GUIDE проекта.
-- [ ] 2. **#6:** язык документа — по АУДИТОРИИ, не по директории: вопрос-роутер «читает ли это
-      владелец?» + таблица аудиторий в секции Languages обоих слоёв.
-- [ ] 3. **#3:** гейт плейсхолдеров знает библиотеку сфер (генератор дописывает
-      `.kaif/spheres/<sphere>.md` в строку `<BUILD_COMMAND>` — вариант 1, предпочтён полем).
-- **Гейт U′3:** правки в `framework/*` + пересборка + строка «чем наблюдалось» на каждый пункт.
+- [x] 1. **#4:** пункт `owner-voice` в задании адаптации, стоит ДО `goal-plan` (первого
+      owner-текста прохода): портрет ставится с ignore-решением ТЕМ ЖЕ шагом (публичный репо +
+      цитатоносный портрет = публикация личного письма владельца), «портрета нет» фиксируется
+      канонической английской строкой `no voice portrait` в AGENT_GUIDE проекта (класс маркеров
+      `DONE`/`[TESTED]`). Чекпоинт ИСПОЛНЯЕТ гейт (доктрина bug 17/34): портрет на диске ИЛИ
+      запись — иначе отказ. Наблюдалось: s01/S6 — отказ голой галочки, обе ветки контракта
+      зелёные; Reference §7.2 несёт пункт.
+- [x] 2. **#6:** секция Languages payload переписана: вопрос-роутер «does the OWNER read this?» +
+      таблица аудиторий (мета-планы эпиков, `MASTER_PLAN`/`STATUS`, `interviews/`+`homeworks/`,
+      README/ноты/чат — сторона владельца; разведка и executor-шаги — английский) + две границы
+      (промоушен переписывает · разведка остаётся EN). Кириллическая цитата владельца поймана
+      СОБСТВЕННЫМ валидатором (§9.11) и перефразирована переводом. Зеркало обвязки: корневой
+      AGENT_GUIDE несёт тот же вопрос-роутер поверх послойного разреза истока. Наблюдалось:
+      s01/S6 — три ассерта по развёрнутому AGENT_GUIDE.
+- [x] 3. **#3:** строка слота в пункте `placeholders` называет БУДУЩЕГО члена охвата гейта —
+      `.kaif/spheres/<sphere>.md — YOUR declared library joins this list the moment you run
+      \`sphere <name>\`» (аннотация появляется, только пока сфера не объявлена И слот жив в
+      библиотеках; на update-дороге сфера объявлена — аннотации нет по построению). Вариант 1
+      issue («список полный») при честной оговорке: имя члена известно, момент вступления назван.
+      Наблюдалось: s01/S6 — регэксп-ассерт по сгенерированному заданию.
+- **Гейт U′3:** ✅ [TESTED: 2026-08-21 · красный доказан против до-фиксного dist (9 красных
+  s01/S6: пункта нет, роутинг директорийный, аннотации нет); после пересборки — сборка чистая
+  (§9.11 зелёный после перефраза), «all 14 suites green», counters 50 зеркал OK; фикстуры
+  owner-voice добавлены в динамические циклы s04/S13 и s07/T8+T8b]
 
 ### U′4 — исток: слепок и релиз-ритуал (#20 + 98.1/98.2)
 
@@ -213,6 +233,40 @@
 > anonymity is a fresh-deployment choice). The implicit default still inherits the marker, so
 > the bug-11 semantics you quoted are untouched (guarded by S15b). Your hand-edited marker will
 > reconcile cleanly: the upstream fix writes the same values mechanically.
+
+**→ issue #4 (портрет голоса не устанавливается):**
+
+> Fixed for the upcoming 2.3 with your proposed shape, moved one slot earlier than you suggested:
+> the new `owner-voice` adaptation item stands BEFORE `goal-plan` — the first owner-facing text
+> of the pass — so the deadline your report names ("before the README exists") is met by
+> construction, not by hope. Both details you flagged are in: the ignore decision travels in the
+> SAME step (public repo + quote-bearing portrait = published private writing), and the "owner
+> has none" branch records a canonical English line `no voice portrait` in the deployed
+> AGENT_GUIDE so no future session re-asks. Your expected check became the checkpoint's own gate:
+> `checkpoint owner-voice` REFUSES unless the portrait is on disk or the record exists — a bare
+> tick attests neither (the same executing-checkpoint doctrine as `placeholders`).
+
+**→ issue #6 (язык по директории):**
+
+> Fixed for the upcoming 2.3 exactly along your proposal: the Languages section now routes by the
+> question — does the OWNER read this? — with the audience table naming, on the owner's side,
+> everything your report listed (epic meta-plans, `MASTER_PLAN.md`, `STATUS.md`, `interviews/`,
+> READMEs, release notes, every chat report), and both boundaries verbatim in spirit: promotion
+> rewrites, recon/executor detail stays English with its conclusions QUOTED into owner-language
+> carriers. The three-lines-apart self-contradiction you caught (meta-plan as "where the owner
+> sees the whole shape" vs `plans/` routed to English) is gone — the table row cites that very
+> sentence. Your wholesale-rewritten local section will merge as a wording choice, as you
+> predicted: the behaviour is now identical upstream.
+
+**→ issue #3 (гейт шире списка пункта):**
+
+> Fixed for the upcoming 2.3, your option 1: the `<BUILD_COMMAND>` row of the placeholders item
+> now names the sphere library as exactly what it is — a member that JOINS the gate's scope the
+> moment you run `sphere <name>` (at task-generation time the sphere is not yet declared, so the
+> row names the future member instead of guessing a name). When the build command IS detectable,
+> the machinery already fills the sphere cell like every other file, and no row appears at all.
+> The residual risk your report named — a list that omits a member teaching sessions to distrust
+> the task's other lists — is the sentence this fix was built from.
 
 **→ issue #10 (полевой отчёт KAGO):**
 

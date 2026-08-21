@@ -271,5 +271,53 @@ ok(pkgB.scripts.test === 'node test.mjs' && pkgB.scripts['kaif:update'] === 'nod
    'S5b чужой script уцелел, kaif:* дописаны');
 ok(!/[^\r]\n/.test(pkgB1.slice(1)), 'S5b стиль CRLF сохранён и во вставке');
 
+// ---------------------------------------------------------------- S6: фаза U′3 — канон поставки (issues #4, #6, #3)
+// #4: задание адаптации никогда не устанавливало портрет голоса — README поля был написан ДО
+// прибытия голоса, владелец вмешивался дважды («и стилометрию НУЖНО установить, это моя прямая
+// команда»). #6: язык документов роутился ДИРЕКТОРИЕЙ — мета-план эпика уезжал английским у
+// русскоязычного владельца («Я по-русски разговариваю вообще-то»). #3: строка <BUILD_COMMAND>
+// пункта placeholders не называла библиотеку сфер, которую гейт после `sphere <name>` сканирует.
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки: пункта owner-voice
+//  нет, роутинг директорийный, аннотации сферы нет]
+console.log('\n=== S6 (U′3): owner-voice в задании · язык по аудитории · сфера в строке placeholders ===');
+// собственная песочница с ОДНОЙ установкой (S5a ставился дважды — re-run сносит адаптационное
+// задание по норме bugs/33) и package.json БЕЗ build-скрипта: слот <BUILD_COMMAND> остаётся жив
+const S6 = join(ROOT, 's6'); mkdirSync(S6); seedBundle(S6);
+writeFileSync(join(S6, 'package.json'), '{\n  "name": "s6",\n  "version": "1.0.0"\n}\n');
+r = run(S6, 'install');
+ok(r.code === 0, 'S6 install exit 0', r.out.slice(-300));
+const taskS6 = readFileSync(join(S6, 'KAIF_ADAPTATION_TASK.md'), 'utf8');
+// #4: пункт существует и стоит ДО goal-plan (первого owner-текста прохода)
+ok(taskS6.includes('**owner-voice**') && taskS6.includes('checkpoint owner-voice'),
+   'S6 (#4): задание несёт пункт owner-voice с чекпоинтом');
+ok(taskS6.indexOf('**owner-voice**') > -1 && taskS6.indexOf('**owner-voice**') < taskS6.indexOf('**goal-plan**'),
+   'S6 (#4): owner-voice стоит ДО goal-plan — портрет решается раньше первого owner-текста');
+// #6: развёрнутый AGENT_GUIDE роутит язык ВОПРОСОМ аудитории (читаем ДО дописывания записи ниже)
+const agS6 = readFileSync(join(S6, 'AGENT_GUIDE.md'), 'utf8');
+ok(agS6.includes('routed by AUDIENCE, never by directory') && agS6.includes('does the OWNER read this?'),
+   'S6 (#6): язык роутится вопросом «читает ли это владелец?», не списком директорий');
+ok(agS6.includes('epic meta-plans (`plans/NN_EPIC_*`)') && agS6.includes('`MASTER_PLAN.md` · `STATUS.md`')
+   && agS6.includes('everything in `interviews/`'),
+   'S6 (#6): таблица аудиторий называет мета-планы, MASTER_PLAN/STATUS и interviews на стороне владельца');
+ok(agS6.includes('Promotion rewrites') && agS6.includes('Recon and executor detail stay English'),
+   'S6 (#6): обе границы правила названы (промоушен переписывает · разведка остаётся английской)');
+// #4: гейт объективен — голая галочка без портрета и без записи ОТКАЗЫВАЕТ
+r = run(S6, 'checkpoint owner-voice');
+ok(r.code !== 0 && /owner-voice REFUSED/.test(r.out),
+   'S6 (#4): checkpoint owner-voice без портрета и записи — отказ, не самоаттестация', r.out.slice(-250));
+writeFileSync(join(S6, 'AGENT_GUIDE.md'),
+  readFileSync(join(S6, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
+r = run(S6, 'checkpoint owner-voice');
+ok(r.code === 0 && /no voice portrait` recorded/.test(r.out),
+   'S6 (#4): каноническая запись `no voice portrait` в AGENT_GUIDE удовлетворяет гейт', r.out.slice(-250));
+// #4: позитивная ветка — портрет на диске удовлетворяет гейт без записи (S5b ставился один раз)
+writeFileSync(join(S5b, 'AUTHOR_STYLOMETRY.md'), '# Owner voice portrait\n\nsandbox portrait\n');
+r = run(S5b, 'checkpoint owner-voice');
+ok(r.code === 0 && /portrait on disk/.test(r.out),
+   'S6 (#4): портрет на диске удовлетворяет гейт (вторая ветка контракта)', r.out.slice(-250));
+// #3: строка <BUILD_COMMAND> пункта placeholders называет БУДУЩЕГО члена — объявляемую сферу
+ok(/BUILD_COMMAND[^\n]*\.kaif\/spheres\/<sphere>\.md — YOUR declared library joins/.test(taskS6),
+   'S6 (#3): список пункта placeholders называет библиотеку сферы, которая войдёт в охват гейта');
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
 process.exit(failures ? 1 : 0);

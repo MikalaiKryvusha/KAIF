@@ -458,13 +458,30 @@ The ladder is not ceremony for its own sake: research is where the epic gets its
 the meta-plan is where the owner sees the whole shape once, and phase-by-phase operational plans are
 what keeps a context-losing session executing the RIGHT next step instead of re-deriving the epic.
 
-### Languages — two audiences, two languages
+### Languages — routed by AUDIENCE, never by directory
 
-Agent-internal documents (this guide, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`,
-`EXPERIENCE.md`, the maps, working notes in `plans/`/`bugs/`/`researches/`, the skills) are written and
-maintained in **English** — the language models read most reliably. Owner-facing documents (`GOAL.md`,
-`KAIF_FRAMEWORK.md`, the directory READMEs) and every chat report to the owner are in
-**<OWNER_LANGUAGE>**. Keep this split as you create new documents.
+Creating or renaming any document → ask ONE routing question first: **does the OWNER read this?**
+The owner reads it → the owner's working language — **<OWNER_LANGUAGE>** here (`.kaif/kaif.json` →
+`language`). Only the agent reads it → **English**, the language models read most reliably. A
+directory list cannot carry this rule: skills keep creating owner-facing artifacts long after
+install (epic meta-plans, interviews, homework), and any list is frozen at the moment it was
+written — the field cost was an owner discovering his own roadmap in a foreign language within
+hours of install (issue #6; his words, translated: "I speak Russian, actually").
+
+| The owner reads it → owner's language | Only the agent reads it → English |
+|---|---|
+| `GOAL.md` · `MASTER_PLAN.md` · `STATUS.md` · `KAIF_FRAMEWORK.md` | this guide · `PHILOSOPHY.md` · `BUG_FIXING_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` · `REQUIREMENTS_FRAMEWORK.md` |
+| epic meta-plans (`plans/NN_EPIC_*`) — the guide itself says the owner sees the whole shape there | operational plans' executor steps · working notes in `bugs/` |
+| everything in `interviews/` and `homeworks/` — the owner answers inside the document | `researches/` (recon detail) · `EXPERIENCE.md` · the maps · the skills |
+| directory READMEs · `README.md` · release notes · every chat report to the owner | |
+
+Two boundaries stop the rule from drifting:
+
+- **Promotion rewrites.** A document the owner STARTS reading changes language — the audience
+  decides, and the audience changed.
+- **Recon and executor detail stay English.** The owner meets their conclusions through the
+  meta-plan, the interviews and the chat reports, which QUOTE the material in the owner's
+  language — exactly what the self-sufficient-question rule already demands.
 
 ### Experience log — `EXPERIENCE.md`
 
@@ -2433,8 +2450,10 @@ placeholders from project reality (package.json, git config, LICENSE); writes fi
 mirrors; wires the marker, npm handles and the deploy manifest (v2, §12.2); writes ONE cognitive
 deliverable — `KAIF_ADAPTATION_TASK.md`, whose items close only via `checkpoint <id>` commands
 (the `field-report` item requires the mandatory field install report to exist in
-`reports/KAIF_UPDATES/` before it ticks); `verify-final` runs the final gates (§7.5) and
-self-cleans the installer.
+`reports/KAIF_UPDATES/` before it ticks; the `owner-voice` item closes the voice-portrait
+question BEFORE any owner-facing text is written — portrait installed, or a canonical
+`no voice portrait` line recorded in the deployed AGENT_GUIDE); `verify-final` runs the final
+gates (§7.5) and self-cleans the installer.
 
 ### 7.3 Agent systems
 

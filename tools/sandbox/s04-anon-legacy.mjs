@@ -148,6 +148,9 @@ ok(dedupScan('installer/KAIF-CORE.mjs::stale-claims', 'stale-claims-noise').leng
 ok(dedupScan('installer/KAIF-CORE.mjs::stale-claims', 'scanner-false-green').length === 0,
    'S13-M5 эвал-ловушка дедупа: чужой symptom-class НЕ матчится (негативный контроль — новый сигнал = новый тикет)');
 const adaptIds = [...new Set([...readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md'), 'utf8').matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
+// U′3 issue #4: гейт owner-voice объективен — «нет портрета» фиксируется канонической строкой
+writeFileSync(join(S13, 'AGENT_GUIDE.md'),
+  readFileSync(join(S13, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
 r = run(S13, 'verify-final');
 ok(r.code === 0, 'S13 verify-final exit 0 (полный анонимный install)', r.out);
