@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by tools/build-framework.mjs. Edit the sources and re-run the tool. -->
-# KAIF — Krinik AI Framework · the self-extracting core · v2.2
+# KAIF — Krinik AI Framework · the self-extracting core · v2.3
 
 > **You are reading an installer.** This document describes the KAIF framework **and** unpacks it into a
 > project. If you are an AI agent asked to *"unpack KAIF"* — your job is in **§8**. Read this document,
@@ -6903,7 +6903,7 @@ document that states the current version writes only `MAJOR.MINOR`. On deploy th
 `.kaif/kaif.json`:
 
 ```json
-{ "framework": "KAIF", "version": "2.2", "released": "2026-08-08",
+{ "framework": "KAIF", "version": "2.3", "released": "2026-08-21",
   "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin",
   "sphere": "programming", "agent": "claude-code" }
 ```
