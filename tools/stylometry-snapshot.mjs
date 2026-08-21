@@ -94,12 +94,17 @@ function loadConfig() {
   return JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
 }
 
-/** Разрешён ли спан к публикации без схлопывания. */
-function isPublishableSpan(span, line, allow) {
+/** Разрешён ли спан к публикации без схлопывания.
+ *  Порог токена судится по ОПУБЛИКОВАННОЙ форме спана (issue #20): чистка видела «NDim Space
+ *  Rating» (3 слова → токен), замена имени раздувала его в «project A Space Rating» (4 слова),
+ *  и красной становилась независимая приёмка, судящая уже опубликованное тело. Чистка и приёмка
+ *  обязаны судить В ОДНОМ пространстве — опубликованном. */
+function isPublishableSpan(span, line, allow, privateNames = []) {
   if (allow.includes(span)) return true;
-  const words = span.trim().split(/\s+/).filter(Boolean);
+  const pub = anonymizeStr(span, privateNames);
+  const words = pub.trim().split(/\s+/).filter(Boolean);
   if (words.length > TOKEN_MAX_WORDS) return false;
-  if (SENTENCE_PUNCT.test(span)) return false;
+  if (SENTENCE_PUNCT.test(pub)) return false;
   // Спан на строке с адресом корпуса — это цитата с адресом, а не токен.
   CORPUS_REF.lastIndex = 0;
   if (CORPUS_REF.test(line)) return false;
@@ -154,6 +159,23 @@ function guillemetRegions(line) {
   return regions;
 }
 
+/** Замена приватных имён в одной строке — вынесена из scrubLine, потому что она нужна ещё и
+ *  суждению о публикуемости (isPublishableSpan) и приёмке (расширение белого списка): все три
+ *  обязаны видеть одно и то же опубликованное пространство (issue #20). */
+function anonymizeStr(s, privateNames, stats = null) {
+  let out = s;
+  for (const p of privateNames) {
+    out = out.replace(p.re, (match, offset, whole) => {
+      if (stats) stats.privateNames = (stats.privateNames || 0) + 1;
+      const before = whole[offset - 1] || '';
+      const after = whole[offset + match.length] || '';
+      const inPath = before === '/' || before === '_' || after === '/' || after === '_';
+      return inPath ? p.slug : p.alias;
+    });
+  }
+  return out;
+}
+
 /** Схлопывание неразрешённых спанов + обезличивание адресов и приватных имён. */
 function scrubLine(line, allow, stats, privateNames = []) {
   // Сначала «ёлочки» сканером (вложенность), затем прочие пары — регулярным выражением.
@@ -162,7 +184,7 @@ function scrubLine(line, allow, stats, privateNames = []) {
   for (const [s, e] of guillemetRegions(line)) {
     const inner = line.slice(s + 1, e);
     out += line.slice(prev, s);
-    if (inner === '…' || isPublishableSpan(inner, line, allow)) {
+    if (inner === '…' || isPublishableSpan(inner, line, allow, privateNames)) {
       out += line.slice(s, e + 1);
     } else {
       stats.elided.push({ span: inner, line });
@@ -180,7 +202,7 @@ function scrubLine(line, allow, stats, privateNames = []) {
   // Регрессия поймана СРАВНЕНИЕМ С ПОБАЙТНЫМ ЭТАЛОНОМ, а не чтением диффа глазами.
   out = out.replace(ANY_QUOTED, (full, open, inner, close) => {
     if (inner === '…') return full;                      // уже схлопнуто — не считать дважды
-    if (isPublishableSpan(inner, line, allow)) return full;
+    if (isPublishableSpan(inner, line, allow, privateNames)) return full;
     stats.elided.push({ span: inner, line });
     return `${open}…${close}`;
   });
@@ -188,16 +210,7 @@ function scrubLine(line, allow, stats, privateNames = []) {
     stats.anonymized += 1;
     return `${num}_*.md`;
   });
-  for (const p of privateNames) {
-    out = out.replace(p.re, (match, offset, whole) => {
-      stats.privateNames = (stats.privateNames || 0) + 1;
-      const before = whole[offset - 1] || '';
-      const after = whole[offset + match.length] || '';
-      const inPath = before === '/' || before === '_' || after === '/' || after === '_';
-      return inPath ? p.slug : p.alias;
-    });
-  }
-  return out;
+  return anonymizeStr(out, privateNames, stats);
 }
 
 /**
@@ -268,6 +281,12 @@ function build(sourcePath, cfg) {
   // Шапку источника заменяем публичной: до первого заголовка, названного в конфиге как начало переноса.
   const startAt = cfg.startAtHeading;
   while (i < src.length && !src[i].startsWith(startAt)) i += 1;
+  // Инвариант issue #20 («дороже самой починки»): ненайденный заголовок начала переноса — ОТКАЗ,
+  // а не тихий старт с другого места. Тихий старт публикует документ, начинающийся не там, где
+  // задумано, и заметить это можно только грепом вручную; молчащий страж хуже отсутствующего.
+  if (startAt && i >= src.length) {
+    throw new Error(`в источнике нет заголовка начала переноса: ${startAt} — слепок НЕ пересобран (сверь startAtHeading в tools/stylometry-snapshot.config.json с живым источником)`);
+  }
 
   let skippingSection = null;
   let pendingRuleId = null;
@@ -701,7 +720,12 @@ function selfTest(sourcePath, cfg) {
   for (const list of Object.values(cfg.publicEvidence || {})) {
     for (const a of list) publicTexts.push(pullPublicQuote(a));
   }
-  const cleanFailures = selfCheck(clean.body, [...(cfg.allowSpans || []), ...publicTexts], readFileSync(sourcePath, 'utf8').split(/\r?\n/));
+  // То же расширение белого списка обезличенными вариантами, что и в боевой приёмке (issue #20).
+  const stRaw = [...(cfg.allowSpans || []), ...publicTexts];
+  const stPriv = loadPrivateNames();
+  const cleanFailures = selfCheck(clean.body,
+    [...new Set([...stRaw, ...stRaw.map((a) => anonymizeStr(a, stPriv))])],
+    readFileSync(sourcePath, 'utf8').split(/\r?\n/));
   if (cleanFailures.length) {
     console.error(`❌ селфтест: чистая копия — приёмка КРАСНАЯ (${cleanFailures.length}):`);
     for (const f of cleanFailures.slice(0, 5)) console.error(`   · ${f}`);
@@ -753,7 +777,13 @@ const publicQuoteTexts = [];
 for (const list of Object.values(cfg.publicEvidence || {})) {
   for (const a of list) publicQuoteTexts.push(pullPublicQuote(a));
 }
-const allowForCheck = [...(cfg.allowSpans || []), ...publicQuoteTexts];
+// Белый список расширяется ОБЕЗЛИЧЕННЫМИ вариантами своих записей (issue #20, тот же класс
+// «одно пространство суждения»): запись allow вправе нести настоящее имя проекта (директива
+// владельца называет вещи рабочими именами), а тело слепка к моменту приёмки уже несёт алиас —
+// сверка «сырое против опубликованного» гасила бы легальный спан.
+const allowRaw = [...(cfg.allowSpans || []), ...publicQuoteTexts];
+const privNamesForCheck = loadPrivateNames();
+const allowForCheck = [...new Set([...allowRaw, ...allowRaw.map((a) => anonymizeStr(a, privNamesForCheck))])];
 
 const header = readFileSync(HEADER_PATH, 'utf8')
   .replace(
