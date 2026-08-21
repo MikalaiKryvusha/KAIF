@@ -33,7 +33,10 @@
 
 **Ответ раунда 1 (история; страница не показала вариант A):** B) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 21 августа 2026, 09:02 (+03:00) -->
 
-**Answer:**
+**Answer:** A) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 21 августа 2026, 09:07 (+03:00) -->
+
+
+**Комментарий владельца (21 августа 2026, 09:07 (+03:00)):** позовёшь, когда какой режим включать <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 21 августа 2026, 09:07 (+03:00) -->
 
 ## Q2. Когда отправлять 13 ответов в полевые issues?
 
@@ -50,4 +53,4 @@
 
 **Ответ раунда 1 (история; страница не показала вариант B):** C) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 21 августа 2026, 09:02 (+03:00) -->
 
-**Answer:**
+**Answer:** C) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 21 августа 2026, 09:07 (+03:00) -->
