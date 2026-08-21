@@ -157,3 +157,22 @@ pack(s)»).
 | 3 | CONFIRMED | substantial | U | check-framework.mjs:446-458 builds destLangs as a UNION (a dest enters if ANY one pack carries it, :457-458); :469-476 uses inLangs only inside error prose; :478 orphan check fires only when NO pack carries the file — no comparison of pack compositions exists. A pack missing a file its 8 siblings carry passes §5f green. Mitigations checked and found insufficient: deploy-time logPackHonesty (KAIF-CORE.mjs:341-358) would list the lost doc among English arrivals but labels the accident 'INCOMPLETE BY DESIGN' — certifying a loss as intent; number-mirror tripwires resolve, per the project's own doctrine (numbers in prose are QUOTES of tool output), by syncing prose to the new number without ever naming the asymmetry. Directly exposed by the 2.3 freeze reshuffle (№56/№57, plans/70:81). Epic U per family default. |
 | 4 | CONFIRMED | substantial | U | check-framework.mjs:473 `const sha = normSha5f(srcAbs);` — the hash is taken ONLY of the EN source; the pack file participates solely as a destLangs key (name), its content is never opened by §5f or any other gate (verified: no other reader of languages/* content in tools/). The section header :430-438 declares a 'реестр пар истина↔зеркало' and the error text :476 promises 're-sync its localization' — yet a pack file replaced by a one-line stub passes check-framework green (R2 mutation). Not a legitimate compromise: translations cannot be diffed against EN, but the pin doctrine's own 'conscious edit' mechanism (pinning the pack-side sha too, or minimal integrity floors) is applicable and absent — a pair registry that never reads the mirror side cannot detect a destroyed mirror. Epic U per family default (pack parity machinery). |
 | 5 | CONFIRMED | substantial | U | Narrowed but real. Partially refuted arm: whole-pack deletion is NOT silent on HEAD — counters-guard MIRRORS :173-176 compare README's 'N language packs'/'N языковых пакетов' prose against live.langs (directory count, :90-91), and git -L dates them to 5b76e9d 2026-08-08, BEFORE R2, so the R2 'delete hi/ → exit 0' evidence could only hold with prose adjusted too; found-based counting itself is authored design (comment :450-451, dated 504a33f 2026-08-08, tied to freeze decisions №56/№57). Surviving defect at the named address: :382's filter `.filter((l) => existsSync(join(root, l, TRIGGERS_FILE)))` SILENTLY drops a pack dir that lost only skill-triggers.json — live.langs stays 9 (mirrors green), the axis loops 8, prints '✅ … ключи 8 языковых пакетов', exit 0, no dirs↔triggers cross-check anywhere; a language loses its whole alias machinery with green gates while the installer still prints 'trigger aliases ARE localized' (KAIF-CORE.mjs:357). No design statement covers the silent skip (only the count shift). Epic U per family default. |
+
+## Решения, принятые агентом без владельца
+
+1. Закрытие семейства оформлено ревизией W5 (сессия 41), а не внутри эпика U′: исходы всех пяти
+   вхождений жили в таблице `plans/77`, документ семейства их не нёс — секция ниже сводит их
+   сюда, чтобы имя файла и тело говорили одно.
+
+## ✅ STATUS: DONE (2026-08-21 19:19 +03:00)
+
+What was done: все пять вхождений получили исход в 2.3 эпиком U′ (`plans/77`, таблица исходов):
+92.1 — валидация `--lang` (`checkedLang`: слово-имя → отказ с подсказкой, не-код → отказ,
+маркер лечится; свод s09/D7); 92.2–92.5 — заморозка №56/№57 тремя носителями объявления +
+страж `tools/lang-packs-guard.mjs` с локом `tools/lang-packs.lock.json` (92.2 — пины 35
+EN-описаний навыков; 92.3 — состав пакетов поимённо + sha, потеря/подмена/посторонний файл;
+92.4 — побайтный пин замороженных EOL-норм + пол 40 % живого ru; 92.5 — ростер пакетов ИЗ ЛОКА,
+не с диска).
+How verified: `--selftest` стража — шесть мутаций красные на фикстурах, чистая копия молчит,
+дерево не тронуто; своды s07/Freeze и s09/D7 доказаны красным против до-фиксовой машинерии;
+релиз 2.3 (v2.3, 2026-08-21) прошёл с этими стражами в шаге 4 `/release`.

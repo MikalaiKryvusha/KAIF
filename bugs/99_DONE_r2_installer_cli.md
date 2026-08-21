@@ -158,3 +158,19 @@ verified` в середине вывода.
 | 1 | CONFIRMED | substantial | U | KAIF-CORE.mjs:334 `translated: overrides.size` — pack size in the bundle, computed above writeIfNew (:455 'kept existing' returns false without writing) and the OWNER_SEEDED kept-branch (:1094-1098); printed at :1983 as 'N owner docs templated'. Not design: the file's own doctrine comment :282 ('counts what is ON DISK, never what was planned') and the disk-reading sibling counter countAliasedOnDisk (:290, called :1982) define the intended semantics this counter violates. Install over existing GOAL.md/KAIF_FRAMEWORK.md claims 8, writes 6 (doc's sandbox b99b matches the code path). Owner-facing lie, no data loss — substantial. |
 | 2 | CONFIRMED | substantial | U | KAIF-CORE.mjs:356 counts `deploy.filter((f) => skillName(f.path))` without isSkippedAnon, while both real deploy sites filter it (:1245, :1794 `skillName(f.path) && !isSkippedAnon(f.path)`) and anon skips are logged at :1785. The :357 line claims 'Arriving in ENGLISH ... all 35 skill bodies' but in anonymous mode 4 ORIGIN_TIED skills never arrive: same run prints 35 then '31 skills trigger-aliased', 31 dirs on disk. Refutation as 'framework total, not delivery count' fails — the sentence explicitly names what arrives and needs manual transfer. Residual instance of the class bugs/65 declared closed — substantial. |
 | 3 | CONFIRMED | hygiene | U | KAIF-LOADER.mjs:35 `SOURCES[(val('--channel') ·· 'release').toLowerCase()] ·· SOURCES.release` — unknown channel name silently falls to release; no warning anywhere (:38-39 only log/die helpers, die is used for other bad inputs, not this one); KAIF.md:83-86 contracts exactly two names (release, main), mirror KAIF.md:107 byte-identical. Real defect (silent substitution on a misunderstood request, user gets 2.1 instead of main's 2.2), but narrow: only mistyped-channel users, output still names the fetched URL and 'machinery 2.1 verified', default path unaffected — hygiene. |
+
+## Решения, принятые агентом без владельца
+
+1. Закрытие семейства оформлено ревизией W5 (сессия 41): исходы всех трёх вхождений жили в
+   таблице `plans/77`, документ семейства их не нёс — секция ниже сводит их сюда.
+
+## ✅ STATUS: DONE (2026-08-21 19:19 +03:00)
+
+What was done: все три вхождения получили исход в 2.3 эпиком U′ (фаза U′2, `plans/77`):
+99.1 — счётчик owner-доков считает ДИСК (`translatedOnDisk`), а не план бандла; 99.2 —
+анти-фильтр `isSkippedAnon` в `logPackHonesty` — строка про навыки называет реально прибывшее
+(в anonymous 31, не 35); 99.3 — загрузчик ОТКАЗЫВАЕТ на неизвестном `--channel` с именами
+законных каналов вместо молчаливого падения в release.
+How verified: своды s04/S16 (красный «8 при 6» и «bodies==aliased» 35≠31) и s09/D6 (красный из
+`7bb1753`) — каждый доказан красным против до-фиксовой машинерии; полигон «all 14 suites green»
+на закрытии U′2; релиз 2.3 собран этой машинерией.
