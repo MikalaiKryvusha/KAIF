@@ -730,6 +730,13 @@ if (!files.length) {
 
 let hard = 0;
 const readmeText = fs.existsSync('README.md') ? fs.readFileSync('README.md', 'utf8') : '';
+// Ось «ноты ↔ README» судит ТОЛЬКО СТАРШИЕ ноты (максимальная версия в имени): README несёт
+// таблицу текущей версии, а исторические ноты зеркалят СВОЮ опубликованную страницу — их
+// стережёт release-body-guard. До 2.3 файл нот был один, и ось множественности не знала:
+// появление RELEASE_NOTES_2.3.md осиротило числа 2.2 против README (найдено в W3, сессия 39).
+const notesFiles = files.filter((f) => /RELEASE_NOTES_/.test(f));
+const verOf = (f) => { const m = f.match(/RELEASE_NOTES_(\d+)\.(\d+)/); return m ? (+m[1]) * 1000 + (+m[2]) : -1; };
+const latestNotes = notesFiles.sort((a, b) => verOf(a) - verOf(b)).pop() || null;
 for (const f of files) {
   if (!fs.existsSync(f)) { console.log(`❌ файла нет — ${f}`); hard++; continue; }
   const text = fs.readFileSync(f, 'utf8');
@@ -744,7 +751,7 @@ for (const f of files) {
       hard += wrap.length;
     }
   }
-  if (/RELEASE_NOTES_/.test(f) && readmeText) {
+  if (f === latestNotes && readmeText) {
     const drift = checkNotesVsReadme(text, readmeText);
     if (drift.length) {
       console.log(`  ❌ NOTES-VS-README — ${drift[0].name} (${drift.length})`);

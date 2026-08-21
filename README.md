@@ -503,32 +503,25 @@ artifacts are never hand-edited.
 
 ### 8.5. Interesting facts
 
-#### 8.5.1. Metrics of the work on KAIF 2.2
+#### 8.5.1. Metrics of the work on KAIF 2.3
 
-Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00.
+The window: after the v2.2 release (2026-08-09) through 2026-08-21; the numbers are printed by `node tools/kaif-stats.mjs`.
 
-Table 6 — Metrics of KAIF 2.2
+Table 6 — Metrics of KAIF 2.3
 
 | What was measured | Value | What it equals |
 |-------------------|-------|----------------|
-| Time spent on the version | **three days** | 7, 8 and 9 August 2026 |
-| Active working time of the human + AI-agent pair | **≈ 40 hours** | five full 8-hour working days |
-| Tokens the agent read | **≈ 4.5 billion** | about 28,000 novels — like reading the entire Harry Potter series two thousand times |
-| Tokens the agent wrote | **≈ 17.8 million** | about 111 novels — like writing fifteen copies of War and Peace |
-| Commits in git | **204** | a commit every 12 minutes of work; a human developer makes 1–3 commits a working day |
-| Words of prose — rules, conventions and the KAIF canon, not code — written during the work on the version | **≈ 396,000** | more than Anna Karenina — 350,000 words |
-| Code written during the work on the version | **≈ 14,400 lines** | about a third of the source code of Doom (1993) |
-| Words of prose in the delivered KAIF 2.2 core | **≈ 104,000** | more than Tolkien's The Hobbit — 95,000 words |
-| Lines of machinery code in the delivered KAIF 2.2 core | **≈ 3,400** | about a twelfth of the source code of Doom (1993) |
-| Writing pace | **≈ 10,000 words** per hour | to write that much a human needs about 80 hours of uninterrupted writing |
-| Man-hours the same work would have taken living people | **≈ 7,400** | a team of five engineers working 186 days straight |
-| At an average salary of $3,000 the payroll for those people would be | **≈ $133,000** | about 26,000 hamburgers at $5 |
-| Electricity spent on the work of the AI agents | **≈ 22 kWh** | an ordinary flat spends that much in two days |
-| How much human work falls on one hour of the human + agent pair's work | **≈ 190 person-hours** | one hour with the agent does what a human alone would do in 190 hours — 24 working days of 8 hours |
-| Requests to the models in total | **≈ 13,000** | about 650 ordinary chatbot conversations of 20 messages each |
-| Weekly subscription limit spent on the version | **88%** | about **4.5 million ordinary chatbot messages**, counting 1,000 tokens for a question with its answer |
-| What all the work would cost if paid at Anthropic's public API prices | **≈ $4,500** | about 900 hamburgers at $5 |
-| **Actually paid for the Claude Max subscription** | **$55** | 11 hamburgers at $5 |
+| Calendar window of the version | **11.6 days** | between two releases: v2.2 went out on August 9, v2.3 on August 21 |
+| Active working time of the human + AI-agent tandem | **≈ 4.6 hours** | one long working evening — pauses longer than 5 minutes excluded |
+| Tokens the models processed | **≈ 601 million** | about 3,700 novels of 160,000 tokens each |
+| Tokens the agent wrote | **≈ 2.3 million** | about 14 novels |
+| Commits in git | **68** | a commit every 4 minutes of active work |
+| Words of prose written during the work on the version | **81,852** | more than Harry Potter and the Philosopher's Stone — 77,000 words |
+| Code written during the work on the version | **2,063 lines** | guards and point fixes for classes paid for by the field |
+| Scaffolding growth this version | **+742 lines · +2 tools** | the price of pinning the freeze and the release body; mass reduction is the mandate of 2.4 |
+| Requests to the models | **1,732** | across 5 sessions |
+| Man-hours the same work would take by industry rates | **≈ 1,266** | one engineer working seven and a half months |
+| What the work would cost at Anthropic's public API prices | **≈ $948** | about 190 hamburgers at $5 |
 
 ## License
 
@@ -1039,32 +1032,25 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 ### 8.5. Интересные факты
 
-#### 8.5.1. Метрики работ по версии KAIF 2.2
+#### 8.5.1. Метрики работ по версии KAIF 2.3
 
-Работы по версии 2.2 стартовали 07.08.2026 в 00:00 и закончились 09.08.2026 в 20:00.
+Окно: после релиза v2.2 (2026-08-09) по 2026-08-21; числа печатает `node tools/kaif-stats.mjs`.
 
-Таблица 6 — Метрики версии KAIF 2.2
+Таблица 6 — Метрики версии KAIF 2.3
 
 | Что измерено | Значение | Чему это равно |
 |--------------|----------|----------------|
-| Время работы над версией | **трое суток** | 7, 8 и 9 августа 2026 года |
-| Время активной работы тандема «человек + ИИ-агент» | **≈ 40 часов** | пять полных рабочих дней по 8 часов |
-| Агент прочитал токенов | **≈ 4,5 миллиарда** | примерно 28 000 романов — это как две тысячи раз прочитать всё семикнижие «Гарри Поттера» |
-| Агент написал токенов | **≈ 17,8 миллиона** | примерно 111 романов — это как написать пятнадцать «Войн и миров» |
-| Коммитов в git | **204** | коммит каждые 12 минут работы; живой разработчик делает 1–3 коммита за рабочий день |
-| Слов прозы (правила, соглашения и канон KAIF, не код) написано за время работы над версией | **≈ 396 000** | больше, чем «Анна Каренина» — в ней 350 000 слов |
-| Кода написано за время работы над версией | **≈ 14 400 строк** | примерно треть исходного кода игры Doom 1993 года |
-| Слов прозы в ядре поставки KAIF 2.2 | **≈ 104 000** | больше, чем в «Хоббите» Толкина — там 95 000 слов |
-| Строк кода машинерии в ядре поставки KAIF 2.2 | **≈ 3 400** | примерно двенадцатая часть исходного кода игры Doom 1993 года |
-| Темп письма | **≈ 10 000 слов** в час | чтобы написать столько, человеку в среднем нужно около 80 часов непрерывного письма |
-| Трудозатраты, если бы ту же работу делали живые люди | **≈ 7 400 человеко-часов** | команда из пяти инженеров работала бы 186 дней подряд |
-| При средней заработной плате 3 000 $ фонд оплаты труда этих людей составил бы | **≈ $133 000** | примерно 26 000 гамбургеров по 5 $ |
-| Электроэнергии израсходовано на работу ИИ-агентов | **≈ 22 кВт·ч** | столько обычная квартира расходует за двое суток |
-| Сколько работы людей приходится на один час работы тандема Человек-Агент | **≈ 190 человеко-часов** | один час с агентом делает столько, сколько человек в одиночку делал бы 190 часов — 24 рабочих дня по 8 часов |
-| Запросов к моделям всего | **≈ 13 000** | примерно 650 обычных чатов с чат-ботом по 20 сообщений в каждом |
-| Недельный лимит подписки, израсходованный на версию | **88 %** | примерно **4,5 миллиона обычных сообщений в чат-боте**, если считать 1 000 токенов на вопрос с ответом |
-| Стоила бы вся работа, если платить по публичному прайсу API Anthropic | **≈ $4 500** | примерно 900 гамбургеров по 5 $ |
-| **Фактически заплачено по подписке Claude Max** | **$55** | 11 гамбургеров по 5 $ |
+| Календарное окно версии | **11,6 суток** | от релиза v2.2 (9 августа) до релиза v2.3 (21 августа) |
+| Время активной работы тандема «человек + ИИ-агент» | **≈ 4,6 часа** | один длинный рабочий вечер — паузы дольше 5 минут не считаются |
+| Модели обработали токенов | **≈ 601 миллион** | примерно 3 700 романов по 160 000 токенов |
+| Агент написал токенов | **≈ 2,3 миллиона** | примерно 14 романов |
+| Коммитов в git | **68** | коммит каждые 4 минуты активной работы |
+| Слов прозы написано за время работы над версией | **81 852** | больше, чем «Гарри Поттер и философский камень» — в нём 77 000 слов |
+| Кода написано за время работы над версией | **2 063 строки** | стражи и точечные фиксы классов, оплаченных полем |
+| Леса выросли за версию | **+742 строки · +2 инструмента** | цена пина заморозки и тела релиза; сокращение массы — мандат 2.4 |
+| Запросов к моделям | **1 732** | за 5 сессий |
+| Трудозатраты той же работы по отраслевым ставкам | **≈ 1 266 человеко-часов** | один инженер работал бы семь с половиной месяцев |
+| Стоила бы вся работа по публичному прайсу API Anthropic | **≈ $948** | примерно 190 гамбургеров по 5 $ |
 
 ## Лицензия
 
