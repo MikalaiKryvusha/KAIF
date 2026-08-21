@@ -89,7 +89,7 @@ const AUTHOR_TOKEN_CLUSTERS = [['Kryvusha', 'Кривуша', 'MikalaiKryvusha']
 const ACRONYM_EXPANSIONS = ['KAIF (Krinik AI Framework)', 'Krinik AI Framework (KAIF)', 'Krinik AI Framework'];
 const KAIF_JSON = '.kaif/kaif.json';
 const DEPLOY_MANIFEST = '.kaif/deploy-manifest.json'; // persisted path list — `check` works after the bundle is cleaned
-// Crash journal (KLAS field ask, plan 77 U′2): written AFTER the backup and BEFORE the first
+// Crash journal (field ask, plan 77 U′2): written AFTER the backup and BEFORE the first
 // tree mutation of an update, deleted as the update's last act. A run killed mid-flight leaves
 // either an untouched tree or a VISIBLE journal — a half-updated tree without a trace cannot
 // exist by construction. `resume` restores the pre-update tree from the journal's backup.
@@ -612,7 +612,7 @@ function backupTree(deploy, fromVer, toVer) {
   } catch (e) { log(`⚠ pre-update backup skipped: ${e.message}`); }
 }
 
-// ---------------------------------------------------------------------------- crash journal (plan 77 U′2, KLAS п. 2)
+// ---------------------------------------------------------------------------- crash journal (plan 77 U′2, field ask п. 2)
 // The update's writes are interleaved with classification, so a run killed mid-flight used to
 // leave a HALF-UPDATED tree with no trace: marker and manifest still old, files partly new —
 // and a naive re-run then classified every already-replaced file as owner-diverged. The journal

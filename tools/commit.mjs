@@ -215,6 +215,19 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
   if (!only.length && staged.length) {
     console.log('   (не то множество? → node tools/commit.mjs --only <путь> … — уедет ровно названное)');
   }
+  // ПРЕПОЛЁТ 1c: приватные имена не едут в поставку (находка W2-1 суда W1, 2026-08-21).
+  // Класс: шаг ритуала (/end-chat, private-names-guard) держится на внимании сессии — утечка U′2
+  // пережила закрытие эпика именно так. Здесь шаг становится гейтом ровно в момент, когда
+  // отравление возможно: коммит несёт поверхность поставки/витрины/слепка.
+  const DELIVERY_RE = /^(framework\/|dist\/|KAIF\.md$|README\.|AUTHOR_STYLOMETRY)/;
+  if (staged.some((l) => DELIVERY_RE.test(l.split('\t').pop()))) {
+    try {
+      execFileSync(process.execPath, [join(ROOT, 'tools', 'private-names-guard.mjs')], { cwd: ROOT, stdio: 'inherit' });
+    } catch {
+      console.error('\n✋ коммит остановлен преполётом 1c: private-names-guard красный — приватное имя едет в поставку/витрину. Алиасы — .kaif/private-names.json.');
+      process.exit(1);
+    }
+  }
 }
 // Сообщение идёт через `git commit -F <файл>` — текст вообще не попадает в argv/шелл
 // (лекарство класса bugs/46; -m с не-ASCII запрещён по построению).
