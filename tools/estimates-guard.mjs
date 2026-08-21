@@ -76,22 +76,20 @@ const METHOD_CONSTANTS = {
 // распознаёт — «какое из чисел прозы является ставкой» есть суждение; эту половину держат глаза
 // владельца на вычитке витрины (homeworks/06), как и записано в plans/67.
 
-// «Гарри Поттер и философский камень» — 76 944 слова: по данным независимых подсчётов
-// wordcounter.net и wordcounters.com (сходятся); на витрине округлено до 77 000.
-const POTTER_WORDS = 77000;
+// Реестр ПУСТ с 2026-08-21 18:32 +03:00 — слово владельца (ДЗ-06, волна №3): блок «Интересные
+// факты» снят из витрины 2.3 целиком вместе с Таблицей 6, и единственная рукописная ставка
+// («Гарри Поттер — 77 000 слов», источник: wordcounter.net и wordcounters.com — 76 944, подсчёты
+// сходятся) ушла с витрины; строка реестра снята ТЕМ ЖЕ движением — ровно та дисциплина, ради
+// которой ось существует (протухший реестр = красный). Формат строки: { name, value,
+// re: /паттерн с разделителями разрядов носителя/u, files: [список путей от корня] }.
+const SHOWCASE_RATES = [];
 
-// Паттерн терпим к разделителю разрядов НОСИТЕЛЯ: EN-половина пишет «77,000», RU-половина —
-// «77 000» с неразрывным пробелом (пробой 2026-08-21: U+002C и U+00A0; узкий U+202F — запас NBSP-
-// класса showcase-lint). Файлы называются от корня репозитория.
-const SHOWCASE_RATES = [
-  { name: 'POTTER_WORDS', value: POTTER_WORDS, re: /77[,   ]000/u, files: ['README.md'] },
-];
-
-// Ось витрины: root параметром, чтобы селфтест доказывал обе стороны на фикстурах-копиях
-// (bugs/62 — мутация для доказательства делается на копии, живая витрина не трогается).
-function checkShowcase(root) {
+// Ось витрины: root и реестр — параметрами, чтобы селфтест доказывал обе стороны на
+// фикстурах-копиях с СИНТЕТИЧЕСКОЙ ставкой (bugs/62 — мутация на копии; живой реестр имеет
+// право быть пустым, и селфтест от его состава не зависит).
+function checkShowcase(root, rates = SHOWCASE_RATES) {
   const misses = [];
-  for (const rate of SHOWCASE_RATES) {
+  for (const rate of rates) {
     for (const rel of rate.files) {
       const p = path.join(root, rel);
       if (!fs.existsSync(p)) { misses.push({ rate: rate.name, file: rel, why: 'файла нет' }); continue; }
@@ -199,18 +197,19 @@ function selftest() {
   console.log(`${covered ? '✅' : '❌'} блок секции покрывает свои константы`);
   if (!covered) bad++;
 
-  // Ось витрины (bugs/73 «в») — обе стороны на фикстурах-копиях (bugs/62: живой README не
-  // трогается). Обе формы разделителя разрядов — те, что сняты пробой с живой витрины.
+  // Ось витрины (bugs/73 «в») — обе стороны на фикстурах-копиях с СИНТЕТИЧЕСКОЙ ставкой
+  // (bugs/62: живой README не трогается; живой реестр имеет право быть ПУСТЫМ — слово владельца
+  // 2026-08-21 сняло единственную ставку, и селфтест от состава реестра не зависит).
   const box = tempRoot('estimates-guard-selftest');
-  fs.writeFileSync(path.join(box, 'README.md'),
-    'EN half: more than 77,000 words.\nRU half: в нём 77 000 слов.\n');
-  const d = checkShowcase(box);
+  const synthRates = [{ name: 'TEST_RATE', value: 77000, re: /77[, ]000/u, files: ['README.md'] }];
+  fs.writeFileSync(path.join(box, 'README.md'), 'EN half: more than 77,000 words.\n');
+  const d = checkShowcase(box, synthRates);
   console.log(`${d.length === 0 ? '✅' : '❌'} витрина: ставка реестра найдена в фикстуре (misses ${d.length}, ждали 0)`);
   if (d.length) bad++;
 
-  fs.writeFileSync(path.join(box, 'README.md'), 'Число переписали: теперь тут 90 000 слов.\n');
-  const e = checkShowcase(box);
-  const missFired = e.some((x) => x.rate === 'POTTER_WORDS');
+  fs.writeFileSync(path.join(box, 'README.md'), 'The number was rewritten: 90,000 words now.\n');
+  const e = checkShowcase(box, synthRates);
+  const missFired = e.some((x) => x.rate === 'TEST_RATE');
   console.log(`${missFired ? '✅' : '❌'} витрина: ставка ушла — ${missFired ? 'страж покраснел (реестр протух)' : 'СТРАЖ НЕ ЗАМЕТИЛ'}`);
   if (!missFired) bad++;
 

@@ -32,17 +32,6 @@ This version was born from the field: thirteen issues filed by agents of live pr
 
 ---
 
-### 🎲 Interesting facts — what this version cost
-
-The window: after the v2.2 release (2026-08-09) through 2026-08-21, numbers printed by `node tools/kaif-stats.mjs`.
-
-- **68 commits · 11.6 calendar days** — 81,852 words of prose and 2,063 lines of code written into the repository.
-- The models processed **601 million tokens** across 1,732 requests in 5 sessions.
-- The same work by industry rates: **≈ 1,266 man-hours** — prose at a technical writer's pace, code at Capers Jones' rate.
-- At Anthropic's public API prices this volume of work would cost **≈ $948**; the work ran on a Claude Max subscription.
-
----
-
 ### 📦 Installation
 
 Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent in your own words — the [README](https://github.com/MikalaiKryvusha/KAIF#-quick-start) carries the full quick start, the deployment modes and the language options.
@@ -73,17 +62,6 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 **5. Восемь языковых пакетов заморожены — и заморозка запинена.** Ведутся только `ru` и `en`; остальные восемь заморожены с явным объявлением — версия, состояние, причина, оживление по запросу сообщества — на README, в справочнике и в самой строке установки. Страж `lang-packs-guard` пинит замороженные пакеты побайтно, держит пол объёма живого русского пакета и 35 английских описаний навыков против тихого протухания.
 
 **6. Суд стал частью релиза.** До публикации этой страницы реестр из 47 заявлений — всего, что 2.3 говорит о себе, — прошёл переисполнение: своды перегнаны, стражи переломаны на копиях, замеры сняты заново. Пять находок пережили панель скептиков и починены до релиза — среди них приватное имя проекта в комментариях поставки (теперь такой коммит останавливает гейт) и инструмент слепка, молча писавший настоящие имена без карты псевдонимов (теперь без карты он отказывается работать). Замер лесов напечатан честно: +2 инструмента и +742 строки за версию — цена стражей на оплаченные полем классы; сокращение массы — мандат следующей версии.
-
----
-
-### 🎲 Интересные факты — чего стоила эта версия
-
-Окно: после релиза v2.2 (2026-08-09) по 2026-08-21, числа печатает `node tools/kaif-stats.mjs`.
-
-- **68 коммитов · 11,6 календарных суток** — 81 852 слова прозы и 2 063 строки кода написаны в репозиторий.
-- Модели обработали **601 миллион токенов** за 1 732 запроса в 5 сессиях.
-- Та же работа по отраслевым ставкам: **≈ 1 266 человеко-часов** — проза темпом технического писателя, код по ставке Кейперса Джонса.
-- По публичным ценам API Anthropic этот объём работы стоил бы **≈ $948**; работа шла по подписке Claude Max.
 
 ---
 

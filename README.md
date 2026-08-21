@@ -501,28 +501,6 @@ artifacts are never hand-edited.
 5. The delivery holds 14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded files;
    162 bundle blocks; 702 modules.
 
-### 8.5. Interesting facts
-
-#### 8.5.1. Metrics of the work on KAIF 2.3
-
-The window: after the v2.2 release (2026-08-09) through 2026-08-21; the numbers are printed by `node tools/kaif-stats.mjs`.
-
-Table 6 — Metrics of KAIF 2.3
-
-| What was measured | Value | What it equals |
-|-------------------|-------|----------------|
-| Calendar window of the version | **11.6 days** | between two releases: v2.2 went out on August 9, v2.3 on August 21 |
-| Active working time of the human + AI-agent tandem | **≈ 4.6 hours** | one long working evening — pauses longer than 5 minutes excluded |
-| Tokens the models processed | **≈ 601 million** | about 3,700 novels of 160,000 tokens each |
-| Tokens the agent wrote | **≈ 2.3 million** | about 14 novels |
-| Commits in git | **68** | a commit every 4 minutes of active work |
-| Words of prose written during the work on the version | **81,852** | more than Harry Potter and the Philosopher's Stone — 77,000 words |
-| Code written during the work on the version | **2,063 lines** | guards and point fixes for classes paid for by the field |
-| Scaffolding growth this version | **+742 lines · +2 tools** | the price of pinning the freeze and the release body; mass reduction is the mandate of 2.4 |
-| Requests to the models | **1,732** | across 5 sessions |
-| Man-hours the same work would take by industry rates | **≈ 1,266** | one engineer working seven and a half months |
-| What the work would cost at Anthropic's public API prices | **≈ $948** | about 190 hamburgers at $5 |
-
 ## License
 
 [MIT](LICENSE) — © 2026 **Mikalai Kryvusha** aka **KOT KRINIK** · Николай Кривуша aka Кот Криник.
@@ -1029,28 +1007,6 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 35 навыков + 1 распаковщик = 57 встроенных файлов;
    162 блока бандла; 702 модуля.
-
-### 8.5. Интересные факты
-
-#### 8.5.1. Метрики работ по версии KAIF 2.3
-
-Окно: после релиза v2.2 (2026-08-09) по 2026-08-21; числа печатает `node tools/kaif-stats.mjs`.
-
-Таблица 6 — Метрики версии KAIF 2.3
-
-| Что измерено | Значение | Чему это равно |
-|--------------|----------|----------------|
-| Календарное окно версии | **11,6 суток** | от релиза v2.2 (9 августа) до релиза v2.3 (21 августа) |
-| Время активной работы тандема «человек + ИИ-агент» | **≈ 4,6 часа** | один длинный рабочий вечер — паузы дольше 5 минут не считаются |
-| Модели обработали токенов | **≈ 601 миллион** | примерно 3 700 романов по 160 000 токенов |
-| Агент написал токенов | **≈ 2,3 миллиона** | примерно 14 романов |
-| Коммитов в git | **68** | коммит каждые 4 минуты активной работы |
-| Слов прозы написано за время работы над версией | **81 852** | больше, чем «Гарри Поттер и философский камень» — в нём 77 000 слов |
-| Кода написано за время работы над версией | **2 063 строки** | стражи и точечные фиксы классов, оплаченных полем |
-| Леса выросли за версию | **+742 строки · +2 инструмента** | цена пина заморозки и тела релиза; сокращение массы — мандат 2.4 |
-| Запросов к моделям | **1 732** | за 5 сессий |
-| Трудозатраты той же работы по отраслевым ставкам | **≈ 1 266 человеко-часов** | один инженер работал бы семь с половиной месяцев |
-| Стоила бы вся работа по публичному прайсу API Anthropic | **≈ $948** | примерно 190 гамбургеров по 5 $ |
 
 ## Лицензия
 
