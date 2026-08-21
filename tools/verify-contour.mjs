@@ -567,6 +567,44 @@ async function main() {
       await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
     }
 
+    block('10а. АВТОВЫВОД класса «сообщение»: документ без вопросов, поднятый БЕЗ флага (bugs/105)');
+    {
+      // Полевой отказ 2026-08-21: домашка с вопросами ПРОЗОЙ (парсер их законно не видит) поднята
+      // обычным показом — владелец жал «Записать решение» на пустом и получал «Нечего записывать»
+      // трижды; кнопки «ОК, прочитано» у обычной страницы нет. Класс: показ без единого
+      // распознанного вопроса и без исходящих обязан обслуживаться классом «сообщение» САМ,
+      // без флага отправителя. Фикстура — вне очереди: автовывод не должен зависеть от неё.
+      const autoRel = 'reports/auto_notice_qa.md';
+      const autoBody = '# Домашка для QA-прогона\n\n**Вопрос прозой:** прочитайте и скажите ок.\n';
+      writeFileSync(join(fixtureRoot, autoRel), autoBody, 'utf8');
+      let autoUrl = null;
+      serveContour._onUp = (u) => { autoUrl = u; };
+      const autoPromise = serveContour(fixtureRoot, { docPath: autoRel },
+        { open: false, signal: false, log: logSilent });
+      while (!autoUrl) await sleep(50);
+      const page = await attachPage(browser.cdp, autoUrl);
+      const probe = await page.evaluate([
+        "(function(){var b=document.querySelector('#save');return {",
+        " radios:document.querySelectorAll('input[type=radio]').length,",
+        " btn:b?b.textContent:null, chip:!!document.querySelector('.tag.notice')}})()",
+      ].join(''));
+      check('автовывод: ни одной радиокнопки (вопросов парсер не видит)', probe.radios === 0, 'найдено ' + probe.radios);
+      check('автовывод: кнопка — «ОК, прочитано», а не «Записать решение»', probe.btn === 'ОК, прочитано',
+        'фактически «' + probe.btn + '»');
+      check('автовывод: чип класса «ответа не ждёт» на месте', probe.chip);
+      await page.evaluate("document.querySelector('#save').click()");
+      const served = await Promise.race([autoPromise, sleep(8000).then(() => null)]);
+      check('автовывод: клик «ОК» дал ШТАТНЫЙ исход «прочитано» — «просто ок» снова возможен',
+        served !== null && served.outcome === 'notice read', served ? served.outcome : 'не завершился за 8 с');
+      check('автовывод: исход несёт код успеха (0)', served !== null && served.exitCode === 0);
+      const decA = readDecision(fixtureRoot, autoRel);
+      check('автовывод: запись решения помечена классом notice', decA !== null && decA.kind === 'notice',
+        decA ? 'kind=' + decA.kind : 'записи нет');
+      check('автовывод: документ владельца НЕ тронут побайтно',
+        readFileSync(join(fixtureRoot, autoRel), 'utf8') === autoBody);
+      await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
+    }
+
     block('QA3. Оба сценария «страница ушла»: перезагрузка — ЖИВЁТ, закрытие — УМИРАЕТ');
     {
       rmSync(join(fixtureRoot, 'interviews/decisions'), { recursive: true, force: true });
