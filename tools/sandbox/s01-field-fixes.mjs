@@ -2,9 +2,10 @@
 // Сценарии: S1 свежая установка · S2 анонимный check при живом бандле (репро GH#1)
 // · S3 легаси: наследование agents, честный контекст, повторный прогон · S4 update:
 // ignore-first + честный лог ядра. Каждый ассерт печатает ✅/❌; ненулевой exit при провале.
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync } from 'node:fs';
+import { readFileSync, writeFileSync, appendFileSync, mkdirSync, rmSync, existsSync, cpSync, readdirSync } from 'node:fs';
 import { execSync } from 'node:child_process';
-import { join, resolve, dirname } from 'node:path';
+import { createHash } from 'node:crypto';
+import { join, resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { must } from '../lib/sandbox-run.mjs';
@@ -318,6 +319,91 @@ ok(r.code === 0 && /portrait on disk/.test(r.out),
 // #3: строка <BUILD_COMMAND> пункта placeholders называет БУДУЩЕГО члена — объявляемую сферу
 ok(/BUILD_COMMAND[^\n]*\.kaif\/spheres\/<sphere>\.md — YOUR declared library joins/.test(taskS6),
    'S6 (#3): список пункта placeholders называет библиотеку сферы, которая войдёт в охват гейта');
+
+// ---------------------------------------------------------------- S7: sha256-гейт ЛОАДЕРА (долг L5, линза 3 №3)
+// Суд эпика L назвал дыру ПОСТОЯННОГО покрытия: sha256-гейт лоадера не стерёг ни один свод —
+// tamper доказывался только сессионными стендами (1.5, L5), и следующая правка лоадера могла
+// снять гейт молча. Тест ГЕРМЕТИЧЕН: --source локальный каталог, сети нет; tamper — на КОПИЯХ
+// артефактов (bugs/62), dist не трогается.
+// [TESTED: 2026-08-21 · красный доказан мутацией на копии лоадера с выключенным сравнением
+//  (`got !== want` → `false`): tamper-набор прошёл, «handing over» напечатан, дерево родилось —
+//  все три tamper-ассерта S7 стали бы красными; twin-компаратор S8 доказан красным порчей
+//  одного файла между слепками — mismatch назван поимённо]
+console.log('\n=== S7: sha256-гейт ЛОАДЕРА — подменённый артефакт не исполняется ===');
+const LOADER = join(REPO, 'framework', 'installer', 'KAIF-LOADER.mjs');
+const runLoader = (cwd, src) => {
+  try {
+    const out = execSync(`node ${LOADER} --source ${src} --mode anonymous`, { cwd, stdio: 'pipe' });
+    return { code: 0, out: out.toString() };
+  } catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+};
+const LOADER_SET = ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md', 'kaif-manifest.json'];
+const seedSource = (dir) => { mkdirSync(dir); for (const n of LOADER_SET) cpSync(join(DIST, n), join(dir, n)); };
+// контраст: чистый набор проходит гейт, руль передан ядру, дерево родилось — без него
+// tamper-красные доказывали бы лишь то, что лоадер не работает вовсе
+const SRC_OK = join(ROOT, 's7-src-ok'); seedSource(SRC_OK);
+const S7A = join(ROOT, 's7-clean'); mkdirSync(S7A);
+r = runLoader(S7A, SRC_OK);
+ok(r.code === 0 && /sha256 ok/.test(r.out) && /handing over/.test(r.out),
+   'S7 контраст: чистый набор — гейт зелёный, руль передан ядру', r.out.slice(-400));
+ok(existsSync(join(S7A, 'AGENT_GUIDE.md')) && existsSync(join(S7A, '.kaif', 'kaif.json')),
+   'S7 контраст: установка ЧЕРЕЗ лоадер родила дерево');
+// tamper ядра: подменённый исполняемый артефакт — отказ ДО записи, ядро не исполняется
+const SRC_TC = join(ROOT, 's7-src-tampered-core'); seedSource(SRC_TC);
+appendFileSync(join(SRC_TC, 'KAIF-CORE.mjs'), '\n// tampered byte\n');
+const S7B = join(ROOT, 's7-tamper-core'); mkdirSync(S7B);
+r = runLoader(S7B, SRC_TC);
+ok(r.code !== 0 && /sha256 mismatch for KAIF-CORE\.mjs/.test(r.out),
+   'S7 tamper ядра: гейт красный и называет артефакт', r.out.slice(-300));
+ok(!existsSync(join(S7B, '.kaif', 'kaif-core.mjs')),
+   'S7 tamper ядра: подменённое ядро НЕ записано (отказ раньше записи)');
+ok(!/handing over/.test(r.out) && !existsSync(join(S7B, 'AGENT_GUIDE.md')),
+   'S7 tamper ядра: руль не передан, установка не родилась');
+// tamper бандла: ядро (валидное) уже записано — это штатно; установка всё равно не стартует
+const SRC_TB = join(ROOT, 's7-src-tampered-bundle'); seedSource(SRC_TB);
+appendFileSync(join(SRC_TB, 'KAIF-CORE-BUNDLE.md'), '\ntampered\n');
+const S7C = join(ROOT, 's7-tamper-bundle'); mkdirSync(S7C);
+r = runLoader(S7C, SRC_TB);
+ok(r.code !== 0 && /sha256 mismatch for KAIF-CORE-BUNDLE\.md/.test(r.out),
+   'S7 tamper бандла: гейт красный и называет артефакт', r.out.slice(-300));
+ok(!/handing over/.test(r.out) && !existsSync(join(S7C, 'AGENT_GUIDE.md')),
+   'S7 tamper бандла: руль не передан, установка не родилась');
+
+// ---------------------------------------------------------------- S8: twin-run — установка детерминирована (долг L5)
+// Вторая половина того же долга: byte-exact twin-run стенда L5 (147 файлов, 0 расхождений) жил
+// только в сессии. Вход выравнивается ЦЕЛИКОМ — второй прогон идёт В ТОТ ЖЕ абсолютный путь
+// (машинерия законно печатает имя и путь проекта в развёрнутые документы; twin в двух разных
+// каталогах сравнивал бы разные ВХОДЫ и краснел на честной параметризации — проверено пробой
+// 2026-08-21). Поэтому исключений в сравнении НЕТ: любой mismatch — недетерминизм машинерии
+// (дата, рандом, порядок ключей) и потому красный.
+console.log('\n=== S8: twin-run — повторная установка в тот же путь побайтно идентична ===');
+const snapTree = (dir) => {
+  const out = new Map();
+  const walk = (d) => {
+    for (const e of readdirSync(d, { withFileTypes: true })) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) walk(p);
+      else out.set(relative(dir, p).replaceAll('\\', '/'), createHash('sha256').update(readFileSync(p)).digest('hex'));
+    }
+  };
+  walk(dir);
+  return out;
+};
+const S8 = join(ROOT, 's8-twin'); mkdirSync(S8); seedBundle(S8);
+must(run, S8, 'install');
+const snap1 = snapTree(S8);
+rmSync(S8, { recursive: true, force: true }); mkdirSync(S8); seedBundle(S8);
+must(run, S8, 'install');
+const snap2 = snapTree(S8);
+const only1 = [...snap1.keys()].filter((k) => !snap2.has(k));
+const only2 = [...snap2.keys()].filter((k) => !snap1.has(k));
+const twinDiffs = [...snap1.keys()].filter((k) => snap2.has(k) && snap1.get(k) !== snap2.get(k));
+ok(only1.length === 0 && only2.length === 0,
+   `S8 twin-run: состав деревьев идентичен (${snap1.size} файлов)`,
+   `только в №1: ${only1.slice(0, 5).join(', ') || '—'}; только в №2: ${only2.slice(0, 5).join(', ') || '—'}`);
+ok(twinDiffs.length === 0,
+   `S8 twin-run: все ${snap1.size} файлов побайтно равны — установка детерминирована`,
+   'разошлись: ' + twinDiffs.slice(0, 5).join(', '));
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
 process.exit(failures ? 1 : 0);
