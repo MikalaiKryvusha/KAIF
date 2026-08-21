@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-// [NOT-TESTED] — md-to-pdf в этом дереве не разрешается (require.resolve → MODULE_NOT_FOUND), прогон НЕ наблюдался; ставить [TESTED] без наблюдения запрещено (TESTING_FRAMEWORK)
+// [TESTED: 2026-08-21 · живой прогон этой сессии: «✅ README.pdf generated», exit 0; md-to-pdf 5.2.5 резолвится из tools/node_modules]
+// Прежний маркер [NOT-TESTED] называл причину, не воспроизводящуюся на HEAD (bugs/98 №3:
+// «require.resolve → MODULE_NOT_FOUND» при живом модуле) — маркер с ложным обоснованием
+// обесценивает разметку; переключён ПО НАБЛЮДЕНИЮ, как велит TESTING_FRAMEWORK (правило 2).
 // tools/readme-pdf.mjs
 // Render README.md → README.pdf using md-to-pdf (headless Chromium).
 // First run downloads Chromium via puppeteer. Requires: cd tools && npm install

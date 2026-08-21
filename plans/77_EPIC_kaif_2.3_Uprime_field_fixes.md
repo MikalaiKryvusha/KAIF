@@ -14,7 +14,10 @@
 > `7bb1753`/`7d9258c`/`555ac5e`, полигон «all 14 suites green») · U′3 закрыта 2026-08-21
 > 02:59 +03:00 (канон поставки: #4 пункт owner-voice с исполняющим гейтом · #6 язык по
 > аудитории в обоих слоях · #3 сфера названа будущим членом списка placeholders; черновики
-> ответов — секцией ниже).
+> ответов — секцией ниже) · U′4 закрыта 2026-08-21 03:16 +03:00 (#20 — раздел 0 доезжает,
+> «одно пространство суждения», отказ на ненайденном заголовке, коммит `3fa0e9f`; 98.1 —
+> реальные команды в шаге 4 `/release`; 98.2 — страж `release-body-guard`, красный селфтестом,
+> живой v2.2 сходится).
 > **Вовне:** машинерия поставки (`framework/installer/`), контракт `/owner-reviews`, канон
 > `/report-bug` — публичные контракты; ответы в issues — только `send-outbound` со словом
 > владельца.
@@ -151,14 +154,37 @@
   (§9.11 зелёный после перефраза), «all 14 suites green», counters 50 зеркал OK; фикстуры
   owner-voice добавлены в динамические циклы s04/S13 и s07/T8+T8b]
 
-### U′4 — исток: слепок и релиз-ритуал (#20 + 98.1/98.2)
+### U′4 — исток: слепок и релиз-ритуал (#20 + 98.1/98.2) — ✅ закрыта 2026-08-21 03:16 +03:00
 
-- [ ] 1. **#20:** довести начатое `790554c` — прогон `node tools/stylometry-snapshot.mjs` с
-      разделом 0 зелёный, слепок `AUTHOR_STYLOMETRY.md` несёт шесть запретов владельца; красный
-      на спане чинится по конфигу, не ослаблением приёмки.
-- [ ] 2. **98.1:** шаг контрольной сборки `/release` называет РЕАЛЬНЫЕ команды; **98.2:**
-      опубликованное тело релиза сверяется с файлом нот механически (страж, доказан красным).
-- **Гейт U′4:** слепок пересобран зелёным; страж 98.2 красный на подмене тела.
+- [x] 1. **#20:** причина найдена и она НЕ из гипотез issue — спан «имя + 2 слова» проходил
+      чистку токеном (3 слова) с настоящим именем, а алиас «project A» раздувал его в 4 слова
+      МЕЖДУ чисткой и приёмкой (гипотеза о сверке заголовка опровергнута наблюдением: build
+      находил заголовок всегда; симптом 1 — производная красной приёмки). Фикс — инвариант
+      «одно пространство суждения»: `isPublishableSpan` судит опубликованную форму
+      (`anonymizeStr` вынесен, DRY) · белый список приёмки расширен обезличенными вариантами
+      (обе точки: боевая + селфтест) · `build()` ПАДАЕТ на ненайденном `startAtHeading`
+      (инвариант issue «дороже самой починки» — прежде молча съедался весь файл). Контракт
+      issue пройден дословно: селфтест 13 форм · приёмка зелёная, файл записан · `^## 0\.`=1 ·
+      «З1|З6|ледокол»=7 · `--check` сходится. Мутации доказаны на закоммиченном конфиге и
+      откатаны git checkout: A (`## 1.`) → раздел 0 исчезает, grep 0; B (несуществующий
+      заголовок) → отказ с именем заголовка, файл не тронут. Слепок пересобран с ядра 1.2
+      @ `5265de5`. Коммит `3fa0e9f`. Попутная грабля замера: PS5.1 `Set-Content -Encoding
+      UTF8` писал BOM в конфиг и валил `JSON.parse` ДО логики (EXP-0007) — мутации переписаны
+      через node.
+- [x] 2. **98.1:** шаг 4 обвязочного `/release` — четыре РЕАЛЬНЫЕ команды истока
+      (`build-framework` · `test:core` · `counters-guard` · `doc-header-lint`) вместо
+      шаблонного стаба BUILD_COMMAND; плейсхолдер в payload-шаблоне легален по построению
+      (заполняется развёртыванием). **98.2:** новый страж `tools/release-body-guard.mjs` —
+      `gh release view --json body` против `reports/RELEASE_NOTES_<ver>.md` построчно + ось
+      NBSP; хвостовые пустые строки — законная разница носителя; `--selftest` красный БЕЗ сети
+      на обеих осях улики (подмена нотации разрядов · потеря NBSP), молчание на чистой копии;
+      живой прогон против v2.2 — совпадение (NBSP 20/20). Вшит в шаг 6.9 `/release` второй
+      механической половиной + строка в таблице инструментов AGENT_GUIDE. Попутно по правилу
+      TESTING (маркер против улик): `tools/readme-pdf.mjs:2` — ложный `[NOT-TESTED]`
+      («MODULE_NOT_FOUND» при живом модуле 5.2.5, 98.3) переключён в `[TESTED]` по живому
+      прогону этой сессии; остальное 98.3 — скоуп 2.4.
+- **Гейт U′4:** ✅ [TESTED: 2026-08-21 · слепок пересобран зелёным (`--check` сходится);
+  страж 98.2 красный на подмене тела селфтестом и зелёный на живом v2.2]
 
 ### U′5 — заморозка восьми пакетов и закрытие эпика (№56/№57; 92.2–92.5)
 
@@ -267,6 +293,25 @@
 > the machinery already fills the sphere cell like every other file, and no row appears at all.
 > The residual risk your report named — a list that omits a member teaching sessions to distrust
 > the task's other lists — is the sentence this fix was built from.
+
+**→ issue #20 (раздел 0 не доезжает до слепка):**
+
+> Fixed for the upcoming 2.3 — and the cause was a third thing, not either hypothesis. The
+> heading comparison was fine (build found section 0 every run — your symptom 1 was downstream
+> of the red acceptance, exactly as your "правильное поведение" note suspected). The real
+> mechanism: the span «NDim Space Rating» passed the scrub as a 3-word token WITH the real name,
+> then the alias («project A», two words) inflated it to 4 words — and the independent
+> acceptance judged the PUBLISHED body, where the token threshold was now broken. The fix is the
+> invariant your report circled around: the scrub and the acceptance now judge in ONE space —
+> the published one (token threshold on the anonymized form; the whitelist extended with
+> anonymized variants of its own entries). Your contract ran verbatim: selftest green (13 leak
+> forms), acceptance GREEN with the file written, `grep -c "^## 0\."` → 1, «З1|З6|ледокол» → 7,
+> `--check` — «слепок совпадает». Your invariant proposal is in too: build() now REFUSES when
+> `startAtHeading` is not found, naming the heading, instead of silently starting elsewhere —
+> proven by mutation both ways (`## 1.` → section 0 vanishes; a nonexistent heading → refusal,
+> file untouched). Your boundaries held: the section did not move, the acceptance was not
+> weakened, no agent-invented text entered allowSpans. Section 0 — the six prohibitions, the
+> icebreaker image, the E21 measurement — now ships to every deployment.
 
 **→ issue #10 (полевой отчёт KAGO):**
 
