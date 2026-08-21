@@ -371,12 +371,21 @@ function applyLanguage(files) {
   return { deploy: out, translated: overrides.size, overridePaths: [...overrides.keys()] };
 }
 
+// Frozen language packs (owner's decision #56, 2.3): eight packs stay in the bundle at their
+// full 2.2 state and deploy as before, but receive no updates — en and ru are the maintained
+// two. The freeze is DECLARED at deploy time, like the pack boundary below: a status the owner
+// learns from the docs but not from the install that just used the pack would be a silent one.
+const FROZEN_PACKS = ['ar', 'de', 'es', 'fr', 'hi', 'ja', 'pt', 'zh-hans'];
+
 // The pack boundary is DECLARED at deploy time, not discovered post-factum (field: a new skill
 // arrived as "a raw English body with a localized alias line glued on" and read as a defect;
 // the packs are owner-doc-only BY DESIGN — the framework is English-first). One honest line
 // names exactly what arrives in English and needs manual transfer if the owner wants it local.
 function logPackHonesty(files, deploy) {
   if (LANG === 'en') return;
+  if (FROZEN_PACKS.includes(LANG)) {
+    log(`⟳ language pack "${LANG}" is FROZEN at its KAIF 2.2 state (origin decision #56): it deploys as before but receives no updates — en/ru are the maintained packs. A frozen pack is revived on community demand: open an issue at the origin.`);
+  }
   const prefix = `templates/languages/${LANG}/`.toLowerCase();
   let hasPack = false;
   const packed = new Set();

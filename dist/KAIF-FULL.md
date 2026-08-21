@@ -2464,11 +2464,19 @@ never edited by hand.
 
 ### 7.4 Languages
 
-Nine language packs (ru, es, pt, fr, de, zh-Hans, ja, hi, ar) override the owner-facing documents
-and inject trigger aliases into each skill's `description:`. Agent documents stay English by
-default. A project that translated its wrapper wholesale declares `"i18n": "translated"` in the
-marker: mechanical replacement is then disabled in favor of per-module diffs, and the machinery
-never wars with the translation (§10.2).
+Two language packs are MAINTAINED: `en` (the source language itself) and `ru`. The other eight —
+es, pt, fr, de, zh-Hans, ja, hi, ar — are FROZEN at their full KAIF 2.2 state (owner's decision
+#56, named in the open: nine parallel packs are heavy to maintain and do not yet pay for
+themselves). A frozen pack STAYS in the bundle and deploys exactly as it did in 2.2 — the
+owner-facing documents plus skill trigger aliases — but receives no updates with new releases;
+its byte state is pinned by the origin's guard, so silent degradation cannot ride a release. A
+frozen pack is REVIVED on community demand: open an issue at the origin. Deploying with one stays
+legal, and the install log says its status honestly.
+
+A pack overrides the owner-facing documents and injects trigger aliases into each skill's
+`description:`. Agent documents stay English by default. A project that translated its wrapper
+wholesale declares `"i18n": "translated"` in the marker: mechanical replacement is then disabled
+in favor of per-module diffs, and the machinery never wars with the translation (§10.2).
 
 ### 7.5 The final gates
 

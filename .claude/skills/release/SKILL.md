@@ -121,6 +121,7 @@ node tools/build-framework.mjs     # сборка ядра + check-framework: б
 npm run test:core                  # песочный полигон машинерии — все своды (число печатает прогон)
 node tools/counters-guard.mjs      # живые числа сборки против всех зеркал (README · STATUS · AGENT_GUIDE)
 node tools/doc-header-lint.mjs     # шапки-меты · метки времени · PENDING-судьбы
+node tools/lang-packs-guard.mjs    # заморозка №56: восемь пакетов побайтно · живой ru · пины EN-описаний
 ```
 
 **Шаг 4.1 (специфика истока KAIF): TEMPLATE_NOTES описывают ЭТОТ релиз.** Перепиши

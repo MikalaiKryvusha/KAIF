@@ -415,6 +415,12 @@ ru, zh-Hans, es, hi, ar, pt, fr, de, ja — and appends trigger aliases in the o
 every skill. Agent-internal documents stay English by design. Other languages degrade honestly:
 English plus a translation item in the adaptation task.
 
+Since 2.3 two packs are maintained: en and ru. The other eight are frozen at their full 2.2
+state — they stay in the delivery, deploy exactly as before and are pinned byte-exact by a
+guard, but they receive no updates. The reason is practical: nine parallel packs are heavy to
+maintain and do not yet pay for themselves. A frozen pack is revived on community demand — open
+an issue.
+
 ## 8. Reference
 
 ### 8.1. Milestones
@@ -945,6 +951,11 @@ origin и удаление делают свои навыки — попроси
 zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому навыку алиасы-триггеры на языке
 владельца. Внутренние документы агента остаются английскими by design. Остальные языки деградируют
 честно: английский плюс пункт перевода в задании адаптации.
+
+С версии 2.3 ведутся два пакета: en и ru. Остальные восемь заморожены в полном состоянии 2.2 —
+они остаются в поставке, разворачиваются как прежде и запинены побайтно стражем, но обновлений
+не получают. Причина практическая: девять параллельных пакетов тяжелы в поддержке и пока не
+окупаются. Замороженный пакет оживает по запросу сообщества — откройте issue.
 
 ## 8. Справочные сведения
 

@@ -346,5 +346,20 @@ ok(readFileSync(join(T11, 'TESTING_FRAMEWORK.md'), 'utf8').includes('UPSTREAM AD
    'bugs/66 №3: английский сосед в том же de-развёртывании обновлён МЕХАНИЧЕСКИ (защита не заморозка)',
    'sha до=' + tf11Before.slice(0, 12));
 
+// ---------------------------------------------------------------- Freeze (№56, U′5): замороженный пакет объявляет статус при развёртывании
+// Заморозка восьми пакетов легальна, только если она НЕ МОЛЧИТ (формула №56: версия · состояние ·
+// причина · оживление по запросу): владелец, ставящий --lang de, узнаёт статус из САМОЙ установки,
+// а не из документации, которую он не открывал. Живой ru строку заморозки не несёт.
+// [TESTED: 2026-08-21 · красный доказан прогоном против dist ДО пересборки: строки FROZEN нет]
+console.log('\n=== Freeze (№56): honesty-строка замороженного пакета ===');
+const FZ = join(ROOT, 'freeze-de'); mkdirSync(FZ); seed(FZ);
+let rf = run(FZ, 'install --lang de --mode anonymous');
+ok(rf.code === 0, 'Freeze: установка замороженным пакетом (de) остаётся легальной, exit 0', rf.out.slice(-300));
+ok(/FROZEN at its KAIF 2\.2 state/.test(rf.out) && /revived on community demand/.test(rf.out),
+   'Freeze: строка статуса — состояние 2.2 названо, оживление по запросу названо (формула №56)', rf.out.slice(-400));
+const FZR = join(ROOT, 'freeze-ru'); mkdirSync(FZR); seed(FZR);
+rf = run(FZR, 'install --lang ru --mode anonymous');
+ok(rf.code === 0 && !/FROZEN/.test(rf.out), 'Freeze: живой пакет ru строку заморозки НЕ несёт', rf.out.slice(-300));
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ s07: все стражи зелёные'}`);
 process.exit(failures ? 1 : 0);
