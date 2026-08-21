@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-// [TESTED: 2026-08-09 · прогон npm run test:core: три преполёта зелёные, «all 14 suites green»]
+// [TESTED: 2026-08-21 · прогон npm run test:core: преполёты зелёные, «all 14 suites green»;
+//  именование упавшего свода доказано красным на копии сюиты с подложным всегда-красным сводом —
+//  «✖ s99-always-red.mjs FAILED (exit 1)» + имена в итоговой строке (bugs/61, рецидив 2026-08-21)]
 // tools/sandbox-suite.mjs — the PERMANENT sandbox polygon of the update machinery (plan 21 §5.6).
 // Runs every core sandbox suite end-to-end in the OS temp dir. Mandatory before a release and
 // after any change to framework/installer/* or tools/build-framework.mjs — verification that
@@ -141,11 +143,20 @@ if (unmarked.length) {
 }
 console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker (${SUITES.length} suites)`);
 
+// Упавший свод называется ПОИМЁННО с кодом/сигналом (bugs/61, наблюдение 2026-08-21): прежний
+// catch глотал имя, и транзиентный красный оставил ровно «1 of 14 FAILED» — какой из четырнадцати,
+// восстановить было не по чему. Красная строка самого свода видна через stdio:inherit, но свод,
+// умерший БЕЗ неё (краш, сигнал, немой exit), безымянным быть не имеет права.
 let failed = 0;
+const failedNames = [];
 for (const s of SUITES) {
   console.log(`\n━━━━━━ ${s} ━━━━━━`);
   try { execFileSync(process.execPath, [join(HERE, s)], { stdio: 'inherit' }); }
-  catch { failed++; }
+  catch (e) {
+    failed++;
+    failedNames.push(s);
+    console.error(`✖ ${s} FAILED (${e.status != null ? 'exit ' + e.status : 'signal ' + (e.signal || '?')})`);
+  }
 }
-if (failed) { console.error(`\n❌ sandbox suite: ${failed} of ${SUITES.length} suites FAILED`); process.exit(1); }
+if (failed) { console.error(`\n❌ sandbox suite: ${failed} of ${SUITES.length} suites FAILED — ${failedNames.join(', ')}`); process.exit(1); }
 console.log(`\n✅ sandbox suite: all ${SUITES.length} suites green`);
