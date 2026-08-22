@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.2-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.3-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Contours](https://img.shields.io/badge/Contours-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Principles](https://img.shields.io/badge/Principles-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -30,10 +30,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.2_GitHub_LOGO_v2.webp" alt="KAIF 2.2 Yolden KAIF — an ouroboros with an eye at its centre" width="560">
+  <img src="assets/KAIF_2.3_GitHub_LOGO.webp" alt="KAIF 2.3 Subjected KAIF — an ouroboros with an eye at its centre" width="560">
 </p>
 
-<p align="center"><strong>Version 2.2 — Yolden KAIF</strong> · 2026-08-08</p>
+<p align="center"><strong>Version 2.3 — Subjected KAIF</strong> · 2026-08-21</p>
 
 > A very large-scale version, the one that endows KAIF with the power of an intelligent system that
 > develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for
@@ -442,6 +442,7 @@ Table 5 — Versions
 | v2.0 | Excellent KAIF | 2026-07-28 | Updates by machinery, not by mind: the module map, template-vs-disk shas, update receipts, the `KAIF_REFERENCE.md` reference, the permanent sandbox polygon. |
 | v2.1 | Strong KAIF | 2026-07-31 | The owner contour: the place-of-questions rule with `/owner-reviews`, the owner's voice portrait `/owner-voice`, craft prostheses for weak sessions (`/code-revision`, craft slots, `/guarded-loop`), the planning ladder, the `PROJECT_HISTORY.md` chronicle. |
 | v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour turns a question to the owner into a working channel, the field-to-origin signal path gained five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` is the slash-command form of saying "carry on": a simple way to continue the work in the current chat. |
+| v2.3 | Subjected KAIF | 2026-08-21 | The version that spent its cycle under observation: thirteen issues from the agents of live projects became the scope, so this one is made of what its users found. The canon speaks in commands, so an obligation carries a command, a numbered step or a checkbox, and `TESTING_FRAMEWORK.md` is rebuilt around a chain of testing activities; a recorded lesson has to answer whether the trap can be mechanized away instead of remembered; `update` writes a journal before its first mutation, and `resume` finishes what a killed run started; a failed network call on Windows reports one error instead of two; eight language packs are frozen with a declared version, state and reason, while `en` and `ru` stay maintained. |
 
 ### 8.2. Repository layout
 
@@ -525,7 +526,7 @@ pleasant work!
 </p>
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-2.2-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.3-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Контуры](https://img.shields.io/badge/Контуров-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Принципы](https://img.shields.io/badge/Принципов-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -540,10 +541,10 @@ pleasant work!
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.2_GitHub_LOGO_v2.webp" alt="KAIF 2.2 Yolden KAIF — уроборос с глазом в центре" width="560">
+  <img src="assets/KAIF_2.3_GitHub_LOGO.webp" alt="KAIF 2.3 Subjected KAIF — уроборос с глазом в центре" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.2 — Yolden KAIF</strong> · 08.08.2026</p>
+<p align="center"><strong>Версия 2.3 — Subjected KAIF</strong> · 21.08.2026</p>
 
 > Очень масштабная версия, наделяющая KAIF силой умной системы, самостоятельно развивающейся по
 > циклу обратной связи. Уроборос символизирует замыкание цикла и совершенство. Глаз символизирует
@@ -949,6 +950,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.0 | Excellent KAIF | 28.07.2026 | Обновление машинерией, а не разумом: карта модулей, template-vs-disk sha, расписки обновления, записка `KAIF_REFERENCE.md`, постоянный песочный полигон. |
 | v2.1 | Strong KAIF | 31.07.2026 | Контур владельца: правило места вопросов с `/owner-reviews`, портрет голоса `/owner-voice`, ремесленные протезы для слабых сессий (`/code-revision`, craft-слоты, `/guarded-loop`), лестница планирования, летопись `PROJECT_HISTORY.md`. |
 | v2.2 | Yolden KAIF | 08.08.2026 | Цикл замыкается: интерактивный контур делает вопрос к владельцу рабочим каналом; у пути сигнала «поле → исток» появились пять предписанных шагов; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` — это слеш-команда «продолжай»: простой способ продолжить работу в текущем чате. |
+| v2.3 | Subjected KAIF | 21.08.2026 | Версия, которая весь свой цикл была под наблюдением: тринадцать issues от агентов живых проектов стали её скоупом, то есть она сделана из того, что нашли пользователи. Канон заговорил командами — обязательство несёт команду, нумерованный шаг или чекбокс, а `TESTING_FRAMEWORK.md` пересобран вокруг цепочки тестовых активностей; записанный урок обязан ответить, нельзя ли грабли механизировать вместо того, чтобы их помнить; `update` пишет журнал до первой мутации, а убитый прогон дочиняет `resume`; отказ сети на Windows сообщает об одной ошибке вместо двух; восемь языковых пакетов заморожены с объявленными версией, состоянием и причиной, а `en` и `ru` продолжают вестись. |
 
 ### 8.2. Структура репозитория
 

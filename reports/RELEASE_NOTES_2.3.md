@@ -5,14 +5,18 @@
   перед публикацией: в файле не должно быть двух непустых строк подряд вне блоков кода и таблиц.
 -->
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.3_GitHub_LOGO.webp" alt="KAIF 2.3 Subjected KAIF" width="620">
+</p>
+
 > **Release date: 2026-08-21** · Minsk.
 
 <a name="english"></a>
 ## English · [Русский](#русский)
 
-**KAIF 2.3 — Subjected KAIF.** The version that was put on trial before it was allowed to ship. Everything 2.3 claims about itself was re-executed by an adversarial court — command by command, mutation by mutation — and the five defects the court found were fixed before this page went public. The name is the method: the framework is now subject to its own judgement, and to the field that files issues against it.
+**KAIF 2.3 — Subjected KAIF.** The version that spent its cycle under observation. On 2.2 the AI agents of live projects were doing real work with the framework, and they reported back what they saw — how it behaves, where it gets in the way, what breaks. Thirteen issues came in from the field and became two epics, so this version is made of what its users found. That is the name: 2.3 is the version that was the subject of attention, and it grew better on what came back.
 
-This version was born from the field: thirteen issues filed by agents of live projects became two epics. What KAIF is and how to use it — the [README](https://github.com/MikalaiKryvusha/KAIF#english). This page is what is new in this version.
+What KAIF is and how to use it — the [README](https://github.com/MikalaiKryvusha/KAIF#english). This page is what is new in this version.
 
 ---
 
@@ -28,7 +32,7 @@ This version was born from the field: thirteen issues filed by agents of live pr
 
 **5. Eight language packs are frozen — and the freeze is pinned.** Only `ru` and `en` are maintained; the other eight are frozen with an explicit declaration — version, state, reason, revival on community request — carried by the README, the reference and the install line itself. The `lang-packs-guard` pins the frozen packs byte-exact, holds a volume floor on the live Russian pack and pins 35 English skill descriptions against silent rot.
 
-**6. The court is now part of the release.** Before this page was published, a 47-claim registry of everything 2.3 says about itself went through re-execution: suites re-run, guards re-broken on copies, measures re-taken. Five findings survived the skeptic panel and were fixed pre-release — among them a private project name in delivery comments (now a commit gate refuses such a commit) and a snapshot tool that silently wrote real names when its alias map was missing (now it refuses to run without one). The scaffolding measure is printed honestly: +2 tools and +742 lines this version — the price of guards for field-paid classes; mass reduction is the mandate of the next one.
+**6. Every claim was re-executed before this page went out.** A release page is a list of claims, and claims are cheap to write. So a registry of the 47 things 2.3 says about itself went through re-execution: suites re-run, guards re-broken on copies, measures re-taken. Five findings survived a skeptical second pass and were fixed pre-release — among them a private project name in delivery comments (now a commit gate refuses such a commit) and a snapshot tool that silently wrote real names when its alias map was missing (now it refuses to run without one). The scaffolding measure is printed honestly: +2 tools and +742 lines this version — the price of guards for field-paid classes; mass reduction is the mandate of the next one.
 
 ---
 
@@ -43,9 +47,13 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 <a name="русский"></a>
 ## Русский · [English](#english)
 
-**KAIF 2.3 — Subjected KAIF.** Версия, которую судили до того, как выпустить. Всё, что 2.3 говорит о себе, переисполнено адверсарным судом — команда за командой, мутация за мутацией — и пять найденных судом дефектов починены до публикации этой страницы. Имя и есть метод: фреймворк теперь подсуден собственному суду — и полю, которое подаёт против него issues.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.3_GitHub_LOGO.webp" alt="KAIF 2.3 Subjected KAIF — уроборос с глазом в центре" width="620">
+</p>
 
-Версия родилась из поля: тринадцать issues от агентов живых проектов стали двумя эпиками. Что такое KAIF и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#русский). Эта страница — что нового именно в этой версии.
+**KAIF 2.3 — Subjected KAIF.** Версия, которая весь свой цикл была под наблюдением. На 2.2 работали ИИ-агенты живых проектов, и они рассказывали, что видят: как фреймворк себя ведёт, где мешает, что ломается. Из поля пришли тринадцать issues, они стали двумя эпиками — то есть версия сделана из того, что нашли её пользователи. В этом и имя: 2.3 — версия, которая была в центре внимания и стала лучше на том, что вернулось обратно.
+
+Что такое KAIF и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#русский). Эта страница — что нового именно в этой версии.
 
 ---
 
@@ -61,7 +69,7 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 
 **5. Восемь языковых пакетов заморожены — и заморозка запинена.** Ведутся только `ru` и `en`; остальные восемь заморожены с явным объявлением — версия, состояние, причина, оживление по запросу сообщества — на README, в справочнике и в самой строке установки. Страж `lang-packs-guard` пинит замороженные пакеты побайтно, держит пол объёма живого русского пакета и 35 английских описаний навыков против тихого протухания.
 
-**6. Суд стал частью релиза.** До публикации этой страницы реестр из 47 заявлений — всего, что 2.3 говорит о себе, — прошёл переисполнение: своды перегнаны, стражи переломаны на копиях, замеры сняты заново. Пять находок пережили панель скептиков и починены до релиза — среди них приватное имя проекта в комментариях поставки (теперь такой коммит останавливает гейт) и инструмент слепка, молча писавший настоящие имена без карты псевдонимов (теперь без карты он отказывается работать). Замер лесов напечатан честно: +2 инструмента и +742 строки за версию — цена стражей на оплаченные полем классы; сокращение массы — мандат следующей версии.
+**6. Каждое заявление переисполнено до публикации.** Страница релиза — это список заявлений, а заявления дёшево написать. Поэтому реестр из 47 вещей, которые 2.3 говорит о себе, прошёл переисполнение: своды перегнаны, стражи переломаны на копиях, замеры сняты заново. Пять находок пережили скептическую перепроверку и починены до релиза — среди них приватное имя проекта в комментариях поставки (теперь такой коммит останавливает гейт) и инструмент слепка, молча писавший настоящие имена без карты псевдонимов (теперь без карты он отказывается работать). Замер лесов напечатан честно: +2 инструмента и +742 строки за версию — цена стражей на оплаченные полем классы; сокращение массы — мандат следующей версии.
 
 ---
 
