@@ -5,7 +5,7 @@
   "codename": "Subjected KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "52b1c8fd29f6ab7cd20961e84de37456bbb17d3d9d60fda56b62badd47231fbf",
-    "KAIF-CORE-BUNDLE.md": "241afc07fc8391e8230ddb82bdec22371f22c051e6c24fbaaff5c9a468adccc5"
+    "KAIF-CORE-BUNDLE.md": "7747654fa11aabf2dbeeada721abfe3df56c318cb02ef364fc0ee36aa35ae197"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
