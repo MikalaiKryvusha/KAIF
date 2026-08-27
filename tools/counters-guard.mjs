@@ -24,7 +24,7 @@
 //   node tools/counters-guard.mjs              # сверка; exit 1 при расхождении
 //   node tools/counters-guard.mjs --selftest   # ДОКАЗАТЬ, что страж умеет краснеть
 //
-// Гоняется в /end-chat и /release вместе с остальным реестром пар.
+// Гоняется в /end-chat-soft и /release вместе с остальным реестром пар.
 import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync, cpSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -381,7 +381,15 @@ function checkLanguagePacks(live, findings) {
   if (!existsSync(root)) { findings.push(`языковые пакеты: каталога нет — ${LANG_ROOT.join('/')}`); return 0; }
   const langs = readdirSync(root).filter((l) => existsSync(join(root, l, TRIGGERS_FILE)));
   if (!langs.length) { findings.push(`языковые пакеты: ни одного ${TRIGGERS_FILE} — страж ослеп`); return 0; }
+  // Заморозка №56 (эпик SC 2.4): ЗАМОРОЖЕННЫЙ пакет запинен ПОБАЙТНО на состоянии 2.2 локом
+  // (tools/lang-packs.lock.json), и его ключи стережёт lang-packs-guard сверкой с локом — дифф
+  // заморозки против ЖИВОГО ростера краснел бы вечно по построению, как только ростер навыков
+  // сменился (2.4: end-chat → end-chat-force/soft). Ростером поимённо сверяются только ЖИВЫЕ
+  // (maintained) пакеты. Лока нет (песочница селфтеста) — замороженных нет, сверяются все.
+  let frozen = new Set();
+  try { frozen = new Set(Object.keys(JSON.parse(readFileSync(join(ROOT, 'tools', 'lang-packs.lock.json'), 'utf8')).frozen || {})); } catch { /* лок недоступен — честно сверяем всё */ }
   for (const lang of langs) {
+    if (frozen.has(lang)) continue; // побайтная сверка замороженного — ось lang-packs-guard
     let keys;
     try { keys = Object.keys(JSON.parse(readFileSync(join(root, lang, TRIGGERS_FILE), 'utf8'))); }
     catch (e) { findings.push(`языковой пакет ${lang}: ${TRIGGERS_FILE} не читается — ${e.message}`); continue; }

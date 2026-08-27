@@ -268,9 +268,14 @@ ok(!task14c.includes('· AUTHOR_STYLOMETRY.md:'),
 console.log('\n=== S14d: deprecations — нетронутое удаляется механически, правленное уходит в задачу ===');
 const SRCD = join(ROOT, 'src-9.9-dep'); mkdirSync(SRCD);
 let bundleD = readFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), 'utf8');
-// заменяем СУЩЕСТВУЮЩИЙ ключ меты (сборка кладёт "deprecations": []) — второй ключ JSON.parse
-// молча перекрыл бы наш тестовый (поймано этим же тестом)
-bundleD = bundleD.replace('"deprecations": [],',
+// заменяем СУЩЕСТВУЮЩИЙ ключ меты — второй ключ JSON.parse молча перекрыл бы наш тестовый
+// (поймано этим же тестом). С 2.4 сборка кладёт НЕПУСТОЙ массив (упразднён end-chat), поэтому
+// фикстура заменяет ВЕСЬ массив по регэкспу, а не пустой литерал: no-op replace тихо оставлял
+// боевые упразднения вместо тестовых, и ассерт про what-next краснел на чужих данных — ровно
+// так свод упал в день рождения записи 2.4. Несовпадение — ошибка фикстуры, не молчание.
+const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
+if (!depKeyRe.test(bundleD)) throw new Error('S14d fixture: ключ deprecations не найден в мете бандла');
+bundleD = bundleD.replace(depKeyRe,
   '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test"}, {"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test"}],');
 // упразднённые файлы не должны ехать в новом бандле (иначе классификация их снова напишет)
 const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +

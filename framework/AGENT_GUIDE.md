@@ -57,6 +57,15 @@ relies entirely on this document to get to work.
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
 > conditions. Do not enter a loop if the human just gave a specific interactive task.
 
+> ⏰ **WORKING UNTIL A NAMED TIME — the deadline is the START of the soft closure, not a finish
+> line.** When the human names an end time for autonomous work ("work until 11", "work for an
+> hour", any loop with a duration): until that time, work at your NORMAL pace as if there were no
+> deadline — no speeding up, no corner-cutting, and no finishing early out of fear of the clock
+> (an early finish breaks the order exactly as much as overrunning it). WHEN — and only when — the
+> named time arrives, START `/end-chat-soft`: finish the current work to a natural cut, then run
+> the full ceremonies unhurried, and only then close. The named time bounds the WORKING, not the
+> closing. Every loop skill defers to this rule.
+
 ---
 
 ## Before every task — checklist
@@ -510,7 +519,7 @@ version, do I upgrade"* (strictly the delta; anything general is a LINK to the R
 mechanical check: a paragraph pasteable into the README unchanged belongs in the README).
 `STATUS.md`: *"where are we now"* — the living SUMMARY of the present (soft target ~200 lines;
 `check` warns above it). `PROJECT_HISTORY.md`: *"the closed past"* — the append-only chronicle:
-closed sessions/phases/releases MOVE there verbatim (the `/end-chat` bonsai trim) instead of piling
+closed sessions/phases/releases MOVE there verbatim (the `/end-chat-soft` bonsai trim) instead of piling
 up in STATUS. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
 Updating the README — draw on the current README and the owner's other repo storefronts (one
 storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
@@ -623,7 +632,7 @@ between a source of truth and its mirror: a deploy manifest pinning an old engin
 prod ran a newer one, a comment contradicting the compose file it describes, a producer's contract
 diverging from its consumer. A weak session updates the side it SEES and does not know the other
 side exists. Keep a light registry — a table, one row per pair:
-`truth → mirror(s) → the one-line check command`. `/end-chat` and `/release` run the registry's
+`truth → mirror(s) → the one-line check command`. `/end-chat-soft` and `/release` run the registry's
 commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
 A mirrored/generated surface is edited at its SOURCE and rebuilt — never patched in place (the
 patch dies on the next rebuild, and the pair drifts again).

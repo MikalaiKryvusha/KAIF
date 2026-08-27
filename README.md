@@ -166,7 +166,7 @@ below.
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
-    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (35 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (36 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
   </picture>
 </p>
 
@@ -186,7 +186,7 @@ Table 1 — Key documents of a deployment
 | `REQUIREMENTS_FRAMEWORK.md` | How the agent writes and checks requirements: goal vector + acceptance criteria first, ten quality criteria, the stop-word dictionary | Universal — deployed verbatim |
 | `GOAL.md` | The vision: what the owner wants in the end | **The owner** — the one document that is theirs to fill |
 | `STATUS.md` | The living summary of now (~200-line soft target) | Agent, after every significant task |
-| `PROJECT_HISTORY.md` | The append-only chronicle of closed sessions, phases, releases | Agent moves entries at `/end-chat` |
+| `PROJECT_HISTORY.md` | The append-only chronicle of closed sessions, phases, releases | Agent moves entries at `/end-chat-soft` |
 | `EXPERIENCE.md` | The grep-friendly log of paid-for lessons | Agent grows it (`/experience`) |
 | `MASTER_PLAN.md` | The phased roadmap from the current state to `GOAL.md` | Agent derives it (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files, links | Agent maintains |
@@ -239,7 +239,7 @@ Table 2 — Knowledge directories
    are appended at deploy time; the skill bodies stay English.
 2. Skills are generated for five agent systems at once — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.claude/skills/`.
-3. Thirty-five skills are deployed.
+3. Thirty-six skills are deployed.
 
 Table 3 — The skills
 
@@ -248,7 +248,8 @@ Table 3 — The skills
 | `/resume` | Start a session: read the canon docs, pick the one main thing, announce it, begin. |
 | `/kaif-go` | The slash-command form of saying "carry on" (short alias `/go`): continue the work in the current chat. It is never a blanket yes to vision forks, the write-gate or an `AUTH:` line. |
 | `/pause` | Soft-park the chat: reach a logical stopping point, keep the tree green, continue HERE later — no pushes, no ceremony. |
-| `/end-chat` | Fully close the chat: update `STATUS.md`, rebuild artifacts, commit AND push, hand the baton to other chats. |
+| `/end-chat-soft` | Softly close the chat: finish the current work to a natural cut, then unhurriedly update `STATUS.md`, rebuild artifacts, commit AND push, hand the baton to other chats. |
+| `/end-chat-force` | Urgently close the chat right now: capture only what must not be lost (status + baton), commit AND push; the skipped ceremonies become an explicit debt line. |
 | `/autoloop` | A long autonomous series over the backlog; every item ends with a mandatory judge pass. |
 | `/dayloop` | Daytime autonomous work while the owner is busy — with brief progress pings in chat. |
 | `/nightloop` | Autonomous work until morning; the morning report leads with outcomes. |
@@ -286,7 +287,7 @@ Table 3 — The skills
 ### 5.1. The session cycle
 
 A session begins with `/resume` (the agent reads the canon and picks the one main thing), proceeds
-through the work with verification, and ends with `/pause` (soft-park) or `/end-chat` (full
+through the work with verification, and ends with `/pause` (soft-park) or `/end-chat-soft` (full
 closure with a handoff). The state carries over in the files, not in the chat: the next session
 starts from an empty context and is productive immediately.
 
@@ -456,7 +457,7 @@ KAIF.jpg                              the logo
 framework/                            the canonical universal templates (the payload)
   _intro.md                           the narrative of the full core
   installer/                          KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
-  skills/                             35 skill templates (one directory per skill)
+  skills/                             36 skill templates (one directory per skill)
   spheres/                            sphere libraries: programming · science · design · business · _template · _index
   adapters/                           10 agent-system adapters (five skill-target systems + fallback and archived ones)
   templates/_owner-voice-template.md  the owner-voice portrait skeleton (ships to .kaif/)
@@ -499,8 +500,8 @@ artifacts are never hand-edited.
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
-5. The delivery holds 14 documents + 7 READMEs + 35 skills + 1 unpacker = 57 embedded files;
-   162 bundle blocks; 703 modules.
+5. The delivery holds 14 documents + 7 READMEs + 36 skills + 1 unpacker = 58 embedded files;
+   163 bundle blocks; 712 modules.
 
 ## License
 
@@ -673,7 +674,7 @@ origin, ни упоминаний автора (привязанные к origin
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
-    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (35 повторяемых ритуалов — вызов по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (36 повторяемых ритуалов — вызов по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
   </picture>
 </p>
 
@@ -693,7 +694,7 @@ origin, ни упоминаний автора (привязанные к origin
 | `REQUIREMENTS_FRAMEWORK.md` | Как агент пишет и проверяет требования: вектор цели + критерии приёмки первыми, десять критериев качества, стоп-словарь | Универсален — разворачивается дословно |
 | `GOAL.md` | Видение: чего владелец хочет в итоге | **Владелец** — единственный документ, который заполняет он |
 | `STATUS.md` | Живая сводка текущего положения (мягкий ориентир ~200 строк) | Агент, после каждой значимой задачи |
-| `PROJECT_HISTORY.md` | Дописываемая летопись закрытых сессий, фаз, релизов | Агент переносит записи на `/end-chat` |
+| `PROJECT_HISTORY.md` | Дописываемая летопись закрытых сессий, фаз, релизов | Агент переносит записи на `/end-chat-soft` |
 | `EXPERIENCE.md` | Греп-дружелюбный журнал оплаченных уроков | Агент растит сам (`/experience`) |
 | `MASTER_PLAN.md` | Фазовый план от текущего состояния к `GOAL.md` | Агент выводит (`/revision`) |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | Внешняя карта: директории, файлы, связи | Ведёт агент |
@@ -745,7 +746,7 @@ origin, ни упоминаний автора (привязанные к origin
    тела навыков остаются английскими.
 2. Навыки генерируются сразу для пяти агентских систем — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.claude/skills/`.
-3. Разворачиваются тридцать пять навыков.
+3. Разворачиваются тридцать шесть навыков.
 
 Таблица 3 — Навыки
 
@@ -754,7 +755,8 @@ origin, ни упоминаний автора (привязанные к origin
 | `/resume` | Начать сессию: прочитать канон-документы, выбрать одно главное, объявить и приступить. |
 | `/kaif-go` | Слеш-команда «продолжай» (короткий алиас `/go`): продолжить работу в текущем чате. Никогда не бланковое «да» на развилки видения, write-gate и строки `AUTH:`. |
 | `/pause` | Мягко припарковать чат: дойти до логической точки, оставить дерево зелёным, продолжить ЗДЕСЬ позже — без пушей и церемоний. |
-| `/end-chat` | Полностью закрыть чат: обновить `STATUS.md`, пересобрать артефакты, закоммитить И запушить, передать эстафету другим чатам. |
+| `/end-chat-soft` | Мягко закрыть чат: доделать текущую работу до логического среза, затем неторопливо обновить `STATUS.md`, пересобрать артефакты, закоммитить И запушить, передать эстафету другим чатам. |
+| `/end-chat-force` | Срочно закрыть чат прямо сейчас: зафиксировать только то, что нельзя потерять (статус + эстафета), закоммитить И запушить; пропущенные церемонии становятся явной строкой долга. |
 | `/autoloop` | Длинная автономная серия по беклогу; каждый пункт завершается обязательным judge-проходом. |
 | `/dayloop` | Дневная автономная работа, пока владелец занят, — с короткими сводками в чат. |
 | `/nightloop` | Автономная работа до утра; утренний отчёт — результатом вперёд. |
@@ -792,7 +794,7 @@ origin, ни упоминаний автора (привязанные к origin
 ### 5.1. Цикл сессии
 
 Сессия начинается с `/resume` (агент читает канон и выбирает одно главное), проходит через работу
-с верификацией и завершается `/pause` (мягкая парковка) или `/end-chat` (полное закрытие с
+с верификацией и завершается `/pause` (мягкая парковка) или `/end-chat-soft` (полное закрытие с
 эстафетой). Состояние переносится файлами, не чатом: следующая сессия начинается с пустого
 контекста и продуктивна сразу.
 
@@ -964,7 +966,7 @@ KAIF.jpg                              логотип
 framework/                            канонические универсальные шаблоны (полезная нагрузка)
   _intro.md                           нарратив полного ядра
   installer/                          KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · нарратив тонкого ядра
-  skills/                             35 шаблонов навыков (по директории на навык)
+  skills/                             36 шаблонов навыков (по директории на навык)
   spheres/                            библиотеки сфер: programming · science · design · business · _template · _index
   adapters/                           10 адаптеров агентских систем (пять целевых для навыков + фолбэки и архивные)
   templates/_owner-voice-template.md  скелет портрета голоса владельца (едет в .kaif/)
@@ -1007,8 +1009,8 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
-5. В поставке 14 документов + 7 README + 35 навыков + 1 распаковщик = 57 встроенных файлов;
-   162 блока бандла; 703 модуля.
+5. В поставке 14 документов + 7 README + 36 навыков + 1 распаковщик = 58 встроенных файлов;
+   163 блока бандла; 712 модулей.
 
 ## Лицензия
 

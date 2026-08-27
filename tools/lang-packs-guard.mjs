@@ -15,7 +15,7 @@
 //                                                  # (после сверки ru-алиасов глазами)
 //   node tools/lang-packs-guard.mjs --selftest     # красный доказан фикстурами, дерево не тронуто
 //
-// Гоняется в /end-chat и /release (реестр пар: «замороженные пакеты ↔ лок»).
+// Гоняется в /end-chat-soft и /release (реестр пар: «замороженные пакеты ↔ лок»).
 // [TESTED: 2026-08-21 · --selftest: шесть мутаций красные, чистая фикстура молчит; живой лок
 //  сгенерирован и сверка зелёная]
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, rmSync } from 'node:fs';

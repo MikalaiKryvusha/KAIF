@@ -107,10 +107,10 @@ for (const [label, args] of TOOL_SELFTESTS) check(label, run(label, args));
 // Здесь стерегутся ПОЛНЫЕ формы команд: короткое вхождение зеленело бы от простого упоминания
 // инструмента в прозе (`BUG_FIXING_FRAMEWORK.md` → Стражи).
 const RITUAL_CALLS = [
-  ['/end-chat зовёт дешёвую половину приёмки контура',
-    '.claude/skills/end-chat/SKILL.md', 'node tools/verify-contour.mjs --etalon-only'],
-  ['/end-chat называет верный ход при красном (пересмотр эталона, не слепая перезапись)',
-    '.claude/skills/end-chat/SKILL.md', 'node tools/verify-contour.mjs --write-etalon'],
+  ['/end-chat-soft зовёт дешёвую половину приёмки контура',
+    '.claude/skills/end-chat-soft/SKILL.md', 'node tools/verify-contour.mjs --etalon-only'],
+  ['/end-chat-soft называет верный ход при красном (пересмотр эталона, не слепая перезапись)',
+    '.claude/skills/end-chat-soft/SKILL.md', 'node tools/verify-contour.mjs --write-etalon'],
   ['/release зовёт ПОЛНЫЙ приёмочный прогон контура',
     '.claude/skills/release/SKILL.md', '**ПОЛНЫЙ приёмочный прогон контура — здесь и обязателен:** `node tools/verify-contour.mjs`'],
 ];

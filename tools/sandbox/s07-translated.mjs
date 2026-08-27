@@ -68,9 +68,9 @@ bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'U
 bundle = editBundleModule(bundle, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)', '', 'Historical note: this discipline entered the canon in KAIF 2.0.'));
 bundle = editBundleModule(bundle, 'bugs/README.md', 0, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (bugs-readme)'));
 bundle = editBundleModule(bundle, 'AGENT_GUIDE.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (agent-guide)'));
-// Д3 (bugs/28): апстрим-правка привозит НОВЫЙ незаполняемый слот в модуль end-chat —
+// Д3 (bugs/28): апстрим-правка привозит НОВЫЙ незаполняемый слот в модуль end-chat-soft —
 // update-задание обязано получить пункт placeholders (а не узнать о нём падением финального гейта)
-bundle = editBundleModule(bundle, '.claude/skills/end-chat/SKILL.md', 1, (m) => m.lines.push('', 'Sign as <YOUR AGENT/MODEL>.'));
+bundle = editBundleModule(bundle, '.claude/skills/end-chat-soft/SKILL.md', 1, (m) => m.lines.push('', 'Sign as <YOUR AGENT/MODEL>.'));
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
 copy(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
 const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
@@ -231,7 +231,7 @@ ok(!agTxt.includes('renamed-project'), 'Д1: дрейфнувшее имя не 
 ok(agTxt.includes('UPSTREAM ADDITION 9.9 (agent-guide)'), 'Д1: апстримная правка соседнего модуля влита механически');
 const dm7 = JSON.parse(readFileSync(join(T7, '.kaif', 'deploy-manifest.json'), 'utf8'));
 ok(dm7.values && dm7.values['<PROJECT_NAME>'] === 't7', 'Д1: снимок values живёт в манифесте (имя развёртывания зафиксировано)');
-// Д3: пункт placeholders в задании (новый слот приехал апстрим-правкой end-chat)
+// Д3: пункт placeholders в задании (новый слот приехал апстрим-правкой end-chat-soft)
 const task7 = readFileSync(join(T7, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/\*\*placeholders\*\*/.test(task7) && task7.includes('<YOUR AGENT/MODEL>'),
    'Д3: update-задание несёт пункт placeholders с непроставленным слотом');

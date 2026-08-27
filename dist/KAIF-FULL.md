@@ -112,7 +112,7 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 35 in all (or the agent's equivalent)
+├── .claude/skills/     # the repeatable rituals (slash-skills) — 36 in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -201,6 +201,15 @@ relies entirely on this document to get to work.
 > `/guarded-loop` when the owner asked for a protected run) and grind the
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
 > conditions. Do not enter a loop if the human just gave a specific interactive task.
+
+> ⏰ **WORKING UNTIL A NAMED TIME — the deadline is the START of the soft closure, not a finish
+> line.** When the human names an end time for autonomous work ("work until 11", "work for an
+> hour", any loop with a duration): until that time, work at your NORMAL pace as if there were no
+> deadline — no speeding up, no corner-cutting, and no finishing early out of fear of the clock
+> (an early finish breaks the order exactly as much as overrunning it). WHEN — and only when — the
+> named time arrives, START `/end-chat-soft`: finish the current work to a natural cut, then run
+> the full ceremonies unhurried, and only then close. The named time bounds the WORKING, not the
+> closing. Every loop skill defers to this rule.
 
 ---
 
@@ -655,7 +664,7 @@ version, do I upgrade"* (strictly the delta; anything general is a LINK to the R
 mechanical check: a paragraph pasteable into the README unchanged belongs in the README).
 `STATUS.md`: *"where are we now"* — the living SUMMARY of the present (soft target ~200 lines;
 `check` warns above it). `PROJECT_HISTORY.md`: *"the closed past"* — the append-only chronicle:
-closed sessions/phases/releases MOVE there verbatim (the `/end-chat` bonsai trim) instead of piling
+closed sessions/phases/releases MOVE there verbatim (the `/end-chat-soft` bonsai trim) instead of piling
 up in STATUS. `EXPERIENCE.md` and the knowledge dirs: *"why / how it went"*.
 Updating the README — draw on the current README and the owner's other repo storefronts (one
 storefront handwriting, not the agent's); updating the notes — draw on THIS project's previous
@@ -768,7 +777,7 @@ between a source of truth and its mirror: a deploy manifest pinning an old engin
 prod ran a newer one, a comment contradicting the compose file it describes, a producer's contract
 diverging from its consumer. A weak session updates the side it SEES and does not know the other
 side exists. Keep a light registry — a table, one row per pair:
-`truth → mirror(s) → the one-line check command`. `/end-chat` and `/release` run the registry's
+`truth → mirror(s) → the one-line check command`. `/end-chat-soft` and `/release` run the registry's
 commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
 A mirrored/generated surface is edited at its SOURCE and rebuilt — never patched in place (the
 patch dies on the next rebuild, and the pair drifts again).
@@ -1917,7 +1926,7 @@ style, tone). Anything the agent should honor without being told twice.>`
 >   trim is overdue.
 > - **Closed work is MOVED OUT, not accumulated:** when a phase/session's entry is no longer "now",
 >   move it VERBATIM into `PROJECT_HISTORY.md` (the chronicle — that is what it is for).
->   `/end-chat` carries a "bonsai trim" step for exactly this (`/pause` stays ceremony-free by design).
+>   `/end-chat-soft` carries a "bonsai trim" step for exactly this (`/pause` stays ceremony-free by design).
 > - **Leave the file the way you'd want to find it:** fresh summary of what works, what's in
 >   progress, what's next, the pitfalls, and WHERE TO LOOK for the details (plans, bugs, history) —
 >   pointers, not retellings.
@@ -1992,7 +2001,7 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 > The APPEND-ONLY chronicle of how this project lived and grew: closed sessions, shipped phases,
 > releases, big decisions in the order they happened. This is where `STATUS.md` sheds its past —
 > STATUS stays a short live summary of NOW; everything finished moves HERE (the "bonsai trim" step
-> of `/end-chat`).
+> of `/end-chat-soft`).
 >
 > **Not required reading.** This file is NOT part of `/resume`'s canon set and not in the
 > before-every-task minimum — open it only when you actually need the archaeology: how a decision
@@ -2407,7 +2416,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
 | `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
-| `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat`'s trim. |
+| `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
 | `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The internal map: abstractions and interactions. | Agent maintains. |
@@ -2436,11 +2445,11 @@ project's working language); **OTHER KAIF documents** — the project's local "h
 
 ## 6. The skill system
 
-Thirty-five skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-six skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
-  chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat` (full closure:
+  chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat-soft` (the unhurried full closure) + `end-chat-force` (the urgent capture-and-go closure:
   STATUS baton, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
   with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
@@ -3102,14 +3111,14 @@ Do the chosen task. Along the way:
 ``````md
 ---
 name: pause
-description: SOFT-PARK the current chat — a temporary pause with the intent to CONTINUE IN THIS SAME CHAT. Bring the task in flight to a logical stopping point, verify the tree is green, park neatly WITHOUT the heavy wrap-up (no push, no STATUS/README ceremony) and post a precise parking note in the chat. Use when the human says "pause", "park it", "hold on, back soon", "пауза", "припаркуйся", "прервёмся ненадолго". For the FULL session closure (STATUS, commits, pushes, handoff to other chats) use /end-chat instead.
+description: SOFT-PARK the current chat — a temporary pause with the intent to CONTINUE IN THIS SAME CHAT. Bring the task in flight to a logical stopping point, verify the tree is green, park neatly WITHOUT the heavy wrap-up (no push, no STATUS/README ceremony) and post a precise parking note in the chat. Use when the human says "pause", "park it", "hold on, back soon", "пауза", "припаркуйся", "прервёмся ненадолго". For the FULL session closure (STATUS, commits, pushes, handoff to other chats) use /end-chat-soft (unhurried) or /end-chat-force (urgent) instead.
 ---
 
 # /pause — soft-park the chat (we continue HERE later)
 
 A temporary pause, not a goodbye: the human intends to come back to THIS chat and continue. The whole
 point is a **cheap, precise parking** — no heavyweight rituals. (The heavy closure — STATUS, commits,
-pushes, handing the baton to other agents — is `/end-chat`, a different skill.)
+pushes, handing the baton to other agents — is `/end-chat-soft` (or the urgent `/end-chat-force`), a different skill.)
 
 ## Step 1. Reach a logical stopping point — never park mid-surgery
 
@@ -3122,7 +3131,7 @@ Do NOT start anything new.
 
 - If the tree is green and carries uncommitted work: make a **local commit without pushing**
   (`wip: <what> — soft parking` + your standard co-author trailer). A local commit costs nothing
-  and survives a crash; a push is a session-closure act and belongs to `/end-chat`.
+  and survives a crash; a push is a session-closure act and belongs to `/end-chat-soft` / `/end-chat-force`.
 - Do NOT update `STATUS.md`, README or other status documents — that ceremony is exactly what this
   skill exists to skip. The parking note in the chat (step 3) is the continuation medium.
 
@@ -3138,7 +3147,7 @@ Then stop. No further actions, no background work.
 
 ## Notes
 
-- The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
+- The family in one line: **/pause = the chat continues later; /end-chat-soft = finish properly, then say goodbye; /end-chat-force = capture the essentials and say goodbye right now.**
 - The RETURN from a pause is a refresh trigger (`AGENT_GUIDE.md` → Context refresh): before resuming
   the parked work, re-read the re-read core and update the witness (marker + quote) — the parking
   note says WHERE to continue; the refresh makes sure you continue by the CURRENT canon.
@@ -3248,6 +3257,9 @@ without those resources.
 
 ## When to STOP the loop (and report to the human)
 
+- The owner NAMED an end time for this run and it has arrived → **start `/end-chat-soft`**; until
+  that time — normal pace, no early finish out of deadline fear (`AGENT_GUIDE.md` → Working until
+  a named time).
 - The autonomous pool is exhausted (everything left needs the human/resources).
 - A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and
   pause. (A project running the `/owner-reviews` contour queues the interview to its "N accumulated"
@@ -3298,8 +3310,12 @@ Stop the loop ONLY if one of:
    ❗ **Non-critical errors are NOT a stop condition — just keep working:** a failed build (fix it), a
    flaky connection (reconnect), a bug in the software (file it and fix or defer), a hard/unclear task
    (take another), a crash (investigate/fix). These are normal working situations.
+3. **The owner NAMED an end time when starting this run** ("work until 11", "for an hour") and it
+   has arrived → **start `/end-chat-soft`**; until that time — normal pace, no early finish out of
+   deadline fear (`AGENT_GUIDE.md` → Working until a named time).
 
-⚠️ **No time-stop, no pauses, no time checks.** Unlike the night loop, don't stop at any hour and don't
+⚠️ **No time-stop, no pauses, no time checks** (unless the owner named an end time — condition 3).
+Unlike the night loop, don't stop at any hour and don't
 look at the clock. Work **CONTINUOUSLY**: finished one — take the next. Don't pause, don't wait for
 confirmations, don't schedule big "wake up later" gaps. The only stop is a stop condition above. A
 **short** `ScheduleWakeup` (≈60s) is NOT a pause — it's the loop's heartbeat to continue in a new turn
@@ -3407,6 +3423,9 @@ time and on the human appearing**, and **self-restart via `ScheduleWakeup`**.
 Stop the loop ONLY if one of:
 1. **It is ≥ the wake time** (default 09:00 local; set it when starting the loop). ⏰ Check the time
    (`date "+%H:%M"`) PERIODICALLY — don't miss the wake hour. The human comes online in the morning.
+   Reaching the wake time means **START `/end-chat-soft`** — never a rushed stop and never an EARLY
+   finish out of deadline fear: work at your normal pace right up to the hour (`AGENT_GUIDE.md` →
+   Working until a named time).
 2. **The human wrote in the chat — classify before you switch** (the drive-by rule, `AGENT_GUIDE.md`): a direct request →
    exit, switch to them immediately; a **drive-by idea/bug not about the current task** → capture it
    (`/propose-idea` / `/report-bug`, source: "tossed by the owner"), confirm in one line and
@@ -3469,10 +3488,12 @@ Until one fires — don't stop, don't wait for confirmations, work.
 
 ## Finishing (when a stop condition fired)
 
-- Get the current micro-step compiling, **commit and push** (don't leave broken/uncommitted main).
-- Update `STATUS.md`: what got done overnight, where you stopped, what's next, any "awaiting human review".
-- If stop = wake time or the human wrote — write a short summary of the night in the chat.
-- If stop = a critical error — describe it, what you tried, why you can't continue; wait.
+- Stop = the wake time → **start `/end-chat-soft`**: finish the current item to a natural cut at
+  your normal pace, then the full unhurried ceremonies (status + baton, judge pass, commit AND
+  push, the night's summary in the chat). The wake time bounds the WORKING, not the closing.
+- Stop = the human wrote — switch to them; give a short summary of the night.
+- Stop = a critical error — get the current micro-step compiling if you can, **commit and push**
+  (don't leave broken/uncommitted main), describe what happened and what you tried; wait.
 
 ## Notes
 
@@ -4388,7 +4409,7 @@ well-structured explanation they can read and act on.
 
 4. **The skills — the commands you type.** List them grouped, each with a one-line purpose — build the
    groups from the ACTUAL skills inventory (never this example verbatim): session (`/resume`, `/pause` —
-   soft-park, the chat continues, `/end-chat` — full wrap-up with a handoff), autonomy (`/autoloop`,
+   soft-park, the chat continues, `/end-chat-soft` — full unhurried wrap-up with a handoff, `/end-chat-force` — the urgent capture-and-go closure), autonomy (`/autoloop`,
    `/dayloop`, `/nightloop`, `/guarded-loop`), hygiene (`/refresh-context`, `/check-backlog`), knowledge & memory
    (`/report-bug`, `/bug-research`, `/propose-idea`, `/experience`), owner (`/interview`, `/fix-vision`,
    `/what-next`, `/owner-voice`, `/owner-reviews`), planning (`/plan-task`, `/plan-epic`, `/revision`),
@@ -4399,7 +4420,7 @@ well-structured explanation they can read and act on.
 
 5. **How a normal workflow looks.** A short example: *"`/resume` to start → I work and keep `STATUS.md`
    current → you drop ideas in `ideas/` or answer an `/interview` → `/pause` to break off (the chat
-   continues later) or `/end-chat` to close the chat with a handoff."* Note the human's role (visionary:
+   continues later) or `/end-chat-soft` to close the chat with a handoff (`/end-chat-force` when it must close right now)."* Note the human's role (visionary:
    `GOAL.md`, ideas, interview answers) vs. the agent's (executor).
 
 6. **Where to go deeper.** Point to `.kaif/KAIF_REFERENCE.md` (the authoritative framework
@@ -4809,23 +4830,104 @@ go into the linter the same day (a rule without its guard is a wish, not a rule)
   model's work — that split is the point.
 ``````
 
-### `.claude/skills/end-chat/SKILL.md`
+### `.claude/skills/end-chat-force/SKILL.md`
 
-> **FILE: `.claude/skills/end-chat/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.claude/skills/end-chat-force/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
-name: end-chat
-description: FULLY CLOSE this chat and hand the baton over — update all status documents (STATUS.md, README if warranted), rebuild artifacts, commit AND push, then write the handoff so agents in OTHER chats can continue seamlessly. Use when the human says "end the chat", "wrap up", "закончим чат", "завершаем чат", "передай эстафету", "сворачиваемся", "save progress, commit and push", "заверши сессию", "зафиксируй статус". For a light in-chat pause (no pushes, no ceremony) use /pause instead.
+name: end-chat-force
+description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies — capture only the essentials that must not be lost (status + the baton for the next chat), commit AND push, say goodbye in one line. Use when the human says "закрой чат срочно", "сворачиваемся прямо сейчас", "закрывай немедленно, без церемоний", "end the chat now", "force-close the chat", "end-chat-force". The skipped ceremonies (judge pass, bonsai trim, README refresh, showcase linters) become an explicit debt line in STATUS.md that the next /end-chat-soft pays. For an unhurried full closure use /end-chat-soft; for a light in-chat pause use /pause.
 ---
 
-# /end-chat — full closure: we say goodbye to this chat
+# /end-chat-force — the urgent closure: save what must not be lost, and go
 
-The human is closing this chat for good; the work continues in OTHER chats with OTHER agent sessions
-that start from an empty context. Run the closure routine **in order**, narrate each step briefly.
-Don't skip steps. If a step fails — stop, tell the human, don't continue blindly.
+The human needs this chat closed NOW. Speed wins over ceremony — but never over the baton: a
+closure that loses the essentials is not fast, it is destructive. Three steps, minutes total.
 
-## Step 1. Record status & the baton in STATUS.md
+## Step 1. The baton — only what must not be lost
+
+Update `STATUS.md`, tersely:
+
+- **What was done in this chat** — the facts a stranger cannot recover from git alone.
+- **Where we are** — what works, what is mid-flight and in what state.
+- **What the next session does FIRST** — commands, paths, open questions with owners.
+- **The ceremonies debt line** — add verbatim:
+  `⚠️ Force-closed <date+time>: ceremonies skipped (judge pass, bonsai trim, README, showcase
+  linters) — the first /end-chat-soft pays this debt.`
+- Convert relative dates to absolute.
+
+Uncommitted work-in-progress that cannot land safely: name it in the baton (file, state, next
+move) instead of finishing it — naming survives, rushing corrupts.
+
+## Step 2. Commit and push
+
+Commit through the project's staging gate and push:
+
+`<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
+pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+
+If the build is known-broken, say so IN the commit message (`wip:` prefix) — an honest broken
+state beats a silently lost one. If a push is rejected (non-fast-forward) — `git pull --rebase`,
+retry once, and if it still fails, tell the human: the commit exists locally, nothing is lost.
+
+## Step 3. The one-line farewell
+
+One line to the human: the commit hash, the single most important thing for the next chat, and
+the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
+
+## What this skill refuses to skip
+
+- **The baton.** No closure without Step 1 — that is the one thing force mode exists to protect.
+- **The staging gate.** A sweeping add that grabs the owner's stray files is not faster, it is a
+  leak; the gate's refusal is obeyed even in force mode.
+- **Honesty.** Skipped ceremonies are DECLARED (the debt line), never silently dropped — a force
+  closure that pretends to be a full one is the fraud `/fable-judge` hunts.
+
+## Notes
+
+- The family in one line: **/pause — the chat continues later; /end-chat-soft — finish properly,
+  then say goodbye; /end-chat-force — capture the essentials and say goodbye right now.**
+- Force mode is the human's call, not the agent's shortcut: never pick it on your own initiative
+  just because the session ran long.
+``````
+
+### `.claude/skills/end-chat-soft/SKILL.md`
+
+> **FILE: `.claude/skills/end-chat-soft/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+
+``````md
+---
+name: end-chat-soft
+description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN ADVANCE, while work is still going. Acknowledge in one line, finish the current work to a natural cut WITHOUT rushing, and only then unhurriedly run the full closure (status + baton, bonsai trim, README, rebuild, pairs registry, judge pass, commit AND push, farewell). Use when the human says "wrap up when you're done", "finish up and close the chat later", "потихоньку потом закроешь чат", "нужно будет доделать и закругляться", "доделай и сворачивайся" — an advance request is NOT an order to drop the work right now. Neutral closing phrases with no urgency ("закончим чат", "завершаем чат", "wrap up", "end the chat") also mean THIS skill. For an urgent right-now closure use /end-chat-force; for a light in-chat pause (the chat continues) use /pause.
+---
+
+# /end-chat-soft — the soft closure: finish properly, then say goodbye
+
+The human wants this chat closed — but closed WELL, not fast. The work continues in OTHER chats
+with OTHER agent sessions that start from an empty context. Two phases: first honor the work,
+then run the full closure ritual. Never rush either phase.
+
+## Phase A. The advance order — keep working to a natural cut
+
+The order usually arrives WHILE you are working ("wrap up when you're done"). Then:
+
+1. **Acknowledge in one line** — "Got it: I'll soft-close after reaching a natural cut —
+   continuing the current work." — and RETURN to the work.
+2. **Finish the current work to a logical cut**: a self-contained piece is done, verified, and
+   committable; nothing is left half-rewritten. Work at your NORMAL pace and quality — no rushing,
+   no corner-cutting, no shrinking the task because a closure is pending.
+3. Do NOT start new large work after the order — the next natural cut is where the closure begins.
+
+If the ask arrives when nothing is in progress — Phase A collapses: begin the closure right away
+(still unhurried).
+
+## Phase B. The full closure ritual — in order, without haste
+
+Run the steps **in order**, narrate briefly. Don't skip steps. A step fails — stop, tell the
+human, don't continue blindly.
+
+### Step 1. Record status & the baton in STATUS.md
 
 Update `STATUS.md`:
 - **What was done in this chat** — concrete, tied to bugs/features and files.
@@ -4834,8 +4936,10 @@ Update `STATUS.md`:
   nothing this chat knew. Commands, file paths, what to verify first, open questions with owners.
 - Convert relative dates to absolute (find today's date from context / `date`).
 
-Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson emerged
-in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is passed.
+Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson
+emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is
+passed. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
+this closure pays it: run what was skipped and remove the line.
 
 If the project keeps a **truth↔mirror pairs registry**, run its check commands before passing the
 baton — a handoff over a drifted pair hands the next session a lie.
@@ -4846,18 +4950,18 @@ closed phases, finished sessions, shipped releases — move VERBATIM into `PROJE
 from its header ("remove this line — will the next agent err?" · "readable in one sitting?"; soft
 target ~200 lines). Leave the file the way you'd want to find it.
 
-## Step 2. Refresh README (when reality moved)
+### Step 2. Refresh README (when reality moved)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If the README
 is bilingual, keep both languages in sync. Don't invent — reflect only what is done and verified.
 
-## Step 3. (Re)build / regenerate artifacts
+### Step 3. (Re)build / regenerate artifacts
 
 `<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
 own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
 regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
 
-## Step 4. Commit and push (judge first)
+### Step 4. Commit and push (judge first)
 
 Run a `/fable-judge` pass over this chat's finished claims before pushing (the canon: a judge pass
 precedes every push). Then:
@@ -4871,16 +4975,20 @@ End the message with your standard co-author trailer, e.g.:
 Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ```
 
-## Step 5. The farewell report
+### Step 5. The farewell report
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
 
 ## Notes
 
-- The difference in one line: **/pause = the chat continues later; /end-chat = the chat says goodbye.**
-- If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the human
-  about the divergence.
+- The family in one line: **/pause — the chat continues later; /end-chat-soft — finish properly,
+  then say goodbye; /end-chat-force — capture the essentials and say goodbye right now.**
+- This skill is also the closing move of timed autonomous runs: a named end time means "START
+  /end-chat-soft at that time" (`AGENT_GUIDE.md` → Working until a named time) — never an early
+  finish out of deadline fear.
+- If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the
+  human about the divergence.
 - Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.
 ``````
 
@@ -5287,6 +5395,11 @@ Two parameters, spoken back in ONE line before starting:
 
 Example: *"Guarded loop: until 22:00, wake-ups every 10 min (default). Starting."*
 
+The duration bounds the WORKING, not the closing (`AGENT_GUIDE.md` → Working until a named time):
+work at your normal pace right up to the boundary — no early finish out of deadline fear — and
+reaching the boundary STARTS the soft closure (Step 5), it never means "everything must be
+finished before it".
+
 ## Step 1 — arm the WATCHDOG (external, never self)
 
 The process that runs the work must not be the only judge of its own health — a hung agent cannot
@@ -5346,10 +5459,11 @@ Woken by the watchdog and the pulse is stale:
 
 ## Step 5 — end of the run
 
-At the duration boundary (or when the pool is empty): finish the current item cleanly, write the
-final heartbeat line (`run complete`), **disarm the external watchdog**, and close per the
-session's situation — a parking note (the `/pause` way) if the chat continues, or the full
-`/end-chat` ceremony if the session ends. Report: items done, restarts survived, anything
+At the duration boundary (or when the pool is empty): finish the current item cleanly to a
+natural cut — unhurried, the boundary started the closing, it does not rush it — write the final
+heartbeat line (`run complete`), **disarm the external watchdog**, and close per the session's
+situation: the full unhurried `/end-chat-soft` ceremonies if the session ends, or a parking note
+(the `/pause` way) if the chat continues. Report: items done, restarts survived, anything
 escalated.
 
 ## What this skill refuses to do

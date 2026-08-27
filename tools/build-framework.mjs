@@ -249,6 +249,13 @@ const TEMPLATE_NOTES_BY_VERSION = {
     // frozen literal: a dynamic version()/codename() here would rename HISTORY on the next bump
     'Release codename for this version: KAIF 2.2 — Yolden KAIF',
   ],
+  // Same INERT rule as above: this key is read by the codename gate only once version() says 2.4.
+  // The frozen codename line is APPENDED by the release phase (epic RL), never pre-created here.
+  '2.4': [
+    'Skill /end-chat is SPLIT into a pair (owner request, ideas/26 pp. 4–5 of the origin): NEW /end-chat-force — the urgent right-now closure that captures only what must not be lost (status + baton), commits AND pushes, and records the skipped ceremonies as an explicit debt line in STATUS.md; NEW /end-chat-soft — the advance-order closure: acknowledge in one line, finish the current work to a natural cut WITHOUT rushing, then run the full unhurried ceremonies (the old /end-chat body lives here). Phrases like "wrap up when you\'re done" are a SOFT order, never a command to drop the work now. The old /end-chat is RETIRED (see deprecations: an untouched copy is removed mechanically; an edited one becomes your task item). MIGRATION — agent work: if your wrapper documents or local skills reference /end-chat by name, re-point them to the pair.',
+    'AGENT_GUIDE canon — WORKING UNTIL A NAMED TIME: a named end time for autonomous work ("work until 11", "for an hour", any loop duration) bounds the WORKING, not the closing — normal pace with no early finish out of deadline fear until the named time, and AT the named time START /end-chat-soft (natural cut, then full ceremonies). All four loop skills (/autoloop, /dayloop, /nightloop, /guarded-loop) defer to this rule.',
+    'AGENT_GUIDE canon — THE CREED AND THE PRAYER (owner request, canonized from two field deployments): the guide now OPENS with two recite-aloud blocks between HTML markers — KAIF:CREED (believe in the product and the owner\'s vision; the deploying agent fills <AUTHOR> and renders it in the owner\'s language) and KAIF:PRAYER (16 thinking principles of PHILOSOPHY.md in prayer form + one boundary: Occam and Pareto never economize on what the owner sees). The agent says both in the chat on session entry, before any non-trivial task and on every context refresh; /resume carries the step. A prayer is an axiom: no attributions or justifications inside the blocks (owner\'s word).',
+  ],
   // Same INERT rule as above: this key is read by the codename gate only once version() says 2.3.
   '2.3': [
     'The canon now speaks in COMMANDS (epic X, field issue #22): every obligation of a canon document carries one of three executable forms — a command to run, a numbered step with an exit condition, or a checkbox a ritual ticks — prose stays as the rationale UNDER the carrier and never carries an obligation alone; a new PROHIBITION enters the canon only rephrased as positive guidance or moved into a guard that reddens itself. MIGRATION: the rule binds the templates as they arrive; your local wrapper documents adopt it as you touch them.',
@@ -267,7 +274,10 @@ const TEMPLATE_NOTES = TEMPLATE_NOTES_BY_VERSION[version()] || [];
 // T10 — a mechanism that replaces another owns the cleanup of its predecessor). Each entry:
 // { path, reason }. The core removes untouched instances mechanically and lists edited ones
 // in the update task. Empty is the normal state.
-const DEPRECATIONS = [];
+const DEPRECATIONS = [
+  { path: '.claude/skills/end-chat/SKILL.md',
+    reason: 'split in 2.4 into /end-chat-force (urgent, no ceremonies, explicit debt line) + /end-chat-soft (advance order, full ceremonies at a natural cut)' },
+];
 
 // POLICY changes, by version (Reference §10.6; field gap 04-§6: 1.6 changed the language POLICY
 // and the change dissolved into an ordinary diff — the owner learned about it on an audit).
@@ -284,6 +294,10 @@ const POLICY_CHANGES_BY_VERSION = {
   ],
   '2.3': [
     'Language packs FROZEN (owner decision #56, declared, not silent): only `ru` and `en` are maintained; the other eight packs (zh-Hans, es, hi, ar, pt, fr, de, ja) are frozen byte-exact at their 2.2 state — version, state and reason declared on the README, in the reference and in the install line itself; a frozen-language deployment keeps working exactly as in 2.2 and revives on community request. Nothing to merge; if your deployment uses one of the eight, expect English arrivals for anything new.',
+  ],
+  '2.4': [
+    'Closure ceremonies changed shape: /end-chat no longer exists — /end-chat-soft is the default full closure (an advance order finishes the current work to a natural cut first), /end-chat-force is the urgent capture-and-go with a declared ceremonies debt. Scripts, docs or habits invoking /end-chat must switch to the pair.',
+    'Timed autonomous runs changed contract: a named end time now means "work at NORMAL pace until the time, then START /end-chat-soft" — never "guarantee everything finished before the time". Agents used to finish early out of deadline fear; that early finish is now declared a violation of the order.',
   ],
 };
 

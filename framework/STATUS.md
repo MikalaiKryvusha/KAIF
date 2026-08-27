@@ -16,7 +16,7 @@
 >   trim is overdue.
 > - **Closed work is MOVED OUT, not accumulated:** when a phase/session's entry is no longer "now",
 >   move it VERBATIM into `PROJECT_HISTORY.md` (the chronicle — that is what it is for).
->   `/end-chat` carries a "bonsai trim" step for exactly this (`/pause` stays ceremony-free by design).
+>   `/end-chat-soft` carries a "bonsai trim" step for exactly this (`/pause` stays ceremony-free by design).
 > - **Leave the file the way you'd want to find it:** fresh summary of what works, what's in
 >   progress, what's next, the pitfalls, and WHERE TO LOOK for the details (plans, bugs, history) —
 >   pointers, not retellings.

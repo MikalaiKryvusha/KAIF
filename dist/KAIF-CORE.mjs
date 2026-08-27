@@ -101,7 +101,7 @@ const FENCE = '`'.repeat(6);
 // detect mechanically; the rest lands in the adaptation task for the agent.
 const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_PATH>',
                       '<LICENSE>', '<BUILD_COMMAND>', '<TEST_HARNESS>', '<COMMIT_COMMAND>', '<YOUR AGENT/MODEL>',
-                      "<YOUR AGENT'S noreply EMAIL>",   // bug 28: shipped by /end-chat, was invisible to the gate
+                      "<YOUR AGENT'S noreply EMAIL>",   // bug 28: shipped by /end-chat (now /end-chat-soft), was invisible to the gate
                       '<OWNER_LANGUAGE>'];
 
 // Docs seeded/owned by the OWNER after deploy — an update never touches them and never
@@ -2401,7 +2401,7 @@ function cmdCheck() {
   if (okOnDisk('STATUS.md')) {
     const n = readFileSync('STATUS.md', 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
     if (n > STATUS_SOFT_LINES)
-      console.error(`⚠ STATUS.md: ${n} lines against the soft target of ~${STATUS_SOFT_LINES} — time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat rules)`);
+      console.error(`⚠ STATUS.md: ${n} lines against the soft target of ~${STATUS_SOFT_LINES} — time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat-soft rules)`);
   }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }
