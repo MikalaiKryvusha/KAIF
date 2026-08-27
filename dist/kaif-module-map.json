@@ -3974,10 +3974,10 @@
       {
         "signature": "## Branch first — a defect of the FRAMEWORK itself, not the project",
         "class": "static",
-        "sha256": "e50a782ecc32b0b9d875fd5f5d2fb164458e59e2c5549fab54cf61e8cf0052f8",
+        "sha256": "697337848399b3a7c51b3ae27cb6a98d405caa3ee8e1ad8095ec116706e67a0b",
         "lines": [
           27,
-          64
+          70
         ]
       },
       {
@@ -3985,8 +3985,8 @@
         "class": "static",
         "sha256": "36f63c1f1f0f1d0688c8b586812670cc76d7782319e9b985b6b833b7af082cd3",
         "lines": [
-          65,
-          95
+          71,
+          101
         ]
       },
       {
@@ -3994,8 +3994,8 @@
         "class": "static",
         "sha256": "f2ad749c9a49625fd1022afd4431181e1747d2abf75178d328c26b0de2e529fc",
         "lines": [
-          96,
-          119
+          102,
+          125
         ]
       },
       {
@@ -4003,8 +4003,8 @@
         "class": "adaptive",
         "sha256": "2a7fb0bc24b045a40c50b5142a8800091dff3148a95958e28e0e263452a734cc",
         "lines": [
-          120,
-          172
+          126,
+          178
         ]
       },
       {
@@ -4012,8 +4012,8 @@
         "class": "static",
         "sha256": "cc9cd26c93d2bde53041a566ba46133ed7bc717fb1ab6b8585da808d5a37330c",
         "lines": [
-          173,
-          176
+          179,
+          182
         ]
       }
     ],

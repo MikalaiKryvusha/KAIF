@@ -56,6 +56,11 @@ let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 // EXPERIENCE.md (owner): модуль [0] — смена конвенции шаблона.
 const philMods = splitModules((bundle.match(new RegExp('> \\*\\*FILE: `PHILOSOPHY\\.md`[^]*?' + FENCE + '\\w*\\n([^]*?)\\n' + FENCE, 'm')) || [])[1] + '\n');
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
+// FP2 (2.4): второй апстрим-модуль ТОГО ЖЕ файла — чтобы в S6 один merge нёс И влитый модуль,
+// И конфликтный (иначе строка «merged … kept for you: …» не рождается вовсе). Текст намеренно
+// НЕ префиксуется «UPSTREAM ADDITION 9.9 (philosophy» — иначе S6-ассерт отсутствия зеленел бы/краснел
+// бы на чужой подстроке.
+bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 3, (m) => m.lines.push('', 'UPSTREAM TAIL 9.9 (philosophy)'));
 bundle = editBundleModule(bundle, '.claude/skills/pause/SKILL.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (pause)'));
 bundle = editBundleModule(bundle, 'EXPERIENCE.md', 0, (m) => m.lines.push('', 'TEMPLATE CONVENTION CHANGE 9.9'));
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
@@ -90,7 +95,10 @@ writeFileSync(PHIL, joinModules(pm));
 const PAUSE = join(S5, '.claude/skills/pause/SKILL.md');
 const pz = splitModules(readFileSync(PAUSE, 'utf8'));
 pz[1].lines.push('', 'LOCAL PROJECT EDIT (pause module 1)');
-writeFileSync(PAUSE, joinModules(pz));
+// KAIF ticket 06 (KAGO 2.3, эпик FP 2.4): файл на диске — CRLF, как на autocrlf=true дереве;
+// merge обязан СОХРАНИТЬ конвенцию концов строк, а не молча переписать в LF (до фикса ровно это
+// и происходило — локальные побайтные стражи потребителя краснели сразу после зелёного прохода).
+writeFileSync(PAUSE, joinModules(pz).replace(/\n/g, '\r\n'));
 // owner-контент: EXPERIENCE.md наполняем владельческим
 writeFileSync(join(S5, 'EXPERIENCE.md'), '# EXPERIENCE\n\nOWNER CONTENT — MUST SURVIVE\n');
 
@@ -107,6 +115,10 @@ ok(phil.includes('UPSTREAM ADDITION 9.9 (philosophy)'), 'NDim: апстримн�
 const pauseTxt = readFileSync(PAUSE, 'utf8');
 ok(pauseTxt.includes('LOCAL PROJECT EDIT'), 'KPOT: локально правленный модуль сохранён');
 ok(pauseTxt.includes('UPSTREAM ADDITION 9.9 (pause)'), 'KPOT: апстримный модуль того же файла заменён механически');
+// тикет KAGO 06: CRLF-файл после merge остаётся CRLF, LF-сосед (PHILOSOPHY) не приобретает CR —
+// хелпер сохраняет конвенцию ЦЕЛИ, а не навязывает одну на всех
+ok(pauseTxt.includes('\r\n'), '🔴 FP1 (тикет KAGO 06): merge сохранил CRLF-конвенцию переписанного файла');
+ok(!phil.includes('\r'), 'FP1 контроль: LF-файл после merge не приобрёл CRLF');
 ok(readFileSync(join(S5, 'EXPERIENCE.md'), 'utf8').includes('OWNER CONTENT — MUST SURVIVE'), 'owner-контент нетронут');
 const task = readFileSync(join(S5, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task.includes('owner-conventions') && task.includes('EXPERIENCE.md'), 'конвенция owner-шаблона всплыла пунктом задания');
@@ -152,6 +164,12 @@ const task6 = readFileSync(join(S6, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task6.includes('merge-modules') && task6.includes('PHILOSOPHY.md') && task6.includes('```diff') &&
    task6.includes('+ UPSTREAM ADDITION 9.9 (philosophy)') && task6.includes('- LOCAL EDIT in the SAME module'),
    'S6 задача несёт по-модульный дифф «твоя версия → новый шаблон»');
+// FP2 (пожелание KAGO, эпик FP 2.4): в S6 один merge несёт И влитый модуль [3], И конфликтный
+// [2] — строка merge обязана НАЗВАТЬ оставленный модуль сигнатурой (заголовок H2 → «kept for
+// you: ##»), а не счётом «1 kept for you», заставлявшим отвечать песочницей.
+ok(p6txt.includes('UPSTREAM TAIL 9.9 (philosophy)'), 'FP2 предусловие: соседний апстрим-модуль влит тем же merge');
+ok(/kept for you: ##/.test(r.out) && !/\(\d+ kept for you\)/.test(r.out),
+   '🔴 FP2 (пожелание KAGO): строка merge называет оставленные модули сигнатурами, не счётом');
 
 // ---------------------------------------------------------------- S7: i18n translated — переведённое не трогается
 // Семантика флага пере-резана эпиком B 2.1 (bugs/20 K2): флаг защищает ПО-ФАЙЛОВО и только файлы,

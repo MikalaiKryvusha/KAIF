@@ -4,8 +4,8 @@
   "released": "2026-08-21",
   "codename": "Subjected KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "1fc521ccb07a1744cbc298385195dc21bb919f8fa64c1116c499fc7fcd4b3148",
-    "KAIF-CORE-BUNDLE.md": "2a20952d71dae91940b30843ae4566e3b181c11dab7f595834e6ba8e4f464e68"
+    "KAIF-CORE.mjs": "e811a3526c9e0a2b05f9fa2ff89852268fc22edf6c6b33de95e57984b39ee562",
+    "KAIF-CORE-BUNDLE.md": "4df6bdd59497d6b152f5a39e82fc4b317e535b976d13c09ddd87bd9bf1a23040"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
