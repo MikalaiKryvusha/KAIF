@@ -1,164 +1,218 @@
 #!/usr/bin/env node
-// build-team-logo.mjs — бронзовая подпись версии на арте владельца «Team KAIF» (2.4).
+// build-team-logo.mjs — логотип релиза 2.4: арт владельца v2 + подпись фирменным стилем 2.3.
 //
-// ЗАЧЕМ. Финальный логотип 2.4 собирается из ДВУХ файлов владельца: оригинал 1254×1254 несёт
-// выжженную подпись «KAIF 2.4 — TEAM DEPLOYMENT», а AI-апскейл 4000×4000 — тот же медальон БЕЗ
-// подписи (проба глазами 2026-08-28: нижняя полоса апскейла пуста). Рабочее имя версии —
-// Team KAIF (слово владельца при открытии 2.4; финальное подтверждение — AUTH-шаг /release).
-// Класс «протухшая подпись версии на картинке» уже стоил релиза 2.3 — лечится инструментом.
+// ЗАЧЕМ. Первая сборка логотипа 2.4 (словными полосами из caption старого арта) забракована
+// владельцем по двум пунктам (`bugs/107`): гарнитура не 2.3 и имя версии не заказанное. Эта
+// версия инструмента собирает логотип по его плану починки: арт v2 владельца остаётся
+// НЕТРОНУТЫМ ПОБАЙТНО, вокруг него — чёрные поля, внизу — подпись
+// «KAIF 2.4 — Teamed Up KAIF» (имя — слово владельца 2026-08-28 11:19 +03:00, решение №82),
+// НАБРАННАЯ механикой build-logo-title.mjs — тем же Franklin Gothic Medium, медью и фаской,
+// что на логотипах 2.2/2.3 (стиль снят пробами с плиты GitHub; его верность стережёт
+// `node tools/build-logo-title.mjs --check`).
 //
-// МЕТОД — ПЕРЕСБОРКА СЛОВНЫМИ ПОЛОСАМИ ИЗ ОРИГИНАЛА (по образцу build-logo-title.mjs, но БЕЗ
-// подбора гарнитуры и БЕЗ побуквенной сегментации): новый текст «KAIF 2.4 — TEAM KAIF» = полоса
-// «KAIF 2.4 — TEAM» (первые слова старой подписи НЕПРЕРЫВНЫМ куском — родные интервалы
-// сохраняются по построению) + словный зазор (измерен) + полоса «KAIF» (первое слово). Гарнитура
-// оригинала — инскрипционный серифный капс класса Trajan, которого нет среди 339 шрифтов машины
-// (проба `magick -list font`); ближайший системный был бы ПОДМЕНОЙ гарнитуры — ровно класс,
-// против которого написан build-logo-title (его шапка: в PSD Arial, на GitHub Franklin Gothic).
-// Побуквенная сегментация ОТБРОШЕНА осознанно: при кегле 88px засечки соседних букв слипаются
-// (проба: «TEAM DEPLOY…» шла кластером 166–518px при любых порогах), а словные зазоры чисты.
-// Буквы — те же пиксели бронзы автора; цена метода — мягкость кромок ресайза ×3.19 (Lanczos),
-// на чёрном поле малозаметная; вердикт вкуса — владелец на приёмке витрины (класс «вкус»).
+// ГЕОМЕТРИЯ — ВСЯ композиция это плита 2.3, масштабированная ОДНИМ коэффициентом
+// s = W_арта_v2 / W_арта_2.3 (арт-зона плиты — bbox 1542x1571+679+164; арт v2 — 3609 шириной):
+// поля сверху/слева/справа, воздух арт→строка, кегль и полоса подписи — всё ×s. Выбор владельца
+// на сравнительном листе из трёх панелей (2.3 · подпись малая · подпись как в 2.3), чат
+// 2026-08-28: «Вариант B» — после двух его вердиктов на показах («добавь чёрных отступов
+// сверху, справа, слева, а то слишком близко медальон к краю, не так, как в старом лого»;
+// «посмотри, сколько воздуха было в старом лого!»). Числа плиты сняты пробами
+// identify/threshold/bbox 2026-08-28, ничего не выдумано.
 //
 // КОМАНДЫ
-//   node tools/build-team-logo.mjs            # собрать: PNG (4000²) + лёгкая WEBP
-//   node tools/build-team-logo.mjs --check    # самопроверка: пересобрать СТАРЫЙ текст из его же
-//                                             # словных полос на исходных местах (1:1) и сверить
-//                                             # RMSE с полосой оригинала; расхождение = красный
+//   node tools/build-team-logo.mjs           # собрать: PNG (размер печатает прогон) + лёгкая WEBP
+//   node tools/build-team-logo.mjs --check   # проверить СОБРАННЫЙ артефакт: размер холста ·
+//                                            # арт владельца в выходе побайтно равен исходнику ·
+//                                            # поля как у 2.3 · подпись есть, отцентрована и
+//                                            # МЕДНАЯ (не серебро) · углы полосы чисто чёрные.
 //
-// Требует ImageMagick 7 (`magick`) в PATH. [TESTED: 2026-08-28 · --check зелёный; сборка 2.4
-// сверена глазами; webp с чистым чёрным фоном]
+// Требует ImageMagick 7 (`magick`) в PATH. [TESTED: 2026-08-28 · --check красный на подсунутом
+// браке v1 (все оси) и зелёный на сборке; стиль подписи отдельно доказан зелёным
+// build-logo-title --check; тон меди сверен замером с 2.3; показ владельцу — до коммита]
 import { execFileSync } from 'node:child_process';
-import { readFileSync, statSync, mkdtempSync, rmSync } from 'node:fs';
+import { statSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
+import { renderTitle } from './build-logo-title.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const GLYPH_SRC = join(ROOT, 'assets', 'KAIF 2.4 - Team KAIF.png');                     // 1254², подпись есть
-const CANVAS_SRC = join(ROOT, 'assets', 'KAIF 2.4 - Team KAIF_upscayl_3x_ultramix-balanced-4x.png'); // 4000², подписи нет
+// Исходник по слову владельца в чате 2026-08-28 ~12:19 +03:00: «сделал логотип v2, и там есть
+// версия увеличенная через ультрамикс - её бери».
+const ART_SRC = join(ROOT, 'assets', 'KAIF 2.4 - Teamed Up KAIF v2 logo_upscayl_3x_ultramix-balanced-4x.png');
 const OUT_PNG = join(ROOT, 'assets', 'KAIF_2.4_GitHub_LOGO.png');
 const OUT_WEBP = join(ROOT, 'assets', 'KAIF_2.4_GitHub_LOGO.webp');
 
-// ── Константы, снятые пробами 2026-08-28 (identify/threshold/bbox/свипы; сессия чата 2) ──────
-const ORIG_W = 1254, CANVAS_W = 4000;
-const SCALE = CANVAS_W / ORIG_W;      // 3.1898…: апскейл владельца геометрически = оригинал × SCALE
-const BAND_Y = 1128;                  // верх полосы подписи в ОРИГИНАЛЕ (bbox текста: 916×88 @ y1134)
-const BAND_H = 112;                   // полоса: текст 88 px + запас; низ медальона выше BAND_Y
-const OLD_WORDS = ['KAIF', '2.4', '— TEAM', 'DEPLOYMENT']; // словные блоки как их видит сегментация
-                                      // (зазор «—»↔«TEAM» уже словного порога — они один блок)
-const THRESH = 60;                    // порог «чернила/фон»: ниже — AA-мостики склеивают блоки
-const WORD_GAP_MIN = 10;              // зазор ≥ этого — граница СЛОВ (свип: ровно 4 блока)
-const PAD = 4;                        // паддинг полос по x: AA-пиксели тусклее порога не режутся
-const WEBP_QUALITY = 82;              // «лёгкая webp»: ориентир 2.3 — 463 КБ; чёрный жмётся отлично
-const WEBP_SIDE = 2000;               // webp — витринный (README width=560): 2000² хватает и на ретину;
-                                      // полный 4000² остаётся в PNG
+const TITLE = 'KAIF 2.4 — Teamed Up KAIF'; // решение №82 — идентичность даёт только владелец
 
-// -alpha off ОБЯЗАТЕЛЕН на каждом чтении артов: оба PNG — srgba, и альфа-канал отравляет
-// Gray-статистику (полоса читалась полусерой, сегментация слипалась в один блоб).
-const run = (args) => execFileSync('magick', args, { stdio: ['ignore', 'pipe', 'pipe'] });
+// ── Плита 2.3 (донор геометрии; все числа — пробы 2026-08-28, шапка выше) ────────────────────
+const PLATE_W = 2900, PLATE_H = 2300;
+const PLATE_ART_BOTTOM = 1735;  // низ уробороса: bbox арта без полосы подписи (164+1571)
+const PLATE_BAND_TOP = 1960;    // ниже — зона подписи (TITLE_BAND_TOP донора)
+const PLATE_ART_W = 1542;       // арт-зона плиты: bbox 1542x1571+679+164
+const PLATE_ART_SIDE = 679;     //   боковое поле (слева и справа симметрично)
+const PLATE_ART_TOP = 164;      //   верхнее поле
+// ── Арт v2 (пробы 2026-08-28: identify + threshold-bbox 3609x3555+74+43) ─────────────────────
+const ART_FILE_W = 3762, ART_FILE_H = 3762; // размер ФАЙЛА владельца
+const ART_BOX_X = 74, ART_BOX_Y = 43;       // где в файле живёт содержимое…
+const ART_BOX_W = 3609, ART_BOX_H = 3555;   // …и каков его габарит
+// ── Ручки вкуса — калибровка владельца поверх пропорций 2.3 (показ, чат 2026-08-28) ──────────
+// После выбора варианта B владелец дал три поправки, каждая — своя ручка; значения подобраны
+// показом и меняются ТОЛЬКО его словом:
+const TUNE_MARGIN = 0.85;   // «а медальон наоборот станет чуть-чуть больше» → поля чуть меньше
+const TUNE_CAPTION = 0.85;  // «и текст чуть-чуть уменьши»
+const TUNE_GAP = 0.55;      // «но текст подними выше к медальону»
+// ── Производные композиции: плита 2.3 × s, поправленная ручками вкуса ────────────────────────
+const S_ART = ART_BOX_W / PLATE_ART_W;      // 2.3405…: единый масштаб «плита 2.3 → холст 2.4»
+const S_CAP = S_ART * TUNE_CAPTION;         // 1.9894…: масштаб блока подписи
+const MARGIN_SIDE = Math.round(PLATE_ART_SIDE * S_ART * TUNE_MARGIN); // 1351: чёрное поле по бокам
+const MARGIN_TOP = Math.round(PLATE_ART_TOP * S_ART * TUNE_MARGIN);   // 326: чёрное поле сверху
+const ART_X = MARGIN_SIDE - ART_BOX_X;      // 1277: файл кладётся так, чтобы СОДЕРЖИМОЕ…
+const ART_Y = MARGIN_TOP - ART_BOX_Y;       // 283:  …легло ровно на расчётные поля
+const CANVAS_W = MARGIN_SIDE * 2 + ART_BOX_W;           // 6311
+const ART_BOTTOM = ART_Y + ART_BOX_Y + ART_BOX_H;       // 3881: низ медальона на холсте
+const GAP = Math.round((PLATE_BAND_TOP - PLATE_ART_BOTTOM) * S_ART * TUNE_GAP); // 290
+const BAND_H_SRC = PLATE_H - PLATE_BAND_TOP;            // 340: полоса подписи на плите
+const BAND_W = Math.round(PLATE_W * S_CAP); // 5769: полоса подписи в масштабе S_CAP
+const BAND_H = Math.round(BAND_H_SRC * S_CAP);          // 676
+const BAND_X = Math.round((CANVAS_W - BAND_W) / 2);     // 271: полоса по центру холста
+const BAND_Y = ART_BOTTOM + GAP;                        // 4171
+const CANVAS_H = BAND_Y + BAND_H;                       // 4847
+const WEBP_SIDE = 2000;         // витринная webp (README width=560): вписывается в 2000x2000
+const WEBP_QUALITY = 82;        // ориентир лёгкости — webp 2.3 (463 КБ); чёрный жмётся отлично
+const CHECK_RMSE_MAX = 0;       // арт владельца в выходе — ПОБАЙТНО исходник, без допуска
+const CENTER_TOLERANCE = 4;     // px: центр подписи против центра холста (AA-кромки дрожат на ±1)
+const MARGIN_TOLERANCE = 2;     // px: поля выхода против расчётных (порог 12% дрожит на кромке)
+// Медь, не серебро: средний тон чернил подписи обязан быть тёплым, как у 2.3 (замер эталона:
+// 20.8/12.2/6.1). Ось оплачена живым дефектом этой же сессии: PNG-писатель схлопнул чёрную
+// плиту в grayscale, подпись вышла R=G=B 21/21/21 — и остальные оси остались зелёными.
+const COPPER_MIN_RG = 4;        // r − g чернил не меньше этого (у серебра 0)
+const COPPER_MIN_GB = 3;        // g − b чернил не меньше этого
 
-/** Полоса подписи оригинала серым PGM → { w, h, data } (P5, maxval 255). */
-function readBand(tmp) {
-  const pgm = join(tmp, 'band.pgm');
-  run([GLYPH_SRC, '-alpha', 'off', '-crop', `${ORIG_W}x${BAND_H}+0+${BAND_Y}`, '+repage',
-    '-colorspace', 'Gray', '-depth', '8', pgm]);
-  const buf = readFileSync(pgm);
-  let p = 0, fields = [];
-  while (fields.length < 4) {
-    while (buf[p] === 0x23) { while (buf[p] !== 0x0a) p++; p++; }
-    let s = '';
-    while (buf[p] !== 0x20 && buf[p] !== 0x0a && buf[p] !== 0x0d && buf[p] !== 0x09) s += String.fromCharCode(buf[p++]);
-    while (buf[p] === 0x20 || buf[p] === 0x0a || buf[p] === 0x0d || buf[p] === 0x09) p++;
-    fields.push(s);
-  }
-  const [magic, w, h] = [fields[0], +fields[1], +fields[2]];
-  if (magic !== 'P5') throw new Error(`ожидался P5, получен ${magic}`);
-  return { w, h, data: buf.subarray(buf.length - w * h) };
-}
+const mg = (args) => execFileSync('magick', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+// Снимает метки времени: один вход обязан давать одни байты (канон детерминизма сравниваемого).
+const DETERMINISTIC = ['-define', 'png:exclude-chunk=time',
+  '+set', 'date:create', '+set', 'date:modify', '+set', 'date:timestamp'];
 
-/** Словные блоки полосы: колонки с чернилами, разрезанные зазорами ≥ WORD_GAP_MIN. */
-function segmentWords(band) {
-  const { w, h, data } = band;
-  const col = new Array(w).fill(0);
-  for (let y = 0; y < h; y++)
-    for (let x = 0; x < w; x++)
-      if (data[y * w + x] > THRESH) col[x]++;
-  const blocks = [];
-  let x = 0;
-  while (x < w) {
-    while (x < w && col[x] === 0) x++;
-    if (x >= w) break;
-    let x0 = x, gap = 0, xEnd = x;
-    while (x < w && gap < WORD_GAP_MIN) {
-      if (col[x] > 0) { xEnd = x; gap = 0; } else gap++;
-      x++;
-    }
-    blocks.push({ x0, x1: xEnd, w: xEnd - x0 + 1 });
-  }
-  return blocks;
-}
-
-/** Аргументы вырезки словной полосы (полная высота полосы; паддинг по x в чёрные зазоры). */
-const stripCrop = (x0, x1) =>
-  [`${x1 - x0 + 1 + 2 * PAD}x${BAND_H}+${x0 - PAD}+${BAND_Y}`];
-
-function main() {
-  const check = process.argv.includes('--check');
+function build() {
   const tmp = mkdtempSync(join(tmpdir(), 'kaif-team-logo-'));
   try {
-    const blocks = segmentWords(readBand(tmp));
-    if (blocks.length !== OLD_WORDS.length)
-      throw new Error(`словных блоков ${blocks.length}, ожидалось ${OLD_WORDS.length} ` +
-        `(${OLD_WORDS.join(' | ')}); блоки: ${blocks.map((b) => `${b.x0}..${b.x1}`).join(' ')} — пороги требуют пересъёма`);
+    // 1. Подпись родным масштабом стиля 2.3 на чистой чёрной плите. Формат PNG24 ОБЯЗАТЕЛЕН:
+    //    PNG-писатель ImageMagick схлопывает полностью чёрный холст в grayscale ПРИ ЗАПИСИ
+    //    (проба: даже с `-set colorspace sRGB -type TrueColor` на диске Gray PseudoClass),
+    //    финальный composite renderTitle наследует пространство плиты — и медь подписи молча
+    //    обесцвечивается в серебро. PNG24 запрещает редукцию по построению.
+    const plate = join(tmp, 'black-plate.png');
+    mg(['-size', `${PLATE_W}x${PLATE_H}`, 'canvas:black', `PNG24:${plate}`]);
+    const caption = join(tmp, 'caption.png');
+    renderTitle({ scratch: tmp, title: TITLE, plate, out: caption });
 
-    const [wKaif, , wTeamTail] = [blocks[0], blocks[1], blocks[2]];
-    const wordGap = blocks[1].x0 - blocks[0].x1 - 1; // измеренный словный пробел «KAIF»→«2.4»
+    // 2. Полоса подписи → масштаб f (Lanczos: тот же фильтр, что в доноре).
+    const band = join(tmp, 'band.png');
+    mg([caption, '-crop', `${PLATE_W}x${BAND_H_SRC}+0+${PLATE_BAND_TOP}`, '+repage',
+      '-filter', 'Lanczos', '-resize', `${BAND_W}x${BAND_H}!`, band]);
 
-    if (check) {
-      // Самопроверка 1:1: полосы [блок1..блок3] и [блок4] на исходных местах чёрного поля = оригинал.
-      const rebuilt = join(tmp, 'rebuilt.png'), orig = join(tmp, 'orig.png');
-      run(['-size', `${ORIG_W}x${BAND_H}`, 'canvas:black',
-        '(', GLYPH_SRC, '-alpha', 'off', '-crop', ...stripCrop(blocks[0].x0, blocks[2].x1), '+repage', ')',
-        '-geometry', `+${blocks[0].x0 - PAD}+0`, '-composite',
-        '(', GLYPH_SRC, '-alpha', 'off', '-crop', ...stripCrop(blocks[3].x0, blocks[3].x1), '+repage', ')',
-        '-geometry', `+${blocks[3].x0 - PAD}+0`, '-composite',
-        rebuilt]);
-      run([GLYPH_SRC, '-alpha', 'off', '-crop', `${ORIG_W}x${BAND_H}+0+${BAND_Y}`, '+repage', orig]);
-      let rmse = '';
-      try { execFileSync('magick', ['compare', '-metric', 'RMSE', orig, rebuilt, 'null:'], { stdio: ['ignore', 'pipe', 'pipe'] }); rmse = '0 (0)'; }
-      catch (e) { rmse = String(e.stderr).trim(); }
-      const val = parseFloat(rmse);
-      if (!(val >= 0) || val > 655) { console.error(`✗ --check: RMSE ${rmse} — пересборка старого текста разошлась с оригиналом`); process.exit(1); }
-      console.log(`✅ --check: пересборка старого текста словными полосами совпала с оригиналом (RMSE ${rmse}, порог 655/65535 = 1%)`);
-      return;
-    }
+    // 3. Холст: чёрное поле по расчёту 2.3, арт владельца нетронутым, полоса — по центру снизу.
+    //    -alpha off обязателен: арт srgba, и альфа при наивном composite травит статистику
+    //    проверок (урок v1-сборки).
+    mg(['-size', `${CANVAS_W}x${CANVAS_H}`, 'canvas:black',
+      '(', ART_SRC, '-alpha', 'off', ')', '-geometry', `+${ART_X}+${ART_Y}`, '-compose', 'Over', '-composite',
+      band, '-geometry', `+${BAND_X}+${BAND_Y}`, '-compose', 'Over', '-composite',
+      ...DETERMINISTIC, `PNG24:${OUT_PNG}`]);
 
-    // Новая строка: [KAIF 2.4 — TEAM] + словный зазор + [KAIF], центр — центр старой подписи.
-    const wA = blocks[2].x1 - blocks[0].x0 + 1;
-    const wB = blocks[0].w;
-    const total = wA + wordGap + wB;
-    const center = Math.round((blocks[0].x0 + blocks[3].x1) / 2);
-    const xA = center - Math.round(total / 2);
-    const xB = xA + wA + wordGap;
-    const sw = (v) => Math.round(v * SCALE);
+    // 4. Лёгкая витринная webp с чистым чёрным фоном.
+    mg([OUT_PNG, '-filter', 'Lanczos', '-resize', `${WEBP_SIDE}x${WEBP_SIDE}`,
+      '-quality', String(WEBP_QUALITY), '-define', 'webp:method=6', ...DETERMINISTIC, OUT_WEBP]);
 
-    run([CANVAS_SRC, '-alpha', 'off', '-filter', 'Lanczos',
-      '(', GLYPH_SRC, '-alpha', 'off', '-crop', ...stripCrop(blocks[0].x0, blocks[2].x1), '+repage',
-      '-resize', `${sw(wA + 2 * PAD)}x${sw(BAND_H)}!`, ')',
-      '-geometry', `+${sw(xA - PAD)}+${sw(BAND_Y)}`, '-composite',
-      '(', GLYPH_SRC, '-alpha', 'off', '-crop', ...stripCrop(blocks[0].x0, blocks[0].x1), '+repage',
-      '-resize', `${sw(wB + 2 * PAD)}x${sw(BAND_H)}!`, ')',
-      '-geometry', `+${sw(xB - PAD)}+${sw(BAND_Y)}`, '-composite',
-      OUT_PNG]);
-    run([OUT_PNG, '-filter', 'Lanczos', '-resize', `${WEBP_SIDE}x${WEBP_SIDE}`, '-quality', String(WEBP_QUALITY), OUT_WEBP]);
     const mb = (p) => (statSync(p).size / 1048576).toFixed(2);
-    console.log(`✅ подпись «KAIF 2.4 — TEAM KAIF» собрана словными полосами оригинала ×${SCALE.toFixed(4)}`);
-    console.log(`   полоса A «KAIF 2.4 — TEAM» ${wA}px @${xA} · зазор ${wordGap}px · полоса B «KAIF» ${wB}px @${xB} (координаты 1254)`);
+    console.log(`✅ подпись «${TITLE}» набрана стилем 2.3 (build-logo-title), поля — по плите 2.3`);
+    console.log(`   холст ${CANVAS_W}x${CANVAS_H} · поля бок ${MARGIN_SIDE} / верх ${MARGIN_TOP} · воздух арт→полоса ${GAP}px · полоса ${BAND_W}x${BAND_H} @+${BAND_X}+${BAND_Y}`);
     console.log(`   → ${OUT_PNG} (${mb(OUT_PNG)} МБ) · ${OUT_WEBP} (${mb(OUT_WEBP)} МБ)`);
-    console.log('   Открой PNG глазами: пересборка судится взглядом, не только числами (EXP-0071).');
+    console.log('   Рендер судят ГЛАЗА владельца (класс «вкус»): показ ДО коммита — bugs/107.');
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }
 }
 
-main();
+/** Проверки собранного артефакта; красный — process.exit(1) с причиной. */
+function check() {
+  let bad = 0;
+  const fail = (m) => { console.error(`❌ ${m}`); bad++; };
+  const okay = (m) => console.log(`✅ ${m}`);
+
+  const dims = mg(['identify', '-format', '%wx%h', OUT_PNG]).trim();
+  if (dims !== `${CANVAS_W}x${CANVAS_H}`) fail(`холст ${dims}, ожидался ${CANVAS_W}x${CANVAS_H}`);
+  else okay(`холст ${dims}`);
+
+  const tmp = mkdtempSync(join(tmpdir(), 'kaif-team-logo-check-'));
+  try {
+    // Арт владельца в выходе — побайтно исходник (пиксели, RMSE строго 0).
+    const artCrop = join(tmp, 'art.png');
+    mg([OUT_PNG, '-crop', `${ART_FILE_W}x${ART_FILE_H}+${ART_X}+${ART_Y}`, '+repage', artCrop]);
+    let rmse = '0 (0)';
+    try {
+      execFileSync('magick', ['compare', '-metric', 'RMSE', ART_SRC, artCrop, 'null:'],
+        { stdio: ['ignore', 'pipe', 'pipe'] });
+    } catch (e) { rmse = String(e.stderr).trim(); }
+    const val = parseFloat(rmse);
+    if (!(val <= CHECK_RMSE_MAX)) fail(`арт владельца изменён: RMSE ${rmse} (допуск ${CHECK_RMSE_MAX})`);
+    else okay(`арт владельца в выходе побайтно равен исходнику (RMSE ${rmse})`);
+
+    // Подпись в полосе есть и отцентрована; порог 12% — как во всех пробах этой пары артов.
+    let capLeft = null;
+    const bbox = mg([OUT_PNG, '-crop', `${CANVAS_W}x${BAND_H}+0+${BAND_Y}`, '+repage',
+      '-threshold', '12%', '-format', '%@', 'info:']).trim();
+    const m = bbox.match(/^(\d+)x(\d+)\+(\d+)\+(\d+)$/);
+    if (!m) fail(`полоса подписи пуста (bbox: ${bbox})`);
+    else {
+      const [, bw, , bx] = m.map(Number);
+      capLeft = bx;
+      const center = bx + bw / 2, want = CANVAS_W / 2;
+      if (Math.abs(center - want) > CENTER_TOLERANCE)
+        fail(`подпись не отцентрована: центр ${center}, ожидался ${want}±${CENTER_TOLERANCE}`);
+      else okay(`подпись в полосе: ширина ${bw}px, центр ${center} (холст ${want})`);
+      if (bw < BAND_W * 0.5 || bw > BAND_W * 0.95)
+        fail(`ширина подписи ${bw}px вне разумного коридора [50%..95%] полосы ${BAND_W}`);
+    }
+
+    // Поля как заказано: верхнее — строго поле арта; левую кромку общего bbox задаёт либо арт,
+    // либо подпись — та из них, что шире (ось — вердикты владельца о воздухе на показах).
+    const full = mg([OUT_PNG, '-threshold', '12%', '-format', '%@', 'info:']).trim();
+    const fm = full.match(/^(\d+)x(\d+)\+(\d+)\+(\d+)$/);
+    if (!fm) fail(`bbox выхода не читается: ${full}`);
+    else {
+      const [, , , fx, fy] = fm.map(Number);
+      const wantFx = capLeft === null ? MARGIN_SIDE : Math.min(MARGIN_SIDE, capLeft);
+      if (Math.abs(fx - wantFx) > MARGIN_TOLERANCE || Math.abs(fy - MARGIN_TOP) > MARGIN_TOLERANCE)
+        fail(`поля выхода +${fx}+${fy}, расчёт +${wantFx}+${MARGIN_TOP} (±${MARGIN_TOLERANCE})`);
+      else okay(`поля: содержимое начинается на +${fx}+${fy} (арт: бок ${MARGIN_SIDE}, верх ${MARGIN_TOP})`);
+    }
+
+    // Медь, не серебро: тон чернил подписи тёплый, как у стиля 2.3.
+    const ink = mg([OUT_PNG, '-crop', `${CANVAS_W}x${BAND_H}+0+${BAND_Y}`, '+repage',
+      '-fuzz', '10%', '-transparent', 'black',
+      '-format', '%[fx:mean.r*255] %[fx:mean.g*255] %[fx:mean.b*255]', 'info:'])
+      .trim().split(/\s+/).map(Number);
+    const [ir, ig, ib] = ink;
+    if (ir - ig < COPPER_MIN_RG || ig - ib < COPPER_MIN_GB)
+      fail(`подпись не медная: тон чернил ${ir.toFixed(1)}/${ig.toFixed(1)}/${ib.toFixed(1)} ` +
+        `(нужно r−g ≥ ${COPPER_MIN_RG} и g−b ≥ ${COPPER_MIN_GB}; серебро даёт R=G=B)`);
+    else okay(`подпись медная: тон чернил ${ir.toFixed(1)}/${ig.toFixed(1)}/${ib.toFixed(1)} (эталон 2.3: 20.8/12.2/6.1)`);
+
+    // Углы полосы — чисто чёрные: композиция не принесла мусора.
+    for (const [x, y] of [[0, BAND_Y], [CANVAS_W - 40, CANVAS_H - 40]]) {
+      const mean = parseFloat(mg([OUT_PNG, '-crop', `40x40+${x}+${y}`, '+repage',
+        '-format', '%[fx:mean*255]', 'info:']).trim());
+      if (mean > 1) fail(`угол полосы +${x}+${y} не чёрный (mean ${mean.toFixed(2)})`);
+    }
+    if (!bad) okay('углы полосы подписи чисто чёрные');
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+
+  if (bad) { console.error(`\n❌ --check КРАСНЫЙ: расхождений ${bad}`); process.exit(1); }
+  console.log('\n✅ --check зелёный. Стиль подписи отдельно стережёт build-logo-title --check; красоту судит владелец.');
+}
+
+if (process.argv.includes('--check')) check();
+else build();

@@ -30,7 +30,7 @@
 import { execFileSync } from 'node:child_process';
 import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -248,4 +248,6 @@ function main() {
   console.log('\n⚠️  Рендер судят ГЛАЗА: откройте картинку и прочитайте подпись, прежде чем публиковать.');
 }
 
-main();
+// Гард прямого запуска: build-team-logo.mjs (2.4) импортирует renderTitle, и main при импорте
+// молча собирал бы логотип по version.json — исполняемся только когда вызваны как программа.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
