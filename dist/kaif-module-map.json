@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.3",
   "released": "2026-08-21",
-  "moduleCount": 712,
+  "moduleCount": 749,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -1177,7 +1177,7 @@
       {
         "signature": "## 6. The skill system",
         "class": "static",
-        "sha256": "8bd41571f9a2bd8e9002235546630cea5d3846a39b8bb6b15b274bbe32abba9c",
+        "sha256": "9b855495eccd333a926856532b85c94d838d7a97a6965579b62a964428d78193",
         "lines": [
           112,
           152
@@ -4117,6 +4117,347 @@
         "lines": [
           40,
           44
+        ]
+      }
+    ],
+    ".claude/skills/team-deployment/SKILL.md": [
+      {
+        "signature": "<preamble>",
+        "class": "adaptive",
+        "sha256": "e7df705d05a11a5b82c9e5d5a28f55cfbe6df035f71fd206435879956c2ecd4f",
+        "lines": [
+          1,
+          5
+        ]
+      },
+      {
+        "signature": "# /team-deployment — deploy a team of AI agents",
+        "class": "static",
+        "sha256": "97da1823d9d584b18aa1d128ca0f1c5dae1abe0c2046c8ad87bbe06b8e628755",
+        "lines": [
+          6,
+          37
+        ]
+      },
+      {
+        "signature": "## Operation 1 — analyze: profile the project before proposing anyone",
+        "class": "static",
+        "sha256": "9deff8458a274e44fbc7eab0ecc2bf04f34600786e9680b0d9c35ccfed69f584",
+        "lines": [
+          38,
+          55
+        ]
+      },
+      {
+        "signature": "## Operation 2 — suggest: an evidence-informed team design, approved by the owner",
+        "class": "static",
+        "sha256": "f2db6b170e3836a0bd7773b17d107f4cee9a83c8cee4cc88405aafe6d359b65d",
+        "lines": [
+          56,
+          71
+        ]
+      },
+      {
+        "signature": "## Operation 3 — deploy: materialize the approved design",
+        "class": "static",
+        "sha256": "e39f0b75aaddbdf536ad1cf11d148c7dfab070fda3681e9383adc2e04720da3d",
+        "lines": [
+          72,
+          92
+        ]
+      },
+      {
+        "signature": "## Operation 4 — status: the board is the team's shared truth",
+        "class": "static",
+        "sha256": "49c80eead0cfe5f09c8fd318af3e1d6dc9bcf825871b7a2f72da8356ddf1d961",
+        "lines": [
+          93,
+          99
+        ]
+      },
+      {
+        "signature": "## Operation 5 — retrospective: after a milestone, judge the ORGANIZATION",
+        "class": "static",
+        "sha256": "3b8b6f1d6e4b1812b3e7f5ef01e7edb62aaa60551de14dc19c717de3eab6cd5c",
+        "lines": [
+          100,
+          108
+        ]
+      },
+      {
+        "signature": "## Anti-patterns — detect and refuse",
+        "class": "static",
+        "sha256": "77905f239addd3874d9780a9af8259bc44b0d564d44c706863fc5be5201e9022",
+        "lines": [
+          109,
+          119
+        ]
+      },
+      {
+        "signature": "## The paid-for field lessons (why the templates say what they say)",
+        "class": "static",
+        "sha256": "0435577492f3d9b74af45c12cba6b32f4c84455417c547c4896db39113d1daf5",
+        "lines": [
+          120,
+          142
+        ]
+      },
+      {
+        "signature": "## Done when",
+        "class": "static",
+        "sha256": "c25c5965df096f7690067ceb01f18b8a8e5e99e4a9478ead7b6f04989fe7762a",
+        "lines": [
+          143,
+          152
+        ]
+      }
+    ],
+    ".claude/skills/team-deployment/references/team-constitution-template.md": [
+      {
+        "signature": "# TEAM_CONSTITUTION — <team name> operating canon",
+        "class": "static",
+        "sha256": "f680e32779e8455e1380d855838b212a31548c6e97c4286de1dfc3099529a3ce",
+        "lines": [
+          1,
+          9
+        ]
+      },
+      {
+        "signature": "## What this is and when it binds",
+        "class": "static",
+        "sha256": "9f2918bb2c53e5aa96e1ddafeae20c2d2863749beaa1aab9d92b1ebeff75dc60",
+        "lines": [
+          10,
+          21
+        ]
+      },
+      {
+        "signature": "## Owner",
+        "class": "static",
+        "sha256": "64a6be4d2a558945f5a49dac62b483bf7bc47e760f18aad88a2564feddd00352",
+        "lines": [
+          22,
+          27
+        ]
+      },
+      {
+        "signature": "## 1. Team map",
+        "class": "static",
+        "sha256": "71ef387ebebdbba32d4319e34749e66350eff6106148231bfefc621d989044d0",
+        "lines": [
+          28,
+          41
+        ]
+      },
+      {
+        "signature": "## 2. Communication regimen",
+        "class": "static",
+        "sha256": "5446816fa6dd4158e82ed70ec08e586197f80821a2c93cdea8749b3c9503f9c4",
+        "lines": [
+          42,
+          71
+        ]
+      },
+      {
+        "signature": "## 3. Escalation to the owner — through the Manager only",
+        "class": "static",
+        "sha256": "5395c970824257e7c1d2348aec1998a9fd53b1594740c23389590bfe85be8710",
+        "lines": [
+          72,
+          78
+        ]
+      },
+      {
+        "signature": "## 4. Status board — `TEAM_STATUS.md`",
+        "class": "static",
+        "sha256": "cee921fd1eece95b0f92d3cf642fa59ec8991817d06b456b7c3bd2122f4afe6d",
+        "lines": [
+          79,
+          86
+        ]
+      },
+      {
+        "signature": "## 5. Git discipline",
+        "class": "static",
+        "sha256": "a51febdb2fb69614633a3e475f3268b51767153afd32f1c870ad972f4229a136",
+        "lines": [
+          87,
+          103
+        ]
+      },
+      {
+        "signature": "## 6. Document numbering in team mode",
+        "class": "static",
+        "sha256": "48dd9bdcae44d42b5f2789735e2c045a3a44d39a3f1585666e1638039b25cf81",
+        "lines": [
+          104,
+          113
+        ]
+      },
+      {
+        "signature": "## 7. Machine resources — singletons and locks",
+        "class": "static",
+        "sha256": "facd514a167238e5d77f297b3bcb0435d3b210ae7f7f70b2514fb5a1aee6894a",
+        "lines": [
+          114,
+          123
+        ]
+      },
+      {
+        "signature": "## 8. Context budget — a resource the Manager balances",
+        "class": "static",
+        "sha256": "dfabf01974c7da76eb4e3f617fdc937e9c3c1040a1ee11d3f78df072ef33051d",
+        "lines": [
+          124,
+          138
+        ]
+      },
+      {
+        "signature": "## 9. Launch and stop",
+        "class": "static",
+        "sha256": "cff039d122592b3c2f336f7d7d9ad77ee9360b534e92cd6e3478efe176f3f931",
+        "lines": [
+          139,
+          162
+        ]
+      },
+      {
+        "signature": "## Role contracts",
+        "class": "static",
+        "sha256": "df6b2af217338a0b11df55936405ac7eed878b151dd191dd8cf14a97778c0e6f",
+        "lines": [
+          163,
+          166
+        ]
+      }
+    ],
+    ".claude/skills/team-deployment/references/team-roles-library.md": [
+      {
+        "signature": "# Team roles library — reusable role contracts and team archetypes",
+        "class": "static",
+        "sha256": "71745148de64ed75566ced3477f4c479772b2ece1b9d4aada129fa1ddec81df0",
+        "lines": [
+          1,
+          22
+        ]
+      },
+      {
+        "signature": "## Role: manager",
+        "class": "static",
+        "sha256": "a9c45ef5adf1714795cbf11a90e638d6d6b35e3f8842c51994da5b0fe14fb9fe",
+        "lines": [
+          23,
+          43
+        ]
+      },
+      {
+        "signature": "## Role: system-architect *(optional seat; often folded into manager on small teams)*",
+        "class": "static",
+        "sha256": "0bcdb1fd848996bf04e50b88deeb22d92bff9b95f6f43d9f59b3660fd1ed9880",
+        "lines": [
+          44,
+          61
+        ]
+      },
+      {
+        "signature": "## Role: engineer *(the universal implementer; instantiate ×N)*",
+        "class": "static",
+        "sha256": "e9e678af14029688c74cd959fbb5b2e81f6df0ebba8c5efd301c09785f453aaa",
+        "lines": [
+          62,
+          81
+        ]
+      },
+      {
+        "signature": "## Role: ux-designer *(optional seat)*",
+        "class": "static",
+        "sha256": "d3f2f7891798addb46e13b3d0d59bced70fce8094b0b569e9e4d506b5ffe3556",
+        "lines": [
+          82,
+          99
+        ]
+      },
+      {
+        "signature": "## Role: qa-verifier",
+        "class": "static",
+        "sha256": "5446d277c65439efbc6fc3c13d8b129f0757ee1d5132c0f39b8ce23dfd41125e",
+        "lines": [
+          100,
+          121
+        ]
+      },
+      {
+        "signature": "## Team archetypes",
+        "class": "static",
+        "sha256": "18bf2e1fb1335c98187f3a8d0879937c78c6655a7f2fc2be4675ad1153702268",
+        "lines": [
+          122,
+          128
+        ]
+      },
+      {
+        "signature": "### Archetype: web-product-small",
+        "class": "static",
+        "sha256": "ae84ab9b782058e3976eaf731a5834109e395b935cd3f10048d9319af9bd6aed",
+        "lines": [
+          129,
+          141
+        ]
+      },
+      {
+        "signature": "### Archetype: web-product-medium *(the live field configuration: manager + designer + qa + engineer ×3)*",
+        "class": "static",
+        "sha256": "eee2e7183f3328d745fdfd7955bd5687d34b574519a0c30aa6b1d6def610a284",
+        "lines": [
+          142,
+          158
+        ]
+      }
+    ],
+    ".claude/skills/team-deployment/references/team-status-board-template.md": [
+      {
+        "signature": "# TEAM_STATUS — <team name> status board",
+        "class": "static",
+        "sha256": "752f41b2223cffa3f38b22d56d1c1c6a0e2932cc3443bd95fe1dddf95f2f1a49",
+        "lines": [
+          1,
+          11
+        ]
+      },
+      {
+        "signature": "## Board",
+        "class": "static",
+        "sha256": "d7c1931f955dee7688d6b979bda0b6434492295e539f64d337b24aaaf6785f49",
+        "lines": [
+          12,
+          21
+        ]
+      },
+      {
+        "signature": "## Resource locks",
+        "class": "static",
+        "sha256": "8e51d4210e3da53242c9bfa9e2d5e494daa186c1de058df6754b68fca89cfc41",
+        "lines": [
+          22,
+          30
+        ]
+      },
+      {
+        "signature": "## Form rules (from the owner's field order — keep them)",
+        "class": "static",
+        "sha256": "eb9da31aba23ef77e8a1e15441571b5e368e046fe4de8b18da44274c77386664",
+        "lines": [
+          31,
+          38
+        ]
+      },
+      {
+        "signature": "## Board tool — the contract (the project's agent builds it)",
+        "class": "static",
+        "sha256": "d89c11ae035b9f95233dccd2bcce3b9fd84118e21e7eda684c3b1c7063c65c1c",
+        "lines": [
+          39,
+          70
         ]
       }
     ],

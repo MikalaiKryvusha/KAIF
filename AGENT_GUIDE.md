@@ -46,7 +46,7 @@
 > фреймворком* (он применяет себя к себе, dogfooding). Поэтому здесь два слоя, и путать их нельзя:
 >
 > 1. **Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:
->    - `framework/` — канонические универсальные шаблоны (четырнадцать ключевых документов вкл. канон требований `REQUIREMENTS_FRAMEWORK.md`, летопись `PROJECT_HISTORY.md` и пояснительную записку `KAIF_REFERENCE.md`, семь README директорий, тридцать шесть навыков, опциональные модули и скрипт-распаковщик).
+>    - `framework/` — канонические универсальные шаблоны (четырнадцать ключевых документов вкл. канон требований `REQUIREMENTS_FRAMEWORK.md`, летопись `PROJECT_HISTORY.md` и пояснительную записку `KAIF_REFERENCE.md`, семь README директорий, тридцать семь навыков, опциональные модули и скрипт-распаковщик).
 >    - `KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом
 >      `tools/build-framework.mjs`. Это единственный источник истины для развёртывания.
 > 2. **Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):
@@ -415,7 +415,7 @@ KAIF/
 │   ├── STATUS.md GOAL.md MASTER_PLAN.md KAIF_FRAMEWORK.md KAIF_REFERENCE.md (→ .kaif/)
 │   ├── PROJECT_STRUCTURE_EXTERNAL_MAP.md  PROJECT_ARCHITECTURE_INTERNAL_MAP.md
 │   ├── readmes/<dir>.md             ← the 7 directory-README templates
-│   ├── skills/<name>/SKILL.md       ← the 36 skill templates
+│   ├── skills/<name>/SKILL.md       ← the 37 skill templates
 │   ├── installer/                   ← KAIF-CORE.mjs (machinery) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/  ← 9 language packs (owner docs + skill-triggers.json)
 │   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint)
@@ -474,7 +474,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 36 навыков + 1 распаковщик = 58; бандл 163 блока; карта — 712 модулей) — не переписывай эти
+7 README + 37 навыков + 1 распаковщик = 59; бандл 167 блоков; карта — 749 модулей) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.

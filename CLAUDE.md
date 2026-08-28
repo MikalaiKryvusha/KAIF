@@ -28,7 +28,8 @@
 `/dayloop`, `/nightloop`, `/guarded-loop`, `/refresh-context`, `/check-backlog`, `/experience`, `/report-bug`,
 `/bug-research`, `/propose-idea`, `/interview`, `/owner-voice`, `/owner-reviews`, `/plan-task`,
 `/plan-epic`, `/revision`, `/fix-vision`, `/what-next`,
-`/derive-styleguide`, `/code-revision`, `/help-kaif`, `/release` + жизненный цикл `/kaif-*` +
+`/derive-styleguide`, `/code-revision`, `/help-kaif`, `/release`, `/team-deployment` +
+жизненный цикл `/kaif-*` +
 **fable-семейство** `/fable-method`, `/fable-loop`, `/fable-judge`, `/fable-domain` — дисциплина
 исполнения задач, вендорено из fable-method (EN); judge-проход обязателен в циклах и перед релизом).
 

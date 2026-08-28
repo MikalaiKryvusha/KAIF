@@ -166,7 +166,7 @@ below.
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
-    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (36 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (37 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
   </picture>
 </p>
 
@@ -239,7 +239,7 @@ Table 2 — Knowledge directories
    are appended at deploy time; the skill bodies stay English.
 2. Skills are generated for five agent systems at once — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.claude/skills/`.
-3. Thirty-six skills are deployed.
+3. Thirty-seven skills are deployed.
 
 Table 3 — The skills
 
@@ -263,6 +263,7 @@ Table 3 — The skills
 | `/interview` | Ask the owner the fateful A/B/C/D questions — vision decisions are never guessed. |
 | `/owner-voice` | A stylometric portrait of the owner's written voice, taken from their own texts into the optional `AUTHOR_STYLOMETRY.md`; AI text in the owner's artifacts is then written or re-voiced to sound like the owner, under machine-checkable invariants. |
 | `/owner-reviews` | The optional review contour: interviews and outbound drafts rendered as local HTML pages, decisions recorded with author and time, sends mechanically gated by approval — fail-closed. |
+| `/team-deployment` | Design and deploy a TEAM of AI agents: analyze the work profile, suggest an evidence-informed composition the owner approves, then materialize it as isolated worktrees under a generated Team Constitution and a shared status board. Ships role contracts, two archetypes and the board-tool contract; the project's agent builds the tools. |
 | `/fix-vision` | Capture the owner's vision-level chat messages into the docs before they evaporate. |
 | `/what-next` | Rank the next steps by value toward the vision when the owner asks "what now?". |
 | `/plan-task` | Plan an ordinary task/bug/idea into ONE operational plan; heavy tasks are handed to `/plan-epic`. |
@@ -457,7 +458,7 @@ KAIF.jpg                              the logo
 framework/                            the canonical universal templates (the payload)
   _intro.md                           the narrative of the full core
   installer/                          KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
-  skills/                             36 skill templates (one directory per skill)
+  skills/                             37 skill templates (one directory per skill)
   spheres/                            sphere libraries: programming · science · design · business · _template · _index
   adapters/                           10 agent-system adapters (five skill-target systems + fallback and archived ones)
   templates/_owner-voice-template.md  the owner-voice portrait skeleton (ships to .kaif/)
@@ -500,8 +501,8 @@ artifacts are never hand-edited.
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
-5. The delivery holds 14 documents + 7 READMEs + 36 skills + 1 unpacker = 58 embedded files;
-   163 bundle blocks; 712 modules.
+5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
+   167 bundle blocks; 749 modules.
 
 ## License
 
@@ -674,7 +675,7 @@ origin, ни упоминаний автора (привязанные к origin
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
-    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (36 повторяемых ритуалов — вызов по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (37 повторяемых ритуалов — вызов по имени) — здесь работаете вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
   </picture>
 </p>
 
@@ -746,7 +747,7 @@ origin, ни упоминаний автора (привязанные к origin
    тела навыков остаются английскими.
 2. Навыки генерируются сразу для пяти агентских систем — Claude Code, Codex, Grok Build, Cline,
    Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.claude/skills/`.
-3. Разворачиваются тридцать шесть навыков.
+3. Разворачиваются тридцать семь навыков.
 
 Таблица 3 — Навыки
 
@@ -770,6 +771,7 @@ origin, ни упоминаний автора (привязанные к origin
 | `/interview` | Задать владельцу судьбоносные вопросы A/B/C/D — решения видения не угадываются. |
 | `/owner-voice` | Стилометрический портрет письменного голоса владельца, снятый с его же текстов в опциональный `AUTHOR_STYLOMETRY.md`; дальше ИИ-текст в артефактах владельца пишется или перепевается так, чтобы звучать как владелец, — под машинно-проверяемыми инвариантами. |
 | `/owner-reviews` | Опциональный контур согласований: интервью и исходящие черновики рендерятся локальными HTML-страницами, решения фиксируются с автором и временем, отправки механически загейчены одобрением — fail-closed. |
+| `/team-deployment` | Спроектировать и развернуть КОМАНДУ ИИ-агентов: проанализировать профиль работы, предложить обоснованный состав на одобрение владельцу, затем материализовать его изолированными worktree под сгенерированной Конституцией команды и общей статус-доской. Едут контракты ролей, два архетипа и контракт инструмента доски; инструменты строит агент проекта. |
 | `/fix-vision` | Зафиксировать визионерские сообщения владельца из чата в документы, пока не испарились. |
 | `/what-next` | Ранжировать следующие шаги по ценности к видению, когда владелец спрашивает «что дальше?». |
 | `/plan-task` | Спланировать обычную задачу/баг/идею в ОДИН операционный план; тяжёлое передаётся `/plan-epic`. |
@@ -966,7 +968,7 @@ KAIF.jpg                              логотип
 framework/                            канонические универсальные шаблоны (полезная нагрузка)
   _intro.md                           нарратив полного ядра
   installer/                          KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · нарратив тонкого ядра
-  skills/                             36 шаблонов навыков (по директории на навык)
+  skills/                             37 шаблонов навыков (по директории на навык)
   spheres/                            библиотеки сфер: programming · science · design · business · _template · _index
   adapters/                           10 адаптеров агентских систем (пять целевых для навыков + фолбэки и архивные)
   templates/_owner-voice-template.md  скелет портрета голоса владельца (едет в .kaif/)
@@ -1009,8 +1011,8 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
-5. В поставке 14 документов + 7 README + 36 навыков + 1 распаковщик = 58 встроенных файлов;
-   163 блока бандла; 712 модулей.
+5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
+   167 блоков бандла; 749 модулей.
 
 ## Лицензия
 
