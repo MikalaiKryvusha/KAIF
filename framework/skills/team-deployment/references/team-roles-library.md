@@ -153,5 +153,4 @@ Starting composition — 4–6 seats:
 
 Anti-pattern watch: manager bottleneck (all dispatch and merges on one seat — cut work into
 one-session portions, alternate heavy tasks); agent explosion (a seat without independent work);
-shared workspace mutation (two engineers in one zone — re-cut by feature boundary, not by layer;
-paid for in the field: two concurrent implementers overlapping in shared auth code).
+shared workspace mutation (two engineers in one zone — re-cut by feature boundary, not by layer).

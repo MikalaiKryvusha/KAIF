@@ -4407,10 +4407,10 @@
       {
         "signature": "### Archetype: web-product-medium *(the live field configuration: manager + designer + qa + engineer ×3)*",
         "class": "static",
-        "sha256": "eee2e7183f3328d745fdfd7955bd5687d34b574519a0c30aa6b1d6def610a284",
+        "sha256": "e3c20304b6624830066353be5c634e934a1ea96b306cfca2e910fc57c28f20af",
         "lines": [
           142,
-          158
+          157
         ]
       }
     ],
