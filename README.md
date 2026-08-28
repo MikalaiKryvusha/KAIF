@@ -26,6 +26,10 @@
 
 **KAIF — Krinik AI Framework — a context-resilient, fundamental strategic-operational methodological framework for AI agents: resilience to context loss and discipline of autonomy.**
 
+KAIF is an agent harness — the working environment around the model that lets it carry a long
+task across tools, steps and sessions. Here the harness is markdown: documents, rituals and
+guards that the agent reads and maintains.
+
 The project's history lives in the [releases](https://github.com/MikalaiKryvusha/KAIF/releases)
 and in section 8.1.
 
@@ -54,17 +58,21 @@ and in section 8.1.
 2. The framework is not code. It is a working process captured as files: key documents, directory
    conventions, and repeatable slash-skills. It works with any language, any stack, and any
    domain — programming, science, design, business.
-3. The framework solves two chronic failures of AI agents. Context loss: without external memory,
+3. The industry has settled on a formula for this layer: Agent = Model + Harness. The models have
+   converged in quality, so the harness around the model now does most of the work — and KAIF is
+   an outer harness assembled in markdown, portable across agent systems instead of locked into
+   one of them.
+4. The framework solves two chronic failures of AI agents. Context loss: without external memory,
    every new session re-discovers the architecture, the decisions, and the half-finished work.
    Drift: left autonomous, an agent either stalls or oversteps into decisions that are not its to
    make.
-4. The human remains the visionary; the agent executes. Decisions that shape the product — brand,
+5. The human remains the visionary; the agent executes. Decisions that shape the product — brand,
    UX, architecture, naming — are made by the owner through interview documents; everything cheap
    to reverse is decided by the agent autonomously.
-5. Nothing raw is trusted. Execution follows the fable loop, everything created carries a
+6. Nothing raw is trusted. Execution follows the fable loop, everything created carries a
    test-status marker (`[NOT-TESTED]` / `[TESTED: …]`), and an adversarial judge re-runs the
    claims before work counts as done.
-6. The framework has a full lifecycle: deploy → update → fork → remove. Updates are mechanical and
+7. The framework has a full lifecycle: deploy → update → fork → remove. Updates are mechanical and
    respect every local change (section 6).
 
 <p align="center">
@@ -160,8 +168,10 @@ wherever the network exists.
 
 A deployment consists of four layers: commands (the skills the human invokes by name), state and
 knowledge (living documents the agent maintains), rules of work (the canon), and machinery
-(`.kaif/` — checksums, provenance-driven updates, spheres). The layers are shown in the diagram
-below.
+(`.kaif/` — checksums, provenance-driven updates, spheres). These are the layers every agent
+harness carries — instructions, state and memory, verification, guardrails, context management —
+here they are files, so the harness travels with the repository. The layers are shown in the
+diagram below.
 
 <p align="center">
   <picture>
@@ -446,6 +456,7 @@ Table 5 — Versions
 | v2.1 | Strong KAIF | 2026-07-31 | The owner contour: the place-of-questions rule with `/owner-reviews`, the owner's voice portrait `/owner-voice`, craft prostheses for weak sessions (`/code-revision`, craft slots, `/guarded-loop`), the planning ladder, the `PROJECT_HISTORY.md` chronicle. |
 | v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour turns a question to the owner into a working channel, the field-to-origin signal path gained five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` is the slash-command form of saying "carry on": a simple way to continue the work in the current chat. |
 | v2.3 | Subjected KAIF | 2026-08-21 | The version that spent its cycle under observation: thirteen issues from the agents of live projects became the scope, so this one is made of what its users found. The canon speaks in commands, so an obligation carries a command, a numbered step or a checkbox, and `TESTING_FRAMEWORK.md` is rebuilt around a chain of testing activities; a recorded lesson has to answer whether the trap can be mechanized away instead of remembered; `update` writes a journal before its first mutation, and `resume` finishes what a killed run started; a failed network call on Windows reports one error instead of two; eight language packs are frozen with a declared version, state and reason, while `en` and `ru` stay maintained. |
+| v2.4 | Teamed Up KAIF | 2026-08-28 | The harness takes a team: the optional `/team-deployment` skill designs and deploys a team of AI agents — roles, isolated worktree workplaces, a generated team Constitution, a shared status dashboard. Closing a chat splits into `/end-chat-soft` and `/end-chat-force`, and a named end time starts the soft close instead of cutting the work short. Before work the agent speaks the creed and the prayer of principles. The interactive contour calls with its named neural voice and renders choices as radio buttons. Four field fixes from the 2.3 reports ship alongside. |
 
 ### 8.2. Repository layout
 
@@ -540,6 +551,10 @@ pleasant work!
 
 **КАИФ — Криник АИ Фреймворк — контекстоустойчивый фундаментальный стратегическо-операционный методологический фреймворк для ИИ-агентов: устойчивость к потере контекста и дисциплина автономности.**
 
+KAIF — это агентный харнесс (обвязка): рабочее окружение вокруг модели, которое даёт ей вести
+долгую задачу через инструменты, шаги и сессии. Здесь харнесс — это markdown: документы, ритуалы
+и стражи, которые агент читает и ведёт.
+
 История проекта живёт в [релизах](https://github.com/MikalaiKryvusha/KAIF/releases) и в
 разделе 8.1.
 
@@ -567,16 +582,20 @@ pleasant work!
 2. Кода во фреймворке нет. Фреймворк — рабочий процесс, записанный файлами: ключевые документы,
    конвенции директорий и повторяемые навыки. Он подходит любому языку, любому стеку и любой
    сфере — программированию, науке, дизайну, бизнесу.
-3. Фреймворк лечит два хронических отказа ИИ-агентов. Потеря контекста: без внешней памяти каждая
+3. Индустрия сошлась на формуле для этого слоя: агент = модель + харнесс. Модели сравнялись по
+   качеству, и большую часть работы теперь делает харнесс вокруг модели — а KAIF и есть такой
+   внешний харнесс, собранный в markdown: он переносится между агентскими системами, а не заперт
+   в одной из них.
+4. Фреймворк лечит два хронических отказа ИИ-агентов. Потеря контекста: без внешней памяти каждая
    новая сессия заново открывает архитектуру, решения и недоделанную работу. Дрейф: агент,
    оставленный без присмотра, либо буксует, либо берётся за решения, которые принимать не вправе.
-4. Человек остаётся визионером, агент исполняет. Решения, которые формируют продукт — бренд, UX,
+5. Человек остаётся визионером, агент исполняет. Решения, которые формируют продукт — бренд, UX,
    архитектуру, нейминг, — владелец принимает через документы интервью; всё, что дёшево откатить,
    агент решает сам.
-5. Сырому доверия нет. Работа идёт по fable-циклу, всё созданное несёт маркер тест-статуса
+6. Сырому доверия нет. Работа идёт по fable-циклу, всё созданное несёт маркер тест-статуса
    (`[NOT-TESTED]` / `[TESTED: …]`), а состязательный судья перепроверяет заявления, прежде чем
    работу засчитают сделанной.
-6. У фреймворка полный жизненный цикл: развёртывание → обновление → форк → удаление. Обновление
+7. У фреймворка полный жизненный цикл: развёртывание → обновление → форк → удаление. Обновление
    идёт механически и уважает каждую локальную правку (раздел 6).
 
 <p align="center">
@@ -670,7 +689,10 @@ origin, ни упоминаний автора (привязанные к origin
 
 Развёртывание состоит из четырёх слоёв: команды (навыки, вызываемые человеком по имени),
 состояние и знание (живые документы, которые ведёт агент), правила работы (канон) и механика
-(`.kaif/` — контрольные суммы, обновление по происхождению, сферы). Слои показаны на схеме ниже.
+(`.kaif/` — контрольные суммы, обновление по происхождению, сферы). Это слои, которые несёт
+любой агентный харнесс, — инструкции, состояние и память, верификация, гвардрейлы, управление
+контекстом; здесь они — файлы, поэтому харнесс переезжает вместе с репозиторием. Слои показаны
+на схеме ниже.
 
 <p align="center">
   <picture>
@@ -956,6 +978,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.1 | Strong KAIF | 31.07.2026 | Контур владельца: правило места вопросов с `/owner-reviews`, портрет голоса `/owner-voice`, ремесленные протезы для слабых сессий (`/code-revision`, craft-слоты, `/guarded-loop`), лестница планирования, летопись `PROJECT_HISTORY.md`. |
 | v2.2 | Yolden KAIF | 08.08.2026 | Цикл замыкается: интерактивный контур делает вопрос к владельцу рабочим каналом; у пути сигнала «поле → исток» появились пять предписанных шагов; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` — это слеш-команда «продолжай»: простой способ продолжить работу в текущем чате. |
 | v2.3 | Subjected KAIF | 21.08.2026 | Версия, которая весь свой цикл была под наблюдением: тринадцать issues от агентов живых проектов стали её скоупом, то есть она сделана из того, что нашли пользователи. Канон заговорил командами — обязательство несёт команду, нумерованный шаг или чекбокс, а `TESTING_FRAMEWORK.md` пересобран вокруг цепочки тестовых активностей; записанный урок обязан ответить, нельзя ли грабли механизировать вместо того, чтобы их помнить; `update` пишет журнал до первой мутации, а убитый прогон дочиняет `resume`; отказ сети на Windows сообщает об одной ошибке вместо двух; восемь языковых пакетов заморожены с объявленными версией, состоянием и причиной, а `en` и `ru` продолжают вестись. |
+| v2.4 | Teamed Up KAIF | 28.08.2026 | Харнесс берёт команду: опциональный навык `/team-deployment` проектирует и разворачивает команду ИИ-агентов — роли, изолированные рабочие места в worktree, сгенерированная Конституция команды, общая доска статусов. Закрытие чата раздвоено на `/end-chat-soft` и `/end-chat-force`, а названное время окончания начинает мягкое закрытие, вместо того чтобы обрывать работу раньше срока. Перед работой агент произносит символ веры и молитву принципов. Интерактивный контур зовёт именованным нейроголосом и рендерит развилки радиокнопками. Вместе с версией едут четыре полевых фикса из отчётов 2.3. |
 
 ### 8.2. Структура репозитория
 
