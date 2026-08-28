@@ -4160,10 +4160,10 @@
       {
         "signature": "## Operation 3 — deploy: materialize the approved design",
         "class": "static",
-        "sha256": "e39f0b75aaddbdf536ad1cf11d148c7dfab070fda3681e9383adc2e04720da3d",
+        "sha256": "c6793e7d8ace38a58e273daf94a01dbb4fb82b6e79d0f22c4d43239e5c9003ae",
         "lines": [
           72,
-          92
+          94
         ]
       },
       {
@@ -4171,8 +4171,8 @@
         "class": "static",
         "sha256": "49c80eead0cfe5f09c8fd318af3e1d6dc9bcf825871b7a2f72da8356ddf1d961",
         "lines": [
-          93,
-          99
+          95,
+          101
         ]
       },
       {
@@ -4180,8 +4180,8 @@
         "class": "static",
         "sha256": "3b8b6f1d6e4b1812b3e7f5ef01e7edb62aaa60551de14dc19c717de3eab6cd5c",
         "lines": [
-          100,
-          108
+          102,
+          110
         ]
       },
       {
@@ -4189,8 +4189,8 @@
         "class": "static",
         "sha256": "77905f239addd3874d9780a9af8259bc44b0d564d44c706863fc5be5201e9022",
         "lines": [
-          109,
-          119
+          111,
+          121
         ]
       },
       {
@@ -4198,8 +4198,8 @@
         "class": "static",
         "sha256": "0435577492f3d9b74af45c12cba6b32f4c84455417c547c4896db39113d1daf5",
         "lines": [
-          120,
-          142
+          122,
+          144
         ]
       },
       {
@@ -4207,8 +4207,8 @@
         "class": "static",
         "sha256": "c25c5965df096f7690067ceb01f18b8a8e5e99e4a9478ead7b6f04989fe7762a",
         "lines": [
-          143,
-          152
+          145,
+          154
         ]
       }
     ],
@@ -4243,10 +4243,10 @@
       {
         "signature": "## 1. Team map",
         "class": "static",
-        "sha256": "71ef387ebebdbba32d4319e34749e66350eff6106148231bfefc621d989044d0",
+        "sha256": "f29cab5739232ef2922697d667f5758a011c25897bc7f6552b3d096c441781a2",
         "lines": [
           28,
-          41
+          42
         ]
       },
       {
@@ -4254,8 +4254,8 @@
         "class": "static",
         "sha256": "5446816fa6dd4158e82ed70ec08e586197f80821a2c93cdea8749b3c9503f9c4",
         "lines": [
-          42,
-          71
+          43,
+          72
         ]
       },
       {
@@ -4263,8 +4263,8 @@
         "class": "static",
         "sha256": "5395c970824257e7c1d2348aec1998a9fd53b1594740c23389590bfe85be8710",
         "lines": [
-          72,
-          78
+          73,
+          79
         ]
       },
       {
@@ -4272,17 +4272,17 @@
         "class": "static",
         "sha256": "cee921fd1eece95b0f92d3cf642fa59ec8991817d06b456b7c3bd2122f4afe6d",
         "lines": [
-          79,
-          86
+          80,
+          87
         ]
       },
       {
         "signature": "## 5. Git discipline",
         "class": "static",
-        "sha256": "a51febdb2fb69614633a3e475f3268b51767153afd32f1c870ad972f4229a136",
+        "sha256": "b54fba356bb838a192803399da03dd05428635d881333688e843d41495a04f1d",
         "lines": [
-          87,
-          103
+          88,
+          104
         ]
       },
       {
@@ -4290,8 +4290,8 @@
         "class": "static",
         "sha256": "48dd9bdcae44d42b5f2789735e2c045a3a44d39a3f1585666e1638039b25cf81",
         "lines": [
-          104,
-          113
+          105,
+          114
         ]
       },
       {
@@ -4299,8 +4299,8 @@
         "class": "static",
         "sha256": "facd514a167238e5d77f297b3bcb0435d3b210ae7f7f70b2514fb5a1aee6894a",
         "lines": [
-          114,
-          123
+          115,
+          124
         ]
       },
       {
@@ -4308,8 +4308,8 @@
         "class": "static",
         "sha256": "dfabf01974c7da76eb4e3f617fdc937e9c3c1040a1ee11d3f78df072ef33051d",
         "lines": [
-          124,
-          138
+          125,
+          139
         ]
       },
       {
@@ -4317,8 +4317,8 @@
         "class": "static",
         "sha256": "cff039d122592b3c2f336f7d7d9ad77ee9360b534e92cd6e3478efe176f3f931",
         "lines": [
-          139,
-          162
+          140,
+          163
         ]
       },
       {
@@ -4326,8 +4326,8 @@
         "class": "static",
         "sha256": "df6b2af217338a0b11df55936405ac7eed878b151dd191dd8cf14a97778c0e6f",
         "lines": [
-          163,
-          166
+          164,
+          167
         ]
       }
     ],

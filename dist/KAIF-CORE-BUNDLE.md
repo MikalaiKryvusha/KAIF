@@ -7014,9 +7014,11 @@ Output: a short analysis note (a plan or research doc per project convention). N
    per team, reachable from every workspace; each role rewrites ONLY its own row; atomic writes.
 3. **Workspaces.** One isolated workspace per implementation role; the manager works in the main
    copy. For git projects the reference mechanism is `git worktree` with the naming invariant
-   **session address = directory name = branch name = `<project>_<role>`** — the prefix keeps
-   team windows distinguishable from other projects on the same machine. Build the workplace tool
-   to the contract in the constitution template (create / list / reset-from-main / remove).
+   **session address = directory name = branch name = `<project>-team-<role>`** (owner's word on
+   the pattern): the project prefix keeps team windows distinguishable from other projects on
+   the same machine, the `team` infix marks the window as a team seat at a glance, the suffix
+   names the seat. Build the workplace tool to the contract in the constitution template
+   (create / list / reset-from-main / remove).
 4. **Role instructions.** For each seat, prepare the manager's briefing message from the role
    contract: you are <Role> · your zone · read the constitution in full · run the project's
    resume ritual on a FRESH main · announce yourself on the board · report readiness.
@@ -7117,15 +7119,16 @@ time: only the Manager talks to the owner (section 3).
 
 ## 1. Team map
 
-Naming invariant: **session address = directory name = branch name = `<project>_<role>`**.
-The prefix keeps this team's windows and addresses distinguishable from other projects' sessions
-living on the same machine. A session learns its OWN role from its working directory — a role is
-where you are, not what you claim.
+Naming invariant: **session address = directory name = branch name = `<project>-team-<role>`**.
+The project prefix keeps this team's windows and addresses distinguishable from other projects'
+sessions living on the same machine; the `team` infix marks a directory as a team seat at a
+glance (the owner's named pattern: `project-team-role`). A session learns its OWN role from its
+working directory — a role is where you are, not what you claim.
 
 | Role | Session address | Directory | Branch | Focus |
 |---|---|---|---|---|
-| Manager | `<project>_manager` | `<main copy path>` | `main` | planning, architecture, orchestration, merges, owner liaison |
-| <Role> | `<project>_<role>` | `<workspaces dir>/<project>_<role>` | `<project>_<role>` | <one line> |
+| Manager | `<project>-team-manager` | `<main copy path>` | `main` | planning, architecture, orchestration, merges, owner liaison |
+| <Role> | `<project>-team-<role>` | `<workspaces dir>/<project>-team-<role>` | `<project>-team-<role>` | <one line> |
 
 *(one row per seat of the approved design; the Manager gets no worktree — the main copy is his)*
 
@@ -7176,7 +7179,7 @@ Statuses are SHORT; the document never grows. The board shows the moment; the pr
 
 ## 5. Git discipline
 
-- **A role works in its own branch** (`<project>_<role>`), commits incrementally and often
+- **A role works in its own branch** (`<project>-team-<role>`), commits incrementally and often
   (resilience to session loss), and never touches another role's branch or files.
 - **Merges into `main` — Manager only, and only after the verifier's verdict.** The pipeline:
   assignment → work in the role branch (units and linters green — the implementer's duty) →

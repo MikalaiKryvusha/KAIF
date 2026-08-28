@@ -80,9 +80,11 @@ Output: a short analysis note (a plan or research doc per project convention). N
    per team, reachable from every workspace; each role rewrites ONLY its own row; atomic writes.
 3. **Workspaces.** One isolated workspace per implementation role; the manager works in the main
    copy. For git projects the reference mechanism is `git worktree` with the naming invariant
-   **session address = directory name = branch name = `<project>_<role>`** — the prefix keeps
-   team windows distinguishable from other projects on the same machine. Build the workplace tool
-   to the contract in the constitution template (create / list / reset-from-main / remove).
+   **session address = directory name = branch name = `<project>-team-<role>`** (owner's word on
+   the pattern): the project prefix keeps team windows distinguishable from other projects on
+   the same machine, the `team` infix marks the window as a team seat at a glance, the suffix
+   names the seat. Build the workplace tool to the contract in the constitution template
+   (create / list / reset-from-main / remove).
 4. **Role instructions.** For each seat, prepare the manager's briefing message from the role
    contract: you are <Role> · your zone · read the constitution in full · run the project's
    resume ritual on a FRESH main · announce yourself on the board · report readiness.
