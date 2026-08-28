@@ -4,9 +4,11 @@
   «для читаемости в репозитории» превращается на публичной странице в рваный текст. Проверка
   перед публикацией: в файле не должно быть двух непустых строк подряд вне блоков кода и таблиц.
 
-  ⚠️ ЛОГОТИП 2.4: блок <img> вставляется ПОСЛЕ перерисовки по bugs/107 (только по отмашке
-  владельца; текущие assets/KAIF_2.4_GitHub_LOGO.* забракованы и не вставляются).
 -->
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.4_GitHub_LOGO.webp" alt="KAIF 2.4 Teamed Up KAIF" width="620">
+</p>
 
 > **Release date: 2026-08-28** · Minsk.
 
@@ -45,6 +47,10 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 
 <a name="русский"></a>
 ## Русский · [English](#english)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/assets/KAIF_2.4_GitHub_LOGO.webp" alt="KAIF 2.4 Teamed Up KAIF — медальон команды из восьми ролей в кольце уробороса" width="620">
+</p>
 
 **KAIF 2.4 — Teamed Up KAIF.** KAIF — это агентный харнесс (обвязка), и до сих пор он запрягал одного агента на проект. Центральная фича версии записана в самом имени: 2.4 учит KAIF разворачивать целую команду ИИ-агентов — несколько агентов в одной упряжи тянут один проект, каждый на своём рабочем месте, и все видны на одной доске статусов.
 

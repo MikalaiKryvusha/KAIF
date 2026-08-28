@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.3-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.4-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Contours](https://img.shields.io/badge/Contours-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Principles](https://img.shields.io/badge/Principles-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -34,10 +34,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.3_GitHub_LOGO.webp" alt="KAIF 2.3 Subjected KAIF — an ouroboros with an eye at its centre" width="560">
+  <img src="assets/KAIF_2.4_GitHub_LOGO.webp" alt="KAIF 2.4 Teamed Up KAIF — a team medallion of eight roles inside the ouroboros ring" width="560">
 </p>
 
-<p align="center"><strong>Version 2.3 — Subjected KAIF</strong> · 2026-08-21</p>
+<p align="center"><strong>Version 2.4 — Teamed Up KAIF</strong> · 2026-08-28</p>
 
 > A very large-scale version, the one that endows KAIF with the power of an intelligent system that
 > develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for
@@ -540,7 +540,7 @@ pleasant work!
 </p>
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-2.3-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.4-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Контуры](https://img.shields.io/badge/Контуров-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Принципы](https://img.shields.io/badge/Принципов-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -559,10 +559,10 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.3_GitHub_LOGO.webp" alt="KAIF 2.3 Subjected KAIF — уроборос с глазом в центре" width="560">
+  <img src="assets/KAIF_2.4_GitHub_LOGO.webp" alt="KAIF 2.4 Teamed Up KAIF — медальон команды из восьми ролей в кольце уробороса" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.3 — Subjected KAIF</strong> · 21.08.2026</p>
+<p align="center"><strong>Версия 2.4 — Teamed Up KAIF</strong> · 28.08.2026</p>
 
 > Очень масштабная версия, наделяющая KAIF силой умной системы, самостоятельно развивающейся по
 > циклу обратной связи. Уроборос символизирует замыкание цикла и совершенство. Глаз символизирует
