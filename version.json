@@ -1,9 +1,9 @@
 {
   "name": "KAIF",
   "major": 2,
-  "minor": 3,
-  "codename": "Subjected KAIF",
-  "released": "2026-08-21",
+  "minor": 4,
+  "codename": "Teamed Up KAIF",
+  "released": "2026-08-28",
   "origin": "https://github.com/MikalaiKryvusha/KAIF",
-  "build": 394
+  "build": 395
 }

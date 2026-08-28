@@ -39,13 +39,13 @@ and in section 8.1.
 
 <p align="center"><strong>Version 2.4 — Teamed Up KAIF</strong> · 2026-08-28</p>
 
-> A very large-scale version, the one that endows KAIF with the power of an intelligent system that
-> develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for
-> completeness. The eye stands for KAIF now being under the observation of the projects that use it —
-> and those projects being under the observation of KAIF. Every cycle closes — the metaphorical ones
-> and the technical ones alike.
+> KAIF has become a team. A team of AI agents, each taking on the role of an expert professional,
+> builds your project on the git worktree technology. In several VS Code windows at once, like a
+> close-knit crew of specialists, the agents work and discuss the working questions among
+> themselves. You — the owner, the customer — remain the visionary. Your AI agents deliver your
+> order for your project.
 >
-> — *Mikalai Kryvusha on KAIF 2.2*
+> — *Mikalai Kryvusha on KAIF 2.4*
 
 <a id="excellent-en"></a>
 
@@ -564,12 +564,13 @@ KAIF — это агентный харнесс (обвязка): рабочее
 
 <p align="center"><strong>Версия 2.4 — Teamed Up KAIF</strong> · 28.08.2026</p>
 
-> Очень масштабная версия, наделяющая KAIF силой умной системы, самостоятельно развивающейся по
-> циклу обратной связи. Уроборос символизирует замыкание цикла и совершенство. Глаз символизирует
-> то, что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им
-> пользуются, — под наблюдением KAIF. Все циклы — и метафорические, и технические — замыкаются.
+> KAIF стал командным. Команда ИИ-агентов, каждый из которых принимает на себя роль
+> профессионала-эксперта, разрабатывает ваш проект по технологии git worktree. В нескольких окнах
+> VS Code одновременно, как сплочённая команда специалистов, агенты работают и обсуждают между
+> собой рабочие вопросы. Вы — владелец, заказчик — остаётесь визионером. Ваши ИИ-агенты выполняют
+> ваш заказ на ваш проект.
 >
-> — *Николай Кривуша о версии KAIF 2.2*
+> — *Николай Кривуша о версии KAIF 2.4*
 
 <a id="excellent-ru"></a>
 
