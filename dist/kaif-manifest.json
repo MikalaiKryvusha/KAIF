@@ -5,7 +5,7 @@
   "codename": "Teamed Up KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "ce787cb4c1fb2e1551fb2e81a2e59dd726c3a13a08bf8034b9b62c51f518842e",
-    "KAIF-CORE-BUNDLE.md": "68c71369c336f7bef9a5adf37a1f6bc271fc4cc1deaff132c5946fd4326eaa1c"
+    "KAIF-CORE-BUNDLE.md": "488510504c8bbb6dc6d17441b7f5d1e27ba9cfcf9248044638f4deb2b812ffee"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

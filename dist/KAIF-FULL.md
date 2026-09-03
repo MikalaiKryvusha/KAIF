@@ -6958,13 +6958,14 @@ The guiding principle (and the first sizing rule):
 > **Optimize the organization of cognitive work, not the number of agents.**
 > Do not spawn agents because you can. Spawn them because the work graph justifies them.
 
-Three templates ship with this skill in `references/` — copy and adapt, never invent from memory:
+Four templates ship with this skill in `references/` — copy and adapt, never invent from memory:
 
 | Template | Becomes (suggested name) |
 |---|---|
 | `references/team-constitution-template.md` | `TEAM_CONSTITUTION.md` — the team's operating canon |
-| `references/team-status-board-template.md` | `TEAM_STATUS.md` — the live status board |
+| `references/team-status-board-template.md` | `TEAM_STATUS.md` — the live status board (ignored by git) |
 | `references/team-roles-library.md` | role sections pasted into the constitution + role instructions |
+| `references/team-ci-template.md` | `.github/workflows/team-ci.yml` — the CI that ships with the team |
 
 **Boundaries of this skill (deliberate).** It delivers METHODOLOGY as markdown: constitution,
 board, role contracts, archetypes, procedures. It does NOT deliver an orchestrator: no scheduler

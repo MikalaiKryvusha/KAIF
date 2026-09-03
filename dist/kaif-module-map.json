@@ -4142,10 +4142,10 @@
       {
         "signature": "# /team-deployment — deploy a team of AI agents",
         "class": "static",
-        "sha256": "97da1823d9d584b18aa1d128ca0f1c5dae1abe0c2046c8ad87bbe06b8e628755",
+        "sha256": "ee6c37dcddafc96232e461e03702f6fd109f22db8757e6887419aa818e138a28",
         "lines": [
           6,
-          37
+          38
         ]
       },
       {
@@ -4153,8 +4153,8 @@
         "class": "static",
         "sha256": "9deff8458a274e44fbc7eab0ecc2bf04f34600786e9680b0d9c35ccfed69f584",
         "lines": [
-          38,
-          55
+          39,
+          56
         ]
       },
       {
@@ -4162,8 +4162,8 @@
         "class": "static",
         "sha256": "c6b06ec7a83eb8f1449295b4538ece588a8b1104c8442728362d184331dfb484",
         "lines": [
-          56,
-          82
+          57,
+          83
         ]
       },
       {
@@ -4171,8 +4171,8 @@
         "class": "static",
         "sha256": "69c0cfa0c97f913e47892e81650d60e02fe7fe395a5732a361901bbe462b0c6d",
         "lines": [
-          83,
-          113
+          84,
+          114
         ]
       },
       {
@@ -4180,8 +4180,8 @@
         "class": "static",
         "sha256": "49c80eead0cfe5f09c8fd318af3e1d6dc9bcf825871b7a2f72da8356ddf1d961",
         "lines": [
-          114,
-          120
+          115,
+          121
         ]
       },
       {
@@ -4189,8 +4189,8 @@
         "class": "static",
         "sha256": "3c5b444c2652253ef7fc4d7c5401fb28feda11400e5969c8cde1c112d03304da",
         "lines": [
-          121,
-          133
+          122,
+          134
         ]
       },
       {
@@ -4198,8 +4198,8 @@
         "class": "static",
         "sha256": "77905f239addd3874d9780a9af8259bc44b0d564d44c706863fc5be5201e9022",
         "lines": [
-          134,
-          144
+          135,
+          145
         ]
       },
       {
@@ -4207,8 +4207,8 @@
         "class": "static",
         "sha256": "0435577492f3d9b74af45c12cba6b32f4c84455417c547c4896db39113d1daf5",
         "lines": [
-          145,
-          167
+          146,
+          168
         ]
       },
       {
@@ -4216,8 +4216,8 @@
         "class": "static",
         "sha256": "14f84bdd48ea0a6f0c262f808736f5f5ea39872257883567c34733821ed4b256",
         "lines": [
-          168,
-          180
+          169,
+          181
         ]
       }
     ],
