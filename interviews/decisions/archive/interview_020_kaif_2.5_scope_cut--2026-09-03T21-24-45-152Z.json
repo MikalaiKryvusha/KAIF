@@ -1,0 +1,25 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_020_kaif_2.5_scope_cut.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-09-03T21:24:45.152Z",
+  "atHuman": "4 сентября 2026, 00:24 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": "ещё был найден большой дефект класса в KAGO проекте. Он запланирован? Что там был за дефект?"
+    },
+    "Q2": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q3": {
+      "choice": "D",
+      "text": "Пока без названия. Решим ближе к релизу. Кодовое имя \"E\"",
+      "comment": ""
+    }
+  }
+}
