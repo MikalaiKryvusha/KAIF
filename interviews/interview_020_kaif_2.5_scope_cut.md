@@ -130,7 +130,7 @@ CONFIRMED, один частично протух (#38 — тембровая п
 | **C** | Добавить только 07 и 08 (0,75 чата); 09 целиком — 2.6. | Самые дешёвые два; вопрос размера канона откладывается. |
 | **D** | Свой вариант. | — |
 
-**Answer:**
+**Answer:** A) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 4 сентября 2026, 00:37 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 
