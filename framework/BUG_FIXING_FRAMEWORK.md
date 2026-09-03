@@ -100,6 +100,11 @@ Principles:
   very defect it exists to catch and watch it fail; only then trust its green. Guard with **full unique
   strings/shapes, not short substrings** — a short pattern will happily match someone else's line and
   stay green while the real thing rots.
+- **Name the threat, not only the fixture.** The broken version a guard is reddened against is NAMED,
+  and so is the gap between that version and the real threat (`TESTING_FRAMEWORK.md` → gate 5:
+  `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`); a guard is DONE only when observed working on
+  the path the owner actually runs — a suite pass is the engine's test burn, not the engine mounted
+  on the rocket (origin issue #35).
 - **Byte-exact goldens for refactors:** capture the output BEFORE the change, diff AFTER. "Looks like
   the same numbers" is not evidence; an empty diff is.
 - **The same obligation runs forward, not only after a defect:** new code is born with the artifacts

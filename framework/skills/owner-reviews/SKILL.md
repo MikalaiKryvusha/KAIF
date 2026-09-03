@@ -196,11 +196,22 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   genuinely absent right now, it announces itself in every call ("system voice — engine not
   installed") and stands as a recorded debt until the engine lands. The engineering half stays:
   the approval contour has no right to BREAK over timbre — make route choice a pure function so
-  both branches sit under guards regardless of the machine running the checks.
+  both branches sit under guards regardless of the machine running the checks. **And the voice is
+  chosen by LANGUAGE first, timbre second** (origin issue #38: a Russian phrase read by an English
+  phoneme set is not worse timbre, it is noise — and every guard stayed green): the route selects a
+  voice whose culture matches `.kaif/kaif.json` → `language`; the system default is taken only when
+  its culture already matches; when no matching voice exists, the contour says so aloud in the call
+  line and drops to beeps + banner rather than speaking an unintelligible sentence. The route
+  function returns the CHOSEN voice and its culture, and the guard asserts culture-matches-language
+  — a guard that can go red.
 - **I36. Text normalization for speech lives in the ENGINE, not in the project.** The call phrase
   almost always carries a number ("interview #16"); without normalization digits get swallowed or
   spelled out. Heavy shared resources (the TTS model, its venv) belong to the MACHINE, not the
-  project: the project calls a ready command and falls back honestly when it is absent.
+  project: the project calls a ready command and falls back honestly when it is absent. The boundary
+  holds for the rich engine only: the stock FALLBACK has no cross-script normalization, so a project
+  on the fallback owns the minimal normalization of its own phrase — transliterating foreign-script
+  tokens — as a rule over the whole phrase in the phrase builder (the source of such tokens is the
+  document title the agent wrote), never a per-word dictionary.
 
 **The notice class (I37–I38) — the contour also has something to SAY:**
 

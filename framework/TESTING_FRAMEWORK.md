@@ -141,6 +141,28 @@ ships, walk the gates that apply:
 5. **A check that has never failed proves nothing.** Every new guard/check is verified on a broken
    version first (see `BUG_FIXING_FRAMEWORK.md` → Guards); goldens for refactors are byte-exact —
    an empty diff is proof, "the numbers look the same" is not.
+   **And the broken version is NAMED — together with its distance from the THREAT.** Reddening a
+   guard against *a* broken version is necessary and not sufficient: four field guards in one
+   evening were each green and mutation-proven — and each proven against the failure that was
+   convenient to simulate (a process death on a digital twin instead of a machine freeze; a
+   readback after a CLEAN close instead of a death without one; one warning instead of an
+   accumulation; the first step instead of any step). The machine hung, and the fuse built for it
+   recorded nothing (origin issue #35). A green mutation over a wrong-threat fixture does not
+   withhold confidence — it ISSUES it, falsely. So every guard declares, next to itself, four
+   greppable lines, and a guard is DONE only when the last one is no longer `NOT YET`:
+   ```
+   @guard <name>
+   THREAT:         the real event it exists for
+   PROVED-AGAINST: what the red run actually did
+   GAP:            what the proof does NOT cover — or the word `none`, written after thinking
+   ON-REAL-PATH:   where it was seen working on the path the owner actually runs — or `NOT YET`
+   ```
+   A recorder whose tape must outlive the event it explains declares the same way — `@forensic
+   <name>` · `EXPLAINS:` the event · `DURABLE-AT:` when the evidence becomes durable — and `close`,
+   `exit`, `trip-only` are rejected values: evidence durable only at a clean ending is not evidence.
+   The optional tool module `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) reds on a block
+   with a missing field or a rejected `DURABLE-AT`; it fires only on explicit `@guard` / `@forensic`
+   markers and never guesses what a guard is.
 6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door
    the product offers, walk the real screens, read the console — only then is "deployed" a fact.
    A smoke that only walks public surfaces proves the landing page is alive, not the product: if
@@ -179,6 +201,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
   says WHAT must carry a status and how trust propagates. The triviality gate still applies: a trivial
   change verified by its one obvious check needs no ceremony beyond its normal comment.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
+- **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
+  (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
+  `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
 - **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
   fraud table; principle 6 lives there.

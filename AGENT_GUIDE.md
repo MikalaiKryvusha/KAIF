@@ -78,7 +78,7 @@
 3. git status                     # what changed, what's uncommitted
 4. git log --oneline -5           # where we are in history
 5. Load only the relevant slice   # use the Context router below — read the required minimum + task-type docs
-6. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
+6. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before claiming done
 7. Read the relevant plan         # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md; кодишь — ЦИТИРУЙ план:
                                   # перед реализацией шага процитируй строку якоря, которую делаешь сейчас;
                                   # не можешь назвать строку = дрейф скоупа, пойманный ДО диффа.
@@ -88,7 +88,9 @@
                                   # по REQUIREMENTS_FRAMEWORK.md
 8. Recon before code              # задача опирается на внешнюю правду (старая система, чужой API, поведение
                                   # прода, док вендора)? ПЕРВЫЙ артефакт — разведдок в researches/; код
-                                  # запрещён до его появления; дальше кодь по документу, не по памяти
+                                  # запрещён до его появления; дальше кодь по документу, не по памяти.
+                                  # Та же дверь — для ИНЖЕНЕРНОЙ РАЗВИЛКИ с ценой ошибки (четвёртая дверь,
+                                  # PHILOSOPHY.md): разведка авторитетов области ДО выбора, не своё рассуждение
 9. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
 10. Comment your code/tools; keep docs accurate   # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAMEWORK.md)
 11. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
@@ -278,7 +280,10 @@ README; в поставке с 2.2, эпик O): приказ перечитат
 
 - **Разведдок** (чек-лист, шаг 8) — *описывает*, как внешняя правда устроена на самом деле, снято с
   живого источника (код старой системы, работающий прод, док вендора) — никогда по памяти. Первый
-  артефакт любой задачи с внешней правдой; переиспользуется всеми будущими сессиями.
+  артефакт любой задачи с внешней правдой; переиспользуется всеми будущими сессиями. Второй
+  триггер — ИНЖЕНЕРНАЯ РАЗВИЛКА с ценой ошибки (четвёртая дверь): разведдок тогда фиксирует, как
+  эту задачу решают те, кто её уже решил, — отраслевая практика, спецификации, разборы
+  инцидентов, — а строка `FORK:` в точке решения на него ссылается.
 - **Канон-карта** — для домена с фактологией (мир игры, продукт, бренд, API): таблица сущностей → их
   ролей → соответствий, **утверждённая владельцем**. Карта предшествует канону: каждая правка сверяется
   с ней, менять её может ТОЛЬКО владелец, конфликт текста с картой = стоп и вопрос. Ключевые факты
@@ -311,6 +316,19 @@ README; в поставке с 2.2, эпик O): приказ перечитат
 который его проверяет, — свод, чек-лист, фикстура, страж, — спланированным В ТОМ ЖЕ шаге, никогда
 «потом» (`TESTING_FRAMEWORK.md` → «Работа производит и средство своей проверки»). Шаг 5 вендоренного
 цикла велит НАБЛЮДАТЬ проверку; эта строка — то, что обязывает её СДЕЛАТЬ.
+
+**KAIF добавляет второе обязательство — к шагу 3 (реши), и записано оно здесь по той же причине:
+РАЗВИЛКА** (issue #36 поля; слово владельца: «НЕЛЬЗЯ ДОВЕРЯТЬ принятие решений на развилках ИИ
+модели и ИИ агенту»). Развилка — любой выбор с ≥ 2 вариантами И ненулевой ценой ошибки или
+необратимостью (имя переменной и порядок двух строк развилкой не являются). На развилке
+принудительный артефакт — одна строка в точке решения:
+`FORK: options <A | B | C> · price of error <что сломается при ошибке> · consulted <авторитет
+области · разведдок · владелец>` — и третий слот заполняет четвёртая дверь (`PHILOSOPHY.md`):
+проверенная практика области, найденная разведкой (разведдок в `researches/`, когда цена
+реальна), или слово владельца — никогда собственное правдоподобное рассуждение агента в
+одиночку. `/fable-judge` охотится на развилку без строки `FORK:` или с `consulted <own
+reasoning>` (охота «fork-without-recon») и на автономный цикл, закрытый до взведённой границы при
+непустом пуле (охота «early-finish», `/guarded-loop`); обе названы в KAIF-блоке судьи.
 
 Место выбрано намеренно. Навыки вендорены **дословно** из
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) и держатся побайтно равными
@@ -418,7 +436,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md       ← the 37 skill templates
 │   ├── installer/                   ← KAIF-CORE.mjs (machinery) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/  ← 9 language packs (owner docs + skill-triggers.json)
-│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint)
+│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint · kaif-guard-lint)
 │   ├── hooks/                       ← optional refresh-hooks module → .kaif/hooks/ (epic O; owner opt-in)
 │   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded as a FILE: block)
 │   ├── module-classes.json          ← manual module-class overrides (classes are otherwise computed)
@@ -429,7 +447,7 @@ KAIF/
 │                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
 └── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
-           · sandbox/s01–s14 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+           · sandbox/s01–s15 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -474,7 +492,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 37 навыков + 1 распаковщик = 59; бандл 167 блоков; карта — 749 модулей) — не переписывай эти
+7 README + 37 навыков + 1 распаковщик = 59; бандл 168 блоков; карта — 749 модулей) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.
@@ -490,6 +508,12 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 > Сшивка с **authorization gate** fable-method: этот гид — *стоячая авторизация* владельца на рутинные
 > коммиты/пуши по политике выше. Всё сверх неё — релизы, деплои, внешние публикации/отправки,
 > force-push, удаление общих данных — по-прежнему требует цитируемых слов владельца (строка `AUTH:`).
+> **Одно названное исключение — ЗДЕСЬ, потому что этот абзац читается перед каждой задачей** (issue
+> #37 поля: два TOP-тикета часами висели «Delivered upstream: NOT YET» под этой самой фразой): тикет о
+> дефекте САМОГО KAIF в origin фреймворка доставляется под стоячей авторизацией владельца KAIF
+> (`/report-bug`, шаг доставки) и строки `AUTH:` не ждёт — заводится и отправляется одним движением,
+> раньше работы, в которой найден. Оговорка истока: здесь origin — этот же репозиторий, и «доставка»
+> = коммит документа в `bugs/`. Всё остальное из списка выше ждёт слова владельца.
 
 **Неотменяемая git-гигиена (каждое правило оплачено реальным инцидентом):**
 

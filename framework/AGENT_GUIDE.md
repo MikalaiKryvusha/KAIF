@@ -77,9 +77,9 @@ relies entirely on this document to get to work.
 4. git log --oneline -5           # where we are in history
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
-7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
+7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before claiming done
 8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics). Filing a plan/bug/idea → goal vector + acceptance criteria FIRST, per REQUIREMENTS_FRAMEWORK.md
-9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
+9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session. The same door opens for an ENGINEERING FORK with a price of error (the fourth door, PHILOSOPHY.md): recon of the domain's authorities BEFORE the choice, never the agent's own reasoning alone
 10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 11. Run the build (if touching code)   # <BUILD_COMMAND>
 12. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
@@ -293,7 +293,10 @@ observation (a session that "remembers" a domain invents it):
 
 - **Recon doc** (checklist step 9) — *describes* how the external truth actually works, read from the
   live source (old system's code, the running prod, the vendor doc) — never from recall. The first
-  artifact of any task that rests on one; reused by every future session.
+  artifact of any task that rests on one; reused by every future session. Its second trigger is an
+  ENGINEERING FORK with a price of error (the fourth door): the recon doc then records how those who
+  already solved this class solve it — industry practice, specifications, incident reviews — and
+  the `FORK:` line at the decision point cites it.
 - **Canon map** — for any domain with facts (a game world, a product, a brand, an API): a table of
   entities → their roles → mappings, **approved by the owner**. The map precedes the canon: every edit
   is checked against it, ONLY the owner may change it, and a conflict between text and map = stop and
@@ -324,6 +327,18 @@ verification is not only *observed*, it is *produced*. New behaviour ships toget
 that checks it — test suite, checklist, fixture, guard — planned in the SAME step, never "later"
 (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Step 5 of the vendored loop
 asks you to observe a check; this line is what obliges you to have made one.
+
+**KAIF adds a second obligation at step 3 (decide), stated here for the same reason — the FORK
+(origin issue #36; the owner's word: a fork is NOT the agent's to decide alone).** A fork is any
+choice with ≥ 2 options AND a non-zero price of error or irreversibility (a variable name or the
+order of two lines is not one). At a fork the forced artifact is one line at the decision point —
+`FORK: options <A | B | C> · price of error <what breaks if wrong> · consulted <domain authority ·
+recon doc · owner>` — and the third slot is filled by the fourth door (`PHILOSOPHY.md`): the
+domain's proven practice found by recon (a recon doc in `researches/` when the price is real), or
+the owner's word — never the agent's own plausible reasoning alone. `/fable-judge` hunts a fork
+decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon
+hunt) and an autonomous loop closed before its armed boundary with a non-empty pool (the
+early-finish hunt, `/guarded-loop`); both are named in the judge's KAIF patch block.
 
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
@@ -475,6 +490,12 @@ so the agent doesn't improvise.>`
 > standing authorization for routine commits/pushes per the policy above. Everything beyond it —
 > releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
 > the owner's quoted words (an `AUTH:` line).
+> **One named carve-out, stated HERE because this is the paragraph read before every task** (origin
+> issue #37: two TOP tickets sat "Delivered upstream: NOT YET" for hours under this very sentence): a
+> ticket about a defect of KAIF ITSELF, filed to the framework's OWN origin, is delivered under the
+> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 4) and does NOT wait for an `AUTH:` line —
+> file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
+> list above keeps waiting for the owner's words.
 
 **Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
 

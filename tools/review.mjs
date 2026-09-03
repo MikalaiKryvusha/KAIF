@@ -67,6 +67,11 @@ const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130; // I25: три исхода
 const QUEUE_FILE = 'interviews/decisions/queue.json'; // I7: очередь — файл состояния
 const TMP_DIR = 'tools/.review-tmp';
+/** Язык проекта из маркера развёртывания — по нему выбирается голос фолбэка (I35, 2.5: issue #38). */
+function projectLanguage(root) {
+  try { return String(JSON.parse(readFileSync(resolve(root, '.kaif', 'kaif.json'), 'utf8').replace(/^﻿/, '')).language || 'en').toLowerCase().slice(0, 2); }
+  catch { return 'en'; }
+}
 // Класс «сообщение» (I37/I38; идея 21 → задача T10). Строки — именованные константы: их
 // стережёт селфтест, и совпадение по случайной подстроке недопустимо (норма стражей).
 const KIND_NOTICE = 'notice';                             // машинное имя класса в очереди и записи
@@ -115,14 +120,26 @@ export function signalCall(root, rawPhrase, { quiet = inQuietHours(), log = cons
       mkdirSync(dir, { recursive: true });
       const phraseFile = join(dir, 'call-phrase.txt');
       writeFileSync(phraseFile, '﻿' + phrase, 'utf8'); // UTF-8 с BOM — PS5.1 читает кодировку по BOM
-      spawn('powershell.exe', ['-NoProfile', '-Command',
+      // I35 (2.5, issue #38): голос выбирается по ЯЗЫКУ проекта, тембр — вторым. Предпочтительное
+      // имя берётся ТОЛЬКО если его культура совпадает с языком; иначе — первый голос нужной
+      // культуры; нет ни одного — фраза НЕ произносится (код 3), работают писки и баннер: русская
+      // фраза английским голосом — не худший тембр, а шум при зелёных гейтах.
+      const lang = projectLanguage(root);
+      const ps = spawn('powershell.exe', ['-NoProfile', '-Command',
         'Add-Type -AssemblyName System.Speech; ' +
         '$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
-        "try { $s.SelectVoice('" + SAPI_VOICE.replace(/'/g, "''") + "') } catch {}; " +
+        "$c = '" + lang + "'; $pref = '" + SAPI_VOICE.replace(/'/g, "''") + "'; " +
+        '$vs = @($s.GetInstalledVoices() | Where-Object { $_.Enabled -and $_.VoiceInfo.Culture.Name.ToLower().StartsWith($c) }); ' +
+        'if ($vs.Count -eq 0) { exit 3 }; ' +
+        '$v = @($vs | Where-Object { $_.VoiceInfo.Name -eq $pref }); if ($v.Count -eq 0) { $v = $vs }; ' +
+        '$s.SelectVoice($v[0].VoiceInfo.Name); ' +
         "$s.Speak([IO.File]::ReadAllText('" + phraseFile.replace(/\\/g, '\\\\').replace(/'/g, "''") + "'))"],
-        { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS }).on('error', () => {});
+        { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
+      ps.on('exit', (code) => { if (code === 3) log(`ЗОВ: голоса культуры «${lang}» на этой машине нет — фраза не произнесена, работают писки и баннер (I35)`); });
+      ps.on('error', () => {});
     };
     try {
+      log(`ЗОВ: голос — ${VOICE_NAME} (Silero, ru); фолбэк — системный голос культуры «${projectLanguage(root)}» (I35)`);
       const silero = spawn(process.execPath, [VOICE_TOOL, phrase, '--play', '--voice', VOICE_NAME],
         { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
       silero.on('exit', (code) => { if (code !== 0) sapiFallback(); });

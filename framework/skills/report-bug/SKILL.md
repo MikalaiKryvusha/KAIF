@@ -59,7 +59,13 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
    internet without asking" and was refused — the rule's substance was never the problem).
    The `/owner-reviews` send gate exists for a DIFFERENT risk — publishing in a FOREIGN
    repository or as the owner's own statement — and stays mandatory there; a KAIF-defect signal
-   to the framework's own origin carries neither risk and does not queue on the human.
+   to the framework's own origin carries neither risk and does not queue on the human. And it does
+   not queue behind the current task either: a KAIF defect is filed AND delivered in the same
+   motion, ahead of the work that found it — the `AGENT_GUIDE.md` authorization gate names this
+   carve-out inline, because the blanket rule there is what sessions read before every task
+   (origin issue #37: two TOP tickets sat "NOT YET" for hours). The ticket's `Delivered upstream:`
+   line carries the issue URL; `NOT YET` is legal ONLY on `tracking: anonymous` — on `origin` it is
+   a debt with an owner, never a resting state.
 5. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
    quote-evidence; blameless wording (a weak model's failure is described as a missing guardrail,
    never as "the model is dumb").
@@ -74,6 +80,7 @@ Both templates open with the machine-grepable fingerprint
 # KAIF bug: <one-line defect statement>
 
 kaif-fp: <surface> :: <symptom-class> :: v<major.minor>
+**Delivered upstream:** <origin issue URL · or `NOT YET` — legal only on `tracking: anonymous`>
 **Autocapture** (from `.kaif/kaif.json` + update receipt): KAIF <version> · project <name | anonymized> ·
 sphere <…> · language <…> · i18n <…> · tracking <origin | none> · agent system <…> · OS <…> · Node <…>
 **Dedup attestation:** searched `bugs/KAIF/` (<command → result>) and open origin issues
@@ -105,6 +112,7 @@ owner-work-safety / honest-green / owner-decisions / cold-start / memory / auton
 # KAIF improvement request: <one-line proposal>
 
 kaif-fp: <surface> :: <symptom-class> :: v<major.minor>
+**Delivered upstream:** <origin issue URL · or `NOT YET` — legal only on `tracking: anonymous`>
 **Autocapture:** <same line as template A>
 **Dedup attestation:** <same as template A>
 

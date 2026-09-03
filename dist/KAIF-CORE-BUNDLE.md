@@ -65,6 +65,13 @@
       "Four field fixes from the 2.3 update reports, all mechanical: merge/replace preserves the FILE's end-of-line convention instead of silently rewriting it; step 4 of /report-bug is rephrased so an agent system's own safety classifier passes it; legitimately old version mentions can carry an inline justification marker for the stale-claims scan; the merge lines of `update` output name the module signatures they touch. Plus /owner-reviews hardening (owner requests): the contour's NAMED NEURAL VOICE is part of its identity — deploying the contour includes downloading the concrete speech engine and pinning ONE owner-chosen voice, the stock system voice is only a degraded fallback that announces itself in every call and leaves a recorded debt; multiple-choice questions to the owner ALWAYS render as radio buttons.",
       "Release codename for this version: KAIF 2.4 — Teamed Up KAIF"
     ],
+    "2.5": [
+      "AGENT_GUIDE canon — the authorization gate names its ONE carve-out inline (origin issue #37): a ticket about a defect of KAIF itself, filed to the framework's own origin, is delivered under the KAIF owner's standing authorization and does NOT wait for an AUTH: line — filed and delivered in the same motion, ahead of the work that found it. /report-bug step 4 says the same; templates A/B gain a `Delivered upstream:` line, and NOT YET is legal only on tracking: anonymous.",
+      "PHILOSOPHY canon — THE FOURTH DOOR (origin issue #36, the owner's word: a fork is NOT the agent's to decide alone): an engineering fork (≥ 2 options + a non-zero price of error) is closed by recon of the domain's authorities or by the owner, never by the agent's own reasoning alone. AGENT_GUIDE adds the forced artifact at the decision point — `FORK: options · price of error · consulted` — and the recon-doc rule gains the fork as its second trigger; /fable-judge gains the fork-without-recon hunt.",
+      "TESTING canon — gate 5 gains its SECOND HALF (origin issue #35, four field guards proved against the convenient fixture, none against the threat; the owner's machine hung): the broken version a guard is reddened against is NAMED with its distance from the threat — every guard declares `@guard` THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH, a recorder declares `@forensic` EXPLAINS · DURABLE-AT (close / exit / trip-only rejected), and a guard is DONE only when observed on the real path. BUG_FIXING → Guards points to the block. NEW optional tool module .kaif/tools/kaif-guard-lint.mjs (check | selftest; advisory, fires only on explicit markers, SKIPPED=3 without any).",
+      "/guarded-loop — the boundary is WRITTEN and CHECKED (origin issue #30: a run closed 25 minutes early under a fulfilled-looking pulse): the first pulse reads `armed until <ISO>`, .kaif/guarded-loop.json carries { \"until\" }, and Step 5 opens with the forced artifact `BOUNDARY: now · armed until · pool` — ceremony time is spent AFTER the boundary, never reserved before it; /fable-judge gains the early-finish hunt.",
+      "/owner-reviews — I35 binds the voice to the LANGUAGE first, timbre second (origin issue #38): the route selects a voice whose culture matches .kaif/kaif.json → language, the system default only when it already matches, and drops to beeps + banner rather than speaking an unintelligible sentence; I36 names the fallback's own phrase normalization."
+    ],
     "2.3": [
       "The canon now speaks in COMMANDS (epic X, field issue #22): every obligation of a canon document carries one of three executable forms — a command to run, a numbered step with an exit condition, or a checkbox a ritual ticks — prose stays as the rationale UNDER the carrier and never carries an obligation alone; a new PROHIBITION enters the canon only rephrased as positive guidance or moved into a guard that reddens itself. MIGRATION: the rule binds the templates as they arrive; your local wrapper documents adopt it as you touch them.",
       "TESTING_FRAMEWORK rebuilt around the testing-activities chain (field issue #21): basis → named design techniques → written test documentation → execution with statuses → defect form; a [TESTED] mark on a FEATURE is legal only next to a written case set (one observation switches one CASE, never a feature); NEW delivery template .kaif/_testcases-template.md — copy it into your test-docs home (default testcases/) per feature. REQUIREMENTS_FRAMEWORK gained the writing checklist as its executable carrier.",
@@ -81,6 +88,12 @@
     }
   ],
   "policyChanges": {
+    "2.5": [
+      "Authorization gate carve-out: a ticket about a defect of KAIF ITSELF to the framework's own origin no longer waits for the owner's AUTH: line — it is delivered under the KAIF owner's standing authorization in the same motion as it is filed (origin issue #37). Every other outward action (releases, deploys, sends, force-pushes, deletions) still waits for the owner's quoted words.",
+      "Forks are no longer the agent's to decide alone (origin issue #36, the fourth door): a choice with ≥ 2 options and a non-zero price of error carries a `FORK:` line at the decision point whose `consulted` slot names a domain authority, a recon doc or the owner — the agent's own reasoning alone is a judge-hunted finding. Variable names and the order of two lines are not forks.",
+      "Gate 5 second half (origin issue #35): a guard is DONE only when it declares THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH and has been observed on the path the owner actually runs; forensic recorders declare DURABLE-AT, and durability only at a clean ending is rejected. Advisory linter: .kaif/tools/kaif-guard-lint.mjs (opt-in, fires only on explicit markers).",
+      "Guarded loops may not close before their armed boundary with a non-empty pool (origin issue #30): the BOUNDARY: line is printed before any closing ceremony and the clock decides, not the agent's estimate of the ceremonies."
+    ],
     "1.6": [
       "Language policy: agent-facing documents are English by default; the owner's language covers owner-facing documents and chat (a wholesale-translated wrapper declares \"i18n\": \"translated\" in the marker instead of fighting this rule)."
     ],
@@ -192,9 +205,9 @@ relies entirely on this document to get to work.
 4. git log --oneline -5           # where we are in history
 5. Read MEMORY.md (if present)    # user profile, key decisions
 6. Load ONLY the relevant slice   # use the Context router below — read the required minimum + task-type docs, not everything
-7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING); /fable-loop to orchestrate; /fable-judge before claiming done
+7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before claiming done
 8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics). Filing a plan/bug/idea → goal vector + acceptance criteria FIRST, per REQUIREMENTS_FRAMEWORK.md
-9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session
+9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session. The same door opens for an ENGINEERING FORK with a price of error (the fourth door, PHILOSOPHY.md): recon of the domain's authorities BEFORE the choice, never the agent's own reasoning alone
 10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change
 11. Run the build (if touching code)   # <BUILD_COMMAND>
 12. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
@@ -408,7 +421,10 @@ observation (a session that "remembers" a domain invents it):
 
 - **Recon doc** (checklist step 9) — *describes* how the external truth actually works, read from the
   live source (old system's code, the running prod, the vendor doc) — never from recall. The first
-  artifact of any task that rests on one; reused by every future session.
+  artifact of any task that rests on one; reused by every future session. Its second trigger is an
+  ENGINEERING FORK with a price of error (the fourth door): the recon doc then records how those who
+  already solved this class solve it — industry practice, specifications, incident reviews — and
+  the `FORK:` line at the decision point cites it.
 - **Canon map** — for any domain with facts (a game world, a product, a brand, an API): a table of
   entities → their roles → mappings, **approved by the owner**. The map precedes the canon: every edit
   is checked against it, ONLY the owner may change it, and a conflict between text and map = stop and
@@ -439,6 +455,18 @@ verification is not only *observed*, it is *produced*. New behaviour ships toget
 that checks it — test suite, checklist, fixture, guard — planned in the SAME step, never "later"
 (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Step 5 of the vendored loop
 asks you to observe a check; this line is what obliges you to have made one.
+
+**KAIF adds a second obligation at step 3 (decide), stated here for the same reason — the FORK
+(origin issue #36; the owner's word: a fork is NOT the agent's to decide alone).** A fork is any
+choice with ≥ 2 options AND a non-zero price of error or irreversibility (a variable name or the
+order of two lines is not one). At a fork the forced artifact is one line at the decision point —
+`FORK: options <A | B | C> · price of error <what breaks if wrong> · consulted <domain authority ·
+recon doc · owner>` — and the third slot is filled by the fourth door (`PHILOSOPHY.md`): the
+domain's proven practice found by recon (a recon doc in `researches/` when the price is real), or
+the owner's word — never the agent's own plausible reasoning alone. `/fable-judge` hunts a fork
+decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon
+hunt) and an autonomous loop closed before its armed boundary with a non-empty pool (the
+early-finish hunt, `/guarded-loop`); both are named in the judge's KAIF patch block.
 
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
@@ -590,6 +618,12 @@ so the agent doesn't improvise.>`
 > standing authorization for routine commits/pushes per the policy above. Everything beyond it —
 > releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
 > the owner's quoted words (an `AUTH:` line).
+> **One named carve-out, stated HERE because this is the paragraph read before every task** (origin
+> issue #37: two TOP tickets sat "Delivered upstream: NOT YET" for hours under this very sentence): a
+> ticket about a defect of KAIF ITSELF, filed to the framework's OWN origin, is delivered under the
+> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 4) and does NOT wait for an `AUTH:` line —
+> file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
+> list above keeps waiting for the owner's words.
 
 **Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
 
@@ -1210,6 +1244,23 @@ is worse than a missing one**. And what the AI *does* legitimately write into th
 visibly marked (`[AI]…[/AI]` provenance marks — `AGENT_GUIDE.md`) until the owner accepts it: AI text
 must never dissolve into the owner's text unnoticed.
 
+**The fourth door — a fork is closed by recon of the domain's authorities, not by reasoning
+(KAIF 2.5).** The three doors are about a missing FACT. Between them and the owner's forks of vision (`/interview`)
+lies a class the canon used to hand to the agent silently: the ENGINEERING FORK — how to flush a
+buffer, which threshold to take, where to draw a refusal boundary. Formally no fact is missing (the
+agent "knows" the options) and formally it is not vision (the owner does not want to decide it) —
+and it is exactly where a plausible argument is the worst available source: subjectively convincing,
+carrying no trace of anyone else's burns. Field-paid (origin issue #36): a black box was set to dump
+"on trip and on close only — never per tick", reasoned from the model's head; the machine froze, the
+box wrote zero bytes — and flight recorders, write-ahead logs and crash dumps had all settled the
+question decades ago: flush continuously. So: **a fork is not the agent's property.** It is decided
+EITHER by the owner OR by the domain's authorities found by recon (industry practice, specifications,
+incident reviews — not the first search hit); the agent's own judgment stops being FIRST and can
+never be the ONLY source. The mark of a fork is ≥ 2 options plus a non-zero price of error or
+irreversibility; where both are small, recon costs more than it buys and the choice is made on the
+spot (a variable name, the order of two lines). The forced artifact at the decision point is the
+`FORK:` line (`AGENT_GUIDE.md` → the fable loop), and `/fable-judge` hunts a fork decided without it.
+
 ### Descartes' Square — a decision tool for hard forks
 When the right choice isn't intuitively obvious, analyze it through four questions: **What happens if I DO
 this? What happens if I DON'T? What will NOT happen if I do? What will NOT happen if I don't?** Answering
@@ -1384,6 +1435,11 @@ Principles:
   very defect it exists to catch and watch it fail; only then trust its green. Guard with **full unique
   strings/shapes, not short substrings** — a short pattern will happily match someone else's line and
   stay green while the real thing rots.
+- **Name the threat, not only the fixture.** The broken version a guard is reddened against is NAMED,
+  and so is the gap between that version and the real threat (`TESTING_FRAMEWORK.md` → gate 5:
+  `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`); a guard is DONE only when observed working on
+  the path the owner actually runs — a suite pass is the engine's test burn, not the engine mounted
+  on the rocket (origin issue #35).
 - **Byte-exact goldens for refactors:** capture the output BEFORE the change, diff AFTER. "Looks like
   the same numbers" is not evidence; an empty diff is.
 - **The same obligation runs forward, not only after a defect:** new code is born with the artifacts
@@ -1609,6 +1665,28 @@ ships, walk the gates that apply:
 5. **A check that has never failed proves nothing.** Every new guard/check is verified on a broken
    version first (see `BUG_FIXING_FRAMEWORK.md` → Guards); goldens for refactors are byte-exact —
    an empty diff is proof, "the numbers look the same" is not.
+   **And the broken version is NAMED — together with its distance from the THREAT.** Reddening a
+   guard against *a* broken version is necessary and not sufficient: four field guards in one
+   evening were each green and mutation-proven — and each proven against the failure that was
+   convenient to simulate (a process death on a digital twin instead of a machine freeze; a
+   readback after a CLEAN close instead of a death without one; one warning instead of an
+   accumulation; the first step instead of any step). The machine hung, and the fuse built for it
+   recorded nothing (origin issue #35). A green mutation over a wrong-threat fixture does not
+   withhold confidence — it ISSUES it, falsely. So every guard declares, next to itself, four
+   greppable lines, and a guard is DONE only when the last one is no longer `NOT YET`:
+   ```
+   @guard <name>
+   THREAT:         the real event it exists for
+   PROVED-AGAINST: what the red run actually did
+   GAP:            what the proof does NOT cover — or the word `none`, written after thinking
+   ON-REAL-PATH:   where it was seen working on the path the owner actually runs — or `NOT YET`
+   ```
+   A recorder whose tape must outlive the event it explains declares the same way — `@forensic
+   <name>` · `EXPLAINS:` the event · `DURABLE-AT:` when the evidence becomes durable — and `close`,
+   `exit`, `trip-only` are rejected values: evidence durable only at a clean ending is not evidence.
+   The optional tool module `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) reds on a block
+   with a missing field or a rejected `DURABLE-AT`; it fires only on explicit `@guard` / `@forensic`
+   markers and never guesses what a guard is.
 6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door
    the product offers, walk the real screens, read the console — only then is "deployed" a fact.
    A smoke that only walks public surfaces proves the landing page is alive, not the product: if
@@ -1647,6 +1725,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
   says WHAT must carry a status and how trust propagates. The triviality gate still applies: a trivial
   change verified by its one obvious check needs no ceremony beyond its normal comment.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
+- **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
+  (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
+  `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
 - **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
   fraud table; principle 6 lives there.
@@ -2694,6 +2775,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-provenance.mjs` | The acceptance gate for AI text in owner canon (§13.3). |
 | `kaif-canon-lint.mjs` | The growing canon linter: revoked decision → forbidden wording; accepted decision → guarded full unique line; `selftest` proves every guard can fire. |
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
+| `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
@@ -3975,7 +4057,8 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
-> prostheses · the context-refresh contour). In KAIF rituals this
+> prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4011,6 +4094,8 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Timer-fed heartbeat (KAIF 2.1).** In a guarded loop (`/guarded-loop`), a `.kaif/heartbeat.log` pulse must correspond to a COMPLETED step — cross-check pulse lines against the actual work trail (commits, task ticks). A pulse written on a schedule while no work landed is the exact fraud the watchdog exists to catch: it keeps a hung agent looking alive.
    - **Mutation addressivity (KAIF 2.1).** A guard proven by mutation must name its addressees BEFORE the run: *mutant M → exactly checks P₁…Pₙ go red, and only they; intact code → 0 red*. A mutation that reddens only side checks — or a guard "proven" with no named addressees — proves nothing (field: a green smoke that forgave the entire error class it was supposed to catch).
    - **Refresh witness (KAIF 2.2).** A claimed context refresh must carry its two-part witness (`AGENT_GUIDE.md` → Context refresh): `.kaif/refresh-marker.json` rewritten at the claimed moment AND a chat quote of one concrete line from the re-read. A marker without the quote — or a refresh claimed against a stale marker — is fraud of the false-`[TESTED]` class.
+   - **Fork without recon (KAIF 2.5).** A choice with ≥ 2 options and a non-zero price of error must carry its `FORK: options · price of error · consulted` line at the decision point (`AGENT_GUIDE.md` → the fable loop; `PHILOSOPHY.md` → the fourth door), and the `consulted` slot must name a domain authority, a recon doc or the owner — `consulted <own reasoning>`, or no line at all on a fork that had a price, is the finding (field: a black box set to dump "on close only", decided from the model's head, wrote zero bytes when the machine froze — origin issue #36).
+   - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30).
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -4544,6 +4629,11 @@ Two parameters, spoken back in ONE line before starting:
 
 Example: *"Guarded loop: until 22:00, wake-ups every 10 min (default). Starting."*
 
+The contract is WRITTEN, not only spoken (origin issue #30: a session wrote "until 23:50" into its
+own heartbeat and still closed 25 minutes early): the first heartbeat line of the run reads
+`armed until <ISO>`, and `.kaif/guarded-loop.json` carries `{ "until": "<ISO>" }` — a written line
+is not a keeper; the CHECK against it is (Step 5).
+
 The duration bounds the WORKING, not the closing (`AGENT_GUIDE.md` → Working until a named time):
 work at your normal pace right up to the boundary — no early finish out of deadline fear — and
 reaching the boundary STARTS the soft closure (Step 5), it never means "everything must be
@@ -4608,9 +4698,15 @@ Woken by the watchdog and the pulse is stale:
 
 ## Step 5 — end of the run
 
-At the duration boundary (or when the pool is empty): finish the current item cleanly to a
-natural cut — unhurried, the boundary started the closing, it does not rush it — write the final
-heartbeat line (`run complete`), **disarm the external watchdog**, and close per the session's
+Before ANY closing ceremony, print the forced artifact —
+`BOUNDARY: now <ISO> · armed until <ISO> · pool <empty | N items>` — and closure starts ONLY when
+`now ≥ until`, or with a genuinely empty pool listed aloud. Ceremony time is spent AFTER the
+boundary, never reserved before it: budgeting the ceremonies backwards from the boundary is the
+exact inversion that silently lost 25 of 60 ordered minutes in the field (origin issue #30), and
+`/fable-judge` hunts a final pulse earlier than `until` with a non-empty pool (the early-finish
+hunt). Then, at the duration boundary (or when the pool is empty): finish the current item cleanly
+to a natural cut — unhurried, the boundary started the closing, it does not rush it — write the
+final heartbeat line (`run complete`), **disarm the external watchdog**, and close per the session's
 situation: the full unhurried `/end-chat-soft` ceremonies if the session ends, or a parking note
 (the `/pause` way) if the chat continues. Report: items done, restarts survived, anything
 escalated.
@@ -4622,6 +4718,8 @@ escalated.
 - "Always restart" — without a cooldown and the escalation cap a bad state becomes a crash-storm.
 - Leave the watchdog armed after the run, or run two watchdogs without a single-instance guard.
 - Invent thresholds — the debounce and timeouts come from the project's measured durations.
+- Close before the armed boundary with a non-empty pool — the `BOUNDARY:` line is printed first,
+  and the clock decides, not the agent's estimate of how long the ceremonies will take.
 ``````
 
 > **FILE: `.claude/skills/help-kaif/SKILL.md`** — replace the command placeholders with the project's real commands
@@ -5536,11 +5634,22 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   genuinely absent right now, it announces itself in every call ("system voice — engine not
   installed") and stands as a recorded debt until the engine lands. The engineering half stays:
   the approval contour has no right to BREAK over timbre — make route choice a pure function so
-  both branches sit under guards regardless of the machine running the checks.
+  both branches sit under guards regardless of the machine running the checks. **And the voice is
+  chosen by LANGUAGE first, timbre second** (origin issue #38: a Russian phrase read by an English
+  phoneme set is not worse timbre, it is noise — and every guard stayed green): the route selects a
+  voice whose culture matches `.kaif/kaif.json` → `language`; the system default is taken only when
+  its culture already matches; when no matching voice exists, the contour says so aloud in the call
+  line and drops to beeps + banner rather than speaking an unintelligible sentence. The route
+  function returns the CHOSEN voice and its culture, and the guard asserts culture-matches-language
+  — a guard that can go red.
 - **I36. Text normalization for speech lives in the ENGINE, not in the project.** The call phrase
   almost always carries a number ("interview #16"); without normalization digits get swallowed or
   spelled out. Heavy shared resources (the TTS model, its venv) belong to the MACHINE, not the
-  project: the project calls a ready command and falls back honestly when it is absent.
+  project: the project calls a ready command and falls back honestly when it is absent. The boundary
+  holds for the rich engine only: the stock FALLBACK has no cross-script normalization, so a project
+  on the fallback owns the minimal normalization of its own phrase — transliterating foreign-script
+  tokens — as a rule over the whole phrase in the phrase builder (the source of such tokens is the
+  document title the agent wrote), never a per-word dictionary.
 
 **The notice class (I37–I38) — the contour also has something to SAY:**
 
@@ -6702,7 +6811,13 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
    internet without asking" and was refused — the rule's substance was never the problem).
    The `/owner-reviews` send gate exists for a DIFFERENT risk — publishing in a FOREIGN
    repository or as the owner's own statement — and stays mandatory there; a KAIF-defect signal
-   to the framework's own origin carries neither risk and does not queue on the human.
+   to the framework's own origin carries neither risk and does not queue on the human. And it does
+   not queue behind the current task either: a KAIF defect is filed AND delivered in the same
+   motion, ahead of the work that found it — the `AGENT_GUIDE.md` authorization gate names this
+   carve-out inline, because the blanket rule there is what sessions read before every task
+   (origin issue #37: two TOP tickets sat "NOT YET" for hours). The ticket's `Delivered upstream:`
+   line carries the issue URL; `NOT YET` is legal ONLY on `tracking: anonymous` — on `origin` it is
+   a debt with an owner, never a resting state.
 5. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
    quote-evidence; blameless wording (a weak model's failure is described as a missing guardrail,
    never as "the model is dumb").
@@ -6717,6 +6832,7 @@ Both templates open with the machine-grepable fingerprint
 # KAIF bug: <one-line defect statement>
 
 kaif-fp: <surface> :: <symptom-class> :: v<major.minor>
+**Delivered upstream:** <origin issue URL · or `NOT YET` — legal only on `tracking: anonymous`>
 **Autocapture** (from `.kaif/kaif.json` + update receipt): KAIF <version> · project <name | anonymized> ·
 sphere <…> · language <…> · i18n <…> · tracking <origin | none> · agent system <…> · OS <…> · Node <…>
 **Dedup attestation:** searched `bugs/KAIF/` (<command → result>) and open origin issues
@@ -6748,6 +6864,7 @@ owner-work-safety / honest-green / owner-decisions / cold-start / memory / auton
 # KAIF improvement request: <one-line proposal>
 
 kaif-fp: <surface> :: <symptom-class> :: v<major.minor>
+**Delivered upstream:** <origin issue URL · or `NOT YET` — legal only on `tracking: anonymous`>
 **Autocapture:** <same line as template A>
 **Dedup attestation:** <same as template A>
 
@@ -8218,6 +8335,171 @@ function cmdSelftest() {
 }
 
 ({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => die(`unknown command: ${CMD} (check | selftest)`)))();
+``````
+
+> **FILE: `.kaif/tools/kaif-guard-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-guard-lint.mjs — the OPTIONAL guard-declaration linter (2.5, epic CN; TESTING_FRAMEWORK.md
+// gate 5, second half — origin issue #35). Deployed to .kaif/tools/.
+//
+// What it mechanizes: A GUARD DECLARES WHAT IT IS PROVED AGAINST. Four field guards in one evening
+// were green and mutation-proven — each against the failure that was convenient to simulate, none
+// against the real threat; the machine froze and the fuse recorded nothing. Gate 5 ("a check that
+// has never failed proves nothing") was satisfied in all four cases and was not enough. So the
+// author of a guard writes a greppable block next to it, and this linter reds when a field is
+// missing or empty, or when a forensic recorder declares a durability the canon rejects:
+//
+//   @guard <name>       THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH   (ON-REAL-PATH "NOT YET" is
+//                       legal and visible: such a guard is not DONE — BUG_FIXING_FRAMEWORK → Guards)
+//   @forensic <name>    EXPLAINS · DURABLE-AT   (values close | exit | trip-only are REJECTED:
+//                       evidence durable only at a clean ending does not survive the event)
+//   @fork <name>        OPTIONS · COST · RECON · DECIDED   (the FORK artifact when a fork is
+//                       recorded in code rather than in the chat — PHILOSOPHY.md → the fourth door)
+//
+// Boundaries, so the linter never becomes bureaucracy (the donor deployment's field lesson):
+//   · fires ONLY on explicit markers — it never guesses what a guard is and never walks code with
+//     heuristics (a guessing linter reds on healthy code, and that has been paid for);
+//   · never walks .git / node_modules / .kaif / vendored trees;
+//   · ADVISORY: exit 1 = findings, exit 0 = scanned and clean, exit 3 = SKIPPED (no markers found —
+//     "not scanned" must never read as "clean", the bug-34 class).
+//
+// Rules are DATA (the "one engine + rules-as-data" architecture, owner decision #73): a new marker
+// kind or a new rejected value is a table row, not a new script.
+//
+// Commands:
+//   node .kaif/tools/kaif-guard-lint.mjs check [paths…]   # default: the whole tree minus excluded dirs
+//   node .kaif/tools/kaif-guard-lint.mjs selftest         # PROVE every rule: red on its own bad fixture,
+//                                                         # silent on the clean block (both answers)
+// [TESTED: 2026-09-04 · observed in the sandbox polygon (npm run test:core, "all 15 suites green"):
+//  selftest 8 cases green; s15 proves exit 1 on @guard-without-GAP + @forensic DURABLE-AT: close with
+//  both named, exit 0 on the clean block with "NOT YET" visible, exit 3 (SKIPPED) on a marker-less tree]
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+
+const argv = process.argv.slice(2);
+const CMD = argv[0] || 'check';
+const PATHS = argv.slice(1);
+const EXIT_SKIPPED = 3;
+
+// ---------------------------------------------------------------------------
+// The rules — data. `required` names the fields a marker must carry (order is irrelevant, presence
+// and non-emptiness are not); `rejected` names values the canon forbids for a field.
+export const RULES = {
+  guard:    { required: ['THREAT', 'PROVED-AGAINST', 'GAP', 'ON-REAL-PATH'], rejected: {} },
+  forensic: { required: ['EXPLAINS', 'DURABLE-AT'],
+              rejected: { 'DURABLE-AT': ['close', 'exit', 'trip-only'] } },
+  fork:     { required: ['OPTIONS', 'COST', 'RECON', 'DECIDED'], rejected: {} },
+};
+const MARKER = /@(guard|forensic|fork)\s+([\w.:/-]+)/;
+// A field line inside a comment of any syntax: `THREAT: …`, `// GAP: …`, `* DURABLE-AT: …`, `# …`.
+const FIELD = /^\s*(?:\/\/|\*|#|--|;|<!--|\/\*)?\s*([A-Z][A-Z-]+):\s*(.*?)\s*(?:\*\/|-->)?\s*$/;
+// A block ends at the first line that carries neither a field nor a continuation of the previous
+// field (a continuation is an indented text line with no `KEY:`), or after this many lines.
+const BLOCK_WINDOW = 16;
+const SKIP_DIRS = new Set(['.git', 'node_modules', '.kaif', 'dist', 'vendor', '.venv', 'venv', '__pycache__']);
+const TEXT_EXT = /\.(mjs|cjs|js|ts|tsx|jsx|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|sh|ps1|rb|php|swift|lua|sql|yaml|yml|toml|md)$/i;
+
+/** Parse one file's text → the declared blocks with their findings. Pure: no disk. */
+export function lintText(text, file = '<text>') {
+  const lines = text.split(/\r?\n/);
+  const blocks = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(MARKER);
+    if (!m) continue;
+    const kind = m[1], name = m[2], rule = RULES[kind];
+    const fields = {};
+    let last = null;
+    for (let j = i + 1; j < lines.length && j <= i + BLOCK_WINDOW; j++) {
+      const f = lines[j].match(FIELD);
+      if (f) { fields[f[1]] = f[2]; last = f[1]; continue; }
+      const cont = /^\s*(?:\/\/|\*|#|--|;)?\s{2,}\S/.test(lines[j]) && last && !MARKER.test(lines[j]);
+      if (cont) { fields[last] = (fields[last] + ' ' + lines[j].replace(/^\s*(?:\/\/|\*|#|--|;)?\s*/, '')).trim(); continue; }
+      break;
+    }
+    const findings = [];
+    for (const key of rule.required) {
+      if (!(key in fields)) findings.push(`missing ${key}`);
+      else if (!fields[key]) findings.push(`empty ${key}`);
+    }
+    for (const [key, bad] of Object.entries(rule.rejected)) {
+      const v = (fields[key] || '').toLowerCase();
+      if (v && bad.includes(v)) findings.push(`${key}: "${fields[key]}" is a rejected value (evidence durable only at a clean ending is not evidence)`);
+    }
+    blocks.push({ file, line: i + 1, kind, name, fields, findings });
+  }
+  return blocks;
+}
+
+function walk(dir, out) {
+  for (const n of readdirSync(dir)) {
+    if (SKIP_DIRS.has(n)) continue;
+    const p = join(dir, n);
+    let st; try { st = statSync(p); } catch { continue; }
+    if (st.isDirectory()) walk(p, out);
+    else if (TEXT_EXT.test(n)) out.push(p);
+  }
+  return out;
+}
+
+function check() {
+  const roots = PATHS.length ? PATHS : ['.'];
+  const files = [];
+  for (const r of roots) {
+    if (!existsSync(r)) { console.error(`✖ path not found: ${r}`); process.exit(1); }
+    if (statSync(r).isDirectory()) walk(r, files); else files.push(r);
+  }
+  let blocks = 0, findings = 0, notYet = 0;
+  for (const f of files) {
+    let text; try { text = readFileSync(f, 'utf8'); } catch { continue; }
+    if (!/@(guard|forensic|fork)\s/.test(text)) continue;
+    for (const b of lintText(text, f)) {
+      blocks++;
+      if ((b.fields['ON-REAL-PATH'] || '').toUpperCase().startsWith('NOT YET')) notYet++;
+      for (const x of b.findings) { findings++; console.log(`✖ ${b.file}:${b.line} — @${b.kind} ${b.name}: ${x}`); }
+    }
+  }
+  if (blocks === 0) {
+    console.log(`⚠ guard-lint SKIPPED — no @guard / @forensic / @fork markers in ${files.length} file(s); nothing was linted (exit ${EXIT_SKIPPED})`);
+    process.exit(EXIT_SKIPPED);
+  }
+  if (findings) { console.log(`✖ guard-lint: ${findings} finding(s) in ${blocks} declared block(s) — a guard without its declared threat is proved against nothing`); process.exit(1); }
+  console.log(`✅ guard-lint OK — ${blocks} declared block(s) in ${files.length} file(s)` + (notYet ? `; ${notYet} guard(s) still ON-REAL-PATH: NOT YET — declared, not DONE` : ''));
+}
+
+// ---------------------------------------------------------------------------
+// selftest — every rule proves BOTH answers on in-memory fixtures (no disk, no repo).
+function selftest() {
+  const cases = [
+    ['full @guard block is clean', `// @guard fuse\n// THREAT: machine freeze\n// PROVED-AGAINST: process kill on the twin\n// GAP: the twin cannot freeze its host\n// ON-REAL-PATH: NOT YET\n`, []],
+    ['@guard missing GAP reds and names it', `// @guard fuse\n// THREAT: machine freeze\n// PROVED-AGAINST: process kill\n// ON-REAL-PATH: NOT YET\n`, ['missing GAP']],
+    ['@guard with an empty THREAT reds', `# @guard ring\n# THREAT:\n# PROVED-AGAINST: readback\n# GAP: none\n# ON-REAL-PATH: 2026-08-30 live sweep\n`, ['empty THREAT']],
+    ['@forensic DURABLE-AT close is rejected', `/* @forensic ring\n * EXPLAINS: the judge at the moment of death\n * DURABLE-AT: close\n */`, ['DURABLE-AT: "close" is a rejected value']],
+    ['@forensic DURABLE-AT every-second is clean', `// @forensic ring\n// EXPLAINS: the judge at the moment of death\n// DURABLE-AT: every-second\n`, []],
+    ['@fork missing RECON reds', `// @fork ring-dump\n// OPTIONS: per tick | on close | 1 s aggregate\n// COST: zero bytes of evidence if wrong\n// DECIDED: 1 s aggregate\n`, ['missing RECON']],
+    ['continuation lines belong to the previous field', `// @guard x\n// THREAT: machine freeze\n//   during the descent\n// PROVED-AGAINST: kill\n// GAP: none\n// ON-REAL-PATH: NOT YET\n`, []],
+    ['a marker-less text yields no blocks', `const a = 1; // nothing declared here\n`, null],
+  ];
+  let failed = 0;
+  for (const [name, text, expect] of cases) {
+    const blocks = lintText(text, 'fixture');
+    let pass;
+    if (expect === null) pass = blocks.length === 0;
+    else {
+      const got = blocks.flatMap((b) => b.findings);
+      pass = blocks.length === 1 && got.length === expect.length && expect.every((e) => got.some((g) => g.startsWith(e)));
+    }
+    console.log((pass ? '✅ ' : '❌ ') + name + (pass ? '' : ' — got: ' + JSON.stringify(blocks.map((b) => b.findings))));
+    if (!pass) failed++;
+  }
+  if (failed) { console.error(`✖ guard-lint selftest: ${failed} of ${cases.length} case(s) FAILED`); process.exit(1); }
+  console.log(`✅ guard-lint selftest OK — ${cases.length} cases, every rule red on its fixture and silent on the clean block`);
+}
+
+if (CMD === 'check') check();
+else if (CMD === 'selftest') selftest();
+else { console.error(`usage: node .kaif/tools/kaif-guard-lint.mjs check [paths…] | selftest`); process.exit(1); }
 ``````
 
 > **FILE: `.kaif/tools/kaif-provenance.mjs`** — optional tool module — verbatim

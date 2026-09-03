@@ -45,6 +45,9 @@
 //         marker-age timer silent-while-fresh, once-per-session STATUS guard) and deploy
 //         WITHOUT WIRING (no settings.json → every gate green: optionality is ACTIVATION, not
 //         file presence; deleted module files stay an honest MISSING, as for the tool modules)
+//   s15 — kaif-guard-lint (epic CN 2.5, plan 83; origin issue #35): the guard-declaration block
+//         as a guard — red on @guard without GAP and @forensic DURABLE-AT: close, green on the
+//         declared block (NOT YET visible in the summary), SKIPPED=3 on a tree without markers
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -59,7 +62,8 @@ const REPO = resolve(HERE, '..', '..');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',
                 's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
                 's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs',
-                's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs'];
+                's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs',
+                's15-guard-lint.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a
