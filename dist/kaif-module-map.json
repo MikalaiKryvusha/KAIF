@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.4",
   "released": "2026-08-28",
-  "moduleCount": 750,
+  "moduleCount": 756,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -4160,19 +4160,19 @@
       {
         "signature": "## Operation 2 — suggest: an evidence-informed team design, approved by the owner",
         "class": "static",
-        "sha256": "f2db6b170e3836a0bd7773b17d107f4cee9a83c8cee4cc88405aafe6d359b65d",
+        "sha256": "c6b06ec7a83eb8f1449295b4538ece588a8b1104c8442728362d184331dfb484",
         "lines": [
           56,
-          71
+          82
         ]
       },
       {
         "signature": "## Operation 3 — deploy: materialize the approved design",
         "class": "static",
-        "sha256": "c6793e7d8ace38a58e273daf94a01dbb4fb82b6e79d0f22c4d43239e5c9003ae",
+        "sha256": "69c0cfa0c97f913e47892e81650d60e02fe7fe395a5732a361901bbe462b0c6d",
         "lines": [
-          72,
-          94
+          83,
+          113
         ]
       },
       {
@@ -4180,17 +4180,17 @@
         "class": "static",
         "sha256": "49c80eead0cfe5f09c8fd318af3e1d6dc9bcf825871b7a2f72da8356ddf1d961",
         "lines": [
-          95,
-          101
+          114,
+          120
         ]
       },
       {
         "signature": "## Operation 5 — retrospective: after a milestone, judge the ORGANIZATION",
         "class": "static",
-        "sha256": "3b8b6f1d6e4b1812b3e7f5ef01e7edb62aaa60551de14dc19c717de3eab6cd5c",
+        "sha256": "3c5b444c2652253ef7fc4d7c5401fb28feda11400e5969c8cde1c112d03304da",
         "lines": [
-          102,
-          110
+          121,
+          133
         ]
       },
       {
@@ -4198,8 +4198,8 @@
         "class": "static",
         "sha256": "77905f239addd3874d9780a9af8259bc44b0d564d44c706863fc5be5201e9022",
         "lines": [
-          111,
-          121
+          134,
+          144
         ]
       },
       {
@@ -4207,17 +4207,55 @@
         "class": "static",
         "sha256": "0435577492f3d9b74af45c12cba6b32f4c84455417c547c4896db39113d1daf5",
         "lines": [
-          122,
-          144
+          145,
+          167
         ]
       },
       {
         "signature": "## Done when",
         "class": "static",
-        "sha256": "c25c5965df096f7690067ceb01f18b8a8e5e99e4a9478ead7b6f04989fe7762a",
+        "sha256": "14f84bdd48ea0a6f0c262f808736f5f5ea39872257883567c34733821ed4b256",
         "lines": [
-          145,
-          154
+          168,
+          180
+        ]
+      }
+    ],
+    ".claude/skills/team-deployment/references/team-ci-template.md": [
+      {
+        "signature": "# team-ci — the CI workflow that ships with the team",
+        "class": "static",
+        "sha256": "db79f97023bc7250b5dfc36cdcca9eb2f0f13a4e51b332d1d5347b3ebdfb6982",
+        "lines": [
+          1,
+          7
+        ]
+      },
+      {
+        "signature": "## Constraints (state them in the constitution § 5; keep them here)",
+        "class": "static",
+        "sha256": "d6197f0fa5e12e5394aee84bf85103068bcf785d5c3803261f91c2253bf40284",
+        "lines": [
+          8,
+          21
+        ]
+      },
+      {
+        "signature": "## The workflow",
+        "class": "static",
+        "sha256": "4c102322663f98e7ef8b1286890a9ec299eb879edd403313995d1f0ea7c2211a",
+        "lines": [
+          22,
+          43
+        ]
+      },
+      {
+        "signature": "## Local pre-push (non-GitHub remotes)",
+        "class": "static",
+        "sha256": "e75369f442d02f0cb8f7d7bab361b86589f6247ae60b3064f6ace4e3f22dab05",
+        "lines": [
+          44,
+          49
         ]
       }
     ],
@@ -4344,10 +4382,10 @@
       {
         "signature": "# Team roles library — reusable role contracts and team archetypes",
         "class": "static",
-        "sha256": "71745148de64ed75566ced3477f4c479772b2ece1b9d4aada129fa1ddec81df0",
+        "sha256": "a476bc1e95c6ccc3b560b5cd0dd287be41f3afc98ea89f7313bcd619e92a5bda",
         "lines": [
           1,
-          22
+          24
         ]
       },
       {
@@ -4355,8 +4393,8 @@
         "class": "static",
         "sha256": "a9c45ef5adf1714795cbf11a90e638d6d6b35e3f8842c51994da5b0fe14fb9fe",
         "lines": [
-          23,
-          43
+          25,
+          45
         ]
       },
       {
@@ -4364,8 +4402,8 @@
         "class": "static",
         "sha256": "0bcdb1fd848996bf04e50b88deeb22d92bff9b95f6f43d9f59b3660fd1ed9880",
         "lines": [
-          44,
-          61
+          46,
+          63
         ]
       },
       {
@@ -4373,8 +4411,8 @@
         "class": "static",
         "sha256": "e9e678af14029688c74cd959fbb5b2e81f6df0ebba8c5efd301c09785f453aaa",
         "lines": [
-          62,
-          81
+          64,
+          83
         ]
       },
       {
@@ -4382,8 +4420,8 @@
         "class": "static",
         "sha256": "d3f2f7891798addb46e13b3d0d59bced70fce8094b0b569e9e4d506b5ffe3556",
         "lines": [
-          82,
-          99
+          84,
+          101
         ]
       },
       {
@@ -4391,17 +4429,17 @@
         "class": "static",
         "sha256": "5446d277c65439efbc6fc3c13d8b129f0757ee1d5132c0f39b8ce23dfd41125e",
         "lines": [
-          100,
-          121
+          102,
+          123
         ]
       },
       {
         "signature": "## Team archetypes",
         "class": "static",
-        "sha256": "18bf2e1fb1335c98187f3a8d0879937c78c6655a7f2fc2be4675ad1153702268",
+        "sha256": "f938176d6b466b8b433985874a00f8a83265ca76f87e1374e9ba2f3ddec7d267",
         "lines": [
-          122,
-          128
+          124,
+          133
         ]
       },
       {
@@ -4409,8 +4447,8 @@
         "class": "static",
         "sha256": "ae84ab9b782058e3976eaf731a5834109e395b935cd3f10048d9319af9bd6aed",
         "lines": [
-          129,
-          141
+          134,
+          146
         ]
       },
       {
@@ -4418,8 +4456,17 @@
         "class": "static",
         "sha256": "e3c20304b6624830066353be5c634e934a1ea96b306cfca2e910fc57c28f20af",
         "lines": [
-          142,
-          157
+          147,
+          162
+        ]
+      },
+      {
+        "signature": "### Archetype: hardware-lab-small *(a measurement / device project: one physical singleton under test)*",
+        "class": "static",
+        "sha256": "34feb91027e32ea406d6f2c9c5c4f5af24f72362bb51eb428d5dc09d41705ba5",
+        "lines": [
+          163,
+          179
         ]
       }
     ],
@@ -4427,19 +4474,19 @@
       {
         "signature": "# TEAM_STATUS — <team name> status board",
         "class": "static",
-        "sha256": "752f41b2223cffa3f38b22d56d1c1c6a0e2932cc3443bd95fe1dddf95f2f1a49",
+        "sha256": "1ff86644c002ee7047f592553da531fdc8a2231f94087324812f75efd25d6f54",
         "lines": [
           1,
-          11
+          13
         ]
       },
       {
         "signature": "## Board",
         "class": "static",
-        "sha256": "d7c1931f955dee7688d6b979bda0b6434492295e539f64d337b24aaaf6785f49",
+        "sha256": "049ce64b6bf20ad5987ece1633ea046fbb332e618a8ae5606ade640f35ad2817",
         "lines": [
-          12,
-          21
+          14,
+          33
         ]
       },
       {
@@ -4447,8 +4494,8 @@
         "class": "static",
         "sha256": "8e51d4210e3da53242c9bfa9e2d5e494daa186c1de058df6754b68fca89cfc41",
         "lines": [
-          22,
-          30
+          34,
+          42
         ]
       },
       {
@@ -4456,17 +4503,26 @@
         "class": "static",
         "sha256": "eb9da31aba23ef77e8a1e15441571b5e368e046fe4de8b18da44274c77386664",
         "lines": [
-          31,
-          38
+          43,
+          50
+        ]
+      },
+      {
+        "signature": "## Where the board lives — session state OUTSIDE git",
+        "class": "static",
+        "sha256": "b10bbdf099da5d94a88c077ad08d15905f5c4d8b31048780691912b07776a263",
+        "lines": [
+          51,
+          64
         ]
       },
       {
         "signature": "## Board tool — the contract (the project's agent builds it)",
         "class": "static",
-        "sha256": "d89c11ae035b9f95233dccd2bcce3b9fd84118e21e7eda684c3b1c7063c65c1c",
+        "sha256": "6fa761485ea0343631f5855c6a22645a866a34ce5f45b6cca124ddfa549d4e94",
         "lines": [
-          39,
-          70
+          65,
+          103
         ]
       }
     ],

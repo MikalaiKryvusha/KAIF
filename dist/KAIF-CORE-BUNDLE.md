@@ -74,7 +74,8 @@
       "DELIVERY ACCOUNTING (field request: 54 honest, green sessions moved the product 11 of 389 — no instrument asked whether work moved the owner's acceptance): MASTER_PLAN names ONE delivery metric; /end-chat-soft, /end-chat-force and the four loops open their report with the forced line `DELIVERY: <metric> X → Y; moved by: … | blocker: …`; /what-next ranks FIRST by the metric or a scarce-resource unblock — the newest pain is not a priority claim; /fable-judge gains the delivery-line hunt.",
       "BUG_FIXING canon — THE SEVERITY LADDER (field request: 65 % of 68 bug documents were defects OF the protection machinery): S1 harmed hardware / data / trust → the full package; S2 a run or an hour lost → document + guard, no epic, no new canon; S3 everything else → one EXPERIENCE line, no bug document; an incident never opens an epic by itself (the delivery test decides); a mechanized lesson collapses to one line + pointer.",
       "SIZE BUDGETS of the re-read core + PRAYER CADENCE (field request: a 5.8k-line core re-read hourly, STATUS at 6× its target): `check` now warns above a per-document line budget for all nine re-read-core documents (STATUS ~200 as before; the table lives in the core, advisory, never a failure); the prayer directive in AGENT_GUIDE carries the cadence as an owner setting — full text before every task (default) or once per session on entry.",
-      "NEW machinery command `kaif-core report <ticket>` (epic SG; field: the delivery step of /report-bug as PROSE was refused twice by an agent-system classifier, which reacts to the subject, not the wording): delivers a bugs/KAIF ticket to the origin through `gh` under the KAIF owner's standing authorization (origin issue #15), appends the authorship trailer, writes the issue URL into the ticket's `Delivered upstream:` line; refusals named (tracking: anonymous · no gh · not a ticket · gh refused), a timeout is OUTCOME UNKNOWN never a refusal, --dry-run calls nothing. /report-bug step 4 now says \"run it\"."
+      "NEW machinery command `kaif-core report <ticket>` (epic SG; field: the delivery step of /report-bug as PROSE was refused twice by an agent-system classifier, which reacts to the subject, not the wording): delivers a bugs/KAIF ticket to the origin through `gh` under the KAIF owner's standing authorization (origin issue #15), appends the authorship trailer, writes the issue URL into the ticket's `Delivered upstream:` line; refusals named (tracking: anonymous · no gh · not a ticket · gh refused), a timeout is OUTCOME UNKNOWN never a refusal, --dry-run calls nothing. /report-bug step 4 now says \"run it\".",
+      "/team-deployment — THE TEAM IN THE FIELD (epic TM; two live teams returned their gaps): an ADOPT path for an already-live team (inventory against the invariants → matches / bring-to-canon / better-than-canon → the owner's decision → apply without overwriting the owner's words; two owner's words on one parameter → the project owner's wins, as a FORK:); the naming invariant states its one exception — the manager's seat IS the main copy; a third archetype `hardware-lab-small` (one physical singleton under test); the board knows FOUR states as roles (free · busy · blocked · offline) and its tool contract gains item 7 `audit-waiting` (a blocked row whose addressee is not working is an alarm, exit ≠ 0); the board LIVES OUTSIDE GIT (ignore-first, a snapshot travels to the retrospective, named opt-out); the stop ritual releases locks and waits; the retrospective also fires on dormancy; NEW reference `team-ci-template.md` — CI SHIPS WITH THE TEAM (the owner's order, origin issue #29): one job, three cheap gates read from the project's own commands, red blocks the merge, a non-GitHub remote gets the same job as a pre-push script."
     ],
     "2.3": [
       "The canon now speaks in COMMANDS (epic X, field issue #22): every obligation of a canon document carries one of three executable forms — a command to run, a numbered step with an exit condition, or a checkbox a ritual ticks — prose stays as the rationale UNDER the carrier and never carries an obligation alone; a new PROHIBITION enters the canon only rephrased as positive guidance or moved into a guard that reddens itself. MIGRATION: the rule binds the templates as they arrive; your local wrapper documents adopt it as you touch them.",
@@ -98,7 +99,8 @@
       "Gate 5 second half (origin issue #35): a guard is DONE only when it declares THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH and has been observed on the path the owner actually runs; forensic recorders declare DURABLE-AT, and durability only at a clean ending is rejected. Advisory linter: .kaif/tools/kaif-guard-lint.mjs (opt-in, fires only on explicit markers).",
       "Guarded loops may not close before their armed boundary with a non-empty pool (origin issue #30): the BOUNDARY: line is printed before any closing ceremony and the clock decides, not the agent's estimate of the ceremonies.",
       "Incident response is SIZED (2.5, field request): the severity ladder S1 / S2 / S3 in BUG_FIXING_FRAMEWORK replaces \"the full package for every defect\" — S3 defects get one EXPERIENCE line and no bug document, S2 gets no epic and no new canon section, and an incident alone never opens an epic. Every session close and loop report now carries a DELIVERY: line against ONE owner metric named in MASTER_PLAN.md — fill that line in, or the judge hunts its absence. The prayer cadence is an owner setting in the AGENT_GUIDE directive (default unchanged: full text before every task).",
-      "Delivery of KAIF-defect tickets is a MACHINERY command (2.5, epic SG): `node .kaif/kaif-core.mjs report <ticket>` performs the outward `gh issue create` under the standing authorization of origin issue #15 — allowlist that ONE command in your agent system's permission layer once; the skill text no longer carries the delivery procedure, only \"run it\". On tracking: anonymous the command refuses and the ticket stays local."
+      "Delivery of KAIF-defect tickets is a MACHINERY command (2.5, epic SG): `node .kaif/kaif-core.mjs report <ticket>` performs the outward `gh issue create` under the standing authorization of origin issue #15 — allowlist that ONE command in your agent system's permission layer once; the skill text no longer carries the delivery procedure, only \"run it\". On tracking: anonymous the command refuses and the ticket stays local.",
+      "Team deployments changed two defaults (2.5, epic TM): the status board `TEAM_STATUS.md` is session state OUTSIDE git — operation 3 adds it to .gitignore in the same motion (a tracked board is a named opt-out with its price stated in the constitution § 4); and CI ships with the team (origin issue #29) — a red `team-ci.yml` run on a role branch blocks the merge like a missing verifier's verdict. A live team is ADOPTED through the new adopt path, never overwritten by the templates."
     ],
     "1.6": [
       "Language policy: agent-facing documents are English by default; the owner's language covers owner-facing documents and chat (a wholesale-translated wrapper declares \"i18n\": \"translated\" in the marker instead of fighting this rule)."
@@ -7179,8 +7181,19 @@ Output: a short analysis note (a plan or research doc per project convention). N
 
 ## Operation 2 — suggest: an evidence-informed team design, approved by the owner
 
+0. **A team ALREADY runs here → the adopt path, not a design.** Inventory the live
+   constitution, board, tools and names against the nine invariants, the board-tool contract
+   (7 items), the roles library and the naming invariant; sort every delta into three buckets —
+   *matches* · *bring-to-canon* · *better-than-canon* (the last bucket is a SIGNAL TO THE ORIGIN
+   via `/report-bug`, not a defect); put the delta to the owner as a decision BEFORE any change;
+   apply only approved items and never overwrite the owner's recorded words. **Two owner's words
+   on one parameter** (e.g. a pre-canon naming pattern vs the canon's): the project owner's word
+   wins, framed as an explicit `FORK:`; local names that carry it stay legitimate under a note.
+   Operation 3 then applies ONLY to the approved bring-to-canon items — never copy over a live
+   constitution.
 1. Pick the nearest **archetype** from `references/team-roles-library.md` (web-product-small ·
-   web-product-medium) and adapt: activate optional roles only when their condition holds
+   web-product-medium · hardware-lab-small — the last whenever one physical singleton under test
+   serializes the core work) and adapt: activate optional roles only when their condition holds
    (architect — architecture complexity at least medium; designer — UI complexity at least
    medium; second/third engineer — parallelizable work exceeds one engineer's sustainable pace).
 2. Size by the starting heuristics — then justify every seat:
@@ -7200,8 +7213,10 @@ Output: a short analysis note (a plan or research doc per project convention). N
    role contracts of the chosen roles from the library; delete roles the design did not take.
    The nine invariant sections stay — they are the paid-for field lessons, not decoration.
 2. **Status board.** Copy `references/team-status-board-template.md` → `TEAM_STATUS.md` (one row
-   per role). Build or adapt the board updater tool to its contract (in the template): one board
-   per team, reachable from every workspace; each role rewrites ONLY its own row; atomic writes.
+   per role) **and add it to `.gitignore` in the same motion** — the board is session state, not
+   history (template → "Where the board lives"; the named opt-out is the owner's). Build or adapt
+   the board updater tool to its contract (in the template): one board per team, reachable from
+   every workspace; each role rewrites ONLY its own row; atomic writes; `audit-waiting` alarms.
 3. **Workspaces.** One isolated workspace per implementation role; the manager works in the main
    copy. For git projects the reference mechanism is `git worktree` with the naming invariant
    **session address = directory name = branch name = `<project>-team-<role>`** (owner's word on
@@ -7214,7 +7229,13 @@ Output: a short analysis note (a plan or research doc per project convention). N
    resume ritual on a FRESH main · announce yourself on the board · report readiness.
 5. **Launch.** The owner opens one window per role and types one line per window (the session
    rename to the role address). Everything else is the manager's job: fresh `main` for every
-   role BEFORE their resume ritual, then briefings, then task dispatch.
+   role BEFORE their resume ritual, then briefings, then task dispatch — **at first launch**,
+   whenever the owner opens the windows; before that, honestly report "waiting for windows".
+6. **CI travels with the team** (the owner's order, origin issue #29). Materialize
+   `.github/workflows/team-ci.yml` from `references/team-ci-template.md` — the fenced block plus
+   its five constraints (cheap gates only, commands READ from `package.json` / the build canon,
+   red CI blocks the merge per constitution § 5, a non-GitHub remote gets the same job as the
+   named pre-push script). Like every artifact of this operation: by the owner's yes.
 
 ## Operation 4 — status: the board is the team's shared truth
 
@@ -7225,6 +7246,10 @@ the baton between sessions — the board never replaces it.
 
 ## Operation 5 — retrospective: after a milestone, judge the ORGANIZATION
 
+Triggers: a milestone — **and dormancy**: the windows are closed, solo sessions continue, and
+role branches sit unmerged — that is silent organizational debt, and it opens a retrospective
+exactly like a milestone does. The board as it stood at the end of the shift is copied into the
+retrospective document (the board itself is not in git — template → "Where the board lives").
 Answer in writing: was the team correctly staffed · which roles were overloaded / underutilized ·
 which capabilities were missing or duplicated · where did coordination become the bottleneck ·
 which verification gates caught real defects · what changes next deployment. Proposed changes must
@@ -7272,9 +7297,65 @@ this skill exists as distillation rather than theory:
 - `TEAM_CONSTITUTION.md` and `TEAM_STATUS.md` exist, filled from the templates.
 - Board and workplace tools exist to their contracts and are proven on a broken case
   (a foreign-row edit refused; a stale lock recovered).
-- Every seat has a workspace, a briefing, and a fresh-main start.
-- The first dispatch round completed: tasks assigned in the constitution's message form, reports
-  came back in the report form.
+- Every seat has a workspace, a briefing, and a fresh-main start; `team-ci.yml` exists (or the
+  named pre-push script for a non-GitHub remote) and the board is ignored by git.
+- At first launch, the first dispatch round completes: tasks assigned in the constitution's
+  message form, reports came back in the report form (before the windows open: "waiting for windows").
+- A live team was ADOPTED, not overwritten: the owner's decision on the delta is recorded and the
+  local constitution's wording survives byte-wise except the approved additions.
+``````
+
+> **FILE: `.claude/skills/team-deployment/references/team-ci-template.md`** — verbatim
+
+``````md
+# team-ci — the CI workflow that ships with the team
+
+> Template from the KAIF `team-deployment` skill (operation 3, step 6; the owner's order in
+> origin issue #29: "CI must ship together with the team deployment"). Copy the fenced block
+> below to `.github/workflows/team-ci.yml` of the project — by the owner's yes, like every
+> artifact of operation 3 — and fill every `<angle-bracket>` placeholder.
+
+## Constraints (state them in the constitution § 5; keep them here)
+
+1. **Cheap gates only** — units, lint, typecheck. No secrets, no emulators, no live stand, no
+   device: heavy dynamic checks stay LOCAL behind the stand lock (constitution § 7).
+2. **Commands are READ, never guessed** — take them from `package.json` scripts or the project's
+   build canon (`AGENT_GUIDE.md`). An unknown command stays a named placeholder for the owner: a
+   job that runs the wrong command is worse than no job (a false green).
+3. **Red blocks the merge** — a red run on a role branch blocks the merge request the same way a
+   missing verifier's verdict does; the Manager merges nothing red (constitution § 5).
+4. **Non-GitHub remote** — the same job runs as a documented local pre-push script named in
+   constitution § 5; the capability degrades gracefully, never silently.
+5. **One job, at most three gate steps** — a team CI that grows into a pipeline belongs to the
+   project's own CI canon, not to this template.
+
+## The workflow
+
+```yaml
+name: team-ci
+on:
+  push:
+    branches: ['main', '<project>-team-*']   # the role-branch pattern of the naming invariant (§ 1)
+  pull_request:
+    branches: ['main']
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4            # <replace with the project's toolchain setup action>
+        with: { node-version: '<major from .nvmrc / engines>', cache: npm }
+      - run: npm ci                            # <the project's install command>
+      - run: <unit-test command>               # gate 1 — from package.json / the build canon
+      - run: <lint command>                    # gate 2
+      - run: <typecheck command>               # gate 3 — drop the line if the stack has none
+```
+
+## Local pre-push (non-GitHub remotes)
+
+`<pre-push command>` — the same three gates in the same order, wired as the repository's
+`pre-push` hook or the project's documented script; constitution § 5 names it so no seat can
+claim the check did not apply to it.
 ``````
 
 > **FILE: `.claude/skills/team-deployment/references/team-constitution-template.md`** — verbatim
@@ -7487,6 +7568,8 @@ work returns to the backlog.
 > concrete session assigned to it; a role may be instantiated more than once (engineer ×2) —
 > keep those three apart. Contracts are distilled from a live six-role field team plus published
 > multi-agent research; adapt parameters, keep the form.
+> **An existing LIVE team: take the skill's adopt path** — its contracts are compared with these,
+> not replaced by them; a local contract stricter than the library is a signal to the origin.
 
 Contract form (every role below follows it):
 
@@ -7602,9 +7685,12 @@ Contract form (every role below follows it):
 ## Team archetypes
 
 An archetype is a starting composition plus ACTIVATION CONDITIONS for optional seats — evidence
-before scale, never the reverse. Both archetypes assume the centralized topology (everyone
+before scale, never the reverse. All archetypes assume the centralized topology (everyone
 reports to the manager; peer collaboration where the constitution explicitly allows it) and one
-isolated workspace per implementation seat.
+isolated workspace per implementation seat. **A physical singleton under test is an axis of
+size in its own right:** when one device serializes the core work and may need a human at the
+machine, the deciding questions are who may touch it, how its access maps to a board lock and
+whether the verifier may re-run device claims — pick `hardware-lab-small` before counting seats.
 
 ### Archetype: web-product-small
 
@@ -7634,6 +7720,23 @@ Starting composition — 4–6 seats:
 Anti-pattern watch: manager bottleneck (all dispatch and merges on one seat — cut work into
 one-session portions, alternate heavy tasks); agent explosion (a seat without independent work);
 shared workspace mutation (two engineers in one zone — re-cut by feature boundary, not by layer).
+
+### Archetype: hardware-lab-small *(a measurement / device project: one physical singleton under test)*
+
+Starting composition — 2–3 seats:
+
+| Seat | Count | Condition |
+|---|---|---|
+| manager | 1 | always (folds in architect duties); **the ONLY seat with device-write authority**, and only under the device's board lock; a human-present rule for live runs is inherited from the project's own canon where one exists |
+| engineer | 0–1 | activate when the device-FREE backlog (offline machinery, analysis, tooling) exceeds the manager's pace; its zone is defined negatively — a task that seems to need the device goes back to the manager |
+| qa-verifier | 1 | always; verdicts from RECORDED observations (run journals, fixtures, exported data) — never by re-touching the device: independence is bought with journals, not with a second hand on the singleton |
+
+Constitution additions this archetype requires: a **§ 0 device rule** above the nine invariant
+sections (who writes to the device · under which lock · when a human must be present), and a
+lock row for the device in the board (§ 7) that refuses every seat but the manager. Anti-pattern
+watch: verifier at the device (a re-run that changes the state under test); engineer waiting on
+the device (a zone cut so that every task needs the singleton — re-cut to device-free streams);
+a device claim with no journal behind it (the verifier has nothing to verify).
 ``````
 
 > **FILE: `.claude/skills/team-deployment/references/team-status-board-template.md`** — verbatim
@@ -7649,6 +7752,8 @@ shared workspace mutation (two engineers in one zone — re-cut by feature bound
 > The board is the state IN THE MOMENT — transparent to the whole team so agents do not
 > interrupt each other, respect each other's busyness, and can see where help is needed.
 > The project's `STATUS.md` still carries the baton between sessions; the board never replaces it.
+> **An existing LIVE team: take the skill's adopt path — do not copy this template over its
+> board or its board tool;** a tool that already holds the contract below is a match, not a defect.
 
 ## Board
 
@@ -7657,8 +7762,18 @@ shared workspace mutation (two engineers in one zone — re-cut by feature bound
 | manager | 🟢 free | — | — | <stamp> |
 | <role> | 🟢 free | — | — | <stamp> |
 
-*(States: 🟢 free · 🔴 busy. "Doing" — one short line: what and on whose assignment. "Waiting
-for" — who/what blocks, or "—". "Updated" — the project's canonical moment stamp.)*
+*("Doing" — one short line: what and on whose assignment. "Waiting for" — the ADDRESS of who
+blocks, or "—". "Updated" — the project's canonical moment stamp.)*
+
+**Four states, and each is a ROLE with an obligation** (two states were not enough: three seats
+of six once stood "busy" while standing still, and the "Waiting for" column obliged nobody):
+
+| State | Meaning | Obligation of the seat | Obligation of the Manager |
+|---|---|---|---|
+| 🟢 free | no assignment in hand | report readiness; take the next assignment | give one, or say "wait" |
+| 🔴 busy | working on a named assignment | "Doing" names it; row refreshed at every cut | do not interrupt (§ 2 rule 4) |
+| 🟡 blocked | cannot proceed | "Waiting for" names the ADDRESS and the matter; one message to the holder | react to `audit-waiting` (contract item 7) — a blocked seat is the Manager's queue |
+| ⚫ offline | window closed / session gone | row cleared on stop (§ 9); locks released | clear a vanished seat's row and locks (Manager-only override) |
 
 ## Resource locks
 
@@ -7676,6 +7791,20 @@ previews… Take → run → release; holding "just in case" is forbidden.)*
 - Successes and difficulties are legal status content — that is how neighbors see where to help.
 - Reading the board before messaging someone is part of the communication regimen (constitution
   § 2 rule 4).
+
+## Where the board lives — session state OUTSIDE git
+
+The board is the state of the moment, not history: it is rewritten at every state change, so a
+TRACKED board makes the `main` tree dirty by construction (field: 105 board commits in ten days,
+14 of them only to clean the tree before a gate). Therefore:
+
+- **`TEAM_STATUS.md` is ignore-first** — one line in `.gitignore` when operation 3 materializes
+  it (the same class as `.kaif/refresh-marker.json` and the heartbeat); it is never committed.
+- **A snapshot travels to the retrospective:** operation 5 copies the board as it stood at the
+  end of the shift into the retrospective document — that is where its history belongs.
+- **Named opt-out:** a team that wants the board tracked (audit trail, no shared disk) writes the
+  opt-out into the constitution § 4 with its price stated — a dirty tree at every state change —
+  and exempts the board from the tree-cleanliness gates by name.
 
 ## Board tool — the contract (the project's agent builds it)
 
@@ -7699,14 +7828,21 @@ Node.js. The tool MUST hold:
    itself — never remembered by the session.
 6. **Proven on a broken case before trusted** (project testing canon): a foreign-row edit is
    refused; an abandoned lock is recovered; two concurrent writers do not corrupt the table.
+7. **`audit-waiting` — the wait column obliges someone.** The tool lists every 🟡 blocked row and
+   judges it: the "Waiting for" cell must name a seat by its ADDRESS (matched on word boundaries
+   that understand the project's script, not ASCII `\b`); a named seat that is not 🔴 busy means
+   "nobody is working on what you wait for"; an unnamed addressee means "nothing to check". Any
+   such row is an ALARM: non-zero exit code, and the Manager reacts before anything else (reassign,
+   unblock, or clear). Proven red on a fixture with a dead addressee and a nameless wait.
 
 Suggested command surface (adapt names to the project):
 
 ```
-<board-tool> set [--busy|--free] [--doing "…"] [--waiting "…"]   # my row only
-<board-tool> lock <resource> | unlock <resource>                  # singleton locks
+<board-tool> set [--busy|--free|--blocked] [--doing "…"] [--waiting "<address>: …"]   # my row only
+<board-tool> lock <resource> | unlock <resource>                  # singleton locks (N slot rows for capacity N)
 <board-tool> show                                                 # print the board
-<board-tool> set --role <r> …                                     # Manager-only: clear a stale row
+<board-tool> audit-waiting                                        # blocked rows judged; exit ≠ 0 on an alarm
+<board-tool> set --role <r> …                                     # Manager-only: clear a stale/offline row
 ```
 ``````
 

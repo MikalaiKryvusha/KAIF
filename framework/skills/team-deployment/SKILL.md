@@ -55,8 +55,19 @@ Output: a short analysis note (a plan or research doc per project convention). N
 
 ## Operation 2 — suggest: an evidence-informed team design, approved by the owner
 
+0. **A team ALREADY runs here → the adopt path, not a design.** Inventory the live
+   constitution, board, tools and names against the nine invariants, the board-tool contract
+   (7 items), the roles library and the naming invariant; sort every delta into three buckets —
+   *matches* · *bring-to-canon* · *better-than-canon* (the last bucket is a SIGNAL TO THE ORIGIN
+   via `/report-bug`, not a defect); put the delta to the owner as a decision BEFORE any change;
+   apply only approved items and never overwrite the owner's recorded words. **Two owner's words
+   on one parameter** (e.g. a pre-canon naming pattern vs the canon's): the project owner's word
+   wins, framed as an explicit `FORK:`; local names that carry it stay legitimate under a note.
+   Operation 3 then applies ONLY to the approved bring-to-canon items — never copy over a live
+   constitution.
 1. Pick the nearest **archetype** from `references/team-roles-library.md` (web-product-small ·
-   web-product-medium) and adapt: activate optional roles only when their condition holds
+   web-product-medium · hardware-lab-small — the last whenever one physical singleton under test
+   serializes the core work) and adapt: activate optional roles only when their condition holds
    (architect — architecture complexity at least medium; designer — UI complexity at least
    medium; second/third engineer — parallelizable work exceeds one engineer's sustainable pace).
 2. Size by the starting heuristics — then justify every seat:
@@ -76,8 +87,10 @@ Output: a short analysis note (a plan or research doc per project convention). N
    role contracts of the chosen roles from the library; delete roles the design did not take.
    The nine invariant sections stay — they are the paid-for field lessons, not decoration.
 2. **Status board.** Copy `references/team-status-board-template.md` → `TEAM_STATUS.md` (one row
-   per role). Build or adapt the board updater tool to its contract (in the template): one board
-   per team, reachable from every workspace; each role rewrites ONLY its own row; atomic writes.
+   per role) **and add it to `.gitignore` in the same motion** — the board is session state, not
+   history (template → "Where the board lives"; the named opt-out is the owner's). Build or adapt
+   the board updater tool to its contract (in the template): one board per team, reachable from
+   every workspace; each role rewrites ONLY its own row; atomic writes; `audit-waiting` alarms.
 3. **Workspaces.** One isolated workspace per implementation role; the manager works in the main
    copy. For git projects the reference mechanism is `git worktree` with the naming invariant
    **session address = directory name = branch name = `<project>-team-<role>`** (owner's word on
@@ -90,7 +103,13 @@ Output: a short analysis note (a plan or research doc per project convention). N
    resume ritual on a FRESH main · announce yourself on the board · report readiness.
 5. **Launch.** The owner opens one window per role and types one line per window (the session
    rename to the role address). Everything else is the manager's job: fresh `main` for every
-   role BEFORE their resume ritual, then briefings, then task dispatch.
+   role BEFORE their resume ritual, then briefings, then task dispatch — **at first launch**,
+   whenever the owner opens the windows; before that, honestly report "waiting for windows".
+6. **CI travels with the team** (the owner's order, origin issue #29). Materialize
+   `.github/workflows/team-ci.yml` from `references/team-ci-template.md` — the fenced block plus
+   its five constraints (cheap gates only, commands READ from `package.json` / the build canon,
+   red CI blocks the merge per constitution § 5, a non-GitHub remote gets the same job as the
+   named pre-push script). Like every artifact of this operation: by the owner's yes.
 
 ## Operation 4 — status: the board is the team's shared truth
 
@@ -101,6 +120,10 @@ the baton between sessions — the board never replaces it.
 
 ## Operation 5 — retrospective: after a milestone, judge the ORGANIZATION
 
+Triggers: a milestone — **and dormancy**: the windows are closed, solo sessions continue, and
+role branches sit unmerged — that is silent organizational debt, and it opens a retrospective
+exactly like a milestone does. The board as it stood at the end of the shift is copied into the
+retrospective document (the board itself is not in git — template → "Where the board lives").
 Answer in writing: was the team correctly staffed · which roles were overloaded / underutilized ·
 which capabilities were missing or duplicated · where did coordination become the bottleneck ·
 which verification gates caught real defects · what changes next deployment. Proposed changes must
@@ -148,6 +171,9 @@ this skill exists as distillation rather than theory:
 - `TEAM_CONSTITUTION.md` and `TEAM_STATUS.md` exist, filled from the templates.
 - Board and workplace tools exist to their contracts and are proven on a broken case
   (a foreign-row edit refused; a stale lock recovered).
-- Every seat has a workspace, a briefing, and a fresh-main start.
-- The first dispatch round completed: tasks assigned in the constitution's message form, reports
-  came back in the report form.
+- Every seat has a workspace, a briefing, and a fresh-main start; `team-ci.yml` exists (or the
+  named pre-push script for a non-GitHub remote) and the board is ignored by git.
+- At first launch, the first dispatch round completes: tasks assigned in the constitution's
+  message form, reports came back in the report form (before the windows open: "waiting for windows").
+- A live team was ADOPTED, not overwritten: the owner's decision on the delta is recorded and the
+  local constitution's wording survives byte-wise except the approved additions.
