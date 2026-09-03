@@ -291,6 +291,7 @@ function ensureIgnoreFirst() {
                   '.kaif/backup-*/',        // pre-update backups are rollback material, never history (field ask)
                   UPDATE_JOURNAL,           // the crash journal is transient run state; it must be VISIBLE, not committed
                   '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
+                  '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
                   '.kaif/refresh-marker.json']; // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));

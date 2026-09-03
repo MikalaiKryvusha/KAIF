@@ -4225,10 +4225,10 @@
       {
         "signature": "# TEAM_CONSTITUTION — <team name> operating canon",
         "class": "static",
-        "sha256": "f680e32779e8455e1380d855838b212a31548c6e97c4286de1dfc3099529a3ce",
+        "sha256": "8703d40c7e51efe2079a8959f3bab6c561d258d8c41800e3c71e6e19a247a3c2",
         "lines": [
           1,
-          9
+          12
         ]
       },
       {
@@ -4236,8 +4236,8 @@
         "class": "static",
         "sha256": "9f2918bb2c53e5aa96e1ddafeae20c2d2863749beaa1aab9d92b1ebeff75dc60",
         "lines": [
-          10,
-          21
+          13,
+          24
         ]
       },
       {
@@ -4245,26 +4245,26 @@
         "class": "static",
         "sha256": "64a6be4d2a558945f5a49dac62b483bf7bc47e760f18aad88a2564feddd00352",
         "lines": [
-          22,
-          27
+          25,
+          30
         ]
       },
       {
         "signature": "## 1. Team map",
         "class": "static",
-        "sha256": "f29cab5739232ef2922697d667f5758a011c25897bc7f6552b3d096c441781a2",
+        "sha256": "23201779be4c3bfffcdbe9548cbc0f51013f225ef52c23d1d9dbb83b8ccdd1f8",
         "lines": [
-          28,
-          42
+          31,
+          51
         ]
       },
       {
         "signature": "## 2. Communication regimen",
         "class": "static",
-        "sha256": "5446816fa6dd4158e82ed70ec08e586197f80821a2c93cdea8749b3c9503f9c4",
+        "sha256": "b60b8aa487db7da08a992facc2e9c6bbcbb1030b48312efa79044d24082e8603",
         "lines": [
-          43,
-          72
+          52,
+          83
         ]
       },
       {
@@ -4272,8 +4272,8 @@
         "class": "static",
         "sha256": "5395c970824257e7c1d2348aec1998a9fd53b1594740c23389590bfe85be8710",
         "lines": [
-          73,
-          79
+          84,
+          90
         ]
       },
       {
@@ -4281,17 +4281,17 @@
         "class": "static",
         "sha256": "cee921fd1eece95b0f92d3cf642fa59ec8991817d06b456b7c3bd2122f4afe6d",
         "lines": [
-          80,
-          87
+          91,
+          98
         ]
       },
       {
         "signature": "## 5. Git discipline",
         "class": "static",
-        "sha256": "b54fba356bb838a192803399da03dd05428635d881333688e843d41495a04f1d",
+        "sha256": "9dea399daae02bafd5a771a2082c0ce996208e8f7a096aee329f39ef92912e87",
         "lines": [
-          88,
-          104
+          99,
+          124
         ]
       },
       {
@@ -4299,17 +4299,17 @@
         "class": "static",
         "sha256": "48dd9bdcae44d42b5f2789735e2c045a3a44d39a3f1585666e1638039b25cf81",
         "lines": [
-          105,
-          114
+          125,
+          134
         ]
       },
       {
         "signature": "## 7. Machine resources — singletons and locks",
         "class": "static",
-        "sha256": "facd514a167238e5d77f297b3bcb0435d3b210ae7f7f70b2514fb5a1aee6894a",
+        "sha256": "32b8e7d1397334485330250785eca8122c045d440643b4e1713311a8d43f109c",
         "lines": [
-          115,
-          124
+          135,
+          147
         ]
       },
       {
@@ -4317,17 +4317,17 @@
         "class": "static",
         "sha256": "dfabf01974c7da76eb4e3f617fdc937e9c3c1040a1ee11d3f78df072ef33051d",
         "lines": [
-          125,
-          139
+          148,
+          162
         ]
       },
       {
         "signature": "## 9. Launch and stop",
         "class": "static",
-        "sha256": "cff039d122592b3c2f336f7d7d9ad77ee9360b534e92cd6e3478efe176f3f931",
+        "sha256": "7f2e38b3788df274a2a42953f9b4751247d34f478d4538bd5000bb1cb7119ef8",
         "lines": [
-          140,
-          163
+          163,
+          190
         ]
       },
       {
@@ -4335,8 +4335,8 @@
         "class": "static",
         "sha256": "df6b2af217338a0b11df55936405ac7eed878b151dd191dd8cf14a97778c0e6f",
         "lines": [
-          164,
-          167
+          191,
+          194
         ]
       }
     ],
