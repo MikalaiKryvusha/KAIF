@@ -50,13 +50,19 @@ export const RULES = {
               rejected: { 'DURABLE-AT': ['close', 'exit', 'trip-only'] } },
   fork:     { required: ['OPTIONS', 'COST', 'RECON', 'DECIDED'], rejected: {} },
 };
-const MARKER = /@(guard|forensic|fork)\s+([\w.:/-]+)/;
+// A marker is the FIRST thing on its line (after an optional comment opener): a marker mentioned
+// mid-sentence — a test-case name, prose about the linter, a placeholder like `@guard <name>` —
+// is not a declaration. Judge-caught on the linter's own source: its selftest names ("full @guard
+// block is clean") were read as four half-declared guards.
+const MARKER = /^\s*(?:\/\/|#|\*|\/\*|<!--|--|;)?\s*@(guard|forensic|fork)\s+([\w.:/-]+)/;
 // A field line inside a comment of any syntax: `THREAT: …`, `// GAP: …`, `* DURABLE-AT: …`, `# …`.
 const FIELD = /^\s*(?:\/\/|\*|#|--|;|<!--|\/\*)?\s*([A-Z][A-Z-]+):\s*(.*?)\s*(?:\*\/|-->)?\s*$/;
 // A block ends at the first line that carries neither a field nor a continuation of the previous
 // field (a continuation is an indented text line with no `KEY:`), or after this many lines.
 const BLOCK_WINDOW = 16;
-const SKIP_DIRS = new Set(['.git', 'node_modules', '.kaif', 'dist', 'vendor', '.venv', 'venv', '__pycache__']);
+// Fixture trees are skipped by name: a deliberately broken block in a test fixture is the test's
+// material, not a declaration of the project's guards.
+const SKIP_DIRS = new Set(['.git', 'node_modules', '.kaif', 'dist', 'vendor', '.venv', 'venv', '__pycache__', 'sandbox', 'fixtures']);
 const TEXT_EXT = /\.(mjs|cjs|js|ts|tsx|jsx|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|sh|ps1|rb|php|swift|lua|sql|yaml|yml|toml|md)$/i;
 
 /** Parse one file's text → the declared blocks with their findings. Pure: no disk. */
@@ -111,7 +117,7 @@ function check() {
   let blocks = 0, findings = 0, notYet = 0;
   for (const f of files) {
     let text; try { text = readFileSync(f, 'utf8'); } catch { continue; }
-    if (!/@(guard|forensic|fork)\s/.test(text)) continue;
+    if (!/^\s*(?:\/\/|#|\*|\/\*|<!--|--|;)?\s*@(guard|forensic|fork)\s/m.test(text)) continue;
     for (const b of lintText(text, f)) {
       blocks++;
       if ((b.fields['ON-REAL-PATH'] || '').toUpperCase().startsWith('NOT YET')) notYet++;
