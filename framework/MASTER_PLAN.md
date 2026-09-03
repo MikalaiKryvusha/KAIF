@@ -12,6 +12,11 @@
 
 `<Distilled from GOAL.md — the north star in a single sentence.>`
 
+**Delivery metric (one line):** `<the ONE countable measure of distance to the owner's acceptance —
+"edges known: N of 389", "screens shipped: N of 12" — reported as DELIVERY: X → Y at every session
+close and loop iteration (AGENT_GUIDE → the fable loop); agreed with the owner, changed only by the
+owner's word>`
+
 ## Guiding principles
 
 `<The few decisions/values that shape every choice: e.g. "simplicity over features", "ship weekly",

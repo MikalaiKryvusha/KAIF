@@ -12,7 +12,7 @@
 // with one-liners lives in the COMMANDS spec at the end of this file and in `help`):
 //   node kaif-core.mjs help                        # the command list (also the bare-run default)
 //   node kaif-core.mjs install --bundle <KAIF-CORE-BUNDLE.md> [options]
-//   node kaif-core.mjs check                       # validate the deployed manifest (bundle must still exist)
+//   node kaif-core.mjs check                       # validate the deployed manifest (bundle must still exist) + size budgets of the re-read core (advisory)
 //   node kaif-core.mjs verify-final                # checkpoints done? then self-clean the install artifacts
 //   node kaif-core.mjs sync                        # re-sync per-system skill mirrors from .claude/skills/
 //   node kaif-core.mjs diff [--source <x>]         # audit disk vs deployed templates | preview vs another version
@@ -112,9 +112,16 @@ const OWNER_SEEDED = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.
 const SOURCES = { release: `${ORIGIN}/releases/latest/download`,
                   main: 'https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/dist' };
 const UPDATE_TASK = 'KAIF_UPDATE_TASK.md';
-// The owner's soft target for STATUS.md length (decision #27, 2.1): a SUMMARY of "now", not a
-// chronicle; `check` warns above this (bugs/37 — the promised guard now exists as code).
-const STATUS_SOFT_LINES = 200;
+// Size budgets of the RE-READ CORE (AGENT_GUIDE → Document taxonomy, tier 1), in lines. The
+// STATUS target is the owner's (decision #27, 2.1: a SUMMARY of "now", not a chronicle; bugs/37 —
+// the promised guard now exists as code). The other eight arrived with 2.5 (epic CN, field
+// request: the context ritual costs O(canon) and the canon only grows — a 5.8k-line re-read
+// core re-read hourly, STATUS at 6× its target with the debt acknowledged inside the file).
+// `check` WARNS above a budget, never fails: the cure is move-out (chronicle, researches/, a
+// house-rules file), not a bigger number. ONE place for the numbers — the canon points here.
+const DOC_BUDGETS = { 'STATUS.md': 200, 'GOAL.md': 300, 'MASTER_PLAN.md': 300,
+  'PROJECT_STRUCTURE_EXTERNAL_MAP.md': 300, 'PHILOSOPHY.md': 300, 'TESTING_FRAMEWORK.md': 300,
+  'BUG_FIXING_FRAMEWORK.md': 300, 'REQUIREMENTS_FRAMEWORK.md': 250, 'AGENT_GUIDE.md': 1200 };
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
@@ -2418,13 +2425,25 @@ function cmdCheck() {
     if (drifted) console.error(`⚠ ${drifted} mirror copies lag the canon${drifted > 3 ? ` (${drifted - 3} more not listed)` : ''} — normal until re-sync; run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
   }
   warnSphereLibrary();
-  // The STATUS soft-length guard (bugs/37, decision #27): the 2.1 release PROMISED a warning at
-  // the ~200-line soft target and shipped prose only — field STATUS files grew to 1647/1928
-  // lines because "there was no one to warn". A warning, never a failure.
-  if (okOnDisk('STATUS.md')) {
-    const n = readFileSync('STATUS.md', 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
-    if (n > STATUS_SOFT_LINES)
-      console.error(`⚠ STATUS.md: ${n} lines against the soft target of ~${STATUS_SOFT_LINES} — time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat-soft rules)`);
+  // The size-budget guard over the re-read core (STATUS: bugs/37, decision #27 — the 2.1 release
+  // PROMISED a warning at the ~200-line soft target and shipped prose only, field STATUS files
+  // grew to 1647/1928 lines because "there was no one to warn"; the other eight: 2.5, epic CN).
+  // A warning, never a failure; each warning names the budget it measured against.
+  // @guard doc-budgets
+  // THREAT:         the re-read core grows past what a session can hold and nobody warns (field: a 5.8k-line
+  //                 core re-read hourly, STATUS at 6× its target with the debt acknowledged inside the file)
+  // PROVED-AGAINST: sandbox s16 — a deployed copy with AGENT_GUIDE / STATUS padded by filler lines; the mutant
+  //                 with this warning disabled reddens exactly the three addressed asserts (2026-09-04)
+  // GAP:            filler is not organic growth — real sections raise the line count the same way, but a
+  //                 document that stays under budget while its CONTENT rots is not this guard's threat
+  // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.5 update
+  for (const [doc, budget] of Object.entries(DOC_BUDGETS)) {
+    if (!okOnDisk(doc)) continue;
+    const n = readFileSync(doc, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
+    if (n > budget)
+      console.error(`⚠ ${doc}: ${n} lines against its budget of ~${budget} — ${doc === 'STATUS.md'
+        ? 'time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat-soft rules)'
+        : 'move content OUT (chronicle, researches/, a house-rules file) rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)'}`);
   }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }

@@ -48,6 +48,10 @@
 //   s15 — kaif-guard-lint (epic CN 2.5, plan 83; origin issue #35): the guard-declaration block
 //         as a guard — red on @guard without GAP and @forensic DURABLE-AT: close, green on the
 //         declared block (NOT YET visible in the summary), SKIPPED=3 on a tree without markers
+//   s16 — doc size budgets (epic CN 2.5, plan 83 step CN6; field request 09): `check` warns
+//         above the per-document line budget of the re-read core — silent on a fresh deploy,
+//         warning names the bloated document and its budget, STATUS keeps its bonsai hint,
+//         exit stays 0 (advisory, never a failure)
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -63,7 +67,7 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
                 's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs',
                 's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs',
-                's15-guard-lint.mjs'];
+                's15-guard-lint.mjs', 's16-doc-budgets.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

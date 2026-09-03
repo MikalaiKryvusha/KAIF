@@ -15,7 +15,9 @@ relies entirely on this document to get to work.
 > 🔴 **AGENT, SAY IT IN THE CHAT BEFORE STARTING ANY WORK** — in full, together with the creed
 > above: on session entry (`/resume`), before any non-trivial task, and on every context refresh
 > in a long session. Do not skip items and do not paraphrase. The principles are unpacked in
-> `PHILOSOPHY.md`.
+> `PHILOSOPHY.md`. Cadence is the owner's setting — one box is ticked here: ☑ full text before
+> every non-trivial task and on every refresh (default) · ☐ full text once per session on entry,
+> then one line «creed and prayer said at <time>» before each task.
 
 1. **SIMPLICITY ABOVE ALL.** If it is taking long, I overcomplicated it — the task is not hard.
    Stuck → re-understand the task, don't pile on complexity.
@@ -149,7 +151,12 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    Reference §5) — `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `EXPERIENCE.md` (grepped by tag, never
    re-read whole), `PROJECT_HISTORY.md` (archaeology on demand), `KAIF_FRAMEWORK.md` and
    `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
-   schedule.
+   schedule. Each of the nine carries a SIZE BUDGET in lines — the re-read ritual costs O(core),
+   and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
+   target), the other eight in ONE place, the budget table of the core machinery, which
+   `node .kaif/kaif-core.mjs check` prints when it WARNS above a budget (a warning, never a
+   failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
+   not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
    may skip them when refreshing context, but knows they exist and works with them when the router
@@ -337,8 +344,11 @@ recon doc · owner>` — and the third slot is filled by the fourth door (`PHILO
 domain's proven practice found by recon (a recon doc in `researches/` when the price is real), or
 the owner's word — never the agent's own plausible reasoning alone. `/fable-judge` hunts a fork
 decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon
-hunt) and an autonomous loop closed before its armed boundary with a non-empty pool (the
-early-finish hunt, `/guarded-loop`); both are named in the judge's KAIF patch block.
+hunt), an autonomous loop closed before its armed boundary with a non-empty pool (the
+early-finish hunt, `/guarded-loop`) and a session close or loop report without its delivery line —
+`DELIVERY: <the owner's metric> X → Y; moved by: … | blocker: …`, the ONE acceptance metric named
+in `MASTER_PLAN.md`, printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked
+FIRST by `/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
 
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
