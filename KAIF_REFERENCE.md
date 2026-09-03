@@ -289,7 +289,12 @@ per-module preview against another version — a v1 manifest gets a synthetic ba
 deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
 resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
-machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version`.
+machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version` · `report
+<ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
+owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
+issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
+not a ticket, `gh` refused; a timeout is OUTCOME UNKNOWN, exit 3, never a refusal; `--dry-run`
+calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass
 

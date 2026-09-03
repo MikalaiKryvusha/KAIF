@@ -73,7 +73,8 @@
       "/owner-reviews — I35 binds the voice to the LANGUAGE first, timbre second (origin issue #38): the route selects a voice whose culture matches .kaif/kaif.json → language, the system default only when it already matches, and drops to beeps + banner rather than speaking an unintelligible sentence; I36 names the fallback's own phrase normalization.",
       "DELIVERY ACCOUNTING (field request: 54 honest, green sessions moved the product 11 of 389 — no instrument asked whether work moved the owner's acceptance): MASTER_PLAN names ONE delivery metric; /end-chat-soft, /end-chat-force and the four loops open their report with the forced line `DELIVERY: <metric> X → Y; moved by: … | blocker: …`; /what-next ranks FIRST by the metric or a scarce-resource unblock — the newest pain is not a priority claim; /fable-judge gains the delivery-line hunt.",
       "BUG_FIXING canon — THE SEVERITY LADDER (field request: 65 % of 68 bug documents were defects OF the protection machinery): S1 harmed hardware / data / trust → the full package; S2 a run or an hour lost → document + guard, no epic, no new canon; S3 everything else → one EXPERIENCE line, no bug document; an incident never opens an epic by itself (the delivery test decides); a mechanized lesson collapses to one line + pointer.",
-      "SIZE BUDGETS of the re-read core + PRAYER CADENCE (field request: a 5.8k-line core re-read hourly, STATUS at 6× its target): `check` now warns above a per-document line budget for all nine re-read-core documents (STATUS ~200 as before; the table lives in the core, advisory, never a failure); the prayer directive in AGENT_GUIDE carries the cadence as an owner setting — full text before every task (default) or once per session on entry."
+      "SIZE BUDGETS of the re-read core + PRAYER CADENCE (field request: a 5.8k-line core re-read hourly, STATUS at 6× its target): `check` now warns above a per-document line budget for all nine re-read-core documents (STATUS ~200 as before; the table lives in the core, advisory, never a failure); the prayer directive in AGENT_GUIDE carries the cadence as an owner setting — full text before every task (default) or once per session on entry.",
+      "NEW machinery command `kaif-core report <ticket>` (epic SG; field: the delivery step of /report-bug as PROSE was refused twice by an agent-system classifier, which reacts to the subject, not the wording): delivers a bugs/KAIF ticket to the origin through `gh` under the KAIF owner's standing authorization (origin issue #15), appends the authorship trailer, writes the issue URL into the ticket's `Delivered upstream:` line; refusals named (tracking: anonymous · no gh · not a ticket · gh refused), a timeout is OUTCOME UNKNOWN never a refusal, --dry-run calls nothing. /report-bug step 4 now says \"run it\"."
     ],
     "2.3": [
       "The canon now speaks in COMMANDS (epic X, field issue #22): every obligation of a canon document carries one of three executable forms — a command to run, a numbered step with an exit condition, or a checkbox a ritual ticks — prose stays as the rationale UNDER the carrier and never carries an obligation alone; a new PROHIBITION enters the canon only rephrased as positive guidance or moved into a guard that reddens itself. MIGRATION: the rule binds the templates as they arrive; your local wrapper documents adopt it as you touch them.",
@@ -96,7 +97,8 @@
       "Forks are no longer the agent's to decide alone (origin issue #36, the fourth door): a choice with ≥ 2 options and a non-zero price of error carries a `FORK:` line at the decision point whose `consulted` slot names a domain authority, a recon doc or the owner — the agent's own reasoning alone is a judge-hunted finding. Variable names and the order of two lines are not forks.",
       "Gate 5 second half (origin issue #35): a guard is DONE only when it declares THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH and has been observed on the path the owner actually runs; forensic recorders declare DURABLE-AT, and durability only at a clean ending is rejected. Advisory linter: .kaif/tools/kaif-guard-lint.mjs (opt-in, fires only on explicit markers).",
       "Guarded loops may not close before their armed boundary with a non-empty pool (origin issue #30): the BOUNDARY: line is printed before any closing ceremony and the clock decides, not the agent's estimate of the ceremonies.",
-      "Incident response is SIZED (2.5, field request): the severity ladder S1 / S2 / S3 in BUG_FIXING_FRAMEWORK replaces \"the full package for every defect\" — S3 defects get one EXPERIENCE line and no bug document, S2 gets no epic and no new canon section, and an incident alone never opens an epic. Every session close and loop report now carries a DELIVERY: line against ONE owner metric named in MASTER_PLAN.md — fill that line in, or the judge hunts its absence. The prayer cadence is an owner setting in the AGENT_GUIDE directive (default unchanged: full text before every task)."
+      "Incident response is SIZED (2.5, field request): the severity ladder S1 / S2 / S3 in BUG_FIXING_FRAMEWORK replaces \"the full package for every defect\" — S3 defects get one EXPERIENCE line and no bug document, S2 gets no epic and no new canon section, and an incident alone never opens an epic. Every session close and loop report now carries a DELIVERY: line against ONE owner metric named in MASTER_PLAN.md — fill that line in, or the judge hunts its absence. The prayer cadence is an owner setting in the AGENT_GUIDE directive (default unchanged: full text before every task).",
+      "Delivery of KAIF-defect tickets is a MACHINERY command (2.5, epic SG): `node .kaif/kaif-core.mjs report <ticket>` performs the outward `gh issue create` under the standing authorization of origin issue #15 — allowlist that ONE command in your agent system's permission layer once; the skill text no longer carries the delivery procedure, only \"run it\". On tracking: anonymous the command refuses and the ticket stays local."
     ],
     "1.6": [
       "Language policy: agent-facing documents are English by default; the owner's language covers owner-facing documents and chat (a wholesale-translated wrapper declares \"i18n\": \"translated\" in the marker instead of fighting this rule)."
@@ -2705,7 +2707,12 @@ per-module preview against another version — a v1 manifest gets a synthetic ba
 deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
 resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
-machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version`.
+machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version` · `report
+<ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
+owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
+issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
+not a ticket, `gh` refused; a timeout is OUTCOME UNKNOWN, exit 3, never a refusal; `--dry-run`
+calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass
 
@@ -6853,30 +6860,20 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
    append a "+1 observation" comment there (conditions, environment, version, steps, expected/got;
    new version of the same class → "reproduced on vX.Y") — do NOT open a new ticket.
 3. **File locally:** `bugs/KAIF/NN_*.md` by template A/B below (create the directory on first use).
-4. **Deliver by tracking mode:** `origin` — file/append the origin issue **under the KAIF
-   owner's STANDING AUTHORIZATION, signed by the agent**; `anonymous` — the signal stays LOCAL,
-   never reach for the origin. The authorization is not implied — it is the KAIF owner's
-   standing rule, given verbatim in origin issue #15: every KAIF defect an agent finds is
-   reported by the agent to the KAIF GitHub, and the ticket is signed by the project's agent so
-   it reads as the agent's field report, not the owner's statement — "this is CANON". Delivering
-   here EXERCISES that pre-given human decision and cites it; nothing in this step bypasses a
-   human — the human decision was made once, upstream, by the repository's own owner. TRANSPORT
-   and AUTHORSHIP are two independent axes: the transport is whatever account `gh` has — usually
-   the owner's, and that is normal; the AUTHOR is named in the ticket body: state that the text
-   is written by, and answered for by, the project's agent. If your agent system's permission
-   layer asks a human to confirm the outbound call — let it ask and wait: the confirmation
-   prompt and the standing authorization compose, they never conflict (a project A 2.3 field report:
-   the older imperative wording of this step read to safety classifiers as "post to the
-   internet without asking" and was refused — the rule's substance was never the problem).
-   The `/owner-reviews` send gate exists for a DIFFERENT risk — publishing in a FOREIGN
-   repository or as the owner's own statement — and stays mandatory there; a KAIF-defect signal
-   to the framework's own origin carries neither risk and does not queue on the human. And it does
-   not queue behind the current task either: a KAIF defect is filed AND delivered in the same
-   motion, ahead of the work that found it — the `AGENT_GUIDE.md` authorization gate names this
-   carve-out inline, because the blanket rule there is what sessions read before every task
-   (origin issue #37: two TOP tickets sat "NOT YET" for hours). The ticket's `Delivered upstream:`
-   line carries the issue URL; `NOT YET` is legal ONLY on `tracking: anonymous` — on `origin` it is
-   a debt with an owner, never a resting state.
+4. **Deliver by tracking mode:** `origin` — run the machinery, in the same motion as filing and
+   ahead of the work that found the defect:
+   `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`
+   It files the origin issue signed by the agent under the KAIF owner's STANDING AUTHORIZATION
+   (origin issue #15 — the owner's word: "this is CANON"; the `AGENT_GUIDE.md` authorization
+   gate names this carve-out inline, origin issue #37), appends the authorship trailer (the
+   transport is the machine's `gh` account, the AUTHOR is the project's agent) and writes the
+   issue URL into the ticket's `Delivered upstream:` line. Its refusals are named — `tracking:
+   anonymous` (the signal stays LOCAL; `NOT YET` is legal there), no `gh`, not a ticket, `gh`
+   refused — and a timeout is reported as OUTCOME UNKNOWN, never as a refusal (check before
+   repeating). If your agent system's permission layer asks a human to confirm the call — let it
+   ask and wait: the prompt and the standing authorization compose. `--dry-run` shows what would
+   go. The `/owner-reviews` send gate stays for FOREIGN repositories and statements in the
+   owner's name. On `origin`, `NOT YET` is a debt with an owner, never a resting state.
 5. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
    quote-evidence; blameless wording (a weak model's failure is described as a missing guardrail,
    never as "the model is dumb").

@@ -458,7 +458,7 @@ KAIF/
 │                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
 └── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
-           · sandbox/s01–s16 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+           · sandbox/s01–s17 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.

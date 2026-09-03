@@ -509,7 +509,7 @@ artifacts are never hand-edited.
    canon and skill bodies are English by design.
 2. Native skills are generated for five agent systems; other harnesses (Cursor, Copilot,
    Windsurf) ride the universal `AGENTS.md` fallback without native skill files.
-3. The sandbox polygon (16 suites) verifies the deploy/update machinery; the methodology itself is
+3. The sandbox polygon (17 suites) verifies the deploy/update machinery; the methodology itself is
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
@@ -1032,7 +1032,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    тела навыков — английские by design.
 2. Родные навыки генерируются для пяти агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) работают через универсальный `AGENTS.md` без родных файлов навыков.
-3. Песочный полигон (16 сводов) проверяет машинерию развёртывания и обновления; сама методология
+3. Песочный полигон (17 сводов) проверяет машинерию развёртывания и обновления; сама методология
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.

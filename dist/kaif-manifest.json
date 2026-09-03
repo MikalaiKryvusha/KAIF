@@ -4,8 +4,8 @@
   "released": "2026-08-28",
   "codename": "Teamed Up KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "75455f9d72f03a41bf8748f270d6f38cb2f26ad2f792f21d226f65a63d52b479",
-    "KAIF-CORE-BUNDLE.md": "e6ad9cffc8eb147a25243e644bfd3cbede860d0f367e425fd5c42a62351ab9a9"
+    "KAIF-CORE.mjs": "6fb49157ae7b6a61be299236bc3c2201cd34f08e9c7dbd350ae469e169cd64a0",
+    "KAIF-CORE-BUNDLE.md": "393f3af624204ddc8b764e5734f4057b0a171ee6dd843d7ef7512f351ecba749"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
