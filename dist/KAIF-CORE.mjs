@@ -1082,11 +1082,19 @@ function unpairedAnchors(text) {
 // blocks byte-exact across files on disk went transiently red right after a green mechanical
 // pass ("the project stays whole at every step" broken in letter). New files stay LF: there is
 // no convention to preserve. One helper covers merge and replace alike (the ticket's smallest fix).
+// H10 (2.5, epic US; RL court 2.4 finding): the convention is judged by DOMINANCE, not by presence —
+// one stray CRLF line used to flip a whole LF file to CRLF on the next mechanical replace (s18 U7:
+// 218 of 218 lines). A tie (an evenly mixed file) keeps CRLF: the convention a Windows checkout
+// would restore anyway; a file with no CRLF at all stays LF as before.
 function writeMatchingEol(path, content) {
   let out = content;
   try {
-    if (existsSync(path) && readFileSync(path, 'utf8').includes('\r\n'))
-      out = content.replace(/\r?\n/g, '\r\n');
+    if (existsSync(path)) {
+      const prev = readFileSync(path, 'utf8');
+      const crlf = (prev.match(/\r\n/g) || []).length;
+      const lf = (prev.match(/\n/g) || []).length - crlf;
+      if (crlf > 0 && crlf >= lf) out = content.replace(/\r?\n/g, '\r\n');
+    }
   } catch { /* unreadable target — write the content as-is */ }
   writeFileSync(path, out);
 }
