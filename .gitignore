@@ -19,6 +19,7 @@ tools/.review-tmp/
 
 # Освежение контекста (O2): маркер-свидетельство — состояние сессии, не история проекта
 .kaif/refresh-marker.json
+.kaif/update-rehearsal.json
 
 # Защищённый цикл (2.5, CN4): взведённая граница until — состояние прогона, как и пульс
 .kaif/guarded-loop.json

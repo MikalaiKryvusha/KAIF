@@ -292,7 +292,8 @@ function ensureIgnoreFirst() {
                   UPDATE_JOURNAL,           // the crash journal is transient run state; it must be VISIBLE, not committed
                   '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
                   '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
-                  '.kaif/refresh-marker.json']; // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
+                  '.kaif/refresh-marker.json',  // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
+                  '.kaif/update-rehearsal.json']; // the preview's recorded wholesale verdicts — consumed by the next update (2.5, P1)
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
   const add = wanted.filter((w) => !have.has(w) && !have.has(w.replace(/\/$/, '')));
@@ -890,7 +891,7 @@ function languageArrivalsOf(paths) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [] } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   // Checklists and decision tables inside framework files often carry the OWNER's recorded
@@ -907,6 +908,12 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const upstreamOf = (p) => (meta.sources && meta.sources[p] && fromVersion)
     ? `; upstream: ${meta.sources[p]} — the same delta from the origin: git diff v${fromVersion} v${meta.version} -- ${meta.sources[p]}` : '';
   if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below${upstreamOf(p)})` : p).join(' · ')}. ${OWNER_LINES}`]);
+  // P1 (2.5, epic US; #27 R1): a file whose wholesale verdict differed between the recorded
+  // rehearsal and this run was FROZEN — what the rehearsal showed the owner stays true, and both
+  // number sets ride the item: the disagreement is the fingerprint of a classification that
+  // depended on something other than the tree.
+  const fmtVerdict = (v) => `${v.outcome} — baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling}`;
+  if (verdictMismatches.length) items.push(['verdict-mismatch', `The wholesale verdict of these files DIFFERED between the recorded rehearsal and this run — each was FROZEN (kept intact; its template delta ships in the Module diffs below), so what the rehearsal showed you stays true: ${verdictMismatches.map((m) => `${m.path} (rehearsal: ${fmtVerdict(m.rehearsal)}; this run: ${fmtVerdict(m.live)})`).join(' · ')}. Merge each by hand from its diff, then file the mismatch WITH BOTH NUMBER SETS as a framework defect (skill /report-bug, template A) — it is the fingerprint of a classification that depended on something other than the tree.`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
   // New templates may arrive carrying deploy-time slots the machinery cannot fill (bug 28: the
@@ -1364,7 +1371,7 @@ function templateDelta(oldEntries, newContent, oldTexts) {
 // release's synthetic baseline: template provenance for v1 manifests and old template TEXTS for
 // the real old→new diffs of bug 32.
 // [TESTED: 2026-07-28 · extraction verified by re-running suites S5–S12c unchanged-green]
-function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
+function classifyAndApply(deploy, old, values, unresolved, cur, base = null, rehearsal = null) {
   const oldShas = old.shas || {};
   const oldTplShas = old.templateShas || (base && base.templateShas) || {};   // v2: what the previous deploy's TEMPLATES were
   const oldModShas = { ...((base && base.moduleShas) || {}), ...(old.moduleShas || {}) };  // v2: their per-module cut (manifest wins per path)
@@ -1394,6 +1401,11 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
   if (i18nTranslated) log('⟳ marker declares i18n: translated — mechanical replacement disabled for files carrying the owner\'s script; upstream changes ship as per-module diffs');
   const translatedWholesale = [];
   const addedPaths = [];                             // NEW files of this release — the language-arrivals item reads them back (2.5, epic US)
+  const verdicts = {};                               // path → { baseFound, baseN, ceiling, outcome } for every wholesale candidate (P1, 2.5)
+  const verdictMismatches = [];                      // files whose live verdict differed from the rehearsal's (P1, 2.5)
+  // P1 (2.5, epic US; #27 R1): the rehearsal's verdict for this file, when one was recorded.
+  const rehearsed = (p) => (rehearsal && rehearsal.verdicts && rehearsal.verdicts[p]) || null;
+  const fmtV = (v) => `${v.outcome} — baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling}`;
   let replaced = 0, added = 0, kept = 0, mergedModules = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
@@ -1448,14 +1460,37 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
         diverged.push(f.path); translatedWholesale.push(f.path); kept++; adopted.push(f.path);
         const delta = templateDelta(oldModShas[f.path], content, oldTexts);
         if (delta.length) divergedModules[f.path] = delta;
-        const v = res.verdict || {};
+        const v = { ...(res.verdict || {}), outcome: 'frozen' };
+        verdicts[f.path] = v;
         log(`⟳ ${f.path}: baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling} → frozen (translated wholesale — its headings are in the owner's script; kept intact, the template delta ships in the task)`);
+        // The safe side of a mismatch: frozen stays frozen — but the disagreement is still NAMED,
+        // because it is the fingerprint of the non-determinism the origin is hunting (P1).
+        const rv = rehearsed(f.path);
+        if (rv && rv.outcome !== 'frozen') { verdictMismatches.push({ path: f.path, rehearsal: rv, live: v }); log(`⚠ ${f.path}: the rehearsal said ${fmtV(rv)} — this run says frozen; the file stays frozen (verdict mismatch — see the task)`); }
         continue;
       }
       if (res) {
         // the same decision printed for the OTHER outcome: a body in the owner's script whose surviving
         // template headings sit ABOVE the ceiling merges by signature — say so with the numbers (P1)
-        if (res.verdict) log(`⟳ ${f.path}: baseFound ${res.verdict.baseFound} of ${res.verdict.baseN}, ceiling ${res.verdict.ceiling} → merged (the body carries the owner's script, but enough template headings survive for a by-signature merge)`);
+        if (res.verdict) {
+          const v = { ...res.verdict, outcome: 'merged' };
+          verdicts[f.path] = v;
+          log(`⟳ ${f.path}: baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling} → merged (the body carries the owner's script, but enough template headings survive for a by-signature merge)`);
+          // P1 freeze-on-mismatch (2.5, epic US; #27 R1: the rehearsal froze AGENT_GUIDE, the live
+          // run merged it and appended 416 English lines to a Russian canon). A rehearsal that said
+          // "frozen" is a promise the owner read — this run keeps it: the file stays intact, the
+          // template delta ships in the task, and the mismatch is named with both number sets.
+          const rv = rehearsed(f.path);
+          if (rv && rv.outcome === 'frozen') {
+            verdicts[f.path] = { ...v, outcome: 'frozen', mismatch: rv };
+            verdictMismatches.push({ path: f.path, rehearsal: rv, live: v });
+            diverged.push(f.path); kept++; adopted.push(f.path);
+            const delta = templateDelta(oldModShas[f.path], content, oldTexts);
+            if (delta.length) divergedModules[f.path] = delta;
+            log(`⚠ ${f.path}: the rehearsal said ${fmtV(rv)} — this run says merged → FROZEN (verdict mismatch; kept intact, the template delta ships in the task)`);
+            continue;
+          }
+        }
         if (fileTranslated) {
           if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; }
           kept++; adopted.push(f.path);
@@ -1492,7 +1527,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
-  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths };
+  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches };
 }
 
 // ---------------------------------------------------------------------------- update (idea 14 / plan 15)
@@ -1544,14 +1579,15 @@ async function cmdUpdate() {
   // every real "old template → new template" diff in the task (bug 32). Optional by design:
   // absence degrades to sha-detected notes, never to silence, and never blocks the update.
   const oldBase = await buildSyntheticBaseline(cur);
+  const rehearsal = loadRehearsal(cur.version, man.version);   // P1 (2.5): a recorded rehearsal verdict binds this run — loaded BEFORE the backup/journal so a bad --rehearsal path refuses cleanly
   // Before/after file sizes: the honest way to SEE a K1-class mangling instantly (field ask —
   // "the doubling is visible in a size summary at once, and invisible in 43 merged-lines").
   const sizeBefore = {};
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
-  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths } =
-    classifyAndApply(deploy, old, values, unresolved, cur, oldBase);
+  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches } =
+    classifyAndApply(deploy, old, values, unresolved, cur, oldBase, rehearsal);
   const sizeJumps = deploy
     .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
     .map((f) => ({ path: f.path, before: sizeBefore[f.path], after: statSync(f.path).size }))
@@ -1617,7 +1653,7 @@ async function cmdUpdate() {
     ? deploy.filter((f) => !isSkippedAnon(f.path) && (!oldTpl[f.path] || oldTpl[f.path] !== normSha(f.content))).length : null;
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths),
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths), verdictMismatches,
       sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
@@ -1626,7 +1662,8 @@ async function cmdUpdate() {
     source: base,   // where THIS update came from — the previous delta stays recomputable (field ask №3)
     counters: { replaced, mergedModules, added, kept },
     diverged, divergedModules: Object.fromEntries(Object.entries(divergedModules).map(([p, l]) => [p, l.map((d) => d.signature)])),
-    ownerConvention });
+    ownerConvention, verdicts });   // the verdicts with their numbers: a later run (or the origin) compares receipts, not outcomes (P1, 2.5)
+  consumeRehearsal(rehearsal);
   appendHistory(marker, cur.version, man.version, 'core-update');
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   clearUpdateJournal();   // the LAST act: from here there is nothing left to resume
@@ -1649,6 +1686,31 @@ function localStamp(d = new Date()) {
 }
 
 const LAST_UPDATE = '.kaif/last-update.json';
+const REHEARSAL = '.kaif/update-rehearsal.json';
+// P1 (2.5, epic US; #27 R1): the verdicts a rehearsal recorded — `diff --source` over THIS tree
+// (auto-consumed) or an update's receipt from a sandbox copy (`--rehearsal <path>`). A record binds
+// only the same interval: one for another from→to is named and ignored, never applied to the wrong
+// run; an explicit path that cannot be read REFUSES (the owner named it — silence would be a lie).
+// [TESTED: 2026-09-04 · polygon s18 U3б: `diff --source` prints check-backlog → frozen and
+// propose-idea → merged and records both; the record tampered to say propose-idea = frozen makes
+// the update KEEP that file (no upstream line lands, the owner's translated section survives),
+// name the mismatch in the log and the `verdict-mismatch` task item with both number sets, carry
+// every verdict in the receipt, and consume the record; red on the 46a5ba7 core (8 of 8: the old
+// core merged the file)]
+function loadRehearsal(from, to) {
+  const explicit = val('--rehearsal');
+  const path = explicit || REHEARSAL;
+  if (!existsSync(path)) { if (explicit) die(`--rehearsal: no such file: ${explicit}`); return null; }
+  let r;
+  try { r = readJson(path); } catch { if (explicit) die(`--rehearsal: not readable JSON: ${explicit}`); log(`⚠ ${path} is not readable JSON — rehearsal ignored`); return null; }
+  if (String(r.from) !== String(from) || String(r.to) !== String(to)) { log(`⚠ rehearsal record ${path} is for ${r.from} → ${r.to}; this update is ${from} → ${to} — ignored`); return null; }
+  const verdicts = r.verdicts || {};
+  log(`⟳ rehearsal verdicts loaded from ${path} (${Object.keys(verdicts).length} file(s)) — a file whose live verdict differs is frozen`);
+  return { path, explicit: !!explicit, verdicts };
+}
+// The auto record is one-shot: consumed by the update it rehearsed (the receipt now carries the
+// live verdicts); an explicit --rehearsal file is the owner's and is left alone.
+function consumeRehearsal(r) { if (r && !r.explicit) { try { unlinkSync(r.path); } catch { /* already gone */ } } }
 function writeReceipt(r) {
   const receipt = { ...r, date: localStamp() };
   writeFileSync(LAST_UPDATE, JSON.stringify(receipt, null, 2) + '\n');
@@ -2216,7 +2278,7 @@ async function cmdInstall() {
     }
     if (!baseline) baseline = await buildSyntheticBaseline(legacyOld);
     if (baseline) {
-      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld);
+      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld, null, loadRehearsal(legacyOld.version, meta.version));
       cls.baselineOld = baseline; // deprecations later need the OLD template shas (step 5)
       adopted = cls.adopted;
       log(`⟳ bootstrap classified against ${baseline.synthetic ? `a synthetic baseline of v${legacyOld.version}` : 'the surviving deploy manifest'}: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept`);
@@ -2373,7 +2435,7 @@ async function cmdInstall() {
       writeReceipt({ from: legacyOld.version, to: meta.version, route: bootRoute,
         counters: cls ? { replaced: cls.replaced, mergedModules: cls.mergedModules, added: cls.added, kept: cls.kept, adopted: adopted.length }
                       : { adopted: adopted.length },
-        classified: !!cls });
+        classified: !!cls, verdicts: cls ? cls.verdicts : {} });
       appendHistory(marker, legacyOld.version, meta.version, bootRoute);
       writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
     }
@@ -2433,7 +2495,7 @@ async function cmdInstall() {
         : cls
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths),
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches,
                 sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback }
             : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback });
     }
@@ -2991,6 +3053,30 @@ async function cmdDiff() {
   }
   log(`diff vs ${man2.version}: ${changedFiles} file(s) carry upstream static-module changes; ${sameFiles} — nothing to do`);
   for (const l of lines) log(l);
+  // P1 rehearsal (2.5, epic US; #27 R1): the preview prints the SAME wholesale verdict the update
+  // would print — file by file, with its numbers — and records it in .kaif/update-rehearsal.json;
+  // the next `update` over this tree freezes any file whose live verdict differs, so what the
+  // rehearsal showed the owner stays true. The candidate set mirrors classifyAndApply's skips
+  // (untouched file → mechanical replace; zero template delta → nothing to judge), so the two
+  // lists compare line by line. A rehearsal in a sandbox COPY leaves the same numbers in that
+  // copy's receipt: hand it to the live run as `update --rehearsal <copy>/.kaif/last-update.json`.
+  const fromVer = okOnDisk(KAIF_JSON) ? (() => { try { return readJson(KAIF_JSON).version; } catch { return null; } })() : null;
+  const tplShas = m.templateShas || {};
+  const verdicts = {};
+  for (const f of otherDeploy) {
+    if (!f.path.endsWith('.md') || !mineModShas[f.path] || !okOnDisk(f.path)) continue;
+    let filled = fillPlaceholders(f.content, values, new Set());
+    if (ANON) filled = anonymize(filled);
+    if (tplShas[f.path] && (fileShaNorm(f.path) === tplShas[f.path] || tplShas[f.path] === normSha(filled))) continue;
+    let res = null;
+    try { res = mergeModules(f.path, filled, mineModShas[f.path], true, null); } catch { /* unreadable — no verdict */ }
+    if (!res || !res.verdict) continue;
+    const outcome = res.translatedWholesale ? 'frozen' : 'merged';
+    verdicts[f.path] = { ...res.verdict, outcome };
+    log(`⟳ ${f.path}: baseFound ${res.verdict.baseFound} of ${res.verdict.baseN}, ceiling ${res.verdict.ceiling} → ${outcome}`);
+  }
+  writeFileSync(REHEARSAL, JSON.stringify({ from: fromVer, to: man2.version, source: srcBase, at: localStamp(), verdicts }, null, 2) + '\n');
+  log(`⟳ rehearsal recorded: ${Object.keys(verdicts).length} wholesale verdict(s) → ${REHEARSAL} — the next update over this tree freezes any file whose verdict differs`);
 }
 
 function cmdVerifyFinal() {
@@ -3030,7 +3116,7 @@ const COMMANDS = {
   diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version', flags: { '--source': true, '--baseline': true, '--lang': true }, pos: 0 },
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly)', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false }, pos: 0 },
-  update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true }, pos: 0 },
+  update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release; --rehearsal <receipt> binds the run to a sandbox copy\'s verdicts', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true, '--rehearsal': true }, pos: 0 },
   resume:          { fn: cmdResume,       mutating: true, desc: 'restore the pre-update tree after a crashed update (per .kaif/update-journal.json)', flags: {}, pos: 0 },
   'update-verify': { fn: cmdUpdateVerify, mutating: true, desc: 'final gates of an update; self-cleans on green', flags: {}, pos: 0 },
   'verify-final':  { fn: cmdVerifyFinal,  mutating: true, desc: 'final gates of an install; self-cleans on green', flags: {}, pos: 0 },

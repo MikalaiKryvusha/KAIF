@@ -2842,6 +2842,13 @@ lands in the task WITH a "your version → new template" diff ONLY when upstream
 it. New template modules insert by template order. A file whose body carries the owner's
 script prints its verdict WITH the numbers that produced it — `baseFound N of M, ceiling K →
 frozen | merged` (2.5: a rehearsal and the live run compare line by line, not by outcome).
+The rehearsal is BINDING (2.5, origin issue #27 R1): `diff --source` prints the same verdicts
+over the same candidate set and records them in `.kaif/update-rehearsal.json`; the next `update`
+over that tree (or one given `--rehearsal <receipt>` from a sandbox copy) freezes any file whose
+live verdict is `merged` where the rehearsal said `frozen` — kept intact, the template delta in
+the task, both number sets in the `verdict-mismatch` item — so what the rehearsal showed the
+owner stays true; every candidate's verdict also rides the receipt (`verdicts`), and a record
+for another version interval is named and ignored.
 Anchored blocks — `<!-- KAIF:NAME:BEGIN -->` … `<!-- KAIF:NAME:END -->` (the creed, the prayer)
 — are indivisible units (2.5, origin issue #27): the merge plan is judged as a whole, and a
 pair that was balanced on disk but would come out unbalanced (its markers live in different
@@ -2864,7 +2871,9 @@ version anywhere in the project — prose AND the project's own scripts: `packag
 version change — an empty scan says `no lines found`, so a silent scanner failure can never pass
 as a clean tree, 2.5) ·
 language arrivals (NEW files of the release that arrived English on a non-English deployment,
-2.5) · the news interval · executing checkpoints (`recheck` runs the
+2.5) · verdict mismatches (files frozen because the recorded rehearsal's wholesale verdict
+differed from this run's — both number sets named, 2.5) · the news interval · executing
+checkpoints (`recheck` runs the
 actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
 field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an
 update does not verify green without its report).
@@ -5490,12 +5499,18 @@ diverged places. Your cognitive work is that task, not the migration.
    - `node .kaif/kaif-core.mjs diff --source <url|dir>` — a per-module preview of what the new
      version would change *here*. Works even on a v1 manifest: the machinery builds a synthetic
      baseline of your CURRENT version (`--baseline <dir|url>` points it at saved artifacts when
-     the origin release is unreachable).
+     the origin release is unreachable). It also prints the wholesale verdict of every localized
+     candidate WITH its numbers (`baseFound N of M, ceiling K → frozen | merged`) and records them
+     in `.kaif/update-rehearsal.json`: the next `update` over this tree freezes any file whose live
+     verdict differs from what you read here (task item `verdict-mismatch`, both number sets).
    - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
      (`git archive HEAD | tar -x -C <tmpdir>`), `git init` there, run the REAL update/bootstrap in
      the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field
      the live pass matched the sandbox byte for byte. Prefer this on the first-ever update and on
-     any deployment with heavy localization.
+     any deployment with heavy localization. The copy's receipt (`<copy>/.kaif/last-update.json`)
+     carries the verdicts it printed: hand it to the live run as
+     `update --rehearsal <copy>/.kaif/last-update.json`, and a file the copy froze can never be
+     merged live — a mismatch freezes it and names both number sets in the task.
 
 3. **Route by what the project has:**
    - **`.kaif/kaif-core.mjs` exists (KAIF ≥ 1.5):** run `node .kaif/kaif-core.mjs update`

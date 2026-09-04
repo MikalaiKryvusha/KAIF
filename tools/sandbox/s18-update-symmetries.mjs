@@ -97,6 +97,8 @@ let bundle99 = bundle0;
 bundle99 = editBundleModule(bundle99, '.claude/skills/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
 bundle99 = editBundleModule(bundle99, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)'));
 bundle99 = editBundleModule(bundle99, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
+// U3б: апстрим меняет H1-модуль навыка, у которого на диске переведено ТЕЛО одного раздела (заголовки целы → merged)
+bundle99 = editBundleModule(bundle99, '.claude/skills/propose-idea/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (propose-idea)'));
 bundle99 += '\n> **FILE: `.claude/skills/new-skill/SKILL.md`** — a NEW skill of 9.9 (English by construction)\n\n' +
   FENCE + 'md\n---\nname: new-skill\ndescription: A NEW skill arriving in 9.9 — English by construction.\n---\n\n' +
   '# /new-skill — a new skill\n\n## What it does\n\nEnglish body of the new skill.\n' + FENCE + '\n';
@@ -170,12 +172,41 @@ const cbPre = cbOrig.slice(0, cbOrig.search(/^# /m));
 writeFileSync(CB, cbPre +
   '# /check-backlog — ревизия беклога\n\nПройтись по bugs/ и plans/, найти всё открытое.\n\n' +
   '## Что делать\n\nШаги ревизии по-русски.\n\n## Заметки\n\nЗаметки по-русски.\n');
+// U3б-фикстура: второй навык переведён ТОЛЬКО телом одного раздела (заголовки целы) — кандидат с вердиктом merged
+const PI = join(T2, '.claude/skills/propose-idea/SKILL.md');
+const piMods = splitModules(readFileSync(PI, 'utf8').replace(/\r\n/g, '\n'));
+ok(piMods.length > 2 && /^## /.test(piMods[2].signature), 'U3б фикстура: у propose-idea есть H2-раздел для перевода тела', piMods.map((m) => m.signature).join(' | '));
+piMods[2].lines = [piMods[2].signature, '', 'Русский текст владельца вместо английского тела раздела — заголовок оставлен.', ''];
+writeFileSync(PI, joinModules(piMods));
 // U3 — до update: два «сухих» прогона diff по одной копии
 const d1 = run(T2, `diff --source ${SRC99}`); const d2 = run(T2, `diff --source ${SRC99}`);
 const scrub = (s) => s.replace(/\d{4}-\d{2}-\d{2}T[^\s]+/g, '<t>').replace(/\b\d+ ?ms\b/g, '<ms>');
 ok(d1.code === 0 && d2.code === 0 && scrub(d1.out) === scrub(d2.out), 'U3: два diff --source по байт-идентичной копии печатают одно и то же', scrub(d1.out).slice(-300));
+// ---------------------------------------------------------------- U3б (P1): репетиция записана, расхождение замораживает файл
+console.log('\n=== U3б (P1): diff --source записывает вердикты; update замораживает файл при расхождении с репетицией ===');
+const REH = join(T2, '.kaif', 'update-rehearsal.json');
+ok(/check-backlog\/SKILL\.md: baseFound \d+ of \d+, ceiling \d+ → frozen/.test(d2.out) && /propose-idea\/SKILL\.md: baseFound \d+ of \d+, ceiling \d+ → merged/.test(d2.out),
+   'U3б: diff --source печатает вердикт по каждому кандидату (check-backlog → frozen · propose-idea → merged)', d2.out.split('\n').filter((l) => /baseFound/.test(l)).join(' | '));
+ok(existsSync(REH), 'U3б: репетиция записана в .kaif/update-rehearsal.json');
+const reh = existsSync(REH) ? JSON.parse(readFileSync(REH, 'utf8')) : { verdicts: {} };
+ok(reh.from === FROM && reh.to === '9.9' && reh.verdicts['.claude/skills/check-backlog/SKILL.md']?.outcome === 'frozen' && reh.verdicts['.claude/skills/propose-idea/SKILL.md']?.outcome === 'merged',
+   'U3б: запись репетиции несёт from/to и вердикты с исходами', JSON.stringify(reh).slice(0, 300));
+// подмена: «репетиция сказала frozen» для файла, который боевой прогон сольёт — ровно полевой P1 (#27 R1)
+// (на ядре без репетиции запись подделывается целиком — стражи ниже краснеют чисто, а не падают)
+reh.from = FROM; reh.to = '9.9';
+reh.verdicts['.claude/skills/propose-idea/SKILL.md'] = { ...(reh.verdicts['.claude/skills/propose-idea/SKILL.md'] || { baseFound: 0, baseN: 0, ceiling: 0 }), outcome: 'frozen' };
+writeFileSync(REH, JSON.stringify(reh, null, 2) + '\n');
 r = run(T2, `update --source ${SRC99}`);
 ok(r.code === 0, 'U2 update →9.9 (ru, переведённый навык) exit 0', r.out);
+ok(/propose-idea\/SKILL\.md: the rehearsal said frozen[^\n]*this run says merged → FROZEN/.test(r.out), 'U3б: лог называет расхождение и заморозку с обоими наборами чисел', r.out.split('\n').filter((l) => /propose-idea/.test(l)).join(' | ').slice(0, 400));
+const piAfter = readFileSync(PI, 'utf8');
+ok(!piAfter.includes('UPSTREAM ADDITION 9.9 (propose-idea)') && piAfter.includes('Русский текст владельца вместо английского тела'), 'U3б: файл с расхождением НЕ слит (апстримная правка не приехала, перевод владельца цел)');
+ok(/\*\*verdict-mismatch\*\*[^\n]*propose-idea\/SKILL\.md \(rehearsal: frozen — baseFound \d+ of \d+, ceiling \d+; this run: merged — baseFound \d+ of \d+/.test(readFileSync(join(T2, 'KAIF_UPDATE_TASK.md'), 'utf8')),
+   'U3б: задание несёт пункт verdict-mismatch с обоими наборами чисел');
+const receipt2 = JSON.parse(readFileSync(join(T2, '.kaif', 'last-update.json'), 'utf8'));
+ok(receipt2.verdicts?.['.claude/skills/check-backlog/SKILL.md']?.outcome === 'frozen' && receipt2.verdicts?.['.claude/skills/propose-idea/SKILL.md']?.outcome === 'frozen' && receipt2.verdicts['.claude/skills/propose-idea/SKILL.md'].mismatch,
+   'U3б: квитанция несёт вердикты с числами; замороженный по расхождению помечен mismatch', JSON.stringify(receipt2.verdicts || {}).slice(0, 300));
+ok(!existsSync(REH), 'U3б: запись репетиции потреблена обновлением (одноразовая)');
 ok(/check-backlog\/SKILL\.md: baseFound \d+ of \d+, ceiling \d+ → frozen/.test(r.out),
    'U2: лог печатает решение по файлу-кандидату с числами (`baseFound N of M, ceiling K → frozen`)', r.out.split('\n').filter((l) => /check-backlog/.test(l)).join(' | '));
 ok(!/^# \/check-backlog — [A-Za-z]/m.test(readFileSync(CB, 'utf8')), 'U2: переведённый файл не удвоен английским шаблоном (K1 держится)');
