@@ -6958,14 +6958,16 @@ The guiding principle (and the first sizing rule):
 > **Optimize the organization of cognitive work, not the number of agents.**
 > Do not spawn agents because you can. Spawn them because the work graph justifies them.
 
-Four templates ship with this skill in `references/` — copy and adapt, never invent from memory:
+Five references ship with this skill in `references/` — four templates to copy and adapt (never
+invent from memory) and the adopt path for a team that already runs:
 
-| Template | Becomes (suggested name) |
+| Reference | Becomes (suggested name) |
 |---|---|
 | `references/team-constitution-template.md` | `TEAM_CONSTITUTION.md` — the team's operating canon |
 | `references/team-status-board-template.md` | `TEAM_STATUS.md` — the live status board (ignored by git) |
 | `references/team-roles-library.md` | role sections pasted into the constitution + role instructions |
 | `references/team-ci-template.md` | `.github/workflows/team-ci.yml` — the CI that ships with the team |
+| `references/team-adopt.md` | no file — the adopt path: inventory · three-bucket delta · the owner's decision |
 
 **Boundaries of this skill (deliberate).** It delivers METHODOLOGY as markdown: constitution,
 board, role contracts, archetypes, procedures. It does NOT deliver an orchestrator: no scheduler
@@ -6999,16 +7001,12 @@ Output: a short analysis note (a plan or research doc per project convention). N
 
 ## Operation 2 — suggest: an evidence-informed team design, approved by the owner
 
-0. **A team ALREADY runs here → the adopt path, not a design.** Inventory the live
-   constitution, board, tools and names against the nine invariants, the board-tool contract
-   (7 items), the roles library and the naming invariant; sort every delta into three buckets —
-   *matches* · *bring-to-canon* · *better-than-canon* (the last bucket is a SIGNAL TO THE ORIGIN
-   via `/report-bug`, not a defect); put the delta to the owner as a decision BEFORE any change;
-   apply only approved items and never overwrite the owner's recorded words. **Two owner's words
-   on one parameter** (e.g. a pre-canon naming pattern vs the canon's): the project owner's word
-   wins, framed as an explicit `FORK:`; local names that carry it stay legitimate under a note.
-   Operation 3 then applies ONLY to the approved bring-to-canon items — never copy over a live
-   constitution.
+0. **A team ALREADY runs here → the adopt path (`references/team-adopt.md`), not a design.**
+   Inventory the live constitution, board, tools and names against the canon → sort every delta
+   into *matches* · *bring-to-canon* · *better-than-canon* (a SIGNAL TO THE ORIGIN, not a defect)
+   → the owner decides BEFORE any change → apply only approved items around the owner's recorded
+   words; two owner's words on one parameter → the project owner's wins, as a `FORK:`. Operation 3
+   then applies ONLY the approved bring-to-canon items — never copy over a live constitution.
 1. Pick the nearest **archetype** from `references/team-roles-library.md` (web-product-small ·
    web-product-medium · hardware-lab-small — the last whenever one physical singleton under test
    serializes the core work) and adapt: activate optional roles only when their condition holds

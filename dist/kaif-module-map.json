@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.4",
   "released": "2026-08-28",
-  "moduleCount": 756,
+  "moduleCount": 764,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -4142,10 +4142,10 @@
       {
         "signature": "# /team-deployment — deploy a team of AI agents",
         "class": "static",
-        "sha256": "ee6c37dcddafc96232e461e03702f6fd109f22db8757e6887419aa818e138a28",
+        "sha256": "0d21959b032e1c5243e1aa242ec0e4b830ab5ff145c0420afdfc1baa88b5e974",
         "lines": [
           6,
-          38
+          40
         ]
       },
       {
@@ -4153,17 +4153,17 @@
         "class": "static",
         "sha256": "9deff8458a274e44fbc7eab0ecc2bf04f34600786e9680b0d9c35ccfed69f584",
         "lines": [
-          39,
-          56
+          41,
+          58
         ]
       },
       {
         "signature": "## Operation 2 — suggest: an evidence-informed team design, approved by the owner",
         "class": "static",
-        "sha256": "c6b06ec7a83eb8f1449295b4538ece588a8b1104c8442728362d184331dfb484",
+        "sha256": "9237a800d2cb859dc1990964bdb8a7caf007a0f5fda712b7d3e884b30147103c",
         "lines": [
-          57,
-          83
+          59,
+          81
         ]
       },
       {
@@ -4171,8 +4171,8 @@
         "class": "static",
         "sha256": "69c0cfa0c97f913e47892e81650d60e02fe7fe395a5732a361901bbe462b0c6d",
         "lines": [
-          84,
-          114
+          82,
+          112
         ]
       },
       {
@@ -4180,8 +4180,8 @@
         "class": "static",
         "sha256": "49c80eead0cfe5f09c8fd318af3e1d6dc9bcf825871b7a2f72da8356ddf1d961",
         "lines": [
-          115,
-          121
+          113,
+          119
         ]
       },
       {
@@ -4189,8 +4189,8 @@
         "class": "static",
         "sha256": "3c5b444c2652253ef7fc4d7c5401fb28feda11400e5969c8cde1c112d03304da",
         "lines": [
-          122,
-          134
+          120,
+          132
         ]
       },
       {
@@ -4198,8 +4198,8 @@
         "class": "static",
         "sha256": "77905f239addd3874d9780a9af8259bc44b0d564d44c706863fc5be5201e9022",
         "lines": [
-          135,
-          145
+          133,
+          143
         ]
       },
       {
@@ -4207,8 +4207,8 @@
         "class": "static",
         "sha256": "0435577492f3d9b74af45c12cba6b32f4c84455417c547c4896db39113d1daf5",
         "lines": [
-          146,
-          168
+          144,
+          166
         ]
       },
       {
@@ -4216,8 +4216,82 @@
         "class": "static",
         "sha256": "14f84bdd48ea0a6f0c262f808736f5f5ea39872257883567c34733821ed4b256",
         "lines": [
-          169,
-          181
+          167,
+          179
+        ]
+      }
+    ],
+    ".claude/skills/team-deployment/references/team-adopt.md": [
+      {
+        "signature": "# team-adopt — the adopt path for a team that ALREADY runs",
+        "class": "static",
+        "sha256": "110a412488a0f0b6f4adc8ca9a4a7903e1620869b10b8da996fea45c3833f35b",
+        "lines": [
+          1,
+          8
+        ]
+      },
+      {
+        "signature": "## When this path binds",
+        "class": "static",
+        "sha256": "f4b22735dd2e97f5bd95c52a80cbe9b535ba82f649f089071395b2194199c927",
+        "lines": [
+          9,
+          15
+        ]
+      },
+      {
+        "signature": "## Step 1 — inventory: the live team against the canon, item by item",
+        "class": "static",
+        "sha256": "8b99713a0bd9e040c9886b6bf47dee8d9b785d7edf154704169302da505b4fb1",
+        "lines": [
+          16,
+          35
+        ]
+      },
+      {
+        "signature": "## Step 2 — sort every delta into three buckets",
+        "class": "static",
+        "sha256": "9f333ca8ca2e44f311cd5c38ee7ab6ff3c5576a008869611cae6a7552a7daa11",
+        "lines": [
+          36,
+          48
+        ]
+      },
+      {
+        "signature": "## Step 3 — the owner decides BEFORE any change",
+        "class": "static",
+        "sha256": "5c63a27993939f595cf69effee27f94aea98ff7321703ddff77ce00acbcbb318",
+        "lines": [
+          49,
+          58
+        ]
+      },
+      {
+        "signature": "## Step 4 — apply only what was approved, around the owner's words",
+        "class": "static",
+        "sha256": "5678ba02f1b70888481b7d79718d391eb8fc9b77cb455f63a874326503dd9ed4",
+        "lines": [
+          59,
+          68
+        ]
+      },
+      {
+        "signature": "## Done when",
+        "class": "static",
+        "sha256": "d15ff2625818762910fc124b2e50fc3b645c5acf7864a07bc8b4b1c1cb546089",
+        "lines": [
+          69,
+          75
+        ]
+      },
+      {
+        "signature": "## Anti-patterns — refuse",
+        "class": "static",
+        "sha256": "68ecf02db1ee39ed9d749bd9abad3a8f2af5b7ad022327a88cb5d850ac35f0c1",
+        "lines": [
+          76,
+          82
         ]
       }
     ],
