@@ -1148,8 +1148,14 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   const wholesaleCeiling = baseN <= 2 ? 0 : Math.max(1, Math.floor(baseN * WHOLESALE_SURVIVOR_SHARE));
   // One predicate for both axes (bugs/66 №3) — the net used to re-implement the script test
   // inline, so widening `localizedAgainst` alone would have left this site Latin-blind.
-  if (baseN && baseFound <= wholesaleCeiling && localizedAgainst(bodyOf(diskMods), bodyOf(newMods)))
-    return { translatedWholesale: true };
+  // P1 (2.5, epic US; field #27 R1: two runs on a byte-identical tree classified one file
+  // differently and nobody could see WHY): the verdict carries the numbers that produced it —
+  // for every candidate (a body in the owner's script), frozen or merged — so a rehearsal and the
+  // live run compare line by line instead of by outcome. The freeze-on-mismatch half is US3.
+  const localized = !!baseN && localizedAgainst(bodyOf(diskMods), bodyOf(newMods));
+  const verdict = localized ? { baseFound, baseN, ceiling: wholesaleCeiling } : null;
+  if (localized && baseFound <= wholesaleCeiling)
+    return { translatedWholesale: true, verdict };
   let replaced = 0;
   const divergedList = [];
   const out = [];
@@ -1251,7 +1257,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
     replaced++;
   }
   const merged = joinModules(out);
-  return { merged, changed: !dryRun && merged !== disk, replaced, divergedList };
+  return { merged, changed: !dryRun && merged !== disk, replaced, divergedList, verdict };
 }
 
 // The real delivery for a file the machinery may not touch (translated wholesale): the
@@ -1381,10 +1387,14 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
         diverged.push(f.path); translatedWholesale.push(f.path); kept++; adopted.push(f.path);
         const delta = templateDelta(oldModShas[f.path], content, oldTexts);
         if (delta.length) divergedModules[f.path] = delta;
-        log(`⟳ ${f.path} is translated wholesale (its headings are in the owner's script) — kept intact; the template delta ships in the task`);
+        const v = res.verdict || {};
+        log(`⟳ ${f.path}: baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling} → frozen (translated wholesale — its headings are in the owner's script; kept intact, the template delta ships in the task)`);
         continue;
       }
       if (res) {
+        // the same decision printed for the OTHER outcome: a body in the owner's script whose surviving
+        // template headings sit ABOVE the ceiling merges by signature — say so with the numbers (P1)
+        if (res.verdict) log(`⟳ ${f.path}: baseFound ${res.verdict.baseFound} of ${res.verdict.baseN}, ceiling ${res.verdict.ceiling} → merged (the body carries the owner's script, but enough template headings survive for a by-signature merge)`);
         if (fileTranslated) {
           if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; }
           kept++; adopted.push(f.path);
