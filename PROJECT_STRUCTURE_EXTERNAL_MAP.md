@@ -40,7 +40,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md             # шаблоны навыков (число печатает сборка; generic, плейсхолдеры команд)
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
-│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint → .kaif/tools/)
+│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint → .kaif/tools/)
 │   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
 │   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
@@ -62,7 +62,7 @@ KAIF/
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
 │   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s14
-│   ├── sandbox/s01…s18*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3)
+│   ├── sandbox/s01…s19*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3)
 │   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf

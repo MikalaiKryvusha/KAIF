@@ -51,6 +51,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -67,10 +68,7 @@ const ok = (cond, name, extra = '') => {
 };
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 const modText = (m) => m.lines.join('\n');
-const run = (cwd, args) => {
-  try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
-};
+const run = coreRunner(ROOT);
 // KAIF_SBX_CORE — подмена ядра для доказательств «красный на сломанном» (судья L2): свод
 // гоняется против ядра с одним реверснутым слоем фикса и обязан краснеть в своём изоляторе.
 const CORE_OVERRIDE = process.env.KAIF_SBX_CORE || null;

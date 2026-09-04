@@ -13,6 +13,7 @@ import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
+import { failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // Корень прогона УНИКАЛЕН по построению (bugs/59): каталог с фиксированным именем в общем
@@ -29,7 +30,7 @@ const ok = (cond, name, extra = '') => {
 };
 const run = (args) => {
   try { return { code: 0, out: execSync(`node ${join(ROOT, '.kaif', 'tools', 'kaif-requirements-lint.mjs')} ${args} 2>&1`, { cwd: ROOT, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: ROOT, args: args }); }
 };
 cpSync(join(REPO, 'framework', 'tools', 'kaif-requirements-lint.mjs'), join(ROOT, '.kaif', 'tools', 'kaif-requirements-lint.mjs'));
 
@@ -120,7 +121,7 @@ ok(r.code === 3 && /SKIPPED/.test(r.out), 's13 пустая песочница �
 const WRAPPER_LINT = join(REPO, 'tools', 'doc-header-lint.mjs');
 const runWrapper = (args) => {
   try { return { code: 0, out: execSync(`node ${WRAPPER_LINT} ${args} 2>&1`, { stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: ROOT, args: args }); }
 };
 
 // --- селфтест обвязочного линтера: красный доказан предсказанными находками (шапка + блок

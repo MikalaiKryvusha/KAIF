@@ -40,10 +40,15 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Исходник по слову владельца в чате 2026-08-28 ~12:19 +03:00: «сделал логотип v2, и там есть
 // версия увеличенная через ультрамикс - её бери».
 const ART_SRC = join(ROOT, 'assets', 'KAIF 2.4 - Teamed Up KAIF v2 logo_upscayl_3x_ultramix-balanced-4x.png');
-const OUT_PNG = join(ROOT, 'assets', 'KAIF_2.4_GitHub_LOGO.png');
-const OUT_WEBP = join(ROOT, 'assets', 'KAIF_2.4_GitHub_LOGO.webp');
-
-const TITLE = 'KAIF 2.4 — Teamed Up KAIF'; // решение №82 — идентичность даёт только владелец
+// Подпись — `--title "KAIF X.Y — Name"` (2.5, решение №89: «логотип оставляем от 2.4 версии, только
+// меняем текст-подпись»); без флага — подпись 2.4 (решение №82). Имя выходного файла — от версии
+// в подписи, как в build-logo-title: артефакт с версией в имени не перезаписывает соседнюю версию.
+const titleIdx = process.argv.indexOf('--title');
+const TITLE = titleIdx >= 0 && process.argv[titleIdx + 1] ? process.argv[titleIdx + 1] : 'KAIF 2.4 — Teamed Up KAIF';
+const TITLE_VER = (TITLE.match(/^KAIF (\d+\.\d+)/) || [])[1];
+if (!TITLE_VER) { console.error(`✖ подпись должна начинаться с "KAIF X.Y": ${TITLE}`); process.exit(1); }
+const OUT_PNG = join(ROOT, 'assets', `KAIF_${TITLE_VER}_GitHub_LOGO.png`);
+const OUT_WEBP = join(ROOT, 'assets', `KAIF_${TITLE_VER}_GitHub_LOGO.webp`);
 
 // ── Плита 2.3 (донор геометрии; все числа — пробы 2026-08-28, шапка выше) ────────────────────
 const PLATE_W = 2900, PLATE_H = 2300;

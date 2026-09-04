@@ -17,6 +17,7 @@ import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
+import { failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -37,7 +38,7 @@ const CALLS = join(ROOT, 'gh-calls.log');
 const run = (args, env = {}) => {
   const e = { ...process.env, KAIF_GH: SHIM, GH_SHIM_LOG: CALLS, ...env };
   try { return { code: 0, out: execSync(`node ${join(S, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd: S, stdio: 'pipe', env: e }).toString() }; }
-  catch (err) { return { code: err.status ?? 1, out: (err.stdout || '').toString() + (err.stderr || '').toString() }; }
+  catch (err) { return failed(err, { root: ROOT, cwd: ROOT, args: args }); }
 };
 const calls = () => (existsSync(CALLS) ? readFileSync(CALLS, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
 const setTracking = (tracking) => {

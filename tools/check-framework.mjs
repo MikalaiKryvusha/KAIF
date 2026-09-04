@@ -38,6 +38,7 @@ const OWNER_SEEDED_TPL = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIE
 const CYRILLIC_DATA_CARRIERS = [
   'tools/kaif-provenance.mjs',         // the RU analogues of the [AI]/[AI-ed] marks, as config examples
   'tools/kaif-requirements-lint.mjs',  // the RU half of the requirements stop-word dictionary
+  'tools/kaif-scenario-lint.mjs',      // the RU keywords, rule word lists and selftest fixtures of the scenario form (2.5)
   'installer/KAIF-CORE.mjs',           // SCRIPTS (the writing-system regexes) + AUTHOR_TOKEN_CLUSTERS, as data
 ];
 // The author's own name is an ATTRIBUTION, not a leaked example — it must stay in the bylines of

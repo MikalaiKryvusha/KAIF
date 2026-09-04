@@ -17,6 +17,7 @@ import { execSync, execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
+import { failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -33,7 +34,7 @@ const ok = (cond, name, extra = '') => {
 };
 const run = (cwd, args) => {
   try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args}`, { cwd, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: args }); }
 };
 // Запуск хука как его запускает агентская система: JSON на stdin, JSON (или тишина) на stdout.
 // Терпим к отсутствию/крашу скрипта: свод досчитывает все ассерты (EXP-0027 — краш затирает счёт)

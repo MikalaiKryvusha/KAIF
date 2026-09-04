@@ -52,7 +52,7 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
-import { must } from '../lib/sandbox-run.mjs';
+import { must, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -66,10 +66,7 @@ const ok = (cond, name, extra = '') => {
   if (!cond) failures++;
 };
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
-const run = (cwd, args) => {
-  try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
-};
+const run = coreRunner(ROOT);
 const copy = (a, b) => writeFileSync(b, readFileSync(a));
 const seed = (dir) => {
   mkdirSync(join(dir, '.kaif', 'install'), { recursive: true });

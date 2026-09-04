@@ -145,7 +145,8 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
    **Severity:** S1 | S2 | S3   <consulted at FILING time — the severity ladder, BUG_FIXING_FRAMEWORK.md;
    S3 gets ONE line in EXPERIENCE.md instead of this document>
    **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
-   REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches>
+   REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches — or as a four-line scenario:
+   Situation · Action · Result · Check ("The scenario form")>
 
    ## Symptom
    <what is observed>

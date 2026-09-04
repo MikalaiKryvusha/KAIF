@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { join, resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { must } from '../lib/sandbox-run.mjs';
+import { must, failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -32,14 +32,14 @@ const run = (cwd, args) => {
   try {
     const out = execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args}`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };
-  } catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  } catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: args }); }
 };
 // Первый запуск (ядра ещё нет в песочнице) — из dist
 const runDist = (cwd, args) => {
   try {
     const out = execSync(`node ${join(DIST, 'KAIF-CORE.mjs')} ${args}`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };
-  } catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  } catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: args }); }
 };
 const seedBundle = (dir) => {
   mkdirSync(join(dir, '.kaif', 'install'), { recursive: true });
@@ -335,7 +335,7 @@ const runLoader = (cwd, src) => {
   try {
     const out = execSync(`node ${LOADER} --source ${src} --mode anonymous`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };
-  } catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  } catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: src }); }
 };
 const LOADER_SET = ['KAIF-CORE.mjs', 'KAIF-CORE-BUNDLE.md', 'kaif-manifest.json'];
 const seedSource = (dir) => { mkdirSync(dir); for (const n of LOADER_SET) cpSync(join(DIST, n), join(dir, n)); };

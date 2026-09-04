@@ -14,6 +14,7 @@ import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
+import { failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -31,7 +32,7 @@ const ok = (cond, name, extra = '') => {
 // немых команд в своде нет, результат каждой судится внутри ok(...)).
 const run = (args) => {
   try { return { code: 0, out: execSync(`node ${join(S, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd: S, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: ROOT, args: args }); }
 };
 const lines = (doc) => readFileSync(join(S, doc), 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
 const bloat = (doc, extra) => {

@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.4",
   "released": "2026-08-28",
-  "moduleCount": 764,
+  "moduleCount": 766,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -680,30 +680,39 @@
         ]
       },
       {
-        "signature": "## The writing checklist — the executable carrier of this canon",
+        "signature": "### The scenario form — the same criterion written as an example (optional, a project's choice)",
         "class": "static",
-        "sha256": "d534007d6386d2197b6e7fff9fb8c73444721eb74db22278f59af4607059f38e",
+        "sha256": "45c5b610b352ade2afe93afa14553eb34496a90c5bebee2b5f40ed5909491208",
         "lines": [
           108,
-          129
+          158
+        ]
+      },
+      {
+        "signature": "## The writing checklist — the executable carrier of this canon",
+        "class": "static",
+        "sha256": "5623907cbe8930f571eaf24521aa85bd317ab19c15e2a1ace4ef9fd2d479a5c4",
+        "lines": [
+          159,
+          182
         ]
       },
       {
         "signature": "## Boundaries — what this framework is NOT",
         "class": "static",
-        "sha256": "2ba6cef24797b4a147d5d11de78ce248bb79b7fa20fb62deef40c5f96b446649",
+        "sha256": "ca6cfd208730da33ba64fc250285a1830ab1dd8b228d693cbc83ec5cfc94a91f",
         "lines": [
-          130,
-          141
+          183,
+          195
         ]
       },
       {
         "signature": "## How this composes with the rest of KAIF",
         "class": "static",
-        "sha256": "06dc1ccc79a726183b2ddeccb614335a80e53d791b17f8551c18e99328748636",
+        "sha256": "7c555749796f47f1268857e6ff77eecd1c545eaec699631c577847d764899a68",
         "lines": [
-          142,
-          159
+          196,
+          216
         ]
       }
     ],
@@ -1474,10 +1483,10 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "5d8e05a36656380d4fcdca9bdd86105ad6d54b5baa42be8a78971b9ceda46f2e",
+        "sha256": "ec6812ed65c171cb721e4035aa8b8fb9f906f21ce41f70f4957af755742ab482",
         "lines": [
           437,
-          472
+          473
         ]
       },
       {
@@ -1485,8 +1494,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          473,
-          485
+          474,
+          486
         ]
       },
       {
@@ -1494,8 +1503,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          486,
-          494
+          487,
+          495
         ]
       }
     ],
@@ -2995,12 +3004,21 @@
         ]
       },
       {
+        "signature": "### Step 3a. Explaining a mechanic to the owner — a scenario first, the formula after",
+        "class": "static",
+        "sha256": "b4627ffa80bd56a8439f6e424665ae3eb626746d5bb61ef10108a1a9e9ad9a67",
+        "lines": [
+          99,
+          108
+        ]
+      },
+      {
         "signature": "### Step 4. Ask the owner — via the document",
         "class": "static",
         "sha256": "d6862b9574321dc349aadd9227378945dde0e402873d4475f9d2ca67cebb51ee",
         "lines": [
-          99,
-          113
+          109,
+          123
         ]
       },
       {
@@ -3008,8 +3026,8 @@
         "class": "static",
         "sha256": "5b9280a40aa68abbf3c5fccca9b54df583e3fb653dbac80c3969d178bad5494e",
         "lines": [
-          114,
-          141
+          124,
+          151
         ]
       },
       {
@@ -3017,8 +3035,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          142,
-          146
+          152,
+          156
         ]
       }
     ],
@@ -3640,10 +3658,10 @@
       {
         "signature": "## Rung 2 — the meta-plan (one `plans/NN_EPIC_<name>.md`)",
         "class": "static",
-        "sha256": "89073c4d3f224e0968a635e83b2e83111c5ce96b1e14155bf577d1430437122e",
+        "sha256": "b17db1633e5c42683efd18cfd0a93bfa10bd8c231b6a5da382a36e6e73e52936",
         "lines": [
           37,
-          51
+          52
         ]
       },
       {
@@ -3651,8 +3669,8 @@
         "class": "static",
         "sha256": "797cfda916153005aa6c64af08970168ca899d67342ca74c7c2ae699d4f4fede",
         "lines": [
-          52,
-          66
+          53,
+          67
         ]
       },
       {
@@ -3660,8 +3678,8 @@
         "class": "static",
         "sha256": "02eb6cda82ca615ba6d5a32df75f1861190d7f8a430cbcd66926f4f4571de004",
         "lines": [
-          67,
-          76
+          68,
+          77
         ]
       },
       {
@@ -3669,8 +3687,8 @@
         "class": "static",
         "sha256": "dea38a30df721585fadd74966c51fae422ffc109ce9960be610597949b599b05",
         "lines": [
-          77,
-          83
+          78,
+          84
         ]
       }
     ],
@@ -3714,10 +3732,10 @@
       {
         "signature": "## Step 2 — write the plan",
         "class": "static",
-        "sha256": "bd99d8d1e42cfd140b172723f6dd2f725ea801f843b638c261a9fd8f3895e6ff",
+        "sha256": "ca635fa497aeff8bd32c04d69d10756a6a60d978ea89da2d223f237c917fc98b",
         "lines": [
           34,
-          64
+          68
         ]
       },
       {
@@ -3725,8 +3743,8 @@
         "class": "static",
         "sha256": "086d4fe0dbf3db280fc6682a5f8d56ad515fa4c1195b143ab6eb8d1f6895d2e0",
         "lines": [
-          65,
-          71
+          69,
+          75
         ]
       },
       {
@@ -3734,8 +3752,8 @@
         "class": "static",
         "sha256": "41843d36a144da89b42869b748b963360472b4176c05069451a5765f3eabbda2",
         "lines": [
-          72,
-          79
+          76,
+          83
         ]
       }
     ],
@@ -3770,10 +3788,10 @@
       {
         "signature": "## What to do",
         "class": "adaptive",
-        "sha256": "aa743594f20fccbb1566393539844f5f86f1cdde2b457d63958cfa5ca3497909",
+        "sha256": "bb20c1aabf3bbd2d5f580f7ba18fd270a8511514cc3b4811580ea04108fa0427",
         "lines": [
           26,
-          70
+          71
         ]
       },
       {
@@ -3781,8 +3799,8 @@
         "class": "static",
         "sha256": "e0c170bb23c20ae92315f408eec9b40c3d3c3b1b73e1ca8357d1731651927bb2",
         "lines": [
-          71,
-          75
+          72,
+          76
         ]
       }
     ],
@@ -4010,10 +4028,10 @@
       {
         "signature": "## What to do",
         "class": "adaptive",
-        "sha256": "e2b0c8f8c5036ee53fec3481583f5158f389241a9b1a03177cad6102035c500c",
+        "sha256": "4679b3ef94a8e269f3d2f78020a12bb72f8213d9ee23a7eef63b69cd17cc6f85",
         "lines": [
           127,
-          181
+          182
         ]
       },
       {
@@ -4021,8 +4039,8 @@
         "class": "static",
         "sha256": "cc9cd26c93d2bde53041a566ba46133ed7bc717fb1ab6b8585da808d5a37330c",
         "lines": [
-          182,
-          185
+          183,
+          186
         ]
       }
     ],

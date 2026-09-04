@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
-import { must } from '../lib/sandbox-run.mjs';
+import { must, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -42,16 +42,7 @@ const sha256 = (b) => createHash('sha256').update(b).digest('hex');
 // Полный вывод УПАВШЕЙ команды пишется файлом рядом с корнем прогона (сессия 50: два флейка
 // `update` с exit≠0 в этом своде — T1, затем T2 — оставили после себя только хвост 400 символов
 // строки `ok()`, и причина осталась неназванной; `e.status` undefined = убит сигналом/буфером).
-let runFails = 0;
-const run = (cwd, args) => {
-  try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024 }).toString() }; }
-  catch (e) {
-    const out = (e.stdout || '').toString() + (e.stderr || '').toString();
-    const dump = join(ROOT, `run-fail-${++runFails}.log`);
-    try { writeFileSync(dump, `# ${args}\n# cwd ${cwd}\n# status ${e.status} signal ${e.signal} code ${e.code} message ${e.message}\n\n${out}`); } catch { /* best-effort forensics */ }
-    return { code: e.status ?? 1, out: out + `\n[full output of the failed run → ${dump}]` };
-  }
-};
+const run = coreRunner(ROOT, { maxBuffer: 64 * 1024 * 1024 });
 const seed = (dir) => {
   mkdirSync(join(dir, '.kaif', 'install'), { recursive: true });
   copy(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(dir, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'));

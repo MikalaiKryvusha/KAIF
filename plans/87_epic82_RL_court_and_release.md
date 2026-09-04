@@ -19,7 +19,8 @@
 REFUTED-блокеров → витрина обеих половин → черновики ответов на каждый открытый тикет и по одной
 квитанции на полевой отчёт → релиз v2.5 по слову владельца с именем по его решению.
 **Метрика:** критерии 2.5 закрыты 5 из 8 после суда → релиз = 8 из 8 (критерии 6–8 — скоуп,
-витрина, публикация; `MASTER_PLAN` §8).
+витрина, публикация; `MASTER_PLAN` §8). *Поправка 2026-09-04 14:5x +03:00 (№91): знаменатель —
+9 (критерий 7 [SF] вставлен словом владельца); релиз = 9 из 9.*
 
 ## Критерии приёмки (fit)
 
@@ -93,7 +94,11 @@ REFUTED-блокеров → витрина обеих половин → чер
       `TEMPLATE_NOTES_BY_VERSION['2.5']` (frozen literal, №87) · `README.pdf` перегенерирован
       (первый экран — глазами владельца, рендерера у агента нет) · гейты: showcase-lint · voice-lint
       (жёстких 0; коридоры нот — длинные предложения 21,3 и 5 антитез, справка) · counters 50 ·
-      private-names · estimates — зелёные. Цитата владельца о версии — интервью №022 Q1 (пока
+      private-names · estimates — зелёные. ✅ 14:5x: по слову владельца (интервью №022 Q1 = своё,
+      №89) — новой цитаты нет: цитата о 2.4 остаётся, под ней возвращена цитата о 2.2 (README
+      v2.3, дословно, обе половины); логотип 2.5 — арт 2.4 (медальон команды) с подписью
+      «KAIF 2.5 — Experienced KAIF» (`build-team-logo.mjs --title`, `--check` зелёный, прочитан
+      глазами; alt-тексты README и нот — медальон). Прежняя запись: цитата — интервью №022 Q1 (пока
       стоит его цитата о 2.4). **Витрина.** README EN/RU: строка 2.5 в истории версий, числа из сборки; релиз-ноты
       `reports/RELEASE_NOTES_2.5.md` из нот сборщика; `README.pdf` перегенерирован (первый экран —
       владельцу, у агента нет рендерера); `counters-guard` · `doc-header-lint` · `release-body-guard`.
@@ -118,7 +123,7 @@ REFUTED-блокеров → витрина обеих половин → чер
       вариантов); страница контура владельцу — при следующем живом чате (`node tools/review.mjs`).
 - [ ] **RL5. Релиз по слову владельца** — `/release` (предпроверка · версия · сборка · тег · пуш ·
       GitHub Release); после — `send-outbound` ответов по тикетам, тоже по слову (№13).
-- [ ] **RL6. Закрытие 2.5:** `plans/82` критерии 5–8 ✅, `MASTER_PLAN` §8 (8 из 8), `STATUS`,
+- [ ] **RL6. Закрытие 2.5:** `plans/82` критерии 5–9 ✅, `MASTER_PLAN` §8 (9 из 9), `STATUS`,
       летопись; `ideas/28` пополнен отложенным (bugs/100, флейк s07, US3в лечение); план 2.6 —
       по `/plan-epic`, не здесь.
 
@@ -259,20 +264,27 @@ adoption gap → the ADOPT path of 2.5; #29/#33/#34 answered above). Форма 
 `/team-deployment` in v2.5 (reference `team-adopt.md`): inventory against the invariants → the
 owner's decision → apply without overwriting the owner's words».
 
-**#39 (Unliminium, scenario form for acceptance criteria — ответ по №022 Q3; черновик под
-рекомендованный A).** Thank you — the four-line form (Situation · Action · Result · Check) is the
-owner's own language for a requirement, and the fourth line is exactly what the agent era adds to
-BDD: a check the agent can run instead of a sentence it can only claim. Your deployment already
-proved the whole package in the field (home rule after the upstream text, four templates, a
-form guard with an addressable selftest, 145 files green), so the request is accepted into the
-2.6 register at the origin (`ideas/28`) as one item: the optional "Scenario form" subsection of
-`REQUIREMENTS_FRAMEWORK.md` with the EARS → scenario mapping and your seven rules, an optional
-`kaif-scenario-lint` tool module mirroring your `tools/req-lint.mjs`, and the four lines in the
-criteria block of the four document templates. It does not enter v2.5 — its scope was cut by the
-owner before your ticket arrived — and the keywords stay yours. *(При B: «accepted as the canon
-subsection only; the guard and the templates stay a project choice»; при C: «declined: the
-scenario syntax stays a per-project choice by the boundary the canon already states — your home
-rule is the right home for it».)*
+**#39 (scenario form for acceptance criteria — решение владельца №91, интервью №022 Q3 = A «в
+2.5 в полном виде»; исполнено эпиком SF, `plans/88`).** Thank
+you — the four-line form (Situation · Action · Result · Check) is the owner's own language for a
+requirement, and the fourth line is exactly what the agent era adds to BDD: a check the agent can
+run instead of a sentence it can only claim. Your deployment proved the whole package in the
+field first (the home rule after the upstream text, four templates, a form guard with an
+addressable selftest, a live backlog green), and the owner's word put it into v2.5 in full: the
+optional "The scenario form" subsection of `REQUIREMENTS_FRAMEWORK.md` (four lines, the
+Given/When/Then bridge plus the fourth line, EARS → scenario, your seven rules with ❌/✅, the two
+field boundaries — an owner-written Check may be empty, an agent-edited Check during execution is
+judged like a weakened test); the optional tool module `.kaif/tools/kaif-scenario-lint.mjs`
+(`check` / `selftest`; the seven rules as data, keywords mirrored per language — `en` and `ru`
+ship, a project adds a row; `SKIPPED=3` on a tree without a scenario; the selftest proves rule N
+red on mutation N only, in both languages); the four lines in the criteria block of
+`/plan-task`, `/plan-epic`, `/propose-idea`, `/report-bug`; and `/interview` step 3a — a mechanic is
+explained scenario-first, the formula after. Two things differ from your home rule on purpose:
+the form stays a project's CHOICE at the canon level (the "Not Gherkin-everywhere" boundary
+holds — a project makes it mandatory by its own home rule, as yours does), and the examples are
+domain-neutral. The keywords stay yours. Your `update` to 2.5 will bring the subsection next to
+your home rule — keep the home rule (it states where the form is mandatory for you) and point it
+at the canon subsection; the linter you already run stays yours, the shipped one is a mirror.
 
 ## Верификация наблюдением
 

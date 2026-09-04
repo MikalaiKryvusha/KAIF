@@ -55,6 +55,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { createHash } from 'node:crypto';
 import { splitModules, joinModules } from '../module-map-lib.mjs';
+import { failed, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -70,13 +71,10 @@ const ok = (cond, name, extra = '') => {
   if (!cond) failures++;
 };
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
-const run = (cwd, args) => {
-  try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
-};
+const run = coreRunner(ROOT);
 const runTool = (cwd, tool, args) => {
   try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'tools', tool)} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
-  catch (e) { return { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: [tool, args].join(' ') }); }
 };
 const seed = (dir) => {
   mkdirSync(join(dir, '.kaif', 'install'), { recursive: true });

@@ -71,6 +71,10 @@
 //         mangled argv name refused); one placeholder-surface predicate for the gate and the
 //         task item; the anonymous → origin switch names kept anonymity-conditioned files
 //
+//   s19 — kaif-scenario-lint (epic SF 2.5, plan 88; origin issue #39): the four-line scenario form
+//         of an acceptance criterion (Situation · Action · Result · Check) keeps its shape — seven
+//         rules as data, red on a broken fixture in both shipped languages, green on a clean one,
+//         an empty Check is a warning, SKIPPED on a tree without scenarios, fenced templates invisible
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
@@ -86,7 +90,7 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs',
                 's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs',
                 's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs',
-                's18-update-symmetries.mjs'];
+                's18-update-symmetries.mjs', 's19-scenario-lint.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

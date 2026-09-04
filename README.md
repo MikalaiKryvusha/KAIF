@@ -34,7 +34,7 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.5_GitHub_LOGO.webp" alt="KAIF 2.5 Experienced KAIF — the ouroboros with the eye and the version title" width="560">
+  <img src="assets/KAIF_2.5_GitHub_LOGO.webp" alt="KAIF 2.5 Experienced KAIF — a team medallion of eight roles inside the ouroboros ring" width="560">
 </p>
 
 <p align="center"><strong>Version 2.5 — Experienced KAIF</strong> · 2026-09-04</p>
@@ -46,6 +46,14 @@ and in section 8.1.
 > order for your project.
 >
 > — *Mikalai Kryvusha on KAIF 2.4*
+
+> A very large-scale version, the one that endows KAIF with the power of an intelligent system that
+> develops itself through a feedback loop. The ouroboros stands for the closing of the loop and for
+> completeness. The eye stands for KAIF now being under the observation of the projects that use it —
+> and those projects being under the observation of KAIF. Every cycle closes — the metaphorical ones
+> and the technical ones alike.
+>
+> — *Mikalai Kryvusha on KAIF 2.2*
 
 <a id="excellent-en"></a>
 
@@ -457,7 +465,7 @@ Table 5 — Versions
 | v2.2 | Yolden KAIF | 2026-08-08 | The loop closes: the interactive contour turns a question to the owner into a working channel, the field-to-origin signal path gained five prescribed steps, `REQUIREMENTS_FRAMEWORK.md` joins as the 14th key document, re-reading the canon becomes a verifiable act with a witness marker and the optional `refresh-hooks` module, and `/kaif-go` is the slash-command form of saying "carry on": a simple way to continue the work in the current chat. |
 | v2.3 | Subjected KAIF | 2026-08-21 | The version that spent its cycle under observation: thirteen issues from the agents of live projects became the scope, so this one is made of what its users found. The canon speaks in commands, so an obligation carries a command, a numbered step or a checkbox, and `TESTING_FRAMEWORK.md` is rebuilt around a chain of testing activities; a recorded lesson has to answer whether the trap can be mechanized away instead of remembered; `update` writes a journal before its first mutation, and `resume` finishes what a killed run started; a failed network call on Windows reports one error instead of two; eight language packs are frozen with a declared version, state and reason, while `en` and `ru` stay maintained. |
 | v2.4 | Teamed Up KAIF | 2026-08-28 | The harness takes a team: the optional `/team-deployment` skill designs and deploys a team of AI agents — roles, isolated worktree workplaces, a generated team Constitution, a shared status dashboard. Closing a chat splits into `/end-chat-soft` and `/end-chat-force`, and a named end time starts the soft close instead of cutting the work short. Before work the agent speaks the creed and the prayer of principles. The interactive contour calls with its named neural voice and renders choices as radio buttons. Four field fixes from the 2.3 reports ship alongside. |
-| v2.5 | Experienced KAIF | 2026-09-04 | Rules move to the point of decision: the KAIF-defect carve-out stands inside the authorization gate, an engineering fork is closed by the fourth door and a forced `FORK:` line, every guard declares the threat it was proven against, the guarded loop writes its boundary. Delivery is counted by one owner metric in every session close, defects get a severity ladder, the re-read core gets line budgets. A KAIF ticket is delivered by a machinery command. The team skill adopts a live team, gives the board four states and ships CI with the team. The update keeps an anchored block whole, prints its verdicts with numbers and holds a rehearsal binding, writes the stale-claims item unconditionally and scans the project's scripts. |
+| v2.5 | Experienced KAIF | 2026-09-04 | Rules move to the point of decision: the KAIF-defect carve-out stands inside the authorization gate, an engineering fork is closed by the fourth door and a forced `FORK:` line, every guard declares the threat it was proven against, the guarded loop writes its boundary. Delivery is counted by one owner metric in every session close, defects get a severity ladder, the re-read core gets line budgets. A KAIF ticket is delivered by a machinery command. The team skill adopts a live team, gives the board four states and ships CI with the team. The update keeps an anchored block whole, prints its verdicts with numbers and holds a rehearsal binding, writes the stale-claims item unconditionally and scans the project's scripts. An acceptance criterion can be written in the owner's language as a four-line scenario — Situation · Action · Result · Check — with an optional linter that guards its form. |
 
 ### 8.2. Repository layout
 
@@ -510,12 +518,12 @@ artifacts are never hand-edited.
    canon and skill bodies are English by design.
 2. Native skills are generated for five agent systems; other harnesses (Cursor, Copilot,
    Windsurf) ride the universal `AGENTS.md` fallback without native skill files.
-3. The sandbox polygon (18 suites) verifies the deploy/update machinery; the methodology itself is
+3. The sandbox polygon (19 suites) verifies the deploy/update machinery; the methodology itself is
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   170 bundle blocks; 764 modules.
+   171 bundle blocks; 766 modules.
 
 ## License
 
@@ -560,7 +568,7 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.5_GitHub_LOGO.webp" alt="KAIF 2.5 Experienced KAIF — уроборос с глазом и подписью версии" width="560">
+  <img src="assets/KAIF_2.5_GitHub_LOGO.webp" alt="KAIF 2.5 Experienced KAIF — медальон команды из восьми ролей в кольце уробороса" width="560">
 </p>
 
 <p align="center"><strong>Версия 2.5 — Experienced KAIF</strong> · 04.09.2026</p>
@@ -572,6 +580,13 @@ KAIF — это агентный харнесс (обвязка): рабочее
 > ваш заказ на ваш проект.
 >
 > — *Николай Кривуша о версии KAIF 2.4*
+
+> Очень масштабная версия, наделяющая KAIF силой умной системы, самостоятельно развивающейся по
+> циклу обратной связи. Уроборос символизирует замыкание цикла и совершенство. Глаз символизирует
+> то, что KAIF теперь под наблюдением проектов, которые им пользуются, а проекты, которые им
+> пользуются, — под наблюдением KAIF. Все циклы — и метафорические, и технические — замыкаются.
+>
+> — *Николай Кривуша о версии KAIF 2.2*
 
 <a id="excellent-ru"></a>
 
@@ -981,7 +996,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.2 | Yolden KAIF | 08.08.2026 | Цикл замыкается: интерактивный контур делает вопрос к владельцу рабочим каналом; у пути сигнала «поле → исток» появились пять предписанных шагов; `REQUIREMENTS_FRAMEWORK.md` входит 14-м ключевым документом; перечитывание канона становится проверяемым действием с маркером-свидетельством и опциональным модулем `refresh-hooks`; `/kaif-go` — это слеш-команда «продолжай»: простой способ продолжить работу в текущем чате. |
 | v2.3 | Subjected KAIF | 21.08.2026 | Версия, которая весь свой цикл была под наблюдением: тринадцать issues от агентов живых проектов стали её скоупом, то есть она сделана из того, что нашли пользователи. Канон заговорил командами — обязательство несёт команду, нумерованный шаг или чекбокс, а `TESTING_FRAMEWORK.md` пересобран вокруг цепочки тестовых активностей; записанный урок обязан ответить, нельзя ли грабли механизировать вместо того, чтобы их помнить; `update` пишет журнал до первой мутации, а убитый прогон дочиняет `resume`; отказ сети на Windows сообщает об одной ошибке вместо двух; восемь языковых пакетов заморожены с объявленными версией, состоянием и причиной, а `en` и `ru` продолжают вестись. |
 | v2.4 | Teamed Up KAIF | 28.08.2026 | Харнесс берёт команду: опциональный навык `/team-deployment` проектирует и разворачивает команду ИИ-агентов — роли, изолированные рабочие места в worktree, сгенерированная Конституция команды, общая доска статусов. Закрытие чата раздвоено на `/end-chat-soft` и `/end-chat-force`, а названное время окончания начинает мягкое закрытие, вместо того чтобы обрывать работу раньше срока. Перед работой агент произносит символ веры и молитву принципов. Интерактивный контур зовёт именованным нейроголосом и рендерит развилки радиокнопками. Вместе с версией едут четыре полевых фикса из отчётов 2.3. |
-| v2.5 | Experienced KAIF | 04.09.2026 | Правила переезжают в точку решения: исключение для дефектов KAIF стоит внутри гейта авторизации, инженерную развилку закрывает четвёртая дверь и принудительная строка `FORK:`, каждый страж объявляет угрозу, против которой доказан, защищённый цикл записывает свою границу. Доставка считается одной метрикой владельца в каждом закрытии сессии, у дефектов есть лестница тяжести, у перечитываемого ядра — бюджеты строк. Тикет о KAIF доставляет команда машинерии. Командный навык принимает живую команду, даёт доске четыре состояния и везёт CI вместе с командой. Обновление держит якорный блок целым, печатает вердикты с числами и связывает себя репетицией, пишет пункт `stale-claims` безусловно и сканирует скрипты проекта. |
+| v2.5 | Experienced KAIF | 04.09.2026 | Правила переезжают в точку решения: исключение для дефектов KAIF стоит внутри гейта авторизации, инженерную развилку закрывает четвёртая дверь и принудительная строка `FORK:`, каждый страж объявляет угрозу, против которой доказан, защищённый цикл записывает свою границу. Доставка считается одной метрикой владельца в каждом закрытии сессии, у дефектов есть лестница тяжести, у перечитываемого ядра — бюджеты строк. Тикет о KAIF доставляет команда машинерии. Командный навык принимает живую команду, даёт доске четыре состояния и везёт CI вместе с командой. Обновление держит якорный блок целым, печатает вердикты с числами и связывает себя репетицией, пишет пункт `stale-claims` безусловно и сканирует скрипты проекта. Критерий приёмки можно записать на языке владельца четырёхстрочным сценарием — Ситуация · Действие · Результат · Проверка — с опциональным линтером его формы. |
 
 ### 8.2. Структура репозитория
 
@@ -1034,12 +1049,12 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    тела навыков — английские by design.
 2. Родные навыки генерируются для пяти агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) работают через универсальный `AGENTS.md` без родных файлов навыков.
-3. Песочный полигон (18 сводов) проверяет машинерию развёртывания и обновления; сама методология
+3. Песочный полигон (19 сводов) проверяет машинерию развёртывания и обновления; сама методология
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   170 блоков бандла; 764 модуля.
+   171 блоков бандла; 766 модуля.
 
 ## Лицензия
 
