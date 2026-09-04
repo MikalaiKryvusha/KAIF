@@ -1,7 +1,7 @@
 {
   "framework": "KAIF",
-  "version": "2.4",
-  "released": "2026-08-28",
+  "version": "2.5",
+  "released": "2026-09-04",
   "moduleCount": 766,
   "files": {
     "AGENT_GUIDE.md": [

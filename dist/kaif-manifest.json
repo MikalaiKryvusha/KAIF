@@ -1,11 +1,11 @@
 {
   "framework": "KAIF",
-  "version": "2.4",
-  "released": "2026-08-28",
-  "codename": "Teamed Up KAIF",
+  "version": "2.5",
+  "released": "2026-09-04",
+  "codename": "Experienced KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "7f2baad56390df55a964e3573615883450203ad83d471bf3f7a4342164a5f8ec",
-    "KAIF-CORE-BUNDLE.md": "b791125771364e592c2ed090e618acc70f82dcabba82871e5931d6f4947d4bea"
+    "KAIF-CORE-BUNDLE.md": "f400506d5748f5f0dd66504c8f2dfbe7b38301cddba8eaa5e7f7b30c17144072"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
