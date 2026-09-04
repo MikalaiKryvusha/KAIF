@@ -5293,10 +5293,10 @@
       {
         "signature": "## Opt-in — an explicit owner step",
         "class": "static",
-        "sha256": "a505b692c06b9875dc3f62eae37fd9fab15b8b16eac66bf088147b950d9b57c8",
+        "sha256": "dfef38b9c56e0656dbecb34079d000fdba444cef797f64b09676e1a80e5dc191",
         "lines": [
           24,
-          40
+          42
         ]
       },
       {
@@ -5304,8 +5304,8 @@
         "class": "static",
         "sha256": "77960cd00a40b959d2824350a6a6cd6cc8080da6ccbf38c33001dfa108eb9476",
         "lines": [
-          41,
-          93
+          43,
+          95
         ]
       }
     ],

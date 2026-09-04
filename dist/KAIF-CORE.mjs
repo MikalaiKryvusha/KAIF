@@ -898,7 +898,12 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // stale-claims comes AFTER review-news: the news carry the history-migration instruction, and
   // the scan once flagged the very STATUS lines that migration moves two items later (bugs/35,
   // project A гр.4); the checkpoint re-runs the scanner, so the post-migration state is what counts.
-  if (staleClaims.length) items.push(['stale-claims', `These lines still assert the OLD version (${fromVersion}) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`]);
+  // #31 (2.5, epic US; field: the item was present in one run and absent in the next, and an
+  // ABSENT item is indistinguishable from "nothing found" — a silent scanner failure would pass
+  // as a clean tree): the item is UNCONDITIONAL on a version-changing update; an empty scan says so.
+  if (fromVersion) items.push(['stale-claims', staleClaims.length
+    ? `These lines still assert the OLD version (${fromVersion}) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`
+    : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
   // Epic M (feedback loop): the update report is MANDATORY, even for a smooth pass (deviations
@@ -1042,6 +1047,35 @@ async function buildSyntheticBaseline(legacyOld) {
 // cycles while its file's upstream modules merge mechanically; conflict module → diff in the
 // task; upstream-untouched divergence makes no noise; a translated-wholesale file is kept intact
 // (no doubling); dryRun analyzes without writes; owner-added sections never trip the net]
+// Anchored blocks — `<!-- KAIF:NAME:BEGIN -->` … `<!-- KAIF:NAME:END -->` (the creed, the prayer) —
+// are INDIVISIBLE units (2.5, epic US; origin issue #27 R1b: a module merge landed the prayer's END
+// without its BEGIN, a second field team saw upstream text arrive INSIDE a localized pair). This
+// reads a document's markers fence-aware and names every pair that is unbalanced or out of order —
+// exactly the shape a piecewise merge leaves behind. Returns { NAME: reason } for the bad ones only;
+// the multi-line author-note comment (`KAIF:AUTHOR-NOTE`) is not a line marker and is not judged.
+function unpairedAnchors(text) {
+  const seen = {};
+  let inFence = false;
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (/^(`{3,}|~{3,})/.test(line)) { inFence = !inFence; continue; }
+    if (inFence) continue;
+    // a marker may carry a trailing note inside the comment (`<!-- KAIF:AUTHOR-NOTE:BEGIN — … -->`)
+    const m = line.match(/^<!-- KAIF:([A-Z0-9-]+):(BEGIN|END)(?: [^\n]*)?-->$/);
+    if (!m) continue;
+    const s = seen[m[1]] || (seen[m[1]] = { BEGIN: 0, END: 0, open: false, bad: null });
+    s[m[2]]++;
+    if (m[2] === 'BEGIN') { if (s.open) s.bad = s.bad || 'BEGIN inside an open pair'; s.open = true; }
+    else { if (!s.open) s.bad = s.bad || 'END before BEGIN'; s.open = false; }
+  }
+  const out = {};
+  for (const [name, s] of Object.entries(seen)) {
+    if (s.bad) out[name] = s.bad;
+    else if (s.BEGIN !== s.END) out[name] = `BEGIN=${s.BEGIN} END=${s.END}`;
+  }
+  return out;
+}
+
 // KAIF ticket 06 (KAGO 2.3 field report): rewriting an EXISTING file keeps the file's dominant
 // line-ending convention. On an autocrlf=true tree `update` used to write LF into a CRLF working
 // tree — git normalizes on commit, so the REPO was unharmed, but any local guard comparing text
@@ -2399,8 +2433,27 @@ function cmdCheck() {
   // docs are exempt: their content is the owner's business. Fence-aware count via the splitter.
   for (const p of paths.filter((x) => x.endsWith('.md') && !OWNER_SEEDED.includes(x))) {
     if (!okOnDisk(p)) continue;
-    const h1 = splitModules(normEol(readFileSync(p, 'utf8'))).filter((m) => /^# /.test(m.signature)).length;
+    const text = normEol(readFileSync(p, 'utf8'));
+    const h1 = splitModules(text).filter((m) => /^# /.test(m.signature)).length;
     if (h1 > 1) { console.error(`✖ two-headed document (${h1} H1 headings): ${p} — a broken merge left two documents in one file; reconcile by hand`); missing++; }
+    // Anchored blocks are INDIVISIBLE (2.5 epic US, origin issue #27 R1b + a second field team's
+    // "arrived inside the pair"): a module merge once landed `KAIF:PRAYER:END` without its BEGIN
+    // and without the creed at all — /resume had nothing to recite and no gate said a word. An
+    // END without a BEGIN (or the reverse, or END before BEGIN) is a structurally invalid document,
+    // judged here with the same weight as a two-headed one. Fenced code is not a marker.
+    // @guard anchor-parity
+    // THREAT:         a module merge lands an anchored block in pieces — END without BEGIN (origin issue
+    //                 #27 R1b) or upstream text inside a localized pair — and /resume has nothing to
+    //                 recite while every gate stays green
+    // PROVED-AGAINST: sandbox s18 U9 — PHILOSOPHY.md with a bare `KAIF:TEST:END` → check exit ≠ 0 naming
+    //                 the file and the pair; the same marker inside a code fence stays green (2026-09-04);
+    //                 the field shape itself is reproduced by s18 U1 (PRAYER BEGIN=0 END=1 after a merge)
+    // GAP:            judges the document AFTER the fact — the merge that produces the shape is the subject
+    //                 of the unit rule in mergeModules (plans/86 US2b); a pair with both markers present
+    //                 but a replaced BODY is not this guard's threat
+    // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.5 update
+    for (const [name, bad] of Object.entries(unpairedAnchors(text)))
+      { console.error(`✖ unpaired anchor block KAIF:${name} (${bad}): ${p} — an anchored block arrived in pieces; restore the whole BEGIN…END pair by hand (the pair is indivisible)`); missing++; }
   }
   if (missing) die(`INCOMPLETE: ${missing} artifacts missing`);
   // Content gate (warning, not failure): a mirror that EXISTS but drifted from its canon
