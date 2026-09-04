@@ -84,11 +84,26 @@ REFUTED-блокеров → витрина обеих половин → чер
       `4958dd1`: ровно 2 красных; на починенном — 57 зелёных); 1/2-находки — 6 дешёвых починок
       мандатом RL + 2 строки в `ideas/28`; кластер A на починенном дереве — см. реестр (полигон
       сессии 51). Попутно `bugs/108` (пачка контура показала протухшую домашку; страж I39).
-- [ ] **RL2. Витрина.** README EN/RU: строка 2.5 в истории версий, числа из сборки; релиз-ноты
+- [x] **RL2. ✅ 2026-09-04 14:1x +03:00 (сессия 51) — RC витрины собран:** README EN/RU (бейдж
+      2.5 · логотип `assets/KAIF_2.5_GitHub_LOGO.{png,webp}` — `build-logo-title.mjs --title`,
+      `--check` зелёный, подпись прочитана глазами · строка «Version 2.5 — Experienced KAIF ·
+      2026-09-04» (дата ПРЕДВАРИТЕЛЬНАЯ — сверить в день релиза) · строка v2.5 в Таблице 5 обеих
+      половин) · `reports/RELEASE_NOTES_2.5.md` из 11 нот сборщика — шесть пунктов, имя НЕ
+      толкуется (EXP-0094), двух непустых строк подряд нет · строка кодового имени в
+      `TEMPLATE_NOTES_BY_VERSION['2.5']` (frozen literal, №87) · `README.pdf` перегенерирован
+      (первый экран — глазами владельца, рендерера у агента нет) · гейты: showcase-lint · voice-lint
+      (жёстких 0; коридоры нот — длинные предложения 21,3 и 5 антитез, справка) · counters 50 ·
+      private-names · estimates — зелёные. Цитата владельца о версии — интервью №022 Q1 (пока
+      стоит его цитата о 2.4). **Витрина.** README EN/RU: строка 2.5 в истории версий, числа из сборки; релиз-ноты
       `reports/RELEASE_NOTES_2.5.md` из нот сборщика; `README.pdf` перегенерирован (первый экран —
       владельцу, у агента нет рендерера); `counters-guard` · `doc-header-lint` · `release-body-guard`.
 - [ ] **RL3. Черновики ответов** во все открытые issues + квитанции отчётам (критерий 3);
       показать владельцу страницей контура (`node tools/review.mjs`), не отправлять.
+      ◐ 2026-09-04 14:2x +03:00 (сессия 51): открытых — 13 тикетов (#27–#39) и 11 отчётов (#5 #7
+      #9 #11 #12 #13 #17 #23 #24 #25 #26; `gh issue list --state open`); черновики #27–#38 ниже,
+      #23/#24 — `plans/80`, #39 — ниже (по ответу №022 Q3), #28/#32 — отчёты с собственными
+      черновиками; квитанции остальным девяти отчётам — список ниже. Показ владельцу — страницей
+      контура после релиза, вместе с гейтом отправки (`review-gate` → `send-outbound`, №13).
       ◐ 2026-09-04 ≈12:00 +03:00 (сессия 50): черновики для двенадцати тикетов #27–#38 в
       секции ниже (#23/#24 — `plans/80`; какие из них ещё открыты — сверить `gh issue list` в
       RL3, STATUS называл «10 открытых»); осталось: квитанции 13 отчётам (одна форма + список) и
@@ -231,6 +246,33 @@ verbatim evidence was read into the 2.5 planning synthesis (`researches/23`/`24`
 origin) and either shipped in v2.5 (<release link>; the tickets your report fed are answered
 there: #NN, #NN) or recorded for 2.6 with its address (`ideas/28`). Nothing in it was dropped
 silently; the field report is the framework's feedback loop, and this one moved it.
+
+**Список квитанций (RL3, сессия 51; тикеты, которые кормил каждый отчёт, — по `researches/24` §2):**
+#5 (KAGO 2.2 install → #3 · placeholder gate, closed in 2.3) · #7 (KAGO contour build → I35 voice by
+language in 2.5, #38) · #9 (QA_Engineer 1.6 → 2.2 → the legacy road of #27/#32 in 2.5) · #11 (KLAS
+2.1 → 2.2 → mechanical core-update, 2.3) · #12 (Unliminium 2.1 → 2.2 → wholesale-translated
+deployment: the rehearsal binding of 2.5) · #13 (NDim 2.1 → 2.2 → bootstrap route: `language-arrivals`
+of 2.5) · #17 (KUMM 2.2 install, thin-loader route → no 2.5 ticket; thanks only) · #25 (NDim 2.3 →
+2.4 → #27 R1b anchored block, cured in 2.5) · #26 (NDim first `/team-deployment` use — brownfield
+adoption gap → the ADOPT path of 2.5; #29/#33/#34 answered above). Форма — квитанция выше; для #26
+— добавить одно предложение: «the brownfield-adoption gap you named is the adopt path of
+`/team-deployment` in v2.5 (reference `team-adopt.md`): inventory against the invariants → the
+owner's decision → apply without overwriting the owner's words».
+
+**#39 (Unliminium, scenario form for acceptance criteria — ответ по №022 Q3; черновик под
+рекомендованный A).** Thank you — the four-line form (Situation · Action · Result · Check) is the
+owner's own language for a requirement, and the fourth line is exactly what the agent era adds to
+BDD: a check the agent can run instead of a sentence it can only claim. Your deployment already
+proved the whole package in the field (home rule after the upstream text, four templates, a
+form guard with an addressable selftest, 145 files green), so the request is accepted into the
+2.6 register at the origin (`ideas/28`) as one item: the optional "Scenario form" subsection of
+`REQUIREMENTS_FRAMEWORK.md` with the EARS → scenario mapping and your seven rules, an optional
+`kaif-scenario-lint` tool module mirroring your `tools/req-lint.mjs`, and the four lines in the
+criteria block of the four document templates. It does not enter v2.5 — its scope was cut by the
+owner before your ticket arrived — and the keywords stay yours. *(При B: «accepted as the canon
+subsection only; the guard and the templates stay a project choice»; при C: «declined: the
+scenario syntax stays a per-project choice by the boundary the canon already states — your home
+rule is the right home for it».)*
 
 ## Верификация наблюдением
 
