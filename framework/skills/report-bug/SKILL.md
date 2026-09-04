@@ -23,6 +23,9 @@ can be returned to (or handed to `/bug-research`).
   file it with the source noted ("tossed by the owner, <date>"), confirm in one line, return to the
   current task.
 - NOT for a "stuck-from-misunderstanding" stall (that's `PHILOSOPHY.md`) and not instead of fixing a trivial typo.
+- **Size the response before the first line** — the severity ladder (`BUG_FIXING_FRAMEWORK.md`):
+  S1 / S2 get a bug document with a `Severity:` line in its header; **S3 (a burr, cosmetics, a
+  one-off typo) gets one line in `EXPERIENCE.md` (`/experience`) and NO bug document.**
 
 ## Branch first — a defect of the FRAMEWORK itself, not the project
 
@@ -139,6 +142,8 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
    **Status:** 🔴 OPEN   (or 🟡 partial / 🔬 research-only / 🔧 fix pending verification)
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
+   **Severity:** S1 | S2 | S3   <consulted at FILING time — the severity ladder, BUG_FIXING_FRAMEWORK.md;
+   S3 gets ONE line in EXPERIENCE.md instead of this document>
    **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
    REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches>
 

@@ -46,7 +46,11 @@
 7. **Расширение охвата селфтестов** — каверза 3 суда W1 (ADDR-охваты `experience-lint` ·
    `lang-packs-guard` · `stylometry-snapshot` · `s02/S9-crash`) + остаток 98.3 + находка S1 суда
    RL 2.4 (END-класс молитвенных маркеров не стережёт никто). H10 (смешанный EOL) взят в 2.5
-   эпиком US.
+   эпиком US. Добавлено судом RL 2.5 (2026-09-04, E-H3): `language-arrivals` на bootstrap-маршруте
+   доказан кодом, сводом не наблюдён — U6в: `install --lang ru --mode anonymous` + бандл 9.9 с
+   новым навыком → пункт в `KAIF_UPDATE_TASK.md` после `install --mode standard`; и C-H3: таймаут
+   `gh auth status` в `report` даёт exit 2 «not ready», формула Reference «таймаут = exit 3»
+   буквально верна лишь для `issue create` — уточнить формулу или код.
 8. **TD-фазы 1/5/7/10** (`ideas/KAIF_2.4_TEAM_DEPLOYMENT_EPIC.md`): TeamSpec/RoleContract YAML ·
    генерация `TEAM_SPEC.yaml` · граф-машинерия диспатча · автоматика ретроспектив; архетипы
    research/game/data · профили способностей моделей · cost-aware routing · дашборды здоровья.

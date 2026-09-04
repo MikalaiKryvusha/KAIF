@@ -556,7 +556,7 @@ function expectedAgentArtifacts(skillNames) {
 // deployed files that LITERALLY carry each slot; foreign sphere libraries are reference
 // material and never gate (only the DECLARED sphere is a working surface), so only it may appear.
 // The addresses come from the SAME predicate the final gate judges by (`placeholderSurfaces`,
-// 2.5 — KAGO `bugs/KAIF/10`): a chronicle line quoting `<BUILD_COMMAND>` verbatim is history,
+// 2.5 — project F `bugs/KAIF/10`): a chronicle line quoting `<BUILD_COMMAND>` verbatim is history,
 // not a slot, and the gate never asked for it — so the item must not send anyone to "fill" it.
 // Canonical copies only: per-system mirrors re-sync from them at update-verify.
 function unresolvedOnDisk(unresolved, deploy) {
@@ -777,7 +777,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   // "we updated to <old>" cannot be "updated to <new>" without lying; half the field scan's hits
   // were exactly that (bug 23 / project A K5), and a noisy guard teaches the agent to ignore it.
   // Agent-system mirrors are DERIVATIVE — the machinery itself re-syncs them from the canon,
-  // yet they once ate 44 of 46 hits and the whole cap (bugs/35, KCam Г4).
+  // yet they once ate 44 of 46 hits and the whole cap (bugs/35, project D Г4).
   const SKIP_DIRS = ['.git', 'node_modules', '.kaif', 'researches', 'interviews', 'homeworks', 'bugs', 'ideas',
                      'reports',   // dated field/audit journals — same noise class as the other knowledge dirs (bugs/35)
                      '.agents', '.grok', '.cline', '.roo'];
@@ -800,7 +800,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   // sentence period right after the token ("… KAIF 1.6." is a claim, sandbox-caught)
   const ADJACENT = new RegExp(`(?:kaif|каиф)[^\\n]{0,16}${escVer}(?!\\d|\\.\\d)|(?<!\\d)(?<!\\d\\.)${escVer}[^\\n]{0,16}(?:kaif|каиф)`, 'i');
   const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
-  const byFile = new Map();  // directory before the walk reached the only real public claim (KCam Г4)
+  const byFile = new Map();  // directory before the walk reached the only real public claim (project D Г4)
   const walk = (dir) => {
     for (const n of readdirSync(dir)) {
       const p = (dir === '.' ? '' : dir + '/') + n;
@@ -808,11 +808,13 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       if (statSync(p).isDirectory()) { walk(p); continue; }
       // Prose AND the project's own scripts (2.5, epic US; field wish plans/73 U2 p.4, QA_Engineer
       // p.14): a version pin in `package.json` scripts or a local guard asserting the OLD version
-      // is the claim that bites hardest — it fails CI after a green update. Lock files and
-      // dependency trees carry no claim of the project's own and are skipped.
+      // is the claim that bites hardest — it fails CI after a green update. Lock FILES carry no
+      // claim of the project's own and are skipped — judged by the lock-file NAME, never by the
+      // word "lock" anywhere in a name: BLOCKERS.md and lockstep.mjs are claims like any other
+      // (court RL 2.5, E-H1: the by-word filter silently un-scanned prose 2.4 used to scan).
       const isProse = /\.md$/i.test(n);
       if (!isProse && !(n === 'package.json' || /\.(mjs|cjs|js|ts|sh|ps1|py|ya?ml|toml)$/i.test(n))) continue;
-      if (/lock/i.test(n)) continue;
+      if (!isProse && /lock.ya?ml$/i.test(n)) continue;   // pnpm-lock.yaml — the one lock format the script whitelist lets through
       // The chronicle's era volumes (PROJECT_HISTORY_<era>.md, the split its template prescribes)
       // are journals of the past exactly like the main file — judge-caught before the first split.
       if (/^PROJECT_HISTORY/.test(p)) continue;
@@ -833,7 +835,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
         if (/\b\d{4}-\d{2}/.test(line)) continue;  // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4)
         if (p === 'STATUS.md' && /предыдущ|previous/i.test(line)) continue;   // history, not a claim
         // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
-        // staleness (KCam Г4: rewriting them would forge it); judge the line with its
+        // staleness (project D Г4: rewriting them would forge it); judge the line with its
         // parenthesized segments removed, so only unparenthesized adjacency counts as a claim.
         // In a SCRIPT parentheses are syntax, not attribution — `assert(v === 'KAIF 2.4')` IS the pin.
         if (!ADJACENT.test(isProse ? line.replace(/\([^)]*\)/g, '') : line)) continue;
@@ -845,7 +847,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   try { walk('.'); } catch { /* best-effort scan */ }
   const files = [...byFile.keys()];
   const hits = files.slice(0, CAP_FILES).flatMap((p) => byFile.get(p));
-  if (files.length > CAP_FILES)   // honest truncation: "shown N of M", never a silent cut (KCam Г4)
+  if (files.length > CAP_FILES)   // honest truncation: "shown N of M", never a silent cut (project D Г4)
     hits.push(`shown ${CAP_FILES} of ${files.length} file(s) with hits — fix these, then re-run the scan (checkpoint stale-claims re-runs it)`);
   return hits;
 }
@@ -1105,7 +1107,7 @@ async function buildSyntheticBaseline(legacyOld) {
 // exactly the shape a piecewise merge leaves behind. Returns { NAME: reason } for the bad ones only;
 // the multi-line author-note comment (`KAIF:AUTHOR-NOTE`) is not a line marker and is not judged.
 // ONE fence-aware scanner feeds both judges — `check`'s parity and the merge's indivisibility rule
-// below (KAGO 10: two scanners of one thing drift apart; one predicate cannot).
+// below (project F 10: two scanners of one thing drift apart; one predicate cannot).
 function anchorMarkers(text) {
   const out = [];
   let inFence = false;
@@ -1135,7 +1137,7 @@ function unpairedAnchors(text) {
   return out;
 }
 
-// KAIF ticket 06 (KAGO 2.3 field report): rewriting an EXISTING file keeps the file's dominant
+// KAIF ticket 06 (project F 2.3 field report): rewriting an EXISTING file keeps the file's dominant
 // line-ending convention. On an autocrlf=true tree `update` used to write LF into a CRLF working
 // tree — git normalizes on commit, so the REPO was unharmed, but any local guard comparing text
 // blocks byte-exact across files on disk went transiently red right after a green mechanical
@@ -1301,14 +1303,14 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
       const pos = out.findIndex((o) => o.signature === newMods[k].signature);
       if (pos >= 0) { at = pos + 1; break; }
     }
-    // KAGO R2 (2.5, epic US): an insertion point INSIDE an anchored pair that is open at that spot
+    // project F R2 (2.5, epic US): an insertion point INSIDE an anchored pair that is open at that spot
     // (a localized prayer cut into the owner's own headings) would land upstream text between the
     // owner's BEGIN and END — the point moves past the module that closes every open pair.
     at = pastOpenPairs(out, at);
     out.splice(at, 0, { signature: nm.signature, lines: modText(nm).split('\n'), inserted: true });
     replaced++;
   }
-  // P2 (2.5, epic US; origin #27 R1b, KAGO R2): an anchored block is INDIVISIBLE. Its markers may
+  // P2 (2.5, epic US; origin #27 R1b, project F R2): an anchored block is INDIVISIBLE. Its markers may
   // live in different modules (the prayer's BEGIN sits in the H1 module, its END in the prayer
   // module), so a by-module merge can apply one carrier and keep the other — the field got an END
   // without its BEGIN. The plan above is judged as a whole: a pair balanced on disk and unbalanced
@@ -1339,7 +1341,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   return { merged, changed: !dryRun && merged !== disk, replaced, divergedList, verdict };
 }
 // The insertion point for a NEW module, moved past every anchored pair still open at `at`
-// (KAGO R2); an unclosable pair (already broken on disk) leaves the point where it was.
+// (project F R2); an unclosable pair (already broken on disk) leaves the point where it was.
 function pastOpenPairs(mods, at) {
   const open = new Set();
   const feed = (m) => { for (const { name, kind } of anchorMarkers(modText(m))) { if (kind === 'BEGIN') open.add(name); else open.delete(name); } };
@@ -1518,7 +1520,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
           continue;
         }
         if (res.changed) { writeMatchingEol(f.path, res.merged); mergedModules += res.replaced;
-          // KAGO 2.3 field wish: NAME the kept modules by signature — "1 kept for you" made the
+          // project F 2.3 field wish: NAME the kept modules by signature — "1 kept for you" made the
           // answer require a sandbox diff, and the answer should not require a sandbox.
           log(`↻ merged ${res.replaced} module(s) into ${f.path}${res.divergedList.length ? ` (kept for you: ${res.divergedList.map((d) => d.signature).join(' · ')})` : ''}`); }
         if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; kept++; adopted.push(f.path); }
@@ -1866,7 +1868,7 @@ function splicePackageJson(raw, addName, addScripts) {
 // <BUILD_COMMAND> live in the .agents/.grok/.cline/.roo copies and .kaif/spheres/ for a
 // whole release while the gate stayed green (bug 11, three field reports).
 // ONE predicate for both readers of "where may a slot still sit" — the gate below and the task's
-// `placeholders` item (2.5, epic US; KAGO `bugs/KAIF/10`): the generator used to name EVERY
+// `placeholders` item (2.5, epic US; project F `bugs/KAIF/10`): the generator used to name EVERY
 // deployed file carrying the token, chronicle quotes included, while the gate judged only these
 // surfaces — an instruction wider than its gate sends a weak session to "fill" a verbatim quote
 // in the history. The surfaces: the canon, every skill (canonical + per-system mirrors), and the
@@ -2774,7 +2776,7 @@ function ghSpawn(ghArgs) {
 }
 const refuse = (msg, code) => { console.error('✖ ' + msg); process.exit(code); };
 function cmdReport() {
-  const ticket = args[1];
+  const ticket = args.slice(1).find((a) => !a.startsWith('-')); // the flag may precede the path (court RL 2.5, C-H2)
   if (!ticket || ticket.startsWith('--')) die('usage: kaif-core report <path to bugs/KAIF/NN_*.md> [--dry-run]');
   const dryRun = args.includes('--dry-run');
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
@@ -2896,7 +2898,7 @@ function cmdCheckpoint() {
   // free — a weak model could stamp all four without doing anything; bug 34 / project C D5: the
   // scanners for placeholders and stale-claims EXISTED and re-running them at tick time costs
   // zero — a tick that skips an existing scanner is self-attestation):
-  //   recheck      — re-syncs the mirrors (closes the drift window — KCam Г11), then runs the
+  //   recheck      — re-syncs the mirrors (closes the drift window — project D Г11), then runs the
   //                  actual `check` and refuses to record on failure;
   //   placeholders — runs the placeholder scanner and refuses while literal slots remain
   //                  (the item's contract is "fill each" — an unfilled slot is objective);
@@ -2906,7 +2908,7 @@ function cmdCheckpoint() {
   //                  the tick, and into the committable receipt — decision #42).
   if (id === 'recheck') {
     // The mirror re-sync used to live only in update-verify, leaving five agent systems on
-    // contradicting skills for the whole merge window (bug 34, KCam Г11) — close it here.
+    // contradicting skills for the whole merge window (bug 34, project D Г11) — close it here.
     resyncCopies();
     // execFileSync + process.execPath: no shell (paths with $/backticks survive on POSIX),
     // no PATH lookup (the same node binary that runs this process runs the check).

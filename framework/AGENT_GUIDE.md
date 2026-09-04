@@ -153,9 +153,9 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
    schedule. Each of the nine carries a SIZE BUDGET in lines — the re-read ritual costs O(core),
    and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
-   target), the other eight in ONE place, the budget table of the core machinery, which
-   `node .kaif/kaif-core.mjs check` prints when it WARNS above a budget (a warning, never a
-   failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
+   target), the other eight in ONE place, the budget table of the core machinery (`DOC_BUDGETS`);
+   `node .kaif/kaif-core.mjs check` names the document, its line count and its budget when it
+   WARNS above one (a warning, never a failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
    not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent

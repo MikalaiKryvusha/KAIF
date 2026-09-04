@@ -38,6 +38,13 @@
 //   U11 (P5) КРАСНЫЙ ×3 — пункты project-name без файловой формы; имя «???» записывалось в маркер.
 //   U12 (KAGO 10) КРАСНЫЙ ×1 — цитата слота в летописи называлась местом заполнения.
 //   U13 (P4) КРАСНЫЙ ×2 — переход anonymous→origin не называл удержанные файлы анонимной формулировки.
+//   Дописано судом RL 2.5 (2026-09-04, находка E-H2 — двух стражей в этой шапке не было):
+//   U9 (P2, `check` краснит непарный якорь) КРАСНЫЙ ×1 — мутация на копии: снять `missing++` в
+//        `check` (ядро 4958dd1) → красен ровно U9 (улика судьи 4, лог s18-M3-anchorcheck.log).
+//   U14 (bugs/100, одно дерево в двух папках) КРАСНЫЙ на ядре build 434 — `A: baseFound 5 of 29 →
+//        merged` / `B: 4 of 29 → frozen`; мутация «H1 обратно в счёт» на 4958dd1 → красен ровно U14.
+//   U5б (суд RL 2.5, E-H1) КРАСНЫЙ ×2 на ядре 4958dd1 — `BLOCKERS.md` и `lockstep.mjs` с клеймом
+//        старой версии пропущены фильтром `/lock/i` по имени (лог s18-red-E-H1.log скретчпада суда).
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -230,6 +237,10 @@ console.log('\n=== U5 (U2 п. 4): stale-claims сканирует скрипты
 const T3 = join(ROOT, 'u5'); mkdirSync(T3); seed(T3);
 writeFileSync(join(T3, 'package.json'), '{\n  "name": "sbx-symmetries",\n  "scripts": {\n' +
   `    "kaif:pin-check": "node tools/pin.mjs --require \\"KAIF ${FROM}\\""\n  }\n}\n`);
+// U5б-фикстура (суд RL 2.5, E-H1): проза и скрипт со словом «lock» В ИМЕНИ несут тот же клейм —
+// фильтр lock-файлов обязан судить lock-ФАЙЛЫ (pnpm-lock.yaml), а не любое имя с «lock».
+writeFileSync(join(T3, 'BLOCKERS.md'), `# Blockers\n\nThis project requires KAIF ${FROM} exactly.\n`);
+writeFileSync(join(T3, 'lockstep.mjs'), `if (v !== 'KAIF ${FROM}') throw 1;\n`);
 must(run, T3, 'install');
 // U7-фикстура: файл, который апстрим МЕНЯЕТ (заменится механически) — LF с ОДНОЙ CRLF-строкой
 const TF = join(T3, 'TESTING_FRAMEWORK.md');
@@ -242,6 +253,11 @@ r = run(T3, `update --source ${SRC99}`);
 ok(r.code === 0, 'U5 update →9.9 exit 0', r.out);
 const task3 = readFileSync(join(T3, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/stale-claims[^]*package\.json/.test(task3), 'U5: пин старой версии в package.json scripts назван в stale-claims', task3.split('\n').filter((l) => /stale-claims|package\.json/.test(l)).join(' | ').slice(0, 300));
+// Тело ОДНОГО пункта stale-claims: от его строки до следующего пункта задания (`- **имя**`).
+const staleItem = (() => { const ls = task3.split('\n'); const i = ls.findIndex((l) => /\*\*stale-claims\*\*/.test(l)); if (i < 0) return '';
+  const j = ls.slice(i + 1).findIndex((l) => /^- \*\*[a-z-]+\*\*/.test(l)); return ls.slice(i, j < 0 ? undefined : i + 1 + j).join('\n'); })();
+ok(/BLOCKERS\.md:3/.test(staleItem), 'U5б (суд RL 2.5, E-H1): проза со словом lock в имени (BLOCKERS.md) названа в stale-claims', staleItem.slice(0, 400));
+ok(/lockstep\.mjs:1/.test(staleItem), 'U5б (суд RL 2.5, E-H1): скрипт со словом lock в имени (lockstep.mjs) назван в stale-claims', staleItem.slice(0, 400));
 // ---------------------------------------------------------------- U11 (P5 / #28 R4): guidance ДО акта — пункт называет файловую форму; искажённое имя отвергается
 console.log('\n=== U11 (P5): пункт project-name называет --name-file; искажённое argv-имя отвергается ДО записи ===');
 ok(/\*\*project-name\*\*[^\n]*--name-file <path>/.test(task3), 'U11: пункт project-name задания обновления называет файловую форму рядом с argv', task3.split('\n').find((l) => /\*\*project-name\*\*/.test(l))?.slice(0, 200));

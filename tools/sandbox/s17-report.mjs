@@ -9,7 +9,9 @@
 // `unknown command: report` (наблюдение в plans/84).
 // [TESTED: 2026-09-04 · зелёный в составе полигона — 25 проверок свода ✅, «sandbox suite: all 17 suites
 //  green» (npm run test:core); КРАСНЫЙ доказан на копии: тот же свод против HEAD-ядра до SG1
-//  (git show HEAD:dist/KAIF-CORE.mjs в scratch-dist) → exit 1, 18 проверок красные с «unknown command: report»]
+//  (git show HEAD:dist/KAIF-CORE.mjs в scratch-dist) → exit 1, 17 проверок красные (+ строка-итог
+//  `17 failure(s)`; 10 из них — словами «unknown command: report», остальные производные) — число
+//  пересчитано судом RL 2.5 (2026-09-04, C-H1: прежние «18» считали строку-итог проверкой)]
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';

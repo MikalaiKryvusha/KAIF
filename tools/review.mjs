@@ -67,6 +67,12 @@ const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130; // I25: три исхода
 const QUEUE_FILE = 'interviews/decisions/queue.json'; // I7: очередь — файл состояния
 const TMP_DIR = 'tools/.review-tmp';
+// I39 (bugs/108): позиция очереди старше порога — ДОЛГ АГЕНТА, а не вопрос владельцу. Пачка
+// `--queue` показала домашку 21.08 четвёртого сентября; слово владельца: «Релиз 2.3 давно выпущен.
+// Вычитка просрочена. Не понимаю, зачем ты это мне открыл». Порог — от того случая (14 дней);
+// протухшее печатается агенту поимённо и на страницу не идёт, пока агент не закроет документ
+// статусом или не покажет НАМЕРЕННО (`--include-stale`).
+const STALE_QUEUE_DAYS = Number(process.env.KAIF_STALE_QUEUE_DAYS) > 0 ? Number(process.env.KAIF_STALE_QUEUE_DAYS) : 14;
 /** Язык проекта из маркера развёртывания — по нему выбирается голос фолбэка (I35, 2.5: issue #38). */
 function projectLanguage(root) {
   try { return String(JSON.parse(readFileSync(resolve(root, '.kaif', 'kaif.json'), 'utf8').replace(/^﻿/, '')).language || 'en').toLowerCase().slice(0, 2); }
@@ -225,6 +231,35 @@ export function pendingDocs(root) {
       push('interviews/' + f);
   for (const item of readQueue(root)) if (!isNoticeItem(item)) push(item.doc);
   return out;
+}
+
+// ── I39: протухшие позиции очереди — долг агента, не страница владельца ────────────────────
+// Возраст позиции: `addedAt` очереди (когда есть), иначе первая ISO-дата шапки документа
+// (`Создан:`/`Created:`/`Status:` в первых 30 строках); документ без даты протухнуть не может.
+export function queueDocAgeDays(root, rel, now = new Date()) {
+  const item = readQueue(root).find((i) => i.doc === rel && i.addedAt);
+  let at = item ? Date.parse(item.addedAt) : NaN;
+  if (Number.isNaN(at)) {
+    const p = resolve(root, rel);
+    if (!existsSync(p)) return 0;
+    const head = readFileSync(p, 'utf8').replace(/^﻿/, '').split(/\r?\n/).slice(0, 30).join('\n');
+    const m = head.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+    at = m ? Date.parse(m[1] + 'T00:00:00Z') : NaN;
+  }
+  return Number.isNaN(at) ? 0 : Math.floor((now.getTime() - at) / 86400000);
+}
+export function staleQueueDocs(root, docs, now = new Date()) {
+  return docs.map((d) => ({ ...d, days: queueDocAgeDays(root, d.doc, now) }))
+    .filter((d) => d.days > STALE_QUEUE_DAYS);
+}
+// Витрина владельца: то, что ждёт ЕГО — документ, где он уже ответил на все вопросы, уходит
+// сразу (иначе он приглашён отвечать дважды); документ без вопросов, но со статусом «ждёт»,
+// остаётся; ПРОТУХШИЙ (I39) уходит, пока агент не покажет его намеренно.
+export function ownerDocs(root, { includeStale = false, now = new Date() } = {}) {
+  const live = pendingDocs(root).filter((d) => !(d.questions > 0 && d.unanswered === 0));
+  if (includeStale) return live;
+  const stale = new Set(staleQueueDocs(root, live, now).map((d) => d.doc));
+  return live.filter((d) => !stale.has(d.doc));
 }
 
 // ── Сборка страниц (I1: только из документов) ──────────────────────────────────────────────
@@ -759,7 +794,7 @@ function checkLock(root, key) {
 
 // ── Сервер: поднять → показать → позвать → ждать → записать → умереть (I8) ─────────────────
 export function serveContour(root, { docPath = null, batch = false, notice = false }, opts = {}) {
-  const { open = true, signal = true, timeoutMs = 0, log = console.log } = opts; // I9: дефолт 0 — без таймаута
+  const { open = true, signal = true, timeoutMs = 0, log = console.log, includeStale = false } = opts; // I9: дефолт 0 — без таймаута
   // bugs/105: одиночный показ документа, в котором парсер НЕ РАСПОЗНАЛ ни одного вопроса и нет
   // исходящих артефактов, обслуживается классом «сообщение» АВТОМАТИЧЕСКИ. Иначе владелец
   // получает страницу, где ни одно действие не легально: «Записать решение» отказывает на пустом
@@ -779,10 +814,9 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
   }
   return new Promise((resolveP) => {
     // В режиме очереди корневая страница — ВХОДНАЯ (карточки); тела документов живут на /d/<rel>.
-    // Витрина владельца показывает то, что ждёт ЕГО: документ, где он уже ответил на все вопросы,
-    // уходит с неё сразу — иначе он приглашён отвечать дважды. Документ без вопросов, но со
-    // статусом «ждёт», остаётся: его ожидание адресовано именно человеку.
-    const forOwner = () => pendingDocs(root).filter((d) => !(d.questions > 0 && d.unanswered === 0));
+    // Витрина владельца показывает то, что ждёт ЕГО (`ownerDocs`: отвеченное уходит, «ждёт» без
+    // вопросов остаётся, протухшее — долг агента, I39).
+    const forOwner = () => ownerDocs(root, { includeStale });
     const build = () => batch ? buildIndexPage(root, forOwner(), pendingNotices(root))
       : notice ? buildNoticePage(root, docPath) : buildPage(root, docPath);
     // Страница одного документа внутри режима очереди: класс определяет файл состояния, а не URL.
@@ -951,7 +985,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         const nWait = first.questions ? first.questions.filter((q) => !q.answered).length : 0;
         signalCall(root, callPhrase({
           batch, notice: noticeMode, kind: first.kind, title: first.title, nWait,
-          nDocs: batch ? pendingDocs(root).length + (first.notices || 0) : 1,
+          nDocs: batch ? forOwner().length + (first.notices || 0) : 1,
           nQuestions: first.total || 0, nNotices: first.notices || 0,
         }), { log });
       }
@@ -1012,6 +1046,23 @@ export function selftest() {
   ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }).includes('сообщений'),
     'без сообщений фраза пачки о них не заикается');
 
+  // 6. I39 (bugs/108): протухшая позиция очереди — долг агента, на страницу владельца не идёт
+  const OLD = 'interviews/interview_002_selftest_old.md';
+  writeFileSync(join(root, OLD),
+    '# Interview #002 — старое\n\n> Status: **🟡 awaiting**\n> Created: 2026-01-01\n\n### Q1. Вопрос?\n\n' +
+    '- **A)** первый\n- **B)** второй\n\n**Answer:**\n', 'utf8');
+  const now = new Date('2026-09-04T12:00:00Z');
+  ok(queueDocAgeDays(root, OLD, now) > STALE_QUEUE_DAYS && queueDocAgeDays(root, IV, now) === 0,
+    'возраст позиции: старый документ старше порога, документ без даты — 0 дней');
+  ok(staleQueueDocs(root, pendingDocs(root), now).map((d) => d.doc).join() === OLD,
+    'протухшей названа ровно старая позиция (I39)');
+  ok(!ownerDocs(root, { now }).some((d) => d.doc === OLD) && ownerDocs(root, { now }).some((d) => d.doc === IV),
+    'витрина владельца без протухшего, живой вопрос на месте (I39)');
+  ok(ownerDocs(root, { now, includeStale: true }).some((d) => d.doc === OLD),
+    '--include-stale возвращает протухшее на страницу НАМЕРЕННО');
+  enqueue(root, OLD); // позиция очереди с сегодняшним addedAt перекрывает дату шапки — она СВЕЖАЯ
+  ok(queueDocAgeDays(root, OLD, new Date()) === 0, 'addedAt очереди сильнее даты шапки документа');
+
   rmSync(root, { recursive: true, force: true });
   console.log(bad ? 'СЕЛФТЕСТ КРАСНЫЙ: ' + bad + ' из ' + n : 'селфтест класса «сообщение» зелёный: ' + n + ' проверок');
   if (bad) process.exit(1);
@@ -1027,6 +1078,7 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     open: !args.includes('--no-open'),
     signal: !args.includes('--silent'),
     timeoutMs: Number(opt('--timeout') || 0) * 1000, // I9: дефолт 0 — терпение машины бесконечно
+    includeStale: args.includes('--include-stale'), // I39: протухшее — только намеренно
   };
   const asNotice = args.includes('--notice'); // I37: класс «сообщение»
   if (args.includes('--selftest')) { selftest(root); process.exit(0); }
@@ -1038,7 +1090,11 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     process.exit(0);
   }
   if (args.includes('--queue')) { // пачечная страница «Накопилось N» — зов ОДИН раз на пачку (I7)
-    const docs = pendingDocs(root);
+    const stale = opts.includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true }));
+    for (const d of stale) // I39: протухшее — долг агента, печатается ему, не показывается владельцу
+      console.log('⚠ протухло в очереди (' + d.days + ' дн. > ' + STALE_QUEUE_DAYS + '): ' + d.doc +
+        ' — НЕ показано; закрой документ статусом (слово владельца или «снято») или покажи намеренно: --include-stale');
+    const docs = ownerDocs(root, opts);
     const notices = pendingNotices(root);
     if (docs.length === 0 && notices.length === 0) {
       console.log('Неотвеченных вопросов и непрочитанных сообщений нет — очередь пуста, страница не нужна.');
@@ -1065,7 +1121,7 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
   } else {
     console.error('usage: node tools/review.mjs <документ.md> [--no-serve|--silent|--no-open|--timeout N]\n' +
       '       node tools/review.mjs <документ.md> --notice   (сообщение: ответа не ждёт, ждёт пометки «' + NOTICE_READ_LABEL + '»)\n' +
-      '       node tools/review.mjs --queue | --enqueue <документ.md> [--notice] | --selftest\n' +
+      '       node tools/review.mjs --queue [--include-stale] | --enqueue <документ.md> [--notice] | --selftest\n' +
       'Запускать ОТСЛЕЖИВАЕМОЙ фоновой задачей (I31): голый & харнесс не отслеживает — уведомление не придёт.');
     process.exit(1);
   }

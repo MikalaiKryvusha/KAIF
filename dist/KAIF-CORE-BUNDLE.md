@@ -463,9 +463,9 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
    schedule. Each of the nine carries a SIZE BUDGET in lines — the re-read ritual costs O(core),
    and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
-   target), the other eight in ONE place, the budget table of the core machinery, which
-   `node .kaif/kaif-core.mjs check` prints when it WARNS above a budget (a warning, never a
-   failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
+   target), the other eight in ONE place, the budget table of the core machinery (`DOC_BUDGETS`);
+   `node .kaif/kaif-core.mjs check` names the document, its line count and its budget when it
+   WARNS above one (a warning, never a failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
    not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
@@ -5760,11 +5760,12 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I38. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I39. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
-contour be able to TELL, not only to ask.
+contour be able to TELL, not only to ask. I39 (2.5) was paid for at the origin: a stale homework
+raised in a batch next to a live question.
 
 - **I1. md is the source, HTML is derived. Always.** The page is built from the document and never
   hand-edited — otherwise a second truth appears and the next empty-context session misses
@@ -5953,6 +5954,14 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   comment must leave that document byte-for-byte untouched. Unread notices accumulate under the
   questions, never above them: questions block work, notices do not, and the page order is where
   the human sees that difference.
+- **I39. A stale queue position is the AGENT's debt, never a question to the human.** A batch
+  shows only what is still worth the human's attention; a position older than the stale threshold
+  (default 14 days) is printed to the agent by name and kept OFF the page until the agent closes
+  the document by status (the owner's word, or "withdrawn") or shows it deliberately with an
+  explicit flag. Paid for at the origin: a proofreading homework for a release that had shipped two
+  weeks earlier was raised in a batch next to a live question — the owner's word: "the release is
+  long out, the review is overdue, why did you open this for me". Age comes from the queue's own
+  timestamp, then from the document header's first ISO date; a document with neither cannot go stale.
 
 ## The named class: "handling the human's work"
 
@@ -7058,6 +7067,9 @@ can be returned to (or handed to `/bug-research`).
   file it with the source noted ("tossed by the owner, <date>"), confirm in one line, return to the
   current task.
 - NOT for a "stuck-from-misunderstanding" stall (that's `PHILOSOPHY.md`) and not instead of fixing a trivial typo.
+- **Size the response before the first line** — the severity ladder (`BUG_FIXING_FRAMEWORK.md`):
+  S1 / S2 get a bug document with a `Severity:` line in its header; **S3 (a burr, cosmetics, a
+  one-off typo) gets one line in `EXPERIENCE.md` (`/experience`) and NO bug document.**
 
 ## Branch first — a defect of the FRAMEWORK itself, not the project
 
@@ -7174,6 +7186,8 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
    **Status:** 🔴 OPEN   (or 🟡 partial / 🔬 research-only / 🔧 fix pending verification)
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
+   **Severity:** S1 | S2 | S3   <consulted at FILING time — the severity ladder, BUG_FIXING_FRAMEWORK.md;
+   S3 gets ONE line in EXPERIENCE.md instead of this document>
    **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
    REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches>
 
@@ -7758,6 +7772,9 @@ role rewrites ONLY its own row via the board tool. Form, rules, and the tool con
 board document itself. Update your row at every state change: took a task · waiting · freed.
 Statuses are SHORT; the document never grows. The board shows the moment; the project's
 `STATUS.md` still carries the baton between sessions — the board never replaces it.
+The board lives OUTSIDE git (ignore-first; board document → "Where the board lives"); a tracked
+board is a named opt-out recorded HERE with its price: `<n/a | opt-out: <why> — price: a dirty
+main copy by construction>`.
 
 ## 5. Git discipline
 
@@ -9059,7 +9076,7 @@ else { console.error(`usage: node .kaif/tools/kaif-guard-lint.mjs check [paths�
 //   "aiMarks": ["[ИИ]", "[ИИ-ред]"]   — the [AI]- and [AI-ed]-analog open tags; closers are
 //   derived ([ИИ] → [/ИИ]); the English pair is always recognized too (bug 34, project B Г8).
 // Exit codes: 0 = gate ran green · 1 = violations · 3 = SKIPPED (no canonArtifacts KEY —
-//   nothing was proven; check and report agree on this, bug 34 / field report KCam Г7).
+//   nothing was proven; check and report agree on this, bug 34 / field report project D Г7).
 //
 // Commands:
 //   node .kaif/tools/kaif-provenance.mjs report            # where AI text awaits acceptance
@@ -9090,7 +9107,7 @@ const sha = (s) => createHash('sha256').update(s).digest('hex').slice(0, 16);
 const slashes = (p) => p.replaceAll('\\', '/'); // registry keys and decl entries use forward slashes
 // SKIPPED ≠ passed (bug 34): without a canonArtifacts KEY the gate has nothing to guard —
 // exit 3 says "nothing was proven", and check/report AGREE on it (they used to diverge:
-// report said "nothing to report" exit 0 while check scanned and failed — field report KCam Г7).
+// report said "nothing to report" exit 0 while check scanned and failed — field report project D Г7).
 const EXIT_SKIPPED = 3;
 
 // The deployment's marker carries the whole convention: the canon declaration AND the
