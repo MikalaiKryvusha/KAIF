@@ -2839,13 +2839,23 @@ Reconstruction starts from the DISK order (the owner's inserted sections keep th
 A module untouched since deploy takes the new template's text; a localized module is never
 replaced by a template that carries none of the owner's script; an edited module is kept — and
 lands in the task WITH a "your version → new template" diff ONLY when upstream actually changed
-it. New template modules insert by template order.
+it. New template modules insert by template order. A file whose body carries the owner's
+script prints its verdict WITH the numbers that produced it — `baseFound N of M, ceiling K →
+frozen | merged` (2.5: a rehearsal and the live run compare line by line, not by outcome).
+Anchored blocks — `<!-- KAIF:NAME:BEGIN -->` … `<!-- KAIF:NAME:END -->` (the creed, the prayer)
+— are indivisible units: `check` reddens a document carrying an END without its BEGIN (or the
+reverse) with the weight of a two-headed document (2.5, origin issue #27).
 
 ### 10.3 The update task
 
-`KAIF_UPDATE_TASK.md` lists: per-module merges with diffs · whole-file merges · owner-convention
+`KAIF_UPDATE_TASK.md` lists: per-module merges with diffs · whole-file merges (a
+translated-wholesale file also names its UPSTREAM path and a ready `git diff v<from> v<to> --
+<src>` — the dest → src map ships in the bundle meta as `sources`, 2.5) · owner-convention
 transfers · deprecations carrying local edits · stale claims (lines still asserting the OLD
-version anywhere in the project) · the news interval · executing checkpoints (`recheck` runs the
+version anywhere in the project; the item is UNCONDITIONAL on a version change — an empty scan
+says `no lines found`, so a silent scanner failure can never pass as a clean tree, 2.5) ·
+language arrivals (NEW files of the release that arrived English on a non-English deployment,
+2.5) · the news interval · executing checkpoints (`recheck` runs the
 actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
 field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an
 update does not verify green without its report).
