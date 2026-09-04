@@ -74,9 +74,10 @@ REFUTED-блокеров → витрина обеих половин → чер
       владельцу, у агента нет рендерера); `counters-guard` · `doc-header-lint` · `release-body-guard`.
 - [ ] **RL3. Черновики ответов** во все открытые issues + квитанции отчётам (критерий 3);
       показать владельцу страницей контура (`node tools/review.mjs`), не отправлять.
-      ◐ 2026-09-04 ≈12:00 +03:00 (сессия 50): черновики для #27 · #28 · #30 · #31 · #32 · #35 ·
-      #36 · #37 · #38 — в секции ниже (#23/#24 — `plans/80`); осталось: #29 · #33 · #34 (эпик TM,
-      по `plans/85`), квитанции 13 отчётам, страница контура для владельца.
+      ◐ 2026-09-04 ≈12:00 +03:00 (сессия 50): черновики для двенадцати тикетов #27–#38 в
+      секции ниже (#23/#24 — `plans/80`; какие из них ещё открыты — сверить `gh issue list` в
+      RL3, STATUS называл «10 открытых»); осталось: квитанции 13 отчётам (одна форма + список) и
+      страница контура для владельца.
 - [ ] **RL4. Имя версии** — вопрос владельцу (№85: решить ближе к релизу); варианты — три, с
       обоснованием от содержания 2.5 (симметрии обновления · точки решения · команда в поле).
 - [ ] **RL5. Релиз по слову владельца** — `/release` (предпроверка · версия · сборка · тег · пуш ·
@@ -172,6 +173,29 @@ own origin is delivered under the standing authorization in the same motion as i
 LANGUAGE first: the route selects a voice whose culture matches the deployment's `language`,
 the system default only when it already matches, and drops to beeps + banner rather than speak
 an unintelligible sentence; the timbre half of the ticket was already superseded by 2.4.
+
+**#29 (NDim, CI must travel with the team — the owner's order).** Thank you — CI now ships with
+the team in v2.5: operation 3 of `/team-deployment` carries a new reference
+`team-ci-template.md` — one job, at most three gate steps (checkout · setup by stack · install ·
+the test/lint/typecheck commands READ from the project's `package.json` or build canon, never
+hard-coded), triggered by pushes to role branches and PRs into main; your constraints are
+stated out loud in the reference: cheap gates only (no secrets, emulators or a live bench), a red
+run on a role branch blocks the merge exactly like a missing verifier's verdict (a line in
+constitution § 5), and a non-GitHub remote gets the same job as a documented local pre-push
+script. This is declared a policy change of 2.5 in the update task, not merged silently.
+
+**#33 (NDim, a two-state board obliges nobody).** Thank you — the board now knows four states
+as ROLES, each with its obligation: 🟢 free · 🔴 busy · 🟡 blocked · ⚫ offline; and the board
+contract gained item 7, `audit-waiting`: a tool lists every "Waiting for" line older than the
+threshold and returns a non-zero exit code, and the manager is obliged to react — your
+`auditWaiting` reference implementation (four mutations) was read and its form taken.
+
+**#34 (NDim, a tracked board keeps main dirty by construction).** Thank you — the board is now
+SESSION STATE OUTSIDE git by default: operation 3 adds `TEAM_STATUS.md` to `.gitignore` in the
+same motion (the `.kaif/refresh-marker.json` precedent), a board snapshot travels into the
+shift retrospective (operation 5), and a team that needs a tracked board takes a NAMED opt-out
+with its price written in the constitution (a dirty tree by construction). Declared as a policy
+change of 2.5 in the update task.
 
 ## Верификация наблюдением
 
