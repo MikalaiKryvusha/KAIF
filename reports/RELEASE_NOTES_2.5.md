@@ -35,13 +35,13 @@ What KAIF is and how to use it — the [README](https://github.com/MikalaiKryvus
 
 **6. A requirement in the owner's language — the scenario form.** An acceptance criterion can now be written as four lines: Situation · Action · Result · Check. The first three are Given / When / Then of classic BDD; the fourth is the runnable command or query with its expected output — the machine signal without which "done" stays the agent's word. Seven rules keep the form honest (one action, a result observable from outside, concrete values, no implementation words, third person, a runnable Check, and a Check that is never quietly edited during execution); an owner may leave the Check line empty and the agent fills it. The four lines stand in the criteria block of `/plan-task` and are named in `/plan-epic`, `/propose-idea` and `/report-bug`, `/interview` explains a mechanic scenario-first, and the optional `kaif-scenario-lint` module guards the form where a scenario is started — never demanding one. The form came from the field: an owner who is not a programmer wrote it for his own project first.
 
-**7. The court sat before this page went out.** A registry of 32 claims this version makes about itself was re-executed by four judges with clean contexts and a panel of two skeptics: 26 confirmed as written, 6 weakened to what the evidence supports, none refuted — and the five defects the panel let through were fixed and re-judged the same hour, one of them with a new guard proven red first.
+**7. The court sat before this page went out.** A registry of 30 claims this version makes about itself was re-executed by four judges with clean contexts and a panel of two skeptics: 25 confirmed as written, 5 weakened to what the evidence supports, none refuted — and the five defects the panel let through were fixed and re-judged the same hour, one of them with a new guard proven red first.
 
 ---
 
 ### 📦 Installation
 
-Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent in your own words — the [README](https://github.com/MikalaiKryvusha/KAIF#-quick-start) carries the full quick start, the deployment modes and the language options.
+Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent in your own words — the [README](https://github.com/MikalaiKryvusha/KAIF#2-installation) carries the full installation procedure, the deployment modes and the language options.
 
 Updating a deployed project: say *"update KAIF"* — the agent checks the origin, shows the delta and migrates respectfully, keeping your content. Four behaviours of the update changed in this version; the update task names each of them, and a tree the previous merge left with an unpaired block turns red on purpose — restore the block from the task diff once. If the run dies midway, say *"resume the KAIF update"*.
 
@@ -56,7 +56,7 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 
 **KAIF 2.5 — Experienced KAIF.** Тринадцать тикетов от агентов живых проектов — три из них владелец пометил как TOP — стали скоупом этой версии. Каждый тикет — правило, которое стояло в каноне прозой и не держалось в момент решения. 2.5 даёт таким правилам носитель в точке решения: принудительную строку, команду машинерии, стража, который краснеет, пункт задания, который обновление пишет за вас.
 
-Что такое KAIF и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#русский). Эта страница — что нового именно в этой версии.
+Что такое KAIF и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#russian). Эта страница — что нового именно в этой версии.
 
 ---
 
@@ -74,12 +74,12 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 
 **6. Требование на языке владельца — сценарная форма.** Критерий приёмки теперь можно записать четырьмя строками: Ситуация · Действие · Результат · Проверка. Три первые — Given / When / Then классического BDD; четвёртая — исполнимая команда или запрос с ожидаемым выходом, тот машинный сигнал, без которого «готово» остаётся словом агента. Семь правил держат форму честной (одно действие, результат, наблюдаемый снаружи, конкретные значения, без слов реализации, третье лицо, исполнимая «Проверка» — и «Проверка», которую никто тихо не правит по ходу исполнения); владелец может оставить строку «Проверка» пустой, и агент её заполняет. Четыре строки стоят в блоке критериев навыка `/plan-task` и названы в `/plan-epic`, `/propose-idea` и `/report-bug`, `/interview` объясняет механику сначала сценарием, а опциональный модуль `kaif-scenario-lint` стережёт форму там, где сценарий начат, — и никогда его не требует. Форма пришла из поля: владелец, который не программист, сначала написал её для собственного проекта.
 
-**7. Суд заседал до выхода этой страницы.** Реестр из 32 заявлений, которые версия делает о себе, переисполнен четырьмя судьями с чистыми контекстами и панелью из двух скептиков: 26 подтверждены как написаны, 6 ослаблены до того, что подтверждают улики, ни одно не опровергнуто — а пять дефектов, которые панель пропустила, починены и пересужены тем же часом, один из них — с новым стражем, доказанным красным до фикса.
+**7. Суд заседал до выхода этой страницы.** Реестр из 30 заявлений, которые версия делает о себе, переисполнен четырьмя судьями с чистыми контекстами и панелью из двух скептиков: 25 подтверждены как написаны, 5 ослаблены до того, что подтверждают улики, ни одно не опровергнуто — а пять дефектов, которые панель пропустила, починены и пересужены тем же часом, один из них — с новым стражем, доказанным красным до фикса.
 
 ---
 
 ### 📦 Установка
 
-Положите [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) в корень проекта и скажите агенту своими словами — полный быстрый старт, режимы развёртывания и языковые опции несёт [README](https://github.com/MikalaiKryvusha/KAIF#-быстрый-старт).
+Положите [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) в корень проекта и скажите агенту своими словами — полный порядок установки, режимы развёртывания и языковые опции несёт [README](https://github.com/MikalaiKryvusha/KAIF#2-установка).
 
 Обновление развёрнутого проекта: скажите *«обнови KAIF»* — агент сверится с истоком, покажет дельту и мигрирует уважительно, сохранив ваше. Четыре поведения обновления в этой версии изменились; задание обновления называет каждое, а дерево, в котором прошлое слияние оставило непарный блок, краснеет намеренно — восстановите блок из диффа задания один раз. Если прогон умер на середине — скажите *«продолжи обновление KAIF»*.
