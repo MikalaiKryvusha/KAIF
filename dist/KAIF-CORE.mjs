@@ -2488,6 +2488,24 @@ function cmdCheck() {
     }
     if (drifted) console.error(`⚠ ${drifted} mirror copies lag the canon${drifted > 3 ? ` (${drifted - 3} more not listed)` : ''} — normal until re-sync; run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
   }
+  // Language mix (2.5, epic US; field #32 R-C: a ru deployment's own skill directory was already
+  // bilingual — 18 of 45 skills English — and no gate said a word). Skills are agent-read and stay
+  // English by policy; the count is HONESTY about the tree, not a defect: a warning, never a failure.
+  try {
+    const lang = String(readJson(KAIF_JSON).language || 'en').toLowerCase();
+    const re = SCRIPTS[lang];
+    if (lang !== 'en' && re && existsSync('.claude/skills')) {
+      let total = 0, english = 0;
+      for (const n of readdirSync('.claude/skills')) {
+        const p = `.claude/skills/${n}/SKILL.md`;
+        if (!okOnDisk(p)) continue;
+        total++;
+        const body = splitModules(normEol(readFileSync(p, 'utf8'))).filter((m) => m.signature !== '<preamble>').map(modText).join('\n');
+        if (!re.test(body)) english++;
+      }
+      if (english) console.error(`⚠ language mix: ${english} of ${total} skills are English (language: ${lang}) — skills are agent-read and arrive English by policy; translate on demand, and expect NEW skills to arrive English too`);
+    }
+  } catch { /* unreadable marker — the marker gate flags it separately */ }
   warnSphereLibrary();
   // The size-budget guard over the re-read core (STATUS: bugs/37, decision #27 — the 2.1 release
   // PROMISED a warning at the ~200-line soft target and shipped prose only, field STATUS files
