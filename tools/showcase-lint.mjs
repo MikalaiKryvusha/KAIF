@@ -42,7 +42,7 @@ const SOFT = 'SOFT';
 // Часть классов объявлена не таблицей, а инлайном — им нужен контекст всей страницы, а не строки.
 const INLINE_CLASSES = ['RANGE', 'JARGON'];
 // Оси — проверки НЕ построчные: они судят документ целиком или пару документов.
-const AXES = ['HALVES', 'WRAP', 'NOTES-VS-README'];
+const AXES = ['HALVES', 'WRAP', 'NOTES-VS-README', 'NOTES-ANCHORS'];
 
 const CLASSES = [
   {
@@ -521,6 +521,58 @@ function checkNotesVsReadme(notesText, readmeText) {
   return hits;
 }
 
+/**
+ * Ссылки нот на README обязаны попадать в СУЩЕСТВУЮЩИЙ якорь. Ноты каждой версии пишутся по форме
+ * прошлых нот (`/release` шаг 6), и вместе с формой наследуются ссылки: `#-quick-start` и
+ * `#-быстрый-старт` пережили исчезновение раздела «Quick start» из README (2.1) и уехали мёртвыми
+ * на страницы релизов 2.2 → 2.4, `#русский` никогда не совпадал с id `russian`. Нашёл судья
+ * релиза 2.5 (сессия 52) — ни один страж витрины ссылки не судил. Якорь считается по правилу
+ * GitHub: заголовок → нижний регистр → убрать всё, кроме букв, цифр, знаков, пробелов и дефисов
+ * (эмодзи уходит, отсюда ведущий дефис у «✨ Quick start») → пробелы в дефисы; повтор получает
+ * суффикс `-1`, `-2`; плюс явные `<a id="…">` / `<a name="…">`. Судятся только ссылки на README
+ * (URL репозитория с фрагментом или `/blob/…/README.md#…`); внутристраничные `#english` нот —
+ * их собственные якоря, оси не принадлежат. [TESTED: 2026-09-04 · селфтест — мёртвый якорь
+ * красный, живые (заголовок с точкой, кириллица, id, эмодзи-заголовок) молчат]
+ */
+function githubSlug(heading) {
+  const plain = heading.replace(/`/g, '').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').trim().toLowerCase();
+  return plain.replace(/[^\p{L}\p{N}\p{M}\s-]/gu, '').replace(/\s/g, '-');
+}
+
+function readmeAnchors(readmeText) {
+  const seen = new Map();
+  const anchors = new Set();
+  for (const line of readmeText.split(/\r?\n/)) {
+    const h = line.match(/^#{1,6}\s+(.+?)\s*#*\s*$/);
+    if (h) {
+      const base = githubSlug(h[1]);
+      const n = seen.get(base) || 0;
+      seen.set(base, n + 1);
+      anchors.add(n ? `${base}-${n}` : base);
+    }
+    for (const m of line.matchAll(/<a\s+(?:id|name)="([^"]+)"/g)) anchors.add(m[1]);
+  }
+  return anchors;
+}
+
+function checkNotesAnchors(notesText, readmeText) {
+  const hits = [];
+  const anchors = readmeAnchors(readmeText);
+  const linkRe = /https?:\/\/github\.com\/[^/\s)"]+\/[^/\s)"#]+(?:\/blob\/[^\s)"#]*README\.md)?#([^\s)"]+)/g;
+  notesText.split(/\r?\n/).forEach((line, i) => {
+    for (const m of line.matchAll(linkRe)) {
+      let anchor = m[1];
+      try { anchor = decodeURIComponent(anchor); } catch { /* оставляем как есть — сравнение и так упадёт вслух */ }
+      if (anchors.has(anchor)) continue;
+      hits.push({ level: HARD, id: 'NOTES-ANCHORS',
+                  name: 'ссылка нот ведёт на несуществующий якорь README',
+                  fix: 'возьми якорь из живого README: слаг заголовка по правилу GitHub или явный <a id>',
+                  n: i + 1, quote: `#${anchor} — в README нет` });
+    }
+  });
+  return hits;
+}
+
 // ── Отчёт ──────────────────────────────────────────────────────────────────────────────────────
 function report(file, text) {
   const hits = [...checkText(text), ...checkHalves(text)];
@@ -673,6 +725,20 @@ function selftest() {
   console.log(`${driftDead ? '✅' : '❌'} ноты↔README: пара без стороны README молчит (слово владельца 2026-08-21)`);
   if (!driftDead) bad++;
 
+  // 2e. Ось «якоря README в ссылках нот»: мёртвый якорь краснеет; живые — заголовок с точкой,
+  // кириллический заголовок, явный <a id>, эмодзи-заголовок с ведущим дефисом — молчат.
+  const readmeAnch = '<a id="english"></a>\n\n# KAIF\n\n## 2. Installation\n\n## ✨ Quick start\n\n<a id="russian"></a>\n\n## 2. Установка\n';
+  const notesAnchOk = 'See the [README](https://github.com/o/r#2-installation), [RU](https://github.com/o/r#russian), ' +
+    '[start](https://github.com/o/r#-quick-start), [ru-install](https://github.com/o/r#2-%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0) ' +
+    'and the in-page [anchor](#english).';
+  const notesAnchBad = 'See the [README](https://github.com/o/r#-quick-start-guide) and [RU](https://github.com/o/r#русский).';
+  const anchQuiet = checkNotesAnchors(notesAnchOk, readmeAnch).length === 0;
+  const anchRed = checkNotesAnchors(notesAnchBad, readmeAnch).length === 2;
+  console.log(`${anchQuiet ? '✅' : '❌'} NOTES-ANCHORS: четыре живых якоря (точка · кириллица · id · эмодзи) молчат`);
+  console.log(`${anchRed ? '✅' : '❌'} NOTES-ANCHORS: два мёртвых якоря краснеют (ровно два)`);
+  if (!anchQuiet) bad++;
+  if (!anchRed) bad++;
+
   // 3. Класс PASSIVE НЕ запускается вне секции-инструкции: возвратный залог в описательном разделе
   // законен, и страж, который этого не знает, заставил бы переписать здоровый текст.
   const descriptive = '## 6. Обновление\n\nОбновление выполняется механически и уважает каждую правку.';
@@ -769,6 +835,16 @@ for (const f of files) {
       for (const h of drift) console.log(`      стр. ${h.n}: ${h.quote}`);
       console.log(`      → ${drift[0].fix}`);
       hard += drift.length;
+    }
+    // Ось якорей — тоже только на СТАРШИХ нотах: исторические ноты зеркалят свои опубликованные
+    // страницы (release-body-guard), а README с тех пор мог потерять раздел — их красный был бы
+    // упрёком прошлому, которое править вправе только владелец (`gh release edit`).
+    const dead = checkNotesAnchors(text, readmeText);
+    if (dead.length) {
+      console.log(`  ❌ NOTES-ANCHORS — ${dead[0].name} (${dead.length})`);
+      for (const h of dead) console.log(`      стр. ${h.n}: ${h.quote}`);
+      console.log(`      → ${dead[0].fix}`);
+      hard += dead.length;
     }
   }
 }
