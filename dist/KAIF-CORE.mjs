@@ -1179,14 +1179,20 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   // script into every skill's frontmatter and would blind the test.
   const nonPre = (list) => list.filter((x) => x.signature !== '<preamble>');
   const bodyOf = (mods) => nonPre(mods).map(modText).join('\n');
-  const baseFound = nonPre(oldMods).filter((e) => diskMods.some((d) => d.signature === e.signature)).length;
+  // The H1 is OUT of the wholesale count (bugs/100, 2.5): it is the one signature that carries a
+  // deploy-time value (`# <PROJECT_NAME> — …`), and a synthetic baseline fills it from whatever
+  // the folder resolves to — one tree in two folder names once got two verdicts, exactly ±1 at
+  // the ceiling (the field's 20-vs-19). Bug 26 already treats an H1 mismatch as signature drift,
+  // never as a translation; the count now says the same.
+  const counted = (list) => nonPre(list).filter((x) => !/^# /.test(x.signature));
+  const baseFound = counted(oldMods).filter((e) => diskMods.some((d) => d.signature === e.signature)).length;
   // On a TINY base (directory READMEs cut into 1 module) "≤1 matched" degenerates: an intact base
   // heading plus one owner-added section in the owner's script would read as a translation and
   // freeze the file with a lying task note (judge finding F1, s07/T6) — small bases demand that
   // NO base signature survives before the net may fire. On a real-size base the ceiling is a
   // SHARE of the base, not an absolute: real translations leave TERMS untranslated, and the old
   // "≤1" ceiling read project C's 2-survivors-of-21 translation as English and doubled it (bug 31).
-  const baseN = nonPre(oldMods).length;
+  const baseN = counted(oldMods).length;
   const wholesaleCeiling = baseN <= 2 ? 0 : Math.max(1, Math.floor(baseN * WHOLESALE_SURVIVOR_SHARE));
   // One predicate for both axes (bugs/66 №3) — the net used to re-implement the script test
   // inline, so widening `localizedAgainst` alone would have left this site Latin-blind.

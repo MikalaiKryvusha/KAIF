@@ -250,7 +250,10 @@ lands in the task WITH a "your version → new template" diff ONLY when upstream
 it. New template modules insert by template order. A file whose body carries the owner's
 script prints its verdict WITH the numbers that produced it — `baseFound N of M, ceiling K →
 frozen | merged` (2.5: a rehearsal and the live run compare line by line, not by outcome).
-The rehearsal is BINDING (2.5, origin issue #27 R1): `diff --source` prints the same verdicts
+The H1 is OUT of that count (2.5, origin bug 100): it is the one heading that carries a deploy-time
+value, and a synthetic baseline fills it from whatever the folder resolves to — one tree under two
+folder names once got two verdicts, ±1 at the ceiling; the polygon now runs exactly that and
+demands one verdict. The rehearsal is BINDING (2.5, origin issue #27 R1): `diff --source` prints the same verdicts
 over the same candidate set and records them in `.kaif/update-rehearsal.json`; the next `update`
 over that tree (or one given `--rehearsal <receipt>` from a sandbox copy) freezes any file whose
 live verdict is `merged` where the rehearsal said `frozen` — kept intact, the template delta in

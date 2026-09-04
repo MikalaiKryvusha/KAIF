@@ -340,5 +340,13 @@ ok(conditioned && new RegExp('\\*\\*mode-switch\\*\\*[^\\n]*' + conditioned.repl
    'U13: пункт mode-switch задания называет удержанный файл с анонимной формулировкой', task7.split('\n').filter((l) => /\*\*[a-z-]+\*\*/.test(l)).map((l) => l.slice(0, 40)).join(' | '));
 ok(/kept file\(s\) were deployed with the anonymous wording/.test(r.out), 'U13: лог считает удержанные файлы анонимной формулировки', r.out.split('\n').filter((l) => /anonymous/.test(l)).join(' | ').slice(0, 300));
 
+// ---------------------------------------------------------------- U14 (bugs/100): одно дерево в двух папках → один вердикт wholesale
+console.log('\n=== U14 (bugs/100, P1 причина): то же дерево под другим именем папки даёт ТОТ ЖЕ вердикт wholesale ===');
+// проба живёт отдельным файлом (запускаемый repro бага); здесь она — страж: exit 0 = один вердикт в обеих папках
+let probe;
+try { probe = { code: 0, out: execSync(`node ${join(REPO, 'tools', 'sandbox', 'probes', 'bugs-100-two-folders.mjs')} --no-package ${join(ROOT, 'u14')} 2>&1`, { stdio: 'pipe' }).toString() }; }
+catch (e) { probe = { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
+ok(probe.code === 0 && /ОДИН вердикт/.test(probe.out), 'U14: дерево без package.json в папках alpha-project/beta-project — один вердикт (H1 вне счёта wholesale)', probe.out.split('\n').filter((l) => /baseFound|вердикт/.test(l)).join(' | ').slice(-400));
+
 console.log(failures ? `\n❌ s18: ${failures} red` : '\n✅ s18: all green');
 process.exit(failures ? 1 : 0);

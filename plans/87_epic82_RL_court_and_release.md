@@ -38,8 +38,8 @@ REFUTED-блокеров → витрина обеих половин → чер
 4. Релиз: `version.json` 2.5 + имя + дата, сборка, тег `v2.5`, `latest`, GitHub Release —
    ТОЛЬКО по слову владельца (`AUTH:`-строка); до слова — RC собран и показан.
    *Meter:* `/release` шаги · `git tag` · страница релиза.
-5. Открытое после релиза: `bugs/100` (P1 причина — лечение «H1 вне счёта wholesale» + свод «две
-   папки») и флейк s07 (`STATUS` п. 1.2) — в `ideas/28` или первым пунктом 2.6.
+5. Открытое после релиза: флейк s07 (`STATUS` п. 1.2) — в `ideas/28` или первым пунктом 2.6
+   (`bugs/100` вылечен ещё в сессии 50: H1 вне счёта wholesale, страж s18 U14 на пробе «две папки»).
 
 ## Шаги
 
@@ -108,7 +108,9 @@ mechanism is REPRODUCED: one tree, two folder names, `baseFound 5 → merged` vs
 frozen`, but only when `<PROJECT_NAME>` falls back to the folder name — no `package.json` with a
 `name` and no recorded `projectName`. One question back to you: did your 1.6 → 2.4 tree carry a
 `package.json` with `name` at the root? If it did, the cause is elsewhere and the rehearsal
-freeze is the fence either way); the cure itself is scheduled for 2.6, the protection ships now. (2) R1b, END without BEGIN: an
+freeze is the fence either way); the cure ships in v2.5 as well: the H1 is out of the wholesale
+count (it is the one heading that carries a deploy-time value), and a polygon guard now runs one
+tree under two folder names and demands one verdict. (2) R1b, END without BEGIN: an
 anchored block is indivisible — the merge plan is judged as a whole, a pair that would come out
 unbalanced rolls back to the disk state and goes to the task as ONE `(anchored block
 KAIF:PRAYER)` item with the diff of all its carriers, and `check` reddens any document that
