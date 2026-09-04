@@ -30,7 +30,15 @@
 //        целиком (`writeMatchingEol` судит по наличию, не по доминированию).
 //   U8 (срез U2, п. 1 plans/73) КРАСНЫЙ — пункт задания о wholesale-файле не даёт ГОТОВОЙ команды
 //        диффа (`kaif-core.mjs diff --source …`).
-import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
+//   Стражи, добавленные в сессии 50 вместе со своими фиксами (каждый доказан красным на ядре
+//   ДО фикса циклом «stash истока → сборка → свод → pop → сборка», EXP-0104):
+//   U3б (P1, обязывающая репетиция) КРАСНЫЙ на 46a5ba7 ×8 — `diff --source` не печатал вердиктов
+//        и не писал репетицию; подделанная запись «frozen» не мешала боевому мержу.
+//   U10 (#32 R-D) КРАСНЫЙ на 5ed5baa ×5 — deprecation без преемника, неубранные не считались.
+//   U11 (P5) КРАСНЫЙ ×3 — пункты project-name без файловой формы; имя «???» записывалось в маркер.
+//   U12 (KAGO 10) КРАСНЫЙ ×1 — цитата слота в летописи называлась местом заполнения.
+//   U13 (P4) КРАСНЫЙ ×2 — переход anonymous→origin не называл удержанные файлы анонимной формулировки.
+import { readFileSync, writeFileSync, appendFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -101,7 +109,7 @@ bundle99 = editBundleModule(bundle99, 'PHILOSOPHY.md', 2, (m) => m.lines.push(''
 bundle99 = editBundleModule(bundle99, '.claude/skills/propose-idea/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (propose-idea)'));
 bundle99 += '\n> **FILE: `.claude/skills/new-skill/SKILL.md`** — a NEW skill of 9.9 (English by construction)\n\n' +
   FENCE + 'md\n---\nname: new-skill\ndescription: A NEW skill arriving in 9.9 — English by construction.\n---\n\n' +
-  '# /new-skill — a new skill\n\n## What it does\n\nEnglish body of the new skill.\n' + FENCE + '\n';
+  '# /new-skill — a new skill\n\n## What it does\n\nEnglish body of the new skill. Run the tests with `<TEST_HARNESS>` first.\n' + FENCE + '\n';   // <TEST_HARNESS>: слот, который машинерия не заполнит без scripts.test — пункт placeholders (U12)
 const SRC99 = join(ROOT, 'src-9.9');
 writeSource(SRC99, bundle99, '9.9');
 
@@ -228,10 +236,26 @@ const TF = join(T3, 'TESTING_FRAMEWORK.md');
 const tfLines = readFileSync(TF, 'utf8').replace(/\r\n/g, '\n').split('\n');
 tfLines[2] = tfLines[2] + '\r';           // одна CRLF-строка в LF-файле: доминирует LF
 writeFileSync(TF, tfLines.join('\n'));
+// U12-фикстура (KAGO 10): летопись ЦИТИРУЕТ слот дословно — это история, не место заполнения
+appendFileSync(join(T3, 'PROJECT_HISTORY.md'), '\n2026-01-01 — chronicle: the adaptation filled `<TEST_HARNESS>` back then (verbatim quote, not a slot).\n');
 r = run(T3, `update --source ${SRC99}`);
 ok(r.code === 0, 'U5 update →9.9 exit 0', r.out);
 const task3 = readFileSync(join(T3, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/stale-claims[^]*package\.json/.test(task3), 'U5: пин старой версии в package.json scripts назван в stale-claims', task3.split('\n').filter((l) => /stale-claims|package\.json/.test(l)).join(' | ').slice(0, 300));
+// ---------------------------------------------------------------- U11 (P5 / #28 R4): guidance ДО акта — пункт называет файловую форму; искажённое имя отвергается
+console.log('\n=== U11 (P5): пункт project-name называет --name-file; искажённое argv-имя отвергается ДО записи ===');
+ok(/\*\*project-name\*\*[^\n]*--name-file <path>/.test(task3), 'U11: пункт project-name задания обновления называет файловую форму рядом с argv', task3.split('\n').find((l) => /\*\*project-name\*\*/.test(l))?.slice(0, 200));
+const adapt3 = join(T3, 'KAIF_ADAPTATION_TASK.md');
+ok(existsSync(adapt3) && /\*\*project-name\*\*[^\n]*--name-file <path>/.test(readFileSync(adapt3, 'utf8')), 'U11: пункт project-name задания установки тоже называет файловую форму');
+const nameBefore = JSON.parse(readFileSync(join(T3, '.kaif', 'kaif.json'), 'utf8')).projectName;
+r = run(T3, 'project-name "???"');
+const nameAfter = JSON.parse(readFileSync(join(T3, '.kaif', 'kaif.json'), 'utf8')).projectName;
+ok(r.code !== 0 && /MANGLED[^\n]*--name-file/.test(r.out) && nameAfter === nameBefore, 'U11: имя из одних «?» (след искажения argv) отвергнуто до записи, маркер не тронут', r.out.slice(-200));
+// ---------------------------------------------------------------- U12 (KAGO 10): один предикат поверхностей у пункта placeholders и у гейта
+console.log('\n=== U12 (KAGO 10): пункт placeholders называет ТОЛЬКО поверхности гейта — цитата летописи не место заполнения ===');
+const phLine = task3.split('\n').find((l) => /\*\*placeholders\*\*/.test(l)) || '';
+ok(/<TEST_HARNESS>[^\n]*new-skill\/SKILL\.md/.test(phLine), 'U12: пункт placeholders называет новый навык с незаполненным слотом (поверхность гейта)', phLine.slice(0, 300));
+ok(phLine && !/PROJECT_HISTORY\.md/.test(phLine), 'U12: дословная цитата слота в летописи НЕ названа местом заполнения (инструкция = гейт)', phLine.slice(0, 300));
 // ---------------------------------------------------------------- U7: EOL по доминированию
 console.log('\n=== U7 (H10): механическая замена сохраняет ДОМИНИРУЮЩУЮ конвенцию концов строк ===');
 const tfAfter = readFileSync(TF, 'utf8');
@@ -265,6 +289,56 @@ ok(r.code !== 0 && /unpaired anchor block KAIF:TEST[^\n]*PHILOSOPHY\.md/.test(r.
 writeFileSync(join(T5, 'PHILOSOPHY.md'), readFileSync(join(T5, 'PHILOSOPHY.md'), 'utf8').replace('\n<!-- KAIF:TEST:END -->\n', '\n```\n<!-- KAIF:TEST:END -->\n```\n'));
 r = run(T5, 'check');
 ok(r.code === 0, 'U9: маркер внутри code fence не считается — check снова зелёный', r.out.slice(-200));
+
+// ---------------------------------------------------------------- U10 (#32 R-D): deprecation называет преемника; неубранные СЧИТАЮТСЯ
+console.log('\n=== U10 (#32 R-D): преемник в deprecation (лог · пункт задания) · счёт неубранных (контекст-строка · квитанция) ===');
+// по образцу s04 S14d: ЗАМЕНА существующего ключа `deprecations` в мете бандла (второй ключ JSON.parse перекрыл бы тихо)
+const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
+if (!depKeyRe.test(bundle99)) throw new Error('U10 fixture: ключ deprecations не найден в мете бандла');
+let bundleDep = bundle99.replace(depKeyRe,
+  '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test", "successor": "/next-thing (.claude/skills/next-thing/SKILL.md)"}, ' +
+  '{"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test", "successor": "/help-thing (.claude/skills/help-thing/SKILL.md)"}],');
+const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
+  '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n[\\s\\S]*?\\n' + FENCE + '\\n?', 'm'), '');
+bundleDep = dropBlock(dropBlock(bundleDep, '.claude/skills/what-next/SKILL.md'), '.claude/skills/help-kaif/SKILL.md');
+const SRCDEP = join(ROOT, 'src-9.9-dep');
+writeSource(SRCDEP, bundleDep, '9.9');
+const T6 = join(ROOT, 'u10'); mkdirSync(T6); seed(T6);
+must(run, T6, 'install');
+const HK = join(T6, '.claude/skills/help-kaif/SKILL.md');
+writeFileSync(HK, readFileSync(HK, 'utf8') + '\nLOCAL EDIT ON DEPRECATED\n');   // правленный — остаётся и считается
+r = run(T6, `update --source ${SRCDEP}`);
+ok(r.code === 0, 'U10 update →9.9 с deprecations exit 0', r.out);
+ok(/retired \.claude\/skills\/what-next\/SKILL\.md \([^)]*\) → successor: \/next-thing/.test(r.out), 'U10: лог удаления называет преемника', r.out.split('\n').filter((l) => /retired|deprecated/.test(l)).join(' | ').slice(0, 300));
+ok(/1 deprecated artifact\(s\) kept/.test(r.out), 'U10: лог считает неубранные (1 kept)', r.out.split('\n').filter((l) => /deprecated/.test(l)).join(' | ').slice(0, 300));
+const task6 = readFileSync(join(T6, 'KAIF_UPDATE_TASK.md'), 'utf8');
+ok(/\*\*deprecations\*\*[^\n]*help-kaif\/SKILL\.md[^\n]*successor: \/help-thing/.test(task6), 'U10: пункт задания называет преемника у правленного упразднённого');
+ok(/^> [^\n]*1 deprecated artifact\(s\) retired; 1 deprecated artifact\(s\) KEPT with local edits/m.test(task6), 'U10: контекст-строка задания считает и убранные, и неубранные', task6.split('\n').find((l) => /^> /.test(l)));
+const receipt6 = JSON.parse(readFileSync(join(T6, '.kaif', 'last-update.json'), 'utf8'));
+ok(receipt6.deprecations && receipt6.deprecations.retired === 1 && receipt6.deprecations.kept === 1, 'U10: квитанция несёт счёт deprecations {retired: 1, kept: 1}', JSON.stringify(receipt6.deprecations));
+
+// ---------------------------------------------------------------- U13 (P4 / #28 R3): переход anonymous → origin называет удержанные файлы с анонимной формулировкой
+console.log('\n=== U13 (P4): anonymous → origin — удержанный файл с анонимной формулировкой назван в задании ===');
+const T7 = join(ROOT, 'u13'); mkdirSync(T7); seed(T7);
+must(run, T7, 'install --mode anonymous');
+// файл, чей текст анонимизатор МЕНЯЕТ: сравниваем анонимную установку со стандартной (T5 — u9), берём первый различающийся навык
+const T7std = join(ROOT, 'u13-std'); mkdirSync(T7std); seed(T7std);
+must(run, T7std, 'install');
+const conditioned = ['KAIF_FRAMEWORK.md', '.claude/skills/report-bug/SKILL.md', '.claude/skills/help-kaif/SKILL.md', 'AGENT_GUIDE.md']
+  .find((p) => existsSync(join(T7, p)) && existsSync(join(T7std, p)) && readFileSync(join(T7, p), 'utf8') !== readFileSync(join(T7std, p), 'utf8'));
+ok(!!conditioned, 'U13 фикстура: найден файл, чей текст зависит от режима (анонимная ≠ стандартная установка)', conditioned || 'none');
+if (conditioned) writeFileSync(join(T7, conditioned), readFileSync(join(T7, conditioned), 'utf8') + '\nLOCAL EDIT UNDER ANONYMOUS MODE\n');
+// bootstrap на 9.9 с явным --mode standard: бандл новой версии кладётся туда, откуда его читает install;
+// версию install берёт из МЕТА-БЛОКА бандла (первое `"version"` в файле), а не из манифеста — патчим её
+writeFileSync(join(T7, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), bundle99.replace(/"version": "[^"]+"/, '"version": "9.9"'));
+r = run(T7, 'install --mode standard');
+ok(r.code === 0 && /tracking anonymous → origin/.test(r.out), 'U13: переход anonymous → origin выполнен и назван в логе', r.out.slice(-300));
+const marker7 = JSON.parse(readFileSync(join(T7, '.kaif', 'kaif.json'), 'utf8'));
+ok(marker7.tracking === 'origin' && marker7.version === '9.9', 'U13: маркер — tracking origin, версия 9.9', JSON.stringify({ tracking: marker7.tracking, version: marker7.version }));
+const task7 = existsSync(join(T7, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(T7, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
+ok(conditioned && new RegExp('\\*\\*mode-switch\\*\\*[^\\n]*' + conditioned.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).test(task7),
+   'U13: пункт mode-switch задания называет удержанный файл с анонимной формулировкой', task7.split('\n').filter((l) => /\*\*[a-z-]+\*\*/.test(l)).map((l) => l.slice(0, 40)).join(' | '));
+ok(/kept file\(s\) were deployed with the anonymous wording/.test(r.out), 'U13: лог считает удержанные файлы анонимной формулировки', r.out.split('\n').filter((l) => /anonymous/.test(l)).join(' | ').slice(0, 300));
 
 console.log(failures ? `\n❌ s18: ${failures} red` : '\n✅ s18: all green');
 process.exit(failures ? 1 : 0);

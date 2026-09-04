@@ -64,7 +64,12 @@
 //         `stale-claims` item is unconditional (`no lines found`) and scans the project's
 //         scripts (package.json pin); English arrivals on a ru deployment are named in the task
 //         and counted by `check`; EOL by dominance; a ready `git diff v<from> v<to>` per
-//         wholesale file; `check` reddens an unpaired anchor (fence-aware)
+//         wholesale file; `check` reddens an unpaired anchor (fence-aware); the rehearsal is
+//         BINDING (`diff --source` records verdicts, a mismatching live verdict freezes the
+//         file, `verdict-mismatch` item + receipt); deprecations name their successor and the
+//         kept ones are counted; `project-name` guidance precedes the act (file form named, a
+//         mangled argv name refused); one placeholder-surface predicate for the gate and the
+//         task item; the anonymous → origin switch names kept anonymity-conditioned files
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';

@@ -89,7 +89,8 @@
   "deprecations": [
     {
       "path": ".claude/skills/end-chat/SKILL.md",
-      "reason": "split in 2.4 into /end-chat-force (urgent, no ceremonies, explicit debt line) + /end-chat-soft (advance order, full ceremonies at a natural cut)"
+      "reason": "split in 2.4 into /end-chat-force (urgent, no ceremonies, explicit debt line) + /end-chat-soft (advance order, full ceremonies at a natural cut)",
+      "successor": "/end-chat-soft (.claude/skills/end-chat-soft/SKILL.md) + /end-chat-force (.claude/skills/end-chat-force/SKILL.md)"
     }
   ],
   "policyChanges": {
@@ -2865,14 +2866,18 @@ restored by hand.
 `KAIF_UPDATE_TASK.md` lists: per-module merges with diffs · whole-file merges (a
 translated-wholesale file also names its UPSTREAM path and a ready `git diff v<from> v<to> --
 <src>` — the dest → src map ships in the bundle meta as `sources`, 2.5) · owner-convention
-transfers · deprecations carrying local edits · stale claims (lines still asserting the OLD
+transfers · deprecations carrying local edits (every deprecation names its SUCCESSOR in the log
+and in the item, and the kept ones are counted in the task's context line and the receipt —
+2.5, origin issue #32 R-D) · stale claims (lines still asserting the OLD
 version anywhere in the project — prose AND the project's own scripts: `package.json`,
 `*.mjs/js/ts/sh/ps1/py/yml/toml`, lock files excluded, 2.5; the item is UNCONDITIONAL on a
 version change — an empty scan says `no lines found`, so a silent scanner failure can never pass
 as a clean tree, 2.5) ·
 language arrivals (NEW files of the release that arrived English on a non-English deployment,
 2.5) · verdict mismatches (files frozen because the recorded rehearsal's wholesale verdict
-differed from this run's — both number sets named, 2.5) · the news interval · executing
+differed from this run's — both number sets named, 2.5) · mode switch (on an anonymous →
+origin transition, the kept files that were deployed with the anonymous wording — named for a
+re-read, 2.5) · the news interval · executing
 checkpoints (`recheck` runs the
 actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
 field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an

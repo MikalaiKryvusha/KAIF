@@ -293,7 +293,9 @@ const TEMPLATE_NOTES = TEMPLATE_NOTES_BY_VERSION[version()] || [];
 // in the update task. Empty is the normal state.
 const DEPRECATIONS = [
   { path: '.claude/skills/end-chat/SKILL.md',
-    reason: 'split in 2.4 into /end-chat-force (urgent, no ceremonies, explicit debt line) + /end-chat-soft (advance order, full ceremonies at a natural cut)' },
+    reason: 'split in 2.4 into /end-chat-force (urgent, no ceremonies, explicit debt line) + /end-chat-soft (advance order, full ceremonies at a natural cut)',
+    // 2.5 (epic US, #32 R-D): every deprecation NAMES its successor — "retired" without "use X instead" sent a field agent hunting.
+    successor: '/end-chat-soft (.claude/skills/end-chat-soft/SKILL.md) + /end-chat-force (.claude/skills/end-chat-force/SKILL.md)' },
 ];
 
 // POLICY changes, by version (Reference §10.6; field gap 04-§6: 1.6 changed the language POLICY

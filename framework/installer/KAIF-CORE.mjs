@@ -555,13 +555,16 @@ function expectedAgentArtifacts(skillNames) {
 // ("the first step toward ticking boxes without looking", three field reports). The scan lists
 // deployed files that LITERALLY carry each slot; foreign sphere libraries are reference
 // material and never gate (only the DECLARED sphere is a working surface), so only it may appear.
+// The addresses come from the SAME predicate the final gate judges by (`placeholderSurfaces`,
+// 2.5 — KAGO `bugs/KAIF/10`): a chronicle line quoting `<BUILD_COMMAND>` verbatim is history,
+// not a slot, and the gate never asked for it — so the item must not send anyone to "fill" it.
+// Canonical copies only: per-system mirrors re-sync from them at update-verify.
 function unresolvedOnDisk(unresolved, deploy) {
   let declared = null;
   try { const s = readJson(KAIF_JSON).sphere; if (s && s !== 'TODO') declared = `.kaif/spheres/${s}.md`; } catch { /* no marker yet */ }
+  const surfaces = [...placeholderSurfaces()].filter((p) => !/^\.(agents|grok|cline|roo)\//.test(p));
   return [...unresolved].map((ph) => {
-    const paths = deploy.filter((f) => f.path.endsWith('.md') && okOnDisk(f.path)
-      && (!f.path.startsWith('.kaif/spheres/') || f.path === declared)
-      && readFileSync(f.path, 'utf8').includes(ph)).map((f) => f.path);
+    const paths = surfaces.filter((p) => okOnDisk(p) && readFileSync(p, 'utf8').includes(ph));
     // Issue #3 (gate-scope-wider-than-instruction): before the sphere is declared, the libraries
     // are rightly excluded above — but the ONE the agent will declare (the `sphere` item of this
     // same task) joins the placeholder gate the moment it is recorded, and a list that omits a
@@ -696,7 +699,7 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // Identity before content: the canonical name feeds every later fill, and identity is the
   // OWNER's — a lowercase package/folder name seeded into H1 headings misnames the project.
   if (!canonicalName() && values['<PROJECT_NAME>'])
-    items.push(['project-name', `<PROJECT_NAME> was auto-filled with "${values['<PROJECT_NAME>']}" from a technical identifier (package.json/folder name) — a lowercase tech id is NOT the project's canonical name, and identity is the OWNER's, never the machinery's guess. Confirm the canonical name with the owner, record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\` (the marker and future fills heal), then correct any seeded headings carrying the wrong form.`]);
+    items.push(['project-name', `<PROJECT_NAME> was auto-filled with "${values['<PROJECT_NAME>']}" from a technical identifier (package.json/folder name) — a lowercase tech id is NOT the project's canonical name, and identity is the OWNER's, never the machinery's guess. Confirm the canonical name with the owner, record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\` for an ASCII name, or \`--name-file <path>\` for any other script (a name in argv can be mangled by the shell; a mangled one is refused, but a wrong-yet-ASCII one would be recorded) — the marker and future fills heal; then correct any seeded headings carrying the wrong form.`]);
   if (unresolvedLive.length) items.push(['placeholders', `Fill the remaining placeholders at their REAL locations (each verified on disk at generation time; grep to be sure): ${fmtSlots(unresolvedLive)}`]);
   items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection. Keep them SHORT; write in 2-3 small edits, not one giant write.']);
   // Issue #4 (obligation-exists-but-no-deploy-step): the canon routes owner-text writing through
@@ -851,19 +854,27 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
 // releases deployed — the mechanism that replaced another mechanism owns the cleanup of its
 // predecessor (project C: a 1.2-era validator survived four versions printing false greens).
 // Untouched instances are removed mechanically; locally edited ones go to the task.
+// 2.5 (epic US; origin #32 R-D): a deprecation NAMES ITS SUCCESSOR wherever it is reported —
+// "retired" without "use X instead" sent a field agent hunting — and the ones KEPT (local edits)
+// are COUNTED, not just listed: the summary used to print only what was removed, so a tree that
+// kept every deprecated artifact read as "nothing retired" instead of "N await you".
 function handleDeprecations(meta, old) {
-  const out = { removed: 0, items: [] };
+  const out = { removed: 0, kept: 0, items: [] };
   for (const d of meta.deprecations || []) {
     if (!d.path || !existsSync(d.path)) continue;
+    const reason = d.reason || 'deprecated upstream';
+    const succ = d.successor ? ` → successor: ${d.successor}` : '';
     const tpl = (old.templateShas || {})[d.path];
     if (tpl && fileShaNorm(d.path) === tpl) {
       unlinkSync(d.path);
       out.removed++;
-      log(`- retired ${d.path} (${d.reason || 'deprecated upstream'})`);
+      log(`- retired ${d.path} (${reason})${succ}`);
     } else {
-      out.items.push(`${d.path} — ${d.reason || 'deprecated upstream'} (carries local edits: remove it yourself, or keep it consciously)`);
+      out.kept++;
+      out.items.push(`${d.path} — ${reason}${succ} (carries local edits: remove it yourself, or keep it consciously — the successor already ships)`);
     }
   }
+  if (out.kept) log(`⚠ ${out.kept} deprecated artifact(s) kept — each carries local edits; the task names it with its successor`);
   return out;
 }
 
@@ -891,7 +902,7 @@ function languageArrivalsOf(paths) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [] } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   // Checklists and decision tables inside framework files often carry the OWNER's recorded
@@ -916,6 +927,10 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (verdictMismatches.length) items.push(['verdict-mismatch', `The wholesale verdict of these files DIFFERED between the recorded rehearsal and this run — each was FROZEN (kept intact; its template delta ships in the Module diffs below), so what the rehearsal showed you stays true: ${verdictMismatches.map((m) => `${m.path} (rehearsal: ${fmtVerdict(m.rehearsal)}; this run: ${fmtVerdict(m.live)})`).join(' · ')}. Merge each by hand from its diff, then file the mismatch WITH BOTH NUMBER SETS as a framework defect (skill /report-bug, template A) — it is the fingerprint of a classification that depended on something other than the tree.`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
+  // P4 (2.5, epic US; #28 R3): the anonymous → origin switch cannot rewrite a file the owner edited,
+  // so its text may still assert the OLD mode — name each one for a re-read instead of letting it
+  // rot silently.
+  if (modeSwitch.length) items.push(['mode-switch', `This run switched the deployment anonymous → origin. These files were deployed with the ANONYMOUS wording and were KEPT for local edits, so their text may still describe the old mode (no origin, no machinery core, no updates, no feedback loop): re-read each and re-point it to the standard wording — where the template itself changed, its diff is in the Module diffs below: ${modeSwitch.join(' · ')}`]);
   // New templates may arrive carrying deploy-time slots the machinery cannot fill (bug 28: the
   // update used to learn about them only when the FINAL gate failed, after "I'm done"). The
   // item names each slot's REAL on-disk addresses — the static ".claude/skills/" pointer sent
@@ -924,7 +939,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (sphereSync) items.push(['sphere-sync', `Your declared sphere "${sphereSync.sphere}" is locally authored, and the framework's sphere TEMPLATE changed in this interval — the machinery never edits a local sphere: read the updated .kaif/spheres/_template.md and carry its new/changed sections into .kaif/spheres/${sphereSync.sphere}.md.`]);
   if (skeletonDelta) items.push(['local-inventories', `This release changes the framework skeleton: skills added: ${skeletonDelta.added.join(', ') || 'none'}; removed: ${skeletonDelta.removed.join(', ') || 'none'}. If this project keeps its OWN validators or inventories of the skeleton (doc/skill lists or counts in local tooling), update them — the machinery cannot know your tools; the machine-readable inventory is .kaif/deploy-manifest.json → "paths".`]);
   if (languageArrivals.length) items.push(['language-arrivals', `This deployment's language is ${LANG}, and these NEW files of the release arrived in ENGLISH: ${languageArrivals.join(' · ')}. Skills are agent-read and ship English by policy — translate only what the OWNER reads (or everything, if this project translates wholesale); leave the rest English consciously. Expect every future new file to arrive English the same way.`]);
-  if (nameFallback) items.push(['project-name', `This deployment's <PROJECT_NAME> ("${nameFallback}") came from a technical identifier (package.json/folder), not from the canon — if the canonical name differs (a lowercase tech id in H1 headings is the symptom), record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\`, then correct mis-seeded headings (git grep the old form).`]);
+  if (nameFallback) items.push(['project-name', `This deployment's <PROJECT_NAME> ("${nameFallback}") came from a technical identifier (package.json/folder), not from the canon — if the canonical name differs (a lowercase tech id in H1 headings is the symptom), record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\` for an ASCII name, or \`--name-file <path>\` for any other script (argv can be mangled by the shell — the file form travels byte for byte), then correct mis-seeded headings (git grep the old form).`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
   // stale-claims comes AFTER review-news: the news carry the history-migration instruction, and
   // the scan once flagged the very STATUS lines that migration moves two items later (bugs/35,
@@ -1652,7 +1667,7 @@ async function cmdUpdate() {
   const changedCnt = Object.keys(oldTpl).length
     ? deploy.filter((f) => !isSkippedAnon(f.path) && (!oldTpl[f.path] || oldTpl[f.path] !== normSha(f.content))).length : null;
   writeUpdateTask(diverged, { ...meta, version: man.version },
-    `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
+    `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
     { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths), verdictMismatches,
       sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback });
 
@@ -1662,7 +1677,8 @@ async function cmdUpdate() {
     source: base,   // where THIS update came from — the previous delta stays recomputable (field ask №3)
     counters: { replaced, mergedModules, added, kept },
     diverged, divergedModules: Object.fromEntries(Object.entries(divergedModules).map(([p, l]) => [p, l.map((d) => d.signature)])),
-    ownerConvention, verdicts });   // the verdicts with their numbers: a later run (or the origin) compares receipts, not outcomes (P1, 2.5)
+    ownerConvention, verdicts,      // the verdicts with their numbers: a later run (or the origin) compares receipts, not outcomes (P1, 2.5)
+    deprecations: { retired: dep.removed, kept: dep.kept } });   // the kept ones are a debt the receipt must confess (#32 R-D, 2.5)
   consumeRehearsal(rehearsal);
   appendHistory(marker, cur.version, man.version, 'core-update');
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
@@ -1843,8 +1859,13 @@ function splicePackageJson(raw, addName, addScripts) {
 // legitimately hold template slots for the owner). Scanning only .claude/ let literal
 // <BUILD_COMMAND> live in the .agents/.grok/.cline/.roo copies and .kaif/spheres/ for a
 // whole release while the gate stayed green (bug 11, three field reports).
-function scanPlaceholders() {
-  let issues = 0;
+// ONE predicate for both readers of "where may a slot still sit" — the gate below and the task's
+// `placeholders` item (2.5, epic US; KAGO `bugs/KAIF/10`): the generator used to name EVERY
+// deployed file carrying the token, chronicle quotes included, while the gate judged only these
+// surfaces — an instruction wider than its gate sends a weak session to "fill" a verbatim quote
+// in the history. The surfaces: the canon, every skill (canonical + per-system mirrors), and the
+// DECLARED sphere only — foreign sphere libraries carry template slots BY DESIGN (bugs/36).
+function placeholderSurfaces() {
   const scan = new Set(['AGENT_GUIDE.md']);
   for (const base of ['.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills'])
     if (existsSync(base)) for (const n of readdirSync(base)) { const p = `${base}/${n}/SKILL.md`; if (existsSync(p)) scan.add(p); }
@@ -1856,7 +1877,11 @@ function scanPlaceholders() {
     const declared = readJson(KAIF_JSON).sphere;
     if (declared && declared !== 'TODO' && okOnDisk(`.kaif/spheres/${declared}.md`)) scan.add(`.kaif/spheres/${declared}.md`);
   } catch { /* no readable marker — no sphere surface to scan */ }
-  for (const p of scan) {
+  return scan;
+}
+function scanPlaceholders() {
+  let issues = 0;
+  for (const p of placeholderSurfaces()) {
     const t = readFileSync(p, 'utf8');
     for (const ph of PLACEHOLDERS) if (t.includes(ph)) { console.error(`✖ placeholder ${ph} still in ${p}`); issues++; }
   }
@@ -2325,10 +2350,20 @@ async function cmdInstall() {
   // transition instead of dropping the flag for the marker while honouring it for files — the
   // run whose banner says "mode standard" leaves a marker that says the same. `fork` tracking
   // is untouched (a fork IS a standard deployment; severing it is /kaif-switch-origin's job).
+  let modeSwitch = [];   // P4 (2.5): kept files that were deployed with the ANONYMOUS wording
   if (legacyOld && val('--mode') && !ANON && legacyOld.tracking === 'anonymous') {
     marker.tracking = 'origin';
     marker.origin = ORIGIN;
     log('⟳ marker: tracking anonymous → origin (explicit --mode standard — version checks, updates and the feedback loop are live from here)');
+    // P4 (2.5, epic US; #28 R3): the switch rewrites what it may — but a file KEPT for local edits
+    // still carries the wording the anonymous deploy gave it (no origin, no core, no updates),
+    // and nothing used to name those files. Anonymity-conditioned = the anonymizer changes the
+    // template's text; kept = the disk text is NOT the standard template after this pass (owner
+    // documents, diverged files, module merges with kept modules — every road that leaves the
+    // old wording in place).
+    modeSwitch = deploy.filter((f) => f.path.endsWith('.md') && !isSkippedAnon(f.path) && okOnDisk(f.path)
+      && anonymize(f.content) !== f.content && fileShaNorm(f.path) !== normSha(f.content)).map((f) => f.path).sort();
+    if (modeSwitch.length) log(`⚠ ${modeSwitch.length} kept file(s) were deployed with the anonymous wording — the task names each for a re-read`);
   }
   // Same auto-record as cmdUpdate (project C D2, bug 31): a legacy bootstrap that just recognized
   // translated-wholesale files on a non-English deployment writes the i18n fact down.
@@ -2493,9 +2528,9 @@ async function cmdInstall() {
       writeUpdateTask(cls ? cls.diverged : [], meta, rerun
         ? `re-run on ${meta.version}: the tree already carries this version — verify the previous merge rather than redoing it`
         : cls
-          ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
+          ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches,
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches, modeSwitch,
                 sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback }
             : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback });
     }
@@ -2804,6 +2839,13 @@ function readOwnerText(inline, filePath, what) {
     const full = normEol(readFileSync(filePath, 'utf8').replace(/^﻿/, '')).trim();
     if (!full) die(`${what} file is empty: ${filePath}`);
     return { full, firstLine: full.split('\n').find((l) => l.trim()).trim(), fromFile: true };
+  }
+  // P5 (2.5, epic US; #28 R4): a value that ARRIVED mangled (replacement characters, or nothing
+  // but question marks — the two shapes a shell's argv conversion leaves) is refused BEFORE the
+  // act: recording it would seed the damage into the marker and every fill. The guidance itself
+  // reaches the agent earlier still — the task items name the file form next to the argv form.
+  if (inline && (/�/.test(inline) || /^[?\s]+$/.test(inline))) {
+    die(`the ${what} argument arrived MANGLED by the shell ("${inline}") — nothing recorded; non-ASCII text travels through files: --${what}-file <path>`);
   }
   if (inline && /[^\x20-\x7E]/.test(inline)) {
     log(`⚠ non-ASCII text in the ${what} argument travels through the shell and can be silently mangled on some profiles (PowerShell 5.1, MSYS2 argv conversion) — prefer --${what}-file: text travels through files`);
