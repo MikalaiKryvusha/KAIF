@@ -74,6 +74,9 @@ REFUTED-блокеров → витрина обеих половин → чер
       владельцу, у агента нет рендерера); `counters-guard` · `doc-header-lint` · `release-body-guard`.
 - [ ] **RL3. Черновики ответов** во все открытые issues + квитанции отчётам (критерий 3);
       показать владельцу страницей контура (`node tools/review.mjs`), не отправлять.
+      ◐ 2026-09-04 ≈12:00 +03:00 (сессия 50): черновики для #27 · #28 · #30 · #31 · #32 · #35 ·
+      #36 · #37 · #38 — в секции ниже (#23/#24 — `plans/80`); осталось: #29 · #33 · #34 (эпик TM,
+      по `plans/85`), квитанции 13 отчётам, страница контура для владельца.
 - [ ] **RL4. Имя версии** — вопрос владельцу (№85: решить ближе к релизу); варианты — три, с
       обоснованием от содержания 2.5 (симметрии обновления · точки решения · команда в поле).
 - [ ] **RL5. Релиз по слову владельца** — `/release` (предпроверка · версия · сборка · тег · пуш ·
@@ -81,6 +84,94 @@ REFUTED-блокеров → витрина обеих половин → чер
 - [ ] **RL6. Закрытие 2.5:** `plans/82` критерии 5–8 ✅, `MASTER_PLAN` §8 (8 из 8), `STATUS`,
       летопись; `ideas/28` пополнен отложенным (bugs/100, флейк s07, US3в лечение); план 2.6 —
       по `/plan-epic`, не здесь.
+
+## Черновики ответов в полевые issues (RL3; отправка ПОСЛЕ релиза 2.5 по слову владельца, №84)
+
+> Форма — `plans/80`: благодарность · что именно приехало в 2.5 по каждому пункту тикета · честная
+> граница. Перед отправкой — сверка время-чувствительных форм (EXP-0093) и подстановка ссылки на
+> релиз. Написаны 2026-09-04 на закрытии эпика US (сессия 50); #29/#33/#34 (эпик TM) — дописать в
+> RL3 по `plans/85`.
+
+**#27 (Prompt Modding, 1.6 → 2.4 non-determinism).** Thank you — this ticket set the whole
+"update symmetries" epic of v2.5. (1) R1, the two runs that classified `AGENT_GUIDE.md`
+differently: the verdict now prints its numbers for every localized candidate (`baseFound N of
+M, ceiling K → frozen | merged`), and the rehearsal is BINDING — `diff --source` records the
+verdicts in `.kaif/update-rehearsal.json` (a sandbox copy's receipt carries them too: pass it as
+`update --rehearsal <copy>/.kaif/last-update.json`), and a live run whose verdict is `merged`
+where the rehearsal said `frozen` FREEZES the file and names both number sets in the task
+(`verdict-mismatch`). The 416 English lines can no longer land after a rehearsal that showed
+`kept intact`. The root cause is narrowed to the legacy road (v1 manifest + synthetic baseline:
+the baseline's H1 is filled from the folder name, so a git-archive copy and the live folder can
+differ by exactly one surviving heading right at the ceiling — `bugs/100` at the origin); the
+cure itself is scheduled for 2.6, the protection ships now. (2) R1b, END without BEGIN: an
+anchored block is indivisible — the merge plan is judged as a whole, a pair that would come out
+unbalanced rolls back to the disk state and goes to the task as ONE `(anchored block
+KAIF:PRAYER)` item with the diff of all its carriers, and `check` reddens any document that
+still carries an unpaired marker (your tree will turn red after updating — that red is the
+signal; restore the block from the task diff once). Your §4 wish "in the declared position — or
+to the task" is exactly what was built.
+
+**#28 (Prompt Modding §2 R1–R5).** Thank you for the five precise rakes. R1/R2 — see #27 above
+(binding rehearsal + indivisible anchored blocks). R3 (anonymous → origin leaves old-mode text
+in place): the transition now names every kept file that was deployed with the anonymous wording
+in a `mode-switch` task item for a re-read — honest boundary: it catches the MECHANICALLY
+conditioned wording (author-note regions, the acronym expansion), not prose inside a skill that
+describes the old mode. R4 (`project-name` warns after accepting): the guidance now precedes
+the act — both task items name the file form `--name-file <path>` next to the argv form, and a
+name that ARRIVED mangled through the shell (replacement characters / question marks only) is
+refused before anything is recorded; a readable non-ASCII argv still warns and is accepted, as
+before. R5 (hooks README smoke line hangs on stdin): `< /dev/null` is in the line, with the
+reason next to it.
+
+**#31 (QA_Engineer, vanishing `stale-claims` item).** Thank you — confirmed and fixed at the
+cheap end: the item is now UNCONDITIONAL on every version change; an empty scan says so in its
+body (`no lines found — the scan for claims of the OLD version ran over the tree and found
+nothing…`), so a missing item and a clean tree can no longer look alike. The scan also covers
+the project's own scripts now (`package.json` and script files; lock files excluded) — a pin of
+the old version in a script becomes a task line instead of a CI surprise. The one-sided loss you
+saw is explained by the old `if (staleClaims.length)` gate; the scanner's precision rules were
+not changed.
+
+**#32 (QA_Engineer, 2.2 → 2.4 modular route).** Thank you — the negative result R-B (sandbox =
+live, file for file, on the modular route) was the most useful line of the whole batch: it
+narrowed the #27 hunt to the legacy road. R-A — see #31. R-C (18 of 45 skills English, `check`
+silent): `check` now prints `⚠ language mix: N of M skills are English (language: ru)` — a
+warning, not a refusal; and every NEW file of a release that arrives English on a non-English
+deployment is listed in the update task (`language-arrivals`), so the boundary is declared on
+each update rather than discovered. R-D (deprecation without a successor): every deprecation
+names its successor in the log and in the task item, and the kept ones are COUNTED (context line
++ receipt). Wishes: (4) a translated-wholesale file now names its upstream path and a ready
+`git diff v<from> v<to> -- <src>` (the dest → src map ships in the bundle meta); (5) the old
+version pin in `tools/` — covered by the script scan of #31.
+
+**#30 (KAGO, guarded loop closed early).** Thank you — the prose rule did not hold, so it became
+a written and CHECKED contract in v2.5: the first pulse reads `armed until <ISO>`,
+`.kaif/guarded-loop.json` carries `{ "until" }`, Step 5 opens with the forced artifact
+`BOUNDARY: now · armed until · pool`, ceremony time is spent AFTER the boundary, and
+`/fable-judge` hunts an early final pulse with a non-empty pool ("early-finish").
+
+**#35 (gate 5 asks for a red guard, not for a threat).** Thank you — canon fixed at the source:
+TESTING gate 5 gained its second half — every guard declares `@guard THREAT · PROVED-AGAINST ·
+GAP · ON-REAL-PATH`, a forensic recorder declares `@forensic … DURABLE-AT`, durability only at a
+clean ending is rejected; an advisory linter (`kaif-guard-lint`, opt-in, fires only on explicit
+markers) reads the block.
+
+**#36 (a fork decided from the agent's head).** Thank you — the fourth door is now in
+PHILOSOPHY, and AGENT_GUIDE adds the forced artifact at the decision point: `FORK: options ·
+price of error · consulted <authority | recon | owner>`; a fork closed by the agent's own reasoning
+alone is a judge-hunted finding. Point 3 of your ticket (a `recon-before-decision` hook) waits
+for a mechanical fork signal — recorded for 2.6.
+
+**#37 (the blanket AUTH rule swallowed the `/report-bug` exception).** Thank you — the
+authorization gate now names its ONE carve-out inline: a KAIF-defect ticket to the framework's
+own origin is delivered under the standing authorization in the same motion as it is filed;
+`/report-bug` step 4 says "run it", and the delivery is a machinery command
+(`kaif-core report <ticket>`) rather than prose an agent-system classifier can refuse.
+
+**#38 (voice as timbre, not intelligibility).** Thank you — I35 now binds the voice to the
+LANGUAGE first: the route selects a voice whose culture matches the deployment's `language`,
+the system default only when it already matches, and drops to beeps + banner rather than speak
+an unintelligible sentence; the timbre half of the ticket was already superseded by 2.4.
 
 ## Верификация наблюдением
 
