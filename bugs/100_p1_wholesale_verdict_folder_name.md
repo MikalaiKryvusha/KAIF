@@ -1,6 +1,6 @@
 # Bug 100 — P1: вердикт translated-wholesale зависит от ИМЕНИ ПАПКИ дерева (синтетический baseline v1-манифеста заполняет H1 из fallback-значения)
 
-**Status:** 🔬 ГИПОТЕЗА С МЕХАНИЗМОМ — прочитана по коду, полигоном не воспроизведена · скоуп **2.5 (эпик US, шаг US3в) → RL**
+**Status:** ✅ МЕХАНИЗМ ПОДТВЕРЖДЁН ПРОБОЙ 2026-09-04 12:03 +03:00 (сессия 50; `tools/sandbox/probes/bugs-100-two-folders.mjs --no-package`) — то же дерево в двух папках даёт два вердикта; условие — `<PROJECT_NAME>` резолвится из ИМЕНИ ПАПКИ (нет `package.json` с `name` и нет `projectName` в маркере). Лечение — эпик RL/2.6 · скоуп **2.5 (эпик US, шаг US3в) → RL**
 **Version/build:** build 427 · **When/context:** сессия 50, охота за причиной #27 R1 / #32 R-B (plans/86 US3в), 2026-09-04
 **Fix accepted when (observable):** свод полигона разворачивает ОДНО дерево в двух папках с разными
 именами (v1-манифест без `values`, синтетический baseline, файл-кандидат на wholesale с `baseFound`
@@ -45,6 +45,30 @@ Prompt Modding (#27 R1): два прогона по байт-идентично�
 5. **Почему полигон этого не видит:** каждый свод разворачивает дерево в одной папке; сравнение
    «две папки, одно дерево» ни один свод не делает. s18 U3 сравнивает два `diff --source` по
    ОДНОЙ копии — детерминизм внутри папки, не между папками.
+
+## Наблюдение пробы (2026-09-04 12:02–12:03 +03:00, ядро build 433, ru-развёртывание)
+
+Проба `tools/sandbox/probes/bugs-100-two-folders.mjs`: `install --lang ru` в папке
+`alpha-project` (без `package.json` до установки) → `AGENT_GUIDE.md` переведён так, что английскими
+остались H1 + `ceiling` заголовков (baseN 29 → ceiling 4; на диске H1 = `# alpha-project — AI
+Agent Guide`) → манифест приведён к v1 (сняты `templateShas`/`moduleShas`/`templateTexts`/`values`)
+→ побайтная копия в `beta-project` → в обеих `update --source <9.9> --baseline <старый релиз без
+молитвы>`:
+
+```
+run 1 (package.json, который записала установка, ОСТАВЛЕН — name: "alpha-project"):
+  A: baseFound 5 of 29, ceiling 4 → merged
+  B: baseFound 5 of 29, ceiling 4 → merged        ← одинаково: <PROJECT_NAME> взят из package.json
+run 2 (--no-package: package.json удалён из дерева до копирования):
+  A: baseFound 5 of 29, ceiling 4 → merged
+  B: baseFound 4 of 29, ceiling 4 → frozen        ← РАЗНЫЕ вердикты: H1 baseline в B заполнен «beta-project»
+```
+
+Механизм п. 4 подтверждён буквально (`baseFound − 1` ровно на потолке). Условие срабатывания в
+поле: `<PROJECT_NAME>` резолвится из имени папки — дерево без `package.json` с `name` (не-Node
+проект; установка 1.x, не писавшая `package.json`; либо агент его снёс) И без `projectName` в
+маркере (команда `project-name` появилась позже 1.6). Вопрос Prompt Modding в ответе на #27: был
+ли `package.json` с `name` в корне дерева 1.6 → 2.4.
 
 ## Что НЕ объясняет гипотеза (честная граница)
 

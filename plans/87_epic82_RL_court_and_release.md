@@ -103,8 +103,12 @@ where the rehearsal said `frozen` FREEZES the file and names both number sets in
 (`verdict-mismatch`). The 416 English lines can no longer land after a rehearsal that showed
 `kept intact`. The root cause is narrowed to the legacy road (v1 manifest + synthetic baseline:
 the baseline's H1 is filled from the folder name, so a git-archive copy and the live folder can
-differ by exactly one surviving heading right at the ceiling — `bugs/100` at the origin); the
-cure itself is scheduled for 2.6, the protection ships now. (2) R1b, END without BEGIN: an
+differ by exactly one surviving heading right at the ceiling — `bugs/100` at the origin; the
+mechanism is REPRODUCED: one tree, two folder names, `baseFound 5 → merged` vs `baseFound 4 →
+frozen`, but only when `<PROJECT_NAME>` falls back to the folder name — no `package.json` with a
+`name` and no recorded `projectName`. One question back to you: did your 1.6 → 2.4 tree carry a
+`package.json` with `name` at the root? If it did, the cause is elsewhere and the rehearsal
+freeze is the fence either way); the cure itself is scheduled for 2.6, the protection ships now. (2) R1b, END without BEGIN: an
 anchored block is indivisible — the merge plan is judged as a whole, a pair that would come out
 unbalanced rolls back to the disk state and goes to the task as ONE `(anchored block
 KAIF:PRAYER)` item with the diff of all its carriers, and `check` reddens any document that

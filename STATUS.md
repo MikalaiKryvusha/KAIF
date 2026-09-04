@@ -37,8 +37,9 @@
 восемнадцатым; US3б — обязывающая репетиция (`diff --source` пишет вердикты, `update`
 замораживает при расхождении, пункт `verdict-mismatch`); US5 закрыт целиком (quote-skip
 предикат · преемник и счёт deprecation · `project-name` до акта · `mode-switch` при
-anonymous→origin · EOL · `language mix` · `< /dev/null`); US3в — причина P1 названа гипотезой
-с механизмом (`bugs/100`: H1 baseline из имени папки при v1-манифесте без `values`; фикс — RL).
+anonymous→origin · EOL · `language mix` · `< /dev/null`); US3в — причина P1 ПОДТВЕРЖДЕНА
+пробой «две папки» (`bugs/100`: H1 синтетического baseline из имени папки при v1-манифесте без
+`values`, дерево без `package.json` `name` → `baseFound` ±1 на потолке; лечение — RL/2.6).
 US6 — ноты/policy 2.5 в сборщике (INERT), реестр пар зелёный; US7 — судья, `plans/87` (эпик RL)
 написан, `plans/82` ряд 4 ✅. **Следующий — эпик RL «Суд и релиз» (`plans/87`).** **Метрика доставки версии: критерии приёмки 2.5
 закрыты 4 из 8.** Предыдущий релиз — 2.4 Teamed Up KAIF, 2026-08-28 (`v2.4`, `latest`; абзац релиза —
@@ -94,10 +95,11 @@ US6 — ноты/policy 2.5 в сборщике (INERT), реестр пар з�
    пункта `placeholders` (s18 U12) · (б) преемник и счёт deprecation, квитанция `deprecations`
    (U10) · (з) `project-name`: файловая форма в обоих пунктах, искажённое argv-имя отвергается
    до записи (U11) · (и) пункт `mode-switch` при anonymous→origin (U13); каждый страж доказан
-   красным на ядре до фикса, полигон 18/18 после каждого. **US3в:** причина P1 — `bugs/100`
-   (гипотеза с механизмом: синтетический baseline v1-манифеста заполняет H1 из имени папки →
-   `baseFound` ±1 на потолке; эскиз свода «две папки» U14; кандидат лечения (а) — H1 вне счёта
-   wholesale); лечение — эпик RL, защита US3б уже стоит.
+   красным на ядре до фикса, полигон 18/18 после каждого. **US3в:** причина P1 — `bugs/100`,
+   механизм ПОДТВЕРЖДЁН пробой `tools/sandbox/probes/bugs-100-two-folders.mjs --no-package`
+   (то же дерево: `alpha-project` → `baseFound 5 → merged`, `beta-project` → `baseFound 4 →
+   frozen`; с `package.json` `name` ось мертва); кандидат лечения (а) — H1 вне счёта wholesale +
+   свод «две папки» в s18; лечение — эпик RL/2.6, защита US3б уже стоит.
    ✅ **US6 + US7 (≈11:48–11:55):** нота «UPDATE SYMMETRIES» и policy-строка «FOUR behaviours»
    в сборщике (INERT до version 2.5); реестр пар прогнан; лёгкий судья — VERIFIED WITH CAVEATS
    (`plans/86` US7); `plans/87` (эпик RL) написан; `plans/82` ряд 4 ✅; `MASTER_PLAN` §8 — 4 из 8.
