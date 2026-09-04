@@ -883,7 +883,14 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const items = [];
   if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
   if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}. ${OWNER_LINES}`]);
-  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below)` : p).join(' · ')}. ${OWNER_LINES}`]);
+  // A translated-wholesale file names its upstream path and a READY diff command against the
+  // origin's tags (2.5, epic US; field wish plans/73 U2 p.1, asked twice): for i18n deployments
+  // the diffs ARE the delivery, and "find the upstream file yourself" was cognitive work per file.
+  // The map dest → src ships in the bundle meta (`sources`); an older bundle without it degrades
+  // to the note alone, never to silence.
+  const upstreamOf = (p) => (meta.sources && meta.sources[p] && fromVersion)
+    ? `; upstream: ${meta.sources[p]} — the same delta from the origin: git diff v${fromVersion} v${meta.version} -- ${meta.sources[p]}` : '';
+  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below${upstreamOf(p)})` : p).join(' · ')}. ${OWNER_LINES}`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
   // New templates may arrive carrying deploy-time slots the machinery cannot fill (bug 28: the

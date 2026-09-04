@@ -150,8 +150,9 @@ ok(!/^# \/check-backlog — [A-Za-z]/m.test(readFileSync(CB, 'utf8')), 'U2: пе
 const task2 = readFileSync(join(T2, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/\*\*stale-claims\*\*/.test(task2), 'U4 (#31): пункт stale-claims есть в задании даже без клеймов', task2.split('\n').filter((l) => /\*\*[a-z-]+\*\*/.test(l)).map((l) => l.slice(0, 40)).join(' | '));
 ok(/stale-claims[^]*no lines found/.test(task2), 'U4 (#31): пустой скан назван телом `no lines found`');
-ok(/kaif-core\.mjs diff --source[^\n]*check-backlog\/SKILL\.md|check-backlog\/SKILL\.md[^\n]*kaif-core\.mjs diff --source/.test(task2),
-   'U8 (U2 п. 1): пункт о wholesale-файле даёт ГОТОВУЮ команду диффа (`kaif-core.mjs diff --source …`)');
+ok(/check-backlog\/SKILL\.md \(translated wholesale[^\n]*git diff v\S+ v9\.9 -- framework\/skills\/check-backlog\/SKILL\.md/.test(task2),
+   'U8 (U2 п. 1): пункт о wholesale-файле называет путь апстрима и ГОТОВУЮ команду диффа (`git diff v<from> v<to> -- <src>`)',
+   task2.split('\n').filter((l) => /merge-diverged/.test(l)).join(' | ').slice(0, 400));
 
 // ---------------------------------------------------------------- U5: пин старой версии в package.json scripts
 console.log('\n=== U5 (U2 п. 4): stale-claims сканирует скрипты проекта ===');

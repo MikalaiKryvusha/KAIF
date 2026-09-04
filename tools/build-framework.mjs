@@ -347,8 +347,9 @@ function bundleBlocks() {
   const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES,
     templateNotesByVersion: TEMPLATE_NOTES_BY_VERSION, deprecations: DEPRECATIONS,
     policyChanges: POLICY_CHANGES_BY_VERSION, moduleClasses };
-  blocks.push(`> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
-    FENCE + 'json\n' + JSON.stringify(meta, null, 2) + '\n' + FENCE + '\n');
+  const renderMeta = (m) => `> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
+    FENCE + 'json\n' + JSON.stringify(m, null, 2) + '\n' + FENCE + '\n';
+  blocks.push(renderMeta(meta));   // re-rendered at the end of this function, once every entry is known
   for (const [src, [dest, note]] of Object.entries(DOC_TARGETS)) {
     if (src === 'framework/kaif-unpack.mjs') continue; // legacy unpacker: lives only in the full core
     blocks.push(embedBundle(src, dest, note));
@@ -405,6 +406,12 @@ function bundleBlocks() {
     };
     walk(langRoot, '');
   }
+  // dest → src map (2.5, epic US): the update task names a translated-wholesale file's UPSTREAM
+  // path and a ready `git diff v<from> v<to> -- <src>` against the origin — for i18n deployments
+  // the diffs are the whole delivery, and "find the upstream file yourself" was work per file.
+  // Sorted keys: the meta block is diffed and cached downstream (the canonical-ordering rule).
+  meta.sources = Object.fromEntries(BUNDLE_ENTRIES.map(({ src, dest }) => [dest, src]).sort((a, b) => a[0].localeCompare(b[0])));
+  blocks[0] = renderMeta(meta);
   return blocks;
 }
 
