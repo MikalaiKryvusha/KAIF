@@ -873,8 +873,17 @@ function policyInterval(meta, fromVersion) {
   return out;
 }
 
+// NEW files that arrived in English on a non-English deployment (2.5, epic US; field #28 R2:
+// sixteen new skills landed English on a ru tree and the final line said nothing). Skills are
+// agent-read and ship English by policy — the item is HONESTY about what arrived, not a defect.
+function languageArrivalsOf(paths) {
+  const re = LANG !== 'en' && SCRIPTS[LANG];
+  if (!re) return [];
+  return (paths || []).filter((p) => p.endsWith('.md') && okOnDisk(p) && !re.test(readFileSync(p, 'utf8')));
+}
+
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [] } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   // Checklists and decision tables inside framework files often carry the OWNER's recorded
@@ -900,6 +909,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (unresolved.length) items.push(['placeholders', `New templates carry deploy-time slots the machinery could not fill — fill each at its REAL location(s), verified on disk at generation time (canonical copies; mirrors re-sync at update-verify): ${fmtSlots(unresolved)}`]);
   if (sphereSync) items.push(['sphere-sync', `Your declared sphere "${sphereSync.sphere}" is locally authored, and the framework's sphere TEMPLATE changed in this interval — the machinery never edits a local sphere: read the updated .kaif/spheres/_template.md and carry its new/changed sections into .kaif/spheres/${sphereSync.sphere}.md.`]);
   if (skeletonDelta) items.push(['local-inventories', `This release changes the framework skeleton: skills added: ${skeletonDelta.added.join(', ') || 'none'}; removed: ${skeletonDelta.removed.join(', ') || 'none'}. If this project keeps its OWN validators or inventories of the skeleton (doc/skill lists or counts in local tooling), update them — the machinery cannot know your tools; the machine-readable inventory is .kaif/deploy-manifest.json → "paths".`]);
+  if (languageArrivals.length) items.push(['language-arrivals', `This deployment's language is ${LANG}, and these NEW files of the release arrived in ENGLISH: ${languageArrivals.join(' · ')}. Skills are agent-read and ship English by policy — translate only what the OWNER reads (or everything, if this project translates wholesale); leave the rest English consciously. Expect every future new file to arrive English the same way.`]);
   if (nameFallback) items.push(['project-name', `This deployment's <PROJECT_NAME> ("${nameFallback}") came from a technical identifier (package.json/folder), not from the canon — if the canonical name differs (a lowercase tech id in H1 headings is the symptom), record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\`, then correct mis-seeded headings (git grep the old form).`]);
   items.push(['review-news', 'Read the template news below; apply anything relevant to files this update could not touch mechanically.']);
   // stale-claims comes AFTER review-news: the news carry the history-migration instruction, and
@@ -1316,6 +1326,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
   const i18nTranslated = String((cur || {}).i18n || '').toLowerCase() === 'translated';
   if (i18nTranslated) log('⟳ marker declares i18n: translated — mechanical replacement disabled for files carrying the owner\'s script; upstream changes ship as per-module diffs');
   const translatedWholesale = [];
+  const addedPaths = [];                             // NEW files of this release — the language-arrivals item reads them back (2.5, epic US)
   let replaced = 0, added = 0, kept = 0, mergedModules = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
@@ -1325,14 +1336,14 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
     if (OWNER_SEEDED.includes(f.path)) {
       // A MISSING owner doc is seeded from the template (a 1.2-era tree predates EXPERIENCE.md —
       // the classified legacy path must seed it exactly like a fresh install would; sandbox-caught).
-      if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
+      if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; addedPaths.push(f.path); continue; }
       kept++;                                                            // owner's — never in scope
       // …but the TEMPLATE may have changed a CONVENTION (field: EXPERIENCE gained Repro:/Not for:
       // and no project could learn it) — surface the fact, touch nothing.
       if (oldTplShas[f.path] && oldTplShas[f.path] !== normSha(content)) ownerConvention.push(f.path);
       continue;
     }
-    if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; continue; }
+    if (!existsSync(f.path)) { writeIfNew(f.path, content); added++; addedPaths.push(f.path); continue; }
     // Authority to replace comes ONLY from matching the previous TEMPLATE (bug 12): the template
     // sha never mutates with the disk, so "restored by hand at update N" can no longer read as
     // "untouched" at update N+1. v1 manifests (no templateShas) keep the old byte-sha + kept-guard.
@@ -1410,7 +1421,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null) {
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
-  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale };
+  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths };
 }
 
 // ---------------------------------------------------------------------------- update (idea 14 / plan 15)
@@ -1468,7 +1479,7 @@ async function cmdUpdate() {
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
-  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale } =
+  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths } =
     classifyAndApply(deploy, old, values, unresolved, cur, oldBase);
   const sizeJumps = deploy
     .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
@@ -1535,7 +1546,7 @@ async function cmdUpdate() {
     ? deploy.filter((f) => !isSkippedAnon(f.path) && (!oldTpl[f.path] || oldTpl[f.path] !== normSha(f.content))).length : null;
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved,
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths),
       sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
@@ -2351,7 +2362,7 @@ async function cmdInstall() {
         : cls
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved,
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths),
                 sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback }
             : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback });
     }
