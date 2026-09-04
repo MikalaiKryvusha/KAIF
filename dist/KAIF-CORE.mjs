@@ -802,7 +802,13 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       const p = (dir === '.' ? '' : dir + '/') + n;
       if (SKIP_DIRS.includes(n) || SKIP_FILES.includes(p)) continue;
       if (statSync(p).isDirectory()) { walk(p); continue; }
-      if (!/\.md$/i.test(n)) continue;
+      // Prose AND the project's own scripts (2.5, epic US; field wish plans/73 U2 p.4, QA_Engineer
+      // p.14): a version pin in `package.json` scripts or a local guard asserting the OLD version
+      // is the claim that bites hardest — it fails CI after a green update. Lock files and
+      // dependency trees carry no claim of the project's own and are skipped.
+      const isProse = /\.md$/i.test(n);
+      if (!isProse && !(n === 'package.json' || /\.(mjs|cjs|js|ts|sh|ps1|py|ya?ml|toml)$/i.test(n))) continue;
+      if (/lock/i.test(n)) continue;
       // The chronicle's era volumes (PROJECT_HISTORY_<era>.md, the split its template prescribes)
       // are journals of the past exactly like the main file — judge-caught before the first split.
       if (/^PROJECT_HISTORY/.test(p)) continue;
@@ -825,7 +831,8 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
         // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
         // staleness (KCam Г4: rewriting them would forge it); judge the line with its
         // parenthesized segments removed, so only unparenthesized adjacency counts as a claim.
-        if (!ADJACENT.test(line.replace(/\([^)]*\)/g, ''))) continue;
+        // In a SCRIPT parentheses are syntax, not attribution — `assert(v === 'KAIF 2.4')` IS the pin.
+        if (!ADJACENT.test(isProse ? line.replace(/\([^)]*\)/g, '') : line)) continue;
         if (!byFile.has(p)) byFile.set(p, []);
         byFile.get(p).push(`${p}:${i + 1} — ${line.trim().slice(0, 100)}`);
       }
@@ -1064,14 +1071,21 @@ async function buildSyntheticBaseline(legacyOld) {
 // cycles while its file's upstream modules merge mechanically; conflict module → diff in the
 // task; upstream-untouched divergence makes no noise; a translated-wholesale file is kept intact
 // (no doubling); dryRun analyzes without writes; owner-added sections never trip the net]
+// [TESTED: 2026-09-04 · polygon s18 U1/U1б: a pair whose BEGIN sits in a kept (diverged) H1 module
+// and whose END rides a NEW prayer module comes out balanced — the prayer is rolled back and the
+// task carries ONE `(anchored block KAIF:PRAYER)` item with the diff of both carriers; a new
+// module whose insertion point falls inside a pair open on disk lands after the closing module
+// (red on the 095c1c4 core: `PRAYER BEGIN=0 END=1` and `NEW@726 < END@5036`)]
 // Anchored blocks — `<!-- KAIF:NAME:BEGIN -->` … `<!-- KAIF:NAME:END -->` (the creed, the prayer) —
 // are INDIVISIBLE units (2.5, epic US; origin issue #27 R1b: a module merge landed the prayer's END
 // without its BEGIN, a second field team saw upstream text arrive INSIDE a localized pair). This
 // reads a document's markers fence-aware and names every pair that is unbalanced or out of order —
 // exactly the shape a piecewise merge leaves behind. Returns { NAME: reason } for the bad ones only;
 // the multi-line author-note comment (`KAIF:AUTHOR-NOTE`) is not a line marker and is not judged.
-function unpairedAnchors(text) {
-  const seen = {};
+// ONE fence-aware scanner feeds both judges — `check`'s parity and the merge's indivisibility rule
+// below (KAGO 10: two scanners of one thing drift apart; one predicate cannot).
+function anchorMarkers(text) {
+  const out = [];
   let inFence = false;
   for (const raw of text.split('\n')) {
     const line = raw.trim();
@@ -1079,10 +1093,16 @@ function unpairedAnchors(text) {
     if (inFence) continue;
     // a marker may carry a trailing note inside the comment (`<!-- KAIF:AUTHOR-NOTE:BEGIN — … -->`)
     const m = line.match(/^<!-- KAIF:([A-Z0-9-]+):(BEGIN|END)(?: [^\n]*)?-->$/);
-    if (!m) continue;
-    const s = seen[m[1]] || (seen[m[1]] = { BEGIN: 0, END: 0, open: false, bad: null });
-    s[m[2]]++;
-    if (m[2] === 'BEGIN') { if (s.open) s.bad = s.bad || 'BEGIN inside an open pair'; s.open = true; }
+    if (m) out.push({ name: m[1], kind: m[2] });
+  }
+  return out;
+}
+function unpairedAnchors(text) {
+  const seen = {};
+  for (const { name, kind } of anchorMarkers(text)) {
+    const s = seen[name] || (seen[name] = { BEGIN: 0, END: 0, open: false, bad: null });
+    s[kind]++;
+    if (kind === 'BEGIN') { if (s.open) s.bad = s.bad || 'BEGIN inside an open pair'; s.open = true; }
     else { if (!s.open) s.bad = s.bad || 'END before BEGIN'; s.open = false; }
   }
   const out = {};
@@ -1182,7 +1202,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
           out.push(dm);
           divergedList.push({ signature: dm.signature, note: 'the document H1 is absent from the incoming template — treated as placeholder-signature drift, kept (bug 26)', diff: '' });
         }
-        else replaced++;
+        else { out.push({ signature: dm.signature, lines: [], was: dm }); replaced++; }   // empty entry = removed; `was` lets the pair rule below restore it
         continue;
       }
       const newText = modText(newM);
@@ -1201,7 +1221,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
         let text = newText;
         if (dm.signature === '<preamble>' && / Trigger aliases \(/.test(modText(dm)) && !/ Trigger aliases \(/.test(text))
           text = text.replace(/^(description:[^\n]*?)(\s*)$/m, (_, d) => d.replace(/\s+$/, '') + (modText(dm).match(/ Trigger aliases \([a-zA-Z-]+\): [^\n]*/) || [''])[0]);
-        out.push({ signature: dm.signature, lines: text.split('\n') }); replaced++;
+        out.push({ signature: dm.signature, lines: text.split('\n'), was: dm }); replaced++;
       }
     } else {
       // owner/agent-edited, or a module the deploy never shipped (owner-added section) — keep.
@@ -1253,11 +1273,52 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
       const pos = out.findIndex((o) => o.signature === newMods[k].signature);
       if (pos >= 0) { at = pos + 1; break; }
     }
-    out.splice(at, 0, { signature: nm.signature, lines: modText(nm).split('\n') });
+    // KAGO R2 (2.5, epic US): an insertion point INSIDE an anchored pair that is open at that spot
+    // (a localized prayer cut into the owner's own headings) would land upstream text between the
+    // owner's BEGIN and END — the point moves past the module that closes every open pair.
+    at = pastOpenPairs(out, at);
+    out.splice(at, 0, { signature: nm.signature, lines: modText(nm).split('\n'), inserted: true });
     replaced++;
+  }
+  // P2 (2.5, epic US; origin #27 R1b, KAGO R2): an anchored block is INDIVISIBLE. Its markers may
+  // live in different modules (the prayer's BEGIN sits in the H1 module, its END in the prayer
+  // module), so a by-module merge can apply one carrier and keep the other — the field got an END
+  // without its BEGIN. The plan above is judged as a whole: a pair balanced on disk and unbalanced
+  // in the plan rolls EVERY changed carrier back to its disk state (replaced → restored, inserted →
+  // dropped, removed → restored) and the whole block goes to the task as ONE item with a "your
+  // version → the new template" diff of all its carriers. A pair already broken on disk is not
+  // rolled back (this merge did not break it): the item names it, and `check` stays red until the
+  // block is restored by hand.
+  const diskBad = unpairedAnchors(disk);
+  for (const [name, reason] of Object.entries(unpairedAnchors(joinModules(out)))) {
+    const carries = (m) => anchorMarkers(modText(m)).some((x) => x.name === name);
+    const sigs = new Set([...newMods, ...diskMods].filter(carries).map((m) => m.signature));
+    const wholeOld = diskMods.filter((m) => sigs.has(m.signature)).map(modText).join('\n');
+    const wholeNew = newMods.filter((m) => sigs.has(m.signature)).map(modText).join('\n');
+    if (diskBad[name]) {
+      divergedList.push({ signature: `(anchored block KAIF:${name})`, note: `this anchored block is already unbalanced ON DISK (${reason}) — \`check\` stays red until it is restored; its carriers, your version → the new template`, diff: lineDiff(wholeOld, wholeNew) });
+      continue;
+    }
+    for (let k = out.length - 1; k >= 0; k--) {
+      const o = out[k];
+      if (!sigs.has(o.signature)) continue;
+      if (o.inserted) { out.splice(k, 1); replaced--; }
+      else if (o.was) { out[k] = o.was; replaced--; }
+    }
+    divergedList.push({ signature: `(anchored block KAIF:${name})`, note: `anchored block KAIF:${name} is indivisible and not all of its carrier modules could be applied (a piecewise merge would leave ${reason}) — the whole block was kept as on disk; fold it in by hand from this diff of all its carriers`, diff: lineDiff(wholeOld, wholeNew) });
   }
   const merged = joinModules(out);
   return { merged, changed: !dryRun && merged !== disk, replaced, divergedList, verdict };
+}
+// The insertion point for a NEW module, moved past every anchored pair still open at `at`
+// (KAGO R2); an unclosable pair (already broken on disk) leaves the point where it was.
+function pastOpenPairs(mods, at) {
+  const open = new Set();
+  const feed = (m) => { for (const { name, kind } of anchorMarkers(modText(m))) { if (kind === 'BEGIN') open.add(name); else open.delete(name); } };
+  for (let i = 0; i < at; i++) feed(mods[i]);
+  let j = at;
+  while (open.size && j < mods.length) feed(mods[j++]);
+  return open.size ? at : j;
 }
 
 // The real delivery for a file the machinery may not touch (translated wholesale): the

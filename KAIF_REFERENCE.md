@@ -252,8 +252,15 @@ it. New template modules insert by template order. A file whose body carries the
 script prints its verdict WITH the numbers that produced it — `baseFound N of M, ceiling K →
 frozen | merged` (2.5: a rehearsal and the live run compare line by line, not by outcome).
 Anchored blocks — `<!-- KAIF:NAME:BEGIN -->` … `<!-- KAIF:NAME:END -->` (the creed, the prayer)
-— are indivisible units: `check` reddens a document carrying an END without its BEGIN (or the
-reverse) with the weight of a two-headed document (2.5, origin issue #27).
+— are indivisible units (2.5, origin issue #27): the merge plan is judged as a whole, and a
+pair that was balanced on disk but would come out unbalanced (its markers live in different
+modules — one carrier applied, the other kept) rolls every changed carrier back to the disk
+state and lands in the task as ONE item, `(anchored block KAIF:NAME)`, with the diff of all its
+carriers; a NEW module whose insertion point falls inside a pair open on disk is inserted after
+the module that closes it (a localized prayer cut into the owner's headings never receives
+upstream text between its markers); a pair already broken on disk is not rolled back — the item
+names it, and `check` reddens the document with the weight of a two-headed document until it is
+restored by hand.
 
 ### 10.3 The update task
 
@@ -261,8 +268,10 @@ reverse) with the weight of a two-headed document (2.5, origin issue #27).
 translated-wholesale file also names its UPSTREAM path and a ready `git diff v<from> v<to> --
 <src>` — the dest → src map ships in the bundle meta as `sources`, 2.5) · owner-convention
 transfers · deprecations carrying local edits · stale claims (lines still asserting the OLD
-version anywhere in the project; the item is UNCONDITIONAL on a version change — an empty scan
-says `no lines found`, so a silent scanner failure can never pass as a clean tree, 2.5) ·
+version anywhere in the project — prose AND the project's own scripts: `package.json`,
+`*.mjs/js/ts/sh/ps1/py/yml/toml`, lock files excluded, 2.5; the item is UNCONDITIONAL on a
+version change — an empty scan says `no lines found`, so a silent scanner failure can never pass
+as a clean tree, 2.5) ·
 language arrivals (NEW files of the release that arrived English on a non-English deployment,
 2.5) · the news interval · executing checkpoints (`recheck` runs the
 actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory

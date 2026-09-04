@@ -1,7 +1,9 @@
 // s18-update-symmetries.mjs — свод эпика US 2.5 «Симметрии обновления» (plans/86; issues #27,
-// [NOT-TESTED] — свод написан ДО фиксов (EXP-0016/0017): на HEAD-ядре 9c2fe5e он ОБЯЗАН быть
-// КРАСНЫМ ровно в стражах, названных ниже; в tools/sandbox-suite.mjs вписывается ВМЕСТЕ с фиксами,
-// когда зеленеет (шаг US6 плана).
+// [TESTED: 2026-09-04 · свод написан ДО фиксов (EXP-0016/0017): красный прогон на HEAD-ядре 9c2fe5e —
+// 9 красных ровно по предсказаниям (лог s18-red1.log сессии 49); последние три стража доказаны
+// красными на ядре 095c1c4 в сессии 50 (U1 `PRAYER BEGIN=0 END=1` · U1б `END@5036 NEW@726` — новый
+// модуль ВНУТРИ пары · U5 `package.json` не в скане), зелёными — на ядре с US2б/US5г; в составе
+// полигона — «sandbox suite: all 18 suites green»]
 // #28 §2 R1–R5, #31, #32 R-A–R-D, KAGO R2; входы — researches/23 §2а, researches/24 §2).
 //
 // Предсказания до первого прогона (2026-09-04, сессия 49):
@@ -9,6 +11,10 @@
 //        --baseline), H1-модуль диверджен локальной правкой, апстрим 9.9 несёт модуль молитвы →
 //        в дерево приезжает `KAIF:PRAYER:END` без `KAIF:PRAYER:BEGIN` (маркер BEGIN живёт в
 //        неприменённом H1-модуле). Страж: каждая пара маркеров KAIF:X сбалансирована.
+//   U1б (KAGO R2; добавлен в сессии 50 вместе с фиксом) КРАСНЫЙ на ядре 095c1c4 — пара на диске
+//        сбалансирована, но открыта на месте «после H1» (заголовок молитвы переведён, END уехал в
+//        модуль владельца ниже); НОВЫЙ модуль апстрима вставляется «после ближайшего соседа по
+//        шаблону» = после H1 → ВНУТРЬ пары. Страж: новый модуль стоит ЗА закрывающим модулем.
 //   U2 (P1 — #27 R1, печать решения) КРАСНЫЙ — лог update не печатает вердикт по файлу-кандидату
 //        с числами: `<файл>: baseFound N of M, ceiling K → frozen|merged`.
 //   U3 (P1 — детерминизм) ЗЕЛЁНЫЙ ПО ПОСТРОЕНИЮ на HEAD — страж регрессии: два `diff --source`
@@ -127,6 +133,32 @@ ok(agAfter.includes('Local owner line inside the H1 module.'), 'U1: локаль
 const task1 = existsSync(join(T1, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(T1, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
 ok(/KAIF:PRAYER|prayer|anchored block|якорн/i.test(task1) || /KAIF:PRAYER:BEGIN/.test(agAfter),
    'U1: молитва либо приехала целиком (BEGIN+END), либо названа в задании как неделимый блок', task1.slice(0, 300));
+
+// ---------------------------------------------------------------- U1б (KAGO R2): точка вставки внутри открытой на диске пары уходит за закрывающий модуль
+console.log('\n=== U1б (KAGO R2): НОВЫЙ модуль апстрима не приезжает ВНУТРЬ локализованной пары ===');
+// апстрим 9.9б: НОВЫЙ модуль сразу за модулем молитвы (в порядке шаблона — уже ПОСЛЕ END пары)
+const bundle99b = editBundleModule(bundle99, 'AGENT_GUIDE.md', /^## 🙏/, (m) => m.lines.push('', '## NEW SECTION 9.9', '', 'English upstream section arriving right after the prayer.'));
+const SRC99B = join(ROOT, 'src-9.9b');
+writeSource(SRC99B, bundle99b, '9.9');
+const T1b = join(ROOT, 'u1b'); mkdirSync(T1b); seed(T1b);
+must(run, T1b, 'install');
+const AG1b = join(T1b, 'AGENT_GUIDE.md');
+// пара «по-KAGO»: заголовок молитвы переведён (модуль стал владельческим), END уехал в отдельный
+// модуль владельца ниже — на диске пара сбалансирована, но открыта на месте вставки «после H1»
+let ag1b = readFileSync(AG1b, 'utf8').replace(/\r\n/g, '\n');
+ag1b = ag1b.replace(/^## 🙏 [^\n]*$/m, '## 🙏 Молитва перед работой').replace('<!-- KAIF:PRAYER:END -->\n', '');
+const nextH2 = ag1b.indexOf('\n## ', ag1b.indexOf('## 🙏 Молитва') + 1);
+ag1b = ag1b.slice(0, nextH2) + '\n## Граница пары (владелец)\n\n<!-- KAIF:PRAYER:END -->\n' + ag1b.slice(nextH2);
+writeFileSync(AG1b, ag1b);
+ok(ag1b.indexOf('<!-- KAIF:PRAYER:BEGIN -->') < ag1b.indexOf('## 🙏 Молитва') && ag1b.indexOf('## 🙏 Молитва') < ag1b.indexOf('<!-- KAIF:PRAYER:END -->'),
+   'U1б фикстура: BEGIN в H1 · переведённая молитва · END в модуле владельца ниже');
+r = run(T1b, `update --source ${SRC99B}`);
+ok(r.code === 0, 'U1б update →9.9б exit 0', r.out);
+const ag1bAfter = readFileSync(AG1b, 'utf8');
+ok(ag1bAfter.includes('## NEW SECTION 9.9'), 'U1б фикстура: новый модуль апстрима приехал', r.out.slice(-300));
+const iEnd = ag1bAfter.indexOf('<!-- KAIF:PRAYER:END -->'), iNew = ag1bAfter.indexOf('## NEW SECTION 9.9');
+ok(iEnd >= 0 && iNew > iEnd, 'U1б: новый модуль вставлен ЗА закрывающим модулем пары, а не внутрь неё', `END@${iEnd} NEW@${iNew}`);
+ok(/^## 🙏 Молитва перед работой$/m.test(ag1bAfter) && !/^## 🙏 THE PRAYER/m.test(ag1bAfter), 'U1б: локализованный модуль молитвы цел, английский не воскрешён');
 
 // ---------------------------------------------------------------- U2/U3/U4/U8: переведённый навык, печать вердикта, детерминизм, stale-claims
 console.log('\n=== U2 (P1): вердикт wholesale печатается с числами · U3: детерминизм · U4 (#31): stale-claims безусловный · U8: команда диффа ===');

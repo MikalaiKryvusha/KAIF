@@ -57,6 +57,14 @@
 //         performs an outward action) — delivery writes the URL into the ticket, dry-run calls
 //         nothing, refusals named (anonymous · no gh · not a ticket · gh refused), idempotent on
 //         a delivered ticket, TIMEOUT is "outcome unknown" (exit 3), never a refusal
+//   s18 — update symmetries (epic US 2.5, plan 86; origin issues #27/#31/#32, KAGO R2): an
+//         anchored pair (creed, prayer) arrives whole or goes to the task as one item — never an
+//         END without its BEGIN; a new module never lands INSIDE a pair open on disk; the
+//         wholesale verdict prints its numbers; two `diff --source` runs print the same; the
+//         `stale-claims` item is unconditional (`no lines found`) and scans the project's
+//         scripts (package.json pin); English arrivals on a ru deployment are named in the task
+//         and counted by `check`; EOL by dominance; a ready `git diff v<from> v<to>` per
+//         wholesale file; `check` reddens an unpaired anchor (fence-aware)
 //
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
@@ -72,7 +80,8 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's05-provenance.mjs', 's06-canon-lint.mjs', 's07-translated.mjs', 's08-l2-faces.mjs',
                 's09-l3-cli-safety.mjs', 's10-l4-audit-noise.mjs', 's11-l5-remaining.mjs',
                 's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs',
-                's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs'];
+                's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs',
+                's18-update-symmetries.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a
