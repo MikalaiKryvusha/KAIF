@@ -197,6 +197,14 @@ shift retrospective (operation 5), and a team that needs a tracked board takes a
 with its price written in the constitution (a dirty tree by construction). Declared as a policy
 change of 2.5 in the update task.
 
+**Квитанция полевому отчёту (одна форма на все; список отчётов сверяется в RL3 по приёму с
+момента релиза 2.4 — `reports/KAIF_UPDATES/*2.4*` + `KAGO_OWNER_REVIEWS_FIELD_REPORT.md`;
+STATUS называл 13):** Thank you for the `<PROJECT> KAIF <from→to> report` — every rake with
+verbatim evidence was read into the 2.5 planning synthesis (`researches/23`/`24` at the
+origin) and either shipped in v2.5 (<release link>; the tickets your report fed are answered
+there: #NN, #NN) or recorded for 2.6 with its address (`ideas/28`). Nothing in it was dropped
+silently; the field report is the framework's feedback loop, and this one moved it.
+
 ## Верификация наблюдением
 
 Реестр суда — файл с уликами; витрина — стражи счётчиков/шапок/тела релиза; черновики — список
