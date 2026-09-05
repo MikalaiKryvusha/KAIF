@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.5",
   "released": "2026-09-04",
-  "moduleCount": 773,
+  "moduleCount": 783,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -3022,12 +3022,21 @@
         ]
       },
       {
+        "signature": "### Step 3c. Check the form against the contour contract before opening the page (KAIF 2.6)",
+        "class": "static",
+        "sha256": "444abdb7dd0a54f246bf3d1435aa887c02c9d8f591a8b6b5f9b5fe030f8bfde9",
+        "lines": [
+          146,
+          154
+        ]
+      },
+      {
         "signature": "### Step 4. Ask the owner — via the document",
         "class": "static",
         "sha256": "d6862b9574321dc349aadd9227378945dde0e402873d4475f9d2ca67cebb51ee",
         "lines": [
-          146,
-          160
+          155,
+          169
         ]
       },
       {
@@ -3035,8 +3044,8 @@
         "class": "static",
         "sha256": "5b9280a40aa68abbf3c5fccca9b54df583e3fb653dbac80c3969d178bad5494e",
         "lines": [
-          161,
-          188
+          170,
+          197
         ]
       },
       {
@@ -3044,8 +3053,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          189,
-          193
+          198,
+          202
         ]
       }
     ],
@@ -3391,10 +3400,10 @@
       {
         "signature": "# /owner-reviews — the owner-review contour",
         "class": "static",
-        "sha256": "d00c910d8ab7397fb399fb536f1cab6182ef9b4d5ae7ffa862cd13d97cffc922",
+        "sha256": "c02e60be41ac76851ef6a2eef4198b7a9ae27f9844daff8f12e8eb3defdd66fd",
         "lines": [
           6,
-          20
+          32
         ]
       },
       {
@@ -3402,8 +3411,8 @@
         "class": "static",
         "sha256": "c0781637377ef139cfedc2b10d2215567d300f0c89b34f622e4e1776c9f4720d",
         "lines": [
-          21,
-          39
+          33,
+          51
         ]
       },
       {
@@ -3411,8 +3420,8 @@
         "class": "static",
         "sha256": "5a8f3741351d87f5b178e1769bf5d78ac33ac4dfca9f67ce6364a87d8ff777a0",
         "lines": [
-          40,
-          271
+          52,
+          283
         ]
       },
       {
@@ -3420,8 +3429,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          272,
-          283
+          284,
+          295
         ]
       },
       {
@@ -3429,8 +3438,8 @@
         "class": "static",
         "sha256": "89329e4df17a11bb38fa7a8d82395186f01e604e4bb58ac5d7835a39cc430250",
         "lines": [
-          284,
-          333
+          296,
+          345
         ]
       },
       {
@@ -3438,8 +3447,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          334,
-          343
+          346,
+          355
         ]
       },
       {
@@ -3447,8 +3456,8 @@
         "class": "static",
         "sha256": "00a9322b97b28da62f0169e9a1240c4f37197c9c9b134b1b29f10c1bfeeb4b73",
         "lines": [
-          344,
-          455
+          356,
+          467
         ]
       },
       {
@@ -3456,8 +3465,8 @@
         "class": "static",
         "sha256": "81674bb4e07934a8bf603b61358af949ac4b315f59df859ac67a669df96c24b1",
         "lines": [
-          456,
-          488
+          468,
+          500
         ]
       },
       {
@@ -3465,8 +3474,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          489,
-          504
+          501,
+          516
         ]
       },
       {
@@ -3474,8 +3483,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          505,
-          575
+          517,
+          587
         ]
       },
       {
@@ -3483,8 +3492,8 @@
         "class": "static",
         "sha256": "0d1a55845743246bd68df0b614d8e790d24a27f07d90693220b64f3da04e0600",
         "lines": [
-          576,
-          596
+          588,
+          608
         ]
       },
       {
@@ -3492,8 +3501,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          597,
-          616
+          609,
+          628
         ]
       },
       {
@@ -3501,8 +3510,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          617,
-          628
+          629,
+          640
         ]
       }
     ],
@@ -5526,6 +5535,89 @@
         "lines": [
           53,
           59
+        ]
+      }
+    ],
+    ".kaif/INTERACTIVE_CONTOUR_SPEC.md": [
+      {
+        "signature": "# INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)",
+        "class": "static",
+        "sha256": "72f5a4ac6f531e7a6e120fd62fb72fbab473edb2e439e06f95e1645263fa57c8",
+        "lines": [
+          1,
+          10
+        ]
+      },
+      {
+        "signature": "## 1. Source document — what the page is built from",
+        "class": "static",
+        "sha256": "3be3c5cfb71f004674be6076a1c8620dcd1753a338aaf589acd29fe8da2aff08",
+        "lines": [
+          11,
+          25
+        ]
+      },
+      {
+        "signature": "## 2. Pre-flight — runs before any page opens (exit 3 = refuse to open)",
+        "class": "static",
+        "sha256": "61f9dd04de2a88183c90a76295c71fbf5adb321f86935352228f055750948ba9",
+        "lines": [
+          26,
+          39
+        ]
+      },
+      {
+        "signature": "## 3. Records — three files, derived names, never overwritten",
+        "class": "static",
+        "sha256": "0fe6e41b77feb5a2f27b750cad9902a052cd80e39fcb07bc36cc9c8f7381e1cc",
+        "lines": [
+          40,
+          52
+        ]
+      },
+      {
+        "signature": "## 4. The page — what the owner must see",
+        "class": "static",
+        "sha256": "078b1bca68e5a97ac2a83439a6a92b58359423dd4f015a1245c5520d5e06bbd5",
+        "lines": [
+          53,
+          63
+        ]
+      },
+      {
+        "signature": "## 5. Process — outcomes, patience, wake-up",
+        "class": "static",
+        "sha256": "f17b8bb08743e03c75eb3134948fc2340a06dafe4f85f4462b83a6aa2833e408",
+        "lines": [
+          64,
+          74
+        ]
+      },
+      {
+        "signature": "## 6. The call — sound first, voice by language",
+        "class": "static",
+        "sha256": "79df36b07fb3ac8daaa944c4ea581ebf6c6fd30eb5720ff92bf9f26735079b24",
+        "lines": [
+          75,
+          83
+        ]
+      },
+      {
+        "signature": "## 7. Faces and flags (the shipped generator)",
+        "class": "static",
+        "sha256": "7bf1e5571e73795780a7e2ae7c5d0047964242cff915a6c2aff1c9c691ddcf84",
+        "lines": [
+          84,
+          99
+        ]
+      },
+      {
+        "signature": "## 8. Acceptance in one minute",
+        "class": "static",
+        "sha256": "cf78f3e9fe91bffba8dda7b8ca06d4492bf29a2cb76ee192da334e851f56725b",
+        "lines": [
+          100,
+          107
         ]
       }
     ],

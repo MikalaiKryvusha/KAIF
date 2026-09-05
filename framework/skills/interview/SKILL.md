@@ -143,6 +143,15 @@ make the proposal fit (the guard was right; the reading was wrong). Do not turn 
 ask": a question before the search is the same defect with better manners. `/fable-judge` hunts
 "confusion delivered as verdict".
 
+### Step 3c. Check the form against the contour contract before opening the page (KAIF 2.6)
+
+The two legal option forms (a table row `| **A** | … |` or a list item `- **A)** …`), the declared free
+field, and the pre-flight that refuses to open a page whose question has neither (exit 3 — the page would
+open without radio buttons, origin issue #51) are written in one page: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`.
+Before opening the page, run the shipped generator's pre-flight — `node .kaif/tools/contour/review.mjs
+<interview.md> --no-open` — and fix the question it names; a project that runs its own contour checks the
+document against that page by hand. Paragraph headings like `**A. …**` are not options.
+
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
 "**Answer:**" fields). This keeps the work async — the agent isn't blocked on a synchronous chat.

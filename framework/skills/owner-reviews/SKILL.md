@@ -18,6 +18,18 @@ stdlib localhost server that lives seconds (serve → record → die), system ut
 voice/sound/notification/browser; the page is self-contained and opens offline. The temptation to
 take a static-site generator or UI framework is large and the win is zero.
 
+**KAIF 2.6 — the contract has a ONE-PAGE executable form: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** (ships
+with the update as a bundle-only page beside the other `.kaif/_*` skeletons; origin issues #19 #38 #47
+#51 — four contours rebuilt per project and broken on their own edge cases, the last one opened WITHOUT
+radio buttons because the options were typed as paragraphs). The page names, in a form a session verifies
+in a minute: the two legal option forms, the pre-flight that refuses to open a page whose question has no
+options and no declared free field (exit 3), the three records and the fact of showing, what the owner
+must see (the header scrolls with the page — the owner's word), the three outcomes and exit codes, the
+call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
+· proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
+shipped generator; do not build a contour** — a project that still runs its own checks it against that
+page before every opening. The 43 invariants below remain the long-form canon behind the page.
+
 ## Build order (field-corrected: "ours was worse")
 
 1. **The place-of-questions guard** — depends on nothing, pays immediately, shows the real scale.

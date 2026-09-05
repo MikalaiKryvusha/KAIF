@@ -4558,6 +4558,15 @@ make the proposal fit (the guard was right; the reading was wrong). Do not turn 
 ask": a question before the search is the same defect with better manners. `/fable-judge` hunts
 "confusion delivered as verdict".
 
+### Step 3c. Check the form against the contour contract before opening the page (KAIF 2.6)
+
+The two legal option forms (a table row `| **A** | … |` or a list item `- **A)** …`), the declared free
+field, and the pre-flight that refuses to open a page whose question has neither (exit 3 — the page would
+open without radio buttons, origin issue #51) are written in one page: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`.
+Before opening the page, run the shipped generator's pre-flight — `node .kaif/tools/contour/review.mjs
+<interview.md> --no-open` — and fix the question it names; a project that runs its own contour checks the
+document against that page by hand. Paragraph headings like `**A. …**` are not options.
+
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
 "**Answer:**" fields). This keeps the work async — the agent isn't blocked on a synchronous chat.
@@ -6354,6 +6363,18 @@ dependencies is explicitly encouraged — the field contour is a ~100-line markd
 stdlib localhost server that lives seconds (serve → record → die), system utilities for
 voice/sound/notification/browser; the page is self-contained and opens offline. The temptation to
 take a static-site generator or UI framework is large and the win is zero.
+
+**KAIF 2.6 — the contract has a ONE-PAGE executable form: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** (ships
+with the update as a bundle-only page beside the other `.kaif/_*` skeletons; origin issues #19 #38 #47
+#51 — four contours rebuilt per project and broken on their own edge cases, the last one opened WITHOUT
+radio buttons because the options were typed as paragraphs). The page names, in a form a session verifies
+in a minute: the two legal option forms, the pre-flight that refuses to open a page whose question has no
+options and no declared free field (exit 3), the three records and the fact of showing, what the owner
+must see (the header scrolls with the page — the owner's word), the three outcomes and exit codes, the
+call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
+· proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
+shipped generator; do not build a contour** — a project that still runs its own checks it against that
+page before every opening. The 43 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")
 

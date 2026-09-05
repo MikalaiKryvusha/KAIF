@@ -41,6 +41,7 @@ KAIF/
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
 │   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы · реестр систем 2.6)
+│   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint → .kaif/tools/)
 │   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)

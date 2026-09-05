@@ -413,6 +413,12 @@ function bundleBlocks() {
   // DERIVED from SYSTEMS_REGISTRY.md by `kaif-core delivery` and never asked of the owner — the
   // agent copies this skeleton to the project root and drafts the registry; same delivery shape as
   // the two skeletons above (bundle-only, optional; a deployment without a registry stays green).
+  // the interactive-contour CONTRACT page (2.6, epic IC; owner decision №101 — origin issues #19/#38/#47/#51):
+  // one page a session verifies in a minute before opening an owner-facing page; bundle-only, like the
+  // other .kaif/_* skeletons — the long-form canon stays in the /owner-reviews skill
+  if (existsSync(join(FW, 'templates', '_interactive-contour-spec.md')))
+    blocks.push(embedBundle('framework/templates/_interactive-contour-spec.md', '.kaif/INTERACTIVE_CONTOUR_SPEC.md',
+      'interactive-contour contract page — verbatim; the shipped generator implements it, a project contour is checked against it'));
   if (existsSync(join(FW, 'templates', '_systems-registry-template.md')))
     blocks.push(embedBundle('framework/templates/_systems-registry-template.md', '.kaif/_systems-registry-template.md',
       'the systems-registry skeleton — the agent copies it to SYSTEMS_REGISTRY.md and drafts the registry; `kaif-core delivery` prints the delivery vector from it'));
