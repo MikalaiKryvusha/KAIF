@@ -4,8 +4,8 @@
   "released": "2026-09-04",
   "codename": "Experienced KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "955220e4ca97a0d113122077a8e7c5c440081e2be388367d0f9e464938434071",
-    "KAIF-CORE-BUNDLE.md": "9d1a09bda1adf2b272286a4639fefb35ef4b02caccf4e0b9fa8ebdd1392ece5d"
+    "KAIF-CORE.mjs": "7bf5d4a6af86f954940173bcebd1ee5717d4703d21a9b146bbe6ebb4805f97cf",
+    "KAIF-CORE-BUNDLE.md": "7a98aa39e18c24f6b554a048c4d03356dd8bc0fadeccf2bbe088fc7d90f596bc"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

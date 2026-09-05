@@ -576,6 +576,29 @@ if (existsSync(distDir)) {
     }
     distNote = ` · dist OK (bundle ${bundleBlocks} blocks, sha256 fresh, notes name ${expectCodenameLine})`;
 
+    // 10. ONE flag list, two carriers (2.6, UR1; origin issue #42): the loader validates the flags it
+    //     hands to `install` BEFORE it downloads the core — so the list must live in the loader too,
+    //     and the two copies must be EQUAL: loader INSTALL_FLAGS == core COMMANDS.install.flags minus
+    //     --bundle (the loader supplies that one itself). Read from the SOURCES, compared as sets of
+    //     (flag, takes-a-value). Red proven by removing one flag from the loader's copy (2026-09-05).
+    {
+      const coreSrc = readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8');
+      const loaderSrc = readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-LOADER.mjs'), 'utf8');
+      const flagsOf = (src, re, label) => {
+        const m = src.match(re);
+        if (!m) { errors.push(`install-flag pair: ${label} not found — the guard cannot read it`); return null; }
+        return Object.fromEntries([...m[1].matchAll(/'(--[a-z-]+)':\s*(true|false)/g)].map((x) => [x[1], x[2] === 'true']));
+      };
+      const coreFlags = flagsOf(coreSrc, /\n\s*install:\s*\{[^\n]*?flags:\s*\{([^}]*)\}/, 'COMMANDS.install.flags in KAIF-CORE.mjs');
+      const loaderFlags = flagsOf(loaderSrc, /const INSTALL_FLAGS = \{([^}]*)\}/, 'INSTALL_FLAGS in KAIF-LOADER.mjs');
+      if (coreFlags && loaderFlags) {
+        delete coreFlags['--bundle'];
+        const a = JSON.stringify(Object.entries(coreFlags).sort()), b = JSON.stringify(Object.entries(loaderFlags).sort());
+        if (a !== b) errors.push(`install-flag pair DRIFT: loader INSTALL_FLAGS ${b} ≠ core install flags minus --bundle ${a} — an unknown flag would again be refused only AFTER the core is written (origin #42)`);
+        else distNote += ' · loader↔core install flags paired';
+      }
+    }
+
     // 8. The module map (plan 21 §3.1): present, COMPLETE (every md block of the bundle mapped),
     //    FRESH (signatures + sha match a re-split of the bundle's own content), classes valid.
     //    The splitter comes from the same lib the build uses — one algorithm, no drift.

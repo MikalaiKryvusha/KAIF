@@ -62,8 +62,8 @@ KAIF/
 │   ├── build-framework.mjs                # framework/ → KAIF.md + dist/ (в конце сам исполняет check-framework)
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
-│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s14
-│   ├── sandbox/s01…s20*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery)
+│   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s21
+│   ├── sandbox/s01…s21*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery/маршрут обновления)
 │   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf
@@ -110,7 +110,7 @@ framework/templates/**│                        └─▶ dist/kaif-module-map.
                                   блоки сбалансированы · нет {{маркеров}} · стражи нотации/бренда ·
                                   карта модулей пересплитом · пин сплиттера ядро==сборка · sha свежи)
 
-npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s17 в OS-temp  →  проверки полигона (число печатает прогон)
+npm run test:core  →  tools/sandbox-suite.mjs  →  s01–s21 в OS-temp  →  проверки полигона (число печатает прогон)
 tools/build-diagrams.mjs  ──▶  assets/*.svg  ──▶  README.md (через <picture>)
 README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 ```

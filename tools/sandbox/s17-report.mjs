@@ -12,6 +12,12 @@
 //  (git show HEAD:dist/KAIF-CORE.mjs в scratch-dist) → exit 1, 17 проверок красные (+ строка-итог
 //  `17 failure(s)`; 10 из них — словами «unknown command: report», остальные производные) — число
 //  пересчитано судом RL 2.5 (2026-09-04, C-H1: прежние «18» считали строку-итог проверкой)]
+// [TESTED: 2026-09-05 · 2.6 UR4 (#40) + C-H3: 32 проверки свода ✅ в составе полигона «all 21 suites
+//  green»; КРАСНЫЙ доказан швом KAIF_DIST против HEAD-сборки cb42039 (2.5, до UR4): ровно четыре
+//  новых ассерта UR4 красные (строчный «not yet» → exit 1 · `#37` на строке → exit 1 · `#37` на
+//  строке-продолжении → exit 1 · отказ без обеих форм), C-H3 зелёный на обеих (правка формулы Reference,
+//  не кода); шов KAIF_DIST добавлен в этот свод тем же шагом — до него красное доказательство было
+//  невозможно без правки кода свода]
 import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -20,7 +26,8 @@ import { tempRoot } from '../lib/temp-root.mjs';
 import { failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const DIST = join(REPO, 'dist');
+// KAIF_DIST — шов для доказательства красного: свод против ЧУЖОЙ сборки (HEAD до фикса) без правки кода (прецедент s20).
+const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
 // Корень прогона УНИКАЛЕН по построению (bugs/59) — через tempRoot, никогда фиксированным именем.
 const ROOT = tempRoot('report', process.argv[2]);
 const S = join(ROOT, 'deploy');
@@ -66,8 +73,8 @@ writeFileSync(SHIM, `import { appendFileSync, readFileSync } from 'node:fs';
 const args = process.argv.slice(2);
 const mode = process.env.GH_SHIM_MODE || 'ok';
 appendFileSync(process.env.GH_SHIM_LOG, JSON.stringify({ args, mode }) + '\\n');
-if (args[0] === 'auth') process.exit(mode === 'noauth' ? 1 : 0);
-if (mode === 'hang') { setTimeout(() => process.exit(0), 4000); }
+if (args[0] === 'auth') { if (mode === 'hang-auth') { setTimeout(() => process.exit(0), 4000); } else process.exit(mode === 'noauth' ? 1 : 0); }
+else if (mode === 'hang') { setTimeout(() => process.exit(0), 4000); }
 else if (mode === 'refuse') { console.error('GraphQL: Could not resolve to a Repository (createIssue)'); process.exit(1); }
 else {
   const repo = args[args.indexOf('--repo') + 1];
@@ -146,6 +153,31 @@ ok(r.code === 3 && /OUTCOME UNKNOWN/.test(r.out) && /gh issue list --repo exampl
    's17 таймаут gh — exit 3 «OUTCOME UNKNOWN» с командой ручной проверки, не «отказ»', r.out);
 ok(!/refused/.test(r.out), 's17 таймаут — слово «refused» не произнесено');
 ok(/NOT YET/.test(ticketLine()), 's17 таймаут — тикет не тронут');
+
+// ---------------------------------------------------------------- 2.6 UR4 (origin #40): формы контракта `Delivered upstream:`
+// Поле: три тикета 2.2–2.4 писали «not yet» строчными, четвёртый — доставленный рукой — нёс `origin **#37**`
+// на строке-продолжении (перенос на 100 колонок); все четыре получали один отказ, не называвший ни одной
+// законной формы. Красный на HEAD-ядре до UR4: (1) exit 1 · (2) exit 1 · (3) exit 1 · (4) в отказе нет «#NN».
+console.log('\n=== 2.6 UR4 (#40): «not yet» в любом регистре · #NN = доставлено · контракт абзацем · отказ называет обе формы ===');
+writeTicket('not yet — awaiting the field report');
+r = run(`report ${TICKET} --dry-run`);
+ok(r.code === 0 && /DRY-RUN/.test(r.out), 's17/UR4 (критерий 4): «not yet» строчными — законная недоставленная форма, dry-run проходит', r.out);
+writeTicket('✅ sent 2026-08-30 by hand — origin #37');
+r = run(`report ${TICKET} --dry-run`);
+ok(r.code === 0 && /already delivered: #37/.test(r.out), 's17/UR4 (критерий 4): `#NN` на строке = доставлено — идемпотентность, не отказ и не дубль', r.out);
+writeFileSync(join(S, TICKET), ticketText('✅ this issue — sent 2026-08-30 immediately on filing, per the rule this')
+  .replace('**Autocapture**', 'project records in origin **#37**.\n**Autocapture**'));
+r = run(`report ${TICKET} --dry-run`);
+ok(r.code === 0 && /already delivered: #37/.test(r.out), 's17/UR4: контракт читается АБЗАЦЕМ — `#37` на строке-продолжении (перенос на 100 колонок) = доставлено', r.out);
+writeTicket('later maybe');
+r = run(`report ${TICKET} --dry-run`);
+ok(r.code !== 0 && /NOT YET — <why it waits>/.test(r.out) && /<issue URL or #NN>/.test(r.out), 's17/UR4 (критерий 4): нераспознанная строка — отказ называет ОБЕ законные формы и точную правку', r.out);
+// C-H3 (суд RL 2.5): зависший `gh auth status` — честный «not ready» (exit 2: ничего не отправлялось, дубля быть
+// не может); «OUTCOME UNKNOWN» exit 3 — только для `issue create`. Формула Reference §10.7 уточнена в 2.6.
+writeTicket();
+r = run(`report ${TICKET}`, { GH_SHIM_MODE: 'hang-auth', KAIF_GH_TIMEOUT_MS: '800' });
+ok(r.code === 2 && /gh is not ready/.test(r.out) && !/OUTCOME UNKNOWN/.test(r.out), 's17/C-H3: таймаут gh auth status — exit 2 «not ready», не «исход неизвестен» (ничего не отправлялось)', r.out);
+ok(/NOT YET/.test(ticketLine()), 's17/C-H3: тикет не тронут');
 
 if (failures) { console.error(`\n❌ s17: ${failures} failure(s)`); process.exit(1); }
 console.log('\n✅ s17 report: all green');

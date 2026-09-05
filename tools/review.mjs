@@ -611,7 +611,10 @@ function pageShell({ title, kind, heading, main, questions, artifacts = [], batc
       --tagink:#0b1020; --tagwait:#f59e0b; --tagdone:#22c55e; --tagyou:#60a5fa; } }
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink);
     font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
-  header { position:sticky; top:0; background:var(--card); border-bottom:1px solid var(--line);
+  /* Шапка скроллится СО СТРАНИЦЕЙ, не липнет к верху — слово владельца 2026-09-05 17:3x +03:00 со
+     страницы интервью №024: «вот эту шапку нужно не стики делать, а чтобы скролилась со всей
+     страницей». Класс «вкус»: судит его глаз, не наш счёт сущностей. */
+  header { position:static; background:var(--card); border-bottom:1px solid var(--line);
     padding:10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
   header .project { font-weight:700; color:var(--accent) } .kind { color:var(--muted) }
   main { max-width:900px; margin:0 auto; padding:16px 20px 120px }
@@ -679,7 +682,7 @@ function pageShell({ title, kind, heading, main, questions, artifacts = [], batc
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   #status { flex:0 1 auto } .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
-  #banner { display:none; position:sticky; top:46px; background:var(--danger); color:#fff;
+  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff;
     padding:8px 20px; font-weight:600; z-index:6 }`;
 
   // JS страницы — одинарные кавычки и конкатенация, НИ ОДНОГО бэктика (T7).

@@ -150,11 +150,28 @@ unlinkSync(join(U1, 'KAIF_ADAPTATION_TASK.md'));   // адаптация «за�
   writeFileSync(pPhil, joinModules(mods)); }
 r = run(U1, `update --source ${SRC}`);
 ok(r.code === 0, 'U1 update → 9.9 exit 0', r.out);
+// 2.6 (UR2, origin #48): канон и навыки заполнены рукой ОДНИМ значением — машинерия ВЫВОДИТ его с диска и
+// заполняет тот же слот в объявленной сфере сама; пункта placeholders нет, потому что заполнять больше
+// нечего. Прежний T1b-контракт («пункт называет РЕАЛЬНЫЙ адрес — файл сферы») живёт ниже в U1s, где слот
+// не заполнен НИГДЕ и вывести его неоткуда (решение сессии 55 по EXP-0022: чужой красный = решение прошлой
+// фазы; здесь оно СУЖЕНО, не отменено).
 const u1ph = taskItem(U1, 'KAIF_UPDATE_TASK.md', 'placeholders');
-ok(!!u1ph, 'U1 пункт placeholders существует (живой слот в объявленной сфере)');
-// 🔴 КРАСНЫЙ ДО ФИКСА: пункт шлёт в .claude/skills/, а слот живёт в .kaif/spheres/programming.md
-ok(!!u1ph && u1ph.includes('.kaif/spheres/programming.md'),
-   '🔴 T1b пункт называет РЕАЛЬНЫЙ адрес слота — файл объявленной сферы (KCam суд.2)', u1ph || '(нет пункта)');
+const sphereAfter = readFileSync(join(U1, '.kaif', 'spheres', 'programming.md'), 'utf8');
+ok(/hand-filled slots recognized \(\d+\): [^\n]*<BUILD_COMMAND>/.test(r.out), 'U1 (2.6 UR2): значение <BUILD_COMMAND> ВЫВЕДЕНО с диска канона/навыков', r.out.split('\n').filter((l) => /hand-filled/.test(l)).join(' | ').slice(0, 300));
+ok(!sphereAfter.includes('<BUILD_COMMAND>') && !u1ph,
+   'U1 (2.6 UR2): слот объявленной сферы заполнен МАШИНЕРИЕЙ тем же значением — пункта placeholders нет (нечего заполнять)', (u1ph || '(нет пункта)').slice(0, 200));
+// U1s — T1b-контракт как был: слот НЕ заполнен нигде → пункт placeholders называет РЕАЛЬНЫЙ адрес — файл сферы
+const U1s = join(ROOT, 'u1s'); mkdirSync(U1s); seed(U1s);
+must(run, U1s, 'install');
+must(run, U1s, 'sphere programming');           // объявленная сфера несёт литеральный <BUILD_COMMAND>, как и весь канон
+unlinkSync(join(U1s, 'KAIF_ADAPTATION_TASK.md'));
+r = run(U1s, `update --source ${SRC}`);
+ok(r.code === 0, 'U1s update → 9.9 exit 0', r.out);
+const u1sph = taskItem(U1s, 'KAIF_UPDATE_TASK.md', 'placeholders');
+ok(!!u1sph, 'U1s пункт placeholders существует (живой слот, не заполненный нигде)');
+// 🔴 КРАСНЫЙ ДО ФИКСА 2.1: пункт шлёт в .claude/skills/, а слот живёт и в .kaif/spheres/programming.md
+ok(!!u1sph && u1sph.includes('.kaif/spheres/programming.md'),
+   '🔴 T1b пункт называет РЕАЛЬНЫЙ адрес слота — файл объявленной сферы (KCam суд.2)', u1sph || '(нет пункта)');
 // 🔴 T7: backup-дерево до правок (KLAS D13)
 const bak = join(U1, '.kaif', `backup-${CUR}-9.9`);
 ok(existsSync(bak), '🔴 T7 .kaif/backup-<from>-<to>/ существует после update');

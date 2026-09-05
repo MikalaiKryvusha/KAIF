@@ -111,6 +111,13 @@ const PLACEHOLDERS = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>'
 // even lists them as "diverged" (their divergence is the whole point of their existence).
 const OWNER_SEEDED = ['GOAL.md', 'STATUS.md', 'PROJECT_HISTORY.md', 'EXPERIENCE.md', 'MASTER_PLAN.md',
   'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'KAIF_FRAMEWORK.md'];
+// A wholesale-verdict CANDIDATE path — the same three tests classifyAndApply applies before its
+// modular merge (an md file · not owner-seeded · not skipped by anonymity). `diff --source` judges
+// by this ONE predicate so the rehearsal it records and the update's receipt count the same files
+// (2.6, UR1; origin #42 side observation: the preview recorded 16 verdicts, the receipt 15 —
+// MASTER_PLAN.md is owner-seeded and never a candidate of the update, and the canon promised the
+// two lists "compare line by line").
+const wholesaleCandidatePath = (p) => p.endsWith('.md') && !OWNER_SEEDED.includes(p) && !isSkippedAnon(p);
 // Where update fetches the fresh machinery from (mirrors KAIF-LOADER.mjs).
 const SOURCES = { release: `${ORIGIN}/releases/latest/download`,
                   main: 'https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/main/dist' };
@@ -165,6 +172,11 @@ if (!val('--mode') && okOnDisk(KAIF_JSON)) {
 const normEol = (s) => s.replace(/\r\n/g, '\n');
 const normSha = (data) => sha256(normEol(String(data)));           // EOL-normalized sha: CRLF never
 const fileShaNorm = (p) => normSha(readFileSync(p, 'utf8'));       // fakes a divergence (bug 12)
+// Two-part version compare (major.minor) — ONE definition (2.6, UR3; origin #44's own correction:
+// the same closure lived twice, inside newsInterval and policyInterval, and the stale-claims
+// filter that needed it had neither in scope).
+const vnum = (v) => String(v || '0').split('.').map(Number);
+const gt = (a, b) => { const [a1, a2 = 0] = vnum(a), [b1, b2 = 0] = vnum(b); return a1 !== b1 ? a1 > b1 : a2 > b2; };
 
 function splitModules(content) {
   const lines = content.split('\n');
@@ -486,6 +498,99 @@ function fillPlaceholders(content, values, unresolved) {
   return out;
 }
 
+// ── Hand-filled slots — DERIVED from the disk, never asked (2.6, UR2; origin #48 R2/R3) ────────
+// Slots the machinery cannot fill at deploy time (<BUILD_COMMAND>, <TEST_HARNESS>, <YOUR AGENT/MODEL>…
+// when package.json has no scripts) are filled BY HAND in the adaptation task — and from then on
+// every file carrying them differed from its template, so each interval classified them as owner
+// edits: three hand merges and one hand deprecation per interval for files the owner never touched,
+// plus `update-verify` counting the template's slot lines as "promised upstream lines" (a weaker
+// session would paste the placeholders back). The cure is arithmetic, not ceremony: read the fills
+// off the disk by matching a template as a REGEX (each unfilled slot → one single-line capture
+// group; a repeated slot → a back-reference to its first capture), then judge "untouched modulo
+// fills" by the EXACT sha of the disk text with the fills folded back into their slots. A false
+// positive is impossible by construction (the un-filled disk text IS the old template); a false
+// negative lands on the safe side (the file stays "diverged", as in 2.5). The derived map is cached
+// in the deploy manifest (`fills`) and re-derived when absent — an old manifest reads as before.
+// [TESTED: 2026-09-05 · polygon s21 B1–B6 green (fills recognized «(2): <BUILD_COMMAND>, <TEST_HARNESS>»;
+// /autoloop replaced with the fills kept and out of the task; /dayloop retired mechanically; no
+// «promised upstream line … <BUILD_COMMAND>» from update-verify; `fills` in the manifest; the identity
+// module equal to the incoming template makes no item) + s11 U1/U1s (a slot filled everywhere is
+// filled in the declared sphere too; a slot filled nowhere still makes the placeholders item);
+// red on the cb42039 core via KAIF_DIST: B1–B6 all ✖; the first draft LEARNED GARBAGE from literal
+// slots (`<YOUR` / `AGENT/MODEL> …`) and matched the NEW template only — both caught by the polygon
+// on the first run (s03 S10c, s21 B1/B5) and fixed here: literal-on-disk slots stay literal in the
+// pattern, matching is per module and against the OLD template texts first]
+const slotsIn = (text) => PLACEHOLDERS.filter((ph) => text.includes(ph));
+const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+// Match ONE template text (a module, normally) against its disk text. A slot the disk still carries
+// LITERALLY is emitted as a literal, never as a capture — otherwise a lazy group happily split
+// `<YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>` at the space and "learned" garbage (polygon-caught
+// on the first run); a capture never spans `<`/`>` for the same reason.
+function matchFills(template, disk) {
+  const slots = slotsIn(template);
+  if (!slots.length) return null;
+  const literalOnDisk = new Set(slots.filter((s) => disk.includes(s)));
+  if (literalOnDisk.size === slots.length) return null;   // nothing was filled here
+  const groups = new Map();
+  const slotRe = new RegExp(`(${slots.map(reEscape).join('|')})`, 'g');
+  let pat = '', last = 0;
+  for (let m; (m = slotRe.exec(template)); ) {
+    pat += reEscape(template.slice(last, m.index));
+    const slot = m[1];
+    if (literalOnDisk.has(slot)) pat += reEscape(slot);
+    else if (groups.has(slot)) pat += `\\k<${groups.get(slot)}>`;
+    else { const g = `s${groups.size}`; groups.set(slot, g); pat += `(?<${g}>[^\\n<>]+?)`; }
+    last = m.index + slot.length;
+  }
+  pat += reEscape(template.slice(last));
+  const hit = new RegExp(`^${pat}$`).exec(disk);
+  if (!hit) return null;
+  const out = {};
+  for (const [slot, g] of groups) {
+    const v = hit.groups[g];
+    if (v && v.trim()) out[slot] = v;
+  }
+  return out;
+}
+// Fold the fills back into their slots — the inverse of fillPlaceholders for the hand-filled map.
+function unfill(text, fills) {
+  let out = text;
+  for (const [slot, v] of Object.entries(fills || {})) if (v) out = out.split(v).join(slot);
+  return out;
+}
+// The deployment's hand-filled map: the manifest's cached map first, then every deployed md file
+// whose template still carries a slot after the deploy VALUES — matched MODULE BY MODULE (by
+// signature), so an upstream change or an owner edit elsewhere in the file costs nothing. The
+// template the disk was filled FROM is the OLD one (`oldTplTexts` — the previous release's own
+// artifact), when in hand; the incoming template is tried as well and suffices wherever the module
+// did not change. Templates that changed simply fail to match; the fills come from the ones that did not.
+function deriveFills(deploy, values, cached, oldTplTexts = {}) {
+  const fills = { ...(cached || {}) };
+  const learn = (tplText, diskText) => {
+    let diskBySig = null;
+    for (const m of splitModules(tplText)) {
+      const t = modText(m);
+      if (!slotsIn(t).some((s) => !(s in fills))) continue;   // nothing new to learn from this module
+      if (!diskBySig) diskBySig = new Map(splitModules(diskText).map((d) => [d.signature, modText(d)]));
+      const d = diskBySig.get(m.signature);
+      if (d == null) continue;
+      for (const [s, v] of Object.entries(matchFills(t, d) || {})) if (!(s in fills)) fills[s] = v;
+    }
+  };
+  for (const f of deploy) {
+    if (!f.path.endsWith('.md') || !okOnDisk(f.path)) continue;
+    let tpl = fillPlaceholders(f.content, values, new Set());
+    if (ANON) tpl = anonymize(tpl);
+    tpl = normEol(tpl);
+    const old = oldTplTexts && oldTplTexts[f.path];
+    if (!slotsIn(tpl).some((s) => !(s in fills)) && !(old != null && slotsIn(normEol(old)).some((s) => !(s in fills)))) continue;
+    const disk = normEol(readFileSync(f.path, 'utf8'));
+    if (old != null) learn(normEol(old), disk);
+    learn(tpl, disk);
+  }
+  return fills;
+}
+
 // Anonymous install: strip marked author regions and de-expand the brand acronym —
 // mechanically, so no cognitive "scrubbing" pass is needed (anonymity by design).
 function anonymize(content) {
@@ -756,8 +861,6 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
 function newsInterval(meta, fromVersion) {
   const byVer = meta.templateNotesByVersion;
   if (!byVer) return (meta.templateNotes || []).map((n) => `- ${n}`).join('\n') || '- (no template notes shipped with this version)';
-  const vnum = (v) => String(v || '0').split('.').map(Number);
-  const gt = (a, b) => { const [a1, a2 = 0] = vnum(a), [b1, b2 = 0] = vnum(b); return a1 !== b1 ? a1 > b1 : a2 > b2; };
   const vers = Object.keys(byVer).filter((v) => gt(v, fromVersion || '0') && !gt(v, meta.version)).sort((a, b) => (gt(a, b) ? 1 : -1));
   if (!vers.length) return '- (no template notes recorded for this interval)';
   return vers.map((v) => [`**${v}:**`, ...byVer[v].map((n) => `- ${n}`)].join('\n')).join('\n\n');
@@ -796,10 +899,22 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   // co-occurrence on one line is NOT a claim: "building Product 2.0 … KAIF leads the process"
   // is the PRODUCT's version — a project whose own version matches a KAIF release number once
   // turned this scanner into a false-positive generator (bugs/35, project A гр.3).
-  const escVer = fromVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // the negative guards reject a LONGER version number ("21.6", "1.6.3", "1.60"), never a
-  // sentence period right after the token ("… KAIF 1.6." is a claim, sandbox-caught)
-  const ADJACENT = new RegExp(`(?:kaif|каиф)[^\\n]{0,16}${escVer}(?!\\d|\\.\\d)|(?<!\\d)(?<!\\d\\.)${escVer}[^\\n]{0,16}(?:kaif|каиф)`, 'i');
+  // 2.6 (UR3; origin #44): the window is ANY version token strictly OLDER than the version being
+  // installed — not only the one being replaced. A one-version window made the blind spot grow
+  // with the age of the lie (a README badge stuck on 2.2 survived three green updates: no later
+  // interval had fromVersion === "2.2"). Every exemption below stays exactly as it was; the
+  // adjacency regex is built per token found on the line.
+  const VERSION_TOKEN = /(?<!\d)(?<!\d\.)\d+\.\d+(?!\d|\.\d)/g;
+  const adjacentCache = new Map();
+  const adjacent = (v) => {
+    if (!adjacentCache.has(v)) {
+      const escVer = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      // the negative guards reject a LONGER version number ("21.6", "1.6.3", "1.60"), never a
+      // sentence period right after the token ("… KAIF 1.6." is a claim, sandbox-caught)
+      adjacentCache.set(v, new RegExp(`(?:kaif|каиф)[^\\n]{0,16}${escVer}(?!\\d|\\.\\d)|(?<!\\d)(?<!\\d\\.)${escVer}[^\\n]{0,16}(?:kaif|каиф)`, 'i'));
+    }
+    return adjacentCache.get(v);
+  };
   const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
   const byFile = new Map();  // directory before the walk reached the only real public claim (project D Г4)
   const walk = (dir) => {
@@ -825,7 +940,12 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       const lines = readFileSync(p, 'utf8').split('\n');
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        if (!line.includes(fromVersion) || line.includes(toVersion)) continue;
+        if (line.includes(toVersion)) continue;
+        // `%20` is a URL-encoded space: a shields.io badge writes `KAIF%202.2` and must read as
+        // "KAIF 2.2", never as version "202.2" (origin #44's own README line, polygon-caught).
+        const scan = line.replace(/%20/g, ' ');
+        const older = [...new Set(scan.match(VERSION_TOKEN) || [])].filter((v) => gt(toVersion, v));
+        if (!older.length) continue;
         if (/^\s*>/.test(line)) continue;          // blockquote = the owner's quoted word (bugs/35, project B Г5)
         // project A 2.3 field wish R2: a JUSTIFIED old-version mention re-flagged on EVERY interval,
         // forever ("minutes per update, forever"). The canonical marker `KAIF-VERSION-OK` (an
@@ -839,9 +959,15 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
         // staleness (project D Г4: rewriting them would forge it); judge the line with its
         // parenthesized segments removed, so only unparenthesized adjacency counts as a claim.
         // In a SCRIPT parentheses are syntax, not attribution — `assert(v === 'KAIF 2.4')` IS the pin.
-        if (!ADJACENT.test(isProse ? line.replace(/\([^)]*\)/g, '') : line)) continue;
+        // A parenthesis right after `]` is a markdown link/image TARGET, not an attribution — the
+        // shields.io badge keeps its version inside exactly such a target (`![…](…KAIF%202.2…)`),
+        // and stripping it hid origin #44's own README line from the scan (2.6, polygon-caught).
+        const judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
+        const claimed = older.find((v) => adjacent(v).test(judged));
+        if (!claimed) continue;
         if (!byFile.has(p)) byFile.set(p, []);
-        byFile.get(p).push(`${p}:${i + 1} — ${line.trim().slice(0, 100)}`);
+        // a token older than the one just replaced is NAMED — the reader must not assume fromVersion
+        byFile.get(p).push(`${p}:${i + 1} — ${line.trim().slice(0, 100)}${claimed === fromVersion ? '' : ` (asserts ${claimed})`}`);
       }
     }
   };
@@ -861,14 +987,16 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
 // "retired" without "use X instead" sent a field agent hunting — and the ones KEPT (local edits)
 // are COUNTED, not just listed: the summary used to print only what was removed, so a tree that
 // kept every deprecated artifact read as "nothing retired" instead of "N await you".
-function handleDeprecations(meta, old) {
+function handleDeprecations(meta, old, fills = null) {
   const out = { removed: 0, kept: 0, items: [] };
   for (const d of meta.deprecations || []) {
     if (!d.path || !existsSync(d.path)) continue;
     const reason = d.reason || 'deprecated upstream';
     const succ = d.successor ? ` → successor: ${d.successor}` : '';
     const tpl = (old.templateShas || {})[d.path];
-    if (tpl && fileShaNorm(d.path) === tpl) {
+    // untouched MODULO the hand-filled slots retires mechanically too (2.6, UR2; origin #48 R2: a
+    // deprecated skill whose only local difference was its <BUILD_COMMAND> fill went to the hand)
+    if (tpl && (fileShaNorm(d.path) === tpl || (fills && normSha(unfill(readFileSync(d.path, 'utf8'), fills)) === tpl))) {
       unlinkSync(d.path);
       out.removed++;
       log(`- retired ${d.path} (${reason})${succ}`);
@@ -887,8 +1015,6 @@ function handleDeprecations(meta, old) {
 function policyInterval(meta, fromVersion) {
   const byVer = meta.policyChanges;
   if (!byVer) return [];
-  const vnum = (v) => String(v || '0').split('.').map(Number);
-  const gt = (a, b) => { const [a1, a2 = 0] = vnum(a), [b1, b2 = 0] = vnum(b); return a1 !== b1 ? a1 > b1 : a2 > b2; };
   const out = [];
   for (const v of Object.keys(byVer).filter((v) => gt(v, fromVersion || '0') && !gt(v, meta.version)).sort((a, b) => (gt(a, b) ? 1 : -1)))
     for (const p of byVer[v]) out.push(`[${v}] ${p}`);
@@ -951,7 +1077,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // ABSENT item is indistinguishable from "nothing found" — a silent scanner failure would pass
   // as a clean tree): the item is UNCONDITIONAL on a version-changing update; an empty scan says so.
   if (fromVersion) items.push(['stale-claims', staleClaims.length
-    ? `These lines still assert the OLD version (${fromVersion}) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`
+    ? `These lines still assert an OLD version (older than ${meta.version}; the one just replaced is ${fromVersion} — a line stuck on an earlier one names it) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`
     : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
@@ -1046,7 +1172,7 @@ async function fetchMaybe(base, name) {
 // same transform pipeline (language, fill, anonymize), and the blind adopt-everything legacy
 // path becomes an ordinary modular update. Field prototype: project C's kaif-baseline-diff.mjs.
 // --baseline <dir|url> overrides the source (sandboxes; offline owners with a saved artifact).
-async function buildSyntheticBaseline(legacyOld) {
+async function buildSyntheticBaseline(legacyOld, purpose = 'baseline') {
   const ver = legacyOld && legacyOld.version;
   if (!ver) return null;
   const base = val('--baseline') || `${ORIGIN}/releases/download/v${ver}`;
@@ -1083,7 +1209,10 @@ async function buildSyntheticBaseline(legacyOld) {
     log(`⟳ synthetic baseline: v${ver}'s own ${name} (${Object.keys(templateShas).length} templates) — old template texts in hand for real diffs`);
     return { shas: {}, templateShas, moduleShas, templateTexts, kept: [], synthetic: true };
   }
-  log(`⟳ no baseline artifact reachable for v${ver} (${base}) — classic adopt-everything legacy path`);
+  // The bootstrap over a SURVIVING manifest asks only for the old texts (2.6, UR5): its road stays
+  // modular either way, so the honest line here is about the diffs' rendering, not about the road.
+  if (purpose === 'texts') log(`⟳ no artifact of v${ver} reachable for the OLD template texts (${base}) — module diffs on this route show the incoming template only; pass --baseline <dir|url> with that version's artifacts to see −/+`);
+  else log(`⟳ no baseline artifact reachable for v${ver} (${base}) — classic adopt-everything legacy path`);
   return null;
 }
 
@@ -1161,7 +1290,7 @@ function writeMatchingEol(path, content) {
   writeFileSync(path, out);
 }
 
-function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null) {
+function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null, fills = null) {
   const disk = normEol(readFileSync(path, 'utf8'));
   const diskMods = splitModules(disk);
   if (joinModules(diskMods) !== disk) return null;                      // pathological file — file-level fallback
@@ -1218,6 +1347,9 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
     // template is judged MODULO the machinery-appended alias tail — the old text comes from the
     // baseline artifact and must agree with the deploy's own module snapshot before it is trusted.
     let untouchedMod = oldE && dSha === oldE.sha256;
+    // 2.6 (UR2; origin #48 R2): untouched MODULO the hand-filled slots — the module's disk text with
+    // the fills folded back equals the old template module exactly (matchFills / unfill above).
+    if (!untouchedMod && oldE && fills && normSha(unfill(modText(dm), fills)) === oldE.sha256) untouchedMod = true;
     if (!untouchedMod && oldE && dm.signature === '<preamble>' && oldTexts && oldTexts.has('<preamble>')) {
       const ot = oldTexts.get('<preamble>');
       if (normSha(ot) === oldE.sha256 && stripAliasTail(modText(dm)) === stripAliasTail(ot)) untouchedMod = true;
@@ -1236,7 +1368,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
         else { out.push({ signature: dm.signature, lines: [], was: dm }); replaced++; }   // empty entry = removed; `was` lets the pair rule below restore it
         continue;
       }
-      const newText = modText(newM);
+      const newText = fills ? fillPlaceholders(modText(newM), fills, new Set()) : modText(newM);   // the new template module with the deployment's own fills folded in (2.6, UR2)
       if (dSha === normSha(newText)) { out.push(dm); }                  // unchanged upstream too
       // The safety net never judges the preamble: machinery aliases make it carry the owner's
       // script by construction (bug 43) — the alias tail is preserved by the replacement below.
@@ -1262,8 +1394,13 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
       // A CONFLICT diff stays "your version → the new template" (the 2.0 canon, s02/S6): the
       // owner's edit must be visible as `-` lines right where the merge happens. Template→template
       // diffs are reserved for files whose DISK text shows nothing (translated/wholesale/absent).
-      if (oldE && newM && normSha(modText(newM)) !== oldE.sha256)
-        divergedList.push({ signature: dm.signature, note: 'carries local edits AND upstream changed it', diff: lineDiff(modText(dm), modText(newM)) });
+      // 2.6 (UR2; origin #48 R3): a disk module ALREADY equal to the incoming template (fills folded
+      // in) has nothing to merge — the sentence below used to fire when the deploy VALUES drifted
+      // (project-name healing) and the task rendered an empty "upstream changed it" diff.
+      const newFilled = newM ? (fills ? fillPlaceholders(modText(newM), fills, new Set()) : modText(newM)) : null;
+      if (newM && dSha === normSha(newFilled)) { /* already the new template — nothing to hand over */ }
+      else if (oldE && newM && normSha(modText(newM)) !== oldE.sha256)
+        divergedList.push({ signature: dm.signature, note: 'carries local edits AND upstream changed it', diff: lineDiff(modText(dm), newFilled) });
       else if (oldE && !newM)
         divergedList.push({ signature: dm.signature, note: 'upstream REMOVED this module; your edited version kept', diff: lineDiff(modText(dm), '') });
     }
@@ -1430,6 +1567,13 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
   // P1 (2.5, epic US; #27 R1): the rehearsal's verdict for this file, when one was recorded.
   const rehearsed = (p) => (rehearsal && rehearsal.verdicts && rehearsal.verdicts[p]) || null;
   const fmtV = (v) => `${v.outcome} — baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling}`;
+  // 2.6 (UR2; origin #48 R2/R3): the hand-filled slots of THIS deployment, derived before the loop
+  // rewrites f.content — see matchFills. Files and modules equal to "template + fills" are untouched
+  // and move mechanically with the fills folded into the NEW template.
+  const fills = deriveFills(deploy, values, old.fills, oldTplTexts);
+  const fillsN = Object.keys(fills).length;
+  if (fillsN) log(`⟳ hand-filled slots recognized (${fillsN}): ${Object.keys(fills).join(', ')} — a file equal to "template + fills" is untouched and moves mechanically, fills kept`);
+  const withFills = (text) => (fillsN ? fillPlaceholders(text, fills, new Set()) : text);
   let replaced = 0, added = 0, kept = 0, mergedModules = 0;
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
@@ -1451,14 +1595,17 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     // sha never mutates with the disk, so "restored by hand at update N" can no longer read as
     // "untouched" at update N+1. v1 manifests (no templateShas) keep the old byte-sha + kept-guard.
     const untouched = oldTplShas[f.path]
-      ? fileShaNorm(f.path) === oldTplShas[f.path]
+      ? (fileShaNorm(f.path) === oldTplShas[f.path]
+         || (fillsN && normSha(unfill(readFileSync(f.path, 'utf8'), fills)) === oldTplShas[f.path]))   // untouched MODULO the hand-filled slots (2.6, UR2)
       : (!adoptedBefore.has(f.path) && oldShas[f.path] && fileSha(f.path) === oldShas[f.path]);
     if (untouched) {
       // An untouched file IS the old template — replacing it with the new one is right even
       // under the i18n flag (the flag protects the owner's translation, and an untouched file
       // carries none; s07 T2 guards this for pure-EN files on translated deployments).
-      if (fileShaNorm(f.path) === normSha(content)) { kept++; continue; } // upstream didn't change it either
-      writeMatchingEol(f.path, content); log(`↻ replaced ${f.path}`); replaced++; continue;
+      // The replacement carries the deployment's own fills folded into the NEW template (2.6, UR2).
+      const want = f.path.endsWith('.mjs') ? content : withFills(content);
+      if (fileShaNorm(f.path) === normSha(want)) { kept++; continue; } // upstream didn't change it either
+      writeMatchingEol(f.path, want); log(`↻ replaced ${f.path}${want !== content ? ' (fills kept)' : ''}`); replaced++; continue;
     }
     // bugs/32 (all four 2.1 field reports): a diverged/translated file whose TEMPLATE did not
     // change in this interval has NOTHING to deliver — it stays as-is and never makes a task
@@ -1476,7 +1623,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     if (f.path.endsWith('.md') && oldModShas[f.path]) {
       const oldTexts = oldTplTexts[f.path] != null
         ? new Map(splitModules(normEol(oldTplTexts[f.path])).map((m) => [m.signature, modText(m)])) : null;
-      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts);
+      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts, fillsN ? fills : null);
       if (res && res.translatedWholesale) {
         // headings translated — merging would double the document (bug 20/K1); hands off. The
         // task item now carries the REAL old→new template delta instead of "fold the news in
@@ -1551,7 +1698,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
-  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches };
+  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills };
 }
 
 // ---------------------------------------------------------------------------- update (idea 14 / plan 15)
@@ -1610,7 +1757,7 @@ async function cmdUpdate() {
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
-  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches } =
+  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills } =
     classifyAndApply(deploy, old, values, unresolved, cur, oldBase, rehearsal);
   const sizeJumps = deploy
     .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
@@ -1658,9 +1805,9 @@ async function cmdUpdate() {
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
     agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
-    values: persistValues(values), marker }, null, 2) + '\n');
+    values: persistValues(values), fills, marker }, null, 2) + '\n');   // `fills` — the hand-filled slots, derived (2.6, UR2)
 
-  const dep = handleDeprecations(meta, old);
+  const dep = handleDeprecations(meta, old, fills);
   const staleClaims = scanStaleClaims(cur.version, man.version, templateShas);
   // The task lists only slots that are LITERALLY on disk after the pass (judge finding: the raw
   // `unresolved` set collects every null-valued slot seen in incoming templates — on a fully
@@ -2126,6 +2273,11 @@ function runFinalGates(taskFile, tag, verb) {
   if (!i18nTranslated && task.includes('## Module diffs')) {
     let curFile = null, inDiff = false, unmergedLines = 0, skipSection = false;
     const perFile = new Map();
+    // 2.6 (UR2; origin #48 R2): a promised line that carries a hand-filled slot is on disk in its
+    // FILLED form — judge it with the deployment's fills folded in, never tell the agent to paste
+    // `<BUILD_COMMAND>` back over `npm run build`.
+    let fills = {};
+    try { fills = (okOnDisk(DEPLOY_MANIFEST) && readJson(DEPLOY_MANIFEST).fills) || {}; } catch { fills = {}; }
     for (const line of task.split('\n')) {
       const h = line.match(/^### (.+)$/);
       if (h) { curFile = h[1].trim(); continue; }
@@ -2136,7 +2288,7 @@ function runFinalGates(taskFile, tag, verb) {
       if (skipSection) continue;
       if (inDiff && curFile && line.startsWith('+ ') && line.length > 12 && okOnDisk(curFile)) {
         if (!perFile.has(curFile)) perFile.set(curFile, readFileSync(curFile, 'utf8'));
-        if (!perFile.get(curFile).includes(line.slice(2))) {
+        if (!perFile.get(curFile).includes(line.slice(2)) && !perFile.get(curFile).includes(fillPlaceholders(line.slice(2), fills, new Set()))) {
           console.error(`⚠ promised upstream line not found on disk (unmerged?): ${curFile} :: ${line.slice(2, 80)}`);
           unmergedLines++;
         }
@@ -2301,6 +2453,9 @@ async function cmdInstall() {
   //    release artifact. Only with no baseline at all does classic adopt-everything run.
   let adopted = [];
   let cls = null;
+  let rehearsal = null;   // the recorded rehearsal this bootstrap is bound to (2.6, UR1) — consumed at the end, like cmdUpdate's
+  if (!legacyOld && val('--rehearsal'))
+    die('--rehearsal binds an update-by-bootstrap over an EXISTING deployment to a sandbox copy\'s receipt — this tree carries no .kaif/kaif.json, so there is nothing to rehearse against');
   if (legacyOld) {
     if (legacyOld.version !== meta.version) {
       backupTree(deploy, legacyOld.version, meta.version); // rollback material BEFORE any write
@@ -2312,7 +2467,19 @@ async function cmdInstall() {
     }
     if (!baseline) baseline = await buildSyntheticBaseline(legacyOld);
     if (baseline) {
-      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld, null, loadRehearsal(legacyOld.version, meta.version));
+      // 2.6 (UR5; origin #41 wish 3): the surviving manifest holds SHAS, never TEXTS — so a module
+      // absent on disk rendered as an all-`+` block on this route while the core-update route
+      // showed the real −/+ (its synthetic baseline carries the old template texts). Fetch the old
+      // release's own artifact for the TEXTS only (modules and shas stay the manifest's — it wins
+      // per path in classifyAndApply); absence degrades to the 2.5 rendering and never blocks.
+      // `--baseline <dir|url>` is the same switch as on every other road.
+      const texts = baseline.synthetic ? null : await buildSyntheticBaseline(legacyOld, 'texts');
+      // 2.6 (UR1; origin #42, three field trees in one day): `--rehearsal <receipt>` reaches this
+      // route now (the flag is in install's whitelist AND the loader's), and the auto record is
+      // CONSUMED below exactly like cmdUpdate's — all three trees found it still on disk after
+      // the update it rehearsed.
+      rehearsal = loadRehearsal(legacyOld.version, meta.version);
+      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld, texts, rehearsal);
       cls.baselineOld = baseline; // deprecations later need the OLD template shas (step 5)
       adopted = cls.adopted;
       log(`⟳ bootstrap classified against ${baseline.synthetic ? `a synthetic baseline of v${legacyOld.version}` : 'the surviving deploy manifest'}: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept`);
@@ -2459,7 +2626,7 @@ async function cmdInstall() {
   // the final gates self-heal from this snapshot.
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
     agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
-    values: persistValues(values), marker }, null, 2) + '\n');
+    values: persistValues(values), fills: cls ? cls.fills : {}, marker }, null, 2) + '\n');   // `fills` — hand-filled slots, derived on a classified bootstrap (2.6, UR2)
 
   // 5) the final cognitive task for the agent: fresh install → adaptation;
   //    install over an OLDER deployed KAIF (legacy 1.4-style project bootstrapped
@@ -2524,7 +2691,7 @@ async function cmdInstall() {
       const why = legacyOld.tracking === 'anonymous'
         ? 'this anonymous deployment kept no content snapshots'
         : 'this deployment has no content snapshots (pre-1.5 deployments never wrote them)';
-      const dep = cls ? handleDeprecations(meta, cls.baselineOld || {}) : { removed: 0, items: [] };
+      const dep = cls ? handleDeprecations(meta, cls.baselineOld || {}, cls.fills) : { removed: 0, items: [] };
       const staleClaims = rerun ? [] : scanStaleClaims(legacyOld.version, meta.version,
         okOnDisk(DEPLOY_MANIFEST) ? (() => { try { return readJson(DEPLOY_MANIFEST).templateShas || null; } catch { return null; } })() : null);
       // Only slots literally on disk make the task item (judge finding — see cmdUpdate),
@@ -2574,6 +2741,7 @@ async function cmdInstall() {
     if (ANON && !f.path.endsWith('.mjs')) want = anonymize(want);
     return normEol(readFileSync(p, 'utf8')) === normEol(want);
   }).length;
+  consumeRehearsal(rehearsal);   // 2.6 (UR1): one-shot on THIS route too — the auto record used to survive the bootstrap it rehearsed (origin #42)
   clearUpdateJournal();   // bootstrap road completed — nothing left to resume
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translatedOnDisk ? ` · ${translatedOnDisk} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
   // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
@@ -2793,9 +2961,18 @@ function cmdReport() {
   const deliveredLine = (text.match(lineRe) || [])[0];
   if (!h1 || !deliveredLine)
     die(`${ticket} is not a KAIF ticket: it needs an H1 title and a \`**Delivered upstream:**\` line (/report-bug templates A/B)`);
-  const already = deliveredLine.match(/https?:\/\/\S+/);
+  // 2.6 (UR4; origin #40): the contract is read as a PARAGRAPH — the line plus its wrapped
+  // continuations up to a blank line or the next `**field**` (the canon wraps prose at 100
+  // columns, and a hand-delivered field ticket wrote `origin **#37**` on the next line). `not yet`
+  // in ANY case is the undelivered form and wins; otherwise a URL or a `#NN` anywhere in the
+  // paragraph is the delivered form — the idempotency branch fires instead of a refusal, so a
+  // ticket delivered by hand can never be sent twice. A refusal names BOTH legal forms and the edit.
+  const deliveredPara = (normEol(text).match(/^\*\*Delivered upstream:\*\*[^\n]*(?:\n(?![ \t]*$)(?!\*\*)[^\n]*)*/m) || [deliveredLine])[0];
+  const notYet = /not yet/i.test(deliveredPara);
+  const already = deliveredPara.match(/https?:\/\/\S+/) || (!notYet && deliveredPara.match(/(?<![\w/])#\d+\b/));
   if (already) { log(`✔ already delivered: ${already[0]} — nothing sent (idempotent; edit the line by hand only if that issue is gone)`); return; }
-  if (!/NOT YET/.test(deliveredLine)) die(`the Delivered upstream line is neither NOT YET nor a URL: "${deliveredLine.trim()}"`);
+  if (!notYet)
+    die(`the Delivered upstream line is neither NOT YET nor a delivery: "${deliveredLine.trim()}" — write it in one of the two legal forms and re-run: \`**Delivered upstream:** NOT YET — <why it waits>\` (undelivered; the case of "not yet" does not matter) or \`**Delivered upstream:** <issue URL or #NN>\` (delivered by hand)`);
   // The body is the ticket itself plus the authorship trailer — transport ≠ author (#15).
   const trailer = '\n\n---\nFiled by the project\'s agent under the KAIF owner\'s standing authorization (origin issue #15); ' +
     'transport — the `gh` account of the deploying machine. Delivered by `kaif-core report` (KAIF ' + (j.version || '?') + ').\n';
@@ -3046,11 +3223,13 @@ async function cmdDiff() {
       die('this deployment carries a v1 manifest (no template provenance) — the audit would report a hollow green. Run the next `update` (it upgrades the manifest to v2), then `diff` works.');
     let match = 0, missing = 0;
     const divFiles = [];
+    const fills = m.fills || {};   // "template + fills" is a MATCH in the audit too (2.6, UR2)
+    const hasFills = Object.keys(fills).length > 0;
     for (const p of m.paths || []) {
       const tpl = (m.templateShas || {})[p];
       if (!tpl) continue;
       if (!okOnDisk(p)) { missing++; continue; }
-      if (fileShaNorm(p) === tpl) match++; else divFiles.push(p);
+      if (fileShaNorm(p) === tpl || (hasFills && normSha(unfill(readFileSync(p, 'utf8'), fills)) === tpl)) match++; else divFiles.push(p);
     }
     log(`diff (audit vs deployed templates): ${divFiles.length} diverged file(s) — protected from replacement; ${match} match — replace-eligible on update${missing ? `; ${missing} missing` : ''}`);
     for (const p of divFiles) log('  ≠ ' + p);
@@ -3113,14 +3292,17 @@ async function cmdDiff() {
   // copy's receipt: hand it to the live run as `update --rehearsal <copy>/.kaif/last-update.json`.
   const fromVer = okOnDisk(KAIF_JSON) ? (() => { try { return readJson(KAIF_JSON).version; } catch { return null; } })() : null;
   const tplShas = m.templateShas || {};
+  const fills = deriveFills(otherDeploy, values, m.fills);   // the same fills-aware skips as the update (2.6, UR2)
+  const fillsN = Object.keys(fills).length;
   const verdicts = {};
   for (const f of otherDeploy) {
-    if (!f.path.endsWith('.md') || !mineModShas[f.path] || !okOnDisk(f.path)) continue;
+    if (!wholesaleCandidatePath(f.path) || !mineModShas[f.path] || !okOnDisk(f.path)) continue;   // one predicate with classifyAndApply (2.6, UR1)
     let filled = fillPlaceholders(f.content, values, new Set());
     if (ANON) filled = anonymize(filled);
-    if (tplShas[f.path] && (fileShaNorm(f.path) === tplShas[f.path] || tplShas[f.path] === normSha(filled))) continue;
+    if (tplShas[f.path] && (fileShaNorm(f.path) === tplShas[f.path] || tplShas[f.path] === normSha(filled)
+        || (fillsN && normSha(unfill(readFileSync(f.path, 'utf8'), fills)) === tplShas[f.path]))) continue;
     let res = null;
-    try { res = mergeModules(f.path, filled, mineModShas[f.path], true, null); } catch { /* unreadable — no verdict */ }
+    try { res = mergeModules(f.path, filled, mineModShas[f.path], true, null, fillsN ? fills : null); } catch { /* unreadable — no verdict */ }
     if (!res || !res.verdict) continue;
     const outcome = res.translatedWholesale ? 'frozen' : 'merged';
     verdicts[f.path] = { ...res.verdict, outcome };
@@ -3302,7 +3484,7 @@ const COMMANDS = {
   diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version', flags: { '--source': true, '--baseline': true, '--lang': true }, pos: 0 },
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
   delivery:        { fn: cmdDelivery,     desc: 'print the delivery vector from SYSTEMS_REGISTRY.md + open bugs/ (systems · complete · integrated · holes · contradictions · bugs) — derived, never asked of the owner; --json · --system <name>; exit 3 until the registry exists', flags: { '--json': false, '--system': true }, pos: 0 },
-  install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly)', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false }, pos: 0 },
+  install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly); over an existing deployment it is an update-by-bootstrap — --rehearsal <receipt> binds it to a sandbox copy\'s verdicts', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false, '--rehearsal': true }, pos: 0 },
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release; --rehearsal <receipt> binds the run to a sandbox copy\'s verdicts', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true, '--rehearsal': true }, pos: 0 },
   resume:          { fn: cmdResume,       mutating: true, desc: 'restore the pre-update tree after a crashed update (per .kaif/update-journal.json)', flags: {}, pos: 0 },
   'update-verify': { fn: cmdUpdateVerify, mutating: true, desc: 'final gates of an update; self-cleans on green', flags: {}, pos: 0 },

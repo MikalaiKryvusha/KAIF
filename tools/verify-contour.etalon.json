@@ -113,5 +113,10 @@
     "questions": 4,
     "parsedOptions": 15,
     "candidateLines": 15
+  },
+  "interviews/interview_024_issue_51_interactive_contour_spec_or_shipped_generator.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
   }
 }

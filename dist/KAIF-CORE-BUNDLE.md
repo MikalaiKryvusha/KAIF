@@ -88,7 +88,8 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.6": [
-      "NEW optional canon document SYSTEMS_REGISTRY.md (skeleton .kaif/_systems-registry-template.md, bundle-only, the agent copies and drafts it) + the NEW non-mutating core command `delivery` — the delivery VECTOR: systems · complete % with its fraction · integrated % · holes · contradictions · bugs, every number derived from the tree (`--json` deterministic, `--system <name>` one system's fraction; exit 3 with the copy-the-skeleton instruction until the registry exists). The DELIVERY: line moved to the vector form in AGENT_GUIDE (the fable loop), MASTER_PLAN (Delivery vector block), the four loops, both closing ceremonies, /what-next and the /fable-judge call point, with a new `owed questions:` slot fed by the project's queue command; /report-bug: `Kind:` line (hole | contradiction | bug) in the bug-doc header; KAIF_REFERENCE §5 and §10.7 describe both."
+      "NEW optional canon document SYSTEMS_REGISTRY.md (skeleton .kaif/_systems-registry-template.md, bundle-only, the agent copies and drafts it) + the NEW non-mutating core command `delivery` — the delivery VECTOR: systems · complete % with its fraction · integrated % · holes · contradictions · bugs, every number derived from the tree (`--json` deterministic, `--system <name>` one system's fraction; exit 3 with the copy-the-skeleton instruction until the registry exists). The DELIVERY: line moved to the vector form in AGENT_GUIDE (the fable loop), MASTER_PLAN (Delivery vector block), the four loops, both closing ceremonies, /what-next and the /fable-judge call point, with a new `owed questions:` slot fed by the project's queue command; /report-bug: `Kind:` line (hole | contradiction | bug) in the bug-doc header; KAIF_REFERENCE §5 and §10.7 describe both.",
+      "UPDATE ON THE REAL ROUTE (epic UR; origin issues #42 ×3, #48, #44, #40, #41): the rehearsal binding now reaches the BOOTSTRAP route — `install` accepts `--rehearsal <receipt>` (so `node KAIF-LOADER.mjs --lang <code> --rehearsal <copy>/.kaif/last-update.json` works), the loader validates every flag BEFORE it downloads anything (an unknown flag leaves the tree untouched — no more new core under an old marker), the auto record `.kaif/update-rehearsal.json` is consumed on that route too, and `diff --source` and `update` count ONE candidate set (owner-seeded documents excluded from both). HAND-FILLED SLOTS are DERIVED from the disk (`<BUILD_COMMAND>`, `<TEST_HARNESS>`, `<YOUR AGENT/MODEL>` … filled in the adaptation task): a file or module equal to \"template + fills\" is untouched — replaced mechanically with the fills kept, retired mechanically when deprecated; `update-verify` judges promised lines with the fills folded in; the map is cached in the deploy manifest as `fills`; a module already equal to the incoming template is never \"upstream changed it\". `stale-claims` sees ANY version older than the one being installed (a line stuck on an earlier version names it: `(asserts 2.2)`). `report` reads the `Delivered upstream:` line as a paragraph: `not yet` in any case, a URL or `#NN` = delivered (idempotent), a refusal names both legal forms. The bootstrap task renders module diffs with the OLD template texts (`−`/`+`), fetched from the previous release's artifact (`--baseline <dir>` offline). /kaif-update: the bootstrap route is MANDATORY for anchored pairs under a core older than 2.5; assets downloaded once for both runs (`--source <dir>`); `core.longpaths` on Windows."
     ],
     "2.3": [
       "The canon now speaks in COMMANDS (epic X, field issue #22): every obligation of a canon document carries one of three executable forms — a command to run, a numbered step with an exit condition, or a checkbox a ritual ticks — prose stays as the rationale UNDER the carrier and never carries an obligation alone; a new PROHIBITION enters the canon only rephrased as positive guidance or moved into a guard that reddens itself. MIGRATION: the rule binds the templates as they arrive; your local wrapper documents adopt it as you touch them.",
@@ -108,7 +109,8 @@
   ],
   "policyChanges": {
     "2.6": [
-      "The delivery line is a DERIVED vector, never a question to the owner (2.6, epic OQ; origin owner decisions #97/#99 — the 2.5 line sent the agents of four freshly updated projects to their owners to learn what to measure): `DELIVERY:` now prints six numbers from `SYSTEMS_REGISTRY.md` — systems · complete % (always with its fraction) · integrated % · holes · contradictions · bugs — computed by the new non-mutating command `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`; exit 3 until the registry exists). The registry is the AGENT's job: copy `.kaif/_systems-registry-template.md` to `SYSTEMS_REGISTRY.md`, draft the product's logically separate systems from GOAL.md, MASTER_PLAN.md and both maps, print the vector from the draft at once; the owner approves the list as vision when ready. If this deployment opened an interview or a homework after 2.5 that puts the delivery metric to the owner as a question — CLOSE it and build the registry instead: the owner is never sent to define what the framework can derive. Bug documents gain an optional `**Kind:** hole | contradiction | bug` header line (no line = bug) so the three counters are yours to classify; the DELIVERY: line in AGENT_GUIDE, MASTER_PLAN, the four loops, both closing ceremonies, /what-next and the judge call point moved to the vector form, with a new `owed questions:` slot fed by the project's queue command."
+      "The delivery line is a DERIVED vector, never a question to the owner (2.6, epic OQ; origin owner decisions #97/#99 — the 2.5 line sent the agents of four freshly updated projects to their owners to learn what to measure): `DELIVERY:` now prints six numbers from `SYSTEMS_REGISTRY.md` — systems · complete % (always with its fraction) · integrated % · holes · contradictions · bugs — computed by the new non-mutating command `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`; exit 3 until the registry exists). The registry is the AGENT's job: copy `.kaif/_systems-registry-template.md` to `SYSTEMS_REGISTRY.md`, draft the product's logically separate systems from GOAL.md, MASTER_PLAN.md and both maps, print the vector from the draft at once; the owner approves the list as vision when ready. If this deployment opened an interview or a homework after 2.5 that puts the delivery metric to the owner as a question — CLOSE it and build the registry instead: the owner is never sent to define what the framework can derive. Bug documents gain an optional `**Kind:** hole | contradiction | bug` header line (no line = bug) so the three counters are yours to classify; the DELIVERY: line in AGENT_GUIDE, MASTER_PLAN, the four loops, both closing ceremonies, /what-next and the judge call point moved to the vector form, with a new `owed questions:` slot fed by the project's queue command.",
+      "Update machinery changed FOUR behaviours on the real route (2.6, epic UR; origin issues #42, #48, #44, #40): (1) the loader REFUSES an unknown flag before it downloads anything, and `install` takes `--rehearsal <receipt>` — a sandbox receipt binds the bootstrap route the same way it binds `update`; the auto record is consumed on both routes; (2) files that differ from their template ONLY by hand-filled slots (`<BUILD_COMMAND>`, `<TEST_HARNESS>`, the co-author line) are UNTOUCHED — they are replaced mechanically with the fills kept and retired mechanically when deprecated, so the three hand merges and one hand deprecation you did on every interval stop appearing in the task; the fills are derived from your disk and cached in `.kaif/deploy-manifest.json` as `fills`; (3) the `stale-claims` item lists lines asserting ANY version older than the one being installed — expect lines that three green updates never showed you (a badge stuck two releases back), each naming the version it asserts; (4) `report` accepts `not yet` in any case and a `#NN` as \"delivered\" — a hand-delivered pre-2.5 ticket no longer refuses, and a refusal names both legal forms."
     ],
     "2.5": [
       "Authorization gate carve-out: a ticket about a defect of KAIF ITSELF to the framework's own origin no longer waits for the owner's AUTH: line — it is delivered under the KAIF owner's standing authorization in the same motion as it is filed (origin issue #37). Every other outward action (releases, deploys, sends, force-pushes, deletions) still waits for the owner's quoted words.",
@@ -2935,7 +2937,13 @@ validated against the bundle by re-splitting; a stale or tampered map fails the 
 For every bundle file, against the deployment's snapshots: an owner file is never in scope (but a
 changed owner TEMPLATE surfaces as an "owner-conventions" task item); a missing file is added; a
 file whose disk sha equals its TEMPLATE sha is replaced (or kept if upstream did not change it);
-a diverged markdown file undergoes the MODULAR merge.
+a diverged markdown file undergoes the MODULAR merge. Equality is judged MODULO the hand-filled
+slots (2.6, origin issue #48): a file that differs from its template only by the values the
+adaptation task filled into slots the machinery could not fill (`<BUILD_COMMAND>`, `<TEST_HARNESS>`,
+the co-author line) is untouched — the replacement carries those fills into the new template, and
+a deprecated file of that shape retires mechanically. The fills are DERIVED from the disk (the
+template matched as a pattern with one capture per slot; the proof is the exact sha of the disk
+text with the fills folded back), cached in the deploy manifest as `fills`, never asked of anyone.
 
 ### 10.2 The modular merge
 
@@ -2943,15 +2951,21 @@ Reconstruction starts from the DISK order (the owner's inserted sections keep th
 A module untouched since deploy takes the new template's text; a localized module is never
 replaced by a template that carries none of the owner's script; an edited module is kept — and
 lands in the task WITH a "your version → new template" diff ONLY when upstream actually changed
-it. New template modules insert by template order. A file whose body carries the owner's
+it (2.6: a module already equal to the incoming template — the deploy values healed since, e.g.
+by `project-name` — is nothing to hand over and makes no item; the comparison is by the FILLED
+texts, because the manifest keeps no raw template texts and the healing rewrites the fill map).
+New template modules insert by template order. A file whose body carries the owner's
 script prints its verdict WITH the numbers that produced it — `baseFound N of M, ceiling K →
 frozen | merged` (2.5: a rehearsal and the live run compare line by line, not by outcome).
 The H1 is OUT of that count (2.5, origin bug 100): it is the one heading that carries a deploy-time
 value, and a synthetic baseline fills it from whatever the folder resolves to — one tree under two
 folder names once got two verdicts, ±1 at the ceiling; the polygon now runs exactly that and
 demands one verdict. The rehearsal is BINDING (2.5, origin issue #27 R1): `diff --source` prints the same verdicts
-over the same candidate set and records them in `.kaif/update-rehearsal.json`; the next `update`
-over that tree (or one given `--rehearsal <receipt>` from a sandbox copy) freezes any file whose
+over the same candidate set (2.6: ONE predicate for both — an md file neither owner-seeded nor
+skipped by anonymity — so the rehearsal file and the receipt count the same files; origin issue
+#42) and records them in `.kaif/update-rehearsal.json`; the next `update` over that tree (or one
+given `--rehearsal <receipt>` from a sandbox copy — on the bootstrap route the same flag rides the
+loader's line into `install`, 2.6, and the auto record is consumed on both routes) freezes any file whose
 live verdict is `merged` where the rehearsal said `frozen` — kept intact, the template delta in
 the task, both number sets in the `verdict-mismatch` item — so what the rehearsal showed the
 owner stays true; every candidate's verdict also rides the receipt (`verdicts`), and a record
@@ -2974,8 +2988,10 @@ translated-wholesale file also names its UPSTREAM path and a ready `git diff v<f
 <src>` — the dest → src map ships in the bundle meta as `sources`, 2.5) · owner-convention
 transfers · deprecations carrying local edits (every deprecation names its SUCCESSOR in the log
 and in the item, and the kept ones are counted in the task's context line and the receipt —
-2.5, origin issue #32 R-D) · stale claims (lines still asserting the OLD
-version anywhere in the project — prose AND the project's own scripts: `package.json`,
+2.5, origin issue #32 R-D) · stale claims (lines asserting ANY version older than the one being
+installed — not only the one just replaced: a one-version window let a README badge two releases
+back survive three green updates, so a line stuck on an earlier version now names it, `(asserts
+2.2)`, 2.6, origin issue #44 — anywhere in the project: prose AND the project's own scripts: `package.json`,
 `*.mjs/js/ts/sh/ps1/py/yml/toml`, lock files excluded, 2.5; the item is UNCONDITIONAL on a
 version change — an empty scan says `no lines found`, so a silent scanner failure can never pass
 as a clean tree, 2.5) ·
@@ -3023,7 +3039,11 @@ machinery's module cut) · `checkpoint` · `update-verify` · `check` · `versio
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
-not a ticket, `gh` refused; a timeout is OUTCOME UNKNOWN, exit 3, never a refusal; `--dry-run`
+not a ticket, `gh` refused; a timeout of the CREATE call is OUTCOME UNKNOWN, exit 3, never a
+refusal — a hanging `gh auth status` is `not ready`, exit 2: nothing was sent, a repeat is safe
+(2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — `not yet` in any case is
+undelivered, a URL or `#NN` anywhere in it is delivered (idempotent), and a refusal names both
+legal forms with the exact edit (2.6, origin issue #40); `--dry-run`
 calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`) · `delivery` (2.6, epic OQ:
 print the delivery VECTOR — systems · complete % with its fraction · integrated % · holes ·
 contradictions · bugs — from `SYSTEMS_REGISTRY.md` (§5) and the open `bugs/*.md` by their `Kind:`
@@ -3038,7 +3058,14 @@ The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git arc
 in the copy, run the REAL update or bootstrap there and read its diff. This is not a model of the
 pass but the pass itself — field-proven byte-identical to the subsequent live run. Recommended
 before the first-ever update and on heavily localized deployments; `diff --source` remains the
-lighter per-module preview.
+lighter per-module preview. The copy's receipt binds the live run on EITHER route (2.6): `update
+--rehearsal <receipt>` or `node KAIF-LOADER.mjs --lang <code> --rehearsal <receipt>` — the loader
+validates its flags BEFORE any download (`--lang --mode --agents --baseline --force --rehearsal`
+ride to `install`, `--channel --source` are its own; anything else is refused with nothing fetched
+and nothing written — origin issue #42 found three trees left with a new core under an old marker).
+On the bootstrap route the task renders module diffs with the OLD template texts (`−`/`+`, never
+`+` alone): the machinery fetches the previous release's own artifact for them, `--baseline
+<dir|url>` offline (2.6, origin issue #41).
 
 ## 11. Trust and provenance
 
@@ -5658,9 +5685,14 @@ diverged places. Your cognitive work is that task, not the migration.
 2. **Predict the pass BEFORE touching the tree** (both moves are cheap; the field proved both).
    Route note: `update` runs the interval with your CURRENTLY DEPLOYED core (the fresh one is
    swapped in at the end) — so the NEW version's update-time guarantees (pre-update backup
-   tree, new task scopes) apply to the NEXT interval. To get them on THIS pass, update by the
-   thin-`KAIF.md` bootstrap route instead: the fresh core classifies against your surviving
-   deploy manifest and the pass is equally mechanical.
+   tree, new task scopes, merge rules) apply to the NEXT interval. To get them on THIS pass, update
+   by the thin-`KAIF.md` bootstrap route instead: the fresh core classifies against your surviving
+   deploy manifest and the pass is equally mechanical. **The bootstrap route is MANDATORY, not an
+   option, when the deployed core is older than 2.5 and the canon carries anchored pairs** (the
+   creed and the prayer, `<!-- KAIF:NAME:BEGIN/END -->`, typically localized): the old core's merge
+   can land a new module INSIDE such a pair — a field tree got the severity ladder planted between
+   the prayer's BEGIN and END, and the project's own prayer tool would have deleted the arrival as
+   its "cure". The fresh core places it after the END; only the route decides which happens.
    - `node .kaif/kaif-core.mjs diff --source <url|dir>` — a per-module preview of what the new
      version would change *here*. Works even on a v1 manifest: the machinery builds a synthetic
      baseline of your CURRENT version (`--baseline <dir|url>` points it at saved artifacts when
@@ -5673,9 +5705,19 @@ diverged places. Your cognitive work is that task, not the migration.
      the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field
      the live pass matched the sandbox byte for byte. Prefer this on the first-ever update and on
      any deployment with heavy localization. The copy's receipt (`<copy>/.kaif/last-update.json`)
-     carries the verdicts it printed: hand it to the live run as
-     `update --rehearsal <copy>/.kaif/last-update.json`, and a file the copy froze can never be
-     merged live — a mismatch freezes it and names both number sets in the task.
+     carries the verdicts it printed: hand it to the live run — `update --rehearsal
+     <copy>/.kaif/last-update.json` on the core-update route, `node KAIF-LOADER.mjs --lang <code>
+     --rehearsal <copy>/.kaif/last-update.json` on the bootstrap route (since 2.6 the loader knows
+     the flag and refuses an unknown one BEFORE it downloads anything) — and a file the copy froze
+     can never be merged live: a mismatch freezes it and names both number sets in the task. Where
+     the flag cannot be passed (a wrapper runs the loader for you), the equivalent is `cp
+     <copy>/.kaif/last-update.json .kaif/update-rehearsal.json` — the bootstrap picks the default
+     path up by itself and consumes the record. Two field-paid details of the recipe: download the
+     release assets ONCE (`gh release download vX.Y --pattern 'KAIF*' --pattern 'kaif-manifest.json'
+     -D <dir>`) and hand `<dir>` to BOTH runs as `--source <dir>` — the sandbox and the live pass
+     then read the same sha256-verified bytes and their logs differ by the rehearsal line alone;
+     and on Windows run `git config core.longpaths true` in the copy before `git add` (a long
+     archive name under `interviews/` fails the copy otherwise).
 
 3. **Route by what the project has:**
    - **`.kaif/kaif-core.mjs` exists (KAIF ≥ 1.5):** run `node .kaif/kaif-core.mjs update`
@@ -5683,11 +5725,15 @@ diverged places. Your cognitive work is that task, not the migration.
      replaces every framework file that is byte-identical to its install snapshot, adds new files,
      keeps diverged ones untouched, swaps the machinery itself, stamps `.kaif/kaif.json`, and writes
      `KAIF_UPDATE_TASK.md`.
-   - **No machinery (KAIF ≤ 1.4, or an anonymous install):** put the fresh **thin `KAIF.md`** from the
-     origin release in the project root and follow its bootstrap (three `KAIF-BOOT:` steps). The
-     installer detects the existing older `.kaif/kaif.json` and runs as an update: existing files are
-     KEPT, new entities added, owner-level fields of the marker preserved, and `KAIF_UPDATE_TASK.md`
-     replaces the usual adaptation task.
+   - **No machinery (KAIF ≤ 1.4, or an anonymous install) — and every tree named MANDATORY in
+     step 2:** put the fresh **thin `KAIF.md`** from the origin release in the project root and follow
+     its bootstrap (three `KAIF-BOOT:` steps; `--rehearsal`, `--source` and `--baseline` ride on the
+     loader's line). The installer detects the existing older `.kaif/kaif.json` and runs as an update:
+     existing files are KEPT, new entities added, owner-level fields of the marker preserved, and
+     `KAIF_UPDATE_TASK.md` replaces the usual adaptation task. Since 2.6 this route renders its module
+     diffs with the OLD template's lines too (`−`/`+`, not `+` alone): the machinery fetches the
+     previous release's own artifact for the texts — offline, pass `--baseline <dir>` with that
+     version's assets, or read the incoming template alone.
 
 4. **Work `KAIF_UPDATE_TASK.md`** — the only cognitive part: merge the template news into the files the
    machinery could not touch (they carry your local edits), review what's new, run

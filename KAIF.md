@@ -81,13 +81,14 @@ checkpoints mechanically and self-cleans the installer (including this file). Co
 // Usage:
 //   node KAIF-LOADER.mjs [--lang <code>] [--mode standard|anonymous] [--agents <list>]
 //                        [--channel release|main] [--source <dir-or-url>] [--force]
+//                        [--baseline <dir-or-url>] [--rehearsal <receipt>]
 //
 //   --channel release  (default) fetch the latest published release assets (version-pinned set)
 //   --channel main     fetch from the repo's main branch (dist/) — for development
 //   --source <x>       explicit override: a local directory or URL base holding the three
 //                      artifacts (kaif-manifest.json, KAIF-CORE.mjs, KAIF-CORE-BUNDLE.md)
 //
-// All other flags are passed through to KAIF-CORE.mjs install.
+// All other flags are passed through to KAIF-CORE.mjs install — and VALIDATED here first (below).
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
@@ -111,6 +112,26 @@ const die = (s) => { console.error('✖ KAIF-LOADER: ' + s); process.exit(1); };
 // handles at exit trip a libuv assertion on win32 and dress one failure as two (issue #10).
 // They print the same message and unwind via a sentinel; the loop then drains naturally.
 const dieSoft = (s) => { console.error('✖ KAIF-LOADER: ' + s); const e = new Error(s); e.kaifDie = true; throw e; };
+
+// The flags this loader hands to `install` — a MIRROR of the core's COMMANDS.install.flags minus
+// --bundle, which the loader supplies itself (check-framework keeps the pair equal on every build;
+// `true` = the flag takes a value). Validated HERE, before any download (2.6; origin issue #42,
+// three field trees in one day): an unknown flag used to be refused by the core only AFTER the
+// loader had already swapped .kaif/kaif-core.mjs — the tree was left with a new core under the old
+// marker, and the reader of the canon had to reason about whether it was safe to re-run.
+const INSTALL_FLAGS = { '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false, '--rehearsal': true };
+const LOADER_FLAGS = { '--channel': true, '--source': true };
+{
+  const errs = [];
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (!a.startsWith('-')) { errs.push(`unexpected argument: "${a}"`); continue; }
+    const spec = a in INSTALL_FLAGS ? INSTALL_FLAGS : a in LOADER_FLAGS ? LOADER_FLAGS : null;
+    if (!spec) { errs.push(`unknown flag: ${a}`); continue; }
+    if (spec[a]) { if (!args[i + 1] || args[i + 1].startsWith('-')) errs.push(`flag ${a} needs a value`); else i++; }
+  }
+  if (errs.length) die(`${errs.join('; ')} — refusing BEFORE any download: nothing was fetched, nothing was written. Known flags: ${[...Object.keys(LOADER_FLAGS), ...Object.keys(INSTALL_FLAGS)].join(' ')}`);
+}
 
 // A mistyped channel VALUE must refuse, not silently become "release" (bug 99.3 — the same
 // bug-33 class one level below the flag whitelist, mirroring the core's own cmdUpdate check:

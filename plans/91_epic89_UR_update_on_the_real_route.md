@@ -4,8 +4,8 @@
 > **Родитель:** `plans/89` (эпик UR; якоря — критерии приёмки 4 «[UR — репетиция на bootstrap]»,
 > 5 «[UR — заполнения]», 6 «[UR — старые строки версии]», 7 «[UR — доставка тикета]», 8 «[UR —
 > текст навыка обновления]»; строка таблицы эпиков № 2).
-> **Статус:** 🔲 запланирован ≈ 2026-09-05 16:23 +03:00 —
-> старт в НОВОМ чате с шага UR0 (нулёвка актуализации входов, №76); входы — `researches/26` §2/§3
+> **Статус:** 🟢 в работе — UR0 закрыт 2026-09-05 16:53 +03:00 (сессия 55, нулёвка актуализации
+> входов, №76); запланирован ≈ 2026-09-05 16:23 +03:00; входы — `researches/26` §2/§3
 > (заявления #42 ×3 · #48 · #44 · #40 · #41 сверены с HEAD 2.5), `ideas/28` пп. 17–21, 23, суд RL 2.5
 > (своды E-H3/C-H3). **Вовне:** машинерия `framework/installer/KAIF-CORE.mjs` и `KAIF-LOADER.mjs`,
 > навык `/kaif-update` обоих слоёв, новый свод полигона `s21`, пункты `POLICY_CHANGES_BY_VERSION['2.6']`
@@ -102,43 +102,79 @@ wish 3) и не говорит про `--source` для обоих прогон�
 
 ## Шаги
 
-- [ ] **UR0 — нулёвка актуализации входов (№76).** Сверить против HEAD (после OQ2 ядро сдвинулось):
-      `--rehearsal` только у `update` в `COMMANDS` · `consumeRehearsal` только в `cmdUpdate`
-      (`KAIF-CORE.mjs` ≈ `:1691`, `:1738`) · bootstrap зовёт `loadRehearsal` без consume (≈ `:2315`) ·
-      `KAIF-LOADER.mjs:102–104` — passthrough без проверки флагов, ядро пишется до `install` ·
-      `stale-claims` фильтр `!line.includes(fromVersion) || line.includes(toVersion)` (≈ `:828`) ·
-      `gt` дважды (≈ `:760`, `:891`) · `cmdReport` `lineRe`/`NOT YET` (≈ `:2792`, `:2798`) · слоты
-      `values` манифеста (только восемь слотов идентичности) · `update-verify` «promised upstream
-      line» на плейсхолдер-строках · `/kaif-update` шаг 2–3 обоих слоёв · номер нового свода — `s21`
-      (в `plans/89` критерии 4–5 писали «s20», s20 занят `delivery` — поправить якоря по факту) ·
-      своды E-H3/C-H3 суда RL 2.5. Правка плана по фактам — штатно.
-- [ ] **UR1 — репетиция на bootstrap (критерий 1, #42 ×3).** `install` получает флаг `--rehearsal`
-      (в `COMMANDS`; тот же `loadRehearsal` с явным путём + `consumeRehearsal` после применения);
-      `KAIF-LOADER.mjs` валидирует свои флаги и flags-passthrough ПО СПИСКУ ядра ДО скачивания и
-      записи ядра (неизвестный флаг → отказ, дерево не тронуто); один набор кандидатов у `diff
-      --source` и `update` (общая функция отбора вместо двух фильтров). Свод `s21`: четыре ассерта +
-      красный на копии HEAD.
-- [ ] **UR2 — заполнения плейсхолдеров (критерий 2, #48 R2/R3).** Манифест деплоя персистит
-      заполнения навыков (`fills: { <placeholder>: <value> }` рядом с `values`); классификация:
-      `sha(template + fills) == sha(disk)` → нетронут → механическая замена `new template + fills` и
-      депрекация машинерией; «upstream changed it» — `templateSha(old) != templateSha(new)` (шаблон
-      против шаблона), не диск против шаблона; `update-verify` пропускает строки-плейсхолдеры при
-      сверке «обещанных» строк. Ассерт `fills: /autoloop kept out of merge-modules` + красный на
-      копии.
-- [ ] **UR3 — окно старых строк версии (критерий 3, #44).** `stale-claims`: любая версия строго
-      старше устанавливаемой (`gt(toVersion, found)`), а не только `fromVersion`; `gt` — одна функция
-      модульной области; ассерт `README.md:22` + красный на копии; шум замерить на живых README
-      полигона (версии в примерах — маркером оправдания, как в 2.4).
-- [ ] **UR4 — доставка тикета (критерий 4, #40).** `report`: `/not yet/i` · `#\d+` на строке =
-      доставлено (`already delivered … #NN`) · отказ называет обе законные формы и правку; три
-      ассерта в `s17-report.mjs` + красный на копии.
-- [ ] **UR5 — текст `/kaif-update` обоих слоёв + baseline на bootstrap (критерий 5, #41).** Четыре
-      формулировки; синтетический baseline старого шаблона на bootstrap-маршруте (как на легаси);
-      своды E-H3/C-H3 зелёные.
-- [ ] **UR6 — сборка, полигон 21, документы.** `POLICY_CHANGES_BY_VERSION['2.6']` — пункт про
-      обновление (репетиция на bootstrap · заполнения · окно stale-claims · формы `report`);
-      `TEMPLATE_NOTES` 2.6; `KAIF_REFERENCE` §10.3/§10.7/§10.8; внешняя карта (`s21`); черновики
-      ответов #40/#42/#44/#48 секцией здесь; `counters-guard` (сводов 20 → 21 — зеркала по выводу).
+- [x] **UR0 — нулёвка актуализации входов (№76) — ✅ 2026-09-05 16:53 +03:00 (сессия 55).** Сверено
+      против HEAD `cb42039` (ядро 2.5, build 467; после OQ2 якоря сдвинулись на одну строку): `--rehearsal`
+      только у `update` (`COMMANDS` `:3306`; флаги `install` `:3305` — `--bundle --lang --mode --agents
+      --baseline --force`) · `consumeRehearsal` только в `cmdUpdate` (`:1691`, тело `:1738`) · bootstrap
+      зовёт `loadRehearsal` без consume (`:2315`) · `KAIF-LOADER.mjs:99–105` — passthrough фильтрует
+      только `--channel/--source`, ядро записано в `.kaif/kaif-core.mjs` на `:90–92` ДО передачи руля ·
+      фильтр `stale-claims` `:828` · `vnum`/`gt` дважды (`:759–760` в `newsInterval`, `:890–891` в
+      `policyInterval`) · `cmdReport`: `lineRe` `:2792`, URL-примета `:2796`, `/NOT YET/` `:2798` · слоты
+      манифеста: `persistValues(values)` `:1660` (update) и `:2461` (install), `detectValues` `:434` —
+      восемь слотов идентичности, `<BUILD_COMMAND>`/`<TEST_HARNESS>` только при `scripts.build/test`, иначе
+      слот остаётся литералом и заполняется рукой · `update-verify` «promised upstream line» `:2140` ·
+      набор кандидатов `cmdDiff` `:3116–3128` против `classifyAndApply` `:1398`: разница ровно в
+      `OWNER_SEEDED` (`MASTER_PLAN.md` — кандидат превью, не обновления: 16 vs 15 из #42) ·
+      `mergeModules` `:1266` «carries local edits AND upstream changed it» судит `sha(newM) ≠
+      oldE.sha256`, где ОБА заполнены значениями — дрейф при исцелении `<PROJECT_NAME>` командой
+      `project-name` (#48 R3) · `/kaif-update` оба слоя побайтно равны (89 строк), шаги 2–3 без четырёх
+      формулировок · номер свода — `s21` (якоря `plans/89` критериев 4–6 поправлены) · E-H3/C-H3 —
+      `ideas/28` п. 7 (U6в: `language-arrivals` на bootstrap кодом доказан, сводом не наблюдён; C-H3:
+      таймаут `gh auth status` → exit 2 «not ready», формула Reference «таймаут = exit 3» верна лишь
+      для `issue create`). Тикеты #40/#41/#42/#44/#48 прочитаны целиком с комментариями (три
+      подтверждения #42 — NDim/Unliminium/KUMM; поправка автора #44: `cmpVer` в поставке нет, есть
+      дважды объявленный `gt`). Новый тикет **#50** (16:46 +03:00, поведение агента на развилках) —
+      вне UR: зарегистрирован эпиком FK в `plans/89` по слову владельца в чате («берем его тоже в 2.6
+      версию»). Проектные решения по каждому шагу — § «Решения» 1–7.
+- [x] **UR1 — репетиция на bootstrap (критерий 1, #42 ×3) — ✅ 2026-09-05 (сессия 55).** `install`
+      принимает `--rehearsal` (`COMMANDS`; тот же `loadRehearsal` + `consumeRehearsal` перед
+      `clearUpdateJournal` bootstrap-ветки; свежая установка с флагом — отказ «нечего репетировать»);
+      `KAIF-LOADER.mjs` валидирует флаги ДО скачивания по константе `INSTALL_FLAGS` (зеркало
+      `COMMANDS.install.flags` без `--bundle`; пара стережётся гардом 10 `check-framework` — красный
+      доказан мутацией копии загрузчика); один предикат `wholesaleCandidatePath` у `diff --source` и
+      `classifyAndApply` (owner-документы — не кандидаты превью). Свод `s21` A1–A4 зелёные (41/41);
+      на HEAD-сборке `cb42039` через `KAIF_DIST`/`KAIF_LOADER` красные A1 ×3, A2, A3 ×3 — ровно по
+      предсказаниям; половина A4 «документ владельца не кандидат» на HEAD зелёная в фикстуре
+      (каверза — см. § «Решения» 8).
+- [x] **UR2 — заполнения плейсхолдеров (критерий 2, #48 R2/R3) — ✅ 2026-09-05 (сессия 55).**
+      Заполнения ВЫВОДЯТСЯ с диска (`matchFills`/`deriveFills`/`unfill`: шаблон как паттерн, слот
+      литеральный на диске — литерал паттерна, захват без `<`/`>`, помодульно, против СТАРЫХ текстов
+      шаблона первым делом), кэш — `fills` манифеста; «нетронут по модулю заполнений» на уровне файла
+      (`classifyAndApply`), модуля (`mergeModules`) и депрекации (`handleDeprecations`); замена
+      несёт заполнения в новый шаблон; `update-verify` судит обещанные строки с учётом заполнений;
+      модуль, равный новому заполненному шаблону, пункта не рождает (#48 R3); аудит `diff` без
+      источника — тоже с учётом заполнений. Свод `s21` B1–B6 зелёные, на HEAD все шесть красные;
+      сосед `s11` U1/U1s — граница «слот заполнен машинерией ↔ пункт placeholders» (решение 9).
+      Первая редакция выучила мусор из литеральных слотов и сопоставляла только с новым шаблоном —
+      поймано полигоном на первом прогоне (EXP-0112).
+- [x] **UR3 — окно старых строк версии (критерий 3, #44) — ✅ 2026-09-05 (сессия 55).** `stale-claims`
+      судит любой токен `\d+.\d+` строго старше устанавливаемой версии (`%20` → пробел; скобка после
+      `]` — цель ссылки, не атрибуция; строка со версией старее заменяемой несёт `(asserts X.Y)`);
+      `vnum`/`gt` — одно объявление модульной области; текст пункта — «an OLD version (older than
+      <to>)». Свод `s21` C1/C2 зелёные, на HEAD красные (бейдж невидим; `gt` дважды); изъятия (цитата,
+      датированная строка) — как прежде, шум не вырос (C1 третий ассерт).
+- [x] **UR4 — доставка тикета (критерий 4, #40) — ✅ 2026-09-05 (сессия 55).** `report` читает
+      контракт `Delivered upstream:` абзацем; `not yet` в любом регистре — недоставлено и побеждает;
+      URL или `#NN` в абзаце — доставлено (идемпотентно); отказ называет обе законные формы и правку.
+      `s17` +4 ассерта UR4 (+1 C-H3: зависший `gh auth status` → exit 2 «not ready», режим шима
+      `hang-auth`); шов `KAIF_DIST` добавлен в `s17`; на HEAD четыре ассерта UR4 красные, C-H3 зелёный
+      на обеих (правилась формула Reference, не код).
+- [x] **UR5 — текст `/kaif-update` обоих слоёв + baseline на bootstrap (критерий 5, #41) — ✅
+      2026-09-05 (сессия 55).** Четыре формулировки в шагах 2–3 (MANDATORY для якорных пар под ядром
+      < 2.5 · `--rehearsal` на строке загрузчика и `cp` как эквивалент · `gh release download` один раз
+      + `--source <dir>` обоим прогонам · `git config core.longpaths true`); копия обвязки побайтно
+      равна поставке; на bootstrap с выжившим манифестом ядро подтягивает синтетический baseline СТАРОЙ
+      версии ради текстов (`buildSyntheticBaseline(legacyOld, 'texts')`, `--baseline` — тот же
+      переключатель) — дифф отсутствующего модуля несёт старый шаблон контекстом, не одни `+` (`s21` D1;
+      на HEAD красный); E-H3 — `s21` D2 (`language-arrivals` на bootstrap, зелёный на обеих —
+      покрытие); C-H3 — `s17`.
+- [x] **UR6 — сборка, полигон 21, документы — ✅ 2026-09-05 (сессия 55).** `POLICY_CHANGES_BY_VERSION['2.6']`
+      и `TEMPLATE_NOTES_BY_VERSION['2.6']` — по пункту про обновление (без «спросите владельца» — `s20`
+      стережёт текст); `KAIF_REFERENCE` §10.1/§10.2/§10.3/§10.7/§10.8; внешняя и внутренняя карты
+      (`s01–s21`); `sandbox-suite.mjs` — `s21` в `SUITES` и шапке; зеркала счётчика сводов 20 → 21
+      (README EN/RU, STATUS ×2, AGENT_GUIDE) — `counters-guard` зелёный (50 зеркал); черновики ответов
+      #40/#41/#42/#44/#48 — секцией ниже; `npm run test:core` → **`all 21 suites green`**;
+      `doc-header-lint` 0 находок; урок — EXP-0112.
 - [ ] **UR7 — лёгкий судья эпика (критерий 6)** → таблица вердиктов ниже → `plans/92` (CB) на
       закрытии (канон N+1) → строка в `plans/89` «Веха».
 
@@ -168,7 +204,112 @@ wish 3) и не говорит про `--source` для обоих прогон�
 
 ## Решения, принятые агентом без владельца
 
-(на старте — нет; заполняется по ходу UR)
+1. **UR2 — заполнения ВЫВОДЯТСЯ с диска, а не записываются чекпоинтом** (#48 wish 2 предлагал
+   запись при `placeholders`): значение слота снимается сопоставлением «шаблон как регулярное
+   выражение» — каждый незаполненный слот шаблона становится группой захвата одной строки, повтор
+   того же слота — обратной ссылкой; доказательство «нетронут по модулю заполнений» — точное
+   равенство `sha(unfill(диск, fills)) == sha старого шаблона`: ложноположительное невозможно по
+   построению, ложноотрицательное — безопасная сторона (файл остаётся «диверджен», как в 2.5).
+   Выведенные заполнения персистятся в манифест ключом `fills` как кэш; отсутствие ключа = вывести
+   заново (старый манифест читается как прежде). Оккам: ни нового шага чекпоинта, ни вопроса агенту.
+2. **UR2 — «upstream changed it» судится сначала равенством диска НОВОМУ заполненному шаблону**
+   (диск == `fill(newM, fills)` → пункта нет — ровно случай #48 R3, где модуль идентичности уже
+   нёс каноническое имя), а не «сырой шаблон против сырого шаблона»: сырых текстов старого шаблона
+   манифест не хранит, а `project-name` исцеляет и `values` манифеста — старые значения не
+   восстановить; граница названа в Reference §10.2 и здесь.
+3. **UR1 — список флагов `install` ЖИВЁТ в загрузчике константой** (`INSTALL_FLAGS`): загрузчик
+   обязан отказать ДО скачивания ядра, а ядра у него в этот момент нет; пара «константа загрузчика ↔
+   `COMMANDS.install.flags` ядра (без `--bundle`, его подставляет сам загрузчик)» стережётся
+   `check-framework` на каждой сборке (гард 10, красный доказан мутацией), а не полигоном.
+4. **UR3 — окно `stale-claims` = любой токен `\d+.\d+` строго старше устанавливаемой версии** при
+   прочих изъятиях как есть; примета смежности строится по НАЙДЕННОМУ токену, не по `fromVersion`;
+   текст пункта — «assert an OLD version (older than <to>)».
+5. **UR4 — контракт `Delivered upstream:` читается АБЗАЦЕМ** (строка плюс продолжения до пустой
+   строки или следующего `**поля**`): перенос на 100 колонок (#40, тикет 16 поля) — законная
+   форма, не отказ; `#NN` в абзаце = доставлено; отказ называет обе законные формы и правку.
+6. **UR5 — baseline на bootstrap = синтетический baseline СТАРОЙ версии только ради ТЕКСТОВ**
+   (`templateTexts`) поверх выжившего манифеста: модули и sha — из манифеста, старые тексты — из
+   артефакта релиза; недоступность артефакта деградирует к рендеру 2.5 (одни `+`) и не блокирует;
+   переключатель — тот же `--baseline <dir|url>`.
+7. **C-H3 — правится ФОРМУЛА, не код:** таймаут `gh auth status` — честный «not ready» (exit 2:
+   ничего не отправлено, дубля быть не может); «OUTCOME UNKNOWN, exit 3» — только для `issue
+   create`; s17 получает ассерт на оба ответа.
+8. **Каверза красного доказательства A4 (один предикат кандидатов) — записана, не спрятана.** Половина
+   «документ владельца не кандидат превью» на HEAD-сборке зелёная: старое ядро в фикстуре (ru-развёртывание,
+   MASTER_PLAN переведён целиком, входящий шаблон без кириллицы) не доходит до вердикта по
+   `MASTER_PLAN.md` — три диагностических прогона с логом в копии HEAD-ядра показали печать ДО первого
+   `continue` и тишину после при всех трёх условиях истинных; причина не найдена, время ограничено.
+   Полевое «16 vs 15» (#42) не воспроизведено. Предикат `wholesaleCandidatePath` оставлен как
+   DRY-правка (один набор тестов вместо двух фильтров) с зелёным ассертом-регрессией «наборы равны» на
+   обеих сборках; судья эпика (UR7) читает это как каверзу критерия 1, не как REFUTED.
+9. **Сосед `s11` U1 переписан, а не подогнан (EXP-0022):** его прежний T1b-контракт («пункт placeholders
+   называет РЕАЛЬНЫЙ адрес слота — файл объявленной сферы») сужен новой семантикой заполнений — слот,
+   заполненный рукой в каноне и навыках, машинерия заполняет и в объявленной сфере (пункта нет, потому
+   что заполнять нечего); контракт T1b живёт в новом U1s, где слот не заполнен НИГДЕ. Решение
+   агента: заполнить библиотеку сферы значением, которым владелец заполнил всё остальное, — ровно то,
+   что велел бы пункт placeholders; выдуманных значений нет (только выведенные с диска).
+10. **Шапка страницы контура — по слову владельца, класс «вкус».** `header { position: static }` и баннер
+    к верху; слово 2026-09-05 ≈ 17:30 +03:00 со страницы интервью №024. `/owner-reviews` липкость не
+    канонизировал — правится только инструмент истока; дефолт будущего генератора (эпик IC).
+
+## Черновики ответов в issues origin (отправка — ПОСЛЕ релиза 2.6, по тикету, без вычитки; №84/№92/№93)
+
+Форма — прецедент `plans/90` и слово владельца №92: итог первым, без внутренней кухни; тикет
+закрывается тем же комментарием (№93), полевой отчёт — квитанцией (№94). Каждый текст — EN, как
+сами тикеты. Числа сводов — из вывода полигона на момент отправки.
+
+**#42 (improvement request, NDim + Unliminium + KUMM):**
+
+> Fixed in KAIF 2.6. `--rehearsal <receipt>` is accepted by `install` now, so the bootstrap line the
+> canon recommends for translated deployments takes the sandbox receipt directly:
+> `node KAIF-LOADER.mjs --lang ru --rehearsal <copy>/.kaif/last-update.json`. The loader validates
+> every flag BEFORE it downloads anything — an unknown flag is refused with nothing fetched and
+> nothing written, so a tree can no longer be left with a new core under an old marker. The auto
+> record `.kaif/update-rehearsal.json` is consumed on the bootstrap route as well. `diff --source`
+> and `update` judge candidates by ONE predicate (owner-seeded documents such as `MASTER_PLAN.md` are
+> excluded from both), so the rehearsal file and the receipt count the same files. Your `cp` route
+> keeps working and is named in `/kaif-update` as the equivalent where the flag cannot be passed;
+> the skill also carries "download the assets once, hand `--source <dir>` to both runs" and the
+> Windows `core.longpaths` note. Guarded by polygon suite `s21` — red on the 2.5 core exactly as you
+> reported (`unknown flag for install: --rehearsal`; the record surviving; 16 vs 15). Three
+> confirmations in one day made this the second epic of 2.6 — thank you.
+
+**#44 (bug, NDim):**
+
+> Fixed in KAIF 2.6. `stale-claims` flags any version token strictly OLDER than the version being
+> installed, not only the one being replaced; every existing exemption (`KAIF-VERSION-OK`,
+> blockquotes, dated rows, parenthesized attributions, `PROJECT_HISTORY*`, template-identical
+> files) stays exactly as it was, and a line stuck on an earlier version names it
+> (`README.md:22 — … (asserts 2.2)`). Your own correction landed too: the two-part compare `gt`
+> is one module-scope definition now. Polygon `s21` C1/C2 — red on 2.5 (the badge line invisible;
+> `gt` declared twice).
+
+**#40 (bug, KAGO):**
+
+> Fixed in KAIF 2.6. `report` reads the `Delivered upstream:` contract as a PARAGRAPH (the line
+> plus its wrapped continuations), accepts `not yet` in any case, treats a URL or `#NN` anywhere in
+> it as delivered (idempotent — no duplicate issue), and a refusal names both legal forms and the
+> exact edit. Polygon `s17` — red on 2.5 for all three shapes you listed.
+
+**#48 (field report, KUMM) — квитанция + закрытие:**
+
+> Thank you for the report — received and worked into KAIF 2.6. Wish 1 (#42) — fixed there. Wish 2
+> (R2/R3) — fixed: hand-filled slots are DERIVED from the disk (no new checkpoint, nothing to
+> record by hand) — a file equal to "template + fills" is untouched, replaced mechanically with the
+> fills kept, retired mechanically when deprecated; `update-verify` judges promised lines with the
+> fills folded in (no more "unmerged?" on `<BUILD_COMMAND>` lines); a module already equal to the
+> incoming template is no longer "upstream changed it" (R3). Wish 3 — the flag route above; the
+> `cp` route stays documented as the equivalent. Wish 4 (the language-pack pointer) and the `@fork`
+> doc nit — epic CB of 2.6. Wish 5 (positive) — kept as is. Closing with this quittance.
+
+**#41 (field report, KAGO) — квитанция + закрытие:**
+
+> Thank you — worked into KAIF 2.6: wish 1 — `/kaif-update` says the bootstrap route is MANDATORY
+> for a tree with anchored pairs under a deployed core older than 2.5; wish 2 — #40 fixed; wish 3 —
+> the bootstrap task renders `−`/`+` from the OLD template texts (fetched from the previous
+> release's own artifact; `--baseline <dir>` offline); wish 5 — `core.longpaths` in the sandbox
+> recipe; wish 4 (`@fork` in the linter sentence, the language-mix heuristic) — epic CB; R8 (the
+> body of #23) — epic HY, by the owner's word. Closing with this quittance.
 
 ## Судья эпика
 
