@@ -12,6 +12,7 @@
     "test": "node tools/check-framework.mjs",
     "pdf": "node tools/readme-pdf.mjs",
     "kaif:check": "node tools/check-framework.mjs",
+    "kaif:delivery": "node dist/KAIF-CORE.mjs delivery",
     "kaif:version": "node tools/kaif.mjs version",
     "kaif:update": "node tools/kaif.mjs update",
     "kaif:fork": "node tools/kaif.mjs fork",
