@@ -105,7 +105,11 @@ bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
 showing, outcomes and exit codes, the call, the faces and flags of the shipped generator under
 `.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
-and `/owner-reviews` says "run the shipped generator, do not build a contour".
+and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
+as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
+(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`)
+and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
+and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);

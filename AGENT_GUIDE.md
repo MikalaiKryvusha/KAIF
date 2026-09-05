@@ -466,7 +466,7 @@ KAIF/
 │                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
 └── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
-           · sandbox/s01–s21 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+           · sandbox/s01–s22 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -511,7 +511,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 37 навыков + 1 распаковщик = 59; бандл 173 блока; карта — 783 модуля) — не переписывай эти
+7 README + 37 навыков + 1 распаковщик = 59; бандл 176 блоков; карта — 783 модуля) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.

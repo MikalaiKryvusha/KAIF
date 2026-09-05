@@ -93,9 +93,9 @@ level; the window may cross midnight.
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
-`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.decisionsDir`
-(default `interviews/decisions`), `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped,
-others fall back to EN).
+`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` (how the
+voice addresses the owner; default `ownerName`), `contour.decisionsDir` (default `interviews/decisions`),
+`contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute
 
