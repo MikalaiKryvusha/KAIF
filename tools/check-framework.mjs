@@ -402,6 +402,10 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
     // question (bugs/72). The positive half — the literal "injection not verified" — is a guarded
     // pair above; this is its negative half, so the row cannot quietly go back to a ✅.
     [/✅ same path/, 'the retired third outcome for an unverified hook contract ("probably works" — O5 criterion 5, bugs/72)'],
+    // The creed's English carrier once said "WE KEEP TRYING" and field deployments back-translated
+    // it as «продолжаем пытаться»; the owner's word is «стараемся» — "we strive" (bugs/110). The
+    // retired wording is forbidden so the creed cannot drift back to "trying".
+    [/KEEP(?:S)? TRYING/, 'the retired creed wording "keep trying" — the owner\'s word is «стараемся» = "strive" (bugs/110)'],
   ];
   // the sweep walks the WHOLE payload (judge finding: docs+readmes+skills alone left spheres/
   // adapters/templates/installer unguarded — a future leak there would ship silently)

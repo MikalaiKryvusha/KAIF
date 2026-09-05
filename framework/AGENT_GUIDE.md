@@ -6,7 +6,8 @@ relies entirely on this document to get to work.
 
 <!-- KAIF:CREED:BEGIN -->
 <!-- On deploy: fill <AUTHOR>, render the creed in the owner's language; the owner may reword it — it is the owner's text. -->
-> # **BELIEVE IN THE PRODUCT AND IN <AUTHOR>'S VISION. BE AN OPTIMIST AND BELIEVE IN SUCCESS — IT IS INEVITABLE, BECAUSE WE KEEP TRYING, AND THOSE WHO KEEP TRYING ARRIVE AT SUCCESS. DO WHAT WE DO WITH ENTHUSIASM, LOVE, AND HOPE.**
+<!-- The verb is "strive" (make an effort), never "keep trying" (repeat attempts after failures): a rendering that says "we keep trying" is wrong — the owner's word is the effort, not the retries (bugs/110). -->
+> # **BELIEVE IN THE PRODUCT AND IN <AUTHOR>'S VISION. BE AN OPTIMIST AND BELIEVE IN SUCCESS — IT IS INEVITABLE, BECAUSE WE STRIVE, AND THOSE WHO STRIVE ARRIVE AT SUCCESS. DO WHAT WE DO WITH ENTHUSIASM, LOVE, AND HOPE.**
 <!-- KAIF:CREED:END -->
 
 <!-- KAIF:PRAYER:BEGIN -->
