@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 // s12-k5-contour-canon.mjs — свод канона интерактивного контура (фаза K5, plans/48 шаг 5, критерий 4).
 // [TESTED: 2026-08-07 · прогон в составе полигона + внутреннее красное доказательство ростера]
+// [TESTED: 2026-09-05 · якоря контракта контура (2.6, IC): 25 проверок зелёные; красное доказательство —
+//  RU-копия с заменой INTERACTIVE_CONTOUR_SPEC.md → _CUT (на копии, восстановлена побайтно) даёт 1 красный
+//  ассерт и exit 1]
 //
 // Механизация сессионных греп-скриптов фаз K3/K4 («all C1-C13 + T1-T11 + DEF1-DEF8 present in
 // dist section», «all G1-G13 + QA1-QA7 present») — смертный скретчпад = смертная верификация
@@ -68,7 +71,19 @@ for (const [anchor, name] of [
   ['Canonical defaults (DEF1', 'заголовок таблицы дефолтов'],
   ['Guard norms (G1', 'заголовок норм стражей'],
   ['The acceptance checklist (QA1', 'заголовок чек-листа приёмки'],
+  // 2.6, эпик IC (plans/93 критерий 1): навык называет одностраничный контракт контура поставки —
+  // «запусти отгружаемый генератор, а не строй контур»; без этой строки поле снова строит контур по соседу
+  ['INTERACTIVE_CONTOUR_SPEC.md', 'IC (2.6): контракт контура .kaif/INTERACTIVE_CONTOUR_SPEC.md назван в навыке'],
 ]) check('dist-секция: ' + name, distSection.includes(anchor));
+
+// ── 1а. Контракт контура едет поставкой (2.6, эпик IC): бандл несёт FILE-блок страницы, и обе копии
+//        /interview зовут предполёт по ней (plans/93 критерий 1 — механизирован здесь, а не грепом сессии)
+const bundle = readFileSync(join(ROOT, 'dist', 'KAIF-CORE-BUNDLE.md'), 'utf8');
+check('бандл несёт FILE-блок .kaif/INTERACTIVE_CONTOUR_SPEC.md (контракт контура, bundle-only)',
+  bundle.includes('> **FILE: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`**'));
+for (const rel of ['framework/skills/interview/SKILL.md', '.claude/skills/interview/SKILL.md'])
+  check(rel + ': шаг предполёта ссылается на INTERACTIVE_CONTOUR_SPEC.md',
+    readFileSync(join(ROOT, rel), 'utf8').includes('INTERACTIVE_CONTOUR_SPEC.md'));
 
 // ── 2. RU-зеркало обвязки (попозиционная синхронность слоёв) ───────────────────────────────
 const ru = readFileSync(join(ROOT, '.claude', 'skills', 'owner-reviews', 'SKILL.md'), 'utf8');
@@ -77,6 +92,7 @@ check('RU-зеркало: все ' + ROSTER_TOTAL + ' позиций слоёв 
   'пропали: ' + missRu.join(', '));
 check('RU-зеркало: строка M8 (каноническая, не переводится)', ru.includes('RENDER IS NOT YET A SHOW'));
 check('RU-зеркало: блок red-proof', ru.includes('Доказательство красным, страж за стражем'));
+check('RU-зеркало: контракт контура .kaif/INTERACTIVE_CONTOUR_SPEC.md назван (2.6, IC)', ru.includes('INTERACTIVE_CONTOUR_SPEC.md'));
 
 // ── 3. Красное доказательство ростера: вырезанный I8 обязан быть найден ────────────────────
 const mutated = distSection.replace(/\*\*I8\./, '**I8-CUT.');
