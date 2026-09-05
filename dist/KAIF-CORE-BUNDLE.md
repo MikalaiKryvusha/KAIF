@@ -1160,7 +1160,13 @@ the transport (equivalence rule in `/interview`: HTML = md = chat). The contour 
 that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
 (`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
 has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
-(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE).
+(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE). **And
+every question and every answer option is a SCENARIO of what the owner will see** — Situation ·
+Action · Result · Check in the customer's language, the technical explanation UNDER it and never
+instead of it (`/interview` step 3a; the origin's owner decision #98: two questions phrased as
+technical explanations came back as "I don't understand the problem — as a customer"); a live
+question without the four lines is a guard finding, the declared exception is a marker with a
+reason on the line (a name — the taste class).
 
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
@@ -4439,14 +4445,14 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except four marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> Kept verbatim except six marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6). In KAIF rituals this
+> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner** (the customer's language · complete mechanics only). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4485,6 +4491,8 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Fork without recon (KAIF 2.5).** A choice with ≥ 2 options and a non-zero price of error must carry its `FORK: options · price of error · consulted` line at the decision point (`AGENT_GUIDE.md` → the fable loop; `PHILOSOPHY.md` → the fourth door), and the `consulted` slot must name a domain authority, a recon doc or the owner — `consulted <own reasoning>`, or no line at all on a fork that had a price, is the finding (field: a black box set to dump "on close only", decided from the model's head, wrote zero bytes when the machine froze — origin issue #36).
    - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30).
    - **Delivery line (KAIF 2.5; the vector form since 2.6).** A session close (`/end-chat-soft`, `/end-chat-force`) or a loop iteration report must open with `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …; moved by: … | blocker: … | owed questions: …` — the delivery VECTOR printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` (`MASTER_PLAN.md` → Delivery vector): six numbers DERIVED from the tree, never asked of the owner. A report without the line, with a zero delta on every component and no named blocker, or with `registry not built yet` and the registry's drafting not named as the next move, is a finding of the false-completion family: every local invariant (honest, green, verified) can hold while the product moved zero (field: 54 sessions, 11 of 389 edges, 0 modes shipped — a framework that graded honesty and never distance to acceptance). A line quoting a metric the owner was ASKED to name is the same finding from the other side: a mechanic that sends the agent to the owner for its parameter is incomplete.
+   - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
+   - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives — since 2.6 the delivery vector comes from `SYSTEMS_REGISTRY.md`, never from a question.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -5292,15 +5300,33 @@ If it shapes brand/architecture/UX for the long term — interview.
   needed to clarify is worse than a few extra questions.
 - Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
 
-### Step 3a. Explaining a mechanic to the owner — a scenario first, the formula after
+### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after
 
-When a question (or its context) has to explain how something works — a rule, a mechanic, a
-behaviour — open with a four-line scenario with concrete values (`REQUIREMENTS_FRAMEWORK.md` →
-"The scenario form": Situation · Action · Result · Check), and only then the formula: the
-formula explains WHY it came out so; a scenario without the formula is still an explanation, a
-formula without the scenario is not. The values in the scenario come from the canon or from a run,
-never invented (the three doors, `PHILOSOPHY.md`); the owner answers in the same language — his
-scenario may leave the Check line empty, and filling it is the agent's work.
+The rule is one line: every question and every option opens with a four-line scenario with
+concrete values (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form": Situation · Action · Result ·
+Check) in the CUSTOMER's language — what the owner will see on the screen, in the file, in the chat — and only
+then the technical explanation (vector or scalar, flag, command, schema): the formula explains WHY
+it comes out so; a scenario without the formula is still a question the owner can answer, a formula
+without the scenario is not (the origin's owner returned two such questions with "I don't understand
+the problem — as a customer", decision #98). This holds for the mechanic a question explains AND for
+each answer option: an option is a scenario of the world after that choice, not a label. The values
+in the scenario come from the canon or from a run, never invented (the three doors,
+`PHILOSOPHY.md`); the owner answers in the same language — the owner's scenario may leave the Check
+line empty, and filling it is the agent's work. An option, written this way:
+
+```
+- **A) Print the vector from the draft registry**
+  - Situation. The registry has 9 systems; the owner has not approved it yet.
+  - Action. The agent closes the session.
+  - Result. You see `DELIVERY: systems 9 · complete 86 % (31 of 36) … · registry: draft` as the
+    first line of the farewell — and no question to you.
+  - Check. `npm run kaif:delivery` prints a line starting with `DELIVERY: systems 9`.
+```
+
+Where the project runs a questions guard, a live question whose body carries none of the four lines
+is a finding (the origin: `questions-guard`, axis G6); the declared exception is a marker with a
+reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question
+with no behaviour to show (a name, the taste class).
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the

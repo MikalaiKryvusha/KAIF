@@ -96,15 +96,33 @@ If it shapes brand/architecture/UX for the long term — interview.
   needed to clarify is worse than a few extra questions.
 - Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
 
-### Step 3a. Explaining a mechanic to the owner — a scenario first, the formula after
+### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after
 
-When a question (or its context) has to explain how something works — a rule, a mechanic, a
-behaviour — open with a four-line scenario with concrete values (`REQUIREMENTS_FRAMEWORK.md` →
-"The scenario form": Situation · Action · Result · Check), and only then the formula: the
-formula explains WHY it came out so; a scenario without the formula is still an explanation, a
-formula without the scenario is not. The values in the scenario come from the canon or from a run,
-never invented (the three doors, `PHILOSOPHY.md`); the owner answers in the same language — his
-scenario may leave the Check line empty, and filling it is the agent's work.
+The rule is one line: every question and every option opens with a four-line scenario with
+concrete values (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form": Situation · Action · Result ·
+Check) in the CUSTOMER's language — what the owner will see on the screen, in the file, in the chat — and only
+then the technical explanation (vector or scalar, flag, command, schema): the formula explains WHY
+it comes out so; a scenario without the formula is still a question the owner can answer, a formula
+without the scenario is not (the origin's owner returned two such questions with "I don't understand
+the problem — as a customer", decision #98). This holds for the mechanic a question explains AND for
+each answer option: an option is a scenario of the world after that choice, not a label. The values
+in the scenario come from the canon or from a run, never invented (the three doors,
+`PHILOSOPHY.md`); the owner answers in the same language — the owner's scenario may leave the Check
+line empty, and filling it is the agent's work. An option, written this way:
+
+```
+- **A) Print the vector from the draft registry**
+  - Situation. The registry has 9 systems; the owner has not approved it yet.
+  - Action. The agent closes the session.
+  - Result. You see `DELIVERY: systems 9 · complete 86 % (31 of 36) … · registry: draft` as the
+    first line of the farewell — and no question to you.
+  - Check. `npm run kaif:delivery` prints a line starting with `DELIVERY: systems 9`.
+```
+
+Where the project runs a questions guard, a live question whose body carries none of the four lines
+is a finding (the origin: `questions-guard`, axis G6); the declared exception is a marker with a
+reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question
+with no behaviour to show (a name, the taste class).
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the

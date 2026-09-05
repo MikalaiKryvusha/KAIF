@@ -833,7 +833,13 @@ the transport (equivalence rule in `/interview`: HTML = md = chat). The contour 
 that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
 (`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
 has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
-(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE).
+(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE). **And
+every question and every answer option is a SCENARIO of what the owner will see** — Situation ·
+Action · Result · Check in the customer's language, the technical explanation UNDER it and never
+instead of it (`/interview` step 3a; the origin's owner decision #98: two questions phrased as
+technical explanations came back as "I don't understand the problem — as a customer"); a live
+question without the four lines is a guard finding, the declared exception is a marker with a
+reason on the line (a name — the taste class).
 
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the

@@ -251,10 +251,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "3c20f10da4a7a9620262eabd39dabdae8f52e8ef1ef61b71330a4386fed10ac5",
+        "sha256": "d50de5ff9576b549b6d39691eeb5d2a4759e866d5b24ad997cee84ded5de34c7",
         "lines": [
           810,
-          943
+          949
         ]
       },
       {
@@ -262,8 +262,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          944,
-          958
+          950,
+          964
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          959,
-          971
+          965,
+          977
         ]
       }
     ],
@@ -2349,7 +2349,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "36ce990fc3dff917ad78e3c35576b989a8deeec08a0a55a817261d03a8234055",
+        "sha256": "55f57d6dd273b9880112f101c69fe85b7ba93076ab7891b44d2fd3a80ead89e2",
         "lines": [
           1,
           18
@@ -2367,10 +2367,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "ceaaa9344a20f3c74e10fc89550ea921b178fc63e8d82b6ba2ec9672b6d58e7e",
+        "sha256": "061b60373fdb8368ee1c4b0ce369f3ef10e7b66b9fc4cd635b0296260cb73a96",
         "lines": [
           23,
-          61
+          63
         ]
       },
       {
@@ -2378,8 +2378,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          62,
-          67
+          64,
+          69
         ]
       }
     ],
@@ -3004,12 +3004,12 @@
         ]
       },
       {
-        "signature": "### Step 3a. Explaining a mechanic to the owner — a scenario first, the formula after",
+        "signature": "### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after",
         "class": "static",
-        "sha256": "b4627ffa80bd56a8439f6e424665ae3eb626746d5bb61ef10108a1a9e9ad9a67",
+        "sha256": "c49bc716f2a8ebeb848bd6f8e377483122de6a7659b886310abb7b260249ea3f",
         "lines": [
           99,
-          108
+          126
         ]
       },
       {
@@ -3017,8 +3017,8 @@
         "class": "static",
         "sha256": "d6862b9574321dc349aadd9227378945dde0e402873d4475f9d2ca67cebb51ee",
         "lines": [
-          109,
-          123
+          127,
+          141
         ]
       },
       {
@@ -3026,8 +3026,8 @@
         "class": "static",
         "sha256": "5b9280a40aa68abbf3c5fccca9b54df583e3fb653dbac80c3969d178bad5494e",
         "lines": [
-          124,
-          151
+          142,
+          169
         ]
       },
       {
@@ -3035,8 +3035,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          152,
-          156
+          170,
+          174
         ]
       }
     ],

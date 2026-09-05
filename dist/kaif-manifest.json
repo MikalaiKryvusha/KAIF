@@ -5,7 +5,7 @@
   "codename": "Experienced KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "955220e4ca97a0d113122077a8e7c5c440081e2be388367d0f9e464938434071",
-    "KAIF-CORE-BUNDLE.md": "e2828902501f23882a36bb23ef76fa3f39190ed52f7ce809f4db2c7329b415e7"
+    "KAIF-CORE-BUNDLE.md": "9d1a09bda1adf2b272286a4639fefb35ef4b02caccf4e0b9fa8ebdd1392ece5d"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
