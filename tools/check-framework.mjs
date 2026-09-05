@@ -530,7 +530,13 @@ if (existsSync(distDir)) {
     }, 0) : 0;
     const langFiles = countFiles(langRoot);
     const toolsDir2 = join(ROOT, 'framework', 'tools');
-    const toolMods = existsSync(toolsDir2) ? readdirSync(toolsDir2).filter((f) => f.endsWith('.mjs')).length : 0;
+    // mirrors the build's recursive walk (2.6, epic IC: tool modules may live in subdirectories such as
+    // framework/tools/contour/) — a subdirectory the build ships and this count misses would fail the pin
+    const countToolMods = (dir) => readdirSync(dir).reduce((n, f) => {
+      const p = join(dir, f);
+      return n + (statSyncTop(p).isDirectory() ? countToolMods(p) : (f.endsWith('.mjs') ? 1 : 0));
+    }, 0);
+    const toolMods = existsSync(toolsDir2) ? countToolMods(toolsDir2) : 0;
     // the optional refresh-hooks module (epic O, 2.2): every FILE in framework/hooks/ ships to
     // .kaif/hooks/ (the filter mirrors the build's — a stray directory is ignored by both sides)
     const hooksDir = join(ROOT, 'framework', 'hooks');

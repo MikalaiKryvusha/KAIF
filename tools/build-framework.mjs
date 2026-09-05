@@ -385,8 +385,17 @@ function bundleBlocks() {
   for (const s of readdirSync(join(FW, 'spheres')).filter((f) => f.endsWith('.md')))
     blocks.push(embedBundle(`framework/spheres/${s}`, `.kaif/spheres/${s}`, 'sphere library — verbatim'));
   // optional tool modules (owner decision #19: separate optional modules, never core weight)
+  // Tool modules may live in SUBDIRECTORIES (2.6, epic IC — the shipped contour generator is
+  // `framework/tools/contour/*.mjs` → `.kaif/tools/contour/*.mjs`; plans/93 IC0 fork → A): the walk is
+  // recursive, paths keep '/' separators, and the order is canonical (sorted per directory) so the bundle
+  // diffs deterministically. check-framework.mjs mirrors this walk for its count (registry pair).
   const toolsDir = join(FW, 'tools');
-  if (existsSync(toolsDir)) for (const t of readdirSync(toolsDir).filter((f) => f.endsWith('.mjs')))
+  const walkToolModules = (dir, rel = '') => readdirSync(dir).sort().flatMap((f) => {
+    const p = join(dir, f);
+    if (statSync(p).isDirectory()) return walkToolModules(p, `${rel}${f}/`);
+    return f.endsWith('.mjs') ? [`${rel}${f}`] : [];
+  });
+  if (existsSync(toolsDir)) for (const t of walkToolModules(toolsDir))
     blocks.push(embedBundle(`framework/tools/${t}`, `.kaif/tools/${t}`, 'optional tool module — verbatim'));
   // optional refresh-hooks module (epic O, 2.2): scripts + sample config + wiring README →
   // .kaif/hooks/. Same optionality as the tool modules: the files DEPLOY, activation is an

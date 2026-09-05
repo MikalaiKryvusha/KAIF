@@ -99,7 +99,13 @@ of the same shape (2.6): **`SYSTEMS_REGISTRY.md`** — the registry of the produ
 systems that feeds the delivery vector (§10.7 `delivery`); it ships as a skeleton too
 (`.kaif/_systems-registry-template.md`), the agent DRAFTS it from `GOAL.md`, `MASTER_PLAN.md` and both
 maps, the owner approves the list as vision, and a deployment without it stays green — the delivery
-line just reads `registry not built yet`, and drafting the registry is the agent's next move.
+line just reads `registry not built yet`, and drafting the registry is the agent's next move. A third
+bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
+— the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
+the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
+showing, outcomes and exit codes, the call, the faces and flags of the shipped generator under
+`.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
+and `/owner-reviews` says "run the shipped generator, do not build a contour".
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
