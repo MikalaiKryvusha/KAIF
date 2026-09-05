@@ -6,5 +6,11 @@
   "tracking": "origin",
   "sphere": "meta/framework",
   "agents": ["claude-code"],
-  "language": "ru"
+  "language": "ru",
+  "contour": {
+    "projectName": "KAIF",
+    "spokenProjectName": "КАИФ",
+    "ownerName": "Mikalai Kryvusha (KOT KRINIK)",
+    "callName": "Криник"
+  }
 }

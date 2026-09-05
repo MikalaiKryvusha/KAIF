@@ -92,7 +92,7 @@ const esc = (s) => String(s).replace(/</g, '&lt;');
 
 // ── The call phrase — a PURE function (its content is judged by the selftest, not by ear) ─────
 export function callPhrase(ctx, cfg) {
-  const t = T(cfg), o = cfg.callName, p = cfg.projectName;
+  const t = T(cfg), o = cfg.callName, p = cfg.spokenProjectName; // the voice says the spoken form
   if (ctx.notice) return t.call.notice(o, p, ctx.title);
   if (ctx.batch) {
     const parts = [t.call.parts.docs(ctx.nDocs), t.call.parts.questions(ctx.nQuestions)];
@@ -1063,13 +1063,12 @@ export function selftest(log = console.log) {
   if (bad) process.exit(1);
 }
 
-// ── Entry point (T9: executes only when run directly) ─────────────────────────────────────────
-if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
-  const args = process.argv.slice(2);
+// ── Entry point (T9: executes only when run directly; `main` is exported so an origin wrapper can run
+// the very same CLI in-process — the origin eats its own shipment, plans/93 IC5) ──────────────────
+export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
   const valueFlags = ['--timeout', '--transport', '--mark-shown'];
   const docPath = args.find((a, i) => !a.startsWith('--') && !valueFlags.includes(args[i - 1]));
-  const root = process.cwd();
   const opts = {
     open: !args.includes('--no-open'),
     signal: !args.includes('--silent'),
@@ -1146,3 +1145,5 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     serveContour(root, { docPath, face }, opts).then((r) => process.exit(r.exitCode));
   }
 }
+
+if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) main();

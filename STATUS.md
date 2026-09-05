@@ -64,7 +64,7 @@ contradictions 0 · bugs 23`** (2026-09-05 20:40 +03:00, `npm run kaif:delivery`
 
 ### 1. 👉 СЕЙЧАС — версия 2.6 открыта, эпики OQ, UR и FK закрыты: следующий — эпик IC (`plans/93`)
 
-1. **👉 ЭСТАФЕТА — эпик IC «Интерактивный контур поставкой», шаг IC5 «исток ест свою поставку»** (`plans/93`;
+1. **👉 ЭСТАФЕТА — эпик IC «Интерактивный контур поставкой», остаток IC6 (документы) → IC7 (судья)** (`plans/93`;
    issue #51, интервью №024 Q1 = B, №101 — пересмотр №34; критерий 14 `plans/89`; вопросов владельцу нет).
    **IC0–IC4 ✅** (сессия 55 — IC0/IC1/IC2 и части IC4/IC6, коммиты `3417a6a`…`2906d32`; сессия 56 — **IC3 ✅
    22:28** и **IC4 ✅**): генератор `framework/tools/contour/` — **три модуля** `core.mjs` · `review.mjs` ·
@@ -75,13 +75,14 @@ contradictions 0 · bugs 23`** (2026-09-05 20:40 +03:00, `npm run kaif:delivery`
    проба IC3 **11/11** (была 3/1); свод **`s22`** в полигоне (свежая установка · #051 → exit 3 · рендер с
    радиокнопками и `position:static` · показ I40–I42 · лица · маршрут обновления со своим `tools/review.mjs`
    нетронутым); предполёт по корпусу истока — 0 красных; дополнения инвентаря по коду — `researches/28`
-   § «Дополнения по коду». **Дальше — IC5:** `tools/review.mjs` истока → обёртка ≤ 60 строк над
-   `framework/tools/contour/review.mjs` (голос Silero и приватные пути — ТОЛЬКО окружение `KAIF_VOICE_TOOL` ·
-   `KAIF_VOICE` · `KAIF_SAPI_VOICE`; `contour.callName` = «Криник», `contour.ownerName` — в `.kaif/kaif.json`
-   истока; очередь/показ/сообщение — через ядро поставки; `tools/lib/review-core.mjs` → реэкспорт или снос —
-   решить по потребителям `verify-contour`/`questions-guard`/`review-gate`/`send-outbound`), полный
-   `node tools/verify-contour.mjs` в ЖИВОМ браузере, эталон глазами, `s12` и `private-names-guard` зелёные →
-   **IC6** остаток (README обеих половин — только факт; `ideas/28` п. 29 — веха; черновик ответа #51 уже в
+   § «Дополнения по коду». **IC5 ✅ 22:41 — исток ест свою поставку:** `tools/review.mjs` — обёртка 36 строк
+   (окружение голоса `KAIF_VOICE_TOOL` · `KAIF_VOICE` · `KAIF_SAPI_VOICE` + `export *` + `main()` в процессе),
+   `tools/lib/review-core.mjs` — шим 30 строк (реэкспорт `core.mjs` + легаси-константы из конфигурации);
+   параметры истока — блок `contour` в `.kaif/kaif.json` (`spokenProjectName` КАИФ · `callName` Криник);
+   **полный `verify-contour` в живом браузере — 174 зелёных, 0 красных**, эталон не менялся; `questions-guard`
+   0 новых (следы решений №008 Q1/Q2 · №009 Q3 перенесены в шапки обёртки/шима); каверза — голос Silero в QA не
+   звучит по построению (`--silent`), живой зов проверит первое реальное интервью. **Дальше —
+   IC6** остаток (README обеих половин — только факт; `ideas/28` п. 29 — веха; черновик ответа #51 уже в
    `plans/93`) → **IC7** лёгкий судья → `plans/94` (**WN**). Каверзы IC3 для судьи: живой браузер не открывался
    (селфтест и свод — без браузера), фолбэки окна/писков/голоса вне Windows не наблюдены. **Сразу после IC —
    разведдок КЛАССА #52** (`researches/29`, ≈ 0,5 чата; слово владельца №103 со страницы интервью №025, 20:53,
@@ -175,7 +176,7 @@ contradictions 0 · bugs 23`** (2026-09-05 20:40 +03:00, `npm run kaif:delivery`
 | `node tools/counters-guard.mjs` | 50 зеркал живых чисел; ось навыков и документов — ПОИМЁННО |
 | `node tools/questions-guard.mjs` | место вопросов · вариант ПОТЕРЯН · вопрос ОТПРАВЛЯЕТ в документ · ратчет долга · **G4 ждёт и ни разу не показан · G5 вопрос владельцу прозой вне `interviews/` · G6 живой вопрос без сценария** (2.6 OQ1; G5/G6 — вперёд от даты ≥ 2026-09-05) |
 | `node tools/review.mjs --queue --list` · `--mark-shown <док> --transport чат` | очередь владельца БЕЗ браузера: возраст ожидания и показа, ни разу не показанные первыми, **код 2 = гейт** (I41/I42); факт показа для вопроса, заданного в чате (I40); карта — `interviews/decisions/shown.json` |
-| `node framework/tools/contour/review.mjs --selftest` · `<док> --no-open` (код 3 = предполёт) · `--proofread` · `--mockup` | **отгружаемый генератор контура** (2.6 IC3; в поле — `.kaif/tools/contour/`): предполёт формы вариантов §2 контракта, самопроверка «радиогрупп = вопросов», три лица; параметры — `kaif.json`; свод `s22`; исток переходит на него шагом IC5 |
+| `node tools/review.mjs …` = обёртка над `framework/tools/contour/review.mjs` (`--selftest` · `<док> --no-open` — код 3 = предполёт · `--proofread` · `--mockup`) | **отгружаемый генератор контура** (2.6 IC3/IC5; в поле — `.kaif/tools/contour/`): предполёт формы вариантов §2 контракта, самопроверка «радиогрупп = вопросов», три лица; параметры истока — `.kaif/kaif.json` → `contour`; свод `s22`; исток ест свою поставку с IC5 |
 | `npm run kaif:delivery` = `node dist/KAIF-CORE.mjs delivery` (`--json` · `--system <имя>`) | **вектор доставки** (2.6 OQ2–OQ3): шесть чисел из `SYSTEMS_REGISTRY.md` (девять контуров, черновик до слова владельца) + открытых `bugs/*.md` по `Kind:` — systems · complete % с дробью · integrated % · holes · contradictions · bugs; печатать на каждом закрытии; пара «контуры ↔ строки реестра» — реестр пар `AGENT_GUIDE`; свод `s20` |
 | `node tools/doc-header-lint.mjs` | шапка-мета · метки времени и их ПРАВДИВОСТЬ · закрытие против тела · **PENDING без СУДЬБЫ** |
 | `node tools/showcase-lint.mjs` · `estimates-guard` · `private-names-guard` | витрина: 13 классов и четыре оси — симметрия половин (включая подписи таблиц и блоки цитат) · врап тела релиза · числа нот ↔ README · **якоря README в ссылках нот** (2.5, сессия 52); источник у оценки; утечка имён (зоны — поставка, README, все ноты, слепок) |
@@ -191,7 +192,7 @@ contradictions 0 · bugs 23`** (2026-09-05 20:40 +03:00, `npm run kaif:delivery`
 | `node framework/tools/kaif-scenario-lint.mjs check <пути>` (`selftest`) | форма сценария критерия (Situation · Action · Result · Check, правила 1–6 + порядок; 2.5, SF; issue #39); `SKIPPED=3` без сценария; свод s19 |
 | `node tools/experience-lint.mjs` (`--selftest`) | поле механизации у новых записей опыта (issue #14, эпик X): mechanized/none-cheap/subject-lesson; ловушка по форме требует первых двух; долг — baseline, только убывает; в `/end-chat-soft` |
 
-**Тронул контур** (`tools/review.mjs`, `tools/lib/review-core.mjs`) → обязателен полный
+**Тронул контур** (`framework/tools/contour/*`, обёртку `tools/review.mjs` или шим `tools/lib/review-core.mjs`) → обязателен полный
 `node tools/verify-contour.mjs` в живом браузере; новый живой документ роняет эталон НАМЕРЕННО —
 лечится `--write-etalon` с пересмотром чисел ГЛАЗАМИ.
 

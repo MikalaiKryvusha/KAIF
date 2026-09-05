@@ -9182,6 +9182,7 @@ export function loadContourConfig(root) {
   return {
     root: resolve(root), language, projectName, ownerName,
     callName: String(c.callName || ownerName).trim(),        // how the voice addresses the owner
+    spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
     markerFound: existsSync(resolve(root, KAIF_JSON)),
@@ -9672,7 +9673,7 @@ const esc = (s) => String(s).replace(/</g, '&lt;');
 
 // ── The call phrase — a PURE function (its content is judged by the selftest, not by ear) ─────
 export function callPhrase(ctx, cfg) {
-  const t = T(cfg), o = cfg.callName, p = cfg.projectName;
+  const t = T(cfg), o = cfg.callName, p = cfg.spokenProjectName; // the voice says the spoken form
   if (ctx.notice) return t.call.notice(o, p, ctx.title);
   if (ctx.batch) {
     const parts = [t.call.parts.docs(ctx.nDocs), t.call.parts.questions(ctx.nQuestions)];
@@ -10643,13 +10644,12 @@ export function selftest(log = console.log) {
   if (bad) process.exit(1);
 }
 
-// ── Entry point (T9: executes only when run directly) ─────────────────────────────────────────
-if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
-  const args = process.argv.slice(2);
+// ── Entry point (T9: executes only when run directly; `main` is exported so an origin wrapper can run
+// the very same CLI in-process — the origin eats its own shipment, plans/93 IC5) ──────────────────
+export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
   const valueFlags = ['--timeout', '--transport', '--mark-shown'];
   const docPath = args.find((a, i) => !a.startsWith('--') && !valueFlags.includes(args[i - 1]));
-  const root = process.cwd();
   const opts = {
     open: !args.includes('--no-open'),
     signal: !args.includes('--silent'),
@@ -10726,6 +10726,8 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     serveContour(root, { docPath, face }, opts).then((r) => process.exit(r.exitCode));
   }
 }
+
+if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) main();
 ``````
 
 > **FILE: `.kaif/tools/contour/texts.mjs`** — optional tool module — verbatim
@@ -12729,8 +12731,9 @@ level; the window may cross midnight.
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
-`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` (how the
-voice addresses the owner; default `ownerName`), `contour.decisionsDir` (default `interviews/decisions`),
+`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` /
+`contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults `ownerName` / `projectName`),
+`contour.decisionsDir` (default `interviews/decisions`),
 `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute

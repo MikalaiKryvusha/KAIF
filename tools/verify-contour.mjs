@@ -160,6 +160,13 @@ function makeFixtureRoot(root = tempRoot('verify-contour')) {
   rmSync(root, { recursive: true, force: true });
   mkdirSync(join(root, 'interviews'), { recursive: true });
   mkdirSync(join(root, 'drafts', 'bodies'), { recursive: true });
+  // IC5 (2.6): фикстура = РАЗВЁРТЫВАНИЕ. Отгружаемый генератор читает язык и параметры контура из маркера
+  // `.kaif/kaif.json` (№97 — не спрашивает); фикстура без маркера получила бы английскую страницу и «owner»
+  // в записях, и прогон судил бы не то, что видит владелец истока. Маркер — копия блока `contour` истока.
+  mkdirSync(join(root, '.kaif'), { recursive: true });
+  const originMarker = JSON.parse(readFileSync(join(ROOT, '.kaif', 'kaif.json'), 'utf8').replace(/^﻿/, ''));
+  writeFileSync(join(root, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: originMarker.version,
+    language: originMarker.language, contour: originMarker.contour }, null, 2) + '\n');
   // G12: вёрстка несёт И короткий, И длинный вариант; Q2 уже отвечен словом владельца (неприкосновенно).
   writeFileSync(join(root, 'interviews', 'interview_101_fixture.md'), [
     '# Interview #101 — фикстура QA-прогона',
@@ -685,7 +692,7 @@ async function main() {
         ]);
         if (silentCode === null) await reap(silent);
         check('вахта ТИШИНЫ убивает контур сама и называет себя (I14, второй канал — bugs/65 №4)',
-          silentCode === 2 && /тишина-вахта/.test(silentOut),
+          silentCode === 2 && /silence watch/.test(silentOut),
           `code=${silentCode} log=${silentOut.slice(-200)}`);
 
         // Второй ответ мутанта (EXP-0059): без сжатия порога смерти БЫТЬ НЕ ДОЛЖНО. Без этой

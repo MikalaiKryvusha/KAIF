@@ -5605,10 +5605,10 @@
       {
         "signature": "## 7. Faces and flags (the shipped generator)",
         "class": "static",
-        "sha256": "f02f2674516a367a767d59f0825b8a69168705f816b5dcd9b082084dcac86430",
+        "sha256": "e9e1aeea506aacc44b1dea0a39c1684e971cdaeb1c710098af283ea8efb40899",
         "lines": [
           84,
-          99
+          100
         ]
       },
       {
@@ -5616,8 +5616,8 @@
         "class": "static",
         "sha256": "cf78f3e9fe91bffba8dda7b8ca06d4492bf29a2cb76ee192da334e851f56725b",
         "lines": [
-          100,
-          107
+          101,
+          108
         ]
       }
     ],

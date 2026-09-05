@@ -73,6 +73,7 @@ export function loadContourConfig(root) {
   return {
     root: resolve(root), language, projectName, ownerName,
     callName: String(c.callName || ownerName).trim(),        // how the voice addresses the owner
+    spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
     markerFound: existsSync(resolve(root, KAIF_JSON)),
