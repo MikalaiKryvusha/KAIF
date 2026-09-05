@@ -42,6 +42,7 @@ markdown-документов, соглашения о директориях, �
 | `PROJECT_HISTORY.md` | Летопись (append-only): закрытые сессии/фазы/релизы; вне `/resume` — археология по потребности. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
 | Пояснительная записка `KAIF_REFERENCE.md` | Авторитетный справочник устройства фреймворка. **Особый случай истока:** источник — `framework/KAIF_REFERENCE.md`; корневая `KAIF_REFERENCE.md` — СГЕНЕРИРОВАННАЯ копия (страж расхождения в check-framework); развёрнутым проектам едет в `.kaif/KAIF_REFERENCE.md`. В собственном `.kaif/` истока нет `tools/` — исходники tool-модулей лежат в `framework/tools/` (DRY: исток не держит рукописных копий своей поставки). |
+| `SYSTEMS_REGISTRY.md` | Опциональный канон-документ (2.6): реестр логически обособленных систем — здесь девять контуров внутренней карты — из которого `npm run kaif:delivery` печатает вектор доставки `DELIVERY:`; черновик агента, утверждение — слово владельца. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Директории знаний (в каждой свой README). |
 | `.claude/skills/` | Повторяемые ритуалы (`/resume`, `/pause`, циклы, `/revision`, …). |
 | `.kaif/kaif.json` | Маркер развёртывания: версия, сфера, агент, tracking. |

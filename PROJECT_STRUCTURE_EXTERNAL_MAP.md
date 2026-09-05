@@ -40,6 +40,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md             # шаблоны навыков (число печатает сборка; generic, плейсхолдеры команд)
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
+│   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы · реестр систем 2.6)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint → .kaif/tools/)
 │   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
@@ -71,6 +72,7 @@ KAIF/
 │
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
 ├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока)
+├── SYSTEMS_REGISTRY.md                    # реестр систем истока (9 контуров) → вектор доставки `npm run kaif:delivery` (2.6 OQ3; черновик до слова владельца)
 ├── KAIF_REFERENCE.md                      # ⭐ СГЕНЕРИРОВАННАЯ копия framework/KAIF_REFERENCE.md (страж в check; правь источник)
 ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md REQUIREMENTS_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
 ├── PROJECT_HISTORY.md                     # летопись (append-only; вне /resume — археология по потребности; 2.1 эпик H)
@@ -156,3 +158,4 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 | Текущее состояние проекта | `STATUS.md` | — |
 | README | `README.md` (и EN, и RU) | `node tools/readme-pdf.mjs` |
 | Схемы README | `tools/build-diagrams.mjs` (НЕ сами SVG) | `node tools/build-diagrams.mjs` + PDF |
+| Реестр систем / вектор доставки | `SYSTEMS_REGISTRY.md` (строка на контур внутренней карты; форма — `framework/templates/_systems-registry-template.md`) | `npm run kaif:delivery` (строку — в `MASTER_PLAN.md` §8 и STATUS) |

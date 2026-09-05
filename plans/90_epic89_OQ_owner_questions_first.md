@@ -15,7 +15,9 @@
 > 16:06 +03:00** — `SYSTEMS_REGISTRY.md` истока (9 контуров, черновик), ручка `npm run
 > kaif:delivery`, строка вектора в `MASTER_PLAN` §8/STATUS, пара «контуры ↔ реестр» — критерий 8 ✅.
 > Веха: **OQ4 закрыт 2026-09-05 16:14 +03:00** — `/interview` 3a, фраза «Место вопросов», две
-> охоты судьи 2.6 — критерий 9 ✅. Следующий шаг — OQ5. **Вовне:** правки канона поставки (`framework/AGENT_GUIDE.md`,
+> охоты судьи 2.6 — критерий 9 ✅. Веха: **OQ5 закрыт 2026-09-05 16:20 +03:00** — карты и
+> `KAIF_FRAMEWORK`, черновики ответов #46/#47, реестр показан владельцу сообщением. Следующий шаг —
+> OQ6 (судья эпика → `plans/91` UR). **Вовне:** правки канона поставки (`framework/AGENT_GUIDE.md`,
 > `MASTER_PLAN.md`, `KAIF_REFERENCE.md`, навыки `resume`, `owner-reviews`, `interview`,
 > `report-bug`, `what-next`, четыре цикла, две церемонии, `fable-judge`-точка вызова; машинерия
 > `KAIF-CORE` — команда `delivery`; новый шаблон `.kaif/_systems-registry-template.md`; пункт
@@ -273,7 +275,14 @@
       только KAIF-блок (вендоренный текст не трогать, реестр пар); исток `questions-guard` ось
       **G6** (под `### Qn.` у каждого варианта таблицы/списка — четыре строки-ключа языка проекта;
       ratchet для старых интервью).
-- [ ] **OQ5 — сборка, полигон, документы.** `node tools/build-framework.mjs` · `npm run test:core`
+- [x] **OQ5 — сборка, полигон, документы.** ✅ 2026-09-05 16:20 +03:00 (сессия 54): сборка и полигон
+      20/20 — зелёные с OQ4; `KAIF_REFERENCE` §5/§10.7 — с OQ2; внешняя карта (скелеты
+      `templates/_*-template.md`, `SYSTEMS_REGISTRY.md` в обвязке, строка «Где что лежит»);
+      `KAIF_FRAMEWORK.md` — строка реестра; черновики ответов #46/#47 — секцией выше; черновик
+      реестра показан владельцу сообщением контура (`--notice`, показ записан в
+      `interviews/decisions/shown.json`, I40); стражи: doc-header-lint 0 · questions-guard 0 новых ·
+      counters OK · verify-contour --etalon-only 50/0. Интервальный ассерт задания обновления — на
+      бампе (критерий 7 🟡). Исходная формулировка: `node tools/build-framework.mjs` · `npm run test:core`
       (20 сводов) · `counters-guard` · `doc-header-lint` · `questions-guard` · реестр пар;
       `KAIF_REFERENCE.md` (§команд, §контур владельца); `PROJECT_STRUCTURE_EXTERNAL_MAP.md`
       (s20, шаблон, реестр); `STATUS.md` (инструменты · п. 1); черновики ответов #46/#47 — секцией
@@ -380,6 +389,50 @@ OQ4 (2026-09-05 16:14 +03:00):
     прогона `npm run kaif:delivery`, не выдуманы (три двери); EN и RU примеры — один смысл.
 19. **Шапка `fable-judge` «except four marked KAIF patches» → «six»**: слово отстало от списка ещё
     в 2.5 ((5) добавлен без пересчёта), поправлено вместе с (6); обе копии побайтно равны.
+
+## Черновики ответов в issues origin (отправка ПОСЛЕ релиза 2.6 — №84; без вычитки владельца — №92)
+
+Транспорт — `gh issue comment` под стоячей авторизацией (№93), затем закрытие тикета той же
+квитанцией (№94); проекты поля не называются (№90). Ссылку на релиз вписать в момент отправки.
+
+**#46 — «the DELIVERY line demands ONE scalar, but the owner asked for a VECTOR»** (шаблон B):
+
+> Shipped in KAIF 2.6 (<release link>) — not as a widening of the scalar but as the field
+> explanation made canon: the delivery line is now a DERIVED VECTOR. `DELIVERY: systems N ·
+> complete A → B % (k of n) · integrated C % (c of d) · holes … · contradictions … · bugs …; moved
+> by: … | blocker: … | owed questions: …` — printed by the new non-mutating command
+> `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`) from `SYSTEMS_REGISTRY.md`.
+> The registry ships as a skeleton (`.kaif/_systems-registry-template.md`): one row per logically
+> separate system (own action · own state · own condition of success; cut finer rather than
+> coarser), four completeness parts as checkboxes — Specified · Accepted · Implemented · Verified
+> in use — with the percentage ALWAYS printed with its fraction, and needs declared as «feeds from»;
+> integration = the share of declared needs closed by an implemented system. Holes, contradictions
+> and bugs are counted from the open `bugs/*.md` by a new `Kind: hole | contradiction | bug` header
+> line (no line = bug). The metric is DERIVED: the agent drafts the registry from GOAL.md,
+> MASTER_PLAN.md and both maps and prints the vector from the draft at once; the owner approves the
+> list as vision when ready. Nobody is sent to ask «what to measure» any more — the 2.5 wording is
+> gone from every carrier, and the update task's policy section tells a deployment that opened such
+> an interview to close it and build the registry instead. On the ticket's three points: (1) yes,
+> N components — fixed at six, the list explained in the field; (2) the line keeps its shape, every
+> component that moved gets its own arrow, a zero delta on all of them still needs a named blocker;
+> (3) the guidance sentence turned out unnecessary — the axes are different by construction (built ·
+> connected · broken). Thank you: the shape is the one explained in the field, taken verbatim.
+
+**#47 — «the owner-question queue is PRINTED but never DELIVERED»** (шаблон A):
+
+> Fixed in KAIF 2.6 (<release link>): the contour now records the third fact — SHOWN.
+> `/owner-reviews` gains invariants I40–I43: the fact of showing is written at the moment the
+> document is in front of the owner (a map next to the decisions, transport named: page · batch ·
+> chat); the queue prints the age of waiting and of the last showing and puts never-shown documents
+> FIRST; the queue command has an EXIT CONDITION — a waiting document the owner has never seen stops
+> the ritual until it is raised or the reason is written (`/resume` step 1b; both closing
+> ceremonies and the four loops now carry an `owed questions: N (oldest M d, never shown K)` slot in
+> the delivery line); a question marked «answer elsewhere» is the agent's debt, not the owner's.
+> The same day's other word — questions to the owner as a scenario of what the owner will see — is
+> canon too: `/interview` step 3a applies the four-line scenario to every question and every option,
+> and the judge hunts a question without one. Your local fix (the shown map, the age line, the exit
+> code) is the donor of this contract; the update does not replace your tool — the contract matches
+> it by meaning. Thank you for the verbatim words; they are now the reason line of the rule.
 
 ## Судья эпика
 
