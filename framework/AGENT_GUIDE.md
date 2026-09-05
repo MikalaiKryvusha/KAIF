@@ -750,7 +750,11 @@ header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("reco
 continuing the current task") and return to the interrupted work. Do not drop the current task for the
 note, and do not hold it in your head until the session ends — a session's head is the worst storage
 there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
-vision-level → `/fix-vision`; it is an explicit "switch to this" → switch.
+vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
+the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it
+sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
+row 1 is what moves `DELIVERY:` or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
+judge hunts "recency ranked over metric".
 
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
 WAVE of bugs at once, the wave itself is a symptom that the process leaked — worth more than any bug in
