@@ -62,7 +62,7 @@ KAIF/
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
 │   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s14
-│   ├── sandbox/s01…s19*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3)
+│   ├── sandbox/s01…s20*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery)
 │   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf

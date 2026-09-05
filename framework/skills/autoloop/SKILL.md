@@ -77,8 +77,11 @@ without those resources.
    can't be honestly reviewed even by its author, and when the judge finds trouble, the rollback is one
    file instead of a session. `git diff --stat` before committing — anything you didn't intend, stop.
 11. **Short chat report** (1–3 lines): what you did, what you verified, what's next — opened by the
-    delivery line `DELIVERY: <the owner's metric> X → Y; moved by: … | blocker: …` (the metric from
-    `MASTER_PLAN.md`; zero delta only with a named blocker — the judge's delivery-line hunt). → next task.
+    delivery line `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions …
+    · bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector
+    printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the
+    fable loop; an arrow on every component that moved, a zero delta on all of them only with a named
+    blocker — the judge's delivery-line hunt; `registry not built yet` until the registry exists). → next task.
 
 ## Self-pacing (so the loop runs LONG)
 

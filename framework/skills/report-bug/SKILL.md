@@ -144,6 +144,10 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
    **Severity:** S1 | S2 | S3   <consulted at FILING time — the severity ladder, BUG_FIXING_FRAMEWORK.md;
    S3 gets ONE line in EXPERIENCE.md instead of this document>
+   **Kind:** hole | contradiction | bug   <the class the delivery vector counts (`node .kaif/kaif-core.mjs
+   delivery`, SYSTEMS_REGISTRY.md): hole — the rules are SILENT where an answer is needed ·
+   contradiction — two places answer DIFFERENTLY · bug — code, table or calculation diverges from the
+   written rule; no line = bug>
    **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
    REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches — or as a four-line scenario:
    Situation · Action · Result · Check ("The scenario form")>

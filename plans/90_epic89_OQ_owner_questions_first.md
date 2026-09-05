@@ -7,7 +7,11 @@
 > issues #46/#47, `bugs/111`. Веха: **OQ0 + OQ1 закрыты 2026-09-05 15:21 +03:00** (сессия 53,
 > коммит `f1fee48`, build 459): факт «показан», очередь с возрастом и гейтом, шаг 1b `/resume`,
 > оси G4/G5/G6, инварианты I40–I43 обоих слоёв — критерии 1–4 ✅ наблюдением (селфтесты 25/29
-> зелёные, живой страж 0 новых, s12 ростер 43, полигон 19/19 зелёный). Следующий шаг — OQ2. **Вовне:** правки канона поставки (`framework/AGENT_GUIDE.md`,
+> зелёные, живой страж 0 новых, s12 ростер 43, полигон 19/19 зелёный). Веха: **OQ2 закрыт
+> 2026-09-05 15:51 +03:00** (сессия 54): шаблон реестра систем в бандле, команда `delivery` ядра,
+> форма вектора в 9 + 8 носителях обоих слоёв, policy-change/template-notes 2.6, `Kind:` в шаблоне
+> документа бага, свод `s20` (32 проверки; красный на HEAD-ядре) — критерии 5–6 ✅, 7 🟡 (интервальный
+> ассерт задания обновления — на бампе версии); полигон 20/20. Следующий шаг — OQ3. **Вовне:** правки канона поставки (`framework/AGENT_GUIDE.md`,
 > `MASTER_PLAN.md`, `KAIF_REFERENCE.md`, навыки `resume`, `owner-reviews`, `interview`,
 > `report-bug`, `what-next`, четыре цикла, две церемонии, `fable-judge`-точка вызова; машинерия
 > `KAIF-CORE` — команда `delivery`; новый шаблон `.kaif/_systems-registry-template.md`; пункт
@@ -99,6 +103,12 @@
    - Проверка. `npm run test:core` → `all 20 suites green` — новый свод `s20-delivery.mjs` несёт
      ассерты: шесть чисел · дробь при проценте · детерминизм (`--json` ×2 → `diff` пуст) · «not
      built yet» с кодом 3; на ядре 2.5 свод печатает `✖ unknown command: delivery`.
+   ✅ 2026-09-05 15:51 +03:00 — `node tools/sandbox/s20-delivery.mjs` → 32 проверки ✅, строка
+   фикстуры дословно `DELIVERY: systems 3 · complete 42 % (5 of 12) · integrated 100 % (1 of 1) ·
+   holes 1 · contradictions 0 · bugs 1`, `--json` ×2 побайтно равны, `isolated: 2`, без реестра —
+   код 3 и `draft it: cp .kaif/_systems-registry-template.md SYSTEMS_REGISTRY.md`; полигон
+   `all 20 suites green`; красный на HEAD-ядре `e67aea7` (`KAIF_DIST=<копия>`) — 28 отказов, 15
+   словами `unknown command: delivery`, зелёными остались четыре проверки, не адресующие команду.
 
 6. **[форма строки во всех носителях]**
    - Ситуация. Поставка после шага OQ2.
@@ -109,6 +119,13 @@
      в бандле (`grep -c "_systems-registry-template" dist/KAIF-CORE-BUNDLE.md` → `1`).
    - Проверка. Три грепа выше + `node tools/build-framework.mjs` → `check-framework OK`;
      `node tools/counters-guard.mjs` → OK.
+   ✅ 2026-09-05 15:51 +03:00 — греп старой формы по `framework/`, `.claude/skills/`, `AGENT_GUIDE.md`
+   → пусто (и RU-форма «метрика владельца» — пусто); `DELIVERY: systems` → 9 файлов; блок «Delivery
+   vector» в `framework/MASTER_PLAN.md:15`, `grep -c "agreed with the owner"` → `0`; шаблон в бандле
+   — `grep -c "_systems-registry-template" dist/KAIF-CORE-BUNDLE.md` → `7` (FILE-маркер + нота +
+   упоминания в AGENT_GUIDE/MASTER_PLAN/Reference/policy/template-notes — критерий ждал `1`, число
+   поправлено по факту); сборка `check-framework OK` (172 блока, 772 модуля); `counters OK — 50
+   зеркал`; реестр пар `fable-*` — `diff` пуст.
 
 7. **[задание обновления без вопроса владельцу]**
    - Ситуация. Свод полигона: дерево 2.5 обновляется до сборки 2.6.
@@ -118,6 +135,12 @@
      закройте его, постройте реестр»; ни одной строки «ask the owner … metric».
    - Проверка. `grep -c "registry" KAIF_UPDATE_TASK.md` → `≥ 1` и `grep -ci "ask the owner.*metric"
      KAIF_UPDATE_TASK.md` → `0` в своде `s20` (ассерт).
+   🟡 2026-09-05 15:51 +03:00 — запись `POLICY_CHANGES_BY_VERSION['2.6']` в мете бандла
+   (`policyChanges['2.6']`) + `TEMPLATE_NOTES_BY_VERSION['2.6']`; свод `s20` судит ТЕКСТ записи (реестр
+   и команда названы · «CLOSE it and build the registry» · ни в записи, ни в ядре нет «ask the owner
+   … metric»). Интервальный ассерт по сгенерированному `KAIF_UPDATE_TASK.md` невозможен, пока
+   `version()` = 2.5 — ключ `'2.6'` инертен (интервал `(2.5, 2.6]` пуст); дописать его в `s20` на
+   бампе версии (шаг RL, рядом с кодовой строкой) — тогда ✅.
 
 8. **[исток мерит себя вектором]**
    - Ситуация. Исток после шага OQ3: `SYSTEMS_REGISTRY.md` выведен из инвентаря контуров
@@ -175,7 +198,17 @@
         цикла: слот `owed questions: N (oldest M d, never shown K)` в строке доставки.
       - `AGENT_GUIDE` обоих слоёв, «Место вопросов»: одно предложение — очередь имеет условие
         выхода, показ записывается.
-- [ ] **OQ2 — вектор доставки без вопроса владельцу (критерии 5–7).**
+- [x] **OQ2 — вектор доставки без вопроса владельцу (критерии 5–7).** ✅ 2026-09-05 15:51 +03:00
+      (сессия 54): шаблон `framework/templates/_systems-registry-template.md` → бандл
+      (`build-framework.mjs`, рядом с `_testcases`; четыре строки «canon name ↔ поверхность» в
+      `check-framework`) · команда `delivery` в `KAIF-CORE.mjs` (немутирующая; парсер по заголовкам,
+      ☐/☑ и `[ ]/[x]`, EOL-норм, отказ называет строку и колонку; `--json` детерминирован, `--system`;
+      код 3 без реестра; `Kind:` по открытым `bugs/*.md`, `bugs/KAIF/` и DONE не считаются) · форма
+      вектора в 9 EN-носителях + `framework/MASTER_PLAN.md` «Delivery vector» + 8 RU-носителях +
+      `AGENT_GUIDE.md` + `KAIF_REFERENCE` §5/§10.7 (слот `owed questions:` — туда же; RU-команда истока
+      — `node dist/KAIF-CORE.mjs delivery` до ручки OQ3) · policy-change и template-notes 2.6 ·
+      `Kind:` в шаблоне документа бага `/report-bug` обоих слоёв · свод `s20-delivery.mjs` (32
+      проверки; красный на HEAD-ядре); критерии 5–6 ✅, 7 🟡 (интервальный ассерт — на бампе).
       - `framework/templates/_systems-registry-template.md` → `.kaif/_systems-registry-template.md`
         (`build-framework.mjs` по прецеденту строк 391–398): шапка с правилом заполнения (из
         `GOAL.md`, `MASTER_PLAN.md`, карт; три признака обособленности; резать мельче; проект —
@@ -266,6 +299,28 @@
 6. **Слот «вопросов владельцу» в строке `DELIVERY:` отложен в OQ2**, чтобы девять носителей
    строки правились одним движением вместе с формой вектора (№99).
 
+OQ2 (2026-09-05 15:51 +03:00):
+
+7. **Строка `Kind:` живёт в шаблоне ДОКУМЕНТА БАГА проекта** (`/report-bug` шаг 3, рядом с
+   `Severity:`), а не в шаблоне A тикета KAIF: `delivery` считает открытые `bugs/*.md` продукта, а
+   тикеты `bugs/KAIF/` — сигналы о фреймворке, не находки продукта, и в счёт не входят. План
+   называл «шаблон A» — поправлено по смыслу А5 донора (три класса — про правила продукта).
+8. **Вплетённость продукта = закрытые потребности / объявленные** (как в STATUS п. 1.1), не среднее
+   по системам (как в `researches/27` §1): одна дробь на продукт печатается так же, как дробь
+   завершённости, и не прячет систему с одной потребностью за средним. Обратимо в одной строке.
+9. **Черновик реестра печатает ПОЛНЫЙ вектор с суффиксом `· registry: draft (N systems, awaiting
+   the owner's approval)`**, а не строку «not built yet (draft …)» из эстафеты: вектор из черновика
+   — решение §4.5 донора (тупика нет по построению), а «not built yet» остаётся ровно для
+   отсутствующего файла (код 3). Признак черновика — `**Status:** draft` в шапке реестра.
+10. **Колонки-части читаются по заголовку**: четыре отгруженных имени (`specif|accept|implement|
+    verif`) ИЛИ любая колонка, где каждая клетка — чекбокс (проект вправе переименовать части);
+    «закрывающая» потребность часть — `Implemented`, при переименовании — третья. Тире и пустые
+    клетки чекбоксом не считаются (иначе пустая колонка «Lives in» стала бы пятой частью).
+11. **Шов `KAIF_DIST` в своде `s20`** — красный доказан против HEAD-ядра без правки кода свода
+    (прецедент s17 делал это копией в scratch-dist руками); зелёный путь шва не касается.
+12. **Команда истока в RU-носителях — `node dist/KAIF-CORE.mjs delivery`** (исток не держит
+    `.kaif/kaif-core.mjs`); ручка `npm run kaif:delivery` — OQ3, тогда носители переводятся на неё.
+
 ## Судья эпика
 
 (на закрытии)
@@ -274,5 +329,6 @@
 
 `plans/89` · `researches/27` · `interviews/interview_023` (№97–№100) · issues #46 #47 ·
 `bugs/111` · EXP-0110 · `framework/skills/owner-reviews` (I1–I39) · `tools/questions-guard.mjs`
-(G1–G3, I20/I21) · `tools/review.mjs` · `framework/installer/KAIF-CORE.mjs` (`COMMANDS`) ·
-`tools/build-framework.mjs:391–398` (шаблоны `.kaif/`).
+(G1–G3, I20/I21) · `tools/review.mjs` · `framework/installer/KAIF-CORE.mjs` (`COMMANDS`,
+`cmdDelivery`) · `tools/build-framework.mjs:391–398` (шаблоны `.kaif/`) ·
+`framework/templates/_systems-registry-template.md` · `tools/sandbox/s20-delivery.mjs`.

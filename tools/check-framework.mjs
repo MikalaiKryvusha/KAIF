@@ -116,6 +116,7 @@ const FORMERLY_BLIND = [
   'installer/_thin-intro.md',
   'templates/_owner-voice-template.md',
   'templates/_testcases-template.md',
+  'templates/_systems-registry-template.md',
   'skills/code-revision/references/audit-report-template.md',
   'skills/fable-method/references/examples.md',
   'skills/fable-method/references/failure-modes.md',
@@ -353,6 +354,17 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['AUTHOR_STYLOMETRY.md']],
     ['portrait canon name ↔ KAIF_REFERENCE', 'framework/KAIF_REFERENCE.md',
       ['AUTHOR_STYLOMETRY.md']],
+    // 2.6 (epic OQ, owner decision #99): the systems registry has ONE canonical filename too, and
+    // every surface that routes an agent to the delivery vector must name it — a registry filed
+    // under a guessed name is invisible to `kaif-core delivery` and the line reads "not built yet".
+    ['systems registry canon name ↔ the shipped skeleton', 'framework/templates/_systems-registry-template.md',
+      ['SYSTEMS_REGISTRY.md', 'kaif-core.mjs delivery']],
+    ['systems registry canon name ↔ AGENT_GUIDE fable-loop (payload)', 'framework/AGENT_GUIDE.md',
+      ['SYSTEMS_REGISTRY.md', 'kaif-core.mjs delivery']],
+    ['systems registry canon name ↔ MASTER_PLAN delivery vector (payload)', 'framework/MASTER_PLAN.md',
+      ['SYSTEMS_REGISTRY.md', 'kaif-core.mjs delivery']],
+    ['systems registry canon name ↔ KAIF_REFERENCE', 'framework/KAIF_REFERENCE.md',
+      ['SYSTEMS_REGISTRY.md']],
     ['portrait canon name ↔ README (both halves)', 'README.md',
       ['AUTHOR_STYLOMETRY.md']],
     // O5 criterion 5, TWO outcomes only (bugs/72): a hook contract is either CONFIRMED against a

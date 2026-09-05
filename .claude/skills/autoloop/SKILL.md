@@ -77,8 +77,11 @@ description: Запускает агента в ДЛИННУЮ автономн�
    дифф честно не отревьюит даже автор, а когда судья находит беду, откат стоит один файл, а не сессию.
    `git diff --stat` перед коммитом — всё, чего не намеревался менять, — стоп.
 11. **Короткий отчёт в чат** (1–3 строки): что сделал, что проверил, что дальше — первой строкой
-    `DELIVERY: <метрика владельца> X → Y; moved by: … | blocker: …` (метрика из `MASTER_PLAN.md`;
-    нулевой сдвиг только с названным блокером — охота судьи «delivery-line»). → следующая задача.
+    `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
+    moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (вектор печатает
+    `node dist/KAIF-CORE.mjs delivery` из `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → fable-цикл; стрелка
+    у каждой сдвинувшейся компоненты, нулевой сдвиг по всем — только с названным блокером; охота судьи
+    «delivery-line»; `registry not built yet`, пока реестра нет). → следующая задача.
 
 ## Самотемп (чтобы цикл шёл ДОЛГО)
 

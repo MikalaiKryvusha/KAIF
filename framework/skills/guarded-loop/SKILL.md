@@ -102,8 +102,12 @@ to a natural cut — unhurried, the boundary started the closing, it does not ru
 final heartbeat line (`run complete`), **disarm the external watchdog**, and close per the session's
 situation: the full unhurried `/end-chat-soft` ceremonies if the session ends, or a parking note
 (the `/pause` way) if the chat continues. Report: items done, restarts survived, anything
-escalated — opened by `DELIVERY: <the owner's metric> X → Y; moved by: … | blocker: …` (the metric
-from `MASTER_PLAN.md`; zero delta only with a named blocker — the judge's delivery-line hunt).
+escalated — opened by `DELIVERY: systems N · complete A → B % · integrated C % · holes … ·
+contradictions … · bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)`
+(the vector printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` —
+`AGENT_GUIDE.md` → the fable loop; an arrow on every component that moved, a zero delta on all of
+them only with a named blocker — the judge's delivery-line hunt; `registry not built yet` until the
+registry exists).
 
 ## What this skill refuses to do
 

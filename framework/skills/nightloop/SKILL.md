@@ -60,8 +60,11 @@ Until one fires — don't stop, don't wait for confirmations, work.
    no batch commits (a big diff can't be honestly reviewed; a judged failure rolls back one file, not a
    night). `/fable-judge` pass before every push.
 7. **Short chat report** (1–3 lines): so in the morning the human sees the progress; opened by
-   `DELIVERY: <the owner's metric> X → Y; moved by: … | blocker: …` (the metric from `MASTER_PLAN.md`;
-   zero delta only with a named blocker — the judge's delivery-line hunt).
+   `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
+   moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector printed by
+   `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the fable loop;
+   an arrow on every component that moved, a zero delta on all of them only with a named blocker —
+   the judge's delivery-line hunt; `registry not built yet` until the registry exists).
 8. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
    turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
    `ScheduleWakeup` (same `/nightloop` input, short listen) is a *mechanical fallback* for when the

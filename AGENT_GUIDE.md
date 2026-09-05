@@ -337,10 +337,17 @@ README; в поставке с 2.2, эпик O): приказ перечитат
 одиночку. `/fable-judge` охотится на развилку без строки `FORK:` или с `consulted <own
 reasoning>` (охота «fork-without-recon»), на автономный цикл, закрытый до взведённой границы при
 непустом пуле (охота «early-finish», `/guarded-loop`), и на закрытие сессии или отчёт итерации
-без строки доставки — `DELIVERY: <метрика владельца> X → Y; moved by: … | blocker: …`, ОДНА
-метрика приёмки, названная в `MASTER_PLAN.md`, печатается `/end-chat-soft`, `/end-chat-force` и
-четырьмя циклами, ранжируется ПЕРВОЙ в `/what-next` (охота «delivery-line»); все три названы в
-KAIF-блоке судьи.
+без строки доставки — `DELIVERY: systems N · complete A → B % · integrated C % · holes … ·
+contradictions … · bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)`
+— ВЕКТОР доставки, который печатает `node dist/KAIF-CORE.mjs delivery` из `SYSTEMS_REGISTRY.md`
+(реестр логически обособленных систем продукта: агент СОСТАВЛЯЕТ его копией
+`.kaif/_systems-registry-template.md` из `GOAL.md`, `MASTER_PLAN.md` и обеих карт; владелец
+утверждает список как видение — сама метрика ВЫВОДИТСЯ, владельца никто не спрашивает, чем мерить:
+механика с шагом «спросить владельца» неполна и не отгружается, №97/№99), стрелка у каждой
+сдвинувшейся компоненты, `registry not built yet`, пока файла нет, и `registry: draft`, пока
+владелец не утвердил, слот долга вопросов — из `node tools/review.mjs --queue --list`; печатается
+`/end-chat-soft`, `/end-chat-force` и четырьмя циклами, ранжируется ПЕРВОЙ в `/what-next` (охота
+«delivery-line»); все три названы в KAIF-блоке судьи.
 
 Место выбрано намеренно. Навыки вендорены **дословно** из
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) и держатся побайтно равными
@@ -459,7 +466,7 @@ KAIF/
 │                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
 └── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
-           · sandbox/s01–s19 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+           · sandbox/s01–s20 · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -504,7 +511,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 37 навыков + 1 распаковщик = 59; бандл 171 блоков; карта — 767 модуля) — не переписывай эти
+7 README + 37 навыков + 1 распаковщик = 59; бандл 172 блоков; карта — 772 модуля) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.

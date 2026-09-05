@@ -94,7 +94,12 @@ One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR
 the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
 own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
 as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
-history is kept INSIDE the file, append-only (§9 of the skeleton).
+history is kept INSIDE the file, append-only (§9 of the skeleton). A second optional canon document
+of the same shape (2.6): **`SYSTEMS_REGISTRY.md`** — the registry of the product's logically separate
+systems that feeds the delivery vector (§10.7 `delivery`); it ships as a skeleton too
+(`.kaif/_systems-registry-template.md`), the agent DRAFTS it from `GOAL.md`, `MASTER_PLAN.md` and both
+maps, the owner approves the list as vision, and a deployment without it stays green — the delivery
+line just reads `registry not built yet`, and drafting the registry is the agent's next move.
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
 `interviews/` `homeworks/` `reports/`. Closed items take the `DONE` tag in the filename (§13.1);
@@ -329,7 +334,13 @@ machinery's module cut) · `checkpoint` · `update-verify` · `check` · `versio
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
 not a ticket, `gh` refused; a timeout is OUTCOME UNKNOWN, exit 3, never a refusal; `--dry-run`
-calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
+calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`) · `delivery` (2.6, epic OQ:
+print the delivery VECTOR — systems · complete % with its fraction · integrated % · holes ·
+contradictions · bugs — from `SYSTEMS_REGISTRY.md` (§5) and the open `bugs/*.md` by their `Kind:`
+line; non-mutating; the table is read by its header names, a cell that cannot be read refuses
+naming the row and the column; `--json` deterministic, `--system <name>` one system's fraction;
+exit 3 with the copy-the-skeleton instruction until the registry exists — the metric is DERIVED,
+never asked of the owner).
 
 ### 10.8 Predicting a pass
 

@@ -347,9 +347,17 @@ the owner's word — never the agent's own plausible reasoning alone. `/fable-ju
 decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon
 hunt), an autonomous loop closed before its armed boundary with a non-empty pool (the
 early-finish hunt, `/guarded-loop`) and a session close or loop report without its delivery line —
-`DELIVERY: <the owner's metric> X → Y; moved by: … | blocker: …`, the ONE acceptance metric named
-in `MASTER_PLAN.md`, printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked
-FIRST by `/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
+`DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
+moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` — the delivery VECTOR,
+printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` (the registry of the
+product's logically separate systems: the agent DRAFTS it by copying
+`.kaif/_systems-registry-template.md` and filling it from `GOAL.md`, `MASTER_PLAN.md` and both maps;
+the owner approves the list as vision — the metric itself is DERIVED, the owner is never asked what
+to measure: a mechanic whose step is a question to the owner is incomplete and does not ship), an
+arrow on every component that moved, `registry not built yet` until the file exists and
+`registry: draft` until the owner approves it, the owed-questions slot from the project's queue
+command; printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked FIRST by
+`/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
 
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so

@@ -14,6 +14,7 @@
 //   node kaif-core.mjs install --bundle <KAIF-CORE-BUNDLE.md> [options]
 //   node kaif-core.mjs check                       # validate the deployed manifest (bundle must still exist) + size budgets of the re-read core (advisory)
 //   node kaif-core.mjs report bugs/KAIF/NN_x.md    # deliver a KAIF-defect ticket to the origin via gh (standing authorization, issue #15) and write the URL back
+//   node kaif-core.mjs delivery [--json|--system <name>]  # the delivery VECTOR from SYSTEMS_REGISTRY.md + open bugs/ (derived, never asked of the owner); exit 3 until the registry exists
 //   node kaif-core.mjs verify-final               # checkpoints done? then self-clean the install artifacts
 //   node kaif-core.mjs sync                        # re-sync per-system skill mirrors from .claude/skills/
 //   node kaif-core.mjs diff [--source <x>]         # audit disk vs deployed templates | preview vs another version
@@ -3155,6 +3156,141 @@ function cmdModules() {
   console.log(JSON.stringify({ moduleCount: count, files: out }, null, 2));
 }
 
+// ---------------------------------------------------------------------------- delivery (2.6)
+// delivery — print the DELIVERY VECTOR: six numbers, every one DERIVED from files in the tree and
+// none asked of the owner. The 2.5 line said "the ONE owner metric named in MASTER_PLAN.md", and the
+// agents of four freshly updated projects went to their owners asking what to measure — the origin's
+// owner ruled that a mechanic which sends the agent to the owner for a parameter is incomplete and
+// does not ship (decisions #97/#99). So: the product is cut into logically separate SYSTEMS
+// (SYSTEMS_REGISTRY.md — drafted by the agent from GOAL.md, MASTER_PLAN.md and both maps, approved
+// by the owner as vision), each with its completeness parts and its declared needs; findings in
+// bugs/ carry a Kind: class. Numbers: systems · complete % WITH its fraction (the "90 % syndrome"
+// guard — an estimate without a fraction is a feeling) · integrated % (declared needs closed by a
+// system whose Implemented box is ticked) · holes · contradictions · bugs (open bugs/*.md — no DONE
+// in the filename — by their `**Kind:**` line; no line = bug; bugs/KAIF/ tickets are framework
+// signals, never product findings). Non-mutating. The table is read by its HEADER names, never by
+// column position, so an owner's edit — an extra column, `[x]` for ☑, CRLF — keeps parsing; a cell
+// the parser cannot read REFUSES naming the row and the column (a silently skipped cell would print
+// a confident wrong number). Exit 3 until the registry exists — the code the optional guards use
+// for "nothing to judge yet": the delivery line then reads `registry not built yet`, and drafting
+// the registry is the agent's next move, never a question to the owner.
+// [TESTED: 2026-09-05 · polygon suite s20 (tools/sandbox/s20-delivery.mjs): 32 checks green on a
+//  deployed copy — the six-number line on the three-system fixture, --json determinism, [x]/CRLF/extra
+//  column, draft suffix, --system, three named refusals; red proved on the 2.5 core: unknown command]
+const SYSTEMS_REGISTRY = 'SYSTEMS_REGISTRY.md';
+const SYSTEMS_REGISTRY_TEMPLATE = '.kaif/_systems-registry-template.md';
+const BUGS_DIR = 'bugs';
+const CHECK_TRUE = new Set(['☑', '[x]', '[X]', '✅', 'x', 'X']);
+const CHECK_FALSE = new Set(['☐', '[ ]', '[]', '', '—', '–', '-']);
+const CHECK_GLYPH = /^(☑|☐|✅|\[ ?[xX]?\])$/;            // a REAL checkbox — dashes alone never make a part column
+const pct = (num, den) => (den ? Math.round((num / den) * 100) : null);
+
+function parseSystemsRegistry(text) {
+  const src = normEol(text);
+  const lines = src.split('\n');
+  const draft = /^\*\*Status:\*\*\s*draft/im.test(src);
+  const cellsOf = (l) => l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim());
+  let header = null, headerAt = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^\s*\|/.test(lines[i])) continue;
+    const c = cellsOf(lines[i]);
+    if (c.some((h) => /^system$/i.test(h))) { header = c; headerAt = i; break; }
+  }
+  if (!header) throw new Error(`${SYSTEMS_REGISTRY}: no table with a "System" column — keep the header row of ${SYSTEMS_REGISTRY_TEMPLATE}`);
+  const iSystem = header.findIndex((h) => /^system$/i.test(h));
+  const iNeeds = header.findIndex((h) => /need|feeds/i.test(h));
+  const rows = [];
+  for (let i = headerAt + 1; i < lines.length; i++) {
+    if (!/^\s*\|/.test(lines[i])) { if (rows.length) break; continue; }   // the table ends at the first non-row after its rows
+    const c = cellsOf(lines[i]);
+    if (c.every((x) => x === '' || /^:?-{2,}:?$/.test(x))) continue;       // the separator row
+    const name = c[iSystem] || '';
+    if (!name || /^<.*>$/.test(name)) continue;                             // empty row, or the skeleton's placeholder row
+    rows.push({ line: i + 1, cells: c, name });
+  }
+  // Part columns = the four shipped names by header, plus any column whose every cell is a checkbox
+  // (a project may rename its parts: the columns are data). `#`, System and Needs never qualify.
+  const isCheck = (v) => CHECK_TRUE.has(v) || CHECK_FALSE.has(v);
+  const parts = [];
+  header.forEach((h, j) => {
+    if (j === iSystem || j === iNeeds || h === '#' || !h) return;
+    const shipped = /specif|accept|implement|verif/i.test(h);
+    const allCheck = rows.length > 0 && rows.every((r) => isCheck(r.cells[j] || '')) && rows.some((r) => CHECK_GLYPH.test(r.cells[j] || ''));
+    if (shipped || allCheck) parts.push({ index: j, name: h });
+  });
+  const named = parts.findIndex((p) => /implement/i.test(p.name));
+  const implIdx = named >= 0 ? named : (parts.length >= 3 ? 2 : parts.length - 1);
+  const byName = new Map(rows.map((r) => [r.name.toLowerCase(), r]));
+  for (const r of rows) {
+    r.done = 0; r.parts = [];
+    for (const p of parts) {
+      const v = r.cells[p.index] || '';
+      if (!isCheck(v)) throw new Error(`${SYSTEMS_REGISTRY} line ${r.line} (System "${r.name}"), column "${p.name}": "${v}" is not a checkbox — use ☐ / ☑ (or [ ] / [x])`);
+      const on = CHECK_TRUE.has(v);
+      r.parts.push({ name: p.name, on });
+      if (on) r.done++;
+    }
+    const needsCell = iNeeds >= 0 ? (r.cells[iNeeds] || '') : '';
+    r.needs = needsCell.split(/[,;·]/).map((s) => s.replace(/`/g, '').trim()).filter((s) => s && !CHECK_FALSE.has(s) && !/^none$/i.test(s));
+    for (const n of r.needs)
+      if (!byName.has(n.toLowerCase())) throw new Error(`${SYSTEMS_REGISTRY} line ${r.line} (System "${r.name}"): needs "${n}" — no such system row; add the row or fix the name`);
+  }
+  for (const r of rows)
+    r.closed = r.needs.filter((n) => { const t = byName.get(n.toLowerCase()); return implIdx >= 0 && t.parts[implIdx] && t.parts[implIdx].on; }).length;
+  rows.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));   // canonical order: two --json runs diff empty
+  return { draft, parts: parts.map((p) => p.name), rows };
+}
+
+// Open findings by class: top-level bugs/*.md without DONE in the name; README and bugs/KAIF/ skipped.
+function countFindings() {
+  const counts = { hole: 0, contradiction: 0, bug: 0 };
+  if (!existsSync(BUGS_DIR)) return counts;
+  for (const f of readdirSync(BUGS_DIR).sort()) {
+    const p = join(BUGS_DIR, f);
+    if (!f.endsWith('.md') || /^readme\.md$/i.test(f) || /DONE/.test(f) || !statSync(p).isFile()) continue;
+    const m = readFileSync(p, 'utf8').match(/^\*{0,2}Kind:?\*{0,2}\s*(hole|contradiction|bug)\b/im);
+    counts[m ? m[1].toLowerCase() : 'bug']++;
+  }
+  return counts;
+}
+
+function cmdDelivery() {
+  if (!okOnDisk(SYSTEMS_REGISTRY))
+    refuse(`systems registry not built yet — draft it: cp ${SYSTEMS_REGISTRY_TEMPLATE} ${SYSTEMS_REGISTRY}, then fill the table from GOAL.md, MASTER_PLAN.md and both maps — one row per logically separate system, cut finer rather than coarser (the agent drafts; the owner approves the list as vision when ready; the vector prints from the draft meanwhile). Until then the delivery line reads "DELIVERY: registry not built yet".`, 3);
+  let reg = null;
+  try { reg = parseSystemsRegistry(readFileSync(SYSTEMS_REGISTRY, 'utf8')); }
+  catch (e) { refuse(e.message, 1); }
+  const { draft, parts, rows } = reg;
+  const findings = countFindings();
+  const systems = rows.length;
+  const done = rows.reduce((s, r) => s + r.done, 0), total = systems * parts.length;
+  const declared = rows.reduce((s, r) => s + r.needs.length, 0), closed = rows.reduce((s, r) => s + r.closed, 0);
+  const isolated = rows.filter((r) => !r.needs.length).length;
+  const complete = total ? `${pct(done, total)} % (${done} of ${total})` : 'n/a (no systems yet)';
+  const integrated = declared ? `${pct(closed, declared)} % (${closed} of ${declared})` : 'n/a (no needs declared)';
+  const line = `DELIVERY: systems ${systems} · complete ${complete} · integrated ${integrated} · holes ${findings.hole} · contradictions ${findings.contradiction} · bugs ${findings.bug}`
+    + (draft ? ` · registry: draft (${systems} systems, awaiting the owner's approval)` : '');
+  const one = val('--system');
+  if (one) {
+    const r = rows.find((x) => x.name.toLowerCase() === one.toLowerCase());
+    if (!r) refuse(`no system "${one}" in ${SYSTEMS_REGISTRY} — known: ${rows.map((x) => x.name).join(', ') || '(none)'}`, 1);
+    log(`${r.name}: complete ${parts.length ? `${pct(r.done, parts.length)} % (${r.done} of ${parts.length})` : 'n/a'} · parts: ${r.parts.map((p) => `${p.name} ${p.on ? '☑' : '☐'}`).join(' · ') || '(none)'} · needs ${r.needs.length} (closed ${r.closed})${r.needs.length ? ': ' + r.needs.join(', ') : ''}`);
+    return;
+  }
+  if (has('--json')) {
+    console.log(JSON.stringify({
+      line, systems,
+      complete: { percent: pct(done, total), done, total },
+      integrated: { percent: pct(closed, declared), closed, declared },
+      holes: findings.hole, contradictions: findings.contradiction, bugs: findings.bug,
+      isolated, draft, parts,
+      registry: rows.map((r) => ({ name: r.name, done: r.done, total: parts.length, needs: r.needs, closed: r.closed })),
+    }, null, 2));
+    return;
+  }
+  log(line);
+}
+
 // ---------------------------------------------------------------------------- dispatch (bug 33)
 // ONE spec drives the dispatcher, the argv validation and the help text. Flags map to
 // "takes a value?"; `pos` is the number of allowed positional arguments after the command.
@@ -3165,6 +3301,7 @@ const COMMANDS = {
   check:           { fn: cmdCheck,        desc: 'validate the deployed manifest (marker schema, mirrors, two-headed docs)', flags: { '--bundle': true, '--agents': true, '--mode': true, '--lang': true }, pos: 0 },
   diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version', flags: { '--source': true, '--baseline': true, '--lang': true }, pos: 0 },
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
+  delivery:        { fn: cmdDelivery,     desc: 'print the delivery vector from SYSTEMS_REGISTRY.md + open bugs/ (systems · complete · integrated · holes · contradictions · bugs) — derived, never asked of the owner; --json · --system <name>; exit 3 until the registry exists', flags: { '--json': false, '--system': true }, pos: 0 },
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly)', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false }, pos: 0 },
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release; --rehearsal <receipt> binds the run to a sandbox copy\'s verdicts', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true, '--rehearsal': true }, pos: 0 },
   resume:          { fn: cmdResume,       mutating: true, desc: 'restore the pre-update tree after a crashed update (per .kaif/update-journal.json)', flags: {}, pos: 0 },

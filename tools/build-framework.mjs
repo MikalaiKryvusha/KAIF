@@ -277,6 +277,10 @@ const TEMPLATE_NOTES_BY_VERSION = {
     // frozen literal (same rule as 2.3): the name is the owner's word — decision #87, interview #021 Q1, 2026-09-04 13:37 +03:00
     'Release codename for this version: KAIF 2.5 — Experienced KAIF',
   ],
+  // INERT until version() says 2.6 (epic OQ, 2026-09-05): the codename line is appended by epic RL.
+  '2.6': [
+    'NEW optional canon document SYSTEMS_REGISTRY.md (skeleton .kaif/_systems-registry-template.md, bundle-only, the agent copies and drafts it) + the NEW non-mutating core command `delivery` — the delivery VECTOR: systems · complete % with its fraction · integrated % · holes · contradictions · bugs, every number derived from the tree (`--json` deterministic, `--system <name>` one system\'s fraction; exit 3 with the copy-the-skeleton instruction until the registry exists). The DELIVERY: line moved to the vector form in AGENT_GUIDE (the fable loop), MASTER_PLAN (Delivery vector block), the four loops, both closing ceremonies, /what-next and the /fable-judge call point, with a new `owed questions:` slot fed by the project\'s queue command; /report-bug: `Kind:` line (hole | contradiction | bug) in the bug-doc header; KAIF_REFERENCE §5 and §10.7 describe both.',
+  ],
   // Same INERT rule as above: this key is read by the codename gate only once version() says 2.3.
   '2.3': [
     'The canon now speaks in COMMANDS (epic X, field issue #22): every obligation of a canon document carries one of three executable forms — a command to run, a numbered step with an exit condition, or a checkbox a ritual ticks — prose stays as the rationale UNDER the carrier and never carries an obligation alone; a new PROHIBITION enters the canon only rephrased as positive guidance or moved into a guard that reddens itself. MIGRATION: the rule binds the templates as they arrive; your local wrapper documents adopt it as you touch them.',
@@ -307,6 +311,10 @@ const DEPRECATIONS = [
 // A rule change of the previous version is declared here and the update task surfaces it in a
 // separate "decisions for the OWNER" section — never merged silently.
 const POLICY_CHANGES_BY_VERSION = {
+  // INERT until version() says 2.6 (epic OQ, 2026-09-05): read by the policy gate only on the 2.5→2.6 interval.
+  '2.6': [
+    'The delivery line is a DERIVED vector, never a question to the owner (2.6, epic OQ; origin owner decisions #97/#99 — the 2.5 line sent the agents of four freshly updated projects to their owners to learn what to measure): `DELIVERY:` now prints six numbers from `SYSTEMS_REGISTRY.md` — systems · complete % (always with its fraction) · integrated % · holes · contradictions · bugs — computed by the new non-mutating command `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`; exit 3 until the registry exists). The registry is the AGENT\'s job: copy `.kaif/_systems-registry-template.md` to `SYSTEMS_REGISTRY.md`, draft the product\'s logically separate systems from GOAL.md, MASTER_PLAN.md and both maps, print the vector from the draft at once; the owner approves the list as vision when ready. If this deployment opened an interview or a homework after 2.5 that puts the delivery metric to the owner as a question — CLOSE it and build the registry instead: the owner is never sent to define what the framework can derive. Bug documents gain an optional `**Kind:** hole | contradiction | bug` header line (no line = bug) so the three counters are yours to classify; the DELIVERY: line in AGENT_GUIDE, MASTER_PLAN, the four loops, both closing ceremonies, /what-next and the judge call point moved to the vector form, with a new `owed questions:` slot fed by the project\'s queue command.',
+  ],
   // INERT until version() says 2.5 (epic CN, 2026-09-04): read by the policy gate only on the 2.4→2.5 interval.
   '2.5': [
     'Authorization gate carve-out: a ticket about a defect of KAIF ITSELF to the framework\'s own origin no longer waits for the owner\'s AUTH: line — it is delivered under the KAIF owner\'s standing authorization in the same motion as it is filed (origin issue #37). Every other outward action (releases, deploys, sends, force-pushes, deletions) still waits for the owner\'s quoted words.',
@@ -397,6 +405,13 @@ function bundleBlocks() {
   if (existsSync(join(FW, 'templates', '_testcases-template.md')))
     blocks.push(embedBundle('framework/templates/_testcases-template.md', '.kaif/_testcases-template.md',
       'the test-cases template — TESTING_FRAMEWORK activities chain copies it into the project test-doc home and fills the copy'));
+  // the systems-registry skeleton (2.6, epic OQ; owner decisions #97/#99): the delivery vector is
+  // DERIVED from SYSTEMS_REGISTRY.md by `kaif-core delivery` and never asked of the owner — the
+  // agent copies this skeleton to the project root and drafts the registry; same delivery shape as
+  // the two skeletons above (bundle-only, optional; a deployment without a registry stays green).
+  if (existsSync(join(FW, 'templates', '_systems-registry-template.md')))
+    blocks.push(embedBundle('framework/templates/_systems-registry-template.md', '.kaif/_systems-registry-template.md',
+      'the systems-registry skeleton — the agent copies it to SYSTEMS_REGISTRY.md and drafts the registry; `kaif-core delivery` prints the delivery vector from it'));
   // language packs: owner-facing doc overrides + skill trigger aliases per language.
   // Data for KAIF-CORE (never written to disk as-is): the chosen language's files
   // override their destination paths; others are ignored.

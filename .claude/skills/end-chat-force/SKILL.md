@@ -36,9 +36,11 @@ description: СРОЧНО ЗАКРЫТЬ этот чат ПРЯМО СЕЙЧАС
 ## Шаг 3. Прощание одной строкой
 
 Одна строка владельцу: хеш коммита, самое важное для следующего чата и напоминание, что долг
-церемоний записан в `STATUS.md`, — с префиксом строки доставки `DELIVERY: <метрика владельца>
-X → Y; moved by: … | blocker: …` (метрика из `MASTER_PLAN.md`; форс-режим пропускает церемонии,
-но не учёт доставки). Прощай.
+церемоний записан в `STATUS.md`, — с префиксом строки доставки `DELIVERY: systems N · complete
+A → B % · integrated C % · holes … · contradictions … · bugs …; moved by: … | blocker: … | owed
+questions: N (oldest M d, never shown K)` (вектор печатает `node dist/KAIF-CORE.mjs delivery` из
+`SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → fable-цикл; `registry not built yet`, пока реестра нет;
+форс-режим пропускает церемонии, но не учёт доставки). Прощай.
 
 ## Что этот навык отказывается пропускать
 

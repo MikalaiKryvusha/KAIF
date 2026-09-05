@@ -104,8 +104,11 @@ description: Запустить автономный цикл по беклог�
 полные неторопливые
 церемонии `/end-chat-soft`, если сессия кончается, либо парковочная заметка (по-`/pause`), если
 чат продолжается. Отчёт: пунктов сделано, рестартов пережито, что эскалировано — первой строкой
-`DELIVERY: <метрика владельца> X → Y; moved by: … | blocker: …` (метрика из `MASTER_PLAN.md`;
-нулевой сдвиг только с названным блокером — охота судьи «delivery-line»).
+`DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
+moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (вектор печатает
+`node dist/KAIF-CORE.mjs delivery` из `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → fable-цикл; стрелка
+у каждой сдвинувшейся компоненты, нулевой сдвиг по всем — только с названным блокером; охота судьи
+«delivery-line»; `registry not built yet`, пока реестра нет).
 
 ## Что навык ЗАПРЕЩАЕТ
 
