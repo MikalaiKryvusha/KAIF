@@ -39,3 +39,6 @@ tools/.review-tmp/
 .kaif/watchdog-popup.txt
 
 # Note: README.pdf and FRAMEWORK.md are committed deliverables (generated, but tracked).
+
+# 2.6 epic IC: temporary renders of the shipped contour generator (IC3) — ignore first, tool second
+.kaif/.contour-tmp/
