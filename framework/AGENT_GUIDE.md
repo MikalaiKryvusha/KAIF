@@ -821,7 +821,11 @@ and a tool counts as ADOPTED only when a ritual contains the executable command 
 violations ("show all unanswered interviews") — in the field such a guard surfaced two questions
 nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML render of an
 interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
-the transport (equivalence rule in `/interview`: HTML = md = chat).
+the transport (equivalence rule in `/interview`: HTML = md = chat). The contour records not only
+that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
+(`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
+has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
+(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE).
 
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the

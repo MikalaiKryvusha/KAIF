@@ -73,6 +73,17 @@ const TMP_DIR = 'tools/.review-tmp';
 // протухшее печатается агенту поимённо и на страницу не идёт, пока агент не закроет документ
 // статусом или не покажет НАМЕРЕННО (`--include-stale`).
 const STALE_QUEUE_DAYS = Number(process.env.KAIF_STALE_QUEUE_DAYS) > 0 ? Number(process.env.KAIF_STALE_QUEUE_DAYS) : 14;
+// I40–I42 (issue #47 поля, 2.6): ТРЕТИЙ факт о вопросе — ПОКАЗАН. Контур записывал, что вопрос
+// ЕСТЬ (статус «ждёт») и что он ОТВЕЧЕН (запись решения), но не что он стоял перед владельцем;
+// ритуал не отличал «думает» от «не знает, что вопрос существует» и считал верным дешёвое.
+// Полевой счёт: вопрос печатался очередью ~40 сессий 48 дней и ни разу не был показан — слово
+// владельца: «он лежит давно без моего даже малейшего представления, что есть некий вопрос».
+// Хранилище — ОДНА карта рядом с решениями (Оккам): { "<doc>": { at, transport } }. Транспорт
+// НАЗЫВАЕТСЯ (страница · пачка · чат) и силы ответа не меняет (HTML = md = чат).
+const SHOWN_FILE = 'interviews/decisions/shown.json';
+const EXIT_NEVER_SHOWN = 2; // I42: непоказанный ждущий документ роняет `--queue --list` — гейт, не печать
+export const TRANSPORT_PAGE = 'страница', TRANSPORT_BATCH = 'пачка', TRANSPORT_CHAT = 'чат';
+const DAY_MS = 86400000;
 /** Язык проекта из маркера развёртывания — по нему выбирается голос фолбэка (I35, 2.5: issue #38). */
 function projectLanguage(root) {
   try { return String(JSON.parse(readFileSync(resolve(root, '.kaif', 'kaif.json'), 'utf8').replace(/^﻿/, '')).language || 'en').toLowerCase().slice(0, 2); }
@@ -260,6 +271,45 @@ export function ownerDocs(root, { includeStale = false, now = new Date() } = {})
   if (includeStale) return live;
   const stale = new Set(staleQueueDocs(root, live, now).map((d) => d.doc));
   return live.filter((d) => !stale.has(d.doc));
+}
+
+// ── I40–I42: факт «показан», очередь с возрастом, гейт кодом выхода ────────────────────────
+export function readShown(root) {
+  const p = resolve(root, SHOWN_FILE);
+  if (!existsSync(p)) return {};
+  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, '')); } catch { return {}; }
+}
+// Пишется В МОМЕНТ показа (окно открыто / вопрос задан в чате) — не когда агент о нём вспомнил.
+export function recordShown(root, rels, transport, now = new Date()) {
+  const map = readShown(root);
+  for (const r of rels) map[String(r).replace(/\\/g, '/')] = { at: now.toISOString(), transport };
+  mkdirSync(resolve(root, DECISIONS_DIR), { recursive: true });
+  writeFileSync(resolve(root, SHOWN_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
+  return map;
+}
+// Очередь БЕЗ браузера: возраст ожидания и возраст показа по каждому живому документу; ни разу
+// не показанные — ПЕРВЫМИ (I41); есть непоказанный → код выхода EXIT_NEVER_SHOWN (I42) —
+// печать очереди не доставка, показ — действие агента (I15).
+export function listQueue(root, { now = new Date(), includeStale = false } = {}) {
+  const shown = readShown(root);
+  const docs = ownerDocs(root, { includeStale, now }).map((d) => {
+    const s = shown[d.doc] || null;
+    const shownDays = s ? Math.floor((now.getTime() - Date.parse(s.at)) / DAY_MS) : null;
+    return { ...d, waitDays: queueDocAgeDays(root, d.doc, now), shown: s, shownDays };
+  });
+  docs.sort((a, b) => (a.shown ? 1 : 0) - (b.shown ? 1 : 0)
+    || (b.shownDays ?? 0) - (a.shownDays ?? 0) || a.doc.localeCompare(b.doc));
+  const never = docs.filter((d) => !d.shown);
+  const lines = docs.map((d) => `${d.shown ? '🟡' : '⛔'} ${d.doc} — ждёт ${d.waitDays} дн.` +
+    (d.shown ? ` · показан: ${d.shown.at.slice(0, 10)} — ${d.shownDays} дн. назад (${d.shown.transport})`
+             : ' · НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует'));
+  if (!docs.length) lines.push('Очередь владельца пуста — ждущих документов нет.');
+  if (never.length) {
+    lines.push(`🔴 ГЕЙТ (I42): ни разу не показанных — ${never.length}. Напечатать очередь ≠ донести вопрос; показ — действие агента.`);
+    lines.push('   Подними страницей: node tools/review.mjs --queue · задал точечно в чате — запиши факт: node tools/review.mjs --mark-shown <док> --transport ' + TRANSPORT_CHAT);
+    lines.push('   Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.');
+  }
+  return { docs, never, lines, exitCode: never.length ? EXIT_NEVER_SHOWN : 0 };
 }
 
 // ── Сборка страниц (I1: только из документов) ──────────────────────────────────────────────
@@ -981,6 +1031,11 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
       log('Страница поднята: ' + url + (batch ? ' (очередь)' : ' (' + first.title + ')'));
       if (open) log('Окно: ' + openWindow(url)); // показ — действие агента (I15)
+      if (open) { // I40: факт показа — в момент открытого окна, не когда агент вспомнил
+        const shownRels = batch ? forOwner().map((d) => d.doc) : [relative(root, resolve(root, docPath)).replace(/\\/g, '/')];
+        recordShown(root, shownRels, batch ? TRANSPORT_BATCH : TRANSPORT_PAGE);
+        log('Показ записан (I40): ' + shownRels.length + ' док. → ' + SHOWN_FILE);
+      }
       if (signal) { // I5: зов — ПОСЛЕ поднявшейся страницы; I32: не блокирует контур
         const nWait = first.questions ? first.questions.filter((q) => !q.answered).length : 0;
         signalCall(root, callPhrase({
@@ -1063,6 +1118,24 @@ export function selftest() {
   enqueue(root, OLD); // позиция очереди с сегодняшним addedAt перекрывает дату шапки — она СВЕЖАЯ
   ok(queueDocAgeDays(root, OLD, new Date()) === 0, 'addedAt очереди сильнее даты шапки документа');
 
+  // 7. I40–I42 (issue #47): факт «показан», возраст показа, непоказанные первыми, гейт кодом выхода.
+  // Красный наблюдён ДО фикса: без карты shown.json listQueue не существовало, а очередь печаталась
+  // байт-в-байт одинаково в день 1 и в день 48 — ровно класс поля.
+  const lq1 = listQueue(root, { now, includeStale: true });
+  ok(lq1.exitCode === EXIT_NEVER_SHOWN && lq1.never.length === 2 && lq1.lines[0].startsWith('⛔'),
+    'без записей показа оба ждущих документа — «НИ РАЗУ НЕ ПОКАЗАН», первой строкой ⛔, код выхода 2 (I41/I42)');
+  recordShown(root, [IV], TRANSPORT_BATCH, now);
+  const lq2 = listQueue(root, { now, includeStale: true });
+  const ivLine = lq2.lines.find((l) => l.includes(IV));
+  ok(Boolean(ivLine) && ivLine.includes('показан: ' + now.toISOString().slice(0, 10)) && ivLine.includes('(' + TRANSPORT_BATCH + ')'),
+    'после записи показа очередь печатает дату и транспорт (I40)');
+  ok(lq2.lines[0].startsWith('⛔') && lq2.lines[0].includes(OLD) && lq2.exitCode === EXIT_NEVER_SHOWN,
+    'непоказанный OLD стоит ВЫШЕ показанного IV, гейт всё ещё красный (I41/I42)');
+  recordShown(root, [OLD], TRANSPORT_PAGE, now);
+  ok(listQueue(root, { now, includeStale: true }).exitCode === 0, 'все показаны — код выхода 0 (I42)');
+  ok(readShown(root)[OLD].transport === TRANSPORT_PAGE && readShown(root)[IV].transport === TRANSPORT_BATCH,
+    'карта показов хранит транспорт по документу (I40)');
+
   rmSync(root, { recursive: true, force: true });
   console.log(bad ? 'СЕЛФТЕСТ КРАСНЫЙ: ' + bad + ' из ' + n : 'селфтест класса «сообщение» зелёный: ' + n + ' проверок');
   if (bad) process.exit(1);
@@ -1088,6 +1161,18 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     console.log('В очереди: ' + items.length + ' поз.' + (asNotice ? ' (' + NOTICE_KIND_LABEL + ')' : '') +
       ' — покажется пачкой: node tools/review.mjs --queue');
     process.exit(0);
+  }
+  if (args.includes('--mark-shown')) { // I40: вопрос задан точечно в чате — факт показа пишет рука агента
+    const doc = opt('--mark-shown');
+    if (!doc) { console.error('usage: node tools/review.mjs --mark-shown <документ.md> [--transport ' + TRANSPORT_CHAT + ']'); process.exit(1); }
+    recordShown(root, [doc], opt('--transport') || TRANSPORT_CHAT);
+    console.log('Показ записан (I40): ' + doc + ' · ' + (opt('--transport') || TRANSPORT_CHAT) + ' → ' + SHOWN_FILE);
+    process.exit(0);
+  }
+  if (args.includes('--queue') && args.includes('--list')) { // I41/I42: очередь с возрастом, без браузера; гейт — код выхода
+    const r = listQueue(root, { includeStale: opts.includeStale });
+    for (const l of r.lines) console.log(l);
+    process.exit(r.exitCode);
   }
   if (args.includes('--queue')) { // пачечная страница «Накопилось N» — зов ОДИН раз на пачку (I7)
     const stale = opts.includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true }));
@@ -1122,6 +1207,8 @@ if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) {
     console.error('usage: node tools/review.mjs <документ.md> [--no-serve|--silent|--no-open|--timeout N]\n' +
       '       node tools/review.mjs <документ.md> --notice   (сообщение: ответа не ждёт, ждёт пометки «' + NOTICE_READ_LABEL + '»)\n' +
       '       node tools/review.mjs --queue [--include-stale] | --enqueue <документ.md> [--notice] | --selftest\n' +
+      '       node tools/review.mjs --queue --list   (очередь с возрастом и фактом показа, без браузера; код 2 = есть ни разу не показанный — I41/I42)\n' +
+      '       node tools/review.mjs --mark-shown <документ.md> [--transport чат]   (факт показа для вопроса, заданного в чате — I40)\n' +
       'Запускать ОТСЛЕЖИВАЕМОЙ фоновой задачей (I31): голый & харнесс не отслеживает — уведомление не придёт.');
     process.exit(1);
   }

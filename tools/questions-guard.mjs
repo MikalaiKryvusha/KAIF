@@ -16,13 +16,19 @@
 //   C4(5) — распознавание букв только через \p{L} с флагом u (\w/\b — ASCII-only даже с u).
 //   T9  — модуль импортируем без исполнения (гард точки входа).
 //   G10 — селфтест мутациями с ПРЕДСКАЗАНИЕМ точного отказа до прогона.
+//   G4  — (2.6, issue #47) ждущее интервью, НИ РАЗУ не показанное владельцу дольше порога, — нарушение;
+//         факт показа — карта контура interviews/decisions/shown.json (I40).
+//   G5  — (2.6, поправка автора к #47) вопрос владельцу ПРОЗОЙ вне interviews/: обращение к владельцу
+//         и «?» в конце строки, вне цитат/кода/таблиц; действует ВПЕРЁД от даты документа.
+//   G6  — (2.6, №98) живой вопрос без четырёхстрочного сценария Ситуация · Действие · Результат ·
+//         Проверка — владелец как заказчик не понимает предмет; действует вперёд от даты интервью.
 //
 // Запуск:  node tools/questions-guard.mjs            — прогон по репозиторию (exit 1 на новом)
 //          node tools/questions-guard.mjs --selftest — мутации на временной фикстуре
 //          node tools/questions-guard.mjs --write-baseline — снять базовую линию долга (однократно)
 //          node tools/questions-guard.mjs --root <dir> [--baseline <file>] — прогон по чужому корню (фикстуры)
 
-import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, rmSync, utimesSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path'; // T10: resolve, не join, для внешних путей
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
@@ -69,6 +75,37 @@ const POINTS_TO_INTERVIEWS_RE = /interviews\/|интервью\s*№|interview\s
 // Явное исключение стража: маркер с причиной на строке; пустая причина — само нарушение.
 const ALLOW_MARKER_RE = /<!--\s*questions-guard:allow\s*(.*?)\s*-->/iu;
 
+// G4 (issue #47, 2.6): факт показа читается из карты контура (I40); возраст — mtime файла интервью
+// (эвристика, названная вслух: правка сегодня = живой документ; нетронутый неделями — тот самый
+// класс: 48 дней, ~40 сессий, «он лежит давно без моего даже малейшего представления, что есть
+// некий вопрос»). Порог — сутки: свежее интервью ещё не успело подняться страницей.
+const SHOWN_FILE = 'interviews/decisions/shown.json';
+const NEVER_SHOWN_DAYS = 1;
+const DAY_MS = 86400000;
+// G5/G6 действуют ВПЕРЁД — по первой ISO-дате в шапке документа (первые 12 строк); документ без
+// даты не доказуемо новый и не судится: историю не переписываем, ратчет не раздуваем (порог задаёт
+// сам документ — тот же приём, что у оси меток времени doc-header-lint).
+const FORWARD_SINCE = '2026-09-05';
+const HEAD_LINES = 12;
+// G5: обращение к владельцу — узкая примета (владел-/автор-/owner), только вместе с «?» в конце
+// строки ПОСЛЕ снятия цитат «…», "…" и код-спанов: цитата слов владельца с вопросом — не вопрос ему.
+const OWNER_ADDRESS_RE = /(?:владел\p{L}*|автор\p{L}*|\bowner\b)/iu;
+const QUOTED_RE = /«[^»]*»|"[^"]*"|`[^`]*`/gu;
+// G6 (№98): четыре строки-ключа на языке проекта (сценарная форма REQUIREMENTS_FRAMEWORK).
+const SCENARIO_KEYS = [
+  /^\s*(?:-\s*)?(?:Ситуация|Situation)\./mu, /^\s*(?:-\s*)?(?:Действие|Action)\./mu,
+  /^\s*(?:-\s*)?(?:Результат|Result)\./mu, /^\s*(?:-\s*)?(?:Проверка|Check)\./mu,
+];
+// Законный отказ от сценария — ОБЪЯВЛЕННЫЙ, с причиной (например, вопрос-имя: класс «вкус»).
+const NO_SCENARIO_MARK = /<!--\s*questions-guard:no-scenario\s+\S/u;
+const readShownMap = (root) => {
+  const p = resolve(root, SHOWN_FILE);
+  if (!existsSync(p)) return {};
+  try { return JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { return {}; }
+};
+const headDate = (lines) => (lines.slice(0, HEAD_LINES).join('\n').match(/\b(\d{4}-\d{2}-\d{2})\b/) || [])[1] || null;
+const isForward = (lines) => { const d = headDate(lines); return Boolean(d) && d >= FORWARD_SINCE; };
+
 // ── Утилиты ────────────────────────────────────────────────────────────────────────────────
 const sha1 = (s) => createHash('sha1').update(s, 'utf8').digest('hex');
 const stripBom = (s) => s.replace(/^﻿/, '');
@@ -110,6 +147,7 @@ function scanPlaceOfQuestions(root) {
   const hits = []; // { file, line, text, key, emptyReason }
   for (const p of mdFiles(root)) {
     const lines = readLines(p);
+    const g5 = isForward(lines); // G5 судит только документы, датированные не раньше FORWARD_SINCE
     let inFence = false;
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -127,7 +165,14 @@ function scanPlaceOfQuestions(root) {
       const content = line.replace(/^[\s>*+-]+/u, ''); // мимо маркеров списка/цитаты
       const isQueueHeading = QUEUE_HEADING_RE.test(line);
       const isAddress = ADDRESS_START_RE.test(content.slice(0, ADDRESS_WINDOW_CHARS));
-      if (isQueueHeading || isAddress) hits.push(mkHit(root, p, i, line, false));
+      if (isQueueHeading || isAddress) { hits.push(mkHit(root, p, i, line, false)); continue; }
+      // G5: вопрос владельцу ПРОЗОЙ — обращение + «?» в конце строки; цитаты, таблицы, блок-цитаты
+      // и заголовки молчат (поправка автора к #47: вопрос жил под строкой статуса в bugs/39 и ни
+      // одной примете заголовка не соответствовал).
+      if (g5 && !/^\s*[>|#]/.test(line)) {
+        const bare = content.replace(QUOTED_RE, '').trim();
+        if (/\?$/u.test(bare) && OWNER_ADDRESS_RE.test(bare)) hits.push({ ...mkHit(root, p, i, line, false), prose: true });
+      }
     }
   }
   return hits;
@@ -208,16 +253,22 @@ function parseInterview(root, p) {
     // Явный отказ от вариантов — законный ход, но ОБЪЯВЛЕННЫЙ (см. OPEN_MARK ниже).
     open: OPEN_MARK.test(q.body ? q.body.join('\n') : ''),
     sendsToDoc: sendsToDoc(q.body),
+    // G6 (№98): в теле вопроса есть все четыре строки сценария — или объявленный отказ с причиной.
+    scenario: SCENARIO_KEYS.every((re) => re.test((q.body || []).join('\n'))),
+    noScenario: NO_SCENARIO_MARK.test((q.body || []).join('\n')),
   }));
-  return { file: name, num, closed: st === 'closed', waiting: st === 'waiting', questions };
+  const lines = readLines(p);
+  return { file: name, num, closed: st === 'closed', waiting: st === 'waiting', questions,
+    forward: isForward(lines), ageDays: Math.floor((Date.now() - statSync(p).mtimeMs) / DAY_MS) };
 }
 
 function scanInterviews(root) {
   const dir = join(root, INTERVIEWS_DIR);
   // unresolvedTargets — СПРАВКА, не нарушение: адрес назван, но ни во что не разрешается.
-  const out = { unanswered: [], stale: [], propagation: [], unanswerable: [], unresolvedTargets: [] };
+  const out = { unanswered: [], stale: [], propagation: [], unanswerable: [], unresolvedTargets: [], neverShown: [] };
   if (!existsSync(dir)) return out;
   const files = readdirSync(dir).filter((f) => /^interview_\d+.*\.md$/.test(f)).sort();
+  const shown = readShownMap(root); // I40: карта показов контура
 
   // Корпус для эвристики цитирования (I20/I21): все md вне interviews/ из скоупа + корневые доки.
   const corpus = [];
@@ -231,6 +282,11 @@ function scanInterviews(root) {
     const iv = parseInterview(root, join(dir, f));
     const empty = iv.questions.filter((q) => !q.answered);
     for (const q of empty) out.unanswered.push({ file: iv.file, q: q.id }); // ОТЧЁТ, не нарушение
+
+    // G4 (issue #47): ждущий документ, которого владелец НИ РАЗУ не видел, старше порога — нарушение.
+    // Единица — документ; ключ долга стабилен, чтобы ратчет не воскрешал его каждым прогоном.
+    if (iv.waiting && empty.length > 0 && !shown[iv.file] && iv.ageDays >= NEVER_SHOWN_DAYS)
+      out.neverShown.push({ file: iv.file, days: iv.ageDays, key: iv.file + '#never-shown' });
 
     // G3: статус «ждёт» при нуле пустых полей = протух.
     if (iv.waiting && iv.questions.length > 0 && empty.length === 0)
@@ -262,6 +318,10 @@ function scanInterviews(root) {
     for (const q of empty) {
       if (q.sendsToDoc) out.unanswerable.push({ file: iv.file, q: q.id, sends: true,
         key: `${iv.file}#${q.id}#sends-to-doc` });
+      // G6 (№98): живой вопрос без сценария «что владелец увидит» — заказчик не понимает предмет
+      // (bugs/111: два вопроса вернулись словом «не понимаю проблему»). Вперёд от даты интервью.
+      if (iv.forward && !q.scenario && !q.noScenario) out.unanswerable.push({ file: iv.file, q: q.id,
+        noScenario: true, key: `${iv.file}#${q.id}#no-scenario` });
     }
 
     if (!iv.num) continue;
@@ -350,12 +410,24 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
   const iv = scanInterviews(root);
 
   const violations = [
-    ...place.map((h) => ({ ...h, kind: h.emptyReason ? 'маркер с ПУСТОЙ причиной' : 'место вопросов' })),
+    ...place.map((h) => ({ ...h, kind: h.emptyReason ? 'маркер с ПУСТОЙ причиной'
+      : h.prose ? 'вопрос владельцу ПРОЗОЙ вне interviews/ (G5)' : 'место вопросов' })),
     ...iv.stale.map((s) => ({ ...s, kind: 'STATUS ПРОТУХ (G3)', text: 'статус «ждёт» при нуле пустых полей' })),
+    ...iv.neverShown.map((s) => ({ ...s, kind: 'ЖДЁТ И НИ РАЗУ НЕ ПОКАЗАН (G4, issue #47)',
+      text: `документ ждёт владельца ${s.days} дн. без единой записи показа (interviews/decisions/shown.json). `
+          + 'Напечатать очередь ≠ донести вопрос: подними страницей (node tools/review.mjs --queue) или, задав в чате, '
+          + 'запиши факт (node tools/review.mjs --mark-shown <док> --transport чат); мёртвый документ закрой статусом' })),
     ...iv.propagation.map((d) => ({ ...d, kind: 'разнос не выполнен (I20)', text: `${d.q} → ${d.target}` })),
     // bugs/62: вопрос, который владелец не может ОТВЕТИТЬ в один клик. Отказ называет верный ход
     // (семейство 12) — обе легальные формы варианта и законный выход «свободный вопрос».
-    ...iv.unanswerable.map((u) => (u.sends
+    ...iv.unanswerable.map((u) => (u.noScenario
+      ? { ...u, kind: 'вопрос БЕЗ СЦЕНАРИЯ (G6, №98)',
+          text: `${u.q}: ни одного четырёхстрочного сценария «что владелец увидит». Слово владельца: `
+              + '«Я просил описывать требования поведенческими сценариями, и ты сам этим не пользуешься… '
+              + 'приносишь мне какие-то технические пояснения, которые я не понимаю, как заказчик». Добавь под '
+              + 'вариант строки Ситуация · Действие · Результат · Проверка — или объяви отказ с причиной: '
+              + '<!-- questions-guard:no-scenario причина -->' }
+      : u.sends
       ? { ...u, kind: 'вопрос ОТПРАВЛЯЕТ в документ (bugs/83)',
           text: `${u.q}: предмет решения лежит за ссылкой, а не в вопросе. Слово владельца: `
               + '«не отправляй меня капаться в MD документах! Открытый вопрос должен быть достаточен '
@@ -427,6 +499,30 @@ function selftest() {
     if (!ok) process.exitCode = 1;
   };
   const w = (relPath, text) => writeFileSync(join(box, relPath), text, 'utf8');
+
+  // G4/G5/G6 (2.6, issue #47 и №98) — шесть мутаций, каждая с предсказанием.
+  const SCEN = '- Ситуация. Проект в состоянии `X`.\n- Действие. Агент запускает `cmd`.\n- Результат. Печатается `1`.\n- Проверка. `cmd` → `1`.\n';
+  const IV_NEW = (extra) => '# Interview #095\n\n> Status: **🟡 awaiting**\n> Created: 2026-09-05\n\n### Q1. Вопрос?\n\n' +
+    '| Вариант | Что означает |\n|---|---|\n| **A** | раз |\n| **B** | два |\n\n' + extra + '\n**Answer:**\n';
+  const threeDaysAgo = new Date(Date.now() - 3 * DAY_MS);
+  mut('ждёт и НИ РАЗУ не показан 3 дня (G4) → красный', 'нарушение «ЖДЁТ И НИ РАЗУ НЕ ПОКАЗАН»',
+    () => { w('interviews/interview_095_x.md', IV_NEW(SCEN)); utimesSync(join(box, 'interviews/interview_095_x.md'), threeDaysAgo, threeDaysAgo); },
+    true, 'НИ РАЗУ НЕ ПОКАЗАН');
+  mut('ждёт, показан пачкой (G4) → зелёный', '0 нарушений: запись в shown.json гасит ось',
+    () => { w('interviews/interview_095_x.md', IV_NEW(SCEN)); utimesSync(join(box, 'interviews/interview_095_x.md'), threeDaysAgo, threeDaysAgo);
+      mkdirSync(join(box, 'interviews/decisions'), { recursive: true });
+      w('interviews/decisions/shown.json', JSON.stringify({ 'interviews/interview_095_x.md': { at: new Date().toISOString(), transport: 'пачка' } })); },
+    false, '');
+  mut('вопрос владельцу ПРОЗОЙ в plans/ (G5) → красный', 'нарушение «вопрос владельцу ПРОЗОЙ вне interviews/»',
+    () => w('plans/95_x.md', '# План 95 — тест\n\n> **Создан:** 2026-09-05\n\nВладелец, какой из двух вариантов берём?\n'),
+    true, 'ПРОЗОЙ');
+  mut('цитата слов владельца с «?» (G5) → зелёный', '0 нарушений: вопрос внутри «…» — цитата, не обращение',
+    () => w('plans/95_x.md', '# План 95 — тест\n\n> **Создан:** 2026-09-05\n\nСлово владельца дословно: «какой из двух вариантов берём?» — ответ ниже.\n'),
+    false, '');
+  mut('живой вопрос БЕЗ сценария в интервью от 2026-09-05 (G6) → красный', 'нарушение «вопрос БЕЗ СЦЕНАРИЯ»',
+    () => w('interviews/interview_095_x.md', IV_NEW('')), true, 'БЕЗ СЦЕНАРИЯ');
+  mut('объявленный отказ от сценария с причиной (G6) → зелёный', '0 нарушений: маркер no-scenario с причиной',
+    () => w('interviews/interview_095_x.md', IV_NEW('<!-- questions-guard:no-scenario вопрос-имя, класс «вкус» -->\n')), false, '');
 
   // Три мутации G1 поимённо (контракт: new violation → red · маркер с причиной → green · пустая причина → red).
   mut('новое нарушение → красный', 'ровно 1 новое нарушение вида «место вопросов»',

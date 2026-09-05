@@ -1141,7 +1141,11 @@ and a tool counts as ADOPTED only when a ritual contains the executable command 
 violations ("show all unanswered interviews") — in the field such a guard surfaced two questions
 nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML render of an
 interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
-the transport (equivalence rule in `/interview`: HTML = md = chat).
+the transport (equivalence rule in `/interview`: HTML = md = chat). The contour records not only
+that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
+(`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
+has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
+(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE).
 
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
@@ -5839,7 +5843,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I39. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I43. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -6041,6 +6045,33 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   weeks earlier was raised in a batch next to a live question — the owner's word: "the release is
   long out, the review is overdue, why did you open this for me". Age comes from the queue's own
   timestamp, then from the document header's first ISO date; a document with neither cannot go stale.
+- **I40. The third fact about a question is SHOWN — recorded at the moment the document actually
+  stands in front of the owner.** The contour already records that a question EXISTS (the waiting
+  status) and that it was ANSWERED (the decision record); nothing recorded that it was ever SEEN,
+  so no ritual could tell "he is thinking" from "he has no idea it exists" and every ritual treated
+  the cheaper state as true. Paid for in the field (issue #47): a question printed by every
+  session's queue for 48 days and never once put in front of the owner — his words: "it lies there
+  without my slightest notion that some question exists". The fact lives in ONE map next to the
+  decisions (`interviews/decisions/shown.json`: `{ "<doc>": { "at": "<ISO>", "transport":
+  "page | batch | chat" } }`), written when the browser window opens (page, batch) or, for a pointed
+  question asked in chat, by the agent's hand (`--mark-shown <doc> --transport chat`). The transport
+  is NAMED and changes nothing about the answer's force (HTML = md = chat).
+- **I41. The queue prints AGE, and the never-shown come FIRST.** Every waiting document prints
+  `waiting N d · shown: <date> — M d ago (<transport>)` or `NEVER SHOWN — the owner does not know
+  this question exists`; the order is never-shown first, then the oldest show first. A queue whose
+  output is byte-identical on day 1 and on day 48 cannot escalate anything.
+- **I42. A ritual that prints the queue has an EXIT CONDITION, not a wish.** The queue command
+  without a browser (`--queue --list`) exits non-zero while a waiting document is never-shown; the
+  ritual that calls it (`/resume` step 1b, the closing ceremonies, the loops) is not complete until
+  the document is raised (page or chat) or one line says why not (a dead document → fix its status
+  and it leaves the queue). Printing is not delivery: "show" is the agent's action (I15), and the
+  exit code is what makes the duty mechanical (field issue #22: a rule with a command is honoured,
+  a rule in prose accumulates debt).
+- **I43. The queue says WHO is blocked — and can be wrong out loud.** A waiting document whose
+  only open question is marked "answer elsewhere" (moved to a bug, a plan) is not waiting on the
+  owner: it is the AGENT's debt wearing an owner-facing label, and the queue names it so. Field
+  correction to #47: the blocked mechanic was waiting on the agent for 48 days while every session
+  read "round 2 — awaiting the owner" and concluded the owner was the blocker.
 
 ## The named class: "handling the human's work"
 
@@ -7357,6 +7388,19 @@ If relevant to open questions:
 The full pass IS a context refresh (`AGENT_GUIDE.md` → Context refresh): on completing it, rewrite
 `.kaif/refresh-marker.json` (trigger `ritual:/resume`); the Step-2 announcement doubles as the
 quote-acceptance when it cites at least one concrete line from the read — quote it.
+
+## Step 1b. Run the owner's queue — a command with an exit condition, not a wish
+
+Before choosing the session's direction, run the queue command of the project's interactive
+contour (the one `/owner-reviews` built — e.g. `node tools/review.mjs --queue --list`, no browser)
+and read what it prints: every waiting document shows its age and whether the owner has EVER seen
+it (contract I40–I42). The step is not complete while a waiting document reads `NEVER SHOWN`: raise
+it — the page, or a pointed question in chat with the fact recorded by `--mark-shown` — or write one
+line here saying why not (a dead document → fix its status, and it leaves the queue). Printing the
+queue is not delivering the question. The owner's word (field issue #47, a question printed by
+~40 sessions for 48 days and never once shown): "questions to the owner come in priority number
+ONE". A project without the contour runs the same step by hand: `ls interviews/` plus the status
+line of every waiting document — and the same exit condition.
 
 ## Step 2. Synthesize — choose the one main thing
 

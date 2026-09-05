@@ -39,6 +39,19 @@ The full pass IS a context refresh (`AGENT_GUIDE.md` → Context refresh): on co
 `.kaif/refresh-marker.json` (trigger `ritual:/resume`); the Step-2 announcement doubles as the
 quote-acceptance when it cites at least one concrete line from the read — quote it.
 
+## Step 1b. Run the owner's queue — a command with an exit condition, not a wish
+
+Before choosing the session's direction, run the queue command of the project's interactive
+contour (the one `/owner-reviews` built — e.g. `node tools/review.mjs --queue --list`, no browser)
+and read what it prints: every waiting document shows its age and whether the owner has EVER seen
+it (contract I40–I42). The step is not complete while a waiting document reads `NEVER SHOWN`: raise
+it — the page, or a pointed question in chat with the fact recorded by `--mark-shown` — or write one
+line here saying why not (a dead document → fix its status, and it leaves the queue). Printing the
+queue is not delivering the question. The owner's word (field issue #47, a question printed by
+~40 sessions for 48 days and never once shown): "questions to the owner come in priority number
+ONE". A project without the contour runs the same step by hand: `ls interviews/` plus the status
+line of every waiting document — and the same exit condition.
+
 ## Step 2. Synthesize — choose the one main thing
 
 Pick a single direction for this session. Priority (descending):

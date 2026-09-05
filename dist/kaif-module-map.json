@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.5",
   "released": "2026-09-04",
-  "moduleCount": 766,
+  "moduleCount": 767,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -251,10 +251,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "ed3b3ba96cfac5ec190bb8bc1afe98a98870bf6909adaea6b972b3e44d1b4a16",
+        "sha256": "3c20f10da4a7a9620262eabd39dabdae8f52e8ef1ef61b71330a4386fed10ac5",
         "lines": [
           802,
-          931
+          935
         ]
       },
       {
@@ -262,8 +262,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          932,
-          946
+          936,
+          950
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          947,
-          959
+          951,
+          963
         ]
       }
     ],
@@ -3400,10 +3400,10 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "be5d0fd951735715967c9aa8972519a0611a4754d7290c5de0453405eed62083",
+        "sha256": "5a8f3741351d87f5b178e1769bf5d78ac33ac4dfca9f67ce6364a87d8ff777a0",
         "lines": [
           40,
-          244
+          271
         ]
       },
       {
@@ -3411,8 +3411,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          245,
-          256
+          272,
+          283
         ]
       },
       {
@@ -3420,8 +3420,8 @@
         "class": "static",
         "sha256": "89329e4df17a11bb38fa7a8d82395186f01e604e4bb58ac5d7835a39cc430250",
         "lines": [
-          257,
-          306
+          284,
+          333
         ]
       },
       {
@@ -3429,8 +3429,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          307,
-          316
+          334,
+          343
         ]
       },
       {
@@ -3438,8 +3438,8 @@
         "class": "static",
         "sha256": "00a9322b97b28da62f0169e9a1240c4f37197c9c9b134b1b29f10c1bfeeb4b73",
         "lines": [
-          317,
-          428
+          344,
+          455
         ]
       },
       {
@@ -3447,8 +3447,8 @@
         "class": "static",
         "sha256": "81674bb4e07934a8bf603b61358af949ac4b315f59df859ac67a669df96c24b1",
         "lines": [
-          429,
-          461
+          456,
+          488
         ]
       },
       {
@@ -3456,8 +3456,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          462,
-          477
+          489,
+          504
         ]
       },
       {
@@ -3465,8 +3465,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          478,
-          548
+          505,
+          575
         ]
       },
       {
@@ -3474,8 +3474,8 @@
         "class": "static",
         "sha256": "0d1a55845743246bd68df0b614d8e790d24a27f07d90693220b64f3da04e0600",
         "lines": [
-          549,
-          569
+          576,
+          596
         ]
       },
       {
@@ -3483,8 +3483,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          570,
-          589
+          597,
+          616
         ]
       },
       {
@@ -3492,8 +3492,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          590,
-          601
+          617,
+          628
         ]
       }
     ],
@@ -4073,12 +4073,21 @@
         ]
       },
       {
+        "signature": "## Step 1b. Run the owner's queue — a command with an exit condition, not a wish",
+        "class": "static",
+        "sha256": "9baa7a9d0b04519277773629b05a4fbde35162ccdd1916523c3d970e45db761e",
+        "lines": [
+          42,
+          54
+        ]
+      },
+      {
         "signature": "## Step 2. Synthesize — choose the one main thing",
         "class": "static",
         "sha256": "256f9fab79889826de717107e4af9e14a8b95263dad44b4471fc99f5b8003df2",
         "lines": [
-          42,
-          58
+          55,
+          71
         ]
       },
       {
@@ -4086,8 +4095,8 @@
         "class": "static",
         "sha256": "145c5c387ea213935bc7900033ebeeec8bbdca49fc7d8ba6d207d365e09859b4",
         "lines": [
-          59,
-          65
+          72,
+          78
         ]
       },
       {
@@ -4095,8 +4104,8 @@
         "class": "static",
         "sha256": "70349f3f6138dedff3a6c122a82143408699b741ae0a21d72f397ed502ba8bd1",
         "lines": [
-          66,
-          70
+          79,
+          83
         ]
       }
     ],
