@@ -123,5 +123,10 @@
     "questions": 1,
     "parsedOptions": 3,
     "candidateLines": 3
+  },
+  "interviews/interview_026_issue_52_class_fix_verification_context.md": {
+    "questions": 4,
+    "parsedOptions": 15,
+    "candidateLines": 15
   }
 }

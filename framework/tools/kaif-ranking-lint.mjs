@@ -27,7 +27,10 @@
 //   node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…]   # exit 0 / 1 / 3
 //   node .kaif/tools/kaif-ranking-lint.mjs selftest                       # every rule red on its mutation only,
 //                                                                         # the #53 fixture red, the clean answer green
-// [NOT-TESTED]
+// [TESTED: 2026-09-05 · selftest 19 cases green (7 rules × 2 languages, mutation N → rule N only, the #53 fixture red with
+//  five rules, a plain document is not an answer); first run went red on `recency-first` because the row-1 mutation also
+//  tripped `order` — `order` now judges rows 2+; sandbox suite s23 on a deployed copy: install · check #53 → 1 · fixed → 0 ·
+//  foreign → 3 · usage → 1 · bundle meta 2.6 entries]
 import { readFileSync, existsSync } from 'node:fs';
 
 const argv = process.argv.slice(2);

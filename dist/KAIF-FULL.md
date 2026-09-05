@@ -895,7 +895,11 @@ header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("reco
 continuing the current task") and return to the interrupted work. Do not drop the current task for the
 note, and do not hold it in your head until the session ends — a session's head is the worst storage
 there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
-vision-level → `/fix-vision`; it is an explicit "switch to this" → switch.
+vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
+the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it
+sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
+row 1 is what moves `DELIVERY:` or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
+judge hunts "recency ranked over metric".
 
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
 WAVE of bugs at once, the wave itself is a symptom that the process leaked — worth more than any bug in
@@ -3044,6 +3048,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
+| `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
@@ -4754,10 +4759,32 @@ urgent), second-order effects (what unblocks the most future work). The newest p
 priority claim by itself — a fresh incident earns its rank by the metric, not by its date (field:
 54 honest, green sessions moved the product 11 of 389). Note the rough effort of each.
 
-### Step 3. Answer in chat
-1. **The ONE next step** — highest value, and *why it is next* (tie it to GOAL/MASTER_PLAN).
-2. **2–4 runner-ups** — one line each, with value/effort.
+### Step 3. Answer in chat — in the FIXED FORM (KAIF 2.6, origin issue #53)
+The rule "the newest pain is not a priority claim" stood here as prose, and a field agent quoted it and
+broke it in the same answer. Prose does not rank; the form does. The answer OPENS with two lines read
+from the documents, never from memory, then the table, then two mandatory lines:
+
+```
+METRIC: <the DELIVERY vector — `node .kaif/kaif-core.mjs delivery`, with its date>
+MAIN PHASE: <the phase MASTER_PLAN.md marks as the main one now; no mark → the first phase not closed, and say so>
+
+| step | moves | closes | effort |
+|---|---|---|---|
+| 1. <step> | <metric component it shifts, or —> | <bugs/NN, plans/NN it closes, or empty> | <chats> |
+
+Fresh owner words — not ranked by the metric (→ /fix-vision): <words of the last 48 h not yet in GOAL/MASTER_PLAN, or "none">
+Tech debt: open bugs N · red M · drifted pairs K
+```
+Rules of the table: every row carries `moves` (or `—`) and `closes`; a row with `moves: —` and an empty
+`closes` NEVER stands above a row that has at least one — and row 1 in particular moves the metric or
+closes something. A fresh word of the owner earns its rank by the metric, not by its date: until
+`/fix-vision` puts it into GOAL/MASTER_PLAN it sits on the shelf — visible, recorded, NOT ranked. The
+debt line is always there (count the open bugs, the red ones, the drifted registry pairs). Then:
+1. **The ONE next step** — row 1, and *why it is next* (tie it to GOAL/MASTER_PLAN).
+2. **2–4 runner-ups** — the rest of the table, one line each.
 3. **Blocked on the owner** — open interviews/homework, if any.
+Lint the draft BEFORE printing it: `node .kaif/tools/kaif-ranking-lint.mjs check <draft.md>` — exit 1 names
+what is missing (no METRIC:, a fresh word on row 1, no shelf, no debt line); exit 3 means it saw no answer.
 
 ### Step 4. Offer to start
 Offer to begin the top step immediately; on the owner's confirmation (or in an autonomous loop) — start.
@@ -5565,6 +5592,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives — since 2.6 the delivery vector comes from `SYSTEMS_REGISTRY.md`, never from a question.
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
+   - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

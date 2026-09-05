@@ -41,6 +41,7 @@ const CYRILLIC_DATA_CARRIERS = [
   'tools/kaif-scenario-lint.mjs',      // the RU keywords, rule word lists and selftest fixtures of the scenario form (2.5)
   'installer/KAIF-CORE.mjs',           // SCRIPTS (the writing-system regexes) + AUTHOR_TOKEN_CLUSTERS, as data
   'tools/contour/texts.mjs',           // the RU dictionary of the shipped contour (page texts, call phrases, parser labels) — 2.6 IC3; core.mjs/review.mjs stay judged
+  'tools/kaif-ranking-lint.mjs',       // the RU anchors of the /what-next answer form (shelf, debt line) + RU selftest fixtures (2.6, WN)
 ];
 // The author's own name is an ATTRIBUTION, not a leaked example — it must stay in the bylines of
 // the narrative spines. Exempted as FULL phrases: a bare token ("Кот") would excuse whole sentences.

@@ -88,6 +88,7 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.6": [
+      "THE /what-next ANSWER HAS A FORM (epic WN; origin issue #53 — a field agent quoted the rule \"the newest pain is not a priority claim\" and broke it in the same answer, ranking the words of the owner of that day above the main phase and 87 open bugs): the answer opens with METRIC: (the DELIVERY vector) and MAIN PHASE: read from the documents, ranks steps in the fixed table | step | moves | closes | effort |, keeps the fresh words of the owner on a separate shelf \"not ranked by the metric\" until /fix-vision, and always carries the tech-debt line; the NEW optional tool module .kaif/tools/kaif-ranking-lint.mjs (check <draft.md> / selftest, SKIPPED=3 without an answer) reddens on exactly the #53 draft; /fable-judge hunts \"recency ranked over metric\".",
       "NEW optional canon document SYSTEMS_REGISTRY.md (skeleton .kaif/_systems-registry-template.md, bundle-only, the agent copies and drafts it) + the NEW non-mutating core command `delivery` — the delivery VECTOR: systems · complete % with its fraction · integrated % · holes · contradictions · bugs, every number derived from the tree (`--json` deterministic, `--system <name>` one system's fraction; exit 3 with the copy-the-skeleton instruction until the registry exists). The DELIVERY: line moved to the vector form in AGENT_GUIDE (the fable loop), MASTER_PLAN (Delivery vector block), the four loops, both closing ceremonies, /what-next and the /fable-judge call point, with a new `owed questions:` slot fed by the project's queue command; /report-bug: `Kind:` line (hole | contradiction | bug) in the bug-doc header; KAIF_REFERENCE §5 and §10.7 describe both.",
       "THE OWNER-FACING INTERACTIVE CONTOUR SHIPS (epic IC; origin issues #19/#38/#47/#51 — four contours rebuilt per project and broken on their own edge cases, the last one opened WITHOUT radio buttons because the options were typed as paragraphs; owner decision #101 revising 2.2 #34): a one-page executable contract .kaif/INTERACTIVE_CONTOUR_SPEC.md — the two legal option forms, the pre-flight that refuses to open a page whose question has no list-form options and no declared free field (exit 3), the three records and the fact of showing, the outcomes and exit codes, the call by language, the faces and flags of the shipped generator under .kaif/tools/contour/ (interview · notice · proofreading · mockup review; parameters are read from .kaif/kaif.json). /owner-reviews now says \"run the shipped generator, do not build a contour\"; /interview step 3c checks the form against the contract before opening a page. Tool modules may live in subdirectories of .kaif/tools/.",
       "CONFUSION IS A RESEARCH TRIGGER, NOT A VERDICT (epic FK; origin issue #50, the owner's word): an owner's proposal that confuses the agent is a proposal not yet understood — never a wrong one. AGENT_GUIDE (both layers) and PHILOSOPHY (next to the three doors) carry the order the owner set — web search for what he most likely meant → a measurement over his own data → a question in interviews/ as a scenario; a message \"your proposal breaks X / cannot / impossible / contradicts\" is not sendable without a `Recon:` block (query · found · measurement); rolling back owner-ordered work because a guard went red is a fork in interviews/ with the guard's output quoted, never a report line, and the guard is not disarmed; the owner's term enters the rule as the worked example (the Cyrillic spelling of RPG is RPG, not a third tag). /interview gains step 3b (the pre-flight and the `Recon:` block); /fable-judge gains the hunt \"confusion delivered as verdict\".",
@@ -111,6 +112,7 @@
   ],
   "policyChanges": {
     "2.6": [
+      "A fresh word of the owner is ranked by the metric, never by its date (2.6, epic WN; origin issue #53, owner decision #102): /what-next answers in the fixed form — METRIC: and MAIN PHASE: first, a | step | moves | closes | effort | table where row 1 moves the metric or closes something, the shelf \"fresh owner words — not ranked by the metric\" (→ /fix-vision), the tech-debt line — and the agent lints the draft with `node .kaif/tools/kaif-ranking-lint.mjs check <draft.md>` before printing it; a drive-by note of the owner goes to the backlog and sits on the shelf until /fix-vision (AGENT_GUIDE → drive-by notes of the owner). Nothing here asks the owner: the metric is `kaif-core delivery`, the phase is the one MASTER_PLAN marks as main (else the first open one, said so).",
       "The delivery line is a DERIVED vector, never a question to the owner (2.6, epic OQ; origin owner decisions #97/#99 — the 2.5 line sent the agents of four freshly updated projects to their owners to learn what to measure): `DELIVERY:` now prints six numbers from `SYSTEMS_REGISTRY.md` — systems · complete % (always with its fraction) · integrated % · holes · contradictions · bugs — computed by the new non-mutating command `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`; exit 3 until the registry exists). The registry is the AGENT's job: copy `.kaif/_systems-registry-template.md` to `SYSTEMS_REGISTRY.md`, draft the product's logically separate systems from GOAL.md, MASTER_PLAN.md and both maps, print the vector from the draft at once; the owner approves the list as vision when ready. If this deployment opened an interview or a homework after 2.5 that puts the delivery metric to the owner as a question — CLOSE it and build the registry instead: the owner is never sent to define what the framework can derive. Bug documents gain an optional `**Kind:** hole | contradiction | bug` header line (no line = bug) so the three counters are yours to classify; the DELIVERY: line in AGENT_GUIDE, MASTER_PLAN, the four loops, both closing ceremonies, /what-next and the judge call point moved to the vector form, with a new `owed questions:` slot fed by the project's queue command.",
       "The owner-review contour is no longer built per project (2.6, epic IC; origin issue #51, owner decision #101 revising 2.2 #34): the update brings the one-page contract .kaif/INTERACTIVE_CONTOUR_SPEC.md and the shipped generator .kaif/tools/contour/ (interview · notice · proofreading · mockup review; project parameters are read from .kaif/kaif.json with derived defaults). Point the project skills at the shipped generator; a home-grown contour is kept or retired by the word of the project owner — the machinery writes only under .kaif/. Before opening any owner-facing page, run the pre-flight: a question without list-form options and without a declared free field is refused with exit 3 and the form to fix is printed.",
       "Confusion at a fork is a RESEARCH TRIGGER, never a verdict (2.6, epic FK; origin issue #50 — the owner's own rule): when the owner's proposal seems to break a model, a rule or a test you hold, the canon now orders web search → a measurement over the owner's data → a question in interviews/ — and a message \"your proposal breaks X / cannot / impossible / contradicts\" without a `Recon:` block (query · found · measurement) is a judge-hunted finding; rolling back owner-ordered work because a guard went red goes to interviews/ as a fork with the guard's output quoted, never into a report line. Your local canon may already carry a house rule of this shape — keep it; the shipped rule adds the order and the block form.",
@@ -225,6 +227,7 @@
     ".kaif/tools/kaif-canon-lint.mjs": "framework/tools/kaif-canon-lint.mjs",
     ".kaif/tools/kaif-guard-lint.mjs": "framework/tools/kaif-guard-lint.mjs",
     ".kaif/tools/kaif-provenance.mjs": "framework/tools/kaif-provenance.mjs",
+    ".kaif/tools/kaif-ranking-lint.mjs": "framework/tools/kaif-ranking-lint.mjs",
     ".kaif/tools/kaif-requirements-lint.mjs": "framework/tools/kaif-requirements-lint.mjs",
     ".kaif/tools/kaif-scenario-lint.mjs": "framework/tools/kaif-scenario-lint.mjs",
     "AGENT_GUIDE.md": "framework/AGENT_GUIDE.md",
@@ -1087,7 +1090,11 @@ header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("reco
 continuing the current task") and return to the interrupted work. Do not drop the current task for the
 note, and do not hold it in your head until the session ends — a session's head is the worst storage
 there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
-vision-level → `/fix-vision`; it is an explicit "switch to this" → switch.
+vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
+the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it
+sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
+row 1 is what moves `DELIVERY:` or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
+judge hunts "recency ranked over metric".
 
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
 WAVE of bugs at once, the wave itself is a symptom that the process leaked — worth more than any bug in
@@ -3223,6 +3230,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
+| `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
@@ -4570,6 +4578,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives — since 2.6 the delivery vector comes from `SYSTEMS_REGISTRY.md`, never from a question.
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
+   - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -8540,10 +8549,32 @@ urgent), second-order effects (what unblocks the most future work). The newest p
 priority claim by itself — a fresh incident earns its rank by the metric, not by its date (field:
 54 honest, green sessions moved the product 11 of 389). Note the rough effort of each.
 
-### Step 3. Answer in chat
-1. **The ONE next step** — highest value, and *why it is next* (tie it to GOAL/MASTER_PLAN).
-2. **2–4 runner-ups** — one line each, with value/effort.
+### Step 3. Answer in chat — in the FIXED FORM (KAIF 2.6, origin issue #53)
+The rule "the newest pain is not a priority claim" stood here as prose, and a field agent quoted it and
+broke it in the same answer. Prose does not rank; the form does. The answer OPENS with two lines read
+from the documents, never from memory, then the table, then two mandatory lines:
+
+```
+METRIC: <the DELIVERY vector — `node .kaif/kaif-core.mjs delivery`, with its date>
+MAIN PHASE: <the phase MASTER_PLAN.md marks as the main one now; no mark → the first phase not closed, and say so>
+
+| step | moves | closes | effort |
+|---|---|---|---|
+| 1. <step> | <metric component it shifts, or —> | <bugs/NN, plans/NN it closes, or empty> | <chats> |
+
+Fresh owner words — not ranked by the metric (→ /fix-vision): <words of the last 48 h not yet in GOAL/MASTER_PLAN, or "none">
+Tech debt: open bugs N · red M · drifted pairs K
+```
+Rules of the table: every row carries `moves` (or `—`) and `closes`; a row with `moves: —` and an empty
+`closes` NEVER stands above a row that has at least one — and row 1 in particular moves the metric or
+closes something. A fresh word of the owner earns its rank by the metric, not by its date: until
+`/fix-vision` puts it into GOAL/MASTER_PLAN it sits on the shelf — visible, recorded, NOT ranked. The
+debt line is always there (count the open bugs, the red ones, the drifted registry pairs). Then:
+1. **The ONE next step** — row 1, and *why it is next* (tie it to GOAL/MASTER_PLAN).
+2. **2–4 runner-ups** — the rest of the table, one line each.
 3. **Blocked on the owner** — open interviews/homework, if any.
+Lint the draft BEFORE printing it: `node .kaif/tools/kaif-ranking-lint.mjs check <draft.md>` — exit 1 names
+what is missing (no METRIC:, a fresh word on row 1, no shelf, no debt line); exit 3 means it saw no answer.
 
 ### Step 4. Offer to start
 Offer to begin the top step immediately; on the owner's confirmation (or in an autonomous loop) — start.
@@ -11491,6 +11522,221 @@ function cmdAccept() {
 
 ({ check: cmdCheck, report: cmdReport, accept: cmdAccept }[CMD] ||
   (() => die(`unknown command: ${CMD} (report | check | accept <file>)`)))();
+``````
+
+> **FILE: `.kaif/tools/kaif-ranking-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-ranking-lint.mjs — the OPTIONAL linter of the `/what-next` answer FORM (KAIF 2.6, epic WN;
+// origin issue #53; owner decision #102). Deployed to .kaif/tools/.
+//
+// What it mechanizes: the rule "the newest pain is not a priority claim" stood in `/what-next` as prose,
+// and a field agent quoted it and broke it in the same answer — the owner's words of the day sat on top,
+// the main phase, the delivery metric and 87 open bugs were never named. Prose does not rank; a FORM does.
+// The answer of `/what-next` (and the draft the agent lints BEFORE printing it) must carry:
+//   METRIC: <the DELIVERY vector read from the documents>        (line, anywhere above the table)
+//   MAIN PHASE: <the phase the plan marks as the main one now>    (line, anywhere above the table)
+//   | step | moves | closes | effort |                             (the ranking table, fixed columns)
+//   — every row: `moves` names the metric component it shifts or is `—`; `closes` names bugs/plans or is empty;
+//   — ORDER: a row with `moves: —` and an empty `closes` never stands above a row that has at least one;
+//   — row 1 in particular must move the metric or close something (the #53 defect: a fresh word on line 1);
+//   <shelf line>  "Fresh owner words — not ranked by the metric" / «Свежие слова владельца — не ранжированы
+//                 метрикой» (+ pointer to /fix-vision); may say "none" — but the shelf EXISTS;
+//   <debt line>   "Tech debt:" / «Техдолг:» with at least one number (open bugs · red · drifted pairs).
+//
+// Boundaries, so the linter never becomes bureaucracy (same as kaif-scenario-lint):
+//   · keywords are a per-language table — a project adds a row; rules are DATA;
+//   · it judges ONLY a document that STARTED a /what-next answer (a METRIC: line or a moves/closes table);
+//     anything else is SKIPPED (exit 3) — "not scanned" must never read as "clean";
+//   · ADVISORY: exit 1 = findings, exit 0 = scanned and clean, exit 3 = SKIPPED;
+//   · fenced code and `>` quotes are invisible (a template quoted in a skill is not an answer).
+//
+// Commands:
+//   node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…]   # exit 0 / 1 / 3
+//   node .kaif/tools/kaif-ranking-lint.mjs selftest                       # every rule red on its mutation only,
+//                                                                         # the #53 fixture red, the clean answer green
+// [TESTED: 2026-09-05 · selftest 19 cases green (7 rules × 2 languages, mutation N → rule N only, the #53 fixture red with
+//  five rules, a plain document is not an answer); first run went red on `recency-first` because the row-1 mutation also
+//  tripped `order` — `order` now judges rows 2+; sandbox suite s23 on a deployed copy: install · check #53 → 1 · fixed → 0 ·
+//  foreign → 3 · usage → 1 · bundle meta 2.6 entries]
+import { readFileSync, existsSync } from 'node:fs';
+
+const argv = process.argv.slice(2);
+const CMD = argv[0] || 'check';
+const PATHS = argv.slice(1);
+const EXIT_SKIPPED = 3;
+const DASH = /^\s*(?:—|-|–|none|нет)?\s*$/i;   // an empty `moves` / `closes` cell
+
+// ---------------------------------------------------------------------------
+// Keywords per language — the form's anchors. Latin anchors (METRIC:, MAIN PHASE:, moves, closes) are the
+// same in every language: they are the machine half of the form, the owner reads the table cells.
+export const KEYWORDS = {
+  en: { shelf: 'Fresh owner words', debt: 'Tech debt', fixVision: '/fix-vision' },
+  ru: { shelf: 'Свежие слова владельца', debt: 'Техдолг', fixVision: '/fix-vision' },
+};
+const METRIC_RE = /^\s*\**METRIC:\**\s*(.*)$/i;
+const PHASE_RE = /^\s*\**MAIN PHASE:\**\s*(.*)$/i;
+const HEADER_RE = /^\s*\|.*\bmoves\b.*\|.*\bcloses\b.*\|/i;
+const SEP_RE = /^\s*\|(\s*:?-{2,}:?\s*\|)+\s*$/;
+const shelfRe = () => new RegExp('(' + Object.values(KEYWORDS).map((k) => k.shelf).join('|') + ')', 'i');
+const debtRe = () => new RegExp('^\\s*\\**(?:' + Object.values(KEYWORDS).map((k) => k.debt).join('|') + ')\\**\\s*:', 'i');
+
+// ---------------------------------------------------------------------------
+// Parsing — the answer block of a document: the lines above the table, the table rows, the lines below.
+export function parseAnswer(src) {
+  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const visible = [];
+  let fence = false;
+  lines.forEach((l, i) => {
+    if (/^\s*```/.test(l)) { fence = !fence; return; }
+    if (fence || /^\s*>/.test(l)) return;
+    visible.push({ n: i + 1, t: l });
+  });
+  const metric = visible.find((v) => METRIC_RE.test(v.t));
+  const phase = visible.find((v) => PHASE_RE.test(v.t));
+  const hIdx = visible.findIndex((v) => HEADER_RE.test(v.t));
+  if (!metric && hIdx < 0) return null;                     // not a /what-next answer — SKIPPED by the caller
+  const rows = [];
+  if (hIdx >= 0) {
+    const header = visible[hIdx].t.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim().toLowerCase());
+    const iMoves = header.findIndex((c) => /\bmoves\b/.test(c));
+    const iCloses = header.findIndex((c) => /\bcloses\b/.test(c));
+    for (let k = hIdx + 1; k < visible.length; k++) {
+      const t = visible[k].t;
+      if (!/^\s*\|/.test(t)) break;
+      if (SEP_RE.test(t)) continue;
+      const cells = t.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim());
+      rows.push({ line: visible[k].n, step: cells[0] || '', moves: cells[iMoves] || '', closes: cells[iCloses] || '' });
+    }
+  }
+  return {
+    metric: metric ? metric.t.match(METRIC_RE)[1].trim() : null,
+    phase: phase ? phase.t.match(PHASE_RE)[1].trim() : null,
+    table: hIdx >= 0, tableLine: hIdx >= 0 ? visible[hIdx].n : null, rows,
+    shelf: visible.some((v) => shelfRe().test(v.t)),
+    debt: visible.find((v) => debtRe().test(v.t)) || null,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// The rules — data. Each: id · message · test(answer) → true when violated.
+const carries = (r) => !DASH.test(r.moves) || !DASH.test(r.closes);
+export const RULES = [
+  { id: 'no-metric', msg: 'no METRIC: line — the answer must open with the delivery vector read from the documents',
+    test: (a) => !a.metric || !/\d/.test(a.metric) },
+  { id: 'no-main-phase', msg: 'no MAIN PHASE: line — name the phase the plan marks as the main one now (or the first open phase, saying so)',
+    test: (a) => !a.phase },
+  { id: 'no-table', msg: 'no ranking table with `moves` and `closes` columns — steps are ranked in the fixed form, not in prose',
+    test: (a) => !a.table || a.rows.length === 0 },
+  { id: 'recency-first', msg: 'row 1 neither moves the metric nor closes anything — a fresh word on top is the #53 defect',
+    test: (a) => a.rows.length > 0 && !carries(a.rows[0]) },
+  { id: 'order', msg: 'a row with `moves: —` and empty `closes` stands above a row that has at least one',
+    test: (a) => a.rows.some((r, i) => i > 0 && !carries(r) && a.rows.slice(i + 1).some(carries)) }, // row 1 is recency-first's
+  { id: 'no-shelf', msg: 'no shelf "Fresh owner words — not ranked by the metric" (may say "none"; pointer /fix-vision)',
+    test: (a) => !a.shelf },
+  { id: 'no-debt', msg: 'no "Tech debt:" line with numbers (open bugs · red · drifted pairs)',
+    test: (a) => !a.debt || !/\d/.test(a.debt.t) },
+];
+export const RULE_IDS = RULES.map((r) => r.id);
+
+export function lint(answer) {
+  const findings = [];
+  for (const r of RULES) if (r.test(answer)) findings.push({ id: r.id, msg: r.msg });
+  return findings;
+}
+
+// ---------------------------------------------------------------------------
+function check(paths) {
+  if (!paths.length) { console.error('usage: node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…] | selftest'); process.exit(1); }
+  for (const p of paths) if (!existsSync(p)) { console.error(`✖ path not found: ${p}`); process.exit(1); }
+  let answers = 0, nF = 0;
+  for (const f of paths) {
+    const a = parseAnswer(readFileSync(f, 'utf8'));
+    if (!a) continue;
+    answers++;
+    for (const x of lint(a)) { nF++; console.log(`✖ ${f}${a.tableLine ? ':' + a.tableLine : ''} — ${x.id}: ${x.msg}`); }
+  }
+  if (!answers) {
+    console.log(`⚠ ranking-lint SKIPPED — no /what-next answer (METRIC: line or moves/closes table) in ${paths.length} file(s); nothing was linted (exit ${EXIT_SKIPPED})`);
+    process.exit(EXIT_SKIPPED);
+  }
+  if (nF) { console.log(`✖ ranking-lint: ${nF} finding(s) in ${answers} answer(s) — an answer that is not in form ranks by recency, not by the metric`); process.exit(1); }
+  console.log(`✅ ranking-lint OK — ${answers} answer(s), 0 findings`);
+}
+
+// ---------------------------------------------------------------------------
+// selftest — the clean answer is green in both languages; the #53 fixture is red; each mutation of the
+// clean answer reddens its rule and only it; a plain document is not an answer (SKIPPED path).
+const CLEAN = {
+  en: [
+    'METRIC: DELIVERY: systems 9 · complete 86 % (31 of 36) · integrated 100 % (7 of 7) · holes 0 · contradictions 0 · bugs 23',
+    'MAIN PHASE: Phase 2 — Reach (v2), marked as the main one now in MASTER_PLAN.md',
+    '',
+    '| step | moves | closes | effort |', '|---|---|---|---|',
+    '| 1. Traffic series: index the catalogue | complete +1 (Catalogue) | bugs/12 | 0.5 chat |',
+    '| 2. Yandex verification | integrated +1 | — | 0.25 chat |',
+    '| 3. Refactor the console | — | plans/40 | 1 chat |',
+    '| 4. Rename the sidebar | — | — | 0.25 chat |',
+    '',
+    'Fresh owner words — not ranked by the metric (→ /fix-vision): "MVP of the messenger" (today), "rewrite the terms" (yesterday).',
+    'Tech debt: open bugs 87 · red 30 · drifted pairs 0.',
+  ],
+  ru: [
+    'METRIC: DELIVERY: systems 9 · complete 86 % (31 of 36) · integrated 100 % (7 of 7) · holes 0 · contradictions 0 · bugs 23',
+    'MAIN PHASE: Фаза 2 — Охват (v2), помечена «ГЛАВНОЕ СЕЙЧАС» в MASTER_PLAN.md',
+    '',
+    '| шаг | moves | closes | трудоёмкость |', '|---|---|---|---|',
+    '| 1. Серия трафика: индексация каталога | complete +1 (Каталог) | bugs/12 | 0,5 чата |',
+    '| 2. Верификация Яндекса | integrated +1 | — | 0,25 чата |',
+    '| 3. Рефакторинг консоли | — | plans/40 | 1 чат |',
+    '| 4. Переименовать сайдбар | — | — | 0,25 чата |',
+    '',
+    'Свежие слова владельца — не ранжированы метрикой (→ /fix-vision): «MVP мессенджера» (сегодня), «перепись условий» (вчера).',
+    'Техдолг: открытых багов 87 · красных 30 · разъехавшихся пар 0.',
+  ],
+};
+// The #53 incident, as the field agent answered it: fresh words on top, no metric, no phase, no shelf, no debt line.
+const FIX_53 = [
+  '| step | moves | closes | effort |', '|---|---|---|---|',
+  '| 1. MVP of the messenger (the owner said so today) | — | — | 2 chats |',
+  '| 2. Rewrite the terms (the owner said so yesterday) | — | — | 1 chat |',
+  '| 3. Traffic series: index the catalogue | complete +1 | bugs/12 | 0.5 chat |',
+];
+const MUTATIONS = {
+  'no-metric': (L) => L.filter((l) => !/^METRIC:/.test(l)),
+  'no-main-phase': (L) => L.filter((l) => !/^MAIN PHASE:/.test(l)),
+  'no-table': (L) => L.filter((l) => !/^\|/.test(l)),
+  'recency-first': (L) => { const r = L.filter((l) => /^\| [0-9]\./.test(l)); return L.map((l) => l === r[0] ? r[3] : l === r[3] ? r[0] : l); },
+  'order': (L) => { const r = L.filter((l) => /^\| [0-9]\./.test(l)); return L.map((l) => l === r[1] ? r[3] : l === r[3] ? r[1] : l); },
+  'no-shelf': (L) => L.filter((l) => !/Fresh owner words|Свежие слова владельца/.test(l)),
+  'no-debt': (L) => L.filter((l) => !/^(Tech debt|Техдолг):/.test(l)),
+};
+
+function selftest() {
+  let failed = 0, cases = 0;
+  const say = (ok, name) => { cases++; if (!ok) { failed++; console.log(`  ✗ ${name}`); } else console.log(`  ✓ ${name}`); };
+  for (const lang of Object.keys(CLEAN)) {
+    const clean = parseAnswer(CLEAN[lang].join('\n') + '\n');
+    const f = clean ? lint(clean) : [{ id: 'not-parsed' }];
+    say(clean && f.length === 0 && clean.rows.length === 4, `${lang}: clean answer — 4 rows parsed, 0 findings${f.length ? ' (got ' + f.map((x) => x.id).join(',') + ')' : ''}`);
+    for (const id of RULE_IDS) {
+      const got = lint(parseAnswer(MUTATIONS[id](CLEAN[lang]).join('\n') + '\n')).map((x) => x.id);
+      say(got.length === 1 && got[0] === id, `${lang}: mutation ${id} → exactly [${id}] (got [${got.join(',')}])`);
+    }
+  }
+  const f53 = lint(parseAnswer(FIX_53.join('\n') + '\n')).map((x) => x.id);
+  say(f53.includes('recency-first') && f53.includes('no-metric') && f53.includes('no-main-phase') && f53.includes('no-shelf') && f53.includes('no-debt'),
+    `the #53 fixture (fresh words on top, no metric) is RED: [${f53.join(', ')}]`);
+  say(parseAnswer('# A plan\n\nSome prose.\n\n| a | b |\n|---|---|\n| 1 | 2 |\n') === null, 'a plain document with an unrelated table is not an answer (SKIPPED path)');
+  say(parseAnswer('> METRIC: quoted\n```\n| step | moves | closes |\n```\n') === null, 'a quoted METRIC: line and a fenced table are invisible');
+  if (failed) { console.error(`✖ ranking-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
+  console.log(`✅ ranking-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only, the #53 fixture red, the clean answer green`);
+}
+
+if (CMD === 'check') check(PATHS);
+else if (CMD === 'selftest') selftest();
+else { console.error('usage: node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…] | selftest'); process.exit(1); }
 ``````
 
 > **FILE: `.kaif/tools/kaif-requirements-lint.mjs`** — optional tool module — verbatim
