@@ -42,7 +42,8 @@ KAIF/
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
 │   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы · реестр систем 2.6)
 │   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
-│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint → .kaif/tools/)
+│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint → .kaif/tools/);
+│   │                                      # с 2.6 сборщик обходит поддиректории (framework/tools/contour/ → .kaif/tools/contour/ — генератор контура, эпик IC, шаг IC3)
 │   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
 │   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
@@ -65,7 +66,8 @@ KAIF/
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
 │   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s21
 │   ├── sandbox/s01…s21*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery/маршрут обновления)
-│   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14)
+│   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14);
+│   │                                      # и исполнимые приёмки шагов, написанные ДО кода (ic3-contour-generator → свод s22 после IC3)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf
 │   ├── commit.mjs                         # bump build, commit, push
@@ -149,7 +151,7 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 | Шаблон ключевого документа | `framework/<DOC>.md` (+ корневая копия, если универсальный) | пересобрать |
 | Пояснительную записку | `framework/KAIF_REFERENCE.md` | пересобрать |
 | Машинерию установки/обновления | `framework/installer/KAIF-CORE.mjs` | пересобрать + `npm run test:core` |
-| Опциональный tool-модуль | `framework/tools/*.mjs` | пересобрать + `npm run test:core` (s05/s06) |
+| Опциональный tool-модуль | `framework/tools/*.mjs` (с 2.6 — и поддиректории, например `framework/tools/contour/`) | пересобрать + `npm run test:core` (s05/s06; контур — s12, проба `sandbox/probes/ic3-contour-generator.mjs`) |
 | Хук освежения контекста | `framework/hooks/*` | пересобрать + `npm run test:core` (s14) |
 | Языковой пакет | `framework/templates/languages/<lang>/` | пересобрать |
 | Шаблон README директории | `framework/readmes/<dir>.md` | пересобрать |
