@@ -124,6 +124,25 @@ is a finding (the origin: `questions-guard`, axis G6); the declared exception is
 reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question
 with no behaviour to show (a name, the taste class).
 
+### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
+
+The origin owner's rule (origin issue #50): an owner's proposal that confuses you is a proposal you
+have not yet understood — not a wrong one. Before writing an interview about it, and before ANY
+message that says the proposal cannot be done ("breaks the model", "impossible", "contradicts"), run
+the pre-flight `confusion → search → measure → ask`: (1) search the web for what the owner most
+likely meant — the term of the owner's domain and its usage (the Cyrillic spelling of "RPG" is the
+ordinary Russian way to write it, so "role-playing game and RPG at once" meant two complete pairs,
+not a third tag); (2) measure against the owner's own data — the catalogue, the archive, prior
+answers (in the field 90 live records already carried the pair the agent had called impossible);
+(3) only then ask. The interview body — and any report that says "cannot" — carries a `Recon:`
+block: `query: …` · `found: …` · `measurement: …` (a localized wrapper names the block and its three
+keys in the owner's language — the guard of the origin reads both); an empty block is a pre-flight
+refusal, the same way `lintSelfContained` refuses a question that points outward. Rolling back work the owner asked for because a guard went red is a
+fork for THIS document — quote the guard's output inside the question; never disarm the guard to
+make the proposal fit (the guard was right; the reading was wrong). Do not turn this into "always
+ask": a question before the search is the same defect with better manners. `/fable-judge` hunts
+"confusion delivered as verdict".
+
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
 "**Answer:**" fields). This keeps the work async — the agent isn't blocked on a synchronous chat.

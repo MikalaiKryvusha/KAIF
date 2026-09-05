@@ -89,6 +89,7 @@
     ],
     "2.6": [
       "NEW optional canon document SYSTEMS_REGISTRY.md (skeleton .kaif/_systems-registry-template.md, bundle-only, the agent copies and drafts it) + the NEW non-mutating core command `delivery` — the delivery VECTOR: systems · complete % with its fraction · integrated % · holes · contradictions · bugs, every number derived from the tree (`--json` deterministic, `--system <name>` one system's fraction; exit 3 with the copy-the-skeleton instruction until the registry exists). The DELIVERY: line moved to the vector form in AGENT_GUIDE (the fable loop), MASTER_PLAN (Delivery vector block), the four loops, both closing ceremonies, /what-next and the /fable-judge call point, with a new `owed questions:` slot fed by the project's queue command; /report-bug: `Kind:` line (hole | contradiction | bug) in the bug-doc header; KAIF_REFERENCE §5 and §10.7 describe both.",
+      "CONFUSION IS A RESEARCH TRIGGER, NOT A VERDICT (epic FK; origin issue #50, the owner's word): an owner's proposal that confuses the agent is a proposal not yet understood — never a wrong one. AGENT_GUIDE (both layers) and PHILOSOPHY (next to the three doors) carry the order the owner set — web search for what he most likely meant → a measurement over his own data → a question in interviews/ as a scenario; a message \"your proposal breaks X / cannot / impossible / contradicts\" is not sendable without a `Recon:` block (query · found · measurement); rolling back owner-ordered work because a guard went red is a fork in interviews/ with the guard's output quoted, never a report line, and the guard is not disarmed; the owner's term enters the rule as the worked example (the Cyrillic spelling of RPG is RPG, not a third tag). /interview gains step 3b (the pre-flight and the `Recon:` block); /fable-judge gains the hunt \"confusion delivered as verdict\".",
       "UPDATE ON THE REAL ROUTE (epic UR; origin issues #42 ×3, #48, #44, #40, #41): the rehearsal binding now reaches the BOOTSTRAP route — `install` accepts `--rehearsal <receipt>` (so `node KAIF-LOADER.mjs --lang <code> --rehearsal <copy>/.kaif/last-update.json` works), the loader validates every flag BEFORE it downloads anything (an unknown flag leaves the tree untouched — no more new core under an old marker), the auto record `.kaif/update-rehearsal.json` is consumed on that route too, and `diff --source` and `update` count ONE candidate set (owner-seeded documents excluded from both). HAND-FILLED SLOTS are DERIVED from the disk (`<BUILD_COMMAND>`, `<TEST_HARNESS>`, `<YOUR AGENT/MODEL>` … filled in the adaptation task): a file or module equal to \"template + fills\" is untouched — replaced mechanically with the fills kept, retired mechanically when deprecated; `update-verify` judges promised lines with the fills folded in; the map is cached in the deploy manifest as `fills`; a module already equal to the incoming template is never \"upstream changed it\". `stale-claims` sees ANY version older than the one being installed (a line stuck on an earlier version names it: `(asserts 2.2)`). `report` reads the `Delivered upstream:` line as a paragraph: `not yet` in any case, a URL or `#NN` = delivered (idempotent), a refusal names both legal forms. The bootstrap task renders module diffs with the OLD template texts (`−`/`+`), fetched from the previous release's artifact (`--baseline <dir>` offline). /kaif-update: the bootstrap route is MANDATORY for anchored pairs under a core older than 2.5; assets downloaded once for both runs (`--source <dir>`); `core.longpaths` on Windows."
     ],
     "2.3": [
@@ -110,6 +111,7 @@
   "policyChanges": {
     "2.6": [
       "The delivery line is a DERIVED vector, never a question to the owner (2.6, epic OQ; origin owner decisions #97/#99 — the 2.5 line sent the agents of four freshly updated projects to their owners to learn what to measure): `DELIVERY:` now prints six numbers from `SYSTEMS_REGISTRY.md` — systems · complete % (always with its fraction) · integrated % · holes · contradictions · bugs — computed by the new non-mutating command `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`; exit 3 until the registry exists). The registry is the AGENT's job: copy `.kaif/_systems-registry-template.md` to `SYSTEMS_REGISTRY.md`, draft the product's logically separate systems from GOAL.md, MASTER_PLAN.md and both maps, print the vector from the draft at once; the owner approves the list as vision when ready. If this deployment opened an interview or a homework after 2.5 that puts the delivery metric to the owner as a question — CLOSE it and build the registry instead: the owner is never sent to define what the framework can derive. Bug documents gain an optional `**Kind:** hole | contradiction | bug` header line (no line = bug) so the three counters are yours to classify; the DELIVERY: line in AGENT_GUIDE, MASTER_PLAN, the four loops, both closing ceremonies, /what-next and the judge call point moved to the vector form, with a new `owed questions:` slot fed by the project's queue command.",
+      "Confusion at a fork is a RESEARCH TRIGGER, never a verdict (2.6, epic FK; origin issue #50 — the owner's own rule): when the owner's proposal seems to break a model, a rule or a test you hold, the canon now orders web search → a measurement over the owner's data → a question in interviews/ — and a message \"your proposal breaks X / cannot / impossible / contradicts\" without a `Recon:` block (query · found · measurement) is a judge-hunted finding; rolling back owner-ordered work because a guard went red goes to interviews/ as a fork with the guard's output quoted, never into a report line. Your local canon may already carry a house rule of this shape — keep it; the shipped rule adds the order and the block form.",
       "Update machinery changed FOUR behaviours on the real route (2.6, epic UR; origin issues #42, #48, #44, #40): (1) the loader REFUSES an unknown flag before it downloads anything, and `install` takes `--rehearsal <receipt>` — a sandbox receipt binds the bootstrap route the same way it binds `update`; the auto record is consumed on both routes; (2) files that differ from their template ONLY by hand-filled slots (`<BUILD_COMMAND>`, `<TEST_HARNESS>`, the co-author line) are UNTOUCHED — they are replaced mechanically with the fills kept and retired mechanically when deprecated, so the three hand merges and one hand deprecation you did on every interval stop appearing in the task; the fills are derived from your disk and cached in `.kaif/deploy-manifest.json` as `fills`; (3) the `stale-claims` item lists lines asserting ANY version older than the one being installed — expect lines that three green updates never showed you (a badge stuck two releases back), each naming the version it asserts; (4) `report` accepts `not yet` in any case and a `#NN` as \"delivered\" — a hand-delivered pre-2.5 ticket no longer refuses, and a refusal names both legal forms."
     ],
     "2.5": [
@@ -1170,6 +1172,30 @@ technical explanations came back as "I don't understand the problem — as a cus
 question without the four lines is a guard finding, the declared exception is a marker with a
 reason on the line (a name — the taste class).
 
+**The agent's confusion is a sign to search, never to refuse** (the origin owner's word, 2026-09-05,
+origin issue #50; his sentence, rendered from Russian: "if I propose something and it confuses you,
+you don't understand it — that is your direct sign to go and search the internet for what I meant,
+or to ask me"). An owner's proposal that seems to contradict a model, a rule or a test the agent
+holds is a proposal NOT YET UNDERSTOOD — never a wrong one. The order is the owner's, and search
+comes first: (1) a web search for what the owner most likely meant — the term of the owner's domain
+and its usage; (2) a measurement over the owner's own data — the catalogue, the archive, prior
+interview answers; (3) a question in `interviews/` — as a scenario. A message to the owner about his
+proposal saying "it breaks X", "cannot", "impossible", "contradicts" is not sendable without the
+evidence of steps 1–2 — an interview with a `Recon:` block (`query:` · `found:` · `measurement:`;
+`/interview` step 3b) is written instead. Rolling back work the owner asked for because a guard
+went red is a fork in `interviews/` with the guard's output quoted, never a report line — and the
+guards are not disarmed (in the field case the tag-pair model was RIGHT; the reading was wrong). The
+owner's term enters the rule as the worked example: the Cyrillic spelling of "RPG" is the ordinary
+Russian way to write it, so "role-playing game" and "RPG" each have their own Russian twin — two
+complete pairs, not a third tag without one. Field case (#50, three instances in one day in one
+project): the owner's answer "write role-playing game and RPG at once" was read as a third tag, the
+edit rolled back and "not done" delivered as a finding — the owner: "nothing breaks!"; a ten-second
+search, or a look at the catalogue (90 records already carried the pair), would have settled it in
+a minute instead of forty. The rule does not become "always ask the owner": a question without steps
+1–2 is the same defect with better manners. `/fable-judge` hunts "confusion delivered as verdict"; a
+project's question guard may carry the axis (the origin's does — G7, declared exception
+`<!-- questions-guard:verdict-ok reason -->`).
+
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
 agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
@@ -1473,6 +1499,13 @@ the canon, the owner's word); a placeholder without a source is a bug by definit
 is worse than a missing one**. And what the AI *does* legitimately write into the owner's canon stays
 visibly marked (`[AI]…[/AI]` provenance marks — `AGENT_GUIDE.md`) until the owner accepts it: AI text
 must never dissolve into the owner's text unnoticed.
+
+**And one door the owner opened himself (KAIF 2.6, origin issue #50): confusion is a research
+trigger, not a verdict.** The three doors are about the AGENT's gap. When the gap is in the OWNER's
+words — a proposal that seems to break a model, a rule or a test the agent holds — the first door is
+still search (what the owner most likely meant; the owner's own data), the second is the owner's
+answer, and the third — "your proposal breaks X", written without the first two — is the same
+forbidden invention wearing a verdict's clothes (`AGENT_GUIDE.md` → the confusion rule).
 
 **The fourth door — a fork is closed by recon of the domain's authorities, not by reasoning
 (KAIF 2.5).** The three doors are about a missing FACT. Between them and the owner's forks of vision (`/interview`)
@@ -4479,7 +4512,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner** (the customer's language · complete mechanics only). In KAIF rituals this
+> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4520,6 +4553,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Delivery line (KAIF 2.5; the vector form since 2.6).** A session close (`/end-chat-soft`, `/end-chat-force`) or a loop iteration report must open with `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …; moved by: … | blocker: … | owed questions: …` — the delivery VECTOR printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` (`MASTER_PLAN.md` → Delivery vector): six numbers DERIVED from the tree, never asked of the owner. A report without the line, with a zero delta on every component and no named blocker, or with `registry not built yet` and the registry's drafting not named as the next move, is a finding of the false-completion family: every local invariant (honest, green, verified) can hold while the product moved zero (field: 54 sessions, 11 of 389 edges, 0 modes shipped — a framework that graded honesty and never distance to acceptance). A line quoting a metric the owner was ASKED to name is the same finding from the other side: a mechanic that sends the agent to the owner for its parameter is incomplete.
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives — since 2.6 the delivery vector comes from `SYSTEMS_REGISTRY.md`, never from a question.
+   - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -5354,6 +5388,25 @@ Where the project runs a questions guard, a live question whose body carries non
 is a finding (the origin: `questions-guard`, axis G6); the declared exception is a marker with a
 reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question
 with no behaviour to show (a name, the taste class).
+
+### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
+
+The origin owner's rule (origin issue #50): an owner's proposal that confuses you is a proposal you
+have not yet understood — not a wrong one. Before writing an interview about it, and before ANY
+message that says the proposal cannot be done ("breaks the model", "impossible", "contradicts"), run
+the pre-flight `confusion → search → measure → ask`: (1) search the web for what the owner most
+likely meant — the term of the owner's domain and its usage (the Cyrillic spelling of "RPG" is the
+ordinary Russian way to write it, so "role-playing game and RPG at once" meant two complete pairs,
+not a third tag); (2) measure against the owner's own data — the catalogue, the archive, prior
+answers (in the field 90 live records already carried the pair the agent had called impossible);
+(3) only then ask. The interview body — and any report that says "cannot" — carries a `Recon:`
+block: `query: …` · `found: …` · `measurement: …` (a localized wrapper names the block and its three
+keys in the owner's language — the guard of the origin reads both); an empty block is a pre-flight
+refusal, the same way `lintSelfContained` refuses a question that points outward. Rolling back work the owner asked for because a guard went red is a
+fork for THIS document — quote the guard's output inside the question; never disarm the guard to
+make the proposal fit (the guard was right; the reading was wrong). Do not turn this into "always
+ask": a question before the search is the same defect with better manners. `/fable-judge` hunts
+"confusion delivered as verdict".
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the

@@ -118,5 +118,10 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_025_issue_52_returning_user_smoke_in_2.6_or_2.7.md": {
+    "questions": 1,
+    "parsedOptions": 3,
+    "candidateLines": 3
   }
 }

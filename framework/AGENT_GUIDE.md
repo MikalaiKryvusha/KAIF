@@ -841,6 +841,30 @@ technical explanations came back as "I don't understand the problem — as a cus
 question without the four lines is a guard finding, the declared exception is a marker with a
 reason on the line (a name — the taste class).
 
+**The agent's confusion is a sign to search, never to refuse** (the origin owner's word, 2026-09-05,
+origin issue #50; his sentence, rendered from Russian: "if I propose something and it confuses you,
+you don't understand it — that is your direct sign to go and search the internet for what I meant,
+or to ask me"). An owner's proposal that seems to contradict a model, a rule or a test the agent
+holds is a proposal NOT YET UNDERSTOOD — never a wrong one. The order is the owner's, and search
+comes first: (1) a web search for what the owner most likely meant — the term of the owner's domain
+and its usage; (2) a measurement over the owner's own data — the catalogue, the archive, prior
+interview answers; (3) a question in `interviews/` — as a scenario. A message to the owner about his
+proposal saying "it breaks X", "cannot", "impossible", "contradicts" is not sendable without the
+evidence of steps 1–2 — an interview with a `Recon:` block (`query:` · `found:` · `measurement:`;
+`/interview` step 3b) is written instead. Rolling back work the owner asked for because a guard
+went red is a fork in `interviews/` with the guard's output quoted, never a report line — and the
+guards are not disarmed (in the field case the tag-pair model was RIGHT; the reading was wrong). The
+owner's term enters the rule as the worked example: the Cyrillic spelling of "RPG" is the ordinary
+Russian way to write it, so "role-playing game" and "RPG" each have their own Russian twin — two
+complete pairs, not a third tag without one. Field case (#50, three instances in one day in one
+project): the owner's answer "write role-playing game and RPG at once" was read as a third tag, the
+edit rolled back and "not done" delivered as a finding — the owner: "nothing breaks!"; a ten-second
+search, or a look at the catalogue (90 records already carried the pair), would have settled it in
+a minute instead of forty. The rule does not become "always ask the owner": a question without steps
+1–2 is the same defect with better manners. `/fable-judge` hunts "confusion delivered as verdict"; a
+project's question guard may carry the axis (the origin's does — G7, declared exception
+`<!-- questions-guard:verdict-ok reason -->`).
+
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
 agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
