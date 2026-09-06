@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/installer/_thin-intro.md by tools/build-framework.mjs. Edit the source and re-run the tool. -->
-# KAIF — Krinik AI Framework · the entry point · v2.5
+# KAIF — Krinik AI Framework · the entry point · v2.6
 
 > **You are reading an installer bootstrap.** KAIF is a context-resilient, autonomy-disciplined
 > operating framework for the human–AI tandem: externalized memory, accumulated knowledge, bounded
@@ -223,4 +223,4 @@ The framework then runs on its skills: `/resume`, `/pause`, the autonomous loops
 
 MIT License — © 2026 **Mikalai Kryvusha (KOT KRINIK)**. The execution-discipline skills (`fable-*`) are
 vendored from [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
-v2.5 · released 2026-09-04 · origin https://github.com/MikalaiKryvusha/KAIF
+v2.6 · released 2026-09-06 · origin https://github.com/MikalaiKryvusha/KAIF

@@ -1,11 +1,13 @@
 {
   "framework": "KAIF",
-  "version": "2.5",
-  "released": "2026-09-04",
+  "version": "2.6",
+  "released": "2026-09-06",
   "origin": "https://github.com/MikalaiKryvusha/KAIF",
   "tracking": "origin",
   "sphere": "meta/framework",
-  "agents": ["claude-code"],
+  "agents": [
+    "claude-code"
+  ],
   "language": "ru",
   "contour": {
     "projectName": "KAIF",

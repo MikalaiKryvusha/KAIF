@@ -1,9 +1,9 @@
 {
   "name": "KAIF",
   "major": 2,
-  "minor": 5,
-  "codename": "Experienced KAIF",
-  "released": "2026-09-04",
+  "minor": 6,
+  "codename": "Mindful KAIF",
+  "released": "2026-09-06",
   "origin": "https://github.com/MikalaiKryvusha/KAIF",
-  "build": 518
+  "build": 519
 }
