@@ -28,7 +28,7 @@
   - Проверка. `gh release list` не показывает v2.6.
 - **C)** Свой вариант — впишите.
 
-**Answer:**
+**Answer:** C) — Заставка нарисована? Релиз ноутсы написаны? README обновлен под новую версию? Все доделано по 2.6, что оставили в 2.6? <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 6 сентября 2026, 12:36 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 

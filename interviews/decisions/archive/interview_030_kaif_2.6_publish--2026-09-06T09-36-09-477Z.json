@@ -1,0 +1,15 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_030_kaif_2.6_publish.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-09-06T09:36:09.477Z",
+  "atHuman": "6 сентября 2026, 12:36 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "C",
+      "text": "Заставка нарисована? Релиз ноутсы написаны? README обновлен под новую версию? Все доделано по 2.6, что оставили в 2.6?",
+      "comment": ""
+    }
+  }
+}
