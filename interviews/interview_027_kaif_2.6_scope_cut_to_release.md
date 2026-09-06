@@ -72,7 +72,7 @@
   - Проверка. `gh release view v2.6` печатает релиз; в `ideas/29` нет строки про `code-revision`.
 - **D)** Свой вариант — впишите, что оставить и что отложить.
 
-**Answer:**
+**Answer:** B) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 6 сентября 2026, 09:46 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 
