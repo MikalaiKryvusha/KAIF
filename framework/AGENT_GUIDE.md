@@ -853,7 +853,12 @@ Action · Result · Check in the customer's language, the technical explanation 
 instead of it (`/interview` step 3a; the origin's owner decision #98: two questions phrased as
 technical explanations came back as "I don't understand the problem — as a customer"); a live
 question without the four lines is a guard finding, the declared exception is a marker with a
-reason on the line (a name — the taste class).
+reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
+language, never the agent's vocabulary** (the origin's decision #106, its bug 112): in option labels and in
+the Situation · Action · Result lines every named thing is what the owner will see after it; epic codes,
+plan addresses, tool names, flags and canon terms live only in the Check line and in the technical note
+under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions
+guard, the declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
 
 **The agent's confusion is a sign to search, never to refuse** (the origin owner's word, 2026-09-05,
 origin issue #50; his sentence, rendered from Russian: "if I propose something and it confuses you,

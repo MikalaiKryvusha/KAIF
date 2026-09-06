@@ -998,7 +998,12 @@ Action · Result · Check in the customer's language, the technical explanation 
 instead of it (`/interview` step 3a; the origin's owner decision #98: two questions phrased as
 technical explanations came back as "I don't understand the problem — as a customer"); a live
 question without the four lines is a guard finding, the declared exception is a marker with a
-reason on the line (a name — the taste class).
+reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
+language, never the agent's vocabulary** (the origin's decision #106, its bug 112): in option labels and in
+the Situation · Action · Result lines every named thing is what the owner will see after it; epic codes,
+plan addresses, tool names, flags and canon terms live only in the Check line and in the technical note
+under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions
+guard, the declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
 
 **The agent's confusion is a sign to search, never to refuse** (the origin owner's word, 2026-09-05,
 origin issue #50; his sentence, rendered from Russian: "if I propose something and it confuses you,
@@ -4588,6 +4593,22 @@ is a finding (the origin: `questions-guard`, axis G6); the declared exception is
 reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question
 with no behaviour to show (a name, the taste class).
 
+**The voice of the conversation is the customer's language, never the agent's vocabulary** (the
+origin owner's word, 2026-09-06, decision #106, rendered from Russian: "this is the voice of
+requirements and questions — the voice of the conversation between the AI agent and the owner; the
+owner reasons in meanings and behavioural scenarios"). The scenario form does not translate the text
+by itself: an epic code can be typed into the Action line and the form stays green — and the owner
+answers "your codes mean nothing to me" (the origin's bug 112, the fourth rejection of one class in a
+month). So in option labels and in the Situation · Action · Result lines every named thing is what
+the owner will SEE or GET after it: not "CB → RW → HY remain" but "the budget warning stops blaming
+the canon that arrived; the agent no longer says done without checking on the real world". Epic
+codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, in the
+answer-target line and in the technical note under the scenario. The pre-show check is the
+customer's eye: is there a word in the question the owner never said himself? The origin guards the
+class with axis G8 of the same questions guard (epic codes read from the meta-plan tables; the
+declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`); `/fable-judge` hunts
+"owner text in agent vocabulary".
+
 ### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
 
 The origin owner's rule (origin issue #50): an owner's proposal that confuses you is a proposal you
@@ -5584,7 +5605,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world). In KAIF rituals this
+> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5628,6 +5649,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
    - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
+   - **Owner text in agent vocabulary (KAIF 2.6).** An owner-facing text — a question, an option label, a Situation · Action · Result line, a report line the owner reads as the customer — that names a thing by the agent's working vocabulary (an epic code or a chain of them, a plan or bug address, a tool invocation, a flag, a canon term) instead of by what the owner will SEE or GET after it, is a finding: the scenario form was satisfied and the owner still could not choose (the origin's bug 112 — four rejections of one class in a month; the owner's word, decision #106: "the owner reasons in meanings and behavioural scenarios"). Hunt option labels and scenario lines for `XX → YY` chains, `node …/` invocations, `--flags`, `plans/NN`; the Check line, the answer-target line and a technical note under the scenario are the legal homes for all of these. The declared exception is a marker with a reason on the line (`questions-guard:vocabulary-ok`); a dead round the owner already commented on is not a live question.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

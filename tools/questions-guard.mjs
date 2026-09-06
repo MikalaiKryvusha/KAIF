@@ -25,6 +25,10 @@
 //          как приговор; цитаты сняты; исключение — маркер verdict-ok с причиной;
 //   G6  — (2.6, №98) живой вопрос без четырёхстрочного сценария Ситуация · Действие · Результат ·
 //         Проверка — владелец как заказчик не понимает предмет; действует вперёд от даты интервью.
+//   G8  — (2.6, bugs/112, слово владельца №106) СЛОВАРЬ АГЕНТА в тексте, который читает владелец: коды
+//         эпиков (данные — из таблиц эпиков живых мета-планов), вызовы инструментов, флаги, адреса документов
+//         в подписях вариантов и строках Ситуация · Действие · Результат живого вопроса; «Проверка»,
+//         «Адресат ответа», цитаты «…», мёртвые раунды с комментарием владельца — тихие; вперёд от 2026-09-06.
 //
 // Запуск:  node tools/questions-guard.mjs            — прогон по репозиторию (exit 1 на новом)
 //          node tools/questions-guard.mjs --selftest — мутации на временной фикстуре
@@ -114,6 +118,68 @@ const SUBJECT_RE = /(?:владел\p{L}*|\bowner'?s?\b|предложен\p{L}*
 const RECON_HEAD_RE = /(?:Разведка|Recon)\s*:/u;
 const RECON_WINDOW_LINES = 12;
 const VERDICT_OK_MARK = /<!--\s*questions-guard:verdict-ok\s+\S/u;
+// G8 (2.6, bugs/112 — слово владельца №106, 2026-09-06: «голос требований, вопросов - голос беседы ИИ агента с
+// владельцем. Владелец рассуждает в терминах и понятиях смыслов и поведенческих сценариев»; раунд 1 №027 — «твои CW
+// мне ничего не говорят. Я Заказчик»): СЛОВАРЬ АГЕНТА в тексте владельцу. Ось G6 судит ФОРМУ (четыре строки) —
+// строка сценария, написанная кодами, проходит её целиком; эта ось судит СЛОВАРЬ. Словарь — ДАННЫЕ: коды эпиков
+// читаются из таблиц эпиков живых мета-планов (plans/*EPIC*.md, строка «| N | **XX «…»), остальное — механические
+// приметы (вызов инструмента, флаг команды, адрес документа). Охват — подписи вариантов и строки Ситуация ·
+// Действие · Результат ЖИВОГО вопроса; строка «Проверка», «Адресат ответа», код-блоки и цитаты «…»/"…" не судятся —
+// там кухня законна. Мёртвый раунд (пустой Answer, но есть комментарий владельца — owner-review) не живой.
+// Термины канона («страж», «свод», «реестр пар») и слова одной сферы ось НЕ стережёт (GAP) — их держат правило
+// голоса беседы (/interview 3a) и охота судьи «owner text in agent vocabulary».
+//
+// @guard questions-guard-G8
+// THREAT:         вопрос владельцу, чьи варианты и сценарии написаны словарём агента — владелец отвечает словом о
+//                 языке вместо выбора (bugs/112: четыре вхождения за месяц — №62 · №98 · №026 · №027)
+// PROVED-AGAINST: селфтест — фикстура по форме Q1 №027 (цепочка кодов в подписи варианта) и вызов инструмента в строке
+//                 «Действие» → красный; форма Q2 №027, тот же вызов в «Проверка», код в цитате «…», мёртвый раунд с
+//                 комментарием владельца, маркер vocabulary-ok → зелёный
+// GAP:            термины канона и слова одной сферы не стережёт — держат правило 3a и судья
+// ON-REAL-PATH:   живой прогон истока 2026-09-06 после VB2 — Q2 №027 тихий, Q1 №027 — мёртвый раунд
+const FORWARD_SINCE_G8 = '2026-09-06';
+const G8_LINE_RE = /^\s*(?:-\s*)?(?:Ситуация|Действие|Результат|Situation|Action|Result)\./u;
+const G8_OPTION_RE = /^\s*(?:-\s*\*\*[A-ZА-Я]\)|\|\s*\*\*[A-ZА-Я](?:\s*\([^)]*\))?\*\*)/u;
+const G8_CHAIN_RE = /(?<![\p{L}\d])[A-Z]{2}(?:\s*→\s*[A-Z]{2})+(?![\p{L}\d])/u;
+const AGENT_VOCABULARY = [ // приметы-данные: имя для отчёта · регэксп
+  { name: 'вызов инструмента', re: /\bnode\s+(?:tools|\.kaif|dist)\/[\w./-]+|\bnpm run\b/u },
+  { name: 'флаг команды', re: /(?:^|[\s(`])--[a-z][\w-]*/u },
+  { name: 'адрес документа', re: /\b(?:plans|bugs|ideas|researches|reports)\/\d+/u },
+];
+const VOCAB_OK_MARK = /<!--\s*questions-guard:vocabulary-ok\s+\S/u;
+const OWNER_COMMENT_RE = /owner-review:/u; // след контура: владелец уже ответил комментарием — раунд мёртв
+const EPIC_ROW_RE = /^\|\s*\d+[\p{L}]?\s*\|\s*\*\*([A-Z]{2})\s*«/gmu;
+const epicCodesCache = new Map();
+// Коды эпиков — из таблиц эпиков мета-планов (имя файла несёт EPIC): данные проекта, не список в коде.
+const epicCodes = (root) => {
+  if (epicCodesCache.has(root)) return epicCodesCache.get(root);
+  const codes = new Set();
+  const dir = join(root, 'plans');
+  if (existsSync(dir)) for (const f of readdirSync(dir)) {
+    if (!/EPIC/i.test(f) || !/\.md$/.test(f) || /DONE/i.test(f)) continue; // живые мета-планы: закрытые (DONE) не читаются
+    for (const m of stripBom(readFileSync(join(dir, f), 'utf8')).matchAll(EPIC_ROW_RE)) codes.add(m[1]);
+  }
+  epicCodesCache.set(root, codes);
+  return codes;
+};
+// Находки G8 по телу вопроса: [{ line, found[] }] — только судимые строки, цитаты и комментарии сняты.
+function g8Hits(body, codes) {
+  const hits = []; let inFence = false;
+  const codeRe = codes.size ? new RegExp('(?<![\\p{L}\\d])(' + [...codes].join('|') + ')(?![\\p{L}\\d])', 'u') : null;
+  for (const raw of body || []) {
+    if (/^\s*(```|~~~)/.test(raw)) { inFence = !inFence; continue; }
+    if (inFence) continue;
+    if (!(G8_LINE_RE.test(raw) || G8_OPTION_RE.test(raw))) continue;
+    const bare = raw.replace(/<!--[^]*?-->/g, '').replace(/«[^»]*»|"[^"]*"/gu, '');
+    const found = [];
+    const chain = bare.match(G8_CHAIN_RE);
+    if (chain) found.push('цепочка кодов «' + chain[0] + '»');
+    else if (codeRe) { const m = bare.match(codeRe); if (m) found.push('код эпика «' + m[1] + '»'); }
+    for (const v of AGENT_VOCABULARY) { const m = bare.match(v.re); if (m) found.push(v.name + ' «' + m[0].trim() + '»'); }
+    if (found.length) hits.push({ line: raw.trim().slice(0, 90), found });
+  }
+  return hits;
+}
 const readShownMap = (root) => {
   const p = resolve(root, SHOWN_FILE);
   if (!existsSync(p)) return {};
@@ -286,10 +352,15 @@ function parseInterview(root, p) {
     // G6 (№98): в теле вопроса есть все четыре строки сценария — или объявленный отказ с причиной.
     scenario: SCENARIO_KEYS.every((re) => re.test((q.body || []).join('\n'))),
     noScenario: NO_SCENARIO_MARK.test((q.body || []).join('\n')),
+    // G8 (bugs/112): словарь агента в судимых строках; исключение — маркер; мёртвый раунд — комментарий владельца.
+    vocab: g8Hits(q.body, epicCodes(root)),
+    vocabOk: VOCAB_OK_MARK.test((q.body || []).join('\n')),
+    ownerCommented: OWNER_COMMENT_RE.test((q.body || []).join('\n')),
   }));
   const lines = readLines(p);
+  const hd = headDate(lines);
   return { file: name, num, closed: st === 'closed', waiting: st === 'waiting', questions,
-    forward: isForward(lines), ageDays: Math.floor((Date.now() - statSync(p).mtimeMs) / DAY_MS) };
+    forward: isForward(lines), forwardG8: Boolean(hd) && hd >= FORWARD_SINCE_G8, ageDays: Math.floor((Date.now() - statSync(p).mtimeMs) / DAY_MS) };
 }
 
 function scanInterviews(root) {
@@ -352,6 +423,10 @@ function scanInterviews(root) {
       // (bugs/111: два вопроса вернулись словом «не понимаю проблему»). Вперёд от даты интервью.
       if (iv.forward && !q.scenario && !q.noScenario) out.unanswerable.push({ file: iv.file, q: q.id,
         noScenario: true, key: `${iv.file}#${q.id}#no-scenario` });
+      // G8 (bugs/112): словарь агента в подписях вариантов и строках сценария живого вопроса. Вперёд от
+      // 2026-09-06; мёртвый раунд (комментарий владельца при пустом Answer) и объявленное исключение — тихие.
+      if (iv.forwardG8 && q.vocab.length > 0 && !q.vocabOk && !q.ownerCommented) out.unanswerable.push({
+        file: iv.file, q: q.id, vocab: q.vocab, key: `${iv.file}#${q.id}#agent-vocabulary` });
     }
 
     if (!iv.num) continue;
@@ -456,7 +531,14 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
     ...iv.propagation.map((d) => ({ ...d, kind: 'разнос не выполнен (I20)', text: `${d.q} → ${d.target}` })),
     // bugs/62: вопрос, который владелец не может ОТВЕТИТЬ в один клик. Отказ называет верный ход
     // (семейство 12) — обе легальные формы варианта и законный выход «свободный вопрос».
-    ...iv.unanswerable.map((u) => (u.noScenario
+    ...iv.unanswerable.map((u) => (u.vocab
+      ? { ...u, kind: 'СЛОВАРЬ АГЕНТА в вопросе владельцу (G8, bugs/112)',
+          text: `${u.q}: ` + u.vocab.map((h) => h.found.join(', ') + ' — «' + h.line + '»').join('; ')
+              + '. Слово владельца: «Я Заказчик - и я говорю на языке смыслов, поведенческих сценариев». '
+              + 'Назови каждую вещь тем, что владелец увидит после неё; коды, инструменты, флаги и адреса — '
+              + 'в строку «Проверка» или в примечание под сценарием; исключение — '
+              + '<!-- questions-guard:vocabulary-ok причина -->' }
+      : u.noScenario
       ? { ...u, kind: 'вопрос БЕЗ СЦЕНАРИЯ (G6, №98)',
           text: `${u.q}: ни одного четырёхстрочного сценария «что владелец увидит». Слово владельца: `
               + '«Я просил описывать требования поведенческими сценариями, и ты сам этим не пользуешься… '
@@ -711,6 +793,40 @@ function selftest() {
         '3. Длинный пункт списка, где решение владельца подтверждено — ПОДТВЕРЖДЕНО: интервью\n' +
         '   №091, Q1 (перенос строки ровно как в живом `plans/48`).\n');
     },
+    false, '');
+
+  // ── G8 (2.6, bugs/112): словарь агента в вопросе владельцу — семь мутаций с предсказанием ──────
+  const EPIC_PLAN = '# План 89 — EPIC тест\n\n> **Создан:** 2026-09-06\n\n| # | Эпик | Что |\n|---|---|---|\n'
+    + '| 1 | **CB «Бюджет»** | x |\n| 2 | **RW «Реальный мир»** | y |\n| 3 | **HY «Гигиена»** | z |\n| 4 | **CR «Ревью»** | w |\n| 5 | **RL «Релиз»** | v |\n';
+  const IV_G8 = (optA, action, tail = '') => '# Interview #096\n\n> Status: **🟡 awaiting**\n> Created: 2026-09-06\n\n### Q1. Что оставить до релиза?\n\n'
+    + '- **A)** ' + optA + '\n  - Ситуация. Версия готова на 10 критериев из 16.\n  - Действие. ' + action + '\n'
+    + '  - Результат. Вы видите релиз через два чата.\n  - Проверка. `gh release view v2.6` печатает релиз.\n'
+    + '- **B)** Ничего не откладывать.\n  - Ситуация. Та же.\n  - Действие. Агент делает все дела по порядку.\n'
+    + '  - Результат. Вы видите релиз через четыре чата.\n  - Проверка. `gh release view v2.6` печатает релиз.\n\n' + tail + '**Answer:**\n';
+  const CLEAN_A = 'Отложить только ревью навыка Фейблом.';
+  const CLEAN_ACT = 'Агент делает четыре коротких дела, долгое записывает в реестр следующей версии.';
+  mut('цепочка кодов эпиков в подписи варианта (G8, Q1 №027) → красный', 'нарушение «СЛОВАРЬ АГЕНТА» — цепочка кодов «CB → RW → HY → RL»',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md', IV_G8('В 2.7 уезжает только CR. Остаются CB → RW → HY → RL.', CLEAN_ACT)); },
+    true, 'СЛОВАРЬ АГЕНТА');
+  mut('вызов инструмента в строке «Действие» (G8) → красный', 'нарушение «СЛОВАРЬ АГЕНТА» — вызов инструмента',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md', IV_G8(CLEAN_A, 'Агент запускает `node tools/questions-guard.mjs`.')); },
+    true, 'СЛОВАРЬ АГЕНТА');
+  mut('дела названы тем, что владелец увидит (G8, Q2 №027) → зелёный', '0 нарушений: словаря агента в судимых строках нет',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md', IV_G8(CLEAN_A, CLEAN_ACT)); },
+    false, '');
+  mut('тот же вызов инструмента только в строке «Проверка» (G8) → зелёный', '0 нарушений: «Проверка» — законное место команды',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md', IV_G8(CLEAN_A, CLEAN_ACT).replace('`gh release view v2.6` печатает релиз.\n- **B)', '`node tools/questions-guard.mjs --selftest` зелёный.\n- **B)')); },
+    false, '');
+  mut('код эпика внутри цитаты слов владельца «…» (G8) → зелёный', '0 нарушений: цитата снимается до проверки',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md', IV_G8('Слово владельца: «оставь CB и RW» — исполнить как сказано.', CLEAN_ACT)); },
+    false, '');
+  mut('мёртвый раунд: пустой Answer, но есть комментарий владельца (G8) → зелёный', '0 нарушений: раунд отклонён владельцем, вопрос не живой',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md',
+      IV_G8('В 2.7 уезжает только CR. Остаются CB → RW → HY → RL.', CLEAN_ACT, '**Комментарий владельца (6 сентября 2026):** твои CW мне ничего не говорят <!-- owner-review: by X -->\n\n')); },
+    false, '');
+  mut('объявленное исключение vocabulary-ok с причиной (G8) → зелёный', '0 нарушений: маркер с причиной гасит ось',
+    () => { w('plans/89_EPIC_test.md', EPIC_PLAN); w('interviews/interview_096_x.md',
+      IV_G8('Остаются CB → RW → HY → RL.', CLEAN_ACT, '<!-- questions-guard:vocabulary-ok владелец сам попросил показать порядок кодами -->\n\n')); },
     false, '');
 
   // ── Круг R2, ось G: у вопроса НЕСКОЛЬКО адресатов, и судится КАЖДЫЙ ──────────────────────

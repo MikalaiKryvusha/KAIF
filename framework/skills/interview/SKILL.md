@@ -124,6 +124,22 @@ is a finding (the origin: `questions-guard`, axis G6); the declared exception is
 reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question
 with no behaviour to show (a name, the taste class).
 
+**The voice of the conversation is the customer's language, never the agent's vocabulary** (the
+origin owner's word, 2026-09-06, decision #106, rendered from Russian: "this is the voice of
+requirements and questions — the voice of the conversation between the AI agent and the owner; the
+owner reasons in meanings and behavioural scenarios"). The scenario form does not translate the text
+by itself: an epic code can be typed into the Action line and the form stays green — and the owner
+answers "your codes mean nothing to me" (the origin's bug 112, the fourth rejection of one class in a
+month). So in option labels and in the Situation · Action · Result lines every named thing is what
+the owner will SEE or GET after it: not "CB → RW → HY remain" but "the budget warning stops blaming
+the canon that arrived; the agent no longer says done without checking on the real world". Epic
+codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, in the
+answer-target line and in the technical note under the scenario. The pre-show check is the
+customer's eye: is there a word in the question the owner never said himself? The origin guards the
+class with axis G8 of the same questions guard (epic codes read from the meta-plan tables; the
+declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`); `/fable-judge` hunts
+"owner text in agent vocabulary".
+
 ### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
 
 The origin owner's rule (origin issue #50): an owner's proposal that confuses you is a proposal you
