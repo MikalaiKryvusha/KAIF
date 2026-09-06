@@ -85,7 +85,7 @@ README EN/RU и ноты 2.6 называют версию одним имене
       (симметрично, якоря README сняты с живой страницы — EXP-0108; правило @fork фразой линтера — из CB → в 2.7,
       здесь только если дёшево); логотип `build-team-logo.mjs --title "KAIF 2.6 — <имя>"` (после RL4); story-card;
       `readme-pdf`; линты витрины.
-- [ ] **RL3 — черновики ответов в issues #40–#53.** Свести из планов эпиков в § «Черновики ответов» этого плана
+- [x] **RL3 — черновики ответов в issues #40–#53 — 2026-09-06 11:21 +03:00.** Тринадцать текстов (EN, как тикеты) сведены ниже из планов 90–94/96 и квитанций; поправлены по решению №105 (пункты, уехавшие с CB в 2.7, названы отложенными словом владельца) и по находке суда D-F3 (#52 — языком результата); отправка — после публикации, по тикету, `<release link>` — в момент отправки. Замысел шага был: Свести из планов эпиков в § «Черновики ответов» этого плана
       (языком результата, без кодов эпиков и внутренней кухни — №92/№106); квитанции для полевых отчётов.
 - [ ] **RL4 — имя версии (слово владельца №96).** Один вопрос страницей контура: варианты имён на «M» (Mindful KAIF —
       рабочее; ещё два кандидата) сценариями «что вы увидите в заголовке релиза и README»; ответ — в `MASTER_PLAN` §7,
@@ -122,9 +122,63 @@ README EN/RU и ноты 2.6 называют версию одним имене
 2. Правка `@fork` во фразе нот (часть CB, → 2.7) в 2.6 не делается; ноты 2.6 называют линтер той фразой, что и он сам,
    без нового правила.
 
-## Черновики ответов в полевые issues (RL3; отправка — ПОСЛЕ релиза)
+## Черновики ответов в полевые issues (RL3; отправка — ПОСЛЕ релиза, по тикету, без вычитки — №84/№92; закрытие тем же комментарием — №93; полевые отчёты — квитанцией — №94; проекты не называются — №90; язык — EN, как тикеты; `<release link>` — в момент отправки)
 
-Заполняется на RL3 из § «Черновики ответов» планов 90–98.
+**#40 (bug):**
+
+> Fixed in KAIF 2.6 (<release link>). `report` reads the `Delivered upstream:` contract as a PARAGRAPH (the line plus its wrapped continuations), accepts `not yet` in any case, treats a URL or `#NN` anywhere in it as delivered (idempotent — no duplicate issue), and a refusal names both legal forms and the exact edit. Guarded by the polygon (suite `s17`) — red on the 2.5 core for all three shapes you listed. Closing with this comment.
+
+**#42 (improvement request, three projects in one day):**
+
+> Fixed in KAIF 2.6 (<release link>). `--rehearsal <receipt>` is accepted by `install` now, so the bootstrap line the canon recommends for translated deployments takes the sandbox receipt directly: `node KAIF-LOADER.mjs --lang ru --rehearsal <copy>/.kaif/last-update.json`. The loader validates every flag BEFORE it downloads anything — an unknown flag is refused with nothing fetched and nothing written, so a tree can no longer be left with a new core under an old marker. The auto record `.kaif/update-rehearsal.json` is consumed on the bootstrap route as well. `diff --source` and `update` judge candidates by ONE predicate, so the rehearsal file and the receipt count the same files. Your `cp` route keeps working and is named in `/kaif-update` as the equivalent where the flag cannot be passed; the skill also carries "download the assets once, hand `--source <dir>` to both runs" and the Windows `core.longpaths` note. Guarded by polygon suite `s21` — red on the 2.5 core exactly as you reported. Three confirmations in one day made this the second epic of 2.6 — thank you. Closing with this comment.
+
+**#44 (bug):**
+
+> Fixed in KAIF 2.6 (<release link>). `stale-claims` flags any version token strictly OLDER than the version being installed, not only the one being replaced; every existing exemption stays exactly as it was, and a line stuck on an earlier version names it (`README.md:22 — … (asserts 2.2)`). Your own correction landed too: the two-part compare `gt` is one module-scope definition now. Polygon `s21` C1/C2 — red on 2.5. Closing with this comment.
+
+**#46 (improvement request):**
+
+> Shipped in KAIF 2.6 (<release link>) — not as a widening of the scalar but as the field explanation made canon: the delivery line is now a DERIVED VECTOR. `DELIVERY: systems N · complete A → B % (k of n) · integrated C % (c of d) · holes … · contradictions … · bugs …; moved by: … | blocker: … | owed questions: …` — printed by the new non-mutating command `node .kaif/kaif-core.mjs delivery` (`--json`, `--system <name>`) from `SYSTEMS_REGISTRY.md`. The registry ships as a skeleton (`.kaif/_systems-registry-template.md`): one row per logically separate system, four completeness parts as checkboxes — Specified · Accepted · Implemented · Verified in use — with the percentage always printed with its fraction, and needs declared as «feeds from»; integration = the share of declared needs closed by an implemented system. Holes, contradictions and bugs are counted from the open `bugs/*.md` by a new `Kind: hole | contradiction | bug` header line (no line = bug). The metric is DERIVED: the agent drafts the registry from GOAL.md, MASTER_PLAN.md and both maps and prints the vector from the draft at once; the owner approves the list as vision when ready. Nobody is sent to ask «what to measure» any more — the 2.5 wording is gone from every carrier, and the update task tells a deployment that opened such an interview to close it and build the registry instead. On the ticket's three points: (1) yes, N components — fixed at six; (2) the line keeps its shape, every component that moved gets its own arrow, a zero delta on all of them still needs a named blocker; (3) the guidance sentence turned out unnecessary — the axes differ by construction. Thank you: the shape is the one explained in the field, taken verbatim. Closing with this comment.
+
+**#47 (bug):**
+
+> Fixed in KAIF 2.6 (<release link>): the contour now records the third fact — SHOWN. `/owner-reviews` gains invariants I40–I43: the fact of showing is written at the moment the document is in front of the owner (a map next to the decisions, transport named: page · batch · chat); the queue prints the age of waiting and of the last showing and puts never-shown documents FIRST; the queue command has an EXIT CONDITION — a waiting document the owner has never seen stops the ritual until it is raised or the reason is written (`/resume` step 1b; both closing ceremonies and the four loops carry an `owed questions: N (oldest M d, never shown K)` slot in the delivery line). The same day's other word — questions to the owner as a scenario of what the owner will see — is canon too: `/interview` step 3a applies the four-line scenario to every question and every option, and the judge hunts a question without one. Your local fix (the shown map, the age line, the exit code) is the donor of this contract; the update does not replace your tool — the contract matches it by meaning. Thank you for the verbatim words; they are now the reason line of the rule. Closing with this comment.
+
+**#50 (improvement request):**
+
+> Taken into KAIF 2.6 by the owner's word (<release link>). The canon now says what your ticket asked: an owner's proposal that confuses the agent is a proposal not yet understood — never a wrong one. Order is the owner's: web search for what he most likely meant → a measurement over his own data → a question in `interviews/`. A message saying "your proposal breaks X / cannot / impossible" is not sendable without a `Recon:` block (query · found · measurement); rolling back work the owner asked for because a guard went red is a fork in `interviews/` with the guard's output quoted, never a report line; the owner's term enters the rule as the worked example. `/interview` carries the pre-flight, `/fable-judge` hunts "confusion delivered as verdict", the origin's question guard has the axis with your incident as its red fixture. Thank you — three instances in one day made it an epic of its own. Closing with this comment.
+
+**#51 (bug):**
+
+> Taken into KAIF 2.6 by the owner's word (<release link>). The contour no longer gets rebuilt per project: the update brings a one-page executable spec (`.kaif/INTERACTIVE_CONTOUR_SPEC.md` — question/option form, decision and shown records, pre-flight, keep-alive, the "radiogroups = questions" self-check) and a shipped generator (`.kaif/tools/contour/`) with three faces — interview, proofreading, mockup review — reading the project's parameters from `.kaif/kaif.json`, never asking the owner. Its self-test goes red on exactly your case: options typed as paragraphs open a page without radio buttons — the pre-flight now refuses to open it and prints the form to fix. `/owner-reviews` says "run it" (`node .kaif/tools/contour/review.mjs <doc>`), not "build it". The origin itself runs the shipped generator. Thank you — the fourth ticket of this class made the machinery ship. Closing with this comment.
+
+**#52 (improvement request):**
+
+> Taken into KAIF 2.6 (<release link>) — as a class of agent behaviour, not as one more smoke of one project. The agent may no longer say "done" about anything already live until it has verified on the owner's REAL world — with the owner's accumulated sessions, the owner's data, along the owner's own path. Before the word "done" it names how that world differs from its clean stand, and every item ends in one of two outcomes only: verified on the real world, or verified with real state taken from the real world. "Not verified there" is not an outcome any more — it is a stop that names what it waits for. The rule stands in the testing canon of both layers, as an obligation of the fable loop, and as a judge hunt on "done" without it; it arrives with the 2.6 update. Your project's own mechanisms (the returning-user pass, the boot shield, the visible-not-attached check) stay yours — the canon says WHAT must be verified on the real world, not how. Thank you: the class was named by the owner from your incident. Closing with this comment.
+
+**#53 (bug):**
+
+> Taken into KAIF 2.6 by the owner's word (<release link>). The rule "the newest pain is not a priority claim" already stood in `/what-next` as prose — and prose does not rank. In 2.6 the answer has a FORM: it opens with `METRIC:` (the delivery vector) and `MAIN PHASE:` read from the documents; every step carries `moves:`/`closes:`; the owner's words of the last 48 hours that are not yet in GOAL/MASTER_PLAN sit on a separate shelf ("not ranked by the metric", pointer `/fix-vision`); the tech-debt line with numbers is mandatory. A shipped lint (`.kaif/tools/kaif-ranking-lint.mjs`) goes red on exactly your case — the messenger MVP on line 1 with no metric — and `/fable-judge` hunts "recency ranked over metric". Applied to itself: this epic was NOT put first because it was fresh. Closing with this comment.
+
+**#49 (bug — the creed):**
+
+> Fixed in KAIF 2.6 (<release link>). The English carrier of the creed said "WE KEEP TRYING"; the owner's word is "we strive, and whoever strives arrives at success" — the shipped template now carries STRIVE, and a build guard forbids the old verb from returning (`check-framework` reddens on a template with "KEEP TRYING"). A ru deployment that recites the creed from the English template gets the right verb with the 2.6 update; a deployment that translated it locally keeps its own text (localized modules are not overwritten) — re-read the block once after the update. Thank you for the 57-day count: it is what made the class visible. Closing with this comment.
+
+**#41 (field report) — квитанция + закрытие:**
+
+> Thank you — worked into KAIF 2.6 (<release link>): wish 1 — `/kaif-update` says the bootstrap route is MANDATORY for a tree with anchored pairs under a deployed core older than 2.5; wish 2 — #40 fixed; wish 3 — the bootstrap task renders `−`/`+` from the OLD template texts (fetched from the previous release's own artifact; `--baseline <dir>` offline); wish 5 — `core.longpaths` in the sandbox recipe; R8 — the body of #23 is restored (it was double-encoded on the way in; decoded back, no BOM); wish 4 (`@fork` in the linter sentence, the language-mix heuristic) — deferred to 2.7 by the owner's scope cut. Closing with this quittance.
+
+**#43 (field report) — квитанция + закрытие:**
+
+> Thank you — received and worked into KAIF 2.6 (<release link>). Your two separately filed signals (#42, #44) are fixed there; the update-on-the-real-route epic was built on your bootstrap pass. R5 (the `merged` verdict stitching English sections into a half-translated canon file) — deferred to 2.7 by the owner's scope cut: the boundary of "merged" on a mixed file needs its own recon (Cyrillic share per module, not per file). Closing with this quittance.
+
+**#45 (field report) — квитанция + закрытие:**
+
+> Thank you — received and worked into KAIF 2.6 (<release link>). Three versions in one hop on the bootstrap route is exactly the path 2.6 hardens (#42 fixed; the loader refuses unknown flags before downloading; fills derived from disk; stale claims of any age named with file and line); #49 (the creed) is fixed in the shipped template; wish 4 (the "this module came from a field project — if it is yours, you now have a pair" hint in the update news) — deferred to 2.7 by the owner's scope cut. Closing with this quittance.
+
+**#48 (field report) — квитанция + закрытие:**
+
+> Thank you for the report — received and worked into KAIF 2.6 (<release link>). Wish 1 (#42) — fixed there. Wish 2 (R2/R3) — fixed: hand-filled slots are DERIVED from the disk (no new checkpoint, nothing to record by hand) — a file equal to "template + fills" is untouched, replaced mechanically with the fills kept, retired mechanically when deprecated; `update-verify` judges promised lines with the fills folded in (no more "unmerged?" on `<BUILD_COMMAND>` lines); a module already equal to the incoming template is no longer "upstream changed it" (R3). Wish 3 — the flag route above; the `cp` route stays documented as the equivalent. Wish 4 (the language-pack pointer) and the `@fork` doc nit — deferred to 2.7 by the owner's scope cut. Wish 5 (positive) — kept as is. Closing with this quittance.
 
 ## Links
 
