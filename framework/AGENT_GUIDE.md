@@ -359,6 +359,16 @@ arrow on every component that moved, `registry not built yet` until the file exi
 command; printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked FIRST by
 `/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
 
+**KAIF adds a third obligation — at step 5 (verify by observation) and step 7 (report): "DONE" ABOUT
+PRODUCTION COMES AFTER THE REAL WORLD** (origin issue #52; the owner's word: the agent is OBLIGED to verify
+on the real world so as not to break what is already in production). A check on the agent's clean stand is
+not a check of the owner's world, where everything is accumulated; before the word "done" about anything
+already live, the report carries the difference line `REAL WORLD: accumulated · data and machine · path`
+with the outcome "verified on the real world" / "verified with real state" on every item; "not verified
+there" is a stop, not an outcome (the rule and its one exception — `TESTING_FRAMEWORK.md` → "The agent's
+stand is not the owner's real world"); `/fable-judge` hunts "done" without that line (the
+done-without-the-real-world hunt).
+
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
 the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a

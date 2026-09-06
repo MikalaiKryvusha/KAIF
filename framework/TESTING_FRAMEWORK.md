@@ -181,6 +181,30 @@ shipping session skips under pressure). And a post-deploy smoke must be able to 
 product: prove there was something to measure before painting green — a smoke that is greenest
 when the product is emptiest is worse than no smoke.
 
+## The agent's stand is not the owner's real world — "done" about production comes after the real world
+
+The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a
+new user, today's build — and says "done". The owner's world is ACCUMULATED: an old session, a saved
+profile, his own edits in the deployed tree, the cache of the previous build — and there it breaks,
+while every instrument of the agent was green by construction (KAIF 2.6; origin issue #52; the
+owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in
+production). Before the word "done" about anything already in production, the report carries the
+difference line:
+
+```
+REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;
+data and machine — <his data, his device, his account>; path — <the door he actually walks>
+```
+
+Each item has exactly two legal outcomes — *verified on the real world* (on his state, his data, his
+path) or *verified with real state taken from the real world* (seeded from there, never invented).
+"not verified there" is not an outcome: it is a STOP — the work stands and names what it waits for
+(access · the machine · the owner's word). The one exception is the owner's word about a specific
+check that CHANGES his state (writing into his live profile): then the check waits for the owner at
+the machine, and "done" is not said. Gates 6–7 tell you to enter production as a user; this rule
+tells you WHOSE production — his, with everything it has accumulated. `/fable-judge` hunts "done"
+about production without the difference line (the done-without-the-real-world hunt).
+
 ## The taste class — when the observer must be human
 
 A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural,

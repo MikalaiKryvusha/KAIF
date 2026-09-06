@@ -504,6 +504,16 @@ arrow on every component that moved, `registry not built yet` until the file exi
 command; printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked FIRST by
 `/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
 
+**KAIF adds a third obligation — at step 5 (verify by observation) and step 7 (report): "DONE" ABOUT
+PRODUCTION COMES AFTER THE REAL WORLD** (origin issue #52; the owner's word: the agent is OBLIGED to verify
+on the real world so as not to break what is already in production). A check on the agent's clean stand is
+not a check of the owner's world, where everything is accumulated; before the word "done" about anything
+already live, the report carries the difference line `REAL WORLD: accumulated · data and machine · path`
+with the outcome "verified on the real world" / "verified with real state" on every item; "not verified
+there" is a stop, not an outcome (the rule and its one exception — `TESTING_FRAMEWORK.md` → "The agent's
+stand is not the owner's real world"); `/fable-judge` hunts "done" without that line (the
+done-without-the-real-world hunt).
+
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
 the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
@@ -1814,6 +1824,30 @@ has hooks, deny the raw deploy command; a rule that lives only in a document is 
 shipping session skips under pressure). And a post-deploy smoke must be able to FAIL on a dead
 product: prove there was something to measure before painting green — a smoke that is greenest
 when the product is emptiest is worse than no smoke.
+
+## The agent's stand is not the owner's real world — "done" about production comes after the real world
+
+The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a
+new user, today's build — and says "done". The owner's world is ACCUMULATED: an old session, a saved
+profile, his own edits in the deployed tree, the cache of the previous build — and there it breaks,
+while every instrument of the agent was green by construction (KAIF 2.6; origin issue #52; the
+owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in
+production). Before the word "done" about anything already in production, the report carries the
+difference line:
+
+```
+REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;
+data and machine — <his data, his device, his account>; path — <the door he actually walks>
+```
+
+Each item has exactly two legal outcomes — *verified on the real world* (on his state, his data, his
+path) or *verified with real state taken from the real world* (seeded from there, never invented).
+"not verified there" is not an outcome: it is a STOP — the work stands and names what it waits for
+(access · the machine · the owner's word). The one exception is the owner's word about a specific
+check that CHANGES his state (writing into his live profile): then the check waits for the owner at
+the machine, and "done" is not said. Gates 6–7 tell you to enter production as a user; this rule
+tells you WHOSE production — his, with everything it has accumulated. `/fable-judge` hunts "done"
+about production without the difference line (the done-without-the-real-world hunt).
 
 ## The taste class — when the observer must be human
 
@@ -5550,7 +5584,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken). In KAIF rituals this
+> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5593,6 +5627,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives — since 2.6 the delivery vector comes from `SYSTEMS_REGISTRY.md`, never from a question.
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
    - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
+   - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
