@@ -61,6 +61,22 @@ function findIn(text, names) {
   return hits;
 }
 
+// Ось №90 (2.6, эпик HY): ПСЕВДОНИМ донора («project A…F») в поставке — тоже ссылка на проект владельца, и
+// потребителю она не нужна (слово владельца: «нужно поменьше ссылаться на какие-либо проекты в KAIF, ТЕМ БОЛЕЕ — в
+// поставке»). Законное исключение — строка с пометкой source-kept: источник несёт смысл правила (контраст ДВУХ
+// независимых проектов = сила свидетельства). Реестры суда (reports/KAIF_AUDIT) — НЕ поставка: там псевдоним —
+// цель замены, ось их не судит; слепок портрета AUTHOR_STYLOMETRY.md — тоже (псевдонимы там ставит генератор слепка).
+const PSEUDONYM_RE = /\bproject [A-F]\b/g;
+const PSEUDONYM_SKIP_ZONE = /^reports[\\/]KAIF_AUDIT|AUTHOR_STYLOMETRY[.]md/;
+function findPseudonyms(text) {
+  const hits = [];
+  text.split(/\r?\n/).forEach((line, i) => {
+    if (line.includes("source-kept")) return;
+    for (const m of line.matchAll(PSEUDONYM_RE)) hits.push({ n: i + 1, quote: line.slice(Math.max(0, m.index - 40), m.index + 50).trim() });
+  });
+  return hits;
+}
+
 function loadList(root = process.cwd()) {
   const p = path.join(root, LIST);
   if (!fs.existsSync(p)) return null;
@@ -109,6 +125,14 @@ function selftest() {
   console.log(`${noList === null ? '✅' : '❌'} без списка: страж честно молчит вместо ложного зелёного`);
   if (noList !== null) bad++;
 
+  // 5. Ось №90: псевдоним донора без source-kept — красный; с пометкой — молчание.
+  const pseudoLeak = findPseudonyms('// field-caught on project A, 2026-07-17: 18 skills templated over.\n');
+  console.log(`${pseudoLeak.length === 1 ? '✅' : '❌'} псевдоним донора без source-kept: находок ${pseudoLeak.length} (ждали 1)`);
+  if (pseudoLeak.length !== 1) bad++;
+  const pseudoKept = findPseudonyms('// (project B Г5, project A гр.4) // source-kept: two independent field reports\n');
+  console.log(`${pseudoKept.length === 0 ? '✅' : '❌'} псевдоним с пометкой source-kept: находок ${pseudoKept.length} (ждали 0)`);
+  if (pseudoKept.length) bad++;
+
   fs.rmSync(root, { recursive: true, force: true });
   console.log(bad ? `\n❌ selftest FAILED — ${bad}` : '\n✅ selftest OK — красный на утечке, молчание на похожем слове');
   process.exit(bad ? 1 : 0);
@@ -127,7 +151,15 @@ if (!list) {
 let bad = 0;
 for (const zone of list.scanned) {
   for (const file of walk(zone)) {
-    const hits = findIn(fs.readFileSync(file, 'utf8'), list.names);
+    const text = fs.readFileSync(file, 'utf8');
+    const hits = findIn(text, list.names);
+    const ph = PSEUDONYM_SKIP_ZONE.test(zone) ? [] : findPseudonyms(text);
+    if (ph.length) {
+      console.log(`❌ ${file} — псевдоним донора без source-kept (№90)`);
+      for (const h of ph.slice(0, 5)) console.log(`      стр. ${h.n}: …${h.quote}…`);
+      if (ph.length > 5) console.log(`      … и ещё ${ph.length - 5}`);
+      bad += ph.length;
+    }
     if (!hits.length) continue;
     console.log(`❌ ${file}`);
     for (const h of hits.slice(0, 5)) {

@@ -1793,7 +1793,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "a1b45d7beb7737681e2043fd097d94c3270d636ef192c7ee263d824610d0532e",
+        "sha256": "4a60cfc6d7d70e81e1b750a67bcf2f56871909a924f1e0800d3d7320aa9e96fe",
         "lines": [
           1,
           5
@@ -2542,7 +2542,7 @@
       {
         "signature": "## Step 5 - Verify by observation",
         "class": "static",
-        "sha256": "6db3b89a9e91dec2e2dfdcf003ed6724a754782391e70d8bbf7bd0f00018a5d6",
+        "sha256": "d4cc14dd8bda3c356b3776465886cbe963ae0a2c5f5302735a6a5615d7b4b371",
         "lines": [
           102,
           121
@@ -3400,7 +3400,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "bb7dbbac0019e23d48c4797568cdc196e5ce921c234354b6e48d39ba508f321f",
+        "sha256": "bea42f3fa9156548a30dad20aa9a3b15bbe07b7ee221663cd7be5ed9d7ad85b7",
         "lines": [
           1,
           5
@@ -3528,7 +3528,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "01f991978b5fab38604c80ae4ae03d1476b8c04953f59142fd4911c536dfb372",
+        "sha256": "c0544ed65509818b3b4b1e3d79b9aacb06842497d16e3b2fe55c9e0e8b25080b",
         "lines": [
           1,
           5

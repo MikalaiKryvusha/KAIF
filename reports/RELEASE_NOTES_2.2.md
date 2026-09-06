@@ -47,7 +47,7 @@ Work on 2.2 started on 2026-08-07 at 00:00 and finished on 2026-08-09 at 20:00.
 - The same work by human hands: **≈ 7,400 man-hours** — five engineers for 186 working days.
 - Paid: **$55** — a Claude Max month is four weeks at $62.50, and the version burnt 88% of one week's limit. At Anthropic's public API prices the same volume of work would cost **≈ $4,500**.
 
-The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#85-interesting-facts).
+The full table lives in the [README](https://github.com/MikalaiKryvusha/KAIF#8-reference).
 
 ---
 
@@ -112,7 +112,7 @@ Ask your agent for `/kaif-update`. The update is mechanical and respects every l
 - Трудозатраты живых людей на ту же работу: **≈ 7 400 человеко-часов** — пять инженеров на 186 рабочих дней.
 - Заплачено: **$55** — месяц Claude Max это четыре недели по $62,50, а версия сожгла 88 % недельного лимита. По публичному прайсу API Anthropic такой же объём работы стоил бы **≈ $4 500**.
 
-Полная таблица — в [README](https://github.com/MikalaiKryvusha/KAIF#85-интересные-факты).
+Полная таблица — в [README](https://github.com/MikalaiKryvusha/KAIF#8-справочные-сведения).
 
 ---
 

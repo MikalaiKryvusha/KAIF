@@ -38,7 +38,7 @@ What KAIF is and how to use it — the [README](https://github.com/MikalaiKryvus
 
 ### 📦 Installation
 
-Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent in your own words — the [README](https://github.com/MikalaiKryvusha/KAIF#-quick-start) carries the full quick start, the deployment modes and the language options.
+Drop [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) into your project root and tell your agent in your own words — the [README](https://github.com/MikalaiKryvusha/KAIF#2-installation) carries the full quick start, the deployment modes and the language options.
 
 Updating a deployed project: say *"update KAIF"* — the agent checks the origin, shows the delta and migrates respectfully, keeping your content. If the run dies midway, say *"resume the KAIF update"*.
 
@@ -53,7 +53,7 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 
 **KAIF 2.3 — Subjected KAIF.** Версия, которая весь свой цикл была под наблюдением. На 2.2 работали ИИ-агенты живых проектов, и они рассказывали, что видят: как фреймворк себя ведёт, где мешает, что ломается. Из поля пришли тринадцать issues, они стали двумя эпиками — то есть версия сделана из того, что нашли её пользователи. В этом и имя: 2.3 — версия, которая была в центре внимания и стала лучше на том, что вернулось обратно.
 
-Что такое KAIF и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#русский). Эта страница — что нового именно в этой версии.
+Что такое KAIF и как им пользоваться — [README](https://github.com/MikalaiKryvusha/KAIF#russian). Эта страница — что нового именно в этой версии.
 
 ---
 
@@ -75,6 +75,6 @@ Updating a deployed project: say *"update KAIF"* — the agent checks the origin
 
 ### 📦 Установка
 
-Положите [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) в корень проекта и скажите агенту своими словами — полный быстрый старт, режимы развёртывания и языковые опции несёт [README](https://github.com/MikalaiKryvusha/KAIF#-быстрый-старт).
+Положите [`KAIF.md`](https://github.com/MikalaiKryvusha/KAIF/blob/main/KAIF.md) в корень проекта и скажите агенту своими словами — полный быстрый старт, режимы развёртывания и языковые опции несёт [README](https://github.com/MikalaiKryvusha/KAIF#2-установка).
 
 Обновление развёрнутого проекта: скажите *«обнови KAIF»* — агент сверится с истоком, покажет дельту и мигрирует уважительно, сохранив ваше. Если прогон умер на середине — скажите *«продолжи обновление KAIF»*.
