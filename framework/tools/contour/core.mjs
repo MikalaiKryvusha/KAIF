@@ -383,6 +383,7 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.answers ? { answers: payload.answers } : {}),
     ...(payload.artifacts ? { artifacts: payload.artifacts } : {}),
     ...(payload.comments ? { comments: payload.comments } : {}),
+    ...(payload.noRemarks ? { noRemarks: true } : {}), // bugs/113: "looked, no remarks" — a legal verdict on an artifact
   };
   const isMd = extname(abs).toLowerCase() === '.md';
   if (isMd) {

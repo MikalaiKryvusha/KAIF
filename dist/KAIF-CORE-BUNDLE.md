@@ -9580,6 +9580,7 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.answers ? { answers: payload.answers } : {}),
     ...(payload.artifacts ? { artifacts: payload.artifacts } : {}),
     ...(payload.comments ? { comments: payload.comments } : {}),
+    ...(payload.noRemarks ? { noRemarks: true } : {}), // bugs/113: "looked, no remarks" — a legal verdict on an artifact
   };
   const isMd = extname(abs).toLowerCase() === '.md';
   if (isMd) {
@@ -10065,7 +10066,7 @@ export function buildProofreadPage(root, docPath) {
   const html = pageShell(cfg, {
     title, kind: t.kind.proofread,
     heading: '<span class="kind">' + t.kind.proofread + '</span><span>' + esc(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
-    main: '<h2>' + t.head.paragraphs + ' (' + paras.length + ')</h2>' + cards + docCommentBlock(rel, t),
+    main: '<h2>' + t.head.paragraphs + ' (' + paras.length + ')</h2>' + cards + docCommentBlock(rel, t) + '<p class="muted">' + esc(t.ph.noRemarks) + '</p>',
     questions: [], face: 'proofread', faceDoc: rel, paragraphs: paras.map((p) => p.id),
   });
   return { html, questions: [], docHash: bodyHash(md), kind: t.kind.proofread, title, rel, paragraphs: paras.length, face: 'proofread' };
@@ -10086,7 +10087,7 @@ export function buildMockupPage(root, imagePath) {
     title, kind: t.kind.mockup,
     heading: '<span class="kind">' + t.kind.mockup + '</span><span>' + esc(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
     main: '<h2>' + t.head.mockup + '</h2><div class="mock"><img src="' + src + '" alt="' + esc(title) + '"></div>' +
-      '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="5" placeholder="' + esc(t.ph.mockup) + '"></textarea></p>',
+      '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="5" placeholder="' + esc(t.ph.mockup) + '"></textarea></p>' + '<p class="muted">' + esc(t.ph.noRemarks) + '</p>',
     questions: [], face: 'mockup', faceDoc: rel,
   });
   return { html, questions: [], docHash: bodyHash(data.toString('base64')), kind: t.kind.mockup, title, rel, face: 'mockup' };
@@ -10266,6 +10267,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   textarea, input[type=text] { width:100%; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit }
   .bar { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--line); padding:10px 20px; display:flex; gap:14px; align-items:center; justify-content:center; text-align:center }
   .bar #status { flex:0 1 auto }
+  .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
@@ -10322,9 +10324,12 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "function hasArtifacts(doc){var A=CFG.artifacts||[];for(var i=0;i<A.length;i++)if(A[i].doc===doc&&A[i].exists)return true;return false}",
     "function hasComments(p){for(var k in (p.comments||{}))return true;return false}",
     "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;lastPayload=p;",
-    " if(!p.read&&CFG.face!=='mockup'&&Object.keys(p.answers).length===0&&!(p.comment||'').trim()&&!p.artifacts&&!hasComments(p)){",
+    // bugs/113: on the proofreading and mockup faces "Done" with empty fields is a LEGAL outcome — "looked, no remarks"
+    // (the most frequent verdict on an artifact); only the interview face still needs an answer or a comment.
+    " var quiet=CFG.face==='proofread'||CFG.face==='mockup';",
+    " if(quiet&&!(p.comment||'').trim()&&!hasComments(p))p.noRemarks=true;",
+    " if(!p.read&&!quiet&&Object.keys(p.answers).length===0&&!(p.comment||'').trim()&&!p.artifacts&&!hasComments(p)){",
     "  status(hasArtifacts(doc)?TX.needArt:TX.nothing,'err');return}",
-    " if(CFG.face==='mockup'&&!(p.comment||'').trim()){status(TX.nothing,'err');return}",
     " enableButtons(false);status(TX.saving);",
     " fetch('/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})",
     " .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})",
@@ -10480,11 +10485,14 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
               return;
             }
             if (!batch && (face === 'proofread' || face === 'mockup')) {
-              const record = recordDecision(root, doc, { kind: face, comment: payload.comment, comments: payload.comments }, cfg);
+              // bugs/113: empty fields on these faces = "no remarks" — a recorded decision, exit 0 (never a refusal)
+              const noRemarks = Boolean(payload.noRemarks) && !(payload.comment || '').trim() && Object.keys(payload.comments || {}).length === 0;
+              const record = recordDecision(root, doc, { kind: face, comment: payload.comment, comments: payload.comments, ...(noRemarks ? { noRemarks: true } : {}) }, cfg);
               const n = Object.keys(record.comments || {}).length;
-              ok({ ok: true, written: doc + ' + decision.json + archive (' + (face === 'proofread' ? n + ' paragraph comment(s)' : 'mockup comment') + ')' });
+              const what = noRemarks ? t.st.noRemarksWritten : (face === 'proofread' ? n + ' paragraph comment(s)' : 'mockup comment');
+              ok({ ok: true, written: doc + ' + decision.json + archive (' + what + ')' });
               outcome = 'decision recorded';
-              log('Outcome: ' + face + ' recorded (' + doc + ', ' + (face === 'proofread' ? n + ' paragraph comments' : 'comment') + ', by ' + record.by + ') — ending the contour (I8).');
+              log('Outcome: ' + face + ' recorded (' + doc + ', ' + (noRemarks ? 'no remarks' : (face === 'proofread' ? n + ' paragraph comments' : 'comment')) + ', by ' + record.by + ') — ending the contour (I8).');
               setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED);
               return;
             }
@@ -10708,6 +10716,12 @@ export function selftest(log = console.log) {
   ok(mr.kind === 'mockup' && readFileSync(join(root, PNG)).equals(pngBytes) && existsSync(join(root, 'interviews', 'decisions', 'mock.decision.json')), 'mockup record: kind mockup, the image byte-identical, decision.json named after the image');
   let threw = false; try { buildMockupPage(root, DRAFT); } catch { threw = true; }
   ok(threw, 'mockup face refuses a non-image loudly');
+  // bugs/113: "Done" with no remarks is a RECORDED decision on the mockup and proofreading faces (never a refusal)
+  const nr = recordDecision(root, PNG, { kind: 'mockup', comment: '', comments: {}, noRemarks: true }, cfgOf(root));
+  ok(nr.noRemarks === true && JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'mock.decision.json'), 'utf8')).noRemarks === true,
+    'mockup face: Done with empty fields records noRemarks: true (bugs/113)');
+  ok(mp.html.includes(texts('en').ph.noRemarks) && mp.html.includes("p.noRemarks=true") && !mp.html.includes("CFG.face==='mockup'&&!(p.comment"),
+    'mockup page carries the no-remarks hint and the client gate no longer refuses an empty mockup/proofreading record (bugs/113)');
 
   // I40–I42: the fact of showing, never-shown first, the gate by exit code
   const now = new Date('2026-09-05T12:00:00Z');
@@ -10903,6 +10917,7 @@ const EN = {
   ph: { own: 'Your own option or the answer text', comment: 'Comment', addComment: 'Add a comment — your answer stays as it is',
     docComment: 'You may leave no answers — just say it', noticeComment: (btn) => 'You may write nothing — the "' + btn + '" mark is enough',
     paragraph: 'Comment on this paragraph', mockup: 'What to change on the mockup',
+    noRemarks: 'No remarks — just press Done: that is a recorded verdict too',
     artComment: 'What to fix (when rejecting — by meaning, or the agent will not know what to change)' },
   btn: { save: 'Save decision', saveDoc: 'Save decisions for this document', read: 'OK, read', done: 'Done',
     copy: 'Copy', retry: 'Retry saving', approve: '<strong>Approve</strong> — send as is',
@@ -10911,6 +10926,7 @@ const EN = {
     bytes: 'bytes' },
   st: { draft: (n) => 'Draft picked up: ' + n + ' field(s) restored from the browser', saving: 'Saving…',
     saved: (w) => 'Saved: ' + w + '. The window will close by itself…', nothing: 'Nothing to save: no answer, no comment',
+    noRemarksWritten: 'no remarks',
     needArt: 'A decision on the outbound is needed: approve or reject', err: (m) => 'SAVE ERROR: ' + m,
     serverGone: 'THE CONTOUR SERVER IS UNREACHABLE — the answer will NOT be sent. The draft is kept in the browser; copy the text (button below) or restart the contour.',
     closeYourself: 'The browser refused to close the window — please close it yourself',
@@ -10963,6 +10979,7 @@ const RU = {
   ph: { own: 'Свой вариант или текст ответа', comment: 'Комментарий', addComment: 'Дополнить комментарием — ваш ответ останется как есть',
     docComment: 'Можно без ответов — просто сказать', noticeComment: (btn) => 'Можно ничего не писать — достаточно пометки «' + btn + '»',
     paragraph: 'Замечание к этому абзацу', mockup: 'Что поправить на макете',
+    noRemarks: 'Замечаний нет — просто нажмите «Готово»: это тоже записанное решение',
     artComment: 'Что поправить (при отклонении — обязательно по смыслу, иначе агент не знает, что менять)' },
   btn: { save: 'Записать решение', saveDoc: 'Записать решения по этому документу', read: 'ОК, прочитано', done: 'Готово',
     copy: 'Скопировать', retry: 'Повторить запись', approve: '<strong>Одобряю</strong> — отправить как есть',
@@ -10971,6 +10988,7 @@ const RU = {
     bytes: 'байт' },
   st: { draft: (n) => 'Подхвачен черновик: ' + n + ' полей(я) восстановлено из браузера', saving: 'Записываю…',
     saved: (w) => 'Записано: ' + w + '. Окно закроется само…', nothing: 'Нечего записывать: ни ответа, ни комментария',
+    noRemarksWritten: 'замечаний нет',
     needArt: 'Нужно решение по исходящему: одобряю или отклоняю', err: (m) => 'ОШИБКА ЗАПИСИ: ' + m,
     serverGone: 'СЕРВЕР КОНТУРА НЕДОСТУПЕН — ответ НЕ уйдёт. Черновик сохранён в браузере; скопируйте текст (кнопка ниже) или перезапустите контур.',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
@@ -13006,6 +13024,9 @@ one final newline). Text changed after approval = approval void.
 
 - Exactly three outcomes, all in the process log: **decision recorded → exit 0** · **page closed without an
   answer → exit 2** · **interrupted → exit 130**. Pre-flight refusal is exit 3.
+- On the proofreading and mockup faces «Done» with empty fields is a decision recorded too — the record carries
+  `noRemarks: true` («looked, no remarks» is the most frequent verdict on an artifact, and the page says so under the
+  field); the page never refuses it. Only the interview face still needs an answer or a comment (origin bug 113).
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.
 - Saving TERMINATES the process — that termination is how the waiting agent wakes up; start the contour as a
   tracked background task. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence

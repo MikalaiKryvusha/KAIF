@@ -143,5 +143,10 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_030_kaif_2.6_publish.md": {
+    "questions": 2,
+    "parsedOptions": 6,
+    "candidateLines": 6
   }
 }

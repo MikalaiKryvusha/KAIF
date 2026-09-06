@@ -5596,10 +5596,10 @@
       {
         "signature": "## 5. Process — outcomes, patience, wake-up",
         "class": "static",
-        "sha256": "f17b8bb08743e03c75eb3134948fc2340a06dafe4f85f4462b83a6aa2833e408",
+        "sha256": "115534103d8cfd85609e7ea56f340041cea21e96668f520700be222aa1fd727d",
         "lines": [
           64,
-          74
+          77
         ]
       },
       {
@@ -5607,8 +5607,8 @@
         "class": "static",
         "sha256": "79df36b07fb3ac8daaa944c4ea581ebf6c6fd30eb5720ff92bf9f26735079b24",
         "lines": [
-          75,
-          83
+          78,
+          86
         ]
       },
       {
@@ -5616,8 +5616,8 @@
         "class": "static",
         "sha256": "e9e1aeea506aacc44b1dea0a39c1684e971cdaeb1c710098af283ea8efb40899",
         "lines": [
-          84,
-          100
+          87,
+          103
         ]
       },
       {
@@ -5625,8 +5625,8 @@
         "class": "static",
         "sha256": "cf78f3e9fe91bffba8dda7b8ca06d4492bf29a2cb76ee192da334e851f56725b",
         "lines": [
-          101,
-          108
+          104,
+          111
         ]
       }
     ],
