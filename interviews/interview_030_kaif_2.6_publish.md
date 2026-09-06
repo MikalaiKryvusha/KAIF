@@ -55,7 +55,7 @@
   - Проверка. `gh release list` не показывает v2.6.
 - **C)** Свой вариант — впишите.
 
-**Answer:**
+**Answer:** A) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 6 сентября 2026, 12:42 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 
