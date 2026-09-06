@@ -138,5 +138,10 @@
     "questions": 1,
     "parsedOptions": 3,
     "candidateLines": 3
+  },
+  "interviews/interview_029_kaif_2.6_version_name.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
   }
 }

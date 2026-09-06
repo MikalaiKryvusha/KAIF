@@ -185,7 +185,7 @@
       ≤ 120 строк, EN (гард 5d), формы — из `review-core` дословно; ссылки из `/owner-reviews` и
       `/interview` обоих слоёв (RU-копии — перевод от смысла); `KAIF_REFERENCE` — подраздел.
 - [x] **IC3 — генератор трёх лиц (критерии 2–3) — ✅ 2026-09-05 22:28 +03:00 (сессия 56).** Сделано:
-      `framework/tools/contour/` — **три** модуля (`core.mjs` 464 · `review.mjs` 1144 · `texts.mjs` 194 = 1802 строки;
+      `framework/tools/contour/` — **три** модуля (`core.mjs` 464 · `review.mjs` 1144 · `texts.mjs` 194 = 1802 строки на IC3; после IC5 — 467 · 1149 · 196 = 1812 (поправка суда RL);
       третий — носитель данных RU/EN, названный в `CYRILLIC_DATA_CARRIERS` гарда 5d поимённо, `core`/`review` без
       единой кириллической буквы — проверено грепом); параметры читаются (`loadContourConfig`: `contour.*` →
       `kaif.json.projectName` → `basename(root)`; владелец — строка таблицы идентичности обеих письменностей → «owner»;

@@ -947,7 +947,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
         const older = [...new Set(scan.match(VERSION_TOKEN) || [])].filter((v) => gt(toVersion, v));
         if (!older.length) continue;
         if (/^\s*>/.test(line)) continue;          // blockquote = the owner's quoted word (bugs/35, field report Г5)
-        // field report 2.3 field wish R2: a JUSTIFIED old-version mention re-flagged on EVERY interval,
+        // a 2.3 field wish (R2): a JUSTIFIED old-version mention re-flagged on EVERY interval,
         // forever ("minutes per update, forever"). The canonical marker `KAIF-VERSION-OK` (an
         // English greppable token, same family as [TESTED]/DONE) on the hit line or the line
         // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> —
@@ -1668,7 +1668,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
           continue;
         }
         if (res.changed) { writeMatchingEol(f.path, res.merged); mergedModules += res.replaced;
-          // field report 2.3 field wish: NAME the kept modules by signature — "1 kept for you" made the
+          // a 2.3 field wish: NAME the kept modules by signature — "1 kept for you" made the
           // answer require a sandbox diff, and the answer should not require a sandbox.
           log(`↻ merged ${res.replaced} module(s) into ${f.path}${res.divergedList.length ? ` (kept for you: ${res.divergedList.map((d) => d.signature).join(' · ')})` : ''}`); }
         if (res.divergedList.length) { divergedModules[f.path] = res.divergedList; kept++; adopted.push(f.path); }
@@ -1828,7 +1828,7 @@ async function cmdUpdate() {
       sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
-  // later — a field project §4). Survives self-clean; update-verify stamps it when the gates pass.
+  // later — a field report, §4). Survives self-clean; update-verify stamps it when the gates pass.
   writeReceipt({ from: cur.version, to: man.version, route: 'core-update',
     source: base,   // where THIS update came from — the previous delta stays recomputable (field ask №3)
     counters: { replaced, mergedModules, added, kept },

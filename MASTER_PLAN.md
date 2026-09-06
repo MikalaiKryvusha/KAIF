@@ -261,7 +261,7 @@ CB и CR → 2.7, остаток RW → HY → RL, ≈ 2 чата; закрыт�
 ## 8. Следующий шаг
 
 **Вектор доставки (строка `DELIVERY:`, №99):** `DELIVERY: systems 9 · complete 86 % (31 of 36) ·
-integrated 100 % (7 of 7) · holes 0 · contradictions 0 · bugs 23` — снято 2026-09-05 16:27 +03:00
+integrated 100 % (7 of 7) · holes 0 · contradictions 0 · bugs 24` — снято 2026-09-06 11:14 +03:00
 командой `npm run kaif:delivery` (`node dist/KAIF-CORE.mjs delivery`) из `SYSTEMS_REGISTRY.md`:
 девять систем = девять контуров `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, четыре части (specified ·
 accepted · implemented · verified in use), потребности «кто кого питает», находки — открытые

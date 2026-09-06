@@ -95,6 +95,17 @@ import { fileURLToPath } from 'node:url';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
 import { scanSuite } from './sandbox-mute-guard.mjs';
 
+// s09 doctrine for this runner too (court RL 2.6, findings A-F1 / C-F7: `--help` used to start the FULL polygon):
+// the runner takes NO arguments — `--help`/`-h` print usage and exit 0, anything else is refused with usage and
+// exit 1; one suite runs directly: node tools/sandbox/sNN-<name>.mjs. [TESTED: 2026-09-06 · --help → 0, --bogus → 1, bare run → polygon]
+if (process.argv.length > 2) {
+  const help = process.argv.includes('--help') || process.argv.includes('-h');
+  const usage = 'usage: npm run test:core   (= node tools/sandbox-suite.mjs, no arguments — the full polygon)\n' +
+                '       node tools/sandbox/sNN-<name>.mjs   (one suite, directly)\n';
+  if (help) { console.log(usage); process.exit(0); }
+  console.error('sandbox-suite: unknown argument(s) ' + process.argv.slice(2).join(' ') + '\n' + usage); process.exit(1);
+}
+
 const HERE = resolve(dirname(fileURLToPath(import.meta.url)), 'sandbox');
 const REPO = resolve(HERE, '..', '..');
 const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-tools.mjs', 's04-anon-legacy.mjs',

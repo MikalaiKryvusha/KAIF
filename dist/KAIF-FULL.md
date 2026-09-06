@@ -6468,7 +6468,7 @@ options and no declared free field (exit 3), the three records and the fact of s
 must see (the header scrolls with the page — the owner's word), the three outcomes and exit codes, the
 call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
 · proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
-shipped generator; do not build a contour** — a project that still runs its own checks it against that
+shipped generator; do not build a contour** (`node .kaif/tools/contour/review.mjs <doc>`) — a project that still runs its own checks it against that
 page before every opening. The 43 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")

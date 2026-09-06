@@ -50,7 +50,7 @@
    - Результат. Печатается `4`; в обоих слоях числовое пространство «I1–I43»; свод `s12` несёт
      ростер 43 позиции.
    - Проверка. `npm run test:core` → `all 20 suites green`; `node tools/sandbox/s12-k5-contour-canon.mjs`
-     → строка `ростер I1–I43`.
+     → строка `all 26 checks green (roster 104 positions …)` (поправка суда RL: свод печатает ростер числом позиций, не диапазоном инвариантов; свойство I40–I43 держит греп `I4[0-3]\.` → 5 / 5).
    ✅ 2026-09-05 15:21 +03:00 — `grep -c "I4[0-3]\." framework/skills/owner-reviews/SKILL.md` → `4`;
    s12: `all 20 checks green (roster 104 positions × dist EN + RU mirror, red-proof …)`; полигон
    `all 19 suites green` (s20 — OQ2, знаменатель 20 — после него).
