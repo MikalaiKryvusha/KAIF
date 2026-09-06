@@ -34,7 +34,7 @@
   - Проверка. `gh release view v2.6 --json name -q .name` печатает `KAIF 2.6 — Mannered KAIF`.
 - **D)** Своё слово на «M» — впишите.
 
-**Answer:**
+**Answer:** A) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 6 сентября 2026, 11:57 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 
