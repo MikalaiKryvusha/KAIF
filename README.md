@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.5-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.6-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Contours](https://img.shields.io/badge/Contours-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Principles](https://img.shields.io/badge/Principles-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -34,10 +34,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.5_GitHub_LOGO.webp" alt="KAIF 2.5 Experienced KAIF — a team medallion of eight roles inside the ouroboros ring" width="560">
+  <img src="assets/KAIF_2.6_GitHub_LOGO.webp" alt="KAIF 2.6 Mindful KAIF — a team medallion of eight roles inside the ouroboros ring" width="560">
 </p>
 
-<p align="center"><strong>Version 2.5 — Experienced KAIF</strong> · 2026-09-04</p>
+<p align="center"><strong>Version 2.6 — Mindful KAIF</strong> · 2026-09-06</p>
 
 > KAIF has become a team. A team of AI agents, each taking on the role of an expert professional,
 > builds your project on the git worktree technology. In several VS Code windows at once, like a
@@ -466,6 +466,7 @@ Table 5 — Versions
 | v2.3 | Subjected KAIF | 2026-08-21 | The version that spent its cycle under observation: thirteen issues from the agents of live projects became the scope, so this one is made of what its users found. The canon speaks in commands, so an obligation carries a command, a numbered step or a checkbox, and `TESTING_FRAMEWORK.md` is rebuilt around a chain of testing activities; a recorded lesson has to answer whether the trap can be mechanized away instead of remembered; `update` writes a journal before its first mutation, and `resume` finishes what a killed run started; a failed network call on Windows reports one error instead of two; eight language packs are frozen with a declared version, state and reason, while `en` and `ru` stay maintained. |
 | v2.4 | Teamed Up KAIF | 2026-08-28 | The harness takes a team: the optional `/team-deployment` skill designs and deploys a team of AI agents — roles, isolated worktree workplaces, a generated team Constitution, a shared status dashboard. Closing a chat splits into `/end-chat-soft` and `/end-chat-force`, and a named end time starts the soft close instead of cutting the work short. Before work the agent speaks the creed and the prayer of principles. The interactive contour calls with its named neural voice and renders choices as radio buttons. Four field fixes from the 2.3 reports ship alongside. |
 | v2.5 | Experienced KAIF | 2026-09-04 | Rules move to the point of decision: the KAIF-defect carve-out stands inside the authorization gate, an engineering fork is closed by the fourth door and a forced `FORK:` line, every guard declares the threat it was proven against, the guarded loop writes its boundary. Delivery is counted by one owner metric in every session close, defects get a severity ladder, the re-read core gets line budgets. A KAIF ticket is delivered by a machinery command. The team skill adopts a live team, gives the board four states and ships CI with the team. The update keeps an anchored block whole, prints its verdicts with numbers and holds a rehearsal binding, writes the stale-claims item unconditionally and scans the project's scripts. An acceptance criterion can be written in the owner's language as a four-line scenario — Situation · Action · Result · Check — with an optional linter that guards its form. |
+| v2.6 | Mindful KAIF | 2026-09-06 | The agent works on the owner's terms: a question to the owner is priority one and its showing is a recorded fact, every question and option is a scenario of what the owner will see in the customer's language, the delivery vector is derived from a registry of systems and never asked, the update rehearsal reaches the bootstrap route, the interactive contour ships as a spec plus a generator of three faces, a fresh remark is recorded and not ranked, "done" about production comes after the owner's real world, and the delivery names no donor projects. |
 
 ### 8.2. Repository layout
 
@@ -549,7 +550,7 @@ pleasant work!
 </p>
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-2.5-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.6-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Контуры](https://img.shields.io/badge/Контуров-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Принципы](https://img.shields.io/badge/Принципов-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -568,10 +569,10 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.5_GitHub_LOGO.webp" alt="KAIF 2.5 Experienced KAIF — медальон команды из восьми ролей в кольце уробороса" width="560">
+  <img src="assets/KAIF_2.6_GitHub_LOGO.webp" alt="KAIF 2.6 Mindful KAIF — медальон команды из восьми ролей в кольце уробороса" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.5 — Experienced KAIF</strong> · 04.09.2026</p>
+<p align="center"><strong>Версия 2.6 — Mindful KAIF</strong> · 06.09.2026</p>
 
 > KAIF стал командным. Команда ИИ-агентов, каждый из которых принимает на себя роль
 > профессионала-эксперта, разрабатывает ваш проект по технологии git worktree. В нескольких окнах
@@ -997,6 +998,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.3 | Subjected KAIF | 21.08.2026 | Версия, которая весь свой цикл была под наблюдением: тринадцать issues от агентов живых проектов стали её скоупом, то есть она сделана из того, что нашли пользователи. Канон заговорил командами — обязательство несёт команду, нумерованный шаг или чекбокс, а `TESTING_FRAMEWORK.md` пересобран вокруг цепочки тестовых активностей; записанный урок обязан ответить, нельзя ли грабли механизировать вместо того, чтобы их помнить; `update` пишет журнал до первой мутации, а убитый прогон дочиняет `resume`; отказ сети на Windows сообщает об одной ошибке вместо двух; восемь языковых пакетов заморожены с объявленными версией, состоянием и причиной, а `en` и `ru` продолжают вестись. |
 | v2.4 | Teamed Up KAIF | 28.08.2026 | Харнесс берёт команду: опциональный навык `/team-deployment` проектирует и разворачивает команду ИИ-агентов — роли, изолированные рабочие места в worktree, сгенерированная Конституция команды, общая доска статусов. Закрытие чата раздвоено на `/end-chat-soft` и `/end-chat-force`, а названное время окончания начинает мягкое закрытие, вместо того чтобы обрывать работу раньше срока. Перед работой агент произносит символ веры и молитву принципов. Интерактивный контур зовёт именованным нейроголосом и рендерит развилки радиокнопками. Вместе с версией едут четыре полевых фикса из отчётов 2.3. |
 | v2.5 | Experienced KAIF | 04.09.2026 | Правила переезжают в точку решения: исключение для дефектов KAIF стоит внутри гейта авторизации, инженерную развилку закрывает четвёртая дверь и принудительная строка `FORK:`, каждый страж объявляет угрозу, против которой доказан, защищённый цикл записывает свою границу. Доставка считается одной метрикой владельца в каждом закрытии сессии, у дефектов есть лестница тяжести, у перечитываемого ядра — бюджеты строк. Тикет о KAIF доставляет команда машинерии. Командный навык принимает живую команду, даёт доске четыре состояния и везёт CI вместе с командой. Обновление держит якорный блок целым, печатает вердикты с числами и связывает себя репетицией, пишет пункт `stale-claims` безусловно и сканирует скрипты проекта. Критерий приёмки можно записать на языке владельца четырёхстрочным сценарием — Ситуация · Действие · Результат · Проверка — с опциональным линтером его формы. |
+| v2.6 | Mindful KAIF | 06.09.2026 | Агент работает по меркам владельца: вопрос владельцу — приоритет номер один, а его показ — записанный факт; каждый вопрос и вариант — сценарий того, что владелец увидит, на языке заказчика; вектор доставки выводится из реестра систем и не спрашивается; репетиция обновления дошла до bootstrap-маршрута; интерактивный контур входит в поставку — контракт и генератор трёх лиц; свежая реплика записывается, но не ранжируется; «готово» о продакшене — после реального мира владельца; поставка не называет проекты-доноры. |
 
 ### 8.2. Структура репозитория
 
