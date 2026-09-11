@@ -937,17 +937,53 @@ shipped name carries a source artifact (*owner · channel · date*), and a brand
 only by the owner — un-naming is a brand decision too. (`/release` Step 0 enforces this at the
 decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
+**Authorship of a decision — the owner's word is a quote; the agent's word is signed** (origin issue
+#55, 🔴🔴🔴 TOP by the owner's word, rendered from Russian: "you write some nonsense yourself, then read
+it back and interpret it as MY word"; "everything else you must mark as `[AI]`, so that not EVERYTHING
+written is taken for my word"; "my words are what I write to you here, and in the interviews"). The canon
+gives the owner's decisions a special status — not to be revisited — and lets the agent decide the rest;
+both used to land in the same document in the same words, and a day later a fresh session could tell
+them apart only by trusting the previous one: an agent's choice wearing the owner's name became
+unrevisable (field: a "the owner's decision P1: wait, no threshold" comment in live code — the owner's
+actual word at that fork was "do as you see fit" — held a run for 119 s while the owner's machine died;
+430 of 1083 references to the owner's will in one deployment carried no quote). Four rules and a guard:
+- **Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>`
+  (or the address of the interview and question that holds the verbatim text — `interview #NNN, QN`);
+  the agent's — `[AI]` (the "Decisions made without the owner" section of a plan or a bug is the same
+  signature, block-wise). A decision with no signature is a defect, never "probably the owner's".
+  <!-- keep every `[…]` tag inside a one-line code span: the provenance parser reads spans per line -->
+- **A mandate is not a decision.** "Do as you see fit", "your call" and their equivalents in the
+  owner's language transfer the CHOICE to the agent: the record reads `[AI] by mandate — "<the owner's words verbatim>"`, and the
+  decision stays revisable. The mandate is quoted; the choice is signed by the agent.
+- **"Not to be revisited" belongs to `[OWNER]` decisions only.** An `[AI]` decision is revised freely
+  by any later session; the status is never inherited by silence.
+- **The source of truth about the owner's words is the chat and `interviews/`** (the owner's own
+  line). Everything else — a plan line, a code comment, a report — is a RETELLING and reads as one: a
+  reference to the owner's will with no verbatim quote and no interview address beside it is the
+  finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
+  prints the debt with a baseline that only shrinks (`--write-baseline` once, `selftest` proves both
+  answers; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line).
+  `/fable-judge` hunts "an agent decision worn as the owner's word".
+
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
 draft to the owner (interview/chat) and their "yes" — never straight into the canon; **mechanical edits**
 under already-accepted decisions (renames, arithmetic, references, notation) go ahead immediately but
 stay visible until the owner has reviewed them. Two-stage control: first the *intent* (before writing),
 then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
-for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
+for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`). The draft the agent brings
+(an interview, a table, a proposal) is where AI text and the owner's text mix BY DESIGN — so the draft
+carries the provenance marks on the agent's lines (below): the gate demands a draft, the marks make it
+readable a day later.
 
 **Provenance marks — `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]`** (canonical English strings, grep-friendly,
 like `[NOT-TESTED]`). Everything the AI writes into the owner's canon artifacts carries a visible
 paired mark: `[AI]…[/AI]` — written by the AI; `[AI-ed]…[/AI-ed]` — the owner's text, edited by the AI.
+And everything the AI PROPOSES as the owner's canon content — a lore line, a rule, a value, a table row
+— carries the same mark wherever it lives: in an interview, a draft, a table brought to the owner
+(origin issue #55: a field agent, forbidden to mark outside the canon, invented "(my taste)" — and a
+pronoun has no owner a day later: **a pronoun is not a provenance mark**; the question's own
+scaffolding — option letters, the recommendation, the scenario lines — is not marked).
 **A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
 agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
 is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
@@ -956,8 +992,11 @@ text for the owner's canon). The check is grep-cheap: AI text in a canon artifac
 mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time. The check
 IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 (`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/tools/kaif-provenance.mjs check` into your
-gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
-`accept <file>` strips marks into the registry and carries the OWNER'S word only.
+gates — pair integrity everywhere; marks are REQUIRED in the declared canon and LEGAL in any document
+the agent brings to the owner (since 2.7 the "marks only in the canon" refusal is gone); `report` lists
+the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts — for the
+owner's eye, not the acceptance registry); `accept <file>` strips marks into the registry and carries
+the OWNER'S word only.
 
 **The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never
 carry provenance marks (owner's decision, quoted: *"README and the release notes are not subject to

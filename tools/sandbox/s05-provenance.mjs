@@ -39,12 +39,29 @@ r = run('report');
 ok(r.code === 0 && r.out.includes('rules/combat.md') && r.out.includes('1 block'),
    's05 report видит блок, ждущий приёмки', r.out);
 
-// 2) пометка ВНЕ объявленного канона → красный
-writeFileSync(join(ROOT, 'notes.md'), '[AI]\nмаркировать всё подряд нельзя\n[/AI]\n');
+// 2) пометка ВНЕ объявленного канона — с 2.7 ЗАКОННА (эпик AW, тикет #55: черновик владельцу — место,
+//    где текст ИИ и владельца смешиваются по замыслу; запрет заставил полевого агента выдумать «(мой вкус)»):
+//    check зелёный и называет число, report печатает их отдельной группой, реестр приёмки не трогает.
+//    КРАСНЫЙ ДОКАЗАН: та же фикстура под копией инструмента из v2.6 → «NOT a declared canon artifact».
+mkdirSync(join(ROOT, 'interviews'), { recursive: true });
+writeFileSync(join(ROOT, 'interviews', 'draft.md'), '# Черновик владельцу\n\n[AI]\nстрока лора, предложенная агентом\n[/AI]\n');
 r = run('check');
-ok(r.code !== 0 && /NOT a declared canon artifact/.test(r.out),
-   's05 пометка вне канона — гейт красный (агенты не метят всё подряд)', r.out);
-rmSync(join(ROOT, 'notes.md'));
+ok(r.code === 0 && /marks outside the declared canon: 1 block/.test(r.out),
+   's05 пометка вне канона ЗАКОННА (2.7, #55) — check зелёный и называет 1 блок вне канона', r.out);
+r = run('report');
+ok(r.code === 0 && /outside the declared canon/.test(r.out) && /interviews\/draft\.md — 1 block/.test(r.out) && /rules\/combat\.md/.test(r.out),
+   's05 report — блок канона в очереди приёмки, черновик — отдельной группой', r.out);
+{ // шов: инструмент 2.6 из git на той же фикстуре — красный (доказательство смены контракта)
+  const old = execSync('git show v2.6:framework/tools/kaif-provenance.mjs', { cwd: REPO, stdio: 'pipe' }).toString();
+  writeFileSync(join(ROOT, '.kaif', 'tools', 'kaif-provenance-2.6.mjs'), old);
+  let oldRun;
+  try { oldRun = { code: 0, out: execSync(`node ${join(ROOT, '.kaif', 'tools', 'kaif-provenance-2.6.mjs')} check 2>&1`, { cwd: ROOT, stdio: 'pipe' }).toString() }; }
+  catch (e) { oldRun = failed(e, { root: ROOT, cwd: ROOT, args: 'check (v2.6 copy)' }); }
+  ok(oldRun.code !== 0 && /NOT a declared canon artifact/.test(oldRun.out),
+     's05 красный доказан: инструмент v2.6 на той же фикстуре отвергает пометку вне канона', oldRun.out);
+  rmSync(join(ROOT, '.kaif', 'tools', 'kaif-provenance-2.6.mjs'));
+}
+rmSync(join(ROOT, 'interviews'), { recursive: true, force: true });
 
 // 3) непарная пометка → красный с внятной строкой
 writeFileSync(join(ROOT, 'rules', 'broken.md'), '[AI]\nоткрыто и не закрыто\n');

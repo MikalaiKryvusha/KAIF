@@ -82,6 +82,10 @@
       "THE SCENARIO FORM of an acceptance criterion (epic SF; origin issue #39 — the owner's word: \"this is what I lacked in all my KAIF projects\"): REQUIREMENTS_FRAMEWORK gains the optional four-line form — Situation · Action · Result · Check — the owner's language for a requirement, whose fourth line is the runnable test; Given/When/Then plus the machine check the agent era adds; EARS maps onto it (WHILE/WHEN → Situation/Action, \"shall\" → Result), Scale · Meter · Target live in the Check line; seven rules of form (three with ❌/✅ pairs; rules 1–6 and the line order are linted, rule 7 is the judge's); an owner-written Check may be empty (the agent fills it), an agent-edited Check during execution is judged like a weakened test. The four lines stand in /plan-task's criteria block and are named in /plan-epic, /propose-idea, /report-bug; /interview explains a mechanic scenario-first. NEW optional tool module .kaif/tools/kaif-scenario-lint.mjs (check | selftest; rules as data, keywords per language, SKIPPED=3 without a scenario). The form stays a project's choice — the canon never requires it.",
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
+    "2.7": [
+      "THE OWNER'S WORD IS A QUOTE, THE AGENT'S WORD IS SIGNED (epic AW; origin issue #55, 🔴🔴🔴 TOP by the owner's word: \"you write some nonsense yourself, then read it back and interpret it as MY word\" — a \"the owner's decision P1: wait\" comment in live code, whose real owner word was \"do as you see fit\", held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no quote): AGENT_GUIDE (both layers) gains \"Authorship of a decision\" — every recorded decision carries its author ([OWNER] \"<verbatim>\" · date, or the interview address, vs [AI]); \"do as you see fit\" is a MANDATE recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; the source of truth about the owner's words is the chat and interviews/, everything else is a retelling. The NEW optional tool module .kaif/tools/kaif-attribution-lint.mjs (check [paths…] [--write-baseline] / selftest, SKIPPED=3) counts references to the owner's will with no verbatim quote and no interview address within ±2 lines as debt with a baseline that only shrinks; /fable-judge hunts \"an agent decision worn as the owner's word\".",
+      "PROVENANCE MARKS ARE LEGAL IN DRAFTS TO THE OWNER (epic AW; origin issue #55 comment — a field agent, forbidden to mark outside the canon, invented \"(my taste)\", and a pronoun has no owner a day later): kaif-provenance `check` no longer refuses [AI]…[/AI] outside canonArtifacts — marks are REQUIRED in the declared canon and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, never entries of the acceptance registry). AGENT_GUIDE (both layers): the write-gate draft carries the marks on the agent's lines; a pronoun is not a provenance mark; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked. /interview step 3a says the same."
+    ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
       "\"DONE\" ABOUT PRODUCTION COMES AFTER THE REAL WORLD (epic RW; origin issue #52 — the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production): TESTING_FRAMEWORK (both layers) gains the rule \"The agent's stand is not the owner's real world\" right after gates 6-7 — before saying done about anything already live, the report carries a REAL WORLD: difference line (accumulated · data and machine · path) whose items end only in \"verified on the real world\" or \"verified with real state taken from the real world\"; \"not verified there\" is a STOP that names what it waits for, never an outcome; the one exception is the owner's word about a check that changes his state. AGENT_GUIDE (both layers) states it as the third KAIF obligation of the fable loop; /fable-judge hunts done-without-the-real-world. Nothing here asks the owner: the line is derived from the work and the deployed tree.",
@@ -109,6 +113,10 @@
     }
   ],
   "policyChanges": {
+    "2.7": [
+      "The owner's word is a quote, the agent's word is signed (2.7, epic AW; origin issue #55, the owner's TOP): every recorded decision carries its author — [OWNER] \"<verbatim>\" · date (or the interview address) for the owner, [AI] for the agent; \"do as you see fit\" is a mandate and is recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; a reference to the owner's will with no verbatim quote and no interview address within two lines is debt — the NEW optional module `node .kaif/tools/kaif-attribution-lint.mjs check` counts it (adopt once with --write-baseline; the baseline only shrinks; `selftest` proves both answers). If a plan, a code comment or a report in this deployment says \"the owner's decision\" from memory — either quote him, sign it [AI], or mark `<!-- attribution-ok: … -->` with the address of the quote. AGENT_GUIDE (both layers) → \"Authorship of a decision\"; the judge hunts \"an agent decision worn as the owner's word\".",
+      "Provenance marks are legal outside the canon (2.7, epic AW; origin issue #55 comment): `kaif-provenance check` no longer refuses [AI]…[/AI] in a file that is not a declared canon artifact — marks are REQUIRED in canonArtifacts and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, not the acceptance registry). Mark the text you PROPOSE as the owner's canon content (a lore line, a rule, a value) wherever it lives; never a pronoun — \"(my taste)\" has no owner a day later; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked."
+    ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
       "A claim of done about production waits for the real world (2.6, epic RW; origin issue #52, owner decision #104): the stand the agent builds from nothing (fresh browser, clean checkout, new user, today's build) is not the owner's world, where everything is accumulated — old session, saved profile, the cache of the previous build, his own edits in the deployed tree. Before \"done\" about anything already live the report carries the REAL WORLD: difference line with two legal outcomes per item — verified on the real world, or verified with real state taken from it; \"not verified there\" is a stop that names what it waits for (access · the machine · the owner's word about a check that changes his state), never an outcome. TESTING_FRAMEWORK rule next to gates 6-7, the third obligation in the fable loop of AGENT_GUIDE, the done-without-the-real-world hunt of /fable-judge.",
@@ -224,6 +232,7 @@
     ".kaif/tools/contour/core.mjs": "framework/tools/contour/core.mjs",
     ".kaif/tools/contour/review.mjs": "framework/tools/contour/review.mjs",
     ".kaif/tools/contour/texts.mjs": "framework/tools/contour/texts.mjs",
+    ".kaif/tools/kaif-attribution-lint.mjs": "framework/tools/kaif-attribution-lint.mjs",
     ".kaif/tools/kaif-canon-lint.mjs": "framework/tools/kaif-canon-lint.mjs",
     ".kaif/tools/kaif-guard-lint.mjs": "framework/tools/kaif-guard-lint.mjs",
     ".kaif/tools/kaif-provenance.mjs": "framework/tools/kaif-provenance.mjs",
@@ -1277,17 +1286,53 @@ shipped name carries a source artifact (*owner · channel · date*), and a brand
 only by the owner — un-naming is a brand decision too. (`/release` Step 0 enforces this at the
 decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
+**Authorship of a decision — the owner's word is a quote; the agent's word is signed** (origin issue
+#55, 🔴🔴🔴 TOP by the owner's word, rendered from Russian: "you write some nonsense yourself, then read
+it back and interpret it as MY word"; "everything else you must mark as `[AI]`, so that not EVERYTHING
+written is taken for my word"; "my words are what I write to you here, and in the interviews"). The canon
+gives the owner's decisions a special status — not to be revisited — and lets the agent decide the rest;
+both used to land in the same document in the same words, and a day later a fresh session could tell
+them apart only by trusting the previous one: an agent's choice wearing the owner's name became
+unrevisable (field: a "the owner's decision P1: wait, no threshold" comment in live code — the owner's
+actual word at that fork was "do as you see fit" — held a run for 119 s while the owner's machine died;
+430 of 1083 references to the owner's will in one deployment carried no quote). Four rules and a guard:
+- **Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>`
+  (or the address of the interview and question that holds the verbatim text — `interview #NNN, QN`);
+  the agent's — `[AI]` (the "Decisions made without the owner" section of a plan or a bug is the same
+  signature, block-wise). A decision with no signature is a defect, never "probably the owner's".
+  <!-- keep every `[…]` tag inside a one-line code span: the provenance parser reads spans per line -->
+- **A mandate is not a decision.** "Do as you see fit", "your call" and their equivalents in the
+  owner's language transfer the CHOICE to the agent: the record reads `[AI] by mandate — "<the owner's words verbatim>"`, and the
+  decision stays revisable. The mandate is quoted; the choice is signed by the agent.
+- **"Not to be revisited" belongs to `[OWNER]` decisions only.** An `[AI]` decision is revised freely
+  by any later session; the status is never inherited by silence.
+- **The source of truth about the owner's words is the chat and `interviews/`** (the owner's own
+  line). Everything else — a plan line, a code comment, a report — is a RETELLING and reads as one: a
+  reference to the owner's will with no verbatim quote and no interview address beside it is the
+  finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
+  prints the debt with a baseline that only shrinks (`--write-baseline` once, `selftest` proves both
+  answers; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line).
+  `/fable-judge` hunts "an agent decision worn as the owner's word".
+
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
 draft to the owner (interview/chat) and their "yes" — never straight into the canon; **mechanical edits**
 under already-accepted decisions (renames, arithmetic, references, notation) go ahead immediately but
 stay visible until the owner has reviewed them. Two-stage control: first the *intent* (before writing),
 then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
-for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
+for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`). The draft the agent brings
+(an interview, a table, a proposal) is where AI text and the owner's text mix BY DESIGN — so the draft
+carries the provenance marks on the agent's lines (below): the gate demands a draft, the marks make it
+readable a day later.
 
 **Provenance marks — `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]`** (canonical English strings, grep-friendly,
 like `[NOT-TESTED]`). Everything the AI writes into the owner's canon artifacts carries a visible
 paired mark: `[AI]…[/AI]` — written by the AI; `[AI-ed]…[/AI-ed]` — the owner's text, edited by the AI.
+And everything the AI PROPOSES as the owner's canon content — a lore line, a rule, a value, a table row
+— carries the same mark wherever it lives: in an interview, a draft, a table brought to the owner
+(origin issue #55: a field agent, forbidden to mark outside the canon, invented "(my taste)" — and a
+pronoun has no owner a day later: **a pronoun is not a provenance mark**; the question's own
+scaffolding — option letters, the recommendation, the scenario lines — is not marked).
 **A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
 agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
 is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
@@ -1296,8 +1341,11 @@ text for the owner's canon). The check is grep-cheap: AI text in a canon artifac
 mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time. The check
 IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 (`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/tools/kaif-provenance.mjs check` into your
-gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
-`accept <file>` strips marks into the registry and carries the OWNER'S word only.
+gates — pair integrity everywhere; marks are REQUIRED in the declared canon and LEGAL in any document
+the agent brings to the owner (since 2.7 the "marks only in the canon" refusal is gone); `report` lists
+the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts — for the
+owner's eye, not the acceptance registry); `accept <file>` strips marks into the registry and carries
+the OWNER'S word only.
 
 **The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never
 carry provenance marks (owner's decision, quoted: *"README and the release notes are not subject to
@@ -3269,6 +3317,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
+| `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
@@ -4568,14 +4617,14 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except six marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> Kept verbatim except seven marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes). In KAIF rituals this
+> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunt in the same block — **agent-decision-worn-as-the-owner's-word** (the authorship of a decision: the owner's word is a quote, the agent's word is signed). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4620,6 +4669,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
    - **Owner text in agent vocabulary (KAIF 2.6).** An owner-facing text — a question, an option label, a Situation · Action · Result line, a report line the owner reads as the customer — that names a thing by the agent's working vocabulary (an epic code or a chain of them, a plan or bug address, a tool invocation, a flag, a canon term) instead of by what the owner will SEE or GET after it, is a finding: the scenario form was satisfied and the owner still could not choose (the origin's bug 112 — four rejections of one class in a month; the owner's word, decision #106: "the owner reasons in meanings and behavioural scenarios"). Hunt option labels and scenario lines for `XX → YY` chains, `node …/` invocations, `--flags`, `plans/NN`; the Check line, the answer-target line and a technical note under the scenario are the legal homes for all of these. The declared exception is a marker with a reason on the line (`questions-guard:vocabulary-ok`); a dead round the owner already commented on is not a live question.
+   - **Agent decision worn as the owner's word (KAIF 2.7).** A recorded decision — a plan line, a code comment, a report line, a "not to be revisited" status — that attributes a choice to the owner ("the owner's decision", "the owner decided", "per the owner's word", their equivalents in the owner's language) with no verbatim quote of the owner and no interview address beside it, is a finding: the canon's authority order (the owner's direct word > the book) makes a later session obey a choice the agent made itself (`AGENT_GUIDE.md` → "Authorship of a decision"; origin issue #55 — a "the owner's decision P1: wait" comment held a run for 119 s while the owner's machine died; his real word at that fork was "do as you see fit"). Hunt also: a MANDATE ("do as you see fit", "your call") recorded as the owner's decision instead of `[AI] by mandate — "<his words>"`; a "not to be revisited" status on a decision with no `[OWNER]` signature; a pronoun standing in for a provenance mark in a draft brought to the owner ("(my taste)"); an `[AI]`/`[AI-ed]` mark removed without the owner's word. `node .kaif/tools/kaif-attribution-lint.mjs check` over the changed files is the re-run; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -5470,6 +5520,15 @@ customer's eye: is there a word in the question the owner never said himself? Th
 class with axis G8 of the same questions guard (epic codes read from the meta-plan tables; the
 declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`); `/fable-judge` hunts
 "owner text in agent vocabulary".
+
+**Proposed canon content inside a question is marked (KAIF 2.7).** When an option or a draft carries
+text the agent proposes AS the owner's canon — a lore line, a rule, a value, a table row — that text is
+wrapped `[AI]…[/AI]` (or the localized pair from `.kaif/kaif.json` → `aiMarks`) right there in the
+interview or the draft: the mark survives the session, a pronoun does not (origin issue #55: "(my
+taste)" read as the owner's taste a day later). The question's own scaffolding — option letters, the
+recommendation, the scenario lines — is not marked. And the owner's answer is recorded as HIS word:
+`[OWNER] "<verbatim>" · <date>` or the interview address (`AGENT_GUIDE.md` → "Authorship of a
+decision"); "do as you see fit" is a mandate, recorded as `[AI] by mandate — "<his words>"`.
 
 ### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
 
@@ -11037,6 +11096,333 @@ export function texts(language) {
 }
 ``````
 
+> **FILE: `.kaif/tools/kaif-attribution-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-attribution-lint.mjs — the OPTIONAL authorship linter (2.7, epic AW; AGENT_GUIDE.md →
+// "Authorship of a decision"; origin issue #55 — the owner's word, rendered from Russian: "you write
+// some nonsense yourself, then read it back and interpret it as MY word"). Deployed to .kaif/tools/.
+//
+// What it mechanizes: a line that ATTRIBUTES a decision or a will to the owner — "the owner's
+// decision", "решение владельца", "the owner decided", "владелец велел", or the owner's signature
+// `[OWNER]` / `[ВЛАДЕЛЕЦ]` — must carry, within a window of WINDOW lines around it, one of:
+//   · a verbatim quote of the owner — «…», “…” or "…" — or a `>` quote line;
+//   · the address of the interview that holds the verbatim text — `interviews/…`, `интервью №NNN`,
+//     `interview #NNN`, `interview_NNN`;
+//   · the number of a RECORDED decision (`решение №109`, `decision #12`, `MASTER_PLAN §7 №95`) — a
+//     number counts only with a registry word on the same line: a bare `№55` is an issue, a page, anything;
+//   · the declared exception on the line — `<!-- attribution-ok: <where the quote lives> -->`;
+// or the line is signed as the AGENT's own decision ([AI] / [AI-ed] / the localized `aiMarks` pair of
+// .kaif/kaif.json) — a signed agent decision is no attribution. A "Decisions made without the owner"
+// section (any language — see SELF_SECTION) is the agent's signature block-wise: its lines are skipped.
+//
+// Why a linter and not a paragraph: the canon already said "quote the owner verbatim"; a prose rule
+// holds until the session tires — in one deployment 430 of 1083 references to the owner's will carried
+// no quote, and one of them ("the owner's decision P1: wait, no threshold" — his actual word was "do as
+// you see fit") held a run for 119 s while the owner's machine died.
+//
+// Boundaries, so the linter never becomes bureaucracy:
+//   · patterns are DATA per language (ATTRIBUTION) — a project adds a row, the engine does not change;
+//   · invisible by construction: fenced code, `>` quote lines (they are EVIDENCE for their neighbours,
+//     never findings themselves), inline code spans, HTML comments, lines carrying ❌ (the canon's own
+//     counter-examples);
+//   · DEBT, not a turnstile: findings already recorded in the baseline (.kaif/attribution-lint.baseline.json,
+//     keys `file:sha16(line)`) are printed as debt and exit 0; only NEW findings exit 1; the baseline is
+//     written once on adoption (`--write-baseline`) and ONLY SHRINKS after that: a rewrite that would turn
+//     a NEW finding into debt is REFUSED (exit 1) unless `--adopt-new` is passed explicitly — the count of
+//     adopted lines is printed, never silent; a baselined line that changed or vanished is pruned;
+//   · exit 3 = SKIPPED: no markdown in scope — "not scanned" must never read as "clean" (bug 34 class);
+//   · it cannot see an attribution phrased outside the table ("as agreed", "как договаривались"), it
+//     cannot judge whether a quote is genuine, and non-markdown files (code comments) are out of scope —
+//     those stay with `/fable-judge` (the hunt "an agent decision worn as the owner's word").
+//
+// Commands:
+//   node .kaif/tools/kaif-attribution-lint.mjs check [paths…] [--write-baseline [--adopt-new]] [--baseline <file>]
+//         # default paths: plans bugs ideas interviews researches homeworks reports + the root *.md
+//   node .kaif/tools/kaif-attribution-lint.mjs selftest
+//         # PROVE both answers on in-memory fixtures (RU + EN): the field line without a quote → finding;
+//         # with a quote / a `>` quote line / an interview address / a decision number / an agent signature /
+//         # the marker → clean; the owner's signature without his words → finding; invisible zones stay
+//         # silent; the baseline swallows old debt and reddens on a new line only.
+//
+// @guard kaif-attribution-lint
+// THREAT:         an agent's own choice recorded as "the owner's decision" without his words becomes
+//                 unrevisable and is obeyed by later sessions (origin #55: a run held for 119 s while
+//                 the owner's machine died)
+// PROVED-AGAINST: selftest — the field line «Решение владельца П1 (plans/81 §3): ЖДАТЬ, порога не
+//                 заводить» with no quote within ±2 lines → 1 finding; the same line with «давай как ты
+//                 считаешь» beside it → 0; the EN twin "the owner's decision P1: wait, no threshold" → 1;
+//                 the ticket's own mutant «[ВЛАДЕЛЕЦ] без цитаты» → 1
+// GAP:            an attribution phrased outside the pattern table is invisible; a fabricated quote
+//                 passes as a quote (the judge's half); non-markdown files — code comments — are out of
+//                 scope; an incidental quote or decision number within the window grounds a neighbour
+// ON-REAL-PATH:   the origin's own knowledge directories and root documents — first live run
+//                 2026-09-12 (epic AW), baseline written; see the [TESTED] line below
+// [TESTED: 2026-09-12 · selftest green (RU + EN, 26 cases); sandbox suite s24 — bad fixture exit 1 with
+//  both languages named, clean fixture exit 0, baseline swallows the old debt and reddens on the new
+//  line only, a rewrite with a NEW finding present is refused unless --adopt-new, empty tree SKIPPED
+//  (exit 3); live run over the origin — see STATUS "Инструменты"]
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { join, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
+
+const argv = process.argv.slice(2);
+const CMD = argv[0] || 'check';
+const FLAGS = new Set(argv.filter((a) => a.startsWith('--')));
+const baselineFlagAt = argv.indexOf('--baseline');
+const BASELINE = baselineFlagAt >= 0 && argv[baselineFlagAt + 1] ? argv[baselineFlagAt + 1] : '.kaif/attribution-lint.baseline.json';
+const PATHS = argv.slice(1).filter((a, i, arr) => !a.startsWith('--') && arr[i - 1] !== '--baseline');
+const EXIT_SKIPPED = 3;
+const WINDOW = 2;                       // lines before and after an attribution that may carry the evidence
+const DEFAULT_DIRS = ['plans', 'bugs', 'ideas', 'interviews', 'researches', 'homeworks', 'reports'];
+const SKIP_DIRS = new Set(['.git', 'node_modules', '.kaif', 'dist', 'vendor', 'framework']);
+// The machinery's own transients legally QUOTE conventions while describing them (bug 34 class).
+const TRANSIENTS = new Set(['KAIF.md', 'KAIF_UPDATE_TASK.md', 'KAIF_ADAPTATION_TASK.md', 'KAIF_UPDATE_TASK.superseded.md']);
+const KAIF_JSON = '.kaif/kaif.json';
+
+const log = (s) => console.log(s);
+const sha16 = (s) => createHash('sha256').update(s, 'utf8').digest('hex').slice(0, 16);
+
+// ---------------------------------------------------------------------------
+// Patterns — DATA per language. Cyrillic word boundaries are lookarounds on the Cyrillic range
+// (JavaScript `\b` is blind to non-ASCII letters — a paid-for lesson).
+const CYR = '[А-Яа-яЁё]';
+const cyr = (src) => new RegExp(`(?<!${CYR})(?:${src})(?!${CYR})`, 'iu');
+// Only forms that ASSERT a decision or an order are attributions. A bare mention of the concept
+// ("the owner's word is the source of truth", "a candidate for the owner's word") is prose about the
+// rule, not a claim about a choice — it stays invisible, or the linter reddens on every canon page.
+export const ATTRIBUTION = {
+  ru: [
+    cyr('(?:решени[еяю]|приказ[аеу]?|вердикт[аеу]?|распоряжени[еяю])\\s+(?:владельца|заказчика|автора)'),
+    cyr('(?:владелец|заказчик|автор)\\s+(?:решил|велел|сказал|выбрал|попросил|потребовал|постановил|утвердил|запретил|разрешил|заказал|отверг|принял|одобрил)'),
+    cyr('по\\s+(?:решению|слову|воле|приказу|требованию|распоряжению)\\s+(?:владельца|заказчика|автора)'),
+  ],
+  en: [
+    /\bthe owner['’]?s\s+(?:decision|order|verdict|ruling|instruction)\b/i,
+    /\b(?:the\s+)?owner\s+(?:decided|said|chose|ordered|asked|demanded|ruled|approved|forbade|allowed|rejected|accepted)\b/i,
+    /\b(?:per|by|under|on)\s+the\s+owner['’]?s\s+(?:decision|word|will|order|instruction)\b/i,
+    /\bdecided by the owner\b/i,
+  ],
+  // The owner's SIGNATURE (AGENT_GUIDE → "Authorship of a decision") is itself an attribution: `[OWNER]`
+  // without his words beside it is the ticket's own acceptance mutant (#55 "как проверить починку").
+  any: [/\[(?:OWNER|ВЛАДЕЛЕЦ)\]/u],
+};
+// Evidence that the attribution is grounded — any of these within the window.
+// An opening guillemet or curly quote anywhere in the window counts: prose wraps at ~100 columns, so a
+// verbatim quote often opens on one line and closes on the next; the ASCII pair must close on its line
+// (a lone " is code and JSON as often as it is speech). A `>` quote line is evidence too — the most
+// natural quoting form of a markdown document.
+const QUOTE_RE = /«|“|"[^"\n]{3,}"/u;
+const QUOTE_LINE_RE = /^\s*>/;
+// An interview address — a pointer into the registry that holds the words.
+const INTERVIEW_RE = /interviews\/|интервью\s*№\s*\d|interview\s*#\s*\d|interview_\d{3}/iu;
+// The NUMBER of a recorded decision (`решение №109`, `decision #12`, `MASTER_PLAN §7 №95`) — a pointer into
+// the decision journal. The number alone is NOT evidence (`issue №55`, a page, a bug): it must sit on a line
+// that also carries a registry word. A plan or section address alone is not evidence either: the field
+// line "the owner's decision P1 (plans/81 §3)" pointed at a plan whose "decision" was the agent's own.
+// The registry word must sit NEXT to the number ("решение №105", "№105 (решение", "decision #12",
+// "§7 №95", "MASTER_PLAN … №95"): the attribution line itself says "решение владельца", so a word
+// anywhere on the line would ground a bare "(issue №55)" through the attribution's own wording.
+const DECISION_ADDRESS_RE = /(?:решени[а-яё]*\s+(?:владельца\s+)?№\s*\d+|№\s*\d+\s*\(?\s*решени|decision\s*#\s*\d+|№\s*\d+\s*\(?\s*decision|§\s*7\s*№\s*\d+|MASTER_PLAN[^\n]{0,40}№\s*\d+|журнал[а-яё]*\s+решений[^\n]{0,20}№\s*\d+)/iu;
+const decisionAddress = (l) => DECISION_ADDRESS_RE.test(l);
+const OK_MARK_RE = /<!--\s*attribution-ok:/iu;
+// The agent's own signature on the line — a signed agent decision is not an attribution.
+const DEFAULT_AGENT_MARKS = ['[AI]', '[AI-ed]', '[ИИ]', '[ИИ-ред]'];
+// A "decisions made without the owner" section is the agent's signature block-wise (any language).
+const SELF_SECTION = /(Decisions made without the owner|Решения, принятые агентом без владельца|Решения без владельца|Decisions without the owner)/iu;
+
+function agentMarks(root = '.') {
+  const marks = [...DEFAULT_AGENT_MARKS];
+  const p = join(root, KAIF_JSON);
+  if (existsSync(p)) {
+    try {
+      const j = JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+      if (Array.isArray(j.aiMarks)) for (const m of j.aiMarks) if (typeof m === 'string') marks.push(m);
+    } catch { /* a malformed marker is the provenance gate's business, not this linter's */ }
+  }
+  return marks;
+}
+
+// Strip what must not be judged: HTML comments and inline code spans (the text stays for evidence).
+const stripInvisible = (line) => line.replace(/<!--.*?-->/g, ' ').replace(/`[^`]*`/g, ' ');
+const headingLevel = (l) => { const m = l.match(/^(#{1,6})\s/); return m ? m[1].length : 0; };
+const grounds = (l) => QUOTE_RE.test(l) || QUOTE_LINE_RE.test(l) || INTERVIEW_RE.test(l) || decisionAddress(l);
+
+/** Findings of one document: [{ line, text }] — text is the exact source line (trimmed). */
+export function lintText(src, marks = DEFAULT_AGENT_MARKS) {
+  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const out = [];
+  let fence = false;
+  let selfUntil = -1;   // inside a "decisions without the owner" section until this heading level closes it
+  let selfLevel = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    if (/^\s*(```|~~~)/.test(raw)) { fence = !fence; continue; }
+    if (fence) continue;
+    const h = headingLevel(raw);
+    if (h) {
+      if (selfUntil >= 0 && h <= selfLevel) selfUntil = -1;
+      if (SELF_SECTION.test(raw)) { selfUntil = i; selfLevel = h; continue; }
+    }
+    if (selfUntil >= 0) continue;                       // the agent's own decisions, signed block-wise
+    if (QUOTE_LINE_RE.test(raw)) continue;              // a quote line — evidence for neighbours, never a finding
+    if (raw.includes('❌')) continue;                    // the canon's counter-example
+    const text = stripInvisible(raw);
+    const attributes = Object.values(ATTRIBUTION).some((rules) => rules.some((re) => re.test(text)));
+    if (!attributes) continue;
+    if (OK_MARK_RE.test(raw)) continue;                 // the declared exception names where the quote lives
+    if (marks.some((m) => raw.includes(m))) continue;   // signed as the agent's decision
+    const lo = Math.max(0, i - WINDOW), hi = Math.min(lines.length - 1, i + WINDOW);
+    let grounded = false;
+    for (let j = lo; j <= hi && !grounded; j++) if (grounds(lines[j])) grounded = true;
+    if (grounded) continue;
+    out.push({ line: i + 1, text: raw.trim() });
+  }
+  return out;
+}
+
+function* walkMd(dir, root) {
+  if (!existsSync(dir)) return;
+  for (const n of readdirSync(dir)) {
+    const p = join(dir, n);
+    if (SKIP_DIRS.has(n)) continue;
+    if (statSync(p).isDirectory()) { yield* walkMd(p, root); continue; }
+    if (/\.md$/i.test(n)) yield p;
+  }
+}
+function scopeFiles(root, paths) {
+  const files = [];
+  if (paths.length) {
+    for (const p of paths) {
+      const full = join(root, p);
+      if (!existsSync(full)) continue;
+      if (statSync(full).isDirectory()) files.push(...walkMd(full, root)); else if (/\.md$/i.test(full)) files.push(full);
+    }
+  } else {
+    for (const d of DEFAULT_DIRS) files.push(...walkMd(join(root, d), root));
+    for (const n of readdirSync(root)) if (/\.md$/i.test(n) && !TRANSIENTS.has(n) && statSync(join(root, n)).isFile()) files.push(join(root, n));
+  }
+  return files.map((f) => f.replaceAll('\\', '/')).sort();
+}
+const rel = (root, f) => f.replaceAll('\\', '/').replace(root.replaceAll('\\', '/').replace(/\/?$/, '/'), '').replace(/^\.\//, '');
+
+function readBaseline(p) {
+  if (!existsSync(p)) return null;
+  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, '')); } catch { return null; }
+}
+
+/** The check over a root: { findings: [{file, line, text, key}], scanned } */
+export function runCheck(root, paths = []) {
+  const marks = agentMarks(root);
+  const files = scopeFiles(root, paths);
+  const findings = [];
+  for (const f of files) {
+    const r = rel(root, f);
+    for (const x of lintText(readFileSync(f, 'utf8'), marks)) findings.push({ file: r, line: x.line, text: x.text, key: `${r}:${sha16(x.text)}` });
+  }
+  return { findings, scanned: files.length };
+}
+
+function writeBaseline(findings) {
+  const entries = {};
+  for (const f of findings) entries[f.key] = `${f.file}:${f.line} ${f.text.slice(0, 100)}`;
+  const dir = dirname(BASELINE);
+  if (dir && dir !== '.') mkdirSync(dir, { recursive: true });   // a bare file name has no directory to create
+  writeFileSync(BASELINE, JSON.stringify({ written: new Date().toISOString(), count: findings.length, entries }, null, 2) + '\n');
+}
+
+function cmdCheck() {
+  const root = '.';
+  const { findings, scanned } = runCheck(root, PATHS);
+  if (!scanned) { log(`⊘ SKIPPED — no markdown in scope (${PATHS.length ? PATHS.join(' ') : DEFAULT_DIRS.join(' ') + ' + root *.md'}): nothing was proven (exit 3).`); process.exit(EXIT_SKIPPED); }
+  const baseline = readBaseline(BASELINE);
+  const known = new Set(Object.keys((baseline && baseline.entries) || {}));
+  const fresh = findings.filter((f) => !known.has(f.key));
+  if (FLAGS.has('--write-baseline')) {
+    // Adoption writes the whole picture once. After that the baseline ONLY SHRINKS: a rewrite that would
+    // launder a NEW finding into debt is refused — growth is an explicit, printed act (--adopt-new).
+    if (baseline && fresh.length && !FLAGS.has('--adopt-new')) {
+      for (const f of fresh) console.error(`✖ NEW, not baselined: ${f.file}:${f.line} — «${f.text.slice(0, 100)}»`);
+      console.error(`✖ baseline NOT rewritten: ${fresh.length} NEW finding(s) would become debt — ground them (quote · address · [AI]) or pass --adopt-new to record them on purpose`);
+      process.exit(1);
+    }
+    writeBaseline(findings);
+    const pruned = baseline ? [...known].filter((k) => !findings.some((f) => f.key === k)).length : 0;
+    log(`baseline written: ${BASELINE} — ${findings.length} finding(s) recorded as debt${baseline ? ` (${fresh.length} adopted as NEW on purpose, ${pruned} pruned)` : ''} (it only shrinks from here; a changed or vanished line is pruned on the next write)`);
+    return;
+  }
+  const debt = findings.length - fresh.length;
+  for (const f of fresh) console.error(`✖ ${f.file}:${f.line} — attribution to the owner without his words: «${f.text.slice(0, 120)}» (no verbatim quote, quote line, interview address or decision number within ±${WINDOW} lines; sign it [AI] if it is the agent's, quote him if it is his, or mark <!-- attribution-ok: … -->)`);
+  const prunable = baseline ? known.size - debt : 0;
+  const tail = baseline ? ` · debt ${debt} (baseline ${BASELINE}${prunable > 0 ? `, ${prunable} entr${prunable === 1 ? 'y' : 'ies'} no longer found — rewrite it` : ''})` : (findings.length ? ' · no baseline yet — adopt with --write-baseline' : '');
+  if (fresh.length) { console.error(`✖ attribution-lint: ${fresh.length} NEW finding(s) in ${scanned} file(s)${tail}`); process.exit(1); }
+  log(`✅ attribution-lint OK — ${scanned} file(s) scanned, new 0${tail}`);
+}
+
+// ---------------------------------------------------------------------------
+// selftest — both answers on in-memory fixtures, then the baseline behaviour on a temp tree.
+function cmdSelftest() {
+  let n = 0, bad = 0;
+  const expect = (name, src, want, marks = DEFAULT_AGENT_MARKS) => {
+    n++;
+    const got = lintText(src, marks).length;
+    const ok = got === want;
+    if (!ok) bad++;
+    log(`${ok ? '✅' : '❌'} ${name} — findings ${got}, expected ${want}`);
+  };
+  const FIELD_LINE = '* ⚡ Ш5 — ОЖИДАНИЕ РАСПИСКИ РУКИ 2. Решение владельца П1 (plans/81 §3): ЖДАТЬ, порога не заводить.';
+  expect('RU: the field line, no quote → finding', `# x\n\n${FIELD_LINE}\n\nТекст.\n`, 1);
+  expect('RU: the same line with the mandate quoted beside it → clean', `${FIELD_LINE}\nСлово владельца дословно: «давай как ты считаешь».\n`, 0);
+  expect('RU: a `>` quote line beside it → clean', `Решение владельца — ждать.\n> давай как ты считаешь\n`, 0);
+  expect('RU: an interview address in the window → clean', `Решение владельца — ждать.\nИсточник: интервью №031, Q1.\n`, 0);
+  expect('RU: a decision number WITH a registry word → clean', `По слову владельца порог снят (решение №105).\n`, 0);
+  expect('RU: a bare number without a registry word (an issue) → finding', `Решение владельца П1: ждать (issue №55).\n`, 1);
+  expect('RU: signed as the agent\'s decision → clean', `[ИИ] по мандату — «давай как ты считаешь»: ждать расписки; решение владельца не требовалось.\n`, 0);
+  expect('RU: the declared exception on the line → clean', `Решение владельца П1: ждать. <!-- attribution-ok: plans/81 §3 -->\n`, 0);
+  expect('RU: "владелец велел" without words → finding', `Владелец велел убрать порог.\n`, 1);
+  expect('RU: "по слову владельца" with a quote two lines away → clean', `По слову владельца порог снят.\n\n«порога не заводить» — его слова 2026-09-08.\n`, 0);
+  expect('RU: a quote THREE lines away is outside the window → finding', `По слову владельца порог снят.\n\n\n«порога не заводить».\n`, 1);
+  expect('RU: the owner\'s signature without his words → finding (the ticket\'s mutant)', `[ВЛАДЕЛЕЦ] ждать, порога не заводить · 2026-09-08 — не пересматривать.\n`, 1);
+  expect('RU: the owner\'s signature with his words → clean', `[ВЛАДЕЛЕЦ] «давай как ты считаешь» · 2026-09-08.\n`, 0);
+  expect('EN: the owner\'s decision without words → finding', `The owner's decision P1: wait, no threshold.\n`, 1);
+  expect('EN: with the interview address → clean', `The owner's decision (interview #031, Q1): wait.\n`, 0);
+  expect('EN: "the owner decided" with a quote → clean', `The owner decided: "do as you see fit".\n`, 0);
+  expect('EN: with a decision number and the registry word → clean', `Per the owner's decision (decision #12): wait.\n`, 0);
+  expect('EN: signed [AI] by mandate → clean', `[AI] by mandate — "do as you see fit": wait for the receipt; the owner's decision is not claimed.\n`, 0);
+  expect('EN: the owner\'s signature without his words → finding', `[OWNER] wait, no threshold · 2026-09-08 — not to be revisited.\n`, 1);
+  expect('EN: the owner\'s signature with his words → clean', `[OWNER] "do as you see fit" · 2026-09-08.\n`, 0);
+  expect('invisible: ❌ counter-example → clean', `❌ the owner's decision with no quote — the bad form.\n`, 0);
+  expect('invisible: inline code and a fenced block → clean', 'Use `the owner\'s decision` and `[OWNER]` as the pattern.\n\n```\nthe owner\'s decision P1: wait\n```\n', 0);
+  expect('invisible: a `>` quote line is never a finding → clean', `> Решение владельца П1: ждать — цитата из старого документа.\n`, 0);
+  expect('block signature: a "decisions without the owner" section is skipped, the next section is not', `## Decisions made without the owner\n\n1. По решению владельца ждать — нет, это выбор агента.\n\n## Links\n\nПо решению владельца ждать.\n`, 1);
+  expect('localized aiMarks from kaif.json are a signature too', `[КИ] по мандату: ждать; решение владельца не требовалось.\n`, 0, [...DEFAULT_AGENT_MARKS, '[КИ]']);
+
+  // baseline behaviour on a temp tree: adopt → clean; a NEW line → exit 1 naming it only
+  const root = mkdtempSync(join(tmpdir(), 'kaif-attribution-'));
+  try {
+    mkdirSync(join(root, 'plans'), { recursive: true });
+    writeFileSync(join(root, 'plans', '01.md'), `# P\n\n${FIELD_LINE}\n`);
+    const first = runCheck(root);
+    const entries = {}; for (const f of first.findings) entries[f.key] = f.text;
+    writeFileSync(join(root, 'baseline.json'), JSON.stringify({ entries }));
+    writeFileSync(join(root, 'plans', '01.md'), `# P\n\n${FIELD_LINE}\n\nВладелец велел убрать порог.\n`);
+    const second = runCheck(root);
+    const fresh = second.findings.filter((f) => !(f.key in entries));
+    n++;
+    const ok = second.findings.length === 2 && fresh.length === 1 && /велел/.test(fresh[0].text);
+    if (!ok) bad++;
+    log(`${ok ? '✅' : '❌'} baseline: the old line is debt, only the new line is NEW — findings ${second.findings.length}, new ${fresh.length}`);
+  } finally { rmSync(root, { recursive: true, force: true }); }
+
+  if (bad) { console.error(`✖ selftest FAILED — ${bad} of ${n} cases`); process.exit(1); }
+  log(`✅ selftest OK — ${n} cases (RU + EN; both answers on every fixture; baseline proven)`);
+}
+
+({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => { console.error(`✖ unknown command: ${CMD} (check [paths…] [--write-baseline [--adopt-new]] [--baseline <file>] | selftest)`); process.exit(1); }))();
+``````
+
 > **FILE: `.kaif/tools/kaif-canon-lint.mjs`** — optional tool module — verbatim
 
 ``````js
@@ -11363,9 +11749,21 @@ else { console.error(`usage: node .kaif/tools/kaif-guard-lint.mjs check [paths�
 //   node .kaif/tools/kaif-provenance.mjs report            # where AI text awaits acceptance
 //   node .kaif/tools/kaif-provenance.mjs check             # the GATE (wire into your checks/CI):
 //                                                          #   · every mark is correctly paired
-//                                                          #   · with canonArtifacts declared:
-//                                                          #     marks live ONLY in the canon
+//                                                          #   · marks are REQUIRED in the declared
+//                                                          #     canon and LEGAL anywhere the agent
+//                                                          #     brings text to the owner (2.7)
 //                                                          # exit 1 on violations
+//
+// 2.7 (epic AW; origin issue #55 — the owner's word: "everything else you must mark as [AI], so
+// that not EVERYTHING written is taken for my word"): the former refusal "marks live ONLY in the
+// canon" is GONE. A draft the agent brings to the owner (an interview, a table, a proposal) is the
+// one place where AI text and the owner's text mix by design — forbidding the mark there made a
+// field agent invent "(my taste)", and a pronoun has no owner a day later. `check` keeps pair
+// integrity everywhere; `report` lists the canon blocks awaiting acceptance and, SEPARATELY, the
+// marks outside the canon — drafts for the owner's eye, never entries of the acceptance registry.
+// [TESTED: 2026-09-12 · sandbox suite s05 — check green with an [AI] block in interviews/ under
+//  canonArtifacts ["rules/"] and names the count; the same tree under the v2.6 copy of this file
+//  reddens with "NOT a declared canon artifact" (the red proof of the contract change)]
 //   node .kaif/tools/kaif-provenance.mjs accept <file>     # THE OWNER ACCEPTED this file's blocks:
 //                                                          # move them to the acceptance registry
 //                                                          # (.kaif/provenance-accepted.json) and
@@ -11537,18 +11935,16 @@ function cmdCheck() {
   requireDeclaredOrSkip();
   const decl = DECL;
   let issues = 0;
+  let files = 0;
+  let outside = 0;   // 2.7: marks outside the declared canon are LEGAL (drafts to the owner) — counted, never refused
   for (const p of walkMd()) {
+    files++;
     const { blocks, errors } = parseMarks(p);
     for (const e of errors) { console.error('✖ ' + e); issues++; }
-    // "marks live only in the canon" applies once a canon IS declared non-empty — with an
-    // empty declaration (the conscious "no canon yet" state) only mark hygiene is checked.
-    if (blocks.length && decl.length && !inCanon(p, decl)) {
-      console.error(`✖ ${p} carries ${blocks.length} provenance mark block(s) but is NOT a declared canon artifact — marks live only in canonArtifacts (declare it in .kaif/kaif.json, or remove the marks: agents must not mark everything)`);
-      issues++;
-    }
+    if (blocks.length && decl.length && !inCanon(p, decl)) outside += blocks.length;
   }
   if (issues) die(`provenance check FAILED: ${issues} issue(s)`);
-  log(`✅ provenance check OK${decl.length ? '' : ' (canonArtifacts declared empty — no canon yet; only mark hygiene was checked)'}`);
+  log(`✅ provenance check OK — pairs intact in ${files} file(s)${decl.length ? `; marks outside the declared canon: ${outside} block(s) (legal since 2.7 — drafts to the owner; see report)` : ' (canonArtifacts declared empty — no canon yet; only mark hygiene was checked)'}`);
 }
 
 function cmdReport() {
@@ -11556,9 +11952,10 @@ function cmdReport() {
   const decl = DECL;
   if (!decl.length) { log('✅ canonArtifacts is declared EMPTY (no canon yet) — nothing awaits acceptance'); return; }
   let total = 0;
+  const drafts = [];   // 2.7: marks outside the canon — drafts to the owner's eye, not the acceptance registry
   for (const p of walkMd()) {
-    if (!inCanon(p, decl)) continue;
     const { blocks, errors } = parseMarks(p);
+    if (!inCanon(p, decl)) { if (blocks.length) drafts.push({ p, n: blocks.length }); continue; }
     for (const e of errors) console.error('⚠ ' + e);
     if (!blocks.length) continue;
     log(`${p} — ${blocks.length} block(s) awaiting the owner's acceptance:`);
@@ -11566,6 +11963,10 @@ function cmdReport() {
     total += blocks.length;
   }
   log(total ? `${total} block(s) total — acceptance is the OWNER'S word, then: kaif-provenance accept <file>` : '✅ no AI text awaits acceptance in the declared canon');
+  if (drafts.length) {
+    log(`outside the declared canon (drafts to the owner's eye, not the acceptance registry): ${drafts.reduce((s, d) => s + d.n, 0)} block(s) in ${drafts.length} file(s)`);
+    for (const d of drafts) log(`  · ${d.p} — ${d.n} block(s)`);
+  }
 }
 
 function cmdAccept() {

@@ -29,9 +29,21 @@
 //   node .kaif/tools/kaif-provenance.mjs report            # where AI text awaits acceptance
 //   node .kaif/tools/kaif-provenance.mjs check             # the GATE (wire into your checks/CI):
 //                                                          #   · every mark is correctly paired
-//                                                          #   · with canonArtifacts declared:
-//                                                          #     marks live ONLY in the canon
+//                                                          #   · marks are REQUIRED in the declared
+//                                                          #     canon and LEGAL anywhere the agent
+//                                                          #     brings text to the owner (2.7)
 //                                                          # exit 1 on violations
+//
+// 2.7 (epic AW; origin issue #55 — the owner's word: "everything else you must mark as [AI], so
+// that not EVERYTHING written is taken for my word"): the former refusal "marks live ONLY in the
+// canon" is GONE. A draft the agent brings to the owner (an interview, a table, a proposal) is the
+// one place where AI text and the owner's text mix by design — forbidding the mark there made a
+// field agent invent "(my taste)", and a pronoun has no owner a day later. `check` keeps pair
+// integrity everywhere; `report` lists the canon blocks awaiting acceptance and, SEPARATELY, the
+// marks outside the canon — drafts for the owner's eye, never entries of the acceptance registry.
+// [TESTED: 2026-09-12 · sandbox suite s05 — check green with an [AI] block in interviews/ under
+//  canonArtifacts ["rules/"] and names the count; the same tree under the v2.6 copy of this file
+//  reddens with "NOT a declared canon artifact" (the red proof of the contract change)]
 //   node .kaif/tools/kaif-provenance.mjs accept <file>     # THE OWNER ACCEPTED this file's blocks:
 //                                                          # move them to the acceptance registry
 //                                                          # (.kaif/provenance-accepted.json) and
@@ -203,18 +215,16 @@ function cmdCheck() {
   requireDeclaredOrSkip();
   const decl = DECL;
   let issues = 0;
+  let files = 0;
+  let outside = 0;   // 2.7: marks outside the declared canon are LEGAL (drafts to the owner) — counted, never refused
   for (const p of walkMd()) {
+    files++;
     const { blocks, errors } = parseMarks(p);
     for (const e of errors) { console.error('✖ ' + e); issues++; }
-    // "marks live only in the canon" applies once a canon IS declared non-empty — with an
-    // empty declaration (the conscious "no canon yet" state) only mark hygiene is checked.
-    if (blocks.length && decl.length && !inCanon(p, decl)) {
-      console.error(`✖ ${p} carries ${blocks.length} provenance mark block(s) but is NOT a declared canon artifact — marks live only in canonArtifacts (declare it in .kaif/kaif.json, or remove the marks: agents must not mark everything)`);
-      issues++;
-    }
+    if (blocks.length && decl.length && !inCanon(p, decl)) outside += blocks.length;
   }
   if (issues) die(`provenance check FAILED: ${issues} issue(s)`);
-  log(`✅ provenance check OK${decl.length ? '' : ' (canonArtifacts declared empty — no canon yet; only mark hygiene was checked)'}`);
+  log(`✅ provenance check OK — pairs intact in ${files} file(s)${decl.length ? `; marks outside the declared canon: ${outside} block(s) (legal since 2.7 — drafts to the owner; see report)` : ' (canonArtifacts declared empty — no canon yet; only mark hygiene was checked)'}`);
 }
 
 function cmdReport() {
@@ -222,9 +232,10 @@ function cmdReport() {
   const decl = DECL;
   if (!decl.length) { log('✅ canonArtifacts is declared EMPTY (no canon yet) — nothing awaits acceptance'); return; }
   let total = 0;
+  const drafts = [];   // 2.7: marks outside the canon — drafts to the owner's eye, not the acceptance registry
   for (const p of walkMd()) {
-    if (!inCanon(p, decl)) continue;
     const { blocks, errors } = parseMarks(p);
+    if (!inCanon(p, decl)) { if (blocks.length) drafts.push({ p, n: blocks.length }); continue; }
     for (const e of errors) console.error('⚠ ' + e);
     if (!blocks.length) continue;
     log(`${p} — ${blocks.length} block(s) awaiting the owner's acceptance:`);
@@ -232,6 +243,10 @@ function cmdReport() {
     total += blocks.length;
   }
   log(total ? `${total} block(s) total — acceptance is the OWNER'S word, then: kaif-provenance accept <file>` : '✅ no AI text awaits acceptance in the declared canon');
+  if (drafts.length) {
+    log(`outside the declared canon (drafts to the owner's eye, not the acceptance registry): ${drafts.reduce((s, d) => s + d.n, 0)} block(s) in ${drafts.length} file(s)`);
+    for (const d of drafts) log(`  · ${d.p} — ${d.n} block(s)`);
+  }
 }
 
 function cmdAccept() {

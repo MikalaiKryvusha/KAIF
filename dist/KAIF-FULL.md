@@ -1082,17 +1082,53 @@ shipped name carries a source artifact (*owner · channel · date*), and a brand
 only by the owner — un-naming is a brand decision too. (`/release` Step 0 enforces this at the
 decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
+**Authorship of a decision — the owner's word is a quote; the agent's word is signed** (origin issue
+#55, 🔴🔴🔴 TOP by the owner's word, rendered from Russian: "you write some nonsense yourself, then read
+it back and interpret it as MY word"; "everything else you must mark as `[AI]`, so that not EVERYTHING
+written is taken for my word"; "my words are what I write to you here, and in the interviews"). The canon
+gives the owner's decisions a special status — not to be revisited — and lets the agent decide the rest;
+both used to land in the same document in the same words, and a day later a fresh session could tell
+them apart only by trusting the previous one: an agent's choice wearing the owner's name became
+unrevisable (field: a "the owner's decision P1: wait, no threshold" comment in live code — the owner's
+actual word at that fork was "do as you see fit" — held a run for 119 s while the owner's machine died;
+430 of 1083 references to the owner's will in one deployment carried no quote). Four rules and a guard:
+- **Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>`
+  (or the address of the interview and question that holds the verbatim text — `interview #NNN, QN`);
+  the agent's — `[AI]` (the "Decisions made without the owner" section of a plan or a bug is the same
+  signature, block-wise). A decision with no signature is a defect, never "probably the owner's".
+  <!-- keep every `[…]` tag inside a one-line code span: the provenance parser reads spans per line -->
+- **A mandate is not a decision.** "Do as you see fit", "your call" and their equivalents in the
+  owner's language transfer the CHOICE to the agent: the record reads `[AI] by mandate — "<the owner's words verbatim>"`, and the
+  decision stays revisable. The mandate is quoted; the choice is signed by the agent.
+- **"Not to be revisited" belongs to `[OWNER]` decisions only.** An `[AI]` decision is revised freely
+  by any later session; the status is never inherited by silence.
+- **The source of truth about the owner's words is the chat and `interviews/`** (the owner's own
+  line). Everything else — a plan line, a code comment, a report — is a RETELLING and reads as one: a
+  reference to the owner's will with no verbatim quote and no interview address beside it is the
+  finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
+  prints the debt with a baseline that only shrinks (`--write-baseline` once, `selftest` proves both
+  answers; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line).
+  `/fable-judge` hunts "an agent decision worn as the owner's word".
+
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
 draft to the owner (interview/chat) and their "yes" — never straight into the canon; **mechanical edits**
 under already-accepted decisions (renames, arithmetic, references, notation) go ahead immediately but
 stay visible until the owner has reviewed them. Two-stage control: first the *intent* (before writing),
 then the *text* (the owner's read-through). Nothing dissolves into the canon silently, and the corridor
-for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`).
+for mechanical work stays wide (see the three-doors rule in `PHILOSOPHY.md`). The draft the agent brings
+(an interview, a table, a proposal) is where AI text and the owner's text mix BY DESIGN — so the draft
+carries the provenance marks on the agent's lines (below): the gate demands a draft, the marks make it
+readable a day later.
 
 **Provenance marks — `[AI]…[/AI]` / `[AI-ed]…[/AI-ed]`** (canonical English strings, grep-friendly,
 like `[NOT-TESTED]`). Everything the AI writes into the owner's canon artifacts carries a visible
 paired mark: `[AI]…[/AI]` — written by the AI; `[AI-ed]…[/AI-ed]` — the owner's text, edited by the AI.
+And everything the AI PROPOSES as the owner's canon content — a lore line, a rule, a value, a table row
+— carries the same mark wherever it lives: in an interview, a draft, a table brought to the owner
+(origin issue #55: a field agent, forbidden to mark outside the canon, invented "(my taste)" — and a
+pronoun has no owner a day later: **a pronoun is not a provenance mark**; the question's own
+scaffolding — option letters, the recommendation, the scenario lines — is not marked).
 **A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
 agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
 is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
@@ -1101,8 +1137,11 @@ text for the owner's canon). The check is grep-cheap: AI text in a canon artifac
 mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time. The check
 IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 (`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/tools/kaif-provenance.mjs check` into your
-gates — pair integrity + marks-only-in-declared-canon; `report` lists blocks awaiting acceptance;
-`accept <file>` strips marks into the registry and carries the OWNER'S word only.
+gates — pair integrity everywhere; marks are REQUIRED in the declared canon and LEGAL in any document
+the agent brings to the owner (since 2.7 the "marks only in the canon" refusal is gone); `report` lists
+the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts — for the
+owner's eye, not the acceptance registry); `accept <file>` strips marks into the registry and carries
+the OWNER'S word only.
 
 **The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never
 carry provenance marks (owner's decision, quoted: *"README and the release notes are not subject to
@@ -3087,6 +3126,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
+| `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
@@ -4609,6 +4649,15 @@ class with axis G8 of the same questions guard (epic codes read from the meta-pl
 declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`); `/fable-judge` hunts
 "owner text in agent vocabulary".
 
+**Proposed canon content inside a question is marked (KAIF 2.7).** When an option or a draft carries
+text the agent proposes AS the owner's canon — a lore line, a rule, a value, a table row — that text is
+wrapped `[AI]…[/AI]` (or the localized pair from `.kaif/kaif.json` → `aiMarks`) right there in the
+interview or the draft: the mark survives the session, a pronoun does not (origin issue #55: "(my
+taste)" read as the owner's taste a day later). The question's own scaffolding — option letters, the
+recommendation, the scenario lines — is not marked. And the owner's answer is recorded as HIS word:
+`[OWNER] "<verbatim>" · <date>` or the interview address (`AGENT_GUIDE.md` → "Authorship of a
+decision"); "do as you see fit" is a mandate, recorded as `[AI] by mandate — "<his words>"`.
+
 ### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
 
 The origin owner's rule (origin issue #50): an owner's proposal that confuses you is a proposal you
@@ -5598,14 +5647,14 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except six marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> Kept verbatim except seven marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes). In KAIF rituals this
+> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunt in the same block — **agent-decision-worn-as-the-owner's-word** (the authorship of a decision: the owner's word is a quote, the agent's word is signed). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5650,6 +5699,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
    - **Owner text in agent vocabulary (KAIF 2.6).** An owner-facing text — a question, an option label, a Situation · Action · Result line, a report line the owner reads as the customer — that names a thing by the agent's working vocabulary (an epic code or a chain of them, a plan or bug address, a tool invocation, a flag, a canon term) instead of by what the owner will SEE or GET after it, is a finding: the scenario form was satisfied and the owner still could not choose (the origin's bug 112 — four rejections of one class in a month; the owner's word, decision #106: "the owner reasons in meanings and behavioural scenarios"). Hunt option labels and scenario lines for `XX → YY` chains, `node …/` invocations, `--flags`, `plans/NN`; the Check line, the answer-target line and a technical note under the scenario are the legal homes for all of these. The declared exception is a marker with a reason on the line (`questions-guard:vocabulary-ok`); a dead round the owner already commented on is not a live question.
+   - **Agent decision worn as the owner's word (KAIF 2.7).** A recorded decision — a plan line, a code comment, a report line, a "not to be revisited" status — that attributes a choice to the owner ("the owner's decision", "the owner decided", "per the owner's word", their equivalents in the owner's language) with no verbatim quote of the owner and no interview address beside it, is a finding: the canon's authority order (the owner's direct word > the book) makes a later session obey a choice the agent made itself (`AGENT_GUIDE.md` → "Authorship of a decision"; origin issue #55 — a "the owner's decision P1: wait" comment held a run for 119 s while the owner's machine died; his real word at that fork was "do as you see fit"). Hunt also: a MANDATE ("do as you see fit", "your call") recorded as the owner's decision instead of `[AI] by mandate — "<his words>"`; a "not to be revisited" status on a decision with no `[OWNER]` signature; a pronoun standing in for a provenance mark in a draft brought to the owner ("(my taste)"); an `[AI]`/`[AI-ed]` mark removed without the owner's word. `node .kaif/tools/kaif-attribution-lint.mjs check` over the changed files is the re-run; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

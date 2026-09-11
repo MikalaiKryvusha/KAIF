@@ -42,6 +42,7 @@ const CYRILLIC_DATA_CARRIERS = [
   'installer/KAIF-CORE.mjs',           // SCRIPTS (the writing-system regexes) + AUTHOR_TOKEN_CLUSTERS, as data
   'tools/contour/texts.mjs',           // the RU dictionary of the shipped contour (page texts, call phrases, parser labels) — 2.6 IC3; core.mjs/review.mjs stay judged
   'tools/kaif-ranking-lint.mjs',       // the RU anchors of the /what-next answer form (shelf, debt line) + RU selftest fixtures (2.6, WN)
+  'tools/kaif-attribution-lint.mjs',   // the RU attribution patterns ("решение владельца", "по слову владельца") + the RU field line of #55 as a selftest fixture (2.7, AW)
 ];
 // The author's own name is an ATTRIBUTION, not a leaked example — it must stay in the bylines of
 // the narrative spines. Exempted as FULL phrases: a bare token ("Кот") would excuse whole sentences.

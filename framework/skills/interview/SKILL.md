@@ -140,6 +140,15 @@ class with axis G8 of the same questions guard (epic codes read from the meta-pl
 declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`); `/fable-judge` hunts
 "owner text in agent vocabulary".
 
+**Proposed canon content inside a question is marked (KAIF 2.7).** When an option or a draft carries
+text the agent proposes AS the owner's canon — a lore line, a rule, a value, a table row — that text is
+wrapped `[AI]…[/AI]` (or the localized pair from `.kaif/kaif.json` → `aiMarks`) right there in the
+interview or the draft: the mark survives the session, a pronoun does not (origin issue #55: "(my
+taste)" read as the owner's taste a day later). The question's own scaffolding — option letters, the
+recommendation, the scenario lines — is not marked. And the owner's answer is recorded as HIS word:
+`[OWNER] "<verbatim>" · <date>` or the interview address (`AGENT_GUIDE.md` → "Authorship of a
+decision"); "do as you see fit" is a mandate, recorded as `[AI] by mandate — "<his words>"`.
+
 ### Step 3b. Confused by the owner's proposal? Search → measure → ask — never "it breaks X" (KAIF 2.6)
 
 The origin owner's rule (origin issue #50): an owner's proposal that confuses you is a proposal you

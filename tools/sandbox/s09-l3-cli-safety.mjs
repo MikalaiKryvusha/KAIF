@@ -194,10 +194,16 @@ writeFileSync(join(D0, 'rules', 'canon.md'), '# Канон\n\n[ИИ]Правил
 r = runTool(D0, 'kaif-provenance.mjs', 'report');
 ok(r.code === 0 && /rules\/canon\.md/.test(r.out) && /awaiting|ждут|1 block/.test(r.out),
    'G8a (Unlim Г8): report ВИДИТ локализованный блок [ИИ] в каноне (очередь приёмки не пуста)', r.out.slice(-300));
-writeFileSync(join(D0, 'leak.md'), '# Утечка\n\n[ИИ]ИИ-текст вне канона.[/ИИ]\n');
+// G8b — с 2.7 (эпик AW, #55) марка вне канона ЗАКОННА (черновик владельцу); прежний красный сменился
+// на «зелёный, и число названо»: локализованная марка [ИИ] вне канона СЧИТАЕТСЯ, а не отвергается —
+// слепота к [ИИ] (исходная грабля Unlim Г8) по-прежнему поймалась бы нулём в счётчике.
+writeFileSync(join(D0, 'leak.md'), '# Черновик владельцу\n\n[ИИ]ИИ-текст вне канона.[/ИИ]\n');
 r = runTool(D0, 'kaif-provenance.mjs', 'check');
-ok(r.code !== 0 && /leak\.md/.test(r.out),
-   'G8b: check КРАСЕН на локализованной марке вне канона (марки живут только в canonArtifacts)', r.out.slice(-300));
+ok(r.code === 0 && /marks outside the declared canon: 1 block/.test(r.out),
+   'G8b (2.7, #55): check ЗЕЛЁНЫЙ на локализованной марке вне канона и называет 1 блок (черновик владельцу — законно; ноль означал бы слепоту к [ИИ])', r.out.slice(-300));
+r = runTool(D0, 'kaif-provenance.mjs', 'report');
+ok(r.code === 0 && /outside the declared canon/.test(r.out) && /leak\.md — 1 block/.test(r.out),
+   'G8b (2.7): report показывает черновик отдельной группой вне очереди приёмки', r.out.slice(-300));
 rmSync(join(D0, 'leak.md'));
 
 // G9: транзиенты машинерии исключены из провенанс-скана (Unlim Г7)
