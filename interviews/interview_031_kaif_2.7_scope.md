@@ -51,7 +51,7 @@
   - Проверка. `gh release view v2.7 --json name` печатает релиз; `grep -c "handover" ideas/30_kaif_2.8_scope.md` → `≥ 1`.
 - **D)** Свой вариант — впишите, что взять, что отложить и в каком порядке.
 
-**Answer:**
+**Answer:** B) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 12 сентября 2026, 00:25 (+03:00) -->
 
 ### Q2. Имя версии 2.7 — когда его дать?
 
