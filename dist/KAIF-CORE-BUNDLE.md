@@ -88,7 +88,8 @@
       "DELIVERY ACCOUNTING IS REMOVED (epic DR; the origin owner's word, 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): the core command `delivery`, the SYSTEMS_REGISTRY.md canon document and its skeleton .kaif/_systems-registry-template.md (retired by this update), the `Kind:` line of bug documents, the forced `DELIVERY:` line of /end-chat-soft, /end-chat-force and the four loops, the delivery-line hunt of /fable-judge and the MASTER_PLAN \"Delivery vector\" block are gone. This SUPERSEDES the 2.5 \"DELIVERY ACCOUNTING\" and 2.6 \"SYSTEMS_REGISTRY.md\" entries of this task: do NOT build a registry, do NOT print the line. /what-next keeps its 2.6 form; METRIC: now reads the main phase's acceptance metric (criteria closed k of n) from MASTER_PLAN.md / the active plan, and kaif-ranking-lint judges the same form.",
       "THE QUESTION LIVES TO THE END (epic QL; origin issues #54 #56 #58 #60 — four tickets of one project in three days after 2.6): (1) `--check <doc>` — the form check WITHOUT a page: parse + pre-flight + render self-check, prints what was recognised and what was not, exit 3/0, never serves, never calls, never records a showing (`--no-open` was never a check: it serves and CALLS; the origin itself called its owner by voice at midnight while \"checking\"); (2) the FOURTH fact — IMPLEMENTED: `node .kaif/tools/contour/review.mjs --mark-implemented <doc> <Q> --where <commit|file>` writes `<decisionsDir>/implemented.json`, and the queue and the show REFUSE a document whose every open question is implemented (\"implemented, but open → close the status\", exit 2) — /owner-reviews I44/I45, /interview step 5 \"implemented → mark it, in the same move\"; (3) the READING VIEW: live questions first, the answered ones and the document text in one collapsed archive below, nothing removed — and the three legal outcomes of a show (answer · remark · \"read, no remarks\") in AGENT_GUIDE, /owner-reviews I16 and INTERACTIVE_CONTOUR_SPEC §4; (4) the Save control is a FLOATING button at the top right — a bar pinned to the bottom edge is forbidden (spec §4; the owner typed the answers and could not reach the button), and the render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in option labels) with exit 3 on a failing page. The shipped generator under .kaif/tools/contour/ and the one-page contract carry all four.",
       "AN EXECUTED RUN PRODUCES ITS REPORT (epic TR; origin issue #59 — the owner-QA's word: \"THERE WAS NO TESTING\": the agent ran a probe twice, wrote [TESTED] and \"stage accepted\", and the owner could see neither a command, nor a moment, nor what was found): TESTING_FRAMEWORK gains the section \"An executed run produces its report\" — every executed run (a live probe, a smoke, a polygon, a manual walk-through) leaves a report in the test-doc home as a catalog by date, `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (the date-first name IS the index; the home is `testcases/` or `.kaif/kaif.json` → `testdocs`), with seven fields — Work · Contour · Runs (count, a moment and the COMMAND per run) · Checks · Found (a list or an explicit \"none\") · Traces · Verdict — and a `[TESTED: …]` claim about a run names its report. NEW delivery template .kaif/_testrun-report-template.md (copy it into the catalog, never fill it in place) and NEW optional tool module .kaif/tools/kaif-testrun-lint.mjs (check [home] | selftest; rules as data, keywords per language, SKIPPED=3 when the home has no reports/ — an unwritten report is invisible to it, which is why /fable-judge gains the hunt \"tested without a run report\"). And `check` of the core gains the axis \"/resume covers the re-read core\": a re-read core document (the budgeted nine) missing from the bullet list of the deployed /resume skill is named in a warning — a field /resume once opened 5 of 9 and nothing said a word.",
-      "THE OWNER'S TEXT IS WRITTEN BY HIS PORTRAIT, CHECKED INDEPENDENTLY BY IT, FIXED — AND ONLY THEN WRITTEN AND BROUGHT TO HIM (epic VC; origin issue #61 — the owner's word: \"that you write texts and do not use the stylometry is a GLARING methodology bug\": a field agent rewrote an 18-step player sheet through seven rounds under the owner's eyes without opening the voice portrait once; the gate lived as prose in a checklist and had no command; the owner's statement of the expected behaviour: the agent writes the text in the voice and by the rules the owner's stylometry prescribes, then runs an independent check by that same stylometry, fixes, and only then counts the text as written and brings it for approval): AGENT_GUIDE (both layers) gains a FOURTH KAIF obligation at the fable loop's steps 4–5 with three named steps — write BY the portrait WITH IT IN THE WORKING CONTEXT (`node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait into the context BEFORE the first word and leaves the witness .kaif/voice-marker.json; the owner's word: with the stylometry in the working cache) → check INDEPENDENTLY by the same portrait (the machine minute + the §7B pass by a clean instance) → fix, only then written, only then shown — repeated in \"Showing is an action\", checklist step 19 and the router row; /owner-voice carries the writing contract and gains mode `check` as the machine half. NEW optional tool module .kaif/tools/kaif-voice-lint.mjs (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `check` refuses a text with no load witness, last written before the first load or more than an hour after the last load (\"written past the portrait\" — the hour rule; never muted by --warn) and reads the §8 TABLE of AUTHOR_STYLOMETRY.md — pattern · class (stop / positive) · hint · legal exception — and prints every hit as `file:line — «fragment» → hint`; `\\|` inside the pattern cell is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\\b`/`\\w` are Unicode-aware; a row's `/regex/` exception silences a hit on its line, prose is printed beside it; fenced code, inline code and HTML comments are invisible; SKIPPED=3 without a portrait, without a §8 table or with placeholder rows only (likeness is never judged — that verdict is the owner's); the portrait path may be named in .kaif/kaif.json → voicePortrait. The skeleton .kaif/_owner-voice-template.md carries that table form in §8, names the command in §7A and makes §7B a clean-instance pass; the installer's owner-voice item asks to wire the command into the build path of every owner-facing text class; /fable-judge hunts \"owner text past the portrait\" (written without it open, checked by no independent pass, shown before the fixes)."
+      "THE OWNER'S TEXT IS WRITTEN BY HIS PORTRAIT, CHECKED INDEPENDENTLY BY IT, FIXED — AND ONLY THEN WRITTEN AND BROUGHT TO HIM (epic VC; origin issue #61 — the owner's word: \"that you write texts and do not use the stylometry is a GLARING methodology bug\": a field agent rewrote an 18-step player sheet through seven rounds under the owner's eyes without opening the voice portrait once; the gate lived as prose in a checklist and had no command; the owner's statement of the expected behaviour: the agent writes the text in the voice and by the rules the owner's stylometry prescribes, then runs an independent check by that same stylometry, fixes, and only then counts the text as written and brings it for approval): AGENT_GUIDE (both layers) gains a FOURTH KAIF obligation at the fable loop's steps 4–5 with three named steps — write BY the portrait WITH IT IN THE WORKING CONTEXT (`node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait into the context BEFORE the first word and leaves the witness .kaif/voice-marker.json; the owner's word: with the stylometry in the working cache) → check INDEPENDENTLY by the same portrait (the machine minute + the §7B pass by a clean instance) → fix, only then written, only then shown — repeated in \"Showing is an action\", checklist step 19 and the router row; /owner-voice carries the writing contract and gains mode `check` as the machine half. NEW optional tool module .kaif/tools/kaif-voice-lint.mjs (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `check` refuses a text with no load witness, last written before the first load or more than an hour after the last load (\"written past the portrait\" — the hour rule; never muted by --warn) and reads the §8 TABLE of AUTHOR_STYLOMETRY.md — pattern · class (stop / positive) · hint · legal exception — and prints every hit as `file:line — «fragment» → hint`; `\\|` inside the pattern cell is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\\b`/`\\w` are Unicode-aware; a row's `/regex/` exception silences a hit on its line, prose is printed beside it; fenced code, inline code and HTML comments are invisible; SKIPPED=3 without a portrait, without a §8 table or with placeholder rows only (likeness is never judged — that verdict is the owner's); the portrait path may be named in .kaif/kaif.json → voicePortrait. The skeleton .kaif/_owner-voice-template.md carries that table form in §8, names the command in §7A and makes §7B a clean-instance pass; the installer's owner-voice item asks to wire the command into the build path of every owner-facing text class; /fable-judge hunts \"owner text past the portrait\" (written without it open, checked by no independent pass, shown before the fixes).",
+      "THE HAND-OFF IS CALLED A HANDOVER, AND A RENAMED HEADING IS REPLACED, NEVER DUPLICATED (epic HO; origin issue #57 — a field owner reading his Russian deployment asked \"What does Baton mean?\", then: \"That is not a 'baton' — that is local slang. In the industry this is called a HANDOVER, and what we write into STATUS is often written into a HANDOVER.md\"). Two halves. (1) THE WORD: `baton` is gone from the payload — /end-chat-soft, /end-chat-force, /pause, /nightloop, /team-deployment (and its two reference templates), KAIF_REFERENCE and the hooks module now say handover (\"record the handover\", \"STATUS.md is the handover between sessions\"); AGENT_GUIDE (both layers) gains the rule in \"Languages\": a term that turns absurd in the owner's language is checked against THAT SKILL'S OWN TRIGGER ALIASES in the language pack's skill-triggers.json — an alias that names the thing IS the canonical translation (the Russian aliases of /end-chat-soft already said \"pass the relay\" while the canon said \"baton\": the guide was arguing with its own triggers), prefer the industry's word to a private one, and read the translation aloud once. If YOUR STATUS.md or chronicle carries the old word in the owner's language, replace it BY HAND — the machinery never edits owner documents. (2) THE MECHANISM: a module is addressed by its signature — the full heading line — so a renamed heading used to read to the update as \"removed upstream + added upstream\". Measured across the three merge branches: an untouched module landed correctly by accident, a module the owner had EDITED got TWO sections with the same content, and neither branch ever said the word \"renamed\". The bundle meta now ships `renamesByVersion` — the release's explicit declaration, the same answer every migration system gives to the same ambiguity — and `update` treats a declared pair as ONE module: untouched → replaced under the new heading, edited → your text kept with ONE heading and a task item naming the rename, old anchor absent → a log line by name and no failure. Nothing is ever matched by similarity. The build warns by name when a heading vanished from a template with no rename and no deprecation behind it."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -128,7 +129,8 @@
       "The delivery line is RETIRED by the origin owner's word (2.7, epic DR; 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): session closes and loop reports no longer open with `DELIVERY:`, `node .kaif/kaif-core.mjs delivery` no longer exists, the `Kind:` header line of bug documents is dropped, and nothing reads SYSTEMS_REGISTRY.md — delete that file or keep it consciously as your own document (the skeleton .kaif/_systems-registry-template.md is retired by this update; the machinery never touches your registry). If a wrapper skill or document of yours still orders the DELIVERY: line, remove that order — a farewell without the line is no longer a finding. The 2.6 rule \"a fresh word of the owner is ranked by the metric, never by its date\" stands: /what-next opens with METRIC: — the acceptance metric of the main phase read from MASTER_PLAN.md (criteria closed k of n) — and MAIN PHASE:.",
       "The owner-facing contour changed FOUR behaviours (2.7, epic QL; origin issues #54 #56 #58 #60): a document is CHECKED with `--check` before any page opens — `--no-open` serves and calls and is NOT a check; a decision that landed in rules or code is MARKED at once (`--mark-implemented <doc> <Q> --where <ref>`) and the queue never raises that question again — a document whose open questions are all implemented is refused with \"implemented, but open → close the status\" (exit 2) until its status closes by propagation; the page shows the live questions first and folds the settled ones with the document text below (nothing removed); the Save button floats at the top right, and a bottom bar is refused by the render self-check. If a project skill of yours still says \"run --no-open to check\", or a home-grown page draws its own bottom bar, re-point it: the shipped generator carries all of this, and the contract page is the one to check against.",
       "An executed run leaves a report, and the claim names it (2.7, epic TR; origin issue #59): before writing `[TESTED: …]` or \"accepted\" about anything you RAN — a probe, a smoke, a polygon, a manual walk-through — copy `.kaif/_testrun-report-template.md` to `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (`testcases/` by default; name another home in `.kaif/kaif.json` → `testdocs`), fill the seven fields (Runs with the moment and the exact command of each run in a code span; Found as a list or the explicit word \"none\"), run `node .kaif/tools/kaif-testrun-lint.mjs check`, and put the report's address into the claim; the judge hunts a run claim without one. `node .kaif/kaif-core.mjs check` now also warns by name when your /resume skill does not list one of the nine re-read core documents — add the missing bullet, never silence the line.",
-      "The owner's text is written BY his portrait, checked independently by it, fixed — and only then written and brought to him (2.7, epic VC; origin issue #61; the owner's statement of the expected behaviour): a text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — is (1) WRITTEN with AUTHOR_STYLOMETRY.md IN YOUR WORKING CONTEXT — `node .kaif/tools/kaif-voice-lint.mjs load` BEFORE the first word prints it into the context (its rules, lexicon, anti-portrait and before/after pairs; `--sections <regex>` for the modules the unit needs) and leaves the witness .kaif/voice-marker.json (session state, ignored by git) — the owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE; a text with no witness or written before the load is \"written past the portrait\" and `check` refuses it, (2) CHECKED INDEPENDENTLY by the same portrait — `node .kaif/tools/kaif-voice-lint.mjs check <files…>` plus the §7B pass by a clean instance (a subagent or a fresh pass that has not seen the writer's rationale), (3) FIXED — and only then it counts as written and goes to the owner for approval; the report of the unit names the portrait modules read, the command and its outcome (hits answered, or SKIPPED said aloud), the clean pass and the fixes. A draft written natively and re-voiced later is the very class this rule closes. The module reads the §8 TABLE of your portrait (pattern · class · hint · legal exception — the form the updated skeleton .kaif/_owner-voice-template.md shows); if your portrait keeps its §8 heuristics as PROSE or as grep lines in a fence, move them into that table — the linter says SKIPPED over prose, never green; a hit is rewritten by the hint or answered in the exception column, never silenced by deleting the row. Wire the command into the build script of every owner-facing text class you have; the judge hunts owner text past the portrait."
+      "The owner's text is written BY his portrait, checked independently by it, fixed — and only then written and brought to him (2.7, epic VC; origin issue #61; the owner's statement of the expected behaviour): a text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — is (1) WRITTEN with AUTHOR_STYLOMETRY.md IN YOUR WORKING CONTEXT — `node .kaif/tools/kaif-voice-lint.mjs load` BEFORE the first word prints it into the context (its rules, lexicon, anti-portrait and before/after pairs; `--sections <regex>` for the modules the unit needs) and leaves the witness .kaif/voice-marker.json (session state, ignored by git) — the owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE; a text with no witness or written before the load is \"written past the portrait\" and `check` refuses it, (2) CHECKED INDEPENDENTLY by the same portrait — `node .kaif/tools/kaif-voice-lint.mjs check <files…>` plus the §7B pass by a clean instance (a subagent or a fresh pass that has not seen the writer's rationale), (3) FIXED — and only then it counts as written and goes to the owner for approval; the report of the unit names the portrait modules read, the command and its outcome (hits answered, or SKIPPED said aloud), the clean pass and the fixes. A draft written natively and re-voiced later is the very class this rule closes. The module reads the §8 TABLE of your portrait (pattern · class · hint · legal exception — the form the updated skeleton .kaif/_owner-voice-template.md shows); if your portrait keeps its §8 heuristics as PROSE or as grep lines in a fence, move them into that table — the linter says SKIPPED over prose, never green; a hit is rewritten by the hint or answered in the exception column, never silenced by deleting the row. Wire the command into the build script of every owner-facing text class you have; the judge hunts owner text past the portrait.",
+      "A renamed heading is REPLACED by the update, never duplicated — and the hand-off is called a HANDOVER (2.7, epic HO; origin issue #57): until this release a renamed module heading reached your tree as \"the old section removed + a new section added\", so a section YOU had edited ended up doubled — your version under the old heading, the release's under the new one, silently and at exit 0. The bundle now declares its renames (`renamesByVersion`) and `update` applies a declared pair as ONE module: untouched → replaced under the new heading with a `renamed: <path> :: <old> → <new>` line in the log, edited → your text kept with ONE heading and a task item that names the rename and carries the diff, an old anchor that is not on disk → a log line by name. Nothing is matched by similarity — an undeclared rename is still a duplicate, which is why the build now warns when a heading vanishes without a declaration. TWO THINGS FOR YOU. (a) A tree that ALREADY carries both sections from an earlier update folds them by hand, once — the machinery will not guess which half is yours. (b) The payload no longer says `baton`: if your STATUS.md, your chronicle or a local skill of yours carries that word (or its literal translation — in Russian it landed on the word for a loaf of bread), replace it by hand with the industry's term or with the phrase your own trigger aliases already use; owner documents are never edited by the machinery."
     ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
@@ -166,6 +168,22 @@
       "Closure ceremonies changed shape: /end-chat no longer exists — /end-chat-soft is the default full closure (an advance order finishes the current work to a natural cut first), /end-chat-force is the urgent capture-and-go with a declared ceremonies debt. Scripts, docs or habits invoking /end-chat must switch to the pair.",
       "Timed autonomous runs changed contract: a named end time now means \"work at NORMAL pace until the time, then START /end-chat-soft\" — never \"guarantee everything finished before the time\". Agents used to finish early out of deadline fear; that early finish is now declared a violation of the order."
     ]
+  },
+  "renamesByVersion": {
+    "2.7": {
+      ".claude/skills/end-chat-soft/SKILL.md": [
+        [
+          "### Step 1. Record status & the baton in STATUS.md",
+          "### Step 1. Record status & the handover in STATUS.md"
+        ]
+      ],
+      ".claude/skills/end-chat-force/SKILL.md": [
+        [
+          "## Step 1. The baton — only what must not be lost",
+          "## Step 1. The handover — only what must not be lost"
+        ]
+      ]
+    }
   },
   "moduleClasses": {
     "AGENT_GUIDE.md": {
@@ -818,6 +836,26 @@ Two boundaries stop the rule from drifting:
 - **Recon and executor detail stay English.** The owner meets their conclusions through the
   meta-plan, the interviews and the chat reports, which QUOTE the material in the owner's
   language — exactly what the self-sufficient-question rule already demands.
+
+**A term that turns absurd in the owner's language is checked against that skill's own trigger aliases**
+(KAIF 2.7, epic HO; issue #57 — a field deployment in Russian; the owner's words, translated: "That is
+not a 'baton' — that is local slang. In the industry this is called a HANDOVER, and what we write into
+STATUS is often written into a HANDOVER.md"; and, before that, simply: "What does Baton mean?").
+Rendered literally, the English `baton` landed on the Russian word for a LOAF OF BREAD. The fix is not
+a better dictionary — it is a source of truth that already existed: the language pack's
+`skill-triggers.json` carries the phrases the OWNER actually says to invoke the skill, and those
+phrases are the canonical rendering of its terms. The Russian aliases of `/end-chat-soft` already said
+*pass the relay*, while the canon those aliases trigger said *baton* — the guide was arguing with its
+own triggers, and the owner arbitrated for the triggers. So, when you write or localize a term of the
+agent's craft:
+
+1. **Grep that skill's aliases for it** (language pack → `skill-triggers.json`) — an alias that names
+   the thing IS the canonical translation; never coin a second one beside it.
+2. **Prefer the industry's word to a private one** — the payload speaks to strangers, and a term they
+   can look up costs the owner no explanation.
+3. **Read the translation aloud once.** A word that names a foodstuff, a body part or a joke in the
+   owner's language is a defect, not a flavour — the owner asking "what does X mean?" is the symptom,
+   and it arrives months after the word shipped.
 
 ### Experience log — `EXPERIENCE.md`
 
@@ -2985,7 +3023,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
 | `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
@@ -3038,7 +3076,7 @@ mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
   chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat-soft` (the unhurried full closure) + `end-chat-force` (the urgent capture-and-go closure:
-  STATUS baton, judge, commit AND push) · `refresh-context` · `check-backlog`.
+  STATUS handover, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
   with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
   plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
@@ -3135,7 +3173,8 @@ the block's destination path is exact.
 `kaif-bundle-manifest.json` — data for the machinery, never written to disk: `version`,
 `released`, `templateNotes` (current release), `templateNotesByVersion` (per-release news, printed
 as the UNION of the update interval), `deprecations` (artifacts retired by this release, §10.5),
-`moduleClasses` (manual class overrides), `policyChanges` (§10.6).
+`moduleClasses` (manual class overrides), `policyChanges` (§10.6), `renamesByVersion` (headings
+renamed by a release — §9.3).
 
 ## 9. The module map
 
@@ -3153,6 +3192,22 @@ build.
 
 Split-and-rejoin is byte-identical for every file (the build fails otherwise). The map is
 validated against the bundle by re-splitting; a stale or tampered map fails the self-check.
+
+### 9.3 Renamed headings (2.7)
+
+A module's address is its signature — the full heading line — so renaming a heading looks, to an
+update, exactly like removing one module and adding another. That ambiguity is not resolved by
+guessing (neither does any migration system: an explicit declaration is the industry's answer), so
+a release DECLARES its renames in the meta block: `renamesByVersion` → `{ '<version>': { '<template
+dest>': [['<old heading>', '<new heading>'], …] } }`, applied over the `(from, to]` interval like
+policy changes, with both hops of a twice-renamed heading kept so a tree that skipped one release
+still finds its own. The merge binds each target to the hop that is actually ON DISK and then
+treats the pair as ONE module: untouched → replaced under the new heading; carrying local edits →
+your section stays, with ONE heading and a task item naming the rename; old anchor absent → a log
+line by name, never a failure. Every outcome is logged as `renamed: <path> :: <old> → <new>`,
+because silence leaves the owner unable to tell a rename from a delete-plus-add. The build warns
+by name when a heading vanished from a template since the previous release with neither a rename
+nor a deprecation behind it.
 
 ## 10. Updating
 
@@ -4328,15 +4383,15 @@ go into the linter the same day (a rule without its guard is a wish, not a rule)
 ``````md
 ---
 name: end-chat-force
-description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies — capture only the essentials that must not be lost (status + the baton for the next chat), commit AND push, say goodbye in one line. Use when the human says "закрой чат срочно", "сворачиваемся прямо сейчас", "закрывай немедленно, без церемоний", "end the chat now", "force-close the chat", "end-chat-force". The skipped ceremonies (judge pass, bonsai trim, README refresh, showcase linters) become an explicit debt line in STATUS.md that the next /end-chat-soft pays. For an unhurried full closure use /end-chat-soft; for a light in-chat pause use /pause.
+description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies — capture only the essentials that must not be lost (status + the handover for the next chat), commit AND push, say goodbye in one line. Use when the human says "закрой чат срочно", "сворачиваемся прямо сейчас", "закрывай немедленно, без церемоний", "end the chat now", "force-close the chat", "end-chat-force". The skipped ceremonies (judge pass, bonsai trim, README refresh, showcase linters) become an explicit debt line in STATUS.md that the next /end-chat-soft pays. For an unhurried full closure use /end-chat-soft; for a light in-chat pause use /pause.
 ---
 
 # /end-chat-force — the urgent closure: save what must not be lost, and go
 
-The human needs this chat closed NOW. Speed wins over ceremony — but never over the baton: a
+The human needs this chat closed NOW. Speed wins over ceremony — but never over the handover: a
 closure that loses the essentials is not fast, it is destructive. Three steps, minutes total.
 
-## Step 1. The baton — only what must not be lost
+## Step 1. The handover — only what must not be lost
 
 Update `STATUS.md`, tersely:
 
@@ -4348,7 +4403,7 @@ Update `STATUS.md`, tersely:
   linters) — the first /end-chat-soft pays this debt.`
 - Convert relative dates to absolute.
 
-Uncommitted work-in-progress that cannot land safely: name it in the baton (file, state, next
+Uncommitted work-in-progress that cannot land safely: name it in the handover (file, state, next
 move) instead of finishing it — naming survives, rushing corrupts.
 
 ## Step 2. Commit and push
@@ -4369,7 +4424,7 @@ the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 
 ## What this skill refuses to skip
 
-- **The baton.** No closure without Step 1 — that is the one thing force mode exists to protect.
+- **The handover.** No closure without Step 1 — that is the one thing force mode exists to protect.
 - **The staging gate.** A sweeping add that grabs the owner's stray files is not faster, it is a
   leak; the gate's refusal is obeyed even in force mode.
 - **Honesty.** Skipped ceremonies are DECLARED (the debt line), never silently dropped — a force
@@ -4388,7 +4443,7 @@ the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 ``````md
 ---
 name: end-chat-soft
-description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN ADVANCE, while work is still going. Acknowledge in one line, finish the current work to a natural cut WITHOUT rushing, and only then unhurriedly run the full closure (status + baton, bonsai trim, README, rebuild, pairs registry, judge pass, commit AND push, farewell). Use when the human says "wrap up when you're done", "finish up and close the chat later", "потихоньку потом закроешь чат", "нужно будет доделать и закругляться", "доделай и сворачивайся" — an advance request is NOT an order to drop the work right now. Neutral closing phrases with no urgency ("закончим чат", "завершаем чат", "wrap up", "end the chat") also mean THIS skill. For an urgent right-now closure use /end-chat-force; for a light in-chat pause (the chat continues) use /pause.
+description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN ADVANCE, while work is still going. Acknowledge in one line, finish the current work to a natural cut WITHOUT rushing, and only then unhurriedly run the full closure (status + handover, bonsai trim, README, rebuild, pairs registry, judge pass, commit AND push, farewell). Use when the human says "wrap up when you're done", "finish up and close the chat later", "потихоньку потом закроешь чат", "нужно будет доделать и закругляться", "доделай и сворачивайся" — an advance request is NOT an order to drop the work right now. Neutral closing phrases with no urgency ("закончим чат", "завершаем чат", "wrap up", "end the chat") also mean THIS skill. For an urgent right-now closure use /end-chat-force; for a light in-chat pause (the chat continues) use /pause.
 ---
 
 # /end-chat-soft — the soft closure: finish properly, then say goodbye
@@ -4416,22 +4471,22 @@ If the ask arrives when nothing is in progress — Phase A collapses: begin the 
 Run the steps **in order**, narrate briefly. Don't skip steps. A step fails — stop, tell the
 human, don't continue blindly.
 
-### Step 1. Record status & the baton in STATUS.md
+### Step 1. Record status & the handover in STATUS.md
 
 Update `STATUS.md`:
 - **What was done in this chat** — concrete, tied to bugs/features and files.
 - **Current position** — what works, what's in progress, where we are.
-- **The baton ("where to continue")** — a checklist written for a STRANGER: the next session knows
+- **The handover ("where to continue")** — a checklist written for a STRANGER: the next session knows
   nothing this chat knew. Commands, file paths, what to verify first, open questions with owners.
 - Convert relative dates to absolute (find today's date from context / `date`).
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson
-emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is
+emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the handover is
 passed. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
-If the project keeps a **truth↔mirror pairs registry**, run its check commands before passing the
-baton — a handoff over a drifted pair hands the next session a lie.
+If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing
+over — a handover across a drifted pair hands the next session a lie.
 
 **The bonsai trim (STATUS is a summary, not a chronicle):** entries that stopped being "now" —
 closed phases, finished sessions, shipped releases — move VERBATIM into `PROJECT_HISTORY.md`
@@ -4467,7 +4522,7 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ### Step 5. The farewell report
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
-the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
 
 ## Notes
 
@@ -6162,7 +6217,7 @@ Until one fires — don't stop, don't wait for confirmations, work.
 ## Finishing (when a stop condition fired)
 
 - Stop = the wake time → **start `/end-chat-soft`**: finish the current item to a natural cut at
-  your normal pace, then the full unhurried ceremonies (status + baton, judge pass, commit AND
+  your normal pace, then the full unhurried ceremonies (status + handover, judge pass, commit AND
   push, the night's summary in the chat). The wake time bounds the WORKING, not the closing.
 - Stop = the human wrote — switch to them; give a short summary of the night.
 - Stop = a critical error — get the current micro-step compiling if you can, **commit and push**
@@ -7066,7 +7121,7 @@ description: SOFT-PARK the current chat — a temporary pause with the intent to
 
 A temporary pause, not a goodbye: the human intends to come back to THIS chat and continue. The whole
 point is a **cheap, precise parking** — no heavyweight rituals. (The heavy closure — STATUS, commits,
-pushes, handing the baton to other agents — is `/end-chat-soft` (or the urgent `/end-chat-force`), a different skill.)
+pushes, handing over to other agents — is `/end-chat-soft` (or the urgent `/end-chat-force`), a different skill.)
 
 ## Step 1. Reach a logical stopping point — never park mid-surgery
 
@@ -8092,7 +8147,7 @@ Output: a short analysis note (a plan or research doc per project convention). N
 The manager reads the board before dispatching and watches team health: friction, idle roles,
 bottlenecks, uneven context load. Every role updates its row at every state change (took a task ·
 waiting on someone · freed). The board shows the moment; the project's `STATUS.md` still carries
-the baton between sessions — the board never replaces it.
+the handover between sessions — the board never replaces it.
 
 ## Operation 5 — retrospective: after a milestone, judge the ORGANIZATION
 
@@ -8393,7 +8448,7 @@ The board lives in ONE place (reference: the main copy), reachable from every wo
 role rewrites ONLY its own row via the board tool. Form, rules, and the tool contract — in the
 board document itself. Update your row at every state change: took a task · waiting · freed.
 Statuses are SHORT; the document never grows. The board shows the moment; the project's
-`STATUS.md` still carries the baton between sessions — the board never replaces it.
+`STATUS.md` still carries the handover between sessions — the board never replaces it.
 The board lives OUTSIDE git (ignore-first; board document → "Where the board lives"); a tracked
 board is a named opt-out recorded HERE with its price: `<n/a | opt-out: <why> — price: a dirty
 main copy by construction>`.
@@ -8690,7 +8745,7 @@ a device claim with no journal behind it (the verifier has nothing to verify).
 >
 > The board is the state IN THE MOMENT — transparent to the whole team so agents do not
 > interrupt each other, respect each other's busyness, and can see where help is needed.
-> The project's `STATUS.md` still carries the baton between sessions; the board never replaces it.
+> The project's `STATUS.md` still carries the handover between sessions; the board never replaces it.
 > **An existing LIVE team: take the skill's adopt path — do not copy this template over its
 > board or its board tool;** a tool that already holds the contract below is a match, not a defect.
 
@@ -14224,7 +14279,7 @@ process.exit(0);
 // hook of the module — and even it blocks softly: once per session, with a reason that asks
 // for an update or an explicit "nothing changed", never a hard wall.
 //
-// What it does: STATUS.md is the baton between sessions — a session that changed the tree but
+// What it does: STATUS.md is the handover between sessions — a session that changed the tree but
 // never touched STATUS hands the next session a stale summary. When the agent is about to
 // finish its turn, this hook checks: did this session do work (dirty worktree or a recent
 // commit) while STATUS.md stayed untouched longer than the staleness window? If yes — one soft

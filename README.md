@@ -267,8 +267,8 @@ Table 3 — The skills
 | `/resume` | Start a session: read the canon docs, pick the one main thing, announce it, begin. |
 | `/kaif-go` | The slash-command form of saying "carry on" (short alias `/go`): continue the work in the current chat. It is never a blanket yes to vision forks, the write-gate or an `AUTH:` line. |
 | `/pause` | Soft-park the chat: reach a logical stopping point, keep the tree green, continue HERE later — no pushes, no ceremony. |
-| `/end-chat-soft` | Softly close the chat: finish the current work to a natural cut, then unhurriedly update `STATUS.md`, rebuild artifacts, commit AND push, hand the baton to other chats. |
-| `/end-chat-force` | Urgently close the chat right now: capture only what must not be lost (status + baton), commit AND push; the skipped ceremonies become an explicit debt line. |
+| `/end-chat-soft` | Softly close the chat: finish the current work to a natural cut, then unhurriedly update `STATUS.md`, rebuild artifacts, commit AND push, hand over to the next chat. |
+| `/end-chat-force` | Urgently close the chat right now: capture only what must not be lost (status + handover), commit AND push; the skipped ceremonies become an explicit debt line. |
 | `/autoloop` | A long autonomous series over the backlog; every item ends with a mandatory judge pass. |
 | `/dayloop` | Daytime autonomous work while the owner is busy — with brief progress pings in chat. |
 | `/nightloop` | Autonomous work until morning; the morning report leads with outcomes. |
@@ -519,12 +519,12 @@ artifacts are never hand-edited.
    canon and skill bodies are English by design.
 2. Native skills are generated for five agent systems; other harnesses (Cursor, Copilot,
    Windsurf) ride the universal `AGENTS.md` fallback without native skill files.
-3. The sandbox polygon (25 suites) verifies the deploy/update machinery; the methodology itself is
+3. The sandbox polygon (26 suites) verifies the deploy/update machinery; the methodology itself is
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   180 bundle blocks; 790 modules.
+   180 bundle blocks; 791 modules.
 
 ## License
 
@@ -1051,12 +1051,12 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    тела навыков — английские by design.
 2. Родные навыки генерируются для пяти агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) работают через универсальный `AGENTS.md` без родных файлов навыков.
-3. Песочный полигон (25 сводов) проверяет машинерию развёртывания и обновления; сама методология
+3. Песочный полигон (26 сводов) проверяет машинерию развёртывания и обновления; сама методология
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   180 блоков бандла; 790 модулей.
+   180 блоков бандла; 791 модуль.
 
 ## Лицензия
 

@@ -600,6 +600,26 @@ Two boundaries stop the rule from drifting:
   meta-plan, the interviews and the chat reports, which QUOTE the material in the owner's
   language — exactly what the self-sufficient-question rule already demands.
 
+**A term that turns absurd in the owner's language is checked against that skill's own trigger aliases**
+(KAIF 2.7, epic HO; issue #57 — a field deployment in Russian; the owner's words, translated: "That is
+not a 'baton' — that is local slang. In the industry this is called a HANDOVER, and what we write into
+STATUS is often written into a HANDOVER.md"; and, before that, simply: "What does Baton mean?").
+Rendered literally, the English `baton` landed on the Russian word for a LOAF OF BREAD. The fix is not
+a better dictionary — it is a source of truth that already existed: the language pack's
+`skill-triggers.json` carries the phrases the OWNER actually says to invoke the skill, and those
+phrases are the canonical rendering of its terms. The Russian aliases of `/end-chat-soft` already said
+*pass the relay*, while the canon those aliases trigger said *baton* — the guide was arguing with its
+own triggers, and the owner arbitrated for the triggers. So, when you write or localize a term of the
+agent's craft:
+
+1. **Grep that skill's aliases for it** (language pack → `skill-triggers.json`) — an alias that names
+   the thing IS the canonical translation; never coin a second one beside it.
+2. **Prefer the industry's word to a private one** — the payload speaks to strangers, and a term they
+   can look up costs the owner no explanation.
+3. **Read the translation aloud once.** A word that names a foodstuff, a body part or a joke in the
+   owner's language is a defect, not a flavour — the owner asking "what does X mean?" is the symptom,
+   and it arrives months after the word shipped.
+
 ### Experience log — `EXPERIENCE.md`
 
 `EXPERIENCE.md` is the agent's growing, grep-friendly log of lessons (externalized memory of what works and
@@ -2779,7 +2799,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
 | `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
@@ -2832,7 +2852,7 @@ mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
   chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat-soft` (the unhurried full closure) + `end-chat-force` (the urgent capture-and-go closure:
-  STATUS baton, judge, commit AND push) · `refresh-context` · `check-backlog`.
+  STATUS handover, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
   with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
   plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
@@ -2929,7 +2949,8 @@ the block's destination path is exact.
 `kaif-bundle-manifest.json` — data for the machinery, never written to disk: `version`,
 `released`, `templateNotes` (current release), `templateNotesByVersion` (per-release news, printed
 as the UNION of the update interval), `deprecations` (artifacts retired by this release, §10.5),
-`moduleClasses` (manual class overrides), `policyChanges` (§10.6).
+`moduleClasses` (manual class overrides), `policyChanges` (§10.6), `renamesByVersion` (headings
+renamed by a release — §9.3).
 
 ## 9. The module map
 
@@ -2947,6 +2968,22 @@ build.
 
 Split-and-rejoin is byte-identical for every file (the build fails otherwise). The map is
 validated against the bundle by re-splitting; a stale or tampered map fails the self-check.
+
+### 9.3 Renamed headings (2.7)
+
+A module's address is its signature — the full heading line — so renaming a heading looks, to an
+update, exactly like removing one module and adding another. That ambiguity is not resolved by
+guessing (neither does any migration system: an explicit declaration is the industry's answer), so
+a release DECLARES its renames in the meta block: `renamesByVersion` → `{ '<version>': { '<template
+dest>': [['<old heading>', '<new heading>'], …] } }`, applied over the `(from, to]` interval like
+policy changes, with both hops of a twice-renamed heading kept so a tree that skipped one release
+still finds its own. The merge binds each target to the hop that is actually ON DISK and then
+treats the pair as ONE module: untouched → replaced under the new heading; carrying local edits →
+your section stays, with ONE heading and a task item naming the rename; old anchor absent → a log
+line by name, never a failure. Every outcome is logged as `renamed: <path> :: <old> → <new>`,
+because silence leaves the owner unable to tell a rename from a delete-plus-add. The build warns
+by name when a heading vanished from a template since the previous release with neither a rename
+nor a deprecation behind it.
 
 ## 10. Updating
 
@@ -3589,7 +3626,7 @@ description: SOFT-PARK the current chat — a temporary pause with the intent to
 
 A temporary pause, not a goodbye: the human intends to come back to THIS chat and continue. The whole
 point is a **cheap, precise parking** — no heavyweight rituals. (The heavy closure — STATUS, commits,
-pushes, handing the baton to other agents — is `/end-chat-soft` (or the urgent `/end-chat-force`), a different skill.)
+pushes, handing over to other agents — is `/end-chat-soft` (or the urgent `/end-chat-force`), a different skill.)
 
 ## Step 1. Reach a logical stopping point — never park mid-surgery
 
@@ -3960,7 +3997,7 @@ Until one fires — don't stop, don't wait for confirmations, work.
 ## Finishing (when a stop condition fired)
 
 - Stop = the wake time → **start `/end-chat-soft`**: finish the current item to a natural cut at
-  your normal pace, then the full unhurried ceremonies (status + baton, judge pass, commit AND
+  your normal pace, then the full unhurried ceremonies (status + handover, judge pass, commit AND
   push, the night's summary in the chat). The wake time bounds the WORKING, not the closing.
 - Stop = the human wrote — switch to them; give a short summary of the night.
 - Stop = a critical error — get the current micro-step compiling if you can, **commit and push**
@@ -5434,15 +5471,15 @@ go into the linter the same day (a rule without its guard is a wish, not a rule)
 ``````md
 ---
 name: end-chat-force
-description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies — capture only the essentials that must not be lost (status + the baton for the next chat), commit AND push, say goodbye in one line. Use when the human says "закрой чат срочно", "сворачиваемся прямо сейчас", "закрывай немедленно, без церемоний", "end the chat now", "force-close the chat", "end-chat-force". The skipped ceremonies (judge pass, bonsai trim, README refresh, showcase linters) become an explicit debt line in STATUS.md that the next /end-chat-soft pays. For an unhurried full closure use /end-chat-soft; for a light in-chat pause use /pause.
+description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies — capture only the essentials that must not be lost (status + the handover for the next chat), commit AND push, say goodbye in one line. Use when the human says "закрой чат срочно", "сворачиваемся прямо сейчас", "закрывай немедленно, без церемоний", "end the chat now", "force-close the chat", "end-chat-force". The skipped ceremonies (judge pass, bonsai trim, README refresh, showcase linters) become an explicit debt line in STATUS.md that the next /end-chat-soft pays. For an unhurried full closure use /end-chat-soft; for a light in-chat pause use /pause.
 ---
 
 # /end-chat-force — the urgent closure: save what must not be lost, and go
 
-The human needs this chat closed NOW. Speed wins over ceremony — but never over the baton: a
+The human needs this chat closed NOW. Speed wins over ceremony — but never over the handover: a
 closure that loses the essentials is not fast, it is destructive. Three steps, minutes total.
 
-## Step 1. The baton — only what must not be lost
+## Step 1. The handover — only what must not be lost
 
 Update `STATUS.md`, tersely:
 
@@ -5454,7 +5491,7 @@ Update `STATUS.md`, tersely:
   linters) — the first /end-chat-soft pays this debt.`
 - Convert relative dates to absolute.
 
-Uncommitted work-in-progress that cannot land safely: name it in the baton (file, state, next
+Uncommitted work-in-progress that cannot land safely: name it in the handover (file, state, next
 move) instead of finishing it — naming survives, rushing corrupts.
 
 ## Step 2. Commit and push
@@ -5475,7 +5512,7 @@ the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 
 ## What this skill refuses to skip
 
-- **The baton.** No closure without Step 1 — that is the one thing force mode exists to protect.
+- **The handover.** No closure without Step 1 — that is the one thing force mode exists to protect.
 - **The staging gate.** A sweeping add that grabs the owner's stray files is not faster, it is a
   leak; the gate's refusal is obeyed even in force mode.
 - **Honesty.** Skipped ceremonies are DECLARED (the debt line), never silently dropped — a force
@@ -5496,7 +5533,7 @@ the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 ``````md
 ---
 name: end-chat-soft
-description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN ADVANCE, while work is still going. Acknowledge in one line, finish the current work to a natural cut WITHOUT rushing, and only then unhurriedly run the full closure (status + baton, bonsai trim, README, rebuild, pairs registry, judge pass, commit AND push, farewell). Use when the human says "wrap up when you're done", "finish up and close the chat later", "потихоньку потом закроешь чат", "нужно будет доделать и закругляться", "доделай и сворачивайся" — an advance request is NOT an order to drop the work right now. Neutral closing phrases with no urgency ("закончим чат", "завершаем чат", "wrap up", "end the chat") also mean THIS skill. For an urgent right-now closure use /end-chat-force; for a light in-chat pause (the chat continues) use /pause.
+description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN ADVANCE, while work is still going. Acknowledge in one line, finish the current work to a natural cut WITHOUT rushing, and only then unhurriedly run the full closure (status + handover, bonsai trim, README, rebuild, pairs registry, judge pass, commit AND push, farewell). Use when the human says "wrap up when you're done", "finish up and close the chat later", "потихоньку потом закроешь чат", "нужно будет доделать и закругляться", "доделай и сворачивайся" — an advance request is NOT an order to drop the work right now. Neutral closing phrases with no urgency ("закончим чат", "завершаем чат", "wrap up", "end the chat") also mean THIS skill. For an urgent right-now closure use /end-chat-force; for a light in-chat pause (the chat continues) use /pause.
 ---
 
 # /end-chat-soft — the soft closure: finish properly, then say goodbye
@@ -5524,22 +5561,22 @@ If the ask arrives when nothing is in progress — Phase A collapses: begin the 
 Run the steps **in order**, narrate briefly. Don't skip steps. A step fails — stop, tell the
 human, don't continue blindly.
 
-### Step 1. Record status & the baton in STATUS.md
+### Step 1. Record status & the handover in STATUS.md
 
 Update `STATUS.md`:
 - **What was done in this chat** — concrete, tied to bugs/features and files.
 - **Current position** — what works, what's in progress, where we are.
-- **The baton ("where to continue")** — a checklist written for a STRANGER: the next session knows
+- **The handover ("where to continue")** — a checklist written for a STRANGER: the next session knows
   nothing this chat knew. Commands, file paths, what to verify first, open questions with owners.
 - Convert relative dates to absolute (find today's date from context / `date`).
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson
-emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the baton is
+emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the handover is
 passed. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
-If the project keeps a **truth↔mirror pairs registry**, run its check commands before passing the
-baton — a handoff over a drifted pair hands the next session a lie.
+If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing
+over — a handover across a drifted pair hands the next session a lie.
 
 **The bonsai trim (STATUS is a summary, not a chronicle):** entries that stopped being "now" —
 closed phases, finished sessions, shipped releases — move VERBATIM into `PROJECT_HISTORY.md`
@@ -5575,7 +5612,7 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ### Step 5. The farewell report
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
-the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
 
 ## Notes
 
@@ -7705,7 +7742,7 @@ Output: a short analysis note (a plan or research doc per project convention). N
 The manager reads the board before dispatching and watches team health: friction, idle roles,
 bottlenecks, uneven context load. Every role updates its row at every state change (took a task ·
 waiting on someone · freed). The board shows the moment; the project's `STATUS.md` still carries
-the baton between sessions — the board never replaces it.
+the handover between sessions — the board never replaces it.
 
 ## Operation 5 — retrospective: after a milestone, judge the ORGANIZATION
 

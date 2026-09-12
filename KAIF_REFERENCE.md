@@ -82,7 +82,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living SUMMARY of now and the baton between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
 | `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
@@ -135,7 +135,7 @@ mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
   chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat-soft` (the unhurried full closure) + `end-chat-force` (the urgent capture-and-go closure:
-  STATUS baton, judge, commit AND push) · `refresh-context` · `check-backlog`.
+  STATUS handover, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
   with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
   plus `guarded-loop` (2.1): the same loop under a WATCHDOG (external wake-ups every N minutes,
@@ -232,7 +232,8 @@ the block's destination path is exact.
 `kaif-bundle-manifest.json` — data for the machinery, never written to disk: `version`,
 `released`, `templateNotes` (current release), `templateNotesByVersion` (per-release news, printed
 as the UNION of the update interval), `deprecations` (artifacts retired by this release, §10.5),
-`moduleClasses` (manual class overrides), `policyChanges` (§10.6).
+`moduleClasses` (manual class overrides), `policyChanges` (§10.6), `renamesByVersion` (headings
+renamed by a release — §9.3).
 
 ## 9. The module map
 
@@ -250,6 +251,22 @@ build.
 
 Split-and-rejoin is byte-identical for every file (the build fails otherwise). The map is
 validated against the bundle by re-splitting; a stale or tampered map fails the self-check.
+
+### 9.3 Renamed headings (2.7)
+
+A module's address is its signature — the full heading line — so renaming a heading looks, to an
+update, exactly like removing one module and adding another. That ambiguity is not resolved by
+guessing (neither does any migration system: an explicit declaration is the industry's answer), so
+a release DECLARES its renames in the meta block: `renamesByVersion` → `{ '<version>': { '<template
+dest>': [['<old heading>', '<new heading>'], …] } }`, applied over the `(from, to]` interval like
+policy changes, with both hops of a twice-renamed heading kept so a tree that skipped one release
+still finds its own. The merge binds each target to the hop that is actually ON DISK and then
+treats the pair as ONE module: untouched → replaced under the new heading; carrying local edits →
+your section stays, with ONE heading and a task item naming the rename; old anchor absent → a log
+line by name, never a failure. Every outcome is logged as `renamed: <path> :: <old> → <new>`,
+because silence leaves the owner unable to tell a rename from a delete-plus-add. The build warns
+by name when a heading vanished from a template since the previous release with neither a rename
+nor a deprecation behind it.
 
 ## 10. Updating
 

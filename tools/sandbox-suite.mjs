@@ -97,6 +97,13 @@
 //         the portrait path read from the marker, no files → usage (2); on a deployed copy the module and the
 //         skeleton with the table form arrive, the unfilled skeleton copy is SKIPPED and one filled row fires;
 //         red proven on the 2.6 core via KAIF_DIST
+//   s27 — the version's RENAME MAP (epic HO 2.7, plan 106; origin issue #57 "that is not a baton — the
+//         industry calls it a HANDOVER"): a renamed module heading is REPLACED, never duplicated — an
+//         untouched module lands under the new heading and the log SAYS "renamed: …", a module the owner
+//         EDITED keeps his text with ONE heading and a task item naming the rename (the duplicate this
+//         closes), a rename whose old anchor is absent is named in the log and does not fail the update;
+//         plus the live 2.7 pair declared as DATA in the builder and shipped in the bundle meta. Grown
+//         from probe ho-rename-duplicate (red before the fix: 2 of 8 on build 538)
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
@@ -125,7 +132,7 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs',
                 's18-update-symmetries.mjs', 's19-scenario-lint.mjs', 's21-update-route.mjs',
                 's22-contour-shipped.mjs', 's23-ranking-lint.mjs', 's24-attribution-lint.mjs',
-                's25-testrun-lint.mjs', 's26-voice-lint.mjs'];
+                's25-testrun-lint.mjs', 's26-voice-lint.mjs', 's27-rename-map.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

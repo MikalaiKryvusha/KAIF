@@ -1021,6 +1021,36 @@ function policyInterval(meta, fromVersion) {
   return out;
 }
 
+// Headings RENAMED since `fromVersion` (2.7, epic HO; origin issue #57), flattened into
+// { path: [[old, new], …] }. Lower bound as for the policy changes: a tree that skipped three
+// releases gets every rename of those three, in version order, so a heading renamed twice
+// (A→B in 2.7, B→C in 2.8) is chased through both hops rather than read as two strangers.
+// NO upper ceiling, on purpose (judge of epic HO, bugs/114): a policy note is prose and must stay
+// inert until its release ships, but a rename pair is VALIDATED AGAINST THE SHIPPED TEMPLATE at
+// the point of use (it only fires when the template carries the new heading and no longer the
+// old one), so the ceiling bought no safety and opened a window — a tree updating from `main`
+// between the rename and the version bump got the renamed headings with the map switched off,
+// i.e. the very duplicate the map exists to prevent.
+function renameInterval(meta, fromVersion) {
+  const byVer = meta.renamesByVersion;
+  if (!byVer) return {};
+  const out = {};
+  for (const v of Object.keys(byVer).filter((v) => gt(v, fromVersion || '0')).sort((a, b) => (gt(a, b) ? 1 : -1)))
+    for (const [path, pairs] of Object.entries(byVer[v] || {}))
+      for (const [o, n] of pairs) {
+        out[path] = out[path] || [];
+        const has = (a, b) => out[path].some(([x, y]) => x === a && y === b);
+        // A heading renamed twice across the interval (A→B in one release, B→C in the next) keeps
+        // BOTH hops plus the derived A→C: which one a given tree can use depends on where that tree
+        // started, and only the merge (which sees the disk) can tell. Collapsing the chain here
+        // would drop the hop a tree skipping only ONE release actually needs.
+        const prior = out[path].find(([, mid]) => mid === o);
+        if (!has(o, n)) out[path].push([o, n]);
+        if (prior && !has(prior[0], n)) out[path].push([prior[0], n]);
+      }
+  return out;
+}
+
 // NEW files that arrived in English on a non-English deployment (2.5, epic US; field #28 R2:
 // sixteen new skills landed English on a ru tree and the final line said nothing). Skills are
 // agent-read and ship English by policy — the item is HONESTY about what arrived, not a defect.
@@ -1290,7 +1320,7 @@ function writeMatchingEol(path, content) {
   writeFileSync(path, out);
 }
 
-function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null, fills = null) {
+function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null, fills = null, renames = []) {
   const disk = normEol(readFileSync(path, 'utf8'));
   const diskMods = splitModules(disk);
   if (joinModules(diskMods) !== disk) return null;                      // pathological file — file-level fallback
@@ -1336,13 +1366,46 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   const verdict = localized ? { baseFound, baseN, ceiling: wholesaleCeiling } : null;
   if (localized && baseFound <= wholesaleCeiling)
     return { translatedWholesale: true, verdict };
+  // 2.7 (epic HO; origin issue #57): a heading RENAMED by this release. The module is addressed by
+  // its signature, so without a declaration a rename reads as "removed upstream + new upstream" —
+  // harmless for an untouched module (removed, then re-inserted), a silent DUPLICATE for a module
+  // the owner edited, and wordless in the log either way (probe ho-rename-duplicate: 2 of 8 red).
+  // The declaration is the bundle's rename map for this interval; nothing is ever guessed by
+  // similarity — the same answer Django and Liquibase give to the same ambiguity.
+  const renameTo = new Map();      // old signature (on disk) → new signature (in the template)
+  const renameFrom = new Map();    // new signature → old, to suppress the duplicate insertion below
+  const onDisk = new Set(diskMods.map((d) => d.signature));
+  // Live pairs only: the template must carry the NEW heading and must no longer carry the old one
+  // (both alive means two separate sections, not a rename).
+  const declared = (renames || []).filter(([o, n]) => newBySig.has(n) && !newBySig.has(o));
+  // Bind each target to the hop that is ACTUALLY on disk. The interval may offer several hops for
+  // one target (a heading renamed twice, plus the derived end-to-end pair), and only one of them
+  // names a section THIS tree has — binding by declaration order instead would pick the hop for a
+  // tree that started somewhere else and leave the real section behind as a duplicate.
+  for (const [o, n] of declared) if (onDisk.has(o) && !renameFrom.has(n)) { renameTo.set(o, n); renameFrom.set(n, o); }
+  const renamed = [];              // [{ from, to, outcome }] — named in the log and in the task
+  // A declared rename whose OLD heading is nowhere on disk: the owner removed or translated that
+  // section. Not an error and never a crash — the update says so by name (once per target) and the
+  // new module takes the ordinary "new in this release" road.
+  const renameMissing = declared.filter(([, n]) => !renameFrom.has(n))
+    .filter(([, n], i, a) => a.findIndex(([, m]) => m === n) === i)
+    .map(([o, n]) => ({ from: o, to: n }));
+  // A declaration whose OLD heading IS on this disk but whose NEW heading the template does not
+  // carry (a typo in the declared pair, or a rename that was itself renamed again without a
+  // record) — bugs/114, judge E4: silently dropping it hands the owner the very duplicate the map
+  // exists to prevent, at exit 0. It cannot be repaired here; it is SAID, by name, and the build
+  // guard upstream refuses to ship such a pair.
+  const renameBroken = (renames || []).filter(([o, n]) => onDisk.has(o) && !newBySig.has(n) && !newBySig.has(o))
+    .map(([o, n]) => ({ from: o, to: n }));
   let replaced = 0;
   const divergedList = [];
   const out = [];
   for (const dm of diskMods) {
     const dSha = normSha(modText(dm));
     const oldE = oldBySig.get(dm.signature);
-    const newM = newBySig.get(dm.signature);
+    const renamedTo = renameTo.get(dm.signature);
+    const newM = newBySig.get(dm.signature) || (renamedTo ? newBySig.get(renamedTo) : undefined);
+    if (renamedTo && newM) renamed.push({ from: dm.signature, to: renamedTo, outcome: oldE && dSha === oldE.sha256 ? 'replaced' : 'kept (local edits — see the task)' });
     // Frontmatter is a named pseudo-module with one extra right (bug 43): equality with its old
     // template is judged MODULO the machinery-appended alias tail — the old text comes from the
     // baseline artifact and must agree with the deploy's own module snapshot before it is trusted.
@@ -1399,6 +1462,10 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
       // (project-name healing) and the task rendered an empty "upstream changed it" diff.
       const newFilled = newM ? (fills ? fillPlaceholders(modText(newM), fills, new Set()) : modText(newM)) : null;
       if (newM && dSha === normSha(newFilled)) { /* already the new template — nothing to hand over */ }
+      else if (renamedTo && newM)
+        // The renamed-and-edited case — the one the duplicate came from. Your section stays where it
+        // is, under its old heading; the item carries the rename and the diff, and NOTHING is inserted.
+        divergedList.push({ signature: dm.signature, note: `renamed upstream to "${renamedTo}" AND carries local edits — fold your edits into the renamed section by hand (nothing was inserted: a second copy under the new heading is exactly what this declaration prevents)`, diff: lineDiff(modText(dm), newFilled) });
       else if (oldE && newM && normSha(modText(newM)) !== oldE.sha256)
         divergedList.push({ signature: dm.signature, note: 'carries local edits AND upstream changed it', diff: lineDiff(modText(dm), newFilled) });
       else if (oldE && !newM)
@@ -1411,6 +1478,9 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   for (let i = 0; i < newMods.length; i++) {
     const nm = newMods[i];
     if (diskMods.some((d) => d.signature === nm.signature)) continue;
+    // A renamed module is NOT new: its old heading is on disk and the loop above already decided
+    // its fate (replaced in place, or kept with an item). Inserting it here is the duplicate.
+    if (renameFrom.has(nm.signature) && diskMods.some((d) => d.signature === renameFrom.get(nm.signature))) continue;
     // A module absent on disk is inserted ONLY when it is genuinely NEW upstream — absent from
     // the previous release's template too. If the old template had it: unchanged upstream means
     // the absence is the OWNER's doing (translation or deletion) — never re-insert (bug 31: the
@@ -1476,7 +1546,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
     divergedList.push({ signature: `(anchored block KAIF:${name})`, note: `anchored block KAIF:${name} is indivisible and not all of its carrier modules could be applied (a piecewise merge would leave ${reason}) — the whole block was kept as on disk; fold it in by hand from this diff of all its carriers`, diff: lineDiff(wholeOld, wholeNew) });
   }
   const merged = joinModules(out);
-  return { merged, changed: !dryRun && merged !== disk, replaced, divergedList, verdict };
+  return { merged, changed: !dryRun && merged !== disk, replaced, divergedList, verdict, renamed, renameMissing, renameBroken };
 }
 // The insertion point for a NEW module, moved past every anchored pair still open at `at`
 // (field report R2); an unclosable pair (already broken on disk) leaves the point where it was.
@@ -1532,7 +1602,7 @@ function templateDelta(oldEntries, newContent, oldTexts) {
 // release's synthetic baseline: template provenance for v1 manifests and old template TEXTS for
 // the real old→new diffs of bug 32.
 // [TESTED: 2026-07-28 · extraction verified by re-running suites S5–S12c unchanged-green]
-function classifyAndApply(deploy, old, values, unresolved, cur, base = null, rehearsal = null) {
+function classifyAndApply(deploy, old, values, unresolved, cur, base = null, rehearsal = null, renames = {}) {
   const oldShas = old.shas || {};
   const oldTplShas = old.templateShas || (base && base.templateShas) || {};   // v2: what the previous deploy's TEMPLATES were
   const oldModShas = { ...((base && base.moduleShas) || {}), ...(old.moduleShas || {}) };  // v2: their per-module cut (manifest wins per path)
@@ -1605,6 +1675,17 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
       // The replacement carries the deployment's own fills folded into the NEW template (2.6, UR2).
       const want = f.path.endsWith('.mjs') ? content : withFills(content);
       if (fileShaNorm(f.path) === normSha(want)) { kept++; continue; } // upstream didn't change it either
+      // A rename inside an UNTOUCHED file lands correctly by wholesale replacement — but it must
+      // still be SAID (2.7, epic HO; origin #57): silence here is what leaves the owner unable to
+      // tell a renamed section from a deleted one plus a new one. The module merge below says it
+      // for diverged files; this is the same sentence for the file-level road.
+      if (renames[f.path] && okOnDisk(f.path)) {
+        const before = normEol(readFileSync(f.path, 'utf8'));
+        const after = normEol(want);
+        for (const [o, n] of renames[f.path])
+          if (before.includes(o + '\n') && !after.includes(o + '\n') && after.includes(n + '\n'))
+            log(`↻ renamed: ${f.path} :: ${o} → ${n} (replaced with the file — it carried no local edits)`);
+      }
       writeMatchingEol(f.path, want); log(`↻ replaced ${f.path}${want !== content ? ' (fills kept)' : ''}`); replaced++; continue;
     }
     // bugs/32 (all four 2.1 field reports): a diverged/translated file whose TEMPLATE did not
@@ -1623,7 +1704,12 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     if (f.path.endsWith('.md') && oldModShas[f.path]) {
       const oldTexts = oldTplTexts[f.path] != null
         ? new Map(splitModules(normEol(oldTplTexts[f.path])).map((m) => [m.signature, modText(m)])) : null;
-      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts, fillsN ? fills : null);
+      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts, fillsN ? fills : null, renames[f.path] || []);
+      // The rename is SAID, always — an update that silently swaps a heading leaves the owner unable
+      // to tell a rename from a delete-plus-add (2.7, epic HO; origin #57).
+      for (const r of (res && res.renamed) || []) log(`↻ renamed: ${f.path} :: ${r.from} → ${r.to} (${r.outcome})`);
+      for (const r of (res && res.renameMissing) || []) log(`⚠ rename anchor not found on disk: ${f.path} :: ${r.from} (upstream renamed it to ${r.to}; the section arrives as new)`);
+      for (const r of (res && res.renameBroken) || []) log(`⚠ rename declaration broken: ${f.path} :: ${r.from} → ${r.to} — the incoming template carries no such heading; this section may arrive DOUBLED (your old one kept + a new one inserted) — fold it by hand and report the declaration upstream (bugs/114)`);
       if (res && res.translatedWholesale) {
         // headings translated — merging would double the document (bug 20/K1); hands off. The
         // task item now carries the REAL old→new template delta instead of "fold the news in
@@ -1758,7 +1844,7 @@ async function cmdUpdate() {
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills } =
-    classifyAndApply(deploy, old, values, unresolved, cur, oldBase, rehearsal);
+    classifyAndApply(deploy, old, values, unresolved, cur, oldBase, rehearsal, renameInterval(meta, cur.version));
   const sizeJumps = deploy
     .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
     .map((f) => ({ path: f.path, before: sizeBefore[f.path], after: statSync(f.path).size }))
@@ -2479,7 +2565,7 @@ async function cmdInstall() {
       // CONSUMED below exactly like cmdUpdate's — all three trees found it still on disk after
       // the update it rehearsed.
       rehearsal = loadRehearsal(legacyOld.version, meta.version);
-      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld, texts, rehearsal);
+      cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld, texts, rehearsal, renameInterval(meta, legacyOld.version));
       cls.baselineOld = baseline; // deprecations later need the OLD template shas (step 5)
       adopted = cls.adopted;
       log(`⟳ bootstrap classified against ${baseline.synthetic ? `a synthetic baseline of v${legacyOld.version}` : 'the surviving deploy manifest'}: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept`);

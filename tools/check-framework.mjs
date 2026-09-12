@@ -196,7 +196,99 @@ function selfProofHalves() {
   return fails;
 }
 
+// ── Guard 5f: a heading that VANISHED from a template without a record (2.7, epic HO; issue #57) ──
+//
+//   @guard vanished-heading-undeclared
+//   THREAT:         a release renames a module heading and forgets to declare it, so every field
+//                   tree that carries local edits in that section ends up with TWO sections of the
+//                   same content — silently, at exit 0 (measured: probe ho-rename-duplicate, branch B)
+//   PROVED-AGAINST: a fixture pair of module maps where one signature disappears with no rename and
+//                   no deprecation behind it (`--selftest`), plus the inverse pair that stays silent
+//   GAP:            it cannot tell a DELIBERATE removal from a forgotten rename — that is why it
+//                   WARNS by name instead of failing the build; a genuine removal is answered by
+//                   adding a DEPRECATIONS entry or by reading the line and moving on
+//   ON-REAL-PATH:   every build of this repo runs it against the previous release's shipped map
+//
+// The comparison is against what the PREVIOUS RELEASE shipped (`git show v<prev>:dist/kaif-module-map.json`),
+// because that is the map field trees were deployed from. No git, no tag, no map in the tag → SKIPPED,
+// said aloud: a guard that goes quiet when its evidence is missing would read as "nothing vanished".
+function vanishedHeadings(oldFiles, newFiles, renamesByVersion, deprecations) {
+  const declared = new Set();
+  for (const perPath of Object.values(renamesByVersion || {}))
+    for (const [path, pairs] of Object.entries(perPath || {}))
+      for (const [o] of pairs) declared.add(path + ' ' + o);
+  const retiredPaths = new Set((deprecations || []).map((d) => d.path));
+  const out = [];
+  for (const [path, mods] of Object.entries(oldFiles || {})) {
+    if (retiredPaths.has(path)) continue;              // the whole artifact is retired — its headings go with it
+    const now = newFiles[path];
+    if (!now) continue;                                // the path itself is gone: a different class (deprecations)
+    const live = new Set(now.map((m) => m.signature));
+    for (const m of mods) {
+      if (live.has(m.signature) || declared.has(path + ' ' + m.signature)) continue;
+      if (/^# /.test(m.signature)) continue;           // an H1 carries deploy-time values — its drift is bug 26, not a rename
+      out.push(`${path} :: ${m.signature}`);
+    }
+  }
+  return out;
+}
+
+// Guard 5g — the other half of the same declaration (judge of epic HO, E4/E4b; bugs/114): a rename
+// pair is only worth anything if BOTH its halves are real. A typo in the NEW half makes the merge
+// drop the pair silently (the duplicate returns at exit 0) and makes 5f silent too (it keys on the
+// OLD half only). So every pair declared for a version AFTER the previous release must have its
+// new heading in the CURRENT map and its old heading in the PREVIOUS release's map — else the
+// build FAILS (an error, not a warning: a broken declaration is never a deliberate choice).
+// Older pairs are history and are not re-judged: their old headings are legitimately gone.
+function brokenRenames(oldFiles, newFiles, renamesByVersion, prevVersion, gtFn) {
+  const out = [];
+  for (const [v, perPath] of Object.entries(renamesByVersion || {})) {
+    if (prevVersion && !gtFn(v, prevVersion)) continue;
+    for (const [path, pairs] of Object.entries(perPath || {})) {
+      const now = new Set((newFiles[path] || []).map((m) => m.signature));
+      const was = new Set((oldFiles[path] || []).map((m) => m.signature));
+      for (const [o, n] of pairs) {
+        if (!now.has(n)) out.push(`${path} :: new heading not in the current template — "${n}"`);
+        if (oldFiles[path] && !was.has(o)) out.push(`${path} :: old heading was not in release ${prevVersion} — "${o}"`);
+      }
+    }
+  }
+  return out;
+}
+
+// Both answers, on fixtures — the guard must redden on a vanished heading and stay silent when the
+// same disappearance is DECLARED (a rename) or explained (a retired artifact).
+function selfProofVanished() {
+  const fails = [];
+  const oldF = { 'a/S.md': [{ signature: '## Alpha' }, { signature: '## Beta' }], 'b/S.md': [{ signature: '## Gone' }] };
+  const newF = { 'a/S.md': [{ signature: '## Alpha2' }, { signature: '## Beta' }], 'b/S.md': [{ signature: '## Other' }] };
+  const bare = vanishedHeadings(oldF, newF, {}, []);
+  if (!bare.includes('a/S.md :: ## Alpha')) fails.push('исчезнувший заголовок БЕЗ записи не покраснел');
+  if (!bare.includes('b/S.md :: ## Gone')) fails.push('второй исчезнувший заголовок не назван');
+  const declaredOk = vanishedHeadings(oldF, newF, { '9.9': { 'a/S.md': [['## Alpha', '## Alpha2']] } }, [{ path: 'b/S.md' }]);
+  if (declaredOk.length) fails.push('объявленное переименование и депрекация всё равно краснеют: ' + declaredOk.join(' · '));
+  const untouched = vanishedHeadings(oldF, oldF, {}, []);
+  if (untouched.length) fails.push('неизменная карта покраснела: ' + untouched.join(' · '));
+  // 5g — both halves of a declared pair (E4): a typo in the NEW half, an OLD half that never existed,
+  // a pair from an older release that is history and must stay silent.
+  const gtV = (a, b) => parseFloat(a) > parseFloat(b);
+  const typo = brokenRenames(oldF, newF, { '9.9': { 'a/S.md': [['## Alpha', '## Alpha2-TYPO']] } }, '9.8', gtV);
+  if (!typo.some((s) => s.includes('new heading not in the current template'))) fails.push('5g: опечатка в НОВОЙ половине пары не покраснела');
+  const ghost = brokenRenames(oldF, newF, { '9.9': { 'a/S.md': [['## Never', '## Alpha2']] } }, '9.8', gtV);
+  if (!ghost.some((s) => s.includes('old heading was not in release'))) fails.push('5g: несуществующий СТАРЫЙ заголовок не покраснел');
+  const fine = brokenRenames(oldF, newF, { '9.9': { 'a/S.md': [['## Alpha', '## Alpha2']] } }, '9.8', gtV);
+  if (fine.length) fails.push('5g: верная пара покраснела: ' + fine.join(' · '));
+  const history = brokenRenames(oldF, newF, { '9.7': { 'a/S.md': [['## Long-gone', '## Also-gone']] } }, '9.8', gtV);
+  if (history.length) fails.push('5g: пара прошлого релиза (история) покраснела: ' + history.join(' · '));
+  return fails;
+}
+
 if (process.argv.includes('--selftest')) {
+  const vFails = selfProofVanished();
+  for (const f of vFails) console.error('✖ selfproof 5f (HO, issue #57): ' + f);
+  if (vFails.length) { console.error(`\n❌ check-framework --selftest: гард 5f — ${vFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5f: исчезнувший заголовок БЕЗ записи краснеет ПОИМЁННО; объявленное переименование и депрекация молчат');
+  console.log('✅ гард 5g: объявленная пара с опечаткой в НОВОЙ половине или с несуществующей СТАРОЙ — красная; верная пара и пара прошлого релиза молчат');
   const fails = selfProofPayloadCyrillic();
   for (const f of fails) console.error('✖ selfproof 5d: ' + f);
   const halfFails = selfProofHalves();
@@ -377,6 +469,16 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['kaif-voice-lint.mjs load', 'kaif-voice-lint.mjs check <файл…>', 'Пиши ПО портрету — с ним в своём рабочем контексте.', 'Проверь НЕЗАВИСИМО по тому же портрету.']],
     ['voice contract ↔ /fable-judge hunts owner text past the portrait', 'framework/skills/fable-judge/SKILL.md',
       ['**Owner text past the portrait (KAIF 2.7).**']],
+    // HO (2.7, origin issue #57): the rule "a term absurd in the owner's language is checked against
+    // the skill's trigger aliases" is only true while the alias it cites is REALLY in the ru pack —
+    // the field defect was exactly this pair drifting apart (the canon said `baton`, the aliases said
+    // «эстафета»). Both layers carry the rule; the ru pack carries the alias that proves it.
+    ['Languages ↔ the localization rule cites the trigger aliases (payload)', 'framework/AGENT_GUIDE.md',
+      ['trigger aliases', 'skill-triggers.json']],
+    ['Languages ↔ the localization rule cites the trigger aliases (wrapper)', 'AGENT_GUIDE.md',
+      ['ТРИГГЕР-АЛИАСАМИ', 'skill-triggers.json']],
+    ['Languages ↔ the ru pack really carries the alias the rule cites', 'framework/templates/languages/ru/skill-triggers.json',
+      ['передай эстафету']],
     // O5 criterion 5, TWO outcomes only (bugs/72): a hook contract is either CONFIRMED against a
     // live vendor doc or it says "not verified" — "probably works" is the retired third outcome.
     // Grok Build runs our config and its NATIVE contract calls these events passive, so the
@@ -671,6 +773,34 @@ if (existsSync(distDir)) {
       }
       if (!errors.some((e) => e.startsWith('module map') || e.startsWith('vendored core')))
         distNote += ` · module map OK (${mm.moduleCount} modules / ${mdBlocks} md files, core pin ok)`;
+      // Guard 5f (2.7, epic HO): headings that vanished since the PREVIOUS RELEASE without a rename
+      // or a deprecation behind them. A warning, never a failure — see the @guard block above.
+      try {
+        const { execFileSync } = await import('node:child_process');
+        const git = (args) => execFileSync('git', args, { cwd: ROOT, stdio: 'pipe' }).toString().trim();
+        const prev = git(['tag', '--list', 'v*', '--sort=-v:refname']).split('\n').map((s) => s.trim()).filter(Boolean)[0];
+        if (!prev) console.log('ℹ гард 5f (исчезнувшие заголовки): SKIPPED — в репозитории нет тега релиза, сверять не с чем');
+        else {
+          const oldMap = JSON.parse(git(['show', `${prev}:dist/kaif-module-map.json`]));
+          const metaBlock = readFileSync(join(distDir, 'KAIF-CORE-BUNDLE.md'), 'utf8')
+            .match(/^> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\n\n`{6}\w*\n([\s\S]*?)\n`{6}/m);
+          const meta = metaBlock ? JSON.parse(metaBlock[1]) : {};
+          const gone = vanishedHeadings(oldMap.files || {}, mm.files || {}, meta.renamesByVersion, meta.deprecations);
+          if (gone.length) {
+            console.log(`⚠ гард 5f: с релиза ${prev} исчезли заголовки БЕЗ записи в renamesByVersion или DEPRECATIONS — ${gone.length}:`);
+            for (const g of gone) console.log('   · ' + g);
+            console.log('   Переименование? → объяви парой в RENAMES_BY_VERSION (build-framework.mjs). Удаление по делу? → эта строка просто прочитана.');
+          } else distNote += ` · 5f: со ${prev} необъявленных исчезновений нет`;
+          // 5g (bugs/114): a declared pair must be real on BOTH halves — an ERROR, because a typo here
+          // silently returns the duplicate in every field tree AND silences 5f.
+          const prevVer = prev.replace(/^v/, '');
+          const broken = brokenRenames(oldMap.files || {}, mm.files || {}, meta.renamesByVersion, prevVer, (a, b) => parseFloat(a) > parseFloat(b));
+          for (const b of broken) errors.push(`гард 5g: объявленная пара переименования не сходится с шаблонами — ${b}`);
+          if (!broken.length) distNote += ' · 5g: объявленные пары сходятся';
+        }
+      } catch (e) {
+        console.log('ℹ гард 5f (исчезнувшие заголовки): SKIPPED — ' + String(e.message || e).split('\n')[0].slice(0, 140));
+      }
     }
   }
 }

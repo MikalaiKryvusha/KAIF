@@ -455,6 +455,26 @@ Two boundaries stop the rule from drifting:
   meta-plan, the interviews and the chat reports, which QUOTE the material in the owner's
   language — exactly what the self-sufficient-question rule already demands.
 
+**A term that turns absurd in the owner's language is checked against that skill's own trigger aliases**
+(KAIF 2.7, epic HO; issue #57 — a field deployment in Russian; the owner's words, translated: "That is
+not a 'baton' — that is local slang. In the industry this is called a HANDOVER, and what we write into
+STATUS is often written into a HANDOVER.md"; and, before that, simply: "What does Baton mean?").
+Rendered literally, the English `baton` landed on the Russian word for a LOAF OF BREAD. The fix is not
+a better dictionary — it is a source of truth that already existed: the language pack's
+`skill-triggers.json` carries the phrases the OWNER actually says to invoke the skill, and those
+phrases are the canonical rendering of its terms. The Russian aliases of `/end-chat-soft` already said
+*pass the relay*, while the canon those aliases trigger said *baton* — the guide was arguing with its
+own triggers, and the owner arbitrated for the triggers. So, when you write or localize a term of the
+agent's craft:
+
+1. **Grep that skill's aliases for it** (language pack → `skill-triggers.json`) — an alias that names
+   the thing IS the canonical translation; never coin a second one beside it.
+2. **Prefer the industry's word to a private one** — the payload speaks to strangers, and a term they
+   can look up costs the owner no explanation.
+3. **Read the translation aloud once.** A word that names a foodstuff, a body part or a joke in the
+   owner's language is a defect, not a flavour — the owner asking "what does X mean?" is the symptom,
+   and it arrives months after the word shipped.
+
 ### Experience log — `EXPERIENCE.md`
 
 `EXPERIENCE.md` is the agent's growing, grep-friendly log of lessons (externalized memory of what works and
