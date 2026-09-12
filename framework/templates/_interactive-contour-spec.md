@@ -49,6 +49,7 @@ recognised only part of the question-like blocks says so out loud — in the pro
 | the archive | `<decisionsDir>/archive/<doc-basename>--<ISO>.json` | a copy per save; never rewritten |
 | the fact of SHOWING | `<decisionsDir>/shown.json` | `{ "<doc>": { "at": "<ISO>", "transport": "page \| batch \| chat" } }` — written when the window opens, or by hand for a pointed chat question (`--mark-shown <doc> --transport chat`) |
 | the queue | `<decisionsDir>/queue.json` | a STATE file — live documents are never moved into a pending folder |
+| the fact of IMPLEMENTING | `<decisionsDir>/implemented.json` | `{ "<doc>": { "<Q>": { "at": "<ISO>", "where": "<commit or file>" } } }` — the FOURTH fact (2.7, origin issue #54): written by the agent's hand the moment the decision lands in rules or code (`--mark-implemented <doc> <Q> --where <ref>`); a document whose every open question is implemented is never raised again — the queue and the show print `implemented, but open: <doc> Q1 → close the status` and exit 2 |
 
 Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → LF, trailing blanks cut, exactly
 one final newline). Text changed after approval = approval void.

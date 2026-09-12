@@ -195,6 +195,10 @@ Sequence:
   page (contour invariant I7) and move to unblocked work.
 
 ### Step 5. After the answers
+- **Implemented → mark it, in the same move (KAIF 2.7, origin issue #54).** The moment a decision lands in
+  rules or code, record the fourth fact by hand — `node .kaif/tools/contour/review.mjs --mark-implemented
+  <interview.md> <Q> --where <commit or file>` — so the queue never raises that question again (I44/I45);
+  `--queue --list` then says `implemented, but open → close the status`, and the status closes by propagation.
 - **Answer equivalence:** an answer given on the rendered HTML page = an answer written into the md
   = an answer said in chat. All three are the owner's word with equal force; whatever the
   transport, the decision is recorded into the md document (the contour does it mechanically for

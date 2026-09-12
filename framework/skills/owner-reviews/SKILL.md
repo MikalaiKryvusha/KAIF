@@ -51,7 +51,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I43. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I45. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -280,6 +280,19 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   owner: it is the AGENT's debt wearing an owner-facing label, and the queue names it so. Field
   correction to #47: the blocked mechanic was waiting on the agent for 48 days while every session
   read "round 2 — awaiting the owner" and concluded the owner was the blocker.
+- **I44. The FOURTH fact about a question is IMPLEMENTED — written by the agent's hand, with an
+  address, at the moment the decision lands (KAIF 2.7).** Exists · shown · answered were three facts;
+  nothing recorded that the decision had already been carried into rules or code, so the queue raised
+  a question the agent had already implemented and manufactured a FALSE SECOND decision that read as
+  the owner's will (origin issue #54: "you brought me an OLD question… WHICH YOU YOURSELF ALREADY
+  FIXED"). The fact lives next to the others (`<decisionsDir>/implemented.json`: `{ "<doc>": {
+  "<Q>": { "at", "where" } } }`) and is written by `--mark-implemented <doc> <Q> --where <commit or
+  file>` — never inferred from a diff, never written "later": implementing and marking are one move.
+- **I45. The queue and the show REFUSE what is already implemented — out loud, exit 2.** A document
+  whose every open question is implemented is not owed to the owner: `--queue`, `--queue --list` and
+  a direct show print `implemented, but open: <doc> Q1 → close the status (or fill the answer)` and
+  exit 2 — the same gate class as never-shown (I42); the page renders an implemented question as
+  settled with its address. The status is then closed by propagation (I19), never before it.
 
 ## The named class: "handling the human's work"
 

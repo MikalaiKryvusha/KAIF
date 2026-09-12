@@ -115,6 +115,13 @@ const EN = {
     how: (cmd) => 'Raise it as a page: ' + cmd + ' --queue · asked it pointedly in chat — record the fact: ' + cmd + ' --mark-shown <doc> --transport chat',
     dead: 'A dead document with nothing to show → close it by status and it leaves the queue.' },
   transport: { page: 'page', batch: 'batch', chat: 'chat' },
+  // the FOURTH fact — implemented (2.7 QL2, origin issue #54: an already-implemented question was raised again and produced a false second decision)
+  impl: {
+    marked: (doc, q, where, file) => 'Implemented recorded (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,
+    gate: (doc, ids) => 'implemented, but open: ' + doc + ' ' + ids.join(', ') + ' → close the status (or fill the answer); an implemented question is never raised again (I45)',
+    badge: (where, date) => 'implemented → ' + where + ' (' + date + ')',
+    noSuch: (doc, q, ids) => 'no question ' + q + ' in ' + doc + ' — known: ' + (ids.join(', ') || '(none)'),
+  },
   // `--check <doc>` — the form check WITHOUT a page (2.7 QL1, origin issue #56: the only check was the show, and the show is the call)
   check: {
     summary: (doc, n, ids) => 'check: ' + doc + ' — blocks ' + n + ', recognised ' + ids.length + (ids.length ? ': ' + ids.join(', ') : ''),
@@ -186,6 +193,12 @@ const RU = {
     how: (cmd) => 'Подними страницей: ' + cmd + ' --queue · задал точечно в чате — запиши факт: ' + cmd + ' --mark-shown <док> --transport чат',
     dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.' },
   transport: { page: 'страница', batch: 'пачка', chat: 'чат' },
+  impl: {
+    marked: (doc, q, where, file) => 'Факт «внесено» записан (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,
+    gate: (doc, ids) => 'внесено, но открыто: ' + doc + ' ' + ids.join(', ') + ' → закрой статус (или впиши ответ); внесённый вопрос очередь второй раз не поднимет (I45)',
+    badge: (where, date) => 'внесено → ' + where + ' (' + date + ')',
+    noSuch: (doc, q, ids) => 'в ' + doc + ' нет вопроса ' + q + ' — известны: ' + (ids.join(', ') || '(нет)'),
+  },
   check: {
     summary: (doc, n, ids) => 'проверка: ' + doc + ' — блоков ' + n + ', узнано ' + ids.length + (ids.length ? ': ' + ids.join(', ') : ''),
     unrecognised: (n) => 'не узнано: ' + n + ' блок(ов) похожи на вопрос, но не в форме `### В<n>.` / `### Q<n>.` — страница откроется БЕЗ них:',

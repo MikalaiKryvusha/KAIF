@@ -15,7 +15,7 @@
 // [TESTED: 2026-09-05 · зелёный стоя и в составе полигона — «sandbox suite: all 22 suites green» (npm run test:core,
 //  сессия 56); красный до IC3 — проба-предшественник 3 ✓ / 1 ✗ «генератор отсутствует» (21:25 сессии 55); мутация
 //  на копии HTML (радиокнопки вырезаны) роняет selfCheck отгружаемого модуля — ассерт «КРАСНАЯ на копии»]
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'node:fs';
 import { execFileSync, execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -104,6 +104,17 @@ r = runGen(P, ['--mark-shown', 'interviews/interview_052_probe.md', '--transport
 ok(r.code === 0 && existsSync(join(P, 'interviews', 'decisions', 'shown.json')), 's22 B: --mark-shown пишет interviews/decisions/shown.json (I40)', r.out.slice(-200));
 r = runGen(P, ['--mark-shown', 'interviews/interview_051_probe.md', '--transport', 'чат']);
 ok(r.code === 0, 's22 B: факт показа записан и для #051 (вопрос задан в чате после отказа предполёта)', r.out.slice(-200));
+// I44/I45 (QL2, #54): четвёртый факт «внесено» на развёрнутой копии — запись · отказ очереди · отказ показа
+r = runGen(P, ['--mark-implemented', 'interviews/interview_052_probe.md', 'Q1', '--where', 'commit abc123']);
+ok(r.code === 0 && existsSync(join(P, 'interviews', 'decisions', 'implemented.json')) && /abc123/.test(readFileSync(join(P, 'interviews', 'decisions', 'implemented.json'), 'utf8')),
+   's22 B: --mark-implemented пишет interviews/decisions/implemented.json с адресом (I44, QL2 #54)', r.out.slice(-200));
+r = runGen(P, ['--queue', '--list']);
+ok(r.code === 2 && /внесено, но открыто/.test(r.out) && /interview_052_probe\.md Q1/.test(r.out), 's22 B: очередь не поднимает внесённое — «внесено, но открыто: … Q1», код 2 (I45)', r.out.slice(-300));
+r = runGen(P, ['interviews/interview_052_probe.md', '--no-serve']);
+ok(r.code === 2 && /внесено, но открыто/.test(r.out) && !/RENDER IS NOT YET A SHOW/.test(r.out), 's22 B: показ внесённого документа отказан кодом 2 — рендера нет (I45)', r.out.slice(-200));
+r = runGen(P, ['--mark-implemented', 'interviews/interview_052_probe.md', 'Q9', '--where', 'x']);
+ok(r.code === 1 && /Q9/.test(r.out), 's22 B: --mark-implemented на несуществующий вопрос — отказ кодом 1 с именами известных', r.out.slice(-200));
+rmSync(join(P, 'interviews', 'decisions', 'implemented.json'), { force: true });
 r = runGen(P, ['--queue', '--list']);
 ok(r.code === 0 && !/НИ РАЗУ/.test(r.out), 's22 B: после факта показа очередь — код 0 (I42)', r.out.slice(-300));
 // Лица «вычитка» и «макет» рендерятся без браузера.

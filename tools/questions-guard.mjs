@@ -87,6 +87,16 @@ const ALLOW_MARKER_RE = /<!--\s*questions-guard:allow\s*(.*?)\s*-->/iu;
 // класс: 48 дней, ~40 сессий, «он лежит давно без моего даже малейшего представления, что есть
 // некий вопрос»). Порог — сутки: свежее интервью ещё не успело подняться страницей.
 const SHOWN_FILE = 'interviews/decisions/shown.json';
+// G9 (2.7 QL2, issue #54): четвёртый факт — ВНЕСЕНО (I44/I45 контура). Нарушение: все открытые вопросы
+// документа помечены внесёнными, а статус всё ещё «ждёт» — очередь его не поднимет, но каждая сессия
+// читает документ как долг владельца. Справка: закрытое интервью ≥ 3 дней без единой пометки «внесено».
+const IMPLEMENTED_FILE = 'interviews/decisions/implemented.json';
+const IMPLEMENTED_LAG_DAYS = 3;
+const FORWARD_SINCE_G9 = '2026-09-12';
+function readImplementedMap(root) {
+  const p = join(root, IMPLEMENTED_FILE);
+  try { return existsSync(p) ? JSON.parse(stripBom(readFileSync(p, 'utf8'))) : {}; } catch { return {}; }
+}
 const NEVER_SHOWN_DAYS = 1;
 const DAY_MS = 86400000;
 // G5/G6 действуют ВПЕРЁД — по первой ISO-дате в шапке документа (первые 12 строк); документ без
@@ -366,10 +376,11 @@ function parseInterview(root, p) {
 function scanInterviews(root) {
   const dir = join(root, INTERVIEWS_DIR);
   // unresolvedTargets — СПРАВКА, не нарушение: адрес назван, но ни во что не разрешается.
-  const out = { unanswered: [], stale: [], propagation: [], unanswerable: [], unresolvedTargets: [], neverShown: [] };
+  const out = { unanswered: [], stale: [], propagation: [], unanswerable: [], unresolvedTargets: [], neverShown: [], implementedOpen: [], notImplemented: [] };
   if (!existsSync(dir)) return out;
   const files = readdirSync(dir).filter((f) => /^interview_\d+.*\.md$/.test(f)).sort();
   const shown = readShownMap(root); // I40: карта показов контура
+  const implemented = readImplementedMap(root); // I44 (QL2, #54): карта внесённого
 
   // Корпус для эвристики цитирования (I20/I21): все md вне interviews/ из скоупа + корневые доки.
   const corpus = [];
@@ -388,6 +399,14 @@ function scanInterviews(root) {
     // Единица — документ; ключ долга стабилен, чтобы ратчет не воскрешал его каждым прогоном.
     if (iv.waiting && empty.length > 0 && !shown[iv.file] && iv.ageDays >= NEVER_SHOWN_DAYS)
       out.neverShown.push({ file: iv.file, days: iv.ageDays, key: iv.file + '#never-shown' });
+
+    // G9 (issue #54): все открытые вопросы внесены, а статус ждёт — нарушение; отвечено давно и не внесено — справка.
+    const implDoc = implemented[iv.file] || {};
+    const implOpen = empty.filter((q) => implDoc[q.id]);
+    if (iv.waiting && empty.length > 0 && implOpen.length === empty.length)
+      out.implementedOpen.push({ file: iv.file, qs: implOpen.map((q) => q.id), key: iv.file + '#implemented-open' });
+    if (iv.closed && iv.questions.length > 0 && !Object.keys(implDoc).length && iv.ageDays >= IMPLEMENTED_LAG_DAYS && (headDate(readLines(join(dir, f))) || '') >= FORWARD_SINCE_G9)
+      out.notImplemented.push({ file: iv.file, days: iv.ageDays });
 
     // G3: статус «ждёт» при нуле пустых полей = протух.
     if (iv.waiting && iv.questions.length > 0 && empty.length === 0)
@@ -528,6 +547,9 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
       text: `документ ждёт владельца ${s.days} дн. без единой записи показа (interviews/decisions/shown.json). `
           + 'Напечатать очередь ≠ донести вопрос: подними страницей (node tools/review.mjs --queue) или, задав в чате, '
           + 'запиши факт (node tools/review.mjs --mark-shown <док> --transport чат); мёртвый документ закрой статусом' })),
+    ...iv.implementedOpen.map((s) => ({ ...s, kind: 'ВНЕСЕНО, НО ОТКРЫТО (G9, issue #54)',
+      text: `все открытые вопросы (${s.qs.join(', ')}) помечены внесёнными (${IMPLEMENTED_FILE}), а статус всё ещё «ждёт» — `
+          + 'очередь документ не поднимет, но каждая сессия читает его как долг владельца. Закрой статус разносом (I19) или впиши ответ' })),
     ...iv.propagation.map((d) => ({ ...d, kind: 'разнос не выполнен (I20)', text: `${d.q} → ${d.target}` })),
     // bugs/62: вопрос, который владелец не может ОТВЕТИТЬ в один клик. Отказ называет верный ход
     // (семейство 12) — обе легальные формы варианта и законный выход «свободный вопрос».
@@ -593,6 +615,10 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
     log(`— Адресаты, не разрешённые в документ: ${iv.unresolvedTargets.length} (справка, не нарушение)`);
     for (const u of iv.unresolvedTargets) log(`  · ${u.file} ${u.q} → «${u.addr}» — ${u.why}`);
   }
+  if ((iv.notImplemented || []).length) { // G9 справка: ответ есть, факта «внесено» нет — внёс → отметь
+    log(`— Отвечено ≥ ${IMPLEMENTED_LAG_DAYS} дн. и не внесено: ${iv.notImplemented.length} (справка, не нарушение — G9, #54)`);
+    for (const u of iv.notImplemented) log(`  · ${u.file} — ${u.days} дн.; внёс → отметь: node tools/review.mjs --mark-implemented <док> <Q> --where <коммит|файл>`);
+  }
   return { newViolations: fresh, inherited: inherited.length, unanswered: iv.unanswered };
 }
 
@@ -630,6 +656,17 @@ function selftest() {
     () => { w('interviews/interview_095_x.md', IV_NEW(SCEN)); utimesSync(join(box, 'interviews/interview_095_x.md'), threeDaysAgo, threeDaysAgo);
       mkdirSync(join(box, 'interviews/decisions'), { recursive: true });
       w('interviews/decisions/shown.json', JSON.stringify({ 'interviews/interview_095_x.md': { at: new Date().toISOString(), transport: 'пачка' } })); },
+    false, '');
+  mut('все открытые вопросы внесены, статус ждёт (G9, #54) → красный', 'нарушение «ВНЕСЕНО, НО ОТКРЫТО»',
+    () => { w('interviews/interview_095_x.md', IV_NEW(SCEN)); mkdirSync(join(box, 'interviews/decisions'), { recursive: true });
+      w('interviews/decisions/shown.json', JSON.stringify({ 'interviews/interview_095_x.md': { at: new Date().toISOString(), transport: 'пачка' } }));
+      w('interviews/decisions/implemented.json', JSON.stringify({ 'interviews/interview_095_x.md': { Q1: { at: new Date().toISOString(), where: 'commit abc' } } })); },
+    true, 'ВНЕСЕНО');
+  mut('внесён один из двух открытых вопросов (G9) → зелёный', '0 нарушений: документ ещё ждёт владельца по Q2',
+    () => { w('interviews/interview_095_x.md', IV_NEW(SCEN).replace('**Answer:**\n', '**Answer:**\n\n### Q2. Второй?\n\n| Вариант | Что означает |\n|---|---|\n| **A** | раз |\n| **B** | два |\n\n' + SCEN + '\n**Answer:**\n'));
+      mkdirSync(join(box, 'interviews/decisions'), { recursive: true });
+      w('interviews/decisions/shown.json', JSON.stringify({ 'interviews/interview_095_x.md': { at: new Date().toISOString(), transport: 'пачка' } }));
+      w('interviews/decisions/implemented.json', JSON.stringify({ 'interviews/interview_095_x.md': { Q1: { at: new Date().toISOString(), where: 'commit abc' } } })); },
     false, '');
   mut('вопрос владельцу ПРОЗОЙ в plans/ (G5) → красный', 'нарушение «вопрос владельцу ПРОЗОЙ вне interviews/»',
     () => w('plans/95_x.md', '# План 95 — тест\n\n> **Создан:** 2026-09-05\n\nВладелец, какой из двух вариантов берём?\n'),

@@ -71,6 +71,7 @@ const STALE_QUEUE_DAYS = Number(process.env.KAIF_STALE_QUEUE_DAYS) > 0 ? Number(
 const DAY_MS = 86400000;
 const QUEUE_FILE = 'queue.json';      // under decisionsDir (I7)
 const SHOWN_FILE = 'shown.json';      // under decisionsDir (I40)
+const IMPLEMENTED_FILE = 'implemented.json'; // under decisionsDir (I44 — 2.7 QL2, origin issue #54)
 const KIND_NOTICE = 'notice';
 const FACES = ['interview', 'proofread', 'mockup'];
 const IMAGE_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
@@ -214,6 +215,7 @@ export function pendingNotices(root) {
 // Every document with unanswered QUESTIONS: a scan of interviews/ (living documents in place) + the queue.
 export function pendingDocs(root) {
   const noticeDocs = new Set(readQueue(root).filter(isNoticeItem).map((i) => i.doc));
+  const implAll = readImplemented(root); // I44 (QL2, #54): an open question already IMPLEMENTED is not owed to the owner
   const seen = new Set();
   const out = [];
   const push = (rel) => {
@@ -221,9 +223,9 @@ export function pendingDocs(root) {
     seen.add(rel);
     const md = readFileSync(resolve(root, rel), 'utf8');
     const qs = parseQuestions(md);
-    const unanswered = qs.filter((q) => !q.answered);
-    if (unanswered.length > 0 || docStatus(md) === 'waiting')
-      out.push({ doc: rel, unanswered: unanswered.length, questions: qs.length });
+    const st = implStateOf(rel, qs, implAll);
+    if (st.open > 0 || docStatus(md) === 'waiting')
+      out.push({ doc: rel, unanswered: st.unanswered, questions: qs.length, implementedOpen: st.implementedOpen });
   };
   const ivDir = resolve(root, 'interviews');
   if (existsSync(ivDir))
@@ -266,6 +268,31 @@ export function recordShown(root, rels, transport, now = new Date()) {
   writeFileSync(join(decisionsAbs(root), SHOWN_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
   return map;
 }
+// ── I44/I45 (2.7 QL2, origin issue #54): the FOURTH fact — IMPLEMENTED, with an address. The field raised an
+// already-implemented question again and manufactured a false second decision that read as the owner's will.
+// The fact is written by the agent's hand at the moment the decision lands (never inferred); a document whose
+// every open question is implemented is never raised — the queue says so out loud and exits 2 until the status closes.
+export function readImplemented(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), IMPLEMENTED_FILE), {}); }
+export function recordImplemented(root, rel, qid, where, now = new Date()) {
+  const map = readImplemented(root);
+  const key = String(rel).replace(/\\/g, '/');
+  map[key] = map[key] || {};
+  map[key][qid] = { at: now.toISOString(), where };
+  mkdirSync(decisionsAbs(root), { recursive: true });
+  writeFileSync(join(decisionsAbs(root), IMPLEMENTED_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
+  return map;
+}
+export function implStateOf(rel, qs, implAll) {
+  const impl = implAll[String(rel).replace(/\\/g, '/')] || {};
+  const open = qs.filter((q) => !q.answered);
+  return { open: open.length, unanswered: open.filter((q) => !impl[q.id]).length, implementedOpen: open.filter((q) => impl[q.id]).map((q) => q.id) };
+}
+// Lines of the gate: documents whose EVERY open question is implemented (I45) — printed by the queue and the show.
+export function implementedGate(root) {
+  const t = T(cfgOf(root));
+  return pendingDocs(root).filter((d) => d.implementedOpen.length > 0 && d.unanswered === 0).map((d) => ({ doc: d.doc, line: t.impl.gate(d.doc, d.implementedOpen) }));
+}
+
 export function listQueue(root, { now = new Date(), includeStale = false } = {}) {
   const t = T(cfgOf(root));
   const shown = readShown(root);
@@ -284,7 +311,9 @@ export function listQueue(root, { now = new Date(), includeStale = false } = {})
     lines.push('   ' + t.list.how(CLI_NAME));
     lines.push('   ' + t.list.dead);
   }
-  return { docs, never, lines, exitCode: never.length ? EXIT_NEVER_SHOWN : 0 };
+  const implGate = implementedGate(root); // I45: implemented-but-open is a gate of the same class as never-shown
+  for (const g of implGate) lines.push('🔴 ' + g.line);
+  return { docs, never, lines, implGate, exitCode: never.length || implGate.length ? EXIT_NEVER_SHOWN : 0 };
 }
 
 // ── Building pages (I1: only from documents) ──────────────────────────────────────────────────
@@ -307,6 +336,7 @@ export function buildPage(root, docPath) {
   const kind = docKind(root, rel, meta);
   const title = docTitle(md, docPath, meta);
   const parsed = parseQuestions(md);
+  const implMap = readImplemented(root)[rel] || {}; // I44: an implemented open question renders as settled, with its address
   // The card carries the WHOLE question body except the options and the answer fields — those are interactive.
   const proseOf = (q) => {
     const keep = [];
@@ -324,10 +354,11 @@ export function buildPage(root, docPath) {
     return renderMd(keep.join('\n'));
   };
   const questions = parsed.map((q) => ({
-    doc: rel, id: q.id, title: q.title, answered: q.answered, target: q.target,
+    doc: rel, id: q.id, title: q.title, answered: q.answered || Boolean(implMap[q.id]), target: q.target,
     bodyHtml: proseOf(q), recommended: q.recommended,
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text), recommended: o.letter === q.recommended })),
-    existing: q.answers.filter((a) => a.text).map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
+    existing: [...q.answers.filter((a) => a.text).map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
+      ...(implMap[q.id] ? [t.impl.badge(implMap[q.id].where, String(implMap[q.id].at).slice(0, 10))] : [])],
   }));
   const docHash = bodyHash(md);
   // question blocks are CUT from the prose render — the cards below are the only form of questions
@@ -1040,6 +1071,19 @@ export function selftest(log = console.log) {
   const partialPage = buildPage(root, CHK);
   ok(partialPage.html.includes('not recognised: 2 question-like block(s)'), 'the page header says out loud that 2 question-like blocks are not on it');
   rmSync(join(root, CHK), { force: true }); // the fixture must not join the queue counted by the batch cases below
+  // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
+  const IMPL = 'interviews/interview_097_impl.md';
+  writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
+  ok(ownerDocs(root).some((d) => d.doc === IMPL) && listQueue(root).implGate.length === 0, 'an open question is owed to the owner before the implemented mark');
+  recordImplemented(root, IMPL, 'Q1', 'commit abc123');
+  const implMap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+  ok(implMap[IMPL] && implMap[IMPL].Q1.where === 'commit abc123' && /^\d{4}-/.test(implMap[IMPL].Q1.at), 'implemented.json carries the fact with its address and its moment (I44)');
+  const lq = listQueue(root);
+  ok(!ownerDocs(root).some((d) => d.doc === IMPL) && lq.exitCode === 2 && lq.lines.some((l) => l.includes(IMPL) && /Q1/.test(l) && /implemented, but open/.test(l)),
+    'a document whose every open question is implemented is NOT raised; the queue names it with Q1 and exits 2 (I45)');
+  const implPage = buildPage(root, IMPL);
+  ok(implPage.questions[0].answered && implPage.html.includes('implemented → commit abc123'), 'the page renders an implemented question as settled, with its address');
+  rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
   ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("'/alive'"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse');
@@ -1127,7 +1171,7 @@ export function selftest(log = console.log) {
 // the very same CLI in-process — the origin eats its own shipment, plans/93 IC5) ──────────────────
 export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
-  const valueFlags = ['--timeout', '--transport', '--mark-shown'];
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where'];
   const docPath = args.find((a, i) => !a.startsWith('--') && !valueFlags.includes(args[i - 1]));
   const opts = {
     open: !args.includes('--no-open'),
@@ -1146,6 +1190,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' <image> --mockup         (the image + comments)\n' +
       '       ' + CLI_NAME + ' --queue [--include-stale] | --queue --list | --enqueue <doc.md> [--notice] | --selftest\n' +
       '       ' + CLI_NAME + ' --mark-shown <doc.md> [--transport chat]\n' +
+      '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
       'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form).\n' +
       'Run it as a TRACKED background task (I31). Contract: .kaif/INTERACTIVE_CONTOUR_SPEC.md');
     process.exit(1);
@@ -1171,6 +1216,16 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     if (!docPath) usage();
     process.exit(checkDoc(root, docPath));
   }
+  if (args.includes('--mark-implemented')) { // I44 (QL2, #54): the fourth fact — the agent's hand, at the moment of implementing, with an address
+    const i = args.indexOf('--mark-implemented');
+    const doc = args[i + 1], qid = args[i + 2], where = opt('--where');
+    if (!doc || !qid || qid.startsWith('--') || !where) usage();
+    const ids = parseQuestions(readFileSync(resolve(root, doc), 'utf8')).map((q) => q.id);
+    if (!ids.includes(qid)) { console.log(T(cfg).impl.noSuch(doc, qid, ids)); process.exit(1); }
+    recordImplemented(root, relDoc(root, doc), qid, where);
+    console.log(T(cfg).impl.marked(doc, qid, where, cfg.decisionsDir + '/' + IMPLEMENTED_FILE));
+    process.exit(0);
+  }
   if (args.includes('--queue') && args.includes('--list')) {
     const r = listQueue(root, { includeStale: opts.includeStale });
     for (const l of r.lines) console.log(l);
@@ -1179,9 +1234,11 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   if (args.includes('--queue')) {
     const stale = opts.includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true }));
     for (const d of stale) console.log('! stale in the queue (' + d.days + ' d > ' + STALE_QUEUE_DAYS + '): ' + d.doc + ' — NOT shown; close it by status or show it on purpose: --include-stale');
+    const implGate = implementedGate(root); // I45: said out loud before any page, exit 2 when nothing else waits
+    for (const g of implGate) console.log('🔴 ' + g.line);
     const docs = ownerDocs(root, opts);
     const notices = pendingNotices(root);
-    if (docs.length === 0 && notices.length === 0) { console.log('No unanswered questions and no unread notices — the queue is empty, no page needed.'); process.exit(0); }
+    if (docs.length === 0 && notices.length === 0) { console.log('No unanswered questions and no unread notices — the queue is empty, no page needed.'); process.exit(implGate.length ? EXIT_NEVER_SHOWN : 0); }
     for (const d of docs) { // spec §2: a batch never carries a page that would open without radios
       const g = gateForOpen(root, d.doc);
       if (g) { for (const l of g) console.log(l); console.log('  in: ' + d.doc); process.exit(EXIT_PREFLIGHT); }
@@ -1194,6 +1251,11 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     serveContour(root, { docPath, notice: true }, opts).then((r) => process.exit(r.exitCode));
   } else {
     if (face === 'interview') { // spec §2: pre-flight + self-check BEFORE any page opens
+      const stImpl = implStateOf(relDoc(root, docPath), parseQuestions(readFileSync(resolve(root, docPath), 'utf8')), readImplemented(root));
+      if (stImpl.implementedOpen.length && stImpl.unanswered === 0) { // I45: never raise what is already implemented
+        console.log('🔴 ' + T(cfg).impl.gate(relDoc(root, docPath), stImpl.implementedOpen));
+        process.exit(EXIT_NEVER_SHOWN);
+      }
       const g = gateForOpen(root, docPath);
       if (g) { for (const l of g) console.log(l); process.exit(EXIT_PREFLIGHT); }
     }
