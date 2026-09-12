@@ -873,6 +873,14 @@ a minute instead of forty. The rule does not become "always ask the owner": a qu
 project's question guard may carry the axis (the origin's does — G7, declared exception
 `<!-- questions-guard:verdict-ok reason -->`).
 
+**A show has three legal outcomes, and a document brought to the owner has a READING VIEW (KAIF 2.7,
+origin issues #54/#58).** The owner may ANSWER, leave a REMARK, or say «read, no remarks» — the third is a
+recorded verdict, never a refused page (the shipped contour records it as `noRemarks`; origin bug 113). And the
+page the owner opens shows the LIVE questions first; everything answered and the document's text stand below
+as one collapsed archive — nothing is removed, the order of reading changes (the field: 18 535 characters of
+settled matter above the one live question). The same discipline as STATUS ↔ the chronicle: what is closed
+leaves the top.
+
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
 agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE

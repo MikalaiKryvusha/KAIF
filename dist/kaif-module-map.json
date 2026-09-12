@@ -251,10 +251,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "e1512f74c77d92ea9f17cfda56bb96321823d38853663017bb4c0a2bd69fb92d",
+        "sha256": "3c19fef30d4e6bddd420d7ee3d36edbc3d52d369af14c58fde229e699cd19fca",
         "lines": [
           813,
-          1020
+          1028
         ]
       },
       {
@@ -262,8 +262,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1021,
-          1035
+          1029,
+          1043
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          1036,
-          1048
+          1044,
+          1056
         ]
       }
     ],
@@ -3427,10 +3427,10 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "188b3359a2028562cf10dc1268c99a2a789c899d1df281f0b089318608363fe9",
+        "sha256": "e902b09fc19a192c014308f2b6aba09c5d010e087f6b19b868a4f8b87eb7b344",
         "lines": [
           52,
-          296
+          298
         ]
       },
       {
@@ -3438,8 +3438,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          297,
-          308
+          299,
+          310
         ]
       },
       {
@@ -3447,8 +3447,8 @@
         "class": "static",
         "sha256": "89329e4df17a11bb38fa7a8d82395186f01e604e4bb58ac5d7835a39cc430250",
         "lines": [
-          309,
-          358
+          311,
+          360
         ]
       },
       {
@@ -3456,8 +3456,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          359,
-          368
+          361,
+          370
         ]
       },
       {
@@ -3465,8 +3465,8 @@
         "class": "static",
         "sha256": "00a9322b97b28da62f0169e9a1240c4f37197c9c9b134b1b29f10c1bfeeb4b73",
         "lines": [
-          369,
-          480
+          371,
+          482
         ]
       },
       {
@@ -3474,8 +3474,8 @@
         "class": "static",
         "sha256": "81674bb4e07934a8bf603b61358af949ac4b315f59df859ac67a669df96c24b1",
         "lines": [
-          481,
-          513
+          483,
+          515
         ]
       },
       {
@@ -3483,8 +3483,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          514,
-          529
+          516,
+          531
         ]
       },
       {
@@ -3492,8 +3492,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          530,
-          600
+          532,
+          602
         ]
       },
       {
@@ -3501,8 +3501,8 @@
         "class": "static",
         "sha256": "0d1a55845743246bd68df0b614d8e790d24a27f07d90693220b64f3da04e0600",
         "lines": [
-          601,
-          621
+          603,
+          623
         ]
       },
       {
@@ -3510,8 +3510,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          622,
-          641
+          624,
+          643
         ]
       },
       {
@@ -3519,8 +3519,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          642,
-          653
+          644,
+          655
         ]
       }
     ],
@@ -5587,10 +5587,10 @@
       {
         "signature": "## 4. The page — what the owner must see",
         "class": "static",
-        "sha256": "078b1bca68e5a97ac2a83439a6a92b58359423dd4f015a1245c5520d5e06bbd5",
+        "sha256": "b65874ac1b97d08741561ead9abf84ec4c3e4db646689b109efe61437a07c88d",
         "lines": [
           57,
-          67
+          71
         ]
       },
       {
@@ -5598,8 +5598,8 @@
         "class": "static",
         "sha256": "115534103d8cfd85609e7ea56f340041cea21e96668f520700be222aa1fd727d",
         "lines": [
-          68,
-          81
+          72,
+          85
         ]
       },
       {
@@ -5607,8 +5607,8 @@
         "class": "static",
         "sha256": "79df36b07fb3ac8daaa944c4ea581ebf6c6fd30eb5720ff92bf9f26735079b24",
         "lines": [
-          82,
-          90
+          86,
+          94
         ]
       },
       {
@@ -5616,8 +5616,8 @@
         "class": "static",
         "sha256": "e9e1aeea506aacc44b1dea0a39c1684e971cdaeb1c710098af283ea8efb40899",
         "lines": [
-          91,
-          107
+          95,
+          111
         ]
       },
       {
@@ -5625,8 +5625,8 @@
         "class": "static",
         "sha256": "cf78f3e9fe91bffba8dda7b8ca06d4492bf29a2cb76ee192da334e851f56725b",
         "lines": [
-          108,
-          115
+          112,
+          119
         ]
       }
     ],

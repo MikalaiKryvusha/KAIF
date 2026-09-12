@@ -1018,6 +1018,14 @@ a minute instead of forty. The rule does not become "always ask the owner": a qu
 project's question guard may carry the axis (the origin's does — G7, declared exception
 `<!-- questions-guard:verdict-ok reason -->`).
 
+**A show has three legal outcomes, and a document brought to the owner has a READING VIEW (KAIF 2.7,
+origin issues #54/#58).** The owner may ANSWER, leave a REMARK, or say «read, no remarks» — the third is a
+recorded verdict, never a refused page (the shipped contour records it as `noRemarks`; origin bug 113). And the
+page the owner opens shows the LIVE questions first; everything answered and the document's text stand below
+as one collapsed archive — nothing is removed, the order of reading changes (the field: 18 535 characters of
+settled matter above the one live question). The same discipline as STATUS ↔ the chronicle: what is closed
+leaves the top.
+
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
 agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
@@ -6559,7 +6567,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   human are banned as a way of showing. The path is a footnote AFTER the show, never an errand.
 - **I16. The show contour = the question contour.** The page opens ANY markdown, not only
   documents with questions; the document-wide comment field lets the human answer or stay silent.
-  No separate show tool is ever built.
+  No separate show tool is ever built. **The page has a READING VIEW (2.7, origin issue #54):** live
+  questions first, the answered ones and the document text in one collapsed archive below, nothing removed;
+  and a show has THREE legal outcomes — an answer · a remark · «read, no remarks» (origin issue #58, bug 113).
 - **I17. A mechanical check on showing.** Grep the agent's own reply for "double-click", "opens
   offline", "see file", "lies at" next to an artifact extension — a hit means the show was
   replaced by a link. The rule holds through an executable command in rituals, not through intent.

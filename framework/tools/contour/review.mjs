@@ -394,9 +394,18 @@ export function buildPage(root, docPath) {
     : (artifacts.length ? '' : '<h2>' + t.head.questions + '</h2><p>' + t.head.noQuestions + '</p>');
   const unrec = checkForm(md).unrecognised.length; // QL1 (#56): the header says when the page knows only part of the blocks
   const formNote = unrec ? ' <span class="langnote">' + esc(t.check.partialHead(unrec)) + '</span>' : '';
+  // QL3 (2.7, origin issue #54: 18 535 characters of settled matter above the one live question): the READING VIEW —
+  // live questions first; everything answered and the document text below as ONE collapsed archive. Nothing is
+  // removed, only the order of reading changes; a document with no settled questions keeps the plain order.
+  const live = questions.filter((q) => !q.answered), settled = questions.filter((q) => q.answered);
+  const mainHtml = live.length && settled.length
+    ? '<h2>' + t.head.questions + '</h2>' + live.map((q) => qCard(q, t)).join('\n') + artSection +
+      '<details class="archive"><summary>' + esc(t.head.archive(settled.length)) + '</summary><div class="doc">' + body + '</div>' +
+      settled.map((q) => qCard(q, t)).join('\n') + '</details>' + docCommentBlock(rel, t)
+    : '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel, t);
   const html = pageShell(cfg, {
     title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + esc(title) + '</span>' + summary + formNote,
-    main: '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel, t),
+    main: mainHtml,
     questions, artifacts, face: 'interview',
   });
   return { html, questions, artifacts, docHash, kind, title, rel, face: 'interview' };
@@ -624,6 +633,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .opt div p { margin:2px 0 } .qbody p { margin:6px 0 } .qmeta { font-size:13px; color:var(--muted); margin:6px 0 }
   .outbox { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin:10px 0; max-height:60vh; overflow:auto }
   .qcard.danger { border-left-color:var(--danger) }
+  details.archive { margin:22px 0 } details.archive > summary { cursor:pointer; color:var(--muted); font-weight:600; padding:8px 0 } /* QL3 (#54): the settled below, one fold */
   /* proofreading: paragraph cards with their id in the margin; mockup: the image at page width */
   .pcard { background:var(--card); border:1px solid var(--line); border-left:5px solid var(--you); border-radius:10px; padding:10px 16px; margin:12px 0 }
   .pid { font-size:12px; color:var(--muted); font-family:ui-monospace,Consolas,monospace } .ptext p { margin:6px 0 }
@@ -1084,6 +1094,18 @@ export function selftest(log = console.log) {
   const implPage = buildPage(root, IMPL);
   ok(implPage.questions[0].answered && implPage.html.includes('implemented → commit abc123'), 'the page renders an implemented question as settled, with its address');
   rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
+  // QL3 (#54): the reading view — live first, the settled and the text in one fold; nothing removed
+  const ARCH = 'interviews/interview_096_arch.md';
+  const qa = (i) => '### Q' + i + '. Settled ' + i + '?\n\n| Option | Meaning |\n|---|---|\n| **A** | one |\n| **B** | two |\n\n**Answer:** A — yes\n\n';
+  writeFileSync(join(root, ARCH), '# Interview #096\n\n> Status: awaiting\n\nLong context prose.\n\n' + qa(1) + qa(2) + qa(3) + '### Q4. Live?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
+  const archPage = buildPage(root, ARCH);
+  const iLive = archPage.html.indexOf('<strong>Q4.</strong>'), iFold = archPage.html.indexOf('<details class="archive">'), iProse = archPage.html.indexOf('Long context prose'), iQ1 = archPage.html.indexOf('<strong>Q1.</strong>');
+  ok(iLive > 0 && iFold > iLive && iProse > iFold && iQ1 > iFold && (archPage.html.match(/<section class="qcard/g) || []).length === 4 && archPage.html.includes('Archive of the settled — 3'),
+    'reading view: the live question stands first, the prose and the 3 settled questions sit inside one fold below it, all 4 cards present');
+  ok(selfCheck(archPage).ok, 'the render self-check counts the folded radios too (radio groups == questions with options)');
+  const plainPage = buildPage(root, GOOD);
+  ok(!plainPage.html.includes('<details class="archive">'), 'a document with nothing settled keeps the plain order (no fold)');
+  rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
   ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("'/alive'"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse');

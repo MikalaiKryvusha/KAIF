@@ -115,6 +115,17 @@ ok(r.code === 2 && /внесено, но открыто/.test(r.out) && !/RENDER
 r = runGen(P, ['--mark-implemented', 'interviews/interview_052_probe.md', 'Q9', '--where', 'x']);
 ok(r.code === 1 && /Q9/.test(r.out), 's22 B: --mark-implemented на несуществующий вопрос — отказ кодом 1 с именами известных', r.out.slice(-200));
 rmSync(join(P, 'interviews', 'decisions', 'implemented.json'), { force: true });
+// QL3 (#54): фикстура «пять отвеченных с таблицами + один живой» — над живым вопросом ≤ 1 % видимого текста страницы
+const qa53 = (i) => '### Q' + i + '. Вопрос ' + i + '?\n\n| Вариант | Что означает | Цена |\n|---|---|---|\n| **A** | раз — длинное пояснение на строку | низкая |\n| **B** | два — ещё одно длинное пояснение | высокая |\n\n**Answer:** A — берём раз <!-- owner-review: by owner · 1 сентября 2026 -->\n\n';
+writeFileSync(join(P, 'interviews', 'interview_053_probe.md'), '# Interview #053 — архив\n\n> Status: **🟡 awaiting**\n\nДлинный контекст на много строк.\n\n' + qa53(1) + qa53(2) + qa53(3) + qa53(4) + qa53(5) + '### Q6. Живой?\n\n- **A)** раз\n- **B)** два\n\n**Answer:**\n');
+r = runGen(P, ['interviews/interview_053_probe.md', '--no-serve']);
+const html53 = r.code === 0 ? readFileSync(join(P, '.kaif', '.contour-tmp', 'interview_053_probe.html'), 'utf8') : '';
+const vis = (s) => s.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+const mainAt = html53.indexOf('<main>'), liveAt = html53.indexOf('<strong>Q6.</strong>');
+const above = liveAt > mainAt && mainAt >= 0 ? vis(html53.slice(mainAt, liveAt)).length : Infinity, total = vis(html53).length;
+ok(r.code === 0 && liveAt > 0 && above <= total * 0.01 && html53.indexOf('<details class="archive">') > liveAt && (html53.match(/<section class="qcard/g) || []).length === 6,
+   's22 B: #054-фикстура — над живым Q6 ' + above + ' знаков из ' + total + ' (≤ 1 %), архив решённого ниже, все 6 карточек на месте (QL3)', 'exit ' + r.code + ' above=' + above + ' total=' + total);
+rmSync(join(P, 'interviews', 'interview_053_probe.md'), { force: true });
 r = runGen(P, ['--queue', '--list']);
 ok(r.code === 0 && !/НИ РАЗУ/.test(r.out), 's22 B: после факта показа очередь — код 0 (I42)', r.out.slice(-300));
 // Лица «вычитка» и «макет» рендерятся без браузера.

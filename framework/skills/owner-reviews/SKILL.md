@@ -131,7 +131,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   human are banned as a way of showing. The path is a footnote AFTER the show, never an errand.
 - **I16. The show contour = the question contour.** The page opens ANY markdown, not only
   documents with questions; the document-wide comment field lets the human answer or stay silent.
-  No separate show tool is ever built.
+  No separate show tool is ever built. **The page has a READING VIEW (2.7, origin issue #54):** live
+  questions first, the answered ones and the document text in one collapsed archive below, nothing removed;
+  and a show has THREE legal outcomes — an answer · a remark · «read, no remarks» (origin issue #58, bug 113).
 - **I17. A mechanical check on showing.** Grep the agent's own reply for "double-click", "opens
   offline", "see file", "lies at" next to an artifact extension — a hit means the show was
   replaced by a link. The rule holds through an executable command in rituals, not through intent.

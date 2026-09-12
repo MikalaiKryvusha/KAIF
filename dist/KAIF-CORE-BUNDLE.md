@@ -1228,6 +1228,14 @@ a minute instead of forty. The rule does not become "always ask the owner": a qu
 project's question guard may carry the axis (the origin's does — G7, declared exception
 `<!-- questions-guard:verdict-ok reason -->`).
 
+**A show has three legal outcomes, and a document brought to the owner has a READING VIEW (KAIF 2.7,
+origin issues #54/#58).** The owner may ANSWER, leave a REMARK, or say «read, no remarks» — the third is a
+recorded verdict, never a refused page (the shipped contour records it as `noRemarks`; origin bug 113). And the
+page the owner opens shows the LIVE questions first; everything answered and the document's text stand below
+as one collapsed archive — nothing is removed, the order of reading changes (the field: 18 535 characters of
+settled matter above the one live question). The same discipline as STATUS ↔ the chronicle: what is closed
+leaves the top.
+
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
 doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
 agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
@@ -6207,7 +6215,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   human are banned as a way of showing. The path is a footnote AFTER the show, never an errand.
 - **I16. The show contour = the question contour.** The page opens ANY markdown, not only
   documents with questions; the document-wide comment field lets the human answer or stay silent.
-  No separate show tool is ever built.
+  No separate show tool is ever built. **The page has a READING VIEW (2.7, origin issue #54):** live
+  questions first, the answered ones and the document text in one collapsed archive below, nothing removed;
+  and a show has THREE legal outcomes — an answer · a remark · «read, no remarks» (origin issue #58, bug 113).
 - **I17. A mechanical check on showing.** Grep the agent's own reply for "double-click", "opens
   offline", "see file", "lies at" next to an artifact extension — a hit means the show was
   replaced by a link. The rule holds through an executable command in rituals, not through intent.
@@ -10100,9 +10110,18 @@ export function buildPage(root, docPath) {
     : (artifacts.length ? '' : '<h2>' + t.head.questions + '</h2><p>' + t.head.noQuestions + '</p>');
   const unrec = checkForm(md).unrecognised.length; // QL1 (#56): the header says when the page knows only part of the blocks
   const formNote = unrec ? ' <span class="langnote">' + esc(t.check.partialHead(unrec)) + '</span>' : '';
+  // QL3 (2.7, origin issue #54: 18 535 characters of settled matter above the one live question): the READING VIEW —
+  // live questions first; everything answered and the document text below as ONE collapsed archive. Nothing is
+  // removed, only the order of reading changes; a document with no settled questions keeps the plain order.
+  const live = questions.filter((q) => !q.answered), settled = questions.filter((q) => q.answered);
+  const mainHtml = live.length && settled.length
+    ? '<h2>' + t.head.questions + '</h2>' + live.map((q) => qCard(q, t)).join('\n') + artSection +
+      '<details class="archive"><summary>' + esc(t.head.archive(settled.length)) + '</summary><div class="doc">' + body + '</div>' +
+      settled.map((q) => qCard(q, t)).join('\n') + '</details>' + docCommentBlock(rel, t)
+    : '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel, t);
   const html = pageShell(cfg, {
     title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + esc(title) + '</span>' + summary + formNote,
-    main: '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel, t),
+    main: mainHtml,
     questions, artifacts, face: 'interview',
   });
   return { html, questions, artifacts, docHash, kind, title, rel, face: 'interview' };
@@ -10330,6 +10349,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .opt div p { margin:2px 0 } .qbody p { margin:6px 0 } .qmeta { font-size:13px; color:var(--muted); margin:6px 0 }
   .outbox { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin:10px 0; max-height:60vh; overflow:auto }
   .qcard.danger { border-left-color:var(--danger) }
+  details.archive { margin:22px 0 } details.archive > summary { cursor:pointer; color:var(--muted); font-weight:600; padding:8px 0 } /* QL3 (#54): the settled below, one fold */
   /* proofreading: paragraph cards with their id in the margin; mockup: the image at page width */
   .pcard { background:var(--card); border:1px solid var(--line); border-left:5px solid var(--you); border-radius:10px; padding:10px 16px; margin:12px 0 }
   .pid { font-size:12px; color:var(--muted); font-family:ui-monospace,Consolas,monospace } .ptext p { margin:6px 0 }
@@ -10790,6 +10810,18 @@ export function selftest(log = console.log) {
   const implPage = buildPage(root, IMPL);
   ok(implPage.questions[0].answered && implPage.html.includes('implemented → commit abc123'), 'the page renders an implemented question as settled, with its address');
   rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
+  // QL3 (#54): the reading view — live first, the settled and the text in one fold; nothing removed
+  const ARCH = 'interviews/interview_096_arch.md';
+  const qa = (i) => '### Q' + i + '. Settled ' + i + '?\n\n| Option | Meaning |\n|---|---|\n| **A** | one |\n| **B** | two |\n\n**Answer:** A — yes\n\n';
+  writeFileSync(join(root, ARCH), '# Interview #096\n\n> Status: awaiting\n\nLong context prose.\n\n' + qa(1) + qa(2) + qa(3) + '### Q4. Live?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
+  const archPage = buildPage(root, ARCH);
+  const iLive = archPage.html.indexOf('<strong>Q4.</strong>'), iFold = archPage.html.indexOf('<details class="archive">'), iProse = archPage.html.indexOf('Long context prose'), iQ1 = archPage.html.indexOf('<strong>Q1.</strong>');
+  ok(iLive > 0 && iFold > iLive && iProse > iFold && iQ1 > iFold && (archPage.html.match(/<section class="qcard/g) || []).length === 4 && archPage.html.includes('Archive of the settled — 3'),
+    'reading view: the live question stands first, the prose and the 3 settled questions sit inside one fold below it, all 4 cards present');
+  ok(selfCheck(archPage).ok, 'the render self-check counts the folded radios too (radio groups == questions with options)');
+  const plainPage = buildPage(root, GOOD);
+  ok(!plainPage.html.includes('<details class="archive">'), 'a document with nothing settled keeps the plain order (no fold)');
+  rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
   ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("'/alive'"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse');
@@ -11062,6 +11094,7 @@ const EN = {
     optComment: 'Comment (optional)', paragraphs: 'Paragraphs — a comment field under each',
     mockup: 'Mockup — your comments', noticeGroup: 'Notices — no answer owed',
     accumulated: 'Accumulated', queueEmpty: 'The queue is empty — nothing to answer.',
+    archive: (n) => 'Archive of the settled — ' + n + ' answered question(s) and the document text (nothing removed)',
     noPending: 'No unanswered questions — the document waits by status.',
     langFallback: (lang) => 'texts in English — no dictionary for "' + lang + '" ships yet' },
   count: { docs: (n) => n + ' document(s)', questions: (n) => n + ' unanswered question(s)',
@@ -11137,7 +11170,8 @@ const RU = {
   tag: { answered: 'отвечено', unanswered: 'без ответа', you: 'ждёт вас', allAnswered: 'все отвечены',
     answeredN: (n) => 'отвечено ' + n, waitN: (n) => 'ждут вас ' + n, rec: 'рекомендую',
     noAnswerNote: 'ответа не ждёт', noBody: 'тела нет', outbound: 'исходящее' },
-  head: { questions: 'Вопросы', noQuestions: 'Вопросов в документе нет — можно оставить общий комментарий.',
+  head: { archive: (n) => 'Архив решённого — ' + n + ' отвеченных вопрос(ов) и текст документа (ничего не удалено)',
+    questions: 'Вопросы', noQuestions: 'Вопросов в документе нет — можно оставить общий комментарий.',
     outbound: 'Исходящее — нужно ваше решение', docComment: 'Комментарий по документу целиком',
     optComment: 'Комментарий (по желанию)', paragraphs: 'Абзацы — поле замечания под каждым',
     mockup: 'Макет — ваши замечания', noticeGroup: 'Сообщения — ответа не ждут',
@@ -13544,6 +13578,10 @@ one final newline). Text changed after approval = approval void.
 
 ## 4. The page — what the owner must see
 
+- **Reading view (2.7, origin issue #54):** the LIVE questions stand first; everything answered and the document's
+  text sit below as ONE collapsed archive (`<details class="archive">`) — no line removed, only the order of reading
+  changes (the field: 18 535 characters of settled matter above the one live question). Three legal outcomes for the
+  owner: an answer · a remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency
   banner ("server silent") may stay pinned.

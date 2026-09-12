@@ -56,6 +56,10 @@ one final newline). Text changed after approval = approval void.
 
 ## 4. The page — what the owner must see
 
+- **Reading view (2.7, origin issue #54):** the LIVE questions stand first; everything answered and the document's
+  text sit below as ONE collapsed archive (`<details class="archive">`) — no line removed, only the order of reading
+  changes (the field: 18 535 characters of settled matter above the one live question). Three legal outcomes for the
+  owner: an answer · a remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency
   banner ("server silent") may stay pinned.
