@@ -3004,6 +3004,52 @@ function cmdCheck() {
     if (absent.length)
       console.error(`⚠ /resume names ${absent.length} document(s) missing on disk: ${absent.join(', ')} — restore the file or drop the bullet`);
   }
+  // The undelivered SIGNAL on an origin-tracked deployment (2.7, epic SD; origin issue #65 — a recurrence of #37:
+  // two tickets sat "waiting to be sent" for ~40 minutes until the owner said "send" a second time; the carve-out
+  // lived as prose and lost twice to the broad "confirm outward actions" reflex). The carve-out now stands in the
+  // AUTH gate's own line (AGENT_GUIDE → the fable loop) and /report-bug files and delivers in ONE step; this axis
+  // is the machine behind both. It is an ALLOWLIST: a numbered KAIF ticket is silent ONLY on positive evidence of
+  // delivery — an issue (URL `…/issues/N` or `#NN`) and no `not yet` in its `**Delivered upstream:**` paragraph, read
+  // by deliveryState(), the one reading `report` shares. Every other state is named with the next step. Why not "warn
+  // on NOT YET": the delivery lines of the field's own tickets come in more shapes than the template's — the field
+  // name translated into the project language (the #65 incident itself committed «Сигнал в исток: ждёт отправки»),
+  // a promise instead of an address ("⏳ being sent by this session"), a delivery claimed in words with no issue
+  // ("✅ this issue — sent", "folded into the field report"), no line at all; a check that looked only for NOT YET
+  // was silent on every one of them (fail-safe defaults — Saltzer & Schroeder 1975: "a design or implementation
+  // mistake in a mechanism that explicitly excludes access tends to fail by allowing access, a failure which may go
+  // unnoticed in normal use"). A warning, never a failure — the debt is the agent's, and an owner-edited tree must
+  // not fail update-verify on it; on tracking: anonymous the axis is silent, because a local signal is legal there.
+  // @guard undelivered-signal
+  // THREAT:         a KAIF-defect ticket filed locally on an origin-tracked deployment and never sent — the origin
+  //                 never learns, and the owner discovers it by asking "did you file that?" (field: #37, #65)
+  // PROVED-AGAINST: sandbox s17 on a deployed copy — NOT YET → named with the report command; the field name
+  //                 translated (no `**Delivered upstream:**` line) and a promise value → named "no readable delivery
+  //                 state" with both legal forms; NOT YET plus an issue URL → named by check AND refused by report
+  //                 (one reading); delivered through the gh stand-in → silent; tracking: anonymous → silent; README in
+  //                 bugs/KAIF → silent. Red: the 2.6 core (KAIF_DIST); the first, NOT-YET-only build of this axis;
+  //                 three mutants of this block — the tracking gate removed (anonymous → ✖), the delivered branch
+  //                 removed (delivered → ✖), the NN_*.md filter widened (README → ✖). Real state: the 46 ticket files
+  //                 of four field deployments copied into fresh installs (plans/109, run report 2026-09-13 SD)
+  // GAP:            a ticket never written at all is invisible here (the judge's "signal filed, not delivered" hunt
+  //                 covers that side); an issue number that points at the WRONG issue reads as delivered — the axis
+  //                 sees that an issue is named, not that it is the right one; a `#NN` in the project language's own
+  //                 words ("в истоке #37") is not recognised and gets named — the fail-safe direction
+  // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.7 update (seeded real state
+  //                 is not that path)
+  try {
+    const jm = readJson(KAIF_JSON);
+    const KAIF_BUGS = 'bugs/KAIF';
+    if (jm.tracking === 'origin' && existsSync(KAIF_BUGS)) {
+      for (const f of readdirSync(KAIF_BUGS).filter((n) => /^\d+_.*\.md$/i.test(n)).sort()) {   // tickets are bugs/KAIF/NN_*.md
+        const p = KAIF_BUGS + '/' + f;
+        const ds = deliveryState(readFileSync(p, 'utf8'));
+        if (ds.state === 'not-yet')
+          console.error(`⚠ undelivered KAIF signal: ${p} — "Delivered upstream: NOT YET" on tracking: origin is a debt with an owner, not a resting state (origin issue #65): node .kaif/kaif-core.mjs report ${p}`);
+        else if (ds.state !== 'delivered')
+          console.error(`⚠ KAIF signal with no readable delivery state: ${p} — ${ds.state === 'missing' ? 'no `**Delivered upstream:**` line (the field name is machine-read: it stays verbatim in English in any project language)' : ds.state === 'ambiguous' ? `"${ds.line.trim().slice(0, 120)}" says NOT YET and names an issue (${ds.evidence}) at once` : `"${ds.line.trim().slice(0, 120)}" is neither NOT YET nor an issue URL or #NN`}; delivered → write only \`**Delivered upstream:** <issue URL or #NN>\`; not sent → write \`**Delivered upstream:** NOT YET — <why>\` with no issue URL or #NN and run node .kaif/kaif-core.mjs report ${p} (origin issue #65)`);
+      }
+    }
+  } catch { /* unreadable marker or directory — the marker gate flags it separately */ }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }
 
@@ -3058,6 +3104,31 @@ function ghSpawn(ghArgs) {
   return spawnSync(cmd, [...pre, ...ghArgs], { encoding: 'utf8', timeout: GH_TIMEOUT_MS });
 }
 const refuse = (msg, code) => { console.error('✖ ' + msg); process.exit(code); };
+// deliveryState(text) — the ONE reading of a ticket's delivery contract, shared by `report` (idempotency,
+// refusals) and `check` (the undelivered-signal axis), so the two can never disagree about the same line
+// (2.7, epic SD). The contract is read as a PARAGRAPH (2.6 UR4; origin #40) — the line plus its wrapped
+// continuations up to a blank line or the next `**field**` (a hand-delivered field ticket wrote `origin **#37**`
+// on the next line). Evidence of delivery is an ISSUE — an issue URL (`…/issues/N`), or `#NN` that stands as the
+// value itself (`**Delivered upstream:** #37`, `✅ #37`) or right after the word origin/issue (`origin #37`,
+// `origin **#37**`) — never any URL and never any `#digits` ("see step #2 of the skill" is not a delivery).
+// States: delivered (an issue, no `not yet`) · not-yet (`not yet` in any case, no issue) · ambiguous (`not yet`
+// AND an issue: "NOT YET — a recurrence of …/issues/37" must not read as sent, "…/issues/40 — fix not yet
+// released" must not be sent twice, so both commands name it and neither guesses) · unrecognized · missing.
+// Until 2.7 `report` let ANY URL win over `not yet` — a NOT YET ticket quoting a link could never be sent.
+function deliveryState(text) {
+  const t = normEol(text);
+  const line = (t.match(/^\*\*Delivered upstream:\*\*[^\n]*$/m) || [])[0];
+  if (!line) return { state: 'missing' };
+  const para = (t.match(/^\*\*Delivered upstream:\*\*[^\n]*(?:\n(?![ \t]*$)(?!\*\*)[^\n]*)*/m) || [line])[0];
+  const notYet = /not yet/i.test(para);
+  const issue = para.match(/https?:\/\/[^\s)*]*\/issues\/\d+/)
+    || para.match(/^\*\*Delivered upstream:\*\*[ \t]*(?:✅[ \t]*)?(?:\*\*)?(#\d+)\b/)
+    || para.match(/\b(?:origin|issue)[ \t]+(?:\*\*)?(#\d+)\b/i);
+  if (issue && issue[1]) issue[0] = issue[1];   // evidence prints as `#NN`, not with the words around it
+  if (issue && !notYet) return { state: 'delivered', line, evidence: issue[0] };
+  if (issue) return { state: 'ambiguous', line, evidence: issue[0] };
+  return { state: notYet ? 'not-yet' : 'unrecognized', line };
+}
 function cmdReport() {
   const ticket = args.slice(1).find((a) => !a.startsWith('-')); // the flag may precede the path (court RL 2.5, C-H2)
   if (!ticket || ticket.startsWith('--')) die('usage: kaif-core report <path to bugs/KAIF/NN_*.md> [--dry-run]');
@@ -3072,21 +3143,17 @@ function cmdReport() {
   const text = readFileSync(ticket, 'utf8');
   const h1 = (text.match(/^# (.+?)\s*$/m) || [])[1];
   const lineRe = /^\*\*Delivered upstream:\*\*[^\n]*$/m;
-  const deliveredLine = (text.match(lineRe) || [])[0];
-  if (!h1 || !deliveredLine)
-    die(`${ticket} is not a KAIF ticket: it needs an H1 title and a \`**Delivered upstream:**\` line (/report-bug templates A/B)`);
-  // 2.6 (UR4; origin #40): the contract is read as a PARAGRAPH — the line plus its wrapped
-  // continuations up to a blank line or the next `**field**` (the canon wraps prose at 100
-  // columns, and a hand-delivered field ticket wrote `origin **#37**` on the next line). `not yet`
-  // in ANY case is the undelivered form and wins; otherwise a URL or a `#NN` anywhere in the
-  // paragraph is the delivered form — the idempotency branch fires instead of a refusal, so a
-  // ticket delivered by hand can never be sent twice. A refusal names BOTH legal forms and the edit.
-  const deliveredPara = (normEol(text).match(/^\*\*Delivered upstream:\*\*[^\n]*(?:\n(?![ \t]*$)(?!\*\*)[^\n]*)*/m) || [deliveredLine])[0];
-  const notYet = /not yet/i.test(deliveredPara);
-  const already = deliveredPara.match(/https?:\/\/\S+/) || (!notYet && deliveredPara.match(/(?<![\w/])#\d+\b/));
-  if (already) { log(`✔ already delivered: ${already[0]} — nothing sent (idempotent; edit the line by hand only if that issue is gone)`); return; }
-  if (!notYet)
-    die(`the Delivered upstream line is neither NOT YET nor a delivery: "${deliveredLine.trim()}" — write it in one of the two legal forms and re-run: \`**Delivered upstream:** NOT YET — <why it waits>\` (undelivered; the case of "not yet" does not matter) or \`**Delivered upstream:** <issue URL or #NN>\` (delivered by hand)`);
+  // The contract is read by deliveryState() — the same reading the `check` axis uses (see its comment for the
+  // paragraph rule). A delivered ticket fires the idempotency branch instead of a refusal, so a ticket delivered
+  // by hand can never be sent twice; a refusal names BOTH legal forms and the edit.
+  const ds = deliveryState(text);
+  if (!h1 || ds.state === 'missing')
+    die(`${ticket} is not a KAIF ticket: it needs an H1 title and a \`**Delivered upstream:**\` line (/report-bug templates A/B; the field name stays verbatim in English in any project language)`);
+  if (ds.state === 'delivered') { log(`✔ already delivered: ${ds.evidence} — nothing sent (idempotent; edit the line by hand only if that issue is gone)`); return; }
+  if (ds.state === 'ambiguous')
+    die(`the Delivered upstream line says NOT YET and names an issue (${ds.evidence}) at once: "${ds.line.trim()}" — nothing sent: a delivered ticket must never be sent twice, and an undelivered one must never read as sent. Delivered by hand → keep only \`**Delivered upstream:** <issue URL or #NN>\`; not sent → keep \`**Delivered upstream:** NOT YET — <why it waits>\` without an issue URL or #NN (name a related issue in the body), then re-run`);
+  if (ds.state === 'unrecognized')
+    die(`the Delivered upstream line is neither NOT YET nor a delivery: "${ds.line.trim()}" — write it in one of the two legal forms and re-run: \`**Delivered upstream:** NOT YET — <why it waits>\` (undelivered; the case of "not yet" does not matter) or \`**Delivered upstream:** <issue URL or #NN>\` (delivered by hand)`);
   // The body is the ticket itself plus the authorship trailer — transport ≠ author (#15).
   const trailer = '\n\n---\nFiled by the project\'s agent under the KAIF owner\'s standing authorization (origin issue #15); ' +
     'transport — the `gh` account of the deploying machine. Delivered by `kaif-core report` (KAIF ' + (j.version || '?') + ').\n';

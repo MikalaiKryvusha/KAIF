@@ -80,8 +80,9 @@ one final newline). Text changed after approval = approval void.
 - Saving TERMINATES the process — that termination is how the waiting agent wakes up; start the contour as a
   tracked background task. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence
   watch (~3 min, two strikes).
-- One document — one window (a lock with pid and address); a free port (`listen(0)`); a separate app window
-  (`--app=`), never a tab. Auto-close after save is an ATTEMPT (~2 s); if the browser refuses, the page says so.
+- One document — one window (a lock with pid and address); a free port (`listen(0)`) — the previous run's port FIRST when
+  that process is gone (the draft lives in its origin), a taken port named in the log; a separate app window (`--app=`),
+  never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 
 ## 6. The call — sound first, voice by language
 

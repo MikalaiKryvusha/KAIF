@@ -109,7 +109,7 @@ showing, outcomes and exit codes, the call, the faces and flags of the shipped g
 `.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
-(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`)
+(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)
 and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
 and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
@@ -372,15 +372,18 @@ per-module preview against another version — a v1 manifest gets a synthetic ba
 deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
 resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
-machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version` · `report
+machinery's module cut) · `checkpoint` · `update-verify` · `check` (since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms; a warning, read by the same function as `report`) · `version` · `report
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
 not a ticket, `gh` refused; a timeout of the CREATE call is OUTCOME UNKNOWN, exit 3, never a
 refusal — a hanging `gh auth status` is `not ready`, exit 2: nothing was sent, a repeat is safe
-(2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — `not yet` in any case is
-undelivered, a URL or `#NN` anywhere in it is delivered (idempotent), and a refusal names both
-legal forms with the exact edit (2.6, origin issue #40); `--dry-run`
+(2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — an issue in it (a
+`…/issues/N` URL, or `#NN` as the value itself or right after the word origin/issue) with no
+`not yet` is delivered (idempotent), `not yet` in any case with
+no issue is undelivered, both at once is ambiguous and refused, and a refusal names both legal
+forms with the exact edit (2.6, origin issue #40; since 2.7 one function reads it for `report` and
+`check`, and a URL that is not an issue no longer counts); `--dry-run`
 calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass

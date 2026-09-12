@@ -493,6 +493,44 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['this line does not verify']],
     ['claim ↔ /fable-judge hunts both skins of the class', 'framework/skills/fable-judge/SKILL.md',
       ['**Claim wider than the observation (KAIF 2.7).**', '**Tested on hygiene alone (KAIF 2.7).**']],
+    // IW (2.7, origin issue #64): the contour's window invariants got a MACHINE — the generator reuses the previous
+    // run's port and the page reports a tab; the skill ships the launch as a command in both layers; the contract
+    // names both; the judge hunts a contour raised outside its window.
+    ['contour window ↔ the generator reuses the previous port and the page reports a tab', 'framework/tools/contour/review.mjs',
+      ['reused from the previous run', 'display-mode: standalone', "req.url === '/tab'"]],
+    ['contour window ↔ the page texts carry the tab note (EN + RU)', 'framework/tools/contour/texts.mjs',
+      ['tabnote:']],
+    ['contour window ↔ /owner-reviews ships the launch command (payload)', 'framework/skills/owner-reviews/SKILL.md',
+      ['run_in_background: true', '.kaif/contour.log', "PREVIOUS run's port"]],
+    ['contour window ↔ /owner-reviews ships the launch command (wrapper)', '.claude/skills/owner-reviews/SKILL.md',
+      ['run_in_background: true', '.kaif/contour.log']],
+    ['contour window ↔ the contract names the previous port and the tab check', 'framework/templates/_interactive-contour-spec.md',
+      ['previous run', 'display-mode: standalone']],
+    ['contour window ↔ /fable-judge hunts a contour raised outside its window', 'framework/skills/fable-judge/SKILL.md',
+      ['**Contour raised outside its window (KAIF 2.7).**']],
+    // SD (2.7, origin issue #65 — a recurrence of #37): the AUTH carve-out stands IN THE GATE'S LINE in both layers,
+    // /report-bug files and delivers in one step in both layers, the core's check names an undelivered signal with
+    // the ready command, the judge hunts a signal filed and not delivered.
+    ['signal ↔ AGENT_GUIDE carries the carve-out in the AUTH line (payload)', 'framework/AGENT_GUIDE.md',
+      ['the one carve-out of the `AUTH:` gate', 'kaif-core.mjs report']],
+    ['signal ↔ AGENT_GUIDE carries the carve-out in the AUTH line (wrapper)', 'AGENT_GUIDE.md',
+      ['единственное исключение из ворот `AUTH:`', 'kaif-core.mjs report']],
+    ['signal ↔ /report-bug files and delivers in one step (payload)', 'framework/skills/report-bug/SKILL.md',
+      ['File AND deliver', 'kaif-core.mjs report bugs/KAIF/NN_*.md']],
+    ['signal ↔ /report-bug files and delivers in one step (wrapper)', '.claude/skills/report-bug/SKILL.md',
+      ['Заведение и доставка — ОДИН шаг', 'kaif-core.mjs report bugs/KAIF/NN_*.md']],
+    ['signal ↔ the core names an undelivered signal', 'framework/installer/KAIF-CORE.mjs',
+      ['undelivered KAIF signal', '@guard undelivered-signal']],
+    // The axis is an ALLOWLIST read by the one function `report` shares: the field's own tickets carried the class
+    // in four forms (NOT YET · translated field name · a promise · no line), and a NOT-YET-only denylist saw one.
+    ['signal ↔ the core reads delivery by positive evidence, one reading for report and check', 'framework/installer/KAIF-CORE.mjs',
+      ['function deliveryState(text)', 'no readable delivery state', 'const ds = deliveryState(text);']],
+    ['signal ↔ /report-bug keeps the machine-read field name verbatim (payload)', 'framework/skills/report-bug/SKILL.md',
+      ['the field name stays verbatim (English, bold, its own line) in any', '(`NOT YET`, a promise, a missing or translated line)']],
+    ['signal ↔ /report-bug keeps the machine-read field name verbatim (wrapper)', '.claude/skills/report-bug/SKILL.md',
+      ['остаётся дословным — по-английски, жирным, отдельной строкой', '(`NOT YET`, обещание, строка пропущена или']],
+    ['signal ↔ /fable-judge hunts a signal filed, not delivered', 'framework/skills/fable-judge/SKILL.md',
+      ['**Signal filed, not delivered (KAIF 2.7).**']],
     // HO (2.7, origin issue #57): the rule "a term absurd in the owner's language is checked against
     // the skill's trigger aliases" is only true while the alias it cites is REALLY in the ru pack —
     // the field defect was exactly this pair drifting apart (the canon said `baton`, the aliases said

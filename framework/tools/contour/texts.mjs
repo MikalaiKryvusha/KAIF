@@ -98,7 +98,8 @@ const EN = {
     closeYourself: 'The browser refused to close the window — please close it yourself',
     copied: 'Copied to the clipboard', copyManually: 'Select and copy by hand',
     rescue: 'Saving failed — your text is below, it is not lost.', noticeHint: 'Without the mark the notice comes back.',
-    selfcheck: (r, q) => 'PAGE SELF-CHECK FAILED: ' + r + ' radio group(s) for ' + q + ' question(s) — the form is broken, do not answer here; tell the agent.' },
+    selfcheck: (r, q) => 'PAGE SELF-CHECK FAILED: ' + r + ' radio group(s) for ' + q + ' question(s) — the form is broken, do not answer here; tell the agent.',
+    tabnote: 'This page opened as a TAB in a browser, not in the contour\'s own window — your draft lives in this tab only: do not close it until you have saved. The agent has been told (I26).' },
   // the call — the human decides "go now or after" BEFORE reading the page, so it names class and numbers
   call: {
     notice: (o, p, title) => o + ', a ' + p + ' notice: "' + title + '" — no answer owed, just read it. The page is open.',
@@ -179,7 +180,8 @@ const RU = {
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     copied: 'Скопировано в буфер', copyManually: 'Выделите и скопируйте вручную',
     rescue: 'Запись не прошла — ваш текст ниже, он не потерян.', noticeHint: 'Без пометки сообщение придёт снова.',
-    selfcheck: (r, q) => 'САМОПРОВЕРКА СТРАНИЦЫ НЕ ПРОШЛА: радиогрупп ' + r + ' на ' + q + ' вопрос(ов) — форма сломана, здесь не отвечайте; скажите агенту.' },
+    selfcheck: (r, q) => 'САМОПРОВЕРКА СТРАНИЦЫ НЕ ПРОШЛА: радиогрупп ' + r + ' на ' + q + ' вопрос(ов) — форма сломана, здесь не отвечайте; скажите агенту.',
+    tabnote: 'Эта страница открылась ВКЛАДКОЙ в браузере, а не окном контура — черновик живёт только в этой вкладке: не закрывайте её, пока не записали. Агент предупреждён (I26).' },
   call: {
     notice: (o, p, title) => o + ', сообщение ' + p + ': «' + title + '» — ответа не ждёт, только прочитать. Страница открыта.',
     batch: (o, p, parts) => o + ', накопилось в ' + p + ': ' + parts.join(', ') + '. Страница открыта.',

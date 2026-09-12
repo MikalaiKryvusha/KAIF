@@ -26,6 +26,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { quietEnv, QUIET_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 let PASS = 0, FAIL = 0;
@@ -101,8 +102,9 @@ check('красное доказательство: ростер ЛОВИТ вы
   missMut.length === 1 && missMut[0] === 'I8', 'нашёл: ' + missMut.join(', '));
 
 // ── 4. Селфтесты инструментов контура (быстрые, без браузера) ──────────────────────────────
+// ТИХО (bugs/116): селфтесты инструментов контура — окно и голос в песочнице невозможны по окружению, не по флагу.
 const run = (label, args) => {
-  try { execFileSync(process.execPath, args.map((a) => join(ROOT, a) === a ? a : a), { cwd: ROOT, stdio: 'pipe', timeout: 30000 }); return true; }
+  try { execFileSync(process.execPath, args.map((a) => join(ROOT, a) === a ? a : a), { cwd: ROOT, stdio: 'pipe', timeout: QUIET_TIMEOUT_MS, env: quietEnv() }); return true; }
   catch { return false; }
 };
 // Список — источник истины И для прогона, И для счётчика в итоговой строке (EXP-0025: число

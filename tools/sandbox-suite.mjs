@@ -214,7 +214,48 @@ if (unmarked.length) {
                 ' `[TESTED: <date> · <what was observed>]` or an honest `[NOT-TESTED]`; never stamp one without a run');
   process.exit(1);
 }
-console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker (${SUITES.length} suites)`);
+// Preflight guard (bugs/116): a suite or probe that starts the interactive-contour GENERATOR as a child process
+// runs it QUIET — `env: quietEnv()` from tools/lib/sandbox-run.mjs, a PATH with no programs on it. The generator
+// is the one piece of machinery that faces the HUMAN (a window, beeps, a voice), and a suite may run an OLD
+// generator (the KAIF_DIST seam) that does not know the new flags and does its default instead: on the night of
+// 2026-09-12 four red-proof runs raised the fixture page "fresh · Interview #052 — проба" on the owner's screen
+// with a system voice, and he answered into it three times. A flag cannot promise silence to a version that
+// does not know it; the environment can. Debt is ZERO by construction (s12, s22 and probe ic3 converted the day
+// the guard was born), so this is a GATE.
+// @guard sandbox-quiet-child
+// THREAT:         a sandbox run of the contour generator reaches the owner's screen and ears (window + voice)
+// PROVED-AGAINST: the synthetic source below — a generator path + a child-process call without quietEnv →
+//                 flagged; the same source with quietEnv → clean (selfproof, every polygon run); the quiet env
+//                 itself proven by tools/lib/sandbox-run.mjs --selftest (the names the generator spawns by name —
+//                 cmd.exe · powershell.exe on Windows — neither found on the quiet child's PATH nor startable:
+//                 ENOENT; red on copies with the real PATH, and the probe never runs anything that can show or sound)
+// GAP:            a generator started through a helper that hides the path (a variable built elsewhere) is not
+//                 recognised by this text scan; the scan clears a WHOLE FILE by one `quietEnv(` call, so a second
+//                 launch in the same file without it passes; an in-process `import()` of the generator (s22 renders
+//                 with buildPage/selfCheck) is not a child process and runs with the parent's PATH — safe only while
+//                 the imported calls are pure render and check, never serveContour/openWindow; tools outside
+//                 tools/sandbox (verify-contour --visible) open a window BY DESIGN and are out of scope — their runs
+//                 are announced to the owner first
+// ON-REAL-PATH:   2026-09-13 — the old 2.6 generator run quietly with a flag it does not know printed "NO WINDOW
+//                 OPENED" and no voice (plans/108 · bugs/116)
+const GEN_PATH_RE = /contour['"]?\s*,\s*['"]review\.mjs|contour\/review\.mjs/;
+const CHILD_RE = /\b(?:execFileSync|execSync|spawnSync|spawn)\s*\(/;
+const quietViolation = (src) => GEN_PATH_RE.test(src) && CHILD_RE.test(src) && !/\bquietEnv\s*\(/.test(src);
+const quietProof = [];
+if (!quietViolation("execFileSync(process.execPath, [join(P, '.kaif', 'tools', 'contour', 'review.mjs'), '--check'])")) quietProof.push('a generator run without quietEnv was NOT flagged');
+if (quietViolation("execFileSync(process.execPath, [join(P, '.kaif', 'tools', 'contour', 'review.mjs')], { env: quietEnv() })")) quietProof.push('a quiet generator run WAS flagged');
+const loud = [];
+{
+  const files = [...SUITES.map((n) => join(HERE, n)), ...(existsSync(join(HERE, 'probes')) ? readdirSync(join(HERE, 'probes')).filter((n) => n.endsWith('.mjs')).map((n) => join(HERE, 'probes', n)) : [])];
+  for (const f of files) if (quietViolation(readFileSync(f, 'utf8'))) loud.push(f.slice(REPO.length + 1).replace(/\\/g, '/'));
+}
+for (const p of quietProof) console.error('✖ quiet-child selfproof (bugs/116): ' + p);
+for (const l of loud) console.error('✖ contour generator started without quietEnv() (bugs/116): ' + l);
+if (quietProof.length || loud.length) {
+  console.error(`\n❌ preflight: ${loud.length} sandbox file(s) start the contour generator where it can reach the owner — pass env: quietEnv() (tools/lib/sandbox-run.mjs)`);
+  process.exit(1);
+}
+console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker · the contour generator never reaches the owner from a sandbox run (${SUITES.length} suites)`);
 
 // Упавший свод называется ПОИМЁННО с кодом/сигналом (bugs/61, наблюдение 2026-08-21): прежний
 // catch глотал имя, и транзиентный красный оставил ровно «1 of 14 FAILED» — какой из четырнадцати,

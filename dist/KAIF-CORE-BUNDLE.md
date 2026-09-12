@@ -90,7 +90,9 @@
       "AN EXECUTED RUN PRODUCES ITS REPORT (epic TR; origin issue #59 — the owner-QA's word: \"THERE WAS NO TESTING\": the agent ran a probe twice, wrote [TESTED] and \"stage accepted\", and the owner could see neither a command, nor a moment, nor what was found): TESTING_FRAMEWORK gains the section \"An executed run produces its report\" — every executed run (a live probe, a smoke, a polygon, a manual walk-through) leaves a report in the test-doc home as a catalog by date, `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (the date-first name IS the index; the home is `testcases/` or `.kaif/kaif.json` → `testdocs`), with seven fields — Work · Contour · Runs (count, a moment and the COMMAND per run) · Checks · Found (a list or an explicit \"none\") · Traces · Verdict — and a `[TESTED: …]` claim about a run names its report. NEW delivery template .kaif/_testrun-report-template.md (copy it into the catalog, never fill it in place) and NEW optional tool module .kaif/tools/kaif-testrun-lint.mjs (check [home] | selftest; rules as data, keywords per language, SKIPPED=3 when the home has no reports/ — an unwritten report is invisible to it, which is why /fable-judge gains the hunt \"tested without a run report\"). And `check` of the core gains the axis \"/resume covers the re-read core\": a re-read core document (the budgeted nine) missing from the bullet list of the deployed /resume skill is named in a warning — a field /resume once opened 5 of 9 and nothing said a word.",
       "THE OWNER'S TEXT IS WRITTEN BY HIS PORTRAIT, CHECKED INDEPENDENTLY BY IT, FIXED — AND ONLY THEN WRITTEN AND BROUGHT TO HIM (epic VC; origin issue #61 — the owner's word: \"that you write texts and do not use the stylometry is a GLARING methodology bug\": a field agent rewrote an 18-step player sheet through seven rounds under the owner's eyes without opening the voice portrait once; the gate lived as prose in a checklist and had no command; the owner's statement of the expected behaviour: the agent writes the text in the voice and by the rules the owner's stylometry prescribes, then runs an independent check by that same stylometry, fixes, and only then counts the text as written and brings it for approval): AGENT_GUIDE (both layers) gains a FOURTH KAIF obligation at the fable loop's steps 4–5 with three named steps — write BY the portrait WITH IT IN THE WORKING CONTEXT (`node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait into the context BEFORE the first word and leaves the witness .kaif/voice-marker.json; the owner's word: with the stylometry in the working cache) → check INDEPENDENTLY by the same portrait (the machine minute + the §7B pass by a clean instance) → fix, only then written, only then shown — repeated in \"Showing is an action\", checklist step 19 and the router row; /owner-voice carries the writing contract and gains mode `check` as the machine half. NEW optional tool module .kaif/tools/kaif-voice-lint.mjs (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `check` refuses a text with no load witness, last written before the first load or more than an hour after the last load (\"written past the portrait\" — the hour rule; never muted by --warn) and reads the §8 TABLE of AUTHOR_STYLOMETRY.md — pattern · class (stop / positive) · hint · legal exception — and prints every hit as `file:line — «fragment» → hint`; `\\|` inside the pattern cell is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\\b`/`\\w` are Unicode-aware; a row's `/regex/` exception silences a hit on its line, prose is printed beside it; fenced code, inline code and HTML comments are invisible; SKIPPED=3 without a portrait, without a §8 table or with placeholder rows only (likeness is never judged — that verdict is the owner's); the portrait path may be named in .kaif/kaif.json → voicePortrait. The skeleton .kaif/_owner-voice-template.md carries that table form in §8, names the command in §7A and makes §7B a clean-instance pass; the installer's owner-voice item asks to wire the command into the build path of every owner-facing text class; /fable-judge hunts \"owner text past the portrait\" (written without it open, checked by no independent pass, shown before the fixes).",
       "THE HAND-OFF IS CALLED A HANDOVER, AND A RENAMED HEADING IS REPLACED, NEVER DUPLICATED (epic HO; origin issue #57 — a field owner reading his Russian deployment asked \"What does Baton mean?\", then: \"That is not a 'baton' — that is local slang. In the industry this is called a HANDOVER, and what we write into STATUS is often written into a HANDOVER.md\"). Two halves. (1) THE WORD: `baton` is gone from the payload — /end-chat-soft, /end-chat-force, /pause, /nightloop, /team-deployment (and its two reference templates), KAIF_REFERENCE and the hooks module now say handover (\"record the handover\", \"STATUS.md is the handover between sessions\"); AGENT_GUIDE (both layers) gains the rule in \"Languages\": a term that turns absurd in the owner's language is checked against THAT SKILL'S OWN TRIGGER ALIASES in the language pack's skill-triggers.json — an alias that names the thing IS the canonical translation (the Russian aliases of /end-chat-soft already said \"pass the relay\" while the canon said \"baton\": the guide was arguing with its own triggers), prefer the industry's word to a private one, and read the translation aloud once. If YOUR STATUS.md or chronicle carries the old word in the owner's language, replace it BY HAND — the machinery never edits owner documents. (2) THE MECHANISM: a module is addressed by its signature — the full heading line — so a renamed heading used to read to the update as \"removed upstream + added upstream\". Measured across the three merge branches: an untouched module landed correctly by accident, a module the owner had EDITED got TWO sections with the same content, and neither branch ever said the word \"renamed\". The bundle meta now ships `renamesByVersion` — the release's explicit declaration, the same answer every migration system gives to the same ambiguity — and `update` treats a declared pair as ONE module: untouched → replaced under the new heading, edited → your text kept with ONE heading and a task item naming the rename, old anchor absent → a log line by name and no failure. Nothing is ever matched by similarity. The build warns by name when a heading vanished from a template with no rename and no deprecation behind it.",
-      "THE WORD \"TEST\" IS DEFINED, AND A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT (epic CL; origin issues #62 and #63 — two skins of one class, paid by one owner in one day: a bug-fix series reported \"25 closed, all tested\" on unit green · self-test green · mutant red, and the owner-QA recounted by his definition: 3 of 25; an hour later an agent reported \"the page is open, waiting for you for three hours\" on a `curl` 200 while a screenshot showed no browser window at all). (1) TESTING_FRAMEWORK gains the section \"What the word \"test\" means\": a test is a FUNCTIONAL RUN on the REAL product (stage or production) by the user's path whose result is READ — the agent derives the scenarios from the functionality (the module, the feature, the fixed bug), writes the machinery that walks them (a browser driver, a CLI session, a log reader) and runs it as the user would, reading the screen, the lines, the logs (the origin owner's decision #116); lint · unit · self-test · mutation · guards are the developer's HYGIENE — mandatory, never called \"testing\", never flipping the marker (rule 2 says so); machinery that returns only an exit code is an instrument, not a test; `[NOT-TESTED]` is inadmissible to production. The run report's Checks open with TWO separate lines — `Hygiene:` and `Functional run:` (what was walked · on which contour · what was READ — or the word NONE, which means fixed, not tested) — never summed; the template .kaif/_testrun-report-template.md carries them, the test-case template asks each case to name its machinery and what it reads, and the closing status of a bug (/report-bug) carries the same two lines. kaif-testrun-lint gains the rule `pass-without-functional-run`: a Verdict `pass` whose Checks carry no functional-run line or say NONE reddens — hygiene alone is `partial`. (2) AGENT_GUIDE (both layers) gains a FIFTH KAIF obligation at the fable loop's step 7 (report): every statement about the state of the world names WHAT observed it, a proxy is said aloud (a table of \"verified → said today → say instead\"), and the state of the HUMAN'S SCREEN is asserted only after a screenshot — until then \"I did X; please check whether you see Y\"; \"Showing is an action\" says the same; the shipped contour generator prints the boundary at every window it raises (\"the launcher returned 0; whether a window is on the owner's screen this line does not verify\"). /fable-judge hunts both skins: \"claim wider than the observation\" and \"tested on hygiene alone\"."
+      "THE WORD \"TEST\" IS DEFINED, AND A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT (epic CL; origin issues #62 and #63 — two skins of one class, paid by one owner in one day: a bug-fix series reported \"25 closed, all tested\" on unit green · self-test green · mutant red, and the owner-QA recounted by his definition: 3 of 25; an hour later an agent reported \"the page is open, waiting for you for three hours\" on a `curl` 200 while a screenshot showed no browser window at all). (1) TESTING_FRAMEWORK gains the section \"What the word \"test\" means\": a test is a FUNCTIONAL RUN on the REAL product (stage or production) by the user's path whose result is READ — the agent derives the scenarios from the functionality (the module, the feature, the fixed bug), writes the machinery that walks them (a browser driver, a CLI session, a log reader) and runs it as the user would, reading the screen, the lines, the logs (the origin owner's decision #116); lint · unit · self-test · mutation · guards are the developer's HYGIENE — mandatory, never called \"testing\", never flipping the marker (rule 2 says so); machinery that returns only an exit code is an instrument, not a test; `[NOT-TESTED]` is inadmissible to production. The run report's Checks open with TWO separate lines — `Hygiene:` and `Functional run:` (what was walked · on which contour · what was READ — or the word NONE, which means fixed, not tested) — never summed; the template .kaif/_testrun-report-template.md carries them, the test-case template asks each case to name its machinery and what it reads, and the closing status of a bug (/report-bug) carries the same two lines. kaif-testrun-lint gains the rule `pass-without-functional-run`: a Verdict `pass` whose Checks carry no functional-run line or say NONE reddens — hygiene alone is `partial`. (2) AGENT_GUIDE (both layers) gains a FIFTH KAIF obligation at the fable loop's step 7 (report): every statement about the state of the world names WHAT observed it, a proxy is said aloud (a table of \"verified → said today → say instead\"), and the state of the HUMAN'S SCREEN is asserted only after a screenshot — until then \"I did X; please check whether you see Y\"; \"Showing is an action\" says the same; the shipped contour generator prints the boundary at every window it raises (\"the launcher returned 0; whether a window is on the owner's screen this line does not verify\"). /fable-judge hunts both skins: \"claim wider than the observation\" and \"tested on hygiene alone\".",
+      "THE CONTOUR'S WINDOW INVARIANTS GOT A MACHINE (epic IW; origin issue #64 — a field agent launched the contour in the foreground with `--timeout 60` (the shell's timeout killed it and the owner's window with it), relaunched it on a fresh port (the draft became invisible — the port is part of the web origin) and then handed the URL to `Start-Process` (a tab in the owner's working browser): three invariants I26 · I29 · I31 broken in a row by an agent that had read them, and nothing went red; the owner lost the answer he was typing). (1) The shipped generator `.kaif/tools/contour/review.mjs` keeps the lock of a DEAD process and comes up on that run's port first — same web origin, the owner's browser draft is restored on load (\"Port N reused from the previous run\"); a port taken by something else gives a fresh port AND a log line naming the loss (\"… is taken … a draft written in the previous window is NOT visible here\"). (2) The page checks `matchMedia('(display-mode: standalone)')` itself — true only in the `--app=` window (measured on Chrome, headed and headless) — and in a tab shows the owner a yellow note (\"your draft lives in this tab only, do not close it until you have saved\") and tells the server, which logs `Window check: … a TAB (I26)`. (3) `/owner-reviews` (both layers) ships the launch under I31 as a COMMAND per agent system (Claude Code: the Bash tool with run_in_background: true; a harness with tracked tasks: its facility; a plain shell: redirect to .kaif/contour.log and poll the lock) — `--timeout` is for automation only, the URL is never handed to Start-Process/open/xdg-open. The contract page §5 names both; /fable-judge hunts \"a contour raised outside its window\".",
+      "A KAIF-DEFECT TICKET IS DELIVERED IN THE SAME MOVE AS IT IS FILED, AND THE CORE NAMES ONE THAT WAS NOT (epic SD; origin issue #65 — a recurrence of #37: a field agent filed two tickets \"awaiting the owner's word to send\" and delivered them forty minutes later, after one direct question of the owner and a second \"send\"; his own cause, verbatim: the broad, always-on reflex \"confirm outward actions\" beats a narrow exception written as prose inside a long paragraph — \"it lost on #37 and lost again\"). Three places, one rule: (1) AGENT_GUIDE (both layers) — the ONE carve-out of the `AUTH:` gate now stands in the gate's own line at the fable loop's call point (a ticket about a defect of KAIF itself, filed to the framework's origin, goes under the KAIF owner's standing authorization in the same move as filing and awaits no `AUTH:` line; everything else outward still waits for the owner's words); (2) /report-bug (both layers) — the step that files the ticket (step 3, \"File AND deliver\") ENDS with `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`; there is no separate \"deliver\" step to postpone — filing IS delivering; (3) `node .kaif/kaif-core.mjs check` gains the axis \"undelivered signal\", an ALLOWLIST: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` paragraph names an issue (a `…/issues/N` URL, or `#NN` as the value itself or right after the word origin/issue — \"see step #2\" is not a delivery) and does not say NOT YET; NOT YET is named with the ready command, and a missing, translated or unreadable line (a promise such as \"being sent by this session\") or NOT YET beside an issue is named \"no readable delivery state\" with both legal forms — a warning, never a failure, silent on tracking: anonymous. `report` and `check` read the line with ONE function, so they cannot disagree about it: NOT YET beside an issue is refused by `report` too (until 2.7 any URL won and such a ticket could never be sent), and a URL that is not an issue no longer counts as a delivery. Why an allowlist: the delivery lines of four field deployments came in more shapes than the template — the field name translated into the project language (the form the #65 incident itself committed), a promise instead of an address, a delivery claimed in words with no issue, no line at all — and a NOT-YET-only check was silent on all of them. /report-bug (both layers) now says the field name `**Delivered upstream:**` is machine-read and stays verbatim English in any project language. /fable-judge hunts \"a signal filed, not delivered\"."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -132,7 +134,9 @@
       "An executed run leaves a report, and the claim names it (2.7, epic TR; origin issue #59): before writing `[TESTED: …]` or \"accepted\" about anything you RAN — a probe, a smoke, a polygon, a manual walk-through — copy `.kaif/_testrun-report-template.md` to `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (`testcases/` by default; name another home in `.kaif/kaif.json` → `testdocs`), fill the seven fields (Runs with the moment and the exact command of each run in a code span; Found as a list or the explicit word \"none\"), run `node .kaif/tools/kaif-testrun-lint.mjs check`, and put the report's address into the claim; the judge hunts a run claim without one. `node .kaif/kaif-core.mjs check` now also warns by name when your /resume skill does not list one of the nine re-read core documents — add the missing bullet, never silence the line.",
       "The owner's text is written BY his portrait, checked independently by it, fixed — and only then written and brought to him (2.7, epic VC; origin issue #61; the owner's statement of the expected behaviour): a text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — is (1) WRITTEN with AUTHOR_STYLOMETRY.md IN YOUR WORKING CONTEXT — `node .kaif/tools/kaif-voice-lint.mjs load` BEFORE the first word prints it into the context (its rules, lexicon, anti-portrait and before/after pairs; `--sections <regex>` for the modules the unit needs) and leaves the witness .kaif/voice-marker.json (session state, ignored by git) — the owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE; a text with no witness or written before the load is \"written past the portrait\" and `check` refuses it, (2) CHECKED INDEPENDENTLY by the same portrait — `node .kaif/tools/kaif-voice-lint.mjs check <files…>` plus the §7B pass by a clean instance (a subagent or a fresh pass that has not seen the writer's rationale), (3) FIXED — and only then it counts as written and goes to the owner for approval; the report of the unit names the portrait modules read, the command and its outcome (hits answered, or SKIPPED said aloud), the clean pass and the fixes. A draft written natively and re-voiced later is the very class this rule closes. The module reads the §8 TABLE of your portrait (pattern · class · hint · legal exception — the form the updated skeleton .kaif/_owner-voice-template.md shows); if your portrait keeps its §8 heuristics as PROSE or as grep lines in a fence, move them into that table — the linter says SKIPPED over prose, never green; a hit is rewritten by the hint or answered in the exception column, never silenced by deleting the row. Wire the command into the build script of every owner-facing text class you have; the judge hunts owner text past the portrait.",
       "A renamed heading is REPLACED by the update, never duplicated — and the hand-off is called a HANDOVER (2.7, epic HO; origin issue #57): until this release a renamed module heading reached your tree as \"the old section removed + a new section added\", so a section YOU had edited ended up doubled — your version under the old heading, the release's under the new one, silently and at exit 0. The bundle now declares its renames (`renamesByVersion`) and `update` applies a declared pair as ONE module: untouched → replaced under the new heading with a `renamed: <path> :: <old> → <new>` line in the log, edited → your text kept with ONE heading and a task item that names the rename and carries the diff, an old anchor that is not on disk → a log line by name. Nothing is matched by similarity — an undeclared rename is still a duplicate, which is why the build now warns when a heading vanishes without a declaration. TWO THINGS FOR YOU. (a) A tree that ALREADY carries both sections from an earlier update folds them by hand, once — the machinery will not guess which half is yours. (b) The payload no longer says `baton`: if your STATUS.md, your chronicle or a local skill of yours carries that word (or its literal translation — in Russian it landed on the word for a loaf of bread), replace it by hand with the industry's term or with the phrase your own trigger aliases already use; owner documents are never edited by the machinery.",
-      "The word \"test\" now means a FUNCTIONAL RUN on the real product, and a claim is never wider than its observation (2.7, epic CL; origin issues #62 and #63): \"tested\" in a marker, a report or a handover means the agent walked the REAL product (stage or production) by the user's path with machinery it wrote from the functionality's own scenarios and READ the result — the screen, the lines, the logs; lint, unit tests, self-tests, mutation proofs and guards are HYGIENE: still mandatory, never called testing, never flipping `[NOT-TESTED]`, and `[NOT-TESTED]` never goes to production. TWO THINGS FOR YOU. (a) Run reports: the Checks field now opens with two separate lines — `Hygiene:` and `Functional run:` (what was walked · on which contour · what was READ — or the word NONE = fixed, not tested); `node .kaif/tools/kaif-testrun-lint.mjs check` reddens a Verdict `pass` with no functional run or NONE behind it (`pass-without-functional-run`) — a report you wrote by the 2.7 form before this update will redden if it says `pass`: add the two lines by the facts of that run, and write `partial` where there was no functional run; the closing `STATUS: DONE` of a bug carries the same two lines. (b) Reports to the owner: name what observed each claim; a proxy is said aloud (\"the server answers 200; whether a window opened on your screen I did not check\"); the owner's screen is asserted only after a screenshot. If a project skill of yours says \"tested\" about a green unit, or reports \"the page is open\" from a launcher's exit code, re-word it — the judge hunts both."
+      "The word \"test\" now means a FUNCTIONAL RUN on the real product, and a claim is never wider than its observation (2.7, epic CL; origin issues #62 and #63): \"tested\" in a marker, a report or a handover means the agent walked the REAL product (stage or production) by the user's path with machinery it wrote from the functionality's own scenarios and READ the result — the screen, the lines, the logs; lint, unit tests, self-tests, mutation proofs and guards are HYGIENE: still mandatory, never called testing, never flipping `[NOT-TESTED]`, and `[NOT-TESTED]` never goes to production. TWO THINGS FOR YOU. (a) Run reports: the Checks field now opens with two separate lines — `Hygiene:` and `Functional run:` (what was walked · on which contour · what was READ — or the word NONE = fixed, not tested); `node .kaif/tools/kaif-testrun-lint.mjs check` reddens a Verdict `pass` with no functional run or NONE behind it (`pass-without-functional-run`) — a report you wrote by the 2.7 form before this update will redden if it says `pass`: add the two lines by the facts of that run, and write `partial` where there was no functional run; the closing `STATUS: DONE` of a bug carries the same two lines. (b) Reports to the owner: name what observed each claim; a proxy is said aloud (\"the server answers 200; whether a window opened on your screen I did not check\"); the owner's screen is asserted only after a screenshot. If a project skill of yours says \"tested\" about a green unit, or reports \"the page is open\" from a launcher's exit code, re-word it — the judge hunts both.",
+      "The owner-facing contour is launched by the COMMAND in /owner-reviews, and it keeps the owner's draft alive across a dead process (2.7, epic IW; origin issue #64): copy the launch from the table under I31 for your agent system (Claude Code — the Bash tool with run_in_background: true; a harness with tracked tasks — its facility; a plain shell — redirect to .kaif/contour.log and poll the lock file) — never a foreground call, never `--timeout` for a human, never the URL handed to Start-Process / open / xdg-open. The shipped generator now comes up on the previous run's port when that process is gone (the draft typed in the window that outlived it is restored) and names a taken port together with the loss; the page tells the owner and your log when it finds itself in a tab instead of the app window. If a local wrapper of yours removes stale lock files on start, stop doing that — the lock now carries the port the draft lives on.",
+      "Filing a KAIF-defect ticket IS delivering it (2.7, epic SD; origin issue #65): on a deployment that tracks the origin, `bugs/KAIF/NN_*.md` is written and sent in the same move — `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md` — under the KAIF owner's standing authorization, before the work that found the defect, with no `AUTH:` line to wait for (the carve-out now stands in the gate's own line in AGENT_GUIDE; every other outward action still waits for the owner's words). `node .kaif/kaif-core.mjs check` now names every numbered ticket whose `Delivered upstream:` line does not prove delivery (an issue URL or #NN with no NOT YET beside it) — NOT YET with that command, and a missing, translated or unreadable line, or NOT YET beside an issue, as \"no readable delivery state\"; `report` refuses NOT YET beside an issue and no longer takes a URL that is not an issue for a delivery. If your tree carries such tickets from earlier sessions: a ticket delivered by hand or folded into a field report — write its issue URL or #NN into a `**Delivered upstream:**` line (the field name stays verbatim English in any language; find the number with `gh issue list --repo <origin> --state all --search \"<title>\"`), and the warning ends; a ticket never sent — write `**Delivered upstream:** NOT YET — <why>` and send it with the command the warning prints. On tracking: anonymous nothing changes — NOT YET stays legal there."
     ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
@@ -717,7 +721,13 @@ Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/f
 the ask → define done → gather evidence → decide → act surgically → verify by observation → report
 outcome-first, with its gates and **forced artifacts** (`INTENT:` / `AUTH:` / `TWINS:` / `PENDING:`
 lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
-follow). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
+follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a
+ticket about a defect of KAIF itself, filed to the framework's own origin, is delivered under the KAIF
+owner's standing authorization in the same move as filing — `node .kaif/kaif-core.mjs report
+bugs/KAIF/NN_*.md`, `/report-bug` step 3 — and awaits no `AUTH:` line; every other outward action still
+waits for the owner's quoted words. Origin issue #65: the carve-out lived as prose in the git paragraph
+and lost twice, #37 and #65, to the broad "confirm outward actions" reflex — a narrow exception written
+away from the rule it excepts does not hold). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
 the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
 run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
 **KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:**
@@ -973,7 +983,7 @@ so the agent doesn't improvise.>`
 > **One named carve-out, stated HERE because this is the paragraph read before every task** (origin
 > issue #37: two TOP tickets sat "Delivered upstream: NOT YET" for hours under this very sentence): a
 > ticket about a defect of KAIF ITSELF, filed to the framework's OWN origin, is delivered under the
-> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 4) and does NOT wait for an `AUTH:` line —
+> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line —
 > file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
 > list above keeps waiting for the owner's words.
 
@@ -3103,7 +3113,7 @@ showing, outcomes and exit codes, the call, the faces and flags of the shipped g
 `.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
-(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`)
+(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)
 and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
 and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
@@ -3366,15 +3376,18 @@ per-module preview against another version — a v1 manifest gets a synthetic ba
 deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
 resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
-machinery's module cut) · `checkpoint` · `update-verify` · `check` · `version` · `report
+machinery's module cut) · `checkpoint` · `update-verify` · `check` (since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms; a warning, read by the same function as `report`) · `version` · `report
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
 not a ticket, `gh` refused; a timeout of the CREATE call is OUTCOME UNKNOWN, exit 3, never a
 refusal — a hanging `gh auth status` is `not ready`, exit 2: nothing was sent, a repeat is safe
-(2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — `not yet` in any case is
-undelivered, a URL or `#NN` anywhere in it is delivered (idempotent), and a refusal names both
-legal forms with the exact edit (2.6, origin issue #40); `--dry-run`
+(2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — an issue in it (a
+`…/issues/N` URL, or `#NN` as the value itself or right after the word origin/issue) with no
+`not yet` is delivered (idempotent), `not yet` in any case with
+no issue is undelivered, both at once is ambiguous and refused, and a refusal names both legal
+forms with the exact edit (2.6, origin issue #40; since 2.7 one function reads it for `report` and
+`check`, and a URL that is not an issue no longer counts); `--dry-run`
 calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass
@@ -4785,7 +4798,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4834,6 +4847,8 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Owner text past the portrait (KAIF 2.7).** A text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — that reached the owner PAST his voice portrait, in a deployment that has one (`AUTHOR_STYLOMETRY.md`): written without the portrait in the working context (no load witness `.kaif/voice-marker.json`, or the file last written before the first `node .kaif/tools/kaif-voice-lint.mjs load` — `check` names both; the report names no portrait modules read before the first word; the draft ignores the lexicon §2-C or carries the anti-portrait markers §5), or checked by no INDEPENDENT pass (no line naming a run of `node .kaif/tools/kaif-voice-lint.mjs check <file…>` with its hits answered or its `SKIPPED` said aloud, and no clean-instance §7B pass — the writer's own glance is not one), or shown before the fixes — is a finding: the gate lived as prose in a checklist and a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once (origin issue #61 — the owner's word: "how many times did you compare this text with my stylometry?" — zero; his statement of the expected behaviour: the agent writes BY the stylometry, then checks independently by it, fixes, and only then the text is written and brought for approval; `AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation and "Showing is an action"). Hunt also: a draft written natively and re-voiced afterwards presented as "written by the portrait"; a report that claims the machine minute ran while the portrait's §8 is prose (the module would have said `SKIPPED`); a hit "fixed" by widening the exception column, silencing the rule or deleting the row instead of rewriting the text (a weakened check in the owner's own canon); likeness claimed from a green run (the command judges explicit patterns only — likeness is the owner's verdict). Re-run: the command over the shown file and compare the hits; open the named portrait modules and check the lexicon's turns against the text; a project without a portrait is not a finding — the report must say so.
    - **Claim wider than the observation (KAIF 2.7).** A statement about the state of the world — a report line, a chat message quoted in the record, a session close — that is wider than what the run behind it observed: "the page is open for you" backed by a `curl` 200 on the local server; "works in production" backed by a deploy exit 0; "delivered to the owner" backed by a written file; "verified" backed by an instrument's ✅ — is a finding of the false-completion family: the SUBJECT of the verification was substituted (`AGENT_GUIDE.md` → the fable loop's fifth KAIF obligation; origin issue #63 — the owner's word: "you assert what you did not check"; a screenshot showed no browser window while the agent reported "waiting for you for three hours"). The state of the HUMAN'S SCREEN asserted with no screenshot beside it is the special case. Re-run: for every claim find the observation named for it and compare their widths; a proxy not said aloud is the finding; "I did X; check whether you see Y" is the legal form.
    - **Tested on hygiene alone (KAIF 2.7).** A `[TESTED: …]`, a "tested", an "all N tested" or a run report with Verdict `pass` whose evidence is hygiene only — unit green, self-test green, mutant red, guards green — with no `Functional run:` line naming what was walked on the REAL product by the user's path, on which contour and what was READ (the screen · the lines · the logs), or with that line saying `NONE`, is a finding (`TESTING_FRAMEWORK.md` → "What the word "test" means"; origin issue #62 — the owner-QA recounted "25 tested" as 3; the origin's decision #116: the agent derives the scenarios from the functionality, writes the machinery and walks the real product with it, reading the result). `NONE` itself is honest — the fraud is the `pass` or the "tested" above it; `node .kaif/tools/kaif-testrun-lint.mjs check` reddens that pair (`pass-without-functional-run`). Re-run: open the report, read the two lines, re-execute the functional run's command and check that it READS something (a screen, lines, logs) rather than returning a code.
+   - **Contour raised outside its window (KAIF 2.7).** A report that the owner-facing page is "open" / "up" / "waiting for you" while the record shows the contour launched in the FOREGROUND (a `--timeout` for a human; the shell's own timeout killed it), relaunched after a death with no `Port … reused from the previous run` line (a fresh port orphaned the owner's draft), or its URL handed to `Start-Process` / `open` / `xdg-open` (a TAB in the owner's working browser) — is a finding (`/owner-reviews` I26 · I29 · I31 and the ready launch table under I31; origin issue #64 — three invariants broken in a row by an agent that had read them; the owner lost the answer he was typing). Re-run: read the contour's process log — `Window check: … a TAB (I26)` names the tab, `Port … reused` / `Port … is taken` name the draft's fate; a launch that is not the table's command is the finding even when the page did come up.
+   - **Signal filed, not delivered (KAIF 2.7).** A KAIF-defect ticket in `bugs/KAIF/` on an origin-tracked deployment whose `Delivered upstream:` line does not prove delivery at the end of the work that filed it — it says NOT YET, promises ("being sent"), is missing or translated into the project language, or carries NOT YET beside an issue — or a report or a session close that says "filed", "awaiting the owner's word to send", "will deliver when told" — is a finding: filing IS delivering under the KAIF owner's standing authorization (the carve-out stands in the `AUTH:` gate's own line, `AGENT_GUIDE.md` → the fable loop; `/report-bug` step 3), and `node .kaif/kaif-core.mjs check` names every such ticket with the command (origin issue #65 — a recurrence of #37: two tickets waited ~40 minutes and one direct question of the owner for a second "send"; the agent's own cause: the broad "confirm outward actions" reflex beat a narrow exception that lived as prose). Re-run: `node .kaif/kaif-core.mjs check` — an `undelivered KAIF signal` line or a `KAIF signal with no readable delivery state` line is the finding; `NOT YET` is legal only on `tracking: anonymous`.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -6478,6 +6493,24 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
 - **I31. Process termination is the answer-delivery channel.** The agent starts the contour as a
   TRACKED background task and subscribes to its termination; a bare `&` is not tracked by the
   harness and no notification ever comes.
+  **The launch is a COMMAND the agent copies, never a paragraph it interprets** (KAIF 2.7, origin
+  issue #64: an agent launched the contour in the foreground with `--timeout 60` — the shell's
+  timeout killed it and the owner's window with it; a second launch took a fresh port and orphaned
+  the draft; a third handed the URL to `Start-Process` — a tab in the owner's working browser; three
+  invariants in a row, nothing went red; the owner lost the answer he was typing):
+
+  | Agent system | Ready launch |
+  |---|---|
+  | Claude Code | the `Bash` tool with `run_in_background: true`: `node .kaif/tools/contour/review.mjs <doc>` — the harness notifies on exit; never a foreground call, never `--timeout` for a human |
+  | a harness with a background / tracked-task facility (Codex, Cursor, others) | that facility, the same command |
+  | a plain shell, nothing tracks | `node .kaif/tools/contour/review.mjs <doc> > .kaif/contour.log 2>&1 &` — then poll the lock `interviews/decisions/<doc>.lock`: gone, or its `pid` no longer running (`kill -0 <pid>` fails), = the process ended — a killed process leaves its lock on purpose, so the next run reuses the port; the outcome is in the log |
+
+  `--timeout N` is for automation only (I9). The URL is never handed to `Start-Process` / `open` /
+  `xdg-open`: the generator raises the app window itself (I26), and the page says out loud — to the
+  owner as a yellow note, to the agent as a `Window check:` log line — when it finds itself in a tab
+  (`display-mode: standalone` is false there). And the generator comes up on the PREVIOUS run's port
+  when that process is gone (I29 mechanized): the draft of the window that outlived the process is
+  restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
 
 **The call (I32–I36):**
 
@@ -6782,7 +6815,8 @@ hand over a path is born (I15).
 - **T5 (OS).** Machine sleep stops the timers on BOTH sides → two strikes: the first check only
   marks a suspicion, the second (a tick later) decides.
 - **T6 (browser).** The port is part of the web origin — the draft "vanishes" on a new port →
-  a lock per document, never a second window, restore the draft on load (I29, I12).
+  a lock per document, never a second window, restore the draft on load (I29, I12); and since 2.7
+  the lock outlives the process: a relaunch comes up on the previous run's port (#64).
 - **T7 (JS templating).** A backtick inside a template string of the page builder drops the
   module with a syntax error in an UNRELATED place → only typographic quotes inside the block;
   print the warning in the file itself.
@@ -7800,9 +7834,12 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
    A match on surface + symptom-class (the version is NOT part of the key) = the SAME signal →
    append a "+1 observation" comment there (conditions, environment, version, steps, expected/got;
    new version of the same class → "reproduced on vX.Y") — do NOT open a new ticket.
-3. **File locally:** `bugs/KAIF/NN_*.md` by template A/B below (create the directory on first use).
-4. **Deliver by tracking mode:** `origin` — run the machinery, in the same motion as filing and
-   ahead of the work that found the defect:
+3. **File AND deliver — one step, one motion:** write `bugs/KAIF/NN_*.md` by template A/B below
+   (create the directory on first use) and, on `tracking: origin`, run the delivery in the SAME
+   motion, ahead of the work that found the defect — there is no separate "deliver" step to
+   postpone, because filing IS delivering (KAIF 2.7, epic SD; origin issue #65: a ticket waited
+   forty minutes and one direct question of the owner for a second "send" — the broad "confirm
+   outward actions" reflex beat the carve-out that lived as prose):
    `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`
    It files the origin issue signed by the agent under the KAIF owner's STANDING AUTHORIZATION
    (origin issue #15 — the owner's word: "this is CANON"; the `AGENT_GUIDE.md` authorization
@@ -7814,14 +7851,22 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
    repeating). If your agent system's permission layer asks a human to confirm the call — let it
    ask and wait: the prompt and the standing authorization compose. `--dry-run` shows what would
    go. The `/owner-reviews` send gate stays for FOREIGN repositories and statements in the
-   owner's name. On `origin`, `NOT YET` is a debt with an owner, never a resting state.
-5. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
+   owner's name. On `origin`, `NOT YET` is a debt with an owner, never a resting state —
+   `node .kaif/kaif-core.mjs check` names every ticket whose `Delivered upstream:` line does not prove
+   delivery (`NOT YET`, a promise, a missing or translated line) until it is sent — proof is an issue
+   URL or `#NN` with no `NOT YET` beside it, and a line carrying both is refused by `report` too.
+4. **Sender quality gate:** a signal goes upstream only with a deterministic repro OR verbatim
    quote-evidence; blameless wording (a weak model's failure is described as a missing guardrail,
    never as "the model is dumb").
 
 Both templates open with the machine-grepable fingerprint
 `kaif-fp: <surface> :: <symptom-class> :: v<major.minor>` — surface is the canonical delivery path
-(doc, skill, tool, module anchor); symptom-class is a short slug from an open dictionary.
+(doc, skill, tool, module anchor); symptom-class is a short slug from an open dictionary. The
+`**Delivered upstream:**` line under it is machine-read — `report` delivers by it, `check` reads the
+delivery state from it — so the field name stays verbatim (English, bold, its own line) in any
+project language; the value may be in the project language and carries EITHER the issue URL or `#NN`
+standing as the value OR the words `NOT YET` — never both (name a related issue in the body) (KAIF 2.7, epic SD: a field name
+translated into the project language hid a waiting ticket from both commands).
 
 ### Template A — KAIF bug report
 
@@ -10609,7 +10654,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
       needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, closeYourself: t.st.closeYourself,
-      copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}') },
+      copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote },
   }).replace(/</g, '\\u003c');
   // P5: both themes via prefers-color-scheme; colours are variables; contrast is built into the pairs.
   const css = `
@@ -10669,7 +10714,10 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
-  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 20px; font-weight:600; z-index:6 }`;
+  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 20px; font-weight:600; z-index:6 }
+  /* I26 (#64): the page found itself in a TAB, not in the contour's own window — a yellow note, never the red banner:
+     the answer still goes through; what is at risk is the draft (it lives in this tab) and the auto-close. */
+  #tabnote { display:none; background:#fde68a; color:#1d1d1f; padding:8px 20px; font-weight:600; border-bottom:1px solid #f59e0b }`;
 
   // Page JS — single quotes and concatenation, NOT ONE backtick (T7). Texts come from CFG.txt.
   const js = [
@@ -10757,6 +10805,13 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var selfBroken=false;(function(){if(CFG.face!=='interview'||CFG.index)return;var rs=document.querySelectorAll('input[type=radio]');var names={};",
     " for(var i=0;i<rs.length;i++)if(rs[i].name.indexOf('choice:')===0)names[rs[i].name]=1;var n=Object.keys(names).length;",
     " if(n!==CFG.expectRadioGroups){selfBroken=true;var b=$('#banner');b.style.display='block';b.textContent=fmt(TX.selfcheck,{r:n,q:CFG.expectRadioGroups});enableButtons(false)}})();",
+    // I26 (origin issue #64): the page knows whether it lives in the contour's own --app window or in a TAB of the
+    // owner's working browser — `display-mode: standalone` is true only in the app window (measured on Chrome, headed
+    // and headless; locationbar.visible is true everywhere and useless). A tab → a yellow note to the owner + one
+    // POST so the agent's log says it too. The window the launcher opened is the agent's claim; this is the observation.
+    "(function(){var app=false;try{app=!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)}catch(e){}",
+    " if(app)return;var tn=$('#tabnote');if(tn){tn.style.display='block';tn.textContent=TX.tabnote}",
+    " try{fetch('/tab',{method:'POST'})}catch(e){}})();",
     "restoreDraft();",
   ].join('\n');
 
@@ -10772,7 +10827,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     '<title>' + esc(cfg.projectName) + ' · ' + esc(title) + '</title>' +
     '<link rel="icon" href="data:,"><style>' + css + '</style></head><body>' +
     '<header><span class="project">' + esc(cfg.projectName) + '</span>' + heading + langNote + '</header>' + // P9
-    '<div id="banner"></div><main>' + main +
+    '<div id="banner"></div><div id="tabnote"></div><main>' + main +
     '<div id="rescue"><p class="err">' + t.st.rescue + '</p><textarea id="rescuetext" rows="8"></textarea>' +
     '<p><button class="ghost" id="copybtn" type="button">' + t.btn.copy + '</button> <button class="ghost" id="retry" type="button">' + t.btn.retry + '</button></p></div>' +
     '</main>' + saveBar + '<script>' + js + '</script></body></html>';
@@ -10804,8 +10859,16 @@ const lockPath = (root, key) => join(decisionsAbs(root), key.replace(/\.[^.]+$/u
 function checkLock(root, key) {
   const p = lockPath(root, key);
   if (!existsSync(p)) return null;
-  try { const lock = JSON.parse(readFileSync(p, 'utf8')); process.kill(lock.pid, 0); return lock; }
-  catch { rmSync(p, { force: true }); return null; } // a stale lock is removed
+  let lock;
+  try { lock = JSON.parse(readFileSync(p, 'utf8')); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
+  try { process.kill(lock.pid, 0); return lock; }                          // alive → the live address (I29)
+  catch (e) {
+    if (e.code === 'EPERM') return lock;                                   // alive under another user → still live
+    // I29 mechanized (origin issue #64): the process is GONE but the lock is KEPT — it remembers the PORT of the window
+    // that may still stand in front of the owner with his draft in it; serveContour comes up on that port first and
+    // names the loss when it cannot (the port is part of the web origin — a fresh port orphans the draft).
+    return { ...lock, stale: true };
+  }
 }
 
 // ── The server: raise → show → call → wait → record → die (I8) ───────────────────────────────
@@ -10836,12 +10899,14 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     const first = build();
     const lockKey = batch ? '_queue' : basename(docPath);
     const held = checkLock(root, lockKey);
-    if (held) {
+    if (held && !held.stale) {
       log('Already open by this contour: ' + held.url + ' (pid ' + held.pid + ') — not raising a second window (I29).');
       resolveP({ outcome: 'already-open', url: held.url, exitCode: EXIT_DECIDED });
       return;
     }
-    let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0;
+    // #64: the previous run's port, when its process is gone — tried FIRST (same web origin → the draft is restored)
+    const stalePort = held && held.stale ? (Number((String(held.url).match(/:(\d+)\/?$/) || [])[1]) || 0) : 0;
+    let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0, tabReported = false;
     const startedAt = Date.now();
     const noticeMode = notice && !batch;
     const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
@@ -10860,6 +10925,12 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       } else if (req.method === 'GET' && req.url === '/alive') {
         lastAlive = Date.now(); strikes = 0;
         if (beaconTimer) { clearTimeout(beaconTimer); beaconTimer = null; } // the page came back (T3)
+        ok({ ok: true });
+      } else if (req.method === 'POST' && req.url === '/tab') { // I26 (#64): the page says it is a TAB, not the app window
+        if (!tabReported) {
+          tabReported = true;
+          log('Window check: the page reports it is NOT in an app window (display-mode: browser) — it opened as a TAB in a browser (I26); auto-close will not work there and the draft lives in that tab only — do not raise a second window, let the owner finish there.');
+        }
         ok({ ok: true });
       } else if (req.method === 'POST' && req.url === '/decide') {
         let body = '';
@@ -10962,8 +11033,21 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       log('Outcome: interrupted by the human (SIGINT).');
       finish(EXIT_INTERRUPTED);
     });
-    server.listen(0, '127.0.0.1', () => { // I30: a free port, never a fixed one
+    // I30: a free port, never a fixed one — and the PREVIOUS run's port FIRST when its process is gone (I29 mechanized,
+    // origin issue #64): the port is part of the web origin, so coming up on the same port restores the draft the owner
+    // typed in the window that outlived the process; taken by something else → a fresh port, and the loss is said by name.
+    let retried = false;
+    server.on('error', (e) => {
+      if (stalePort && e.code === 'EADDRINUSE' && !retried) {
+        retried = true;
+        log('Port ' + stalePort + ' of the previous run is taken by another process — a fresh port follows; a draft written in the previous window is NOT visible here (I29): open that window if it is still there, or copy the text from it.');
+        server.listen(0, '127.0.0.1');
+      } else throw e;
+    });
+    server.once('listening', () => {
       const url = 'http://127.0.0.1:' + server.address().port + '/';
+      if (stalePort && server.address().port === stalePort)
+        log('Port ' + stalePort + ' reused from the previous run (its process ' + held.pid + ' is gone) — same web origin, so a draft written in that window is restored on load (I29/I12).');
       mkdirSync(decisionsAbs(root), { recursive: true });
       writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
@@ -10986,6 +11070,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       }
       serveContour._onUp && serveContour._onUp(url); // hook for a QA run
     });
+    server.listen(stalePort || 0, '127.0.0.1');
   });
 }
 
@@ -11436,7 +11521,8 @@ const EN = {
     closeYourself: 'The browser refused to close the window — please close it yourself',
     copied: 'Copied to the clipboard', copyManually: 'Select and copy by hand',
     rescue: 'Saving failed — your text is below, it is not lost.', noticeHint: 'Without the mark the notice comes back.',
-    selfcheck: (r, q) => 'PAGE SELF-CHECK FAILED: ' + r + ' radio group(s) for ' + q + ' question(s) — the form is broken, do not answer here; tell the agent.' },
+    selfcheck: (r, q) => 'PAGE SELF-CHECK FAILED: ' + r + ' radio group(s) for ' + q + ' question(s) — the form is broken, do not answer here; tell the agent.',
+    tabnote: 'This page opened as a TAB in a browser, not in the contour\'s own window — your draft lives in this tab only: do not close it until you have saved. The agent has been told (I26).' },
   // the call — the human decides "go now or after" BEFORE reading the page, so it names class and numbers
   call: {
     notice: (o, p, title) => o + ', a ' + p + ' notice: "' + title + '" — no answer owed, just read it. The page is open.',
@@ -11517,7 +11603,8 @@ const RU = {
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     copied: 'Скопировано в буфер', copyManually: 'Выделите и скопируйте вручную',
     rescue: 'Запись не прошла — ваш текст ниже, он не потерян.', noticeHint: 'Без пометки сообщение придёт снова.',
-    selfcheck: (r, q) => 'САМОПРОВЕРКА СТРАНИЦЫ НЕ ПРОШЛА: радиогрупп ' + r + ' на ' + q + ' вопрос(ов) — форма сломана, здесь не отвечайте; скажите агенту.' },
+    selfcheck: (r, q) => 'САМОПРОВЕРКА СТРАНИЦЫ НЕ ПРОШЛА: радиогрупп ' + r + ' на ' + q + ' вопрос(ов) — форма сломана, здесь не отвечайте; скажите агенту.',
+    tabnote: 'Эта страница открылась ВКЛАДКОЙ в браузере, а не окном контура — черновик живёт только в этой вкладке: не закрывайте её, пока не записали. Агент предупреждён (I26).' },
   call: {
     notice: (o, p, title) => o + ', сообщение ' + p + ': «' + title + '» — ответа не ждёт, только прочитать. Страница открыта.',
     batch: (o, p, parts) => o + ', накопилось в ' + p + ': ' + parts.join(', ') + '. Страница открыта.',
@@ -14866,8 +14953,9 @@ one final newline). Text changed after approval = approval void.
 - Saving TERMINATES the process — that termination is how the waiting agent wakes up; start the contour as a
   tracked background task. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence
   watch (~3 min, two strikes).
-- One document — one window (a lock with pid and address); a free port (`listen(0)`); a separate app window
-  (`--app=`), never a tab. Auto-close after save is an ATTEMPT (~2 s); if the browser refuses, the page says so.
+- One document — one window (a lock with pid and address); a free port (`listen(0)`) — the previous run's port FIRST when
+  that process is gone (the draft lives in its origin), a taken port named in the log; a separate app window (`--app=`),
+  never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 
 ## 6. The call — sound first, voice by language
 

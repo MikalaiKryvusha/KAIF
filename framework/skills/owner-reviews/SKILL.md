@@ -190,6 +190,24 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
 - **I31. Process termination is the answer-delivery channel.** The agent starts the contour as a
   TRACKED background task and subscribes to its termination; a bare `&` is not tracked by the
   harness and no notification ever comes.
+  **The launch is a COMMAND the agent copies, never a paragraph it interprets** (KAIF 2.7, origin
+  issue #64: an agent launched the contour in the foreground with `--timeout 60` — the shell's
+  timeout killed it and the owner's window with it; a second launch took a fresh port and orphaned
+  the draft; a third handed the URL to `Start-Process` — a tab in the owner's working browser; three
+  invariants in a row, nothing went red; the owner lost the answer he was typing):
+
+  | Agent system | Ready launch |
+  |---|---|
+  | Claude Code | the `Bash` tool with `run_in_background: true`: `node .kaif/tools/contour/review.mjs <doc>` — the harness notifies on exit; never a foreground call, never `--timeout` for a human |
+  | a harness with a background / tracked-task facility (Codex, Cursor, others) | that facility, the same command |
+  | a plain shell, nothing tracks | `node .kaif/tools/contour/review.mjs <doc> > .kaif/contour.log 2>&1 &` — then poll the lock `interviews/decisions/<doc>.lock`: gone, or its `pid` no longer running (`kill -0 <pid>` fails), = the process ended — a killed process leaves its lock on purpose, so the next run reuses the port; the outcome is in the log |
+
+  `--timeout N` is for automation only (I9). The URL is never handed to `Start-Process` / `open` /
+  `xdg-open`: the generator raises the app window itself (I26), and the page says out loud — to the
+  owner as a yellow note, to the agent as a `Window check:` log line — when it finds itself in a tab
+  (`display-mode: standalone` is false there). And the generator comes up on the PREVIOUS run's port
+  when that process is gone (I29 mechanized): the draft of the window that outlived the process is
+  restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
 
 **The call (I32–I36):**
 
@@ -494,7 +512,8 @@ hand over a path is born (I15).
 - **T5 (OS).** Machine sleep stops the timers on BOTH sides → two strikes: the first check only
   marks a suspicion, the second (a tick later) decides.
 - **T6 (browser).** The port is part of the web origin — the draft "vanishes" on a new port →
-  a lock per document, never a second window, restore the draft on load (I29, I12).
+  a lock per document, never a second window, restore the draft on load (I29, I12); and since 2.7
+  the lock outlives the process: a relaunch comes up on the previous run's port (#64).
 - **T7 (JS templating).** A backtick inside a template string of the page builder drops the
   module with a syntax error in an UNRELATED place → only typographic quotes inside the block;
   print the warning in the file itself.

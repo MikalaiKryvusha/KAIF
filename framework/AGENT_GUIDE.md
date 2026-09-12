@@ -333,7 +333,13 @@ Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/f
 the ask → define done → gather evidence → decide → act surgically → verify by observation → report
 outcome-first, with its gates and **forced artifacts** (`INTENT:` / `AUTH:` / `TWINS:` / `PENDING:`
 lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
-follow). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
+follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a
+ticket about a defect of KAIF itself, filed to the framework's own origin, is delivered under the KAIF
+owner's standing authorization in the same move as filing — `node .kaif/kaif-core.mjs report
+bugs/KAIF/NN_*.md`, `/report-bug` step 3 — and awaits no `AUTH:` line; every other outward action still
+waits for the owner's quoted words. Origin issue #65: the carve-out lived as prose in the git paragraph
+and lost twice, #37 and #65, to the broad "confirm outward actions" reflex — a narrow exception written
+away from the rule it excepts does not hold). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
 the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
 run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
 **KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:**
@@ -589,7 +595,7 @@ so the agent doesn't improvise.>`
 > **One named carve-out, stated HERE because this is the paragraph read before every task** (origin
 > issue #37: two TOP tickets sat "Delivered upstream: NOT YET" for hours under this very sentence): a
 > ticket about a defect of KAIF ITSELF, filed to the framework's OWN origin, is delivered under the
-> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 4) and does NOT wait for an `AUTH:` line —
+> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line —
 > file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
 > list above keeps waiting for the owner's words.
 

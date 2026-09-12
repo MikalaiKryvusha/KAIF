@@ -12,16 +12,23 @@
 // владельца». Красное доказательство — тело пробы `probes/ic3-contour-generator.mjs` до IC3 (3 ✓ / 1 ✗ «генератор
 // отсутствует», 21:25 сессии 55) + мутация на копии HTML: страница без радиокнопок роняет самопроверку
 // `selfCheck` отгружаемого модуля.
+// (D) эпик IW 2.7 (plans/108; тикет #64 — контур поднят вкладкой, черновик потерян): замок мёртвого процесса на свободном
+//     порту → перезапуск на ТОМ ЖЕ порту и «reused from the previous run»; на ЗАНЯТОМ → свежий порт и «taken … NOT visible
+//     here»; рендер несёт самопроверку окна (display-mode: standalone · #tabnote · POST /tab). Красный — пробы IW0 до кода и
+//     шов KAIF_DIST на ядре 2.6 (три ассерта красные, свод доходит до вердикта).
 // [TESTED: 2026-09-05 · зелёный стоя и в составе полигона — «sandbox suite: all 22 suites green» (npm run test:core,
 //  сессия 56); красный до IC3 — проба-предшественник 3 ✓ / 1 ✗ «генератор отсутствует» (21:25 сессии 55); мутация
-//  на копии HTML (радиокнопки вырезаны) роняет selfCheck отгружаемого модуля — ассерт «КРАСНАЯ на копии»]
+//  на копии HTML (радиокнопки вырезаны) роняет selfCheck отгружаемого модуля — ассерт «КРАСНАЯ на копии»;
+//  2026-09-12 · IW: «all checks green» стоя, на ядре 2.6 (KAIF_DIST) три ассерта IW красные — отчёт
+//  testcases/reports/2026-09-12_polygon-2.7-IW.md]
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'node:fs';
-import { execFileSync, execSync } from 'node:child_process';
+import { execFileSync, execSync, spawn } from 'node:child_process';
+import { createServer as createNetServer } from 'node:net';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { must, coreRunner, failed } from '../lib/sandbox-run.mjs';
+import { must, coreRunner, failed, quietEnv, QUIET_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // KAIF_DIST — шов для доказательства красного: свод против ЧУЖОЙ сборки (HEAD до IC3), без правки кода.
@@ -36,8 +43,12 @@ const ok = (cond, name, extra = '') => {
 };
 const run = coreRunner(ROOT);
 // Генератор запускается из cwd развёртывания — ровно так его зовут навыки; результат ВСЕГДА судится ok(...).
+// ТИХО (bugs/116): под швом KAIF_DIST здесь работает СТАРЫЙ генератор, который не знает новых флагов и на них
+// показывает страницу владельцу и зовёт его голосом — так ночью 2026-09-12 четыре прогона подняли у владельца
+// «fresh · Interview #052 — проба». Окружение без программ в PATH делает окно и звук невозможными на любой
+// версии; жёсткий срок убивает страницу, которая всё же ждёт. Страж — преполёт полигона (tools/sandbox-suite.mjs).
 const runGen = (cwd, args) => {
-  try { return { code: 0, out: execFileSync(process.execPath, [join(cwd, '.kaif', 'tools', 'contour', 'review.mjs'), ...args], { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024 }).toString() }; }
+  try { return { code: 0, out: execFileSync(process.execPath, [join(cwd, '.kaif', 'tools', 'contour', 'review.mjs'), ...args], { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024, env: quietEnv(), timeout: QUIET_TIMEOUT_MS }).toString() }; }
   catch (e) { return failed(e, { root: ROOT, cwd, args: 'contour ' + args.join(' ') }); }
 };
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');
@@ -98,6 +109,54 @@ ok(/\.fab \{ position:fixed; top:12px; right:16px/.test(html) && !/bottom:0/.tes
    's22 B: кнопка записи — плавающая справа сверху (position:fixed; top; right), нижней панели на странице нет (QL4, #60)');
 ok(html.includes('<html lang="ru">') && html.includes('Записать решение') && html.includes('рекомендую'), 's22 B: страница на языке развёртывания (ru): lang, кнопка, чип рекомендации');
 ok(html.includes(' · interview_052_probe.md') === false && html.includes('<span class="project">fresh</span>'), 's22 B: имя проекта в шапке выведено из имени каталога (kaif.json без projectName — #97, без вопроса)');
+// IW (2.7, #64, I26): страница сама проверяет, окно она или ВКЛАДКА — display-mode: standalone (правда снята с Chrome:
+// true только в окне --app), жёлтая полоса владельцу + POST /tab серверу; на ядре 2.6 этого нет — красный швом KAIF_DIST
+ok(/display-mode: standalone/.test(html) && html.includes('id="tabnote"') && html.includes("'/tab'"),
+   's22 B: рендер несёт самопроверку окна — display-mode: standalone · #tabnote · POST /tab (IW, #64, I26)');
+// IW (2.7, #64, I29): ЗАМОК ПЕРЕЖИВАЕТ смерть процесса — перезапуск того же документа берёт ПРЕЖНИЙ порт (черновик в его
+// origin восстанавливается сам); занятый порт → свежий порт + предупреждение поимённо. Красный доказан пробой IW0 до кода
+// («relaunch came up on: <новый порт>», ни слова о черновике) и швом KAIF_DIST на ядре 2.6.
+const freePort = () => new Promise((res) => { const s = createNetServer(); s.listen(0, '127.0.0.1', () => { const p = s.address().port; s.close(() => res(p)); }); });
+const LOCK = join(P, 'interviews', 'decisions', 'interview_052_probe.lock');
+mkdirSync(join(P, 'interviews', 'decisions'), { recursive: true });
+const p0 = await freePort();
+writeFileSync(LOCK, JSON.stringify({ pid: 999999, url: 'http://127.0.0.1:' + p0 + '/', startedAt: '2026-09-12T23:00:00+03:00' }) + '\n');
+r = runGen(P, ['interviews/interview_052_probe.md', '--no-open', '--silent', '--timeout', '1']);
+ok(new RegExp('Page is up: http://127\\.0\\.0\\.1:' + p0 + '/').test(r.out) && /reused from the previous run/.test(r.out),
+   's22 B: замок мёртвого процесса на свободном порту ' + p0 + ' → перезапуск на ТОМ ЖЕ порту и «reused from the previous run» (IW, #64, I29)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+const p1 = await freePort();
+const squatter = createNetServer(); await new Promise((res) => squatter.listen(p1, '127.0.0.1', res));
+writeFileSync(LOCK, JSON.stringify({ pid: 999999, url: 'http://127.0.0.1:' + p1 + '/', startedAt: '2026-09-12T23:00:00+03:00' }) + '\n');
+r = runGen(P, ['interviews/interview_052_probe.md', '--no-open', '--silent', '--timeout', '1']);
+ok(/is taken by another process/.test(r.out) && /NOT visible here/.test(r.out) && /Page is up: /.test(r.out) && !new RegExp('Page is up: http://127\\.0\\.0\\.1:' + p1 + '/').test(r.out),
+   's22 B: замок на ЗАНЯТОМ порту ' + p1 + ' → свежий порт и предупреждение «taken … NOT visible here» (IW, #64, I29)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+squatter.close(); rmSync(LOCK, { force: true });
+// IW (2.7, #64, I26 — СЕРВЕРНАЯ половина самопроверки окна): страница-вкладка шлёт POST /tab, генератор пишет ОДНУ строку
+// лога агенту. Браузера нет: клиент один раз шлёт POST, как только страница поднялась; контрольный запуск не шлёт ничего
+// и строки не получает — строка, печатаемая безусловно, прошла бы первый ассерт впустую. Тихое окружение, жёсткий срок;
+// страница заканчивается своей вахтой тишины.
+const launchTab = (postTab) => new Promise((resolveP) => {
+  const child = spawn(process.execPath, [join(P, '.kaif', 'tools', 'contour', 'review.mjs'), 'interviews/interview_052_probe.md', '--no-open', '--silent', '--timeout', '1'],
+    { cwd: P, env: quietEnv(), stdio: ['ignore', 'pipe', 'pipe'] });
+  let out = ''; let posted = false;
+  const onData = (d) => {
+    out += d;
+    const m = /Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/.exec(out);
+    if (m && postTab && !posted) { posted = true; fetch(m[1] + 'tab', { method: 'POST' }).catch((e) => { out += '\n[POST /tab failed: ' + e.message + ']'; }); }
+  };
+  child.stdout.on('data', onData); child.stderr.on('data', onData);
+  const deadline = setTimeout(() => child.kill(), QUIET_TIMEOUT_MS);
+  child.on('exit', (code) => { clearTimeout(deadline); resolveP({ code, out, posted }); });
+});
+const tabRun = await launchTab(true);
+const tabLines = (tabRun.out.match(/Window check: the page reports it is NOT in an app window \(display-mode: browser\)/g) || []).length;
+ok(tabRun.posted && tabLines === 1,
+   's22 B: POST /tab от страницы-вкладки → ровно одна строка лога «Window check: … NOT in an app window» (IW, #64, I26 — серверная половина, клиент без браузера)',
+   'posted ' + tabRun.posted + ', lines ' + tabLines + ': ' + tabRun.out.slice(-300));
+const quietRun = await launchTab(false);
+ok(/Page is up: /.test(quietRun.out) && !/Window check:/.test(quietRun.out),
+   's22 B: контроль — страница поднята, POST /tab не было → строки «Window check:» нет (строка не печатается безусловно)', quietRun.out.slice(-300));
+rmSync(LOCK, { force: true });
 // Красное доказательство мутацией на копии: страница без радиокнопок роняет самопроверку отгружаемого модуля.
 const gen = await import(pathToFileURL(join(P, '.kaif', 'tools', 'contour', 'review.mjs')).href);
 const page = gen.buildPage(P, 'interviews/interview_052_probe.md');

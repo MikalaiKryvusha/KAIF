@@ -13,6 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../../lib/temp-root.mjs';
+import { quietEnv, QUIET_TIMEOUT_MS } from '../../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const DIST = join(REPO, 'dist');
@@ -21,9 +22,10 @@ mkdirSync(ROOT, { recursive: true });
 
 let PASS = 0, FAIL = 0;
 const ok = (name, cond, detail = '') => { if (cond) { PASS++; console.log('  ✓ ' + name); } else { FAIL++; console.log('  ✗ ' + name + (detail ? ' — ' + detail : '')); } };
-// запуск node-скрипта в развёрнутом дереве; результат ВСЕГДА судится ok(...) ниже (страж немых команд)
+// запуск node-скрипта в развёрнутом дереве; результат ВСЕГДА судится ok(...) ниже (страж немых команд);
+// ТИХО (bugs/116): окно и голос генератора контура в пробе невозможны по окружению, на любой версии ядра
 const runNode = (cwd, script, args = []) => {
-  try { return { code: 0, out: execFileSync(process.execPath, [script, ...args], { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024 }).toString() }; }
+  try { return { code: 0, out: execFileSync(process.execPath, [script, ...args], { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024, env: quietEnv(), timeout: QUIET_TIMEOUT_MS }).toString() }; }
   catch (e) { return { code: e.status ?? 1, out: String(e.stdout || '') + String(e.stderr || '') }; }
 };
 

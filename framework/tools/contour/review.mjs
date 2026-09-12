@@ -596,7 +596,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
       needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, closeYourself: t.st.closeYourself,
-      copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}') },
+      copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote },
   }).replace(/</g, '\\u003c');
   // P5: both themes via prefers-color-scheme; colours are variables; contrast is built into the pairs.
   const css = `
@@ -656,7 +656,10 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
-  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 20px; font-weight:600; z-index:6 }`;
+  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 20px; font-weight:600; z-index:6 }
+  /* I26 (#64): the page found itself in a TAB, not in the contour's own window — a yellow note, never the red banner:
+     the answer still goes through; what is at risk is the draft (it lives in this tab) and the auto-close. */
+  #tabnote { display:none; background:#fde68a; color:#1d1d1f; padding:8px 20px; font-weight:600; border-bottom:1px solid #f59e0b }`;
 
   // Page JS — single quotes and concatenation, NOT ONE backtick (T7). Texts come from CFG.txt.
   const js = [
@@ -744,6 +747,13 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var selfBroken=false;(function(){if(CFG.face!=='interview'||CFG.index)return;var rs=document.querySelectorAll('input[type=radio]');var names={};",
     " for(var i=0;i<rs.length;i++)if(rs[i].name.indexOf('choice:')===0)names[rs[i].name]=1;var n=Object.keys(names).length;",
     " if(n!==CFG.expectRadioGroups){selfBroken=true;var b=$('#banner');b.style.display='block';b.textContent=fmt(TX.selfcheck,{r:n,q:CFG.expectRadioGroups});enableButtons(false)}})();",
+    // I26 (origin issue #64): the page knows whether it lives in the contour's own --app window or in a TAB of the
+    // owner's working browser — `display-mode: standalone` is true only in the app window (measured on Chrome, headed
+    // and headless; locationbar.visible is true everywhere and useless). A tab → a yellow note to the owner + one
+    // POST so the agent's log says it too. The window the launcher opened is the agent's claim; this is the observation.
+    "(function(){var app=false;try{app=!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)}catch(e){}",
+    " if(app)return;var tn=$('#tabnote');if(tn){tn.style.display='block';tn.textContent=TX.tabnote}",
+    " try{fetch('/tab',{method:'POST'})}catch(e){}})();",
     "restoreDraft();",
   ].join('\n');
 
@@ -759,7 +769,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     '<title>' + esc(cfg.projectName) + ' · ' + esc(title) + '</title>' +
     '<link rel="icon" href="data:,"><style>' + css + '</style></head><body>' +
     '<header><span class="project">' + esc(cfg.projectName) + '</span>' + heading + langNote + '</header>' + // P9
-    '<div id="banner"></div><main>' + main +
+    '<div id="banner"></div><div id="tabnote"></div><main>' + main +
     '<div id="rescue"><p class="err">' + t.st.rescue + '</p><textarea id="rescuetext" rows="8"></textarea>' +
     '<p><button class="ghost" id="copybtn" type="button">' + t.btn.copy + '</button> <button class="ghost" id="retry" type="button">' + t.btn.retry + '</button></p></div>' +
     '</main>' + saveBar + '<script>' + js + '</script></body></html>';
@@ -791,8 +801,16 @@ const lockPath = (root, key) => join(decisionsAbs(root), key.replace(/\.[^.]+$/u
 function checkLock(root, key) {
   const p = lockPath(root, key);
   if (!existsSync(p)) return null;
-  try { const lock = JSON.parse(readFileSync(p, 'utf8')); process.kill(lock.pid, 0); return lock; }
-  catch { rmSync(p, { force: true }); return null; } // a stale lock is removed
+  let lock;
+  try { lock = JSON.parse(readFileSync(p, 'utf8')); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
+  try { process.kill(lock.pid, 0); return lock; }                          // alive → the live address (I29)
+  catch (e) {
+    if (e.code === 'EPERM') return lock;                                   // alive under another user → still live
+    // I29 mechanized (origin issue #64): the process is GONE but the lock is KEPT — it remembers the PORT of the window
+    // that may still stand in front of the owner with his draft in it; serveContour comes up on that port first and
+    // names the loss when it cannot (the port is part of the web origin — a fresh port orphans the draft).
+    return { ...lock, stale: true };
+  }
 }
 
 // ── The server: raise → show → call → wait → record → die (I8) ───────────────────────────────
@@ -823,12 +841,14 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     const first = build();
     const lockKey = batch ? '_queue' : basename(docPath);
     const held = checkLock(root, lockKey);
-    if (held) {
+    if (held && !held.stale) {
       log('Already open by this contour: ' + held.url + ' (pid ' + held.pid + ') — not raising a second window (I29).');
       resolveP({ outcome: 'already-open', url: held.url, exitCode: EXIT_DECIDED });
       return;
     }
-    let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0;
+    // #64: the previous run's port, when its process is gone — tried FIRST (same web origin → the draft is restored)
+    const stalePort = held && held.stale ? (Number((String(held.url).match(/:(\d+)\/?$/) || [])[1]) || 0) : 0;
+    let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0, tabReported = false;
     const startedAt = Date.now();
     const noticeMode = notice && !batch;
     const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
@@ -847,6 +867,12 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       } else if (req.method === 'GET' && req.url === '/alive') {
         lastAlive = Date.now(); strikes = 0;
         if (beaconTimer) { clearTimeout(beaconTimer); beaconTimer = null; } // the page came back (T3)
+        ok({ ok: true });
+      } else if (req.method === 'POST' && req.url === '/tab') { // I26 (#64): the page says it is a TAB, not the app window
+        if (!tabReported) {
+          tabReported = true;
+          log('Window check: the page reports it is NOT in an app window (display-mode: browser) — it opened as a TAB in a browser (I26); auto-close will not work there and the draft lives in that tab only — do not raise a second window, let the owner finish there.');
+        }
         ok({ ok: true });
       } else if (req.method === 'POST' && req.url === '/decide') {
         let body = '';
@@ -949,8 +975,21 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       log('Outcome: interrupted by the human (SIGINT).');
       finish(EXIT_INTERRUPTED);
     });
-    server.listen(0, '127.0.0.1', () => { // I30: a free port, never a fixed one
+    // I30: a free port, never a fixed one — and the PREVIOUS run's port FIRST when its process is gone (I29 mechanized,
+    // origin issue #64): the port is part of the web origin, so coming up on the same port restores the draft the owner
+    // typed in the window that outlived the process; taken by something else → a fresh port, and the loss is said by name.
+    let retried = false;
+    server.on('error', (e) => {
+      if (stalePort && e.code === 'EADDRINUSE' && !retried) {
+        retried = true;
+        log('Port ' + stalePort + ' of the previous run is taken by another process — a fresh port follows; a draft written in the previous window is NOT visible here (I29): open that window if it is still there, or copy the text from it.');
+        server.listen(0, '127.0.0.1');
+      } else throw e;
+    });
+    server.once('listening', () => {
       const url = 'http://127.0.0.1:' + server.address().port + '/';
+      if (stalePort && server.address().port === stalePort)
+        log('Port ' + stalePort + ' reused from the previous run (its process ' + held.pid + ' is gone) — same web origin, so a draft written in that window is restored on load (I29/I12).');
       mkdirSync(decisionsAbs(root), { recursive: true });
       writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
@@ -973,6 +1012,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       }
       serveContour._onUp && serveContour._onUp(url); // hook for a QA run
     });
+    server.listen(stalePort || 0, '127.0.0.1');
   });
 }
 

@@ -296,7 +296,8 @@ async function main() {
           "  tables:document.querySelectorAll('.doc table').length,stripe:cs.borderLeftWidth,",
           "  stripeDiff:cs.borderLeftColor!==csd.borderLeftColor,contrast:contrast,",
           "  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,",
-          "  fab:rect(),bar:!!document.querySelector('.bar'),fab2:(function(){window.scrollTo(0,1e9);return rect()})()}})()",
+          "  fab:rect(),bar:!!document.querySelector('.bar'),fab2:(function(){window.scrollTo(0,1e9);return rect()})(),",
+          "  tabnote:(function(){var n=document.querySelector('#tabnote');return n?getComputedStyle(n).display:null})()}})()",
         ].join(''));
         const tag = scheme + '/' + width;
         // Закрытый вопрос показывает варианты ЦЕЛИКОМ выключенными радио (пилот 008):
@@ -313,6 +314,10 @@ async function main() {
         const inView = (f) => f && f.pos === 'fixed' && f.top >= 0 && f.bottom <= f.ih && f.right <= f.iw;
         check(tag + ': кнопка записи плавает справа сверху и видна при начальной прокрутке и после прокрутки вниз; нижней панели нет (QL4, #60)',
           inView(probe.fab) && inView(probe.fab2) && !probe.bar, JSON.stringify({ fab: probe.fab, fab2: probe.fab2, bar: probe.bar }));
+        // IW (2.7, #64, I26): этот блок цепляет страницу ВКЛАДКОЙ по построению (Target.createTarget, не --app) —
+        // страница обязана это увидеть сама (display-mode: browser) и показать жёлтую полосу о черновике; в окне --app
+        // (QA2 --visible) полосы нет — обе половины доказаны живым браузером
+        check(tag + ': страница видит, что она ВКЛАДКА — полоса #tabnote показана (IW, #64, I26)', probe.tabnote === 'block', 'display=' + probe.tabnote);
         check(tag + ': консоль чистая', page.events.console.length === 0, page.events.console[0]);
         await browser.cdp.send('Target.closeTarget', { targetId: page.targetId });
       }
@@ -1039,6 +1044,10 @@ async function visibleRun() {
     const { sessionId } = await browser.cdp.send('Target.attachToTarget', { targetId: pageT.targetId, flatten: true });
     await browser.cdp.send('Runtime.enable', {}, sessionId);
     await sleep(1200); // окно видимо реальному глазу
+    // IW (2.7, #64, I26): в окне --app страница знает, что она ОКНО — полосы вкладки нет (display-mode: standalone)
+    const tn = await browser.cdp.send('Runtime.evaluate',
+      { expression: "(function(){var n=document.querySelector('#tabnote');return n?getComputedStyle(n).display:'absent'})()", returnByValue: true }, sessionId);
+    check('в окне --app полосы вкладки НЕТ — страница видит display-mode: standalone (IW, #64, I26)', tn.result.value === 'none', 'display=' + tn.result.value);
     const r = await browser.cdp.send('Runtime.evaluate',
       { expression: FILL_AND_SAVE_JS, returnByValue: true }, sessionId);
     check('клик по записи на видимом окне прошёл', r.result.value === true);

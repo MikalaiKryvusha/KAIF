@@ -18,7 +18,7 @@
 //  строке-продолжении → exit 1 · отказ без обеих форм), C-H3 зелёный на обеих (правка формулы Reference,
 //  не кода); шов KAIF_DIST добавлен в этот свод тем же шагом — до него красное доказательство было
 //  невозможно без правки кода свода]
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, rmSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -178,6 +178,70 @@ writeTicket();
 r = run(`report ${TICKET}`, { GH_SHIM_MODE: 'hang-auth', KAIF_GH_TIMEOUT_MS: '800' });
 ok(r.code === 2 && /gh is not ready/.test(r.out) && !/OUTCOME UNKNOWN/.test(r.out), 's17/C-H3: таймаут gh auth status — exit 2 «not ready», не «исход неизвестен» (ничего не отправлялось)', r.out);
 ok(/NOT YET/.test(ticketLine()), 's17/C-H3: тикет не тронут');
+
+// ---------------------------------------------------------------- 2.7 SD (#65, рецидив #37): ось `check` «недоставленный сигнал»
+// Поле: два тикета NDim лежали «ждёт отправки» ≈ 40 минут до второго слова владельца «отправляй»; ядро на tracking: origin
+// о них молчало. Ось — РАЗРЕШАЮЩИЙ список: молчит только на улике доставки (адрес issue или #NN и нет «not yet»), всё
+// прочее называет; `report` и `check` читают строку одной функцией, и «NOT YET + адрес issue» обе называют, ни одна не
+// угадывает. Красный: проба SD0 до кода (check exit 0, «no line about the ticket»); шов KAIF_DIST на 2.6; первая сборка
+// оси, судившая только `NOT YET` (скретчпад dist-blacklist, 2026-09-13 00:54) — на переведённом поле, на обещании вместо
+// адреса и на «NOT YET + адрес» (формы строк доставки реального поля: 46 тикетов четырёх развёртываний, отчёт 2026-09-13
+// SD); три мутанта блока — без ворот tracking (anonymous ✖), без ветки «доставлен» (доставленный ✖), фильтр NN_*.md
+// расширен (README ✖); ядро второй редакции, где уликой был любой `#цифры` (скретчпад dist-hashany) — на «see step #2».
+const SILENT = /undelivered KAIF signal|no readable delivery state/;
+console.log('\n=== 2.7 SD (#65): check молчит только на доставленном; NOT YET, переведённое поле и обещание — названы; anonymous и README — молчат ===');
+writeTicket();                                           // NOT YET на tracking: origin (установлен выше)
+r = run('check');
+ok(r.code === 0 && /⚠ undelivered KAIF signal: bugs\/KAIF\/07_fixture_ticket\.md/.test(r.out) && /node \.kaif\/kaif-core\.mjs report bugs\/KAIF\/07_fixture_ticket\.md/.test(r.out),
+   's17/SD (критерий 17а): check на tracking: origin — тикет NOT YET назван поимённо с готовой командой report (предупреждение, код 0)', r.out.slice(-400));
+r = run(`report ${TICKET}`);                              // доставка через подменный gh → строка стала URL
+ok(r.code === 0 && /✔ delivered/.test(r.out), 's17/SD: доставка фикстуры прошла (подменный gh)', r.out.slice(-200));
+r = run('check');
+ok(r.code === 0 && !SILENT.test(r.out), 's17/SD: после доставки check о сигнале молчит', r.out.slice(-300));
+// Форма #65 в поле: имя поля переведено на язык проекта и стоит в цитате шапки — строки `**Delivered upstream:**` нет.
+const TRANSLATED = 'bugs/KAIF/08_translated_field.md';
+writeFileSync(join(S, TRANSLATED), '# bugs/KAIF/08 — сигнал ждёт второго слова\n\n> **Сигнал в исток:** ждёт отправки · **Заведён:** 2026-09-12\n\n## Что случилось\n\nфикстура\n');
+// Обещание вместо адреса — строка на месте, но в ней ни NOT YET, ни URL, ни #NN.
+const PROMISE = 'bugs/KAIF/09_promise_value.md';
+writeFileSync(join(S, PROMISE), '# KAIF bug: a promise instead of an address\n\nkaif-fp: sandbox :: fixture :: v2.7\n**Delivered upstream:** ⏳ отправляется этой же сессией\n\n## Symptom\n\nfixture\n');
+writeFileSync(join(S, 'bugs', 'KAIF', 'README.md'), '# bugs/KAIF — local KAIF signals\n\nNot a ticket: no number, no delivery line.\n');
+r = run('check');
+ok(r.code === 0 && /⚠ KAIF signal with no readable delivery state: bugs\/KAIF\/08_translated_field\.md — no `\*\*Delivered upstream:\*\*` line/.test(r.out)
+   && /delivered → write only `\*\*Delivered upstream:\*\* <issue URL or #NN>`; not sent → write `\*\*Delivered upstream:\*\* NOT YET — <why>` with no issue URL or #NN and run node \.kaif\/kaif-core\.mjs report bugs\/KAIF\/08_translated_field\.md/.test(r.out),
+   's17/SD (форма #65): имя поля переведено, строки нет — тикет назван «no readable delivery state» с обеими законными формами и командой (код 0)', r.out.slice(-600));
+ok(/⚠ KAIF signal with no readable delivery state: bugs\/KAIF\/09_promise_value\.md — "\*\*Delivered upstream:\*\* ⏳ отправляется этой же сессией" is neither NOT YET nor an issue URL or #NN/.test(r.out),
+   's17/SD: обещание вместо адреса («⏳ отправляется этой же сессией») — названо дословно, не принято за доставку', r.out.slice(-600));
+ok(!/bugs\/KAIF\/README\.md/.test(r.out) && !/bugs\/KAIF\/07_fixture_ticket\.md/.test(r.out), 's17/SD: README и доставленный тикет в bugs/KAIF — молчит (тикеты — только NN_*.md)', r.out.slice(-600));
+r = run(`report ${PROMISE}`);
+ok(r.code === 1 && /neither NOT YET nor a delivery: "\*\*Delivered upstream:\*\* ⏳ отправляется этой же сессией"/.test(r.out),
+   's17/SD: report на обещании — отказ «neither NOT YET nor a delivery», ничего не отправлено', r.out.slice(-300));
+rmSync(join(S, TRANSLATED)); rmSync(join(S, PROMISE)); rmSync(join(S, 'bugs', 'KAIF', 'README.md'));
+// Одно чтение на две команды — единственный случай, где прежние сборки расходятся: NOT YET и адрес issue в одной строке.
+// До 2.7 `report` отдавал победу ЛЮБОМУ адресу («already delivered» — тикет нельзя было отправить), первая сборка оси
+// называла его как NOT YET («run report») — две машины говорили противоположное о той же строке.
+const AMBIG = 'bugs/KAIF/10_not_yet_with_address.md';
+writeFileSync(join(S, AMBIG), '# KAIF bug: NOT YET that quotes an issue\n\nkaif-fp: sandbox :: fixture :: v2.7\n**Delivered upstream:** NOT YET — a recurrence of https://github.com/example-owner/example-kaif/issues/37\n\n## Symptom\n\nfixture\n');
+const callsBeforeAmbig = calls().length;
+r = run('check');
+ok(r.code === 0 && /⚠ KAIF signal with no readable delivery state: bugs\/KAIF\/10_not_yet_with_address\.md — .* says NOT YET and names an issue \(https:\/\/github\.com\/example-owner\/example-kaif\/issues\/37\) at once/.test(r.out)
+   && !/undelivered KAIF signal: bugs\/KAIF\/10_not_yet_with_address\.md/.test(r.out),
+   's17/SD (одно чтение, check): «NOT YET + адрес issue» — назван «says NOT YET and names an issue … at once», не «undelivered»', r.out.slice(-400));
+r = run(`report ${AMBIG}`);
+ok(r.code === 1 && /says NOT YET and names an issue \(https:\/\/github\.com\/example-owner\/example-kaif\/issues\/37\) at once/.test(r.out) && /nothing sent/.test(r.out) && calls().length === callsBeforeAmbig,
+   's17/SD (одно чтение, report): тот же тикет — report отказывает теми же словами, «nothing sent», gh не зван', r.out.slice(-300));
+rmSync(join(S, AMBIG));
+// Номер issue — улика, только когда стоит значением строки или сразу после слов origin/issue; «см. шаг #2» — не доставка
+// (суд: вторая редакция принимала любой `#цифры`, и обещание со ссылкой на шаг навыка читалось как доставленное).
+const STEPREF = 'bugs/KAIF/11_step_reference.md';
+writeFileSync(join(S, STEPREF), '# KAIF bug: a promise that cites a step number\n\nkaif-fp: sandbox :: fixture :: v2.7\n**Delivered upstream:** ⏳ sending this session — see step #2 of the skill\n\n## Symptom\n\nfixture\n');
+r = run('check');
+ok(r.code === 0 && /⚠ KAIF signal with no readable delivery state: bugs\/KAIF\/11_step_reference\.md — "\*\*Delivered upstream:\*\* ⏳ sending this session — see step #2 of the skill" is neither NOT YET nor an issue URL or #NN/.test(r.out),
+   's17/SD: «#2» в тексте обещания («see step #2 of the skill») — не номер issue, тикет назван, не принят за доставку', r.out.slice(-400));
+rmSync(join(S, STEPREF));
+writeTicket(); setTracking('anonymous');
+r = run('check');
+ok(r.code === 0 && !SILENT.test(r.out), 's17/SD: tracking: anonymous — NOT YET законно, check молчит', r.out.slice(-300));
+setTracking('origin');
 
 if (failures) { console.error(`\n❌ s17: ${failures} failure(s)`); process.exit(1); }
 console.log('\n✅ s17 report: all green');
