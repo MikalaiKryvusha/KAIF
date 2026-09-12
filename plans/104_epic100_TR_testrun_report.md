@@ -1,10 +1,12 @@
 # План 104 — эпик TR «Прогон рождает отчёт»: исполненный прогон оставляет артефакт заданной формы; `/resume` доказуемо открывает всё ядро
 
-> **Создан:** ≈ 2026-09-12 10:15 +03:00 (закрытие эпика QL — канон N+1, №43; сессия 59).
+> **Создан:** ≈ 2026-09-12 10:05 +03:00 (закрытие эпика QL — канон N+1, №43; сессия 59).
 > **Родитель:** `plans/100` (эпик TR — строка 3 таблицы эпиков; критерии приёмки версии 7–8); источники —
 > issue #59 (Unliminium, 10 сентября; слово владельца-QA дословно: «ТЕСТИРОВАНИЯ НЕ БЫЛО») + `researches/30` §2
 > (в поле `/resume` открывал 5 документов ядра из 9, дрейф списка никто не стерёг).
-> **Статус:** 🔲 запланирован ≈ 2026-09-12 10:15 +03:00 — старт с шага TR0 в следующем чате; вопросов владельцу нет
+> **Статус:** ✅ ЗАКРЫТ ≈ 2026-09-12 11:45 +03:00 (сессия 60, один чат; судья VERIFIED WITH CAVEATS — 7 каверз починены
+> до коммита; критерии 7–8 `plans/100` ✅); в работе с ≈ 2026-09-12 10:45 +03:00 — TR0 ✅ ≈ 2026-09-12 10:55 +03:00;
+> запланирован ≈ 2026-09-12 10:05 +03:00; вопросов владельцу нет
 > (критерии заданы сценариями в `plans/100`, критерии 7–8).
 > **Вовне:** поставка — `framework/TESTING_FRAMEWORK.md` (раздел «Исполненный прогон рождает отчёт») + корневой,
 > шаблон `framework/templates/_testrun-report-template.md` → `.kaif/_testrun-report-template.md` (bundle-only, как
@@ -27,7 +29,7 @@
 судья охотится на «tested without a run report»; `/resume` открывает ВСЁ ядро, и ось `check` краснеет, когда
 документ ядра на диске не назван в ритуале (или назван, но отсутствует).
 
-**Метрика эпика:** критерии 7–8 `plans/100` закрыты 0 из 2.
+**Метрика эпика:** критерии 7–8 `plans/100` закрыты 2 из 2 (≈ 2026-09-12 11:45 +03:00).
 
 ## Готово, когда (критерии приёмки — сценариями; якорь `plans/100` критерии 7–8)
 
@@ -36,15 +38,18 @@
    отчёте; свод полигона на установке 2.7 (шаблон приехал в `.kaif/`, линтер в `.kaif/tools/`, `SKIPPED=3` без
    дома, красный на мутации); греп раздела в обоих слоях `TESTING_FRAMEWORK`.
 
-2. **[TR — `/resume` покрывает ядро]** — сценарий `plans/100` критерий 8 дословно. *Проверка:* ось `check` ядра
-   красная на копии, где из списка `/resume` убран один документ ядра, и зелёная на HEAD; селфтест оси; свод.
+2. **[TR — `/resume` покрывает ядро]** — сценарий `plans/100` критерий 8 дословно. *Проверка:* ось `check` ядра на
+   РАЗВЁРНУТОЙ копии (свод `s25`): свежий деплой — без предупреждения; копия без одного буллета — `⚠ /resume does not
+   name 1 of the 9 re-read core documents: GOAL.md`; фикстура критерия «5 из 9» — предупреждение называет четыре
+   документа поимённо; код выхода 0 (совет, не отказ, как у бюджетов); на ядре 2.6 — `✖`; на самом истоке `check` не
+   исполняется (исток не развёрнут машинерией — «Верификация наблюдением»).
 
 3. **[судья эпика]** — лёгкий `/fable-judge` по критериям 1–2; на закрытии — план HO `plans/105` (N+1) и веха в
    `plans/100` (строка 3, критерии 7–8 ✅).
 
 ## Шаги
 
-- [ ] **TR0 — нулёвка актуализации входов.** Сверить против HEAD: `framework/TESTING_FRAMEWORK.md` (цепочка
+- [x] **TR0 ✅ ≈ 2026-09-12 10:55 +03:00 — нулёвка актуализации входов.** Сверить против HEAD: `framework/TESTING_FRAMEWORK.md` (цепочка
       активностей, гейты 6–7, правило реального мира), корневой `TESTING_FRAMEWORK.md`, шаблон
       `_testcases-template.md` (форма скелета и его embed в сборщике `tools/build-framework.mjs` — образец для
       `_testrun-report-template.md`), tool-модули `framework/tools/kaif-scenario-lint.mjs` (образец: правила-данные,
@@ -54,36 +59,140 @@
       штатное действие (№76). `INTENT:` перед первой правкой; `FORK:` — на форме индекса отчётов (файл-индекс против
       имени по дате в каталоге) с разведкой: как это делают тест-менеджеры (test run report — отдельная сущность с
       датой, окружением и ссылкой на план; индекс — каталог по дате).
-- [ ] **TR1 — раздел канона обоих слоёв** `TESTING_FRAMEWORK` → «Исполненный прогон рождает отчёт»: правило
+      **Факты TR0 (HEAD `231c063`, сессия 60):** `framework/TESTING_FRAMEWORK.md` 240 строк — цепочка активностей
+      :28–61, «работа производит средство проверки» :100–123, гейты :125–182 → новый раздел встаёт ПОСЛЕ «работа
+      производит средство проверки», перед гейтами (корневой RU — 241 строка, та же структура; бюджет обоих 300) · скелет
+      `_testcases-template.md` (58 строк: H1 · blockquote «How to use» · шапка Created/Under test/Test basis · шесть
+      секций) — образец формы; embed — `tools/build-framework.mjs:446–449` (явный блок `if existsSync`);
+      `check-framework` считает `framework/templates/*.md` в ожидаемое число блоков бандла (шаблон без embed = красная
+      сборка) и держит список бывших слепых зон 5d (:121) · `kaif-scenario-lint.mjs` (248 строк: `KEYWORDS` по языкам ·
+      `RULES` как данные · parse → lint → check · `selftest` на фикстурах в памяти, оба языка) — образец модуля ·
+      `KAIF-CORE.mjs`: `DOC_BUDGETS` (:131) = ровно девять документов ядра перечитывания — ось берёт список ОТТУДА (DRY),
+      `cmdCheck` (:2766) кончается циклом бюджетов (:2884) — ось встаёт следом; канон навыков — `.claude/skills/` (mirrors
+      судятся против него) · `/resume` обоих слоёв: 12 буллетов `` - `X.md` `` в шаге 1, все девять на месте (HEAD зелёный
+      по построению), `PROJECT_HISTORY.md` — в `>`-цитате (парсер буллетов её не видит) · свод: первый свободный — **s25**
+      (`SUITES` :108–114, s20 снят; шов `KAIF_DIST` — как в s23:21) · дом отчётов истока `testcases/` не существует, в
+      `.kaif/kaif.json` ключа `testdocs` нет (схема маркера неизвестные ключи не отвергает) · записи 2.7 —
+      `TEMPLATE_NOTES_BY_VERSION['2.7']` (:281) и `POLICY_CHANGES_BY_VERSION['2.7']` (:335) · охота судьи —
+      `framework/skills/fable-judge/SKILL.md` заголовок :14 («(7) the KAIF 2.7 hunt») и блок :58; копия обвязки побайтно
+      равна (реестр пар) · реестры tool-модулей и скелетов: `KAIF_REFERENCE` §14 (:478–486) и абзац скелетов (:92–101),
+      `AGENT_GUIDE` корневой :456, `PSEM` :45/:68, `PAIM` :31/:33, STATUS таблица инструментов, `/end-chat-soft` обвязки :46 ·
+      счётчики: своды 23 → 24 (AGENT_GUIDE :467, PSEM :68, PAIM :33, STATUS :43, README :522/:1054 — по `counters-guard`),
+      блоки бандла 177 → +2 (шаблон + модуль).
+      **Правки плана по фактам (№76):** (1) TR4 — ось `check` ПРЕДУПРЕЖДАЕТ, не отказывает: критерий 8 `plans/100` говорит
+      «предупреждение называет четыре документа», и `check` уже держит ту же форму для бюджетов; красный отказ на дрейфе
+      списка ломал бы `update-verify` полевого проекта с локализованным `/resume`; (2) TR3 — «отчёт назван в индексе дома»
+      читается как «отчёт стоит в каталоге по дате» (решение 1); (3) TR8 — план N+1 после TR — **VC** (`plans/105`, тикет
+      #61 по слову владельца ≈ 2026-09-12 10:48 +03:00, №111), HO — следом.
+      `INTENT:` code does — the testing canon requires documents BEFORE a run and a marker INSIDE the claim, nothing from
+      the run itself; `check` warns about size budgets only · the task expects — a seven-field run report at
+      `<testdocs>/reports/<date>_<work>.md`, a linter that judges it (`SKIPPED=3` without a home), a warning when
+      `/resume` omits a re-read core document · the spec says — `plans/100` criteria 7–8 verbatim, issue #59
+      «ТЕСТИРОВАНИЯ НЕ БЫЛО». No divergence: the canon is silent where the spec speaks.
+- [x] **TR1 ✅ ≈ 2026-09-12 11:00 +03:00 — раздел канона обоих слоёв** `TESTING_FRAMEWORK` → «Исполненный прогон рождает отчёт»: правило
       (без отчёта — не прогон; `[TESTED]` в заявлении ссылается на отчёт), семь полей, дом отчётов —
       `<testdocs>/reports/<дата>_<работа>.md`, граница вслух («ненаписанный отчёт невидим для линтера»).
-- [ ] **TR2 — шаблон** `framework/templates/_testrun-report-template.md` → `.kaif/_testrun-report-template.md`
+- [x] **TR2 ✅ ≈ 2026-09-12 11:03 +03:00 — шаблон** `framework/templates/_testrun-report-template.md` → `.kaif/_testrun-report-template.md`
       (embed в сборщике по образцу тест-кейсов; `check-framework` — в списке бывших слепых зон 5d).
-- [ ] **TR3 — tool-модуль** `framework/tools/kaif-testrun-lint.mjs`: `check [дом]` — читает дом отчётов из
+- [x] **TR3 ✅ ≈ 2026-09-12 11:05 +03:00 — tool-модуль** `framework/tools/kaif-testrun-lint.mjs`: `check [дом]` — читает дом отчётов из
       `.kaif/kaif.json` → `testdocs` (дефолт `testcases/`), судит каждый отчёт: семь полей есть и непусты,
       «прогоны» несут ≥ 1 команду в код-спане и ≥ 1 момент ISO/локальный, «найдено» — список или явное «ноль», отчёт
       назван в индексе дома; `SKIPPED=3` без дома; `selftest` — четыре мутации красные, полный отчёт зелёный;
       деплой в `.kaif/tools/` (список tool-модулей сборщика).
-- [ ] **TR4 — ось `check` ядра «`/resume` покрывает ядро»**: `cmdCheck` читает список документов шага 1 навыка
-      `/resume` (`.claude/skills/resume/SKILL.md`, строки с бэктиками `*.md` в блоке шага 1) и сверяет с документами
-      ядра на диске (`docNames` манифеста — 14 ключевых); документ ядра, не названный ритуалом, — красный с именем;
-      названный, но отсутствующий — красный; селфтест мутацией на копии.
-- [ ] **TR5 — охота судьи** «tested without a run report» в KAIF-блоке `/fable-judge` обоих слоёв: заявление
+- [x] **TR4 ✅ ≈ 2026-09-12 11:05 +03:00 — ось `check` ядра «`/resume` покрывает ядро»**: `cmdCheck` после цикла бюджетов читает
+      буллеты `` - `ИМЯ.md` `` навыка `/resume` (`.claude/skills/resume/SKILL.md` — канон навыков) и сверяет с ядром
+      перечитывания = ключи `DOC_BUDGETS` (девять, одно место); документ ядра, не названный ритуалом, —
+      ПРЕДУПРЕЖДЕНИЕ поимённо при коде 0; названный, но отсутствующий на диске — предупреждение; `@guard
+      resume-covers-core`; доказательство мутацией на развёрнутой копии (свод `s25`: «1 of the 9» и «4 of the 9»).
+      (Первая редакция шага говорила «красный» и «`docNames` — 14»; переписана по сделанному — каверза судьи 4.)
+- [x] **TR5 ✅ ≈ 2026-09-12 11:05 +03:00 — охота судьи** «tested without a run report» в KAIF-блоке `/fable-judge` обоих слоёв: заявление
       `[TESTED: …]` о живом прогоне без адреса отчёта в доме — находка.
-- [ ] **TR6 — свод полигона** (новый номер): установка 2.7 → шаблон и линтер на месте · `SKIPPED=3` без дома ·
-      полный отчёт зелёный · мутация красная · ось `check` красная на копии с урезанным `/resume`; красный доказан
-      на ядре 2.6 (шов `KAIF_DIST`).
-- [ ] **TR7 — сборка · counters · полигон · записи 2.7** (`TEMPLATE_NOTES` + `POLICY_CHANGES`, +2) · черновик ответа
-      #59 в этом плане · стражи закрытия.
-- [ ] **TR8 — закрытие:** лёгкий судья → `plans/100` строка 3, критерии 7–8 ✅ → «Решения без владельца» → план HO
-      `plans/105` (N+1) → STATUS/MASTER_PLAN веха.
+- [x] **TR6 ✅ ≈ 2026-09-12 11:08 +03:00 — свод полигона** (новый номер): установка 2.7 → шаблон и линтер на месте · `SKIPPED=3` без дома ·
+      полный отчёт зелёный · мутации красные поимённо · ось `check` ПРЕДУПРЕЖДАЕТ на копии с урезанным `/resume`
+      («1 of the 9» и «4 of the 9»); красный доказан на ядре 2.6 (шов `KAIF_DIST`) — свод доходит до вердикта, а не
+      падает исключением.
+      **Факты TR1–TR6 (наблюдено, сессия 60):** раздел «Исполненный прогон рождает отчёт» / «An executed run
+      produces its report» — после «работа производит средство проверки» в обоих слоях (+ пункт в «Как это
+      стыкуется», + основа 29119-3); шаблон `framework/templates/_testrun-report-template.md` → embed
+      `.kaif/_testrun-report-template.md` (сборка: **179 блоков бандла, 788 модулей**; `check-framework OK`,
+      `--selftest` — 9 бывших слепых зон 5d краснеют, включая новый шаблон); линтер
+      `framework/tools/kaif-testrun-lint.mjs` — `selftest` **31 кейс, 7 правил × 2 языка** (30 → 31 после каверзы
+      судьи 1), каждое правило красное ровно на своей мутации, незаполненный шаблон поставки → `empty-field` на все
+      семь полей, копия с одними «Прогонами» → остальные шесть названы;
+      `check` на истоке без дома — `SKIPPED` код 3 с границей вслух; ось `check` ядра — после цикла бюджетов,
+      список ядра = ключи `DOC_BUDGETS`, `@guard resume-covers-core`; охота «Tested without a run report
+      (KAIF 2.7)» в KAIF-блоке судьи + заголовок «(7) the KAIF 2.7 hunts», копия обвязки побайтно равна;
+      свод `s25` — «✅ s25 testrun-lint: all 27 checks green» на свежем `dist/` (счёт печатает сам свод); красный
+      доказан на ядре 2.6 (`KAIF_DIST` → `git show v2.6:dist/…`): «❌ s25: 7 of 28 check(s) failed» — все семь адресованы
+      отсутствующей фиче (шаблон не приехал · модуль не приехал · предупреждения «1 of the 9» и «4 of the 9» не
+      печатаются · развёрнутого линтера нет · копия шаблона невозможна · линт копии), 21 зелёный, свод доходит до
+      вердикта; пары
+      `check-framework` — две строки TR (канон несёт `cp …_testrun-report-template.md`, судья несёт охоту);
+      ростеры — `KAIF_REFERENCE` §14 + абзац скелетов, `AGENT_GUIDE` обоих слоёв (таксономия ярус 1 — ось
+      `check`; корневое дерево), `PSEM`, `PAIM`, STATUS (таблица инструментов, счётчики), README (24 свода),
+      `/resume` обоих слоёв — заметка «список стережётся», `/end-chat-soft` обвязки — линтер в церемонии.
+- [x] **TR7 ✅ ≈ 2026-09-12 11:16 +03:00 — сборка · counters · полигон · записи 2.7** (`TEMPLATE_NOTES` + `POLICY_CHANGES`, +2) · черновик ответа
+      #59 в этом плане · стражи закрытия. **Факты:** сборка дважды (11:07 и финальная 11:14 после правок документов
+      поставки) — «179 file blocks … 788 modules», `check-framework OK`; полигон четырежды — «all 24 suites green» (11:10, 11:16, ≈ 11:40 после каверз
+      судьи и 11:43 на финальной сборке 11:41 — бандл несёт линтер с шапкой «selftest 31 cases»); `counters-guard` — красный на README (177/779 → 179/788 по выводу сборки), затем «50 зеркал сверены»;
+      `doc-header-lint` — одна находка (метка `plans/104` «10:15» опережала свой коммит 10:05 — исправлена), затем
+      «findings 0»; `questions-guard` 0 · `attribution-lint` new 0 / debt 45 · `experience-lint` новых 0 · `scenario-lint`
+      `plans/100` 12/12 · `guard-lint` 3 блока · `verify-contour --etalon-only` 66/66; записи 2.7 — `TEMPLATE_NOTES` «AN
+      EXECUTED RUN PRODUCES ITS REPORT» и `POLICY_CHANGES` «An executed run leaves a report, and the claim names it»;
+      черновик ответа #59 — ниже; **первый живой отчёт истока** — `testcases/reports/2026-09-12_polygon-2.7-TR.md`
+      (восемь прогонов с командами и моментами, «Найдено» — две находки процесса), `node
+      framework/tools/kaif-testrun-lint.mjs check` → «OK — 1 report(s) … 0 findings»; план VC — `plans/105` (N+1).
+- [x] **TR8 ✅ ≈ 2026-09-12 11:45 +03:00 — закрытие:** судья эпика (лёгкий; субагент с чистым контекстом, 14 заявлений
+      переисполнены, полигон переисполнен им отдельно) — **VERIFIED WITH CAVEATS**: ослабленных сводов и ассертов нет;
+      семь каверз, все закрыты до коммита — (1) плейсхолдеры шаблона многострочные и вложенные, линтер их не вычищал:
+      незаполненная копия краснела ПО ЧУЖОЙ ПРИЧИНЕ, копия с одними «Прогонами» проходила зелёной → `PLACEHOLDER`
+      многострочный с вложением, заголовки таблиц — каркас, содержание = буква, селфтест 30 → 31 с точным исходом;
+      (2) свод `s25` на ядре 2.6 падал исключением на `cpSync` отсутствующего шаблона → `existsSync`, свод доходит до
+      вердикта «7 of 28 check(s) failed»; (3) «27 ассертов / 22 зелёные» — счёт строк `✅`, не ассертов → свод печатает
+      свой счёт («all 27 checks green»), числа — цитатой; (4) тексты критерия 2, TR4, TR6 под ✅ говорили «красный» и
+      «`docNames` — 14» → переписаны по сделанному; (5) фикстура критерия 8 «5 из 9» не исполнялась → ассерт «4 of the 9»
+      в `s25`; (6) место эпика VC стояло рядом со словом владельца без подписи → `[AI]` в `plans/100` и `researches/30`;
+      (7) изъятие `CYRILLIC_DATA_CARRIERS` расширено на модуль → комментарий с кириллицей убран, изъятие держит только
+      данные; урок — EXP-0127 → `plans/100` строка 3, критерии 7–8 ✅ (закрыто 9 из 14) → «Решения без владельца» 4–6 →
+      план VC `plans/105` (N+1; тикет #61 — слово владельца ≈ 2026-09-12 10:48 +03:00, №111; HO — следом) →
+      STATUS/MASTER_PLAN веха.
 
 ## Верификация наблюдением
 
 - Селфтест линтера — четыре мутации и полный отчёт; свод на развёрнутой копии; красный на ядре 2.6.
 - Живой отчёт истока: полигон этой сессии (`npm run test:core`) оформляется первым отчётом по шаблону в доме
   истока (`testcases/reports/`), линтер зелёный на нём — исток ест свою поставку.
-- Ось `check`: `node dist/KAIF-CORE.mjs check` на истоке зелёная; на копии `/resume` без `GOAL.md` — красная.
+- Ось `check`: на РАЗВЁРНУТОЙ копии (свод `s25`) — свежий деплой без предупреждения; копия без буллета `GOAL.md`
+  печатает `⚠ /resume does not name 1 of the 9 re-read core documents: GOAL.md` при коде 0. На самом истоке
+  `node dist/KAIF-CORE.mjs check` НЕ исполняется (проба ≈ 2026-09-12 11:08 +03:00: «neither
+  .kaif/install/KAIF-CORE-BUNDLE.md nor .kaif/deploy-manifest.json found — is KAIF deployed here?») — исток не
+  развёрнут машинерией, доказательство живёт на копии (EXP-0010); строка плана «на истоке зелёная» была
+  допущением и снята.
+
+## Черновик ответа в #59 (отправка после релиза 2.7 — №84/№92/№93)
+
+Shipped in KAIF 2.7 (epic TR):
+
+- `TESTING_FRAMEWORK.md` gains the section **"An executed run produces its report"**: every executed run — a live
+  probe, a smoke, a polygon, a manual walk-through — leaves a report in the test-doc home as a catalog by date,
+  `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (default home `testcases/`; another name via `.kaif/kaif.json` →
+  `testdocs`), with seven fields — Work · Contour · Runs (count, a moment and the exact COMMAND per run) · Checks ·
+  Found (a list, or the explicit word "none") · Traces · Verdict — and a `[TESTED: …]` claim about a run names its
+  report.
+- NEW template `.kaif/_testrun-report-template.md` (copy it into the catalog, never fill it in place) and NEW optional
+  tool module `.kaif/tools/kaif-testrun-lint.mjs` (`check [home]` / `selftest`): rules as data, keywords per language
+  (EN/RU); red on a missing or empty field, a report outside the date catalog, Runs without a command or a moment,
+  Found that is neither a list nor "none", an unnamed Verdict; `SKIPPED=3` when the home has no `reports/` — an
+  unwritten report is invisible to it, and that boundary is printed.
+- `/fable-judge` hunts **"tested without a run report"**: a `[TESTED]` claim about a run with no report address beside
+  it, or a report without the commands and the moments, is a finding.
+- The second half of the class (the ritual that opened part of the core): `node .kaif/kaif-core.mjs check` now warns
+  BY NAME when the deployed `/resume` skill does not list one of the nine re-read core documents.
+
+Proof: `kaif-testrun-lint selftest` — 30 cases (7 rules × 2 languages, every rule red on its mutation only, the
+unfilled template reddens); sandbox suite s25 green on 2.7 and red on the 2.6 core (template and module absent, no
+warning); the origin's own polygon run of this epic is filed as `testcases/reports/2026-09-12_polygon-2.7-TR.md` and
+lints green. Your 2.6 → 2.7 update task carries the policy line. Thank you — this ticket named the class exactly.
 
 ## Риски (ярусы Мёрфи)
 
@@ -98,7 +207,29 @@
 
 ## Решения, принятые агентом без владельца
 
-(заполняется на закрытии)
+1. [AI] `FORK:` форма индекса отчётов — options <A каталог по дате: `<testdocs>/reports/<ГГГГ-ММ-ДД>_<работа>.md`, каталог
+   и есть список прогонов | B файл-индекс `reports/INDEX.md` со строкой на отчёт | C ссылка на отчёт из документа
+   тест-кейсов фичи> · price of error <владелец-QA не находит прогон по заявлению; две копии списка расходятся> ·
+   consulted <ISO/IEC/IEEE 29119-3: журнал исполнения тестов и отчёт о завершении — самостоятельные информационные
+   элементы с идентификатором и датой, отдельного рукописного индекса стандарт не требует
+   (https://www.iso.org/standard/56737.html · https://en.wikipedia.org/wiki/ISO/IEC_29119); TestRail: прогон — сущность
+   с датами, вехой и конфигурацией, список прогонов — страница, упорядоченная по дате, индекс никто не ведёт руками
+   (https://support.testrail.com/hc/en-us/articles/7076838639892-Creating-new-test-runs)> → **A, каталог по дате**:
+   мутация «отчёт вне индекса» = имя файла без даты в начале; B — пара «каталог ↔ файл», за которой пришлось бы следить
+   (DRY: пару лучше убрать); C — отчёт полигона покрывает много фич, у него нет одного документа кейсов.
+2. [AI] Ось «`/resume` покрывает ядро» — предупреждение с именами, не отказ (обоснование — «Правки плана по фактам»
+   п. 1 в TR0); список ядра — ключи `DOC_BUDGETS` ядра (одно место, DRY).
+3. [AI] Парсер списка `/resume` — буллеты `` - `ИМЯ.md` `` по всему файлу навыка, не только внутри шага 1: единственная
+   буллет-форма с именем документа в навыке — список шага 1; `>`-цитата о `PROJECT_HISTORY.md` и нумерованные пункты
+   шага 2 буллетами не являются, поэтому граница шага в парсер не нужна (меньше движущихся частей).
+4. [AI] Каверзы судьи чинились до коммита и в баг-документы не переносились: по лестнице тяжести — S3 (дефекты пойманы
+   судьёй до отгрузки, ни прогон, ни час владельца не потеряны) → урок EXP-0127 с полем механизации, без документа в
+   `bugs/`.
+5. [AI] Фикстура критерия 8 «5 из 9» добавлена в свод отдельным ассертом («4 of the 9») вместо переписывания строки
+   «Проверка» критерия — критерий остаётся якорем, свод исполняет его буквально.
+6. [AI] Расширение изъятия `CYRILLIC_DATA_CARRIERS` (`check-framework` 5d) на `kaif-testrun-lint.mjs` — по прецеденту
+   scenario/ranking/attribution (данные: ключевые слова и фикстуры RU); единственный комментарий с кириллицей переписан,
+   чтобы изъятие держало только данные.
 
 ## Links
 

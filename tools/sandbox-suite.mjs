@@ -84,6 +84,12 @@
 //         incoming template is not "upstream changed it"; `stale-claims` sees ANY version older than the
 //         one being installed (`gt` defined once); the bootstrap task renders −/+ from the old texts
 //         and names English arrivals; red proven on the HEAD core before UR via KAIF_DIST / KAIF_LOADER
+//   s25 — kaif-testrun-lint + the `check` axis "/resume covers the re-read core" (epic TR 2.7, plan 104;
+//         origin issue #59 "THERE WAS NO TESTING"): the seven-field run report keeps its shape — selftest in
+//         both languages, a clean catalog green, six mutations red by name, SKIPPED without a reports/
+//         catalog, the home read from the marker; on a deployed copy the template and the module arrive,
+//         a /resume that lost the GOAL.md bullet makes `check` warn by name (still exit 0), an unfilled
+//         template copy reddens; red proven on the 2.6 core via KAIF_DIST (`git show v2.6:dist/…`)
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
@@ -111,7 +117,8 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's12-k5-contour-canon.mjs', 's13-requirements-lint.mjs', 's14-refresh-hooks.mjs',
                 's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs',
                 's18-update-symmetries.mjs', 's19-scenario-lint.mjs', 's21-update-route.mjs',
-                's22-contour-shipped.mjs', 's23-ranking-lint.mjs', 's24-attribution-lint.mjs'];
+                's22-contour-shipped.mjs', 's23-ranking-lint.mjs', 's24-attribution-lint.mjs',
+                's25-testrun-lint.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

@@ -156,7 +156,9 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
    target), the other eight in ONE place, the budget table of the core machinery (`DOC_BUDGETS`);
    `node .kaif/kaif-core.mjs check` names the document, its line count and its budget when it
-   WARNS above one (a warning, never a failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
+   WARNS above one (a warning, never a failure) — and, since 2.7 (epic TR, origin issue #59), the same
+   command warns BY NAME when a core document is missing from the Step-1 bullets of the deployed
+   `/resume` skill: a field ritual opened 5 of 9 and nothing said a word. Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
    not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent

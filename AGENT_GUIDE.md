@@ -153,7 +153,9 @@
    которым командует; `STATUS.md` ~200 (ориентир владельца), остальные восемь — в ОДНОМ месте,
    таблице бюджетов машинерии ядра (`DOC_BUDGETS`); `node .kaif/kaif-core.mjs check` называет
    документ, его длину и его бюджет, когда ПРЕДУПРЕЖДАЕТ о превышении (предупреждение, никогда
-   не отказ). Превышение бюджета — повод
+   не отказ), а с 2.7 (эпик TR, тикет #59) та же команда предупреждает ПОИМЁННО, когда документ ядра
+   не назван буллетом в шаге 1 навыка `/resume` — полевой ритуал открывал 5 из 9, и никто не сказал ни
+   слова. Превышение бюджета — повод
    ВЫНОСИТЬ (летопись, `researches/`, файл домашних правил), а не поднимать число.
 2. **РАСШИРЕННЫЕ канон-документы.** Остальной канон фреймворка — внутренняя карта, летопись,
    пояснительная записка, журнал опыта, библиотеки сфер и адаптеров. При освежении контекста их
@@ -453,7 +455,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md       ← the 37 skill templates
 │   ├── installer/                   ← KAIF-CORE.mjs (machinery) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/  ← 9 language packs (owner docs + skill-triggers.json)
-│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint · kaif-guard-lint · kaif-scenario-lint · kaif-ranking-lint · kaif-attribution-lint · contour/)
+│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint · kaif-guard-lint · kaif-scenario-lint · kaif-ranking-lint · kaif-attribution-lint · kaif-testrun-lint · contour/)
 │   ├── hooks/                       ← optional refresh-hooks module → .kaif/hooks/ (epic O; owner opt-in)
 │   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded as a FILE: block)
 │   ├── module-classes.json          ← manual module-class overrides (classes are otherwise computed)
@@ -464,7 +466,7 @@ KAIF/
 │                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
 └── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
-           · sandbox/s01–s24 (23 свода, без s20) · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+           · sandbox/s01–s25 (24 свода, без s20) · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -509,7 +511,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 37 навыков + 1 распаковщик = 59; бандл 177 блоков; карта — 779 модулей) — не переписывай эти
+7 README + 37 навыков + 1 распаковщик = 59; бандл 179 блоков; карта — 788 модулей) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.

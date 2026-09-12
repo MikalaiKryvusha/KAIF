@@ -2889,6 +2889,34 @@ function cmdCheck() {
         ? 'time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat-soft rules)'
         : 'move content OUT (chronicle, researches/, a house-rules file) rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)'}`);
   }
+  // The re-read core ↔ the /resume ritual (2.7, epic TR; origin issue #59 + the 2.7 scope recon: a
+  // field /resume opened 5 of the 9 re-read core documents and nobody said a word — the skill's
+  // list and the documents on disk drift silently). The core is the budgeted nine above (ONE
+  // place — AGENT_GUIDE → Document taxonomy, tier 1); the ritual's list is every `- `NAME.md``
+  // bullet of the deployed /resume skill (its Step 1; quotes and numbered items are not bullets).
+  // A warning, never a failure — a localized or owner-edited /resume must not block update-verify;
+  // each line names the documents, so the fix is one bullet per name.
+  // @guard resume-covers-core
+  // THREAT:         the /resume list drifts from the re-read core (a document dropped from the skill, or a
+  //                 core document the ritual never opened) and every session resumes with a hole exactly there
+  // PROVED-AGAINST: sandbox s25 — a deployed copy whose /resume lost the `GOAL.md` bullet → check prints the
+  //                 warning naming GOAL.md and "1 of the 9"; the intact copy prints nothing; the 2.6 core
+  //                 (KAIF_DIST seam) prints nothing on the mutant → ✖
+  // GAP:            a document named in the list but skipped by the session is not visible here — the
+  //                 refresh-marker witness and the judge's refresh-witness hunt cover the execution half
+  // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.7 update
+  const RESUME_SKILL = '.claude/skills/resume/SKILL.md';
+  if (okOnDisk(RESUME_SKILL)) {
+    const named = new Set();
+    for (const m of readFileSync(RESUME_SKILL, 'utf8').matchAll(/^\s*- `([A-Za-z0-9_./-]+\.md)`/gm)) named.add(m[1]);
+    const core = Object.keys(DOC_BUDGETS);
+    const unnamed = core.filter((d) => !named.has(d));
+    if (unnamed.length)
+      console.error(`⚠ /resume does not name ${unnamed.length} of the ${core.length} re-read core documents: ${unnamed.join(', ')} — add each as a bullet to ${RESUME_SKILL} Step 1 (AGENT_GUIDE → Document taxonomy, tier 1; a field ritual once opened 5 of 9 and nothing said a word)`);
+    const absent = [...named].filter((d) => !okOnDisk(d));
+    if (absent.length)
+      console.error(`⚠ /resume names ${absent.length} document(s) missing on disk: ${absent.join(', ')} — restore the file or drop the bullet`);
+  }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }
 

@@ -122,6 +122,37 @@ The triviality gate applies: a trivial change verified by its one obvious check 
 beyond the usual comment and marker. What is never legal is finishing non-trivial work with nothing
 that can re-check it.
 
+## An executed run produces its report
+
+The chain above puts test documents BEFORE a run and the trust contract puts a marker INSIDE the
+claim — and nothing said what the run itself must leave behind. Field-paid (origin issue #59; the
+owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe twice, wrote `[TESTED]` and "stage
+accepted", and the owner could see neither a command, nor a moment, nor what was found. A run that
+left no artifact is indistinguishable from a run that never happened. So:
+
+1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a manual
+   walk-through — in the test-doc home, as a catalog by date:
+   `cp .kaif/_testrun-report-template.md testcases/reports/<YYYY-MM-DD>_<work>.md`
+   (the home is `testcases/` by default; a project may name another in `.kaif/kaif.json` →
+   `testdocs`). The date-first name IS the index: the directory listing is the list of runs, like
+   the runs page of a test-management tool — nobody keeps a second list by hand.
+2. **Seven fields, none empty** — *Work* (what was tested and against which basis — the case set,
+   the plan) · *Contour* (the part of the system and the stand: environment, build, data) · *Runs*
+   (how many, WHEN — a timestamp per run — and the exact COMMANDS in code spans) · *Checks* (what
+   was verified, case by case, with statuses) · *Found* (the defects — or the explicit word "none":
+   zero is a finding, silence is not) · *Traces* (where the evidence lives: logs, screenshots,
+   artifacts — their paths) · *Verdict* (pass · fail · blocked · partial, with the reason).
+3. **A `[TESTED: …]` claim about a run names its report** — the marker carries the report's
+   address (`testcases/reports/2026-09-12_polygon.md`) beside the date and the evidence; a claim
+   about a run with no report behind it is the "tested without a run report" fraud `/fable-judge`
+   hunts.
+4. **The linter judges the form, the judge judges the truth.** The optional tool module
+   `node .kaif/tools/kaif-testrun-lint.mjs check` (`selftest`) reddens on a missing or empty field,
+   on a report outside the date catalog, on *Runs* without a command or a moment, on *Found* that
+   is neither a list nor an explicit "none"; when the home has no `reports/` it prints `SKIPPED=3`
+   and says so — **an unwritten report is invisible to the linter**; only the judge and the owner
+   can ask where it is.
+
 ## Green tests ≠ working — the observation gates
 
 A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible
@@ -228,6 +259,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
 - **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
   (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
   `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
+- **The run-report form as a guard** — the optional tool module `kaif-testrun-lint` (`.kaif/tools/`)
+  judges the seven fields and the date catalog of "An executed run produces its report"; advisory,
+  `SKIPPED=3` when the test-doc home has no `reports/`.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
 - **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
   fraud table; principle 6 lives there.
@@ -236,5 +270,7 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 *Grounding: the seven principles and the activities chain (test basis → design techniques →
 documentation → execution → defect reporting) are the ISTQB canon (istqb.org; ru: testbase.ru) —
-distilled here for an AI agent across all spheres. The activities section, the feature/case marker
-rule and gates 6–7 were paid for in the field: origin issues #21 and #18.*
+distilled here for an AI agent across all spheres; the run report is the ISO/IEC/IEEE 29119-3 test
+execution log and test completion report distilled to seven fields. The activities section, the
+feature/case marker rule, gates 6–7 and the run report were paid for in the field: origin issues #21,
+#18 and #59.*

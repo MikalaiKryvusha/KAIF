@@ -31,6 +31,11 @@ If relevant to open questions:
 > `PROJECT_HISTORY.md` (the chronicle) is deliberately NOT in this set — it is the project's past,
 > not its now. Open it on demand when you need the archaeology of a decision or an old phase.
 
+> **This list is guarded.** `node .kaif/kaif-core.mjs check` warns BY NAME when one of the nine
+> re-read core documents (`AGENT_GUIDE.md` → Document taxonomy, tier 1) is missing from the bullets
+> above — a field `/resume` once opened 5 of 9 and nothing said a word (KAIF 2.7, epic TR). Put the
+> bullet back; never silence the line.
+
 > **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
 > slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
 > here is exactly what makes the lazy slices safe afterwards. Never "optimize" one with the other.

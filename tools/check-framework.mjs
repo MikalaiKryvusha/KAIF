@@ -42,6 +42,7 @@ const CYRILLIC_DATA_CARRIERS = [
   'installer/KAIF-CORE.mjs',           // SCRIPTS (the writing-system regexes) + AUTHOR_TOKEN_CLUSTERS, as data
   'tools/contour/texts.mjs',           // the RU dictionary of the shipped contour (page texts, call phrases, parser labels) — 2.6 IC3; core.mjs/review.mjs stay judged
   'tools/kaif-ranking-lint.mjs',       // the RU anchors of the /what-next answer form (shelf, debt line) + RU selftest fixtures (2.6, WN)
+  'tools/kaif-testrun-lint.mjs',       // the RU field keywords of the run report (Работа · Контур · …) + RU selftest fixtures (2.7, TR)
   'tools/kaif-attribution-lint.mjs',   // the RU attribution patterns ("решение владельца", "по слову владельца") + the RU field line of #55 as a selftest fixture (2.7, AW)
 ];
 // The author's own name is an ATTRIBUTION, not a leaked example — it must stay in the bylines of
@@ -119,6 +120,7 @@ const FORMERLY_BLIND = [
   'installer/_thin-intro.md',
   'templates/_owner-voice-template.md',
   'templates/_testcases-template.md',
+  'templates/_testrun-report-template.md',
   'skills/code-revision/references/audit-report-template.md',
   'skills/fable-method/references/examples.md',
   'skills/fable-method/references/failure-modes.md',
@@ -358,6 +360,12 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['AUTHOR_STYLOMETRY.md']],
     ['portrait canon name ↔ README (both halves)', 'README.md',
       ['AUTHOR_STYLOMETRY.md']],
+    // TR (2.7, origin issue #59): the run-report norm is a promise of the 2.7 notes — BOTH halves are pinned:
+    // the canon carries the copy command that produces the report, the judge carries the hunt for a claim without one
+    ['run report ↔ TESTING_FRAMEWORK carries the copy command (truth side)', 'framework/TESTING_FRAMEWORK.md',
+      ['cp .kaif/_testrun-report-template.md testcases/reports/']],
+    ['run report ↔ /fable-judge hunts the claim without one', 'framework/skills/fable-judge/SKILL.md',
+      ['**Tested without a run report (KAIF 2.7).**']],
     // O5 criterion 5, TWO outcomes only (bugs/72): a hook contract is either CONFIRMED against a
     // live vendor doc or it says "not verified" — "probably works" is the retired third outcome.
     // Grok Build runs our config and its NATIVE contract calls these events passive, so the

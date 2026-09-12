@@ -86,7 +86,8 @@
       "THE OWNER'S WORD IS A QUOTE, THE AGENT'S WORD IS SIGNED (epic AW; origin issue #55, 🔴🔴🔴 TOP by the owner's word: \"you write some nonsense yourself, then read it back and interpret it as MY word\" — a \"the owner's decision P1: wait\" comment in live code, whose real owner word was \"do as you see fit\", held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no quote): AGENT_GUIDE (both layers) gains \"Authorship of a decision\" — every recorded decision carries its author ([OWNER] \"<verbatim>\" · date, or the interview address, vs [AI]); \"do as you see fit\" is a MANDATE recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; the source of truth about the owner's words is the chat and interviews/, everything else is a retelling. The NEW optional tool module .kaif/tools/kaif-attribution-lint.mjs (check [paths…] [--write-baseline] / selftest, SKIPPED=3) counts references to the owner's will with no verbatim quote and no interview address within ±2 lines as debt with a baseline that only shrinks; /fable-judge hunts \"an agent decision worn as the owner's word\".",
       "PROVENANCE MARKS ARE LEGAL IN DRAFTS TO THE OWNER (epic AW; origin issue #55 comment — a field agent, forbidden to mark outside the canon, invented \"(my taste)\", and a pronoun has no owner a day later): kaif-provenance `check` no longer refuses [AI]…[/AI] outside canonArtifacts — marks are REQUIRED in the declared canon and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, never entries of the acceptance registry). AGENT_GUIDE (both layers): the write-gate draft carries the marks on the agent's lines; a pronoun is not a provenance mark; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked. /interview step 3a says the same.",
       "DELIVERY ACCOUNTING IS REMOVED (epic DR; the origin owner's word, 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): the core command `delivery`, the SYSTEMS_REGISTRY.md canon document and its skeleton .kaif/_systems-registry-template.md (retired by this update), the `Kind:` line of bug documents, the forced `DELIVERY:` line of /end-chat-soft, /end-chat-force and the four loops, the delivery-line hunt of /fable-judge and the MASTER_PLAN \"Delivery vector\" block are gone. This SUPERSEDES the 2.5 \"DELIVERY ACCOUNTING\" and 2.6 \"SYSTEMS_REGISTRY.md\" entries of this task: do NOT build a registry, do NOT print the line. /what-next keeps its 2.6 form; METRIC: now reads the main phase's acceptance metric (criteria closed k of n) from MASTER_PLAN.md / the active plan, and kaif-ranking-lint judges the same form.",
-      "THE QUESTION LIVES TO THE END (epic QL; origin issues #54 #56 #58 #60 — four tickets of one project in three days after 2.6): (1) `--check <doc>` — the form check WITHOUT a page: parse + pre-flight + render self-check, prints what was recognised and what was not, exit 3/0, never serves, never calls, never records a showing (`--no-open` was never a check: it serves and CALLS; the origin itself called its owner by voice at midnight while \"checking\"); (2) the FOURTH fact — IMPLEMENTED: `node .kaif/tools/contour/review.mjs --mark-implemented <doc> <Q> --where <commit|file>` writes `<decisionsDir>/implemented.json`, and the queue and the show REFUSE a document whose every open question is implemented (\"implemented, but open → close the status\", exit 2) — /owner-reviews I44/I45, /interview step 5 \"implemented → mark it, in the same move\"; (3) the READING VIEW: live questions first, the answered ones and the document text in one collapsed archive below, nothing removed — and the three legal outcomes of a show (answer · remark · \"read, no remarks\") in AGENT_GUIDE, /owner-reviews I16 and INTERACTIVE_CONTOUR_SPEC §4; (4) the Save control is a FLOATING button at the top right — a bar pinned to the bottom edge is forbidden (spec §4; the owner typed the answers and could not reach the button), and the render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in option labels) with exit 3 on a failing page. The shipped generator under .kaif/tools/contour/ and the one-page contract carry all four."
+      "THE QUESTION LIVES TO THE END (epic QL; origin issues #54 #56 #58 #60 — four tickets of one project in three days after 2.6): (1) `--check <doc>` — the form check WITHOUT a page: parse + pre-flight + render self-check, prints what was recognised and what was not, exit 3/0, never serves, never calls, never records a showing (`--no-open` was never a check: it serves and CALLS; the origin itself called its owner by voice at midnight while \"checking\"); (2) the FOURTH fact — IMPLEMENTED: `node .kaif/tools/contour/review.mjs --mark-implemented <doc> <Q> --where <commit|file>` writes `<decisionsDir>/implemented.json`, and the queue and the show REFUSE a document whose every open question is implemented (\"implemented, but open → close the status\", exit 2) — /owner-reviews I44/I45, /interview step 5 \"implemented → mark it, in the same move\"; (3) the READING VIEW: live questions first, the answered ones and the document text in one collapsed archive below, nothing removed — and the three legal outcomes of a show (answer · remark · \"read, no remarks\") in AGENT_GUIDE, /owner-reviews I16 and INTERACTIVE_CONTOUR_SPEC §4; (4) the Save control is a FLOATING button at the top right — a bar pinned to the bottom edge is forbidden (spec §4; the owner typed the answers and could not reach the button), and the render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in option labels) with exit 3 on a failing page. The shipped generator under .kaif/tools/contour/ and the one-page contract carry all four.",
+      "AN EXECUTED RUN PRODUCES ITS REPORT (epic TR; origin issue #59 — the owner-QA's word: \"THERE WAS NO TESTING\": the agent ran a probe twice, wrote [TESTED] and \"stage accepted\", and the owner could see neither a command, nor a moment, nor what was found): TESTING_FRAMEWORK gains the section \"An executed run produces its report\" — every executed run (a live probe, a smoke, a polygon, a manual walk-through) leaves a report in the test-doc home as a catalog by date, `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (the date-first name IS the index; the home is `testcases/` or `.kaif/kaif.json` → `testdocs`), with seven fields — Work · Contour · Runs (count, a moment and the COMMAND per run) · Checks · Found (a list or an explicit \"none\") · Traces · Verdict — and a `[TESTED: …]` claim about a run names its report. NEW delivery template .kaif/_testrun-report-template.md (copy it into the catalog, never fill it in place) and NEW optional tool module .kaif/tools/kaif-testrun-lint.mjs (check [home] | selftest; rules as data, keywords per language, SKIPPED=3 when the home has no reports/ — an unwritten report is invisible to it, which is why /fable-judge gains the hunt \"tested without a run report\"). And `check` of the core gains the axis \"/resume covers the re-read core\": a re-read core document (the budgeted nine) missing from the bullet list of the deployed /resume skill is named in a warning — a field /resume once opened 5 of 9 and nothing said a word."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -124,7 +125,8 @@
       "The owner's word is a quote, the agent's word is signed (2.7, epic AW; origin issue #55, the owner's TOP): every recorded decision carries its author — [OWNER] \"<verbatim>\" · date (or the interview address) for the owner, [AI] for the agent; \"do as you see fit\" is a mandate and is recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; a reference to the owner's will with no verbatim quote and no interview address within two lines is debt — the NEW optional module `node .kaif/tools/kaif-attribution-lint.mjs check` counts it (adopt once with --write-baseline; the baseline only shrinks; `selftest` proves both answers). If a plan, a code comment or a report in this deployment says \"the owner's decision\" from memory — either quote him, sign it [AI], or mark `<!-- attribution-ok: … -->` with the address of the quote. AGENT_GUIDE (both layers) → \"Authorship of a decision\"; the judge hunts \"an agent decision worn as the owner's word\".",
       "Provenance marks are legal outside the canon (2.7, epic AW; origin issue #55 comment): `kaif-provenance check` no longer refuses [AI]…[/AI] in a file that is not a declared canon artifact — marks are REQUIRED in canonArtifacts and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, not the acceptance registry). Mark the text you PROPOSE as the owner's canon content (a lore line, a rule, a value) wherever it lives; never a pronoun — \"(my taste)\" has no owner a day later; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked.",
       "The delivery line is RETIRED by the origin owner's word (2.7, epic DR; 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): session closes and loop reports no longer open with `DELIVERY:`, `node .kaif/kaif-core.mjs delivery` no longer exists, the `Kind:` header line of bug documents is dropped, and nothing reads SYSTEMS_REGISTRY.md — delete that file or keep it consciously as your own document (the skeleton .kaif/_systems-registry-template.md is retired by this update; the machinery never touches your registry). If a wrapper skill or document of yours still orders the DELIVERY: line, remove that order — a farewell without the line is no longer a finding. The 2.6 rule \"a fresh word of the owner is ranked by the metric, never by its date\" stands: /what-next opens with METRIC: — the acceptance metric of the main phase read from MASTER_PLAN.md (criteria closed k of n) — and MAIN PHASE:.",
-      "The owner-facing contour changed FOUR behaviours (2.7, epic QL; origin issues #54 #56 #58 #60): a document is CHECKED with `--check` before any page opens — `--no-open` serves and calls and is NOT a check; a decision that landed in rules or code is MARKED at once (`--mark-implemented <doc> <Q> --where <ref>`) and the queue never raises that question again — a document whose open questions are all implemented is refused with \"implemented, but open → close the status\" (exit 2) until its status closes by propagation; the page shows the live questions first and folds the settled ones with the document text below (nothing removed); the Save button floats at the top right, and a bottom bar is refused by the render self-check. If a project skill of yours still says \"run --no-open to check\", or a home-grown page draws its own bottom bar, re-point it: the shipped generator carries all of this, and the contract page is the one to check against."
+      "The owner-facing contour changed FOUR behaviours (2.7, epic QL; origin issues #54 #56 #58 #60): a document is CHECKED with `--check` before any page opens — `--no-open` serves and calls and is NOT a check; a decision that landed in rules or code is MARKED at once (`--mark-implemented <doc> <Q> --where <ref>`) and the queue never raises that question again — a document whose open questions are all implemented is refused with \"implemented, but open → close the status\" (exit 2) until its status closes by propagation; the page shows the live questions first and folds the settled ones with the document text below (nothing removed); the Save button floats at the top right, and a bottom bar is refused by the render self-check. If a project skill of yours still says \"run --no-open to check\", or a home-grown page draws its own bottom bar, re-point it: the shipped generator carries all of this, and the contract page is the one to check against.",
+      "An executed run leaves a report, and the claim names it (2.7, epic TR; origin issue #59): before writing `[TESTED: …]` or \"accepted\" about anything you RAN — a probe, a smoke, a polygon, a manual walk-through — copy `.kaif/_testrun-report-template.md` to `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (`testcases/` by default; name another home in `.kaif/kaif.json` → `testdocs`), fill the seven fields (Runs with the moment and the exact command of each run in a code span; Found as a list or the explicit word \"none\"), run `node .kaif/tools/kaif-testrun-lint.mjs check`, and put the report's address into the claim; the judge hunts a run claim without one. `node .kaif/kaif-core.mjs check` now also warns by name when your /resume skill does not list one of the nine re-read core documents — add the missing bullet, never silence the line."
     ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
@@ -220,6 +222,7 @@
     ".claude/skills/what-next/SKILL.md": "framework/skills/what-next/SKILL.md",
     ".kaif/_owner-voice-template.md": "framework/templates/_owner-voice-template.md",
     ".kaif/_testcases-template.md": "framework/templates/_testcases-template.md",
+    ".kaif/_testrun-report-template.md": "framework/templates/_testrun-report-template.md",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
     ".kaif/hooks/README.md": "framework/hooks/README.md",
     ".kaif/hooks/sample-antigravity-hooks.json": "framework/hooks/sample-antigravity-hooks.json",
@@ -247,6 +250,7 @@
     ".kaif/tools/kaif-ranking-lint.mjs": "framework/tools/kaif-ranking-lint.mjs",
     ".kaif/tools/kaif-requirements-lint.mjs": "framework/tools/kaif-requirements-lint.mjs",
     ".kaif/tools/kaif-scenario-lint.mjs": "framework/tools/kaif-scenario-lint.mjs",
+    ".kaif/tools/kaif-testrun-lint.mjs": "framework/tools/kaif-testrun-lint.mjs",
     "AGENT_GUIDE.md": "framework/AGENT_GUIDE.md",
     "BUG_FIXING_FRAMEWORK.md": "framework/BUG_FIXING_FRAMEWORK.md",
     "bugs/README.md": "framework/readmes/bugs.md",
@@ -513,7 +517,9 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
    target), the other eight in ONE place, the budget table of the core machinery (`DOC_BUDGETS`);
    `node .kaif/kaif-core.mjs check` names the document, its line count and its budget when it
-   WARNS above one (a warning, never a failure). Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
+   WARNS above one (a warning, never a failure) — and, since 2.7 (epic TR, origin issue #59), the same
+   command warns BY NAME when a core document is missing from the Step-1 bullets of the deployed
+   `/resume` skill: a field ritual opened 5 of 9 and nothing said a word. Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
    not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
@@ -2016,6 +2022,37 @@ The triviality gate applies: a trivial change verified by its one obvious check 
 beyond the usual comment and marker. What is never legal is finishing non-trivial work with nothing
 that can re-check it.
 
+## An executed run produces its report
+
+The chain above puts test documents BEFORE a run and the trust contract puts a marker INSIDE the
+claim — and nothing said what the run itself must leave behind. Field-paid (origin issue #59; the
+owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe twice, wrote `[TESTED]` and "stage
+accepted", and the owner could see neither a command, nor a moment, nor what was found. A run that
+left no artifact is indistinguishable from a run that never happened. So:
+
+1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a manual
+   walk-through — in the test-doc home, as a catalog by date:
+   `cp .kaif/_testrun-report-template.md testcases/reports/<YYYY-MM-DD>_<work>.md`
+   (the home is `testcases/` by default; a project may name another in `.kaif/kaif.json` →
+   `testdocs`). The date-first name IS the index: the directory listing is the list of runs, like
+   the runs page of a test-management tool — nobody keeps a second list by hand.
+2. **Seven fields, none empty** — *Work* (what was tested and against which basis — the case set,
+   the plan) · *Contour* (the part of the system and the stand: environment, build, data) · *Runs*
+   (how many, WHEN — a timestamp per run — and the exact COMMANDS in code spans) · *Checks* (what
+   was verified, case by case, with statuses) · *Found* (the defects — or the explicit word "none":
+   zero is a finding, silence is not) · *Traces* (where the evidence lives: logs, screenshots,
+   artifacts — their paths) · *Verdict* (pass · fail · blocked · partial, with the reason).
+3. **A `[TESTED: …]` claim about a run names its report** — the marker carries the report's
+   address (`testcases/reports/2026-09-12_polygon.md`) beside the date and the evidence; a claim
+   about a run with no report behind it is the "tested without a run report" fraud `/fable-judge`
+   hunts.
+4. **The linter judges the form, the judge judges the truth.** The optional tool module
+   `node .kaif/tools/kaif-testrun-lint.mjs check` (`selftest`) reddens on a missing or empty field,
+   on a report outside the date catalog, on *Runs* without a command or a moment, on *Found* that
+   is neither a list nor an explicit "none"; when the home has no `reports/` it prints `SKIPPED=3`
+   and says so — **an unwritten report is invisible to the linter**; only the judge and the owner
+   can ask where it is.
+
 ## Green tests ≠ working — the observation gates
 
 A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible
@@ -2122,6 +2159,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
 - **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
   (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
   `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
+- **The run-report form as a guard** — the optional tool module `kaif-testrun-lint` (`.kaif/tools/`)
+  judges the seven fields and the date catalog of "An executed run produces its report"; advisory,
+  `SKIPPED=3` when the test-doc home has no `reports/`.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
 - **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
   fraud table; principle 6 lives there.
@@ -2130,8 +2170,10 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 *Grounding: the seven principles and the activities chain (test basis → design techniques →
 documentation → execution → defect reporting) are the ISTQB canon (istqb.org; ru: testbase.ru) —
-distilled here for an AI agent across all spheres. The activities section, the feature/case marker
-rule and gates 6–7 were paid for in the field: origin issues #21 and #18.*
+distilled here for an AI agent across all spheres; the run report is the ISO/IEC/IEEE 29119-3 test
+execution log and test completion report distilled to seven fields. The activities section, the
+feature/case marker rule, gates 6–7 and the run report were paid for in the field: origin issues #21,
+#18 and #59.*
 ``````
 
 > **FILE: `REQUIREMENTS_FRAMEWORK.md`** — project root — universal, write verbatim
@@ -2916,7 +2958,11 @@ One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR
 the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
 own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
 as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
-history is kept INSIDE the file, append-only (§9 of the skeleton). A second
+history is kept INSIDE the file, append-only (§9 of the skeleton). Two bundle-only skeletons of the
+same family serve the testing canon: `.kaif/_testcases-template.md` (2.3 — the case set per feature,
+`TESTING_FRAMEWORK.md` → the activities chain) and `.kaif/_testrun-report-template.md` (2.7, epic TR —
+the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD>_<work>.md`;
+`TESTING_FRAMEWORK.md` → "An executed run produces its report"). One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -3304,6 +3350,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
 | `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
+| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
@@ -4587,7 +4634,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunt in the same block — **agent-decision-worn-as-the-owner's-word** (the authorship of a decision: the owner's word is a quote, the agent's word is signed). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4632,6 +4679,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
    - **Owner text in agent vocabulary (KAIF 2.6).** An owner-facing text — a question, an option label, a Situation · Action · Result line, a report line the owner reads as the customer — that names a thing by the agent's working vocabulary (an epic code or a chain of them, a plan or bug address, a tool invocation, a flag, a canon term) instead of by what the owner will SEE or GET after it, is a finding: the scenario form was satisfied and the owner still could not choose (the origin's bug 112 — four rejections of one class in a month; the owner's word, decision #106: "the owner reasons in meanings and behavioural scenarios"). Hunt option labels and scenario lines for `XX → YY` chains, `node …/` invocations, `--flags`, `plans/NN`; the Check line, the answer-target line and a technical note under the scenario are the legal homes for all of these. The declared exception is a marker with a reason on the line (`questions-guard:vocabulary-ok`); a dead round the owner already commented on is not a live question.
    - **Agent decision worn as the owner's word (KAIF 2.7).** A recorded decision — a plan line, a code comment, a report line, a "not to be revisited" status — that attributes a choice to the owner ("the owner's decision", "the owner decided", "per the owner's word", their equivalents in the owner's language) with no verbatim quote of the owner and no interview address beside it, is a finding: the canon's authority order (the owner's direct word > the book) makes a later session obey a choice the agent made itself (`AGENT_GUIDE.md` → "Authorship of a decision"; origin issue #55 — a "the owner's decision P1: wait" comment held a run for 119 s while the owner's machine died; his real word at that fork was "do as you see fit"). Hunt also: a MANDATE ("do as you see fit", "your call") recorded as the owner's decision instead of `[AI] by mandate — "<his words>"`; a "not to be revisited" status on a decision with no `[OWNER]` signature; a pronoun standing in for a provenance mark in a draft brought to the owner ("(my taste)"); an `[AI]`/`[AI-ed]` mark removed without the owner's word. `node .kaif/tools/kaif-attribution-lint.mjs check` over the changed files is the re-run; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line.
+   - **Tested without a run report (KAIF 2.7).** A `[TESTED: …]` claim about an EXECUTED run — a live probe, a smoke, a polygon, a manual walk-through, "stage accepted" — with no run-report address in the project's test-doc home beside it (`<testdocs>/reports/<YYYY-MM-DD>_<work>.md`; `TESTING_FRAMEWORK.md` → "An executed run produces its report"), or whose report lacks the commands and the moments of the runs, is a finding: a run that left no artifact is indistinguishable from a run that never happened (origin issue #59 — the owner-QA's word: "THERE WAS NO TESTING"; the agent ran a probe twice and the owner could see neither a command, nor a moment, nor what was found). Re-run: open the named report, re-execute one command from its Runs field and compare the outcome; `node .kaif/tools/kaif-testrun-lint.mjs check` judges the form (`SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, which is exactly why this hunt exists).
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -7689,6 +7737,11 @@ If relevant to open questions:
 
 > `PROJECT_HISTORY.md` (the chronicle) is deliberately NOT in this set — it is the project's past,
 > not its now. Open it on demand when you need the archaeology of a decision or an old phase.
+
+> **This list is guarded.** `node .kaif/kaif-core.mjs check` warns BY NAME when one of the nine
+> re-read core documents (`AGENT_GUIDE.md` → Document taxonomy, tier 1) is missing from the bullets
+> above — a field `/resume` once opened 5 of 9 and nothing said a word (KAIF 2.7, epic TR). Put the
+> bullet back; never silence the line.
 
 > **Boundary with the context router** (`AGENT_GUIDE.md`): the router's "read only the relevant
 > slice" governs tasks INSIDE a session; `/resume` is the session's ENTRY point — the one full pass
@@ -12819,6 +12872,270 @@ else if (CMD === 'selftest') selftest();
 else { console.error(`usage: node .kaif/tools/kaif-scenario-lint.mjs check [paths…] | selftest`); process.exit(1); }
 ``````
 
+> **FILE: `.kaif/tools/kaif-testrun-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-testrun-lint.mjs — the OPTIONAL run-report linter (2.7, epic TR; TESTING_FRAMEWORK.md →
+// "An executed run produces its report"; origin issue #59 — the owner-QA's word: "THERE WAS NO
+// TESTING"). Deployed to .kaif/tools/.
+//
+// What it mechanizes: the report an EXECUTED run leaves behind in the project's test-doc home,
+// as a catalog by date — `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` — keeps its FORM: seven
+// fields (Work · Contour · Runs · Checks · Found · Traces · Verdict), none empty; Runs with a
+// command in a code span and a moment per run; Found as a list or an explicit "none"; a Verdict
+// named by one of four words. The canon requires the report; this linter judges the shape of one
+// that was written.
+//
+// What it does NOT do, said aloud: it cannot see a report that was never written — a `[TESTED: …]`
+// claim about a run with no report behind it is the judge's hunt ("tested without a run report"),
+// never this linter's finding; and it does not verify that the commands ran — the judge re-executes
+// one, this linter only checks that they are there to re-execute.
+//
+// Boundaries, so the linter never becomes bureaucracy:
+//   · field keywords are a per-language table (like the scenario form); a project adds a row;
+//   · rules are DATA (one engine + rules-as-data): a new rule is a table row, not a new script;
+//   · ADVISORY: exit 1 = findings, exit 0 = judged and clean, exit 3 = SKIPPED (no reports catalog
+//     in the home — "not judged" must never read as "clean");
+//   · placeholders `<…>` (multi-line, one level nested) and table header/separator rows are not content:
+//     an unfilled copy of the template reddens with `empty-field` naming all seven fields, and a copy
+//     with ONE field filled reddens naming the other six — one filled row is not a report;
+//   · word boundaries are lookarounds on Unicode letters — JavaScript `\b` is blind to non-ASCII
+//     letters, a paid-for lesson.
+//
+// Commands:
+//   node .kaif/tools/kaif-testrun-lint.mjs check [home]   # home: .kaif/kaif.json → testdocs, default testcases/
+//   node .kaif/tools/kaif-testrun-lint.mjs selftest       # PROVE every rule on in-memory fixtures (EN + RU):
+//                                                         # mutation N reddens rule N and only N, the clean
+//                                                         # report yields 0; the shipped template, unfilled, reddens
+// [TESTED: 2026-09-12 · selftest 31 cases green (7 rules × 2 languages, mutation N → rule N only; the shipped
+//  template unfilled → empty-field naming all seven fields; the template with only Runs filled → empty-field naming
+//  the other six); origin tree without testcases/reports → SKIPPED exit 3, with the first origin report → OK 1 report;
+//  sandbox suite s25 observed: clean catalog exit 0, six mutations exit 1 with every rule named, no catalog
+//  SKIPPED, home read from .kaif/kaif.json → testdocs, deployed copy — template and module arrive, an unfilled
+//  copy reddens; polygon `all 24 suites green`; red proven on the 2.6 dist via KAIF_DIST (template and module
+//  absent) — the origin's run report: testcases/reports/2026-09-12_polygon-2.7-TR.md]
+import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const argv = process.argv.slice(2);
+const CMD = argv[0] || 'check';
+const ARG = argv[1];
+const EXIT_SKIPPED = 3;
+const MARKER = '.kaif/kaif.json';
+const DEFAULT_HOME = 'testcases';
+const REPORTS_DIR = 'reports';
+
+// ---------------------------------------------------------------------------
+// The seven fields per language, in the canonical order of the template. A project whose owner
+// writes in another language adds a row; the engine does not change. Rules address fields by ROLE.
+export const KEYWORDS = {
+  en: ['Work', 'Contour', 'Runs', 'Checks', 'Found', 'Traces', 'Verdict'],
+  ru: ['Работа', 'Контур', 'Прогоны', 'Проверки', 'Найдено', 'Следы', 'Вердикт'],
+};
+export const ROLES = ['work', 'contour', 'runs', 'checks', 'found', 'traces', 'verdict'];
+const CATALOG_NAME = /^\d{4}-\d{2}-\d{2}_.+\.md$/;              // the date-first name IS the index
+const MOMENT = /\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}/;                 // a timestamp per run
+const CODE_SPAN = /`[^`\n]+`/;                                    // a command the reader can re-run
+const LIST_ITEM = /^\s*(?:[-*+]|\d+[.)])\s+\S/m;                  // one item per defect
+const EXPLICIT_NONE = /(?<![\p{L}\p{N}/.])(none|zero|0|ноль|нет)(?![\p{L}\p{N}])/iu;
+const VERDICT_WORD = /(?<![\p{L}\p{N}])(pass|fail|blocked|partial)(?![\p{L}\p{N}])/iu;
+const SEPARATOR_ROW = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+
+// Scaffolding is not content: placeholders `<…>` (multi-line and one level nested — the shipped
+// template's own placeholders span lines and carry `<feature>` inside), table separator rows and
+// table HEADER rows (the row right above a separator). What is left must carry a LETTER: a row
+// number or a bare date is not a filled field. (Judge of epic TR: the first cut stripped only
+// single-line placeholders, so the unfilled template reddened for the wrong reason and a copy with
+// one filled row passed green.)
+const PLACEHOLDER = /<(?:[^<>]|<[^<>]*>)*>/g;
+const stripScaffold = (s) => {
+  const lines = s.replace(PLACEHOLDER, '').split(/\r?\n/);
+  return lines.filter((l, i) => !SEPARATOR_ROW.test(l) &&
+    !(/^\s*\|/.test(l) && i + 1 < lines.length && SEPARATOR_ROW.test(lines[i + 1]))).join('\n');
+};
+const hasContent = (s) => /\p{L}/u.test(stripScaffold(s));
+
+// ---------------------------------------------------------------------------
+// The rules — data. Each: id · test(report) → true when violated · msg(report).
+// report = { name, lang, keys, fields: {role → text}, missing: [keyword…], empty: [keyword…], has(role), text(role) }
+export const RULES = [
+  { id: 'outside-catalog', test: (r) => !CATALOG_NAME.test(r.name),
+    msg: () => 'the report is outside the date catalog — name it <YYYY-MM-DD>_<work>.md (the date-first name is the index)' },
+  { id: 'missing-field', test: (r) => r.missing.length > 0,
+    msg: (r) => `missing field(s): ${r.missing.join(', ')} — the seven fields are ${r.keys.join(' · ')}` },
+  { id: 'empty-field', test: (r) => r.empty.length > 0,
+    msg: (r) => `empty field(s): ${r.empty.join(', ')} — placeholders are not content` },
+  { id: 'runs-no-command', test: (r) => r.has('runs') && !CODE_SPAN.test(r.text('runs')),
+    msg: () => 'Runs carries no command in a code span — the reader must be able to re-run it' },
+  { id: 'runs-no-moment', test: (r) => r.has('runs') && !MOMENT.test(r.text('runs')),
+    msg: () => 'Runs carries no moment (YYYY-MM-DD HH:MM) — when did it run?' },
+  { id: 'found-not-explicit', test: (r) => r.has('found') && !LIST_ITEM.test(r.text('found')) && !EXPLICIT_NONE.test(r.text('found')),
+    msg: () => 'Found is neither a list of defects nor an explicit "none" — zero is a finding, silence is not' },
+  { id: 'verdict-not-named', test: (r) => r.has('verdict') && !VERDICT_WORD.test(r.text('verdict')),
+    msg: () => 'Verdict names none of pass · fail · blocked · partial' },
+];
+export const RULE_IDS = RULES.map((r) => r.id);
+
+// ---------------------------------------------------------------------------
+// Parsing — the H2 headings of a report (`## 3. Runs`, `## Runs`, `## 3) <localized keyword> …`) and their bodies.
+const roleOf = (title) => {
+  for (const [lang, keys] of Object.entries(KEYWORDS))
+    for (let i = 0; i < keys.length; i++)
+      if (new RegExp(`^${keys[i]}(?![\\p{L}])`, 'iu').test(title)) return { lang, role: ROLES[i] };
+  return null;
+};
+
+export function parseReport(name, src) {
+  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const fields = {};
+  let lang = null, cur = null, fence = false;
+  for (const l of lines) {
+    if (/^\s*```/.test(l)) { fence = !fence; if (cur) fields[cur] += l + '\n'; continue; }
+    const m = !fence && /^##\s+(?:\d+[.)]\s*)?(.+?)\s*$/.exec(l);
+    if (m) {
+      const hit = roleOf(m[1]);
+      if (hit) { lang = lang || hit.lang; cur = hit.role; fields[cur] = fields[cur] || ''; continue; }
+      cur = null; continue;                                          // a foreign H2 — its body is nobody's
+    }
+    if (cur) fields[cur] += l + '\n';
+  }
+  lang = lang || 'en';
+  const keys = KEYWORDS[lang];
+  const missing = ROLES.filter((r) => !(r in fields)).map((r) => keys[ROLES.indexOf(r)]);
+  const empty = ROLES.filter((r) => r in fields && !hasContent(fields[r])).map((r) => keys[ROLES.indexOf(r)]);
+  return { name, lang, keys, fields, missing, empty,
+           has: (role) => role in fields && hasContent(fields[role]),
+           text: (role) => stripScaffold(fields[role] || '') };
+}
+
+export function lint(name, src) {
+  const r = parseReport(name, src);
+  return RULES.filter((rule) => rule.test(r)).map((rule) => ({ id: rule.id, msg: rule.msg(r) }));
+}
+
+// ---------------------------------------------------------------------------
+function homeOf(arg) {
+  if (arg) return arg;
+  try {
+    const j = JSON.parse(readFileSync(MARKER, 'utf8'));
+    if (typeof j.testdocs === 'string' && j.testdocs.trim()) return j.testdocs.trim();
+  } catch { /* no marker or unreadable — the default home stands */ }
+  return DEFAULT_HOME;
+}
+
+function check(arg) {
+  const home = homeOf(arg);
+  const dir = join(home, REPORTS_DIR);
+  const shown = dir.replace(/\\/g, '/') + '/';
+  const files = existsSync(dir) && statSync(dir).isDirectory()
+    ? readdirSync(dir).filter((f) => /\.md$/i.test(f) && statSync(join(dir, f)).isFile()).sort() : [];
+  if (!files.length) {
+    console.log(`⚠ testrun-lint SKIPPED — no reports catalog at ${shown} (home "${home}"${arg ? '' : ` — ${MARKER} → testdocs, default ${DEFAULT_HOME}/`}); nothing was judged — an unwritten report is invisible to this linter (exit ${EXIT_SKIPPED})`);
+    process.exit(EXIT_SKIPPED);
+  }
+  let nF = 0;
+  for (const f of files)
+    for (const x of lint(f, readFileSync(join(dir, f), 'utf8'))) { nF++; console.log(`✖ ${shown}${f} — ${x.id}: ${x.msg}`); }
+  if (nF) { console.log(`✖ testrun-lint: ${nF} finding(s) in ${files.length} report(s) under ${shown} — a run without a report in form is a run the owner cannot see`); process.exit(1); }
+  console.log(`✅ testrun-lint OK — ${files.length} report(s) under ${shown}, 0 findings`);
+}
+
+// ---------------------------------------------------------------------------
+// selftest — every rule proves BOTH answers on in-memory fixtures, in both shipped languages:
+// mutation N reddens rule N and only N; the clean report yields 0; the shipped template, unfilled, reddens.
+const CLEAN = {
+  en: {
+    work: 'The polygon of the deploy/update machinery against `plans/104` criteria 7–8; case set — the 24 suites of `tools/sandbox-suite.mjs`.',
+    contour: 'Machinery `KAIF-CORE.mjs` + tool modules; stand — a clean checkout at `231c063`, Node v24, Windows 11; no production involved.',
+    runs: '| # | Moment | Command | Exit / outcome |\n|---|---|---|---|\n| 1 | 2026-09-12 11:05 +03:00 | `npm run test:core` | 0 — all 24 suites green |',
+    checks: '| Case | Status | Observation |\n|---|---|---|\n| s25 linter half | pass | selftest OK, bad fixture exit 1 with 7 rules named |',
+    found: '- none',
+    traces: '- the polygon log: `run.log` in the session scratchpad',
+    verdict: 'pass — every suite green on the first run after the build.',
+  },
+  ru: {
+    work: 'Полигон машинерии развёртывания и обновления против критериев 7–8 `plans/104`; набор кейсов — 24 свода `tools/sandbox-suite.mjs`.',
+    contour: 'Машинерия `KAIF-CORE.mjs` + tool-модули; стенд — чистый чекаут `231c063`, Node v24, Windows 11; продакшена нет.',
+    runs: '| # | Момент | Команда | Код / исход |\n|---|---|---|---|\n| 1 | 2026-09-12 11:05 +03:00 | `npm run test:core` | 0 — все 24 свода зелёные |',
+    checks: '| Кейс | Статус | Наблюдение |\n|---|---|---|\n| половина линтера s25 | pass | selftest OK, плохая фикстура exit 1 с 7 правилами |',
+    found: 'ноль',
+    traces: '- лог полигона: `run.log` в скретчпаде сессии',
+    verdict: 'pass — все своды зелёные с первого прогона после сборки.',
+  },
+};
+// Each mutation is a role → replacement body (null = drop the section); the name mutation is separate.
+const MUTATIONS = {
+  en: {
+    'missing-field': ['contour', null],
+    'empty-field': ['contour', '<the stand it ran on>'],
+    'runs-no-command': ['runs', '| 1 | 2026-09-12 11:05 +03:00 | ran the polygon by hand | 0 |'],
+    'runs-no-moment': ['runs', '| 1 | this morning | `npm run test:core` | 0 |'],
+    'found-not-explicit': ['found', 'We looked at the output and everything seemed fine.'],
+    'verdict-not-named': ['verdict', 'Everything went well, no worries.'],
+  },
+  ru: {
+    'missing-field': ['contour', null],
+    'empty-field': ['contour', '<стенд, на котором гоняли>'],
+    'runs-no-command': ['runs', '| 1 | 2026-09-12 11:05 +03:00 | гоняли полигон руками | 0 |'],
+    'runs-no-moment': ['runs', '| 1 | утром | `npm run test:core` | 0 |'],
+    'found-not-explicit': ['found', 'Смотрели вывод, всё выглядело спокойно.'],
+    'verdict-not-named': ['verdict', 'Всё прошло хорошо.'],
+  },
+};
+const CLEAN_NAME = '2026-09-12_polygon.md';
+const render = (lang, bodies) => {
+  const keys = KEYWORDS[lang];
+  let out = `# Test run report — polygon\n\n**Created:** 2026-09-12 11:20 +03:00\n\n`;
+  ROLES.forEach((role, i) => { if (bodies[role] === null) return; out += `## ${i + 1}. ${keys[i]}\n\n${bodies[role]}\n\n`; });
+  return out;
+};
+
+function selftest() {
+  let failed = 0, cases = 0;
+  const say = (ok, name) => { cases++; if (!ok) { failed++; console.log(`  ✗ ${name}`); } else console.log(`  ✓ ${name}`); };
+  for (const lang of Object.keys(CLEAN)) {
+    const clean = lint(CLEAN_NAME, render(lang, CLEAN[lang]));
+    say(clean.length === 0, `${lang}: clean report — 0 findings${clean.length ? ' (got ' + clean.map((x) => x.id).join(',') + ')' : ''}`);
+    const outside = lint('smoke.md', render(lang, CLEAN[lang])).map((x) => x.id);
+    say(outside.length === 1 && outside[0] === 'outside-catalog', `${lang}: mutation outside-catalog → exactly [outside-catalog] (got [${outside.join(',')}])`);
+    for (const id of RULE_IDS) {
+      if (id === 'outside-catalog') continue;
+      const mut = MUTATIONS[lang][id];
+      say(!!mut, `${lang}: rule ${id} has a mutation`);
+      if (!mut) continue;
+      const got = lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], [mut[0]]: mut[1] })).map((x) => x.id);
+      say(got.length === 1 && got[0] === id, `${lang}: mutation ${id} → exactly [${id}] (got [${got.join(',')}])`);
+    }
+  }
+  // A report whose headings are recognised in neither language names all seven fields missing.
+  const foreign = lint(CLEAN_NAME, '# Report\n\n## Summary\n\nfine\n').map((x) => x.id);
+  say(foreign.length === 1 && foreign[0] === 'missing-field', `unrecognised headings → [missing-field] naming all seven (got [${foreign.join(',')}])`);
+  // The shipped template, copied unfilled, reddens — placeholders are not content.
+  const here = dirname(fileURLToPath(import.meta.url));
+  const tmpl = [join(here, '..', '_testrun-report-template.md'), join(here, '..', 'templates', '_testrun-report-template.md')].find((p) => existsSync(p));
+  if (tmpl) {
+    const text = readFileSync(tmpl, 'utf8');
+    const got = lint(CLEAN_NAME, text);
+    const allSeven = got.length === 1 && got[0].id === 'empty-field' && KEYWORDS.en.every((k) => got[0].msg.includes(k));
+    say(allSeven, `the shipped template, unfilled → exactly [empty-field] naming all seven fields (got [${got.map((x) => x.id).join(',')}])`);
+    // One filled field is not a report: the copy with a real Runs row and nothing else names the other six.
+    const runsOnly = text.replace(/## 3\. Runs[\s\S]*?(?=## 4\. )/, `## 3. Runs\n\n${CLEAN.en.runs}\n\n`);
+    const six = lint(CLEAN_NAME, runsOnly);
+    say(six.length === 1 && six[0].id === 'empty-field' && !six[0].msg.includes('Runs') &&
+        KEYWORDS.en.filter((k) => k !== 'Runs').every((k) => six[0].msg.includes(k)),
+      `the template with only Runs filled → [empty-field] naming the other six (got [${six.map((x) => x.id).join(',')}])`);
+  } else console.log('  · the shipped template is not beside the module — its unfilled-copy proof skipped (not a failure)');
+  if (failed) { console.error(`✖ testrun-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
+  console.log(`✅ testrun-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean report`);
+}
+
+if (CMD === 'check') check(ARG);
+else if (CMD === 'selftest') selftest();
+else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | selftest'); process.exit(1); }
+``````
+
 > **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
 
 ``````js
@@ -13534,6 +13851,70 @@ working (turn the controlling flag off, remove the controlling parameter).
 the coverage matrix names its holes · the control cases ran. Defects found go to `bugs/` in the
 defined shape (`/report-bug` → `BUG_FIXING_FRAMEWORK.md`): steps to reproduce · expected vs
 actual · severity/priority · environment · evidence.
+``````
+
+> **FILE: `.kaif/_testrun-report-template.md`** — the run-report template — TESTING_FRAMEWORK "An executed run produces its report" copies it into <testdocs>/reports/ by date and fills the copy
+
+``````md
+# Test run report — <WORK / FEATURE / SUITE>
+
+> **How to use this file.** COPY it into the reports catalog of the project's test-doc home
+> (default `testcases/reports/`, created on first use; a project may name another home in
+> `.kaif/kaif.json` → `testdocs`) as `<YYYY-MM-DD>_<work-slug>.md` — the date-first name IS the
+> index — then fill every `<PLACEHOLDER>`; never fill this template in place. The rule that
+> produces this document is `TESTING_FRAMEWORK.md` → "An executed run produces its report"; the
+> form is judged by `node .kaif/tools/kaif-testrun-lint.mjs check` (seven fields, none empty; Runs
+> with a command and a moment per run; Found as a list or an explicit "none"; a named Verdict).
+
+**Created:** <YYYY-MM-DD HH:MM ±HH:MM> · **Run by:** <the agent / the model, or the human> ·
+**Version/build:** <...>
+
+## 1. Work
+
+<What was tested and against which basis: the feature or change, the case set
+(`testcases/TC_<feature>_<slug>.md`), the plan or the ticket. One paragraph.>
+
+## 2. Contour
+
+<The part of the system under test and the stand it ran on: environment, build identity, data
+state — and the `REAL WORLD:` difference line when production is involved.>
+
+## 3. Runs
+
+<How many runs, WHEN each ran — a timestamp per run — and the exact command of each, in a code
+span, verbatim as typed, so the reader can re-run it.>
+
+| # | Moment | Command | Exit / outcome |
+|---|---|---|---|
+| 1 | <YYYY-MM-DD HH:MM ±HH:MM> | `<command as run>` | <exit code · one-line outcome> |
+
+## 4. Checks
+
+<What was verified, case by case, with the status `pass` · `fail` · `blocked` · `skipped` and the
+observation named (what was seen). Cite the case ids of the case set where one exists.>
+
+| Case | Status | Observation |
+|---|---|---|
+| <C1 / the assert / the screen> | <pass / fail / blocked / skipped> | <what was seen> |
+
+## 5. Found
+
+<Defects found — one list item per defect with its bug-doc address (`bugs/NN`) — or the explicit
+word `none`: zero is a finding, silence is not.>
+
+- <bugs/NN — one line, or the word none>
+
+## 6. Traces
+
+<Where the evidence lives: log files, screenshots, artifacts, session transcripts — paths or
+addresses the reader can open.>
+
+- <path or address>
+
+## 7. Verdict
+
+<`pass` · `fail` · `blocked` · `partial` — one of the four, then the reason in one sentence. A
+`[TESTED: …]` marker that cites this run names this file.>
 ``````
 
 > **FILE: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** — interactive-contour contract page — verbatim; the shipped generator implements it, a project contour is checked against it
