@@ -172,9 +172,12 @@ ask": a question before the search is the same defect with better manners. `/fab
 The two legal option forms (a table row `| **A** | … |` or a list item `- **A)** …`), the declared free
 field, and the pre-flight that refuses to open a page whose question has neither (exit 3 — the page would
 open without radio buttons, origin issue #51) are written in one page: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`.
-Before opening the page, run the shipped generator's pre-flight — `node .kaif/tools/contour/review.mjs
-<interview.md> --no-open` — and fix the question it names; a project that runs its own contour checks the
-document against that page by hand. Paragraph headings like `**A. …**` are not options.
+Before opening the page, run the shipped generator's form check — `node .kaif/tools/contour/review.mjs
+<interview.md> --check` — and fix what it names (a pre-flight refusal, or a block that looks like a question but
+is not in the form `### Q<n>.`). The check is a door of its own: it never serves, never sounds, never calls and
+never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
+only the window is not opened). A project that runs its own contour checks the document against that page by hand.
+Paragraph headings like `**A. …**` are not options.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the

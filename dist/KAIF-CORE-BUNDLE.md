@@ -5500,9 +5500,12 @@ ask": a question before the search is the same defect with better manners. `/fab
 The two legal option forms (a table row `| **A** | … |` or a list item `- **A)** …`), the declared free
 field, and the pre-flight that refuses to open a page whose question has neither (exit 3 — the page would
 open without radio buttons, origin issue #51) are written in one page: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`.
-Before opening the page, run the shipped generator's pre-flight — `node .kaif/tools/contour/review.mjs
-<interview.md> --no-open` — and fix the question it names; a project that runs its own contour checks the
-document against that page by hand. Paragraph headings like `**A. …**` are not options.
+Before opening the page, run the shipped generator's form check — `node .kaif/tools/contour/review.mjs
+<interview.md> --check` — and fix what it names (a pre-flight refusal, or a block that looks like a question but
+is not in the form `### Q<n>.`). The check is a door of its own: it never serves, never sounds, never calls and
+never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
+only the window is not opened). A project that runs its own contour checks the document against that page by hand.
+Paragraph headings like `**A. …**` are not options.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
@@ -9475,6 +9478,27 @@ export function preflight(md) {
   return problems;
 }
 
+// ── QL1 (2.7, origin issue #56): the form check WITHOUT a page — one parse for `--check` and for the show ──
+// A candidate block is a level 2–4 heading that is a recognised question OR looks like one: a numbered
+// heading ending with `?`, or `Question <n>` / its localized word. An unrecognised candidate is the #56
+// class: the page would open WITHOUT that question and nobody would notice until the owner did.
+const CANDIDATE_Q_RE = new RegExp('^#{2,4}\\s+(?:\\d+[.)]?\\s+.*\\?\\s*$|(?:' + PARSER.questionWords + ')\\s*\\d+)', 'iu');
+export function checkForm(md) {
+  const lines = normalize(md).split('\n');
+  const questions = parseQuestions(md);
+  const known = new Set(questions.map((q) => q.line));
+  const candidates = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^\s*(```|~~~)/.test(line)) { inFence = !inFence; return; }
+    if (inFence) return;
+    if (known.has(i + 1)) candidates.push({ line: i + 1, text: line.trim(), recognised: true });
+    else if (CANDIDATE_Q_RE.test(line)) candidates.push({ line: i + 1, text: line.trim(), recognised: false });
+  });
+  return { blocks: candidates.length, questions, recognised: questions.map((q) => q.id),
+    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md) };
+}
+
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────
 export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 function inline(s) {
@@ -9679,7 +9703,9 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 //   node .kaif/tools/contour/review.mjs <image>  --mockup        # the image + a comment field, Done
 //   node .kaif/tools/contour/review.mjs --queue [--include-stale] | --queue --list | --enqueue <doc> [--notice]
 //   node .kaif/tools/contour/review.mjs --mark-shown <doc> --transport chat | <doc> --no-serve | --selftest
-//   flags: --no-open (serve, do not open a window) · --silent (no call) · --timeout N (seconds; automation only)
+//   flags: --no-open (serve, do not open a window — the call STILL sounds) · --silent (no call) · --timeout N (seconds; automation only)
+//   node .kaif/tools/contour/review.mjs <doc.md> --check   # the form check WITHOUT a page (QL1, #56): parse + pre-flight + self-check,
+//                                                          # prints `blocks N, recognised M`, exit 3/0; never serves, never calls, never records a showing
 //
 // Parameters are READ from .kaif/kaif.json (`language`, `projectName`, optional `contour.*`) — never
 // asked (owner rule #97). The one-page contract this file implements: .kaif/INTERACTIVE_CONTOUR_SPEC.md.
@@ -9707,7 +9733,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, renderMd, splitParagraphs, recordDecision, preflight, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -10024,8 +10050,10 @@ export function buildPage(root, docPath) {
   const qSection = questions.length
     ? '<h2>' + t.head.questions + '</h2>' + questions.map((q) => qCard(q, t)).join('\n')
     : (artifacts.length ? '' : '<h2>' + t.head.questions + '</h2><p>' + t.head.noQuestions + '</p>');
+  const unrec = checkForm(md).unrecognised.length; // QL1 (#56): the header says when the page knows only part of the blocks
+  const formNote = unrec ? ' <span class="langnote">' + esc(t.check.partialHead(unrec)) + '</span>' : '';
   const html = pageShell(cfg, {
-    title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + esc(title) + '</span>' + summary,
+    title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + esc(title) + '</span>' + summary + formNote,
     main: '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel, t),
     questions, artifacts, face: 'interview',
   });
@@ -10420,6 +10448,8 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         notice = true;
         log('The document has no recognised questions and no outbound — showing it as a notice (I37).');
       }
+      const cfAuto = checkForm(mdAuto); // QL1 (#56): a page that knows only PART of the blocks says so out loud
+      if (cfAuto.unrecognised.length) log(t.check.partial(cfAuto.unrecognised.length));
     } catch { /* an unreadable document fails below with its own voice */ }
   }
   return new Promise((resolveP) => {
@@ -10595,6 +10625,27 @@ export function gateForOpen(root, docPath) {
   return null;
 }
 
+// ── QL1 (2.7, origin issue #56 — EXP-0123): `--check <doc>` — the form check WITHOUT a page. The field's only
+// check of a document was the show (`--no-open` still SERVES and CALLS), and the origin itself called its
+// owner by voice at midnight to an answered interview while "checking". This door parses, runs the pre-flight
+// and the render self-check, prints what was recognised and what was not, and exits 3/0 — no server, no sound,
+// no call, no `shown.json`. One parse (`checkForm`) serves both this door and the warning printed at a real show.
+export function checkDoc(root, docPath, log = console.log) {
+  const cfg = cfgOf(root), t = T(cfg);
+  const rel = relDoc(root, docPath);
+  const md = readFileSync(resolve(root, docPath), 'utf8');
+  const cf = checkForm(md);
+  log(t.check.summary(rel, cf.blocks, cf.recognised));
+  if (cf.unrecognised.length) { log(t.check.unrecognised(cf.unrecognised.length)); for (const u of cf.unrecognised) log(t.check.line(u.line, u.text)); }
+  const nAns = cf.questions.filter((q) => q.answered).length;
+  log(t.check.counts(cf.questions.length - nAns, nAns));
+  const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
+  if (gate) for (const l of gate) log(l);
+  if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
+  log(t.check.ok);
+  return EXIT_DECIDED;
+}
+
 // ── Selftest (no browser): pre-flight red on the "options as paragraphs" fixture, green on the
 // canonical forms; the three faces render; records land in three places; the fact of showing ────
 export function selftest(log = console.log) {
@@ -10658,6 +10709,26 @@ export function selftest(log = console.log) {
   const page = buildPage(root, GOOD);
   ok(radioGroupsOf(page.html) === 1 && (page.html.match(/type="radio"/g) || []).length === 3, 'interview page: one radio group of three for Q1, none for the free-field Q2');
   ok(selfCheck(page).ok && gateForOpen(root, GOOD) === null, 'self-check: radio groups == questions with options → the gate opens');
+  // QL1 (#56): --check — the form door without a page: candidates vs recognised, exit 3/0, no show, no call, no shown.json
+  const fxCheck = '# Interview #098\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n\n### 2. And what about this one?\n\nprose\n\n### Question 3\n\nmore prose\n\n## 4. Context\n\nnot a question\n';
+  const cf = checkForm(fxCheck);
+  ok(cf.blocks === 3 && cf.recognised.join() === 'Q1' && cf.unrecognised.length === 2 && cf.unrecognised[0].line === 12 && cf.unrecognised[1].line === 16,
+    'checkForm: Q1 recognised; a numbered heading ending with ? and a `Question 3` heading are unrecognised candidates; `## 4. Context` is not one');
+  const CHK = 'interviews/interview_098_check.md';
+  writeFileSync(join(root, CHK), fxCheck);
+  const lines = []; const cap = (l) => lines.push(String(l));
+  const codeUnrec = checkDoc(root, CHK, cap);
+  ok(codeUnrec === 3 && lines.some((l) => /blocks 3, recognised 1: Q1/.test(l)) && lines.some((l) => /line 12/.test(l)) && lines.some((l) => /REFUSED/.test(l)),
+    '--check: partial recognition → exit 3, names the unrecognised lines (the #56 class)');
+  lines.length = 0;
+  ok(checkDoc(root, BAD, cap) === 3 && lines.some((l) => /PRE-FLIGHT REFUSED/.test(l)), '--check: the options-as-paragraphs fixture → exit 3 with the pre-flight refusal');
+  lines.length = 0;
+  ok(checkDoc(root, GOOD, cap) === 0 && lines.some((l) => /check OK/.test(l)) && !lines.some((l) => /Page is up|CALL:|Shown recorded/.test(l)),
+    '--check: the canonical document → exit 0, "check OK", and no line of a show or a call');
+  ok(!existsSync(join(root, 'interviews', 'decisions', 'shown.json')), '--check never records a showing (shown.json absent)');
+  const partialPage = buildPage(root, CHK);
+  ok(partialPage.html.includes('not recognised: 2 question-like block(s)'), 'the page header says out loud that 2 question-like blocks are not on it');
+  rmSync(join(root, CHK), { force: true }); // the fixture must not join the queue counted by the batch cases below
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
   ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("'/alive'"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse');
@@ -10757,6 +10828,8 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const face = args.includes('--proofread') ? 'proofread' : args.includes('--mockup') ? 'mockup' : 'interview';
   const usage = () => {
     console.error('usage: ' + CLI_NAME + ' <doc.md> [--no-serve|--no-open|--silent|--timeout N]\n' +
+      '       ' + CLI_NAME + ' <doc.md> --check         (the form check WITHOUT a page: no server, no sound, no call, no showing; exit 3 = fix the form)\n' +
+      '       --no-open serves the page and STILL CALLS the owner (the window is just not opened) — a form check is --check, not --no-open\n' +
       '       ' + CLI_NAME + ' <doc.md> --notice        (something to tell; "read" is the outcome)\n' +
       '       ' + CLI_NAME + ' <doc.md> --proofread     (a comment field under every paragraph)\n' +
       '       ' + CLI_NAME + ' <image> --mockup         (the image + comments)\n' +
@@ -10782,6 +10855,10 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     recordShown(root, [doc], transport);
     console.log('Shown recorded (I40): ' + doc + ' · ' + transport + ' → ' + cfg.decisionsDir + '/' + SHOWN_FILE);
     process.exit(0);
+  }
+  if (args.includes('--check')) { // QL1 (#56): the form check is a DOOR of its own — never the show
+    if (!docPath) usage();
+    process.exit(checkDoc(root, docPath));
   }
   if (args.includes('--queue') && args.includes('--list')) {
     const r = listQueue(root, { includeStale: opts.includeStale });
@@ -10859,6 +10936,8 @@ export const PARSER = {
   letters: 'A-ZА-Я',
   // question heading prefixes: `### Q1.` (EN) · `### В1.` (RU)
   questionPrefixes: 'Q|В',
+  // a heading that LOOKS like a question but is not in the form above (QL1, origin #56): `### Question 3` · `### Вопрос 3`
+  questionWords: 'Question|Вопрос',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
   // a counter-question is NOT an answer (contract C4 rule 2)
@@ -10945,6 +11024,17 @@ const EN = {
     how: (cmd) => 'Raise it as a page: ' + cmd + ' --queue · asked it pointedly in chat — record the fact: ' + cmd + ' --mark-shown <doc> --transport chat',
     dead: 'A dead document with nothing to show → close it by status and it leaves the queue.' },
   transport: { page: 'page', batch: 'batch', chat: 'chat' },
+  // `--check <doc>` — the form check WITHOUT a page (2.7 QL1, origin issue #56: the only check was the show, and the show is the call)
+  check: {
+    summary: (doc, n, ids) => 'check: ' + doc + ' — blocks ' + n + ', recognised ' + ids.length + (ids.length ? ': ' + ids.join(', ') : ''),
+    unrecognised: (n) => 'not recognised: ' + n + ' block(s) look like questions but are not in the form `### Q<n>.` — the page would open WITHOUT them:',
+    line: (l, text) => '  line ' + l + ': ' + text,
+    counts: (w, a) => 'unanswered ' + w + ', answered ' + a,
+    ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
+    refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
+    partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
+    partialHead: (n) => 'not recognised: ' + n + ' question-like block(s) — not on this page',
+  },
 };
 
 const RU = {
@@ -11005,6 +11095,16 @@ const RU = {
     how: (cmd) => 'Подними страницей: ' + cmd + ' --queue · задал точечно в чате — запиши факт: ' + cmd + ' --mark-shown <док> --transport чат',
     dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.' },
   transport: { page: 'страница', batch: 'пачка', chat: 'чат' },
+  check: {
+    summary: (doc, n, ids) => 'проверка: ' + doc + ' — блоков ' + n + ', узнано ' + ids.length + (ids.length ? ': ' + ids.join(', ') : ''),
+    unrecognised: (n) => 'не узнано: ' + n + ' блок(ов) похожи на вопрос, но не в форме `### В<n>.` / `### Q<n>.` — страница откроется БЕЗ них:',
+    line: (l, text) => '  строка ' + l + ': ' + text,
+    counts: (w, a) => 'без ответа ' + w + ', отвечено ' + a,
+    ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
+    refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
+    partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',
+    partialHead: (n) => 'не узнано: ' + n + ' блок(ов), похожих на вопрос, — на этой странице их нет',
+  },
 };
 
 const DICTS = { en: EN, ru: RU };
@@ -13330,8 +13430,11 @@ for each question Q<n>:
 self-check after render: count(radio groups) == count(questions)  →  mismatch = exit 3, never a silent page
 ```
 
-The generator runs this pre-flight itself; a project with its own contour runs it as `node
-.kaif/tools/contour/review.mjs <doc> --no-open` and treats exit 3 as a red gate.
+The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `node
+.kaif/tools/contour/review.mjs <doc> --check` — parse + pre-flight + render self-check, prints `blocks N, recognised M: …`
+and what it did NOT recognise, exit 3 / 0; it never serves, never sounds, never calls, never records a showing.
+`--no-open` is NOT a check: it serves the page and calls the owner (only the window is not opened). A page that
+recognised only part of the question-like blocks says so out loud — in the process log and in its header.
 
 ## 3. Records — three files, derived names, never overwritten
 

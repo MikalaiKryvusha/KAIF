@@ -27,6 +27,8 @@ export const PARSER = {
   letters: 'A-ZА-Я',
   // question heading prefixes: `### Q1.` (EN) · `### В1.` (RU)
   questionPrefixes: 'Q|В',
+  // a heading that LOOKS like a question but is not in the form above (QL1, origin #56): `### Question 3` · `### Вопрос 3`
+  questionWords: 'Question|Вопрос',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
   // a counter-question is NOT an answer (contract C4 rule 2)
@@ -113,6 +115,17 @@ const EN = {
     how: (cmd) => 'Raise it as a page: ' + cmd + ' --queue · asked it pointedly in chat — record the fact: ' + cmd + ' --mark-shown <doc> --transport chat',
     dead: 'A dead document with nothing to show → close it by status and it leaves the queue.' },
   transport: { page: 'page', batch: 'batch', chat: 'chat' },
+  // `--check <doc>` — the form check WITHOUT a page (2.7 QL1, origin issue #56: the only check was the show, and the show is the call)
+  check: {
+    summary: (doc, n, ids) => 'check: ' + doc + ' — blocks ' + n + ', recognised ' + ids.length + (ids.length ? ': ' + ids.join(', ') : ''),
+    unrecognised: (n) => 'not recognised: ' + n + ' block(s) look like questions but are not in the form `### Q<n>.` — the page would open WITHOUT them:',
+    line: (l, text) => '  line ' + l + ': ' + text,
+    counts: (w, a) => 'unanswered ' + w + ', answered ' + a,
+    ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
+    refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
+    partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
+    partialHead: (n) => 'not recognised: ' + n + ' question-like block(s) — not on this page',
+  },
 };
 
 const RU = {
@@ -173,6 +186,16 @@ const RU = {
     how: (cmd) => 'Подними страницей: ' + cmd + ' --queue · задал точечно в чате — запиши факт: ' + cmd + ' --mark-shown <док> --transport чат',
     dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.' },
   transport: { page: 'страница', batch: 'пачка', chat: 'чат' },
+  check: {
+    summary: (doc, n, ids) => 'проверка: ' + doc + ' — блоков ' + n + ', узнано ' + ids.length + (ids.length ? ': ' + ids.join(', ') : ''),
+    unrecognised: (n) => 'не узнано: ' + n + ' блок(ов) похожи на вопрос, но не в форме `### В<n>.` / `### Q<n>.` — страница откроется БЕЗ них:',
+    line: (l, text) => '  строка ' + l + ': ' + text,
+    counts: (w, a) => 'без ответа ' + w + ', отвечено ' + a,
+    ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
+    refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
+    partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',
+    partialHead: (n) => 'не узнано: ' + n + ' блок(ов), похожих на вопрос, — на этой странице их нет',
+  },
 };
 
 const DICTS = { en: EN, ru: RU };

@@ -34,8 +34,11 @@ for each question Q<n>:
 self-check after render: count(radio groups) == count(questions)  →  mismatch = exit 3, never a silent page
 ```
 
-The generator runs this pre-flight itself; a project with its own contour runs it as `node
-.kaif/tools/contour/review.mjs <doc> --no-open` and treats exit 3 as a red gate.
+The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `node
+.kaif/tools/contour/review.mjs <doc> --check` — parse + pre-flight + render self-check, prints `blocks N, recognised M: …`
+and what it did NOT recognise, exit 3 / 0; it never serves, never sounds, never calls, never records a showing.
+`--no-open` is NOT a check: it serves the page and calls the owner (only the window is not opened). A page that
+recognised only part of the question-like blocks says so out loud — in the process log and in its header.
 
 ## 3. Records — three files, derived names, never overwritten
 

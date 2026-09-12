@@ -73,6 +73,13 @@ writeFileSync(join(P, 'interviews', 'interview_052_probe.md'), GOOD_052);
 r = runGen(P, ['interviews/interview_051_probe.md', '--no-open']);
 ok(r.code === 3, 's22 B: #051 «варианты абзацами» → предполёт отказывает открывать, exit 3 (критерий 2)', 'exit ' + r.code + ': ' + r.out.slice(-300));
 ok(/Q1/.test(r.out) && /\*\*A\)\*\*/.test(r.out) && /radio/i.test(r.out), 's22 B: отказ называет вопрос Q1, форму «- **A)**» и слово «radio»', r.out.slice(-300));
+// QL1 (2.7, #56): --check — the form door on the deployed copy: exit 3/0, no page, no call, no shown.json
+r = runGen(P, ['interviews/interview_051_probe.md', '--check']);
+ok(r.code === 3 && /Q1/.test(r.out) && /radio/i.test(r.out) && !/Page is up|CALL:|Shown recorded/.test(r.out),
+   's22 B: --check на #051 → exit 3, называет Q1 и radio; ни «Page is up», ни «CALL:», ни факта показа (QL1, #56)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = runGen(P, ['interviews/interview_052_probe.md', '--check']);
+ok(r.code === 0 && /Q1/.test(r.out) && /(узнано|recognised) 1/.test(r.out) && !/Page is up|CALL:|Shown recorded/.test(r.out) && !existsSync(join(P, 'interviews', 'decisions', 'shown.json')),
+   's22 B: --check на #052 → exit 0, «блоков 1, узнано 1: Q1», страницы и зова нет, shown.json не появился', 'exit ' + r.code + ': ' + r.out.slice(-300));
 r = runGen(P, ['interviews/interview_051_probe.md', '--no-serve']);
 ok(r.code === 3, 's22 B: предполёт стоит и перед --no-serve (рендер сломанной страницы не выдаётся)', r.out.slice(-200));
 r = runGen(P, ['interviews/interview_052_probe.md', '--no-serve']);

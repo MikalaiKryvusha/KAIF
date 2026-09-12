@@ -283,6 +283,27 @@ export function preflight(md) {
   return problems;
 }
 
+// ── QL1 (2.7, origin issue #56): the form check WITHOUT a page — one parse for `--check` and for the show ──
+// A candidate block is a level 2–4 heading that is a recognised question OR looks like one: a numbered
+// heading ending with `?`, or `Question <n>` / its localized word. An unrecognised candidate is the #56
+// class: the page would open WITHOUT that question and nobody would notice until the owner did.
+const CANDIDATE_Q_RE = new RegExp('^#{2,4}\\s+(?:\\d+[.)]?\\s+.*\\?\\s*$|(?:' + PARSER.questionWords + ')\\s*\\d+)', 'iu');
+export function checkForm(md) {
+  const lines = normalize(md).split('\n');
+  const questions = parseQuestions(md);
+  const known = new Set(questions.map((q) => q.line));
+  const candidates = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^\s*(```|~~~)/.test(line)) { inFence = !inFence; return; }
+    if (inFence) return;
+    if (known.has(i + 1)) candidates.push({ line: i + 1, text: line.trim(), recognised: true });
+    else if (CANDIDATE_Q_RE.test(line)) candidates.push({ line: i + 1, text: line.trim(), recognised: false });
+  });
+  return { blocks: candidates.length, questions, recognised: questions.map((q) => q.id),
+    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md) };
+}
+
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────
 export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 function inline(s) {
