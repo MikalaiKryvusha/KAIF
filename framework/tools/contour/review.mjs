@@ -954,7 +954,11 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       mkdirSync(decisionsAbs(root), { recursive: true });
       writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
-      if (open) log('Window: ' + openWindow(url, log)); // showing is the agent's action (I15)
+      if (open) { // showing is the agent's action (I15) — and the claim is never wider than the observation (#63):
+        // the launcher's exit code says a process was started, not that a window stands on the owner's screen
+        const launcher = openWindow(url, log);
+        log('Window: ' + launcher + (launcher === 'none' ? '' : " — the launcher returned 0; whether a window is on the owner's screen this line does not verify (a screenshot does)"));
+      }
       if (open) { // I40: the fact of showing — at the moment of the open window
         const shownRels = batch ? forOwner().map((d) => d.doc) : [relDoc(root, docPath)];
         recordShown(root, shownRels, batch ? t.transport.batch : t.transport.page);

@@ -32,7 +32,16 @@ span, verbatim as typed, so the reader can re-run it.>
 
 ## 4. Checks
 
-<What was verified, case by case, with the status `pass` · `fail` · `blocked` · `skipped` and the
+<Two lines first, never summed into one number (`TESTING_FRAMEWORK.md` → "What the word "test"
+means"): hygiene is the developer's lint · unit · self-test · mutation; the functional run is the walk
+through the REAL product by the user's path whose result was READ — name what was walked, on which
+contour and what was read (the screen · the lines · the logs), or write the word `NONE`, which means
+fixed, not tested — and then the Verdict is `partial`, never `pass`.>
+
+Hygiene: <unit N/N · selftest N/N · mutation K red on target — or NONE>
+Functional run: <what was walked · on which contour (stage / production, as the user) · what was READ — or NONE>
+
+<Then what was verified, case by case, with the status `pass` · `fail` · `blocked` · `skipped` and the
 observation named (what was seen). Cite the case ids of the case set where one exists.>
 
 | Case | Status | Observation |

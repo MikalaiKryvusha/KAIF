@@ -537,6 +537,30 @@ The command judges the explicit patterns only; likeness stays the owner's verdic
 `/fable-judge` hunts owner text past the portrait (the owner-text-past-the-portrait hunt): written without
 the portrait open, checked by no independent pass, or shown before the fixes.
 
+**KAIF adds a fifth obligation — at step 7 (report): A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT**
+(origin issue #63 — the owner's word in the ticket, rendered from Russian: "you assert what you did not check";
+the agent had verified `curl` → 200 on the local server and reported "the page is open, waiting for you for
+three hours" — a screenshot showed no browser window at all). The canon demands observation for tests and
+demanded nothing for statements in a report, so an agent could verify the proxy it can reach cheaply and state
+a fact about the thing it never looked at — honestly, in good faith, with a green check behind it. Every
+statement about the state of the world names WHAT observed it; when a proxy was observed instead of the thing,
+the proxy is said aloud:
+
+| Verified | Said today | Say instead |
+|---|---|---|
+| the server answers 200 | "the page is open for you" | "the server answers 200; whether a window opened on your screen I did not check — do you see it?" |
+| the deploy returned 0 | "the feature works in production" | "deploy 0, smoke 24/24; behaviour for real people — not checked" |
+| the file was written, the signal sent | "delivered to the owner" | "written and signalled; delivery is confirmed only by your word" |
+| the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |
+
+The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds;
+until then the only legal form is "I did X; please check whether you see Y". The shipped contour prints this
+boundary itself at every window it raises (`Window: … — the launcher returned 0; whether a window is on the
+owner's screen this line does not verify`). `/fable-judge` hunts a claim wider than the run that backs it (the
+claim-wider-than-observation hunt). The same rule, seen from the other side, defines the word "test"
+(`TESTING_FRAMEWORK.md` → "What the word "test" means"): hygiene reported as "tested" is a claim wider than its
+observation — the judge hunts that too (the tested-on-hygiene-alone hunt).
+
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
 the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
@@ -1088,7 +1112,9 @@ the command (the owner doesn't and shouldn't). "Lies at path…", "opens by doub
 file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
 footnote of where it landed — never as an errand. No separate show tool: the review contour opens
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. **And a text the owner reads as his own is shown only
+contour, open the file with the system opener. **And the show is reported no wider than it was observed:**
+"the page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until
+then, "please check whether you see it" (the fable loop's fifth KAIF obligation; origin issue #63). **And a text the owner reads as his own is shown only
 AFTER it is written BY his portrait, checked independently by it and fixed:**
 `node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
 (the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
@@ -1768,6 +1794,27 @@ the project's sphere library: its *Verification by observation* and *Minimum evi
    worthless — always test against the OWNER'S requirements (`GOAL.md`, the idea, the plan), not only
    against the code's own consistency.
 
+## What the word "test" means — a functional run on the real product, by the user's path
+
+The word was never defined, and a session used it honestly while the owner read it as false (origin
+issue #62: "25 closed, all tested" on unit · self-test · mutant, recounted by the owner-QA as **3 of
+25**). The owner then defined "by hand" for an AI agent (decision #116, rendered): it writes itself the
+scenarios from the functionality of the module, the feature, the fixed bug, writes itself the machinery,
+and in the real product — stage or production — walks the application: presses the buttons, reads the
+lines, looks at the screen, reads the logs — as a QA would by hand. So:
+
+1. **A test is a functional run on the REAL product (stage or production), by the user's path, whose
+   result is READ.** The agent derives the scenarios from the functionality under test (the chain
+   below), writes the machinery that walks them (a browser driver, a CLI session, a log reader) and runs
+   it as the user would, READING the screen, the lines, the logs; never "the owner will test" — his eye judges taste.
+2. **Hygiene is not a test.** Lint, unit tests, self-tests, mutation proofs, guards — mandatory (gate 5
+   stays), never called "testing" in a report, a marker or a handover: they prove the check can fail, not
+   that the thing works for a person. Machinery that returns only an exit code is an instrument, not a
+   test: a run is a test when its result was read, and the report says what.
+3. **`[NOT-TESTED]` is inadmissible to production.** Marker rule 2 flips on a functional run only; the
+   run report carries it SEPARATE from hygiene (`Hygiene:` · `Functional run:` — never summed; `NONE` =
+   *fixed, not tested*); a bug's closing status carries the same two lines (`/report-bug`).
+
 ## The testing activities — the chain that makes "tested" mean something
 
 The trust contract below says how much to TRUST a result; this section says how the testing WORK
@@ -1821,7 +1868,8 @@ of the project language:
    initial comment.
 2. **Meeting `[NOT-TESTED]`** (yours or inherited) → do not build on it blindly: plan its verification,
    verify **by observation** (fable-method Step 5: it ran, it rendered, it counted — never inferred from
-   reading), then flip the marker to `[TESTED: …]` with the evidence named.
+   reading; and a FUNCTIONAL RUN on the real product, its result read — hygiene does not flip the marker:
+   the section on the word "test" above), then flip it to `[TESTED: …]` with the evidence named.
 3. **Meeting `[TESTED: …]`** → you may trust it and need not re-test — but keep a grain of doubt
    (principle 1: bugs always exist). If evidence contradicts the marker, the marker is wrong: investigate.
 4. **Testing found a defect** → file it (`/report-bug`, method: `BUG_FIXING_FRAMEWORK.md`), fix, re-test,
@@ -1873,8 +1921,8 @@ owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe twice, wrote `[T
 accepted", and the owner could see neither a command, nor a moment, nor what was found. A run that
 left no artifact is indistinguishable from a run that never happened. So:
 
-1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a manual
-   walk-through — in the test-doc home, as a catalog by date:
+1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a functional
+   run — in the test-doc home, as a catalog by date:
    `cp .kaif/_testrun-report-template.md testcases/reports/<YYYY-MM-DD>_<work>.md`
    (the home is `testcases/` by default; a project may name another in `.kaif/kaif.json` →
    `testdocs`). The date-first name IS the index: the directory listing is the list of runs, like
@@ -1882,7 +1930,8 @@ left no artifact is indistinguishable from a run that never happened. So:
 2. **Seven fields, none empty** — *Work* (what was tested and against which basis — the case set,
    the plan) · *Contour* (the part of the system and the stand: environment, build, data) · *Runs*
    (how many, WHEN — a timestamp per run — and the exact COMMANDS in code spans) · *Checks* (what
-   was verified, case by case, with statuses) · *Found* (the defects — or the explicit word "none":
+   was verified, case by case, with statuses — opening with two separate lines, `Hygiene:` and
+   `Functional run:` — what was walked · on which contour · what was READ, or `NONE`) · *Found* (the defects — or the explicit word "none":
    zero is a finding, silence is not) · *Traces* (where the evidence lives: logs, screenshots,
    artifacts — their paths) · *Verdict* (pass · fail · blocked · partial, with the reason).
 3. **A `[TESTED: …]` claim about a run names its report** — the marker carries the report's
@@ -1892,7 +1941,8 @@ left no artifact is indistinguishable from a run that never happened. So:
 4. **The linter judges the form, the judge judges the truth.** The optional tool module
    `node .kaif/tools/kaif-testrun-lint.mjs check` (`selftest`) reddens on a missing or empty field,
    on a report outside the date catalog, on *Runs* without a command or a moment, on *Found* that
-   is neither a list nor an explicit "none"; when the home has no `reports/` it prints `SKIPPED=3`
+   is neither a list nor an explicit "none", on a *Verdict* `pass` whose *Checks* carry no
+   `Functional run:` line or say `NONE` (hygiene alone is `partial`); when the home has no `reports/` it prints `SKIPPED=3`
    and says so — **an unwritten report is invisible to the linter**; only the judge and the owner
    can ask where it is.
 
@@ -3224,7 +3274,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
 | `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
-| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
+| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
@@ -4426,7 +4476,10 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
    `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section (what was
-   done / how verified). Backlog revision — the `/check-backlog` skill.
+   done / how verified) that carries TWO separate lines, never summed — `Hygiene: <unit · selftest · mutation>`
+   and `Functional run: <what was walked on the real product · on which contour · what was READ — or NONE>`
+   (`TESTING_FRAMEWORK.md` → "What the word "test" means"; `NONE` means fixed, not tested — and the chat
+   says so). Backlog revision — the `/check-backlog` skill.
 
 ## Notes
 - Better to file a bug and leave it open than to lose it. Factual accuracy beats prose.
@@ -5778,6 +5831,8 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Agent decision worn as the owner's word (KAIF 2.7).** A recorded decision — a plan line, a code comment, a report line, a "not to be revisited" status — that attributes a choice to the owner ("the owner's decision", "the owner decided", "per the owner's word", their equivalents in the owner's language) with no verbatim quote of the owner and no interview address beside it, is a finding: the canon's authority order (the owner's direct word > the book) makes a later session obey a choice the agent made itself (`AGENT_GUIDE.md` → "Authorship of a decision"; origin issue #55 — a "the owner's decision P1: wait" comment held a run for 119 s while the owner's machine died; his real word at that fork was "do as you see fit"). Hunt also: a MANDATE ("do as you see fit", "your call") recorded as the owner's decision instead of `[AI] by mandate — "<his words>"`; a "not to be revisited" status on a decision with no `[OWNER]` signature; a pronoun standing in for a provenance mark in a draft brought to the owner ("(my taste)"); an `[AI]`/`[AI-ed]` mark removed without the owner's word. `node .kaif/tools/kaif-attribution-lint.mjs check` over the changed files is the re-run; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line.
    - **Tested without a run report (KAIF 2.7).** A `[TESTED: …]` claim about an EXECUTED run — a live probe, a smoke, a polygon, a manual walk-through, "stage accepted" — with no run-report address in the project's test-doc home beside it (`<testdocs>/reports/<YYYY-MM-DD>_<work>.md`; `TESTING_FRAMEWORK.md` → "An executed run produces its report"), or whose report lacks the commands and the moments of the runs, is a finding: a run that left no artifact is indistinguishable from a run that never happened (origin issue #59 — the owner-QA's word: "THERE WAS NO TESTING"; the agent ran a probe twice and the owner could see neither a command, nor a moment, nor what was found). Re-run: open the named report, re-execute one command from its Runs field and compare the outcome; `node .kaif/tools/kaif-testrun-lint.mjs check` judges the form (`SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, which is exactly why this hunt exists).
    - **Owner text past the portrait (KAIF 2.7).** A text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — that reached the owner PAST his voice portrait, in a deployment that has one (`AUTHOR_STYLOMETRY.md`): written without the portrait in the working context (no load witness `.kaif/voice-marker.json`, or the file last written before the first `node .kaif/tools/kaif-voice-lint.mjs load` — `check` names both; the report names no portrait modules read before the first word; the draft ignores the lexicon §2-C or carries the anti-portrait markers §5), or checked by no INDEPENDENT pass (no line naming a run of `node .kaif/tools/kaif-voice-lint.mjs check <file…>` with its hits answered or its `SKIPPED` said aloud, and no clean-instance §7B pass — the writer's own glance is not one), or shown before the fixes — is a finding: the gate lived as prose in a checklist and a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once (origin issue #61 — the owner's word: "how many times did you compare this text with my stylometry?" — zero; his statement of the expected behaviour: the agent writes BY the stylometry, then checks independently by it, fixes, and only then the text is written and brought for approval; `AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation and "Showing is an action"). Hunt also: a draft written natively and re-voiced afterwards presented as "written by the portrait"; a report that claims the machine minute ran while the portrait's §8 is prose (the module would have said `SKIPPED`); a hit "fixed" by widening the exception column, silencing the rule or deleting the row instead of rewriting the text (a weakened check in the owner's own canon); likeness claimed from a green run (the command judges explicit patterns only — likeness is the owner's verdict). Re-run: the command over the shown file and compare the hits; open the named portrait modules and check the lexicon's turns against the text; a project without a portrait is not a finding — the report must say so.
+   - **Claim wider than the observation (KAIF 2.7).** A statement about the state of the world — a report line, a chat message quoted in the record, a session close — that is wider than what the run behind it observed: "the page is open for you" backed by a `curl` 200 on the local server; "works in production" backed by a deploy exit 0; "delivered to the owner" backed by a written file; "verified" backed by an instrument's ✅ — is a finding of the false-completion family: the SUBJECT of the verification was substituted (`AGENT_GUIDE.md` → the fable loop's fifth KAIF obligation; origin issue #63 — the owner's word: "you assert what you did not check"; a screenshot showed no browser window while the agent reported "waiting for you for three hours"). The state of the HUMAN'S SCREEN asserted with no screenshot beside it is the special case. Re-run: for every claim find the observation named for it and compare their widths; a proxy not said aloud is the finding; "I did X; check whether you see Y" is the legal form.
+   - **Tested on hygiene alone (KAIF 2.7).** A `[TESTED: …]`, a "tested", an "all N tested" or a run report with Verdict `pass` whose evidence is hygiene only — unit green, self-test green, mutant red, guards green — with no `Functional run:` line naming what was walked on the REAL product by the user's path, on which contour and what was READ (the screen · the lines · the logs), or with that line saying `NONE`, is a finding (`TESTING_FRAMEWORK.md` → "What the word "test" means"; origin issue #62 — the owner-QA recounted "25 tested" as 3; the origin's decision #116: the agent derives the scenarios from the functionality, writes the machinery and walks the real product with it, reading the result). `NONE` itself is honest — the fraud is the `pass` or the "tested" above it; `node .kaif/tools/kaif-testrun-lint.mjs check` reddens that pair (`pass-without-functional-run`). Re-run: open the report, read the two lines, re-execute the functional run's command and check that it READS something (a screen, lines, logs) rather than returning a code.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

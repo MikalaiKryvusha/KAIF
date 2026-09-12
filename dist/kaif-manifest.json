@@ -5,7 +5,7 @@
   "codename": "Mindful KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "c3af7e7f75880608bea9fbaae70698dec58aec6f3ae04e525f7ae134d21c8c15",
-    "KAIF-CORE-BUNDLE.md": "c5af6b642457319374441bff73ba8112cab8258ba30254ffa3b0b1395822af51"
+    "KAIF-CORE-BUNDLE.md": "9aa4ea39061aab6bbcd1e592296ac31dbe04f93116a7b0cdd20225ea0185d0b9"
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

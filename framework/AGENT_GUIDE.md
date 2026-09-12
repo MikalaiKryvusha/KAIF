@@ -392,6 +392,30 @@ The command judges the explicit patterns only; likeness stays the owner's verdic
 `/fable-judge` hunts owner text past the portrait (the owner-text-past-the-portrait hunt): written without
 the portrait open, checked by no independent pass, or shown before the fixes.
 
+**KAIF adds a fifth obligation — at step 7 (report): A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT**
+(origin issue #63 — the owner's word in the ticket, rendered from Russian: "you assert what you did not check";
+the agent had verified `curl` → 200 on the local server and reported "the page is open, waiting for you for
+three hours" — a screenshot showed no browser window at all). The canon demands observation for tests and
+demanded nothing for statements in a report, so an agent could verify the proxy it can reach cheaply and state
+a fact about the thing it never looked at — honestly, in good faith, with a green check behind it. Every
+statement about the state of the world names WHAT observed it; when a proxy was observed instead of the thing,
+the proxy is said aloud:
+
+| Verified | Said today | Say instead |
+|---|---|---|
+| the server answers 200 | "the page is open for you" | "the server answers 200; whether a window opened on your screen I did not check — do you see it?" |
+| the deploy returned 0 | "the feature works in production" | "deploy 0, smoke 24/24; behaviour for real people — not checked" |
+| the file was written, the signal sent | "delivered to the owner" | "written and signalled; delivery is confirmed only by your word" |
+| the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |
+
+The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds;
+until then the only legal form is "I did X; please check whether you see Y". The shipped contour prints this
+boundary itself at every window it raises (`Window: … — the launcher returned 0; whether a window is on the
+owner's screen this line does not verify`). `/fable-judge` hunts a claim wider than the run that backs it (the
+claim-wider-than-observation hunt). The same rule, seen from the other side, defines the word "test"
+(`TESTING_FRAMEWORK.md` → "What the word "test" means"): hygiene reported as "tested" is a claim wider than its
+observation — the judge hunts that too (the tested-on-hygiene-alone hunt).
+
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
 the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
@@ -943,7 +967,9 @@ the command (the owner doesn't and shouldn't). "Lies at path…", "opens by doub
 file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
 footnote of where it landed — never as an errand. No separate show tool: the review contour opens
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. **And a text the owner reads as his own is shown only
+contour, open the file with the system opener. **And the show is reported no wider than it was observed:**
+"the page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until
+then, "please check whether you see it" (the fable loop's fifth KAIF obligation; origin issue #63). **And a text the owner reads as his own is shown only
 AFTER it is written BY his portrait, checked independently by it and fixed:**
 `node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
 (the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never

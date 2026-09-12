@@ -10,11 +10,16 @@
 //     у которой из /resume убран буллет GOAL.md, → check печатает предупреждение с именем GOAL.md и остаётся
 //     зелёным (совет, не отказ) · линтер в копии без дома → SKIPPED · незаполненная копия шаблона в каталоге →
 //     exit 1. Красный доказан на ядре 2.6 швом KAIF_DIST (dist коммитится: `git show v2.6:dist/…`).
-// [TESTED: 2026-09-12 · отдельный прогон на свежем dist — «✅ s25 testrun-lint: all 27 checks green» (счёт печатает
-//  сам свод); в составе полигона — «all 24 suites green»; КРАСНЫЙ доказан: `KAIF_DIST=<git show v2.6:dist/…> node
-//  tools/sandbox/s25-testrun-lint.mjs` → «❌ s25: 7 of 28 check(s) failed» — свод доходит до вердикта, все семь красных
-//  адресованы отсутствующей фиче (шаблон · модуль · предупреждения «1 of the 9» и «4 of the 9» · развёрнутый линтер ·
-//  копия шаблона · линт копии), 21 зелёный; отчёт прогона истока — testcases/reports/2026-09-12_polygon-2.7-TR.md]
+// (3) эпик CL 2.7 (plans/107; тикет #62 — «25 tested» было 3): «Проверки» открываются двумя строками, и вердикт `pass`
+//     без строки `Functional run:` или с `NONE` красен правилом pass-without-functional-run — в «плохом» каталоге два
+//     таких отчёта, в «хорошем» — `NONE` под `partial` (законно), в развёрнутой копии — отчёт «одна гигиена, pass»
+//     краснеет РАЗВЁРНУТЫМ линтером по имени (на ядре 2.6 правила нет — красный швом KAIF_DIST).
+// [TESTED: 2026-09-12 · отдельный прогон на свежем dist — «✅ s25 testrun-lint: all 32 checks green» (счёт печатает
+//  сам свод; до CL — 27); КРАСНЫЙ доказан: `KAIF_DIST=<git show v2.6:dist/…> node tools/sandbox/s25-testrun-lint.mjs` →
+//  «❌ s25: 8 of 33 check(s) failed» — свод доходит до вердикта, восемь красных адресованы отсутствующим фичам (шаблон ·
+//  модуль · предупреждения «1 of the 9» и «4 of the 9» · развёрнутый линтер · копия шаблона · линт копии · правило CL
+//  «одна гигиена, pass»); отчёты прогона истока — testcases/reports/2026-09-12_polygon-2.7-TR.md и
+//  testcases/reports/2026-09-12_polygon-2.7-CL.md]
 import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -48,7 +53,9 @@ cpSync(join(REPO, 'framework', 'templates', '_testrun-report-template.md'), join
 console.log('\n=== s25: отчёт прогона — линтер формы ===');
 let r = runLint('selftest');
 ok(r.code === 0 && /selftest OK/.test(r.out), 's25 selftest — каждое правило красное ровно на своей мутации, EN + RU', r.out);
-ok(/7 rules × 2 languages/.test(r.out), 's25 selftest — семь правил × два языка сосчитаны', r.out);
+ok(/8 rules × 2 languages/.test(r.out), 's25 selftest — восемь правил × два языка сосчитаны (восьмое — pass-without-functional-run, эпик CL)', r.out);
+ok(/✓ en: "Functional run: NONE" under pass → exactly \[pass-without-functional-run\]/.test(r.out) && /✓ ru: "Functional run: NONE" under partial → clean/.test(r.out),
+   's25 selftest — «NONE» под pass красный этим правилом, «NONE» под partial чистый (починено, не протестировано — честно)', r.out);
 ok(/✓ the shipped template, unfilled → exactly \[empty-field\] naming all seven fields/.test(r.out) && /✓ the template with only Runs filled → \[empty-field\] naming the other six/.test(r.out),
    's25 selftest — незаполненный шаблон поставки → empty-field на все семь полей; только «Прогоны» заполнены → остальные шесть названы', r.out);
 
@@ -72,6 +79,9 @@ Machinery \`KAIF-CORE.mjs\` + tool modules; stand — a clean checkout, Node v24
 
 ## 4. Checks
 
+Hygiene: selftest 31/31 · s25 27/27
+Functional run: the deployed copy under s25 — \`.kaif/kaif-core.mjs check\` and the deployed linter run as the user of the shipment, output READ
+
 | Case | Status | Observation |
 |---|---|---|
 | s25 linter half | pass | selftest OK, bad fixture exit 1 |
@@ -89,14 +99,23 @@ Machinery \`KAIF-CORE.mjs\` + tool modules; stand — a clean checkout, Node v24
 pass — every suite green on the first run after the build.
 `;
 writeFileSync(join(ROOT, 'good', 'testcases', 'reports', '2026-09-12_polygon.md'), CLEAN);
-r = runLint('check', join(ROOT, 'good'));
-ok(r.code === 0 && /testrun-lint OK — 1 report\(s\)/.test(r.out), 's25 чистый отчёт в каталоге по дате — линтер ЗЕЛЁНЫЙ (exit 0)', r.out);
-
-// --- КРАСНЫЙ ДОКАЗАН: шесть отчётов, по одной мутации критерия на каждый (поле убрано · поле пустое ·
-//     отчёт вне каталога · прогоны прозой · «найдено» прозой · вердикт прозой)
 const section = (n, key, body) => `## ${n}. ${key}\n\n${body}\n\n`;
 const mutate = (fn) => CLEAN.split(/^(?=## )/m).map(fn).join('');
+// CL (#62): «починено, не протестировано» — `Functional run: NONE` под вердиктом `partial` — ЗАКОННЫЙ отчёт
+writeFileSync(join(ROOT, 'good', 'testcases', 'reports', '2026-09-12_fixed-not-tested.md'),
+  mutate((s) => /^## 4\. Checks/.test(s) ? section(4, 'Checks', 'Hygiene: unit 5/5 · selftest 14/14\nFunctional run: NONE')
+              : /^## 7\. Verdict/.test(s) ? section(7, 'Verdict', 'partial — fixed, not tested: hygiene green, no functional run yet.') : s));
+r = runLint('check', join(ROOT, 'good'));
+ok(r.code === 0 && /testrun-lint OK — 2 report\(s\)/.test(r.out), 's25 чистые отчёты в каталоге по дате (полный · «NONE» под partial) — линтер ЗЕЛЁНЫЙ (exit 0)', r.out);
+
+// --- КРАСНЫЙ ДОКАЗАН: восемь отчётов, по одной мутации критерия на каждый (поле убрано · поле пустое ·
+//     отчёт вне каталога · прогоны прозой · «найдено» прозой · вердикт прозой · pass без строки функционального
+//     прогона · pass при «NONE» — эпик CL, #62)
 const BAD = join(ROOT, 'bad', 'testcases', 'reports');
+writeFileSync(join(BAD, '2026-09-12_pass-no-functional.md'), mutate((s) => /^## 4\. Checks/.test(s) ? section(4, 'Checks', 'Hygiene: unit 5/5 · selftest 14/14 · mutation K4 2 red on target\n\n| Case | Status | Observation |\n|---|---|---|\n| unit | pass | 5/5 |') : s));
+writeFileSync(join(BAD, '2026-09-12_pass-none.md'), mutate((s) => /^## 4\. Checks/.test(s) ? section(4, 'Checks', 'Hygiene: unit 5/5\nFunctional run: NONE') : s));
+// каверза судьи CL: голая метка (или плейсхолдер шаблона) НАД заполненной таблицей — не заполненная строка
+writeFileSync(join(BAD, '2026-09-12_pass-bare-label.md'), mutate((s) => /^## 4\. Checks/.test(s) ? section(4, 'Checks', 'Hygiene: unit 5/5\nFunctional run: <what was walked · on which contour · what was READ — or NONE>\n\n| Case | Status | Observation |\n|---|---|---|\n| unit | pass | 5/5 |') : s));
 writeFileSync(join(BAD, '2026-09-12_missing.md'), mutate((s) => /^## 2\. Contour/.test(s) ? '' : s));
 writeFileSync(join(BAD, '2026-09-12_empty.md'), mutate((s) => /^## 2\. Contour/.test(s) ? section(2, 'Contour', '<the stand it ran on>') : s));
 writeFileSync(join(BAD, 'smoke.md'), CLEAN);
@@ -105,10 +124,12 @@ writeFileSync(join(BAD, '2026-09-12_found-prose.md'), mutate((s) => /^## 5\. Fou
 writeFileSync(join(BAD, '2026-09-12_verdict-prose.md'), mutate((s) => /^## 7\. Verdict/.test(s) ? section(7, 'Verdict', 'Everything went well, no worries.') : s));
 r = runLint('check', join(ROOT, 'bad'));
 ok(r.code === 1, 's25 плохой каталог — линтер КРАСНЫЙ (exit 1)', r.out);
-ok(/7 finding\(s\) in 6 report\(s\)/.test(r.out), 's25 плохой каталог — 7 находок в 6 отчётах (прогоны прозой дают две: нет команды и нет момента)', r.out);
+ok(/10 finding\(s\) in 9 report\(s\)/.test(r.out), 's25 плохой каталог — 10 находок в 9 отчётах (прогоны прозой дают две: нет команды и нет момента)', r.out);
 for (const [file, id] of [['2026-09-12_missing.md', 'missing-field'], ['2026-09-12_empty.md', 'empty-field'], ['smoke.md', 'outside-catalog'],
                           ['2026-09-12_runs-prose.md', 'runs-no-command'], ['2026-09-12_runs-prose.md', 'runs-no-moment'],
-                          ['2026-09-12_found-prose.md', 'found-not-explicit'], ['2026-09-12_verdict-prose.md', 'verdict-not-named']])
+                          ['2026-09-12_found-prose.md', 'found-not-explicit'], ['2026-09-12_verdict-prose.md', 'verdict-not-named'],
+                          ['2026-09-12_pass-no-functional.md', 'pass-without-functional-run'], ['2026-09-12_pass-none.md', 'pass-without-functional-run'],
+                          ['2026-09-12_pass-bare-label.md', 'pass-without-functional-run']])
   ok(new RegExp(`${file.replace('.', '\\.')} — ${id}:`).test(r.out), `s25 плохой каталог — ${file} назван правилом ${id}`, r.out);
 ok(/missing field\(s\): Contour/.test(r.out), 's25 плохой каталог — убранное поле названо по имени (Contour)', r.out);
 
@@ -164,6 +185,13 @@ else ok(false, 's25 копия шаблона в каталог — шаблон
 r = runLint('check', S, DEPLOYED_LINT);
 ok(r.code === 1 && /empty field\(s\): Work, Contour, Runs, Checks, Found, Traces, Verdict/.test(r.out),
    's25 незаполненная копия шаблона в каталоге — линтер красный, empty-field называет все семь полей (плейсхолдеры — не содержание)', r.out);
+// CL (#62): отчёт «одна гигиена, вердикт pass» в каталоге развёрнутой копии → РАЗВЁРНУТЫЙ линтер называет правило
+// (на ядре 2.6 правила нет — красный доказан швом KAIF_DIST)
+writeFileSync(join(S, 'testcases', 'reports', '2026-09-12_hygiene-pass.md'),
+  mutate((s) => /^## 4\. Checks/.test(s) ? section(4, 'Checks', 'Hygiene: unit 5/5 · selftest 14/14 · mutation K4 2 red on target') : s));
+r = runLint('check', S, DEPLOYED_LINT);
+ok(r.code === 1 && /2026-09-12_hygiene-pass\.md — pass-without-functional-run: Verdict says pass while Checks carries no "Functional run:" line/.test(r.out),
+   's25 развёрнутый линтер — «одна гигиена, вердикт pass» красный правилом pass-without-functional-run с именем строки (эпик CL, #62)', r.out);
 
 if (failures) { console.error(`\n❌ s25: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s25 testrun-lint: all ${asserts} checks green`);

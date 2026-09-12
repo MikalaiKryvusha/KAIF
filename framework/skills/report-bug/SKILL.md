@@ -178,7 +178,10 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 
 5. **Lifecycle:** while open — file WITHOUT `DONE`. When CONFIRMED closed (fixed and verified) — rename
    `git mv bugs/NN_x.md bugs/NN_DONE_x.md` and append a `## ✅ STATUS: DONE (date + time)` section (what was
-   done / how verified). Backlog revision — the `/check-backlog` skill.
+   done / how verified) that carries TWO separate lines, never summed — `Hygiene: <unit · selftest · mutation>`
+   and `Functional run: <what was walked on the real product · on which contour · what was READ — or NONE>`
+   (`TESTING_FRAMEWORK.md` → "What the word "test" means"; `NONE` means fixed, not tested — and the chat
+   says so). Backlog revision — the `/check-backlog` skill.
 
 ## Notes
 - Better to file a bug and leave it open than to lose it. Factual accuracy beats prose.

@@ -58,6 +58,10 @@ console.log('\n=== s22 A: свежая установка из бандла — 
 const P = join(ROOT, 'fresh'); seed(P);
 must(run, P, 'install --lang ru');
 for (const f of CONTOUR_FILES) ok(existsSync(join(P, f)), 's22 A: приехал ' + f);
+// CL (2.7, #63): отгружаемый генератор называет границу собственного заявления у каждого поднятого окна —
+// «the launcher returned 0; whether a window is on the owner's screen this line does not verify»
+ok(existsSync(join(P, '.kaif', 'tools', 'contour', 'review.mjs')) && /this line does not verify/.test(readFileSync(join(P, '.kaif', 'tools', 'contour', 'review.mjs'), 'utf8')),
+   's22 A: генератор несёт честную строку окна «this line does not verify» (заявление не шире наблюдения, эпик CL #63)');
 ok(readFileSync(join(P, '.kaif', 'INTERACTIVE_CONTOUR_SPEC.md'), 'utf8').split('\n').length <= 120, 's22 A: контракт ≤ 120 строк (критерий 1)');
 let r = runGen(P, ['--selftest']);
 ok(r.code === 0, 's22 A: --selftest на развёрнутой копии зелёный (exit 0)', r.out);

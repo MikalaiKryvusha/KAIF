@@ -25,6 +25,27 @@ the project's sphere library: its *Verification by observation* and *Minimum evi
    worthless — always test against the OWNER'S requirements (`GOAL.md`, the idea, the plan), not only
    against the code's own consistency.
 
+## What the word "test" means — a functional run on the real product, by the user's path
+
+The word was never defined, and a session used it honestly while the owner read it as false (origin
+issue #62: "25 closed, all tested" on unit · self-test · mutant, recounted by the owner-QA as **3 of
+25**). The owner then defined "by hand" for an AI agent (decision #116, rendered): it writes itself the
+scenarios from the functionality of the module, the feature, the fixed bug, writes itself the machinery,
+and in the real product — stage or production — walks the application: presses the buttons, reads the
+lines, looks at the screen, reads the logs — as a QA would by hand. So:
+
+1. **A test is a functional run on the REAL product (stage or production), by the user's path, whose
+   result is READ.** The agent derives the scenarios from the functionality under test (the chain
+   below), writes the machinery that walks them (a browser driver, a CLI session, a log reader) and runs
+   it as the user would, READING the screen, the lines, the logs; never "the owner will test" — his eye judges taste.
+2. **Hygiene is not a test.** Lint, unit tests, self-tests, mutation proofs, guards — mandatory (gate 5
+   stays), never called "testing" in a report, a marker or a handover: they prove the check can fail, not
+   that the thing works for a person. Machinery that returns only an exit code is an instrument, not a
+   test: a run is a test when its result was read, and the report says what.
+3. **`[NOT-TESTED]` is inadmissible to production.** Marker rule 2 flips on a functional run only; the
+   run report carries it SEPARATE from hygiene (`Hygiene:` · `Functional run:` — never summed; `NONE` =
+   *fixed, not tested*); a bug's closing status carries the same two lines (`/report-bug`).
+
 ## The testing activities — the chain that makes "tested" mean something
 
 The trust contract below says how much to TRUST a result; this section says how the testing WORK
@@ -78,7 +99,8 @@ of the project language:
    initial comment.
 2. **Meeting `[NOT-TESTED]`** (yours or inherited) → do not build on it blindly: plan its verification,
    verify **by observation** (fable-method Step 5: it ran, it rendered, it counted — never inferred from
-   reading), then flip the marker to `[TESTED: …]` with the evidence named.
+   reading; and a FUNCTIONAL RUN on the real product, its result read — hygiene does not flip the marker:
+   the section on the word "test" above), then flip it to `[TESTED: …]` with the evidence named.
 3. **Meeting `[TESTED: …]`** → you may trust it and need not re-test — but keep a grain of doubt
    (principle 1: bugs always exist). If evidence contradicts the marker, the marker is wrong: investigate.
 4. **Testing found a defect** → file it (`/report-bug`, method: `BUG_FIXING_FRAMEWORK.md`), fix, re-test,
@@ -130,8 +152,8 @@ owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe twice, wrote `[T
 accepted", and the owner could see neither a command, nor a moment, nor what was found. A run that
 left no artifact is indistinguishable from a run that never happened. So:
 
-1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a manual
-   walk-through — in the test-doc home, as a catalog by date:
+1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a functional
+   run — in the test-doc home, as a catalog by date:
    `cp .kaif/_testrun-report-template.md testcases/reports/<YYYY-MM-DD>_<work>.md`
    (the home is `testcases/` by default; a project may name another in `.kaif/kaif.json` →
    `testdocs`). The date-first name IS the index: the directory listing is the list of runs, like
@@ -139,7 +161,8 @@ left no artifact is indistinguishable from a run that never happened. So:
 2. **Seven fields, none empty** — *Work* (what was tested and against which basis — the case set,
    the plan) · *Contour* (the part of the system and the stand: environment, build, data) · *Runs*
    (how many, WHEN — a timestamp per run — and the exact COMMANDS in code spans) · *Checks* (what
-   was verified, case by case, with statuses) · *Found* (the defects — or the explicit word "none":
+   was verified, case by case, with statuses — opening with two separate lines, `Hygiene:` and
+   `Functional run:` — what was walked · on which contour · what was READ, or `NONE`) · *Found* (the defects — or the explicit word "none":
    zero is a finding, silence is not) · *Traces* (where the evidence lives: logs, screenshots,
    artifacts — their paths) · *Verdict* (pass · fail · blocked · partial, with the reason).
 3. **A `[TESTED: …]` claim about a run names its report** — the marker carries the report's
@@ -149,7 +172,8 @@ left no artifact is indistinguishable from a run that never happened. So:
 4. **The linter judges the form, the judge judges the truth.** The optional tool module
    `node .kaif/tools/kaif-testrun-lint.mjs check` (`selftest`) reddens on a missing or empty field,
    on a report outside the date catalog, on *Runs* without a command or a moment, on *Found* that
-   is neither a list nor an explicit "none"; when the home has no `reports/` it prints `SKIPPED=3`
+   is neither a list nor an explicit "none", on a *Verdict* `pass` whose *Checks* carry no
+   `Functional run:` line or say `NONE` (hygiene alone is `partial`); when the home has no `reports/` it prints `SKIPPED=3`
    and says so — **an unwritten report is invisible to the linter**; only the judge and the owner
    can ask where it is.
 

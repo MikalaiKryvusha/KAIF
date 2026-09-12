@@ -469,6 +469,30 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['kaif-voice-lint.mjs load', 'kaif-voice-lint.mjs check <файл…>', 'Пиши ПО портрету — с ним в своём рабочем контексте.', 'Проверь НЕЗАВИСИМО по тому же портрету.']],
     ['voice contract ↔ /fable-judge hunts owner text past the portrait', 'framework/skills/fable-judge/SKILL.md',
       ['**Owner text past the portrait (KAIF 2.7).**']],
+    // CL (2.7, origin issues #62/#63): the word "test" is DEFINED and the run report carries TWO lines — the canon
+    // of both layers, the template and the closing status of a bug say the same words, the linter judges the
+    // second line, the contour says the boundary of its own claim, and the judge hunts both skins of the class
+    // (hygiene reported as "tested"; a claim wider than the observation)
+    ['test defined ↔ TESTING_FRAMEWORK carries the definition and the two lines (payload)', 'framework/TESTING_FRAMEWORK.md',
+      ['## What the word "test" means', 'Hygiene:', 'Functional run:', 'inadmissible to production']],
+    ['test defined ↔ TESTING_FRAMEWORK (wrapper)', 'TESTING_FRAMEWORK.md',
+      ['## Что значит слово «тест»', 'Гигиена:', 'Функциональный прогон:', 'в продакшен не допускается']],
+    ['test defined ↔ the run-report template carries the two lines', 'framework/templates/_testrun-report-template.md',
+      ['Hygiene:', 'Functional run:']],
+    ['test defined ↔ /report-bug closing status carries the two lines (payload)', 'framework/skills/report-bug/SKILL.md',
+      ['Hygiene:', 'Functional run:']],
+    ['test defined ↔ /report-bug closing status carries the two lines (wrapper)', '.claude/skills/report-bug/SKILL.md',
+      ['Гигиена:', 'Функциональный прогон:']],
+    ['test defined ↔ kaif-testrun-lint judges the second line in both languages', 'framework/tools/kaif-testrun-lint.mjs',
+      ["'pass-without-functional-run'", "functional: 'Functional run'", "functional: 'Функциональный прогон'"]],
+    ['claim ↔ AGENT_GUIDE fable-loop call point carries the fifth obligation (payload)', 'framework/AGENT_GUIDE.md',
+      ['A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT', 'claim-wider-than-observation hunt', 'tested-on-hygiene-alone hunt']],
+    ['claim ↔ AGENT_GUIDE fable-loop call point carries the fifth obligation (wrapper)', 'AGENT_GUIDE.md',
+      ['ЗАЯВЛЕНИЕ НЕ ШИРЕ НАБЛЮДЕНИЯ']],
+    ['claim ↔ the shipped contour says the boundary at every window it raises', 'framework/tools/contour/review.mjs',
+      ['this line does not verify']],
+    ['claim ↔ /fable-judge hunts both skins of the class', 'framework/skills/fable-judge/SKILL.md',
+      ['**Claim wider than the observation (KAIF 2.7).**', '**Tested on hygiene alone (KAIF 2.7).**']],
     // HO (2.7, origin issue #57): the rule "a term absurd in the owner's language is checked against
     // the skill's trigger aliases" is only true while the alias it cites is REALLY in the ru pack —
     // the field defect was exactly this pair drifting apart (the canon said `baton`, the aliases said
