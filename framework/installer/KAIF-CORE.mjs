@@ -305,6 +305,7 @@ function ensureIgnoreFirst() {
                   '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
                   '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
                   '.kaif/refresh-marker.json',  // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
+                  '.kaif/voice-marker.json',    // the voice-portrait load witness — the same class (2.7, epic VC: `kaif-voice-lint load`)
                   '.kaif/update-rehearsal.json']; // the preview's recorded wholesale verdicts — consumed by the next update (2.5, P1)
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
@@ -813,7 +814,7 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // intervene twice. The item stands BEFORE goal-plan — the first owner-facing text of the pass —
   // and the ignore decision travels in the same step (ignore-first is already canon: a public
   // repo + a quote-bearing portrait = the owner's private writing published).
-  items.push(['owner-voice', 'Ask the owner whether a voice portrait exists (`AUTHOR_STYLOMETRY.md`; skill /owner-voice). If YES: install it at the project root, and when the repository is PUBLIC add it to .gitignore in the SAME step — a portrait may quote the owner\'s private writing. If NO: record the canonical line `no voice portrait` (with date) in AGENT_GUIDE.md → "Notes from the human", so no future session re-asks. Either way this item closes BEFORE any owner-facing text (GOAL wording, README) is written.']);
+  items.push(['owner-voice', 'Ask the owner whether a voice portrait exists (`AUTHOR_STYLOMETRY.md`; skill /owner-voice). If YES: install it at the project root, wire its machine minute into the build path of EVERY owner-facing text class you find (`node .kaif/tools/kaif-voice-lint.mjs check <files…>` inside the script that builds a sheet, a string table, a README section — a hit stops the build or is answered in the portrait\'s exception column; the portrait\'s §8 must be the TABLE the skeleton shows, greps as prose are SKIPPED), and when the repository is PUBLIC add it to .gitignore in the SAME step — a portrait may quote the owner\'s private writing. If NO: record the canonical line `no voice portrait` (with date) in AGENT_GUIDE.md → "Notes from the human", so no future session re-asks. Either way this item closes BEFORE any owner-facing text (GOAL wording, README) is written.']);
   items.push(['goal-plan', 'If GOAL.md is empty, seed it and ask the owner; derive MASTER_PLAN.md from GOAL.md (skill: /revision).']);
   items.push(['sphere', 'Pick the project\'s sphere (libraries ship in .kaif/spheres/; do NOT author a new document unless none fits) and record it by running `node .kaif/kaif-core.mjs sphere <name>` (e.g. `sphere programming`) — never edit .kaif/kaif.json by hand.']);
   if (needTranslate) items.push(['language', `Translate the owner-facing docs (GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs) into "${LANG}" — no bundled template for this language yet. Keep agent-only docs in English.`]);

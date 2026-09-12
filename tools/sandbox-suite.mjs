@@ -90,6 +90,13 @@
 //         catalog, the home read from the marker; on a deployed copy the template and the module arrive,
 //         a /resume that lost the GOAL.md bullet makes `check` warn by name (still exit 0), an unfilled
 //         template copy reddens; red proven on the 2.6 core via KAIF_DIST (`git show v2.6:dist/…`)
+//   s26 — kaif-voice-lint (epic VC 2.7, plan 105; origin issue #61 "how many times did you compare this text with
+//         my stylometry?" — zero): the portrait's §8 TABLE is the single source of patterns — selftest in both
+//         languages, a hit named `file:line — «fragment» → hint` (exit 1) on an EN and a RU project, a clean file
+//         green, `--warn` exit 0, a fence invisible, a prose §8 / no portrait / placeholder-only table SKIPPED (3),
+//         the portrait path read from the marker, no files → usage (2); on a deployed copy the module and the
+//         skeleton with the table form arrive, the unfilled skeleton copy is SKIPPED and one filled row fires;
+//         red proven on the 2.6 core via KAIF_DIST
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
@@ -118,7 +125,7 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs',
                 's18-update-symmetries.mjs', 's19-scenario-lint.mjs', 's21-update-route.mjs',
                 's22-contour-shipped.mjs', 's23-ranking-lint.mjs', 's24-attribution-lint.mjs',
-                's25-testrun-lint.mjs'];
+                's25-testrun-lint.mjs', 's26-voice-lint.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

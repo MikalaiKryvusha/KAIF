@@ -519,12 +519,12 @@ artifacts are never hand-edited.
    canon and skill bodies are English by design.
 2. Native skills are generated for five agent systems; other harnesses (Cursor, Copilot,
    Windsurf) ride the universal `AGENTS.md` fallback without native skill files.
-3. The sandbox polygon (24 suites) verifies the deploy/update machinery; the methodology itself is
+3. The sandbox polygon (25 suites) verifies the deploy/update machinery; the methodology itself is
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   179 bundle blocks; 788 modules.
+   180 bundle blocks; 790 modules.
 
 ## License
 
@@ -1051,12 +1051,12 @@ interviews/ homeworks/ reports/       (в каждой свой README)
    тела навыков — английские by design.
 2. Родные навыки генерируются для пяти агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) работают через универсальный `AGENTS.md` без родных файлов навыков.
-3. Песочный полигон (24 свода) проверяет машинерию развёртывания и обновления; сама методология
+3. Песочный полигон (25 сводов) проверяет машинерию развёртывания и обновления; сама методология
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   179 блоков бандла; 788 модулей.
+   180 блоков бандла; 790 модулей.
 
 ## Лицензия
 

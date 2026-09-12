@@ -87,7 +87,8 @@
       "PROVENANCE MARKS ARE LEGAL IN DRAFTS TO THE OWNER (epic AW; origin issue #55 comment — a field agent, forbidden to mark outside the canon, invented \"(my taste)\", and a pronoun has no owner a day later): kaif-provenance `check` no longer refuses [AI]…[/AI] outside canonArtifacts — marks are REQUIRED in the declared canon and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, never entries of the acceptance registry). AGENT_GUIDE (both layers): the write-gate draft carries the marks on the agent's lines; a pronoun is not a provenance mark; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked. /interview step 3a says the same.",
       "DELIVERY ACCOUNTING IS REMOVED (epic DR; the origin owner's word, 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): the core command `delivery`, the SYSTEMS_REGISTRY.md canon document and its skeleton .kaif/_systems-registry-template.md (retired by this update), the `Kind:` line of bug documents, the forced `DELIVERY:` line of /end-chat-soft, /end-chat-force and the four loops, the delivery-line hunt of /fable-judge and the MASTER_PLAN \"Delivery vector\" block are gone. This SUPERSEDES the 2.5 \"DELIVERY ACCOUNTING\" and 2.6 \"SYSTEMS_REGISTRY.md\" entries of this task: do NOT build a registry, do NOT print the line. /what-next keeps its 2.6 form; METRIC: now reads the main phase's acceptance metric (criteria closed k of n) from MASTER_PLAN.md / the active plan, and kaif-ranking-lint judges the same form.",
       "THE QUESTION LIVES TO THE END (epic QL; origin issues #54 #56 #58 #60 — four tickets of one project in three days after 2.6): (1) `--check <doc>` — the form check WITHOUT a page: parse + pre-flight + render self-check, prints what was recognised and what was not, exit 3/0, never serves, never calls, never records a showing (`--no-open` was never a check: it serves and CALLS; the origin itself called its owner by voice at midnight while \"checking\"); (2) the FOURTH fact — IMPLEMENTED: `node .kaif/tools/contour/review.mjs --mark-implemented <doc> <Q> --where <commit|file>` writes `<decisionsDir>/implemented.json`, and the queue and the show REFUSE a document whose every open question is implemented (\"implemented, but open → close the status\", exit 2) — /owner-reviews I44/I45, /interview step 5 \"implemented → mark it, in the same move\"; (3) the READING VIEW: live questions first, the answered ones and the document text in one collapsed archive below, nothing removed — and the three legal outcomes of a show (answer · remark · \"read, no remarks\") in AGENT_GUIDE, /owner-reviews I16 and INTERACTIVE_CONTOUR_SPEC §4; (4) the Save control is a FLOATING button at the top right — a bar pinned to the bottom edge is forbidden (spec §4; the owner typed the answers and could not reach the button), and the render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in option labels) with exit 3 on a failing page. The shipped generator under .kaif/tools/contour/ and the one-page contract carry all four.",
-      "AN EXECUTED RUN PRODUCES ITS REPORT (epic TR; origin issue #59 — the owner-QA's word: \"THERE WAS NO TESTING\": the agent ran a probe twice, wrote [TESTED] and \"stage accepted\", and the owner could see neither a command, nor a moment, nor what was found): TESTING_FRAMEWORK gains the section \"An executed run produces its report\" — every executed run (a live probe, a smoke, a polygon, a manual walk-through) leaves a report in the test-doc home as a catalog by date, `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (the date-first name IS the index; the home is `testcases/` or `.kaif/kaif.json` → `testdocs`), with seven fields — Work · Contour · Runs (count, a moment and the COMMAND per run) · Checks · Found (a list or an explicit \"none\") · Traces · Verdict — and a `[TESTED: …]` claim about a run names its report. NEW delivery template .kaif/_testrun-report-template.md (copy it into the catalog, never fill it in place) and NEW optional tool module .kaif/tools/kaif-testrun-lint.mjs (check [home] | selftest; rules as data, keywords per language, SKIPPED=3 when the home has no reports/ — an unwritten report is invisible to it, which is why /fable-judge gains the hunt \"tested without a run report\"). And `check` of the core gains the axis \"/resume covers the re-read core\": a re-read core document (the budgeted nine) missing from the bullet list of the deployed /resume skill is named in a warning — a field /resume once opened 5 of 9 and nothing said a word."
+      "AN EXECUTED RUN PRODUCES ITS REPORT (epic TR; origin issue #59 — the owner-QA's word: \"THERE WAS NO TESTING\": the agent ran a probe twice, wrote [TESTED] and \"stage accepted\", and the owner could see neither a command, nor a moment, nor what was found): TESTING_FRAMEWORK gains the section \"An executed run produces its report\" — every executed run (a live probe, a smoke, a polygon, a manual walk-through) leaves a report in the test-doc home as a catalog by date, `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (the date-first name IS the index; the home is `testcases/` or `.kaif/kaif.json` → `testdocs`), with seven fields — Work · Contour · Runs (count, a moment and the COMMAND per run) · Checks · Found (a list or an explicit \"none\") · Traces · Verdict — and a `[TESTED: …]` claim about a run names its report. NEW delivery template .kaif/_testrun-report-template.md (copy it into the catalog, never fill it in place) and NEW optional tool module .kaif/tools/kaif-testrun-lint.mjs (check [home] | selftest; rules as data, keywords per language, SKIPPED=3 when the home has no reports/ — an unwritten report is invisible to it, which is why /fable-judge gains the hunt \"tested without a run report\"). And `check` of the core gains the axis \"/resume covers the re-read core\": a re-read core document (the budgeted nine) missing from the bullet list of the deployed /resume skill is named in a warning — a field /resume once opened 5 of 9 and nothing said a word.",
+      "THE OWNER'S TEXT IS WRITTEN BY HIS PORTRAIT, CHECKED INDEPENDENTLY BY IT, FIXED — AND ONLY THEN WRITTEN AND BROUGHT TO HIM (epic VC; origin issue #61 — the owner's word: \"that you write texts and do not use the stylometry is a GLARING methodology bug\": a field agent rewrote an 18-step player sheet through seven rounds under the owner's eyes without opening the voice portrait once; the gate lived as prose in a checklist and had no command; the owner's statement of the expected behaviour: the agent writes the text in the voice and by the rules the owner's stylometry prescribes, then runs an independent check by that same stylometry, fixes, and only then counts the text as written and brings it for approval): AGENT_GUIDE (both layers) gains a FOURTH KAIF obligation at the fable loop's steps 4–5 with three named steps — write BY the portrait WITH IT IN THE WORKING CONTEXT (`node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait into the context BEFORE the first word and leaves the witness .kaif/voice-marker.json; the owner's word: with the stylometry in the working cache) → check INDEPENDENTLY by the same portrait (the machine minute + the §7B pass by a clean instance) → fix, only then written, only then shown — repeated in \"Showing is an action\", checklist step 19 and the router row; /owner-voice carries the writing contract and gains mode `check` as the machine half. NEW optional tool module .kaif/tools/kaif-voice-lint.mjs (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `check` refuses a text with no load witness, last written before the first load or more than an hour after the last load (\"written past the portrait\" — the hour rule; never muted by --warn) and reads the §8 TABLE of AUTHOR_STYLOMETRY.md — pattern · class (stop / positive) · hint · legal exception — and prints every hit as `file:line — «fragment» → hint`; `\\|` inside the pattern cell is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\\b`/`\\w` are Unicode-aware; a row's `/regex/` exception silences a hit on its line, prose is printed beside it; fenced code, inline code and HTML comments are invisible; SKIPPED=3 without a portrait, without a §8 table or with placeholder rows only (likeness is never judged — that verdict is the owner's); the portrait path may be named in .kaif/kaif.json → voicePortrait. The skeleton .kaif/_owner-voice-template.md carries that table form in §8, names the command in §7A and makes §7B a clean-instance pass; the installer's owner-voice item asks to wire the command into the build path of every owner-facing text class; /fable-judge hunts \"owner text past the portrait\" (written without it open, checked by no independent pass, shown before the fixes)."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -126,7 +127,8 @@
       "Provenance marks are legal outside the canon (2.7, epic AW; origin issue #55 comment): `kaif-provenance check` no longer refuses [AI]…[/AI] in a file that is not a declared canon artifact — marks are REQUIRED in canonArtifacts and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, not the acceptance registry). Mark the text you PROPOSE as the owner's canon content (a lore line, a rule, a value) wherever it lives; never a pronoun — \"(my taste)\" has no owner a day later; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked.",
       "The delivery line is RETIRED by the origin owner's word (2.7, epic DR; 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): session closes and loop reports no longer open with `DELIVERY:`, `node .kaif/kaif-core.mjs delivery` no longer exists, the `Kind:` header line of bug documents is dropped, and nothing reads SYSTEMS_REGISTRY.md — delete that file or keep it consciously as your own document (the skeleton .kaif/_systems-registry-template.md is retired by this update; the machinery never touches your registry). If a wrapper skill or document of yours still orders the DELIVERY: line, remove that order — a farewell without the line is no longer a finding. The 2.6 rule \"a fresh word of the owner is ranked by the metric, never by its date\" stands: /what-next opens with METRIC: — the acceptance metric of the main phase read from MASTER_PLAN.md (criteria closed k of n) — and MAIN PHASE:.",
       "The owner-facing contour changed FOUR behaviours (2.7, epic QL; origin issues #54 #56 #58 #60): a document is CHECKED with `--check` before any page opens — `--no-open` serves and calls and is NOT a check; a decision that landed in rules or code is MARKED at once (`--mark-implemented <doc> <Q> --where <ref>`) and the queue never raises that question again — a document whose open questions are all implemented is refused with \"implemented, but open → close the status\" (exit 2) until its status closes by propagation; the page shows the live questions first and folds the settled ones with the document text below (nothing removed); the Save button floats at the top right, and a bottom bar is refused by the render self-check. If a project skill of yours still says \"run --no-open to check\", or a home-grown page draws its own bottom bar, re-point it: the shipped generator carries all of this, and the contract page is the one to check against.",
-      "An executed run leaves a report, and the claim names it (2.7, epic TR; origin issue #59): before writing `[TESTED: …]` or \"accepted\" about anything you RAN — a probe, a smoke, a polygon, a manual walk-through — copy `.kaif/_testrun-report-template.md` to `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (`testcases/` by default; name another home in `.kaif/kaif.json` → `testdocs`), fill the seven fields (Runs with the moment and the exact command of each run in a code span; Found as a list or the explicit word \"none\"), run `node .kaif/tools/kaif-testrun-lint.mjs check`, and put the report's address into the claim; the judge hunts a run claim without one. `node .kaif/kaif-core.mjs check` now also warns by name when your /resume skill does not list one of the nine re-read core documents — add the missing bullet, never silence the line."
+      "An executed run leaves a report, and the claim names it (2.7, epic TR; origin issue #59): before writing `[TESTED: …]` or \"accepted\" about anything you RAN — a probe, a smoke, a polygon, a manual walk-through — copy `.kaif/_testrun-report-template.md` to `<testdocs>/reports/<YYYY-MM-DD>_<work>.md` (`testcases/` by default; name another home in `.kaif/kaif.json` → `testdocs`), fill the seven fields (Runs with the moment and the exact command of each run in a code span; Found as a list or the explicit word \"none\"), run `node .kaif/tools/kaif-testrun-lint.mjs check`, and put the report's address into the claim; the judge hunts a run claim without one. `node .kaif/kaif-core.mjs check` now also warns by name when your /resume skill does not list one of the nine re-read core documents — add the missing bullet, never silence the line.",
+      "The owner's text is written BY his portrait, checked independently by it, fixed — and only then written and brought to him (2.7, epic VC; origin issue #61; the owner's statement of the expected behaviour): a text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — is (1) WRITTEN with AUTHOR_STYLOMETRY.md IN YOUR WORKING CONTEXT — `node .kaif/tools/kaif-voice-lint.mjs load` BEFORE the first word prints it into the context (its rules, lexicon, anti-portrait and before/after pairs; `--sections <regex>` for the modules the unit needs) and leaves the witness .kaif/voice-marker.json (session state, ignored by git) — the owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE; a text with no witness or written before the load is \"written past the portrait\" and `check` refuses it, (2) CHECKED INDEPENDENTLY by the same portrait — `node .kaif/tools/kaif-voice-lint.mjs check <files…>` plus the §7B pass by a clean instance (a subagent or a fresh pass that has not seen the writer's rationale), (3) FIXED — and only then it counts as written and goes to the owner for approval; the report of the unit names the portrait modules read, the command and its outcome (hits answered, or SKIPPED said aloud), the clean pass and the fixes. A draft written natively and re-voiced later is the very class this rule closes. The module reads the §8 TABLE of your portrait (pattern · class · hint · legal exception — the form the updated skeleton .kaif/_owner-voice-template.md shows); if your portrait keeps its §8 heuristics as PROSE or as grep lines in a fence, move them into that table — the linter says SKIPPED over prose, never green; a hit is rewritten by the hint or answered in the exception column, never silenced by deleting the row. Wire the command into the build script of every owner-facing text class you have; the judge hunts owner text past the portrait."
     ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
@@ -251,6 +253,7 @@
     ".kaif/tools/kaif-requirements-lint.mjs": "framework/tools/kaif-requirements-lint.mjs",
     ".kaif/tools/kaif-scenario-lint.mjs": "framework/tools/kaif-scenario-lint.mjs",
     ".kaif/tools/kaif-testrun-lint.mjs": "framework/tools/kaif-testrun-lint.mjs",
+    ".kaif/tools/kaif-voice-lint.mjs": "framework/tools/kaif-voice-lint.mjs",
     "AGENT_GUIDE.md": "framework/AGENT_GUIDE.md",
     "BUG_FIXING_FRAMEWORK.md": "framework/BUG_FIXING_FRAMEWORK.md",
     "bugs/README.md": "framework/readmes/bugs.md",
@@ -471,9 +474,13 @@ relies entirely on this document to get to work.
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
 19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
-    copy) → open the owner's voice portrait `AUTHOR_STYLOMETRY.md` when the project has one
-    (/owner-voice) and run its checklist before handover; no portrait after a second style
-    rejection → propose taking one
+    copy, a sheet, a UI string) → WRITE BY the portrait `AUTHOR_STYLOMETRY.md` WITH IT IN YOUR WORKING
+    CONTEXT: node .kaif/tools/kaif-voice-lint.mjs load BEFORE the first word (prints its rules, lexicon,
+    anti-portrait and pairs into the context, leaves the witness .kaif/voice-marker.json); after writing —
+    an INDEPENDENT check by the same portrait: node .kaif/tools/kaif-voice-lint.mjs check <file…> (the §8
+    table + the witness; /owner-voice check) + the §7B pass by a clean instance; fix — only then the text
+    is written, and only then it goes to the owner for approval; SKIPPED (no portrait / no §8 table) is
+    said in the report, never read as green; no portrait after a second style rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -493,7 +500,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
-| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`) · the artifact's styleguide |
+| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`): LOADED into the working context before the first word — `node .kaif/tools/kaif-voice-lint.mjs load` — and the text is written BY it · the artifact's styleguide · after writing, the independent check by the same portrait: `node .kaif/tools/kaif-voice-lint.mjs check <file…>` + the §7B pass by a clean instance |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -720,6 +727,34 @@ with the outcome "verified on the real world" / "verified with real state" on ev
 there" is a stop, not an outcome (the rule and its one exception — `TESTING_FRAMEWORK.md` → "The agent's
 stand is not the owner's real world"); `/fable-judge` hunts "done" without that line (the
 done-without-the-real-world hunt).
+
+**KAIF adds a fourth obligation — at step 4 (act) and step 5 (verify), for TEXT the owner reads as his own:
+THE TEXT IS WRITTEN BY THE OWNER'S PORTRAIT, THEN CHECKED INDEPENDENTLY BY THE SAME PORTRAIT, FIXED — AND
+ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER** (origin issue #61 — a field agent rewrote a player sheet
+through seven rounds under the owner's eyes without opening the portrait once; the origin owner's word,
+2026-09-12, rendered from Russian: "the AI agent writes the text in the voice and by the rules the owner's
+stylometry prescribes; after writing, by that same stylometry, the agent runs an independent check of what
+it wrote, fixes it, and only then counts the text as written and brings it to the owner for approval").
+Three steps, in this order, and the report names each:
+1. **Write BY the portrait — with it in your working context.** Before the first word,
+   `node .kaif/tools/kaif-voice-lint.mjs load` prints `AUTHOR_STYLOMETRY.md` into your context (`--sections
+   <regex>` for the modules the unit needs — the rules §2, the lexicon §2-C, the anti-portrait §5, the
+   before/after pairs §6) and leaves the witness `.kaif/voice-marker.json`; write by it while it is there (the
+   owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE). A draft written "natively" and
+   re-voiced afterwards is the class this obligation closes, not its execution — `check` refuses a text with
+   no load witness, last written before the first load, or written more than an hour after the last load (the
+   hour rule of context refresh: the portrait had left the cache) — "written past the portrait".
+2. **Check INDEPENDENTLY by the same portrait.** The machine minute —
+   `node .kaif/tools/kaif-voice-lint.mjs check <file…>` (the §8 table; no portrait or a §8 without the table
+   → `SKIPPED=3`, said in the report in those words, never read as green) — and the semantic pass §7B by a
+   CLEAN instance: a subagent, or a fresh pass forbidden to see the writer's rationale (the judge of the
+   rewrite pipeline, applied to every unit). The writer's own glance is not an independent check.
+3. **Fix — only then it is written.** Every hit is rewritten by the portrait's hint or answered in its
+   exception column (the owner's canon: his word or a journal row); only after that the text counts as
+   written, and only then it is shown to the owner for approval — never before.
+The command judges the explicit patterns only; likeness stays the owner's verdict (the taste class).
+`/fable-judge` hunts owner text past the portrait (the owner-text-past-the-portrait hunt): written without
+the portrait open, checked by no independent pass, or shown before the fixes.
 
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
@@ -1252,7 +1287,11 @@ the command (the owner doesn't and shouldn't). "Lies at path…", "opens by doub
 file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
 footnote of where it landed — never as an errand. No separate show tool: the review contour opens
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. **The executor of this check is THE AGENT ITSELF at
+contour, open the file with the system opener. **And a text the owner reads as his own is shown only
+AFTER it is written BY his portrait, checked independently by it and fixed:**
+`node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
+(the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
+hidden, and a draft written natively and shown "for a look" is the class itself. **The executor of this check is THE AGENT ITSELF at
 the moment of sending, and that is said plainly:** before sending a reply, grep it for
 "double-click / opens offline / see file / lies at" next to an artifact extension — a hit means the
 show was replaced by a link. No machine can do it: the text being checked is your reply, it never
@@ -2958,7 +2997,11 @@ One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR
 the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
 own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
 as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
-history is kept INSIDE the file, append-only (§9 of the skeleton). Two bundle-only skeletons of the
+history is kept INSIDE the file, append-only (§9 of the skeleton), and its §8 is a TABLE of machine
+heuristics (pattern · class · hint · exception) that the shipped linter `kaif-voice-lint` reads as the
+machine half of the independent check after a text is written BY the portrait (2.7, epic VC: written by
+the portrait → checked independently by it → fixed → only then written and brought to the owner). Two
+bundle-only skeletons of the
 same family serve the testing canon: `.kaif/_testcases-template.md` (2.3 — the case set per feature,
 `TESTING_FRAMEWORK.md` → the activities chain) and `.kaif/_testrun-report-template.md` (2.7, epic TR —
 the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD>_<work>.md`;
@@ -3351,6 +3394,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
 | `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
 | `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
+| `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
@@ -4634,7 +4678,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -4680,6 +4724,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Owner text in agent vocabulary (KAIF 2.6).** An owner-facing text — a question, an option label, a Situation · Action · Result line, a report line the owner reads as the customer — that names a thing by the agent's working vocabulary (an epic code or a chain of them, a plan or bug address, a tool invocation, a flag, a canon term) instead of by what the owner will SEE or GET after it, is a finding: the scenario form was satisfied and the owner still could not choose (the origin's bug 112 — four rejections of one class in a month; the owner's word, decision #106: "the owner reasons in meanings and behavioural scenarios"). Hunt option labels and scenario lines for `XX → YY` chains, `node …/` invocations, `--flags`, `plans/NN`; the Check line, the answer-target line and a technical note under the scenario are the legal homes for all of these. The declared exception is a marker with a reason on the line (`questions-guard:vocabulary-ok`); a dead round the owner already commented on is not a live question.
    - **Agent decision worn as the owner's word (KAIF 2.7).** A recorded decision — a plan line, a code comment, a report line, a "not to be revisited" status — that attributes a choice to the owner ("the owner's decision", "the owner decided", "per the owner's word", their equivalents in the owner's language) with no verbatim quote of the owner and no interview address beside it, is a finding: the canon's authority order (the owner's direct word > the book) makes a later session obey a choice the agent made itself (`AGENT_GUIDE.md` → "Authorship of a decision"; origin issue #55 — a "the owner's decision P1: wait" comment held a run for 119 s while the owner's machine died; his real word at that fork was "do as you see fit"). Hunt also: a MANDATE ("do as you see fit", "your call") recorded as the owner's decision instead of `[AI] by mandate — "<his words>"`; a "not to be revisited" status on a decision with no `[OWNER]` signature; a pronoun standing in for a provenance mark in a draft brought to the owner ("(my taste)"); an `[AI]`/`[AI-ed]` mark removed without the owner's word. `node .kaif/tools/kaif-attribution-lint.mjs check` over the changed files is the re-run; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line.
    - **Tested without a run report (KAIF 2.7).** A `[TESTED: …]` claim about an EXECUTED run — a live probe, a smoke, a polygon, a manual walk-through, "stage accepted" — with no run-report address in the project's test-doc home beside it (`<testdocs>/reports/<YYYY-MM-DD>_<work>.md`; `TESTING_FRAMEWORK.md` → "An executed run produces its report"), or whose report lacks the commands and the moments of the runs, is a finding: a run that left no artifact is indistinguishable from a run that never happened (origin issue #59 — the owner-QA's word: "THERE WAS NO TESTING"; the agent ran a probe twice and the owner could see neither a command, nor a moment, nor what was found). Re-run: open the named report, re-execute one command from its Runs field and compare the outcome; `node .kaif/tools/kaif-testrun-lint.mjs check` judges the form (`SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, which is exactly why this hunt exists).
+   - **Owner text past the portrait (KAIF 2.7).** A text the owner signs or reads as his own — a rulebook chapter, a player sheet, a UI string table, site copy, a README section — that reached the owner PAST his voice portrait, in a deployment that has one (`AUTHOR_STYLOMETRY.md`): written without the portrait in the working context (no load witness `.kaif/voice-marker.json`, or the file last written before the first `node .kaif/tools/kaif-voice-lint.mjs load` — `check` names both; the report names no portrait modules read before the first word; the draft ignores the lexicon §2-C or carries the anti-portrait markers §5), or checked by no INDEPENDENT pass (no line naming a run of `node .kaif/tools/kaif-voice-lint.mjs check <file…>` with its hits answered or its `SKIPPED` said aloud, and no clean-instance §7B pass — the writer's own glance is not one), or shown before the fixes — is a finding: the gate lived as prose in a checklist and a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once (origin issue #61 — the owner's word: "how many times did you compare this text with my stylometry?" — zero; his statement of the expected behaviour: the agent writes BY the stylometry, then checks independently by it, fixes, and only then the text is written and brought for approval; `AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation and "Showing is an action"). Hunt also: a draft written natively and re-voiced afterwards presented as "written by the portrait"; a report that claims the machine minute ran while the portrait's §8 is prose (the module would have said `SKIPPED`); a hit "fixed" by widening the exception column, silencing the rule or deleting the row instead of rewriting the text (a weakened check in the owner's own canon); likeness claimed from a green run (the command judges explicit patterns only — likeness is the owner's verdict). Re-run: the command over the shown file and compare the hits; open the named portrait modules and check the lexicon's turns against the text; a project without a portrait is not a finding — the report must say so.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -6793,7 +6838,7 @@ server that outlives the silence threshold → red.
 ``````md
 ---
 name: owner-voice
-description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Two modes — portrait (capture the voice) and rewrite (re-voice an artifact under machine-checkable invariants). Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (one field project, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
+description: Take a stylometric PORTRAIT of the owner's written voice from their own texts and rewrite a project artifact by it, so AI text sounds like the owner's text. Three modes — portrait (capture the voice), rewrite (re-voice an artifact under machine-checkable invariants) and check (the machine half of the independent check that follows writing BY the portrait). The writing contract for any text the owner reads as his own — written BY the portrait, then checked independently by it, fixed, only then written and brought to the owner. Use when the human says "make a portrait of my style", "write like me", "this is not my language", "перепиши моим голосом", "это не мой язык", "match my voice" — AND ON YOUR OWN INITIATIVE when the owner rejects a text over its language or style for the SECOND time: that is the signal that styleguide bans are not working and a portrait is needed. Field-proven methodology (one field project, then applied cross-project); the portrait skeleton ships as .kaif/_owner-voice-template.md. The filled portrait is a separate OPTIONAL canon file: AUTHOR_STYLOMETRY.md.
 ---
 
 # /owner-voice — the owner's voice
@@ -6820,8 +6865,92 @@ thinking and speaking.
 ## When to invoke
 
 - On the owner's ask; on the proactive trigger "second rejection over language".
-- NOT for touching up three paragraphs — there, write with the portrait open and run its
-  checklist; the full ritual starts at several units of work.
+- NOT for touching up three paragraphs — there, the writing contract below applies as it is (written
+  BY the portrait, checked independently, fixed, then shown); the full ritual of `portrait`/`rewrite`
+  starts at several units of work.
+- The writing contract — EVERY time a text the owner signs or reads as his own is written (a rulebook
+  chapter, a player sheet, a UI string table, site copy, a README section): the fable loop's fourth
+  KAIF obligation (`AGENT_GUIDE.md`), spelled out in the next section; mode `check` is its machine half.
+
+## The writing contract — by the portrait, independently checked, then the owner
+
+The obligation "open the portrait and run its checklist" lived as prose in a checklist, and a field
+agent rewrote a player sheet through seven rounds under the owner's eyes without opening the
+portrait once; the owner caught it by the language ("how many times did you compare this text with
+my stylometry?" — zero). His statement of the expected behaviour (origin, 2026-09-12, rendered from
+Russian): **"the AI agent writes the text in the voice and by the rules the owner's stylometry
+prescribes; after writing, by that same stylometry, the agent runs an independent check of what it
+wrote, fixes it, and only then counts the text as written and brings it to the owner for approval."**
+Three steps, in this order — and the report of the unit names each:
+
+1. **Write BY the portrait — with it in your working context.** Before the first word:
+   `node .kaif/tools/kaif-voice-lint.mjs load` (or `load --sections <regex>` for the modules the unit
+   needs — the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6) prints
+   `AUTHOR_STYLOMETRY.md` INTO YOUR WORKING CONTEXT and leaves the witness `.kaif/voice-marker.json`;
+   write by it while it is there — the owner's word: write BY the stylometry, WITH IT IN THE WORKING
+   CACHE — the lexicon's turn of phrase, not a synonym; the skeleton of the section the owner uses; the
+   register of the artifact. A draft written "natively" and re-voiced afterwards is the class this
+   contract closes, not its execution: `check` refuses a text with no load witness or last written
+   before the first load ("written past the portrait").
+2. **Check INDEPENDENTLY by the same portrait.** Two halves, both named in the report: (a) the
+   machine minute — mode `check` below (the §8 table; a `SKIPPED` is said aloud, never read as green);
+   (b) the semantic pass §7B by a CLEAN instance — a subagent, or a fresh pass forbidden to see the
+   writer's rationale, reading the text against the anti-portrait and the pairs (the judge of the
+   `rewrite` pipeline, applied to one unit). The writer's own glance at its own text is not an
+   independent check.
+3. **Fix — only then it is written.** Every hit is rewritten by the portrait's hint or answered in the
+   portrait's exception column (the owner's canon: his word or a journal row §9); only after that the
+   text counts as written — and only then it is shown to the owner for approval, never before.
+
+What the report of the unit carries: the portrait modules read before the first word · the command
+line and its outcome (hits answered, or `SKIPPED` in so many words) · the clean pass and its verdict ·
+the fixes made. `/fable-judge` hunts owner text past the portrait: written without it open, checked by
+no independent pass, or shown before the fixes.
+
+## Mode `check` — the machine half of the independent check
+
+A rule that yields an artifact names the command that produces it — this is that command, the
+machine half of step 2 above (the semantic half is the clean-instance pass §7B):
+
+```
+node .kaif/tools/kaif-voice-lint.mjs load [--sections <regex>]     # step 1: the portrait into your context + the witness
+node .kaif/tools/kaif-voice-lint.mjs check <file…> [--warn]        # step 2, the machine half
+```
+
+- **What it reads:** the §8 TABLE of `AUTHOR_STYLOMETRY.md` (or the file named in `.kaif/kaif.json`
+  → `voicePortrait`) — `pattern · class · hint · legal exception`, the form the skeleton
+  `.kaif/_owner-voice-template.md` carries. The portrait is the single source of the patterns; the
+  module has none of its own.
+- **The witness:** `load` records `.kaif/voice-marker.json` (the moments taken by the tool — a
+  history of loads, the portrait's path and sha, the sections printed; session state, ignored by git
+  like the refresh marker; another portrait starts a new witness). `check` refuses a text with no
+  witness, with a witness for another portrait, last written BEFORE the first load, or written MORE
+  THAN AN HOUR after the last load before it (the hour rule of context refresh: the portrait had left
+  the cache — reload before every unit) — "written past the portrait", exit 1, never muted by
+  `--warn`; it warns when the portrait changed since the load. `load --sections <regex>` that matches
+  no section loads nothing and writes no witness. The witness is a marker with the marker class's
+  boundary: it proves the load ran, not that the print was read — the judge reads the named modules
+  against the text.
+- **What it prints:** every hit as `file:line — «fragment» → hint (exception: …)` and exits 1; a
+  clean file exits 0 with the count of lines judged; a `positive`-class row absent from the file is a
+  warning. `--warn` prints the hits and exits 0 — the calibration mode ("warning mode first; noise
+  above signal = no guard"). A row's `/regex/` exception silences a hit on its line; prose is printed
+  beside the hit for you to weigh.
+- **`SKIPPED=3` is an outcome you REPORT, never a pass:** no portrait · no §8 section · a §8 without
+  the table (greps as prose — move them into the table) · a table with placeholder rows only. The
+  report line for the show says "voice check: SKIPPED — no portrait" in so many words.
+- **On a hit:** rewrite by the hint; a hit that is legal in this place is answered in the portrait's
+  exception column (the owner's canon, so his word or a journal row §9), never by silencing the rule
+  or deleting the row — that is a weakened check, and `/fable-judge` hunts it.
+- **Boundary, said every run:** likeness is not judged — "sounds like the owner" is the taste class
+  and the owner's verdict; the command catches only the explicit patterns of §8. The semantic pass
+  (§7B) and the owner's eyes remain.
+- **Wiring:** a text class with a build script (a sheet generator, a string table, a README section)
+  runs the command inside the script — a hit stops the build or is answered (the deployment task
+  `owner-voice` of the installer asks for exactly this); a text without a script runs it by hand
+  after writing, before the text counts as written (`AGENT_GUIDE.md` → "Showing is an action").
+- **What the command is NOT:** it is not the writing step (the text is written BY the portrait first,
+  step 1 of the contract) and not the whole check (the clean-instance pass §7B is the other half).
 
 ## Mode `portrait` — capturing the voice
 
@@ -6878,10 +7007,11 @@ owner names the last revision they vouch for (via `/interview`) → everything a
 do `portrait` + "all new AI text under marks from now on"; the existing artifact is edited
 fragment-by-fragment at the owner's direct word.
 
-**The pipeline is a DELTA to `/fable-loop`** (do not restate it: rewriter → adversarial judge,
-separate instance, reads the diff LINE BY LINE → up to two repair rounds → verified → invariants
-check → one commit per unit). New here is only: the provenance gate, the invariants ladder, and
-the no-meaning-fixes rule. The judge checks TWO things separately: meaning identity (numbers,
+**The pipeline is a DELTA to `/fable-loop`** (do not restate it: rewriter writing BY the portrait →
+mode `check` over the unit (zero hits, or every hit answered) → adversarial judge, separate instance,
+reads the diff LINE BY LINE against the anti-portrait and the pairs → up to two repair rounds →
+verified → invariants check → one commit per unit — the writing contract above, per unit). New here
+is only: the provenance gate, the machine minute, the invariants ladder, and the no-meaning-fixes rule. The judge checks TWO things separately: meaning identity (numbers,
 formulas, references, enumerated cases) and portrait conformity (by the anti-portrait and pairs).
 
 **Invariants named BEFORE work, shown after** — the ladder, top to bottom:
@@ -13136,6 +13266,525 @@ else if (CMD === 'selftest') selftest();
 else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | selftest'); process.exit(1); }
 ``````
 
+> **FILE: `.kaif/tools/kaif-voice-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-voice-lint.mjs — the OPTIONAL owner-voice tool (2.7, epic VC; AGENT_GUIDE.md → the fable loop's
+// fourth KAIF obligation and "Showing is an action"; origin issue #61 — the owner's word: "that you write
+// texts and do not use the stylometry is a GLARING methodology bug"). Deployed to .kaif/tools/.
+//
+// The owner's contract it serves (his statement, rendered from Russian): the agent WRITES the text by the
+// voice and the rules the owner's stylometry prescribes — WITH THE STYLOMETRY IN ITS WORKING CACHE — then,
+// by that same stylometry, runs an INDEPENDENT check of what it wrote, fixes it, and only then counts the
+// text as written and brings it to the owner. Two commands, one for each half:
+//   load  — prints the portrait (AUTHOR_STYLOMETRY.md) into the agent's working context BEFORE the first
+//           word and leaves the witness .kaif/voice-marker.json (the moments are taken by the tool from the
+//           system clock; the marker is session state, ignored by git like the refresh marker);
+//   check — the MACHINE HALF of the independent check: the stop-patterns and required positives the
+//           portrait keeps as a TABLE in §8, run over the written text; plus the witness — a text with no
+//           load witness, last written BEFORE the portrait was first loaded, or written MORE THAN AN HOUR
+//           after the last load (the hour rule of context refresh: the portrait had left the working
+//           context), is "written past the portrait" and a finding. The semantic half is the
+//           clean-instance pass §7B (not this module).
+// The portrait is the single source of the patterns (the owner edits them where he reads them); this
+// module carries no pattern of its own, and `check` is not the writing step.
+//
+// What it does NOT do, said aloud: it does not judge likeness — "sounds like the owner" is the taste
+// class and the owner's verdict (AGENT_GUIDE.md → the taste class); it catches only the EXPLICIT patterns
+// of the portrait's §8 table. It never lints the portrait itself (every pattern would hit its own row).
+// A portrait whose §8 is prose is honestly SKIPPED — a silent green over an unread §8 would be a false
+// check, which is the very class this module exists to close. And the witness is a MARKER, with the
+// marker class's boundary: it proves that `load` ran and when, not that the agent read what it printed —
+// a copied marker or a re-saved file can forge it; the judge's re-run (open the named modules, compare
+// the lexicon's turns with the text) is what judges the reading, exactly as with the refresh marker.
+//
+// The table (portrait §8; the skeleton .kaif/_owner-voice-template.md carries the form):
+//   | pattern | class | hint | legal exception |      (RU header: паттерн · класс · подсказка · исключение)
+//   pattern   — a regular expression in a code span, word forms spelled out for inflected languages;
+//               `\|` inside the cell is alternation (GFM escapes the pipe); a bare pattern is case-sensitive
+//               like ripgrep, `/…/i` opts into case-folding; `\b`, `\B` and `\w`/`\W` are Unicode-aware
+//               here — JavaScript's own are blind to non-ASCII letters, a paid-for lesson (EXP-0082);
+//               the one gap: `\W` INSIDE a character class stays ASCII (u-mode cannot nest a class) —
+//               write `[^\p{L}\p{N}_]` there explicitly
+//   class     — `stop` (a hit is a finding) or `positive` (its ABSENCE in the whole file is a warning)
+//   hint      — what to write instead, in the owner's own words (printed with every hit)
+//   exception — `/regex/` silences a hit whose LINE matches; prose is printed beside the hit for the reader
+//   a row whose pattern cell is a placeholder `<…>` or empty is not a rule (the skeleton's example rows)
+//
+// The witness (.kaif/voice-marker.json): { at, firstAt, loads[], portrait, sha256, sections, lines } —
+// `load` appends the moment to `loads` (a history, kept for one portrait path; a different portrait
+// starts a new witness); `check` judges every file against it: no witness, or a witness for another
+// portrait → finding; no load before the file's last write → finding; the last load before the write
+// older than STALE_MINUTES → finding (the hour rule); the portrait changed since the last load (sha) →
+// warning. `--warn` never mutes the witness — calibration is for patterns, not for the contract.
+//
+// Exit codes — ADVISORY, like the sibling modules: 1 = findings, 0 = judged and clean, 3 = SKIPPED (no
+// portrait · no §8 section · no pattern table in §8 · a table with no rule — "not judged" must never read
+// as "clean"), 2 = usage (no files, a named file missing, `--sections` without a value or matching no
+// section — then nothing is loaded and no witness is written).
+//
+// Commands:
+//   node .kaif/tools/kaif-voice-lint.mjs load [--sections <regex>]      # print the portrait into your context
+//                                                                        # (or only the H2 sections matching) +
+//                                                                        # write the witness — BEFORE the first word
+//   node .kaif/tools/kaif-voice-lint.mjs check <files…> [--warn]         # portrait: AUTHOR_STYLOMETRY.md at the
+//                                                                        # project root, or .kaif/kaif.json → voicePortrait
+//   node .kaif/tools/kaif-voice-lint.mjs selftest                        # PROVE every answer on in-memory fixtures (EN + RU)
+// [TESTED: 2026-09-12 · selftest 48 cases green in 2 languages (a hit named 7:«Remember that» / 7:«Помни, что» with the row's
+//  hint and its prose exception; the clean text silent; fence, inline code and HTML comment invisible; a /regex/ exception
+//  silences; a bare pattern is case-sensitive and /…/i folds; \b is Unicode-aware — «ты» inside «открыты» is not a hit, \B
+//  fires inside «открытый» and not on a standalone «ты»; an absent positive is a warning; a prose §8 → no-table, no §8 →
+//  no-section, foreign columns → no-table naming the header, a third language found by its number, the shipped skeleton
+//  unfilled → no-rules; the witness — no marker → finding, another portrait → finding, written before the first load →
+//  finding with both moments in the local zone, written 90 min after the last load → finding, a re-load 10 min before the
+//  write → clean, a changed portrait → warning, a pre-history marker still read; --sections keeps the head and the matching
+//  sections and reports zero matches); live on the origin — `load --sections "^8"` printed 381 lines of the generated
+//  portrait and left .kaif/voice-marker.json (ignored by git), `check` — SKIPPED exit 3 naming the two measurement tables of
+//  its §8; sandbox suite s26 observed: EN and RU projects — check without a witness → "no load witness" (exit 1, also under
+//  --warn), load prints the portrait and the witness, a hit named on `sheet/steps.md:7` with the hint, clean green with the
+//  load moment, a file written before the load → "written past the portrait", --warn exit 0 on patterns, fence invisible,
+//  --sections "^8" with the load history, --sections without a match or a value → usage with the witness untouched, prose
+//  §8 and no portrait SKIPPED for check and load, the marker path honoured, a witness for another portrait → finding, usage
+//  exit 2, deployed copy — module and skeleton (both commands + the table) arrive, deployed load, an unfilled skeleton copy
+//  SKIPPED, one filled row fires with the "changed since it was last loaded" warning; polygon `all 25 suites green`; red
+//  proven on the 2.6 dist via KAIF_DIST (7 of 47 addressed to the absent module and skeleton form); the first suite run
+//  caught a line-count defect of this module (the file's trailing newline counted as a line), the epic's judge caught the
+//  witness that refused only once per tree, the mute --warn, the empty --sections load, the mixed time zones and the
+//  untranslated \B — all fixed before commit; the origin's run report: testcases/reports/2026-09-12_polygon-2.7-VC.md]
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+
+const argv = process.argv.slice(2);
+const CMD = argv[0] || 'check';
+const WARN = argv.includes('--warn');
+const SECTIONS_AT = argv.indexOf('--sections');
+const SECTIONS_ARG = SECTIONS_AT >= 0 ? argv[SECTIONS_AT + 1] : null;
+const FILES = argv.slice(1).filter((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--sections');
+const EXIT_FINDINGS = 1;
+const EXIT_USAGE = 2;
+const EXIT_SKIPPED = 3;
+const MARKER = '.kaif/kaif.json';
+const VOICE_MARKER = '.kaif/voice-marker.json';
+const DEFAULT_PORTRAIT = 'AUTHOR_STYLOMETRY.md';
+const FRAGMENT_MAX = 80;
+const LOADS_KEPT = 100;               // the load history a witness keeps (the oldest fall off)
+export const STALE_MINUTES = 60;      // the hour rule of context refresh: an older load is no longer "in the cache"
+export const BOUNDARY = 'likeness is not judged — that verdict is the owner\'s (the taste class); the linter catches only the explicit patterns of the portrait\'s §8 table';
+const USAGE = 'usage: node .kaif/tools/kaif-voice-lint.mjs load [--sections <regex>] | check <files…> [--warn] | selftest';
+
+// ---------------------------------------------------------------------------
+// Words the parser recognises, per shipped language: the §8 heading and the four column headers. A project
+// whose owner writes in another language adds a row; the engine does not change. The heading is also found
+// by its NUMBER (`## 8. …`) so a portrait in a third language is not lost.
+export const KEYWORDS = {
+  en: { section: /machine heuristics/i,
+        columns: { pattern: /^pattern/i, class: /^class/i, hint: /^hint/i, exception: /^(?:legal\s+)?exception/i } },
+  ru: { section: /машинн\S*\s+эвристик/i,
+        columns: { pattern: /^паттерн/i, class: /^класс/i, hint: /^подсказк/i, exception: /^(?:законн\S*\s+)?исключен/i } },
+};
+const SECTION_NUMBER = /^8[.)]\s/;
+const H2 = /^##\s+(.+?)\s*$/;
+const ANY_H2 = /^##\s/;
+const TABLE_ROW = /^\s*\|/;
+const SEPARATOR_ROW = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
+const PLACEHOLDER_CELL = /^<[\s\S]*>$/;
+const DASH_CELL = /^[—–-]+$/;
+const POSITIVE_CLASS = /^(?:positive|обязательн|позитив)/i;   // anything else is `stop`
+const REGEX_CELL = /^\/(.+)\/([a-z]*)$/;
+
+// Split a GFM table row into cells: an unescaped `|` separates, `\|` is a literal pipe — alternation in a
+// regex is written `\|` in the portrait and read back as `|` here. A cell wrapped in a code span is unwrapped.
+const cellsOf = (row) => {
+  const cells = row.trim().split(/(?<!\\)\|/).map((c) => c.replace(/\\\|/g, '|').trim());
+  if (cells.length && cells[0] === '') cells.shift();
+  if (cells.length && cells[cells.length - 1] === '') cells.pop();
+  return cells;
+};
+const unspan = (cell) => { const m = /^`([\s\S]*)`$/.exec(cell); return m ? m[1].trim() : cell; };
+
+// Translate the ripgrep/PCRE habits of a portrait into JavaScript `u`-mode: `\b`, `\B` and `\w`/`\W` are
+// ASCII-only in JavaScript and would either miss a Cyrillic word or split it at every letter. Outside a
+// character class `\b` → a Unicode word boundary, `\B` → its negation, `\w` → [\p{L}\p{N}_], `\W` → the
+// negated class; inside a class `\w` → \p{L}\p{N}_ (a negated set cannot be nested there — the named gap).
+const W = '[\\p{L}\\p{N}_]';
+const UNI_B = `(?:(?<!${W})(?=${W})|(?<=${W})(?!${W}))`;
+const UNI_NB = `(?:(?<=${W})(?=${W})|(?<!${W})(?!${W}))`;
+export function unicodeBody(src) {
+  let out = '', inClass = false;
+  for (let i = 0; i < src.length; i++) {
+    const c = src[i];
+    if (c === '\\' && i + 1 < src.length) {
+      const n = src[i + 1];
+      if (!inClass && n === 'b') { out += UNI_B; i++; continue; }
+      if (!inClass && n === 'B') { out += UNI_NB; i++; continue; }
+      if (n === 'w') { out += inClass ? '\\p{L}\\p{N}_' : W; i++; continue; }
+      if (!inClass && n === 'W') { out += '[^\\p{L}\\p{N}_]'; i++; continue; }
+      out += c + n; i++; continue;
+    }
+    if (c === '[' && !inClass) inClass = true;
+    else if (c === ']' && inClass) inClass = false;
+    out += c;
+  }
+  return out;
+}
+// A pattern cell → RegExp (throws on a pattern that does not compile — the caller reports the row and skips it).
+export function compilePattern(cell, extraFlags = 'g') {
+  const raw = unspan(cell);
+  const m = REGEX_CELL.exec(raw);
+  const body = m ? m[1] : raw;
+  const flags = extraFlags + 'u' + ((m && m[2].includes('i')) ? 'i' : '');
+  return new RegExp(unicodeBody(body), flags);
+}
+
+// ---------------------------------------------------------------------------
+// parsePortrait(text) → { status: ok | no-section | no-table | no-rules, rules, notes, tables }
+// rule = { line, source, re, cls: stop | positive, hint, exception (prose or regex text), excRe }
+export function parsePortrait(text) {
+  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  let start = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const m = H2.exec(lines[i]);
+    if (!m) continue;
+    if (Object.values(KEYWORDS).some((k) => k.section.test(m[1])) || SECTION_NUMBER.test(m[1])) { start = i; break; }
+  }
+  if (start < 0) return { status: 'no-section', rules: [], notes: [], tables: 0 };
+  let end = lines.length;
+  for (let i = start + 1; i < lines.length; i++) if (ANY_H2.test(lines[i])) { end = i; break; }
+  const rules = [], notes = [];
+  let tables = 0, recognised = 0, i = start + 1;
+  while (i < end) {
+    if (!TABLE_ROW.test(lines[i])) { i++; continue; }
+    const block = [];
+    while (i < end && TABLE_ROW.test(lines[i])) block.push({ n: i + 1, s: lines[i++] });
+    if (block.length < 2 || !SEPARATOR_ROW.test(block[1].s)) continue;     // a lone `|` line is not a table
+    tables++;
+    const header = cellsOf(block[0].s);
+    const col = {};
+    header.forEach((h, idx) => {
+      for (const k of Object.values(KEYWORDS))
+        for (const [role, re] of Object.entries(k.columns)) if (re.test(h) && !(role in col)) col[role] = idx;
+    });
+    if (!('pattern' in col) || !('hint' in col)) {
+      notes.push(`a table in §8 (line ${block[0].n}) lacks the pattern/hint columns — its header: ${header.join(' · ')}`);
+      continue;
+    }
+    recognised++;
+    for (const row of block.slice(2)) {
+      const c = cellsOf(row.s);
+      const source = unspan(c[col.pattern] || '');
+      if (!source || PLACEHOLDER_CELL.test(source)) continue;                // an example row is not a rule
+      const hint = c[col.hint] || '';
+      const cls = POSITIVE_CLASS.test(unspan(c[col.class] ?? '')) ? 'positive' : 'stop';
+      const excRaw = 'exception' in col ? unspan(c[col.exception] || '') : '';
+      const exception = excRaw && !PLACEHOLDER_CELL.test(excRaw) && !DASH_CELL.test(excRaw) ? excRaw : '';
+      let re;
+      try { re = compilePattern(c[col.pattern]); }
+      catch (e) { notes.push(`row at line ${row.n}: the pattern «${source}» does not compile — ${e.message}`); continue; }
+      let excRe = null;
+      const em = REGEX_CELL.exec(exception);
+      if (em) {
+        try { excRe = new RegExp(unicodeBody(em[1]), 'u' + (em[2].includes('i') ? 'i' : '')); }
+        catch (e) { notes.push(`row at line ${row.n}: the exception regex does not compile — ${e.message}`); }
+      }
+      rules.push({ line: row.n, source, re, cls, hint, exception, excRe });
+    }
+  }
+  if (!recognised) return { status: 'no-table', rules: [], notes, tables };
+  if (!rules.length) return { status: 'no-rules', rules: [], notes, tables };
+  return { status: 'ok', rules, notes, tables };
+}
+
+// The H2 sections of a portrait whose title matches `re` (for `load --sections`) → { text, matched }; the
+// head before the first H2 always rides along so the portrait's binding note and corpus registry are never
+// dropped. `matched` = 0 means nothing of the body was selected — the caller refuses to write a witness.
+export function sectionsMatching(text, re) {
+  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const out = [];
+  let keep = true, matched = 0;                    // the head before the first H2
+  for (const l of lines) {
+    const m = H2.exec(l);
+    if (m) { keep = re.test(m[1]); if (keep) matched++; }
+    if (keep) out.push(l);
+  }
+  return { text: out.join('\n'), matched };
+}
+
+// ---------------------------------------------------------------------------
+// The invisible regions of a judged file: fenced code blocks, inline code spans and HTML comments are not the
+// owner's prose. They are blanked with spaces so line numbers stay true.
+export function visibleLines(text) {
+  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();   // the newline that ends a file is not a line
+  let fence = null;
+  return lines.map((l) => {
+    const f = /^\s*(```|~~~)/.exec(l);
+    if (f) { if (!fence) fence = f[1]; else if (f[1] === fence) fence = null; return ''; }
+    if (fence) return '';
+    return l.replace(/`[^`]*`/g, (m) => ' '.repeat(m.length)).replace(/<!--[\s\S]*?-->/g, (m) => ' '.repeat(m.length));
+  });
+}
+
+// lintText(name, text, rules) → { findings, warnings, silenced, judged }
+export function lintText(name, text, rules) {
+  const lines = visibleLines(text);
+  const findings = [], warnings = [];
+  let silenced = 0;
+  for (const r of rules) {
+    if (r.cls === 'positive') {
+      const present = lines.some((l) => { r.re.lastIndex = 0; return r.re.test(l); });
+      if (!present) warnings.push({ file: name, rule: r, msg: `required positive «${r.source}» not found in the file → ${r.hint}` });
+      continue;
+    }
+    lines.forEach((l, i) => {
+      for (const m of l.matchAll(r.re)) {
+        if (r.excRe && r.excRe.test(l)) { silenced++; continue; }
+        findings.push({ file: name, line: i + 1, fragment: m[0].slice(0, FRAGMENT_MAX), rule: r });
+      }
+    });
+  }
+  return { findings, warnings, silenced, judged: lines.length };
+}
+export const fmt = (f) => `${f.file}:${f.line} — «${f.fragment}» → ${f.rule.hint}` +
+  (f.rule.exception && !f.rule.excRe ? ` (exception: ${f.rule.exception})` : '');
+
+// ---------------------------------------------------------------------------
+// The witness — was the portrait in the working context WHILE the text was written?
+// witness(marker, portrait, portraitSha, fileMtimeMs) → { findings: [msg…], warnings: [msg…] }
+const pad = (n, w = 2) => String(n).padStart(w, '0');
+export const localIso = (d) => {
+  const off = -d.getTimezoneOffset(), s = off >= 0 ? '+' : '-', a = Math.abs(off);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${pad(d.getMilliseconds(), 3)}${s}${pad(Math.floor(a / 60))}:${pad(a % 60)}`;
+};
+export const NO_WITNESS = (portrait) => `written past the portrait — no load witness for ${portrait} (${VOICE_MARKER}): run \`node .kaif/tools/kaif-voice-lint.mjs load\` BEFORE the first word, write with the portrait in your working context, then check`;
+export function loadsOf(marker) {
+  if (!marker) return [];
+  const raw = Array.isArray(marker.loads) ? marker.loads : [marker.firstAt, marker.at].filter(Boolean);
+  return raw.map((s) => Date.parse(s)).filter(Number.isFinite).sort((a, b) => a - b);
+}
+export function witness(marker, portrait, portraitSha, fileMtimeMs) {
+  const findings = [], warnings = [];
+  const loads = loadsOf(marker);
+  if (!marker || !loads.length) return { findings: [NO_WITNESS(portrait)], warnings };
+  if (marker.portrait && marker.portrait !== portrait)
+    return { findings: [`written past the portrait — the load witness is for another portrait (${marker.portrait}), not ${portrait}: load it first`], warnings };
+  const before = loads.filter((t) => t <= fileMtimeMs);
+  const at = localIso(new Date(fileMtimeMs));
+  if (!before.length)
+    findings.push(`written past the portrait — the file was last written at ${at}, the portrait was first loaded at ${localIso(new Date(loads[0]))}: the text was written without the portrait in the working context — rewrite it BY the portrait (load first)`);
+  else {
+    const last = before[before.length - 1], gap = fileMtimeMs - last;
+    if (gap > STALE_MINUTES * 60 * 1000)
+      findings.push(`written past the portrait — the last load before this text was ${Math.round(gap / 60000)} min earlier (${localIso(new Date(last))}; the file was last written at ${at}): the portrait had left the working context (the hour rule) — reload it and rewrite the text BY it`);
+  }
+  if (portraitSha && marker.sha256 && marker.sha256 !== portraitSha)
+    warnings.push('the portrait changed since it was last loaded (sha differs) — reload it before the next unit');
+  return { findings, warnings };
+}
+const sha256 = (s) => createHash('sha256').update(s).digest('hex');
+function readMarker() {
+  try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8')); } catch { return null; }
+}
+
+// ---------------------------------------------------------------------------
+function portraitPath() {
+  try {
+    const j = JSON.parse(readFileSync(MARKER, 'utf8'));
+    if (typeof j.voicePortrait === 'string' && j.voicePortrait.trim()) return j.voicePortrait.trim();
+  } catch { /* no marker or unreadable — the default name stands */ }
+  return DEFAULT_PORTRAIT;
+}
+function skipped(reason) {
+  console.log(`⚠ voice-lint SKIPPED — ${reason}; nothing was judged — ${BOUNDARY} (exit ${EXIT_SKIPPED})`);
+  process.exit(EXIT_SKIPPED);
+}
+function usage(msg) { console.error(`✖ voice-lint: ${msg}\n${USAGE}`); process.exit(EXIT_USAGE); }
+function load() {
+  const portrait = portraitPath();
+  if (!existsSync(portrait)) skipped(`no portrait at ${portrait} (${DEFAULT_PORTRAIT} at the project root, or ${MARKER} → voicePortrait) — nothing to load`);
+  const text = readFileSync(portrait, 'utf8');
+  let filter = null;
+  if (SECTIONS_AT >= 0) {
+    if (!SECTIONS_ARG || SECTIONS_ARG.startsWith('--')) usage('--sections needs a regex — nothing loaded, no witness written');
+    try { filter = new RegExp(SECTIONS_ARG, 'iu'); } catch (e) { usage(`--sections is not a regex (${e.message}) — nothing loaded, no witness written`); }
+  }
+  let printed = text;
+  if (filter) {
+    const sel = sectionsMatching(text, filter);
+    if (!sel.matched) usage(`no H2 section of ${portrait} matches --sections ${SECTIONS_ARG} — nothing loaded, no witness written`);
+    printed = sel.text;
+  }
+  process.stdout.write(printed.replace(/\s*$/, '') + '\n');
+  const now = new Date(), prev = readMarker();
+  const same = prev && prev.portrait === portrait;                     // another portrait starts a new witness
+  const loads = (same ? (Array.isArray(prev.loads) ? prev.loads : [prev.firstAt].filter(Boolean)) : []).concat(localIso(now)).slice(-LOADS_KEPT);
+  const marker = {
+    at: localIso(now), firstAt: loads[0], loads,
+    portrait, sha256: sha256(text), sections: filter ? filter.source : 'all',
+    lines: printed.split(/\r?\n/).length,
+    note: 'the moments are taken by the tool from the system clock; session state, ignored by git; a witness proves the load ran, not that the print was read',
+  };
+  mkdirSync(dirname(VOICE_MARKER), { recursive: true });
+  writeFileSync(VOICE_MARKER, JSON.stringify(marker, null, 2) + '\n');
+  console.log(`\n✅ voice-lint load — ${portrait} (${marker.lines} line(s), sections: ${marker.sections}) is now in your working context; witness ${VOICE_MARKER} at ${marker.at} (${loads.length} load(s) on record) — write BY it, then \`check\``);
+}
+function check() {
+  if (!FILES.length) usage('check needs at least one file');
+  const missing = FILES.filter((f) => !existsSync(f));
+  if (missing.length) usage(`no such file — ${missing.join(', ')}`);
+  const portrait = portraitPath();
+  if (!existsSync(portrait)) skipped(`no portrait at ${portrait} (${DEFAULT_PORTRAIT} at the project root, or ${MARKER} → voicePortrait)`);
+  const portraitText = readFileSync(portrait, 'utf8');
+  const p = parsePortrait(portraitText);
+  for (const n of p.notes) console.log(`⚠ ${portrait}: ${n}`);
+  if (p.status === 'no-section') skipped(`${portrait} has no §8 "Machine heuristics" section`);
+  if (p.status === 'no-table') skipped(`§8 of ${portrait} carries no pattern table (${p.tables ? 'its table lacks the pattern/hint columns' : 'prose only'}) — nothing for the linter to read; put the greps into the table pattern · class · hint · exception (the shipped skeleton .kaif/_owner-voice-template.md shows the form)`);
+  if (p.status === 'no-rules') skipped(`the §8 table of ${portrait} holds no rule — placeholders are not rules`);
+  const stops = p.rules.filter((r) => r.cls === 'stop').length;
+  const positives = p.rules.length - stops;
+  const marker = readMarker(), pSha = sha256(portraitText);
+  const names = FILES.map((f) => f.replace(/\\/g, '/'));
+  let nHits = 0, nWitness = 0, nW = 0, judged = 0, silenced = 0;
+  // The witness of the whole run first: no witness at all (or one for another portrait) is said ONCE,
+  // naming every file, not once per file.
+  const runWitness = witness(marker, portrait, pSha, Infinity);
+  const perFile = !(runWitness.findings.length && (!loadsOf(marker).length || (marker && marker.portrait && marker.portrait !== portrait)));
+  if (!perFile) { nWitness += FILES.length; console.log(`✖ ${runWitness.findings[0]} — ${FILES.length} file(s): ${names.join(', ')}`); }
+  FILES.forEach((f, i) => {
+    const r = lintText(names[i], readFileSync(f, 'utf8'), p.rules);
+    for (const x of r.findings) { nHits++; console.log(`${WARN ? '⚠' : '✖'} ${fmt(x)}`); }
+    for (const w of r.warnings) { nW++; console.log(`⚠ ${w.file} — ${w.msg}`); }
+    if (perFile) {
+      const wv = witness(marker, portrait, pSha, statSync(f).mtimeMs);
+      for (const x of wv.findings) { nWitness++; console.log(`✖ ${names[i]} — ${x}`); }
+      if (i === 0) for (const x of wv.warnings) { nW++; console.log(`⚠ ${x}`); }
+    }
+    judged += r.judged; silenced += r.silenced;
+  });
+  const scope = `${FILES.length} file(s), ${judged} line(s) against ${portrait} §8 (${stops} stop rule(s) · ${positives} positive(s)` +
+    (silenced ? ` · ${silenced} hit(s) silenced by a row's exception` : '') + ')';
+  const nF = nHits + nWitness;
+  if (nF && !(WARN && !nWitness)) {
+    console.log(`✖ voice-lint: ${nF} finding(s) in ${scope}${nWitness ? ` — ${nWitness} of them the witness (never muted by --warn)` : ''} — rewrite by the hint, or answer the hit in the portrait's exception column; ${BOUNDARY}`);
+    process.exit(EXIT_FINDINGS);
+  }
+  if (nF) { console.log(`⚠ voice-lint (warn mode): ${nF} hit(s) in ${scope} — calibration, exit 0`); return; }
+  console.log(`✅ voice-lint OK — 0 findings${nW ? `, ${nW} warning(s)` : ''} in ${scope}; loaded ${marker.at}; ${BOUNDARY}`);
+}
+
+// ---------------------------------------------------------------------------
+// selftest — every answer proven on in-memory fixtures, in both shipped languages: the table parses (a
+// placeholder row and a broken row are skipped, said aloud), a hit is named with line, fragment and hint, the
+// clean text is silent, fenced/inline code is invisible, a `/regex/` exception silences and prose is printed,
+// a bare pattern is case-sensitive and `/…/i` folds, `\b` and `\B` are Unicode-aware, `\|` is alternation, a
+// positive is warned when absent; a prose §8, a missing §8, a placeholder-only table and a table with foreign
+// columns are SKIPPED statuses; the shipped skeleton, unfilled, parses to `no-rules`; the witness: no marker
+// → finding, another portrait → finding, a file written before the first load → finding, more than an hour
+// after the last load → finding, within the hour of a later load → clean, a changed portrait → warning; the
+// `--sections` filter keeps the head and the matching sections and reports zero matches.
+const FIX = {
+  en: {
+    portrait: `# The Owner's Voice Portrait — fixture\n\n## 7. The self-check checklist (layered)\n\n7A — the machine minute.\n\n## 8. Machine heuristics\n\nProse above the table is invisible to the linter.\n\n| pattern | class | hint | legal exception |\n|---|---|---|---|\n| \`<regular expression>\` | \`<stop / positive>\` | \`<what to write instead>\` | \`<…>\` |\n| \`\\b(Remember that\\|Note that)\\b\` | stop | state the rule; the reader is not reminded | a quoted line — |\n| \`/\\bjust\\b/i\` | stop | drop the softener | \`/^>/\` |\n| \`[unbalanced\` | stop | never reached | — |\n| \`/\\bthe rule\\b/i\` | positive | name the rule at least once | — |\n\n### E9 — prose after the table, invisible\n\n## 9. Portrait journal\n`,
+    hit: 'One.\nTwo.\nThree.\nFour.\nFive.\nSix.\nRemember that the rule is stated once.\n',
+    hitLine: 7, hitFragment: 'Remember that', hitHint: 'state the rule; the reader is not reminded', hitException: 'a quoted line —',
+    alternation: 'Note that the rule stands.\n',
+    clean: 'The rule is stated once. Nothing else.\n',
+    fenced: '```\nRemember that\n```\nThe rule stands.\n',
+    inline: 'Run `Remember that` here. The rule stands.\n',
+    comment: '<!-- Remember that -->\nThe rule stands.\n',
+    silenced: '> just a quote\nThe rule stands.\n',
+    folded: 'Just say it. The rule stands.\n',
+    caseSensitive: 'note that x. The rule stands.\n',
+    positiveMissing: 'Nothing named here.\n',
+  },
+  ru: {
+    portrait: `# Портрет голоса владельца — фикстура\n\n## 7. Чек-лист самопроверки\n\n7A — машинная минута.\n\n## 8. Машинные эвристики\n\nПроза над таблицей линтеру невидима.\n\n| паттерн | класс | подсказка | законное исключение |\n|---|---|---|---|\n| \`<регулярное выражение>\` | \`<стоп / обязательный позитив>\` | \`<что писать вместо>\` | \`<…>\` |\n| \`\\b(Помни, что\\|Не забывай)\\b\` | стоп | правило называется, читателю не напоминают | строка-цитата — |\n| \`\\bты\\b\` | стоп | второе лицо в кодексе не звучит — безличная процедура | \`/^>/\` |\n| \`[незакрытый\` | стоп | не дойдёт | — |\n| \`/\\bправило\\b/i\` | обязательный позитив | назови правило хотя бы раз | — |\n\n## 9. Журнал портрета\n`,
+    hit: 'Раз.\nДва.\nТри.\nЧетыре.\nПять.\nШесть.\nПомни, что правило одно.\n',
+    hitLine: 7, hitFragment: 'Помни, что', hitHint: 'правило называется, читателю не напоминают', hitException: 'строка-цитата —',
+    alternation: 'Не забывай: правило одно.\n',
+    clean: 'Правило названо один раз. Больше ничего.\n',
+    fenced: '```\nПомни, что\n```\nПравило названо.\n',
+    inline: 'Запусти `Помни, что` здесь. Правило названо.\n',
+    comment: '<!-- Помни, что -->\nПравило названо.\n',
+    silenced: '> ты здесь\nПравило названо.\n',
+    folded: 'Здесь ты один. Правило названо.\n',
+    caseSensitive: 'Двери открыты. Правило названо.\n',   // `\bты\b` must not fire inside «открыты» — a Unicode boundary
+    positiveMissing: 'Ничего не названо.\n',
+  },
+};
+const PROSE_S8 = '# P\n\n## 8. Machine heuristics\n\n≥10 grep patterns … graduate into a project guard.\n\n```\nrg -n "Remember that" rules/\n```\n';
+const NO_S8 = '# P\n\n## 7. Checklist\n\nnothing\n';
+const FOREIGN_COLUMNS = '# P\n\n## 8. Машинные эвристики\n\n| Правило линтера | Паттерн (ripgrep) | Комментарий |\n|---|---|---|\n| Обращение на «ты» | `\\b(ты\\|тебя)\\b` | 0 в кодексе |\n';
+const NUMBERED_ONLY = '# P\n\n## 8. Heuristiques machine\n\n| pattern | class | hint | exception |\n|---|---|---|---|\n| `\\bdonc\\b` | stop | drop it | — |\n';
+const NB_PORTRAIT = '# P\n\n## 8. Machine heuristics\n\n| pattern | class | hint | exception |\n|---|---|---|---|\n| `\\Bты\\B` | stop | inside a word only | — |\n';
+
+function selftest() {
+  let failed = 0, cases = 0;
+  const say = (ok, name) => { cases++; if (!ok) { failed++; console.log(`  ✗ ${name}`); } else console.log(`  ✓ ${name}`); };
+  for (const lang of Object.keys(FIX)) {
+    const F = FIX[lang];
+    const p = parsePortrait(F.portrait);
+    say(p.status === 'ok' && p.rules.length === 3, `${lang}: the §8 table parses to 3 rules — the placeholder row and the broken row are not rules (got ${p.status}, ${p.rules.length})`);
+    say(p.notes.length === 1 && /does not compile/.test(p.notes[0]), `${lang}: the broken row is named aloud, not swallowed (notes: ${p.notes.length})`);
+    say(p.rules.filter((r) => r.cls === 'positive').length === 1, `${lang}: the positive class is recognised`);
+    const hit = lintText('sheet/steps.md', F.hit, p.rules);
+    say(hit.findings.length === 1 && hit.findings[0].line === F.hitLine && hit.findings[0].fragment === F.hitFragment,
+      `${lang}: a hit is named with its line and fragment (got ${hit.findings.map((f) => f.line + ':' + f.fragment).join(',')})`);
+    say(hit.findings.length === 1 && fmt(hit.findings[0]) === `sheet/steps.md:${F.hitLine} — «${F.hitFragment}» → ${F.hitHint} (exception: ${F.hitException})`,
+      `${lang}: the printed line carries file:line — «fragment» → hint (exception: prose)`);
+    say(hit.judged === 7, `${lang}: the trailing newline of a file is not a line (judged ${hit.judged})`);
+    say(lintText('a.md', F.alternation, p.rules).findings.length === 1, `${lang}: \\| inside the cell is alternation`);
+    say(lintText('a.md', F.clean, p.rules).findings.length === 0, `${lang}: the clean text is silent`);
+    say(lintText('a.md', F.fenced, p.rules).findings.length === 0, `${lang}: a fenced code block is invisible`);
+    say(lintText('a.md', F.inline, p.rules).findings.length === 0, `${lang}: an inline code span is invisible`);
+    say(lintText('a.md', F.comment, p.rules).findings.length === 0, `${lang}: an HTML comment is invisible`);
+    const sil = lintText('a.md', F.silenced, p.rules);
+    say(sil.findings.length === 0 && sil.silenced === 1, `${lang}: a /regex/ exception silences the hit on its line (silenced ${sil.silenced})`);
+    say(lintText('a.md', F.folded, p.rules).findings.length === 1, `${lang}: ${lang === 'en' ? '/…/i folds case' : 'the bare second-person pattern fires on a whole word'}`);
+    say(lintText('a.md', F.caseSensitive, p.rules).findings.length === 0, `${lang}: ${lang === 'en' ? 'a bare pattern is case-sensitive' : '\\b is Unicode-aware — «ты» inside «открыты» is not a hit'}`);
+    const pm = lintText('a.md', F.positiveMissing, p.rules);
+    say(pm.findings.length === 0 && pm.warnings.length === 1 && /required positive/.test(pm.warnings[0].msg), `${lang}: an absent positive is a warning, never a finding`);
+    say(lintText('a.md', F.clean, p.rules).warnings.length === 0, `${lang}: a present positive is silent`);
+  }
+  say(parsePortrait(PROSE_S8).status === 'no-table', 'a prose §8 (greps in a fence, no table) → no-table');
+  say(parsePortrait(NO_S8).status === 'no-section', 'a portrait without §8 → no-section');
+  const fc = parsePortrait(FOREIGN_COLUMNS);
+  say(fc.status === 'no-table' && fc.tables === 1 && fc.notes.length === 1 && /lacks the pattern\/hint columns/.test(fc.notes[0]), 'a §8 table without the hint column → no-table, and the header is named');
+  say(parsePortrait(NUMBERED_ONLY).status === 'ok', 'a §8 in a third language is found by its number');
+  const nb = parsePortrait(NB_PORTRAIT).rules;
+  say(lintText('a.md', 'открытый\n', nb).findings.length === 1 && lintText('a.md', 'а ты б\n', nb).findings.length === 0, '\\B is Unicode-aware — «ты» inside «открытый» is a hit, a standalone «ты» is not');
+  // the witness — pure verdicts on synthetic moments
+  const T = Date.parse('2026-09-12T14:00:00.000+03:00'), MIN = 60000, P = 'AUTHOR_STYLOMETRY.md';
+  const mk = (loads, sha = 'abc', portrait = P) => ({ portrait, loads: loads.map((t) => new Date(t).toISOString()), firstAt: new Date(loads[0]).toISOString(), at: new Date(loads[loads.length - 1]).toISOString(), sha256: sha });
+  say(witness(null, P, 'abc', T + MIN).findings.length === 1 && /no load witness/.test(witness(null, P, 'abc', T + MIN).findings[0]), 'witness: no marker → finding "no load witness"');
+  say(/another portrait/.test((witness(mk([T], 'abc', 'voice/OTHER.md'), P, 'abc', T + MIN).findings[0] || '')), 'witness: a marker for another portrait → finding');
+  say(witness(mk([T]), P, 'abc', T + MIN).findings.length === 0 && witness(mk([T]), P, 'abc', T + MIN).warnings.length === 0, 'witness: loaded, then written within the hour → clean');
+  say(/the file was last written at 2026-09-12T13:59/.test(witness(mk([T]), P, 'abc', T - MIN).findings[0] || ''), 'witness: written BEFORE the first load → finding, both moments in the local zone');
+  say(/(\d+) min earlier/.test(witness(mk([T]), P, 'abc', T + 90 * MIN).findings[0] || ''), 'witness: written 90 min after the last load → finding (the hour rule)');
+  say(witness(mk([T, T + 80 * MIN]), P, 'abc', T + 90 * MIN).findings.length === 0, 'witness: a re-load 10 min before the write → clean (the load history counts)');
+  say(witness(mk([T]), P, 'other', T + MIN).warnings.some((w) => /changed since it was last loaded/.test(w)), 'witness: the portrait changed since the load → warning "reload"');
+  say(loadsOf({ firstAt: new Date(T).toISOString(), at: new Date(T + MIN).toISOString() }).length === 2, 'witness: a pre-history marker (firstAt/at only) is still read');
+  const sec = sectionsMatching(FIX.en.portrait, /^8\./);
+  say(sec.matched === 1 && /^# The Owner's Voice Portrait/.test(sec.text) && /## 8\. Machine heuristics/.test(sec.text) && !/## 7\./.test(sec.text) && !/## 9\./.test(sec.text), '--sections keeps the head and the matching sections only');
+  say(sectionsMatching(FIX.en.portrait, /^zzz/).matched === 0, '--sections that matches nothing reports zero (the caller refuses to load)');
+  const here = dirname(fileURLToPath(import.meta.url));
+  const tmpl = [join(here, '..', '_owner-voice-template.md'), join(here, '..', 'templates', '_owner-voice-template.md')].find((p) => existsSync(p));
+  if (tmpl) {
+    const p = parsePortrait(readFileSync(tmpl, 'utf8'));
+    say(p.status === 'no-rules' && p.tables === 1, `the shipped skeleton, unfilled → no-rules (its example rows are placeholders; got ${p.status})`);
+  } else console.log('  · the shipped skeleton is not beside the module — its unfilled proof skipped (not a failure)');
+  if (failed) { console.error(`✖ voice-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
+  console.log(`✅ voice-lint selftest OK — ${cases} cases, ${Object.keys(FIX).length} languages: a hit is named with line, fragment and hint; code and comments are invisible; exceptions silence or print; a prose §8 is SKIPPED, never green; a text written before the first load or more than an hour after the last one is written past the portrait`);
+}
+
+if (CMD === 'check') check();
+else if (CMD === 'load') load();
+else if (CMD === 'selftest') selftest();
+else usage(`unknown command "${CMD}"`);
+``````
+
 > **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
 
 ``````js
@@ -13653,7 +14302,11 @@ process.exit(0);
 > shipped to `.kaif/_owner-voice-template.md`: COPY it to the canonical name and fill the copy —
 > never fill the skeleton in place. The portrait is OPTIONAL: no portrait taken, no file, and
 > `check` never reddens for its absence. A deployment that keeps a different name RECORDS that name
-> in `KAIF_FRAMEWORK.md` — the machinery never renames an owner-class file.
+> in `KAIF_FRAMEWORK.md` (and, for the shipped linter, in `.kaif/kaif.json` → `voicePortrait`) — the
+> machinery never renames an owner-class file. **Load, do not consult:** before the first word of any
+> text the owner reads as his own, `node .kaif/tools/kaif-voice-lint.mjs load` prints the filled
+> portrait into the agent's working context and leaves a witness; `check` refuses a text written before
+> that load (the owner's word: write BY the stylometry, with it in the working cache).
 
 > **Status: a BINDING instruction** for any agent writing <the owner's target artifact>. It acts
 > together with the styleguide (if one exists): STRUCTURE lives in the styleguide, LANGUAGE lives
@@ -13749,16 +14402,38 @@ actually moves a model — descriptions alone do not.
 
 ## 7. The self-check checklist (layered)
 
-7A — the machine minute (greps of stop-patterns and required positives). 7B — the semantic pass.
-7C — the second register's pass. **≥3 layers; every item checkable by an action**, never by
-"does it sound like the owner".
+The checklist is the INDEPENDENT check that follows writing BY this portrait — the text is first written
+by §2/§2-C/§5/§6, then checked here, then fixed, and only then it counts as written and goes to the owner
+(`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation). 7A — the machine minute:
+`node .kaif/tools/kaif-voice-lint.mjs check <file…>` — the shipped module runs the §8 table (stop-patterns
+and required positives) over the artifact and prints every hit with the row's hint; `SKIPPED` is said in
+the report, never read as green. 7B — the semantic pass by a CLEAN instance (a subagent, or a fresh pass
+forbidden to see the writer's rationale) against the anti-portrait and the pairs. 7C — the second
+register's pass. **≥3 layers; every item checkable by an action**, never by "does it sound like the owner".
 
 ## 8. Machine heuristics
 
 **≥10 grep patterns** of stop-constructions and positive markers whose ABSENCE is itself a signal;
 each names its legal exceptions. For inflected languages the pattern covers word forms, or the
-grep stays silent. These graduate into a project guard once calibrated on the live artifact
-(warning mode first; noise above signal = no guard).
+grep stays silent. They live HERE, as the table below — the owner edits the patterns where he reads
+them, and the shipped linter reads THIS table (`node .kaif/tools/kaif-voice-lint.mjs check <file…>`):
+prose in this section is invisible to it, and a §8 without the table makes the linter say `SKIPPED`
+aloud rather than pass green. Calibrate on the live artifact first (`--warn` prints the hits without
+reddening); noise above signal = the row is narrowed or deleted, never the guard weakened.
+
+| pattern | class | hint | legal exception |
+|---|---|---|---|
+| `<regular expression in a code span — word forms spelled out; \| inside the cell is alternation; /…/i opts into case-folding; \b is Unicode-aware>` | `<stop / positive>` | `<what to write instead, in the owner's own words>` | `<a /regex/ that silences a hit on its line, or prose the reader weighs>` |
+| `<second example: \b(remember that\|note that)\b>` | `<stop>` | `<state the rule; the reader is not reminded>` | `<— (none)>` |
+
+Column contract: **pattern** — a regular expression (ripgrep habits work: `\|` is alternation inside
+the cell, a bare pattern is case-sensitive, `/…/i` folds case, `\b`, `\B`, `\w` and `\W` are
+Unicode-aware — except `\W` INSIDE a character class, which stays ASCII: write `[^\p{L}\p{N}_]` there);
+**class** — `stop` (a hit is a finding) or `positive` (a marker whose ABSENCE in the whole file is a
+warning); **hint** — printed with every hit, in the owner's own words; **exception** — a `/regex/`
+silences hits on a matching line, prose is printed beside the hit for the reader to weigh. A row whose
+pattern is a `<placeholder>` is not a rule; fenced code, inline code and HTML comments in the judged
+file are invisible. The linter judges these explicit patterns only — likeness stays the owner's verdict.
 
 ## 9. Portrait journal — how this document changed (append-only)
 
@@ -16607,7 +17282,7 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "plan-epic": "«спланируй эпик», «нарезай эпик», «полная лестница планирования», «бери эпик в работу»",
   "guarded-loop": "«защищённый цикл», «работай в защищённом цикле», «цикл с будильниками», «работай автономно с будильниками»",
   "code-revision": "«прогони ревизию кода», «ревизия кода», «аудит кодовой базы», «вычитай код»",
-  "owner-voice": "«портрет моего стиля», «пиши как я», «это не мой язык», «перепиши моим голосом»",
+  "owner-voice": "«портрет моего стиля», «пиши как я», «это не мой язык», «перепиши моим голосом», «проверь голос», «сверь со стилометрией»",
   "owner-reviews": "«сделай вычитку страницей», «отрендери интервью», «разверни контур согласований»",
   "team-deployment": "«разверни команду», «организуй команду агентов», «команда агентов», «развёртывание команды»",
   "kaif-go": "«/go», «дальше», «поехали», «давай», «продолжай»"

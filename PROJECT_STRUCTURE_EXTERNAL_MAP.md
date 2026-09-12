@@ -42,7 +42,7 @@ KAIF/
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
 │   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы)
 │   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
-│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint, kaif-ranking-lint, kaif-attribution-lint, kaif-testrun-lint → .kaif/tools/);
+│   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint, kaif-ranking-lint, kaif-attribution-lint, kaif-testrun-lint, kaif-voice-lint → .kaif/tools/);
 │   │                                      # с 2.6 сборщик обходит поддиректории (framework/tools/contour/ → .kaif/tools/contour/ — генератор контура, эпик IC, шаг IC3)
 │   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (3 скрипта + образец конфига + README; эпик O)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
@@ -65,7 +65,7 @@ KAIF/
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
 │   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s24
-│   ├── sandbox/s01…s25*.mjs (24 свода, без s20)  # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery/маршрут обновления/контур поставкой/форма ответа what-next/авторство решения/отчёт прогона + ось «/resume покрывает ядро»)
+│   ├── sandbox/s01…s26*.mjs (25 сводов, без s20)  # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery/маршрут обновления/контур поставкой/форма ответа what-next/авторство решения/отчёт прогона + ось «/resume покрывает ядро»/линтер голоса владельца)
 │   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14);
 │   │                                      # и исполнимые приёмки шагов, написанные ДО кода (ic3-contour-generator → свод s22 после IC3)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)

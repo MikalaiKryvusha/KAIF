@@ -110,9 +110,13 @@ relies entirely on this document to get to work.
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
 19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
-    copy) → open the owner's voice portrait `AUTHOR_STYLOMETRY.md` when the project has one
-    (/owner-voice) and run its checklist before handover; no portrait after a second style
-    rejection → propose taking one
+    copy, a sheet, a UI string) → WRITE BY the portrait `AUTHOR_STYLOMETRY.md` WITH IT IN YOUR WORKING
+    CONTEXT: node .kaif/tools/kaif-voice-lint.mjs load BEFORE the first word (prints its rules, lexicon,
+    anti-portrait and pairs into the context, leaves the witness .kaif/voice-marker.json); after writing —
+    an INDEPENDENT check by the same portrait: node .kaif/tools/kaif-voice-lint.mjs check <file…> (the §8
+    table + the witness; /owner-voice check) + the §7B pass by a clean instance; fix — only then the text
+    is written, and only then it goes to the owner for approval; SKIPPED (no portrait / no §8 table) is
+    said in the report, never read as green; no portrait after a second style rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -132,7 +136,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
-| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`) · the artifact's styleguide |
+| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`): LOADED into the working context before the first word — `node .kaif/tools/kaif-voice-lint.mjs load` — and the text is written BY it · the artifact's styleguide · after writing, the independent check by the same portrait: `node .kaif/tools/kaif-voice-lint.mjs check <file…>` + the §7B pass by a clean instance |
 
 Sections in these documents are anchored — address a slice (`DOC.md#anchor`) rather than re-reading the
 whole file. The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.
@@ -359,6 +363,34 @@ with the outcome "verified on the real world" / "verified with real state" on ev
 there" is a stop, not an outcome (the rule and its one exception — `TESTING_FRAMEWORK.md` → "The agent's
 stand is not the owner's real world"); `/fable-judge` hunts "done" without that line (the
 done-without-the-real-world hunt).
+
+**KAIF adds a fourth obligation — at step 4 (act) and step 5 (verify), for TEXT the owner reads as his own:
+THE TEXT IS WRITTEN BY THE OWNER'S PORTRAIT, THEN CHECKED INDEPENDENTLY BY THE SAME PORTRAIT, FIXED — AND
+ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER** (origin issue #61 — a field agent rewrote a player sheet
+through seven rounds under the owner's eyes without opening the portrait once; the origin owner's word,
+2026-09-12, rendered from Russian: "the AI agent writes the text in the voice and by the rules the owner's
+stylometry prescribes; after writing, by that same stylometry, the agent runs an independent check of what
+it wrote, fixes it, and only then counts the text as written and brings it to the owner for approval").
+Three steps, in this order, and the report names each:
+1. **Write BY the portrait — with it in your working context.** Before the first word,
+   `node .kaif/tools/kaif-voice-lint.mjs load` prints `AUTHOR_STYLOMETRY.md` into your context (`--sections
+   <regex>` for the modules the unit needs — the rules §2, the lexicon §2-C, the anti-portrait §5, the
+   before/after pairs §6) and leaves the witness `.kaif/voice-marker.json`; write by it while it is there (the
+   owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE). A draft written "natively" and
+   re-voiced afterwards is the class this obligation closes, not its execution — `check` refuses a text with
+   no load witness, last written before the first load, or written more than an hour after the last load (the
+   hour rule of context refresh: the portrait had left the cache) — "written past the portrait".
+2. **Check INDEPENDENTLY by the same portrait.** The machine minute —
+   `node .kaif/tools/kaif-voice-lint.mjs check <file…>` (the §8 table; no portrait or a §8 without the table
+   → `SKIPPED=3`, said in the report in those words, never read as green) — and the semantic pass §7B by a
+   CLEAN instance: a subagent, or a fresh pass forbidden to see the writer's rationale (the judge of the
+   rewrite pipeline, applied to every unit). The writer's own glance is not an independent check.
+3. **Fix — only then it is written.** Every hit is rewritten by the portrait's hint or answered in its
+   exception column (the owner's canon: his word or a journal row); only after that the text counts as
+   written, and only then it is shown to the owner for approval — never before.
+The command judges the explicit patterns only; likeness stays the owner's verdict (the taste class).
+`/fable-judge` hunts owner text past the portrait (the owner-text-past-the-portrait hunt): written without
+the portrait open, checked by no independent pass, or shown before the fixes.
 
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
@@ -891,7 +923,11 @@ the command (the owner doesn't and shouldn't). "Lies at path…", "opens by doub
 file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
 footnote of where it landed — never as an errand. No separate show tool: the review contour opens
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. **The executor of this check is THE AGENT ITSELF at
+contour, open the file with the system opener. **And a text the owner reads as his own is shown only
+AFTER it is written BY his portrait, checked independently by it and fixed:**
+`node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
+(the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
+hidden, and a draft written natively and shown "for a look" is the class itself. **The executor of this check is THE AGENT ITSELF at
 the moment of sending, and that is said plainly:** before sending a reply, grep it for
 "double-click / opens offline / see file / lies at" next to an artifact extension — a hit means the
 show was replaced by a link. No machine can do it: the text being checked is your reply, it never

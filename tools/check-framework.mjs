@@ -44,6 +44,7 @@ const CYRILLIC_DATA_CARRIERS = [
   'tools/kaif-ranking-lint.mjs',       // the RU anchors of the /what-next answer form (shelf, debt line) + RU selftest fixtures (2.6, WN)
   'tools/kaif-testrun-lint.mjs',       // the RU field keywords of the run report (Работа · Контур · …) + RU selftest fixtures (2.7, TR)
   'tools/kaif-attribution-lint.mjs',   // the RU attribution patterns ("решение владельца", "по слову владельца") + the RU field line of #55 as a selftest fixture (2.7, AW)
+  'tools/kaif-voice-lint.mjs',         // the RU §8 heading and column keywords of the voice portrait (паттерн · класс · подсказка · исключение) + RU selftest fixtures (2.7, VC)
 ];
 // The author's own name is an ATTRIBUTION, not a leaked example — it must stay in the bylines of
 // the narrative spines. Exempted as FULL phrases: a bare token ("Кот") would excuse whole sentences.
@@ -346,12 +347,14 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
     // T4 (2.2, owner decision #39): the portrait's canonical filename must be reachable from EVERY
     // surface that routes an agent to it — a nameless portrait shipped twice in the field under two
     // different names (nikolai_stylometry.md and OWNER_VOICE.md, same owner, two deployments)
-    ['portrait canon name ↔ /owner-voice (payload)', 'framework/skills/owner-voice/SKILL.md',
-      ['AUTHOR_STYLOMETRY.md']],
-    ['portrait canon name ↔ /owner-voice (wrapper)', '.claude/skills/owner-voice/SKILL.md',
-      ['AUTHOR_STYLOMETRY.md']],
-    ['portrait canon name ↔ the shipped skeleton header', 'framework/templates/_owner-voice-template.md',
-      ['AUTHOR_STYLOMETRY.md']],
+    // VC (2.7, origin issue #61): the same three surfaces also carry the COMMAND of the machine minute —
+    // a voice gate that names no command is prose, and prose under load is not executed
+    ['portrait canon name ↔ /owner-voice (payload) + the load and check commands', 'framework/skills/owner-voice/SKILL.md',
+      ['AUTHOR_STYLOMETRY.md', 'kaif-voice-lint.mjs load', 'kaif-voice-lint.mjs check']],
+    ['portrait canon name ↔ /owner-voice (wrapper) + the load and check commands', '.claude/skills/owner-voice/SKILL.md',
+      ['AUTHOR_STYLOMETRY.md', 'kaif-voice-lint.mjs load', 'kaif-voice-lint.mjs check']],
+    ['portrait canon name ↔ the shipped skeleton header + the load and check commands', 'framework/templates/_owner-voice-template.md',
+      ['AUTHOR_STYLOMETRY.md', 'kaif-voice-lint.mjs load', 'kaif-voice-lint.mjs check']],
     ['portrait canon name ↔ AGENT_GUIDE router (payload)', 'framework/AGENT_GUIDE.md',
       ['AUTHOR_STYLOMETRY.md']],
     ['portrait canon name ↔ AGENT_GUIDE router (wrapper)', 'AGENT_GUIDE.md',
@@ -366,6 +369,14 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['cp .kaif/_testrun-report-template.md testcases/reports/']],
     ['run report ↔ /fable-judge hunts the claim without one', 'framework/skills/fable-judge/SKILL.md',
       ['**Tested without a run report (KAIF 2.7).**']],
+    // VC (2.7, origin issue #61): the voice gate is a COMMAND at the fable loop's call point and in the
+    // show rule (truth side), and the judge hunts owner text shown without it
+    ['voice contract ↔ AGENT_GUIDE fable-loop call point carries the three steps and the command (payload)', 'framework/AGENT_GUIDE.md',
+      ['node .kaif/tools/kaif-voice-lint.mjs load', 'node .kaif/tools/kaif-voice-lint.mjs check <file…>', 'Write BY the portrait — with it in your working context.', 'Check INDEPENDENTLY by the same portrait.', 'owner-text-past-the-portrait hunt']],
+    ['voice contract ↔ AGENT_GUIDE fable-loop call point carries the three steps and the command (wrapper)', 'AGENT_GUIDE.md',
+      ['kaif-voice-lint.mjs load', 'kaif-voice-lint.mjs check <файл…>', 'Пиши ПО портрету — с ним в своём рабочем контексте.', 'Проверь НЕЗАВИСИМО по тому же портрету.']],
+    ['voice contract ↔ /fable-judge hunts owner text past the portrait', 'framework/skills/fable-judge/SKILL.md',
+      ['**Owner text past the portrait (KAIF 2.7).**']],
     // O5 criterion 5, TWO outcomes only (bugs/72): a hook contract is either CONFIRMED against a
     // live vendor doc or it says "not verified" — "probably works" is the retired third outcome.
     // Grok Build runs our config and its NATIVE contract calls these events passive, so the
