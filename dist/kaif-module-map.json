@@ -5569,10 +5569,10 @@
       {
         "signature": "## 2. Pre-flight — runs before any page opens (exit 3 = refuse to open)",
         "class": "static",
-        "sha256": "c45ff91daa6ecd2592067dfd3c9ef6bfbed3ccfba5f84974c017e3cc55c53c13",
+        "sha256": "099f2683f64eea9000dcbca684a56964a68599001425e1aa6e8084a161478616",
         "lines": [
           26,
-          42
+          40
         ]
       },
       {
@@ -5580,16 +5580,16 @@
         "class": "static",
         "sha256": "f763bff2fdf7365070866e4cda67701cdbbb7976fb434ce101e2b4a9494086f0",
         "lines": [
-          43,
-          56
+          41,
+          54
         ]
       },
       {
         "signature": "## 4. The page — what the owner must see",
         "class": "static",
-        "sha256": "b65874ac1b97d08741561ead9abf84ec4c3e4db646689b109efe61437a07c88d",
+        "sha256": "c2d95a53073b7c3e1468b183c091d40f1584eee6a536adb6d50fb17d9ed6dedf",
         "lines": [
-          57,
+          55,
           71
         ]
       },

@@ -10250,7 +10250,10 @@ export function radioGroupsOf(html) {
 export function selfCheck(page) {
   const expected = page.questions.filter((q) => q.options && q.options.length > 0).length;
   const groups = radioGroupsOf(page.html);
-  return { ok: groups === expected, groups, expected };
+  // QL4 (#60): the RENDER is judged too — the Save control floats at the top right (no bottom bar), option labels carry no raw markdown
+  const fabOk = /\.fab \{[^}]*position:fixed/.test(page.html) && !/bottom:0/.test(page.html) && !/class="bar"/.test(page.html);
+  const labelsOk = !(page.html.match(/<label class="opt[^"]*">[\s\S]*?<\/label>/g) || []).some((l) => l.includes('**'));
+  return { ok: groups === expected && fabOk && labelsOk, groups, expected, fabOk, labelsOk };
 }
 
 const docCommentBlock = (rel, t) =>
@@ -10322,9 +10325,9 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
       --tagink:#0b1020; --tagwait:#f59e0b; --tagdone:#22c55e; --tagyou:#60a5fa; } }
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
   /* The header SCROLLS WITH THE PAGE — the owner's word (2026-09-05): not sticky. Only the emergency banner may pin. */
-  header { position:static; background:var(--card); border-bottom:1px solid var(--line); padding:10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
+  header { position:static; background:var(--card); border-bottom:1px solid var(--line); padding:10px 230px 10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
   header .project { font-weight:700; color:var(--accent) } .kind { color:var(--muted) } .langnote { font-size:12px; color:var(--muted) }
-  main { max-width:900px; margin:0 auto; padding:16px 20px 120px }
+  main { max-width:900px; margin:0 auto; padding:16px 20px 40px }
   .doc { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 22px; overflow-x:auto }
   .doc pre { background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:10px; overflow-x:auto }
   .doc code { background:var(--bg); padding:1px 4px; border-radius:4px }
@@ -10356,8 +10359,14 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .mock { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; margin:10px 0; text-align:center }
   .mock img { max-width:100%; height:auto }
   textarea, input[type=text] { width:100%; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit }
-  .bar { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--line); padding:10px 20px; display:flex; gap:14px; align-items:center; justify-content:center; text-align:center }
-  .bar #status { flex:0 1 auto }
+  /* QL4 (2.7, origin issue #60 — the owner's word: the Save button is a FAB at the top right): a control pinned to the
+     BOTTOM edge is unreachable when the window is taller than the screen (remote desktop, phone) — the owner typed
+     the answers and could not press the button. The FAB is fixed at the top right, visible at any scroll and any
+     height; the status is a pill under it on its own background, gone when empty. A bottom bar is FORBIDDEN (spec §4). */
+  .fab { position:fixed; top:12px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
+  .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
+  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; text-align:right } .fab #status:empty { display:none }
+  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header { padding-right:170px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
@@ -10456,10 +10465,10 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
 
   const saveLabel = face === 'proofread' || face === 'mockup' ? t.btn.done : t.btn.save;
   const saveBar = index
-    ? '<div class="bar" style="display:none"><div id="status"></div></div>'
+    ? '<div class="fab" style="display:none"><div id="status"></div></div>'
     : noticeDoc
-      ? '<div class="bar"><button id="save" type="button" data-doc="' + esc(noticeDoc) + '">' + t.btn.read + '</button><div id="status">' + t.st.noticeHint + '</div></div>'
-      : '<div class="bar"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">' + saveLabel + '</button><div id="status"></div></div>';
+      ? '<div class="fab"><button id="save" type="button" data-doc="' + esc(noticeDoc) + '">' + t.btn.read + '</button><div id="status">' + t.st.noticeHint + '</div></div>'
+      : '<div class="fab"><button id="save" type="button" data-doc="' + esc(singleDoc || '') + '">' + saveLabel + '</button><div id="status"></div></div>';
   const langNote = t.fallbackFrom ? '<span class="langnote">' + esc(t.head.langFallback(t.fallbackFrom)) + '</span>' : '';
 
   return '<!doctype html>\n<html lang="' + esc(cfg.language) + '"><head><meta charset="utf-8">' +
@@ -10689,7 +10698,9 @@ export function gateForOpen(root, docPath) {
   if (parseQuestions(md).length === 0 && !(meta && meta.artifacts && meta.artifacts.length)) return null; // notice class, no radios owed
   const page = buildPage(root, docPath);
   const sc = selfCheck(page);
-  if (!sc.ok) return ['PAGE SELF-CHECK FAILED (spec §2, exit 3): radio groups ' + sc.groups + ' for ' + sc.expected + ' question(s) with options — a broken page is never shown silently.'];
+  if (!sc.ok) return ['PAGE SELF-CHECK FAILED (spec §2, exit 3): radio groups ' + sc.groups + ' for ' + sc.expected + ' question(s) with options'
+    + (sc.fabOk ? '' : '; the Save control is not a floating top-right button (a bottom bar is forbidden — spec §4, origin issue #60)')
+    + (sc.labelsOk ? '' : '; an option label carries raw markdown (**)') + ' — a broken page is never shown silently.'];
   return null;
 }
 
@@ -10821,6 +10832,12 @@ export function selftest(log = console.log) {
   ok(selfCheck(archPage).ok, 'the render self-check counts the folded radios too (radio groups == questions with options)');
   const plainPage = buildPage(root, GOOD);
   ok(!plainPage.html.includes('<details class="archive">'), 'a document with nothing settled keeps the plain order (no fold)');
+  // QL4 (#60): the Save control is a floating top-right button; the self-check reddens on a bottom bar and on raw markdown in a label
+  ok(/\.fab \{[^}]*position:fixed[^}]*top:12px[^}]*right:16px/.test(plainPage.html) && !/bottom:0/.test(plainPage.html) && plainPage.html.includes('<div class="fab"><button id="save"'),
+    'the Save button floats at the top right (position:fixed; top; right) and no bottom bar exists on the page');
+  ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.fab { position:static;') }).ok, 'self-check goes RED when the button stops floating (mutation on a copy)');
+  ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.bar { position:fixed; bottom:0;') }).ok, 'self-check goes RED on a bar pinned to the bottom edge (the #60 page)');
+  ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('<label class="opt"><input', '<label class="opt">**leak**<input') }).ok, 'self-check goes RED when an option label carries raw markdown');
   rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
@@ -13556,11 +13573,9 @@ for each question Q<n>:
 self-check after render: count(radio groups) == count(questions)  →  mismatch = exit 3, never a silent page
 ```
 
-The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `node
-.kaif/tools/contour/review.mjs <doc> --check` — parse + pre-flight + render self-check, prints `blocks N, recognised M: …`
-and what it did NOT recognise, exit 3 / 0; it never serves, never sounds, never calls, never records a showing.
-`--no-open` is NOT a check: it serves the page and calls the owner (only the window is not opened). A page that
-recognised only part of the question-like blocks says so out loud — in the process log and in its header.
+The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs
+<doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
+no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut).
 
 ## 3. Records — three files, derived names, never overwritten
 
@@ -13578,11 +13593,13 @@ one final newline). Text changed after approval = approval void.
 
 ## 4. The page — what the owner must see
 
-- **Reading view (2.7, origin issue #54):** the LIVE questions stand first; everything answered and the document's
-  text sit below as ONE collapsed archive (`<details class="archive">`) — no line removed, only the order of reading
-  changes (the field: 18 535 characters of settled matter above the one live question). Three legal outcomes for the
-  owner: an answer · a remark · «read, no remarks» (§5).
+- **Reading view (2.7, origin issue #54):** LIVE questions first; everything answered and the document's text below as ONE
+  collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
+- **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll
+  and window height; the status is a pill under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the
+  screen (remote desktop, phone) hides it (2.7, origin issue #60, the owner's word: a FAB at the top right). The render
+  self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency
   banner ("server silent") may stay pinned.
 - Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save

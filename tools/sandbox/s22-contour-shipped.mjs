@@ -90,6 +90,8 @@ const html = existsSync(rendered) ? readFileSync(rendered, 'utf8') : '';
 ok((html.match(/type="radio"/g) || []).length === 3 && (html.match(/name="choice:interviews\/interview_052_probe\.md:Q1"/g) || []).length === 3,
    's22 B: три радиокнопки одной группы у Q1 (критерий 3: «радиогрупп = вопросов»)');
 ok(/header \{ position:static;/.test(html), 's22 B: шапка скроллится со страницей — header { position:static } (слово владельца)');
+ok(/\.fab \{ position:fixed; top:12px; right:16px/.test(html) && !/bottom:0/.test(html) && !/class="bar"/.test(html) && html.includes('<div class="fab"><button id="save"'),
+   's22 B: кнопка записи — плавающая справа сверху (position:fixed; top; right), нижней панели на странице нет (QL4, #60)');
 ok(html.includes('<html lang="ru">') && html.includes('Записать решение') && html.includes('рекомендую'), 's22 B: страница на языке развёртывания (ru): lang, кнопка, чип рекомендации');
 ok(html.includes(' · interview_052_probe.md') === false && html.includes('<span class="project">fresh</span>'), 's22 B: имя проекта в шапке выведено из имени каталога (kaif.json без projectName — #97, без вопроса)');
 // Красное доказательство мутацией на копии: страница без радиокнопок роняет самопроверку отгружаемого модуля.

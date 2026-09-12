@@ -34,11 +34,9 @@ for each question Q<n>:
 self-check after render: count(radio groups) == count(questions)  →  mismatch = exit 3, never a silent page
 ```
 
-The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `node
-.kaif/tools/contour/review.mjs <doc> --check` — parse + pre-flight + render self-check, prints `blocks N, recognised M: …`
-and what it did NOT recognise, exit 3 / 0; it never serves, never sounds, never calls, never records a showing.
-`--no-open` is NOT a check: it serves the page and calls the owner (only the window is not opened). A page that
-recognised only part of the question-like blocks says so out loud — in the process log and in its header.
+The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs
+<doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
+no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut).
 
 ## 3. Records — three files, derived names, never overwritten
 
@@ -56,11 +54,13 @@ one final newline). Text changed after approval = approval void.
 
 ## 4. The page — what the owner must see
 
-- **Reading view (2.7, origin issue #54):** the LIVE questions stand first; everything answered and the document's
-  text sit below as ONE collapsed archive (`<details class="archive">`) — no line removed, only the order of reading
-  changes (the field: 18 535 characters of settled matter above the one live question). Three legal outcomes for the
-  owner: an answer · a remark · «read, no remarks» (§5).
+- **Reading view (2.7, origin issue #54):** LIVE questions first; everything answered and the document's text below as ONE
+  collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
+- **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll
+  and window height; the status is a pill under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the
+  screen (remote desktop, phone) hides it (2.7, origin issue #60, the owner's word: a FAB at the top right). The render
+  self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency
   banner ("server silent") may stay pinned.
 - Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save

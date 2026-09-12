@@ -276,7 +276,7 @@ async function main() {
 
     block('4. Страница × 2 темы × 2 ширины (C10-блок 4)');
     for (const scheme of ['light', 'dark']) {
-      for (const width of [1100, 500]) {
+      for (const width of [1400, 560]) { // QL4 (#60): the plan's two widths — wide desktop and phone-narrow
         const page = await attachPage(browser.cdp, pageUrl);
         await browser.cdp.send('Emulation.setEmulatedMedia',
           { features: [{ name: 'prefers-color-scheme', value: scheme }] }, page.sessionId);
@@ -288,12 +288,15 @@ async function main() {
           " var cs=getComputedStyle(card);var csd=getComputedStyle(done);var body=getComputedStyle(document.body);",
           " function lum(c){var m=c.match(/\\d+/g).map(Number);var a=m.slice(0,3).map(function(v){v/=255;",
           "  return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)});return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]}",
+          " function rect(){var b=document.querySelector('#save');if(!b)return null;var r=b.getBoundingClientRect();var f=b.closest('.fab');",
+          "  return {pos:f?getComputedStyle(f).position:null,top:r.top,bottom:r.bottom,right:r.right,ih:innerHeight,iw:innerWidth}}",
           " var l1=lum(body.color),l2=lum(body.backgroundColor);var contrast=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);",
           " return {cards:document.querySelectorAll('.qcard').length,opts:document.querySelectorAll('.opt input').length,",
           "  optsEnabled:document.querySelectorAll('.opt input:not([disabled])').length,",
           "  tables:document.querySelectorAll('.doc table').length,stripe:cs.borderLeftWidth,",
           "  stripeDiff:cs.borderLeftColor!==csd.borderLeftColor,contrast:contrast,",
-          "  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1}})()",
+          "  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,",
+          "  fab:rect(),bar:!!document.querySelector('.bar'),fab2:(function(){window.scrollTo(0,1e9);return rect()})()}})()",
         ].join(''));
         const tag = scheme + '/' + width;
         // Закрытый вопрос показывает варианты ЦЕЛИКОМ выключенными радио (пилот 008):
@@ -307,6 +310,9 @@ async function main() {
           probe.stripe === '5px' && probe.stripeDiff);
         check(tag + ': контраст текста ≥ 4.5', probe.contrast >= 4.5, 'фактически ' + probe.contrast.toFixed(2));
         check(tag + ': нет горизонтального переполнения', !probe.overflow);
+        const inView = (f) => f && f.pos === 'fixed' && f.top >= 0 && f.bottom <= f.ih && f.right <= f.iw;
+        check(tag + ': кнопка записи плавает справа сверху и видна при начальной прокрутке и после прокрутки вниз; нижней панели нет (QL4, #60)',
+          inView(probe.fab) && inView(probe.fab2) && !probe.bar, JSON.stringify({ fab: probe.fab, fab2: probe.fab2, bar: probe.bar }));
         check(tag + ': консоль чистая', page.events.console.length === 0, page.events.console[0]);
         await browser.cdp.send('Target.closeTarget', { targetId: page.targetId });
       }
