@@ -40,7 +40,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md             # шаблоны навыков (число печатает сборка; generic, плейсхолдеры команд)
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
-│   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы · реестр систем 2.6)
+│   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы)
 │   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint, kaif-ranking-lint, kaif-attribution-lint → .kaif/tools/);
 │   │                                      # с 2.6 сборщик обходит поддиректории (framework/tools/contour/ → .kaif/tools/contour/ — генератор контура, эпик IC, шаг IC3)
@@ -65,7 +65,7 @@ KAIF/
 │   ├── check-framework.mjs                # валидатор (блоки/маркеры/стражи/карта модулей пересплитом/пин ядро==сборка)
 │   ├── module-map-lib.mjs                 # одна резка/классификация модулей на сборщик и валидатор
 │   ├── sandbox-suite.mjs                  # ПОСТОЯННЫЙ полигон (npm run test:core): гоняет tools/sandbox/s01–s24
-│   ├── sandbox/s01…s24*.mjs               # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery/маршрут обновления/контур поставкой/форма ответа what-next/авторство решения)
+│   ├── sandbox/s01…s24*.mjs (23 свода, без s20)  # своды полигона (установки/update/расписки/anon-легаси/provenance/canon-lint/перевод/лица L2/CLI L3/report/delivery/маршрут обновления/контур поставкой/форма ответа what-next/авторство решения)
 │   ├── sandbox/probes/*.mjs               # ПРОБЫ (не своды): запускаемые repro багов — красные по построению до фикса, после — тело стража (bugs/100 → s18 U14);
 │   │                                      # и исполнимые приёмки шагов, написанные ДО кода (ic3-contour-generator → свод s22 после IC3)
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
@@ -75,7 +75,6 @@ KAIF/
 │
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
 ├── KAIF_FRAMEWORK.md                      # «KAIF, развёрнутый здесь» (+ исключения истока)
-├── SYSTEMS_REGISTRY.md                    # реестр систем истока (9 контуров) → вектор доставки `npm run kaif:delivery` (2.6 OQ3; черновик до слова владельца)
 ├── KAIF_REFERENCE.md                      # ⭐ СГЕНЕРИРОВАННАЯ копия framework/KAIF_REFERENCE.md (страж в check; правь источник)
 ├── AGENT_GUIDE.md PHILOSOPHY.md BUG_FIXING_FRAMEWORK.md TESTING_FRAMEWORK.md REQUIREMENTS_FRAMEWORK.md STATUS.md   # руководящие документы (RU)
 ├── PROJECT_HISTORY.md                     # летопись (append-only; вне /resume — археология по потребности; 2.1 эпик H)
@@ -161,4 +160,3 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 | Текущее состояние проекта | `STATUS.md` | — |
 | README | `README.md` (и EN, и RU) | `node tools/readme-pdf.mjs` |
 | Схемы README | `tools/build-diagrams.mjs` (НЕ сами SVG) | `node tools/build-diagrams.mjs` + PDF |
-| Реестр систем / вектор доставки | `SYSTEMS_REGISTRY.md` (строка на контур внутренней карты; форма — `framework/templates/_systems-registry-template.md`) | `npm run kaif:delivery` (строку — в `MASTER_PLAN.md` §8 и STATUS) |

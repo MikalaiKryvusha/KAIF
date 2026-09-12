@@ -70,12 +70,7 @@ when the current one is exhausted (see step 8).
    minutes. `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one
    commit — no batch commits of half a day's work (a big diff can't be honestly reviewed; a judged
    failure then rolls back one file, not a session). `/fable-judge` pass before every push.
-7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break;
-   opened by `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … ·
-   bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector
-   printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the
-   fable loop; an arrow on every component that moved, a zero delta on all of them only with a named
-   blocker — the judge's delivery-line hunt; `registry not built yet` until the registry exists).
+7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
 8. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
    no time checks. **Don't assess how much context is left and don't end the turn yourself** — the
    harness does that.

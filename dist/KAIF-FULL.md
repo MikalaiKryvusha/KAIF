@@ -491,18 +491,7 @@ domain's proven practice found by recon (a recon doc in `researches/` when the p
 the owner's word — never the agent's own plausible reasoning alone. `/fable-judge` hunts a fork
 decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon
 hunt), an autonomous loop closed before its armed boundary with a non-empty pool (the
-early-finish hunt, `/guarded-loop`) and a session close or loop report without its delivery line —
-`DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
-moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` — the delivery VECTOR,
-printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` (the registry of the
-product's logically separate systems: the agent DRAFTS it by copying
-`.kaif/_systems-registry-template.md` and filling it from `GOAL.md`, `MASTER_PLAN.md` and both maps;
-the owner approves the list as vision — the metric itself is DERIVED, the owner is never asked what
-to measure: a mechanic whose step is a question to the owner is incomplete and does not ship), an
-arrow on every component that moved, `registry not built yet` until the file exists and
-`registry: draft` until the owner approves it, the owed-questions slot from the project's queue
-command; printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked FIRST by
-`/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
+early-finish hunt, `/guarded-loop`); both are named in the judge's KAIF patch block.
 
 **KAIF adds a third obligation — at step 5 (verify by observation) and step 7 (report): "DONE" ABOUT
 PRODUCTION COMES AFTER THE REAL WORLD** (origin issue #52; the owner's word: the agent is OBLIGED to verify
@@ -908,7 +897,7 @@ there is. Classify first: the note CONCERNS the current task → it is a clarifi
 vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
 the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it
 sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
-row 1 is what moves `DELIVERY:` or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
+row 1 is what moves the main phase's acceptance metric or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
 judge hunts "recency ranked over metric".
 
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a
@@ -1558,7 +1547,7 @@ document's header (`Severity: S1 | S2 | S3`):
 Two caps that keep the protection layer from becoming the project's main source of defects:
 
 - **An incident never opens an epic by itself.** An epic must additionally pass the delivery
-  test — does it move the owner's acceptance metric (the `DELIVERY:` line, `MASTER_PLAN.md`)? —
+  test — does it move the acceptance criteria of the main phase (`MASTER_PLAN.md`)? —
   otherwise the fix stays a fix. (Field: 65 % of 68 bug documents were defects OF the guards,
   watchdogs and hooks, and the guards consumed more of the owner's scarce live time than the
   code they guarded.)
@@ -2395,14 +2384,6 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 
 `<Distilled from GOAL.md — the north star in a single sentence.>`
 
-**Delivery vector (one line):** `DELIVERY: systems N · complete A % (k of n) · integrated B % (c of d)
-· holes … · contradictions … · bugs …` — printed by `node .kaif/kaif-core.mjs delivery` from
-`SYSTEMS_REGISTRY.md`, the registry of the product's logically separate systems: the agent drafts it
-(`cp .kaif/_systems-registry-template.md SYSTEMS_REGISTRY.md`, filled from this plan, `GOAL.md` and
-both maps), the owner approves the list as vision — the metric is DERIVED, never asked. Reported as
-`DELIVERY: … X → Y` at every session close and loop iteration (AGENT_GUIDE → the fable loop); until
-the registry exists the line reads `registry not built yet`, and drafting it is the next move.
-
 ## Guiding principles
 
 `<The few decisions/values that shape every choice: e.g. "simplicity over features", "ship weekly",
@@ -2728,12 +2709,7 @@ One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR
 the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
 own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
 as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
-history is kept INSIDE the file, append-only (§9 of the skeleton). A second optional canon document
-of the same shape (2.6): **`SYSTEMS_REGISTRY.md`** — the registry of the product's logically separate
-systems that feeds the delivery vector (§10.7 `delivery`); it ships as a skeleton too
-(`.kaif/_systems-registry-template.md`), the agent DRAFTS it from `GOAL.md`, `MASTER_PLAN.md` and both
-maps, the owner approves the list as vision, and a deployment without it stays green — the delivery
-line just reads `registry not built yet`, and drafting the registry is the agent's next move. A third
+history is kept INSIDE the file, append-only (§9 of the skeleton). A second
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -2996,13 +2972,7 @@ refusal — a hanging `gh auth status` is `not ready`, exit 2: nothing was sent,
 (2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — `not yet` in any case is
 undelivered, a URL or `#NN` anywhere in it is delivered (idempotent), and a refusal names both
 legal forms with the exact edit (2.6, origin issue #40); `--dry-run`
-calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`) · `delivery` (2.6, epic OQ:
-print the delivery VECTOR — systems · complete % with its fraction · integrated % · holes ·
-contradictions · bugs — from `SYSTEMS_REGISTRY.md` (§5) and the open `bugs/*.md` by their `Kind:`
-line; non-mutating; the table is read by its header names, a cell that cannot be read refuses
-naming the row and the column; `--json` deterministic, `--system <name>` one system's fraction;
-exit 3 with the copy-the-skeleton instruction until the registry exists — the metric is DERIVED,
-never asked of the owner).
+calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass
 
@@ -3643,12 +3613,7 @@ without those resources.
    (build + tests + checks) = one commit — never batch half a day of work into one commit: a big diff
    can't be honestly reviewed even by its author, and when the judge finds trouble, the rollback is one
    file instead of a session. `git diff --stat` before committing — anything you didn't intend, stop.
-11. **Short chat report** (1–3 lines): what you did, what you verified, what's next — opened by the
-    delivery line `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions …
-    · bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector
-    printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the
-    fable loop; an arrow on every component that moved, a zero delta on all of them only with a named
-    blocker — the judge's delivery-line hunt; `registry not built yet` until the registry exists). → next task.
+11. **Short chat report** (1–3 lines): what you did, what you verified, what's next. → next task.
 
 ## Self-pacing (so the loop runs LONG)
 
@@ -3763,12 +3728,7 @@ when the current one is exhausted (see step 8).
    minutes. `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one
    commit — no batch commits of half a day's work (a big diff can't be honestly reviewed; a judged
    failure then rolls back one file, not a session). `/fable-judge` pass before every push.
-7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break;
-   opened by `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … ·
-   bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector
-   printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the
-   fable loop; an arrow on every component that moved, a zero delta on all of them only with a named
-   blocker — the judge's delivery-line hunt; `registry not built yet` until the registry exists).
+7. **Short chat report** (1–3 lines): what you did, what's next — so the human sees progress on a break.
 8. **Continue CONTINUOUSLY**: finished a task — next iteration in the same turn. No pauses, no waiting,
    no time checks. **Don't assess how much context is left and don't end the turn yourself** — the
    harness does that.
@@ -3879,12 +3839,7 @@ Until one fires — don't stop, don't wait for confirmations, work.
    `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one commit —
    no batch commits (a big diff can't be honestly reviewed; a judged failure rolls back one file, not a
    night). `/fable-judge` pass before every push.
-7. **Short chat report** (1–3 lines): so in the morning the human sees the progress; opened by
-   `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
-   moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector printed by
-   `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the fable loop;
-   an arrow on every component that moved, a zero delta on all of them only with a named blocker —
-   the judge's delivery-line hunt; `registry not built yet` until the registry exists).
+7. **Short chat report** (1–3 lines): so in the morning the human sees the progress.
 8. **Self-restart**: if there's work left in the turn — just continue the next iteration in the same
    turn; don't assess how much context is left and don't end the turn yourself (the harness does that).
    `ScheduleWakeup` (same `/nightloop` input, short listen) is a *mechanical fallback* for when the
@@ -4303,10 +4258,6 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
    **Version/build:** <build>   ·   **When/context:** <date, during which task it was found>
    **Severity:** S1 | S2 | S3   <consulted at FILING time — the severity ladder, BUG_FIXING_FRAMEWORK.md;
    S3 gets ONE line in EXPERIENCE.md instead of this document>
-   **Kind:** hole | contradiction | bug   <the class the delivery vector counts (`node .kaif/kaif-core.mjs
-   delivery`, SYSTEMS_REGISTRY.md): hole — the rules are SILENT where an answer is needed ·
-   contradiction — two places answer DIFFERENTLY · bug — code, table or calculation diverges from the
-   written rule; no line = bug>
    **Fix accepted when (observable):** <what will be SEEN working after the fix — written by
    REQUIREMENTS_FRAMEWORK.md; refine as the investigation teaches — or as a four-line scenario:
    Situation · Action · Result · Check ("The scenario form")>
@@ -4620,12 +4571,11 @@ in the scenario come from the canon or from a run, never invented (the three doo
 line empty, and filling it is the agent's work. An option, written this way:
 
 ```
-- **A) Print the vector from the draft registry**
-  - Situation. The registry has 9 systems; the owner has not approved it yet.
-  - Action. The agent closes the session.
-  - Result. You see `DELIVERY: systems 9 · complete 86 % (31 of 36) … · registry: draft` as the
-    first line of the farewell — and no question to you.
-  - Check. `npm run kaif:delivery` prints a line starting with `DELIVERY: systems 9`.
+- **A) Close the proofreading page with "Done" and no remarks**
+  - Situation. The agent brought you a page to proofread; you read it and have nothing to add.
+  - Action. You click "Done" with every field left empty.
+  - Result. You see the page close — nobody shows you this page again, and no question to you.
+  - Check. The agent's console prints `Outcome: proofread recorded (<doc>, no remarks, by …)`.
 ```
 
 Where the project runs a questions guard, a live question whose body carries none of the four lines
@@ -4852,10 +4802,9 @@ the open backlog: `bugs/`, `ideas/`, `plans/`, `homeworks/` without the `DONE` t
 `interviews/`.
 
 ### Step 2. Rank by value
-Rank FIRST by the denominator: does the step move a component of the delivery vector
-(`DELIVERY: systems · complete · integrated · holes · contradictions · bugs` — printed by
-`node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md`, `MASTER_PLAN.md` → Delivery vector;
-no registry yet → drafting it IS the first step, never a question to the owner) or unblock the next
+Rank FIRST by the denominator: does the step move the acceptance metric of the main phase
+(`MASTER_PLAN.md` → the phase marked as the main one now: its acceptance criteria closed k of n —
+read from the plan, never asked of the owner) or unblock the next
 run of a scarce resource (the owner's live evening, a machine, a device)? Only then order the rest by
 **value toward the vision** per
 `PHILOSOPHY.md`: Pareto (the vital few that move the result), the Eisenhower matrix (important ×
@@ -4869,7 +4818,7 @@ broke it in the same answer. Prose does not rank; the form does. The answer OPEN
 from the documents, never from memory, then the table, then two mandatory lines:
 
 ```
-METRIC: <the DELIVERY vector — `node .kaif/kaif-core.mjs delivery`, with its date>
+METRIC: <the main phase's acceptance metric — criteria closed k of n, read from MASTER_PLAN.md / the active plan, with its date>
 MAIN PHASE: <the phase MASTER_PLAN.md marks as the main one now; no mark → the first phase not closed, and say so>
 
 | step | moves | closes | effort |
@@ -5418,12 +5367,7 @@ retry once, and if it still fails, tell the human: the commit exists locally, no
 ## Step 3. The one-line farewell
 
 One line to the human: the commit hash, the single most important thing for the next chat, and
-the reminder that the ceremonies debt is recorded in `STATUS.md` — prefixed by the delivery line
-`DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
-moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector printed by
-`node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the fable loop;
-`registry not built yet` until the registry exists; force mode skips ceremonies, never the
-accounting). Goodbye.
+the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 
 ## What this skill refuses to skip
 
@@ -5527,15 +5471,7 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ### Step 5. The farewell report
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
-the baton in one paragraph — the main thing the NEXT chat should do first. The report OPENS with
-the forced delivery line — `DELIVERY: systems N · complete A → B % · integrated C % · holes … ·
-contradictions … · bugs …; moved by: <one line> | blocker: <named> | owed questions: N (oldest M d,
-never shown K)` — the delivery vector printed by `node .kaif/kaif-core.mjs delivery` from
-`SYSTEMS_REGISTRY.md` (`AGENT_GUIDE.md` → the fable loop; the owed-questions slot from the project's
-queue command, `/resume` step 1b); an arrow on every component that moved, a zero delta on all of
-them is legal only with a named blocker, and `registry not built yet` is legal only with the
-registry's drafting named as the next chat's first move (`/fable-judge` hunts a farewell without the
-line — the delivery-line hunt). That's the goodbye.
+the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
 
 ## Notes
 
@@ -5654,7 +5590,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish**, **delivery-line** (the fourth door · the guarded loop's armed boundary · the session's delivery accounting — the derived vector form since KAIF 2.6); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunt in the same block — **agent-decision-worn-as-the-owner's-word** (the authorship of a decision: the owner's word is a quote, the agent's word is signed). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunt in the same block — **agent-decision-worn-as-the-owner's-word** (the authorship of a decision: the owner's word is a quote, the agent's word is signed). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5692,11 +5628,10 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Refresh witness (KAIF 2.2).** A claimed context refresh must carry its two-part witness (`AGENT_GUIDE.md` → Context refresh): `.kaif/refresh-marker.json` rewritten at the claimed moment AND a chat quote of one concrete line from the re-read. A marker without the quote — or a refresh claimed against a stale marker — is fraud of the false-`[TESTED]` class.
    - **Fork without recon (KAIF 2.5).** A choice with ≥ 2 options and a non-zero price of error must carry its `FORK: options · price of error · consulted` line at the decision point (`AGENT_GUIDE.md` → the fable loop; `PHILOSOPHY.md` → the fourth door), and the `consulted` slot must name a domain authority, a recon doc or the owner — `consulted <own reasoning>`, or no line at all on a fork that had a price, is the finding (field: a black box set to dump "on close only", decided from the model's head, wrote zero bytes when the machine froze — origin issue #36).
    - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30).
-   - **Delivery line (KAIF 2.5; the vector form since 2.6).** A session close (`/end-chat-soft`, `/end-chat-force`) or a loop iteration report must open with `DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …; moved by: … | blocker: … | owed questions: …` — the delivery VECTOR printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` (`MASTER_PLAN.md` → Delivery vector): six numbers DERIVED from the tree, never asked of the owner. A report without the line, with a zero delta on every component and no named blocker, or with `registry not built yet` and the registry's drafting not named as the next move, is a finding of the false-completion family: every local invariant (honest, green, verified) can hold while the product moved zero (field: 54 sessions, 11 of 389 edges, 0 modes shipped — a framework that graded honesty and never distance to acceptance). A line quoting a metric the owner was ASKED to name is the same finding from the other side: a mechanic that sends the agent to the owner for its parameter is incomplete.
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
-   - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives — since 2.6 the delivery vector comes from `SYSTEMS_REGISTRY.md`, never from a question.
+   - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives (a metric, a phase, a count — read from the plan, the code or a run, never from a question).
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
-   - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the delivery vector (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
+   - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the metric (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
    - **Owner text in agent vocabulary (KAIF 2.6).** An owner-facing text — a question, an option label, a Situation · Action · Result line, a report line the owner reads as the customer — that names a thing by the agent's working vocabulary (an epic code or a chain of them, a plan or bug address, a tool invocation, a flag, a canon term) instead of by what the owner will SEE or GET after it, is a finding: the scenario form was satisfied and the owner still could not choose (the origin's bug 112 — four rejections of one class in a month; the owner's word, decision #106: "the owner reasons in meanings and behavioural scenarios"). Hunt option labels and scenario lines for `XX → YY` chains, `node …/` invocations, `--flags`, `plans/NN`; the Check line, the answer-target line and a technical note under the scenario are the legal homes for all of these. The declared exception is a marker with a reason on the line (`questions-guard:vocabulary-ok`); a dead round the owner already commented on is not a live question.
    - **Agent decision worn as the owner's word (KAIF 2.7).** A recorded decision — a plan line, a code comment, a report line, a "not to be revisited" status — that attributes a choice to the owner ("the owner's decision", "the owner decided", "per the owner's word", their equivalents in the owner's language) with no verbatim quote of the owner and no interview address beside it, is a finding: the canon's authority order (the owner's direct word > the book) makes a later session obey a choice the agent made itself (`AGENT_GUIDE.md` → "Authorship of a decision"; origin issue #55 — a "the owner's decision P1: wait" comment held a run for 119 s while the owner's machine died; his real word at that fork was "do as you see fit"). Hunt also: a MANDATE ("do as you see fit", "your call") recorded as the owner's decision instead of `[AI] by mandate — "<his words>"`; a "not to be revisited" status on a decision with no `[OWNER]` signature; a pronoun standing in for a provenance mark in a draft brought to the owner ("(my taste)"); an `[AI]`/`[AI-ed]` mark removed without the owner's word. `node .kaif/tools/kaif-attribution-lint.mjs check` over the changed files is the re-run; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line.
@@ -6043,12 +5978,7 @@ to a natural cut — unhurried, the boundary started the closing, it does not ru
 final heartbeat line (`run complete`), **disarm the external watchdog**, and close per the session's
 situation: the full unhurried `/end-chat-soft` ceremonies if the session ends, or a parking note
 (the `/pause` way) if the chat continues. Report: items done, restarts survived, anything
-escalated — opened by `DELIVERY: systems N · complete A → B % · integrated C % · holes … ·
-contradictions … · bugs …; moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)`
-(the vector printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` —
-`AGENT_GUIDE.md` → the fable loop; an arrow on every component that moved, a zero delta on all of
-them only with a named blocker — the judge's delivery-line hunt; `registry not built yet` until the
-registry exists).
+escalated.
 
 ## What this skill refuses to do
 

@@ -12,14 +12,6 @@
 
 `<Distilled from GOAL.md — the north star in a single sentence.>`
 
-**Delivery vector (one line):** `DELIVERY: systems N · complete A % (k of n) · integrated B % (c of d)
-· holes … · contradictions … · bugs …` — printed by `node .kaif/kaif-core.mjs delivery` from
-`SYSTEMS_REGISTRY.md`, the registry of the product's logically separate systems: the agent drafts it
-(`cp .kaif/_systems-registry-template.md SYSTEMS_REGISTRY.md`, filled from this plan, `GOAL.md` and
-both maps), the owner approves the list as vision — the metric is DERIVED, never asked. Reported as
-`DELIVERY: … X → Y` at every session close and loop iteration (AGENT_GUIDE → the fable loop); until
-the registry exists the line reads `registry not built yet`, and drafting it is the next move.
-
 ## Guiding principles
 
 `<The few decisions/values that shape every choice: e.g. "simplicity over features", "ship weekly",

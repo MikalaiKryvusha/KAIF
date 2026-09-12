@@ -94,12 +94,7 @@ One OPTIONAL canon document joins the fourteen only when it is earned: **`AUTHOR
 the project root — the owner's voice portrait (`/owner-voice`), written by the agent from the owner's
 own texts and accepted by the owner. It ships as a SKELETON (`.kaif/_owner-voice-template.md`), never
 as a filled file or a stub: a deployment without a portrait is complete and `check` stays green. Its
-history is kept INSIDE the file, append-only (§9 of the skeleton). A second optional canon document
-of the same shape (2.6): **`SYSTEMS_REGISTRY.md`** — the registry of the product's logically separate
-systems that feeds the delivery vector (§10.7 `delivery`); it ships as a skeleton too
-(`.kaif/_systems-registry-template.md`), the agent DRAFTS it from `GOAL.md`, `MASTER_PLAN.md` and both
-maps, the owner approves the list as vision, and a deployment without it stays green — the delivery
-line just reads `registry not built yet`, and drafting the registry is the agent's next move. A third
+history is kept INSIDE the file, append-only (§9 of the skeleton). A second
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -362,13 +357,7 @@ refusal — a hanging `gh auth status` is `not ready`, exit 2: nothing was sent,
 (2.6 wording, court RL 2.5); the contract line is read as a PARAGRAPH — `not yet` in any case is
 undelivered, a URL or `#NN` anywhere in it is delivered (idempotent), and a refusal names both
 legal forms with the exact edit (2.6, origin issue #40); `--dry-run`
-calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`) · `delivery` (2.6, epic OQ:
-print the delivery VECTOR — systems · complete % with its fraction · integrated % · holes ·
-contradictions · bugs — from `SYSTEMS_REGISTRY.md` (§5) and the open `bugs/*.md` by their `Kind:`
-line; non-mutating; the table is read by its header names, a cell that cannot be read refuses
-naming the row and the column; `--json` deterministic, `--system <name>` one system's fraction;
-exit 3 with the copy-the-skeleton instruction until the registry exists — the metric is DERIVED,
-never asked of the owner).
+calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass
 

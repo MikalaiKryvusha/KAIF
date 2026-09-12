@@ -129,12 +129,14 @@ const LAYOUT_MIRRORS = [
     re: /the (\d+) skill templates/, keys: ['skills'] },
   { name: 'AGENT_GUIDE — дерево: README директорий', file: 'AGENT_GUIDE.md',
     re: /the (\d+) directory-README templates/, keys: ['readmes'] },
+  // 2.7 (epic DR): s20 retired with the delivery vector — the range end no longer equals the count,
+  // so the tree quotes the COUNT explicitly and the guard reads that, never the range end.
   { name: 'AGENT_GUIDE — дерево: своды полигона', file: 'AGENT_GUIDE.md',
-    re: /sandbox\/s01–s(\d+)/, keys: ['suites'] },
+    re: /sandbox\/s01–s\d+ \((\d+) свод/, keys: ['suites'] },
   { name: 'внешняя карта — дерево: шаблоны README', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
     re: /(\d+) шаблон\S* README директорий/, keys: ['readmes'] },
   { name: 'внешняя карта — дерево: своды полигона', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
-    re: /sandbox\/s01…s(\d+)/, keys: ['suites'] },
+    re: /sandbox\/s01…s\d+\*\.mjs \((\d+) свод/, keys: ['suites'] },
   { name: 'внешняя карта — порядковый номер пояснительной записки', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
     re: /\((\d+)-й ключевой документ/, keys: ['docs'] },
   { name: 'AGENT_GUIDE — реестр стражей: классы showcase-lint', file: 'AGENT_GUIDE.md',
@@ -474,6 +476,10 @@ function selftest() {
   // отчитался бы «файла нет» и красный зачёлся бы там, где ничего не ломали)
   for (const rel of ['framework', 'dist', 'assets']) cpSync(join(ROOT, rel), join(SBX, rel), { recursive: true });
   cpSync(join(ROOT, 'tools', 'sandbox-suite.mjs'), join(SBX, 'tools', 'sandbox-suite.mjs'));
+  // Ось языковых пакетов читает лок заморозки (frozen-пакеты 2.2 сверяются побайтно, не по строкам):
+  // без копии лока песочница судит их как живые, и «чистая копия — зелёный» краснеет на /end-chat
+  // (2.7 DR: селфтест стоял красным с приходом лока — правило «завёл живой источник — впиши СЮДА»).
+  cpSync(join(ROOT, 'tools', 'lang-packs.lock.json'), join(SBX, 'tools', 'lang-packs.lock.json'));
   // ЧИТАЕМЫЕ СТРАЖЕМ КОРНЕВЫЕ ФАЙЛЫ — список один на всю песочницу и растёт вместе с осями.
   // Оси бейджей (контуры, принципы) добавили сюда внутреннюю карту и PHILOSOPHY, а копия — нет:
   // селфтест валился на `ENOENT` внутри первой же проверки «чистая копия — зелёный», то есть
@@ -560,7 +566,9 @@ function selftest() {
   const brokenPack = run(); restore();
   // (11) ось РАСКЛАДКИ (bugs/68) — счётчик в ДЕРЕВЕ канон-карты. Раньше эта поверхность не
   //      стереглась вовсе: «the 28 skill templates» простояло при 35, а страж был зелёным.
-  const hitTree = mutate('AGENT_GUIDE.md', 'the 35 skill templates', 'the 34 skill templates');
+  //      Цель берётся ИЗ ТЕКСТА (bugs/60): зашитое «the 35 skill templates» простояло при 37.
+  const gTree = retarget(guide, /the (\d+) skill templates/);
+  const hitTree = Boolean(gTree) && mutate('AGENT_GUIDE.md', gTree[0], `the ${Number(gTree[1]) - 1} skill templates`);
   const brokenTree = run(); restore();
   // (12) ось РАСКЛАДКИ — перечисление tool-модулей ПО ИМЕНАМ: счёт остаётся тем же, имя чужое.
   const hitModule = mutate('AGENT_GUIDE.md', 'kaif-requirements-lint', 'kaif-requirements-linter');

@@ -111,12 +111,11 @@ in the scenario come from the canon or from a run, never invented (the three doo
 line empty, and filling it is the agent's work. An option, written this way:
 
 ```
-- **A) Print the vector from the draft registry**
-  - Situation. The registry has 9 systems; the owner has not approved it yet.
-  - Action. The agent closes the session.
-  - Result. You see `DELIVERY: systems 9 · complete 86 % (31 of 36) … · registry: draft` as the
-    first line of the farewell — and no question to you.
-  - Check. `npm run kaif:delivery` prints a line starting with `DELIVERY: systems 9`.
+- **A) Close the proofreading page with "Done" and no remarks**
+  - Situation. The agent brought you a page to proofread; you read it and have nothing to add.
+  - Action. You click "Done" with every field left empty.
+  - Result. You see the page close — nobody shows you this page again, and no question to you.
+  - Check. The agent's console prints `Outcome: proofread recorded (<doc>, no remarks, by …)`.
 ```
 
 Where the project runs a questions guard, a live question whose body carries none of the four lines

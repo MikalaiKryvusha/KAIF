@@ -16,10 +16,9 @@ the open backlog: `bugs/`, `ideas/`, `plans/`, `homeworks/` without the `DONE` t
 `interviews/`.
 
 ### Step 2. Rank by value
-Rank FIRST by the denominator: does the step move a component of the delivery vector
-(`DELIVERY: systems · complete · integrated · holes · contradictions · bugs` — printed by
-`node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md`, `MASTER_PLAN.md` → Delivery vector;
-no registry yet → drafting it IS the first step, never a question to the owner) or unblock the next
+Rank FIRST by the denominator: does the step move the acceptance metric of the main phase
+(`MASTER_PLAN.md` → the phase marked as the main one now: its acceptance criteria closed k of n —
+read from the plan, never asked of the owner) or unblock the next
 run of a scarce resource (the owner's live evening, a machine, a device)? Only then order the rest by
 **value toward the vision** per
 `PHILOSOPHY.md`: Pareto (the vital few that move the result), the Eisenhower matrix (important ×
@@ -33,7 +32,7 @@ broke it in the same answer. Prose does not rank; the form does. The answer OPEN
 from the documents, never from memory, then the table, then two mandatory lines:
 
 ```
-METRIC: <the DELIVERY vector — `node .kaif/kaif-core.mjs delivery`, with its date>
+METRIC: <the main phase's acceptance metric — criteria closed k of n, read from MASTER_PLAN.md / the active plan, with its date>
 MAIN PHASE: <the phase MASTER_PLAN.md marks as the main one now; no mark → the first phase not closed, and say so>
 
 | step | moves | closes | effort |

@@ -346,18 +346,7 @@ domain's proven practice found by recon (a recon doc in `researches/` when the p
 the owner's word — never the agent's own plausible reasoning alone. `/fable-judge` hunts a fork
 decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon
 hunt), an autonomous loop closed before its armed boundary with a non-empty pool (the
-early-finish hunt, `/guarded-loop`) and a session close or loop report without its delivery line —
-`DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
-moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` — the delivery VECTOR,
-printed by `node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` (the registry of the
-product's logically separate systems: the agent DRAFTS it by copying
-`.kaif/_systems-registry-template.md` and filling it from `GOAL.md`, `MASTER_PLAN.md` and both maps;
-the owner approves the list as vision — the metric itself is DERIVED, the owner is never asked what
-to measure: a mechanic whose step is a question to the owner is incomplete and does not ship), an
-arrow on every component that moved, `registry not built yet` until the file exists and
-`registry: draft` until the owner approves it, the owed-questions slot from the project's queue
-command; printed by `/end-chat-soft`, `/end-chat-force` and the four loops and ranked FIRST by
-`/what-next` (the delivery-line hunt); all three are named in the judge's KAIF patch block.
+early-finish hunt, `/guarded-loop`); both are named in the judge's KAIF patch block.
 
 **KAIF adds a third obligation — at step 5 (verify by observation) and step 7 (report): "DONE" ABOUT
 PRODUCTION COMES AFTER THE REAL WORLD** (origin issue #52; the owner's word: the agent is OBLIGED to verify
@@ -763,7 +752,7 @@ there is. Classify first: the note CONCERNS the current task → it is a clarifi
 vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
 the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it
 sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
-row 1 is what moves `DELIVERY:` or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
+row 1 is what moves the main phase's acceptance metric or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
 judge hunts "recency ranked over metric".
 
 **A batch of bugs from the owner is one process incident.** When the owner's manual test pass brings a

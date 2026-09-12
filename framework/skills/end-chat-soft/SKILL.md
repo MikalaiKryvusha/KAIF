@@ -79,15 +79,7 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 ### Step 5. The farewell report
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
-the baton in one paragraph — the main thing the NEXT chat should do first. The report OPENS with
-the forced delivery line — `DELIVERY: systems N · complete A → B % · integrated C % · holes … ·
-contradictions … · bugs …; moved by: <one line> | blocker: <named> | owed questions: N (oldest M d,
-never shown K)` — the delivery vector printed by `node .kaif/kaif-core.mjs delivery` from
-`SYSTEMS_REGISTRY.md` (`AGENT_GUIDE.md` → the fable loop; the owed-questions slot from the project's
-queue command, `/resume` step 1b); an arrow on every component that moved, a zero delta on all of
-them is legal only with a named blocker, and `registry not built yet` is legal only with the
-registry's drafting named as the next chat's first move (`/fable-judge` hunts a farewell without the
-line — the delivery-line hunt). That's the goodbye.
+the baton in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
 
 ## Notes
 

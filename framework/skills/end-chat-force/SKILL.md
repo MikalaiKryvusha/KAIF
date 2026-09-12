@@ -37,12 +37,7 @@ retry once, and if it still fails, tell the human: the commit exists locally, no
 ## Step 3. The one-line farewell
 
 One line to the human: the commit hash, the single most important thing for the next chat, and
-the reminder that the ceremonies debt is recorded in `STATUS.md` — prefixed by the delivery line
-`DELIVERY: systems N · complete A → B % · integrated C % · holes … · contradictions … · bugs …;
-moved by: … | blocker: … | owed questions: N (oldest M d, never shown K)` (the vector printed by
-`node .kaif/kaif-core.mjs delivery` from `SYSTEMS_REGISTRY.md` — `AGENT_GUIDE.md` → the fable loop;
-`registry not built yet` until the registry exists; force mode skips ceremonies, never the
-accounting). Goodbye.
+the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 
 ## What this skill refuses to skip
 

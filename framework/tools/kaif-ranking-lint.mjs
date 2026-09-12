@@ -4,9 +4,9 @@
 //
 // What it mechanizes: the rule "the newest pain is not a priority claim" stood in `/what-next` as prose,
 // and a field agent quoted it and broke it in the same answer — the owner's words of the day sat on top,
-// the main phase, the delivery metric and 87 open bugs were never named. Prose does not rank; a FORM does.
+// the main phase, the metric and 87 open bugs were never named. Prose does not rank; a FORM does.
 // The answer of `/what-next` (and the draft the agent lints BEFORE printing it) must carry:
-//   METRIC: <the DELIVERY vector read from the documents>        (line, anywhere above the table)
+//   METRIC: <the main phase's acceptance metric read from the documents> (line, anywhere above the table)
 //   MAIN PHASE: <the phase the plan marks as the main one now>    (line, anywhere above the table)
 //   | step | moves | closes | effort |                             (the ranking table, fixed columns)
 //   — every row: `moves` names the metric component it shifts or is `—`; `closes` names bugs/plans or is empty;
@@ -94,7 +94,7 @@ export function parseAnswer(src) {
 // The rules — data. Each: id · message · test(answer) → true when violated.
 const carries = (r) => !DASH.test(r.moves) || !DASH.test(r.closes);
 export const RULES = [
-  { id: 'no-metric', msg: 'no METRIC: line — the answer must open with the delivery vector read from the documents',
+  { id: 'no-metric', msg: 'no METRIC: line — the answer must open with the main phase\'s acceptance metric read from the documents',
     test: (a) => !a.metric || !/\d/.test(a.metric) },
   { id: 'no-main-phase', msg: 'no MAIN PHASE: line — name the phase the plan marks as the main one now (or the first open phase, saying so)',
     test: (a) => !a.phase },
@@ -141,12 +141,12 @@ function check(paths) {
 // clean answer reddens its rule and only it; a plain document is not an answer (SKIPPED path).
 const CLEAN = {
   en: [
-    'METRIC: DELIVERY: systems 9 · complete 86 % (31 of 36) · integrated 100 % (7 of 7) · holes 0 · contradictions 0 · bugs 23',
+    'METRIC: acceptance criteria of the main phase closed 9 of 15 (2026-09-05)',
     'MAIN PHASE: Phase 2 — Reach (v2), marked as the main one now in MASTER_PLAN.md',
     '',
     '| step | moves | closes | effort |', '|---|---|---|---|',
-    '| 1. Traffic series: index the catalogue | complete +1 (Catalogue) | bugs/12 | 0.5 chat |',
-    '| 2. Yandex verification | integrated +1 | — | 0.25 chat |',
+    '| 1. Traffic series: index the catalogue | criterion 3 (Catalogue) | bugs/12 | 0.5 chat |',
+    '| 2. Yandex verification | criterion 5 | — | 0.25 chat |',
     '| 3. Refactor the console | — | plans/40 | 1 chat |',
     '| 4. Rename the sidebar | — | — | 0.25 chat |',
     '',
@@ -154,12 +154,12 @@ const CLEAN = {
     'Tech debt: open bugs 87 · red 30 · drifted pairs 0.',
   ],
   ru: [
-    'METRIC: DELIVERY: systems 9 · complete 86 % (31 of 36) · integrated 100 % (7 of 7) · holes 0 · contradictions 0 · bugs 23',
+    'METRIC: критерии приёмки главной фазы закрыты 9 из 15 (2026-09-05)',
     'MAIN PHASE: Фаза 2 — Охват (v2), помечена «ГЛАВНОЕ СЕЙЧАС» в MASTER_PLAN.md',
     '',
     '| шаг | moves | closes | трудоёмкость |', '|---|---|---|---|',
-    '| 1. Серия трафика: индексация каталога | complete +1 (Каталог) | bugs/12 | 0,5 чата |',
-    '| 2. Верификация Яндекса | integrated +1 | — | 0,25 чата |',
+    '| 1. Серия трафика: индексация каталога | критерий 3 (Каталог) | bugs/12 | 0,5 чата |',
+    '| 2. Верификация Яндекса | критерий 5 | — | 0,25 чата |',
     '| 3. Рефакторинг консоли | — | plans/40 | 1 чат |',
     '| 4. Переименовать сайдбар | — | — | 0,25 чата |',
     '',
@@ -172,7 +172,7 @@ const FIX_53 = [
   '| step | moves | closes | effort |', '|---|---|---|---|',
   '| 1. MVP of the messenger (the owner said so today) | — | — | 2 chats |',
   '| 2. Rewrite the terms (the owner said so yesterday) | — | — | 1 chat |',
-  '| 3. Traffic series: index the catalogue | complete +1 | bugs/12 | 0.5 chat |',
+  '| 3. Traffic series: index the catalogue | criterion 3 | bugs/12 | 0.5 chat |',
 ];
 const MUTATIONS = {
   'no-metric': (L) => L.filter((l) => !/^METRIC:/.test(l)),
