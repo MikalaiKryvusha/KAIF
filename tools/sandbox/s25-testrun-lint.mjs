@@ -14,13 +14,21 @@
 //     без строки `Functional run:` или с `NONE` красен правилом pass-without-functional-run — в «плохом» каталоге два
 //     таких отчёта, в «хорошем» — `NONE` под `partial` (законно), в развёрнутой копии — отчёт «одна гигиена, pass»
 //     краснеет РАЗВЁРНУТЫМ линтером по имени (на ядре 2.6 правила нет — красный швом KAIF_DIST).
-// [TESTED: 2026-09-12 · отдельный прогон на свежем dist — «✅ s25 testrun-lint: all 32 checks green» (счёт печатает
-//  сам свод; до CL — 27); КРАСНЫЙ доказан: `KAIF_DIST=<git show v2.6:dist/…> node tools/sandbox/s25-testrun-lint.mjs` →
-//  «❌ s25: 8 of 33 check(s) failed» — свод доходит до вердикта, восемь красных адресованы отсутствующим фичам (шаблон ·
-//  модуль · предупреждения «1 of the 9» и «4 of the 9» · развёрнутый линтер · копия шаблона · линт копии · правило CL
-//  «одна гигиена, pass»); отчёты прогона истока — testcases/reports/2026-09-12_polygon-2.7-TR.md и
-//  testcases/reports/2026-09-12_polygon-2.7-CL.md]
-import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
+// (4) эпик FR 2.7 (plans/113; тикет #68 — сгенерированная конституция команды сохранила 5 правил §2 из 9, и ни один гейт
+//     не сказал ни слова): ось `check` «конституция сохранила обязательства шаблона» на той же развёрнутой копии —
+//     конституция из шаблона → тишина · вырезаны ровно те четыре правила, которые потеряло поле, → названы поимённо ·
+//     переведённая (§2 из пяти пунктов) → сверка СЧЁТОМ вслух и НИ ОДНОЙ секции в потерях (заголовки по номеру) ·
+//     удалённый `## 7.` → назван по номеру · маркер `<!-- constitution-ok: … -->` снимает ровно своё · конституции нет →
+//     тишина. Красный доказан на ядре 2.6 (KAIF_DIST) и шестью мутантами блока на КОПИИ dist (скретчпад `fr-mutants.mjs`,
+//     отчёт прогона): три ассерта «молчит»/«зелёный» на 2.6 зелены ПО ПОСТРОЕНИЮ — их держат мутанты, а не 2.6.
+// [TESTED: 2026-09-18 · отдельный прогон на свежем dist — «✅ s25 testrun-lint: all 45 checks green» (счёт печатает
+//  сам свод; до FR — 37 при полном наборе, до CL — 27); КРАСНЫЙ доказан:
+//  `KAIF_DIST=<git show v2.6:dist/…> node tools/sandbox/s25-testrun-lint.mjs` → «❌ s25: 16 of 45 check(s) failed» —
+//  свод доходит до вердикта, красные адресованы отсутствующим фичам (шаблон · модуль · предупреждения «1 of the 9» и
+//  «4 of the 9» · развёрнутый линтер · копия шаблона · линт копии · правило CL «одна гигиена, pass» · восемь ассертов FR);
+//  отчёты прогона истока — testcases/reports/2026-09-12_polygon-2.7-TR.md · 2026-09-12_polygon-2.7-CL.md ·
+//  2026-09-18_constitution-keeps-obligations.md]
+import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync, rmSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -192,6 +200,73 @@ writeFileSync(join(S, 'testcases', 'reports', '2026-09-12_hygiene-pass.md'),
 r = runLint('check', S, DEPLOYED_LINT);
 ok(r.code === 1 && /2026-09-12_hygiene-pass\.md — pass-without-functional-run: Verdict says pass while Checks carries no "Functional run:" line/.test(r.out),
    's25 развёрнутый линтер — «одна гигиена, вердикт pass» красный правилом pass-without-functional-run с именем строки (эпик CL, #62)', r.out);
+
+// --------------------------------- (4) ось «конституция сохранила обязательства шаблона» (эпик FR, plans/113)
+// Тикет #68: сгенерированная конституция сохранила 5 правил §2 из 9 шаблонных — четыре правила
+// («не перебивай занятого» · «не молчи о блокере/простое» · «помощь уважительно» · «какофония запрещена»)
+// исчезли при генерации, и ни один гейт не сказал ни слова. Свод судит развёрнутую копию (та же, что выше).
+console.log('\n=== s25: развёрнутая копия — ось «конституция сохранила обязательства шаблона» (FR) ===');
+const CONST_TPL = join(S, '.claude', 'skills', 'team-deployment', 'references', 'team-constitution-template.md');
+const CONST = join(S, 'TEAM_CONSTITUTION.md');
+ok(existsSync(CONST_TPL), 's25 фикстура: шаблон конституции приехал установкой', CONST_TPL);
+const tplText = existsSync(CONST_TPL) ? readFileSync(CONST_TPL, 'utf8') : '';
+ok(/^6\. 🔴 \*\*A free seat asks for work\.\*\*/m.test(tplText),
+   's25 фикстура: §2 шаблона несёт отдельный пункт 6 «A free seat asks for work» (эпик FR, #68)', tplText.slice(0, 200));
+// строки ПРО КОНСТИТУЦИЮ отделяются от прочих предупреждений check (выше по своду живут предупреждения о /resume)
+const constLines = (out) => out.split(/\r?\n/).filter((l) => /TEAM_CONSTITUTION\.md/.test(l));
+// (а) конституция, скопированная из шаблона, — тишина
+writeFileSync(CONST, tplText);
+r = runCore('check');
+ok(r.code === 0 && constLines(r.out).length === 0, 's25 конституция из шаблона — check молчит о ней (код 0)', r.out);
+// (б) ФОРМА ПОЛЯ: вырезаны ровно те четыре правила §2, которые потеряла полевая генерация
+const FIELD_LOST = ['Do not interrupt the busy.', 'Never stay silent about a blocker.', 'Help respectfully.', 'No cacophony.'];
+const cutRules = (text, leads) => {
+  const out = []; let drop = false;
+  for (const l of text.split(/\r?\n/)) {
+    const lead = /^[ \t]*\d+\.[ \t]+(?:[^\sA-Za-z*]+[ \t]*)?\*\*(.+?)\*\*/.exec(l);
+    if (lead) drop = leads.includes(lead[1].trim());
+    if (!drop) out.push(l);
+  }
+  return out.join('\n');
+};
+const cutText = cutRules(tplText, FIELD_LOST);
+ok(FIELD_LOST.every((a) => !cutText.includes(a)) && cutText.includes('A free seat asks for work.'),
+   's25 фикстура потери: четыре правила поля вырезаны, пункт 6 на месте', cutText.slice(0, 120));
+writeFileSync(CONST, cutText);
+r = runCore('check');
+ok(r.code === 0, 's25 конституция с потерей — check остаётся ЗЕЛЁНЫМ (предупреждение, не отказ)', r.out.slice(-400));
+ok(/⚠ TEAM_CONSTITUTION\.md lost 4 obligation\(s\) of the template: /.test(r.out) &&
+   FIELD_LOST.every((a) => r.out.includes(`§2 "${a}"`)),
+   's25 потеря формы поля — предупреждение называет ПОИМЁННО все четыре правила §2 (#68)', r.out);
+ok(/restore them, or declare the omission beside the item with `<!-- constitution-ok: <why> -->` \(origin issue #68; template: \.claude\/skills\/team-deployment\/references\/team-constitution-template\.md\)/.test(r.out),
+   's25 потеря — строка называет и лекарство, и объявленное исключение, и найденный шаблон', r.out);
+// (в) ПЕРЕВЕДЁННАЯ конституция: якоря не совпадут ни одним — сверка по СЧЁТУ, и ось говорит это вслух
+const ruText = tplText.replace(/^## 2\. Communication regimen[\s\S]*?(?=^## 3\.)/m,
+  '## 2. Reglament obshcheniya\n\n1. **Odno soobshchenie - odno delo.** ...\n2. **Forma postanovki** ...\n' +
+  '3. **Forma otcheta** ...\n4. **Ne perebivay zanyatogo.** ...\n5. **Ne molchi o blokere.** ...\n\n');
+writeFileSync(CONST, ruText);
+r = runCore('check');
+ok(r.code === 0 && /⚠ TEAM_CONSTITUTION\.md cannot match translated anchors: 10 expected in §2, 5 found — 5 obligation\(s\) of the template are missing/.test(r.out),
+   's25 переведённая конституция — предупреждение СЧЁТОМ («10 expected in §2, 5 found»), код 0', r.out);
+ok(/the template's own order: 1 "One message/.test(r.out) && /6 "A free seat asks for work\."/.test(r.out),
+   's25 переведённая — ось печатает порядок шаблона, чтобы потерянное было чем восстановить', r.out);
+ok(!/lost \d+ obligation\(s\) of the template/.test(r.out),
+   's25 переведённая — ни одна СЕКЦИЯ не названа потерянной: заголовки сверяются по НОМЕРУ, который переживает перевод', r.out);
+// (г) удалённый заголовок секции — назван по НОМЕРУ (номер переживает перевод, заголовок — нет)
+writeFileSync(CONST, tplText.replace(/^## 7\. Machine resources — singletons and locks$/m, '## Machine resources'));
+r = runCore('check');
+ok(r.code === 0 && /lost 1 obligation\(s\) of the template: §7 "Machine resources — singletons and locks"/.test(r.out),
+   's25 удалённый заголовок `## 7.` — назван по номеру и заголовку шаблона', r.out);
+// (д) объявленное исключение владельца снимает РОВНО своё обязательство
+writeFileSync(CONST, cutText + '\n<!-- constitution-ok: Do not interrupt the busy. — two seats, both the owner\'s own windows -->\n');
+r = runCore('check');
+ok(r.code === 0 && /lost 3 obligation\(s\) of the template: /.test(r.out) && !r.out.includes('§2 "Do not interrupt the busy."') &&
+   r.out.includes('§2 "No cacophony."'),
+   's25 маркер `constitution-ok` снимает ровно объявленное обязательство, остальные три названы', r.out);
+// (е) конституции нет — тишина (ось нужна команде, а не одиночной сессии)
+rmSync(CONST, { force: true });
+r = runCore('check');
+ok(r.code === 0 && constLines(r.out).length === 0, 's25 без TEAM_CONSTITUTION.md — ось молчит', r.out);
 
 if (failures) { console.error(`\n❌ s25: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s25 testrun-lint: all ${asserts} checks green`);
