@@ -351,6 +351,11 @@ const RENAMES_BY_VERSION = {
     '.claude/skills/end-chat-force/SKILL.md': [
       ['## Step 1. The baton — only what must not be lost', '## Step 1. The handover — only what must not be lost'],
     ],
+    // 2.7, epic CR — the skill rewritten by its executor: Step 0 gained the baseline and the budget
+    // (the same module, renamed — never duplicated in the field; guard 5f named it, session 65).
+    '.claude/skills/code-revision/SKILL.md': [
+      ['## Step 0 — scope, cadence, and the ground before the hunt', '## Step 0 — baseline, scope, budget, and the ground before the hunt'],
+    ],
   },
 };
 

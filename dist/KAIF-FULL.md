@@ -568,6 +568,37 @@ claim-wider-than-observation hunt). The same rule, seen from the other side, def
 (`TESTING_FRAMEWORK.md` → "What the word "test" means"): hygiene reported as "tested" is a claim wider than its
 observation — the judge hunts that too (the tested-on-hygiene-alone hunt).
 
+**KAIF adds a sixth obligation — at step 4 (act) and step 7 (report), for a claim ALREADY PUBLISHED:
+A FALSEHOOD IS CORRECTED WHERE IT STANDS** (origin issue #67; the project owner's word in the ticket, rendered
+from Russian: "the agent leaves a lie and forgets to correct the lie where it left it, once it has found out
+that something in the past was a lie" — said the moment he caught the live case: "you wrote that in the
+comments and left it there, and it is a lie"). The fifth obligation bounds a claim at its BIRTH; this one
+bounds how long a born falsehood survives once it is known. The trigger is an EVENT, not a step: the minute a
+past statement of yours is identified as false — by the owner's word, by a measurement, by a later run —
+whatever you are doing at the time. Five steps, in this order, BEFORE the work continues:
+
+1. **Stop the current task.** The truth arrives in the middle of something else, and "right after this task"
+   is exactly how the falsehood outlives the session.
+2. **Enumerate every place the statement was published or recorded.** `git grep -n "<the phrase>"` for this
+   repository; the outward channels by the command your sphere library names ("Outward write channels →
+   retraction command": tracker comments, wiki pages, chat-ops messages, the owner's pages); and the documents
+   the owner reads — `STATUS.md`, the run reports, the plan you quoted it in.
+3. **Correct or retract in EACH place** — an edit where the artifact is ours; a `correction: …` comment where
+   the channel only appends; a deletion where the channel allows one and the record is worth nothing. A
+   channel whose retraction command you do not know is said aloud — "no retraction command for <channel>" —
+   never passed over in silence.
+4. **Read it back.** Open the corrected place and read what stands there now — an edit unread is a correction
+   claimed, not made.
+5. **Name it in the reply to the owner** — `corrected: <where>`, one line per place; the closing ritual
+   carries the same line (`Standing falsehood: none | <list>`).
+
+The class has a name — a **standing falsehood**: a statement of yours, already delivered outward or written
+into a document, the canon, a status or a report, that you have SINCE learned to be false and that still
+stands where you left it. The boundary: a draft marked as a hypothesis is not one (it claimed nothing), and
+neither is an append-only journal entry, where a correction IS a new entry — but that new entry names the
+entry it corrects. `/fable-judge` hunts a standing falsehood; `/end-chat-soft` and `/end-chat-force` ask about
+it by name at the close.
+
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
 the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
@@ -817,38 +848,25 @@ of "never Y") or moved into a guard that reddens by itself.
 
 ### A leading skill word is an order — the first word of the owner's message
 
-The owner opens a chat with the bare word `resume` and writes the task below it. A session that
-reads the word as a TOPIC starts the task and skips the entry ritual — it then works without the
-canon, the owner's queue, the creed and the prayer, and nothing in the tree says so (KAIF 2.7,
-epic RS; the origin's owner, 2026-09-18, rendered from Russian: "when I start a chat and just
-write the word resume at the top and below it what we do, agents often do not run the resume
-skill — and that is exactly why I write it there. Attention to the word resume must be raised: if
-I write it, I REQUIRE the agent to run that skill before starting the work"). The class behind it:
-a skill's trigger lists WORDS, never their POSITION; the only positional rule in the canon — the
-kick's "a standalone command, never mid-sentence" (`/kaif-go`) — points the other way; the
-auto-loaded context file names no entry ritual; nothing mechanical reads the prompt.
+The owner opens a chat with the bare word `resume` and writes the task below it; a session that
+reads the word as a TOPIC starts the task and skips the entry ritual — no canon, no owner's queue,
+no creed — and nothing in the tree says so (KAIF 2.7, epic RS; the origin's owner, rendered from
+Russian: "if I write it, I REQUIRE the agent to run that skill before starting the work"). The
+class: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never
+mid-sentence" (`/kaif-go`) points the other way; nothing mechanical reads the prompt.
 
-The rule, in the form of a step:
-
-1. **The first word of the owner's message is `resume` — `resume`, `/resume` or its Russian
-   shorthand, the words this rule and its hook name → run `/resume` FIRST, in full, then read the
-   rest of the message as the task.** The ritual is not shortened because a task waits under it:
-   the task is what the ritual is for. Other skills keep their own trigger rules — a first-word
-   "continue" or its translation is the kick's word and goes to `/kaif-go`, not here; a word that
-   is an alias of two skills is resolved by the skill whose rule names it.
-2. **The same word mid-sentence stays prose** ("keep reading resume.log") — the kick's boundary
-   holds unchanged; the position decides, not the word. The boundary is named on purpose: ANY
-   message whose first word is the resume word fires — a file named `resume.log`, "Resume the
-   deployment", the Russian noun for a CV or the verb "summarize" in first position — and the price
-   of that is one extra entry ritual, cheaper than one skipped ritual.
-3. **Where the agent system has lifecycle hooks, the mechanical half is
-   `.kaif/hooks/prompt-resume-word.mjs`** (the optional refresh-hooks module, wiring in its
-   README): it reads the first word of every prompt and injects the order to run `/resume` before
-   the work; silent on every other message. The markdown rule is complete without it; the hook
-   makes it hard to forget.
-
-`/fable-judge` hunts a session whose first owner message opened with the word and whose first
-actions were the task (the hunt "Resume word ignored").
+1. **The first word of the owner's message is `resume` (`resume`, `/resume`, its Russian
+   shorthand) → run `/resume` FIRST, in full, then read the rest as the task.** The ritual is not
+   shortened because a task waits under it. Other skills keep their own trigger rules: a first-word
+   "continue" is the kick's word (`/kaif-go`), and an alias shared by two skills is resolved by the
+   skill whose rule names it.
+2. **The same word mid-sentence stays prose** ("keep reading resume.log") — position decides. The
+   boundary is deliberate: ANY first word from the family fires — `resume.log`, "Resume the
+   deployment", the Russian noun for a CV — and one extra entry ritual is cheaper than one skipped.
+3. **The mechanical half — `.kaif/hooks/prompt-resume-word.mjs`** (optional refresh-hooks module,
+   wiring in its README) reads the first word of every prompt and injects the order; silent on all
+   other messages. The rule is complete without it; the hook makes it hard to forget. `/fable-judge`
+   hunts a session that took the task past the word ("Resume word ignored").
 
 ### The storefront — text a stranger reads
 
@@ -5645,6 +5663,11 @@ Update `STATUS.md`, tersely:
 - **The ceremonies debt line** — add verbatim:
   `⚠️ Force-closed <date+time>: ceremonies skipped (judge pass, bonsai trim, README, showcase
   linters) — the first /end-chat-soft pays this debt.`
+- **The standing falsehood line** — one phrase, verbatim: `Standing falsehood: none`, or
+  `Standing falsehood: <the statement> → still stands in <place>, <place>` (`AGENT_GUIDE.md` → "a
+  falsehood is corrected where it stands"). Force mode may skip a ceremony; it never drops a lie left
+  standing under the owner's name — a statement this session learned was false and corrected only in
+  the chat is named here with every place, and the next session's first move is the five steps.
 - Convert relative dates to absolute.
 
 Uncommitted work-in-progress that cannot land safely: name it in the handover (file, state, next
@@ -5769,6 +5792,16 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+
+One line of that report is asked BY NAME, because nothing else in the session asks it
+(`AGENT_GUIDE.md` → "a falsehood is corrected where it stands"): **which statement of this session
+turned out to be false, and where does it still stand?** Answer it in the report, verbatim:
+
+`Standing falsehood: none` — or `Standing falsehood: <the statement> → corrected in <place>, <place>`
+
+A statement you corrected only in the chat is still standing in the artifact the team reads, so run
+the five steps BEFORE the farewell, never after it — and if a place could not be corrected, name the
+place and its missing retraction command instead of answering `none`.
 
 ## Notes
 

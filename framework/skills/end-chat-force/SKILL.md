@@ -18,6 +18,11 @@ Update `STATUS.md`, tersely:
 - **The ceremonies debt line** — add verbatim:
   `⚠️ Force-closed <date+time>: ceremonies skipped (judge pass, bonsai trim, README, showcase
   linters) — the first /end-chat-soft pays this debt.`
+- **The standing falsehood line** — one phrase, verbatim: `Standing falsehood: none`, or
+  `Standing falsehood: <the statement> → still stands in <place>, <place>` (`AGENT_GUIDE.md` → "a
+  falsehood is corrected where it stands"). Force mode may skip a ceremony; it never drops a lie left
+  standing under the owner's name — a statement this session learned was false and corrected only in
+  the chat is named here with every place, and the next session's first move is the five steps.
 - Convert relative dates to absolute.
 
 Uncommitted work-in-progress that cannot land safely: name it in the handover (file, state, next
