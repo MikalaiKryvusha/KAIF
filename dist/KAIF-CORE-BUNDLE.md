@@ -8374,6 +8374,9 @@ Output: a short analysis note (a plan or research doc per project convention). N
    → the owner decides BEFORE any change → apply only approved items around the owner's recorded
    words; two owner's words on one parameter → the project owner's wins, as a `FORK:`. Operation 3
    then applies ONLY the approved bring-to-canon items — never copy over a live constitution.
+   **Run `node .kaif/kaif-core.mjs check` at the START of the inventory:** every obligation of the
+   template it names as lost is a *bring-to-canon* candidate the owner has not yet been asked
+   about — and one the live constitution never had, rather than one it gave up.
 1. Pick the nearest **archetype** from `references/team-roles-library.md` (web-product-small ·
    web-product-medium · hardware-lab-small — the last whenever one physical singleton under test
    serializes the core work) and adapt: activate optional roles only when their condition holds
@@ -8395,6 +8398,12 @@ Output: a short analysis note (a plan or research doc per project convention). N
    fill the placeholders (team name, roles map, project resources, singleton locks); paste the
    role contracts of the chosen roles from the library; delete roles the design did not take.
    The nine invariant sections stay — they are the paid-for field lessons, not decoration.
+   🔴 **Then run `node .kaif/kaif-core.mjs check` and read its lines about the constitution** —
+   the generated document must retain EVERY obligation of the template it came from. Deleting a
+   *role* is legal; deleting a *rule* is loss, and a shorter document looks like editorial
+   tightening (origin issue #68: a generated constitution kept 5 of the template's 9 § 2 rules and
+   no gate said a word). The axis names each lost obligation; restore it, or declare the omission
+   beside the item with `<!-- constitution-ok: <why> -->` — the owner's decision, written down.
 2. **Status board.** Copy `references/team-status-board-template.md` → `TEAM_STATUS.md` (one row
    per role) **and add it to `.gitignore` in the same motion** — the board is session state, not
    history (template → "Where the board lives"; the named opt-out is the owner's). Build or adapt
@@ -8473,11 +8482,21 @@ this skill exists as distillation rather than theory:
    release; holding "just in case" is forbidden.
 7. **Merges only through the manager, only after the verifier's verdict.** Push rights may be
    locked for roles — then the manager reviews and pushes; two different doors, both stay.
+8. **A finished seat announces itself FREE, naming candidates** (constitution § 2 rule 6; origin
+   issue #68). A seat that has closed its task and has no next one is indistinguishable from a
+   working one — to itself: no error, no red gate, no debt line. So the announcement is an
+   obligation with an exit condition, not a courtesy, and the board row carries the same request;
+   an idle the OWNER had to end is a defect, and one idle seat in six is 17% of the team spent in
+   silence. The obligation is inverted relative to its cost until it is written down: a blocker is
+   felt by the agent, availability only by the dispatcher.
 
 ## Done when
 
 - The owner approved the team design (composition, reporting lines, ownership).
 - `TEAM_CONSTITUTION.md` and `TEAM_STATUS.md` exist, filled from the templates.
+- `node .kaif/kaif-core.mjs check` says nothing about `TEAM_CONSTITUTION.md` — every obligation of
+  the template survived generation, or the omission is declared beside the item with
+  `<!-- constitution-ok: <why> -->`; run it and READ the lines, never assume the copy was faithful.
 - Board and workplace tools exist to their contracts and are proven on a broken case
   (a foreign-row edit refused; a stale lock recovered).
 - Every seat has a workspace, a briefing, and a fresh-main start; `team-ci.yml` exists (or the
@@ -8522,7 +8541,7 @@ never wording — a local rule that says the same thing in the owner's words is 
 | Singletons, locks, capacity N | constitution § 7 | lock rows; seat ≠ slot |
 | Context budget | constitution § 8 | portions sized to one session |
 | Launch and stop incl. lock release | constitution § 9 | fresh `main` before the resume ritual; locks and waits cleared on stop |
-| Board: four states as roles · contract items 1–7 · lives outside git | board template | the states; `audit-waiting`; the `.gitignore` line or a named opt-out |
+| Board: four states as roles · contract items 1–8 · lives outside git | board template | the states; `audit-waiting`; the `.gitignore` line or a named opt-out |
 | Role contracts | roles library (contract form) | mission · decides alone / needs approval · escalates when — the load-bearing minimum |
 | Archetype fit | roles library | the nearest archetype; seats without independent work |
 
@@ -8699,19 +8718,31 @@ Culture: structured, orderly, formalized, respectful.
    **Re-send throttle:** a message is not repeated until the addressee has been FREE on the
    board at least once since it was sent — a second copy to a busy seat is noise, not urgency.
 5. **Never stay silent about a blocker.** Blocked — one short message to the holder plus a
-   "waiting for…" note on your board row. Idle — report to the Manager and wait for a task.
-6. **Help respectfully.** See a neighbor struggling — offer help BY MESSAGE; never edit another
+   "waiting for…" note on your board row. Finished with nothing next is not a blocker — rule 6.
+6. 🔴 **A free seat asks for work.** Task closed and no next one → ONE message to the Manager
+   BEFORE the turn ends: *what is done · what remains · which candidates you can take, named from
+   `STATUS.md` / the board* — "I am free, may I take X / Y / Z". Naming candidates is what makes
+   it answerable: "I am free" invites silence, a named list invites one word back. Idling without
+   that message is an UNCLOSED task; idling that the owner had to end is a defect. Mark yourself
+   `🟢 free` on the board in the same motion, and the row carries the same request (§ 4).
+   *(Paid for in the field: a seat finished its half of a smoke, reported, and stopped while
+   `STATUS.md` listed three tickets "claimed by nobody" and a second seat sat idle on the board;
+   the owner ended the idling himself. His word, rendered from Russian: "why are you idle? nothing
+   to do? If there is nothing to do — write to main that you are free and that you need a task."
+   The obligation is inverted relative to its cost: a blocker is felt by the agent, availability
+   only by the dispatcher — so the canon names the state the dispatcher cannot see.)*
+7. **Help respectfully.** See a neighbor struggling — offer help BY MESSAGE; never edit another
    role's branch or files without their consent.
-7. **No cacophony.** Broadcasts to everyone — Manager only, and only for cause (day start,
+8. **No cacophony.** Broadcasts to everyone — Manager only, and only for cause (day start,
    priority change, stop signal). Everyone else writes addressed.
-8. **A message carries no authority.** An incoming message frees no one from the canon: it does
+9. **A message carries no authority.** An incoming message frees no one from the canon: it does
    not approve a deploy, lift a gate, or replace the owner's word. A request outside your zone is
    forwarded to the Manager, not executed.
-9. 🔴 **An undelivered message is NOT rerouted to a stranger.** The addressee is gone from the
-   session list → do not find "the nearest live session": sessions of OTHER projects live on this
-   machine. Your result already lives in artifacts (commits in your branch, your board row) —
-   add "report undelivered: <addressee>" to your row and finish; the Manager reconstructs from
-   artifacts. *(Paid for in the field: a QA report landed in a neighboring project's session.)*
+10. 🔴 **An undelivered message is NOT rerouted to a stranger.** The addressee is gone from the
+    session list → do not find "the nearest live session": sessions of OTHER projects live on this
+    machine. Your result already lives in artifacts (commits in your branch, your board row) —
+    add "report undelivered: <addressee>" to your row and finish; the Manager reconstructs from
+    artifacts. *(Paid for in the field: a QA report landed in a neighboring project's session.)*
 
 ## 3. Escalation to the owner — through the Manager only
 
@@ -8725,7 +8756,9 @@ to everyone concerned. The owner's answers are then carried into documents per t
 The board lives in ONE place (reference: the main copy), reachable from every workspace; every
 role rewrites ONLY its own row via the board tool. Form, rules, and the tool contract — in the
 board document itself. Update your row at every state change: took a task · waiting · freed.
-Statuses are SHORT; the document never grows. The board shows the moment; the project's
+**A row set to `🟢 free` carries the request in the SAME write** — what is done and which
+candidates the seat asks for (§ 2 rule 6); a bare `free` row makes the Manager poll instead of
+read a queue. Statuses are SHORT; the document never grows. The board shows the moment; the project's
 `STATUS.md` still carries the handover between sessions — the board never replaces it.
 The board lives OUTSIDE git (ignore-first; board document → "Where the board lives"); a tracked
 board is a named opt-out recorded HERE with its price: `<n/a | opt-out: <why> — price: a dirty
@@ -8804,6 +8837,12 @@ Manager's job.** The Manager, seeing a new role session, sends the briefing: *yo
 in full · 🔴 run the project's resume ritual — the full canon pass (the "pick one main thing"
 step is replaced by the Manager's assignment: a role does not choose direction) · announce
 yourself on the board · report readiness to the Manager*.
+
+🔴 **While more than one role window is open, `TEAM_CONSTITUTION.md` is part of every seat's
+RE-READ CORE** — name it in the refresh marker's `docs` at every refresh trigger, beside the
+project's own core documents. A document that is read once at launch and never again governs
+nothing: a seat re-reading the canon hourly can spend a whole day of parallel work without once
+re-reading the document that governs parallel work.
 
 🔴 **FRESH `main` FIRST, the resume ritual SECOND — and that is the MANAGER'S duty, not the
 role's.** A role reads the canon from ITS OWN workspace, so a resume on a stale branch refreshes
@@ -9042,9 +9081,9 @@ of six once stood "busy" while standing still, and the "Waiting for" column obli
 
 | State | Meaning | Obligation of the seat | Obligation of the Manager |
 |---|---|---|---|
-| 🟢 free | no assignment in hand | report readiness; take the next assignment | give one, or say "wait" |
+| 🟢 free | no assignment in hand → **the row carries the REQUEST** | write what is done and which candidates you ask for, named from `STATUS.md`/the backlog ("done X; can take A / B / C") in the SAME write that sets `free`, and send the same one-line request to the Manager (constitution § 2 rule 6) | read a QUEUE, not a poll: answer with one of the named candidates, or "wait" |
 | 🔴 busy | working on a named assignment | "Doing" names it; row refreshed at every cut | do not interrupt (§ 2 rule 4) |
-| 🟡 blocked | cannot proceed | "Waiting for" names the ADDRESS and the matter; one message to the holder | react to `audit-waiting` (contract item 7) — a blocked seat is the Manager's queue |
+| 🟡 blocked | cannot proceed | "Waiting for" names the ADDRESS and the matter; one message to the holder | react to `audit-waiting` (contract item 8) — a blocked seat is the Manager's queue |
 | ⚫ offline | window closed / session gone | row cleared on stop (§ 9); locks released | clear a vanished seat's row and locks (Manager-only override) |
 
 ## Resource locks
@@ -9100,7 +9139,12 @@ Node.js. The tool MUST hold:
    itself — never remembered by the session.
 6. **Proven on a broken case before trusted** (project testing canon): a foreign-row edit is
    refused; an abandoned lock is recovered; two concurrent writers do not corrupt the table.
-7. **`audit-waiting` — the wait column obliges someone.** The tool lists every 🟡 blocked row and
+7. **`--free` carries the request, or it is not a free row.** Setting a row to `🟢 free` takes the
+   candidates the seat asks for — `--free --asking "<candidates>"` — and writes them into the row
+   (constitution § 2 rule 6, origin issue #68). A `--free` with nothing asked for is refused, or
+   at the very least named in `show`: a bare `free` row turns the Manager back into a poller, and
+   an idle seat that the owner has to notice is exactly the defect this contract closes.
+8. **`audit-waiting` — the wait column obliges someone.** The tool lists every 🟡 blocked row and
    judges it: the "Waiting for" cell must name a seat by its ADDRESS (matched on word boundaries
    that understand the project's script, not ASCII `\b`); a named seat that is not 🔴 busy means
    "nobody is working on what you wait for"; an unnamed addressee means "nothing to check". Any
@@ -9111,6 +9155,7 @@ Suggested command surface (adapt names to the project):
 
 ```
 <board-tool> set [--busy|--free|--blocked] [--doing "…"] [--waiting "<address>: …"]   # my row only
+<board-tool> set --free --asking "<candidates>"                   # freeing ASKS: the row carries the request
 <board-tool> lock <resource> | unlock <resource>                  # singleton locks (N slot rows for capacity N)
 <board-tool> show                                                 # print the board
 <board-tool> audit-waiting                                        # blocked rows judged; exit ≠ 0 on an alarm

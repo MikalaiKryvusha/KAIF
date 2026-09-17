@@ -4286,19 +4286,19 @@
       {
         "signature": "## Operation 2 — suggest: an evidence-informed team design, approved by the owner",
         "class": "static",
-        "sha256": "9237a800d2cb859dc1990964bdb8a7caf007a0f5fda712b7d3e884b30147103c",
+        "sha256": "5343c20a529ab07cd5d3015eb0164bd9256a566897aa6b6a7cf79c86f7d3d9a9",
         "lines": [
           59,
-          81
+          84
         ]
       },
       {
         "signature": "## Operation 3 — deploy: materialize the approved design",
         "class": "static",
-        "sha256": "69c0cfa0c97f913e47892e81650d60e02fe7fe395a5732a361901bbe462b0c6d",
+        "sha256": "493756d9ed1f398561ce849c03ba5478b77540091d7fe54d473dd42da61c684b",
         "lines": [
-          82,
-          112
+          85,
+          121
         ]
       },
       {
@@ -4306,8 +4306,8 @@
         "class": "static",
         "sha256": "9426e4ee395e54993eb3d360815df6b97bc857ac8cedfa0f535ec553230de9e5",
         "lines": [
-          113,
-          119
+          122,
+          128
         ]
       },
       {
@@ -4315,8 +4315,8 @@
         "class": "static",
         "sha256": "3c5b444c2652253ef7fc4d7c5401fb28feda11400e5969c8cde1c112d03304da",
         "lines": [
-          120,
-          132
+          129,
+          141
         ]
       },
       {
@@ -4324,26 +4324,26 @@
         "class": "static",
         "sha256": "77905f239addd3874d9780a9af8259bc44b0d564d44c706863fc5be5201e9022",
         "lines": [
-          133,
-          143
+          142,
+          152
         ]
       },
       {
         "signature": "## The paid-for field lessons (why the templates say what they say)",
         "class": "static",
-        "sha256": "0435577492f3d9b74af45c12cba6b32f4c84455417c547c4896db39113d1daf5",
+        "sha256": "6bf0e3bbfabb44c3b99cc8b76734299fa47ef2c44a1b4e1c18bcbf83be39e106",
         "lines": [
-          144,
-          166
+          153,
+          182
         ]
       },
       {
         "signature": "## Done when",
         "class": "static",
-        "sha256": "14f84bdd48ea0a6f0c262f808736f5f5ea39872257883567c34733821ed4b256",
+        "sha256": "330000e1d3e2c10c1f60f7523756779cc65a5a0093581ecee28e773b122416ab",
         "lines": [
-          167,
-          179
+          183,
+          198
         ]
       }
     ],
@@ -4369,7 +4369,7 @@
       {
         "signature": "## Step 1 — inventory: the live team against the canon, item by item",
         "class": "static",
-        "sha256": "8b99713a0bd9e040c9886b6bf47dee8d9b785d7edf154704169302da505b4fb1",
+        "sha256": "feffa3567cd31e2280ca0ee59aae1d94dce312a58f04f3fbaba5b9f6050e423d",
         "lines": [
           16,
           35
@@ -4499,10 +4499,10 @@
       {
         "signature": "## 2. Communication regimen",
         "class": "static",
-        "sha256": "b60b8aa487db7da08a992facc2e9c6bbcbb1030b48312efa79044d24082e8603",
+        "sha256": "5aaf56ecc697f03208e03db7458e405032ee704769d7323f2851237e3f974dfa",
         "lines": [
           52,
-          83
+          95
         ]
       },
       {
@@ -4510,17 +4510,17 @@
         "class": "static",
         "sha256": "5395c970824257e7c1d2348aec1998a9fd53b1594740c23389590bfe85be8710",
         "lines": [
-          84,
-          90
+          96,
+          102
         ]
       },
       {
         "signature": "## 4. Status board — `TEAM_STATUS.md`",
         "class": "static",
-        "sha256": "24e6909310fdba738476468817fadd48420c5415d2a55720fb8ec9fc42abb366",
+        "sha256": "f454d258fe08d97dec39c22ed1a80721790a8bed14388067f12dd7fb5607e07f",
         "lines": [
-          91,
-          101
+          103,
+          115
         ]
       },
       {
@@ -4528,8 +4528,8 @@
         "class": "static",
         "sha256": "9dea399daae02bafd5a771a2082c0ce996208e8f7a096aee329f39ef92912e87",
         "lines": [
-          102,
-          127
+          116,
+          141
         ]
       },
       {
@@ -4537,8 +4537,8 @@
         "class": "static",
         "sha256": "48dd9bdcae44d42b5f2789735e2c045a3a44d39a3f1585666e1638039b25cf81",
         "lines": [
-          128,
-          137
+          142,
+          151
         ]
       },
       {
@@ -4546,8 +4546,8 @@
         "class": "static",
         "sha256": "32b8e7d1397334485330250785eca8122c045d440643b4e1713311a8d43f109c",
         "lines": [
-          138,
-          150
+          152,
+          164
         ]
       },
       {
@@ -4555,17 +4555,17 @@
         "class": "static",
         "sha256": "dfabf01974c7da76eb4e3f617fdc937e9c3c1040a1ee11d3f78df072ef33051d",
         "lines": [
-          151,
-          165
+          165,
+          179
         ]
       },
       {
         "signature": "## 9. Launch and stop",
         "class": "static",
-        "sha256": "7f2e38b3788df274a2a42953f9b4751247d34f478d4538bd5000bb1cb7119ef8",
+        "sha256": "4c273ab18680fcd7a9932cf138eb23769bba1d5591f73fa570c9cfba10bc2ffa",
         "lines": [
-          166,
-          193
+          180,
+          213
         ]
       },
       {
@@ -4573,8 +4573,8 @@
         "class": "static",
         "sha256": "df6b2af217338a0b11df55936405ac7eed878b151dd191dd8cf14a97778c0e6f",
         "lines": [
-          194,
-          197
+          214,
+          217
         ]
       }
     ],
@@ -4683,7 +4683,7 @@
       {
         "signature": "## Board",
         "class": "static",
-        "sha256": "049ce64b6bf20ad5987ece1633ea046fbb332e618a8ae5606ade640f35ad2817",
+        "sha256": "f3352c00d2272515c157fe019cfb91a35d1ccdb66bea2b6b583e87faca5ce198",
         "lines": [
           14,
           33
@@ -4719,10 +4719,10 @@
       {
         "signature": "## Board tool — the contract (the project's agent builds it)",
         "class": "static",
-        "sha256": "6fa761485ea0343631f5855c6a22645a866a34ce5f45b6cca124ddfa549d4e94",
+        "sha256": "70e0105cb5a459bcec03d8770702085e674795d15868c46a6faa2c6d3f132e8f",
         "lines": [
           65,
-          103
+          109
         ]
       }
     ],

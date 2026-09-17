@@ -3054,6 +3054,74 @@ function cmdCheck() {
       }
     }
   } catch { /* unreadable marker or directory — the marker gate flags it separately */ }
+  // The GENERATED team constitution against the TEMPLATE it came from (2.7, epic FR; origin issue #68 — a field
+  // seat finished its half of a smoke, reported, and stopped while `STATUS.md` named three tickets "claimed by
+  // nobody" and a second seat sat idle on the board; the owner ended the idling himself). The obligation existed —
+  // as a trailing clause of the rule about blockers — and it did not survive GENERATION: the project's
+  // `TEAM_CONSTITUTION.md` carried 5 rules where the template carried 9, template rules 4-7 simply absent, and no
+  // gate said a word, because "a shorter document looks like editorial tightening rather than loss". This axis is
+  // the gate the ticket asked for, and it generalises past its own rule: ANY obligation a skill's template carries
+  // can be dropped in generation or translation, and until now nothing noticed.
+  // WHAT AN OBLIGATION IS HERE: the bold anchor of every numbered item of § 2 (the communication regimen — where
+  // the rules that bind a seat live) plus the nine invariant `## N.` section headings. Sections are matched by
+  // their NUMBER, which survives translation; § 2 rules by their English anchor — and when NOT ONE anchor matches,
+  // the document is translated, so the axis says so and falls back to COUNTING the items instead of judging a
+  // translated document against English strings it never had. A warning, never a failure: the constitution is the
+  // owner's document, and an owner-edited tree must not fail its own `check`. A deliberate omission is DECLARED,
+  // not argued with — `<!-- constitution-ok: <why> -->` beside the item (or naming it) exempts that obligation.
+  // No constitution on disk, or no template beside it, and the axis is silent: there is nothing to compare.
+  // @guard constitution-keeps-obligations
+  // THREAT:         an obligation of a skill's template is dropped when the skill GENERATES (or translates) the
+  //                 project's document and nothing notices — the field constitution kept 5 of the template's 9 § 2
+  //                 rules, "a free seat asks for work" among the four that vanished (origin issue #68)
+  // PROVED-AGAINST: sandbox s25 on a deployed copy — constitution copied from the template → silent; the same file
+  //                 with § 2 rules 4-7 cut (the field's own shape) → each of the four named by its anchor; a
+  //                 translated copy whose § 2 holds five items → the counting warning "10 expected in §2, 5 found";
+  //                 a deleted `## 7.` heading → named by number; a declared `<!-- constitution-ok: … -->` → that one
+  //                 not named; no constitution → silent. Red: the 2.6 core (KAIF_DIST seam) silent on the cut file;
+  //                 a mutant whose anchor parser returns nothing, silent on the same loss. Real state: a live field
+  //                 team's own constitution copied into a fresh install (plans/113, run report 2026-09-18)
+  // GAP:            it judges ANCHORS, not meaning — a bold lead over a gutted body reads as present; a PARTIALLY
+  //                 translated § 2 (one English anchor surviving) is judged by anchors and over-names, the fail-safe
+  //                 direction; only § 2 and the nine headings are compared, so a loss in § 5 or § 7 is invisible;
+  //                 whether a seat OBEYS the rule belongs to the judge's two hunts, never here
+  // ON-REAL-PATH:   NOT YET — the path is a field team's own `check` after the 2.7 update (a seeded copy of a real
+  //                 constitution is not that path)
+  try {
+    const CONSTITUTION = 'TEAM_CONSTITUTION.md';
+    const tplPath = ['.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills']
+      .map((b) => `${b}/team-deployment/references/team-constitution-template.md`).find((p) => okOnDisk(p));
+    if (okOnDisk(CONSTITUTION) && tplPath) {
+      const tpl = normEol(readFileSync(tplPath, 'utf8')), doc = normEol(readFileSync(CONSTITUTION, 'utf8'));
+      const sections = (t) => Object.fromEntries([...t.matchAll(/^## (\d+)\.[ \t]*(.*)$/gm)].map((m) => [m[1], m[2].trim()]));
+      // § 2 of a document — its numbered items are the rules that bind a seat
+      const regimen = (t) => { const i = t.search(/^## 2\./m); if (i < 0) return ''; const r = t.slice(i + 3); const j = r.search(/^## /m); return j < 0 ? r : r.slice(0, j); };
+      const anchors = (t) => [...regimen(t).matchAll(/^[ \t]*\d+\.[ \t]+(?:[^\sA-Za-z*]+[ \t]*)?\*\*(.+?)\*\*/gm)].map((m) => m[1].trim());
+      const tplSections = sections(tpl), docSections = sections(doc);
+      const tplAnchors = anchors(tpl), docAnchors = anchors(doc);
+      const exempt = [...doc.matchAll(/<!--[ \t]*constitution-ok:([\s\S]*?)-->/g)].map((m) => m[1].trim());
+      const declared = (s) => exempt.some((e) => e.includes(s));
+      const lost = [];
+      for (const [n, title] of Object.entries(tplSections))
+        if (!(n in docSections) && !declared(title)) lost.push(`§${n} "${title}"`);
+      // An obligation is KEPT only when it stands where obligations stand — as the anchor of a numbered item of
+      // § 2. Matching the anchor anywhere in the text would let a constitution that MENTIONS a rule it deleted
+      // (an appendix of dropped rules, or the `constitution-ok` comment itself) read as compliant; that mistake
+      // was caught by the mutant that ignores the exemption and changed nothing (plans/113 FR6).
+      const kept = (a) => docAnchors.includes(a);
+      // Translated: not ONE English anchor of § 2 survived, yet § 2 has numbered items — judge by COUNT, say so.
+      const translated = tplAnchors.length > 0 && docAnchors.length > 0 && !tplAnchors.some(kept);
+      if (!translated) for (const a of tplAnchors) if (!kept(a) && !declared(a)) lost.push(`§2 "${a}"`);
+      const hint = `restore them, or declare the omission beside the item with \`<!-- constitution-ok: <why> -->\` (origin issue #68; template: ${tplPath})`;
+      if (lost.length)
+        console.error(`⚠ ${CONSTITUTION} lost ${lost.length} obligation(s) of the template: ${lost.join(', ')} — ${hint}`);
+      if (translated) {
+        const found = docAnchors.length + exempt.length;
+        if (found < tplAnchors.length)
+          console.error(`⚠ ${CONSTITUTION} cannot match translated anchors: ${tplAnchors.length} expected in §2, ${found} found — ${tplAnchors.length - found} obligation(s) of the template are missing from the communication regimen (the template's own order: ${tplAnchors.map((a, i) => `${i + 1} "${a}"`).join(', ')}) — ${hint}`);
+      }
+    }
+  } catch { /* unreadable constitution or template — nothing to compare, and no other gate depends on it */ }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }
 
