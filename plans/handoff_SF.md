@@ -27,6 +27,7 @@
 | `plans/112_epic100_SF_standing_falsehood.md` | Шаги SF0–SF2, SF4, SF5 отмечены с моментами и прежними формулировками; SF0 несёт `INTENT:`/`FORK:`; восемь решений `[AI]` | чтением |
 | `plans/handoff_SF.md` | этот файл | — |
 | `dist/*` | Пересобрано `node tools/build-framework.mjs` (генерат, руками не правился) | `node tools/build-framework.mjs && git diff --stat dist/` → пусто |
+| `version.json` | `build` 553 → 554 — поднят самим `tools/commit.mjs` (внутренний счётчик коммитов, не версия); при слиянии — тривиальный конфликт счётчика | `git show f4ee197 --stat -- version.json` |
 
 **Файлы, к которым исполнитель НЕ прикасался по заданию:** `plans/100`, `STATUS.md`, `MASTER_PLAN.md`, `EXPERIENCE.md`,
 обе копии `fable-judge/SKILL.md`, `tools/build-framework.mjs`, `tools/check-framework.mjs`, `README.md`.
