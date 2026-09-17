@@ -357,8 +357,9 @@ false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
 the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
 mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
-once-per-session STATUS guard. Activation is an explicit owner opt-in; a deployment without
-hooks never reddens.
+once-per-session STATUS guard — and, since 2.7, the order to run `/resume` when the owner's message
+opens with the word `resume` (the leading-word rule, "A leading skill word is an order" below).
+Activation is an explicit owner opt-in; a deployment without hooks never reddens.
 
 ### Environment dossier — the agent knows its machine from its own notes
 
@@ -813,6 +814,41 @@ alone. Two corollaries: a rule that produces an ARTIFACT names the command that 
 no command exists, the rule is incomplete, so ship the command rather than phrasing the paragraph
 harder; and a new PROHIBITION enters the canon only restated as positive guidance ("do X" instead
 of "never Y") or moved into a guard that reddens by itself.
+
+### A leading skill word is an order — the first word of the owner's message
+
+The owner opens a chat with the bare word `resume` and writes the task below it. A session that
+reads the word as a TOPIC starts the task and skips the entry ritual — it then works without the
+canon, the owner's queue, the creed and the prayer, and nothing in the tree says so (KAIF 2.7,
+epic RS; the origin's owner, 2026-09-18, rendered from Russian: "when I start a chat and just
+write the word resume at the top and below it what we do, agents often do not run the resume
+skill — and that is exactly why I write it there. Attention to the word resume must be raised: if
+I write it, I REQUIRE the agent to run that skill before starting the work"). The class behind it:
+a skill's trigger lists WORDS, never their POSITION; the only positional rule in the canon — the
+kick's "a standalone command, never mid-sentence" (`/kaif-go`) — points the other way; the
+auto-loaded context file names no entry ritual; nothing mechanical reads the prompt.
+
+The rule, in the form of a step:
+
+1. **The first word of the owner's message is `resume` — `resume`, `/resume` or its Russian
+   shorthand, the words this rule and its hook name → run `/resume` FIRST, in full, then read the
+   rest of the message as the task.** The ritual is not shortened because a task waits under it:
+   the task is what the ritual is for. Other skills keep their own trigger rules — a first-word
+   "continue" or its translation is the kick's word and goes to `/kaif-go`, not here; a word that
+   is an alias of two skills is resolved by the skill whose rule names it.
+2. **The same word mid-sentence stays prose** ("keep reading resume.log") — the kick's boundary
+   holds unchanged; the position decides, not the word. The boundary is named on purpose: ANY
+   message whose first word is the resume word fires — a file named `resume.log`, "Resume the
+   deployment", the Russian noun for a CV or the verb "summarize" in first position — and the price
+   of that is one extra entry ritual, cheaper than one skipped ritual.
+3. **Where the agent system has lifecycle hooks, the mechanical half is
+   `.kaif/hooks/prompt-resume-word.mjs`** (the optional refresh-hooks module, wiring in its
+   README): it reads the first word of every prompt and injects the order to run `/resume` before
+   the work; silent on every other message. The markdown rule is complete without it; the hook
+   makes it hard to forget.
+
+`/fable-judge` hunts a session whose first owner message opened with the word and whose first
+actions were the task (the hunt "Resume word ignored").
 
 ### The storefront — text a stranger reads
 
@@ -3289,11 +3325,13 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Three scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
-session) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
+session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand → the
+order to run `/resume` in full before the work; silent on every other message — Claude Code only,
+other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
 predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
@@ -3584,12 +3622,17 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 ``````md
 ---
 name: resume
-description: Resume work where the last session left off — read the key project documents, decide the single most important thing to do now, announce it, and start. Use when the human says "continue", "let's continue", "what's next", "where did we leave off", "resume", "pick up where we left off", "продолжи", "продолжим", "что дальше".
+description: Resume work where the last session left off — read the key project documents, decide the single most important thing to do now, announce it, and start. Use when the human says "continue", "let's continue", "what's next", "where did we leave off", "resume", "резюм", "резюме", "pick up where we left off", "продолжи", "продолжим", "что дальше" — and ALWAYS when "resume" (or "резюм") is the FIRST word of the human's message with the task written below it: the skill runs FIRST, in full, then the task (AGENT_GUIDE.md → "A leading skill word is an order").
 ---
 
 # /resume — pick up where we left off
 
 A new session starts with empty context. This skill rebuilds the picture fast and gets to work.
+
+> **The word at the top of the message is the order; the task under it waits.** A message that
+> opens with `resume` (or its Russian shorthand) and continues with a task runs THIS skill first, in full — the task
+> is read only after the Step-2 announcement (`AGENT_GUIDE.md` → "A leading skill word is an
+> order"; the mechanical half is the `prompt-resume-word.mjs` hook of the refresh-hooks module).
 
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
@@ -5368,7 +5411,7 @@ Report to the human: the version, the release link, what was attached. Done.
 ``````md
 ---
 name: code-revision
-description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code by axis, run parallel reviewers each armed with the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. The run leaves audit reports in `reports/KAIF_AUDIT/` grouped by finding family, each finding written as a contract a weaker model can execute. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or on the cadence the project sets (e.g., every N weeks); distilled from two field audits (two different projects) that found every real defect OUTSIDE what gates could see.
+description: A periodic READING revision of the codebase by the strongest available model — the complement to gates and judges, which only check what was CLAIMED: zone the code (and the canon that promises what the code must do) by axis, run parallel reviewers each armed with a written brief and the project's own PAID-FOR failure classes (EXPERIENCE + bugs), demand a verbatim quote for every finding, then send every finding through an INDEPENDENT adversarial skeptic whose default verdict is "not a defect"; survivors become bug docs and their lessons feed the guardrails weak models run on. The run leaves audit reports in `reports/KAIF_AUDIT/` grouped by finding family, each finding written as a contract a weaker model can execute, and the newest summary is the next run's baseline. Use when the human says "run a code revision", "прогони ревизию кода", "audit the codebase", or when the newest summary is older than the project's cadence; distilled from two field audits (two different projects) that found every real defect OUTSIDE what gates could see, and rewritten by the model that executes it (KAIF 2.7).
 ---
 
 # /code-revision — the periodic reading revision
@@ -5381,66 +5424,100 @@ model buys: one strong hour closes weeks of accumulated weak-session gaps — an
 `EXPERIENCE.md` and the sphere's craft recipes, which is what makes the WEAK sessions smarter
 afterwards.
 
-> The output artifact — report skeletons, the finding contract, excluded classes, the noise budget
-> — loads on demand: `references/audit-report-template.md` (a reviewer handed bloated instructions
-> silently drops part of them). Steps marked *[judgment]* need the strong model; *[mechanical]*
-> ones are code at any strength (`AGENT_GUIDE.md` → "Strictness modes", the model split).
+> **Written by its executor.** The first edition was written by the model that watched the audits;
+> this one was rewritten by the model that runs them, reading it as an instruction to itself
+> (KAIF 2.7, epic CR) — every change names the execution failure it repairs, every kept place says
+> why. The artifact contract — report skeletons, the finding card, the reviewer and skeptic
+> briefs, the excluded classes, the noise budget — loads on demand:
+> `references/audit-report-template.md` (a reviewer handed bloated instructions silently drops
+> part of them). Steps marked *[judgment]* need the strong model; *[mechanical]* ones are a script
+> or any model.
 
-## Step 0 — scope, cadence, and the ground before the hunt
+## Step 0 — baseline, scope, budget, and the ground before the hunt
 
-Owner-triggered or on the project's recorded cadence. Scope: the zones touched since the last
-revision (git log since the last revision's record), or the whole codebase on the first run.
-Record the run's scope line in the chat before starting. What is hunted is wider than bugs —
-**defects · vulnerabilities · frauds · contradictions · omissions**, including the omission of
-something the canon promised; what is NOT hunted is named just as explicitly (excluded classes,
-reference §5), because a revision reporting everything is ignored entirely.
-
-- **Map the ground** *[judgment]*: subsystems, boundaries, contracts, what each zone is FOR, before
-  any hunting — a reviewer who does not know a boundary reports crossing it as a defect. The map
-  goes into the report's methodology table, so the next run inherits it.
-- **Run the code first** *[mechanical]*: linters, guards, pairs-registry commands, the greps that
-  encode already-paid classes. Mechanical checks precede any LLM judgment
-  (`BUG_FIXING_FRAMEWORK.md` → "A finding is not a finding until verified", point 1); their output
-  is evidence, and what code can find the model must not be spent on.
+1. **Find the baseline** *[mechanical]*: the newest `reports/KAIF_AUDIT/*_SUMMARY.md` IS the record
+   of the last revision. Its coverage map, its Limits and its closing "what the NEXT run must
+   change" are this run's inputs. No summary yet → run 1: the whole codebase. The run is due when
+   the owner asks or when that summary is older than the cadence `AGENT_GUIDE.md` names (four
+   weeks when it names none) — no setting is invented for it.
+2. **Cut the scope** *[judgment]*: the zones touched since the baseline (`git log <baseline sha>..HEAD
+   --stat`) plus the zones the baseline said to take next. Zones are cut by language / layer /
+   subsystem — and by CANON DOCUMENT: a promise in the canon with no mechanism behind it is an
+   omission, hunted from the document side (the pairs registry is its deterministic layer).
+3. **Name the budget and the stop rule** in the chat before starting: reviewers · skeptics · the
+   token or time ceiling; the run stops when the zone list is exhausted or the noise budget
+   (reference §5) is hit. The summary records what was actually spent (the origin's first run: 13
+   agents, about 1.2 M tokens, three zones).
+4. **Record the scope line in the chat**: what is hunted — **defects · vulnerabilities · frauds ·
+   contradictions · omissions**, including the omission of something the canon promised — and what
+   is NOT hunted (excluded classes, reference §5): a revision reporting everything is ignored
+   entirely.
+5. **Map the ground** *[judgment]*: subsystems, boundaries, contracts, what each zone is FOR, before
+   any hunting — a reviewer who does not know a boundary reports crossing it as a defect. The map
+   goes into the report's methodology table, so the next run inherits it.
+6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, every `.kaif/tools/*`
+   module (`check` and `selftest`), the project's own guards (the tools table of `AGENT_GUIDE.md`),
+   the pairs registry, and the greps of the paid classes — the `Repro:` lines of the `EXPERIENCE.md`
+   entries tagged with the zone's tags. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A
+   finding is not a finding until verified", point 1); what code can find, the model is not spent
+   on. Nothing in this step raises a window or a sound on the owner's machine: a contour generator
+   or a live page is never started by a reviewer — the executor starts it, announced.
 
 ## Step 1 — zone and arm the reviewers
 
-- Cut the scope into zones by language/layer/subsystem (one reviewer per zone; parallel where the
-  harness allows).
-- Arm EVERY reviewer with the project's own **paid-for failure classes**: the relevant
-  `EXPERIENCE.md` entries (grep by the zone's tags) and the closed `bugs/` classes. A reviewer
-  hunting the classes this project already paid for finds their new faces; a generic reviewer
-  finds style nits.
+- One reviewer per zone, parallel where the harness allows; each reviewer receives a WRITTEN brief
+  (reference §7) — its zone, the paid classes, the axes, the excluded classes, the card form, the
+  budget — never the whole skill, and never "look for problems".
+- Arm EVERY reviewer with the project's own **paid-for failure classes**: the `EXPERIENCE.md`
+  entries by the zone's tags (their `Repro:` lines are the greps) and the closed `bugs/` classes. A
+  reviewer hunting the classes this project already paid for finds their new faces; a generic
+  reviewer finds style nits.
+- **A reviewer reads its zone WHOLE** — every file, top to bottom, never by grep as a substitute:
+  greps find the known, reading finds the unclaimed (the field runs read a 2 323-line core whole).
+  Read whole · read partly · not read goes into the coverage map by file.
 - Standing axes that both field audits proved fertile (add the project's own): decorative
   guardians (can this check actually STOP anything? what happens on empty input?) ·
   one-directional invariants (`BOTH-WAYS`) · truth↔mirror drift (run the pairs registry) ·
   progress marks set before the work (`AFTER-WORK`) · comments/docs describing deleted behavior ·
-  happy-path process/stream wiring · test-fraud (checks green for the wrong reason).
+  happy-path process/stream wiring · test-fraud (checks green for the wrong reason) · a canon
+  promise with no mechanism behind it.
 
 ## Step 2 — the finding contract: no quote, no finding
 
 Every finding carries a verbatim quote (file:line + the exact text). A finding without its quote
-does not exist — this single rule kept both field audits' reports checkable by script.
+does not exist — this single rule kept both field audits' reports checkable by script. It kills
+real findings with a wrong address too (a field finding died at `:617` while the defect sat at
+`:637`); that is the deliberate price, because a false finding costs more than a missed one.
 
 The full card is eight fields (reference §3); the three that decide whether a WEAKER model can
 execute the fix are the repro stated as a class condition, the verification command inside the
 card, and the link to a paid class. Every finding is also marked against the baseline — `new` /
-`known: <id>` / `regression of <id>` — reusing the feedback loop's deduplication fingerprint and
-its attestation line, never a second key minted here.
+`known: <bugs/NN or EXP-NNNN>` / `regression of <id>` — with the feedback loop's own fingerprint,
+`kaif-fp: <surface> :: <symptom-class> :: v<major.minor>`, and its `Dedup attestation:` line
+naming the commands grepped (`/report-bug`); never a second key minted here.
 
 ## Step 3 — the adversarial skeptic (mandatory, not optional)
 
-Every finding goes to a SEPARATE skeptic whose job is to REFUTE it and whose default verdict is
-**"not a defect"**. The skeptic reads the project's decision documents — interviews, ideas, bugs —
-because that is where the truth usually is: in the field, 9 of 21 findings died here as recorded
-owner decisions or already-guarded behavior, and each would have become false work. Only survivors
-move forward.
+Every finding goes to a skeptic INDEPENDENT of the reviewer that raised it — one skeptic per
+finding, or one per family ruling on each finding; never the reviewer judging its own card; where
+the harness has no subagents, a fresh pass that has not seen the reviewer's rationale. The
+skeptic's job is to REFUTE and its default verdict is **"not a defect"**; its brief (reference §8)
+names the three lenses — is the address verbatim · does an independent reproduction reach the
+failure · does a recorded decision, a guard or a declared exclusion cover the case. The skeptic
+reads the project's decision documents — interviews, ideas, bugs — because that is where the
+truth usually is: in the field, 9 of 21 findings died there as recorded owner decisions or
+already-guarded behavior, 4 of 9 on the origin's first run; each would have become false work.
+Only survivors move forward — and a run whose skeptic refutes nothing is a run whose skeptic did
+not work.
 
 ## Step 4 — verify, file, fix separately
 
-- Each surviving finding is verified by REPRODUCTION before any fix (a finding is not a finding
-  until verified — `BUG_FIXING_FRAMEWORK.md`).
-- Survivors become `bugs/` documents (same-class findings → ONE class doc with a full inventory)
+- The EXECUTOR reproduces each surviving finding before any fix — the skeptic's failed refutation
+  is not the reproduction; the command of the reproduction is field 6 of the card.
+- Every confirmed finding names its twins: `TWINS: searched <pattern> — found <N>: <sites or
+  "none">` (`BUG_FIXING_FRAMEWORK.md` → twin check) — that list is the inventory a class doc is
+  made of.
+- Survivors become `bugs/` documents (same-class findings → ONE class doc with the full inventory)
   AND land in the run's audit reports: one document per family, plus a summary carrying the verdict
   first, the coverage map and the limits (reference §§1–2).
 - Fixes are a separate pass from the revision (separate commits; every fix proves itself with an
@@ -5455,17 +5532,23 @@ move forward.
   a third reminder — a finding the model raised twice is the specification for a grep guard.
 - New craft gaps go into the sphere's craft recipes (the guardian skeleton, platform patterns) —
   that is the amplification: the strong model's reading becomes the weak models' recipes.
-- Record the revision (date, scope, found/refuted/fixed counts) so the next run knows its
-  baseline, and name what the NEXT run must change — one pass finds roughly half, and an identical
-  pass finds the same half.
+- **Count the previous run's effective false positives** (reference §5: a finding whose bug doc
+  is not DONE and whose family no commit names = no action) and write the number into this
+  summary's methodology table.
+- Close the summary with the record the NEXT run reads: date, scope, spend, found / refuted /
+  fixed, the coverage map, and what the next run must change — one pass finds roughly half, and
+  an identical pass finds the same half.
 
 ## What this skill refuses to do
 
 - Ship findings without quotes, or fix anything during the reading pass.
-- Skip the skeptic — unrefuted findings are half false, and false findings become false work.
+- Skip the skeptic, or let the reviewer be its own skeptic — unrefuted findings are half false,
+  and false findings become false work.
 - Treat "the gates are green" as a reason not to read — the gates not lying is exactly what both
   audits confirmed, and every real defect was outside them anyway.
 - Report a finding a weaker model cannot act on, or claim coverage the coverage map does not show.
+- Raise a window or a sound on the owner's machine from a reviewer or a skeptic — a live check is
+  named for the executor, who runs it announced.
 ``````
 
 ### `.claude/skills/derive-styleguide/SKILL.md`
@@ -5804,7 +5887,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5855,6 +5938,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Tested on hygiene alone (KAIF 2.7).** A `[TESTED: …]`, a "tested", an "all N tested" or a run report with Verdict `pass` whose evidence is hygiene only — unit green, self-test green, mutant red, guards green — with no `Functional run:` line naming what was walked on the REAL product by the user's path, on which contour and what was READ (the screen · the lines · the logs), or with that line saying `NONE`, is a finding (`TESTING_FRAMEWORK.md` → "What the word "test" means"; origin issue #62 — the owner-QA recounted "25 tested" as 3; the origin's decision #116: the agent derives the scenarios from the functionality, writes the machinery and walks the real product with it, reading the result). `NONE` itself is honest — the fraud is the `pass` or the "tested" above it; `node .kaif/tools/kaif-testrun-lint.mjs check` reddens that pair (`pass-without-functional-run`). Re-run: open the report, read the two lines, re-execute the functional run's command and check that it READS something (a screen, lines, logs) rather than returning a code.
    - **Contour raised outside its window (KAIF 2.7).** A report that the owner-facing page is "open" / "up" / "waiting for you" while the record shows the contour launched in the FOREGROUND (a `--timeout` for a human; the shell's own timeout killed it), relaunched after a death with no `Port … reused from the previous run` line (a fresh port orphaned the owner's draft), or its URL handed to `Start-Process` / `open` / `xdg-open` (a TAB in the owner's working browser) — is a finding (`/owner-reviews` I26 · I29 · I31 and the ready launch table under I31; origin issue #64 — three invariants broken in a row by an agent that had read them; the owner lost the answer he was typing). Re-run: read the contour's process log — `Window check: … a TAB (I26)` names the tab, `Port … reused` / `Port … is taken` name the draft's fate; a launch that is not the table's command is the finding even when the page did come up.
    - **Signal filed, not delivered (KAIF 2.7).** A KAIF-defect ticket in `bugs/KAIF/` on an origin-tracked deployment whose `Delivered upstream:` line does not prove delivery at the end of the work that filed it — it says NOT YET, promises ("being sent"), is missing or translated into the project language, or carries NOT YET beside an issue — or a report or a session close that says "filed", "awaiting the owner's word to send", "will deliver when told" — is a finding: filing IS delivering under the KAIF owner's standing authorization (the carve-out stands in the `AUTH:` gate's own line, `AGENT_GUIDE.md` → the fable loop; `/report-bug` step 3), and `node .kaif/kaif-core.mjs check` names every such ticket with the command (origin issue #65 — a recurrence of #37: two tickets waited ~40 minutes and one direct question of the owner for a second "send"; the agent's own cause: the broad "confirm outward actions" reflex beat a narrow exception that lived as prose). Re-run: `node .kaif/kaif-core.mjs check` — an `undelivered KAIF signal` line or a `KAIF signal with no readable delivery state` line is the finding; `NOT YET` is legal only on `tracking: anonymous`.
+   - **Resume word ignored (KAIF 2.7).** A session in which an owner message — the first one, or any later one — opened with the word `resume` (`/resume` or its Russian shorthand; the words the rule and its hook name) with a task written below it, and whose next actions were that task — no full pass of the skill's step 1 (every canon document), no owner's queue, no creed and prayer, no `.kaif/refresh-marker.json` with trigger `ritual:/resume` stamped before the first task edit — is a finding of the skipped-ritual class: the word at the top of a message is an ORDER, not a topic (`AGENT_GUIDE.md` → "A leading skill word is an order"; origin, 2026-09-18 — the owner's word: "if I write it, I REQUIRE the agent to run that skill before starting the work"). Re-run: the marker's `at` and `trigger` against the timestamp of the session's first tool action; where the refresh-hooks module is wired, the injected order of `prompt-resume-word.mjs` in the transcript's first turn, quoted in the chat before the marker was stamped. The same word mid-sentence is prose — not a finding.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -6295,6 +6379,9 @@ grants **authority**.
 > **One line of difference from its neighbours.** `/resume` = ENTER a session with empty context
 > (full canon pass). `/pause` = park and leave a note. **`/kaif-go` = a session already warm, work
 > already chosen — go.** If the context is cold, do not fake warmth: run `/resume` instead.
+> And the neighbour rule of position: a message that OPENS with a skill's word (`resume` …) and
+> carries the task below it runs that skill first (`AGENT_GUIDE.md` → "A leading skill word is an
+> order") — the kick's "standalone only" boundary is about the word mid-sentence, not the first word.
 
 ## Step 1. Find the resume point — read it, do not reconstruct it
 
@@ -8122,7 +8209,9 @@ one file at a time:
   `agent`); respectfully add the `kaif:*` handles to `package.json` (create it if absent), backed by a small
   `kaif` tool, without disturbing existing scripts.
 - Point the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`) at `AGENT_GUIDE.md` — don't duplicate the
-  canon, reference it.
+  canon, reference it. The pointer carries ONE rule of its own: a message that opens with the word `resume`
+  is an order to run `/resume` in full before the rest of the message (`AGENT_GUIDE.md` → "A leading skill
+  word is an order").
 
 ### Stage 4 — Finish injection: remove `KAIF.md`, write `KAIF_FRAMEWORK.md`, commit
 Once the structure is deployed and adapted:

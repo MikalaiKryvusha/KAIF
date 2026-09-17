@@ -212,8 +212,9 @@ false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
 the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
 mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
-once-per-session STATUS guard. Activation is an explicit owner opt-in; a deployment without
-hooks never reddens.
+once-per-session STATUS guard — and, since 2.7, the order to run `/resume` when the owner's message
+opens with the word `resume` (the leading-word rule, "A leading skill word is an order" below).
+Activation is an explicit owner opt-in; a deployment without hooks never reddens.
 
 ### Environment dossier — the agent knows its machine from its own notes
 
@@ -668,6 +669,41 @@ alone. Two corollaries: a rule that produces an ARTIFACT names the command that 
 no command exists, the rule is incomplete, so ship the command rather than phrasing the paragraph
 harder; and a new PROHIBITION enters the canon only restated as positive guidance ("do X" instead
 of "never Y") or moved into a guard that reddens by itself.
+
+### A leading skill word is an order — the first word of the owner's message
+
+The owner opens a chat with the bare word `resume` and writes the task below it. A session that
+reads the word as a TOPIC starts the task and skips the entry ritual — it then works without the
+canon, the owner's queue, the creed and the prayer, and nothing in the tree says so (KAIF 2.7,
+epic RS; the origin's owner, 2026-09-18, rendered from Russian: "when I start a chat and just
+write the word resume at the top and below it what we do, agents often do not run the resume
+skill — and that is exactly why I write it there. Attention to the word resume must be raised: if
+I write it, I REQUIRE the agent to run that skill before starting the work"). The class behind it:
+a skill's trigger lists WORDS, never their POSITION; the only positional rule in the canon — the
+kick's "a standalone command, never mid-sentence" (`/kaif-go`) — points the other way; the
+auto-loaded context file names no entry ritual; nothing mechanical reads the prompt.
+
+The rule, in the form of a step:
+
+1. **The first word of the owner's message is `resume` — `resume`, `/resume` or its Russian
+   shorthand, the words this rule and its hook name → run `/resume` FIRST, in full, then read the
+   rest of the message as the task.** The ritual is not shortened because a task waits under it:
+   the task is what the ritual is for. Other skills keep their own trigger rules — a first-word
+   "continue" or its translation is the kick's word and goes to `/kaif-go`, not here; a word that
+   is an alias of two skills is resolved by the skill whose rule names it.
+2. **The same word mid-sentence stays prose** ("keep reading resume.log") — the kick's boundary
+   holds unchanged; the position decides, not the word. The boundary is named on purpose: ANY
+   message whose first word is the resume word fires — a file named `resume.log`, "Resume the
+   deployment", the Russian noun for a CV or the verb "summarize" in first position — and the price
+   of that is one extra entry ritual, cheaper than one skipped ritual.
+3. **Where the agent system has lifecycle hooks, the mechanical half is
+   `.kaif/hooks/prompt-resume-word.mjs`** (the optional refresh-hooks module, wiring in its
+   README): it reads the first word of every prompt and injects the order to run `/resume` before
+   the work; silent on every other message. The markdown rule is complete without it; the hook
+   makes it hard to forget.
+
+`/fable-judge` hunts a session whose first owner message opened with the word and whose first
+actions were the task (the hunt "Resume word ignored").
 
 ### The storefront — text a stranger reads
 

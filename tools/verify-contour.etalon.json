@@ -158,5 +158,10 @@
     "questions": 2,
     "parsedOptions": 7,
     "candidateLines": 7
+  },
+  "interviews/interview_033_code_revision_rewrite_scope.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
   }
 }

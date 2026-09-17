@@ -21,5 +21,10 @@
     "kind": "notice",
     "addedAt": "2026-09-05T13:20:10.299Z",
     "readAt": "2026-09-05T13:22:34.202Z"
+  },
+  {
+    "doc": "interviews/interview_033_code_revision_rewrite_scope.md",
+    "kind": "question",
+    "addedAt": "2026-09-17T22:05:06.229Z"
   }
 ]

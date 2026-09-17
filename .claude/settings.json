@@ -21,6 +21,12 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/prompt-refresh-timer.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/prompt-resume-word.mjs"],
+            "timeout": 15
           }
         ]
       }

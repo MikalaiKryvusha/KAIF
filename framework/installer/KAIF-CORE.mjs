@@ -610,7 +610,11 @@ const CONTEXT_POINTER =
   '# Agent rules\n\nThis project is KAIF-wrapped. Before every task read `AGENT_GUIDE.md` (the canon) and ' +
   '`STATUS.md` (current state); think per `PHILOSOPHY.md`; write requirements per `REQUIREMENTS_FRAMEWORK.md`; ' +
   'test per `TESTING_FRAMEWORK.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
-  'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n';
+  'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n\n' +
+  // The pointer carries ONE rule of its own (2.7, epic RS — the origin owner's word): the context
+  // file is the first thing a session reads, and the entry ritual was named nowhere in it.
+  'A message that opens with the word `resume` (or the /resume alias of your language) is an ORDER to run ' +
+  '/resume in full before the rest of the message (`AGENT_GUIDE.md` → "A leading skill word is an order").\n';
 
 // Returns true when the template was actually written; false when an existing file was
 // ADOPTED (kept as found). Adoption is provenance the deploy manifest must remember:

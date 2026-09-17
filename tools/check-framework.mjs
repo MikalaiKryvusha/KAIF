@@ -550,6 +550,27 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ['injection not verified']],
     ['Grok Build injection caveat ↔ adapters index', 'framework/adapters/_index.md',
       ['injection not verified']],
+    // 2.7, epic RS — the leading-word rule (the origin owner's word 2026-09-18: "resume" at the top of
+    // a message is an ORDER): the rule in the guide of both layers, the aliases in the skill of both
+    // layers and the ru pack, the installer's context pointer, the hook, its sample wiring, the judge.
+    ['leading word rule ↔ AGENT_GUIDE (payload)', 'framework/AGENT_GUIDE.md',
+      ['### A leading skill word is an order']],
+    ['leading word rule ↔ AGENT_GUIDE (origin, ru)', 'AGENT_GUIDE.md',
+      ['### Первое слово сообщения владельца — команда']],
+    ['leading word rule ↔ /resume description (payload)', 'framework/skills/resume/SKILL.md',
+      ['FIRST word of the human\'s message']],
+    ['leading word rule ↔ /resume description (origin, ru)', '.claude/skills/resume/SKILL.md',
+      ['ПЕРВЫМ словом сообщения владельца']],
+    ['leading word rule ↔ ru language pack aliases', 'framework/templates/languages/ru/skill-triggers.json',
+      ['«resume», «резюм», «резюме»']],
+    ['leading word rule ↔ installer context pointer', 'framework/installer/KAIF-CORE.mjs',
+      ['is an ORDER to run ']],
+    ['leading word rule ↔ hooks module README', 'framework/hooks/README.md',
+      ['prompt-resume-word.mjs', 'prompt field not verified']],
+    ['leading word rule ↔ hooks sample config', 'framework/hooks/settings-fragment.json',
+      ['.kaif/hooks/prompt-resume-word.mjs']],
+    ['leading word rule ↔ judge hunt', 'framework/skills/fable-judge/SKILL.md',
+      ['Resume word ignored (KAIF 2.7)']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to

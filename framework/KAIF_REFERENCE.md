@@ -515,11 +515,13 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Three scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
-session) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
+session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand → the
+order to run `/resume` in full before the work; silent on every other message — Claude Code only,
+other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
 predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the

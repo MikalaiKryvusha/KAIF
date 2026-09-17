@@ -350,7 +350,9 @@ one file at a time:
   `agent`); respectfully add the `kaif:*` handles to `package.json` (create it if absent), backed by a small
   `kaif` tool, without disturbing existing scripts.
 - Point the auto-loaded context file (`CLAUDE.md`/`AGENTS.md`) at `AGENT_GUIDE.md` — don't duplicate the
-  canon, reference it.
+  canon, reference it. The pointer carries ONE rule of its own: a message that opens with the word `resume`
+  is an order to run `/resume` in full before the rest of the message (`AGENT_GUIDE.md` → "A leading skill
+  word is an order").
 
 ### Stage 4 — Finish injection: remove `KAIF.md`, write `KAIF_FRAMEWORK.md`, commit
 Once the structure is deployed and adapted:

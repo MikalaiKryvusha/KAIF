@@ -1,11 +1,16 @@
 ---
 name: resume
-description: Resume work where the last session left off — read the key project documents, decide the single most important thing to do now, announce it, and start. Use when the human says "continue", "let's continue", "what's next", "where did we leave off", "resume", "pick up where we left off", "продолжи", "продолжим", "что дальше".
+description: Resume work where the last session left off — read the key project documents, decide the single most important thing to do now, announce it, and start. Use when the human says "continue", "let's continue", "what's next", "where did we leave off", "resume", "резюм", "резюме", "pick up where we left off", "продолжи", "продолжим", "что дальше" — and ALWAYS when "resume" (or "резюм") is the FIRST word of the human's message with the task written below it: the skill runs FIRST, in full, then the task (AGENT_GUIDE.md → "A leading skill word is an order").
 ---
 
 # /resume — pick up where we left off
 
 A new session starts with empty context. This skill rebuilds the picture fast and gets to work.
+
+> **The word at the top of the message is the order; the task under it waits.** A message that
+> opens with `resume` (or its Russian shorthand) and continues with a task runs THIS skill first, in full — the task
+> is read only after the Step-2 announcement (`AGENT_GUIDE.md` → "A leading skill word is an
+> order"; the mechanical half is the `prompt-resume-word.mjs` hook of the refresh-hooks module).
 
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 

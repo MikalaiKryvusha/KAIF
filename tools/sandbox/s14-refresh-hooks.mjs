@@ -20,7 +20,9 @@ import { tempRoot } from '../lib/temp-root.mjs';
 import { failed } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const DIST = join(REPO, 'dist');
+// KAIF_DIST — шов для доказательства красного: свод против ЧУЖОЙ сборки (ядро 2.6 без четвёртого хука,
+// мутант с сломанным предикатом), без правки кода (соглашение s22).
+const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
 // Корень прогона УНИКАЛЕН по построению (bugs/59): каталог с фиксированным именем в общем
 // OS-temp — разделяемый ресурс без владельца, и два одновременных прогона сносили его друг у
 // друга, давая ЛОЖНЫЙ КРАСНЫЙ в главном гейте проекта. Явный путь аргументом по-прежнему жив.
@@ -53,6 +55,7 @@ cpSync(join(DIST, 'KAIF-CORE.mjs'), join(S, '.kaif', 'kaif-core.mjs'));
 let r = run(S, 'install');
 ok(r.code === 0, 's14 install exit 0', r.out.slice(-400));
 const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'stop-status-guard.mjs',
+                    'prompt-resume-word.mjs', // 2.7, эпик RS: первое слово промпта resume → приказ /resume
                     'settings-fragment.json', 'README.md',
                     // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
                     'sample-codex-hooks.json', 'sample-cursor-hooks.json',
@@ -72,8 +75,8 @@ ok(!!(frag.hooks && frag.hooks.SessionStart && frag.hooks.UserPromptSubmit && fr
 ok(frag.hooks && frag.hooks.SessionStart?.[0]?.matcher === 'compact|clear',
    's14 фрагмент конфига: SessionStart с matcher compact|clear');
 const fragTxt = JSON.stringify(frag);
-ok(HOOK_FILES.slice(0, 3).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)),
-   's14 фрагмент конфига: команды указывают на все три развёрнутых скрипта');
+ok(HOOK_FILES.slice(0, 4).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)),
+   's14 фрагмент конфига: команды указывают на все четыре развёрнутых скрипта (четвёртый — resume-word, 2.7)');
 
 // ---------------------------------------------------------------- поведение: SessionStart
 console.log('\n=== s14: поведение хуков (живой контракт: stdin JSON → stdout JSON) ===');
@@ -110,6 +113,27 @@ ok(/last refresh 1\d\d min ago/.test(out), 's14 таймер: маркер пр�
 writeFileSync(marker, 'not json at all');
 out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
 ok(out === '', 's14 таймер: битый JSON при свежем mtime — тишина (фолбэк на mtime файла)', out.slice(0, 120));
+
+// ---------------------------------------------------------------- поведение: слово resume — приказ (2.7, эпик RS)
+// Первое слово промпта — resume / /resume / резюм… → приказ исполнить /resume ЦЕЛИКОМ до работы над
+// остальным сообщением; промпт без слова, то же слово НЕ первым (проза — граница пинка), событие без
+// поля prompt → ТИШИНА (предикат-антишум; молчание — норма). Красный доказан швом KAIF_DIST: на ядре
+// 2.6 файла нет (ассерт «доехал» и три «приказа» красные), на мутанте с сломанным предикатом три
+// «приказа» красные при зелёных «тишинах» (plans/110, RS6).
+console.log('\n=== s14: хук prompt-resume-word — первое слово владельца (эпик RS 2.7) ===');
+const resumeHook = (prompt) => runHook(S, 'prompt-resume-word.mjs',
+  prompt === undefined ? { hook_event_name: 'UserPromptSubmit', cwd: S }
+                       : { hook_event_name: 'UserPromptSubmit', cwd: S, prompt });
+const isResumeOrder = (o) => {
+  const j = parseHook(o); const c = j.hookSpecificOutput?.additionalContext || '';
+  return j.hookSpecificOutput?.hookEventName === 'UserPromptSubmit' && /\/resume/.test(c) && /IN FULL/.test(c) && c.length < 10000;
+};
+ok(isResumeOrder(resumeHook('resume\nделаем эпик LP')), 's14 resume-word: «resume» первым словом, задача ниже — приказ исполнить /resume целиком (под капом)');
+ok(isResumeOrder(resumeHook('Резюм. Продолжаем версию 2.7')), 's14 resume-word: «Резюм.» первым словом (кириллица, регистр, точка) — приказ');
+ok(isResumeOrder(resumeHook('/resume')), 's14 resume-word: «/resume» — приказ');
+ok(resumeHook('делаем эпик LP') === '', 's14 resume-word: промпт без слова — ТИШИНА', resumeHook('делаем эпик LP').slice(0, 120));
+ok(resumeHook('продолжай читать resume.log и скажи, что видишь') === '', 's14 resume-word: слово не первым (проза, граница пинка) — ТИШИНА');
+ok(resumeHook(undefined) === '', 's14 resume-word: событие без поля prompt — ТИШИНА (предикат по тексту не угадывается)');
 
 // ---------------------------------------------------------------- поведение: страж STATUS
 // git-фикстура: работа в сессии есть (грязное дерево) И STATUS.md старше 3 ч → мягкий блок;
@@ -173,14 +197,16 @@ const commandsOf = (node, acc = []) => {
 const sampleTxt = (f) => commandsOf(readJson(join(S, '.kaif', 'hooks', f))).join('\n');
 // система → [файл образца, требуемый флаг формы, скрипты которые ОБЯЗАНЫ быть, скрипты которых быть НЕ ДОЛЖНО]
 const SAMPLES = [
+  // prompt-resume-word.mjs (2.7) — ТОЛЬКО Claude Code: поле prompt чужих событий с доки не снято,
+  // образцы его не обещают (README модуля: «prompt field not verified»)
   ['Codex', 'sample-codex-hooks.json', null,
-   ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs'], ['stop-status-guard.mjs']],
+   ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs'], ['stop-status-guard.mjs', 'prompt-resume-word.mjs']],
   ['Cursor', 'sample-cursor-hooks.json', '--emit cursor',
-   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs']],
+   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs', 'prompt-resume-word.mjs']],
   ['Copilot', 'sample-copilot-hooks.json', '--emit copilot',
-   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs']],
+   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs', 'prompt-resume-word.mjs']],
   ['Antigravity', 'sample-antigravity-hooks.json', '--emit antigravity',
-   ['prompt-refresh-timer.mjs'], ['session-start-refresh.mjs', 'stop-status-guard.mjs']],
+   ['prompt-refresh-timer.mjs'], ['session-start-refresh.mjs', 'stop-status-guard.mjs', 'prompt-resume-word.mjs']],
 ];
 for (const [sys, file, emit, must, mustNot] of SAMPLES) {
   ok(readJson(join(S, '.kaif', 'hooks', file)) !== null, `s14/O5 ${sys}: образец ${file} — валидный JSON`);
@@ -299,5 +325,5 @@ r = run(S, 'check');
 ok(r.code !== 0 && /MISSING or empty: \.kaif\/hooks\//.test(r.out),
    's14 контраст: УДАЛЕНИЕ файлов модуля — честный MISSING (целостность поставки, как у tool-модулей)', r.out.slice(-300));
 
-console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 3 хука по живому контракту)'}`);
+console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 4 хука по живому контракту)'}`);
 process.exit(failures ? 1 : 0);

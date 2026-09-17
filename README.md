@@ -245,7 +245,8 @@ Table 2 — Knowledge directories
    receipt is written to `.kaif/last-update.json`.
 4. `.kaif/hooks/` holds the optional **refresh-hooks** module for harnesses with lifecycle hooks:
    an order to re-read the canon after a context compaction, a timer on the age of the refresh
-   marker, and a soft `STATUS.md` guard once per session. Activation is the owner's explicit
+   marker, a soft `STATUS.md` guard once per session, and an order to run `/resume` when the
+   owner's message opens with the word `resume`. Activation is the owner's explicit
    opt-in — the machinery never edits somebody else's `settings.json`, and a deployment without
    hooks does not redden any gate.
 
@@ -486,7 +487,7 @@ framework/                            the canonical universal templates (the pay
   templates/_owner-voice-template.md  the owner-voice portrait skeleton (ships to .kaif/)
   templates/languages/                9 language packs (owner-facing docs + skill trigger aliases; English is the source)
   tools/                              optional tool modules: provenance gate · canon linter · requirements linter
-  hooks/                              the optional refresh-hooks module (3 scripts + sample configs → .kaif/hooks/)
+  hooks/                              the optional refresh-hooks module (4 scripts + sample configs → .kaif/hooks/)
   readmes/                            7 directory READMEs
   AGENT_GUIDE.md … KAIF_REFERENCE.md  the fourteen key-document templates
 dist/                                 generated distribution (never hand-edited)
@@ -524,7 +525,7 @@ artifacts are never hand-edited.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   180 bundle blocks; 792 modules.
+   181 bundle blocks; 795 modules.
 
 ## License
 
@@ -775,8 +776,9 @@ origin, ни упоминаний автора (привязанные к origin
    канонических `.claude/skills/`, плейсхолдеры пересканируются, маркер развёртывания
    самовосстанавливается, и рядом остаётся расписка `.kaif/last-update.json`.
 4. В `.kaif/hooks/` лежит опциональный модуль **refresh-hooks** для харнессов с lifecycle-хуками:
-   приказ перечитать канон после сжатия контекста, таймер возраста маркера освежения и мягкий страж
-   `STATUS.md` раз в сессию. Подключение — явный опт-ин владельца: машинерия не редактирует чужие
+   приказ перечитать канон после сжатия контекста, таймер возраста маркера освежения, мягкий страж
+   `STATUS.md` раз в сессию и приказ исполнить `/resume`, когда сообщение владельца открывается
+   словом `resume`. Подключение — явный опт-ин владельца: машинерия не редактирует чужие
    `settings.json`.
 
 ## 4. Навыки
@@ -1018,7 +1020,7 @@ framework/                            канонические универса�
   templates/_owner-voice-template.md  скелет портрета голоса владельца (едет в .kaif/)
   templates/languages/                9 языковых пакетов (документы владельца + алиасы навыков; английский — исходник)
   tools/                              опциональные tool-модули: гейт провенанса · линтер канона · линтер требований
-  hooks/                              опциональный модуль refresh-hooks (3 скрипта + образцы конфигов → .kaif/hooks/)
+  hooks/                              опциональный модуль refresh-hooks (4 скрипта + образцы конфигов → .kaif/hooks/)
   readmes/                            7 README директорий
   AGENT_GUIDE.md … KAIF_REFERENCE.md  шаблоны четырнадцати ключевых документов
 dist/                                 генерируемая поставка (руками не правится)
@@ -1056,7 +1058,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   180 блоков бандла; 792 модуля.
+   181 блок бандла; 795 модулей.
 
 ## Лицензия
 

@@ -14,6 +14,7 @@ lacking them.
 | `session-start-refresh.mjs` | `SessionStart`, matcher `compact\|clear` | none — compaction is itself rare | injects the ORDER to re-read the re-read core + stamp the witness |
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h; **once per session** | soft block: update STATUS.md or say why nothing changed |
+| `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires — and ANY first word from that family fires, including a file named `resume.log`, "Resume the deployment" or the Russian noun for a CV: one extra entry ritual is the named price | injects the ORDER to run `/resume` in full before the rest of the message; silent on every other prompt and on an event without a `prompt` field |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate and a cooldown; injections are ORDERS to re-read, never document bodies (the output
@@ -35,7 +36,9 @@ config. To enable:
    `node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null` with no `.kaif/refresh-marker.json`
    present — it must print a JSON order; stamp a fresh marker — it must print nothing. The
    redirect matters: the hook reads its event JSON from stdin, so a hand-run without it waits on
-   the terminal forever (field: a two-minute timeout on the first try).
+   the terminal forever (field: a two-minute timeout on the first try). For the fourth hook:
+   `printf '{"prompt":"resume\\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs` must print
+   the order to run `/resume`; the same line with `"plan the day"` alone must print nothing.
 
 To disable: remove the entries from your settings file. The markdown ritual keeps working
 either way.
@@ -64,6 +67,12 @@ APIs were still moving through beta across the industry when this table was writ
 | **Windsurf / Cascade** | *(not supported)* | ❌ | ❌ | ❌ hooks cannot inject context at all — exit codes only |
 | **Cline** | *(not supported)* | ❌ | ❌ | ❌ hooks are SDK plugins (TS/JS objects), not config-invoked commands |
 | **Zoo Code** | *(markdown ritual)* | — | — | — no hook mechanism |
+
+**The fourth hook — `prompt-resume-word.mjs` (2.7, epic RS) — is wired for Claude Code only.** It
+needs the prompt TEXT in the event (`prompt`), and only the Claude Code contract was read to carry
+it; the Codex, Cursor, Copilot and Antigravity samples do not wire it — whether their per-prompt
+event carries the text was not read in the vendor documentation: **prompt field not verified**.
+Wire it yourself only after reading that contract.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
