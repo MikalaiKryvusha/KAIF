@@ -81,6 +81,16 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
 
+One line of that report is asked BY NAME, because nothing else in the session asks it
+(`AGENT_GUIDE.md` → "a falsehood is corrected where it stands"): **which statement of this session
+turned out to be false, and where does it still stand?** Answer it in the report, verbatim:
+
+`Standing falsehood: none` — or `Standing falsehood: <the statement> → corrected in <place>, <place>`
+
+A statement you corrected only in the chat is still standing in the artifact the team reads, so run
+the five steps BEFORE the farewell, never after it — and if a place could not be corrected, name the
+place and its missing retraction command instead of answering `none`.
+
 ## Notes
 
 - The family in one line: **/pause — the chat continues later; /end-chat-soft — finish properly,

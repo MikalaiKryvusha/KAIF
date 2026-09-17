@@ -422,6 +422,37 @@ claim-wider-than-observation hunt). The same rule, seen from the other side, def
 (`TESTING_FRAMEWORK.md` → "What the word "test" means"): hygiene reported as "tested" is a claim wider than its
 observation — the judge hunts that too (the tested-on-hygiene-alone hunt).
 
+**KAIF adds a sixth obligation — at step 4 (act) and step 7 (report), for a claim ALREADY PUBLISHED:
+A FALSEHOOD IS CORRECTED WHERE IT STANDS** (origin issue #67; the project owner's word in the ticket, rendered
+from Russian: "the agent leaves a lie and forgets to correct the lie where it left it, once it has found out
+that something in the past was a lie" — said the moment he caught the live case: "you wrote that in the
+comments and left it there, and it is a lie"). The fifth obligation bounds a claim at its BIRTH; this one
+bounds how long a born falsehood survives once it is known. The trigger is an EVENT, not a step: the minute a
+past statement of yours is identified as false — by the owner's word, by a measurement, by a later run —
+whatever you are doing at the time. Five steps, in this order, BEFORE the work continues:
+
+1. **Stop the current task.** The truth arrives in the middle of something else, and "right after this task"
+   is exactly how the falsehood outlives the session.
+2. **Enumerate every place the statement was published or recorded.** `git grep -n "<the phrase>"` for this
+   repository; the outward channels by the command your sphere library names ("Outward write channels →
+   retraction command": tracker comments, wiki pages, chat-ops messages, the owner's pages); and the documents
+   the owner reads — `STATUS.md`, the run reports, the plan you quoted it in.
+3. **Correct or retract in EACH place** — an edit where the artifact is ours; a `correction: …` comment where
+   the channel only appends; a deletion where the channel allows one and the record is worth nothing. A
+   channel whose retraction command you do not know is said aloud — "no retraction command for <channel>" —
+   never passed over in silence.
+4. **Read it back.** Open the corrected place and read what stands there now — an edit unread is a correction
+   claimed, not made.
+5. **Name it in the reply to the owner** — `corrected: <where>`, one line per place; the closing ritual
+   carries the same line (`Standing falsehood: none | <list>`).
+
+The class has a name — a **standing falsehood**: a statement of yours, already delivered outward or written
+into a document, the canon, a status or a report, that you have SINCE learned to be false and that still
+stands where you left it. The boundary: a draft marked as a hypothesis is not one (it claimed nothing), and
+neither is an append-only journal entry, where a correction IS a new entry — but that new entry names the
+entry it corrects. `/fable-judge` hunts a standing falsehood; `/end-chat-soft` and `/end-chat-force` ask about
+it by name at the close.
+
 The addition lives here on purpose. These skills are vendored **verbatim** from
 [fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
 the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
