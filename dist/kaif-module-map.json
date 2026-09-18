@@ -1222,7 +1222,7 @@
       {
         "signature": "## 5. The document system",
         "class": "static",
-        "sha256": "5b78c13d0bdf156cfb8d0b5846ad541862f0989b93eec85de44abba11cda4da1",
+        "sha256": "9532fbf1a65af89d6d971e5d87e18d48c21b81264d3aa2ad84b90de9b7096041",
         "lines": [
           71,
           139
@@ -1420,7 +1420,7 @@
       {
         "signature": "### 10.7 Commands",
         "class": "static",
-        "sha256": "db2e6d612ca75c77b9aaacbcf1987ca4a773c54c2bd328d7c8b5cc79a670e70d",
+        "sha256": "bca1950bfeb87a68283707669bd0e377f25a2cd5eb8e2cecdf798021210cc945",
         "lines": [
           379,
           402
@@ -2235,10 +2235,10 @@
       {
         "signature": "### Step 1. Record status & the handover in STATUS.md",
         "class": "static",
-        "sha256": "d70c18b8a1dae85868b69901d385c9d318fb999b46f44814cd68113a8bc3d39d",
+        "sha256": "cefdb31b0c57c55db905903219ef46a862377d1acf4ad1dfc94a3657e572a0db",
         "lines": [
           31,
-          58
+          73
         ]
       },
       {
@@ -2246,8 +2246,8 @@
         "class": "static",
         "sha256": "4e8599aeac84993369d303fdb7c012d1f1891acca2d35e1681076ae1c298d666",
         "lines": [
-          59,
-          63
+          74,
+          78
         ]
       },
       {
@@ -2255,8 +2255,8 @@
         "class": "static",
         "sha256": "c249136cd205896996db62b65d8aebc72f20c4c30b820c864d7cd2d721986329",
         "lines": [
-          64,
-          69
+          79,
+          84
         ]
       },
       {
@@ -2264,8 +2264,8 @@
         "class": "adaptive",
         "sha256": "6bc315e9289e6fb2e7c5f80c593e055d379bf5b9a1710827654a850c0e80ecac",
         "lines": [
-          70,
-          83
+          85,
+          98
         ]
       },
       {
@@ -2273,8 +2273,8 @@
         "class": "static",
         "sha256": "870d9f9a177f73f55a7fdbeca2b2d6bc5704f35c0b2fca9add1437104f47e7dc",
         "lines": [
-          84,
-          98
+          99,
+          113
         ]
       },
       {
@@ -2282,8 +2282,8 @@
         "class": "static",
         "sha256": "c3aa9b2465934f62c753d8300d28d356795065e45778db5b5018d97402c56a56",
         "lines": [
-          99,
-          109
+          114,
+          124
         ]
       }
     ],
@@ -2412,7 +2412,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "57adbfddd598cc8d84e7faeb13d1d808aac998d70a707f0befb8cebf618259e4",
+        "sha256": "4674995b10c076afe9e001991c278b211055380b32e4396a6e938fbbb6352bcf",
         "lines": [
           1,
           18
@@ -2430,10 +2430,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "f85b54796917bfb7b8c4800b845769ed89bc17076b117429cbcb8a7e05621f1c",
+        "sha256": "8f53afce94356323d7aa84a7c3353ac817387f62b8decd0f6c654f1b55ac0f9d",
         "lines": [
           23,
-          80
+          81
         ]
       },
       {
@@ -2441,8 +2441,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          81,
-          86
+          82,
+          87
         ]
       }
     ],

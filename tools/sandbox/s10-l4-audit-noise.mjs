@@ -288,8 +288,12 @@ for (let i = 1; i <= 258; i++) longStatus.push(`- запись ${i}: строк�
 writeFileSync(join(S5, 'STATUS.md'), longStatus.join('\n') + '\n');
 r = run(S5, 'check');
 ok(r.code === 0, 'S5 check exit 0 (страж — warning, не отказ; решение №27)', r.out.slice(-300));
-ok(/STATUS\.md: 260 lines/.test(r.out) && /~200/.test(r.out),
-   'S5 warning существует: число строк + мягкая цель ~200 (обещание релиза 2.1 стало кодом)', r.out.slice(-300));
+// 2.7 (эпик CB, критерий 1): бюджет судится по СОБСТВЕННЫМ строкам, и формулировка предупреждения
+// изменилась — `own lines N of budget ~M (N lines on disk, …)`. Ассерт держит ТО ЖЕ обещание
+// (число строк + мягкая цель ~200) в новых словах и добавляет второе число: у этого STATUS все
+// строки собственные (проект переписал скелет), поэтому 260 обязано стоять в обеих позициях.
+ok(/STATUS\.md: own lines 260 of budget ~200/.test(r.out) && /260 lines on disk/.test(r.out),
+   'S5 warning существует: собственные строки + мягкая цель ~200 (обещание релиза 2.1 стало кодом)', r.out.slice(-300));
 writeFileSync(join(S5, 'STATUS.md'), longStatus.slice(0, 150).join('\n') + '\n');
 r = run(S5, 'check');
 ok(!/lines .*~200|~200 .*lines/.test(r.out), 'S5 короткий STATUS — без предупреждения (тишина по умолчанию)', r.out.slice(-200));

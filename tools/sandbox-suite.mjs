@@ -48,10 +48,13 @@
 //   s15 — kaif-guard-lint (epic CN 2.5, plan 83; origin issue #35): the guard-declaration block
 //         as a guard — red on @guard without GAP and @forensic DURABLE-AT: close, green on the
 //         declared block (NOT YET visible in the summary), SKIPPED=3 on a tree without markers
-//   s16 — doc size budgets (epic CN 2.5, plan 83 step CN6; field request 09): `check` warns
-//         above the per-document line budget of the re-read core — silent on a fresh deploy,
-//         warning names the bloated document and its budget, STATUS keeps its bonsai hint,
-//         exit stays 0 (advisory, never a failure)
+//   s16 — doc size budgets (epic CN 2.5, plan 83 step CN6; field request 09) and the CB epic that
+//         grew out of them (2.7, plans/95; origin issues #43/#45/#71): the budget is judged by the
+//         project's OWN lines — arrived modules are not counted — and the warning carries the
+//         address its overflow moves to; `--gate-budgets` makes it a door (exit 1) while the bare
+//         `check` stays advisory (exit 0) and an unknown flag still refuses; the skill language mix
+//         is judged by the SHARE of foreign-script prose tokens, code spans excluded; `install`
+//         prints its success line BEFORE the incomplete-pack note, and that note says what to report
 //   s17 — kaif-core report (epic SG 2.5, plan 84; field: the delivery step as prose is blocked
 //         by an agent-system classifier): a stand-in `gh` on the KAIF_GH seam (the polygon never
 //         performs an outward action) — delivery writes the URL into the ticket, dry-run calls
