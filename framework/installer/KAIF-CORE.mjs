@@ -2567,6 +2567,10 @@ function moduleAudit() {
 }
 
 function cmdUpdateVerify() {
+  // The update from the previous release is run by the DEPLOYED core, whose ignore list may lack this release's
+  // lines (court of 2.7, D-F1: `.kaif/contour-window/` never reached .gitignore on 2.6 -> 2.7); update-verify is
+  // run by THIS core on every route, so ignore-first is re-asserted here, before any gate. Idempotent.
+  ensureIgnoreFirst();
   runFinalGates(UPDATE_TASK, 'KAIF-UPDATE', 'update-verify');
   moduleAudit();
   // Stamp the receipt: the proof of a verified update must outlive the self-clean (bug 17).

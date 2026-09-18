@@ -231,12 +231,15 @@ export const RULES = [
   { id: 'class-ok-without-reason', kind: 'finding', run: ({ declaredEmpty }) => declaredEmpty
       .map((k) => `<!-- class-ok: ${k} --> carries no reason — the declaration is the RE-CHECKED PRICE of the class, said in words, never a silencer`) },
   // I1, ported from the origin's guard (epic X 2.3, origin issue #14): exactly one of three fields.
+  // The field rules judge an entry that carries `class:` - the 2.7 format; an entry written before it is
+  // out of them: a field journal updated from 2.6 has hundreds, the deployed module ships no baseline
+  // writer, and the first 2.7 lesson used to stop the closing ritual on 112-290 findings (court of 2.7, E-F1).
   { id: 'no-mechanization-field', kind: 'finding', run: ({ entries, baseline }) => entries
-      .filter((e) => !baseline.has(e.id) && !e.mech && !e.none && !e.subj)
+      .filter((e) => e.klass && !baseline.has(e.id) && !e.mech && !e.none && !e.subj)
       .map((e) => `${e.id} (line ${e.line}): no mechanization field — one of \`${KEYWORDS.en.mechanized}:\` · \`${KEYWORDS.en.noneCheap}: <why>\` · \`${KEYWORDS.en.subject}\``) },
   // I4: a trap by form may not answer `subject-lesson`.
   { id: 'trap-answered-subject', kind: 'finding', run: ({ entries, baseline }) => entries
-      .filter((e) => !baseline.has(e.id) && e.trap && !e.mech && !e.none)
+      .filter((e) => e.klass && !baseline.has(e.id) && e.trap && !e.mech && !e.none)
       .map((e) => `${e.id} (line ${e.line}): the text reduces to an order of actions (a trap by form) — it needs \`${KEYWORDS.en.mechanized}:\` or \`${KEYWORDS.en.noneCheap}: <why>\`, never \`${KEYWORDS.en.subject}\``) },
   // A failure entry with no class is invisible to the deadline — the axis says so instead of counting it green.
   { id: 'no-class', kind: 'warning', run: ({ entries, baseline }) => entries
@@ -379,6 +382,7 @@ const CLEAN = {
 ## Entries
 
 ### EXP-0003 · 2026-03-03 · \u2705 · #ok
+class: claim-before-evidence
 **Lesson:** a success entry, out of the deadline's scope.
 **Repro:** \`node tools/x.mjs\`
 **Mechanization:** subject-lesson
@@ -402,6 +406,7 @@ class: shown-as-link
 ## \u0417\u0430\u043F\u0438\u0441\u0438
 
 ### EXP-0003 · 2026-03-03 · \u2705 · #ok
+\u043A\u043B\u0430\u0441\u0441: claim-before-evidence
 **\u0423\u0440\u043E\u043A:** \u0437\u0430\u043F\u0438\u0441\u044C \u043E\u0431 \u0443\u0441\u043F\u0435\u0445\u0435.
 **\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435:** \`node tools/x.mjs\`
 **\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u0443\u0440\u043E\u043A \u043E \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0435
@@ -519,9 +524,15 @@ function selftest() {
   const ff = lint(fieldForms, { root: '.', tree: TREE, addressable: true });
   say(ff.entries.length === 1 && ff.entries[0].id === 'EXP-NEW-shell-ate-the-quotes' && ff.entries[0].klass === 'shell-lied' && ff.entries[0].failure,
     `an id with no number under CRLF is an entry with its class (got ${ff.entries.length} entries, class ${ff.entries[0] && ff.entries[0].klass})`);
+  // A journal updated from 2.6: legacy entries (no `class:`, no mechanization field, a trap by form) under ONE
+  // 2.7 lesson - no finding; the legacy failure entry is only a no-class warning (court of 2.7, E-F1).
+  const legacy = '# EXPERIENCE\n\n## Entries\n\n### EXP-0010 \u00B7 2026-09-18 \u00B7 \u274C \u00B7 #x\nclass: shown-as-link\n**Lesson:** y\n**Mechanization:** mechanized: `tools/showcase-lint.mjs`\n\n### EXP-0009 \u00B7 2026-01-01 \u00B7 \u274C \u00B7 #old\n**Lesson:** first run the build, then the suite.\n';
+  const lg = lint(legacy, { root: '.', tree: TREE, addressable: true });
+  say(lg.findings.length === 0 && lg.warnings.map((w) => w.id).join() === 'no-class',
+    `a journal updated from 2.6 - legacy entries under one 2.7 lesson: 0 findings, one no-class warning (got [${lg.findings.map((f) => f.id)}] / [${lg.warnings.map((w) => w.id)}])`);
   // Prose that merely contains the word "class:" mid-sentence is NOT the field (a field journal does this).
   const prose = CLEAN.en.replace('**Lesson:** showing was replaced by a link.', '**Lesson:** the owner named the class: the dossier was supposed to make it impossible.');
-  say(lint(prose, { root: '.', tree: TREE, addressable: true }).entries.filter((e) => e.klass).length === 2, 'prose with "class:" mid-sentence is not the field (got a third class)');
+  say(lint(prose, { root: '.', tree: TREE, addressable: true }).entries.filter((e) => e.klass).length === 3, 'prose with "class:" mid-sentence is not the field (got a fourth class)');
   if (failed) { console.error(`\u2716 experience-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
   console.log(`\u2705 experience-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules \u00D7 ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean journal`);
 }

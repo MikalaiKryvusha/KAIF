@@ -98,7 +98,7 @@
       {
         "signature": "### Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "c19f7e374dba8199e37dc27f745cd414098d4eeadf66d28b41900d653100103d",
+        "sha256": "0a37bcfd4f1a2f83bf2c2ad1bb2821c3f3d711fe3bca2a394822f0d65d94a5a1",
         "lines": [
           331,
           463
@@ -1348,10 +1348,10 @@
       {
         "signature": "### 9.3 Renamed headings (2.7)",
         "class": "static",
-        "sha256": "1e416d6063f1db02093f6b811df766258a29d3835cd91ca564a6aaa9d19826ec",
+        "sha256": "a13da19c3d2690635f7b77a44c0bdaea11e217d178eeab90bf65280646a9a06a",
         "lines": [
           268,
-          283
+          287
         ]
       },
       {
@@ -1359,8 +1359,8 @@
         "class": "static",
         "sha256": "bfe93071404fa914402b99a75cbd57a40103105b9f6b7366687ba17b3c9ed982",
         "lines": [
-          284,
-          285
+          288,
+          289
         ]
       },
       {
@@ -1368,8 +1368,8 @@
         "class": "adaptive",
         "sha256": "46869cbb7f2e605af1331f99012237f474f5c3d9e929a8a54ef18abea55beb2d",
         "lines": [
-          286,
-          298
+          290,
+          302
         ]
       },
       {
@@ -1377,8 +1377,8 @@
         "class": "static",
         "sha256": "be42a6f445ab674d0e2803bc8e7a2a1c43c5c97edd1df5dde70612a11eaacb20",
         "lines": [
-          299,
-          334
+          303,
+          338
         ]
       },
       {
@@ -1386,8 +1386,8 @@
         "class": "static",
         "sha256": "1544c3741c400f3419702080368b4cbc97ec4dd11a1bc2e5804a7038d8428b42",
         "lines": [
-          335,
-          358
+          339,
+          362
         ]
       },
       {
@@ -1395,8 +1395,8 @@
         "class": "static",
         "sha256": "482e52c71eb2d7abdba4a8f948ec7b59f6e88fff6a2c3e959ac0ad363803f6e2",
         "lines": [
-          359,
-          366
+          363,
+          370
         ]
       },
       {
@@ -1404,8 +1404,8 @@
         "class": "static",
         "sha256": "325171663ed7b5bf8ff971a88ccfc1c5ba7dd2a661617ad11fd18eac6336e6cd",
         "lines": [
-          367,
-          372
+          371,
+          376
         ]
       },
       {
@@ -1413,8 +1413,8 @@
         "class": "static",
         "sha256": "16e95c45a56a09a36130c416cf0b23f294d04d01d2dd4a80cff97e42d2868d11",
         "lines": [
-          373,
-          378
+          377,
+          382
         ]
       },
       {
@@ -1422,8 +1422,8 @@
         "class": "static",
         "sha256": "bca1950bfeb87a68283707669bd0e377f25a2cd5eb8e2cecdf798021210cc945",
         "lines": [
-          379,
-          402
+          383,
+          406
         ]
       },
       {
@@ -1431,8 +1431,8 @@
         "class": "static",
         "sha256": "9139b7739b8464629a44d99c2046e96e964c8bf60c8e1bbc36606967f8894e82",
         "lines": [
-          403,
-          417
+          407,
+          421
         ]
       },
       {
@@ -1440,8 +1440,8 @@
         "class": "static",
         "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
         "lines": [
-          418,
-          419
+          422,
+          423
         ]
       },
       {
@@ -1449,8 +1449,8 @@
         "class": "static",
         "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
         "lines": [
-          420,
-          425
+          424,
+          429
         ]
       },
       {
@@ -1458,8 +1458,8 @@
         "class": "static",
         "sha256": "2ac0a888bff20e43e4cc1ab04c648898e525ad70ad501b0a85d1ad8da1d799bf",
         "lines": [
-          426,
-          432
+          430,
+          436
         ]
       },
       {
@@ -1467,8 +1467,8 @@
         "class": "static",
         "sha256": "8debd5a1abab165b5f2c6b6ba8e64954415fafd9cb15d95154ef535a7e8672e6",
         "lines": [
-          433,
-          447
+          437,
+          451
         ]
       },
       {
@@ -1476,8 +1476,8 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          448,
-          449
+          452,
+          453
         ]
       },
       {
@@ -1485,8 +1485,8 @@
         "class": "static",
         "sha256": "abe02cb2a81bb6d438f38f5611287bc435a797759e7f8a0fadf2b8f2453cd56b",
         "lines": [
-          450,
-          468
+          454,
+          472
         ]
       },
       {
@@ -1494,8 +1494,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          469,
-          477
+          473,
+          481
         ]
       },
       {
@@ -1503,8 +1503,8 @@
         "class": "static",
         "sha256": "ebf4c256d3e38aebfcb1e555c7047795d02a8ca469c58ffcf55b7fbb56153d52",
         "lines": [
-          478,
-          486
+          482,
+          490
         ]
       },
       {
@@ -1512,8 +1512,8 @@
         "class": "static",
         "sha256": "003ce058cd7cc128879e3e00791dcdb65305fe5c5a30b549661d8fde22a90ce9",
         "lines": [
-          487,
-          496
+          491,
+          500
         ]
       },
       {
@@ -1521,8 +1521,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          497,
-          513
+          501,
+          517
         ]
       },
       {
@@ -1530,8 +1530,8 @@
         "class": "static",
         "sha256": "2e8655c8be1185696716f193e64b36d9714b7c454716db81e8d138e66b6ae0d1",
         "lines": [
-          514,
-          557
+          518,
+          561
         ]
       },
       {
@@ -1539,8 +1539,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          558,
-          570
+          562,
+          574
         ]
       },
       {
@@ -1548,8 +1548,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          571,
-          579
+          575,
+          583
         ]
       }
     ],

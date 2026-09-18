@@ -279,7 +279,11 @@ your section stays, with ONE heading and a task item naming the rename; old anch
 line by name, never a failure. Every outcome is logged as `renamed: <path> :: <old> → <new>`,
 because silence leaves the owner unable to tell a rename from a delete-plus-add. The build warns
 by name when a heading vanished from a template since the previous release with neither a rename
-nor a deprecation behind it.
+nor a deprecation behind it. The first hop INTO a release that declares a rename is the exception: that
+update is run by the DEPLOYED older core, which does not read the map, so a section the owner edited under a
+renamed heading arrives twice and the update task names it as "upstream removed" — the release notes and
+the task tell the owner to fold it by hand once (2.6 → 2.7: `/end-chat-soft` and `/end-chat-force` Step 1,
+`/code-revision` Step 0).
 
 ## 10. Updating
 

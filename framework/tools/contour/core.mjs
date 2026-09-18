@@ -434,9 +434,12 @@ export function preflight(md) {
 
 // ── QL1 (2.7, origin issue #56): the form check WITHOUT a page — one parse for `--check` and for the show ──
 // A candidate block is a level 2–4 heading that is a recognised question OR looks like one: a numbered
-// heading ending with `?`, or `Question <n>` / its localized word. An unrecognised candidate is the #56
-// class: the page would open WITHOUT that question and nobody would notice until the owner did.
-const CANDIDATE_Q_RE = new RegExp('^#{2,4}\\s+(?:\\d+[.)]?\\s+.*\\?\\s*$|(?:' + PARSER.questionWords + ')\\s*\\d+)', 'iu');
+// or LETTERED heading ending with `?` (`## 2. …?`, `## A. …?`, `### A1. …?` — the #56 document used letters,
+// court of 2.7, finding A-F1), or `Question <n>` / its localized word. A letter heading WITHOUT `?` stays out:
+// field interviews use `### A.` for option sections and `## A.` for chapters (11 such headings measured in two
+// deployments, none ending with `?`). An unrecognised candidate is the #56 class: the page would open WITHOUT
+// that question and nobody would notice until the owner did.
+const CANDIDATE_Q_RE = new RegExp('^#{2,4}\\s+(?:(?:\\d+[.)]?|\\p{L}\\d*[.)])\\s+.*\\?\\s*$|(?:' + PARSER.questionWords + ')\\s*\\d+)', 'iu');
 export function checkForm(md) {
   const lines = normalize(md).split('\n');
   const questions = parseQuestions(md);

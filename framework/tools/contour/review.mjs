@@ -1413,6 +1413,11 @@ export function selftest(log = console.log) {
   const cf = checkForm(fxCheck);
   ok(cf.blocks === 3 && cf.recognised.join() === 'Q1' && cf.unrecognised.length === 2 && cf.unrecognised[0].line === 12 && cf.unrecognised[1].line === 16,
     'checkForm: Q1 recognised; a numbered heading ending with ? and a `Question 3` heading are unrecognised candidates; `## 4. Context` is not one');
+  // A-F1 (court of 2.7): the #56 document lettered its questions — a letter heading ending with `?` is a candidate
+  // (Latin and Cyrillic), a letter chapter without `?` is not (field interviews use `## A.` for chapters).
+  const cfLetters = checkForm('# Interview #099\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n\n## B. Which one comes first?\n\nprose\n\n## \u04101. \u041A\u0430\u043A\u043E\u0439 \u043F\u0435\u0440\u0432\u044B\u0439?\n\nprose\n\n## C. Context\n\nnot a question\n');
+  ok(cfLetters.blocks === 3 && cfLetters.recognised.join() === 'Q1' && cfLetters.unrecognised.length === 2 && cfLetters.unrecognised[0].line === 12 && cfLetters.unrecognised[1].line === 16,
+    `checkForm: lettered headings ending with ? (Latin and Cyrillic) are unrecognised candidates; \`## C. Context\` is not one (got blocks ${cfLetters.blocks}, unrecognised ${cfLetters.unrecognised.map((u) => u.line)})`);
   const CHK = 'interviews/interview_098_check.md';
   writeFileSync(join(root, CHK), fxCheck);
   const lines = []; const cap = (l) => lines.push(String(l));

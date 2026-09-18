@@ -395,7 +395,7 @@ Three steps, in this order, and the report names each:
 3. **Fix — only then it is written.** Every hit is rewritten by the portrait's hint or answered in its
    exception column (the owner's canon: his word or a journal row); only after that the text counts as
    written, and only then it is shown to the owner for approval — never before.
-The command judges the explicit patterns only; likeness stays the owner's verdict (the taste class).
+The command judges the explicit patterns only; likeness stays the owner's verdict (the taste class). <!-- attribution-ok: names who judges likeness, no decision of the owner is claimed -->
 `/fable-judge` hunts owner text past the portrait (the owner-text-past-the-portrait hunt): written without
 the portrait open, checked by no independent pass, or shown before the fixes.
 
@@ -429,7 +429,7 @@ from Russian: "the agent leaves a lie and forgets to correct the lie where it le
 that something in the past was a lie" — said the moment he caught the live case: "you wrote that in the
 comments and left it there, and it is a lie"). The fifth obligation bounds a claim at its BIRTH; this one
 bounds how long a born falsehood survives once it is known. The trigger is an EVENT, not a step: the minute a
-past statement of yours is identified as false — by the owner's word, by a measurement, by a later run —
+past statement of yours is identified as false — by the owner's word, by a measurement, by a later run — <!-- attribution-ok: a trigger of the rule, no decision of the owner is claimed -->
 whatever you are doing at the time. Five steps, in this order, BEFORE the work continues:
 
 1. **Stop the current task.** The truth arrives in the middle of something else, and "right after this task"
