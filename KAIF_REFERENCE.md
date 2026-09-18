@@ -134,7 +134,7 @@ Thirty-seven skills — the verbs of project work — deploy to `.claude/skills/
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
-  chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat-soft` (the unhurried full closure) + `end-chat-force` (the urgent capture-and-go closure:
+  chat: logical stopping point, green tree, local commit, NO pushes) · `end-chat-soft` (the unhurried full closure; since 2.7, epic SF — origin issue #67 — the farewell report answers `Standing falsehood: none` or names the statement and the places it was corrected in; the force closure carries the same line as one phrase) + `end-chat-force` (the urgent capture-and-go closure:
   STATUS handover, judge, commit AND push) · `refresh-context` · `check-backlog`.
 - **Autonomy loops:** `autoloop` · `dayloop` · `nightloop` — grind the backlog; every item ends
   with a mandatory judge pass; an owner's drive-by note is filed to the backlog, not a task switch —
@@ -373,7 +373,7 @@ per-module preview against another version — a v1 manifest gets a synthetic ba
 deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
 resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
-machinery's module cut) · `checkpoint` · `update-verify` · `check` (since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms; a warning, read by the same function as `report`) · `version` · `report
+machinery's module cut) · `checkpoint` · `update-verify` · `check` (since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms; a warning, read by the same function as `report`) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · `version` · `report
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,

@@ -1231,7 +1231,7 @@
       {
         "signature": "## 6. The skill system",
         "class": "static",
-        "sha256": "e6956888f00c73d431b05de3869ba091a4b2bbb1c8df004c7edf06412ae8b162",
+        "sha256": "992e04f38a688733295b241280d1467e047c2a79c49aafc807c19766f30f1726",
         "lines": [
           130,
           170
@@ -1420,7 +1420,7 @@
       {
         "signature": "### 10.7 Commands",
         "class": "static",
-        "sha256": "2e06f4be755f69b94a368a892db2453db943c9d7f5613bf857631df99abeacb6",
+        "sha256": "db2e6d612ca75c77b9aaacbcf1987ca4a773c54c2bd328d7c8b5cc79a670e70d",
         "lines": [
           365,
           388
@@ -2412,7 +2412,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "7438d1060f40c7e305cb6dbb4a44a15d8e8bc91f9235b10239b68e234743719e",
+        "sha256": "aedcc5966230af93cc4f5f71d17f8001002e6f7b79896920b10b02a2f6d91ca1",
         "lines": [
           1,
           18
@@ -2430,10 +2430,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "32eacb67b5fdf897a6fbb23c056925bab391d26914f724b4289ff4623b523bb8",
+        "sha256": "c21f465ebbcbfbc31ef32e37f2d9d650bb2d2f830a03299d59642125b6539939",
         "lines": [
           23,
-          74
+          77
         ]
       },
       {
@@ -2441,8 +2441,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          75,
-          80
+          78,
+          83
         ]
       }
     ],
