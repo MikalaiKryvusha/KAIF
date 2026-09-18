@@ -5,10 +5,10 @@
   "codename": "Mindful KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "366ccd65227ce1066112a1b3f5183e0ff5589d4537e2b8d8ff54b9dd516d42d6",
-    "KAIF-CORE-BUNDLE.md": "306c17255da58cb82092ef8b83faa11303a4e70720c61d682a0f9178ae7d53b2"
+    "KAIF-CORE-BUNDLE.md": "6bc81067834fcd9e5721ff1f7038501627b3dd39a33367908d3e477aefc9487c"
   },
   "sourceTree": {
-    "sha256": "61c2aaf8fba2f41638d8284f5235eb70b99208a072646d1e553df6198b1d5a67",
+    "sha256": "34b08173644b7d5950d58ecd6d8dc3566ce7806d84fcab3295c547917856b4bf",
     "files": 202
   },
   "assets": {

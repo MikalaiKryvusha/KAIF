@@ -647,6 +647,26 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       ["'.kaif/contour-window/',"]],
     ['live page ↔ /fable-judge hunts a page closed past its command', 'framework/skills/fable-judge/SKILL.md',
       ['**Live page closed past its command (KAIF 2.7).**']],
+    // AQ (2.7, origin issue #70): the archaeology axis lives in the shipped core, the door prints the command,
+    // both layers of /interview carry the five steps, the contract page has the article, and the judge hunts it.
+    ['archaeology ↔ the shipped core refuses a live question with no attestation and prints the grep',
+      'framework/tools/contour/core.mjs',
+      ['ARCHAEOLOGY_SINCE', 'no archaeology line', 'hits and `prior: none`', 'archaeology: n/a']],
+    ['archaeology ↔ the door reports both answers of the axis (payload texts, both languages)',
+      'framework/tools/contour/texts.mjs',
+      ['live question(s) attested', 'not judged — header date', 'archaeologyStopWords']],
+    ['archaeology ↔ /interview carries the five steps (payload)',
+      'framework/skills/interview/SKILL.md',
+      ['### Step 3d. Archaeology BEFORE the question', 'READ the hits', 'prior: unrelated']],
+    ['archaeology ↔ /interview carries the five steps (wrapper)',
+      '.claude/skills/interview/SKILL.md',
+      ['### Шаг 3г. Археология ДО вопроса', 'ПРОЧИТАЙ попадания', 'prior: unrelated']],
+    ['archaeology ↔ the contour contract page has the article',
+      'framework/templates/_interactive-contour-spec.md',
+      ['Second axis of the same door — ARCHAEOLOGY', 'is an honest attestation']],
+    ['archaeology ↔ /fable-judge hunts a question asked past its archaeology',
+      'framework/skills/fable-judge/SKILL.md',
+      ['**Question asked past its archaeology (KAIF 2.7).**']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to

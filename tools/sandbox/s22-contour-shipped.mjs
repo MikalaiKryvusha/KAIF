@@ -12,6 +12,11 @@
 // владельца». Красное доказательство — тело пробы `probes/ic3-contour-generator.mjs` до IC3 (3 ✓ / 1 ✗ «генератор
 // отсутствует», 21:25 сессии 55) + мутация на копии HTML: страница без радиокнопок роняет самопроверку
 // `selfCheck` отгружаемого модуля.
+// (E) эпик AQ 2.7 (plans/115; тикет #70 — 13 вопросов принесены владельцу, хотя его прошлые ответы их уже решили, один —
+//     через 44 дня): ВТОРАЯ ось той же двери — АРХЕОЛОГИЯ живого вопроса. Живой вопрос документа с датой шапки ≥ порога без
+//     строки аттестации → `--check` код 3 и НАПЕЧАТАННАЯ команда грепа; с аттестацией → 0; `N hits` > 0 при `prior: none`
+//     → 3; отвеченный вопрос и дата шапки до порога → 0 (историю поля не красим). Красное — шов `KAIF_DIST` на ядре 2.6
+//     (ассерты «код 3» красные по имени) и мутант порога на копии `dist`.
 // (D) эпик IW 2.7 (plans/108; тикет #64 — контур поднят вкладкой, черновик потерян): замок мёртвого процесса на свободном
 //     порту → перезапуск на ТОМ ЖЕ порту и «reused from the previous run»; на ЗАНЯТОМ → свежий порт и «taken … NOT visible
 //     here»; рендер несёт самопроверку окна (display-mode: standalone · #tabnote · POST /tab). Красный — пробы IW0 до кода и
@@ -204,6 +209,33 @@ ok(r.code === 0 && (pr.match(/name="para:docs\/DRAFT\.md:p\d"/g) || []).length =
 r = runGen(P, ['docs/mock.png', '--mockup', '--no-serve']);
 const mk = existsSync(join(P, '.kaif', '.contour-tmp', 'mock.html')) ? readFileSync(join(P, '.kaif', '.contour-tmp', 'mock.html'), 'utf8') : '';
 ok(r.code === 0 && mk.includes('<img src="data:image/png;base64,') && mk.includes('name="doccomment:docs/mock.png"'), 's22 B: лицо «отсмотр макета» — картинка и поле замечаний', r.out.slice(-200));
+
+// ================================================================ E: АРХЕОЛОГИЯ живого вопроса (AQ 2.7, тикет #70)
+console.log('\n=== s22 E: дверь --check судит АРХЕОЛОГИЮ живого вопроса — код 3 без аттестации с напечатанной командой, 0 с ней ===');
+// Фикстуры несут таблицу вариантов и дату шапки СТРОКОЙ `Created` (порог оси — дата шапки; строка `Created`
+// сильнее любой другой даты головы, иначе дата ОТВЕТА старила бы документ вперёд).
+const AQ_DOC = 'interviews/interview_054_archaeology.md';
+const aqHead = (date) => '# Interview #054 — проба археологии\n\n> Status: **🟡 awaiting**\n> Created: ' + date + '\n\n';
+const aqQ = (att, answer) => '### Q1. Как назвать валюту игры?\n\n' + att
+  + '| Вариант | Что означает |\n|---|---|\n| **A** | кристаллы |\n| **B** | монеты |\n\n**Answer:**' + (answer || '') + '\n';
+const AQ_ATT = '<!-- archaeology: grep -rniE "назва|валю|игры" interviews/ GOAL.md MASTER_PLAN.md plans/ → 0 hits · read: none · prior: none -->\n\n';
+const aqCheck = (body) => { writeFileSync(join(P, AQ_DOC), body); return runGen(P, [AQ_DOC, '--check']); };
+
+r = aqCheck(aqHead('2026-09-18') + aqQ(''));
+ok(r.code === 3 && /no archaeology line/.test(r.out) && /grep -rniE/.test(r.out) && /Q1/.test(r.out) && !/Page is up|CALL:|Shown recorded/.test(r.out),
+   's22 E: живой вопрос с датой шапки от порога БЕЗ аттестации → --check код 3, отказ несёт Q1 и ГОТОВУЮ команду грепа; ни страницы, ни зова (AQ, #70)', 'exit ' + r.code + ': ' + r.out.slice(-400));
+r = aqCheck(aqHead('2026-09-18') + aqQ(AQ_ATT));
+ok(r.code === 0 && /(археология|archaeology): (аттестовано 1 из 1|1 of 1)/.test(r.out),
+   's22 E: та же фикстура С аттестацией → код 0, и дверь печатает «археология: аттестовано 1 из 1»', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = aqCheck(aqHead('2026-09-18') + aqQ(AQ_ATT.replace('0 hits', '5 hits')));
+ok(r.code === 3 && /5 hits and `prior: none`/.test(r.out),
+   's22 E: аттестация с «→ 5 hits» и «prior: none» → код 3 (поиск нашёл, прошлый ответ не назван)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = aqCheck(aqHead('2026-09-18') + aqQ('', ' A) кристаллы'));
+ok(r.code === 0, 's22 E: ОТВЕЧЕННЫЙ вопрос без аттестации → код 0 (владельцу больше ничего не должны)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = aqCheck(aqHead('2026-09-01') + aqQ(''));
+ok(r.code === 0 && /(не судится|not judged)/.test(r.out) && /2026-09-01/.test(r.out),
+   's22 E: дата шапки ДО порога → код 0, и дверь говорит вслух «не судится — дата шапки …» (история поля не краснеет)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+rmSync(join(P, AQ_DOC), { force: true });
 
 // ================================================================ C: маршрут обновления (критерий 4)
 console.log('\n=== s22 C: «старый релиз» без контура + свой tools/review.mjs → update → контур приехал, свой инструмент нетронут ===');

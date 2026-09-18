@@ -96,7 +96,8 @@
       "A KAIF-DEFECT TICKET IS DELIVERED IN THE SAME MOVE AS IT IS FILED, AND THE CORE NAMES ONE THAT WAS NOT (epic SD; origin issue #65 — a recurrence of #37: a field agent filed two tickets \"awaiting the owner's word to send\" and delivered them forty minutes later, after one direct question of the owner and a second \"send\"; his own cause, verbatim: the broad, always-on reflex \"confirm outward actions\" beats a narrow exception written as prose inside a long paragraph — \"it lost on #37 and lost again\"). Three places, one rule: (1) AGENT_GUIDE (both layers) — the ONE carve-out of the `AUTH:` gate now stands in the gate's own line at the fable loop's call point (a ticket about a defect of KAIF itself, filed to the framework's origin, goes under the KAIF owner's standing authorization in the same move as filing and awaits no `AUTH:` line; everything else outward still waits for the owner's words); (2) /report-bug (both layers) — the step that files the ticket (step 3, \"File AND deliver\") ENDS with `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`; there is no separate \"deliver\" step to postpone — filing IS delivering; (3) `node .kaif/kaif-core.mjs check` gains the axis \"undelivered signal\", an ALLOWLIST: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` paragraph names an issue (a `…/issues/N` URL, or `#NN` as the value itself or right after the word origin/issue — \"see step #2\" is not a delivery) and does not say NOT YET; NOT YET is named with the ready command, and a missing, translated or unreadable line (a promise such as \"being sent by this session\") or NOT YET beside an issue is named \"no readable delivery state\" with both legal forms — a warning, never a failure, silent on tracking: anonymous. `report` and `check` read the line with ONE function, so they cannot disagree about it: NOT YET beside an issue is refused by `report` too (until 2.7 any URL won and such a ticket could never be sent), and a URL that is not an issue no longer counts as a delivery. Why an allowlist: the delivery lines of four field deployments came in more shapes than the template — the field name translated into the project language (the form the #65 incident itself committed), a promise instead of an address, a delivery claimed in words with no issue, no line at all — and a NOT-YET-only check was silent on all of them. /report-bug (both layers) now says the field name `**Delivered upstream:**` is machine-read and stays verbatim English in any project language. /fable-judge hunts \"a signal filed, not delivered\".",
       "A FALSEHOOD IS CORRECTED WHERE IT STANDS, NOT IN THE CHAT (epic SF; origin issue #67 — the project owner's word, rendered from Russian: \"the agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie\", said the moment he caught the live case: an agent closed a ticket with the comment \"the model does not write it, so there is nothing to trim\", learned the real mechanism from him an hour later, agreed IN THE CHAT, wrote the correction into its own notes — and the false comment stayed in the tracker under his name until he came back a second time). The canon demanded observation at a claim's BIRTH (the fifth obligation, issue #63) and nothing at its refutation. Four places, one rule: (1) AGENT_GUIDE (both layers) gains a SIXTH KAIF obligation at the fable loop's steps 4 and 7 — the trigger is an EVENT, not a step: the minute a past statement of yours is identified as false, five steps run BEFORE the work continues — stop the current task · enumerate every place it was published (`git grep -n \"<the phrase>\"` for the repository, the outward channels by the sphere library's command, plus STATUS and the run reports) · correct or retract in EACH (an edit where the artifact is ours, a \"correction: …\" comment where the channel only appends, a deletion where the channel allows one; a channel whose retraction command you do not know is said aloud) · read it back · name it in the reply as `corrected: <where>`; the class has a name, a STANDING FALSEHOOD, and the boundary excludes a draft marked as a hypothesis and an append-only journal entry whose new entry names the one it corrects; (2) /end-chat-soft (both layers) asks for it BY NAME in the farewell report — `Standing falsehood: none` or the statement with the places it was corrected in — and a place that could not be corrected is named with its missing retraction command instead of an answer of \"none\"; (3) /end-chat-force carries the same line as one phrase beside the ceremonies-debt line: force mode may skip a ceremony, never a lie left standing under the owner's name; (4) the sphere libraries gain the slot \"Outward write channels → retraction command\" (`_template.md`, filled in `programming.md` with nine channels: the repository's own files, a pushed commit message, an issue/PR comment of yours and someone else's, an issue/PR body, a published release note, a wiki page, a chat-ops message, the owner's contour page) so step 3 is executable rather than imagined. /fable-judge hunts \"a standing falsehood\".",
       "A FREE SEAT ASKS FOR WORK, AND A GENERATED CONSTITUTION KEEPS EVERY OBLIGATION OF ITS TEMPLATE (epic FR; origin issue #68 — a field seat finished its half of a smoke, committed, reported to its neighbour and to the owner, and stopped, while `STATUS.md` named three tickets \"claimed by nobody\" and a second seat sat idle on the board; the owner ended the idling himself). Two halves of one defect. (1) THE OBLIGATION: \"idle — report to the Manager\" lived as a TRAILING CLAUSE of the rule about blockers, and the rule is inverted relative to its cost — a blocker is felt by the agent, availability only by the dispatcher. The constitution template now carries it as its own § 2 rule 6 with an exit condition: task closed and no next one → ONE message to the Manager before the turn ends, naming what is done, what remains and which candidates you can take, by name from `STATUS.md` or the board (\"I am free, may I take X / Y / Z\"); idling without it is an UNCLOSED task, idling the owner had to end is a defect. The board template says the same from its side: a row set to `🟢 free` carries the request in the SAME write, and the board tool contract gains `--free --asking \"<candidates>\"` (item 7; `audit-waiting` becomes item 8). § 9 puts `TEAM_CONSTITUTION.md` into every seat's RE-READ CORE while more than one role window is open — named in the refresh marker's `docs` at every trigger. (2) THE GATE: the obligation did not survive GENERATION — the field constitution kept 5 of the template's 9 § 2 rules and nothing noticed, because a shorter document looks like editorial tightening rather than loss. `check` now compares a `TEAM_CONSTITUTION.md` in the project root against the template that shipped with the skill (found in the deployed `.claude/.agents/.grok/.cline` skills): obligations are the bold anchors of § 2's numbered items plus the nine invariant `## N.` headings, headings matched by NUMBER (which survives translation) and rules by anchor — and when NOT ONE anchor matches, the document is translated, so the axis says so and counts instead (\"cannot match translated anchors: 10 expected in §2, 5 found\"), printing the template's own order so the loss has something to be restored from. Every loss is named: `⚠ TEAM_CONSTITUTION.md lost N obligation(s) of the template: §2 \"A free seat asks for work.\" …`. A warning, never a failure — the constitution is the owner's document; a deliberate omission is DECLARED beside the item with `<!-- constitution-ok: <why> -->`, and a tree with no constitution or no template is silent. /team-deployment now runs `check` and READS its lines at operation 3 step 1, at the start of the adopt inventory, and in \"Done when\".",
-      "A LIVE OWNER PAGE IS CLOSED ONLY BY A CHECKED COMMAND, THE ANSWER SURVIVES THE SERVER, AND A TEST PAGE NEVER CALLS THE OWNER (epic LP; origin issue #66 — the project owner's word, rendered from Russian: \"the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT\": a neighbour session said \"close that page\" and an agent killed the process; and the origin owner's word on interview 032: \"no choice, no 'save as' — everything works for the user as it did! JS itself writes the file to the computer, into the project folder\"). Three changes of the shipped generator .kaif/tools/contour/. (1) `<doc> --close` is the ONLY way to end a live page from outside: it reads the lock — port · pid · title · the page's last input · draft state (the pulse `/alive?i=&d=&s=` carries them, and the first keystroke after a pause pulses within a second) — prints them so the agent can compare with the window it was told about, and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, `contour.closeQuietMs`), while the page itself is younger than it (the owner may be reading), or while a draft is unsaved; otherwise it asks the page's OWN server to end (a token from the lock — a pid read from a file is never killed without `--force`, and the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word \"<quote>\"` and logs the quote. /owner-reviews I46, spec §5, AGENT_GUIDE \"Showing is an action\" in both layers. (2) The app window runs on its OWN browser profile inside the project — `.kaif/contour-window/`, added to .gitignore by the machinery (ignore-first), with the three sign-in-off flags and an `account_info` check after launch — so the draft is on the owner's disk IN THE PROJECT; Save with the server gone stores the answer there — IndexedDB first, measured on disk half a second after the write even when the browser is then killed (`localStorage` needs about six and keeps only a copy and the typed draft) — and the page says \"saved on this computer, the agent will pick it up\" — no dialog, no rescue ring; the next `--queue --list`, `--check` or show picks it up: a headless run of the same profile on the same port posts it back (deferred while a browser still holds the profile — the owner's window is open), it is recorded as the owner's decision with `recovered: true` (the provenance comment in the md says \"picked up from the owner's computer\"), the lock is released; an unsaved draft is named and kept. Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified. /owner-reviews I47, spec §3/§4. (3) An unknown flag REFUSES before any page, sound or call (exit 1, the core's bug-33 rule; the 2.6 generator let `--close` fall through to the show and CALLED the owner) — spec §2; and at the origin the polygon refuses to run against a STALE dist (a fingerprint of framework/** in kaif-manifest.json `sourceTree`). /fable-judge hunts a page closed past its command and an answer left on the owner's machine."
+      "A LIVE OWNER PAGE IS CLOSED ONLY BY A CHECKED COMMAND, THE ANSWER SURVIVES THE SERVER, AND A TEST PAGE NEVER CALLS THE OWNER (epic LP; origin issue #66 — the project owner's word, rendered from Russian: \"the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT\": a neighbour session said \"close that page\" and an agent killed the process; and the origin owner's word on interview 032: \"no choice, no 'save as' — everything works for the user as it did! JS itself writes the file to the computer, into the project folder\"). Three changes of the shipped generator .kaif/tools/contour/. (1) `<doc> --close` is the ONLY way to end a live page from outside: it reads the lock — port · pid · title · the page's last input · draft state (the pulse `/alive?i=&d=&s=` carries them, and the first keystroke after a pause pulses within a second) — prints them so the agent can compare with the window it was told about, and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, `contour.closeQuietMs`), while the page itself is younger than it (the owner may be reading), or while a draft is unsaved; otherwise it asks the page's OWN server to end (a token from the lock — a pid read from a file is never killed without `--force`, and the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word \"<quote>\"` and logs the quote. /owner-reviews I46, spec §5, AGENT_GUIDE \"Showing is an action\" in both layers. (2) The app window runs on its OWN browser profile inside the project — `.kaif/contour-window/`, added to .gitignore by the machinery (ignore-first), with the three sign-in-off flags and an `account_info` check after launch — so the draft is on the owner's disk IN THE PROJECT; Save with the server gone stores the answer there — IndexedDB first, measured on disk half a second after the write even when the browser is then killed (`localStorage` needs about six and keeps only a copy and the typed draft) — and the page says \"saved on this computer, the agent will pick it up\" — no dialog, no rescue ring; the next `--queue --list`, `--check` or show picks it up: a headless run of the same profile on the same port posts it back (deferred while a browser still holds the profile — the owner's window is open), it is recorded as the owner's decision with `recovered: true` (the provenance comment in the md says \"picked up from the owner's computer\"), the lock is released; an unsaved draft is named and kept. Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified. /owner-reviews I47, spec §3/§4. (3) An unknown flag REFUSES before any page, sound or call (exit 1, the core's bug-33 rule; the 2.6 generator let `--close` fall through to the show and CALLED the owner) — spec §2; and at the origin the polygon refuses to run against a STALE dist (a fingerprint of framework/** in kaif-manifest.json `sourceTree`). /fable-judge hunts a page closed past its command and an answer left on the owner's machine.",
+      "A QUESTION TO THE OWNER IS ASKED AFTER THE ARCHAEOLOGY, NOT BEFORE IT (epic AQ; origin issue #70 — an audited field deployment brought one owner 13 questions that his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: \"you are asking ME? did you look into GOAL.md, smart guy, before asking?\" · \"you ask me questions without having looked at the history of decisions... we have discussed this already. Search.\"). A question to the owner is a CLAIM that the matter is not settled yet, and nothing verified it: the rule \"do not ask what is already decided\" stood twice in `/interview` as PROSE with no command, the form door (`--check`, 2.7 QL1) judged only the FORM of a question, and not one interview of five deployments on the author's disk carried a trace of a search (223 documents, measured 2026-09-18). Now the same door has a SECOND axis. A LIVE question of a document whose header date is on or after 2026-09-18 opens only WITH the attestation of the search that was actually run, standing between the heading and its FIRST option: `<!-- archaeology: grep -rniE \"<the heading's words>\" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | \"<the prior answer>\" + address> -->`. Without it the pre-flight refuses with exit 3 and PRINTS the ready command built from the question's own heading (words of 4+ letters, 6+ searched by their stem, function words dropped) — so the fix is a copy-paste, not a lookup. `N > 0` with `prior: none` is refused too (the search FOUND and the prior answer is not named; legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation: the axis promises the agent SEARCHED and said with what, never that it found. Exempt: answered questions, documents with no questions, the declared `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class), and EVERY document dated before that day — the axis judges FORWARD, so the field's old interviews never turn red, and `--check` says which of the two it did (`archaeology: N of M live questions attested` / `archaeology: not judged — header date ... is before ...`). The header date is read from the `Created` line when the head has one, so an ANSWER date standing above it never ages an old document forward. `/interview` step 3d carries the five steps for the agent's hand (run the printed command · READ the hits, not the count · write the attestation · a prior answer found → drop the question and carry the decision over with `--mark-implemented`, or reformulate it as \"the prior answer was X; Y has changed\" · the door refuses what skipped this), and the judge hunts a question asked past its archaeology."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -141,7 +142,8 @@
       "The word \"test\" now means a FUNCTIONAL RUN on the real product, and a claim is never wider than its observation (2.7, epic CL; origin issues #62 and #63): \"tested\" in a marker, a report or a handover means the agent walked the REAL product (stage or production) by the user's path with machinery it wrote from the functionality's own scenarios and READ the result — the screen, the lines, the logs; lint, unit tests, self-tests, mutation proofs and guards are HYGIENE: still mandatory, never called testing, never flipping `[NOT-TESTED]`, and `[NOT-TESTED]` never goes to production. TWO THINGS FOR YOU. (a) Run reports: the Checks field now opens with two separate lines — `Hygiene:` and `Functional run:` (what was walked · on which contour · what was READ — or the word NONE = fixed, not tested); `node .kaif/tools/kaif-testrun-lint.mjs check` reddens a Verdict `pass` with no functional run or NONE behind it (`pass-without-functional-run`) — a report you wrote by the 2.7 form before this update will redden if it says `pass`: add the two lines by the facts of that run, and write `partial` where there was no functional run; the closing `STATUS: DONE` of a bug carries the same two lines. (b) Reports to the owner: name what observed each claim; a proxy is said aloud (\"the server answers 200; whether a window opened on your screen I did not check\"); the owner's screen is asserted only after a screenshot. If a project skill of yours says \"tested\" about a green unit, or reports \"the page is open\" from a launcher's exit code, re-word it — the judge hunts both.",
       "The owner-facing contour is launched by the COMMAND in /owner-reviews, and it keeps the owner's draft alive across a dead process (2.7, epic IW; origin issue #64): copy the launch from the table under I31 for your agent system (Claude Code — the Bash tool with run_in_background: true; a harness with tracked tasks — its facility; a plain shell — redirect to .kaif/contour.log and poll the lock file) — never a foreground call, never `--timeout` for a human, never the URL handed to Start-Process / open / xdg-open. The shipped generator now comes up on the previous run's port when that process is gone (the draft typed in the window that outlived it is restored) and names a taken port together with the loss; the page tells the owner and your log when it finds itself in a tab instead of the app window. If a local wrapper of yours removes stale lock files on start, stop doing that — the lock now carries the port the draft lives on.",
       "Filing a KAIF-defect ticket IS delivering it (2.7, epic SD; origin issue #65): on a deployment that tracks the origin, `bugs/KAIF/NN_*.md` is written and sent in the same move — `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md` — under the KAIF owner's standing authorization, before the work that found the defect, with no `AUTH:` line to wait for (the carve-out now stands in the gate's own line in AGENT_GUIDE; every other outward action still waits for the owner's words). `node .kaif/kaif-core.mjs check` now names every numbered ticket whose `Delivered upstream:` line does not prove delivery (an issue URL or #NN with no NOT YET beside it) — NOT YET with that command, and a missing, translated or unreadable line, or NOT YET beside an issue, as \"no readable delivery state\"; `report` refuses NOT YET beside an issue and no longer takes a URL that is not an issue for a delivery. If your tree carries such tickets from earlier sessions: a ticket delivered by hand or folded into a field report — write its issue URL or #NN into a `**Delivered upstream:**` line (the field name stays verbatim English in any language; find the number with `gh issue list --repo <origin> --state all --search \"<title>\"`), and the warning ends; a ticket never sent — write `**Delivered upstream:** NOT YET — <why>` and send it with the command the warning prints. On tracking: anonymous nothing changes — NOT YET stays legal there.",
-      "The owner-facing contour changed THREE behaviours (2.7, epic LP; origin issue #66 and the origin owner's word on interview 032): a live page is closed ONLY by `node .kaif/tools/contour/review.mjs <doc> --close` — never by killing the process or on a neighbour session's word — and the command refuses (exit 4) while the owner typed less than 180 s ago, while the page is younger than that, or while a draft is unsaved (`--force --owner-word \"<quote>\"` for the owner's own order); the app window now runs on its own browser profile in the project (`.kaif/contour-window/`, put into .gitignore by the update; Edge/Windows verified, other browsers take the same flags unverified), so an answer saved while the server was gone lives on the owner's disk in the project and the agent picks it up at the next queue/check/show as a decision with `recovered: true`; an unknown flag now REFUSES before any page or call (exit 1) where 2.6 showed the page. Nothing to merge — three files under .kaif/tools/contour/ and the one-page contract are replaced mechanically; if your project keeps its own contour, read spec §2 and §5 and adopt the close command and the profile."
+      "The owner-facing contour changed THREE behaviours (2.7, epic LP; origin issue #66 and the origin owner's word on interview 032): a live page is closed ONLY by `node .kaif/tools/contour/review.mjs <doc> --close` — never by killing the process or on a neighbour session's word — and the command refuses (exit 4) while the owner typed less than 180 s ago, while the page is younger than that, or while a draft is unsaved (`--force --owner-word \"<quote>\"` for the owner's own order); the app window now runs on its own browser profile in the project (`.kaif/contour-window/`, put into .gitignore by the update; Edge/Windows verified, other browsers take the same flags unverified), so an answer saved while the server was gone lives on the owner's disk in the project and the agent picks it up at the next queue/check/show as a decision with `recovered: true`; an unknown flag now REFUSES before any page or call (exit 1) where 2.6 showed the page. Nothing to merge — three files under .kaif/tools/contour/ and the one-page contract are replaced mechanically; if your project keeps its own contour, read spec §2 and §5 and adopt the close command and the profile.",
+      "The form door of the owner-facing contour gained a SECOND axis (2.7, epic AQ; origin issue #70): a LIVE question of a document dated on or after 2026-09-18 is refused (exit 3) until it carries the attestation of the search for a prior answer — `<!-- archaeology: grep -rniE \"<the heading's words>\" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | \"<the prior answer>\" + address> -->` between the question heading and its first option; the refusal PRINTS the ready command. Your existing interviews do NOT turn red: the axis judges forward by the header date, a document without a date is treated as old, answered questions are out of the axis, and `--check` says out loud when it judged nothing (\"archaeology: not judged — header date ... is before ...\"). New questions: run the printed command, READ the hits, write the line; `N = 0` is a legal attestation, `N > 0` with `prior: none` is not (name the prior answer, or write `prior: unrelated — <why>`); a question with nothing to search declares `<!-- archaeology: n/a — <reason> -->`. `/interview` step 3d is the five-step form."
     ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
@@ -3177,7 +3179,17 @@ bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
 showing, outcomes and exit codes, the call, the faces and flags of the shipped generator under
-`.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
+`.kaif/tools/contour/`). The form check is a door of its own — `review.mjs <doc> --check`: parse,
+pre-flight and render self-check with no server, no sound and no call (2.7, epic QL, origin issue #56) —
+and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, epic AQ, origin issue #70:
+13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
+after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
+of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
+read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
+too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
+two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB first, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
@@ -4970,7 +4982,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5026,6 +5038,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Idle seat ended by the owner (KAIF 2.7).** In a deployed TEAM (more than one role window open), a seat that closed its task — committed, reported, and has no next assignment — and ended its turn WITHOUT one message to the Manager naming *what is done · what remains · which candidates it can take, by name from `STATUS.md` or the board* ("I am free, may I take X / Y / Z"), or whose board row went `🟢 free` carrying no request, is a finding: the constitution makes the announcement an obligation with an exit condition, not a courtesy, and an idle the OWNER had to end is the defect itself (`TEAM_CONSTITUTION.md` § 2 rule 6 and § 4; origin issue #68 — a field seat finished its half of a smoke, reported, and stopped while `STATUS.md` listed three tickets "claimed by nobody" and a second seat sat idle; the owner's word ended it). The failure state is silent and looks correct — a finished, committed, reported seat is indistinguishable from a working one, to itself — so hunt it in the RECORD, not in the mood: an owner's message of the "why are you idle / take a task" family with no free-announcement before it; a report that ends at "done" with no candidates named; a board row `free` with an empty request cell; a seat whose last outgoing message predates the owner's by more than one turn. Re-run: read the board and the seat's outgoing messages in order — the announcement either precedes the owner's word or it does not exist. A single session in the main copy is NOT in scope: the constitution binds only while more than one role window is open.
    - **Team seat refreshed without the constitution (KAIF 2.7).** In team mode, a refresh witness — `.kaif/refresh-marker.json` written at any trigger (hour · heavy task · compaction · ritual) — whose `docs` does not name `TEAM_CONSTITUTION.md`, or a re-read claimed in chat that quotes only the project's own core, is a finding: a document read once at launch and never again governs nothing, and the rules of PARALLEL work are exactly the ones a seat loses first (`TEAM_CONSTITUTION.md` § 9; origin issue #68 — a seat re-read the core hourly under a marker with a quote and never once re-read the document that governs parallel work). Hunt also: a briefing that says "read the constitution in full" with no refresh trigger naming it afterwards; a generated constitution whose obligations `node .kaif/kaif-core.mjs check` names as lost while the seat reports the canon refreshed. Re-run: `node -e "console.log(require('./.kaif/refresh-marker.json').docs.join('\n'))"` and `node .kaif/kaif-core.mjs check`; a deployment with no `TEAM_CONSTITUTION.md` is not a finding — the hunt is silent outside team mode.
    - **Live page closed past its command (KAIF 2.7).** An owner-facing contour page ended from OUTSIDE by anything other than `node .kaif/tools/contour/review.mjs <doc> --close` — a killed process (`kill`, `taskkill`, `pkill`, a port sweep), a "stale, I closed it" in the report, a restart "to be safe" — or closed with `--force` whose `--owner-word` is not the owner's verbatim words from the chat, is a finding: the command reads the lock (port · pid · title · the page's last input · draft state) and refuses while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — a neighbour session's word is never evidence (`/owner-reviews` I46; `.kaif/INTERACTIVE_CONTOUR_SPEC.md` § 5; origin issue #66 — the project owner's word, rendered from Russian: "the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT"). Hunt also: an answer LEFT on the owner's machine — a stale `<decisionsDir>/*.lock` beside an existing `.kaif/contour-window/` profile at the end of a session that never ran `--queue --list`, `--check` or a show afterwards (the recovery runs there, I47), or a report that says "the owner did not answer" while the log carries `answer recovered from the owner's machine` or `draft found on the owner's machine`; a contour tool run from a sandbox or a probe with a flag the generator does not know that still raised a page (2.6 behaviour — the polygon's quiet child and the unknown-flag refusal both exist to make it impossible). Re-run: `ls <decisionsDir>/*.lock` and `node .kaif/tools/contour/review.mjs --queue --list` — a recovery line or a kept lock is the record; the session transcript for `kill`/`taskkill` beside a contour pid is the finding.
+   - **Question asked past its archaeology (KAIF 2.7).** A live question brought to the owner — a page raised, a document queued, a question asked pointedly in the chat — in a document dated on or after `2026-09-18` whose body carries no archaeology attestation between the question heading and its first option (`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | "<the prior answer>" + address> -->`), or whose attestation says `N > 0` with `prior: none`, or whose `read:` names no file while `N > 0`, is a finding: a question to the owner is a CLAIM that the matter is not settled yet, and the claim was delivered unverified (`AGENT_GUIDE.md` → the place of questions; `/interview` step 3d; origin issue #70 — an audited field deployment brought one owner 13 questions his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: "you are asking ME? did you look into GOAL.md, smart guy, before asking?" · "we have discussed this already. Search."). Hunt also: an attestation whose command was never run (no `N`, no `read:`, the form left as the template's placeholders); a found prior answer named in `prior:` while the question was still shown unchanged — the legal moves are dropping it and carrying the decision over (`--mark-implemented`) or reformulating it as "the prior answer was X; Y has changed"; a `n/a — <reason>` exception on a question that plainly has something to search for. Re-run: `node .kaif/tools/contour/review.mjs <doc> --check` (exit 3 names every unattested question and PRINTS the command), and where the deployment guards its questions, its own axis (the origin: `node tools/questions-guard.mjs`, G11). `N = 0` is NOT a finding — the axis promises the search happened, never that it found; a document dated before that day is never judged.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -5766,6 +5779,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 - Verify the technical facts that determine which options are even possible (e.g. "can this dialog be
   removed?", "does the library have the needed API?"). A question without verified groundwork is a bad question.
 - Look at past interviews (`ls interviews/`) so you don't duplicate accepted decisions and keep one style.
+  Looking is not searching: the search per question, its command and its attestation are **step 3d**, and
+  the contour's door refuses a question that skipped it.
 
 ### Step 2. Create the interview document
 - Name: `interviews/interview_NNN_<short_topic>.md`, where `NNN` is the next free number
@@ -5826,7 +5841,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 - Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
   pad, but don't starve the interview either: a cramped interview that misses what the agent actually
   needed to clarify is worse than a few extra questions.
-- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
+- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews — and this one is not
+  kept by resolve: it is **step 3d**, a command whose result is written under the question.
 
 ### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after
 
@@ -5908,8 +5924,44 @@ Before opening the page, run the shipped generator's form check — `node .kaif/
 <interview.md> --check` — and fix what it names (a pre-flight refusal, or a block that looks like a question but
 is not in the form `### Q<n>.`). The check is a door of its own: it never serves, never sounds, never calls and
 never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
-only the window is not opened). A project that runs its own contour checks the document against that page by hand.
+only the window is not opened). The same door has a SECOND axis — the archaeology of every live question (step 3d,
+2.7, origin issue #70): no attestation, exit 3, and the refusal prints the search command to run.
+A project that runs its own contour checks the document against that page by hand.
 Paragraph headings like `**A. …**` are not options.
+
+### Step 3d. Archaeology BEFORE the question — search, read, attest (KAIF 2.7)
+
+A question to the owner is a CLAIM that the matter is not settled yet, and nothing used to verify it.
+One field owner answered the same questions thirteen times, one of them 44 days after his own answer
+(origin issue #70; his words, rendered from Russian: "you are asking ME? did you look into GOAL.md,
+smart guy, before asking?" · "you ask me questions without having looked at the history of decisions…
+we have discussed this already. Search."). So the search is a step with a command, and its result is
+written under the question — never "I looked at the interviews" in the agent's memory:
+
+1. **Run the search.** The door prints the ready command for the question's own heading — `node
+   .kaif/tools/contour/review.mjs <interview.md> --check` — and it looks like
+   `grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/ GOAL.md MASTER_PLAN.md plans/`.
+   Run it as printed; broaden it when the topic has a synonym, never narrow it.
+2. **READ the hits** — the files, not the number. A count with nothing read is the same claim unverified.
+3. **Write the attestation** between the question heading and its FIRST option:
+   ```
+   <!-- archaeology: grep -rniE "…" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->
+   ```
+   `N` and the file list come from the run that just happened. `N = 0` is an honest attestation: the axis
+   does not promise a find, it promises you searched and said with what.
+4. **A prior answer found → the question does not go to the owner.** Either DROP it and carry the decision
+   over from the old answer (`node .kaif/tools/contour/review.mjs --mark-implemented <old interview.md> <Q>
+   --where <commit or file>`, step 5), or reformulate it as "the prior answer was X; Y has changed — confirm
+   it or change it", with the old answer quoted and addressed. Re-serving a settled question is the defect.
+5. **The door refuses what skipped this step.** A live question of a document dated on or after 2026-09-18
+   without the attestation: exit 3, the grep printed, nothing shown and nobody called — the same for `--check`
+   and for any show. Hits found with `prior: none` is refused too: name the prior answer, or write
+   `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
+   `<!-- archaeology: n/a — <reason> -->`. Interviews dated before that day are never judged (the field's
+   history is not rewritten), and `--check` says so out loud: `archaeology: not judged — header date …`.
+
+Where the project runs a questions guard, the same class is an axis of it (the origin: `questions-guard`,
+axis G11); `/fable-judge` hunts a question asked past its archaeology.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
@@ -9886,6 +9938,9 @@ or cut it. Prebuilt spheres in this repo are maintained with the framework itsel
 //   P8  — markdown mini-renderer, zero dependencies, escaping is the FIRST action.
 //   §2 of the spec — PRE-FLIGHT: a question with no options in list/table form and no declared free
 //         field must not open (the #51 defect: options typed as paragraphs → a page without radios).
+//   §2, second axis (2.7, origin issue #70) — ARCHAEOLOGY: a LIVE question of a document dated on or
+//         after ARCHAEOLOGY_SINCE must not open without the attestation of the search that was run
+//         (`<!-- archaeology: … → N hits · read: … · prior: … -->`); the refusal prints the READY grep.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve, basename, extname } from 'node:path';
@@ -10120,11 +10175,153 @@ function finishQuestion(q, docClosed) {
     o.label = label ? label[1].trim() : o.letter + ')';
     o.text = full.replace(/^\s*-\s+/, '');
   }
+  // AQ (2.7): where the options START — the archaeology attestation lives ABOVE this line, between
+  // the heading and the first option (a question with no options keeps its whole body as the zone).
+  q.firstOptionLine = -1;
+  for (let j = 0; j < q.body.length; j++) {
+    if (!q.optionTableLines.has(j) && !OPTION_START_RE.test(q.body[j])) continue;
+    q.firstOptionLine = j; break;
+  }
   // the recommended letter is taken from the prose OUTSIDE the options and hung on the option itself
   const proseLines = q.body.filter((l, j) => !q.optionTableLines.has(j) && !OPTION_START_RE.test(l));
   const rec = proseLines.join('\n').match(RECOMMEND_RE);
   q.recommended = rec && q.options.some((o) => o.letter === rec[1]) ? rec[1] : null;
   q.answered = docClosed || q.answers.some((a) => a.text); // rule 4
+}
+
+// ── AQ (2.7, origin issue #70): ARCHAEOLOGY — the question is a CLAIM, and the claim is verified ──
+// A question to the owner says "this is not settled yet". Nothing verified it: the field brought one
+// owner the same question thirteen times, once 44 days after he had answered it ("you are asking ME?
+// did you look into GOAL.md, smart guy, before asking?"). So every LIVE question of a document dated
+// on or after the threshold carries an attestation of the search that was actually run, between the
+// question heading and its first option:
+//   <!-- archaeology: grep -rniE "<nouns>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->
+// The axis judges FORWARD, by the document's header date (the `Created` line when there is one, else
+// the first ISO date of the head): the field's old interviews must never turn red, and a document
+// without a date is not provably new. Exempt: answered questions, documents with no questions, and a
+// declared exception `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class).
+// The axis does not promise the search FINDS anything — it promises the agent searched and recorded
+// with what; `N = 0` is a legal, honest attestation. What it does refuse is `N > 0` with `prior: none`:
+// hits were found and the prior answer is not named (legal: `prior: unrelated — <why>`).
+export const ARCHAEOLOGY_SINCE = '2026-09-18';       // the day the door was shipped; older documents stay silent
+export const ARCHAEOLOGY_PATHS = 'interviews/ GOAL.md MASTER_PLAN.md plans/';
+export const ARCHAEOLOGY_MIN_LETTERS = 4;            // a searchable word of the heading — 4+ letters, machine, no judgement
+export const ARCHAEOLOGY_MIN_LETTERS_FALLBACK = 3;   // a heading of short words only still gets a command
+export const ARCHAEOLOGY_MAX_WORDS = 6;              // the printed command stays one readable line
+// A word of 6+ letters is searched by its STEM — the last two characters are cut. Languages that
+// inflect (the origin's own documents are Russian) would otherwise search for one case form and miss
+// the prior answer written in another; the cut costs extra hits, and an extra hit only asks the agent
+// to read and say `prior: unrelated — <why>`, while a missed hit is exactly the defect of issue #70.
+// A stem never gets shorter than ARCHAEOLOGY_STEM_MIN. The first functional run cut two six-letter words
+// down to four characters, and that command returned 895 hits over the origin's own tree; five characters
+// keep the inflections and cost less (measured on the same question, same tree: 895 → 844 hits, 135 files).
+// The axis does not promise a NARROW command — it promises the search happened and the attestation says
+// what was read; a heading whose words are the project's own subject will always hit a lot.
+export const ARCHAEOLOGY_STEM_FROM = 6;
+export const ARCHAEOLOGY_STEM_CUT = 2;
+export const ARCHAEOLOGY_STEM_MIN = 5;
+const ARCHAEOLOGY_RE = /<!--\s*archaeology:([\s\S]*?)-->/u;
+const ARCHAEOLOGY_NA_RE = /<!--\s*archaeology:\s*n\/a\s*[-—–:]*\s*\S/u;
+const ARCHAEOLOGY_HITS_RE = /(?:→|->)\s*(\d+)\s*hits/iu;
+const ARCHAEOLOGY_PRIOR_RE = /prior:\s*([\s\S]*)$/iu;
+const ARCHAEOLOGY_PRIOR_NONE_RE = /^\s*none(?![\p{L}\d])/iu;
+const STOP_WORDS = new Set(String(PARSER.archaeologyStopWords || '').split('|').filter(Boolean));
+
+/** The document's header date: the `Created` line of the head when present, else its first ISO date. */
+export function headerDate(md) {
+  const head = normalize(md).split('\n').slice(0, HEAD_LINES);
+  const createdRe = new RegExp('^\\s*>?\\s*\\*{0,2}(?:' + PARSER.createdLabels + ')', 'iu');
+  for (const line of head) {                            // the creation date OUTRANKS an answer date above it
+    if (!createdRe.test(line)) continue;
+    const m = line.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+    if (m) return m[1];
+  }
+  return (head.join('\n').match(/\b(\d{4}-\d{2}-\d{2})\b/) || [])[1] || null;
+}
+
+/** The searchable words of a question heading — MACHINE: letters only, 4+ long, stop words dropped. */
+export function archaeologyWords(title) {
+  const bare = String(title || '').replace(/`[^`]*`/gu, ' ').replace(/[*_]/gu, ' ');
+  const pick = (min) => {
+    const out = [];
+    for (const w of bare.match(new RegExp('[\\p{L}]{' + min + ',}', 'gu')) || []) {
+      const t = w.toLowerCase();
+      if (STOP_WORDS.has(t)) continue;
+      const stem = t.length >= ARCHAEOLOGY_STEM_FROM
+        ? t.slice(0, Math.max(ARCHAEOLOGY_STEM_MIN, t.length - ARCHAEOLOGY_STEM_CUT)) : t;
+      if (out.includes(stem)) continue;
+      out.push(stem);
+    }
+    return out;
+  };
+  const words = pick(ARCHAEOLOGY_MIN_LETTERS);
+  return (words.length ? words : pick(ARCHAEOLOGY_MIN_LETTERS_FALLBACK)).slice(0, ARCHAEOLOGY_MAX_WORDS);
+}
+
+/** The READY command for a question heading — the door prints it, the agent copies and runs it. */
+export function archaeologyGrep(title) {
+  const words = archaeologyWords(title);
+  return words.length ? 'grep -rniE "' + words.join('|') + '" ' + ARCHAEOLOGY_PATHS : null;
+}
+
+/** The attestation of ONE question: what stands between its heading and its first option. */
+export function archaeologyOf(q) {
+  const body = q.body || [];
+  const zone = (q.firstOptionLine >= 0 ? body.slice(0, q.firstOptionLine) : body).join('\n');
+  if (ARCHAEOLOGY_NA_RE.test(zone)) return { exempt: true };
+  const m = zone.match(ARCHAEOLOGY_RE);
+  if (!m) return { present: false };
+  const hits = m[1].match(ARCHAEOLOGY_HITS_RE);
+  const prior = m[1].match(ARCHAEOLOGY_PRIOR_RE);
+  if (!hits || !prior) return { present: true, formOk: false };
+  return { present: true, formOk: true, hits: Number(hits[1]), priorNone: ARCHAEOLOGY_PRIOR_NONE_RE.test(prior[1]) };
+}
+
+/**
+ * The archaeology of a whole document: judged only FORWARD by the header date. Problems are DATA
+ * (the shipped door prints them in English, the origin's guard in the owner's language) — one parse
+ * for both sides, so the two never hold two truths about one question.
+ */
+export function archaeology(md) {
+  const date = headerDate(md);
+  const out = { judged: Boolean(date) && date >= ARCHAEOLOGY_SINCE, since: ARCHAEOLOGY_SINCE,
+    headerDate: date, live: 0, attested: 0, exempt: 0, problems: [] };
+  const live = parseQuestions(md).filter((q) => !q.answered);
+  out.live = live.length;
+  if (!out.judged) return out;
+  for (const q of live) {
+    const grep = archaeologyGrep(q.title);
+    const a = archaeologyOf(q);
+    if (a.exempt) { out.exempt++; continue; }
+    if (!a.present) {
+      if (grep) out.problems.push({ id: q.id, kind: 'missing', grep });
+      else out.exempt++;                                 // no searchable word in the heading — no command to print
+      continue;
+    }
+    if (!a.formOk) { out.problems.push({ id: q.id, kind: 'malformed', grep }); continue; }
+    out.attested++;
+    if (a.hits > 0 && a.priorNone) out.problems.push({ id: q.id, kind: 'hits-without-prior', hits: a.hits, grep });
+  }
+  return out;
+}
+
+/** The problem lines of the archaeology axis, in the machinery's own language (like the #51 refusal). */
+function archaeologyProblems(md) {
+  const ARCH = (grep) => '<!-- archaeology: ' + (grep || 'grep -rniE "<nouns>" ' + ARCHAEOLOGY_PATHS)
+    + ' → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->';
+  return archaeology(md).problems.map((p) => {
+    if (p.kind === 'hits-without-prior')
+      return p.id + ': archaeology says ' + p.hits + ' hits and `prior: none` — the search FOUND something and no prior'
+        + ' answer is named. Read the hits and name the prior answer with its address, or write `prior: unrelated — <why>`'
+        + ' (origin issue #70: the same question came back to one owner thirteen times).';
+    if (p.kind === 'malformed')
+      return p.id + ': the archaeology line is not in the form — it must carry `→ N hits` and `prior: …`: ' + ARCH(p.grep);
+    return p.id + ': no archaeology line — a question to the owner CLAIMS "this is not settled yet", and the claim is'
+      + ' unverified. Run the search:  ' + p.grep + '  — read the hits, then put the attestation between the question'
+      + ' heading and its first option: ' + ARCH(p.grep)
+      + ' (a prior answer found → drop the question and carry the decision over, or reformulate it as "the prior answer'
+      + ' was X; Y changed"). Declared exception: <!-- archaeology: n/a — <reason> -->.';
+  });
 }
 
 // ── Spec §2: PRE-FLIGHT — the form of every open question, judged before any page opens ───────
@@ -10142,6 +10339,9 @@ export function preflight(md) {
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +
         ' or declare a free field: <!-- questions-guard:no-scenario <reason> -->');
   }
+  // AQ (2.7, origin issue #70): the SECOND axis of the same door — the question's archaeology. A free
+  // field exempts the FORM, never the claim: a free-form question to the owner is a claim too.
+  problems.push(...archaeologyProblems(md));
   return problems;
 }
 
@@ -10163,7 +10363,8 @@ export function checkForm(md) {
     else if (CANDIDATE_Q_RE.test(line)) candidates.push({ line: i + 1, text: line.trim(), recognised: false });
   });
   return { blocks: candidates.length, questions, recognised: questions.map((q) => q.id),
-    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md) };
+    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md),
+    archaeology: archaeology(md) }; // AQ (2.7): the door says out loud what it judged and what it did not
 }
 
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────
@@ -10403,6 +10604,7 @@ import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -11688,6 +11890,12 @@ export function checkDoc(root, docPath, log = console.log) {
   if (cf.unrecognised.length) { log(t.check.unrecognised(cf.unrecognised.length)); for (const u of cf.unrecognised) log(t.check.line(u.line, u.text)); }
   const nAns = cf.questions.filter((q) => q.answered).length;
   log(t.check.counts(cf.questions.length - nAns, nAns));
+  // AQ (2.7, origin issue #70): the archaeology axis speaks in BOTH directions — how many live
+  // questions carry their attestation, or why the document is not judged at all.
+  const arch = cf.archaeology;
+  if (cf.questions.length) log(arch.judged
+    ? t.check.archaeology(arch.attested, arch.live, arch.exempt)
+    : t.check.archaeologyOld(arch.headerDate, arch.since));
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -11778,6 +11986,36 @@ export function selftest(log = console.log) {
   const partialPage = buildPage(root, CHK);
   ok(partialPage.html.includes('not recognised: 2 question-like block(s)'), 'the page header says out loud that 2 question-like blocks are not on it');
   rmSync(join(root, CHK), { force: true }); // the fixture must not join the queue counted by the batch cases below
+  // AQ (2.7, origin issue #70): the SECOND axis of the same door — the archaeology of a live question.
+  // Both answers of every rule: red without the attestation (and the READY command printed), green with
+  // it; red on hits-without-prior, green on `prior: unrelated`; silent on an answered question, on a
+  // declared n/a and on a document whose header date is before the threshold (it says which).
+  const AQD = 'interviews/interview_099_archaeology.md';
+  const aqHead = (date) => '# Interview #099\n\n> Status: awaiting\n> Created: ' + date + '\n\n';
+  const aqQ = (attestation, answer) => '### Q1. What do we name the game currency?\n\n' + attestation
+    + '| Option | Meaning |\n|---|---|\n| **A** | crystals |\n| **B** | coins |\n\n**Answer:**' + (answer || '') + '\n';
+  const AQ_CMD = 'grep -rniE "name|game|curren" ' + ARCHAEOLOGY_PATHS; // 6+ letters are searched by their stem
+  const AQ_OK = '<!-- archaeology: ' + AQ_CMD + ' → 0 hits · read: none · prior: none -->\n\n';
+  const aqCheck = (body) => { writeFileSync(join(root, AQD), body); lines.length = 0; return checkDoc(root, AQD, cap); };
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('')) === 3 && lines.some((l) => /Q1: no archaeology line/.test(l)) && lines.some((l) => l.includes(AQ_CMD)),
+    'archaeology: a live question of a document dated on the threshold without the attestation → exit 3, and the door prints the READY grep of the heading nouns');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK)) === 0 && lines.some((l) => /archaeology: 1 of 1 live question/.test(l)),
+    'archaeology: the attestation with 0 hits and `prior: none` → exit 0, and --check says 1 of 1 attested (N = 0 is honest, the axis never promises a find)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits'))) === 3 && lines.some((l) => /3 hits and `prior: none`/.test(l)),
+    'archaeology: hits found and no prior answer named → exit 3 (the #70 class: the owner had answered it already)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits').replace('prior: none', 'prior: unrelated — the hits are about the shop layout'))) === 0,
+    'archaeology: `prior: unrelated — <why>` is a legal answer to hits');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: searched a bit -->\n\n')) === 3 && lines.some((l) => /not in the form/.test(l)),
+    'archaeology: an attestation without `N hits` and `prior:` is NOT an attestation → exit 3 (fail-closed, never a silent pass)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: n/a — a naming question, the taste class -->\n\n')) === 0,
+    'archaeology: the declared exception `n/a — <reason>` → exit 0');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('', ' A) crystals')) === 0,
+    'archaeology: an ANSWERED question is out of the axis (nothing is owed to the owner any more)');
+  ok(aqCheck(aqHead('2026-09-01') + aqQ('')) === 0 && lines.some((l) => /not judged/.test(l) && /2026-09-01/.test(l)),
+    'archaeology: a document dated before the threshold → exit 0, and the door says out loud it was NOT judged and why');
+  ok(headerDate('# I\n\n> Status: answered 2026-09-18 10:00\n> Created: 2026-09-13 09:47\n') === '2026-09-13',
+    'archaeology: the header date is the CREATION line — an answer date standing above it never ages an old document forward');
+  rmSync(join(root, AQD), { force: true });
   // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
   const IMPL = 'interviews/interview_097_impl.md';
   writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
@@ -12086,6 +12324,29 @@ export const PARSER = {
   identityOwnerLabels: 'Author\\s*/\\s*owner|Автор\\s*/\\s*владелец',
   // headings of the questions section, dropped from the prose render (cards are the only form)
   questionsSectionHeadings: 'QUESTIONS|Вопросы',
+  // the CREATION line of the document head (`> Created: …` · `> **Создан:** …`) — the archaeology axis
+  // (AQ 2.7) takes the document's date from it, so an ANSWER date standing above never ages a document
+  // forward and an old interview stays silent.
+  createdLabels: 'Created|Создан\\p{L}*|Дата\\s+создания',
+  // AQ (2.7, origin issue #70): words the grep command of a question heading drops — pure function
+  // words of both shipped languages. The pick is machine (letters, length, this list), never a
+  // judgement about nouns: a stop list is data a project can read, an opinion is not.
+  archaeologyStopWords: [
+    'чтобы', 'какой', 'какая', 'какое', 'какие', 'когда', 'нужно', 'нужен', 'нужна', 'надо', 'ли',
+    'если', 'или', 'этот', 'этого', 'этом', 'эта', 'это', 'эти', 'там', 'тоже', 'также', 'так',
+    'быть', 'будет', 'было', 'есть', 'делаем', 'делать', 'берём', 'брать', 'можно', 'нельзя',
+    'сейчас', 'потом', 'после', 'перед', 'между', 'через', 'вместо', 'кроме', 'себя', 'свой',
+    'своя', 'своё', 'свои', 'него', 'them', 'that', 'this', 'these', 'those',
+    'with', 'without', 'from', 'into', 'onto', 'over', 'under', 'after', 'before', 'between',
+    'what', 'which', 'when', 'where', 'whom', 'whose', 'should', 'shall', 'would', 'could',
+    'does', 'done', 'will', 'have', 'been', 'being', 'make', 'made', 'take', 'takes', 'keep',
+    'instead', 'about', 'also', 'else', 'than', 'then', 'they', 'your', 'ours', 'only', 'ever',
+    // добавлено первым функциональным прогоном оси (2026-09-18): команда по живому вопросу соседнего
+    // развёртывания несла «выше», «того», «первы», «перва» — служебные слова заголовка, не предмет.
+    'выше', 'ниже', 'того', 'тому', 'тогда', 'потому', 'первый', 'первая', 'первое', 'первые',
+    'первыми', 'второй', 'вторая', 'третий', 'каждый', 'каждая', 'каждое', 'самый', 'самая',
+    'above', 'below', 'first', 'second', 'third', 'again', 'still',
+  ].join('|'),
 };
 
 // ── Owner-facing dictionaries ────────────────────────────────────────────────────────────────
@@ -12169,6 +12430,12 @@ const EN = {
     unrecognised: (n) => 'not recognised: ' + n + ' block(s) look like questions but are not in the form `### Q<n>.` — the page would open WITHOUT them:',
     line: (l, text) => '  line ' + l + ': ' + text,
     counts: (w, a) => 'unanswered ' + w + ', answered ' + a,
+    // AQ (2.7, origin issue #70): the door says what it judged AND what it did not — a silent axis
+    // that never says "not judged" reads as a green one (the bug-34 class).
+    archaeology: (n, m, ex) => 'archaeology: ' + n + ' of ' + m + ' live question(s) attested'
+      + (ex ? ' (' + ex + ' exempt: declared n/a)' : ''),
+    archaeologyOld: (date, since) => 'archaeology: not judged — header date '
+      + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -12251,6 +12518,10 @@ const RU = {
     unrecognised: (n) => 'не узнано: ' + n + ' блок(ов) похожи на вопрос, но не в форме `### В<n>.` / `### Q<n>.` — страница откроется БЕЗ них:',
     line: (l, text) => '  строка ' + l + ': ' + text,
     counts: (w, a) => 'без ответа ' + w + ', отвечено ' + a,
+    archaeology: (n, m, ex) => 'археология: аттестовано ' + n + ' из ' + m + ' живых вопрос(ов)'
+      + (ex ? ' (вне оси: ' + ex + ' — объявленное n/a)' : ''),
+    archaeologyOld: (date, since) => 'археология: не судится — дата шапки '
+      + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',
@@ -15601,11 +15872,9 @@ addresses the reader can open.>
 ``````md
 # INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)
 
-<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy —
-the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these
-lines BEFORE opening a page to the owner. The long-form canon (47 invariants, build contract C1–C13, traps T1–T11) stays in the
-/owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one
-a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons: options typed as paragraphs). -->
+<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these lines BEFORE opening a page to the owner.
+The long-form canon (47 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
+This page has a BUDGET (120 lines, judged by the origin's suite s22): a new article is written at the width of the table below, or it pays for its lines by tightening an old one. -->
 
 ## 1. Source document — what the page is built from
 
@@ -15617,8 +15886,7 @@ a contour rebuilt per project and broken on its own edge case (a page opened WIT
   - a list item per option: `- **A)** what it means` (a parenthesised note after the letter is legal)
 - A question with NO options is legal only when it DECLARES a free field (a `D) your own answer` option, or the marker
   `<!-- questions-guard:no-scenario <reason> -->` for a naming/taste question). Paragraph headings like `**A. …**` are NOT options — the #51 defect.
-- Every question and every option is a four-line scenario (Situation · Action · Result · Check) in the owner's
-  language; the technical note stands UNDER the scenario, never instead of it.
+- Every question and every option is a four-line scenario (Situation · Action · Result · Check) in the owner's language; the technical note stands UNDER the scenario, never instead of it.
 
 ## 2. Pre-flight — runs before any page opens (exit 3 = refuse to open)
 
@@ -15631,9 +15899,12 @@ for each question Q<n>:
 self-check after render: count(radio groups) == count(questions)  →  mismatch = exit 3, never a silent page
 ```
 
-The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs
-<doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
+The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs <doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
 no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut). **An unknown flag REFUSES before any page, sound or call — exit 1** (2.7, epic LP, origin issue #66: the 2.6 generator let `--close` fall through to the show and called the owner); the known flags are printed with the refusal.
+**Second axis of the same door — ARCHAEOLOGY (2.7, origin issue #70: 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days after his answer).** A LIVE question of a document whose header date is on or after `2026-09-18` opens only WITH the attestation of the search that was actually run, standing between its heading and its FIRST option:
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
+Without it the door exits 3 and PRINTS that ready command; `N > 0` with `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
+Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
 
 ## 3. Records — three files, derived names, never overwritten
 
