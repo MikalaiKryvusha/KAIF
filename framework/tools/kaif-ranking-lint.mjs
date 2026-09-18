@@ -56,7 +56,7 @@ const debtRe = () => new RegExp('^\\s*\\**(?:' + Object.values(KEYWORDS).map((k)
 // ---------------------------------------------------------------------------
 // Parsing — the answer block of a document: the lines above the table, the table rows, the lines below.
 export function parseAnswer(src) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const visible = [];
   let fence = false;
   lines.forEach((l, i) => {

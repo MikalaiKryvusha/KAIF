@@ -15,7 +15,10 @@
 //
 // [TESTED: 2026-08-09 · все три режима наблюдены живьём — запись напечатала момент 12:18:32 +03:00,
 //  `--show` прочитал его обратно с возрастом 0 мин, пустой `--docs` отвергнут кодом 1 с готовым
-//  верным ходом. Момент в маркере совпал с системными часами, а не с памятью сессии.]
+//  верным ходом. Момент в маркере совпал с системными часами, а не с памятью сессии.
+//  2026-09-18 14:10 +03:00 · граница списка `--docs`: `--docs A B --note "n"` → docs [A, B]; `--note "n" --docs
+//  A B` → те же [A, B]; `--docs A --note "n" stray` → [A]; `--docs --note "n"` → отказ кодом 1. До правки первая
+//  форма писала в `docs` ТРИ элемента, третьим — текст заметки (наблюдено живьём на маркере сессии 67 в 14:08).]
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -59,8 +62,13 @@ if (!trigger || !(TRIGGERS.includes(trigger) || trigger.startsWith(RITUAL_PREFIX
 }
 // Список перечитанного — всё после `--docs` до следующего флага. Пустой список запрещён:
 // маркер без него утверждает освежение, не называя ЧТО освежено, а это и есть ложный [TESTED].
+// Прежняя редакция ФИЛЬТРОВАЛА флаги вместо остановки на первом из них: значение `--note`, стоящее
+// после списка (ровно так, как показывает строка «Использование» выше), уезжало в `docs`, и маркер
+// свидетельствовал о перечитанном «документе», которым был текст заметки (сессия 67, 2026-09-18).
 const docsIdx = argv.indexOf('--docs');
-const docs = docsIdx < 0 ? [] : argv.slice(docsIdx + 1).filter((a) => !a.startsWith('--'));
+const afterDocs = docsIdx < 0 ? [] : argv.slice(docsIdx + 1);
+const nextFlag = afterDocs.findIndex((a) => a.startsWith('--'));
+const docs = nextFlag < 0 ? afterDocs : afterDocs.slice(0, nextFlag);
 if (!docs.length) {
   console.error('✋ --docs пуст: маркер обязан НАЗЫВАТЬ перечитанное — иначе он утверждает освежение, не свидетельствуя о нём');
   process.exit(1);

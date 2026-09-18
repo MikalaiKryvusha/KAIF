@@ -276,8 +276,10 @@ if (quietProof.length || loud.length) {
 // only when that dist was built from the sources on disk. A stale dist ran the OLD contour generator against a flag
 // it did not know and raised the owner's page — the quiet child (above) stops the window, this stops the CAUSE.
 // The KAIF_DIST seam (a red proof against an old release) is exempt by design: that dist is old on purpose.
-// @guard sandbox-dist-fresh — the declaration with THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH lives beside the
-// function in tools/lib/source-tree-sha.mjs (one fingerprint, both sides, one selftest).
+// The guard is named sandbox-dist-fresh; its declaration (THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH) lives beside the
+// function in tools/lib/source-tree-sha.mjs (one fingerprint, both sides, one selftest). The marker itself is NOT
+// repeated on this line on purpose: kaif-guard-lint reads every marker as a declaration, and a pointer written with the
+// marker was judged as a second, empty block — four findings on a wholesale `check tools framework` (session 67).
 if (!process.env.KAIF_DIST) {
   const fr = distFreshness(REPO);
   if (!fr.fresh) {

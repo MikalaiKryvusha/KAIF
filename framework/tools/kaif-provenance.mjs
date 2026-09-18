@@ -77,7 +77,7 @@ const EXIT_SKIPPED = 3;
 //                                       derived ([ИИ] → [/ИИ]); the English pair always works.
 function readMarker() {
   if (!existsSync(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
-  return JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^﻿/, ''));
+  return JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^\uFEFF/, ''));
 }
 const MARKER = readMarker();
 const DECLARED = Array.isArray(MARKER.canonArtifacts);
@@ -257,7 +257,7 @@ function cmdAccept() {
   const { blocks, errors, tagSites } = parseMarks(file);
   if (errors.length) { for (const e of errors) console.error('✖ ' + e); die('fix mark pairing before accepting'); }
   if (!blocks.length) die(`${file} carries no provenance marks — nothing to accept`);
-  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8').replace(/^﻿/, '')) : { accepted: [] };
+  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8').replace(/^\uFEFF/, '')) : { accepted: [] };
   const date = new Date().toISOString().slice(0, 10);
   for (const b of blocks) reg.accepted.push({ file, date, kind: b.kind, sha: sha(b.text), excerpt: b.text.trim().split('\n')[0].slice(0, 80) });
   writeFileSync(REGISTRY, JSON.stringify(reg, null, 2) + '\n');

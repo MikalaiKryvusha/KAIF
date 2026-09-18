@@ -225,7 +225,7 @@ const isForward = (lines) => { const d = headDate(lines); return Boolean(d) && d
 
 // ── Утилиты ────────────────────────────────────────────────────────────────────────────────
 const sha1 = (s) => createHash('sha1').update(s, 'utf8').digest('hex');
-const stripBom = (s) => s.replace(/^﻿/, '');
+const stripBom = (s) => s.replace(/^\uFEFF/, '');
 const readLines = (p) => stripBom(readFileSync(p, 'utf8')).split(/\r?\n/); // CRLF-терпимо
 const rel = (root, p) => relative(root, p).replace(/\\/g, '/');
 // Снять МЯГКИЙ перенос строки перед проверкой совместной приметы I20 (bugs/56): проза врапается,

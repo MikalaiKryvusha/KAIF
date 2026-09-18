@@ -8,10 +8,11 @@
 //   2. The 6-backtick fences are balanced, one pair per embedded block.
 //   3. No unreplaced build markers ({{...}}) remain.
 //   4. Every skill in framework/skills/ is embedded in KAIF.md.
-import { readFileSync, readdirSync, existsSync, statSync as statSyncTop, cpSync, appendFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, statSync as statSyncTop, cpSync, appendFileSync, writeFileSync as writeFileSyncTop, mkdirSync as mkdirSyncTop } from 'node:fs';
 import { join, dirname, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from './lib/temp-root.mjs';
+import { scanText as scanInvisible, label as invisibleLabel } from './lib/invisible-chars.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -85,6 +86,65 @@ function scanPayloadCyrillic(fwRoot) {
     }
   }
   return found;
+}
+
+// 5h. Invisible characters inside SOURCE bodies (bugs/122). An agent types the escape of a byte-order mark (or of NUL,
+//     BEL, a zero-width space) into the parameter of an edit tool; the tool layer decodes the four-hex-digit escape BEFORE
+//     the write, and the file receives the REAL character. Inside a regex or a string it WORKS exactly like the escape
+//     would, so no suite reddens — while the eye, a diff and a review read `replace(/^<it>/, '')` as `replace(/^/, '')`,
+//     and whoever retypes the line "as seen" silently turns the behaviour off. On 2026-09-18 that was how EVERY byte-order-
+//     mark strip of the project was written: 39 source sites, 25 of them shipped. The set of code points and the scanner
+//     live in tools/lib/invisible-chars.mjs (shared with the probe that carries the ready move, `--fix`).
+//     @guard invisible-characters
+//     THREAT:         a control or format character typed as an escape lands in a source body as the real character; a
+//                     later hand edit drops it and a strip, a separator or a terminal bell silently stops working
+//     PROVED-AGAINST: the NAMED broken version — the origin's own tree at 39c9988 (39 sites in framework/ and tools/) —
+//                     judged by this function: red, every file named with its code points; `--selftest`: a synthetic
+//                     tree with the character inside a .mjs body and inside a .md body is red by name, the same tree
+//                     with a byte-order mark at offset 0 only, and the clean tree, stay silent
+//     GAP:            documents outside framework/ and tools/ are not judged (bugs/, plans/, the journal — there the
+//                     probe reports and a human fixes by meaning); a character somebody WANTS in a body has no exemption
+//                     on purpose — write it as an escape or build it from its code
+//     ON-REAL-PATH:   2026-09-18 — the origin's own build, the path every session walks: REFUSED at 12:57 +03:00 on the
+//                     living tree before the normalisation (twenty files named), green at 14:27 and 14:44 after it; on a
+//                     copy of the tree with the character put back into the shipped core and into one tool — exit 1 and
+//                     the two sites named (report testcases/reports/2026-09-18_invisible-characters.md, runs 1, 10, 12)
+const INVISIBLE_ZONES = ['framework', 'tools'];
+function scanInvisibleCharacters(root) {
+  const found = [];
+  const walk = (dir) => {
+    for (const n of readdirSync(dir).sort()) {
+      const p = join(dir, n);
+      if (statSyncTop(p).isDirectory()) { if (n !== 'node_modules') walk(p); continue; }
+      if (!/\.(mjs|js|json|md)$/i.test(n)) continue;
+      const hits = scanInvisible(readFileSync(p, 'utf8'));
+      if (!hits.length) continue;
+      const rel = relative(root, p).split('\\').join('/');
+      const kinds = [...new Set(hits.map((h) => invisibleLabel(h.code)))].join(' · ');
+      const move = /\.(mjs|js)$/i.test(n) ? `node tools/sandbox/probes/invisible-characters.mjs --fix ${rel}` : 'a document — fix it by hand, by meaning';
+      // The line opens with the form the bug document promised — `<code point> at <file>:<line>` — so a grep for it lands.
+      found.push(`invisible character inside a source body (bugs/122): ${invisibleLabel(hits[0].code)} at ${rel}:${hits[0].line} (column ${hits[0].col}) — ${hits.length} in this file (${kinds}) — the ready move: ${move}`);
+    }
+  };
+  for (const z of INVISIBLE_ZONES) if (existsSync(join(root, z))) walk(join(root, z));
+  return found;
+}
+function selfProofInvisible() {
+  const fails = [];
+  const sandbox = tempRoot('check-5h');
+  const BOM = String.fromCharCode(0xFEFF), NUL = String.fromCharCode(0);
+  const put = (rel, text) => { const p = join(sandbox, ...rel.split('/')); mkdirSyncTop(dirname(p), { recursive: true }); writeFileSyncTop(p, text); };
+  put('framework/clean.mjs', "const s = 'plain';\n");
+  put('tools/file-level-bom.mjs', BOM + "const s = 'a byte-order mark at offset 0 is a file property';\n");
+  let got = scanInvisibleCharacters(sandbox);
+  if (got.length) fails.push(`чистое дерево и BOM в нулевой позиции покраснели: ${got[0]}`);
+  put('framework/strip.mjs', "const t = s.replace(/^" + BOM + "/, '');\n");
+  put('tools/key.md', 'a key separator typed as an escape: [' + NUL + ']\n');
+  got = scanInvisibleCharacters(sandbox);
+  if (!got.some((e) => e.includes('U+FEFF at framework/strip.mjs:1 ') && e.includes('--fix framework/strip.mjs'))) fails.push('символ внутри регулярного выражения .mjs НЕ назван формой «кодовая точка at файл:строка» с готовым ходом');
+  if (!got.some((e) => e.includes('U+0000 at tools/key.md:1 ') && e.includes('by hand'))) fails.push('NUL в документе НЕ назван формой «кодовая точка at файл:строка» или предложен машинный ход');
+  if (got.length !== 2) fails.push(`ожидалось ровно две находки, получено ${got.length}`);
+  return fails;
 }
 
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
@@ -226,7 +286,7 @@ function vanishedHeadings(oldFiles, newFiles, renamesByVersion, deprecations) {
   const declared = new Set();
   for (const perPath of Object.values(renamesByVersion || {}))
     for (const [path, pairs] of Object.entries(perPath || {}))
-      for (const [o] of pairs) declared.add(path + ' ' + o);
+      for (const [o] of pairs) declared.add(path + '\u0000' + o);
   const retiredPaths = new Set((deprecations || []).map((d) => d.path));
   const out = [];
   for (const [path, mods] of Object.entries(oldFiles || {})) {
@@ -235,7 +295,7 @@ function vanishedHeadings(oldFiles, newFiles, renamesByVersion, deprecations) {
     if (!now) continue;                                // the path itself is gone: a different class (deprecations)
     const live = new Set(now.map((m) => m.signature));
     for (const m of mods) {
-      if (live.has(m.signature) || declared.has(path + ' ' + m.signature)) continue;
+      if (live.has(m.signature) || declared.has(path + '\u0000' + m.signature)) continue;
       if (/^# /.test(m.signature)) continue;           // an H1 carries deploy-time values — its drift is bug 26, not a rename
       out.push(`${path} :: ${m.signature}`);
     }
@@ -299,6 +359,10 @@ if (process.argv.includes('--selftest')) {
   if (vFails.length) { console.error(`\n❌ check-framework --selftest: гард 5f — ${vFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5f: исчезнувший заголовок БЕЗ записи краснеет ПОИМЁННО; объявленное переименование и депрекация молчат');
   console.log('✅ гард 5g: объявленная пара с опечаткой в НОВОЙ половине или с несуществующей СТАРОЙ — красная; верная пара и пара прошлого релиза молчат');
+  const iFails = selfProofInvisible();
+  for (const f of iFails) console.error('✖ selfproof 5h (bugs/122): ' + f);
+  if (iFails.length) { console.error(`\n❌ check-framework --selftest: гард 5h — ${iFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5h: невидимый символ в теле .mjs и в теле .md назван ПОИМЁННО (файл · кодовая точка · готовый ход); BOM в нулевой позиции файла и чистое дерево молчат');
   const fails = selfProofPayloadCyrillic();
   for (const f of fails) console.error('✖ selfproof 5d: ' + f);
   const halfFails = selfProofHalves();
@@ -412,6 +476,8 @@ if (skills.includes('release')) {
 //     selftest that proves it has to run before the dist artifacts are read. Here it is only
 //     invoked, so that the ordering of the numbered checks stays readable.
 errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
+// 5h. Invisible characters inside source bodies of framework/ and tools/ (bugs/122) — declared at the top, invoked here.
+errors.push(...scanInvisibleCharacters(ROOT));
 
 // 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
 //     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]
@@ -952,7 +1018,7 @@ if (existsSync(distDir)) {
     //    (b) the machinery sources (CORE/LOADER) must stay version-NEUTRAL — no baked-in
     //        "KAIF X.Y — Codename" header that goes stale the moment a release ships.
     // BOM-tolerant read: Windows tools (PowerShell 5 Out-File) prepend a BOM (EXP-0007).
-    const vjson = JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8').replace(/^﻿/, ''));
+    const vjson = JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8').replace(/^\uFEFF/, ''));
     const expectCodenameLine = `KAIF ${vjson.major}.${vjson.minor} — ${vjson.codename}`;
     if (!vjson.codename) errors.push('version.json has no "codename" — the release codename must live there (single source)');
     const metaMatch = bundle.match(/> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\r?\n\r?\n``````json\r?\n([\s\S]*?)\r?\n``````/);

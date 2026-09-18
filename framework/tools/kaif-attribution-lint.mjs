@@ -137,7 +137,7 @@ function agentMarks(root = '.') {
   const p = join(root, KAIF_JSON);
   if (existsSync(p)) {
     try {
-      const j = JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+      const j = JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
       if (Array.isArray(j.aiMarks)) for (const m of j.aiMarks) if (typeof m === 'string') marks.push(m);
     } catch { /* a malformed marker is the provenance gate's business, not this linter's */ }
   }
@@ -151,7 +151,7 @@ const grounds = (l) => QUOTE_RE.test(l) || QUOTE_LINE_RE.test(l) || INTERVIEW_RE
 
 /** Findings of one document: [{ line, text }] — text is the exact source line (trimmed). */
 export function lintText(src, marks = DEFAULT_AGENT_MARKS) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const out = [];
   let fence = false;
   let selfUntil = -1;   // inside a "decisions without the owner" section until this heading level closes it
@@ -209,7 +209,7 @@ const rel = (root, f) => f.replaceAll('\\', '/').replace(root.replaceAll('\\', '
 
 function readBaseline(p) {
   if (!existsSync(p)) return null;
-  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, '')); } catch { return null; }
+  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, '')); } catch { return null; }
 }
 
 /** The check over a root: { findings: [{file, line, text, key}], scanned } */

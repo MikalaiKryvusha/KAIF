@@ -73,7 +73,7 @@ r = run('check');
 ok(r.code !== 0 && /forbidden/.test(r.out), 's06 CRLF: якорённый ($) запрет срабатывает и с \\r (ложного зелёного нет)', r.out);
 
 // BOM (PS5.1 Out-File): стерегомая строка первой строкой BOM-файла находится
-writeFileSync(join(ROOT, 'rules', 'combat.md'), '﻿Критический удар добавляет +50 к урону (решение владельца).\n');
+writeFileSync(join(ROOT, 'rules', 'combat.md'), '\uFEFFКритический удар добавляет +50 к урону (решение владельца).\n');
 r = run('check');
 ok(r.code === 0, 's06 BOM-файл: стерегомая строка первой строкой находится', r.out);
 

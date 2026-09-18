@@ -160,7 +160,7 @@ const sha256 = (data) => createHash('sha256').update(data).digest('hex');
 const fileSha = (p) => sha256(readFileSync(p));
 const sh = (cmd) => { try { return execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return ''; } };
 // JSON reader tolerant of a UTF-8 BOM (Windows tools like PowerShell 5 write one).
-const readJson = (p) => JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+const readJson = (p) => JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
 
 // The CLI-passed --lang is validated the moment die() is live (bug 92.1; checkedLang above).
 if (val('--lang')) LANG = checkedLang(val('--lang'), '--lang');
@@ -2743,7 +2743,7 @@ async function cmdInstall() {
   let pkg = null, pkgRaw = null;
   if (ANON) { /* no handles by design */ }
   else if (existsSync('package.json')) {
-    try { pkgRaw = readFileSync('package.json', 'utf8'); pkg = JSON.parse(pkgRaw.replace(/^﻿/, '')); }
+    try { pkgRaw = readFileSync('package.json', 'utf8'); pkg = JSON.parse(pkgRaw.replace(/^\uFEFF/, '')); }
     catch { pkg = null; console.error('⚠ package.json exists but is not parseable JSON — kaif:* handles NOT wired (add them by hand)'); }
   } else pkg = {};
   if (pkg) {
@@ -2768,8 +2768,8 @@ async function cmdInstall() {
       const sane = (() => {
         if (next == null) return false;
         try {
-          const orig = JSON.parse(pkgRaw.replace(/^﻿/, ''));
-          const chk = JSON.parse(next.replace(/^﻿/, ''));
+          const orig = JSON.parse(pkgRaw.replace(/^\uFEFF/, ''));
+          const chk = JSON.parse(next.replace(/^\uFEFF/, ''));
           for (const [k, v] of addScripts) { if (!chk.scripts || chk.scripts[k] !== v) return false; delete chk.scripts[k]; }
           if (addName) { if (chk.name !== addName) return false; delete chk.name; }
           if (addScripts.length && !orig.scripts) { if (Object.keys(chk.scripts).length) return false; delete chk.scripts; }
@@ -3055,11 +3055,11 @@ function cmdCheck() {
   // Code is NOT prose (plan 95 risk б): a Russian skill quotes commands, paths and flags by the
   // dozen, and counting them would redden every legitimate localized skill — fenced blocks and
   // inline code spans are removed before tokenizing.
-  // The threshold was MEASURED, not chosen: over the origin's own 37-skill ru layer (2026-09-18) the
-  // 29 skills carrying the owner's script run 0.003 … 0.130 foreign share, and the 8 English ones
-  // run 1.000; one skill (English body, three stray Cyrillic words) sits at 0.993 — invisible to the
-  // old predicate and named as a mix by this one. The threshold sits inside that gap, far from both
-  // sides, and below one half, so a body whose paragraphs are half English is named.
+  // The threshold was MEASURED, not chosen: over the origin's own 37-skill ru layer (2026-09-18), of the
+  // 29 skills carrying the owner's script 28 run 0.003 … 0.130 foreign share and ONE (English body,
+  // three stray Cyrillic words) sits at 0.993 — invisible to the old predicate and named as a mix by
+  // this one; the 8 English ones run 1.000. The threshold sits inside that gap, far from both sides,
+  // and below one half, so a body whose paragraphs are half English is named.
   const LANGUAGE_MIX_FOREIGN_SHARE = 0.35;
   try {
     const lang = String(readJson(KAIF_JSON).language || 'en').toLowerCase();
@@ -3432,7 +3432,7 @@ function readOwnerText(inline, filePath, what) {
   if (filePath && inline) die(`pass either --${what}-file or the inline value, not both — two sources of one truth drift apart`);
   if (filePath) {
     if (!existsSync(filePath)) die(`${what} file not found: ${filePath}`);
-    const full = normEol(readFileSync(filePath, 'utf8').replace(/^﻿/, '')).trim();
+    const full = normEol(readFileSync(filePath, 'utf8').replace(/^\uFEFF/, '')).trim();
     if (!full) die(`${what} file is empty: ${filePath}`);
     return { full, firstLine: full.split('\n').find((l) => l.trim()).trim(), fromFile: true };
   }

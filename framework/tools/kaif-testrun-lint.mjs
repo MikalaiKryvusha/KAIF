@@ -144,7 +144,7 @@ const roleOf = (title) => {
 };
 
 export function parseReport(name, src) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const fields = {};
   let lang = null, cur = null, fence = false;
   for (const l of lines) {

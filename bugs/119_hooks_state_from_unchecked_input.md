@@ -51,7 +51,7 @@ JSON без снятия BOM» вне хуков (TWINS в) и обратный 
    подкаталог → тишина.
 2. `at` в будущем: записать `{"at":"<now+2h ISO>","docs":[],"trigger":"hour"}`, состарить mtime файла на
    5 ч (`utimesSync`) → хук молчит; контроль `at` = 5 ч назад → приказ «last refresh 300 min ago».
-3. BOM: подать то же событие с префиксом `﻿` (буфером или файлом — НЕ строкой в argv, `EXP-0121`):
+3. BOM: подать то же событие с префиксом `\uFEFF` (буфером или файлом — НЕ строкой в argv, `EXP-0121`):
    `session-start-refresh` с `source:"clear"` → `"trigger": "compaction"` вместо `"ritual:/clear"`;
    `prompt-resume-word` с `prompt:"resume\n…"` → ПУСТО.
 

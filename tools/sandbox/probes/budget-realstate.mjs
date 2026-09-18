@@ -12,14 +12,20 @@
 // integrator so the run can be repeated (EXP-0016). The byte-order mark is stripped by CODE POINT, with no escape and no
 // character in this source (origin bug 122).
 // Run:   node tools/sandbox/probes/budget-realstate.mjs <deployment dir> [<deployment dir> …]      (needs a FRESH dist)
+//        node tools/sandbox/probes/budget-realstate.mjs --fixture     a SANDBOX deployment built here: exercises the probe itself
 // Raises no window and no sound; writes only into the OS temp dir and prints where the traces are.
 // [TESTED: 2026-09-18 11:02 and 11:04 +03:00 · by the epic's subagent, as cb-realstate.mjs, on copies of two field
 //  deployments (243 files each; sources re-hashed after the run — 0 changed): 3 and 4 printed numbers matched the numbers
 //  computed here, the other documents silent on both sides, 0 disagreements; the run found the "translated wholesale"
 //  sentence printed for owner-seeded documents — fixed before the commit; report testcases/reports/2026-09-18_canon-budget.md,
-//  runs 10 and 13. NOT re-run by the integrator after the move into the repository.]
+//  runs 10 and 13. NOT re-run by the integrator on field deployments after the move into the repository.
+//  2026-09-18 14:47 and 14:54 +03:00 · the session judge found the moved edition reading stdout ALONE on a green exit (the
+//  core warns on stderr): on a sandbox fixture it reported four false "printed NOTHING", exit 1. Fixed to read both
+//  streams; on the same fixture the fixed probe prints NUMBER MATCHED x4, 0 disagreements, exit 0, while the edition
+//  committed at 39c9988 still prints "printed NOTHING" x4 (14:47); `--fixture` of this file: 4 matched, 254 source files
+//  re-hashed, 0 changed (14:54) — report testcases/reports/2026-09-18_canon-budget.md, the post-judge addendum, row С4.]
 import { mkdtempSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, existsSync, statSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -50,8 +56,28 @@ const normSha = (t) => createHash('sha256').update(normEol(String(t))).digest('h
 const BUDGETS = { 'STATUS.md': 200, 'GOAL.md': 300, 'MASTER_PLAN.md': 300, 'PROJECT_STRUCTURE_EXTERNAL_MAP.md': 300,
   'PHILOSOPHY.md': 300, 'TESTING_FRAMEWORK.md': 300, 'BUG_FIXING_FRAMEWORK.md': 300, 'REQUIREMENTS_FRAMEWORK.md': 250, 'AGENT_GUIDE.md': 1200 };
 
-const dirs = process.argv.slice(2);
-if (!dirs.length) { console.error('usage: node tools/sandbox/probes/budget-realstate.mjs <deployment dir> [<deployment dir> …]'); process.exit(2); }
+// `--fixture` — a SANDBOX deployment built here (never a field project): a fresh `install --lang ru` from dist/ in a unique
+// temp dir, four documents of the re-read core inflated with OWN lines past their budgets. It lets the probe itself be
+// exercised where no neighbour deployment may be read — that is how the stdout-only runner was caught and proved fixed.
+const FIXTURE_INFLATE = { 'AGENT_GUIDE.md': 1300, 'STATUS.md': 260, 'MASTER_PLAN.md': 360, 'PHILOSOPHY.md': 340 };
+function buildFixture() {
+  const F = mkdtempSync(join(tmpdir(), 'kaif-budget-fixture-'));
+  mkdirSync(join(F, '.kaif', 'install'), { recursive: true });
+  copyFileSync(join(REPO, 'dist', 'KAIF-CORE-BUNDLE.md'), join(F, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'));
+  copyFileSync(CORE, join(F, '.kaif', 'kaif-core.mjs'));
+  const inst = spawnSync(process.execPath, [join(F, '.kaif', 'kaif-core.mjs'), 'install', '--lang', 'ru'], { cwd: F, encoding: 'utf8', maxBuffer: 1 << 26, windowsHide: true });
+  if (inst.status !== 0) { console.error('the fixture did not install: exit ' + inst.status + '\n' + String(inst.stdout + inst.stderr).slice(-600)); process.exit(2); }
+  for (const [doc, extra] of Object.entries(FIXTURE_INFLATE)) {
+    const p = join(F, doc);
+    const body = Array.from({ length: extra - 2 }, (_, i) => `own line ${i + 1} - fixture`).join('\n');
+    writeFileSync(p, `${readFileSync(p, 'utf8').replace(/\r?\n$/, '')}\n\n## House section of the fixture project\n\n${body}\n`);
+  }
+  console.log(`fixture deployment built: ${F} (${Object.keys(FIXTURE_INFLATE).length} documents inflated with own lines)`);
+  return F;
+}
+const argv = process.argv.slice(2);
+const dirs = argv.includes('--fixture') ? [buildFixture()] : argv;
+if (!dirs.length) { console.error('usage: node tools/sandbox/probes/budget-realstate.mjs <deployment dir> [<deployment dir> …]   |   --fixture'); process.exit(2); }
 let disagreements = 0, touched = 0;
 dirs.forEach((src, idx) => {
   const alias = 'deployment ' + (idx + 1);
@@ -75,9 +101,12 @@ dirs.forEach((src, idx) => {
   console.log(`copied ${copied} file(s) into the temp tree, ${absent} named by the manifest and absent on disk`);
   copyFileSync(CORE, join(ROOT, '.kaif', 'kaif-core.mjs'));   // the core under test is OURS, never the project's
 
+  // BOTH streams, on a green exit too: the core prints its budget warnings to stderr (console.error), and a bare `check`
+  // exits 0 with them. The first repository edition read stdout alone on exit 0 and reported "printed NOTHING" for every
+  // warning of a healthy deployment — four false mismatches on the sandbox fixture (session-67 judge, finding F3).
   const run = (args) => {
-    try { return { code: 0, out: execFileSync(process.execPath, [join(ROOT, '.kaif', 'kaif-core.mjs'), ...args], { cwd: ROOT, stdio: 'pipe', maxBuffer: 1 << 26 }).toString() }; }
-    catch (e) { return { code: e.status ?? 1, out: String(e.stdout || '') + String(e.stderr || '') }; }
+    const r = spawnSync(process.execPath, [join(ROOT, '.kaif', 'kaif-core.mjs'), ...args], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26, windowsHide: true });
+    return { code: r.status ?? 1, out: String(r.stdout || '') + String(r.stderr || '') };
   };
 
   console.log('\nexpected (computed here, from the line count and the deployment\'s own moduleShas):');

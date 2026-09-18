@@ -112,7 +112,7 @@ export function cfgOf(root) {
   return CFG_CACHE.get(key);
 }
 export const T = (cfg) => texts(cfg.language);
-const stripBom = (s) => String(s).replace(/^﻿/, '');
+const stripBom = (s) => String(s).replace(/^\uFEFF/, '');
 const readJsonOr = (p, dflt) => { if (!existsSync(p)) return dflt; try { return JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { return dflt; } };
 const relDoc = (root, docPath) => relative(root, resolve(root, docPath)).replace(/\\/g, '/');
 const decisionsAbs = (root, cfg = cfgOf(root)) => resolve(root, cfg.decisionsDir);
@@ -150,7 +150,7 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
         const dir = tmpDirOf(root);
         mkdirSync(dir, { recursive: true });
         const phraseFile = join(dir, 'call-phrase.txt');
-        writeFileSync(phraseFile, '﻿' + phrase, 'utf8'); // UTF-8 with BOM — PowerShell reads the encoding by BOM
+        writeFileSync(phraseFile, '\uFEFF' + phrase, 'utf8'); // UTF-8 with BOM — PowerShell reads the encoding by BOM
         const pref = process.env.KAIF_SAPI_VOICE || '';
         const ps = spawn('powershell.exe', ['-NoProfile', '-Command',
           'Add-Type -AssemblyName System.Speech; ' +
@@ -191,7 +191,7 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
     beep.on('exit', voice);
     beep.on('error', () => { log('CALL: beeps failed (no PowerShell?) — voice next.'); voice(); }); // the signal never drops the contour (I32)
   } else {
-    try { process.stdout.write(''); } catch { /* no terminal — nothing to ring */ }
+    try { process.stdout.write('\u0007'); } catch { /* no terminal — nothing to ring */ }
     log('CALL: no sound-card beep on this platform — terminal bell only; voice next.');
     voice();
   }
@@ -1365,7 +1365,7 @@ export function selftest(log = console.log) {
 
   // C3: four faces — one hash
   const base = 'Line one\nLine two\n';
-  const faces = ['﻿' + base, base.replace(/\n/g, '\r\n'), base + '\n\n', base.replace(/\n$/, '')];
+  const faces = ['\uFEFF' + base, base.replace(/\n/g, '\r\n'), base + '\n\n', base.replace(/\n$/, '')];
   ok(new Set(faces.map(bodyHash)).size === 1 && bodyHash('other') !== bodyHash(base), 'normalisation: four faces (BOM/CRLF/tail/no newline) — one hash');
   // I6: quiet hours across midnight
   const at = (h, m) => new Date(2026, 7, 7, h, m);
@@ -1508,7 +1508,7 @@ export function selftest(log = console.log) {
 
   // I37/I38: the notice class — state machine, page form, batch order
   const NOTICE = 'docs/report.md';
-  writeFileSync(join(root, NOTICE), '﻿# Night report\r\n\r\nThree backlog items closed.\r\n');
+  writeFileSync(join(root, NOTICE), '\uFEFF# Night report\r\n\r\nThree backlog items closed.\r\n');
   const beforeN = readFileSync(join(root, NOTICE), 'utf8');
   enqueue(root, NOTICE, { kind: KIND_NOTICE });
   ok(pendingNotices(root).length === 1 && !pendingDocs(root).some((d) => d.doc === NOTICE), 'notice: registered in its own group, never among the questions');

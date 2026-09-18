@@ -300,7 +300,7 @@ must(run, D, 'install --lang ru');
 mkdirSync(join(D, 'interviews', 'decisions'), { recursive: true });
 // the owner's parameter `contour.closeQuietMs` — 4 s here so the suite can observe both refusals and a close within seconds
 // (the default is 180 s); a page YOUNGER than the threshold or typed into within it is never closed without --force
-{ const kj = join(D, '.kaif', 'kaif.json'); const m = JSON.parse(readFileSync(kj, 'utf8').replace(/^﻿/u, '')); m.contour = { ...(m.contour || {}), closeQuietMs: 4000 }; writeFileSync(kj, JSON.stringify(m, null, 2) + '\n'); }
+{ const kj = join(D, '.kaif', 'kaif.json'); const m = JSON.parse(readFileSync(kj, 'utf8').replace(/^\uFEFF/u, '')); m.contour = { ...(m.contour || {}), closeQuietMs: 4000 }; writeFileSync(kj, JSON.stringify(m, null, 2) + '\n'); }
 const CLOSE_QUIET_MS = 4000;
 const DOC = 'interviews/interview_066_probe.md';
 writeFileSync(join(D, DOC), GOOD_052.replace('#052', '#066'));

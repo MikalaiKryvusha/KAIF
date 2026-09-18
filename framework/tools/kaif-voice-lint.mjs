@@ -172,7 +172,7 @@ export function compilePattern(cell, extraFlags = 'g') {
 // parsePortrait(text) → { status: ok | no-section | no-table | no-rules, rules, notes, tables }
 // rule = { line, source, re, cls: stop | positive, hint, exception (prose or regex text), excRe }
 export function parsePortrait(text) {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   let start = -1;
   for (let i = 0; i < lines.length; i++) {
     const m = H2.exec(lines[i]);
@@ -230,7 +230,7 @@ export function parsePortrait(text) {
 // head before the first H2 always rides along so the portrait's binding note and corpus registry are never
 // dropped. `matched` = 0 means nothing of the body was selected — the caller refuses to write a witness.
 export function sectionsMatching(text, re) {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   const out = [];
   let keep = true, matched = 0;                    // the head before the first H2
   for (const l of lines) {
@@ -245,7 +245,7 @@ export function sectionsMatching(text, re) {
 // The invisible regions of a judged file: fenced code blocks, inline code spans and HTML comments are not the
 // owner's prose. They are blanked with spaces so line numbers stay true.
 export function visibleLines(text) {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();   // the newline that ends a file is not a line
   let fence = null;
   return lines.map((l) => {

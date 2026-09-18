@@ -83,7 +83,7 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.7": [
-      "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". TWO THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
+      "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
       "THE OWNER'S WORD IS A QUOTE, THE AGENT'S WORD IS SIGNED (epic AW; origin issue #55, 🔴🔴🔴 TOP by the owner's word: \"you write some nonsense yourself, then read it back and interpret it as MY word\" — a \"the owner's decision P1: wait\" comment in live code, whose real owner word was \"do as you see fit\", held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no quote): AGENT_GUIDE (both layers) gains \"Authorship of a decision\" — every recorded decision carries its author ([OWNER] \"<verbatim>\" · date, or the interview address, vs [AI]); \"do as you see fit\" is a MANDATE recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; the source of truth about the owner's words is the chat and interviews/, everything else is a retelling. The NEW optional tool module .kaif/tools/kaif-attribution-lint.mjs (check [paths…] [--write-baseline] / selftest, SKIPPED=3) counts references to the owner's will with no verbatim quote and no interview address within ±2 lines as debt with a baseline that only shrinks; /fable-judge hunts \"an agent decision worn as the owner's word\".",
       "PROVENANCE MARKS ARE LEGAL IN DRAFTS TO THE OWNER (epic AW; origin issue #55 comment — a field agent, forbidden to mark outside the canon, invented \"(my taste)\", and a pronoun has no owner a day later): kaif-provenance `check` no longer refuses [AI]…[/AI] outside canonArtifacts — marks are REQUIRED in the declared canon and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, never entries of the acceptance registry). AGENT_GUIDE (both layers): the write-gate draft carries the marks on the agent's lines; a pronoun is not a provenance mark; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked. /interview step 3a says the same.",
       "DELIVERY ACCOUNTING IS REMOVED (epic DR; the origin owner's word, 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): the core command `delivery`, the SYSTEMS_REGISTRY.md canon document and its skeleton .kaif/_systems-registry-template.md (retired by this update), the `Kind:` line of bug documents, the forced `DELIVERY:` line of /end-chat-soft, /end-chat-force and the four loops, the delivery-line hunt of /fable-judge and the MASTER_PLAN \"Delivery vector\" block are gone. This SUPERSEDES the 2.5 \"DELIVERY ACCOUNTING\" and 2.6 \"SYSTEMS_REGISTRY.md\" entries of this task: do NOT build a registry, do NOT print the line. /what-next keeps its 2.6 form; METRIC: now reads the main phase's acceptance metric (criteria closed k of n) from MASTER_PLAN.md / the active plan, and kaif-ranking-lint judges the same form.",
@@ -10067,7 +10067,7 @@ export const MIN_OPTIONS = 2;                                   // spec §2: few
 const HEAD_LINES = 30;                                          // the document head the status line lives in
 const ARCHIVE_SUBDIR = 'archive';
 
-const stripBom = (s) => String(s).replace(/^﻿/, '');
+const stripBom = (s) => String(s).replace(/^\uFEFF/, '');
 const readJson = (p) => { try { return JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { return null; } };
 
 // ── Configuration — read, derived, never asked (#97) ──────────────────────────────────────────
@@ -10780,7 +10780,7 @@ export function cfgOf(root) {
   return CFG_CACHE.get(key);
 }
 export const T = (cfg) => texts(cfg.language);
-const stripBom = (s) => String(s).replace(/^﻿/, '');
+const stripBom = (s) => String(s).replace(/^\uFEFF/, '');
 const readJsonOr = (p, dflt) => { if (!existsSync(p)) return dflt; try { return JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { return dflt; } };
 const relDoc = (root, docPath) => relative(root, resolve(root, docPath)).replace(/\\/g, '/');
 const decisionsAbs = (root, cfg = cfgOf(root)) => resolve(root, cfg.decisionsDir);
@@ -10818,7 +10818,7 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
         const dir = tmpDirOf(root);
         mkdirSync(dir, { recursive: true });
         const phraseFile = join(dir, 'call-phrase.txt');
-        writeFileSync(phraseFile, '﻿' + phrase, 'utf8'); // UTF-8 with BOM — PowerShell reads the encoding by BOM
+        writeFileSync(phraseFile, '\uFEFF' + phrase, 'utf8'); // UTF-8 with BOM — PowerShell reads the encoding by BOM
         const pref = process.env.KAIF_SAPI_VOICE || '';
         const ps = spawn('powershell.exe', ['-NoProfile', '-Command',
           'Add-Type -AssemblyName System.Speech; ' +
@@ -10859,7 +10859,7 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
     beep.on('exit', voice);
     beep.on('error', () => { log('CALL: beeps failed (no PowerShell?) — voice next.'); voice(); }); // the signal never drops the contour (I32)
   } else {
-    try { process.stdout.write(''); } catch { /* no terminal — nothing to ring */ }
+    try { process.stdout.write('\u0007'); } catch { /* no terminal — nothing to ring */ }
     log('CALL: no sound-card beep on this platform — terminal bell only; voice next.');
     voice();
   }
@@ -12033,7 +12033,7 @@ export function selftest(log = console.log) {
 
   // C3: four faces — one hash
   const base = 'Line one\nLine two\n';
-  const faces = ['﻿' + base, base.replace(/\n/g, '\r\n'), base + '\n\n', base.replace(/\n$/, '')];
+  const faces = ['\uFEFF' + base, base.replace(/\n/g, '\r\n'), base + '\n\n', base.replace(/\n$/, '')];
   ok(new Set(faces.map(bodyHash)).size === 1 && bodyHash('other') !== bodyHash(base), 'normalisation: four faces (BOM/CRLF/tail/no newline) — one hash');
   // I6: quiet hours across midnight
   const at = (h, m) => new Date(2026, 7, 7, h, m);
@@ -12176,7 +12176,7 @@ export function selftest(log = console.log) {
 
   // I37/I38: the notice class — state machine, page form, batch order
   const NOTICE = 'docs/report.md';
-  writeFileSync(join(root, NOTICE), '﻿# Night report\r\n\r\nThree backlog items closed.\r\n');
+  writeFileSync(join(root, NOTICE), '\uFEFF# Night report\r\n\r\nThree backlog items closed.\r\n');
   const beforeN = readFileSync(join(root, NOTICE), 'utf8');
   enqueue(root, NOTICE, { kind: KIND_NOTICE });
   ok(pendingNotices(root).length === 1 && !pendingDocs(root).some((d) => d.doc === NOTICE), 'notice: registered in its own group, never among the questions');
@@ -12806,7 +12806,7 @@ function agentMarks(root = '.') {
   const p = join(root, KAIF_JSON);
   if (existsSync(p)) {
     try {
-      const j = JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+      const j = JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
       if (Array.isArray(j.aiMarks)) for (const m of j.aiMarks) if (typeof m === 'string') marks.push(m);
     } catch { /* a malformed marker is the provenance gate's business, not this linter's */ }
   }
@@ -12820,7 +12820,7 @@ const grounds = (l) => QUOTE_RE.test(l) || QUOTE_LINE_RE.test(l) || INTERVIEW_RE
 
 /** Findings of one document: [{ line, text }] — text is the exact source line (trimmed). */
 export function lintText(src, marks = DEFAULT_AGENT_MARKS) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const out = [];
   let fence = false;
   let selfUntil = -1;   // inside a "decisions without the owner" section until this heading level closes it
@@ -12878,7 +12878,7 @@ const rel = (root, f) => f.replaceAll('\\', '/').replace(root.replaceAll('\\', '
 
 function readBaseline(p) {
   if (!existsSync(p)) return null;
-  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, '')); } catch { return null; }
+  try { return JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, '')); } catch { return null; }
 }
 
 /** The check over a root: { findings: [{file, line, text, key}], scanned } */
@@ -13039,7 +13039,7 @@ if (!existsSync(RULES)) {
   console.log(`⊘ SKIPPED — ${RULES} not found: canon lint is not configured, nothing was proven (optional module; seed it — see this file's header for the format). Exit code 3 keeps an unconfigured guard from reading as a passed one (bug 34).`);
   process.exit(EXIT_SKIPPED);
 }
-const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^﻿/, ''));
+const rules = JSON.parse(readFileSync(RULES, 'utf8').replace(/^\uFEFF/, ''));
 if (!(rules.forbidden || []).length && !(rules.required || []).length) {
   console.log(`⊘ SKIPPED — ${RULES} carries zero rules: nothing to prove (exit 3; add forbidden/required rules — the linter grows with every fix).`);
   process.exit(EXIT_SKIPPED);
@@ -13062,7 +13062,7 @@ const inScope = (p, files) => !files || ((files = files.replaceAll('\\', '/')).e
 // CRLF checkouts and PS5.1 Out-File BOMs are the documented Windows profile of real projects:
 // read EOL/BOM-normalized, or required lines false-redden and $-anchored forbidden patterns
 // false-GREEN (the worst failure direction).
-const readLines = (p) => readFileSync(p, 'utf8').replace(/^﻿/, '').split(/\r?\n/);
+const readLines = (p) => readFileSync(p, 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/);
 // A broken regex must red the run with a clear message, not a raw stack trace.
 const compileRule = (r) => { try { return new RegExp(r.pattern); } catch (e) { console.error(`✖ invalid regex in forbidden rule: ${r.pattern} — ${e.message}`); return null; } };
 
@@ -13903,7 +13903,7 @@ const EXIT_SKIPPED = 3;
 //                                       derived ([ИИ] → [/ИИ]); the English pair always works.
 function readMarker() {
   if (!existsSync(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
-  return JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^﻿/, ''));
+  return JSON.parse(readFileSync(KAIF_JSON, 'utf8').replace(/^\uFEFF/, ''));
 }
 const MARKER = readMarker();
 const DECLARED = Array.isArray(MARKER.canonArtifacts);
@@ -14083,7 +14083,7 @@ function cmdAccept() {
   const { blocks, errors, tagSites } = parseMarks(file);
   if (errors.length) { for (const e of errors) console.error('✖ ' + e); die('fix mark pairing before accepting'); }
   if (!blocks.length) die(`${file} carries no provenance marks — nothing to accept`);
-  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8').replace(/^﻿/, '')) : { accepted: [] };
+  const reg = existsSync(REGISTRY) ? JSON.parse(readFileSync(REGISTRY, 'utf8').replace(/^\uFEFF/, '')) : { accepted: [] };
   const date = new Date().toISOString().slice(0, 10);
   for (const b of blocks) reg.accepted.push({ file, date, kind: b.kind, sha: sha(b.text), excerpt: b.text.trim().split('\n')[0].slice(0, 80) });
   writeFileSync(REGISTRY, JSON.stringify(reg, null, 2) + '\n');
@@ -14167,7 +14167,7 @@ const debtRe = () => new RegExp('^\\s*\\**(?:' + Object.values(KEYWORDS).map((k)
 // ---------------------------------------------------------------------------
 // Parsing — the answer block of a document: the lines above the table, the table rows, the lines below.
 export function parseAnswer(src) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const visible = [];
   let fence = false;
   lines.forEach((l, i) => {
@@ -14458,7 +14458,7 @@ function cmdCheck() {
   }
   let findings = 0;
   for (const f of files) {
-    const text = readFileSync(f, 'utf8').replace(/^﻿/, '');
+    const text = readFileSync(f, 'utf8').replace(/^\uFEFF/, '');
     for (const [no, raw] of scopedLines(text)) {
       if (isLegal(raw)) continue;
       const line = stripCodeSpans(raw);
@@ -14589,7 +14589,7 @@ const START = new RegExp(`^(\\s*)- \\*{0,2}(${FIRST_KEYS.map((f) => f.key).join(
 const langOf = (firstKey) => FIRST_KEYS.find((f) => f.key === firstKey).lang;
 
 export function parseScenarios(src) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const out = [];
   let fence = false;
   for (let i = 0; i < lines.length; i++) {
@@ -14893,7 +14893,7 @@ const roleOf = (title) => {
 };
 
 export function parseReport(name, src) {
-  const lines = src.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const fields = {};
   let lang = null, cur = null, fence = false;
   for (const l of lines) {
@@ -15246,7 +15246,7 @@ export function compilePattern(cell, extraFlags = 'g') {
 // parsePortrait(text) → { status: ok | no-section | no-table | no-rules, rules, notes, tables }
 // rule = { line, source, re, cls: stop | positive, hint, exception (prose or regex text), excRe }
 export function parsePortrait(text) {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   let start = -1;
   for (let i = 0; i < lines.length; i++) {
     const m = H2.exec(lines[i]);
@@ -15304,7 +15304,7 @@ export function parsePortrait(text) {
 // head before the first H2 always rides along so the portrait's binding note and corpus registry are never
 // dropped. `matched` = 0 means nothing of the body was selected — the caller refuses to write a witness.
 export function sectionsMatching(text, re) {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   const out = [];
   let keep = true, matched = 0;                    // the head before the first H2
   for (const l of lines) {
@@ -15319,7 +15319,7 @@ export function sectionsMatching(text, re) {
 // The invisible regions of a judged file: fenced code blocks, inline code spans and HTML comments are not the
 // owner's prose. They are blanked with spaces so line numbers stay true.
 export function visibleLines(text) {
-  const lines = text.replace(/^﻿/, '').split(/\r?\n/);
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
   if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();   // the newline that ends a file is not a line
   let fence = null;
   return lines.map((l) => {
@@ -15616,7 +15616,8 @@ else usage(`unknown command "${CMD}"`);
 //  witness"); marker older than the interval → order naming the age; MALFORMED marker → judged by
 //  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks — the "old" half
 //  was claimed here before any assert fed it; s14 asserts it since 2026-09-18 (origin bug 121), along
-//  with a BOM-led event and a BOM-led marker reading exactly like their clean twins]
+//  with a BOM-led event and a BOM-led marker reading exactly like their clean twins; report of those
+//  runs - testcases/reports/2026-09-18_hooks-optin-smoke.md (origin repository), runs 4, 5 and 9]
 //
 // PORTABILITY — `--emit <shape>` (epic O phase O5, contracts live-fetched 2026-08-07). The
 // timer is the hook systems disagree about MOST: only two of the surveyed systems let a

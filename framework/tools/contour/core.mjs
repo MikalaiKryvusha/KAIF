@@ -44,7 +44,7 @@ export const MIN_OPTIONS = 2;                                   // spec §2: few
 const HEAD_LINES = 30;                                          // the document head the status line lives in
 const ARCHIVE_SUBDIR = 'archive';
 
-const stripBom = (s) => String(s).replace(/^﻿/, '');
+const stripBom = (s) => String(s).replace(/^\uFEFF/, '');
 const readJson = (p) => { try { return JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { return null; } };
 
 // ── Configuration — read, derived, never asked (#97) ──────────────────────────────────────────

@@ -50,7 +50,7 @@ const run = (args, env = {}) => {
 const calls = () => (existsSync(CALLS) ? readFileSync(CALLS, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
 const setTracking = (tracking) => {
   const p = join(S, '.kaif', 'kaif.json');
-  const j = JSON.parse(readFileSync(p, 'utf8').replace(/^﻿/, ''));
+  const j = JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, ''));
   if (tracking === 'anonymous') { j.tracking = 'anonymous'; delete j.origin; }
   else { j.tracking = 'origin'; j.origin = 'https://github.com/example-owner/example-kaif'; }
   writeFileSync(p, JSON.stringify(j, null, 2) + '\n');

@@ -340,7 +340,7 @@ ok(r.code !== 0 && /placeholder/.test(r.out),
 
 // G12: вердикт судьи файлом — норма «текст через файлы» в собственном API
 const VF = join(D1, '.kaif', 'install', 'verdict.md');
-writeFileSync(VF, '﻿ВЕРДИКТ: ПОДТВЕРЖДЕНО — «полигон зелёный», стражи наблюдались красными → зелёными\nВторая строка улик: 8/8 сводов · реестр пар 6/6.\n');
+writeFileSync(VF, '\uFEFFВЕРДИКТ: ПОДТВЕРЖДЕНО — «полигон зелёный», стражи наблюдались красными → зелёными\nВторая строка улик: 8/8 сводов · реестр пар 6/6.\n');
 r = run(D1, `checkpoint judge --verdict-file ${VF}`);
 ok(r.code === 0, 'G12a (bugs/39): checkpoint judge --verdict-file принят (кириллица, ёлочки, BOM, многострочник)', r.out.slice(-250));
 const task1b = readFileSync(TASK1, 'utf8');
@@ -366,7 +366,7 @@ ok(r.code === 0 && /non-ASCII text in the name argument/.test(r.out),
    'G19a: не-ASCII имя в argv ПРЕДУПРЕЖДАЕТ вслух и не отвергается', r.out.slice(-250));
 // (б) файловый носитель доезжает ПОБАЙТНО — то, ради чего правило и существует.
 const NF = join(D1, '.kaif', 'install', 'name.txt');
-writeFileSync(NF, '﻿Йолден КАИФ\n');          // с BOM: путь обязан быть BOM-терпимым
+writeFileSync(NF, '\uFEFFЙолден КАИФ\n');          // с BOM: путь обязан быть BOM-терпимым
 r = run(D1, `project-name --name-file ${NF}`);
 const marker14 = JSON.parse(readFileSync(join(D1, '.kaif', 'kaif.json'), 'utf8'));
 ok(r.code === 0 && marker14.projectName === CYR_NAME,

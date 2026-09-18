@@ -6,10 +6,12 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite four times — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (five today) — run it ALONE, not beside the polygon (origin bug 109).
 // [TESTED: 2026-09-18 12:12 +03:00 · run on the origin after the fix — four mutants, each red exactly on its named
 //  addressees (2 · 1 · 1 · 1) and green elsewhere (85/86 of 87); the first run at 12:09 refused M4 with "mutation did not
-//  apply" — report testcases/reports/2026-09-18_hooks-optin-smoke.md, runs 7 and 9]
+//  apply" — report testcases/reports/2026-09-18_hooks-optin-smoke.md, runs 7 and 9.
+//  2026-09-18 14:44 +03:00 · FIVE mutants after the session judge's finding F1 (M5 is the judge's own mutant, which the
+//  suite had passed 87/87): red 2 · 1 · 1 · 1 · 1, green 86/87 of 88 — the same report, run 16]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -50,6 +52,16 @@ const MUTANTS = [
     dest: '.kaif/hooks/prompt-resume-word.mjs',
     fn: (b) => b.replace("readFileSync(0, 'utf8').replace(/^" + BOM_ESCAPE + "/, '')", "readFileSync(0, 'utf8')"),
     expect: ['s14 BOM resume-word:'] },
+  // M5 — the mutant the session-67 judge ran (J1) and the suite could NOT see: with a closed stdin the hook gets EOF at
+  // once, so a line that lost its empty stdin still answers in the hidden run. Only the static assert reads the TEXT.
+  { name: 'M5 README: the empty stdin dropped from the first line of BOTH blocks (bug 121 #1, judge finding F1)',
+    dest: '.kaif/hooks/README.md',
+    fn: (b) => {
+      const sh = 'node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null', ps = "'' | node .kaif/hooks/prompt-refresh-timer.mjs";
+      if (!b.includes(sh) || !b.includes(ps)) return b;          // one needle missing → "mutation did not apply"
+      return b.replace(sh, 'node .kaif/hooks/prompt-refresh-timer.mjs').replace(ps, 'node .kaif/hooks/prompt-refresh-timer.mjs');
+    },
+    expect: ['s14 проба README: каждая строка каждого блока даёт хуку stdin'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));

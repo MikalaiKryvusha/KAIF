@@ -164,7 +164,7 @@ function makeFixtureRoot(root = tempRoot('verify-contour')) {
   // `.kaif/kaif.json` (№97 — не спрашивает); фикстура без маркера получила бы английскую страницу и «owner»
   // в записях, и прогон судил бы не то, что видит владелец истока. Маркер — копия блока `contour` истока.
   mkdirSync(join(root, '.kaif'), { recursive: true });
-  const originMarker = JSON.parse(readFileSync(join(ROOT, '.kaif', 'kaif.json'), 'utf8').replace(/^﻿/, ''));
+  const originMarker = JSON.parse(readFileSync(join(ROOT, '.kaif', 'kaif.json'), 'utf8').replace(/^\uFEFF/, ''));
   writeFileSync(join(root, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: originMarker.version,
     language: originMarker.language, contour: originMarker.contour }, null, 2) + '\n');
   // G12: вёрстка несёт И короткий, И длинный вариант; Q2 уже отвечен словом владельца (неприкосновенно).
@@ -385,7 +385,7 @@ async function main() {
       writeFileSync(bodyPath, body + 'дрейф после одобрения\n', 'utf8');
       const drifted = checkApproval(fixtureRoot, draft, 'msg1');
       check('дрейф текста ДЕЛАЕТ одобрение недействительным (I3)', !drifted.ok && /I3|изменился/u.test(drifted.reason));
-      writeFileSync(bodyPath, '﻿' + body.replace(/\n/g, '\r\n') + '\n\n', 'utf8');
+      writeFileSync(bodyPath, '\uFEFF' + body.replace(/\n/g, '\r\n') + '\n\n', 'utf8');
       check('CRLF+BOM+хвост НЕ рушат одобрение (C3: четыре лица — один хеш)',
         checkApproval(fixtureRoot, draft, 'msg1').ok);
       writeFileSync(bodyPath, body, 'utf8'); // фикстура возвращается к исходному телу

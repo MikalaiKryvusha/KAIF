@@ -23,7 +23,8 @@
 //  witness"); marker older than the interval → order naming the age; MALFORMED marker → judged by
 //  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks — the "old" half
 //  was claimed here before any assert fed it; s14 asserts it since 2026-09-18 (origin bug 121), along
-//  with a BOM-led event and a BOM-led marker reading exactly like their clean twins]
+//  with a BOM-led event and a BOM-led marker reading exactly like their clean twins; report of those
+//  runs - testcases/reports/2026-09-18_hooks-optin-smoke.md (origin repository), runs 4, 5 and 9]
 //
 // PORTABILITY — `--emit <shape>` (epic O phase O5, contracts live-fetched 2026-08-07). The
 // timer is the hook systems disagree about MOST: only two of the surveyed systems let a

@@ -16,7 +16,9 @@
 > именами полевых проектов заменены на «a field deployment» по правилу №90, владельцу сказано в чате. **Черновик
 > ответа #71 (§ 8) остаётся здесь до релиза** (№84/№92/№93); его ПОСЛЕДНИЙ абзац протух — «the origin itself fails its own
 > gate today on four core documents» неверно с 10:51 (стрижка `4b702bc`): дверь истока зелёная, 9 из 9 (проба 12:36) —
-> поправить на шаге RL3 вместе с остальными черновиками. Было: 🔧 готов к вставке 2026-09-18 11:35 +03:00.
+> **поправлен 2026-09-18 14:26 +03:00** (сессия 67, шаг RL3 заранее): абзац теперь называет четыре числа ревизии `3d57c09`,
+> стрижку того же дня и нынешние «nine of nine» (дверь переснята в тот же ход: `9 documents … within budget`); перед
+> отправкой число переснять ещё раз. Было: 🔧 готов к вставке 2026-09-18 11:35 +03:00.
 > **Вовне:** ответ в issue #71 (черновик § 8) — после релиза 2.7 по правилу №84/№92/№93.
 >
 > Этот файл — ТОЛЬКО для интегратора: тексты ниже готовы к вставке в файлы, которые worktree править
@@ -199,7 +201,7 @@ Three honest fallbacks say so in the line rather than going quiet: a deployment 
 
 **What we could not verify, and say so.** The gate was exercised on a fresh deployment and on copies of two real deployments' documents: of the nine budgeted documents in each, 3 and 4 were over budget and printed a number, and every one of those printed numbers was read back against `wc -l` and against that deployment's own manifest with no disagreement; the other six and five were silent on both sides, which is agreement between two silences and not the same evidence. The cross-check also re-implements the same algorithm, so it catches an assembly error and not an error of the algorithm itself. And none of it is the run that matters most: a project that updated itself to 2.7 and ran its own `check`. That one belongs to you and to the field, and it is what turns the guard's `ON-REAL-PATH` from `NOT YET` into a date. If your audited project runs it after updating, the output of `node .kaif/kaif-core.mjs check --gate-budgets` is exactly what we would like to see.
 
-One number from our side, since you measured yours: the origin itself fails its own gate today on four core documents. That is the work your ticket created, and it is being done.
+One number from our side, since you measured yours: on the day your ticket arrived the origin itself was over its own budgets on four core documents — `STATUS.md` 300 of 200, `MASTER_PLAN.md` 404 of 300, `TESTING_FRAMEWORK.md` 304 of 300, `AGENT_GUIDE.md` 1314 of 1200. They were trimmed to the named addresses the same day, and the origin's own door — `node tools/budget-gate.mjs`, a step of our closing ritual — now reads nine of nine within budget. That is the work your ticket created.
 ```
 
 ## 9. Черновик урока `EXPERIENCE.md` (вставить ПЕРВЫМ, номер — следующий свободный; НОВЫЙ формат со строкой класса)
