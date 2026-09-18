@@ -306,6 +306,7 @@ function ensureIgnoreFirst() {
                   '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
                   '.kaif/refresh-marker.json',  // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
                   '.kaif/voice-marker.json',    // the voice-portrait load witness — the same class (2.7, epic VC: `kaif-voice-lint load`)
+                  '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66): the draft and a locally saved answer live here; ignore-first BEFORE the first window
                   '.kaif/update-rehearsal.json']; // the preview's recorded wholesale verdicts — consumed by the next update (2.5, P1)
   let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
   const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));

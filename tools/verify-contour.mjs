@@ -749,29 +749,39 @@ async function main() {
       ].join(''));
       // Отказ проявляется НЕ мгновенно: Chrome переиспользует keep-alive-сокет убитого сервера
       // и ждёт TCP-таймаут — опрашиваем DOM до дедлайна, как ждал бы человек у экрана.
+      // LP (2.7, #66; слово владельца Q2 интервью №032 — «никакого выбора, никакого "сохранить"… JS сам пишет файл на
+      // компьютер в папку проекта»): при мёртвом сервере страница НЕ показывает кольцо спасения и не просит копировать —
+      // «Записать» кладёт ответ в IndexedDB профиля (`kaif-contour`/`kv`, ключ `__submitted` — долговечна через ≈ 0,5 с даже
+      // при убитом браузере; копия — в localStorage), говорит «сохранён на этом компьютере» и гасит кнопку (второй клик не
+      // нужен); кольцо остаётся только для браузера без локального хранилища. Проба читает ОБА носителя. Прежние ожидания
+      // блока (кольцо показано · кнопка снова активна · текст в кольце) стерегли поведение 2.6 и заменены ЭТИМИ.
       const PROBE_JS = [
-        "(function(){var draft=null;try{draft=localStorage.getItem(CFG.draftKey+':text:interviews/interview_101_fixture.md:Q1')}catch(e){}",
-        " return {rescueShown:document.querySelector('#rescue').style.display==='block',",
+        "(function(){var draft=null,sub=null;try{draft=localStorage.getItem(CFG.draftKey+':text:interviews/interview_101_fixture.md:Q1');sub=localStorage.getItem(CFG.draftKey+':__submitted')}catch(e){}",
+        " return new Promise(function(done){var fin=function(idb){done(",
+        " {rescueShown:document.querySelector('#rescue').style.display==='block',",
+        "  submittedIdb:!!(idb&&String(idb).indexOf('ответ в мёртвый сервер')>=0),",
         "  saveEnabled:!document.querySelector('#save').disabled,",
-        "  answerInOutput:(document.querySelector('#rescuetext').value||'').indexOf('ответ в мёртвый сервер')>=0",
-        "   ||(document.querySelector('#banner').textContent||'').length>0,",
+        "  submittedLocally:!!(sub&&sub.indexOf('ответ в мёртвый сервер')>=0),",
         "  draftPersisted:draft==='ответ в мёртвый сервер',",
-        "  statusHonest:/ОШИБКА|НЕДОСТУПЕН|не уйдёт/i.test((document.querySelector('#status').textContent||'')+(document.querySelector('#banner').textContent||''))}})()",
+        "  statusHonest:/сохранён на этом компьютере/i.test((document.querySelector('#status').textContent||'')+(document.querySelector('#banner').textContent||''))})};",
+        " try{var r=indexedDB.open('kaif-contour',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};",
+        "  r.onsuccess=function(){try{var g=r.result.transaction('kv','readonly').objectStore('kv').get(CFG.draftKey+':__submitted');g.onsuccess=function(){fin(g.result)};g.onerror=function(){fin(null)}}catch(e){fin(null)}};",
+        "  r.onerror=function(){fin(null)}}catch(e){fin(null)}})})()",
       ].join('');
       const DEAD_SERVER_DEADLINE_MS = 25000;
       let dom = null;
       const t0 = Date.now();
       while (Date.now() - t0 < DEAD_SERVER_DEADLINE_MS) {
         dom = await page.evaluate(PROBE_JS);
-        if (dom.rescueShown && dom.saveEnabled) break;
+        if (dom.submittedLocally && dom.submittedIdb) break;
         await sleep(500);
       }
-      console.log('  (отказ проявился за ' + ((Date.now() - t0) / 1000).toFixed(1) + ' с)');
-      check('спасательный блок показан = true', dom.rescueShown === true);
-      check('кнопка записи снова активна = true', dom.saveEnabled === true);
-      check('ответ присутствует в выводе = true', dom.answerInOutput === true);
+      console.log('  (локальная запись проявилась за ' + ((Date.now() - t0) / 1000).toFixed(1) + ' с)');
+      check('ответ записан на этом компьютере: IndexedDB kaif-contour/kv __submitted = true (долговечный носитель) и копия в localStorage = true', dom.submittedIdb === true && dom.submittedLocally === true, 'idb=' + dom.submittedIdb + ' ls=' + dom.submittedLocally);
+      check('кольцо спасения НЕ показано (localStorage работает) = true', dom.rescueShown === false);
+      check('кнопка записи погашена — второй клик не нужен = true', dom.saveEnabled === false);
       check('черновик подхвачен (localStorage) = true', dom.draftPersisted === true);
-      check('статус честный = true', dom.statusHonest === true);
+      check('статус честный («сохранён на этом компьютере») = true', dom.statusHonest === true);
       await browser.cdp.send('Target.closeTarget', { targetId: page.targetId });
     } catch (e) {
       check('QA7 исполнился', false, e.message); // причина падения — в строку, не в маску

@@ -624,6 +624,29 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       'framework/skills/fable-judge/SKILL.md',
       ['**Idle seat ended by the owner (KAIF 2.7).**',
        '**Team seat refreshed without the constitution (KAIF 2.7).**']],
+    // LP (2.7, origin issue #66 + the origin owner's word on interview 032): the close command, the input state in the
+    // lock, the project profile and the recovery live in the shipped generator; the contract, /owner-reviews and the guide
+    // of both layers name them; the machinery ignores the profile first; the polygon refuses a stale dist; the judge hunts.
+    ['live page ↔ the generator closes only by the checked command and refuses an unknown flag', 'framework/tools/contour/review.mjs',
+      ['export async function closeContour(', 'was NOT killed: a pid from a file may belong to another process', 'the owner is typing; not closed', 'younger than the quiet threshold', 'const KNOWN_FLAGS = [', 'refusing BEFORE any page, sound or call']],
+    ['live page ↔ the answer survives the server: the project profile, the local store, the recovery', 'framework/tools/contour/review.mjs',
+      ["const WINDOW_PROFILE_DIR = '.kaif/contour-window';", 'export function recoverFromWindow(', 'answer recovered from the owner', "localStorage.setItem(DK+'__submitted'", "indexedDB.open('kaif-contour'", 'recovery deferred: a browser still holds the project profile']],
+    ['live page ↔ the record says the answer was picked up', 'framework/tools/contour/core.mjs',
+      ['recovered: true', 'closeQuietMs']],
+    ['live page ↔ the one-page contract names the close command, the profile and the unknown-flag refusal', 'framework/templates/_interactive-contour-spec.md',
+      ['**A live owner page is closed only by `<doc> --close`**', '**The answer survives the server**', '**An unknown flag REFUSES before any page, sound or call — exit 1**']],
+    ['live page ↔ /owner-reviews carries I46 and I47 (payload)', 'framework/skills/owner-reviews/SKILL.md',
+      ['**I46. A live owner page is closed ONLY by `<doc> --close`', '**I47. The answer survives the server', 'One number space, I1–I47.', 'The 47 invariants below']],
+    ['live page ↔ /owner-reviews carries I46 and I47 (wrapper)', '.claude/skills/owner-reviews/SKILL.md',
+      ['**I46. Живую страницу владельца закрывает ТОЛЬКО `<док> --close`', '**I47. Ответ переживает сервер', 'Единое пространство номеров I1–I47.', '47 инвариантов ниже']],
+    ['live page ↔ AGENT_GUIDE: un-showing is a checked action (payload)', 'framework/AGENT_GUIDE.md',
+      ['is CLOSED only by the command that checks', 'review.mjs <doc> --close` (KAIF 2.7, origin issue #66']],
+    ['live page ↔ AGENT_GUIDE: un-showing is a checked action (wrapper)', 'AGENT_GUIDE.md',
+      ['ЗАКРЫВАЕТ только команда, которая её проверяет', 'снятие показа — проверенное действие.']],
+    ['live page ↔ the machinery ignores the window profile FIRST', 'framework/installer/KAIF-CORE.mjs',
+      ["'.kaif/contour-window/',"]],
+    ['live page ↔ /fable-judge hunts a page closed past its command', 'framework/skills/fable-judge/SKILL.md',
+      ['**Live page closed past its command (KAIF 2.7).**']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to

@@ -129,7 +129,7 @@ Functional run: свежая установка из `dist` (путь поста
 - сама ось и её объявление стража — `framework/installer/KAIF-CORE.mjs`,
   блок `@guard constitution-keeps-obligations` в `cmdCheck`
 - план эпика — `plans/113_epic100_FR_free_seat_asks_for_work.md`; передаточный файл —
-  `plans/handoff_FR.md`
+  `plans/handoff_FR_DONE.md`
 
 ## 7. Verdict
 

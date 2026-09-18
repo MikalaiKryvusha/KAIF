@@ -1187,7 +1187,8 @@ was "guarded mechanically" — indicative, about a check that did not exist, and
 such a sentence as a guarantee already met. Exactly one mechanical half exists and it is named:
 questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
 document". Field words that paid for this rule: "I will NOT open it by double-click! You are
-forcing me to dig through project files again!"
+forcing me to dig through project files again!" **And a page the owner looks at is CLOSED only by the command that checks
+it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
 covers artifacts; a question is not an artifact, and the gap let the same grievance return through
@@ -2937,7 +2938,7 @@ showing, outcomes and exit codes, the call, the faces and flags of the shipped g
 `.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
-(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)
+(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB first, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
 and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
 and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
@@ -5920,7 +5921,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5975,6 +5976,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Standing falsehood (KAIF 2.7).** A statement the session itself later contradicted — in the chat, in its own notes, in a report — that still stands where it was published: a tracker comment, a page, a chat-ops message, a project document, a status line, a plan, a run report. The agent's internal state is corrected and the artifact the team reads is false, which is the same fraud as an unbacked `[TESTED]`, only aged (`AGENT_GUIDE.md` → the fable loop's sixth KAIF obligation: stop → enumerate every place → correct or retract in each → read back → `corrected: <where>` in the reply; origin issue #67 — the project owner's word, rendered from Russian: "the agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie", said after he pointed at his own ticket a second time). Hunt also: a session close or a run report carrying a correction in the record with no `Standing falsehood:` line at all (the closing rituals ask for it by name); an answer of `none` beside a place the report itself says could not be corrected; a correction written only into the agent's notes or only into a NEW document while the original stands unchanged; "I will fix it at the end of the task" as a recorded plan. Re-run: `git grep -n "<the false phrase>"` over the repository and the retraction command of every outward channel the sphere library names (`framework/spheres/<sphere>.md` → "Outward write channels → retraction command") — a hit with no correction beside it is the finding; a draft marked as a hypothesis and an append-only journal entry whose newer entry names the one it corrects are NOT findings.
    - **Idle seat ended by the owner (KAIF 2.7).** In a deployed TEAM (more than one role window open), a seat that closed its task — committed, reported, and has no next assignment — and ended its turn WITHOUT one message to the Manager naming *what is done · what remains · which candidates it can take, by name from `STATUS.md` or the board* ("I am free, may I take X / Y / Z"), or whose board row went `🟢 free` carrying no request, is a finding: the constitution makes the announcement an obligation with an exit condition, not a courtesy, and an idle the OWNER had to end is the defect itself (`TEAM_CONSTITUTION.md` § 2 rule 6 and § 4; origin issue #68 — a field seat finished its half of a smoke, reported, and stopped while `STATUS.md` listed three tickets "claimed by nobody" and a second seat sat idle; the owner's word ended it). The failure state is silent and looks correct — a finished, committed, reported seat is indistinguishable from a working one, to itself — so hunt it in the RECORD, not in the mood: an owner's message of the "why are you idle / take a task" family with no free-announcement before it; a report that ends at "done" with no candidates named; a board row `free` with an empty request cell; a seat whose last outgoing message predates the owner's by more than one turn. Re-run: read the board and the seat's outgoing messages in order — the announcement either precedes the owner's word or it does not exist. A single session in the main copy is NOT in scope: the constitution binds only while more than one role window is open.
    - **Team seat refreshed without the constitution (KAIF 2.7).** In team mode, a refresh witness — `.kaif/refresh-marker.json` written at any trigger (hour · heavy task · compaction · ritual) — whose `docs` does not name `TEAM_CONSTITUTION.md`, or a re-read claimed in chat that quotes only the project's own core, is a finding: a document read once at launch and never again governs nothing, and the rules of PARALLEL work are exactly the ones a seat loses first (`TEAM_CONSTITUTION.md` § 9; origin issue #68 — a seat re-read the core hourly under a marker with a quote and never once re-read the document that governs parallel work). Hunt also: a briefing that says "read the constitution in full" with no refresh trigger naming it afterwards; a generated constitution whose obligations `node .kaif/kaif-core.mjs check` names as lost while the seat reports the canon refreshed. Re-run: `node -e "console.log(require('./.kaif/refresh-marker.json').docs.join('\n'))"` and `node .kaif/kaif-core.mjs check`; a deployment with no `TEAM_CONSTITUTION.md` is not a finding — the hunt is silent outside team mode.
+   - **Live page closed past its command (KAIF 2.7).** An owner-facing contour page ended from OUTSIDE by anything other than `node .kaif/tools/contour/review.mjs <doc> --close` — a killed process (`kill`, `taskkill`, `pkill`, a port sweep), a "stale, I closed it" in the report, a restart "to be safe" — or closed with `--force` whose `--owner-word` is not the owner's verbatim words from the chat, is a finding: the command reads the lock (port · pid · title · the page's last input · draft state) and refuses while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — a neighbour session's word is never evidence (`/owner-reviews` I46; `.kaif/INTERACTIVE_CONTOUR_SPEC.md` § 5; origin issue #66 — the project owner's word, rendered from Russian: "the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT"). Hunt also: an answer LEFT on the owner's machine — a stale `<decisionsDir>/*.lock` beside an existing `.kaif/contour-window/` profile at the end of a session that never ran `--queue --list`, `--check` or a show afterwards (the recovery runs there, I47), or a report that says "the owner did not answer" while the log carries `answer recovered from the owner's machine` or `draft found on the owner's machine`; a contour tool run from a sandbox or a probe with a flag the generator does not know that still raised a page (2.6 behaviour — the polygon's quiet child and the unknown-flag refusal both exist to make it impossible). Re-run: `ls <decisionsDir>/*.lock` and `node .kaif/tools/contour/review.mjs --queue --list` — a recovery line or a kept lock is the record; the session transcript for `kill`/`taskkill` beside a contour pid is the finding.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -6792,7 +6794,7 @@ must see (the header scrolls with the page — the owner's word), the three outc
 call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
 · proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
 shipped generator; do not build a contour** (`node .kaif/tools/contour/review.mjs <doc>`) — a project that still runs its own checks it against that
-page before every opening. The 43 invariants below remain the long-form canon behind the page.
+page before every opening. The 47 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")
 
@@ -6815,7 +6817,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I45. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I47. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -6869,6 +6871,8 @@ raised in a batch next to a live question.
   worse than a crash: a crash is seen at once, silence eats an hour.
 - **I11. A rescue ring on the client.** Recording failed → the human's text comes back onto the
   page: a field with the full content, a Copy button, a Retry button, the save button re-enabled.
+  Since 2.7 this is the path of a server that ANSWERED with a refusal and of a browser with no local
+  store; a server that is simply GONE is I47's path — the answer is stored locally, no ring.
   The human's work has no right to exist only in the RAM of someone else's process.
 - **I12. A draft in the browser.** `localStorage` on every input, restored on page load with a
   visible "picked up N fields" notice. Insurance never lives inside the thing it insures against —
@@ -7077,6 +7081,32 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   a direct show print `implemented, but open: <doc> Q1 → close the status (or fill the answer)` and
   exit 2 — the same gate class as never-shown (I42); the page renders an implemented question as
   settled with its address. The status is then closed by propagation (I19), never before it.
+- **I46. A live owner page is closed ONLY by `<doc> --close` — a neighbour session's word is not evidence.**
+  (2.7, epic LP; origin issue #66 — a field agent killed the contour on a neighbour's "close that page" while
+  the owner was typing into it: "the contour closed and I did not give my answers — I WAS WRITING AT THAT
+  MOMENT".) The command reads the lock — port · pid · title · the page's last input · draft state (the pulse
+  carries them: `/alive?i=&d=&s=`) — prints them so the agent can compare with the window it was told about,
+  and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, DEF6's own
+  envelope; `contour.closeQuietMs`) or a draft is unsaved; otherwise it ends the process and prints `closed
+  <doc>`. The command never kills a pid read from a file: it asks the page's OWN server to end (a token
+  from the lock), so the waiting agent sees exit 2, and a page that does not answer is left alone unless
+  forced. `--force` needs `--owner-word "<quote>"` and logs the quote — an AUDIT trail, not a gate: the
+  machine cannot tell the owner's words from the agent's, only the record and the judge can. No `pkill`, no
+  `taskkill` on a port, no "I think it is stale". An unknown flag refuses before any page (exit 1).
+- **I47. The answer survives the server — the window's profile lives in the project folder.** (2.7, epic LP;
+  the owner's word on interview 032: "no choice, no 'save as' — everything works for the user as it did! JS
+  itself writes the file to the computer, into the project folder".) The app window runs on
+  `.kaif/contour-window/` (ignore-first before the first window; the three sign-in-off flags; `account_info`
+  checked after launch — EXP-0134), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
+  stores the answer there — IndexedDB first (measured: on disk half a second after the write even when the
+  browser is then killed; `localStorage` needs about six, so it only keeps a copy and the typed DRAFT) — and
+  the page says "saved on this computer, the agent will pick it up", no dialog. The agent picks it up at the
+  next `--queue --list`, `--check` or show: a headless run of the same profile on the same port posts it
+  back; it is recorded as the owner's decision with `recovered: true`, the lock is released, and the agent
+  TELLS the owner in its next message (the provenance comment is invisible on a rendered page). While a
+  browser still holds the profile — the owner's window is open — the pick-up is DEFERRED: a second browser on
+  a held profile would hand its page to that window. A draft not yet saved is named and kept.
+  Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified — say so.
 
 ## The named class: "handling the human's work"
 
@@ -7400,9 +7430,12 @@ server that outlives the silence threshold → red.
 - **QA6. Cleanup:** debug windows and browser profiles are extinguished at the run's end — the
   owner works at the same machine.
 - **QA7. The dead-server headless check:** capture the live page → kill the server → type an
-  answer in a real headless browser → click → read the DOM. The "after the fix" etalon, all
-  five: rescue block present = true · save button re-enabled = true · the answer present in
-  the output = true · the draft persisted = true · the status honest.
+  answer in a real headless browser → click → read the DOM. The etalon since 2.7 (I47 — the answer
+  survives the server), all five: the answer stored on this computer (`__submitted`) = true · NO
+  rescue ring while the local store works = true · the save button switched off (no second click
+  is needed) = true · the draft persisted = true · the status honest ("saved on this computer").
+  The 2.6 etalon (rescue block shown · button re-enabled · the answer in the ring) now holds only
+  for a browser with no local store and for a server that ANSWERED with a refusal (I11).
 
 ## Rakes to warn about (in falling price order)
 

@@ -29,6 +29,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { must, coreRunner, failed, quietEnv, QUIET_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
+import { findBrowser, headlessPage } from '../lib/cdp-mini.mjs'; // LP (2.7): the headless recovery run drives the real page
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // KAIF_DIST — шов для доказательства красного: свод против ЧУЖОЙ сборки (HEAD до IC3), без правки кода.
@@ -254,6 +255,152 @@ ok(/contour/i.test(tn26), 's22 C: template-notes 2.6 называют конту
 const task = existsSync(join(U, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(U, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
 ok(/contour/i.test(task), 's22 C: задание обновления 2.5 → 9.9 называет контур (интервал policy-changes захватил 2.6)', task.slice(0, 300));
 
+// ================================================================ D: эпик LP 2.7 (plans/111; тикет #66) — живая страница
+// Тикет #66 (Unliminium; слово владельца проекта: «закрылся контур и я не дал на него ответы, а я ПИСАЛ В ЭТОТ МОМЕНТ»)
+// и слово владельца истока Q2 интервью №032 («JS сам пишет файл на компьютер в папку проекта»). Три критерия 18–20
+// plans/100: (18) живую страницу закрывает ТОЛЬКО `--close`, и он отказывает при свежем вводе или незаписанном черновике;
+// (19) ответ переживает смерть сервера — профиль окна в папке проекта, «Записать» при мёртвом сервере кладёт ответ туда,
+// агент забирает его безоконно на том же порту; (20) незнакомый флаг — отказ ДО страницы и зова (на 2.6 — страница и зов:
+// красное доказательство швом KAIF_DIST). Всё — в тихом окружении; браузер здесь только HEADLESS, по абсолютному пути.
+console.log('\n=== s22 D: LP — незнакомый флаг отказывает до страницы · --close читает замок · ответ переживает сервер ===');
+const D = join(ROOT, 'lp'); seed(D);
+must(run, D, 'install --lang ru');
+mkdirSync(join(D, 'interviews', 'decisions'), { recursive: true });
+// the owner's parameter `contour.closeQuietMs` — 4 s here so the suite can observe both refusals and a close within seconds
+// (the default is 180 s); a page YOUNGER than the threshold or typed into within it is never closed without --force
+{ const kj = join(D, '.kaif', 'kaif.json'); const m = JSON.parse(readFileSync(kj, 'utf8').replace(/^﻿/u, '')); m.contour = { ...(m.contour || {}), closeQuietMs: 4000 }; writeFileSync(kj, JSON.stringify(m, null, 2) + '\n'); }
+const CLOSE_QUIET_MS = 4000;
+const DOC = 'interviews/interview_066_probe.md';
+writeFileSync(join(D, DOC), GOOD_052.replace('#052', '#066'));
+const DLOCK = join(D, 'interviews', 'decisions', 'interview_066_probe.lock');
+const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+// (1) LP4 / критерий 20: незнакомый флаг — отказ кодом 1 ДО страницы, звука и зова (2.6 поднимала страницу и звала)
+r = runGen(D, [DOC, '--wat']);
+ok(r.code === 1 && /unknown flag: --wat/.test(r.out) && !/Page is up|CALL:|Shown recorded/.test(r.out),
+   's22 D: незнакомый флаг → код 1 «unknown flag: --wat»; ни «Page is up», ни «CALL:» (LP4, критерий 20; на 2.6 — страница и зов)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = runGen(D, [DOC, '--close']);
+ok(r.code === 0 && /no live page for/.test(r.out) && !/Page is up|CALL:/.test(r.out),
+   's22 D: --close без замка → «no live page … nothing to close», код 0, страница не поднята', 'exit ' + r.code + ': ' + r.out.slice(-300));
+// (2) LP2 / критерий 18: замок с ЖИВЫМ pid (дочерний процесс-держатель) и вводом 12 с назад → ОТКАЗ кодом 4; порт · pid · заголовок
+// the holder is a tiny contour-LIKE server: `--close` never kills a pid from a file — it asks the page's own server to end
+// (POST /close?t=<token from the lock>); a page that does not answer is NOT killed without --force (judge Н7)
+const pHold = await freePort();
+const holder = spawn(process.execPath, ['-e', "var h=require('http');h.createServer(function(q,r){if(q.method==='POST'&&q.url.indexOf('/close?t=tok')===0){r.end('{}');setTimeout(function(){process.exit(0)},50)}else{r.statusCode=404;r.end()}}).listen(" + pHold + ",'127.0.0.1')"], { stdio: 'ignore' });
+let holderExit = null; holder.on('exit', (c, s) => { holderExit = c ?? s ?? 'gone'; });
+await wait(600); // the holder's server is listening
+const lockObj = (extra) => JSON.stringify({ pid: holder.pid, url: 'http://127.0.0.1:' + pHold + '/', startedAt: '2026-09-18T09:00:00+03:00',
+  doc: DOC, title: 'Interview #066 — проба', closeToken: 'tok', ...extra }) + '\n';
+// (2а) the DEFAULT threshold is 180 s — observed in a deployment with NO contour.closeQuietMs (section A's tree); a mutant
+// "default = 0" was invisible while this suite set the parameter everywhere (judge Н15)
+{ const PL = join(P, 'interviews', 'decisions', 'interview_052_probe.lock');
+  writeFileSync(PL, JSON.stringify({ pid: holder.pid, url: 'http://127.0.0.1:' + pHold + '/', startedAt: new Date().toISOString(), doc: 'interviews/interview_052_probe.md', title: 'Interview #052 — проба', closeToken: 'tok' }) + '\n');
+  r = runGen(P, ['interviews/interview_052_probe.md', '--close']);
+  ok(r.code === 4 && /younger than the quiet threshold \(180 s\)/.test(r.out) && holderExit === null,
+     's22 D: развёртывание БЕЗ параметра — порог по умолчанию 180 с («younger than the quiet threshold (180 s)»), процесс жив', 'exit ' + r.code + ': ' + r.out.slice(-300));
+  rmSync(PL, { force: true }); }
+writeFileSync(DLOCK, lockObj({ lastInputAt: Date.now() - 2000, draftFields: 1, saved: false }));
+r = runGen(D, [DOC, '--close']);
+ok(r.code === 4 && /last input [0-3] s ago — the owner is typing; not closed/.test(r.out) &&
+   new RegExp('port ' + pHold + ' · pid ' + holder.pid + ' · title "Interview #066').test(r.out),
+   's22 D: ввод 2 с назад (порог 4 с) → --close ОТКАЗ кодом 4 «the owner is typing; not closed»; порт · pid · заголовок напечатаны (LP2, критерий 18)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+ok(holderExit === null, 's22 D: процесс страницы ЖИВ после отказа (--close ничего не убил)');
+// (2б) страница МОЛОЖЕ порога и без единого ввода → тоже отказ (живой прогон 09:10: закрыли через 3 с после первого нажатия)
+writeFileSync(DLOCK, JSON.stringify({ pid: holder.pid, url: 'http://127.0.0.1:' + pHold + '/', startedAt: new Date().toISOString(), doc: DOC, title: 'Interview #066 — проба' }) + '\n');
+r = runGen(D, [DOC, '--close']);
+ok(r.code === 4 && /the page came up [0-3] s ago — younger than the quiet threshold/.test(r.out) && holderExit === null,
+   's22 D: страница поднята 0–3 с назад, ввода ещё не было → отказ кодом 4 «younger than the quiet threshold» — владелец может читать', 'exit ' + r.code + ': ' + r.out.slice(-300));
+// (3) ввод старше порога, но черновик не записан → отказ; --force без слова владельца → отказ кодом 1; записано → закрыто
+writeFileSync(DLOCK, lockObj({ lastInputAt: Date.now() - 400000, draftFields: 2, saved: false }));
+r = runGen(D, [DOC, '--close']);
+ok(r.code === 4 && /draft of 2 field\(s\) not saved/.test(r.out) && holderExit === null,
+   's22 D: ввод старше порога, черновик не записан → отказ кодом 4 «draft of 2 field(s) not saved», процесс жив', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = runGen(D, [DOC, '--close', '--force']);
+ok(r.code === 1 && /refusing --force: it needs --owner-word/.test(r.out) && holderExit === null,
+   's22 D: --force без --owner-word → отказ кодом 1 (слово соседа — не улика), процесс жив', 'exit ' + r.code + ': ' + r.out.slice(-300));
+// (3а) a page that does NOT answer the close request is NOT killed: the lock names a LIVE pid (this suite's own) and a dead port
+{ const pDead = await freePort();
+  writeFileSync(DLOCK, JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:' + pDead + '/', startedAt: '2026-09-18T09:00:00+03:00', doc: DOC, title: 'Interview #066 — проба', closeToken: 'tok', lastInputAt: Date.now() - 400000, draftFields: 0, saved: true }) + '\n');
+  r = runGen(D, [DOC, '--close']);
+  ok(r.code === 4 && /was NOT killed: a pid from a file may belong to another process/.test(r.out),
+     's22 D: страница по адресу замка не отвечает → --close НЕ убивает pid из файла (код 4; свод жив — он и был этим pid)', 'exit ' + r.code + ': ' + r.out.slice(-300)); }
+writeFileSync(DLOCK, lockObj({ lastInputAt: Date.now() - 400000, draftFields: 0, saved: true }));
+r = runGen(D, [DOC, '--close']);
+await wait(800);
+ok(r.code === 0 && /^closed interviews\/interview_066_probe\.md \(port /m.test(r.out) && /its own server ended it/.test(r.out) && holderExit === 0 && !existsSync(DLOCK),
+   's22 D: ввод старше порога, ответ записан → «closed <док> … its own server ended it»: сервер завершился САМ (код 0 держателя), замок снят', 'exit ' + r.code + ' holder ' + holderExit + ': ' + r.out.slice(-300));
+try { holder.kill(); } catch { /* already gone */ }
+// (4) LP1: настоящий генератор — пульс несёт состояние ввода, замок его хранит, --close из ДРУГОГО процесса читает
+const spawnGen = (cwd, args, extra = {}) => {
+  const child = spawn(process.execPath, [join(cwd, '.kaif', 'tools', 'contour', 'review.mjs'), ...args],
+    { cwd, env: quietEnv(extra), stdio: ['ignore', 'pipe', 'pipe'] });
+  let out = ''; let exitCode = null;
+  child.on('exit', (c, s) => { exitCode = c ?? s ?? 'gone'; });
+  const url = new Promise((res, rej) => {
+    const t = setTimeout(() => rej(new Error('no «Page is up» within the deadline: ' + out.slice(-300))), QUIET_TIMEOUT_MS);
+    const on = (d) => { out += d; const m = /Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/.exec(out); if (m) { clearTimeout(t); res(m[1]); } };
+    child.stdout.on('data', on); child.stderr.on('data', on);
+  });
+  return { child, url, out: () => out, exit: () => exitCode };
+};
+const gen1 = spawnGen(D, [DOC, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '20000' }); // 20 s of tolerated silence — the page has no pulse here
+const url1 = await gen1.url;
+await fetch(url1 + 'alive?i=1000&d=1&s=0');
+await wait(300);
+const lock1 = JSON.parse(readFileSync(DLOCK, 'utf8'));
+ok(lock1.pid === gen1.child.pid && lock1.doc === DOC && typeof lock1.lastInputAt === 'number' && lock1.draftFields === 1 && lock1.saved === false && /Interview #066/.test(lock1.title),
+   's22 D: пульс /alive?i=1000&d=1&s=0 → замок несёт pid · doc · title · lastInputAt · draftFields · saved (LP1)', JSON.stringify(lock1));
+r = runGen(D, [DOC, '--close']);
+ok(r.code === 4 && /the owner is typing; not closed/.test(r.out) && gen1.exit() === null,
+   's22 D: настоящий генератор: --close из другого процесса читает замок и ОТКАЗЫВАЕТ при вводе 1 с назад', 'exit ' + r.code + ': ' + r.out.slice(-300));
+await wait(CLOSE_QUIET_MS + 500); // the page grows older than the threshold
+await fetch(url1 + 'alive?i=500000&d=0&s=1');
+await wait(300);
+r = runGen(D, [DOC, '--close']);
+await wait(1500);
+ok(r.code === 0 && /^closed interviews\/interview_066_probe\.md/m.test(r.out) && gen1.exit() === 2 && /closed by the checked command/.test(gen1.out()) && !existsSync(DLOCK),
+   's22 D: пульс «ввода не было 500 с, записано» → --close закрывает: генератор завершился САМ кодом 2 («closed by the checked command»), замок снят', 'exit ' + r.code + ' gen ' + gen1.exit() + ': ' + r.out.slice(-300));
+// (5) LP3 / критерий 19: ответ переживает смерть сервера — headless-страница на ПРОФИЛЕ ПРОЕКТА печатает ответ, сервер убит,
+//     «Записать» → локальная запись; браузер убит; `--queue --list` забирает ответ безоконно на том же порту → decision.json
+const exe = findBrowser();
+if (!exe) {
+  console.log('s22 D: SKIPPED — no Chromium at a known path on this machine: the headless recovery run (criterion 19) is NOT judged here — said out loud, not green');
+} else {
+  const prof = join(D, '.kaif', 'contour-window');
+  const gen2 = spawnGen(D, [DOC, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '20000' });
+  const url2 = await gen2.url;
+  const page = await headlessPage(url2, { profileDir: prof, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+  const TEXT = 'Ответ владельца пережил сервер ' + Date.now(); // «Ответ владельца пережил сервер N» — кириллица кодами (EXP-0135)
+  const typed = await page.evaluate("(function(){var t=document.getElementsByName('text:" + DOC + ":Q1')[0];t.value=" + JSON.stringify(TEXT) + ";t.dispatchEvent(new Event('input',{bubbles:true}));return t.value})()");
+  ok(typed === TEXT, 's22 D: headless-страница на профиле проекта — текст введён в поле Q1 (событие input → черновик в localStorage)', String(typed).slice(0, 80));
+  gen2.child.kill(); await wait(1000); // сервер мёртв — как в тикете #66
+  ok(gen2.exit() !== null && existsSync(DLOCK), 's22 D: сервер убит, замок остался (stale — порт помнит origin)', 'gen ' + gen2.exit());
+  const st = await page.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(r){setTimeout(function(){r(document.querySelector('#status').textContent+'|'+(localStorage.getItem('owner-review:" + DOC + ":__submitted')?'submitted':'none'))},700)})})()");
+  ok(/сохранён на этом компьютере/.test(st) && /\|submitted$/.test(st),
+     's22 D: «Записать» при мёртвом сервере → «сохранён на этом компьютере», ответ лежит в localStorage профиля проекта (__submitted), без диалога (LP3, критерий 19)', st);
+  // (5а) the browser STILL holds the profile (the owner's window is open): recovery is DEFERRED — a second Chromium on a held
+  // profile would hand its page to the live window, i.e. onto the owner's screen (judge Н5)
+  r = runGen(D, ['--queue', '--list']);
+  ok(/recovery deferred: a browser still holds the project profile/.test(r.out) && !existsSync(join(D, 'interviews', 'decisions', 'interview_066_probe.decision.json')) && existsSync(DLOCK),
+     's22 D: окно ещё держит профиль → забор ОТЛОЖЕН («recovery deferred»), записи нет, замок на месте', 'exit ' + r.code + ': ' + r.out.slice(-300));
+  // (5б) a HARD kill ~2 s after Save — a browser crash, not a polite close: localStorage alone loses the write (flush ≈ 5 s,
+  // measured in the recon and by this suite's first build), IndexedDB — the durable carrier — keeps it (judge Н4)
+  page.close();
+  await wait(2000);
+  r = runGen(D, ['--queue', '--list']);
+  const dec = join(D, 'interviews', 'decisions', 'interview_066_probe.decision.json');
+  ok(/answer recovered from the owner's machine: interviews\/interview_066_probe\.md — 1 answer\(s\)/.test(r.out) && /from indexedDB/.test(r.out) && existsSync(dec),
+     's22 D: после ЖЁСТКОГО убийства браузера --queue --list забрал ответ безоконно ИЗ IndexedDB: «answer recovered … from indexedDB», decision.json есть', 'exit ' + r.code + ': ' + r.out.slice(-400));
+  const decJ = existsSync(dec) ? JSON.parse(readFileSync(dec, 'utf8')) : {};
+  ok(decJ.recovered === true && decJ.answers && decJ.answers.Q1 && decJ.answers.Q1.text === TEXT,
+     's22 D: запись несёт recovered: true, текст ответа ПОБАЙТНО равен введённому', JSON.stringify(decJ).slice(0, 300));
+  const md2 = readFileSync(join(D, DOC), 'utf8');
+  ok(md2.includes(TEXT) && /забран с компьютера владельца/.test(md2),
+     's22 D: ответ вписан в документ; комментарий провенанса называет «забран с компьютера владельца»', md2.slice(-300));
+  ok(!existsSync(DLOCK), 's22 D: замок снят после забора');
+  r = runGen(D, ['--queue', '--list']);
+  ok(r.code === 0 && !/recovered|recovery:/.test(r.out), 's22 D: повторный --queue --list — забирать нечего, ни строки о забое, браузер не поднимался', r.out.slice(-200));
+}
+
 // ================================================================ итог
 if (failures) { console.error(`s22: ${failures} checks FAILED · корень ${ROOT}`); process.exit(1); }
-console.log('s22 contour shipped: all checks green (fresh install · pre-flight #051 · three faces · shown fact · update route)');
+console.log('s22 contour shipped: all checks green (fresh install · pre-flight #051 · three faces · shown fact · update route · LP: unknown flag · --close · answer survives the server)');

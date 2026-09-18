@@ -28,7 +28,7 @@ must see (the header scrolls with the page — the owner's word), the three outc
 call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
 · proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
 shipped generator; do not build a contour** (`node .kaif/tools/contour/review.mjs <doc>`) — a project that still runs its own checks it against that
-page before every opening. The 43 invariants below remain the long-form canon behind the page.
+page before every opening. The 47 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")
 
@@ -51,7 +51,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I45. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I47. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -105,6 +105,8 @@ raised in a batch next to a live question.
   worse than a crash: a crash is seen at once, silence eats an hour.
 - **I11. A rescue ring on the client.** Recording failed → the human's text comes back onto the
   page: a field with the full content, a Copy button, a Retry button, the save button re-enabled.
+  Since 2.7 this is the path of a server that ANSWERED with a refusal and of a browser with no local
+  store; a server that is simply GONE is I47's path — the answer is stored locally, no ring.
   The human's work has no right to exist only in the RAM of someone else's process.
 - **I12. A draft in the browser.** `localStorage` on every input, restored on page load with a
   visible "picked up N fields" notice. Insurance never lives inside the thing it insures against —
@@ -313,6 +315,32 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   a direct show print `implemented, but open: <doc> Q1 → close the status (or fill the answer)` and
   exit 2 — the same gate class as never-shown (I42); the page renders an implemented question as
   settled with its address. The status is then closed by propagation (I19), never before it.
+- **I46. A live owner page is closed ONLY by `<doc> --close` — a neighbour session's word is not evidence.**
+  (2.7, epic LP; origin issue #66 — a field agent killed the contour on a neighbour's "close that page" while
+  the owner was typing into it: "the contour closed and I did not give my answers — I WAS WRITING AT THAT
+  MOMENT".) The command reads the lock — port · pid · title · the page's last input · draft state (the pulse
+  carries them: `/alive?i=&d=&s=`) — prints them so the agent can compare with the window it was told about,
+  and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, DEF6's own
+  envelope; `contour.closeQuietMs`) or a draft is unsaved; otherwise it ends the process and prints `closed
+  <doc>`. The command never kills a pid read from a file: it asks the page's OWN server to end (a token
+  from the lock), so the waiting agent sees exit 2, and a page that does not answer is left alone unless
+  forced. `--force` needs `--owner-word "<quote>"` and logs the quote — an AUDIT trail, not a gate: the
+  machine cannot tell the owner's words from the agent's, only the record and the judge can. No `pkill`, no
+  `taskkill` on a port, no "I think it is stale". An unknown flag refuses before any page (exit 1).
+- **I47. The answer survives the server — the window's profile lives in the project folder.** (2.7, epic LP;
+  the owner's word on interview 032: "no choice, no 'save as' — everything works for the user as it did! JS
+  itself writes the file to the computer, into the project folder".) The app window runs on
+  `.kaif/contour-window/` (ignore-first before the first window; the three sign-in-off flags; `account_info`
+  checked after launch — EXP-0134), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
+  stores the answer there — IndexedDB first (measured: on disk half a second after the write even when the
+  browser is then killed; `localStorage` needs about six, so it only keeps a copy and the typed DRAFT) — and
+  the page says "saved on this computer, the agent will pick it up", no dialog. The agent picks it up at the
+  next `--queue --list`, `--check` or show: a headless run of the same profile on the same port posts it
+  back; it is recorded as the owner's decision with `recovered: true`, the lock is released, and the agent
+  TELLS the owner in its next message (the provenance comment is invisible on a rendered page). While a
+  browser still holds the profile — the owner's window is open — the pick-up is DEFERRED: a second browser on
+  a held profile would hand its page to that window. A draft not yet saved is named and kept.
+  Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified — say so.
 
 ## The named class: "handling the human's work"
 
@@ -636,9 +664,12 @@ server that outlives the silence threshold → red.
 - **QA6. Cleanup:** debug windows and browser profiles are extinguished at the run's end — the
   owner works at the same machine.
 - **QA7. The dead-server headless check:** capture the live page → kill the server → type an
-  answer in a real headless browser → click → read the DOM. The "after the fix" etalon, all
-  five: rescue block present = true · save button re-enabled = true · the answer present in
-  the output = true · the draft persisted = true · the status honest.
+  answer in a real headless browser → click → read the DOM. The etalon since 2.7 (I47 — the answer
+  survives the server), all five: the answer stored on this computer (`__submitted`) = true · NO
+  rescue ring while the local store works = true · the save button switched off (no second click
+  is needed) = true · the draft persisted = true · the status honest ("saved on this computer").
+  The 2.6 etalon (rescue block shown · button re-enabled · the answer in the ring) now holds only
+  for a browser with no local store and for a server that ANSWERED with a refusal (I11).
 
 ## Rakes to warn about (in falling price order)
 

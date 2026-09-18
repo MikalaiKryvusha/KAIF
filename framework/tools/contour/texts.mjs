@@ -63,6 +63,7 @@ const EN = {
     followUp: (atHuman) => 'Answer (follow-up, ' + atHuman + '):',
     ownerComment: (atHuman) => "Owner's comment (" + atHuman + '):',
     proofread: (atHuman) => "Owner's proofreading comments (" + atHuman + '):',
+    recovered: "picked up from the owner's computer", // LP (#66): the provenance comment says the answer came from the local save
   },
   kind: { interview: 'interview', homework: 'homework', document: 'document', notice: 'notice',
     queue: 'queue', proofread: 'proofreading', mockup: 'mockup review' },
@@ -95,6 +96,9 @@ const EN = {
     noRemarksWritten: 'no remarks',
     needArt: 'A decision on the outbound is needed: approve or reject', err: (m) => 'SAVE ERROR: ' + m,
     serverGone: 'THE CONTOUR SERVER IS UNREACHABLE — the answer will NOT be sent. The draft is kept in the browser; copy the text (button below) or restart the contour.',
+    // LP (2.7, origin issue #66): with the window's own profile in the project the answer survives the server — no dialog, no choice
+    serverGoneLocal: 'The contour server is unreachable — keep writing and press Save as usual: the answer is saved on this computer, in the project folder, and the agent will pick it up.',
+    savedLocally: 'The server is unreachable — your answer is saved on this computer (in the project folder); the agent will pick it up. You can close the window.',
     closeYourself: 'The browser refused to close the window — please close it yourself',
     copied: 'Copied to the clipboard', copyManually: 'Select and copy by hand',
     rescue: 'Saving failed — your text is below, it is not lost.', noticeHint: 'Without the mark the notice comes back.',
@@ -145,6 +149,7 @@ const RU = {
     followUp: (atHuman) => 'Answer (дополнение, ' + atHuman + '):',
     ownerComment: (atHuman) => 'Комментарий владельца (' + atHuman + '):',
     proofread: (atHuman) => 'Замечания владельца по вычитке (' + atHuman + '):',
+    recovered: 'забран с компьютера владельца', // LP (#66): комментарий провенанса называет, что ответ пришёл из локальной записи
   },
   kind: { interview: 'интервью', homework: 'домашка', document: 'документ', notice: 'сообщение',
     queue: 'очередь', proofread: 'вычитка', mockup: 'отсмотр макета' },
@@ -177,6 +182,9 @@ const RU = {
     noRemarksWritten: 'замечаний нет',
     needArt: 'Нужно решение по исходящему: одобряю или отклоняю', err: (m) => 'ОШИБКА ЗАПИСИ: ' + m,
     serverGone: 'СЕРВЕР КОНТУРА НЕДОСТУПЕН — ответ НЕ уйдёт. Черновик сохранён в браузере; скопируйте текст (кнопка ниже) или перезапустите контур.',
+    // LP (2.7, #66): окно на своём профиле в папке проекта — ответ переживает сервер; ни диалога, ни выбора (слово владельца Q2 = D)
+    serverGoneLocal: 'Сервер контура недоступен — пишите дальше и нажмите «Записать» как обычно: ответ сохранится на этом компьютере, в папке проекта, и агент его заберёт.',
+    savedLocally: 'Сервер недоступен — ответ сохранён на этом компьютере (в папке проекта); агент его заберёт. Окно можно закрыть.',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     copied: 'Скопировано в буфер', copyManually: 'Выделите и скопируйте вручную',
     rescue: 'Запись не прошла — ваш текст ниже, он не потерян.', noticeHint: 'Без пометки сообщение придёт снова.',

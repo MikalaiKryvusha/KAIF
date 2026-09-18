@@ -76,6 +76,7 @@ export function loadContourConfig(root) {
     spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
+    closeQuietMs: Number(c.closeQuietMs) > 0 ? Number(c.closeQuietMs) : null, // LP (2.7, #66): `--close` refuses while the owner typed less than this ago (default in the generator: 180 s)
     markerFound: existsSync(resolve(root, KAIF_JSON)),
   };
 }
@@ -405,6 +406,7 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.artifacts ? { artifacts: payload.artifacts } : {}),
     ...(payload.comments ? { comments: payload.comments } : {}),
     ...(payload.noRemarks ? { noRemarks: true } : {}), // bugs/113: "looked, no remarks" — a legal verdict on an artifact
+    ...(payload.recovered ? { recovered: true } : {}), // LP (2.7, #66): the answer was saved on the owner's computer while the server was gone and picked up by the agent
   };
   const isMd = extname(abs).toLowerCase() === '.md';
   if (isMd) {
@@ -412,7 +414,7 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     const eol = /\r\n/.test(src) ? '\r\n' : '\n';
     const lines = stripBom(src).split(/\r?\n/);
     const questions = parseQuestions(src);
-    const prov = '<!-- owner-review: by ' + record.by + ' · ' + atHuman + ' -->';
+    const prov = '<!-- owner-review: by ' + record.by + ' · ' + atHuman + (record.recovered ? ' · ' + T.wb.recovered : '') + ' -->';
     let touched = false;
     // questions are processed BOTTOM-UP: a splice never shifts positions still to be processed above
     const entries = Object.entries(payload.answers || {})

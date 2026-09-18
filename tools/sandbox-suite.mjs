@@ -111,6 +111,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
 import { scanSuite } from './sandbox-mute-guard.mjs';
+import { distFreshness } from './lib/source-tree-sha.mjs'; // LP (2.7): refuse a STALE dist before the first suite
 
 // s09 doctrine for this runner too (court RL 2.6, findings A-F1 / C-F7: `--help` used to start the FULL polygon):
 // the runner takes NO arguments — `--help`/`-h` print usage and exit 0, anything else is refused with usage and
@@ -255,7 +256,20 @@ if (quietProof.length || loud.length) {
   console.error(`\n❌ preflight: ${loud.length} sandbox file(s) start the contour generator where it can reach the owner — pass env: quietEnv() (tools/lib/sandbox-run.mjs)`);
   process.exit(1);
 }
-console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker · the contour generator never reaches the owner from a sandbox run (${SUITES.length} suites)`);
+// ── Preflight gate (LP 2.7, plans/111 LP4; the root of bugs/116 in the shipment): the polygon runs the REPO's dist
+// only when that dist was built from the sources on disk. A stale dist ran the OLD contour generator against a flag
+// it did not know and raised the owner's page — the quiet child (above) stops the window, this stops the CAUSE.
+// The KAIF_DIST seam (a red proof against an old release) is exempt by design: that dist is old on purpose.
+// @guard sandbox-dist-fresh — the declaration with THREAT · PROVED-AGAINST · GAP · ON-REAL-PATH lives beside the
+// function in tools/lib/source-tree-sha.mjs (one fingerprint, both sides, one selftest).
+if (!process.env.KAIF_DIST) {
+  const fr = distFreshness(REPO);
+  if (!fr.fresh) {
+    console.error(`\n❌ preflight: dist is stale — rebuild: node tools/build-framework.mjs (${fr.reason}). Not one suite ran: a stale dist runs the OLD generator against NEW flags (bugs/116).`);
+    process.exit(1);
+  }
+}
+console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker · the contour generator never reaches the owner from a sandbox run · dist is fresh against framework/ (${SUITES.length} suites)`);
 
 // Упавший свод называется ПОИМЁННО с кодом/сигналом (bugs/61, наблюдение 2026-08-21): прежний
 // catch глотал имя, и транзиентный красный оставил ровно «1 of 14 FAILED» — какой из четырнадцати,

@@ -95,7 +95,8 @@
       "THE CONTOUR'S WINDOW INVARIANTS GOT A MACHINE (epic IW; origin issue #64 — a field agent launched the contour in the foreground with `--timeout 60` (the shell's timeout killed it and the owner's window with it), relaunched it on a fresh port (the draft became invisible — the port is part of the web origin) and then handed the URL to `Start-Process` (a tab in the owner's working browser): three invariants I26 · I29 · I31 broken in a row by an agent that had read them, and nothing went red; the owner lost the answer he was typing). (1) The shipped generator `.kaif/tools/contour/review.mjs` keeps the lock of a DEAD process and comes up on that run's port first — same web origin, the owner's browser draft is restored on load (\"Port N reused from the previous run\"); a port taken by something else gives a fresh port AND a log line naming the loss (\"… is taken … a draft written in the previous window is NOT visible here\"). (2) The page checks `matchMedia('(display-mode: standalone)')` itself — true only in the `--app=` window (measured on Chrome, headed and headless) — and in a tab shows the owner a yellow note (\"your draft lives in this tab only, do not close it until you have saved\") and tells the server, which logs `Window check: … a TAB (I26)`. (3) `/owner-reviews` (both layers) ships the launch under I31 as a COMMAND per agent system (Claude Code: the Bash tool with run_in_background: true; a harness with tracked tasks: its facility; a plain shell: redirect to .kaif/contour.log and poll the lock) — `--timeout` is for automation only, the URL is never handed to Start-Process/open/xdg-open. The contract page §5 names both; /fable-judge hunts \"a contour raised outside its window\".",
       "A KAIF-DEFECT TICKET IS DELIVERED IN THE SAME MOVE AS IT IS FILED, AND THE CORE NAMES ONE THAT WAS NOT (epic SD; origin issue #65 — a recurrence of #37: a field agent filed two tickets \"awaiting the owner's word to send\" and delivered them forty minutes later, after one direct question of the owner and a second \"send\"; his own cause, verbatim: the broad, always-on reflex \"confirm outward actions\" beats a narrow exception written as prose inside a long paragraph — \"it lost on #37 and lost again\"). Three places, one rule: (1) AGENT_GUIDE (both layers) — the ONE carve-out of the `AUTH:` gate now stands in the gate's own line at the fable loop's call point (a ticket about a defect of KAIF itself, filed to the framework's origin, goes under the KAIF owner's standing authorization in the same move as filing and awaits no `AUTH:` line; everything else outward still waits for the owner's words); (2) /report-bug (both layers) — the step that files the ticket (step 3, \"File AND deliver\") ENDS with `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`; there is no separate \"deliver\" step to postpone — filing IS delivering; (3) `node .kaif/kaif-core.mjs check` gains the axis \"undelivered signal\", an ALLOWLIST: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` paragraph names an issue (a `…/issues/N` URL, or `#NN` as the value itself or right after the word origin/issue — \"see step #2\" is not a delivery) and does not say NOT YET; NOT YET is named with the ready command, and a missing, translated or unreadable line (a promise such as \"being sent by this session\") or NOT YET beside an issue is named \"no readable delivery state\" with both legal forms — a warning, never a failure, silent on tracking: anonymous. `report` and `check` read the line with ONE function, so they cannot disagree about it: NOT YET beside an issue is refused by `report` too (until 2.7 any URL won and such a ticket could never be sent), and a URL that is not an issue no longer counts as a delivery. Why an allowlist: the delivery lines of four field deployments came in more shapes than the template — the field name translated into the project language (the form the #65 incident itself committed), a promise instead of an address, a delivery claimed in words with no issue, no line at all — and a NOT-YET-only check was silent on all of them. /report-bug (both layers) now says the field name `**Delivered upstream:**` is machine-read and stays verbatim English in any project language. /fable-judge hunts \"a signal filed, not delivered\".",
       "A FALSEHOOD IS CORRECTED WHERE IT STANDS, NOT IN THE CHAT (epic SF; origin issue #67 — the project owner's word, rendered from Russian: \"the agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie\", said the moment he caught the live case: an agent closed a ticket with the comment \"the model does not write it, so there is nothing to trim\", learned the real mechanism from him an hour later, agreed IN THE CHAT, wrote the correction into its own notes — and the false comment stayed in the tracker under his name until he came back a second time). The canon demanded observation at a claim's BIRTH (the fifth obligation, issue #63) and nothing at its refutation. Four places, one rule: (1) AGENT_GUIDE (both layers) gains a SIXTH KAIF obligation at the fable loop's steps 4 and 7 — the trigger is an EVENT, not a step: the minute a past statement of yours is identified as false, five steps run BEFORE the work continues — stop the current task · enumerate every place it was published (`git grep -n \"<the phrase>\"` for the repository, the outward channels by the sphere library's command, plus STATUS and the run reports) · correct or retract in EACH (an edit where the artifact is ours, a \"correction: …\" comment where the channel only appends, a deletion where the channel allows one; a channel whose retraction command you do not know is said aloud) · read it back · name it in the reply as `corrected: <where>`; the class has a name, a STANDING FALSEHOOD, and the boundary excludes a draft marked as a hypothesis and an append-only journal entry whose new entry names the one it corrects; (2) /end-chat-soft (both layers) asks for it BY NAME in the farewell report — `Standing falsehood: none` or the statement with the places it was corrected in — and a place that could not be corrected is named with its missing retraction command instead of an answer of \"none\"; (3) /end-chat-force carries the same line as one phrase beside the ceremonies-debt line: force mode may skip a ceremony, never a lie left standing under the owner's name; (4) the sphere libraries gain the slot \"Outward write channels → retraction command\" (`_template.md`, filled in `programming.md` with nine channels: the repository's own files, a pushed commit message, an issue/PR comment of yours and someone else's, an issue/PR body, a published release note, a wiki page, a chat-ops message, the owner's contour page) so step 3 is executable rather than imagined. /fable-judge hunts \"a standing falsehood\".",
-      "A FREE SEAT ASKS FOR WORK, AND A GENERATED CONSTITUTION KEEPS EVERY OBLIGATION OF ITS TEMPLATE (epic FR; origin issue #68 — a field seat finished its half of a smoke, committed, reported to its neighbour and to the owner, and stopped, while `STATUS.md` named three tickets \"claimed by nobody\" and a second seat sat idle on the board; the owner ended the idling himself). Two halves of one defect. (1) THE OBLIGATION: \"idle — report to the Manager\" lived as a TRAILING CLAUSE of the rule about blockers, and the rule is inverted relative to its cost — a blocker is felt by the agent, availability only by the dispatcher. The constitution template now carries it as its own § 2 rule 6 with an exit condition: task closed and no next one → ONE message to the Manager before the turn ends, naming what is done, what remains and which candidates you can take, by name from `STATUS.md` or the board (\"I am free, may I take X / Y / Z\"); idling without it is an UNCLOSED task, idling the owner had to end is a defect. The board template says the same from its side: a row set to `🟢 free` carries the request in the SAME write, and the board tool contract gains `--free --asking \"<candidates>\"` (item 7; `audit-waiting` becomes item 8). § 9 puts `TEAM_CONSTITUTION.md` into every seat's RE-READ CORE while more than one role window is open — named in the refresh marker's `docs` at every trigger. (2) THE GATE: the obligation did not survive GENERATION — the field constitution kept 5 of the template's 9 § 2 rules and nothing noticed, because a shorter document looks like editorial tightening rather than loss. `check` now compares a `TEAM_CONSTITUTION.md` in the project root against the template that shipped with the skill (found in the deployed `.claude/.agents/.grok/.cline` skills): obligations are the bold anchors of § 2's numbered items plus the nine invariant `## N.` headings, headings matched by NUMBER (which survives translation) and rules by anchor — and when NOT ONE anchor matches, the document is translated, so the axis says so and counts instead (\"cannot match translated anchors: 10 expected in §2, 5 found\"), printing the template's own order so the loss has something to be restored from. Every loss is named: `⚠ TEAM_CONSTITUTION.md lost N obligation(s) of the template: §2 \"A free seat asks for work.\" …`. A warning, never a failure — the constitution is the owner's document; a deliberate omission is DECLARED beside the item with `<!-- constitution-ok: <why> -->`, and a tree with no constitution or no template is silent. /team-deployment now runs `check` and READS its lines at operation 3 step 1, at the start of the adopt inventory, and in \"Done when\"."
+      "A FREE SEAT ASKS FOR WORK, AND A GENERATED CONSTITUTION KEEPS EVERY OBLIGATION OF ITS TEMPLATE (epic FR; origin issue #68 — a field seat finished its half of a smoke, committed, reported to its neighbour and to the owner, and stopped, while `STATUS.md` named three tickets \"claimed by nobody\" and a second seat sat idle on the board; the owner ended the idling himself). Two halves of one defect. (1) THE OBLIGATION: \"idle — report to the Manager\" lived as a TRAILING CLAUSE of the rule about blockers, and the rule is inverted relative to its cost — a blocker is felt by the agent, availability only by the dispatcher. The constitution template now carries it as its own § 2 rule 6 with an exit condition: task closed and no next one → ONE message to the Manager before the turn ends, naming what is done, what remains and which candidates you can take, by name from `STATUS.md` or the board (\"I am free, may I take X / Y / Z\"); idling without it is an UNCLOSED task, idling the owner had to end is a defect. The board template says the same from its side: a row set to `🟢 free` carries the request in the SAME write, and the board tool contract gains `--free --asking \"<candidates>\"` (item 7; `audit-waiting` becomes item 8). § 9 puts `TEAM_CONSTITUTION.md` into every seat's RE-READ CORE while more than one role window is open — named in the refresh marker's `docs` at every trigger. (2) THE GATE: the obligation did not survive GENERATION — the field constitution kept 5 of the template's 9 § 2 rules and nothing noticed, because a shorter document looks like editorial tightening rather than loss. `check` now compares a `TEAM_CONSTITUTION.md` in the project root against the template that shipped with the skill (found in the deployed `.claude/.agents/.grok/.cline` skills): obligations are the bold anchors of § 2's numbered items plus the nine invariant `## N.` headings, headings matched by NUMBER (which survives translation) and rules by anchor — and when NOT ONE anchor matches, the document is translated, so the axis says so and counts instead (\"cannot match translated anchors: 10 expected in §2, 5 found\"), printing the template's own order so the loss has something to be restored from. Every loss is named: `⚠ TEAM_CONSTITUTION.md lost N obligation(s) of the template: §2 \"A free seat asks for work.\" …`. A warning, never a failure — the constitution is the owner's document; a deliberate omission is DECLARED beside the item with `<!-- constitution-ok: <why> -->`, and a tree with no constitution or no template is silent. /team-deployment now runs `check` and READS its lines at operation 3 step 1, at the start of the adopt inventory, and in \"Done when\".",
+      "A LIVE OWNER PAGE IS CLOSED ONLY BY A CHECKED COMMAND, THE ANSWER SURVIVES THE SERVER, AND A TEST PAGE NEVER CALLS THE OWNER (epic LP; origin issue #66 — the project owner's word, rendered from Russian: \"the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT\": a neighbour session said \"close that page\" and an agent killed the process; and the origin owner's word on interview 032: \"no choice, no 'save as' — everything works for the user as it did! JS itself writes the file to the computer, into the project folder\"). Three changes of the shipped generator .kaif/tools/contour/. (1) `<doc> --close` is the ONLY way to end a live page from outside: it reads the lock — port · pid · title · the page's last input · draft state (the pulse `/alive?i=&d=&s=` carries them, and the first keystroke after a pause pulses within a second) — prints them so the agent can compare with the window it was told about, and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, `contour.closeQuietMs`), while the page itself is younger than it (the owner may be reading), or while a draft is unsaved; otherwise it asks the page's OWN server to end (a token from the lock — a pid read from a file is never killed without `--force`, and the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word \"<quote>\"` and logs the quote. /owner-reviews I46, spec §5, AGENT_GUIDE \"Showing is an action\" in both layers. (2) The app window runs on its OWN browser profile inside the project — `.kaif/contour-window/`, added to .gitignore by the machinery (ignore-first), with the three sign-in-off flags and an `account_info` check after launch — so the draft is on the owner's disk IN THE PROJECT; Save with the server gone stores the answer there — IndexedDB first, measured on disk half a second after the write even when the browser is then killed (`localStorage` needs about six and keeps only a copy and the typed draft) — and the page says \"saved on this computer, the agent will pick it up\" — no dialog, no rescue ring; the next `--queue --list`, `--check` or show picks it up: a headless run of the same profile on the same port posts it back (deferred while a browser still holds the profile — the owner's window is open), it is recorded as the owner's decision with `recovered: true` (the provenance comment in the md says \"picked up from the owner's computer\"), the lock is released; an unsaved draft is named and kept. Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified. /owner-reviews I47, spec §3/§4. (3) An unknown flag REFUSES before any page, sound or call (exit 1, the core's bug-33 rule; the 2.6 generator let `--close` fall through to the show and CALLED the owner) — spec §2; and at the origin the polygon refuses to run against a STALE dist (a fingerprint of framework/** in kaif-manifest.json `sourceTree`). /fable-judge hunts a page closed past its command and an answer left on the owner's machine."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -139,7 +140,8 @@
       "A renamed heading is REPLACED by the update, never duplicated — and the hand-off is called a HANDOVER (2.7, epic HO; origin issue #57): until this release a renamed module heading reached your tree as \"the old section removed + a new section added\", so a section YOU had edited ended up doubled — your version under the old heading, the release's under the new one, silently and at exit 0. The bundle now declares its renames (`renamesByVersion`) and `update` applies a declared pair as ONE module: untouched → replaced under the new heading with a `renamed: <path> :: <old> → <new>` line in the log, edited → your text kept with ONE heading and a task item that names the rename and carries the diff, an old anchor that is not on disk → a log line by name. Nothing is matched by similarity — an undeclared rename is still a duplicate, which is why the build now warns when a heading vanishes without a declaration. TWO THINGS FOR YOU. (a) A tree that ALREADY carries both sections from an earlier update folds them by hand, once — the machinery will not guess which half is yours. (b) The payload no longer says `baton`: if your STATUS.md, your chronicle or a local skill of yours carries that word (or its literal translation — in Russian it landed on the word for a loaf of bread), replace it by hand with the industry's term or with the phrase your own trigger aliases already use; owner documents are never edited by the machinery.",
       "The word \"test\" now means a FUNCTIONAL RUN on the real product, and a claim is never wider than its observation (2.7, epic CL; origin issues #62 and #63): \"tested\" in a marker, a report or a handover means the agent walked the REAL product (stage or production) by the user's path with machinery it wrote from the functionality's own scenarios and READ the result — the screen, the lines, the logs; lint, unit tests, self-tests, mutation proofs and guards are HYGIENE: still mandatory, never called testing, never flipping `[NOT-TESTED]`, and `[NOT-TESTED]` never goes to production. TWO THINGS FOR YOU. (a) Run reports: the Checks field now opens with two separate lines — `Hygiene:` and `Functional run:` (what was walked · on which contour · what was READ — or the word NONE = fixed, not tested); `node .kaif/tools/kaif-testrun-lint.mjs check` reddens a Verdict `pass` with no functional run or NONE behind it (`pass-without-functional-run`) — a report you wrote by the 2.7 form before this update will redden if it says `pass`: add the two lines by the facts of that run, and write `partial` where there was no functional run; the closing `STATUS: DONE` of a bug carries the same two lines. (b) Reports to the owner: name what observed each claim; a proxy is said aloud (\"the server answers 200; whether a window opened on your screen I did not check\"); the owner's screen is asserted only after a screenshot. If a project skill of yours says \"tested\" about a green unit, or reports \"the page is open\" from a launcher's exit code, re-word it — the judge hunts both.",
       "The owner-facing contour is launched by the COMMAND in /owner-reviews, and it keeps the owner's draft alive across a dead process (2.7, epic IW; origin issue #64): copy the launch from the table under I31 for your agent system (Claude Code — the Bash tool with run_in_background: true; a harness with tracked tasks — its facility; a plain shell — redirect to .kaif/contour.log and poll the lock file) — never a foreground call, never `--timeout` for a human, never the URL handed to Start-Process / open / xdg-open. The shipped generator now comes up on the previous run's port when that process is gone (the draft typed in the window that outlived it is restored) and names a taken port together with the loss; the page tells the owner and your log when it finds itself in a tab instead of the app window. If a local wrapper of yours removes stale lock files on start, stop doing that — the lock now carries the port the draft lives on.",
-      "Filing a KAIF-defect ticket IS delivering it (2.7, epic SD; origin issue #65): on a deployment that tracks the origin, `bugs/KAIF/NN_*.md` is written and sent in the same move — `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md` — under the KAIF owner's standing authorization, before the work that found the defect, with no `AUTH:` line to wait for (the carve-out now stands in the gate's own line in AGENT_GUIDE; every other outward action still waits for the owner's words). `node .kaif/kaif-core.mjs check` now names every numbered ticket whose `Delivered upstream:` line does not prove delivery (an issue URL or #NN with no NOT YET beside it) — NOT YET with that command, and a missing, translated or unreadable line, or NOT YET beside an issue, as \"no readable delivery state\"; `report` refuses NOT YET beside an issue and no longer takes a URL that is not an issue for a delivery. If your tree carries such tickets from earlier sessions: a ticket delivered by hand or folded into a field report — write its issue URL or #NN into a `**Delivered upstream:**` line (the field name stays verbatim English in any language; find the number with `gh issue list --repo <origin> --state all --search \"<title>\"`), and the warning ends; a ticket never sent — write `**Delivered upstream:** NOT YET — <why>` and send it with the command the warning prints. On tracking: anonymous nothing changes — NOT YET stays legal there."
+      "Filing a KAIF-defect ticket IS delivering it (2.7, epic SD; origin issue #65): on a deployment that tracks the origin, `bugs/KAIF/NN_*.md` is written and sent in the same move — `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md` — under the KAIF owner's standing authorization, before the work that found the defect, with no `AUTH:` line to wait for (the carve-out now stands in the gate's own line in AGENT_GUIDE; every other outward action still waits for the owner's words). `node .kaif/kaif-core.mjs check` now names every numbered ticket whose `Delivered upstream:` line does not prove delivery (an issue URL or #NN with no NOT YET beside it) — NOT YET with that command, and a missing, translated or unreadable line, or NOT YET beside an issue, as \"no readable delivery state\"; `report` refuses NOT YET beside an issue and no longer takes a URL that is not an issue for a delivery. If your tree carries such tickets from earlier sessions: a ticket delivered by hand or folded into a field report — write its issue URL or #NN into a `**Delivered upstream:**` line (the field name stays verbatim English in any language; find the number with `gh issue list --repo <origin> --state all --search \"<title>\"`), and the warning ends; a ticket never sent — write `**Delivered upstream:** NOT YET — <why>` and send it with the command the warning prints. On tracking: anonymous nothing changes — NOT YET stays legal there.",
+      "The owner-facing contour changed THREE behaviours (2.7, epic LP; origin issue #66 and the origin owner's word on interview 032): a live page is closed ONLY by `node .kaif/tools/contour/review.mjs <doc> --close` — never by killing the process or on a neighbour session's word — and the command refuses (exit 4) while the owner typed less than 180 s ago, while the page is younger than that, or while a draft is unsaved (`--force --owner-word \"<quote>\"` for the owner's own order); the app window now runs on its own browser profile in the project (`.kaif/contour-window/`, put into .gitignore by the update; Edge/Windows verified, other browsers take the same flags unverified), so an answer saved while the server was gone lives on the owner's disk in the project and the agent picks it up at the next queue/check/show as a decision with `recovered: true`; an unknown flag now REFUSES before any page or call (exit 1) where 2.6 showed the page. Nothing to merge — three files under .kaif/tools/contour/ and the one-page contract are replaced mechanically; if your project keeps its own contour, read spec §2 and §5 and adopt the close command and the profile."
     ],
     "2.6": [
       "Owner-facing text speaks the customer's language, never the agent's vocabulary (2.6, epic VB; the origin's bug 112, owner decision #106): in a question, an option label and the Situation · Action · Result lines every thing is named by what the owner will see or get after it; epic codes and their chains, plan addresses, tool invocations, flags and canon terms are legal only in the Check line, the answer-target line and a technical note under the scenario; a question the owner answers with a word about language instead of a choice is the finding, not a misunderstanding. Rule in /interview 3a and AGENT_GUIDE (both layers), the owner-text-in-agent-vocabulary hunt of /fable-judge; the declared exception is a marker with a reason (questions-guard:vocabulary-ok).",
@@ -1440,7 +1442,8 @@ was "guarded mechanically" — indicative, about a check that did not exist, and
 such a sentence as a guarantee already met. Exactly one mechanical half exists and it is named:
 questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
 document". Field words that paid for this rule: "I will NOT open it by double-click! You are
-forcing me to dig through project files again!"
+forcing me to dig through project files again!" **And a page the owner looks at is CLOSED only by the command that checks
+it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
 covers artifacts; a question is not an artifact, and the gap let the same grievance return through
@@ -3177,7 +3180,7 @@ showing, outcomes and exit codes, the call, the faces and flags of the shipped g
 `.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
-(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)
+(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB first, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
 and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
 and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
@@ -4967,7 +4970,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5022,6 +5025,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Standing falsehood (KAIF 2.7).** A statement the session itself later contradicted — in the chat, in its own notes, in a report — that still stands where it was published: a tracker comment, a page, a chat-ops message, a project document, a status line, a plan, a run report. The agent's internal state is corrected and the artifact the team reads is false, which is the same fraud as an unbacked `[TESTED]`, only aged (`AGENT_GUIDE.md` → the fable loop's sixth KAIF obligation: stop → enumerate every place → correct or retract in each → read back → `corrected: <where>` in the reply; origin issue #67 — the project owner's word, rendered from Russian: "the agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie", said after he pointed at his own ticket a second time). Hunt also: a session close or a run report carrying a correction in the record with no `Standing falsehood:` line at all (the closing rituals ask for it by name); an answer of `none` beside a place the report itself says could not be corrected; a correction written only into the agent's notes or only into a NEW document while the original stands unchanged; "I will fix it at the end of the task" as a recorded plan. Re-run: `git grep -n "<the false phrase>"` over the repository and the retraction command of every outward channel the sphere library names (`framework/spheres/<sphere>.md` → "Outward write channels → retraction command") — a hit with no correction beside it is the finding; a draft marked as a hypothesis and an append-only journal entry whose newer entry names the one it corrects are NOT findings.
    - **Idle seat ended by the owner (KAIF 2.7).** In a deployed TEAM (more than one role window open), a seat that closed its task — committed, reported, and has no next assignment — and ended its turn WITHOUT one message to the Manager naming *what is done · what remains · which candidates it can take, by name from `STATUS.md` or the board* ("I am free, may I take X / Y / Z"), or whose board row went `🟢 free` carrying no request, is a finding: the constitution makes the announcement an obligation with an exit condition, not a courtesy, and an idle the OWNER had to end is the defect itself (`TEAM_CONSTITUTION.md` § 2 rule 6 and § 4; origin issue #68 — a field seat finished its half of a smoke, reported, and stopped while `STATUS.md` listed three tickets "claimed by nobody" and a second seat sat idle; the owner's word ended it). The failure state is silent and looks correct — a finished, committed, reported seat is indistinguishable from a working one, to itself — so hunt it in the RECORD, not in the mood: an owner's message of the "why are you idle / take a task" family with no free-announcement before it; a report that ends at "done" with no candidates named; a board row `free` with an empty request cell; a seat whose last outgoing message predates the owner's by more than one turn. Re-run: read the board and the seat's outgoing messages in order — the announcement either precedes the owner's word or it does not exist. A single session in the main copy is NOT in scope: the constitution binds only while more than one role window is open.
    - **Team seat refreshed without the constitution (KAIF 2.7).** In team mode, a refresh witness — `.kaif/refresh-marker.json` written at any trigger (hour · heavy task · compaction · ritual) — whose `docs` does not name `TEAM_CONSTITUTION.md`, or a re-read claimed in chat that quotes only the project's own core, is a finding: a document read once at launch and never again governs nothing, and the rules of PARALLEL work are exactly the ones a seat loses first (`TEAM_CONSTITUTION.md` § 9; origin issue #68 — a seat re-read the core hourly under a marker with a quote and never once re-read the document that governs parallel work). Hunt also: a briefing that says "read the constitution in full" with no refresh trigger naming it afterwards; a generated constitution whose obligations `node .kaif/kaif-core.mjs check` names as lost while the seat reports the canon refreshed. Re-run: `node -e "console.log(require('./.kaif/refresh-marker.json').docs.join('\n'))"` and `node .kaif/kaif-core.mjs check`; a deployment with no `TEAM_CONSTITUTION.md` is not a finding — the hunt is silent outside team mode.
+   - **Live page closed past its command (KAIF 2.7).** An owner-facing contour page ended from OUTSIDE by anything other than `node .kaif/tools/contour/review.mjs <doc> --close` — a killed process (`kill`, `taskkill`, `pkill`, a port sweep), a "stale, I closed it" in the report, a restart "to be safe" — or closed with `--force` whose `--owner-word` is not the owner's verbatim words from the chat, is a finding: the command reads the lock (port · pid · title · the page's last input · draft state) and refuses while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — a neighbour session's word is never evidence (`/owner-reviews` I46; `.kaif/INTERACTIVE_CONTOUR_SPEC.md` § 5; origin issue #66 — the project owner's word, rendered from Russian: "the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT"). Hunt also: an answer LEFT on the owner's machine — a stale `<decisionsDir>/*.lock` beside an existing `.kaif/contour-window/` profile at the end of a session that never ran `--queue --list`, `--check` or a show afterwards (the recovery runs there, I47), or a report that says "the owner did not answer" while the log carries `answer recovered from the owner's machine` or `draft found on the owner's machine`; a contour tool run from a sandbox or a probe with a flag the generator does not know that still raised a page (2.6 behaviour — the polygon's quiet child and the unknown-flag refusal both exist to make it impossible). Re-run: `ls <decisionsDir>/*.lock` and `node .kaif/tools/contour/review.mjs --queue --list` — a recovery line or a kept lock is the record; the session transcript for `kill`/`taskkill` beside a contour pid is the finding.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -6507,7 +6511,7 @@ must see (the header scrolls with the page — the owner's word), the three outc
 call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
 · proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
 shipped generator; do not build a contour** (`node .kaif/tools/contour/review.mjs <doc>`) — a project that still runs its own checks it against that
-page before every opening. The 43 invariants below remain the long-form canon behind the page.
+page before every opening. The 47 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")
 
@@ -6530,7 +6534,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I45. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I47. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -6584,6 +6588,8 @@ raised in a batch next to a live question.
   worse than a crash: a crash is seen at once, silence eats an hour.
 - **I11. A rescue ring on the client.** Recording failed → the human's text comes back onto the
   page: a field with the full content, a Copy button, a Retry button, the save button re-enabled.
+  Since 2.7 this is the path of a server that ANSWERED with a refusal and of a browser with no local
+  store; a server that is simply GONE is I47's path — the answer is stored locally, no ring.
   The human's work has no right to exist only in the RAM of someone else's process.
 - **I12. A draft in the browser.** `localStorage` on every input, restored on page load with a
   visible "picked up N fields" notice. Insurance never lives inside the thing it insures against —
@@ -6792,6 +6798,32 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   a direct show print `implemented, but open: <doc> Q1 → close the status (or fill the answer)` and
   exit 2 — the same gate class as never-shown (I42); the page renders an implemented question as
   settled with its address. The status is then closed by propagation (I19), never before it.
+- **I46. A live owner page is closed ONLY by `<doc> --close` — a neighbour session's word is not evidence.**
+  (2.7, epic LP; origin issue #66 — a field agent killed the contour on a neighbour's "close that page" while
+  the owner was typing into it: "the contour closed and I did not give my answers — I WAS WRITING AT THAT
+  MOMENT".) The command reads the lock — port · pid · title · the page's last input · draft state (the pulse
+  carries them: `/alive?i=&d=&s=`) — prints them so the agent can compare with the window it was told about,
+  and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, DEF6's own
+  envelope; `contour.closeQuietMs`) or a draft is unsaved; otherwise it ends the process and prints `closed
+  <doc>`. The command never kills a pid read from a file: it asks the page's OWN server to end (a token
+  from the lock), so the waiting agent sees exit 2, and a page that does not answer is left alone unless
+  forced. `--force` needs `--owner-word "<quote>"` and logs the quote — an AUDIT trail, not a gate: the
+  machine cannot tell the owner's words from the agent's, only the record and the judge can. No `pkill`, no
+  `taskkill` on a port, no "I think it is stale". An unknown flag refuses before any page (exit 1).
+- **I47. The answer survives the server — the window's profile lives in the project folder.** (2.7, epic LP;
+  the owner's word on interview 032: "no choice, no 'save as' — everything works for the user as it did! JS
+  itself writes the file to the computer, into the project folder".) The app window runs on
+  `.kaif/contour-window/` (ignore-first before the first window; the three sign-in-off flags; `account_info`
+  checked after launch — EXP-0134), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
+  stores the answer there — IndexedDB first (measured: on disk half a second after the write even when the
+  browser is then killed; `localStorage` needs about six, so it only keeps a copy and the typed DRAFT) — and
+  the page says "saved on this computer, the agent will pick it up", no dialog. The agent picks it up at the
+  next `--queue --list`, `--check` or show: a headless run of the same profile on the same port posts it
+  back; it is recorded as the owner's decision with `recovered: true`, the lock is released, and the agent
+  TELLS the owner in its next message (the provenance comment is invisible on a rendered page). While a
+  browser still holds the profile — the owner's window is open — the pick-up is DEFERRED: a second browser on
+  a held profile would hand its page to that window. A draft not yet saved is named and kept.
+  Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified — say so.
 
 ## The named class: "handling the human's work"
 
@@ -7115,9 +7147,12 @@ server that outlives the silence threshold → red.
 - **QA6. Cleanup:** debug windows and browser profiles are extinguished at the run's end — the
   owner works at the same machine.
 - **QA7. The dead-server headless check:** capture the live page → kill the server → type an
-  answer in a real headless browser → click → read the DOM. The "after the fix" etalon, all
-  five: rescue block present = true · save button re-enabled = true · the answer present in
-  the output = true · the draft persisted = true · the status honest.
+  answer in a real headless browser → click → read the DOM. The etalon since 2.7 (I47 — the answer
+  survives the server), all five: the answer stored on this computer (`__submitted`) = true · NO
+  rescue ring while the local store works = true · the save button switched off (no second click
+  is needed) = true · the draft persisted = true · the status honest ("saved on this computer").
+  The 2.6 etalon (rescue block shown · button re-enabled · the answer in the ring) now holds only
+  for a browser with no local store and for a server that ANSWERED with a refusal (I11).
 
 ## Rakes to warn about (in falling price order)
 
@@ -9902,6 +9937,7 @@ export function loadContourConfig(root) {
     spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
+    closeQuietMs: Number(c.closeQuietMs) > 0 ? Number(c.closeQuietMs) : null, // LP (2.7, #66): `--close` refuses while the owner typed less than this ago (default in the generator: 180 s)
     markerFound: existsSync(resolve(root, KAIF_JSON)),
   };
 }
@@ -10231,6 +10267,7 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.artifacts ? { artifacts: payload.artifacts } : {}),
     ...(payload.comments ? { comments: payload.comments } : {}),
     ...(payload.noRemarks ? { noRemarks: true } : {}), // bugs/113: "looked, no remarks" — a legal verdict on an artifact
+    ...(payload.recovered ? { recovered: true } : {}), // LP (2.7, #66): the answer was saved on the owner's computer while the server was gone and picked up by the agent
   };
   const isMd = extname(abs).toLowerCase() === '.md';
   if (isMd) {
@@ -10238,7 +10275,7 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     const eol = /\r\n/.test(src) ? '\r\n' : '\n';
     const lines = stripBom(src).split(/\r?\n/);
     const questions = parseQuestions(src);
-    const prov = '<!-- owner-review: by ' + record.by + ' · ' + atHuman + ' -->';
+    const prov = '<!-- owner-review: by ' + record.by + ' · ' + atHuman + (record.recovered ? ' · ' + T.wb.recovered : '') + ' -->';
     let touched = false;
     // questions are processed BOTTOM-UP: a splice never shifts positions still to be processed above
     const entries = Object.entries(payload.answers || {})
@@ -10356,9 +10393,10 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
-import { createServer } from 'node:http';
+import { createServer, request as httpRequest } from 'node:http';
+import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -10386,6 +10424,23 @@ const BEEP_DEADLINE_MS = 8000;        // DEF7: hard deadline of the beep child
 const VOICE_TIMEOUT_MS = 60000;       // DEF7: voice timeout (a cold first call may take seconds)
 const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130, EXIT_PREFLIGHT = 3; // I25 + spec §2
+// LP (2.7, origin issue #66 — "the contour closed while I WAS TYPING"): a live owner page is closed only by `--close`,
+// which reads the lock (port · pid · title · last input · draft state) and REFUSES while the owner typed less than
+// CLOSE_QUIET_MS ago or a draft is unsaved. DEF6's own silence threshold (3 min) is the envelope: shorter would close
+// a typing owner, longer keeps a dead window alive for nothing. Overridable by the owner: `contour.closeQuietMs`.
+const CLOSE_QUIET_MS_DEFAULT = 180000;
+const EXIT_NOT_CLOSED = 4;            // LP: --close refused — the owner is typing or the draft is unsaved
+// LP (2.7, #66; interview 032 Q2 = D — "JS writes the file to the computer, into the project folder"): the app window
+// runs on ITS OWN Chromium profile inside the project (ignore-first), so the browser draft and a locally saved answer
+// live on the owner's disk in the project — and a headless run of the SAME profile on the SAME port can read them
+// back when the server is gone (the origin is host:port, so the port must be the lock's).
+const WINDOW_PROFILE_DIR = '.kaif/contour-window';
+const PROFILE_QUIET_FLAGS = ['--no-first-run', '--no-default-browser-check',
+  '--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun']; // EXP-0134: a NEW Edge profile silently signs into the OS account without these
+const RECOVER_TIMEOUT_MS = 20000;     // LP: hard deadline of the headless recovery run
+const FLUSH_GRACE_MS = 6000;          // LP: Chromium commits localStorage in batches (~5 s); killing the headless run sooner would lose the CLEAR of the picked-up keys and record the answer twice next time (probe 2026-09-13 run 1: a kill 1.5 s after a write lost it)
+const ACCOUNT_CHECK_DELAY_MS = 5000;  // LP: read the profile's Preferences after the window came up (EXP-0134)
+const SUBMITTED_KEY = '__submitted';  // LP: localStorage key (under the draft prefix) of an answer saved while the server was gone
 const EXIT_NEVER_SHOWN = 2;           // I42: a never-shown waiting document reddens `--queue --list`
 const STALE_QUEUE_DAYS = Number(process.env.KAIF_STALE_QUEUE_DAYS) > 0 ? Number(process.env.KAIF_STALE_QUEUE_DAYS) : 14; // I39
 const DAY_MS = 86400000;
@@ -10398,6 +10453,12 @@ const IMAGE_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/
   '.webp': 'image/webp', '.svg': 'image/svg+xml' };
 const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
+// LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
+// the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
+const KNOWN_FLAGS = ['--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
+  '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
+  '--where', '--close', '--force', '--owner-word'];
+const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
 
 // ── Configuration per root (cached: AGENT_GUIDE is read once per process) ─────────────────────
 const CFG_CACHE = new Map();
@@ -10915,7 +10976,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
-      needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, closeYourself: t.st.closeYourself,
+      needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, serverGoneLocal: t.st.serverGoneLocal, savedLocally: t.st.savedLocally, closeYourself: t.st.closeYourself,
       copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote },
   }).replace(/</g, '\\u003c');
   // P5: both themes via prefers-color-scheme; colours are variables; contrast is built into the pairs.
@@ -11000,8 +11061,11 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " if(!lab)return;var inp=lab.querySelector('input[type=radio]');if(!inp||inp.disabled)return;",
     " e.preventDefault();var was=inp.checked;",
     " if(e.target===inp){inp.checked=!was}else if(!was){inp.checked=true}",
-    " saveDraft(inp)});",
-    "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft'))saveDraft(e.target)});",
+    " lastInput=Date.now();saveDraft(inp);pulseSoon()});",
+    "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft')){lastInput=Date.now();saveDraft(e.target);pulseSoon()}});",
+    // LP (#66, found by the live run): the lock learned of typing only at the next 15-s pulse — a `--close` three seconds
+    // after the first keystroke found "no input" and closed the page. The first keystroke after a pause pulses within a second.
+    "var pulseTimer=null;function pulseSoon(){if(pulseTimer)return;pulseTimer=setTimeout(function(){pulseTimer=null;pulse()},800)}",
     "function fieldVal(name){var el=document.getElementsByName(name)[0];return el?el.value:''}",
     "function collect(doc){var answers={};for(var i=0;i<QS.length;i++){var q=QS[i];",
     " if(q.doc!==doc)continue;",
@@ -11027,6 +11091,18 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " $('#rescuetext').value=JSON.stringify(payload,null,2);enableButtons(true)}",
     "function enableButtons(on){var bs=document.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].disabled=!on}",
     "var saved=false,closeTimer=null,lastPayload=null;",
+    // LP (#66): input state for the pulse (`--close` reads it from the lock) and the local save when the server is gone
+    "var lastInput=0,lsOk=true,submittedLocally=false;try{localStorage.setItem(DK+'__probe','1');localStorage.removeItem(DK+'__probe')}catch(e){lsOk=false}",
+    "function draftCount(){var n=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf(DK)===0&&k!==DK+'__submitted'&&k!==DK+'__probe')n++}}catch(e){}return n}",
+    // The SUBMITTED answer goes to IndexedDB FIRST: measured on this class of machine, IndexedDB is on disk 0.5 s after the
+    // write under a hard kill of the browser, localStorage only after ~6 s (the recon's table of kills at 0.5–15 s). A copy
+    // stays in localStorage for a browser without IndexedDB; only when BOTH fail does the rescue ring come back.
+    "function idbPut(k,v,cb){try{var r=indexedDB.open('kaif-contour',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};",
+    " r.onsuccess=function(){try{var tx=r.result.transaction('kv','readwrite');tx.objectStore('kv').put(v,k);tx.oncomplete=function(){cb(true)};tx.onerror=function(){cb(false)};tx.onabort=function(){cb(false)}}catch(e){cb(false)}};",
+    " r.onerror=function(){cb(false)}}catch(e){cb(false)}}",
+    "function saveLocally(p,e){var js=JSON.stringify(p);var ls=false;if(lsOk){try{localStorage.setItem(DK+'__submitted',js);ls=true}catch(e2){}}",
+    " idbPut(DK+'__submitted',js,function(okIdb){if(!okIdb&&!ls){rescue(p,String(e));return}",
+    "  submittedLocally=true;saved=true;status(TX.savedLocally,'okmsg');$('#banner').style.display='none';$('#rescue').style.display='none';enableButtons(false)})}",
     "function isNotice(doc){var n=CFG.notices||[];for(var i=0;i<n.length;i++)if(n[i]===doc)return true;return false}",
     "function hasArtifacts(doc){var A=CFG.artifacts||[];for(var i=0;i<A.length;i++)if(A[i].doc===doc&&A[i].exists)return true;return false}",
     "function hasComments(p){for(var k in (p.comments||{}))return true;return false}",
@@ -11046,7 +11122,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: auto-close is an ATTEMPT; a refusal → an honest request; cancelled by pagehide
     "  setTimeout(function(){window.close();closeTimer=setTimeout(function(){status(TX.closeYourself,'err')},CFG.reserveMs)},CFG.closeMs)})",
-    " .catch(function(e){rescue(p,String(e))})}",
+    " .catch(function(e){saveLocally(p,e)})}", // LP (#66): the server is gone → the answer is saved on this computer, no dialog
     "document.addEventListener('click',function(e){var t=e.target;",
     " if(t&&t.classList&&t.classList.contains('savedoc'))doSave(t.getAttribute('data-doc'));",
     " if(t&&t.id==='retry'&&lastPayload)doSave(lastPayload.doc)});",
@@ -11054,10 +11130,11 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var cp=$('#copybtn');if(cp)cp.addEventListener('click',function(){var t=$('#rescuetext');t.select();",
     " try{document.execCommand('copy');status(TX.copied,'okmsg')}catch(e){status(TX.copyManually,'err')}});",
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
-    "function pulse(){fetch('/alive').then(function(r){if(!r.ok)throw 0;if(!selfBroken)$('#banner').style.display='none'})",
-    " .catch(function(){var b=$('#banner');b.style.display='block';b.textContent=TX.serverGone;",
-    "  var r=$('#rescue');r.style.display='block';",
-    "  if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2);enableButtons(true)})}",
+    // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
+    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none'})",
+    " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=lsOk?TX.serverGoneLocal:TX.serverGone;",
+    "  if(!lsOk){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
+    "  if(!submittedLocally)enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
     // I14/DEF6: closing the page is an EVENT for the server (fast path — the beacon names the window role)
     "window.addEventListener('pagehide',function(){if(closeTimer)clearTimeout(closeTimer);",
@@ -11097,23 +11174,50 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
 
 // ── The window (DEF8): an app window when a Chromium browser is found, else the default browser,
 // else an honest "open it yourself: URL" — the contour never pretends a window opened. ───────
-function openWindow(url, log = console.log) {
+// LP (2.7, #66): the app window runs on its OWN profile inside the project (`.kaif/contour-window/`, ignore-first) with
+// the three EXP-0134 flags — the draft and a locally saved answer then live on the owner's disk IN THE PROJECT, and the
+// agent can read them back headless on the same profile. Verified on Edge (Windows); Chrome/macOS/Linux take the same
+// flags and are NOT verified — said so in the run report, never promised.
+const profileDir = (root) => resolve(root, WINDOW_PROFILE_DIR);
+const profileArgs = (root) => ['--user-data-dir=' + profileDir(root), ...PROFILE_QUIET_FLAGS];
+function openWindow(url, log = console.log, root = process.cwd()) {
   const tryCmd = (cmd, args) => { try { return spawnSync(cmd, args, { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
+  const prof = profileArgs(root);
   if (IS_WIN) {
-    const tryApp = (exe) => tryCmd('cmd.exe', ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE]);
+    const tryApp = (exe) => tryCmd('cmd.exe', ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof]);
     if (tryApp('msedge')) return 'edge --app';
     if (tryApp('chrome')) return 'chrome --app';
-    if (tryCmd('cmd.exe', ['/c', 'start', '', url])) { log('Could not raise an app window — opened a plain tab; please close it yourself (DEF8).'); return 'tab'; }
+    if (tryCmd('cmd.exe', ['/c', 'start', '', url])) { log('Could not raise an app window — opened a plain tab in the default browser (no project profile: a draft there cannot be recovered by the agent); please close it yourself (DEF8).'); return 'tab'; }
   } else if (IS_MAC) {
-    if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE])) return 'chrome --app';
+    if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'chrome --app';
     if (tryCmd('open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   } else {
     for (const exe of ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'])
-      if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE])) return exe + ' --app';
+      if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
     if (tryCmd('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   }
   log('NO WINDOW OPENED — open it yourself: ' + url + ' (no browser found on this machine; the page is served until you answer or close it).');
   return 'none';
+}
+
+// LP / EXP-0134: after the window came up, read the profile's Preferences — a Chromium of the OS vendor may sign the
+// NEW profile into the OS account despite the flags; the agent says it out loud instead of the owner discovering it.
+function checkProfileAccount(root, log = console.log, attempt = 0) {
+  const prefs = join(profileDir(root), 'Default', 'Preferences');
+  const delays = [ACCOUNT_CHECK_DELAY_MS, 3 * ACCOUNT_CHECK_DELAY_MS, 6 * ACCOUNT_CHECK_DELAY_MS]; // Preferences appears seconds after the window (live run: not yet at 5 s)
+  const t = setTimeout(() => {
+    try {
+      if (!existsSync(prefs)) {
+        if (attempt + 1 < delays.length) { checkProfileAccount(root, log, attempt + 1); return; }
+        log('Profile check: ' + WINDOW_PROFILE_DIR + '/Default/Preferences not written within ' + (delays[attempt] / 1000) + ' s — sign-in state unknown (EXP-0134)'); return;
+      }
+      const signed = /account_info"\s*:\s*\[\s*\{/.test(readFileSync(prefs, 'latin1'));
+      log(signed
+        ? 'PROFILE SIGNED IN: ' + WINDOW_PROFILE_DIR + ' carries account_info — the browser ignored the sign-in flags (EXP-0134); report it, the profile holds account data'
+        : 'Profile check: ' + WINDOW_PROFILE_DIR + ' has no account_info — the window profile did not sign into the OS account (EXP-0134)');
+    } catch (e) { log('Profile check failed: ' + e.message); }
+  }, delays[attempt]);
+  t.unref();
 }
 
 // ── The lock "one document — one window" (I29) ────────────────────────────────────────────────
@@ -11170,6 +11274,19 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     const stalePort = held && held.stale ? (Number((String(held.url).match(/:(\d+)\/?$/) || [])[1]) || 0) : 0;
     let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0, tabReported = false;
     const startedAt = Date.now();
+    // LP (#66): what `--close` reads — written at listen and refreshed by every pulse
+    let inputState = { lastInputAt: null, draftFields: 0, saved: false };
+    let lockUrl = null;
+    const closeToken = randomBytes(16).toString('hex'); // `--close` proves it read THIS lock, and the server ends itself — no pid from a file is ever killed
+    const startedIso = provenance().at; // ONCE: the page's age is measured from here by `--close` — a stamp taken per pulse would reset it (found by the debug run 09:14)
+    const writeLock = () => {
+      if (!lockUrl) return;
+      try {
+        mkdirSync(decisionsAbs(root), { recursive: true });
+        writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url: lockUrl, startedAt: startedIso,
+          doc: batch ? '_queue' : relDoc(root, docPath), title: first.title, closeToken, ...inputState }) + '\n', 'utf8');
+      } catch { /* a lock that cannot be written is reported by the listen step, not here */ }
+    };
     const noticeMode = notice && !batch;
     const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
     const unreadSuffix = noticeMode ? ' The notice is NOT delivered (no "' + t.btn.read + '" mark, I38) — it repeats in the next batch.' : '';
@@ -11184,9 +11301,18 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         if (!allowed) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Not in the queue: ' + rel); return; }
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(buildDoc(rel).html);
-      } else if (req.method === 'GET' && req.url === '/alive') {
+      } else if (req.method === 'GET' && req.url.startsWith('/alive')) {
         lastAlive = Date.now(); strikes = 0;
         if (beaconTimer) { clearTimeout(beaconTimer); beaconTimer = null; } // the page came back (T3)
+        // LP (#66): the pulse carries the INPUT state — ms since the last keystroke (-1 = none yet), draft fields in
+        // localStorage, whether the answer was saved — and the lock carries it on, so `--close` in ANOTHER process can
+        // refuse while the owner is typing. The lock is rewritten on every pulse (15 s; a few bytes).
+        const q = new URL(req.url, 'http://x').searchParams;
+        const sinceInput = Number(q.get('i')); const draftFields = Number(q.get('d')); const savedFlag = q.get('s') === '1';
+        if (Number.isFinite(sinceInput)) {
+          inputState = { lastInputAt: sinceInput >= 0 ? Date.now() - sinceInput : inputState.lastInputAt, draftFields: Number.isFinite(draftFields) ? draftFields : 0, saved: savedFlag };
+          writeLock();
+        }
         ok({ ok: true });
       } else if (req.method === 'POST' && req.url === '/tab') { // I26 (#64): the page says it is a TAB, not the app window
         if (!tabReported) {
@@ -11251,6 +11377,14 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             log('SAVE ERROR (the page shows the rescue ring): ' + e.message);
           }
         });
+      } else if (req.method === 'POST' && req.url.startsWith('/close?')) { // LP (#66): the checked command asks the page's own server to end
+        const q = new URL(req.url, 'http://x').searchParams;
+        if (q.get('t') !== closeToken) { res.writeHead(403, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: false, reason: 'wrong close token' })); return; }
+        ok({ ok: true, pid: process.pid });
+        if (outcome) return;
+        outcome = 'closed by the agent (--close)';
+        log('Outcome: closed by the checked command (--close)' + (q.get('keep') === '1' ? ' — the lock is KEPT: an unsaved draft lives in the window' : '') + ' — ending the contour.' + unreadSuffix);
+        setTimeout(finish, 100, EXIT_CLOSED, q.get('keep') === '1');
       } else if (req.method === 'POST' && req.url === '/closed') {
         let body = '';
         req.on('data', (c) => { body += c; });
@@ -11284,9 +11418,9 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         finish(EXIT_CLOSED);
       }
     }, SILENCE_TICK_MS);
-    const finish = (code) => {
+    const finish = (code, keepLock = false) => {
       clearInterval(watch);
-      rmSync(lockPath(root, lockKey), { force: true });
+      if (!keepLock) rmSync(lockPath(root, lockKey), { force: true });
       server.close(() => resolveP({ outcome, exitCode: code }));
       setTimeout(() => resolveP({ outcome, exitCode: code }), 1000).unref();
     };
@@ -11310,13 +11444,13 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       const url = 'http://127.0.0.1:' + server.address().port + '/';
       if (stalePort && server.address().port === stalePort)
         log('Port ' + stalePort + ' reused from the previous run (its process ' + held.pid + ' is gone) — same web origin, so a draft written in that window is restored on load (I29/I12).');
-      mkdirSync(decisionsAbs(root), { recursive: true });
-      writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
+      lockUrl = url; writeLock(); // LP: the lock carries doc · title · input state (read by `--close`)
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
       if (open) { // showing is the agent's action (I15) — and the claim is never wider than the observation (#63):
         // the launcher's exit code says a process was started, not that a window stands on the owner's screen
-        const launcher = openWindow(url, log);
+        const launcher = openWindow(url, log, root);
         log('Window: ' + launcher + (launcher === 'none' ? '' : " — the launcher returned 0; whether a window is on the owner's screen this line does not verify (a screenshot does)"));
+        if (launcher.endsWith('--app')) checkProfileAccount(root, log); // EXP-0134: a new profile must not have signed in
       }
       if (open) { // I40: the fact of showing — at the moment of the open window
         const shownRels = batch ? forOwner().map((d) => d.doc) : [relDoc(root, docPath)];
@@ -11334,6 +11468,194 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     });
     server.listen(stalePort || 0, '127.0.0.1');
   });
+}
+
+// ── LP (2.7, origin issue #66): `--close <doc>` — the ONLY legal way to end a live owner page from outside ──────
+// The field case: a neighbour session said "close that page" and an agent killed the process while the owner was
+// typing into it. The command reads the lock (port · pid · title · input state) and REFUSES while the owner typed
+// less than the quiet threshold ago or a draft is unsaved; `--force` needs the owner's words verbatim and logs them.
+/** POST to a local contour server with a hard deadline — plain http, no AbortSignal (a native crash was once seen near it, origin bug 109). */
+function postLocal(url, ms = 3000) {
+  return new Promise((res) => {
+    let settled = false; const end = (v) => { if (!settled) { settled = true; res(v); } };
+    try {
+      const rq = httpRequest(url, { method: 'POST', timeout: ms }, (r) => { r.resume(); r.on('end', () => end({ status: r.statusCode })); });
+      rq.on('timeout', () => { rq.destroy(); end({ error: 'no answer within ' + ms + ' ms' }); });
+      rq.on('error', (e) => end({ error: e.code || e.message }));
+      rq.end();
+    } catch (e) { end({ error: e.message }); }
+  });
+}
+export async function closeContour(root, docPath, { force = false, ownerWord = null, log = console.log, now = Date.now() } = {}) {
+  const cfg = cfgOf(root);
+  const isQueue = docPath === '--queue';
+  const key = isQueue ? '_queue' : basename(docPath);
+  const rel = isQueue ? '(queue)' : relDoc(root, docPath);
+  const lock = checkLock(root, key);
+  if (!lock) { log('no live page for ' + rel + ' — nothing to close (no lock)'); return EXIT_DECIDED; }
+  const port = (String(lock.url).match(/:(\d+)\/?$/u) || [])[1] || '?';
+  log('live page: ' + lock.url + ' · port ' + port + ' · pid ' + lock.pid + ' · title "' + (lock.title || '?') + '" — compare with the window you were told about before touching it');
+  if (lock.stale) { log('the process ' + lock.pid + ' is already gone; the lock is kept for the draft in that window (I29) — nothing to close'); return EXIT_DECIDED; }
+  const quietMs = cfg.closeQuietMs || CLOSE_QUIET_MS_DEFAULT;
+  const sinceInput = lock.lastInputAt ? now - Number(lock.lastInputAt) : null;
+  // A page YOUNGER than the quiet threshold is never closed without the owner's word either: the owner may be reading
+  // it, about to type — the live run of 2026-09-18 closed a page three seconds after the first keystroke because the
+  // lock had not yet heard of it. Age counts from the lock's startedAt; an unreadable stamp counts as "just now".
+  const startedMs = Date.parse(lock.startedAt || '') || now;
+  const age = now - startedMs;
+  const unsaved = Number(lock.draftFields) > 0 && !lock.saved;
+  if (!force) {
+    if (sinceInput !== null && sinceInput < quietMs) {
+      log('last input ' + Math.round(sinceInput / 1000) + ' s ago — the owner is typing; not closed (exit ' + EXIT_NOT_CLOSED + '; the quiet threshold is ' + Math.round(quietMs / 1000) + ' s, contour.closeQuietMs)');
+      return EXIT_NOT_CLOSED;
+    }
+    if (age < quietMs) {
+      log('the page came up ' + Math.round(age / 1000) + ' s ago — younger than the quiet threshold (' + Math.round(quietMs / 1000) + ' s): the owner may be reading it; not closed (exit ' + EXIT_NOT_CLOSED + '; --force --owner-word "<quote>" if the owner said so)');
+      return EXIT_NOT_CLOSED;
+    }
+    if (unsaved) { log('draft of ' + lock.draftFields + ' field(s) not saved — the owner\'s text would be orphaned; not closed (exit ' + EXIT_NOT_CLOSED + ')'); return EXIT_NOT_CLOSED; }
+  } else {
+    if (!ownerWord || !String(ownerWord).trim()) { log('refusing --force: it needs --owner-word "<the owner\'s words, verbatim>" — a neighbour session\'s word is not evidence'); return EXIT_UNKNOWN_FLAG; }
+    log('FORCE close by the owner\'s word: "' + ownerWord + '"' + (sinceInput !== null && sinceInput < quietMs ? ' — last input ' + Math.round(sinceInput / 1000) + ' s ago' : '') + (unsaved ? ' — draft of ' + lock.draftFields + ' field(s) NOT saved' : ''));
+  }
+  // The page's OWN server is asked to end (token from the lock): a pid read from a file may belong to another process by
+  // now, and a killed process exits with a code the contract does not know. Only --force may fall back to the pid.
+  const asked = await postLocal(String(lock.url).replace(/\/?$/u, '/') + 'close?t=' + encodeURIComponent(lock.closeToken || '') + (unsaved ? '&keep=1' : ''));
+  let how = null;
+  if (asked.status === 200) { how = 'its own server ended it (exit 2 for the waiting agent)'; if (!unsaved) rmSync(lockPath(root, key), { force: true }); } // the server removes its lock too — idempotent
+  else if (!force) {
+    log('the page at ' + lock.url + ' did not accept the close request (' + (asked.error || 'HTTP ' + asked.status) + ') — pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; a hung or pre-2.7 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
+    return EXIT_NOT_CLOSED;
+  } else {
+    try { process.kill(lock.pid); } catch (e) { log('could not end the process ' + lock.pid + ': ' + e.message); return EXIT_NOT_CLOSED; }
+    how = 'the process was killed by pid (forced; the page did not answer: ' + (asked.error || 'HTTP ' + asked.status) + ')';
+    if (!unsaved) rmSync(lockPath(root, key), { force: true });
+  }
+  if (unsaved) log('the lock is KEPT (stale): the unsaved draft lives in that window\'s origin on port ' + port + ' — the next show reuses the port (I29) and the recovery run reads the project profile');
+  log('closed ' + rel + ' (port ' + port + ', pid ' + lock.pid + ') — ' + how + '; the browser window itself is not touched: it shows the server-gone line and keeps its draft on the project profile');
+  return EXIT_DECIDED;
+}
+
+// ── LP (2.7, #66): pick up an answer the owner saved on his computer while the server was gone ────────────────
+// A dead process leaves a STALE lock with the window's port; the page wrote the answer into localStorage of the
+// PROJECT profile. A headless run of the same browser on the same profile and the SAME port (the origin is host:port)
+// reads it back and posts it here; the agent records it as the owner's decision and says so. Runs only when the
+// project profile exists (a window once ran) — a sandbox tree never has one, so no browser is ever launched there.
+const BROWSER_EXES = IS_WIN
+  ? ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+     'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe']
+  : IS_MAC ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
+    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge'];
+const findBrowser = () => BROWSER_EXES.find((p) => existsSync(p)) || null;
+function recordRecovered(root, doc, payload, cfg) {
+  const face = payload.face || 'interview';
+  if (payload.read) { const r = recordDecision(root, doc, { kind: KIND_NOTICE, comment: payload.comment, recovered: true }, cfg); markNoticeRead(root, doc); return r; }
+  if (face === 'proofread' || face === 'mockup') {
+    const noRemarks = Boolean(payload.noRemarks) && !(payload.comment || '').trim() && Object.keys(payload.comments || {}).length === 0;
+    return recordDecision(root, doc, { kind: face, comment: payload.comment, comments: payload.comments, ...(noRemarks ? { noRemarks: true } : {}), recovered: true }, cfg);
+  }
+  return recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts, recovered: true }, cfg);
+}
+function recoverOne(root, key, lock, exe, log, result) {
+  const cfg = cfgOf(root);
+  const doc = lock.doc;
+  const port = Number((String(lock.url).match(/:(\d+)\/?$/u) || [])[1]) || 0;
+  if (!doc || doc === '_queue' || !port) {
+    log('recovery: lock ' + key + ' — ' + (doc === '_queue' ? 'a queue page: its draft lives under the page title, not per document — reopen the queue on the same port (I29); nothing picked up' : 'no document or port in the lock; nothing to pick up'));
+    return Promise.resolve();
+  }
+  const DK = 'owner-review:' + doc + ':';
+  const page = '<!doctype html><meta charset="utf-8"><script>' +
+    'var DK=' + JSON.stringify(DK) + ';var SK=DK+"' + SUBMITTED_KEY + '";var out={submitted:null,store:null,drafts:{}};' +
+    'function fin(){fetch("/done",{method:"POST"})}' +
+    'function readLs(){try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf(DK)!==0)continue;var v=localStorage.getItem(k);var f=k.slice(DK.length);' +
+    'if(k===SK){if(!out.submitted){try{out.submitted=JSON.parse(v);out.store="localStorage"}catch(e){}}}else if(f!=="__probe"&&v)out.drafts[f]=v}}catch(e){out.error=String(e)}}' +
+    'function send(db){readLs();fetch("/recovered",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(out)}).then(function(r){return r.json()}).then(function(j){' +
+    'if(!(j&&j.clear)){fin();return}' +
+    'try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}' +
+    'if(!db){fin();return}try{var tx=db.transaction("kv","readwrite");tx.objectStore("kv").delete(SK);tx.oncomplete=fin;tx.onerror=fin;tx.onabort=fin}catch(e){fin()}}).catch(function(){})}' +
+    'try{var r=indexedDB.open("kaif-contour",1);r.onupgradeneeded=function(){r.result.createObjectStore("kv")};' +
+    'r.onsuccess=function(){var db=r.result;try{var g=db.transaction("kv").objectStore("kv").get(SK);' +
+    'g.onsuccess=function(){if(g.result){try{out.submitted=JSON.parse(g.result);out.store="indexedDB"}catch(e){}}send(db)};g.onerror=function(){send(db)}}catch(e){send(db)}};' +
+    'r.onerror=function(){send(null)}}catch(e){send(null)}</script>';
+  let got = null, child = null, timer = null, recorded = null;
+  return new Promise((done) => {
+    const server = createServer((req, res) => {
+      const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
+      if (req.method === 'GET' && req.url === '/recover') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(page); return; }
+      if (req.method === 'POST' && req.url === '/recovered') {
+        let body = ''; req.on('data', (c) => { body += c; });
+        req.on('end', () => {
+          try { got = JSON.parse(body); } catch { got = { error: 'unreadable' }; }
+          let clear = false;
+          if (got && got.submitted) {
+            try { recorded = recordRecovered(root, doc, got.submitted, cfg); clear = true; } catch (e) { log('recovery: could not record ' + doc + ': ' + e.message); }
+          }
+          ok({ ok: true, clear });
+        });
+        return;
+      }
+      if (req.method === 'POST' && req.url === '/done') { ok({ ok: true }); setTimeout(finish, got && got.submitted ? FLUSH_GRACE_MS : 200); return; } // the clear must reach the disk before the kill
+      res.writeHead(404); res.end();
+    });
+    const finish = () => {
+      clearTimeout(timer);
+      if (child) { // taskkill by ABSOLUTE path: a quiet (empty-PATH) environment still ends the browser tree
+        try {
+          const tk = IS_WIN ? join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'taskkill.exe') : null;
+          if (tk && existsSync(tk)) spawnSync(tk, ['/F', '/T', '/PID', String(child.pid)], { stdio: 'ignore' }); else child.kill();
+        } catch { /* already gone */ }
+        child = null;
+      }
+      if (server.closeAllConnections) server.closeAllConnections(); // the port must be FREE before the show that follows reuses it (I29) — a lingering keep-alive socket would orphan the draft's origin
+      server.close(() => done());
+      setTimeout(done, 5000).unref(); // a fallback only: `done` of a settled promise is a no-op
+    };
+    server.on('error', (e) => { log('recovery: port ' + port + ' of the dead window is taken (' + e.code + ') — the local save keeps its origin and cannot be read on another port; nothing picked up for ' + doc); done(); });
+    server.listen(port, '127.0.0.1', () => {
+      child = spawn(exe, ['--headless=new', ...profileArgs(root), '--disable-gpu', 'http://127.0.0.1:' + port + '/recover'], { stdio: 'ignore' });
+      child.on('error', (e) => { log('recovery: could not start the headless browser ' + exe + ': ' + e.message); finish(); });
+      timer = setTimeout(() => { log('recovery: the headless browser did not answer within ' + (RECOVER_TIMEOUT_MS / 1000) + ' s — nothing picked up for ' + doc); finish(); }, RECOVER_TIMEOUT_MS);
+    });
+  }).then(() => {
+    const nDrafts = got && got.drafts ? Object.keys(got.drafts).length : 0;
+    if (recorded) {
+      const n = Object.keys(recorded.answers || {}).length;
+      log('answer recovered from the owner\'s machine: ' + doc + ' — ' + (recorded.kind === KIND_NOTICE ? 'read mark' : n + ' answer(s)' + (recorded.comment ? ' + comment' : '')) + ' → recorded (by ' + recorded.by + '; from ' + (got.store || '?') + '; decision.json · archive · the document) — the lock is released. TELL THE OWNER in your next message that his answer was picked up from his computer (I47): the provenance comment in the document is invisible on a rendered page');
+      rmSync(lockPath(root, key), { force: true });
+      result.recovered.push({ doc, record: recorded });
+    } else if (nDrafts > 0) {
+      log('draft found on the owner\'s machine: ' + doc + ' — ' + nDrafts + ' field(s), NOT saved; the page restores it when reopened on port ' + port + ' (I29) — nothing recorded, the lock is kept');
+      result.drafts.push({ doc, fields: nDrafts });
+    } else if (got) {
+      log('recovery: nothing saved on the owner\'s machine for ' + doc + (got.error ? ' (' + got.error + ')' : '') + ' — the lock is released');
+      rmSync(lockPath(root, key), { force: true });
+    }
+  });
+}
+/** Is a browser running on the project profile right now? Windows Chromium keeps `lockfile` open with no sharing; elsewhere `SingletonLock` marks it (not verified there — said in the returned reason). */
+function profileHeld(root) {
+  const d = profileDir(root);
+  if (IS_WIN) {
+    const lf = join(d, 'lockfile');
+    if (!existsSync(lf)) return null;
+    try { closeSync(openSync(lf, 'r+')); return null; } catch (e) { return 'lockfile busy: ' + e.code; } // opens → a leftover of a dead browser
+  }
+  try { lstatSync(join(d, 'SingletonLock')); return 'SingletonLock present (platform not verified)'; } catch { return null; }
+}
+export function recoverFromWindow(root, { log = console.log } = {}) {
+  const result = { recovered: [], drafts: [] };
+  if (!existsSync(profileDir(root))) return Promise.resolve(result); // no window ever ran on the project profile — nothing to pick up, no browser launched
+  const dir = decisionsAbs(root);
+  const locks = existsSync(dir)
+    ? readdirSync(dir).filter((f) => f.endsWith('.lock')).map((f) => ({ key: f.replace(/\.lock$/u, ''), lock: checkLock(root, f.replace(/\.lock$/u, '')) })).filter((x) => x.lock && x.lock.stale)
+    : [];
+  if (!locks.length) return Promise.resolve(result);
+  const heldBy = profileHeld(root);
+  if (heldBy) { log('recovery deferred: a browser still holds the project profile (' + heldBy + ') — the owner\'s window is open; a second browser on a held profile would hand its page to THAT window. The answer stays where it is and is picked up after the window closes (' + locks.length + ' stale lock(s) kept)'); return Promise.resolve(result); }
+  const exe = findBrowser();
+  if (!exe) { log('recovery: ' + locks.length + ' stale lock(s), but no Chromium at a known path — an answer saved on this computer stays in ' + WINDOW_PROFILE_DIR + ' until a browser is found'); return Promise.resolve(result); }
+  return locks.reduce((chain, { key, lock }) => chain.then(() => recoverOne(root, key, lock, exe, log, result)), Promise.resolve()).then(() => result);
 }
 
 // ── Pre-flight + self-check as one gate (spec §2), used by the CLI before any page opens ───────
@@ -11489,7 +11811,9 @@ export function selftest(log = console.log) {
   rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
-  ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("'/alive'"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse');
+  // LP (#66): the pulse now carries the input state — `/alive?i=<ms since input>&d=<draft fields>&s=<saved>`
+  ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("fetch('/alive?i='"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse with the input state (LP)');
+  ok(page.html.includes("localStorage.setItem(DK+'__submitted'") && page.html.includes("indexedDB.open('kaif-contour'") && page.html.includes('TX.savedLocally'), 'page: an answer saved while the server is gone lands in localStorage of the project profile, no dialog (LP, #66)');
   ok(!/`/.test(page.html.slice(page.html.indexOf('<script>'))), 'T7: no backtick in the page script');
 
   // C6/I2: the decision lands in THREE places; the owner's answer is written back; by = owner from the table
@@ -11574,7 +11898,15 @@ export function selftest(log = console.log) {
 // the very same CLI in-process — the origin eats its own shipment, plans/93 IC5) ──────────────────
 export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
-  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where'];
+  // LP (2.7, #66; the core's bug-33 rule): an unknown flag REFUSES before any page, sound or call. The 2.6 generator let
+  // `--close` fall through to the show — a page and a voice call for a flag nobody meant.
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word'];
+  const unknown = args.filter((a, i) => a.startsWith('--') && !KNOWN_FLAGS.includes(a) && !valueFlags.includes(args[i - 1]));
+  if (unknown.length) {
+    console.error('✖ unknown flag' + (unknown.length > 1 ? 's' : '') + ': ' + unknown.join(' ') + ' — refusing BEFORE any page, sound or call (bug 33: a silently ignored flag shows something you did not ask for). Known flags: ' + KNOWN_FLAGS.join(' '));
+    process.exitCode = EXIT_UNKNOWN_FLAG; // exitCode, not exit(): Windows pipes are asynchronous and exit() would drop the line
+    return;
+  }
   const docPath = args.find((a, i) => !a.startsWith('--') && !valueFlags.includes(args[i - 1]));
   const opts = {
     open: !args.includes('--no-open'),
@@ -11594,7 +11926,8 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' --queue [--include-stale] | --queue --list | --enqueue <doc.md> [--notice] | --selftest\n' +
       '       ' + CLI_NAME + ' --mark-shown <doc.md> [--transport chat]\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
-      'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form).\n' +
+      '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
+      'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
       'Run it as a TRACKED background task (I31). Contract: .kaif/INTERACTIVE_CONTOUR_SPEC.md');
     process.exit(1);
   };
@@ -11615,9 +11948,18 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     console.log('Shown recorded (I40): ' + doc + ' · ' + transport + ' → ' + cfg.decisionsDir + '/' + SHOWN_FILE);
     process.exit(0);
   }
+  if (args.includes('--close')) { // LP (#66): the only legal way to end a live owner page from outside
+    if (!docPath && !args.includes('--queue')) usage();
+    // exitCode, not process.exit(): on Windows stdout to a PIPE is asynchronous, and an immediate exit drops the last lines
+    closeContour(root, docPath || '--queue', { force: args.includes('--force'), ownerWord: opt('--owner-word') }).then((code) => { process.exitCode = code; });
+    return;
+  }
+  // LP (#66): before the queue, the check or a show — pick up what the owner saved while a server was gone
+  const afterRecovery = (fn) => recoverFromWindow(root, { log: console.log }).then(fn, (e) => { console.log('recovery failed: ' + e.message); fn(); });
   if (args.includes('--check')) { // QL1 (#56): the form check is a DOOR of its own — never the show
     if (!docPath) usage();
-    process.exit(checkDoc(root, docPath));
+    afterRecovery(() => process.exit(checkDoc(root, docPath)));
+    return;
   }
   if (args.includes('--mark-implemented')) { // I44 (QL2, #54): the fourth fact — the agent's hand, at the moment of implementing, with an address
     const i = args.indexOf('--mark-implemented');
@@ -11630,10 +11972,18 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     process.exit(0);
   }
   if (args.includes('--queue') && args.includes('--list')) {
-    const r = listQueue(root, { includeStale: opts.includeStale });
-    for (const l of r.lines) console.log(l);
-    process.exit(r.exitCode);
+    afterRecovery(() => {
+      const r = listQueue(root, { includeStale: opts.includeStale });
+      for (const l of r.lines) console.log(l);
+      process.exit(r.exitCode);
+    });
+    return;
   }
+  afterRecovery(() => mainShow(args, root, { opt, docPath, opts, asNotice, face, usage, cfg }));
+}
+
+// The show half of main() — runs after the recovery step (LP): the queue page, a notice, a face, the interview.
+function mainShow(args, root, { opt, docPath, opts, asNotice, face, usage, cfg }) {
   if (args.includes('--queue')) {
     const stale = opts.includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true }));
     for (const d of stale) console.log('! stale in the queue (' + d.days + ' d > ' + STALE_QUEUE_DAYS + '): ' + d.doc + ' — NOT shown; close it by status or show it on purpose: --include-stale');
@@ -11748,6 +12098,7 @@ const EN = {
     followUp: (atHuman) => 'Answer (follow-up, ' + atHuman + '):',
     ownerComment: (atHuman) => "Owner's comment (" + atHuman + '):',
     proofread: (atHuman) => "Owner's proofreading comments (" + atHuman + '):',
+    recovered: "picked up from the owner's computer", // LP (#66): the provenance comment says the answer came from the local save
   },
   kind: { interview: 'interview', homework: 'homework', document: 'document', notice: 'notice',
     queue: 'queue', proofread: 'proofreading', mockup: 'mockup review' },
@@ -11780,6 +12131,9 @@ const EN = {
     noRemarksWritten: 'no remarks',
     needArt: 'A decision on the outbound is needed: approve or reject', err: (m) => 'SAVE ERROR: ' + m,
     serverGone: 'THE CONTOUR SERVER IS UNREACHABLE — the answer will NOT be sent. The draft is kept in the browser; copy the text (button below) or restart the contour.',
+    // LP (2.7, origin issue #66): with the window's own profile in the project the answer survives the server — no dialog, no choice
+    serverGoneLocal: 'The contour server is unreachable — keep writing and press Save as usual: the answer is saved on this computer, in the project folder, and the agent will pick it up.',
+    savedLocally: 'The server is unreachable — your answer is saved on this computer (in the project folder); the agent will pick it up. You can close the window.',
     closeYourself: 'The browser refused to close the window — please close it yourself',
     copied: 'Copied to the clipboard', copyManually: 'Select and copy by hand',
     rescue: 'Saving failed — your text is below, it is not lost.', noticeHint: 'Without the mark the notice comes back.',
@@ -11830,6 +12184,7 @@ const RU = {
     followUp: (atHuman) => 'Answer (дополнение, ' + atHuman + '):',
     ownerComment: (atHuman) => 'Комментарий владельца (' + atHuman + '):',
     proofread: (atHuman) => 'Замечания владельца по вычитке (' + atHuman + '):',
+    recovered: 'забран с компьютера владельца', // LP (#66): комментарий провенанса называет, что ответ пришёл из локальной записи
   },
   kind: { interview: 'интервью', homework: 'домашка', document: 'документ', notice: 'сообщение',
     queue: 'очередь', proofread: 'вычитка', mockup: 'отсмотр макета' },
@@ -11862,6 +12217,9 @@ const RU = {
     noRemarksWritten: 'замечаний нет',
     needArt: 'Нужно решение по исходящему: одобряю или отклоняю', err: (m) => 'ОШИБКА ЗАПИСИ: ' + m,
     serverGone: 'СЕРВЕР КОНТУРА НЕДОСТУПЕН — ответ НЕ уйдёт. Черновик сохранён в браузере; скопируйте текст (кнопка ниже) или перезапустите контур.',
+    // LP (2.7, #66): окно на своём профиле в папке проекта — ответ переживает сервер; ни диалога, ни выбора (слово владельца Q2 = D)
+    serverGoneLocal: 'Сервер контура недоступен — пишите дальше и нажмите «Записать» как обычно: ответ сохранится на этом компьютере, в папке проекта, и агент его заберёт.',
+    savedLocally: 'Сервер недоступен — ответ сохранён на этом компьютере (в папке проекта); агент его заберёт. Окно можно закрыть.',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     copied: 'Скопировано в буфер', copyManually: 'Выделите и скопируйте вручную',
     rescue: 'Запись не прошла — ваш текст ниже, он не потерян.', noticeHint: 'Без пометки сообщение придёт снова.',
@@ -15243,26 +15601,22 @@ addresses the reader can open.>
 ``````md
 # INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)
 
-<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing
-page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still
-runs its own contour checks it against these lines BEFORE opening a page to the owner. The long-form canon
-(43 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the
-part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt
-per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were
-typed as paragraphs). -->
+<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy —
+the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these
+lines BEFORE opening a page to the owner. The long-form canon (47 invariants, build contract C1–C13, traps T1–T11) stays in the
+/owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one
+a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons: options typed as paragraphs). -->
 
 ## 1. Source document — what the page is built from
 
 - **md is the source, HTML is derived. Always.** The page is rendered from the document; nothing is hand-edited.
-- A question is a heading `### Q<n>. <text>`; its answer field is a line starting with `**Answer:**` (the
-  Russian alias of the label is legal). An answer already written by the owner is NEVER overwritten — a new
-  text lands as a dated follow-up field.
+- A question is a heading `### Q<n>. <text>`; its answer field is a line starting with `**Answer:**` (the Russian alias of the
+  label is legal). An answer already written by the owner is NEVER overwritten — a new text lands as a dated follow-up field.
 - **Options are recognised in exactly two forms** — anything else renders WITHOUT radio buttons:
   - a table row per option: `| **A** | what it means | price and risk |`
   - a list item per option: `- **A)** what it means` (a parenthesised note after the letter is legal)
-- A question with NO options is legal only when it DECLARES a free field (a `D) your own answer` option, or the
-  marker `<!-- questions-guard:no-scenario <reason> -->` for a naming/taste question). Paragraph headings like
-  `**A. …**` are NOT options — this is the #51 defect.
+- A question with NO options is legal only when it DECLARES a free field (a `D) your own answer` option, or the marker
+  `<!-- questions-guard:no-scenario <reason> -->` for a naming/taste question). Paragraph headings like `**A. …**` are NOT options — the #51 defect.
 - Every question and every option is a four-line scenario (Situation · Action · Result · Check) in the owner's
   language; the technical note stands UNDER the scenario, never instead of it.
 
@@ -15279,46 +15633,47 @@ self-check after render: count(radio groups) == count(questions)  →  mismatch 
 
 The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs
 <doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
-no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut).
+no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut). **An unknown flag REFUSES before any page, sound or call — exit 1** (2.7, epic LP, origin issue #66: the 2.6 generator let `--close` fall through to the show and called the owner); the known flags are printed with the refusal.
 
 ## 3. Records — three files, derived names, never overwritten
 
 | Fact | Where | Shape |
 |---|---|---|
 | the answer | back into the source md, at `**Answer:**` | `X) <text> <!-- owner-review: by <owner> · <local time> -->` |
-| the decision | `<decisionsDir>/<doc-basename>.decision.json` | `{ kind, document, by, at (ISO), atHuman (local words), comment, answers: { Q1: { choice, text, comment } } }` |
+| the decision | `<decisionsDir>/<doc-basename>.decision.json` | `{ kind, document, by, at (ISO), atHuman (local words), comment, answers: { Q1: { choice, text, comment } } }` — plus `recovered: true` when the answer was saved on the owner's computer while the server was gone and picked up by the agent (2.7, LP); the provenance comment in the md says it too |
 | the archive | `<decisionsDir>/archive/<doc-basename>--<ISO>.json` | a copy per save; never rewritten |
 | the fact of SHOWING | `<decisionsDir>/shown.json` | `{ "<doc>": { "at": "<ISO>", "transport": "page \| batch \| chat" } }` — written when the window opens, or by hand for a pointed chat question (`--mark-shown <doc> --transport chat`) |
 | the queue | `<decisionsDir>/queue.json` | a STATE file — live documents are never moved into a pending folder |
 | the fact of IMPLEMENTING | `<decisionsDir>/implemented.json` | `{ "<doc>": { "<Q>": { "at": "<ISO>", "where": "<commit or file>" } } }` — the FOURTH fact (2.7, origin issue #54): written by the agent's hand the moment the decision lands in rules or code (`--mark-implemented <doc> <Q> --where <ref>`); a document whose every open question is implemented is never raised again — the queue and the show print `implemented, but open: <doc> Q1 → close the status` and exit 2 (`--queue --list` and a direct show: always; the batch `--queue`: the line is printed, exit 2 when nothing else waits) |
 
-Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → LF, trailing blanks cut, exactly
-one final newline). Text changed after approval = approval void.
+Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → LF, trailing blanks cut, exactly one final newline). Text changed after approval = approval void.
 
 ## 4. The page — what the owner must see
 
 - **Reading view (2.7, origin issue #54):** LIVE questions first; everything answered and the document's text below as ONE
   collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
-- **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll
-  and window height; the status is a pill under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the
-  screen (remote desktop, phone) hides it (2.7, origin issue #60, the owner's word: a FAB at the top right). The render
-  self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
-- **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency
-  banner ("server silent") may stay pinned.
+- **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window
+  height; the status is a pill under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop,
+  phone) hides it (2.7, origin issue #60, the owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no
+  `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
+- **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency banner ("server silent") may stay pinned.
 - Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save
   returns the text onto the page with Copy and Retry; a draft lives in `localStorage` and is restored on load
-  ("picked up N fields"). No path may leave the Save button disabled with no visible error.
-- The page polls `/alive` every 15 s (envelope 10–60 s) and says out loud when the server goes silent.
+  ("picked up N fields"). No path may leave the Save button disabled with no visible error. **The answer survives the server** (2.7, LP, origin issue #66;
+  the owner's word: "JS writes the file to the computer, into the project folder — no choice, no 'save as'"): the window runs on its own profile in the project
+  (`.kaif/contour-window/`, ignore-first, sign-in-off flags, `account_info` checked after launch); Save with the server gone stores the answer there, IndexedDB first — durable half a second after the write even if the browser dies ("saved on this
+  computer, the agent will pick it up" — no dialog); the next `--queue --list` / `--check` / show picks it up headless on the same profile and port (the origin; deferred while a browser still holds the profile) →
+  recorded as the owner's decision with `recovered: true`, the lock released; an unsaved draft is named and kept.
+- The page polls `/alive?i=&d=&s=` (ms since input · draft fields · saved) every 15 s (envelope 10–60 s) and says out loud when the server goes silent; the lock
+  keeps that input state (2.7, LP) so `--close` can read it from another process.
 - Time shown to a human is LOCAL words; ISO lives in the records.
 
 ## 5. Process — outcomes, patience, wake-up
 
-- Exactly three outcomes, all in the process log: **decision recorded → exit 0** · **page closed without an
-  answer → exit 2** · **interrupted → exit 130**. Pre-flight refusal is exit 3.
-- On the proofreading and mockup faces «Done» with empty fields is a decision recorded too — the record carries
-  `noRemarks: true` («looked, no remarks» is the most frequent verdict on an artifact, and the page says so under the
-  field); the page never refuses it. Only the interview face still needs an answer or a comment (origin bug 113).
+- Exactly three outcomes, all in the process log: **decision recorded → exit 0** · **page closed without an answer → exit 2** · **interrupted → exit 130**. Pre-flight refusal is exit 3.
+- On the proofreading and mockup faces «Done» with empty fields is a decision recorded too — the record carries `noRemarks: true` («looked, no
+  remarks» is the most frequent verdict on an artifact, and the page says so under the field); the page never refuses it. Only the interview face still needs an answer or a comment (origin bug 113).
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.
 - Saving TERMINATES the process — that termination is how the waiting agent wakes up; start the contour as a
   tracked background task. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence
@@ -15326,15 +15681,17 @@ one final newline). Text changed after approval = approval void.
 - One document — one window (a lock with pid and address); a free port (`listen(0)`) — the previous run's port FIRST when
   that process is gone (the draft lives in its origin), a taken port named in the log; a separate app window (`--app=`),
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
+- **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title
+  ("compare with the window you were told about"), REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s;
+  `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
+  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile.
 
 ## 6. The call — sound first, voice by language
 
-Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up,
-never before. The voice is chosen by the deployment language (`.kaif/kaif.json` → `language`) first, timbre second;
-when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops
-to beeps + banner rather than speaking noise. The rich engine is a MACHINE resource reached through the environment
-(`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every
-level; the window may cross midnight.
+Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen
+by the deployment language (`.kaif/kaif.json` → `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine
+not installed") and the contour drops to beeps + banner rather than speaking noise. The rich engine is a MACHINE resource reached through the environment
+(`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window may cross midnight.
 
 ## 7. Faces and flags (the shipped generator)
 
@@ -15346,6 +15703,7 @@ level; the window may cross midnight.
 | mockup review (an image + comments) | `… <image> --mockup` | `kind: "mockup"` |
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
+| close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
 `contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` /

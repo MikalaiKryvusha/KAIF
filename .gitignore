@@ -43,3 +43,6 @@ tools/.review-tmp/
 
 # 2.6 epic IC: temporary renders of the shipped contour generator (IC3) — ignore first, tool second
 .kaif/.contour-tmp/
+# профиль окна контура владельца в папке проекта (2.7, эпик LP, #66): черновик и локально записанный ответ —
+# состояние на диске владельца, не история; строка стоит ДО первого окна (правило «сначала ignore, потом инструмент»)
+.kaif/contour-window/

@@ -36,9 +36,10 @@
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
-import { createServer } from 'node:http';
+import { createServer, request as httpRequest } from 'node:http';
+import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -66,6 +67,23 @@ const BEEP_DEADLINE_MS = 8000;        // DEF7: hard deadline of the beep child
 const VOICE_TIMEOUT_MS = 60000;       // DEF7: voice timeout (a cold first call may take seconds)
 const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130, EXIT_PREFLIGHT = 3; // I25 + spec §2
+// LP (2.7, origin issue #66 — "the contour closed while I WAS TYPING"): a live owner page is closed only by `--close`,
+// which reads the lock (port · pid · title · last input · draft state) and REFUSES while the owner typed less than
+// CLOSE_QUIET_MS ago or a draft is unsaved. DEF6's own silence threshold (3 min) is the envelope: shorter would close
+// a typing owner, longer keeps a dead window alive for nothing. Overridable by the owner: `contour.closeQuietMs`.
+const CLOSE_QUIET_MS_DEFAULT = 180000;
+const EXIT_NOT_CLOSED = 4;            // LP: --close refused — the owner is typing or the draft is unsaved
+// LP (2.7, #66; interview 032 Q2 = D — "JS writes the file to the computer, into the project folder"): the app window
+// runs on ITS OWN Chromium profile inside the project (ignore-first), so the browser draft and a locally saved answer
+// live on the owner's disk in the project — and a headless run of the SAME profile on the SAME port can read them
+// back when the server is gone (the origin is host:port, so the port must be the lock's).
+const WINDOW_PROFILE_DIR = '.kaif/contour-window';
+const PROFILE_QUIET_FLAGS = ['--no-first-run', '--no-default-browser-check',
+  '--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun']; // EXP-0134: a NEW Edge profile silently signs into the OS account without these
+const RECOVER_TIMEOUT_MS = 20000;     // LP: hard deadline of the headless recovery run
+const FLUSH_GRACE_MS = 6000;          // LP: Chromium commits localStorage in batches (~5 s); killing the headless run sooner would lose the CLEAR of the picked-up keys and record the answer twice next time (probe 2026-09-13 run 1: a kill 1.5 s after a write lost it)
+const ACCOUNT_CHECK_DELAY_MS = 5000;  // LP: read the profile's Preferences after the window came up (EXP-0134)
+const SUBMITTED_KEY = '__submitted';  // LP: localStorage key (under the draft prefix) of an answer saved while the server was gone
 const EXIT_NEVER_SHOWN = 2;           // I42: a never-shown waiting document reddens `--queue --list`
 const STALE_QUEUE_DAYS = Number(process.env.KAIF_STALE_QUEUE_DAYS) > 0 ? Number(process.env.KAIF_STALE_QUEUE_DAYS) : 14; // I39
 const DAY_MS = 86400000;
@@ -78,6 +96,12 @@ const IMAGE_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/
   '.webp': 'image/webp', '.svg': 'image/svg+xml' };
 const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
+// LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
+// the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
+const KNOWN_FLAGS = ['--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
+  '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
+  '--where', '--close', '--force', '--owner-word'];
+const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
 
 // ── Configuration per root (cached: AGENT_GUIDE is read once per process) ─────────────────────
 const CFG_CACHE = new Map();
@@ -595,7 +619,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
-      needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, closeYourself: t.st.closeYourself,
+      needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, serverGoneLocal: t.st.serverGoneLocal, savedLocally: t.st.savedLocally, closeYourself: t.st.closeYourself,
       copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote },
   }).replace(/</g, '\\u003c');
   // P5: both themes via prefers-color-scheme; colours are variables; contrast is built into the pairs.
@@ -680,8 +704,11 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " if(!lab)return;var inp=lab.querySelector('input[type=radio]');if(!inp||inp.disabled)return;",
     " e.preventDefault();var was=inp.checked;",
     " if(e.target===inp){inp.checked=!was}else if(!was){inp.checked=true}",
-    " saveDraft(inp)});",
-    "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft'))saveDraft(e.target)});",
+    " lastInput=Date.now();saveDraft(inp);pulseSoon()});",
+    "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft')){lastInput=Date.now();saveDraft(e.target);pulseSoon()}});",
+    // LP (#66, found by the live run): the lock learned of typing only at the next 15-s pulse — a `--close` three seconds
+    // after the first keystroke found "no input" and closed the page. The first keystroke after a pause pulses within a second.
+    "var pulseTimer=null;function pulseSoon(){if(pulseTimer)return;pulseTimer=setTimeout(function(){pulseTimer=null;pulse()},800)}",
     "function fieldVal(name){var el=document.getElementsByName(name)[0];return el?el.value:''}",
     "function collect(doc){var answers={};for(var i=0;i<QS.length;i++){var q=QS[i];",
     " if(q.doc!==doc)continue;",
@@ -707,6 +734,18 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " $('#rescuetext').value=JSON.stringify(payload,null,2);enableButtons(true)}",
     "function enableButtons(on){var bs=document.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].disabled=!on}",
     "var saved=false,closeTimer=null,lastPayload=null;",
+    // LP (#66): input state for the pulse (`--close` reads it from the lock) and the local save when the server is gone
+    "var lastInput=0,lsOk=true,submittedLocally=false;try{localStorage.setItem(DK+'__probe','1');localStorage.removeItem(DK+'__probe')}catch(e){lsOk=false}",
+    "function draftCount(){var n=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf(DK)===0&&k!==DK+'__submitted'&&k!==DK+'__probe')n++}}catch(e){}return n}",
+    // The SUBMITTED answer goes to IndexedDB FIRST: measured on this class of machine, IndexedDB is on disk 0.5 s after the
+    // write under a hard kill of the browser, localStorage only after ~6 s (the recon's table of kills at 0.5–15 s). A copy
+    // stays in localStorage for a browser without IndexedDB; only when BOTH fail does the rescue ring come back.
+    "function idbPut(k,v,cb){try{var r=indexedDB.open('kaif-contour',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};",
+    " r.onsuccess=function(){try{var tx=r.result.transaction('kv','readwrite');tx.objectStore('kv').put(v,k);tx.oncomplete=function(){cb(true)};tx.onerror=function(){cb(false)};tx.onabort=function(){cb(false)}}catch(e){cb(false)}};",
+    " r.onerror=function(){cb(false)}}catch(e){cb(false)}}",
+    "function saveLocally(p,e){var js=JSON.stringify(p);var ls=false;if(lsOk){try{localStorage.setItem(DK+'__submitted',js);ls=true}catch(e2){}}",
+    " idbPut(DK+'__submitted',js,function(okIdb){if(!okIdb&&!ls){rescue(p,String(e));return}",
+    "  submittedLocally=true;saved=true;status(TX.savedLocally,'okmsg');$('#banner').style.display='none';$('#rescue').style.display='none';enableButtons(false)})}",
     "function isNotice(doc){var n=CFG.notices||[];for(var i=0;i<n.length;i++)if(n[i]===doc)return true;return false}",
     "function hasArtifacts(doc){var A=CFG.artifacts||[];for(var i=0;i<A.length;i++)if(A[i].doc===doc&&A[i].exists)return true;return false}",
     "function hasComments(p){for(var k in (p.comments||{}))return true;return false}",
@@ -726,7 +765,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: auto-close is an ATTEMPT; a refusal → an honest request; cancelled by pagehide
     "  setTimeout(function(){window.close();closeTimer=setTimeout(function(){status(TX.closeYourself,'err')},CFG.reserveMs)},CFG.closeMs)})",
-    " .catch(function(e){rescue(p,String(e))})}",
+    " .catch(function(e){saveLocally(p,e)})}", // LP (#66): the server is gone → the answer is saved on this computer, no dialog
     "document.addEventListener('click',function(e){var t=e.target;",
     " if(t&&t.classList&&t.classList.contains('savedoc'))doSave(t.getAttribute('data-doc'));",
     " if(t&&t.id==='retry'&&lastPayload)doSave(lastPayload.doc)});",
@@ -734,10 +773,11 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var cp=$('#copybtn');if(cp)cp.addEventListener('click',function(){var t=$('#rescuetext');t.select();",
     " try{document.execCommand('copy');status(TX.copied,'okmsg')}catch(e){status(TX.copyManually,'err')}});",
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
-    "function pulse(){fetch('/alive').then(function(r){if(!r.ok)throw 0;if(!selfBroken)$('#banner').style.display='none'})",
-    " .catch(function(){var b=$('#banner');b.style.display='block';b.textContent=TX.serverGone;",
-    "  var r=$('#rescue');r.style.display='block';",
-    "  if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2);enableButtons(true)})}",
+    // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
+    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none'})",
+    " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=lsOk?TX.serverGoneLocal:TX.serverGone;",
+    "  if(!lsOk){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
+    "  if(!submittedLocally)enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
     // I14/DEF6: closing the page is an EVENT for the server (fast path — the beacon names the window role)
     "window.addEventListener('pagehide',function(){if(closeTimer)clearTimeout(closeTimer);",
@@ -777,23 +817,50 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
 
 // ── The window (DEF8): an app window when a Chromium browser is found, else the default browser,
 // else an honest "open it yourself: URL" — the contour never pretends a window opened. ───────
-function openWindow(url, log = console.log) {
+// LP (2.7, #66): the app window runs on its OWN profile inside the project (`.kaif/contour-window/`, ignore-first) with
+// the three EXP-0134 flags — the draft and a locally saved answer then live on the owner's disk IN THE PROJECT, and the
+// agent can read them back headless on the same profile. Verified on Edge (Windows); Chrome/macOS/Linux take the same
+// flags and are NOT verified — said so in the run report, never promised.
+const profileDir = (root) => resolve(root, WINDOW_PROFILE_DIR);
+const profileArgs = (root) => ['--user-data-dir=' + profileDir(root), ...PROFILE_QUIET_FLAGS];
+function openWindow(url, log = console.log, root = process.cwd()) {
   const tryCmd = (cmd, args) => { try { return spawnSync(cmd, args, { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
+  const prof = profileArgs(root);
   if (IS_WIN) {
-    const tryApp = (exe) => tryCmd('cmd.exe', ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE]);
+    const tryApp = (exe) => tryCmd('cmd.exe', ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof]);
     if (tryApp('msedge')) return 'edge --app';
     if (tryApp('chrome')) return 'chrome --app';
-    if (tryCmd('cmd.exe', ['/c', 'start', '', url])) { log('Could not raise an app window — opened a plain tab; please close it yourself (DEF8).'); return 'tab'; }
+    if (tryCmd('cmd.exe', ['/c', 'start', '', url])) { log('Could not raise an app window — opened a plain tab in the default browser (no project profile: a draft there cannot be recovered by the agent); please close it yourself (DEF8).'); return 'tab'; }
   } else if (IS_MAC) {
-    if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE])) return 'chrome --app';
+    if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'chrome --app';
     if (tryCmd('open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   } else {
     for (const exe of ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'])
-      if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE])) return exe + ' --app';
+      if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
     if (tryCmd('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   }
   log('NO WINDOW OPENED — open it yourself: ' + url + ' (no browser found on this machine; the page is served until you answer or close it).');
   return 'none';
+}
+
+// LP / EXP-0134: after the window came up, read the profile's Preferences — a Chromium of the OS vendor may sign the
+// NEW profile into the OS account despite the flags; the agent says it out loud instead of the owner discovering it.
+function checkProfileAccount(root, log = console.log, attempt = 0) {
+  const prefs = join(profileDir(root), 'Default', 'Preferences');
+  const delays = [ACCOUNT_CHECK_DELAY_MS, 3 * ACCOUNT_CHECK_DELAY_MS, 6 * ACCOUNT_CHECK_DELAY_MS]; // Preferences appears seconds after the window (live run: not yet at 5 s)
+  const t = setTimeout(() => {
+    try {
+      if (!existsSync(prefs)) {
+        if (attempt + 1 < delays.length) { checkProfileAccount(root, log, attempt + 1); return; }
+        log('Profile check: ' + WINDOW_PROFILE_DIR + '/Default/Preferences not written within ' + (delays[attempt] / 1000) + ' s — sign-in state unknown (EXP-0134)'); return;
+      }
+      const signed = /account_info"\s*:\s*\[\s*\{/.test(readFileSync(prefs, 'latin1'));
+      log(signed
+        ? 'PROFILE SIGNED IN: ' + WINDOW_PROFILE_DIR + ' carries account_info — the browser ignored the sign-in flags (EXP-0134); report it, the profile holds account data'
+        : 'Profile check: ' + WINDOW_PROFILE_DIR + ' has no account_info — the window profile did not sign into the OS account (EXP-0134)');
+    } catch (e) { log('Profile check failed: ' + e.message); }
+  }, delays[attempt]);
+  t.unref();
 }
 
 // ── The lock "one document — one window" (I29) ────────────────────────────────────────────────
@@ -850,6 +917,19 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     const stalePort = held && held.stale ? (Number((String(held.url).match(/:(\d+)\/?$/) || [])[1]) || 0) : 0;
     let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0, tabReported = false;
     const startedAt = Date.now();
+    // LP (#66): what `--close` reads — written at listen and refreshed by every pulse
+    let inputState = { lastInputAt: null, draftFields: 0, saved: false };
+    let lockUrl = null;
+    const closeToken = randomBytes(16).toString('hex'); // `--close` proves it read THIS lock, and the server ends itself — no pid from a file is ever killed
+    const startedIso = provenance().at; // ONCE: the page's age is measured from here by `--close` — a stamp taken per pulse would reset it (found by the debug run 09:14)
+    const writeLock = () => {
+      if (!lockUrl) return;
+      try {
+        mkdirSync(decisionsAbs(root), { recursive: true });
+        writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url: lockUrl, startedAt: startedIso,
+          doc: batch ? '_queue' : relDoc(root, docPath), title: first.title, closeToken, ...inputState }) + '\n', 'utf8');
+      } catch { /* a lock that cannot be written is reported by the listen step, not here */ }
+    };
     const noticeMode = notice && !batch;
     const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
     const unreadSuffix = noticeMode ? ' The notice is NOT delivered (no "' + t.btn.read + '" mark, I38) — it repeats in the next batch.' : '';
@@ -864,9 +944,18 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         if (!allowed) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('Not in the queue: ' + rel); return; }
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(buildDoc(rel).html);
-      } else if (req.method === 'GET' && req.url === '/alive') {
+      } else if (req.method === 'GET' && req.url.startsWith('/alive')) {
         lastAlive = Date.now(); strikes = 0;
         if (beaconTimer) { clearTimeout(beaconTimer); beaconTimer = null; } // the page came back (T3)
+        // LP (#66): the pulse carries the INPUT state — ms since the last keystroke (-1 = none yet), draft fields in
+        // localStorage, whether the answer was saved — and the lock carries it on, so `--close` in ANOTHER process can
+        // refuse while the owner is typing. The lock is rewritten on every pulse (15 s; a few bytes).
+        const q = new URL(req.url, 'http://x').searchParams;
+        const sinceInput = Number(q.get('i')); const draftFields = Number(q.get('d')); const savedFlag = q.get('s') === '1';
+        if (Number.isFinite(sinceInput)) {
+          inputState = { lastInputAt: sinceInput >= 0 ? Date.now() - sinceInput : inputState.lastInputAt, draftFields: Number.isFinite(draftFields) ? draftFields : 0, saved: savedFlag };
+          writeLock();
+        }
         ok({ ok: true });
       } else if (req.method === 'POST' && req.url === '/tab') { // I26 (#64): the page says it is a TAB, not the app window
         if (!tabReported) {
@@ -931,6 +1020,14 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             log('SAVE ERROR (the page shows the rescue ring): ' + e.message);
           }
         });
+      } else if (req.method === 'POST' && req.url.startsWith('/close?')) { // LP (#66): the checked command asks the page's own server to end
+        const q = new URL(req.url, 'http://x').searchParams;
+        if (q.get('t') !== closeToken) { res.writeHead(403, { 'Content-Type': 'application/json' }); res.end(JSON.stringify({ ok: false, reason: 'wrong close token' })); return; }
+        ok({ ok: true, pid: process.pid });
+        if (outcome) return;
+        outcome = 'closed by the agent (--close)';
+        log('Outcome: closed by the checked command (--close)' + (q.get('keep') === '1' ? ' — the lock is KEPT: an unsaved draft lives in the window' : '') + ' — ending the contour.' + unreadSuffix);
+        setTimeout(finish, 100, EXIT_CLOSED, q.get('keep') === '1');
       } else if (req.method === 'POST' && req.url === '/closed') {
         let body = '';
         req.on('data', (c) => { body += c; });
@@ -964,9 +1061,9 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         finish(EXIT_CLOSED);
       }
     }, SILENCE_TICK_MS);
-    const finish = (code) => {
+    const finish = (code, keepLock = false) => {
       clearInterval(watch);
-      rmSync(lockPath(root, lockKey), { force: true });
+      if (!keepLock) rmSync(lockPath(root, lockKey), { force: true });
       server.close(() => resolveP({ outcome, exitCode: code }));
       setTimeout(() => resolveP({ outcome, exitCode: code }), 1000).unref();
     };
@@ -990,13 +1087,13 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       const url = 'http://127.0.0.1:' + server.address().port + '/';
       if (stalePort && server.address().port === stalePort)
         log('Port ' + stalePort + ' reused from the previous run (its process ' + held.pid + ' is gone) — same web origin, so a draft written in that window is restored on load (I29/I12).');
-      mkdirSync(decisionsAbs(root), { recursive: true });
-      writeFileSync(lockPath(root, lockKey), JSON.stringify({ pid: process.pid, url, startedAt: provenance().at }) + '\n', 'utf8');
+      lockUrl = url; writeLock(); // LP: the lock carries doc · title · input state (read by `--close`)
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
       if (open) { // showing is the agent's action (I15) — and the claim is never wider than the observation (#63):
         // the launcher's exit code says a process was started, not that a window stands on the owner's screen
-        const launcher = openWindow(url, log);
+        const launcher = openWindow(url, log, root);
         log('Window: ' + launcher + (launcher === 'none' ? '' : " — the launcher returned 0; whether a window is on the owner's screen this line does not verify (a screenshot does)"));
+        if (launcher.endsWith('--app')) checkProfileAccount(root, log); // EXP-0134: a new profile must not have signed in
       }
       if (open) { // I40: the fact of showing — at the moment of the open window
         const shownRels = batch ? forOwner().map((d) => d.doc) : [relDoc(root, docPath)];
@@ -1014,6 +1111,194 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     });
     server.listen(stalePort || 0, '127.0.0.1');
   });
+}
+
+// ── LP (2.7, origin issue #66): `--close <doc>` — the ONLY legal way to end a live owner page from outside ──────
+// The field case: a neighbour session said "close that page" and an agent killed the process while the owner was
+// typing into it. The command reads the lock (port · pid · title · input state) and REFUSES while the owner typed
+// less than the quiet threshold ago or a draft is unsaved; `--force` needs the owner's words verbatim and logs them.
+/** POST to a local contour server with a hard deadline — plain http, no AbortSignal (a native crash was once seen near it, origin bug 109). */
+function postLocal(url, ms = 3000) {
+  return new Promise((res) => {
+    let settled = false; const end = (v) => { if (!settled) { settled = true; res(v); } };
+    try {
+      const rq = httpRequest(url, { method: 'POST', timeout: ms }, (r) => { r.resume(); r.on('end', () => end({ status: r.statusCode })); });
+      rq.on('timeout', () => { rq.destroy(); end({ error: 'no answer within ' + ms + ' ms' }); });
+      rq.on('error', (e) => end({ error: e.code || e.message }));
+      rq.end();
+    } catch (e) { end({ error: e.message }); }
+  });
+}
+export async function closeContour(root, docPath, { force = false, ownerWord = null, log = console.log, now = Date.now() } = {}) {
+  const cfg = cfgOf(root);
+  const isQueue = docPath === '--queue';
+  const key = isQueue ? '_queue' : basename(docPath);
+  const rel = isQueue ? '(queue)' : relDoc(root, docPath);
+  const lock = checkLock(root, key);
+  if (!lock) { log('no live page for ' + rel + ' — nothing to close (no lock)'); return EXIT_DECIDED; }
+  const port = (String(lock.url).match(/:(\d+)\/?$/u) || [])[1] || '?';
+  log('live page: ' + lock.url + ' · port ' + port + ' · pid ' + lock.pid + ' · title "' + (lock.title || '?') + '" — compare with the window you were told about before touching it');
+  if (lock.stale) { log('the process ' + lock.pid + ' is already gone; the lock is kept for the draft in that window (I29) — nothing to close'); return EXIT_DECIDED; }
+  const quietMs = cfg.closeQuietMs || CLOSE_QUIET_MS_DEFAULT;
+  const sinceInput = lock.lastInputAt ? now - Number(lock.lastInputAt) : null;
+  // A page YOUNGER than the quiet threshold is never closed without the owner's word either: the owner may be reading
+  // it, about to type — the live run of 2026-09-18 closed a page three seconds after the first keystroke because the
+  // lock had not yet heard of it. Age counts from the lock's startedAt; an unreadable stamp counts as "just now".
+  const startedMs = Date.parse(lock.startedAt || '') || now;
+  const age = now - startedMs;
+  const unsaved = Number(lock.draftFields) > 0 && !lock.saved;
+  if (!force) {
+    if (sinceInput !== null && sinceInput < quietMs) {
+      log('last input ' + Math.round(sinceInput / 1000) + ' s ago — the owner is typing; not closed (exit ' + EXIT_NOT_CLOSED + '; the quiet threshold is ' + Math.round(quietMs / 1000) + ' s, contour.closeQuietMs)');
+      return EXIT_NOT_CLOSED;
+    }
+    if (age < quietMs) {
+      log('the page came up ' + Math.round(age / 1000) + ' s ago — younger than the quiet threshold (' + Math.round(quietMs / 1000) + ' s): the owner may be reading it; not closed (exit ' + EXIT_NOT_CLOSED + '; --force --owner-word "<quote>" if the owner said so)');
+      return EXIT_NOT_CLOSED;
+    }
+    if (unsaved) { log('draft of ' + lock.draftFields + ' field(s) not saved — the owner\'s text would be orphaned; not closed (exit ' + EXIT_NOT_CLOSED + ')'); return EXIT_NOT_CLOSED; }
+  } else {
+    if (!ownerWord || !String(ownerWord).trim()) { log('refusing --force: it needs --owner-word "<the owner\'s words, verbatim>" — a neighbour session\'s word is not evidence'); return EXIT_UNKNOWN_FLAG; }
+    log('FORCE close by the owner\'s word: "' + ownerWord + '"' + (sinceInput !== null && sinceInput < quietMs ? ' — last input ' + Math.round(sinceInput / 1000) + ' s ago' : '') + (unsaved ? ' — draft of ' + lock.draftFields + ' field(s) NOT saved' : ''));
+  }
+  // The page's OWN server is asked to end (token from the lock): a pid read from a file may belong to another process by
+  // now, and a killed process exits with a code the contract does not know. Only --force may fall back to the pid.
+  const asked = await postLocal(String(lock.url).replace(/\/?$/u, '/') + 'close?t=' + encodeURIComponent(lock.closeToken || '') + (unsaved ? '&keep=1' : ''));
+  let how = null;
+  if (asked.status === 200) { how = 'its own server ended it (exit 2 for the waiting agent)'; if (!unsaved) rmSync(lockPath(root, key), { force: true }); } // the server removes its lock too — idempotent
+  else if (!force) {
+    log('the page at ' + lock.url + ' did not accept the close request (' + (asked.error || 'HTTP ' + asked.status) + ') — pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; a hung or pre-2.7 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
+    return EXIT_NOT_CLOSED;
+  } else {
+    try { process.kill(lock.pid); } catch (e) { log('could not end the process ' + lock.pid + ': ' + e.message); return EXIT_NOT_CLOSED; }
+    how = 'the process was killed by pid (forced; the page did not answer: ' + (asked.error || 'HTTP ' + asked.status) + ')';
+    if (!unsaved) rmSync(lockPath(root, key), { force: true });
+  }
+  if (unsaved) log('the lock is KEPT (stale): the unsaved draft lives in that window\'s origin on port ' + port + ' — the next show reuses the port (I29) and the recovery run reads the project profile');
+  log('closed ' + rel + ' (port ' + port + ', pid ' + lock.pid + ') — ' + how + '; the browser window itself is not touched: it shows the server-gone line and keeps its draft on the project profile');
+  return EXIT_DECIDED;
+}
+
+// ── LP (2.7, #66): pick up an answer the owner saved on his computer while the server was gone ────────────────
+// A dead process leaves a STALE lock with the window's port; the page wrote the answer into localStorage of the
+// PROJECT profile. A headless run of the same browser on the same profile and the SAME port (the origin is host:port)
+// reads it back and posts it here; the agent records it as the owner's decision and says so. Runs only when the
+// project profile exists (a window once ran) — a sandbox tree never has one, so no browser is ever launched there.
+const BROWSER_EXES = IS_WIN
+  ? ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
+     'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe']
+  : IS_MAC ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
+    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge'];
+const findBrowser = () => BROWSER_EXES.find((p) => existsSync(p)) || null;
+function recordRecovered(root, doc, payload, cfg) {
+  const face = payload.face || 'interview';
+  if (payload.read) { const r = recordDecision(root, doc, { kind: KIND_NOTICE, comment: payload.comment, recovered: true }, cfg); markNoticeRead(root, doc); return r; }
+  if (face === 'proofread' || face === 'mockup') {
+    const noRemarks = Boolean(payload.noRemarks) && !(payload.comment || '').trim() && Object.keys(payload.comments || {}).length === 0;
+    return recordDecision(root, doc, { kind: face, comment: payload.comment, comments: payload.comments, ...(noRemarks ? { noRemarks: true } : {}), recovered: true }, cfg);
+  }
+  return recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts, recovered: true }, cfg);
+}
+function recoverOne(root, key, lock, exe, log, result) {
+  const cfg = cfgOf(root);
+  const doc = lock.doc;
+  const port = Number((String(lock.url).match(/:(\d+)\/?$/u) || [])[1]) || 0;
+  if (!doc || doc === '_queue' || !port) {
+    log('recovery: lock ' + key + ' — ' + (doc === '_queue' ? 'a queue page: its draft lives under the page title, not per document — reopen the queue on the same port (I29); nothing picked up' : 'no document or port in the lock; nothing to pick up'));
+    return Promise.resolve();
+  }
+  const DK = 'owner-review:' + doc + ':';
+  const page = '<!doctype html><meta charset="utf-8"><script>' +
+    'var DK=' + JSON.stringify(DK) + ';var SK=DK+"' + SUBMITTED_KEY + '";var out={submitted:null,store:null,drafts:{}};' +
+    'function fin(){fetch("/done",{method:"POST"})}' +
+    'function readLs(){try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf(DK)!==0)continue;var v=localStorage.getItem(k);var f=k.slice(DK.length);' +
+    'if(k===SK){if(!out.submitted){try{out.submitted=JSON.parse(v);out.store="localStorage"}catch(e){}}}else if(f!=="__probe"&&v)out.drafts[f]=v}}catch(e){out.error=String(e)}}' +
+    'function send(db){readLs();fetch("/recovered",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(out)}).then(function(r){return r.json()}).then(function(j){' +
+    'if(!(j&&j.clear)){fin();return}' +
+    'try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}' +
+    'if(!db){fin();return}try{var tx=db.transaction("kv","readwrite");tx.objectStore("kv").delete(SK);tx.oncomplete=fin;tx.onerror=fin;tx.onabort=fin}catch(e){fin()}}).catch(function(){})}' +
+    'try{var r=indexedDB.open("kaif-contour",1);r.onupgradeneeded=function(){r.result.createObjectStore("kv")};' +
+    'r.onsuccess=function(){var db=r.result;try{var g=db.transaction("kv").objectStore("kv").get(SK);' +
+    'g.onsuccess=function(){if(g.result){try{out.submitted=JSON.parse(g.result);out.store="indexedDB"}catch(e){}}send(db)};g.onerror=function(){send(db)}}catch(e){send(db)}};' +
+    'r.onerror=function(){send(null)}}catch(e){send(null)}</script>';
+  let got = null, child = null, timer = null, recorded = null;
+  return new Promise((done) => {
+    const server = createServer((req, res) => {
+      const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
+      if (req.method === 'GET' && req.url === '/recover') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(page); return; }
+      if (req.method === 'POST' && req.url === '/recovered') {
+        let body = ''; req.on('data', (c) => { body += c; });
+        req.on('end', () => {
+          try { got = JSON.parse(body); } catch { got = { error: 'unreadable' }; }
+          let clear = false;
+          if (got && got.submitted) {
+            try { recorded = recordRecovered(root, doc, got.submitted, cfg); clear = true; } catch (e) { log('recovery: could not record ' + doc + ': ' + e.message); }
+          }
+          ok({ ok: true, clear });
+        });
+        return;
+      }
+      if (req.method === 'POST' && req.url === '/done') { ok({ ok: true }); setTimeout(finish, got && got.submitted ? FLUSH_GRACE_MS : 200); return; } // the clear must reach the disk before the kill
+      res.writeHead(404); res.end();
+    });
+    const finish = () => {
+      clearTimeout(timer);
+      if (child) { // taskkill by ABSOLUTE path: a quiet (empty-PATH) environment still ends the browser tree
+        try {
+          const tk = IS_WIN ? join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'taskkill.exe') : null;
+          if (tk && existsSync(tk)) spawnSync(tk, ['/F', '/T', '/PID', String(child.pid)], { stdio: 'ignore' }); else child.kill();
+        } catch { /* already gone */ }
+        child = null;
+      }
+      if (server.closeAllConnections) server.closeAllConnections(); // the port must be FREE before the show that follows reuses it (I29) — a lingering keep-alive socket would orphan the draft's origin
+      server.close(() => done());
+      setTimeout(done, 5000).unref(); // a fallback only: `done` of a settled promise is a no-op
+    };
+    server.on('error', (e) => { log('recovery: port ' + port + ' of the dead window is taken (' + e.code + ') — the local save keeps its origin and cannot be read on another port; nothing picked up for ' + doc); done(); });
+    server.listen(port, '127.0.0.1', () => {
+      child = spawn(exe, ['--headless=new', ...profileArgs(root), '--disable-gpu', 'http://127.0.0.1:' + port + '/recover'], { stdio: 'ignore' });
+      child.on('error', (e) => { log('recovery: could not start the headless browser ' + exe + ': ' + e.message); finish(); });
+      timer = setTimeout(() => { log('recovery: the headless browser did not answer within ' + (RECOVER_TIMEOUT_MS / 1000) + ' s — nothing picked up for ' + doc); finish(); }, RECOVER_TIMEOUT_MS);
+    });
+  }).then(() => {
+    const nDrafts = got && got.drafts ? Object.keys(got.drafts).length : 0;
+    if (recorded) {
+      const n = Object.keys(recorded.answers || {}).length;
+      log('answer recovered from the owner\'s machine: ' + doc + ' — ' + (recorded.kind === KIND_NOTICE ? 'read mark' : n + ' answer(s)' + (recorded.comment ? ' + comment' : '')) + ' → recorded (by ' + recorded.by + '; from ' + (got.store || '?') + '; decision.json · archive · the document) — the lock is released. TELL THE OWNER in your next message that his answer was picked up from his computer (I47): the provenance comment in the document is invisible on a rendered page');
+      rmSync(lockPath(root, key), { force: true });
+      result.recovered.push({ doc, record: recorded });
+    } else if (nDrafts > 0) {
+      log('draft found on the owner\'s machine: ' + doc + ' — ' + nDrafts + ' field(s), NOT saved; the page restores it when reopened on port ' + port + ' (I29) — nothing recorded, the lock is kept');
+      result.drafts.push({ doc, fields: nDrafts });
+    } else if (got) {
+      log('recovery: nothing saved on the owner\'s machine for ' + doc + (got.error ? ' (' + got.error + ')' : '') + ' — the lock is released');
+      rmSync(lockPath(root, key), { force: true });
+    }
+  });
+}
+/** Is a browser running on the project profile right now? Windows Chromium keeps `lockfile` open with no sharing; elsewhere `SingletonLock` marks it (not verified there — said in the returned reason). */
+function profileHeld(root) {
+  const d = profileDir(root);
+  if (IS_WIN) {
+    const lf = join(d, 'lockfile');
+    if (!existsSync(lf)) return null;
+    try { closeSync(openSync(lf, 'r+')); return null; } catch (e) { return 'lockfile busy: ' + e.code; } // opens → a leftover of a dead browser
+  }
+  try { lstatSync(join(d, 'SingletonLock')); return 'SingletonLock present (platform not verified)'; } catch { return null; }
+}
+export function recoverFromWindow(root, { log = console.log } = {}) {
+  const result = { recovered: [], drafts: [] };
+  if (!existsSync(profileDir(root))) return Promise.resolve(result); // no window ever ran on the project profile — nothing to pick up, no browser launched
+  const dir = decisionsAbs(root);
+  const locks = existsSync(dir)
+    ? readdirSync(dir).filter((f) => f.endsWith('.lock')).map((f) => ({ key: f.replace(/\.lock$/u, ''), lock: checkLock(root, f.replace(/\.lock$/u, '')) })).filter((x) => x.lock && x.lock.stale)
+    : [];
+  if (!locks.length) return Promise.resolve(result);
+  const heldBy = profileHeld(root);
+  if (heldBy) { log('recovery deferred: a browser still holds the project profile (' + heldBy + ') — the owner\'s window is open; a second browser on a held profile would hand its page to THAT window. The answer stays where it is and is picked up after the window closes (' + locks.length + ' stale lock(s) kept)'); return Promise.resolve(result); }
+  const exe = findBrowser();
+  if (!exe) { log('recovery: ' + locks.length + ' stale lock(s), but no Chromium at a known path — an answer saved on this computer stays in ' + WINDOW_PROFILE_DIR + ' until a browser is found'); return Promise.resolve(result); }
+  return locks.reduce((chain, { key, lock }) => chain.then(() => recoverOne(root, key, lock, exe, log, result)), Promise.resolve()).then(() => result);
 }
 
 // ── Pre-flight + self-check as one gate (spec §2), used by the CLI before any page opens ───────
@@ -1169,7 +1454,9 @@ export function selftest(log = console.log) {
   rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
-  ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("'/alive'"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse');
+  // LP (#66): the pulse now carries the input state — `/alive?i=<ms since input>&d=<draft fields>&s=<saved>`
+  ok(page.html.includes('class="tag rec"') && page.html.includes('id="rescue"') && page.html.includes("localStorage") && page.html.includes("fetch('/alive?i='"), 'page: recommendation chip, rescue ring, browser draft, /alive pulse with the input state (LP)');
+  ok(page.html.includes("localStorage.setItem(DK+'__submitted'") && page.html.includes("indexedDB.open('kaif-contour'") && page.html.includes('TX.savedLocally'), 'page: an answer saved while the server is gone lands in localStorage of the project profile, no dialog (LP, #66)');
   ok(!/`/.test(page.html.slice(page.html.indexOf('<script>'))), 'T7: no backtick in the page script');
 
   // C6/I2: the decision lands in THREE places; the owner's answer is written back; by = owner from the table
@@ -1254,7 +1541,15 @@ export function selftest(log = console.log) {
 // the very same CLI in-process — the origin eats its own shipment, plans/93 IC5) ──────────────────
 export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
-  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where'];
+  // LP (2.7, #66; the core's bug-33 rule): an unknown flag REFUSES before any page, sound or call. The 2.6 generator let
+  // `--close` fall through to the show — a page and a voice call for a flag nobody meant.
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word'];
+  const unknown = args.filter((a, i) => a.startsWith('--') && !KNOWN_FLAGS.includes(a) && !valueFlags.includes(args[i - 1]));
+  if (unknown.length) {
+    console.error('✖ unknown flag' + (unknown.length > 1 ? 's' : '') + ': ' + unknown.join(' ') + ' — refusing BEFORE any page, sound or call (bug 33: a silently ignored flag shows something you did not ask for). Known flags: ' + KNOWN_FLAGS.join(' '));
+    process.exitCode = EXIT_UNKNOWN_FLAG; // exitCode, not exit(): Windows pipes are asynchronous and exit() would drop the line
+    return;
+  }
   const docPath = args.find((a, i) => !a.startsWith('--') && !valueFlags.includes(args[i - 1]));
   const opts = {
     open: !args.includes('--no-open'),
@@ -1274,7 +1569,8 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' --queue [--include-stale] | --queue --list | --enqueue <doc.md> [--notice] | --selftest\n' +
       '       ' + CLI_NAME + ' --mark-shown <doc.md> [--transport chat]\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
-      'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form).\n' +
+      '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
+      'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
       'Run it as a TRACKED background task (I31). Contract: .kaif/INTERACTIVE_CONTOUR_SPEC.md');
     process.exit(1);
   };
@@ -1295,9 +1591,18 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     console.log('Shown recorded (I40): ' + doc + ' · ' + transport + ' → ' + cfg.decisionsDir + '/' + SHOWN_FILE);
     process.exit(0);
   }
+  if (args.includes('--close')) { // LP (#66): the only legal way to end a live owner page from outside
+    if (!docPath && !args.includes('--queue')) usage();
+    // exitCode, not process.exit(): on Windows stdout to a PIPE is asynchronous, and an immediate exit drops the last lines
+    closeContour(root, docPath || '--queue', { force: args.includes('--force'), ownerWord: opt('--owner-word') }).then((code) => { process.exitCode = code; });
+    return;
+  }
+  // LP (#66): before the queue, the check or a show — pick up what the owner saved while a server was gone
+  const afterRecovery = (fn) => recoverFromWindow(root, { log: console.log }).then(fn, (e) => { console.log('recovery failed: ' + e.message); fn(); });
   if (args.includes('--check')) { // QL1 (#56): the form check is a DOOR of its own — never the show
     if (!docPath) usage();
-    process.exit(checkDoc(root, docPath));
+    afterRecovery(() => process.exit(checkDoc(root, docPath)));
+    return;
   }
   if (args.includes('--mark-implemented')) { // I44 (QL2, #54): the fourth fact — the agent's hand, at the moment of implementing, with an address
     const i = args.indexOf('--mark-implemented');
@@ -1310,10 +1615,18 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     process.exit(0);
   }
   if (args.includes('--queue') && args.includes('--list')) {
-    const r = listQueue(root, { includeStale: opts.includeStale });
-    for (const l of r.lines) console.log(l);
-    process.exit(r.exitCode);
+    afterRecovery(() => {
+      const r = listQueue(root, { includeStale: opts.includeStale });
+      for (const l of r.lines) console.log(l);
+      process.exit(r.exitCode);
+    });
+    return;
   }
+  afterRecovery(() => mainShow(args, root, { opt, docPath, opts, asNotice, face, usage, cfg }));
+}
+
+// The show half of main() — runs after the recovery step (LP): the queue page, a notice, a face, the interview.
+function mainShow(args, root, { opt, docPath, opts, asNotice, face, usage, cfg }) {
   if (args.includes('--queue')) {
     const stale = opts.includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true }));
     for (const d of stale) console.log('! stale in the queue (' + d.days + ' d > ' + STALE_QUEUE_DAYS + '): ' + d.doc + ' — NOT shown; close it by status or show it on purpose: --include-stale');

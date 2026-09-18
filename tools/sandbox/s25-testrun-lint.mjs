@@ -240,6 +240,14 @@ ok(/⚠ TEAM_CONSTITUTION\.md lost 4 obligation\(s\) of the template: /.test(r.o
    's25 потеря формы поля — предупреждение называет ПОИМЁННО все четыре правила §2 (#68)', r.out);
 ok(/restore them, or declare the omission beside the item with `<!-- constitution-ok: <why> -->` \(origin issue #68; template: \.claude\/skills\/team-deployment\/references\/team-constitution-template\.md\)/.test(r.out),
    's25 потеря — строка называет и лекарство, и объявленное исключение, и найденный шаблон', r.out);
+// (б2) АДРЕСНОСТЬ починки fail-open (судья интеграции 2026-09-18, каверза К4): обязательство считается СОХРАНЁННЫМ,
+// только когда стоит среди нумерованных пунктов §2 — документ, который УПОМИНАЕТ удалённые правила вне §2
+// (приложение «что мы убрали»), всё равно называет их потерянными. Мутант `kept = (a) => doc.includes(a)`
+// (сверка по всему тексту — та самая первая сборка) на этой фикстуре молчит → ассерт красный.
+writeFileSync(CONST, cutText + '\n## Appendix — rules we dropped on purpose\n\n' + FIELD_LOST.map((a) => '- **' + a + '**').join('\n') + '\n');
+r = runCore('check');
+ok(r.code === 0 && /⚠ TEAM_CONSTITUTION\.md lost 4 obligation\(s\) of the template: /.test(r.out) && FIELD_LOST.every((a) => r.out.includes(`§2 "${a}"`)),
+   's25 правила, УПОМЯНУТЫЕ вне §2 (приложение «что убрали»), всё равно названы потерянными — якорь ищется среди пунктов §2, не по всему тексту (К4)', r.out);
 // (в) ПЕРЕВЕДЁННАЯ конституция: якоря не совпадут ни одним — сверка по СЧЁТУ, и ось говорит это вслух
 const ruText = tplText.replace(/^## 2\. Communication regimen[\s\S]*?(?=^## 3\.)/m,
   '## 2. Reglament obshcheniya\n\n1. **Odno soobshchenie - odno delo.** ...\n2. **Forma postanovki** ...\n' +

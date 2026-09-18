@@ -1042,7 +1042,8 @@ was "guarded mechanically" — indicative, about a check that did not exist, and
 such a sentence as a guarantee already met. Exactly one mechanical half exists and it is named:
 questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
 document". Field words that paid for this rule: "I will NOT open it by double-click! You are
-forcing me to dig through project files again!"
+forcing me to dig through project files again!" **And a page the owner looks at is CLOSED only by the command that checks
+it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
 covers artifacts; a question is not an artifact, and the gap let the same grievance return through
