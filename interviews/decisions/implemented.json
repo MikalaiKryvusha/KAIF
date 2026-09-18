@@ -4,5 +4,11 @@
       "at": "2026-09-17T21:30:50.419Z",
       "where": "plans/100 строки 13, критерии 18–20 (сессия 65)"
     }
+  },
+  "interviews/interview_033_code_revision_rewrite_scope.md": {
+    "Q1": {
+      "at": "2026-09-18T05:16:42.942Z",
+      "where": "plans/63 CR1 + ideas/30 п. 16"
+    }
   }
 }

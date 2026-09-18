@@ -14429,12 +14429,15 @@ process.exit(0);
 // `hook_event_name`, `cwd`, `prompt`; stdout on exit 0 — {"hookSpecificOutput": {"hookEventName":
 // "UserPromptSubmit", "additionalContext": "…"}}. A hook must never break the session: any
 // internal error → exit 0 silently.
-// [NOT-TESTED: hygiene only (2026-09-18) — polygon s14 6/6 ("resume" + newline + task, the Cyrillic
-//  shorthand with a period, "/resume" → the order; no word, the word mid-sentence, no `prompt` field →
-//  silence), the 2.6 core (KAIF_DIST) 8 asserts red, a mutant bundle with the predicate broken exactly
-//  the 3 order asserts red; the FUNCTIONAL run — the owner's own "resume" opening a live chat with this
-//  hook wired — is pending: testcases/reports/2026-09-18_hook-resume-word.md (Functional run: NONE);
-//  the marker flips to [TESTED] only by that observation — TESTING_FRAMEWORK.md, hygiene is not a test]
+// [TESTED: 2026-09-18 08:12 +03:00 - FUNCTIONAL run on the owner's real path: the owner opened a new
+//  chat of the origin with "resume" + newline + "continue" (in Russian), this hook wired in
+//  .claude/settings.json; the injected order stood in the session context, was quoted in the chat
+//  verbatim BEFORE the refresh marker was stamped, and /resume ran in full; report -
+//  testcases/reports/2026-09-18_hook-resume-word.md, run 17, verdict pass. Hygiene beside it: polygon s14
+//  6/6 ("resume" + newline + task, the Cyrillic shorthand with a period, "/resume" -> the order; no word,
+//  the word mid-sentence, no `prompt` field -> silence), the 2.6 core (KAIF_DIST) 8 asserts red, a mutant
+//  bundle with the predicate broken exactly the 3 order asserts red - hygiene alone never flipped this
+//  marker (TESTING_FRAMEWORK.md, hygiene is not a test)]
 //
 // PORTABILITY — `--emit <shape>`: `claude` only. OpenAI Codex reads the same output fields on
 // UserPromptSubmit, but whether ITS event carries the prompt text was not read in its live
