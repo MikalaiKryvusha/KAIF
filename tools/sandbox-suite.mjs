@@ -104,6 +104,18 @@
 //         closes), a rename whose old anchor is absent is named in the log and does not fail the update;
 //         plus the live 2.7 pair declared as DATA in the builder and shipped in the bundle meta. Grown
 //         from probe ho-rename-duplicate (red before the fix: 2 of 8 on build 538)
+//   s28 — kaif-experience-lint (epic EL 2.7, plan 114; origin issue #69 — a field audit of one project's
+//         journal: "14 of 15 failure classes recurred AFTER their lesson was written"): the `class:` field is
+//         the UNIT of recurrence — two failure entries of one class with no `mechanized:` redden with the
+//         class and BOTH ids named, the same class with one mechanized entry is green, a journal with not
+//         one `class:` is SKIPPED (3), a `mechanized:` naming a path the project lacks warns at exit 0 while
+//         an ignored runtime path does not, a slug outside the header list warns, a declared
+//         `<!-- class-ok: <slug> — <why> -->` silences its own class and an empty declaration is itself red,
+//         the baseline silences field debt and never a repeated class, `--shrink` shows without `--yes` and
+//         collapses to one pointer line with it; on a deployed copy the module and the journal template with
+//         the class list and the closing command arrive, and a FRESH deployment's journal is SKIPPED, never
+//         green. Red proven on the 2.6 core via KAIF_DIST and on six mutants of the axis (scratchpad
+//         el-mutants.mjs, report testcases/reports/2026-09-18_experience-lint.md)
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
@@ -133,7 +145,8 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's15-guard-lint.mjs', 's16-doc-budgets.mjs', 's17-report.mjs',
                 's18-update-symmetries.mjs', 's19-scenario-lint.mjs', 's21-update-route.mjs',
                 's22-contour-shipped.mjs', 's23-ranking-lint.mjs', 's24-attribution-lint.mjs',
-                's25-testrun-lint.mjs', 's26-voice-lint.mjs', 's27-rename-map.mjs'];
+                's25-testrun-lint.mjs', 's26-voice-lint.mjs', 's27-rename-map.mjs',
+                's28-experience-lint.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

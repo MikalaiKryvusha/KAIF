@@ -859,10 +859,10 @@
       {
         "signature": "# EXPERIENCE — the agent's accumulated experience",
         "class": "owner",
-        "sha256": "77e95d6a118bdee03d8c6f290b59f133d1bf0e189f0ef328b5218382fc50d788",
+        "sha256": "27af28dde6edeaa11b5e9e9cf7a74b53d94154e61eee3dd1fdc47603bbc2fd4e",
         "lines": [
           1,
-          41
+          80
         ]
       },
       {
@@ -870,8 +870,8 @@
         "class": "owner",
         "sha256": "1b987f70bae3d5ae9d605e0e23d9c0e72e15d688dc7c295aafd13fdc38677d8f",
         "lines": [
-          42,
-          43
+          81,
+          82
         ]
       },
       {
@@ -879,8 +879,8 @@
         "class": "owner",
         "sha256": "41fc046fffb5c76bf67b1d71719ad7a30157e9dc575f963f49181c9662069d2a",
         "lines": [
-          44,
-          50
+          83,
+          89
         ]
       }
     ],
@@ -1528,10 +1528,10 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "d3cc0c580296a8d1d00aad3565b319bf2c1ae631791a280db79d9b76b73ef81c",
+        "sha256": "2e8655c8be1185696716f193e64b36d9714b7c454716db81e8d138e66b6ae0d1",
         "lines": [
           510,
-          552
+          553
         ]
       },
       {
@@ -1539,8 +1539,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          553,
-          565
+          554,
+          566
         ]
       },
       {
@@ -1548,8 +1548,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          566,
-          574
+          567,
+          575
         ]
       }
     ],
@@ -2235,10 +2235,10 @@
       {
         "signature": "### Step 1. Record status & the handover in STATUS.md",
         "class": "static",
-        "sha256": "3c9c09e07a8160186aa21d5b176f373457021c6056fce6f8f219183cdfc71ee3",
+        "sha256": "d70c18b8a1dae85868b69901d385c9d318fb999b46f44814cd68113a8bc3d39d",
         "lines": [
           31,
-          53
+          58
         ]
       },
       {
@@ -2246,8 +2246,8 @@
         "class": "static",
         "sha256": "4e8599aeac84993369d303fdb7c012d1f1891acca2d35e1681076ae1c298d666",
         "lines": [
-          54,
-          58
+          59,
+          63
         ]
       },
       {
@@ -2255,8 +2255,8 @@
         "class": "static",
         "sha256": "c249136cd205896996db62b65d8aebc72f20c4c30b820c864d7cd2d721986329",
         "lines": [
-          59,
-          64
+          64,
+          69
         ]
       },
       {
@@ -2264,8 +2264,8 @@
         "class": "adaptive",
         "sha256": "6bc315e9289e6fb2e7c5f80c593e055d379bf5b9a1710827654a850c0e80ecac",
         "lines": [
-          65,
-          78
+          70,
+          83
         ]
       },
       {
@@ -2273,8 +2273,8 @@
         "class": "static",
         "sha256": "870d9f9a177f73f55a7fdbeca2b2d6bc5704f35c0b2fca9add1437104f47e7dc",
         "lines": [
-          79,
-          93
+          84,
+          98
         ]
       },
       {
@@ -2282,8 +2282,8 @@
         "class": "static",
         "sha256": "c3aa9b2465934f62c753d8300d28d356795065e45778db5b5018d97402c56a56",
         "lines": [
-          94,
-          104
+          99,
+          109
         ]
       }
     ],
@@ -2309,10 +2309,10 @@
       {
         "signature": "## Mode A — CAPTURE a lesson (\"add this to experience\")",
         "class": "static",
-        "sha256": "8d7bd405aa646f42664978b5dea229cb21c310e0b2bb204748227d0319962749",
+        "sha256": "632fe0cca5f292631299ccf9383e2cec6217a3049f262a68866b06398e33d787",
         "lines": [
           15,
-          66
+          84
         ]
       },
       {
@@ -2320,8 +2320,8 @@
         "class": "static",
         "sha256": "86d0ea75a35a79c528542c18f9b76a958c7138d07fc5e575176d83dbff3b96d3",
         "lines": [
-          67,
-          83
+          85,
+          101
         ]
       },
       {
@@ -2329,8 +2329,8 @@
         "class": "static",
         "sha256": "ad84029c18e96905edb2e4974aef873753140099a8d9e0399d54802a32c2f9b0",
         "lines": [
-          84,
-          92
+          102,
+          110
         ]
       }
     ],
@@ -2412,7 +2412,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "7a51fdcff373c51be0eda7c1c7d52dcdb678424450d3cdfe02b97ba7b156f327",
+        "sha256": "57adbfddd598cc8d84e7faeb13d1d808aac998d70a707f0befb8cebf618259e4",
         "lines": [
           1,
           18
@@ -2430,10 +2430,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "883bec2175707dd85d212087d9f6cc4062d35001fd0865d12850aeea7c9fe624",
+        "sha256": "f85b54796917bfb7b8c4800b845769ed89bc17076b117429cbcb8a7e05621f1c",
         "lines": [
           23,
-          79
+          80
         ]
       },
       {
@@ -2441,8 +2441,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          80,
-          85
+          81,
+          86
         ]
       }
     ],

@@ -95,8 +95,13 @@ function scanPayloadCyrillic(fwRoot) {
 // gets the per-half check without anyone remembering to flag it, and a single-language file keeps
 // being read as one whole.
 const RU_ANCHOR = '<a id="russian">';
+// The landmark is a LINE that BEGINS with the anchor. A document that only QUOTES the anchor inside its prose is
+// single-language: the origin's journal does exactly that (a lesson about this very axis), and an `indexOf` split cut it
+// into an "EN half" and an "RU half" at the quote — every header token then read as missing from the second one
+// (found 2026-09-18 by the first pair ever registered on EXPERIENCE.md, epic EL).
+const ruAnchorAt = (body) => { const m = /^<a id="russian">/m.exec(body); return m ? m.index : -1; };
 const segmentsOf = (body) => {
-  const i = body.indexOf(RU_ANCHOR);
+  const i = ruAnchorAt(body);
   return i < 0 ? [['', body]] : [[' (EN half)', body.slice(0, i)], [' (RU half)', body.slice(i)]];
 };
 /** Tokens absent from `body`, each labelled with the half it is missing from. */
@@ -176,7 +181,7 @@ const HALF_TOKEN = 'AUTHOR_STYLOMETRY.md';
 function selfProofHalves() {
   const fails = [];
   const readme = readFileSync(join(ROOT, 'README.md'), 'utf8');
-  const i = readme.indexOf(RU_ANCHOR);
+  const i = ruAnchorAt(readme);
   if (i < 0) { fails.push('README потерял якорь половин — ось ослепла по построению'); return fails; }
   if (missingTokens(readme, [HALF_TOKEN]).length) fails.push('чистый README покраснел');
   const en = readme.slice(0, i), ru = readme.slice(i);
@@ -193,6 +198,11 @@ function selfProofHalves() {
     fails.push('одноязычный документ с токеном ложно покраснел');
   if (missingTokens('no anchor here, no token', [HALF_TOKEN]).length !== 1)
     fails.push('одноязычный документ БЕЗ токена не покраснел');
+  // …и третий: документ, который ЦИТИРУЕТ якорь в прозе (обратные кавычки, середина строки), — одноязычный; токен из его
+  // шапки не объявляется потерянным «во второй половине».
+  const quoting = `header carries ${HALF_TOKEN}\nprose: the halves are computed from the anchor \`${RU_ANCHOR}\` — a quote, not a landmark\ntail`;
+  if (missingTokens(quoting, [HALF_TOKEN]).length)
+    fails.push('документ, цитирующий якорь в прозе, ложно разрезан на половины');
   return fails;
 }
 
@@ -667,6 +677,40 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
     ['archaeology ↔ /fable-judge hunts a question asked past its archaeology',
       'framework/skills/fable-judge/SKILL.md',
       ['**Question asked past its archaeology (KAIF 2.7).**']],
+    // EL (2.7, origin issue #69): the class is the unit of recurrence in both layers, the module carries the
+    // deadline and both fates, the closing ritual runs it, the journal template ships the starter class list,
+    // and the judge hunts the repeated class.
+    ['lesson repeat ↔ the shipped module carries the deadline and both fates',
+      'framework/tools/kaif-experience-lint.mjs',
+      ['@guard experience-lesson-repeat', 'name the guard in the entry', 'class-ok: ${k}',
+       'recurrence of a class cannot be counted']],
+    ['lesson repeat ↔ /experience carries the class field (payload)',
+      'framework/skills/experience/SKILL.md',
+      ['class: <slug>', 'the **unit of recurrence**', 'kaif-experience-lint.mjs check']],
+    ['lesson repeat ↔ /experience carries the class field (wrapper)',
+      '.claude/skills/experience/SKILL.md',
+      ['класс: <слаг>', 'единица счёта повтора', 'tools/experience-lint.mjs']],
+    ['lesson repeat ↔ the closing ritual runs the deadline (payload)',
+      'framework/skills/end-chat-soft/SKILL.md',
+      ['node .kaif/tools/kaif-experience-lint.mjs check', 'never by writing a third record']],
+    ['lesson repeat ↔ the closing ritual runs the deadline (wrapper)',
+      '.claude/skills/end-chat-soft/SKILL.md',
+      ['node tools/experience-lint.mjs', 'третья запись судьбой не является']],
+    ['lesson repeat ↔ the journal template ships the class field and the starter list',
+      'framework/EXPERIENCE.md',
+      ['class: <slug from the class list below', '<!-- classes: question-already-answered',
+       'The deadline is RUN, not remembered']],
+    ['lesson repeat ↔ the origin eats its own shipment through a wrapper',
+      'tools/experience-lint.mjs',
+      ['framework/tools/kaif-experience-lint.mjs', '--write-baseline']],
+    ['lesson repeat ↔ the origin journal carries the classes and the declared prices',
+      'EXPERIENCE.md',
+      ['<!-- классы: escaping-layer', '<!-- class-ok: guard-not-proven-against-threat',
+       'Крайний срок ПРОГОНЯЕТСЯ, а не вспоминается']],
+    ['lesson repeat ↔ /fable-judge hunts the class repeated without a mechanism',
+      'framework/skills/fable-judge/SKILL.md',
+      ['**Lesson repeated without a mechanism (KAIF 2.7).**',
+       'lesson-repeated-without-a-mechanism']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to

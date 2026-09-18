@@ -97,7 +97,8 @@
       "A FALSEHOOD IS CORRECTED WHERE IT STANDS, NOT IN THE CHAT (epic SF; origin issue #67 — the project owner's word, rendered from Russian: \"the agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie\", said the moment he caught the live case: an agent closed a ticket with the comment \"the model does not write it, so there is nothing to trim\", learned the real mechanism from him an hour later, agreed IN THE CHAT, wrote the correction into its own notes — and the false comment stayed in the tracker under his name until he came back a second time). The canon demanded observation at a claim's BIRTH (the fifth obligation, issue #63) and nothing at its refutation. Four places, one rule: (1) AGENT_GUIDE (both layers) gains a SIXTH KAIF obligation at the fable loop's steps 4 and 7 — the trigger is an EVENT, not a step: the minute a past statement of yours is identified as false, five steps run BEFORE the work continues — stop the current task · enumerate every place it was published (`git grep -n \"<the phrase>\"` for the repository, the outward channels by the sphere library's command, plus STATUS and the run reports) · correct or retract in EACH (an edit where the artifact is ours, a \"correction: …\" comment where the channel only appends, a deletion where the channel allows one; a channel whose retraction command you do not know is said aloud) · read it back · name it in the reply as `corrected: <where>`; the class has a name, a STANDING FALSEHOOD, and the boundary excludes a draft marked as a hypothesis and an append-only journal entry whose new entry names the one it corrects; (2) /end-chat-soft (both layers) asks for it BY NAME in the farewell report — `Standing falsehood: none` or the statement with the places it was corrected in — and a place that could not be corrected is named with its missing retraction command instead of an answer of \"none\"; (3) /end-chat-force carries the same line as one phrase beside the ceremonies-debt line: force mode may skip a ceremony, never a lie left standing under the owner's name; (4) the sphere libraries gain the slot \"Outward write channels → retraction command\" (`_template.md`, filled in `programming.md` with nine channels: the repository's own files, a pushed commit message, an issue/PR comment of yours and someone else's, an issue/PR body, a published release note, a wiki page, a chat-ops message, the owner's contour page) so step 3 is executable rather than imagined. /fable-judge hunts \"a standing falsehood\".",
       "A FREE SEAT ASKS FOR WORK, AND A GENERATED CONSTITUTION KEEPS EVERY OBLIGATION OF ITS TEMPLATE (epic FR; origin issue #68 — a field seat finished its half of a smoke, committed, reported to its neighbour and to the owner, and stopped, while `STATUS.md` named three tickets \"claimed by nobody\" and a second seat sat idle on the board; the owner ended the idling himself). Two halves of one defect. (1) THE OBLIGATION: \"idle — report to the Manager\" lived as a TRAILING CLAUSE of the rule about blockers, and the rule is inverted relative to its cost — a blocker is felt by the agent, availability only by the dispatcher. The constitution template now carries it as its own § 2 rule 6 with an exit condition: task closed and no next one → ONE message to the Manager before the turn ends, naming what is done, what remains and which candidates you can take, by name from `STATUS.md` or the board (\"I am free, may I take X / Y / Z\"); idling without it is an UNCLOSED task, idling the owner had to end is a defect. The board template says the same from its side: a row set to `🟢 free` carries the request in the SAME write, and the board tool contract gains `--free --asking \"<candidates>\"` (item 7; `audit-waiting` becomes item 8). § 9 puts `TEAM_CONSTITUTION.md` into every seat's RE-READ CORE while more than one role window is open — named in the refresh marker's `docs` at every trigger. (2) THE GATE: the obligation did not survive GENERATION — the field constitution kept 5 of the template's 9 § 2 rules and nothing noticed, because a shorter document looks like editorial tightening rather than loss. `check` now compares a `TEAM_CONSTITUTION.md` in the project root against the template that shipped with the skill (found in the deployed `.claude/.agents/.grok/.cline` skills): obligations are the bold anchors of § 2's numbered items plus the nine invariant `## N.` headings, headings matched by NUMBER (which survives translation) and rules by anchor — and when NOT ONE anchor matches, the document is translated, so the axis says so and counts instead (\"cannot match translated anchors: 10 expected in §2, 5 found\"), printing the template's own order so the loss has something to be restored from. Every loss is named: `⚠ TEAM_CONSTITUTION.md lost N obligation(s) of the template: §2 \"A free seat asks for work.\" …`. A warning, never a failure — the constitution is the owner's document; a deliberate omission is DECLARED beside the item with `<!-- constitution-ok: <why> -->`, and a tree with no constitution or no template is silent. /team-deployment now runs `check` and READS its lines at operation 3 step 1, at the start of the adopt inventory, and in \"Done when\".",
       "A LIVE OWNER PAGE IS CLOSED ONLY BY A CHECKED COMMAND, THE ANSWER SURVIVES THE SERVER, AND A TEST PAGE NEVER CALLS THE OWNER (epic LP; origin issue #66 — the project owner's word, rendered from Russian: \"the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT\": a neighbour session said \"close that page\" and an agent killed the process; and the origin owner's word on interview 032: \"no choice, no 'save as' — everything works for the user as it did! JS itself writes the file to the computer, into the project folder\"). Three changes of the shipped generator .kaif/tools/contour/. (1) `<doc> --close` is the ONLY way to end a live page from outside: it reads the lock — port · pid · title · the page's last input · draft state (the pulse `/alive?i=&d=&s=` carries them, and the first keystroke after a pause pulses within a second) — prints them so the agent can compare with the window it was told about, and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, `contour.closeQuietMs`), while the page itself is younger than it (the owner may be reading), or while a draft is unsaved; otherwise it asks the page's OWN server to end (a token from the lock — a pid read from a file is never killed without `--force`, and the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word \"<quote>\"` and logs the quote. /owner-reviews I46, spec §5, AGENT_GUIDE \"Showing is an action\" in both layers. (2) The app window runs on its OWN browser profile inside the project — `.kaif/contour-window/`, added to .gitignore by the machinery (ignore-first), with the three sign-in-off flags and an `account_info` check after launch — so the draft is on the owner's disk IN THE PROJECT; Save with the server gone stores the answer there — IndexedDB first, measured on disk half a second after the write even when the browser is then killed (`localStorage` needs about six and keeps only a copy and the typed draft) — and the page says \"saved on this computer, the agent will pick it up\" — no dialog, no rescue ring; the next `--queue --list`, `--check` or show picks it up: a headless run of the same profile on the same port posts it back (deferred while a browser still holds the profile — the owner's window is open), it is recorded as the owner's decision with `recovered: true` (the provenance comment in the md says \"picked up from the owner's computer\"), the lock is released; an unsaved draft is named and kept. Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified. /owner-reviews I47, spec §3/§4. (3) An unknown flag REFUSES before any page, sound or call (exit 1, the core's bug-33 rule; the 2.6 generator let `--close` fall through to the show and CALLED the owner) — spec §2; and at the origin the polygon refuses to run against a STALE dist (a fingerprint of framework/** in kaif-manifest.json `sourceTree`). /fable-judge hunts a page closed past its command and an answer left on the owner's machine.",
-      "A QUESTION TO THE OWNER IS ASKED AFTER THE ARCHAEOLOGY, NOT BEFORE IT (epic AQ; origin issue #70 — an audited field deployment brought one owner 13 questions that his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: \"you are asking ME? did you look into GOAL.md, smart guy, before asking?\" · \"you ask me questions without having looked at the history of decisions... we have discussed this already. Search.\"). A question to the owner is a CLAIM that the matter is not settled yet, and nothing verified it: the rule \"do not ask what is already decided\" stood twice in `/interview` as PROSE with no command, the form door (`--check`, 2.7 QL1) judged only the FORM of a question, and not one interview of five deployments on the author's disk carried a trace of a search (223 documents, measured 2026-09-18). Now the same door has a SECOND axis. A LIVE question of a document whose header date is on or after 2026-09-18 opens only WITH the attestation of the search that was actually run, standing between the heading and its FIRST option: `<!-- archaeology: grep -rniE \"<the heading's words>\" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | \"<the prior answer>\" + address> -->`. Without it the pre-flight refuses with exit 3 and PRINTS the ready command built from the question's own heading (words of 4+ letters, 6+ searched by their stem, function words dropped) — so the fix is a copy-paste, not a lookup. `N > 0` with `prior: none` is refused too (the search FOUND and the prior answer is not named; legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation: the axis promises the agent SEARCHED and said with what, never that it found. Exempt: answered questions, documents with no questions, the declared `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class), and EVERY document dated before that day — the axis judges FORWARD, so the field's old interviews never turn red, and `--check` says which of the two it did (`archaeology: N of M live questions attested` / `archaeology: not judged — header date ... is before ...`). The header date is read from the `Created` line when the head has one, so an ANSWER date standing above it never ages an old document forward. `/interview` step 3d carries the five steps for the agent's hand (run the printed command · READ the hits, not the count · write the attestation · a prior answer found → drop the question and carry the decision over with `--mark-implemented`, or reformulate it as \"the prior answer was X; Y has changed\" · the door refuses what skipped this), and the judge hunts a question asked past its archaeology."
+      "A QUESTION TO THE OWNER IS ASKED AFTER THE ARCHAEOLOGY, NOT BEFORE IT (epic AQ; origin issue #70 — an audited field deployment brought one owner 13 questions that his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: \"you are asking ME? did you look into GOAL.md, smart guy, before asking?\" · \"you ask me questions without having looked at the history of decisions... we have discussed this already. Search.\"). A question to the owner is a CLAIM that the matter is not settled yet, and nothing verified it: the rule \"do not ask what is already decided\" stood twice in `/interview` as PROSE with no command, the form door (`--check`, 2.7 QL1) judged only the FORM of a question, and not one interview of five deployments on the author's disk carried a trace of a search (223 documents, measured 2026-09-18). Now the same door has a SECOND axis. A LIVE question of a document whose header date is on or after 2026-09-18 opens only WITH the attestation of the search that was actually run, standing between the heading and its FIRST option: `<!-- archaeology: grep -rniE \"<the heading's words>\" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | \"<the prior answer>\" + address> -->`. Without it the pre-flight refuses with exit 3 and PRINTS the ready command built from the question's own heading (words of 4+ letters, 6+ searched by their stem, function words dropped) — so the fix is a copy-paste, not a lookup. `N > 0` with `prior: none` is refused too (the search FOUND and the prior answer is not named; legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation: the axis promises the agent SEARCHED and said with what, never that it found. Exempt: answered questions, documents with no questions, the declared `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class), and EVERY document dated before that day — the axis judges FORWARD, so the field's old interviews never turn red, and `--check` says which of the two it did (`archaeology: N of M live questions attested` / `archaeology: not judged — header date ... is before ...`). The header date is read from the `Created` line when the head has one, so an ANSWER date standing above it never ages an old document forward. `/interview` step 3d carries the five steps for the agent's hand (run the printed command · READ the hits, not the count · write the attestation · a prior answer found → drop the question and carry the decision over with `--mark-implemented`, or reformulate it as \"the prior answer was X; Y has changed\" · the door refuses what skipped this), and the judge hunts a question asked past its archaeology.",
+      "A LESSON REPEATED TWICE GOES RED, AND THE CLASS IS THE UNIT OF COUNT (epic EL; origin issue #69 — an audit of one field project's whole experience journal: \"7 of 120 failure entries mechanized (5.8 %), 14 of 15 failure classes recurred AFTER their lesson was written, 4 AFTER a guard was built, five lessons written 6–17 times in different words\"; a recurrence of closed #14, whose fix landed as prose plus one origin-only tool). The rule \"two strikes → a mechanism, never a third reminder\" had a carrier for ONE entry — the Mechanization field — and none for the RECURRENCE: tags are free and overlap, so \"the same class\" was visible only to a human who read the journal end to end. (1) THE UNIT: an entry now carries `class: <slug>` on its own line under the heading (`/experience` step 2 and the EXPERIENCE.md template, which also ships a STARTER class list — the classes that audit had already measured — as a controlled, open list: a new class is added to the list in the same write). (2) THE DEADLINE AS A COMMAND: NEW optional tool module .kaif/tools/kaif-experience-lint.mjs (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`; rules as data, keywords per language, ids not assumed numeric) reddens on the SECOND failure entry (`❌` / `❌→✅`) of one class with no `mechanized:` and names the class and BOTH entries by id; it warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and for a journal outside a project tree addresses are not checked at all — said aloud) and when a slug is outside the header list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · full text: git log -p -S \"<id>\"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and \"not judged\" never reads as \"clean\". (3) THE TWO FATES, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->`, an empty declaration being itself a finding and every declared class printed on the summary line (that list only shrinks). A second `none-cheap:` inside one class is therefore not an answer. The command belongs in the closing ritual: /end-chat-soft now runs it in both layers. /fable-judge hunts \"lesson repeated without a mechanism\"."
     ],
     "2.6": [
       "THE VOICE OF THE CONVERSATION IS THE CUSTOMER'S LANGUAGE (epic VB; the origin's bug 112, owner decision #106 — four rejections of one class in a month: \"your codes mean nothing to me; I am the customer and I reason in meanings and behavioural scenarios\"): the scenario form alone does not protect — an epic code typed into the Action line keeps the form green. /interview step 3a and AGENT_GUIDE (both layers) now say: in option labels and in the Situation · Action · Result lines every named thing is what the owner will SEE or GET after it; epic codes, plan and bug addresses, tool names, flags and canon terms live only in the Check line, the answer-target line and a technical note under the scenario; the pre-show check is the customer's eye. /fable-judge hunts owner-text-in-agent-vocabulary; the origin guards the class mechanically (questions-guard axis G8, epic codes read from the meta-plan tables as data).",
@@ -285,6 +286,7 @@
     ".kaif/tools/contour/texts.mjs": "framework/tools/contour/texts.mjs",
     ".kaif/tools/kaif-attribution-lint.mjs": "framework/tools/kaif-attribution-lint.mjs",
     ".kaif/tools/kaif-canon-lint.mjs": "framework/tools/kaif-canon-lint.mjs",
+    ".kaif/tools/kaif-experience-lint.mjs": "framework/tools/kaif-experience-lint.mjs",
     ".kaif/tools/kaif-guard-lint.mjs": "framework/tools/kaif-guard-lint.mjs",
     ".kaif/tools/kaif-provenance.mjs": "framework/tools/kaif-provenance.mjs",
     ".kaif/tools/kaif-ranking-lint.mjs": "framework/tools/kaif-ranking-lint.mjs",
@@ -2745,6 +2747,7 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 >
 > ```
 > ### EXP-0001 · 2026-01-01 · ✅ · #tag #area
+> class: <slug from the class list below — the UNIT OF RECURRENCE>
 > **Context:** one line — what was being done.
 > **Tried / did:** the approach, briefly.
 > **Result:** ✅/❌ — what happened.
@@ -2764,6 +2767,44 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 > after its entry was recorded, the journal has proven insufficient — the lesson MUST become
 > executable (a linter rule, a guard, a gate), and the entry gains the line
 > `mechanized: <the tool>`. Two strikes → a mechanism, never a third reminder.
+>
+> **The deadline is RUN, not remembered** (2.7, epic EL; origin issue #69 — a field audit of one
+> project's journal: 14 of 15 failure classes recurred AFTER their lesson was written, five lessons
+> written 6–17 times in different words, 5.8 % mechanized): `node .kaif/tools/kaif-experience-lint.mjs
+> check` reads the `class:` field as the UNIT of recurrence and reddens on the SECOND failure entry of
+> one class with no `mechanized:`, naming the class and both entries by id. Two fates clear it, both
+> WRITTEN: name the guard in the entry (`mechanized: <the tool>`), or re-check the price once for the
+> WHOLE class and declare it — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty
+> declaration is itself a finding; the declared classes are printed on the summary line and that list
+> only shrinks). A third record is never a fate. It also warns when
+> `mechanized:` names a command this project does not contain, and when a slug is outside the list
+> below; `--shrink EXP-NNNN` collapses a MECHANIZED entry to one line pointing at its guard (shows by
+> default, `--yes` writes — the text itself stays in the git history). The command belongs in the
+> closing ritual (`/end-chat-soft`).
+>
+> **The class list of this journal** — a CONTROLLED list, not a closed one: pick a slug from it, and
+> when a lesson genuinely brings a new class, add the slug here in the same write (the linter warns
+> about an unlisted slug, it never refuses). The starter list below is what a field audit had already
+> measured (origin issue #69) — replace and grow it with your project's own classes.
+>
+> <!-- classes: question-already-answered, guard-not-proven-against-threat, shown-as-link,
+>      claim-before-evidence, owner-decision-not-applied, text-in-agents-world,
+>      etalon-from-dirty-tree, shell-lied, escaping-layer, twins-missed,
+>      field-dropped-in-rebuild -->
+>
+> | Class slug | The failure it names |
+> |---|---|
+> | `question-already-answered` | the owner is asked what his own past word, the goal doc or a run already decided |
+> | `guard-not-proven-against-threat` | a guard shipped without being seen red on the threat it claims to stop |
+> | `shown-as-link` | showing replaced by a link or a path instead of the thing itself |
+> | `claim-before-evidence` | a claim written wider than the observation behind it |
+> | `owner-decision-not-applied` | a decision the owner gave is recorded and not carried into the artifact |
+> | `text-in-agents-world` | text written for the agent's own world instead of the owner's |
+> | `etalon-from-dirty-tree` | a reference/etalon captured from a tree that was not clean |
+> | `shell-lied` | the shell or the tool swallowed/rewrote what was passed to it |
+> | `escaping-layer` | one escaping level lost between the tool and the file |
+> | `twins-missed` | one of two layers/copies moved and the twin stayed behind |
+> | `field-dropped-in-rebuild` | a field or section silently lost when an artifact was regenerated |
 >
 > The `#tags` are **trigger-tags**: before a task, grep by the task's tags and QUOTE the relevant
 > lessons in your report (id + one line) — or state "no relevant lessons". An unquoted recall is
@@ -3595,6 +3636,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
+| `kaif-experience-lint.mjs` | The recurrence deadline of `EXPERIENCE.md` — "Two strikes → a mechanism, never a third reminder" (2.7, epic EL; origin issue #69 — a field audit of one project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, five lessons written 6–17 times in different words) as an advisory linter (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`): the field `class: <slug>` on its own line under the entry heading is the UNIT of recurrence, and the SECOND failure entry (`❌` or `❌→✅`) of one class with no `mechanized:` is a finding that names the class and BOTH entries by id. Two fates clear it, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty declaration is itself a finding; declared classes are printed on the summary line and that list only shrinks). It also carries the field rules of the origin's own guard (exactly one of `mechanized:` / `none-cheap: <why>` / `subject-lesson`; a trap by form may not answer `subject-lesson`) against an inherited-debt baseline the caller passes, warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and addresses are not checked at all for a journal outside a project tree — said aloud) and when a slug is outside the journal's class list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · repro … · full text: git log -p -S "<id>"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and "not judged" never reads as "clean". Keywords are a per-language table; ids are not assumed numeric (a field journal writes `EXP-NEW-<slug>`). |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
@@ -4721,7 +4763,12 @@ Update `STATUS.md`:
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson
 emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the handover is
-passed. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
+passed — and then run `node .kaif/tools/kaif-experience-lint.mjs check`: a SECOND failure entry of one
+`class:` with no `mechanized:` is red and names the class and both entries by id (2.7, epic EL; origin
+issue #69 — 14 of 15 failure classes recurred AFTER their lesson was written). Fix it before the
+handover by naming the guard in the entry, or by re-checking the price once for the whole class and
+declaring it (`<!-- class-ok: <slug> — <why> -->`) — never by writing a third record; a journal with not
+one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
 If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing
@@ -4825,6 +4872,7 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
 2. **Write one entry** at the **top** of the `## Entries` section, in the canonical format:
    ```
    ### EXP-NNNN · <ISO date> · <✅|❌|❌→✅> · #tag #area
+   class: <slug>
    **Context:** one line.
    **Tried / did:** briefly.
    **Result:** ✅/❌ — what happened.
@@ -4844,6 +4892,12 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
      `none-cheap: <why>`.
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
+   - `class: <slug>` is the **unit of recurrence** — REQUIRED on its own line, right under the heading:
+     tags are free and overlap, so "the same class" was visible only to a human who read the whole
+     journal (origin issue #69: 14 of 15 failure classes recurred AFTER their lesson was written, five
+     lessons written 6–17 times in different words). Take the slug from the CLASS LIST in the journal's
+     header (`<!-- classes: … -->` or the "Lesson classes" section); a genuinely new class is legal —
+     add its slug to that list in the SAME write. Lowercase latin, digits, dashes.
    - Pick 1–3 short `#tags` **inline on the entry** (there is no central tag cloud) — reuse an existing tag
      where one fits (grep the file to see what's in use), so `grep '#tag'` collects related experiences.
    - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
@@ -4853,6 +4907,17 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    the entry's Mechanization field flips to `mechanized: <the tool>`. Two strikes → a mechanism, never
    a third reminder — that deadline stands; step 0 asks the question at the FIRST capture so the
    second burn stops being the price of asking.
+5. **Run the deadline, don't remember it:** `node .kaif/tools/kaif-experience-lint.mjs check` — a SECOND
+   failure entry of one `class:` with no `mechanized:` is a finding naming the class and both entries by
+   id. Two fates clear it, both WRITTEN: name the guard in the entry (`mechanized: <the tool>`), or
+   re-check the price once for the whole class and declare it —
+   `<!-- class-ok: <slug> — <why mechanizing it is not cheaply possible> -->` in the journal (an empty
+   declaration is itself a finding, and the declared classes are printed on the summary line: that list
+   only shrinks). A third record is never a fate;
+   it also warns when `mechanized:` names a command the project does not contain and when a slug is
+   outside the header's list. `--shrink EXP-NNNN` collapses a MECHANIZED entry to one line pointing at
+   its guard (shows by default; `--yes` writes — the text itself stays in the git history). A journal with
+   not one `class:` exits 3 = SKIPPED, said aloud: "not judged" is never "clean".
 
 ## Mode B — RECALL lessons ("recount your experience")
 
@@ -4982,7 +5047,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5038,6 +5103,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Idle seat ended by the owner (KAIF 2.7).** In a deployed TEAM (more than one role window open), a seat that closed its task — committed, reported, and has no next assignment — and ended its turn WITHOUT one message to the Manager naming *what is done · what remains · which candidates it can take, by name from `STATUS.md` or the board* ("I am free, may I take X / Y / Z"), or whose board row went `🟢 free` carrying no request, is a finding: the constitution makes the announcement an obligation with an exit condition, not a courtesy, and an idle the OWNER had to end is the defect itself (`TEAM_CONSTITUTION.md` § 2 rule 6 and § 4; origin issue #68 — a field seat finished its half of a smoke, reported, and stopped while `STATUS.md` listed three tickets "claimed by nobody" and a second seat sat idle; the owner's word ended it). The failure state is silent and looks correct — a finished, committed, reported seat is indistinguishable from a working one, to itself — so hunt it in the RECORD, not in the mood: an owner's message of the "why are you idle / take a task" family with no free-announcement before it; a report that ends at "done" with no candidates named; a board row `free` with an empty request cell; a seat whose last outgoing message predates the owner's by more than one turn. Re-run: read the board and the seat's outgoing messages in order — the announcement either precedes the owner's word or it does not exist. A single session in the main copy is NOT in scope: the constitution binds only while more than one role window is open.
    - **Team seat refreshed without the constitution (KAIF 2.7).** In team mode, a refresh witness — `.kaif/refresh-marker.json` written at any trigger (hour · heavy task · compaction · ritual) — whose `docs` does not name `TEAM_CONSTITUTION.md`, or a re-read claimed in chat that quotes only the project's own core, is a finding: a document read once at launch and never again governs nothing, and the rules of PARALLEL work are exactly the ones a seat loses first (`TEAM_CONSTITUTION.md` § 9; origin issue #68 — a seat re-read the core hourly under a marker with a quote and never once re-read the document that governs parallel work). Hunt also: a briefing that says "read the constitution in full" with no refresh trigger naming it afterwards; a generated constitution whose obligations `node .kaif/kaif-core.mjs check` names as lost while the seat reports the canon refreshed. Re-run: `node -e "console.log(require('./.kaif/refresh-marker.json').docs.join('\n'))"` and `node .kaif/kaif-core.mjs check`; a deployment with no `TEAM_CONSTITUTION.md` is not a finding — the hunt is silent outside team mode.
    - **Live page closed past its command (KAIF 2.7).** An owner-facing contour page ended from OUTSIDE by anything other than `node .kaif/tools/contour/review.mjs <doc> --close` — a killed process (`kill`, `taskkill`, `pkill`, a port sweep), a "stale, I closed it" in the report, a restart "to be safe" — or closed with `--force` whose `--owner-word` is not the owner's verbatim words from the chat, is a finding: the command reads the lock (port · pid · title · the page's last input · draft state) and refuses while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — a neighbour session's word is never evidence (`/owner-reviews` I46; `.kaif/INTERACTIVE_CONTOUR_SPEC.md` § 5; origin issue #66 — the project owner's word, rendered from Russian: "the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT"). Hunt also: an answer LEFT on the owner's machine — a stale `<decisionsDir>/*.lock` beside an existing `.kaif/contour-window/` profile at the end of a session that never ran `--queue --list`, `--check` or a show afterwards (the recovery runs there, I47), or a report that says "the owner did not answer" while the log carries `answer recovered from the owner's machine` or `draft found on the owner's machine`; a contour tool run from a sandbox or a probe with a flag the generator does not know that still raised a page (2.6 behaviour — the polygon's quiet child and the unknown-flag refusal both exist to make it impossible). Re-run: `ls <decisionsDir>/*.lock` and `node .kaif/tools/contour/review.mjs --queue --list` — a recovery line or a kept lock is the record; the session transcript for `kill`/`taskkill` beside a contour pid is the finding.
+   - **Lesson repeated without a mechanism (KAIF 2.7).** A journal entry about a FAILURE (`❌` or `❌→✅`) whose `class:` slug already carries another failure entry with no `mechanized:` — a second, a sixth, a seventeenth record of one class — is a finding of the skipped-deadline class: the journal has become the default sink and "two strikes → a mechanism, never a third reminder" was answered with more prose (`EXPERIENCE.md` header and `/experience` step 0; origin issue #69 — an audit of one field project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, 4 after a guard was built, five lessons written 6–17 times in different words; a recurrence of closed #14, whose fix landed as prose and one origin-only tool). Two fates are legal and both are WRITTEN: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the class list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->`; a second `none-cheap:` inside one class is not a fate, and a declaration with no reason in words is itself the finding. Hunt also: an entry with no `class:` at all (recurrence cannot be counted for it, and a missing field reads as a clean journal); a `mechanized:` naming a command, script or path the project does not contain (a mechanization nobody can run is a claim — an ignored runtime path is not one); a class list that grew a synonym slug for a class that already exists (the same class in two words is the audit's "six to seventeen times" in machine form); a session close that reports the journal captured while the deadline command was never run. Re-run: `node .kaif/tools/kaif-experience-lint.mjs check` — the `repeat` line names the class and BOTH entries by id; `exit 3` (`SKIPPED`) means not one entry carries the field, which is a finding about the journal, never a green.
    - **Question asked past its archaeology (KAIF 2.7).** A live question brought to the owner — a page raised, a document queued, a question asked pointedly in the chat — in a document dated on or after `2026-09-18` whose body carries no archaeology attestation between the question heading and its first option (`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | "<the prior answer>" + address> -->`), or whose attestation says `N > 0` with `prior: none`, or whose `read:` names no file while `N > 0`, is a finding: a question to the owner is a CLAIM that the matter is not settled yet, and the claim was delivered unverified (`AGENT_GUIDE.md` → the place of questions; `/interview` step 3d; origin issue #70 — an audited field deployment brought one owner 13 questions his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: "you are asking ME? did you look into GOAL.md, smart guy, before asking?" · "we have discussed this already. Search."). Hunt also: an attestation whose command was never run (no `N`, no `read:`, the form left as the template's placeholders); a found prior answer named in `prior:` while the question was still shown unchanged — the legal moves are dropping it and carrying the decision over (`--mark-implemented`) or reformulating it as "the prior answer was X; Y has changed"; a `n/a — <reason>` exception on a question that plainly has something to search for. Re-run: `node .kaif/tools/contour/review.mjs <doc> --check` (exit 3 names every unattested question and PRINTS the command), and where the deployment guards its questions, its own axis (the origin: `node tools/questions-guard.mjs`, G11). `N = 0` is NOT a finding — the axis promises the search happened, never that it found; a document dated before that day is never judged.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
@@ -13000,6 +13066,544 @@ function cmdSelftest() {
 }
 
 ({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => die(`unknown command: ${CMD} (check | selftest)`)))();
+``````
+
+> **FILE: `.kaif/tools/kaif-experience-lint.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// kaif-experience-lint.mjs — the OPTIONAL experience-journal linter (2.7, epic EL; EXPERIENCE.md
+// header → "Two strikes → a mechanism, never a third reminder"; /experience step 0; origin issue
+// #69 — a field audit of one project's whole journal: "7 of 120 failure entries mechanized (5.8 %),
+// 14 of 15 failure classes recurred AFTER their lesson was written, 4 AFTER a guard was built, five
+// lessons written 6–17 times in different words"). Deployed to .kaif/tools/.
+//
+// What it mechanizes: the journal's own deadline. The rule existed as PROSE plus one field on one
+// entry, and nobody counted the RECURRENCE — tags are free, and "the same class" was visible only
+// to a human who read the journal end to end (which is how the audit found it). This linter makes
+// the class a UNIT: every entry carries `class: <slug>`, and the SECOND failure entry of one class
+// with no `mechanized:` is a finding that names the class and both entries by id — the repair is to
+// name the guard, never to write a third record.
+//
+// What it does NOT do, said aloud: it cannot tell a good class from a bad one — a wrong slug gives a
+// false GREEN (two entries land in different classes), never a false red, so the marking may be
+// imperfect and the axis stays honest; it does not judge whether a named guard actually prevents the
+// class (that is the judge's re-run and the guard's own @guard block); and it never rewrites the
+// journal by itself — `--shrink` shows, and writes only with `--yes`.
+//
+// Boundaries, so the linter never becomes bureaucracy:
+//   · field keywords are a per-language table (like kaif-testrun-lint); a project adds a row;
+//   · rules are DATA (one engine + rules-as-data): a new rule is a table row, not a new script;
+//   · ADVISORY: exit 1 = findings, exit 0 = judged and clean, exit 3 = SKIPPED (not one `class:` in
+//     the journal — "not judged" must never read as "clean");
+//   · the class list in the journal's header (`<!-- classes: a, b, c -->` or a "Lesson classes"
+//     section) is a CONTROLLED list, not a closed one: a slug outside it is a WARNING, never a
+//     refusal — a new class is exactly what a new lesson brings;
+//   · inherited field debt lives in a baseline the caller passes (`--baseline <file>`; the origin's
+//     wrapper owns its own) and ONLY SHRINKS — an always-red guard teaches itself to be ignored.
+//     The baseline covers the FIELD rules it was captured for; it never silences a repeated class,
+//     because a pair of entries is exactly what has to get a fate;
+//   · that fate is one of two, and both are WRITTEN: name the guard in the entry
+//     (`mechanized: <the tool>`), or re-check the price ONCE FOR THE WHOLE CLASS and declare it —
+//     `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` in the journal. The declaration
+//     is a decision with a reason in words, not a mute switch: an empty one is itself a finding, and
+//     every declared class is printed on the summary line (that list, too, only shrinks). A second
+//     `none-cheap:` inside one class is therefore not an answer — twice "not cheaply possible" is
+//     exactly the moment to re-check the price and say the result out loud.
+//
+// Commands:
+//   node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>]   # default: EXPERIENCE.md
+//   node .kaif/tools/kaif-experience-lint.mjs --shrink EXP-NNNN [journal] [--yes]   # show; --yes writes
+//   node .kaif/tools/kaif-experience-lint.mjs selftest                              # PROVE every rule (EN + RU)
+//
+// @guard experience-lesson-repeat
+// THREAT:         the same failure class is written a second (and a sixth, and a seventeenth) time
+//                 instead of being mechanized — the journal becomes the default sink and the
+//                 deadline "two strikes" has no carrier (origin issue #69; recurrence of #14)
+// PROVED-AGAINST: the selftest below — a journal with two failure entries of one class and no
+//                 `mechanized:` reddens with `repeat` naming the class and BOTH ids, in both
+//                 shipped languages; one mechanized entry of the pair silences it; a journal with
+//                 no `class:` at all exits 3 (SKIPPED), never 0; sandbox suite s28 runs the
+//                 deployed copy, and the red is proven on the 2.6 core via the KAIF_DIST seam
+//                 (the module does not exist there) and on mutants of the repeat axis itself
+// GAP:            a WRONG slug splits a real pair into two classes — a false green, invisible to
+//                 this axis (the marking is a human judgement; the linter only counts); an entry
+//                 whose marker is a bare success is out of scope by construction; `dangling` reads
+//                 the value as text, so a guard named in prose ("the check axis of the core") is
+//                 neither confirmed nor denied; the journal of a project that keeps its lessons
+//                 outside EXPERIENCE.md is invisible to it
+// ON-REAL-PATH:   2026-09-18 — run over the origin's own 136-entry journal after its classes were
+//                 marked, and over copies of two field journals (testcases/reports/2026-09-18_experience-lint.md)
+// [TESTED: 2026-09-18 · selftest 68 cases green (7 rules x 2 languages, mutation N reddens rule N only);
+//  suite s28 "all 30 checks green", red proven on the 2.6 core via KAIF_DIST ("10 of 30 check(s) failed")
+//  and on six mutants of the axis (0 invisible, each reddening its own named assert);
+//  FUNCTIONAL RUN on real state: the origin's own live journal after its 136 entries were marked —
+//  14 repeated classes and one field named, every one given a fate, the re-run green (0 findings,
+//  14 classes with a declared price); copies of two field journals — 328 entries with no class field
+//  => SKIPPED (exit 3), 168 entries with two => 169 findings and 120 failure entries invisible to the
+//  deadline, output read line by line; four defects of this module were found by those runs, not by
+//  reasoning (a numeric-only id skipped 13 of 328 entries; an ignored runtime path read as a dangling
+//  guard; guard addresses "missing" for a journal outside its tree; a declaration whose reason carried
+//  `<...>` dropped silently) — report: testcases/reports/2026-09-18_experience-lint.md]
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+
+const argv = process.argv.slice(2);
+const EXIT_SKIPPED = 3;
+const DEFAULT_JOURNAL = 'EXPERIENCE.md';
+
+// ---------------------------------------------------------------------------
+// The fields per language. A project whose owner writes in another language adds a row; the engine
+// does not change. `\uXXXX` escapes, not letters: the payload of this framework carries no Cyrillic
+// (a build invariant), and an escape is exactly as readable to the engine (paid-for lesson EXP-0135).
+export const KEYWORDS = {
+  en: { klass: 'class', mechanized: 'mechanized', noneCheap: 'none-cheap', subject: 'subject-lesson',
+        classes: 'classes', classList: 'Lesson classes' },
+  ru: { klass: '\u043A\u043B\u0430\u0441\u0441', mechanized: '\u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043E',
+        noneCheap: '\u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438 \u043D\u0435\u0442',
+        subject: '\u0443\u0440\u043E\u043A \u043E \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0435',
+        classes: '\u043A\u043B\u0430\u0441\u0441\u044B', classList: '\u041A\u043B\u0430\u0441\u0441\u044B \u0443\u0440\u043E\u043A\u043E\u0432' },
+};
+const alt = (pick) => Object.values(KEYWORDS).map(pick).join('|');
+
+// The outcome markers of an entry heading: ❌ (U+274C) alone or ❌→✅ is a FAILURE entry — the only
+// kind the recurrence deadline speaks about; a bare ✅ (U+2705) is a success and out of scope.
+const FAILURE_MARK = /\u274C/;
+// The `class:` line: its own line (an optional list bullet and optional bold), never mid-sentence —
+// prose like "the owner named the class: the environment dossier…" is not a field (observed in a
+// field journal). The value is a SLUG; anything else is said aloud, not silently grouped.
+const CLASS_LINE = new RegExp(`^[ \\t]*(?:[-*+][ \\t]+)?(?:\\*\\*)?(?:${alt((k) => k.klass)})(?:\\*\\*)?[ \\t]*:[ \\t]*(?:\\*\\*)?([^\\n]*)$`, 'im');
+const SLUG = /^[a-z0-9][a-z0-9-]*$/;
+// No `\b`: a word boundary in JavaScript is blind to non-ASCII letters (paid-for lesson EXP-0082).
+const FIELD_MECH = new RegExp(`(${alt((k) => k.mechanized)})\\s*:`, 'i');
+const FIELD_NONE = new RegExp(`(${alt((k) => k.noneCheap)})\\s*:`, 'i');
+const FIELD_SUBJ = new RegExp(`(${alt((k) => k.subject)})`, 'i');
+// I4 — a TRAP BY FORM: an entry whose text reduces to an order of actions ("first A, then B",
+// "don't forget X") may not answer `subject-lesson`; it carries mechanized/none-cheap.
+const TRAP_FORM = new RegExp('(\u0441\u043D\u0430\u0447\u0430\u043B\u0430 [^\\n]{0,60}(?:\u043F\u043E\u0442\u043E\u043C|\u0437\u0430\u0442\u0435\u043C)' +
+  '|\u043D\u0435 \u0437\u0430\u0431\u0443\u0434\u044C|\u043F\u0435\u0440\u0435\u0434 \u0442\u0435\u043C \u043A\u0430\u043A' +
+  '|\u0432\u0441\u0435\u0433\u0434\u0430 [^\\n]{0,40}\u043F\u0435\u0440\u0435\u0434' +
+  "|first [^\\n]{0,60}then|don'?t forget|before running)", 'i');
+// The value of `mechanized:` up to the next field separator — what `dangling` reads as text.
+const MECH_VALUE = new RegExp(`(?:${alt((k) => k.mechanized)})\\s*:\\s*([^\\n]*)`, 'i');
+// The class list of the journal header: a machine comment or a section that lists slugs.
+const CLASSES_COMMENT = new RegExp(`<!--\\s*(?:${alt((k) => k.classes)})\\s*:([\\s\\S]*?)-->`, 'i');
+const CLASSES_SECTION = new RegExp(`^#{1,4}[^\\n]*(?:${alt((k) => k.classList)})[^\\n]*$([\\s\\S]*?)(?=^#{1,4} |\\Z)`, 'im');
+// The DECLARED exemption, per class: `<!-- class-ok: <slug> — <why> -->` says the price of mechanizing
+// this class was re-checked and named, so the axis stays silent about it (the precedent of every
+// KAIF axis: the owner's tree never fails on the owner's own declared decision). A declaration with
+// no reason declares nothing and is said aloud — "two strikes" answered by an empty comment is the
+// loophole this whole epic exists to close.
+// The reason is read up to the comment's own terminator (`[\s\S]*?-->`, never `[^>]*`): a reason that
+// quotes a placeholder or a template — `consulted <own reasoning>` — carries `>` inside it, and a
+// character class would end the match early and drop the declaration silently (found on the origin's
+// own journal: 13 of 14 declarations parsed, the fourteenth was the one with `<…>` in its text).
+const CLASS_OK = /<!--\s*class-ok\s*:\s*([a-z0-9][a-z0-9-]*)\s*(?:--+|[—–:])?\s*([\s\S]*?)-->/gi;
+const NPM_RUN = /npm run ([\w:-]+)/g;
+const PATH_TOKEN = /(?:^|[\s`(])((?:\.kaif\/|tools\/|scripts\/|bin\/|framework\/)[\w./-]+\.\w{1,5})/g;
+
+// ---------------------------------------------------------------------------
+// Parsing — entries open with `### EXP-NNNN …` (the id is the heading's first token). The id is NOT
+// assumed numeric: a field journal writes `### EXP-NEW-<slug> · …` for entries captured before their
+// number was assigned, and a parser that demanded digits skipped 13 of 328 entries SILENTLY — a false
+// green, found by running this module over a copy of that real journal (the EXP-0133 class: a fixture
+// written by its author does not carry the forms other agents write).
+export function parseEntries(text) {
+  const out = [];
+  const re = /^### +([A-Z]{2,6}-[A-Za-z0-9][\w-]*)([^\n]*)\n/gm;
+  let m, prev = null;
+  while ((m = re.exec(text))) {
+    if (prev) out.push({ ...prev, body: text.slice(prev.end, m.index) });
+    prev = { id: m[1], heading: m[2], line: text.slice(0, m.index).split('\n').length, end: re.lastIndex };
+  }
+  if (prev) out.push({ ...prev, body: text.slice(prev.end) });
+  return out.map((e) => {
+    const cm = CLASS_LINE.exec(e.body);
+    const raw = cm ? cm[1].trim().split(/[\s\u00B7|]+/)[0].replace(/\*+$/, '') : null;
+    return {
+      ...e,
+      failure: FAILURE_MARK.test(e.heading),
+      rawClass: raw,
+      klass: raw && SLUG.test(raw) ? raw : null,
+      mech: FIELD_MECH.test(e.body),
+      none: FIELD_NONE.test(e.body),
+      subj: FIELD_SUBJ.test(e.body),
+      trap: TRAP_FORM.test(e.body),
+      mechValue: (MECH_VALUE.exec(e.body) || [null, ''])[1].trim(),
+    };
+  });
+}
+
+/** The controlled list of class slugs declared in the journal's header (null = the journal has none). */
+export function classList(text) {
+  const src = (CLASSES_COMMENT.exec(text) || CLASSES_SECTION.exec(text) || [])[1];
+  if (!src) return null;
+  const slugs = (src.match(/[a-z][a-z0-9-]{2,}/g) || []).filter((s) => SLUG.test(s));
+  return slugs.length ? [...new Set(slugs)] : null;
+}
+
+/** The classes whose price was re-checked and DECLARED in the journal → { declared: Map, empty: [slug…] }. */
+export function declaredClasses(text) {
+  const declared = new Map(), empty = [];
+  for (const m of text.matchAll(CLASS_OK)) {
+    const why = m[2].trim().replace(/^[—–-]+\s*/, '');
+    if (why) declared.set(m[1], why); else empty.push(m[1]);
+  }
+  return { declared, empty };
+}
+
+/** Guards named in `mechanized:` that the project does not contain (read as TEXT — see GAP).
+ *  `tree` is the project as two questions — does this path exist, is it deliberately ignored — so the
+ *  selftest can hand over a SYNTHETIC tree and prove the rule without depending on the checkout it
+ *  happens to run inside (s28: the deployed copy failed ten selftest cases when the rule read the disk). */
+function danglingOf(value, root, tree) {
+  const missing = [];
+  let pkg = null;
+  try { pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')); } catch { /* no package.json — npm scripts are not checked */ }
+  for (const m of value.matchAll(NPM_RUN))
+    if (pkg && pkg.scripts && !(m[1] in pkg.scripts)) missing.push(`npm run ${m[1]}`);
+  // A path the project deliberately IGNORES is expected to be absent from a checkout — a runtime
+  // state file is not a dangling guard (found by the functional run on the origin's own journal:
+  // `mechanized: .kaif/guarded-loop.json in the ignore list` was named as missing, and the very
+  // point of that lesson is that the file must NOT be in the tree).
+  for (const m of value.matchAll(PATH_TOKEN))
+    if (!tree.exists(m[1]) && !tree.ignored(m[1])) missing.push(m[1]);
+  return missing;
+}
+
+let ignoreCache = null;
+function isIgnored(rel, root) {
+  if (ignoreCache === null) {
+    try { ignoreCache = readFileSync(join(root, '.gitignore'), 'utf8').split(/\r?\n/).map((l) => l.trim()).filter((l) => l && !l.startsWith('#')); }
+    catch { ignoreCache = []; }
+  }
+  return ignoreCache.some((p) => rel === p.replace(/^\/+|\/+$/g, '') || rel.startsWith(p.replace(/^\/+/, '').replace(/\/+$/, '') + '/'));
+}
+
+// ---------------------------------------------------------------------------
+// The rules — data. Each: id · kind (finding = exit 1, warning = exit 0) · run(ctx) → [message…].
+// ctx = { entries, text, root, baseline: Set<id>, list: string[]|null }
+export const RULES = [
+  // EL (2.7, #69): the deadline itself. Two failure entries of ONE class with no `mechanized:` —
+  // an allowlist by construction (silence only on the positive evidence "mechanized"), because a
+  // denylist of "unmechanized shapes" is silent on every shape it does not know (EXP-0133).
+  { id: 'repeat', kind: 'finding', run: ({ entries, declared }) => {
+      const byClass = new Map();
+      for (const e of entries) {
+        if (!e.failure || !e.klass || e.mech) continue;
+        if (!byClass.has(e.klass)) byClass.set(e.klass, []);
+        byClass.get(e.klass).push(e);
+      }
+      return [...byClass.entries()].filter(([k, g]) => g.length >= 2 && !declared.has(k)).map(([k, g]) =>
+        `class ${k}: ${g.map((e) => e.id).join(', ')} — ${g.length} failure entries, not one mechanized: name the guard` +
+        ` in the entry (\`${KEYWORDS.en.mechanized}: <the tool>\`), or re-check the price once for the whole class and` +
+        ` declare it — \`<!-- class-ok: ${k} — <why mechanizing it is not cheaply possible> -->\` — never a third record:` +
+        ' two strikes, never a third reminder');
+    } },
+  // A declared exemption with no reason declares nothing.
+  { id: 'class-ok-without-reason', kind: 'finding', run: ({ declaredEmpty }) => declaredEmpty
+      .map((k) => `<!-- class-ok: ${k} --> carries no reason — the declaration is the RE-CHECKED PRICE of the class, said in words, never a silencer`) },
+  // I1, ported from the origin's guard (epic X 2.3, origin issue #14): exactly one of three fields.
+  { id: 'no-mechanization-field', kind: 'finding', run: ({ entries, baseline }) => entries
+      .filter((e) => !baseline.has(e.id) && !e.mech && !e.none && !e.subj)
+      .map((e) => `${e.id} (line ${e.line}): no mechanization field — one of \`${KEYWORDS.en.mechanized}:\` · \`${KEYWORDS.en.noneCheap}: <why>\` · \`${KEYWORDS.en.subject}\``) },
+  // I4: a trap by form may not answer `subject-lesson`.
+  { id: 'trap-answered-subject', kind: 'finding', run: ({ entries, baseline }) => entries
+      .filter((e) => !baseline.has(e.id) && e.trap && !e.mech && !e.none)
+      .map((e) => `${e.id} (line ${e.line}): the text reduces to an order of actions (a trap by form) — it needs \`${KEYWORDS.en.mechanized}:\` or \`${KEYWORDS.en.noneCheap}: <why>\`, never \`${KEYWORDS.en.subject}\``) },
+  // A failure entry with no class is invisible to the deadline — the axis says so instead of counting it green.
+  { id: 'no-class', kind: 'warning', run: ({ entries, baseline }) => entries
+      .filter((e) => e.failure && !e.klass && !baseline.has(e.id))
+      .map((e) => `${e.id} (line ${e.line}): a failure entry with no \`${KEYWORDS.en.klass}: <slug>\`${e.rawClass ? ` (the value "${e.rawClass}" is not a slug — lowercase latin, digits and dashes)` : ''} — recurrence cannot be counted for it`) },
+  // A slug outside the header's list: a warning, because a new class is what a new lesson brings.
+  { id: 'unlisted-class', kind: 'warning', run: ({ entries, list }) => {
+      if (!list) return [];
+      const unlisted = new Map();
+      for (const e of entries) if (e.klass && !list.includes(e.klass) && !unlisted.has(e.klass)) unlisted.set(e.klass, e.id);
+      return [...unlisted.entries()].map(([k, id]) => `class ${k} (${id}) is not in the journal's class list — add the slug to the header list, or reuse an existing class`);
+    } },
+  // A guard named in `mechanized:` that the project does not contain — the mechanization is a claim.
+  { id: 'dangling', kind: 'warning', run: ({ entries, root, addressable, tree }) => !addressable ? [] : entries.flatMap((e) => {
+      if (!e.mech || !e.mechValue) return [];
+      const missing = danglingOf(e.mechValue, root, tree);
+      return missing.length ? [`${e.id} (line ${e.line}): \`${KEYWORDS.en.mechanized}:\` names what the project does not contain — ${missing.join(' · ')}` +
+        ' (a mechanization nobody can run is a claim; fix the address or say what replaced it)'] : [];
+    }) },
+];
+export const RULE_IDS = RULES.map((r) => r.id);
+
+export function lint(text, { root = '.', baseline = new Set(), tree = null, addressable = null } = {}) {
+  const entries = parseEntries(text);
+  const list = classList(text);
+  const { declared, empty } = declaredClasses(text);
+  // Guard ADDRESSES are checked against the journal's own tree. A journal read outside its project —
+  // a copy in a scratchpad, a neighbour's file — cannot confirm any address, and "the project does not
+  // contain it" would be a claim about a tree that is not there (found on copies of two field journals:
+  // seven honest mechanizations were named as dangling). No tree, no `dangling`, said aloud.
+  const realTree = { exists: (rel) => existsSync(join(root, rel)), ignored: (rel) => isIgnored(rel, root) };
+  const t = tree || realTree;
+  const addr = addressable === null ? (existsSync(join(root, 'package.json')) || existsSync(join(root, 'tools'))) : addressable;
+  const ctx = { entries, text, root, baseline, list, declared, declaredEmpty: empty, addressable: addr, tree: t };
+  const findings = [], warnings = [];
+  for (const rule of RULES)
+    for (const msg of rule.run(ctx)) (rule.kind === 'finding' ? findings : warnings).push({ id: rule.id, msg });
+  return { entries, list, declared, addressable: addr, findings, warnings };
+}
+
+// ---------------------------------------------------------------------------
+// The command line, parsed ONCE over the WHOLE argv: a flag that takes a value consumes it, the
+// command word is a command, everything else is positional. (The first cut sliced off argv[0] and then
+// read indices against the slice, so `--shrink EXP-0002 <journal>` took the ID as the journal — caught
+// by suite s28, not by reasoning.)
+const flagValue = (name) => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : null; };
+const positional = () => {
+  const out = [];
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--baseline' || a === '--shrink') { i++; continue; }
+    if (a.startsWith('--') || a === 'check' || a === 'selftest') continue;
+    out.push(a);
+  }
+  return out;
+};
+
+function loadBaseline(path) {
+  if (!path) return new Set();
+  if (!existsSync(path)) { console.error(`\u2716 experience-lint: no baseline at ${path}`); process.exit(1); }
+  return new Set(JSON.parse(readFileSync(path, 'utf8')).ids || []);
+}
+
+function check() {
+  const journal = positional()[0] || DEFAULT_JOURNAL;
+  if (!existsSync(journal)) {
+    console.log(`\u26A0 experience-lint SKIPPED — no journal at ${journal}; nothing was judged (exit ${EXIT_SKIPPED})`);
+    process.exit(EXIT_SKIPPED);
+  }
+  const text = readFileSync(journal, 'utf8');
+  const root = dirname(resolve(journal));
+  const baseline = loadBaseline(flagValue('--baseline'));
+  const { entries, list, declared, addressable, findings, warnings } = lint(text, { root, baseline });
+  const classed = entries.filter((e) => e.klass);
+  if (!classed.length) {
+    console.log(`\u26A0 experience-lint SKIPPED — not one entry of ${journal} carries \`${KEYWORDS.en.klass}: <slug>\` (${entries.length} entries read);` +
+      ` recurrence of a class cannot be counted, so nothing was judged — "not judged" is not "clean" (exit ${EXIT_SKIPPED}).` +
+      ` Add the field to the entries (/experience) and a class list to the header.`);
+    process.exit(EXIT_SKIPPED);
+  }
+  const mech = entries.filter((e) => e.mech).length;
+  console.log(`experience-lint: ${entries.length} entries \u00B7 ${classed.length} classed \u00B7 ${new Set(classed.map((e) => e.klass)).size} classes` +
+    ` \u00B7 ${mech} mechanized \u00B7 class list ${list ? `${list.length} slugs` : 'NONE in the header (a new slug is not checked)'}` +
+    `${declared.size ? ` \u00B7 ${declared.size} class(es) declared price-re-checked (must only shrink): ${[...declared.keys()].join(', ')}` : ''}` +
+    `${baseline.size ? ` \u00B7 inherited field debt ${baseline.size} (must only shrink)` : ''}` +
+    `${addressable ? '' : ' \u00B7 guard addresses NOT checked: the journal is outside a project tree (no package.json, no tools/)'}`);
+  for (const w of warnings) console.log(`\u26A0 ${w.id}: ${w.msg}`);
+  for (const f of findings) console.log(`\u2716 ${f.id}: ${f.msg}`);
+  if (findings.length) {
+    console.log(`\u2716 experience-lint: ${findings.length} finding(s) in ${journal} — a lesson repeated without a mechanism is a lesson that failed as text`);
+    process.exit(1);
+  }
+  console.log(`\u2705 experience-lint OK — ${journal}, 0 findings${warnings.length ? `, ${warnings.length} warning(s) above` : ''}`);
+}
+
+// ---------------------------------------------------------------------------
+// --shrink: a MECHANIZED lesson collapses to one line with a pointer to its guard; the text itself
+// stays in the git history (BUG_FIXING_FRAMEWORK → a mechanized lesson shrinks). Shows by default.
+export function shrink(text, id) {
+  const entries = parseEntries(text);
+  const e = entries.find((x) => x.id === id);
+  if (!e) return { error: `no entry ${id} in the journal` };
+  if (!e.mech) return { error: `${id} carries no \`${KEYWORDS.en.mechanized}:\` — only a mechanized lesson shrinks (this one still owes its answer)` };
+  const cm = CLASS_LINE.exec(e.body);
+  const repro = (/^[ \t]*(?:\*\*)?(?:Repro|\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435)(?:\*\*)?[ \t]*:[ \t]*([^\n]*)$/im.exec(e.body) || [null, ''])[1].trim();
+  const line = `**Lesson \u2192 guard:** ${e.mechValue || '(see the class line)'}` +
+    `${repro ? ` \u00B7 repro: ${repro}` : ''} \u00B7 full text: \`git log -p -S "${id}" -- <this journal>\`\n`;
+  const kept = (cm ? cm[0].trim() + '\n' : '');
+  const next = text.slice(0, e.end) + kept + line + '\n' + text.slice(e.end + e.body.length);
+  return { removed: e.body, replacement: kept + line, next };
+}
+
+function shrinkCmd() {
+  const id = flagValue('--shrink');
+  const journal = positional()[0] || DEFAULT_JOURNAL;
+  if (!id) { console.error('usage: --shrink EXP-NNNN [journal] [--yes]'); process.exit(1); }
+  if (!existsSync(journal)) { console.error(`\u2716 experience-lint: no journal at ${journal}`); process.exit(1); }
+  const text = readFileSync(journal, 'utf8');
+  const r = shrink(text, id);
+  if (r.error) { console.error(`\u2716 experience-lint --shrink: ${r.error}`); process.exit(1); }
+  console.log(`--- ${id}: the body that would be removed (${r.removed.split('\n').length} lines) ---\n${r.removed}`);
+  console.log(`--- ${id}: what stands instead ---\n${r.replacement}`);
+  if (!argv.includes('--yes')) {
+    console.log(`\u26A0 shown, NOT written — re-run with --yes to write ${journal} (the removed text stays in the git history)`);
+    return;
+  }
+  writeFileSync(journal, r.next, 'utf8');
+  console.log(`\u2705 ${id} shrunk in ${journal} — one line with a pointer to its guard; the full text is in the git history`);
+}
+
+// ---------------------------------------------------------------------------
+// selftest — every rule proves BOTH answers on in-memory fixtures, in both shipped languages:
+// mutation N reddens rule N and only N, the clean journal yields nothing (EXP-0127: "reddens with
+// something" is an assert that passes for the wrong reason).
+const CLEAN = {
+  en: `# EXPERIENCE
+
+<!-- classes: shown-as-link, escaping-layer, claim-before-evidence -->
+
+## Entries
+
+### EXP-0003 · 2026-03-03 · \u2705 · #ok
+**Lesson:** a success entry, out of the deadline's scope.
+**Repro:** \`node tools/x.mjs\`
+**Mechanization:** subject-lesson
+
+### EXP-0002 · 2026-02-02 · \u274C\u2192\u2705 · #show
+class: shown-as-link
+**Lesson:** showing was replaced by a link a second time.
+**Repro:** \`node tools/showcase-lint.mjs\`
+**Mechanization:** mechanized: \`tools/showcase-lint.mjs\`
+
+### EXP-0001 · 2026-01-01 · \u274C · #show
+class: shown-as-link
+**Lesson:** showing was replaced by a link.
+**Repro:** \`node tools/showcase-lint.mjs\`
+**Mechanization:** none-cheap: the class is a human judgement, no machine evidence
+`,
+  ru: `# EXPERIENCE
+
+<!-- \u043A\u043B\u0430\u0441\u0441\u044B: shown-as-link, escaping-layer, claim-before-evidence -->
+
+## \u0417\u0430\u043F\u0438\u0441\u0438
+
+### EXP-0003 · 2026-03-03 · \u2705 · #ok
+**\u0423\u0440\u043E\u043A:** \u0437\u0430\u043F\u0438\u0441\u044C \u043E\u0431 \u0443\u0441\u043F\u0435\u0445\u0435.
+**\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435:** \`node tools/x.mjs\`
+**\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u0443\u0440\u043E\u043A \u043E \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0435
+
+### EXP-0002 · 2026-02-02 · \u274C\u2192\u2705 · #show
+\u043A\u043B\u0430\u0441\u0441: shown-as-link
+**\u0423\u0440\u043E\u043A:** \u043F\u043E\u043A\u0430\u0437 \u043F\u043E\u0434\u043C\u0435\u043D\u0451\u043D \u0441\u0441\u044B\u043B\u043A\u043E\u0439 \u0432\u0442\u043E\u0440\u043E\u0439 \u0440\u0430\u0437.
+**\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435:** \`node tools/showcase-lint.mjs\`
+**\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043E: \`tools/showcase-lint.mjs\`
+
+### EXP-0001 · 2026-01-01 · \u274C · #show
+\u043A\u043B\u0430\u0441\u0441: shown-as-link
+**\u0423\u0440\u043E\u043A:** \u043F\u043E\u043A\u0430\u0437 \u043F\u043E\u0434\u043C\u0435\u043D\u0451\u043D \u0441\u0441\u044B\u043B\u043A\u043E\u0439.
+**\u0412\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u0435\u0434\u0435\u043D\u0438\u0435:** \`node tools/showcase-lint.mjs\`
+**\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438 \u043D\u0435\u0442: \u0447\u0435\u043B\u043E\u0432\u0435\u0447\u0435\u0441\u043A\u043E\u0435 \u0441\u0443\u0436\u0434\u0435\u043D\u0438\u0435
+`,
+};
+// Each mutation: the id of the rule it must redden, and the edit that produces it.
+const MUTATIONS = {
+  // The deadline: the mechanized entry of the pair loses its field → two unmechanized entries of one class.
+  repeat: {
+    en: (t) => t.replace('**Mechanization:** mechanized: `tools/showcase-lint.mjs`', '**Mechanization:** subject-lesson'),
+    ru: (t) => t.replace('**\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043E: `tools/showcase-lint.mjs`',
+                          '**\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u0443\u0440\u043E\u043A \u043E \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u0435'),
+  },
+  'no-mechanization-field': {
+    en: (t) => t.replace('**Mechanization:** none-cheap: the class is a human judgement, no machine evidence', ''),
+    ru: (t) => t.replace('**\u041C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u044F:** \u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0430\u0446\u0438\u0438 \u043D\u0435\u0442: \u0447\u0435\u043B\u043E\u0432\u0435\u0447\u0435\u0441\u043A\u043E\u0435 \u0441\u0443\u0436\u0434\u0435\u043D\u0438\u0435', ''),
+  },
+  'trap-answered-subject': {
+    en: (t) => t.replace('**Lesson:** a success entry, out of the deadline\'s scope.', '**Lesson:** first run the build, then the suite.'),
+    ru: (t) => t.replace('**\u0423\u0440\u043E\u043A:** \u0437\u0430\u043F\u0438\u0441\u044C \u043E\u0431 \u0443\u0441\u043F\u0435\u0445\u0435.',
+                          '**\u0423\u0440\u043E\u043A:** \u0441\u043D\u0430\u0447\u0430\u043B\u0430 \u0441\u0431\u043E\u0440\u043A\u0430, \u043F\u043E\u0442\u043E\u043C \u0441\u0432\u043E\u0434.'),
+  },
+  'no-class': {
+    en: (t) => t.replace('class: shown-as-link\n**Lesson:** showing was replaced by a link.', '**Lesson:** showing was replaced by a link.'),
+    ru: (t) => t.replace('\u043A\u043B\u0430\u0441\u0441: shown-as-link\n**\u0423\u0440\u043E\u043A:** \u043F\u043E\u043A\u0430\u0437 \u043F\u043E\u0434\u043C\u0435\u043D\u0451\u043D \u0441\u0441\u044B\u043B\u043A\u043E\u0439.',
+                          '**\u0423\u0440\u043E\u043A:** \u043F\u043E\u043A\u0430\u0437 \u043F\u043E\u0434\u043C\u0435\u043D\u0451\u043D \u0441\u0441\u044B\u043B\u043A\u043E\u0439.'),
+  },
+  'unlisted-class': {
+    en: (t) => t.replace('class: shown-as-link\n**Lesson:** showing was replaced by a link.', 'class: shown-as-a-link\n**Lesson:** showing was replaced by a link.'),
+    ru: (t) => t.replace('\u043A\u043B\u0430\u0441\u0441: shown-as-link\n**\u0423\u0440\u043E\u043A:** \u043F\u043E\u043A\u0430\u0437 \u043F\u043E\u0434\u043C\u0435\u043D\u0451\u043D \u0441\u0441\u044B\u043B\u043A\u043E\u0439.',
+                          '\u043A\u043B\u0430\u0441\u0441: shown-as-a-link\n**\u0423\u0440\u043E\u043A:** \u043F\u043E\u043A\u0430\u0437 \u043F\u043E\u0434\u043C\u0435\u043D\u0451\u043D \u0441\u0441\u044B\u043B\u043A\u043E\u0439.'),
+  },
+  'class-ok-without-reason': {
+    en: (t) => t.replace('## Entries', '<!-- class-ok: shown-as-link -->\n\n## Entries'),
+    ru: (t) => t.replace('## \u0417\u0430\u043F\u0438\u0441\u0438', '<!-- class-ok: shown-as-link -->\n\n## \u0417\u0430\u043F\u0438\u0441\u0438'),
+  },
+  dangling: {
+    en: (t) => t.replace('mechanized: `tools/showcase-lint.mjs`', 'mechanized: `tools/no-such-guard.mjs`'),
+    ru: (t) => t.replace('\u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043E: `tools/showcase-lint.mjs`',
+                          '\u043C\u0435\u0445\u0430\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043E: `tools/no-such-guard.mjs`'),
+  },
+};
+
+function selftest() {
+  // The selftest is HERMETIC: the `dangling` rule is handed a SYNTHETIC tree (one path exists, one is
+  // ignored), so the proof holds wherever the module runs — the origin, a deployed `.kaif/tools/`, a
+  // copy in a scratchpad. A selftest that reads the checkout it happens to sit in proves the checkout.
+  const TREE = { exists: (rel) => rel === 'tools/showcase-lint.mjs', ignored: (rel) => rel.startsWith('tools/state/') };
+  let failed = 0, cases = 0;
+  const say = (ok, name) => { cases++; if (!ok) { failed++; console.log(`  \u2717 ${name}`); } else console.log(`  \u2713 ${name}`); };
+  for (const lang of Object.keys(CLEAN)) {
+    const opts = { root: '.', tree: TREE, addressable: true };
+    const clean = lint(CLEAN[lang], opts);
+    const cleanIds = [...clean.findings, ...clean.warnings].map((x) => x.id);
+    say(cleanIds.length === 0, `${lang}: the clean journal — 0 findings and 0 warnings (got [${cleanIds.join(',')}])`);
+    say(clean.entries.length === 3 && clean.list && clean.list.length === 3,
+      `${lang}: three entries parsed and the header's class list read (got ${clean.entries.length} entries, ${clean.list ? clean.list.length : 'no'} slugs)`);
+    for (const id of RULE_IDS) {
+      const mut = MUTATIONS[id];
+      say(!!mut && !!mut[lang], `${lang}: rule ${id} has a mutation`);
+      if (!mut || !mut[lang]) continue;
+      const src = mut[lang](CLEAN[lang]);
+      say(src !== CLEAN[lang], `${lang}: mutation ${id} changed the fixture`);
+      const got = lint(src, opts);
+      const ids = [...got.findings, ...got.warnings].map((x) => x.id);
+      say(ids.length === 1 && ids[0] === id, `${lang}: mutation ${id} \u2192 exactly [${id}] (got [${ids.join(',')}])`);
+    }
+    // The deadline names the CLASS and BOTH ids — the whole point of the axis (criterion 24).
+    const pair = lint(MUTATIONS.repeat[lang](CLEAN[lang]), opts).findings.find((f) => f.id === 'repeat');
+    say(!!pair && /class shown-as-link:/.test(pair.msg) && pair.msg.includes('EXP-0002') && pair.msg.includes('EXP-0001'),
+      `${lang}: the repeat finding names the class and BOTH entries (got "${pair ? pair.msg.slice(0, 70) : 'nothing'}")`);
+    // A THIRD entry of the class does not reset anything: all three are named.
+    const third = CLEAN[lang].replace(/^## /m, `### EXP-0004 \u00B7 2026-04-04 \u00B7 \u274C \u00B7 #show\n${KEYWORDS[lang].klass}: shown-as-link\n**x:** y\n\n## `);
+    const t3 = lint(MUTATIONS.repeat[lang](third), opts).findings.find((f) => f.id === 'repeat');
+    say(!!t3 && t3.msg.includes('EXP-0004') && /3 failure entries/.test(t3.msg), `${lang}: a third entry of the class is named too, with the count (got "${t3 ? t3.msg.slice(0, 60) : 'nothing'}")`);
+    // A success entry of the same class is NOT a strike (the deadline speaks about failures).
+    const success = CLEAN[lang].replace(`### EXP-0002 \u00B7 2026-02-02 \u00B7 \u274C\u2192\u2705`, `### EXP-0002 \u00B7 2026-02-02 \u00B7 \u2705`);
+    const noPair = lint(MUTATIONS.repeat[lang](success), opts).findings.map((f) => f.id);
+    say(!noPair.includes('repeat'), `${lang}: a success entry of the same class is not a strike (got [${noPair.join(',')}])`);
+    // The DECLARED price of the class silences exactly that class — and only with a reason in words.
+    const declaredOk = lint(MUTATIONS.repeat[lang](CLEAN[lang]).replace('## ', '<!-- class-ok: shown-as-link — the price was re-checked: the class is a human judgement, no machine evidence -->\n\n## '), opts);
+    say(declaredOk.findings.length === 0 && declaredOk.declared.get('shown-as-link'),
+      `${lang}: a declared class-ok WITH a reason silences its own class (got [${declaredOk.findings.map((f) => f.id).join(',')}])`);
+    const declaredOther = lint(MUTATIONS.repeat[lang](CLEAN[lang]).replace('## ', '<!-- class-ok: escaping-layer — the price was re-checked -->\n\n## '), opts);
+    say(declaredOther.findings.some((f) => f.id === 'repeat'), `${lang}: a declaration for ANOTHER class silences nothing here`);
+    // The baseline silences the FIELD rule it was captured for — and never the repeat.
+    const withBaseline = lint(MUTATIONS.repeat[lang](CLEAN[lang]), { ...opts, baseline: new Set(['EXP-0001', 'EXP-0002']) });
+    say(withBaseline.findings.some((f) => f.id === 'repeat'), `${lang}: a baseline does NOT silence a repeated class`);
+    // --shrink: shown, never written; and a lesson that still owes its answer refuses.
+    const sh = shrink(CLEAN[lang], 'EXP-0002');
+    say(!sh.error && /Lesson \u2192 guard:/.test(sh.replacement) && sh.replacement.split('\n').filter((l) => l.trim()).length === 2 &&
+        /git log -p -S "EXP-0002"/.test(sh.replacement) && !sh.next.includes(sh.removed.trim()),
+      `${lang}: --shrink collapses a mechanized entry to the class line plus one pointer line (got ${sh.error || sh.replacement.split('\n').filter((l) => l.trim()).length + ' lines'})`);
+    say(!!shrink(CLEAN[lang], 'EXP-0001').error, `${lang}: --shrink refuses an entry with no mechanized: (it still owes its answer)`);
+    say(!!shrink(CLEAN[lang], 'EXP-9999').error, `${lang}: --shrink refuses an id the journal does not carry`);
+    // A journal with no class field at all: the caller must SKIP, never read clean.
+    const noClass = CLEAN[lang].replace(new RegExp(`^${KEYWORDS[lang].klass}: [a-z-]+$`, 'gm'), '');
+    say(lint(noClass, opts).entries.filter((e) => e.klass).length === 0, `${lang}: a journal with no class field has 0 classed entries (the caller exits ${EXIT_SKIPPED})`);
+  }
+  // A field journal's own forms, met on copies of two real journals: an id with no number
+  // (`EXP-NEW-<slug>`) is an entry, and CRLF line endings do not hide the `class:` field.
+  const fieldForms = '# EXPERIENCE\r\n\r\n## Entries\r\n\r\n### EXP-NEW-shell-ate-the-quotes · 2026-08-30 · ❌ · #x\r\nclass: shell-lied\r\n**Lesson:** y\r\n**Mechanization:** subject-lesson\r\n';
+  const ff = lint(fieldForms, { root: '.', tree: TREE, addressable: true });
+  say(ff.entries.length === 1 && ff.entries[0].id === 'EXP-NEW-shell-ate-the-quotes' && ff.entries[0].klass === 'shell-lied' && ff.entries[0].failure,
+    `an id with no number under CRLF is an entry with its class (got ${ff.entries.length} entries, class ${ff.entries[0] && ff.entries[0].klass})`);
+  // Prose that merely contains the word "class:" mid-sentence is NOT the field (a field journal does this).
+  const prose = CLEAN.en.replace('**Lesson:** showing was replaced by a link.', '**Lesson:** the owner named the class: the dossier was supposed to make it impossible.');
+  say(lint(prose, { root: '.', tree: TREE, addressable: true }).entries.filter((e) => e.klass).length === 2, 'prose with "class:" mid-sentence is not the field (got a third class)');
+  if (failed) { console.error(`\u2716 experience-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
+  console.log(`\u2705 experience-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules \u00D7 ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean journal`);
+}
+
+// ---------------------------------------------------------------------------
+if (argv.includes('--shrink')) shrinkCmd();
+else if (argv[0] === 'check' || argv.length === 0) check();
+else if (argv[0] === 'selftest') selftest();
+else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
 ``````
 
 > **FILE: `.kaif/tools/kaif-guard-lint.mjs`** — optional tool module — verbatim

@@ -118,9 +118,19 @@ const task1 = readFileSync(join(T1, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/check-backlog\/SKILL\.md/.test(task1) && /translated wholesale/.test(task1), 'K1: задание называет файл «translated wholesale» в diverged');
 console.log('\n=== T4 (K5): журналы прошлого не считаются протухшими утверждениями ===');
 ok(!task1.includes('researches/15_kaif_20_note.md'), 'K5: researches/ не в stale-claims');
-ok(!/stale-claims[^]*EXPERIENCE\.md/.test(task1), 'K5: EXPERIENCE.md не в stale-claims');
-ok(!/stale-claims[^]*Предыдущее обновление/.test(task1), 'K5: строка «Предыдущее обновление» STATUS пропущена');
-ok(!/stale-claims[^]*TESTING_FRAMEWORK\.md/.test(task1),
+// The three asserts below judge the stale-claims ITEM — from its bullet to the next bullet or heading. They used to read
+// EVERYTHING after the first "stale-claims" (`[^]*`), and the template news printed below the items may legally name any
+// of these files: the 2.7 note of epic EL names EXPERIENCE.md, and the greedy form went red on a healthy task
+// (2026-09-18, the first polygon after that note landed). The item must EXIST, or the three would be vacuously green.
+const staleItemOf = (t) => { const m = /- \*\*stale-claims\*\* — [^]*?(?=\n- \*\*|\n## )/.exec(t); return m ? m[0] : ''; };
+const staleItem1 = staleItemOf(task1);
+ok(staleItem1.length > 0, 'K5: пункт stale-claims найден в задании (иначе три ассерта ниже зелёные по пустоте)', task1.slice(0, 300));
+ok(!/EXPERIENCE\.md/.test(staleItem1), 'K5: EXPERIENCE.md не в stale-claims', staleItem1.slice(0, 400));
+// …и второй ответ (EXP-0059): суженный ассерт обязан УМЕТЬ краснеть — строка журнала, подсунутая В пункт, ему видна.
+ok(/EXPERIENCE\.md/.test(staleItemOf(task1.replace(staleItem1, staleItem1 + '\n  EXPERIENCE.md:3 — KAIF 1.0'))),
+   'K5: суженный ассерт умеет краснеть — строка журнала ВНУТРИ пункта видна');
+ok(!/Предыдущее обновление/.test(staleItem1), 'K5: строка «Предыдущее обновление» STATUS пропущена', staleItem1.slice(0, 400));
+ok(!/TESTING_FRAMEWORK\.md/.test(staleItem1),
    'Д4: файл, байт-в-байт равный текущему шаблону, не может нести протухшее утверждение ПРОЕКТА');
 ok(readFileSync(join(T1, 'PROJECT_HISTORY.md'), 'utf8').includes('OWNER CHRONICLE — MUST SURVIVE'),
    'H: летопись — owner-seeded, update её не трогает');
