@@ -8,8 +8,8 @@
 // Usage: node tools/sandbox/probes/ticket-replies-readback.mjs [dir] [--repo owner/name]
 //   `dir` defaults to reports/release_<major.minor of version.json>; the repo — MikalaiKryvusha/KAIF.
 // [TESTED: 2026-09-18 17:32 +03:00 · session 69, THIS file after answering and closing #54–#71: "all 18: closed, replies
-//  equal their files", exit 0 (its scratchpad twin gave the same at 17:27; `gh issue list --state open` → 0). Not yet seen
-//  red on a real mismatch. Report: testcases/reports/2026-09-18_release-2.7.md, run 20]
+//  equal their files", exit 0 (its scratchpad twin gave the same at ≈ 17:26; `gh issue list --state open` → 0). Not yet seen
+//  red on a real mismatch. Report: testcases/reports/2026-09-18_release-2.7.md, runs 20 and 21]
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';

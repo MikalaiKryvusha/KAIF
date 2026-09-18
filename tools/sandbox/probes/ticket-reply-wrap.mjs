@@ -16,7 +16,7 @@
 // [TESTED: 2026-09-18 17:32 +03:00 · session 69, THIS file: on reports/release_2.7 (fixed) → "no wrapped prose", exit 0;
 //  red on copies of the drafts before the fix (`git show a05de51:reports/release_2.7/66.md`, 54.md) → "66.md: 33 wrapped
 //  join(s)", exit 1. The fix itself (13 of 18 drafts, word counts equal in every file) ran from the scratchpad twin of this
-//  logic at ≈ 17:18. Report: testcases/reports/2026-09-18_release-2.7.md]
+//  logic at ≈ 17:18. Report: testcases/reports/2026-09-18_release-2.7.md, run 21]
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
