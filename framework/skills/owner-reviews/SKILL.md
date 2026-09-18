@@ -321,7 +321,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   MOMENT".) The command reads the lock — port · pid · title · the page's last input · draft state (the pulse
   carries them: `/alive?i=&d=&s=`) — prints them so the agent can compare with the window it was told about,
   and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, DEF6's own
-  envelope; `contour.closeQuietMs`) or a draft is unsaved; otherwise it ends the process and prints `closed
+  envelope; `contour.closeQuietMs`), while the PAGE ITSELF is younger than it (no pulse yet — the owner may be
+  reading), or while a draft is unsaved; otherwise it ends the process and prints `closed
   <doc>`. The command never kills a pid read from a file: it asks the page's OWN server to end (a token
   from the lock), so the waiting agent sees exit 2, and a page that does not answer is left alone unless
   forced. `--force` needs `--owner-word "<quote>"` and logs the quote — an AUDIT trail, not a gate: the
@@ -332,7 +333,7 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   itself writes the file to the computer, into the project folder".) The app window runs on
   `.kaif/contour-window/` (ignore-first before the first window; the three sign-in-off flags; `account_info`
   checked after launch — EXP-0134), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
-  stores the answer there — IndexedDB first (measured: on disk half a second after the write even when the
+  stores the answer there — IndexedDB is the PRIMARY carrier (measured: on disk half a second after the write even when the
   browser is then killed; `localStorage` needs about six, so it only keeps a copy and the typed DRAFT) — and
   the page says "saved on this computer, the agent will pick it up", no dialog. The agent picks it up at the
   next `--queue --list`, `--check` or show: a headless run of the same profile on the same port posts it

@@ -778,7 +778,7 @@ async function main() {
       }
       console.log('  (локальная запись проявилась за ' + ((Date.now() - t0) / 1000).toFixed(1) + ' с)');
       check('ответ записан на этом компьютере: IndexedDB kaif-contour/kv __submitted = true (долговечный носитель) и копия в localStorage = true', dom.submittedIdb === true && dom.submittedLocally === true, 'idb=' + dom.submittedIdb + ' ls=' + dom.submittedLocally);
-      check('кольцо спасения НЕ показано (localStorage работает) = true', dom.rescueShown === false);
+      check('кольцо спасения НЕ показано (локальное хранилище работает) = true', dom.rescueShown === false);
       check('кнопка записи погашена — второй клик не нужен = true', dom.saveEnabled === false);
       check('черновик подхвачен (localStorage) = true', dom.draftPersisted === true);
       check('статус честный («сохранён на этом компьютере») = true', dom.statusHonest === true);

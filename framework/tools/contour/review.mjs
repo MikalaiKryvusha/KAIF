@@ -738,7 +738,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // LP (#66): input state for the pulse (`--close` reads it from the lock) and the local save when the server is gone
     "var lastInput=0,lsOk=true,submittedLocally=false;try{localStorage.setItem(DK+'__probe','1');localStorage.removeItem(DK+'__probe')}catch(e){lsOk=false}",
     "function draftCount(){var n=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf(DK)===0&&k!==DK+'__submitted'&&k!==DK+'__probe')n++}}catch(e){}return n}",
-    // The SUBMITTED answer goes to IndexedDB FIRST: measured on this class of machine, IndexedDB is on disk 0.5 s after the
+    // The SUBMITTED answer's PRIMARY carrier is IndexedDB (it wins at pick-up; a copy goes to localStorage, written synchronously just before): measured on this class of machine, IndexedDB is on disk 0.5 s after the
     // write under a hard kill of the browser, localStorage only after ~6 s (the recon's table of kills at 0.5–15 s). A copy
     // stays in localStorage for a browser without IndexedDB; only when BOTH fail does the rescue ring come back.
     "function idbPut(k,v,cb){try{var r=indexedDB.open('kaif-contour',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};",

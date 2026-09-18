@@ -66,7 +66,8 @@ afterwards.
 
 - One reviewer per zone — or, for a single small zone, two or more cut by the zone's CLAIM
   CLUSTERS (what the zone promises, not its directories; reference §7: reviewers cut that way came
-  at one defect from different sides and raised no duplicate card) — parallel where the harness
+  at one defect from four sides; the origin's one-zone run of 2026-09-18 adds a single observation —
+  two such reviewers raised no duplicate card) — parallel where the harness
   allows; each reviewer receives a WRITTEN brief
   (reference §7) — its zone, the paid classes, the axes, the excluded classes, the card form, the
   budget — never the whole skill, and never "look for problems".

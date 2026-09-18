@@ -2987,7 +2987,7 @@ too, `N = 0` is honest, and documents dated before that day are never judged (`-
 two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
-(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB first, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
+(the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB is the primary carrier, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
 and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
 and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
@@ -5607,7 +5607,8 @@ afterwards.
 
 - One reviewer per zone — or, for a single small zone, two or more cut by the zone's CLAIM
   CLUSTERS (what the zone promises, not its directories; reference §7: reviewers cut that way came
-  at one defect from different sides and raised no duplicate card) — parallel where the harness
+  at one defect from four sides; the origin's one-zone run of 2026-09-18 adds a single observation —
+  two such reviewers raised no duplicate card) — parallel where the harness
   allows; each reviewer receives a WRITTEN brief
   (reference §7) — its zone, the paid classes, the axes, the excluded classes, the card form, the
   budget — never the whole skill, and never "look for problems".
@@ -7221,7 +7222,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   MOMENT".) The command reads the lock — port · pid · title · the page's last input · draft state (the pulse
   carries them: `/alive?i=&d=&s=`) — prints them so the agent can compare with the window it was told about,
   and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, DEF6's own
-  envelope; `contour.closeQuietMs`) or a draft is unsaved; otherwise it ends the process and prints `closed
+  envelope; `contour.closeQuietMs`), while the PAGE ITSELF is younger than it (no pulse yet — the owner may be
+  reading), or while a draft is unsaved; otherwise it ends the process and prints `closed
   <doc>`. The command never kills a pid read from a file: it asks the page's OWN server to end (a token
   from the lock), so the waiting agent sees exit 2, and a page that does not answer is left alone unless
   forced. `--force` needs `--owner-word "<quote>"` and logs the quote — an AUDIT trail, not a gate: the
@@ -7232,7 +7234,7 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   itself writes the file to the computer, into the project folder".) The app window runs on
   `.kaif/contour-window/` (ignore-first before the first window; the three sign-in-off flags; `account_info`
   checked after launch — EXP-0134), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
-  stores the answer there — IndexedDB first (measured: on disk half a second after the write even when the
+  stores the answer there — IndexedDB is the PRIMARY carrier (measured: on disk half a second after the write even when the
   browser is then killed; `localStorage` needs about six, so it only keeps a copy and the typed DRAFT) — and
   the page says "saved on this computer, the agent will pick it up", no dialog. The agent picks it up at the
   next `--queue --list`, `--check` or show: a headless run of the same profile on the same port posts it

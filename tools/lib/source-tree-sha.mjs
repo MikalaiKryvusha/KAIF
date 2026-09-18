@@ -6,7 +6,11 @@
 // the first suite and REFUSES when they differ: "dist is stale — rebuild". The same function on both sides, so the
 // two can never disagree about what "the sources" are. Inputs: every file under framework/ (the payload), the
 // builder itself, the module-map library it shares with the validator, and version.json (the version line in the
-// bundle header). Bytes as on disk — both sides read the same working tree on the same machine, so EOL never differs.
+// bundle header). Bytes with line endings NORMALISED (CRLF → LF): the first cut hashed bytes as on disk on the premise
+// "both sides read the same working tree, so EOL never differs" — false on the day it was written. With core.autocrlf=true a
+// fresh checkout carries CRLF in every text file, while a file a tool rewrote carries LF: the origin's own tree held 156 LF,
+// 42 CRLF and 5 mixed inputs, so the committed fingerprint reproduced in NO other tree — a clone, a CI job and every subagent
+// worktree were refused by the gate ("dist is stale") with a byte-identical dist (found by the session judge, 2026-09-18).
 // ONE exception, paid for on the day the gate was born: version.json enters WITHOUT its `build` counter. tools/commit.mjs bumps
 // `build` on every commit and the builder never reads it (it reads major · minor · released · codename) — hashed by bytes, the
 // file made dist read as stale after EVERY commit, and the rebuild that cured it dirtied the tree for the next one.
@@ -16,7 +20,9 @@
 //                 an old generator that does not know the flag under test and shows a page to the owner instead
 // PROVED-AGAINST: `--selftest`: a fixture tree with a manifest carrying its own fingerprint → fresh; one byte
 //                 changed in a source file → stale, named; a manifest without the field → stale, named
-// GAP:            a dist rebuilt from a DIFFERENT checkout with byte-identical sources reads as fresh (correct by
+// GAP:            line endings are normalised, so a change that is ONLY a CRLF↔LF flip of a source reads as fresh (the
+//                 builder normalises EOL itself — the dist does not change on it);
+//                 a dist rebuilt from a DIFFERENT checkout with byte-identical sources reads as fresh (correct by
 //                 definition); files outside the input set that change the build (node itself, tools/lib helpers the
 //                 builder imports beyond module-map-lib) are not fingerprinted — add them here when the builder does;
 //                 version.json is projected (every key except `build`), so a field the builder starts reading from
@@ -50,7 +56,9 @@ export const VERSION_JSON_IGNORED_KEYS = ['build'];
 
 /** The bytes a file contributes: as on disk, except version.json — a canonical projection without the ignored keys. */
 function inputBytes(root, rel) {
-  const raw = readFileSync(join(root, rel));
+  const disk = readFileSync(join(root, rel));
+  // latin1 round-trips every byte, so the replace touches nothing but the CR of a CRLF pair — text or not, both sides agree
+  const raw = Buffer.from(disk.toString('latin1').replace(/\r\n/g, '\n'), 'latin1');
   if (rel !== 'version.json') return raw;
   try {
     const j = JSON.parse(raw.toString('utf8').replace(/^\uFEFF/, ''));
@@ -98,6 +106,9 @@ if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('/source-tre
     ok(s1.files === 4, 'input set counts framework/** + builder + version.json (4)');
     writeFileSync(join(R, 'dist', 'kaif-manifest.json'), JSON.stringify({ sourceTree: s1 }));
     ok(distFreshness(R).fresh === true, 'fresh on a matching manifest');
+    writeFileSync(join(R, 'framework', 'A.md'), 'a\r\n');
+    ok(distFreshness(R).fresh === true, 'fresh when the same source arrives with CRLF (a fresh checkout under core.autocrlf)');
+    writeFileSync(join(R, 'framework', 'A.md'), 'a\n');
     writeFileSync(join(R, 'version.json'), '{"major":1,"build":77}\n');
     ok(distFreshness(R).fresh === true, 'fresh after the commit tool bumped ONLY the build counter of version.json');
     writeFileSync(join(R, 'version.json'), '{"major":2,"build":77}\n');
@@ -115,5 +126,5 @@ if (process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('/source-tre
     ok(distFreshness(R).fresh === false, 'stale on a missing manifest');
   } finally { rmSync(R, { recursive: true, force: true }); }
   if (fails.length) { console.error('❌ source-tree-sha --selftest:\n  · ' + fails.join('\n  · ')); process.exit(1); }
-  console.log('✅ source-tree-sha --selftest: fresh on a matching fixture and after a build-counter bump, red on a changed byte, on a changed version field, on a field-less manifest and on a missing one');
+  console.log('✅ source-tree-sha --selftest: fresh on a matching fixture, on the same source with CRLF and after a build-counter bump; red on a changed byte, on a changed version field, on a field-less manifest and on a missing one');
 }

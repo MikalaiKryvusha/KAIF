@@ -187,7 +187,7 @@
 > as' — everything works for the user as it did; JS itself writes the file to the computer, into the project folder." So the
 > app window now runs on its own browser profile inside the project (`.kaif/contour-window/`, put into `.gitignore` by the
 > machinery before the first window; three flags keep a new Edge profile from signing into the OS account, and the generator
-> checks `account_info` after launch). Save with the server gone stores the answer there — IndexedDB first (measured: on disk
+> checks `account_info` after launch). Save with the server gone stores the answer there — IndexedDB is the primary carrier (measured: on disk
 > half a second after the write even when the browser is then killed; `localStorage` needs about six, so it keeps a copy and
 > the typed draft) — and the page says "saved on this computer, the agent will pick it up" — no dialog, no "copy the text"
 > ring. At the next `--queue --list`, `--check` or show the generator sees the stale lock, waits until no browser holds the
@@ -217,7 +217,7 @@
    умирает в первые секунды после «Записать» — ровно тот случай, ради которого эпик> · consulted <разведдок `researches/31` §4
    — устройство называло IndexedDB; замер этой сессии на Edge/Windows: жёсткое убийство через 0,5 с после записи — IndexedDB
    читается обратно, localStorage теряется до ≈ 6 с (Chromium сбрасывает его пачками ≈ 5 с — проба 2026-09-13 прогон 1 и прогон
-   5 отчёта)>`. Выбрано «оба, IndexedDB первым»: свод теперь убивает браузер ЖЁСТКО и забирает ответ «from indexedDB».
+   5 отчёта)>`. Выбрано «оба, IndexedDB — основной носитель» («первым» — по долговечности и по приоритету при заборе; по порядку ВЫЗОВА в коде сначала идёт синхронная запись копии в `localStorage` — уточнение судьи сессии, К5): свод теперь убивает браузер ЖЁСТКО и забирает ответ «from indexedDB».
    Прежняя редакция решения (опровергнута замером): Носитель локальной записи — `localStorage` профиля проекта, а не IndexedDB из `researches/31` §4: страница уже
    хранит там черновик (I12), обе записи читаются одним headless-проходом; слово владельца «JS сам пишет файл на компьютер в
    папку проекта» исполняется местом профиля, а не видом хранилища.

@@ -173,6 +173,9 @@ const MIRRORS = [
     re: /(\d+) language packs/, keys: ['langs'] },
   { name: 'README RU — §8.2 языковые пакеты', file: 'README.md',
     re: /(\d+) языков\S* пакет\S*/, keys: ['langs'] },
+  // 2.7 (судья сессии 66, К3): число сводов в STATUS простояло «26» при живых 27 — зеркала у него не было.
+  { name: 'STATUS — число сводов полигона', file: 'STATUS.md',
+    re: /полигон `npm run test:core` — \*\*(\d+) свод/, keys: ['suites'] },
   { name: 'STATUS — строка «актуальная сборка»', file: 'STATUS.md',
     re: /\*\*(\d+) навы[а-я]*\*\* \/ (\d+) блок[а-я]* FULL \/ \*\*(\d+) бандла\*\* \/ \*\*(\d+) модул[а-я]*\*\*/,
     keys: ['skills', 'embedded', 'blocks', 'modules'] },

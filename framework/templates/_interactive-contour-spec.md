@@ -61,7 +61,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   returns the text onto the page with Copy and Retry; a draft lives in `localStorage` and is restored on load
   ("picked up N fields"). No path may leave the Save button disabled with no visible error. **The answer survives the server** (2.7, LP, origin issue #66;
   the owner's word: "JS writes the file to the computer, into the project folder — no choice, no 'save as'"): the window runs on its own profile in the project
-  (`.kaif/contour-window/`, ignore-first, sign-in-off flags, `account_info` checked after launch); Save with the server gone stores the answer there, IndexedDB first — durable half a second after the write even if the browser dies ("saved on this
+  (`.kaif/contour-window/`, ignore-first, sign-in-off flags, `account_info` checked after launch); Save with the server gone stores the answer there, IndexedDB the primary carrier — durable half a second after the write even if the browser dies ("saved on this
   computer, the agent will pick it up" — no dialog); the next `--queue --list` / `--check` / show picks it up headless on the same profile and port (the origin; deferred while a browser still holds the profile) →
   recorded as the owner's decision with `recovered: true`, the lock released; an unsaved draft is named and kept.
 - The page polls `/alive?i=&d=&s=` (ms since input · draft fields · saved) every 15 s (envelope 10–60 s) and says out loud when the server goes silent; the lock
@@ -81,7 +81,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   that process is gone (the draft lives in its origin), a taken port named in the log; a separate app window (`--app=`),
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 - **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title
-  ("compare with the window you were told about"), REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s;
+  ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
   A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile.
 
@@ -102,7 +102,7 @@ not installed") and the contour drops to beeps + banner rather than speaking noi
 | mockup review (an image + comments) | `… <image> --mockup` | `kind: "mockup"` |
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
-| close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / draft unsaved), 0 = closed or nothing to close |
+| close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
 `contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` /
