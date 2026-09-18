@@ -65,7 +65,11 @@ try {
 
   let prompt = null;
   try {
-    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    // A leading U+FEFF is dropped before the parse: Windows PowerShell 5.1 on a UTF-8 console puts
+    // the three bytes in front of ANY string piped into a native command, so the hand-run smoke of
+    // .kaif/hooks/README.md fell silent on a valid event (origin bugs 119/121). RFC 8259 §8.1: a
+    // parser "MAY ignore the presence of a byte order mark rather than treating it as an error".
+    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (typeof input.prompt === 'string') prompt = input.prompt;
   } catch { /* unreadable stdin — no text, no predicate, no output */ }
 

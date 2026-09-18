@@ -113,6 +113,21 @@ ok(/last refresh 1\d\d min ago/.test(out), 's14 таймер: маркер пр�
 writeFileSync(marker, 'not json at all');
 out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
 ok(out === '', 's14 таймер: битый JSON при свежем mtime — тишина (фолбэк на mtime файла)', out.slice(0, 120));
+// bugs/121 F11: маркер `[TESTED]` таймера называл свидетелем ЭТОТ свод и перечислял свойство
+// «malformed+old speaks», которого свод хуку ни разу не подавал (битый маркер шёл только со свежим
+// mtime). Адресат мутанта назван заранее (EXP-0059): `if (Number.isNaN(at)) { statSync(markerPath);
+// at = Date.now(); }` краснит ровно этот ассерт; удаление фолбэка целиком — другой мутант (краснит и соседа).
+const twoHoursAgoSec = (Date.now() - 2 * 3600 * 1000) / 1000;
+utimesSync(marker, twoHoursAgoSec, twoHoursAgoSec);
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
+ok(/last refresh 1\d\d min ago/.test(out), 's14 таймер: битый JSON при СТАРОМ mtime (2 ч) — приказ называет возраст по mtime (bugs/121 F11)', out.slice(0, 160));
+// bugs/119 №3, половина МАРКЕРА: маркер с BOM (так пишет `Set-Content -Encoding UTF8`) читается по СВОЕМУ
+// `at`, а не съезжает молча на mtime: `at` двухчасовой давности при СВЕЖЕМ mtime обязан дать приказ с возрастом.
+// BOM — БАЙТАМИ, а не символом в исходнике: невидимый символ внутри кода не виден ни глазу, ни диффу (bugs/122).
+const BOM = Buffer.from([0xEF, 0xBB, 0xBF]);
+writeFileSync(marker, Buffer.concat([BOM, Buffer.from(JSON.stringify({ at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(), docs: [], trigger: 'hour' }), 'utf8')]));
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
+ok(/last refresh 1\d\d min ago/.test(out), 's14 таймер: маркер с BOM читается по своему `at` (2 ч), а не по свежему mtime (bugs/119 №3)', out.slice(0, 160));
 
 // ---------------------------------------------------------------- поведение: слово resume — приказ (2.7, эпик RS)
 // Первое слово промпта — resume / /resume / резюм… → приказ исполнить /resume ЦЕЛИКОМ до работы над
@@ -168,6 +183,85 @@ const NG = join(ROOT, 'no-git'); seedHooks(NG);
 writeFileSync(join(NG, 'STATUS.md'), '# s'); utimesSync(join(NG, 'STATUS.md'), oldSec, oldSec);
 out = runHook(NG, 'stop-status-guard.mjs', { hook_event_name: 'Stop', cwd: NG, session_id: sid + '-c' });
 ok(out === '', 's14 страж STATUS: не-git проект — тишина (не краснеет там, где не наблюдает)', out.slice(0, 120));
+
+// ---------------------------------------------------------------- ось BOM: событие в двух лицах (bugs/119 №3)
+// Windows PowerShell 5.1 на консоли UTF-8 ставит три байта EF BB BF перед ЛЮБОЙ строкой, поданной в
+// native-команду; `JSON.parse` на них падал, и хук МОЛЧА съезжал на дефолты: приказ `/resume` пропадал,
+// `clear` штамповался как `compaction`, таймер и страж теряли `cwd` события. Событие подаётся БАЙТАМИ
+// (Buffer, не строкой в argv — EXP-0121) в двух лицах, с BOM и без; вывод обязан совпасть побайтно.
+// Каждая пара РАЗЛИЧАЮЩАЯ (EXP-0059): процесс хука стоит в ROOT, где нет ни маркера, ни STATUS.md, а `cwd`
+// события указывает на фикстуру — хук, потерявший событие, отвечает иначе, чем прочитавший его.
+// Адресаты красного названы заранее: на сборке до фикса (шов KAIF_DIST) красные ровно эти четыре пары.
+console.log('\n=== s14: событие с BOM читается как событие без него (bugs/119 №3) ===');
+const hookBytes = (script, event, withBom) => {
+  const body = Buffer.from(JSON.stringify(event) + '\r\n', 'utf8'); // хвост CRLF — так строку подаёт PowerShell
+  try { return execFileSync(process.execPath, [join(S, '.kaif', 'hooks', script)], { input: withBom ? Buffer.concat([BOM, body]) : body, cwd: ROOT }).toString(); }
+  catch (e) { return `<HOOK-CRASH: ${String(e.message).slice(0, 120)}>`; }
+};
+const bomTwins = (script, clean, bommed) => ({ clean: hookBytes(script, clean, false), bom: hookBytes(script, bommed || clean, true) });
+let tw = bomTwins('prompt-resume-word.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S, prompt: 'resume\nplan the day' });
+ok(isResumeOrder(tw.clean) && tw.bom === tw.clean, 's14 BOM resume-word: событие с BOM даёт ТОТ ЖЕ приказ /resume, побайтно', `без BOM ${tw.clean.length} симв. · с BOM ${tw.bom.length} симв.`);
+tw = bomTwins('session-start-refresh.mjs', { hook_event_name: 'SessionStart', source: 'clear', cwd: S });
+ok(/ritual:\/clear/.test(tw.clean) && tw.bom === tw.clean, 's14 BOM SessionStart: `clear` с BOM приказывает trigger "ritual:/clear", а не дефолтный "compaction"', tw.bom.slice(0, 200));
+const TF = join(ROOT, 'timer-fx'); mkdirSync(join(TF, '.kaif'), { recursive: true });
+writeFileSync(join(TF, '.kaif', 'refresh-marker.json'), JSON.stringify({ at: new Date().toISOString(), docs: [], trigger: 'hour' }));
+tw = bomTwins('prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: TF });
+ok(tw.clean === '' && tw.bom === tw.clean, 's14 BOM таймер: `cwd` события с BOM прочитан — свежий маркер фикстуры даёт тишину в обоих лицах', tw.bom.slice(0, 160));
+utimesSync(join(G, 'STATUS.md'), oldSec, oldSec);           // STATUS фикстуры снова «не тронут» 5 часов
+tw = bomTwins('stop-status-guard.mjs', { hook_event_name: 'Stop', cwd: G, session_id: sid + '-bom-a' },
+                                       { hook_event_name: 'Stop', cwd: G, session_id: sid + '-bom-b' }); // cooldown раз/сессию → два id
+ok(parseHook(tw.clean).decision === 'block' && tw.bom === tw.clean, 's14 BOM страж STATUS: `cwd` и `session_id` события с BOM прочитаны — тот же мягкий блок, побайтно', tw.bom.slice(0, 160));
+
+// ---------------------------------------------------------------- ось «инструкция исполнима адресатом» (bugs/121 F9)
+// README модуля — единственный документ, по которому ЧЕЛОВЕК подключает хуки, и его командные строки не
+// исполнял никто: проба была записана POSIX-синтаксисом (`< /dev/null`, `printf`), а на оболочке владельца
+// (Windows PowerShell 5.1) первая строка — ошибка разбора, второй команды нет вовсе. Теперь README несёт по
+// блоку на оболочку (```sh · ```powershell), а свод ИСПОЛНЯЕТ каждую строку каждого блока в ЕЁ оболочке на
+// развёрнутой копии и читает вывод. Ожидания — ПО ПОЗИЦИИ строки: новая строка в README краснит счёт, пока
+// её ожидание не выписано здесь (тот же ход, что у оси имён: конфиг без названного контракта падает).
+// Строка кладётся в ФАЙЛ сценария и запускается по пути — не через argv оболочки (EXP-0121, EXP-0034).
+// Окон и звука нет: оболочки запускаются скрыто (`windowsHide`), stdin оболочки закрыт, срок вызова жёсткий —
+// строка, ждущая терминала (ровно та грабля, о которой предупреждает README), краснеет, а не вешает полигон.
+console.log('\n=== s14: проба из README исполняется в оболочке адресата (bugs/121 F9) ===');
+const readmeTxt = (() => { try { return readFileSync(join(S, '.kaif', 'hooks', 'README.md'), 'utf8'); } catch { return ''; } })();
+const smokeBlocks = (lang) => [...readmeTxt.matchAll(new RegExp('^[ \\t]*```' + lang + '[ \\t]*\\r?\\n([\\s\\S]*?)^[ \\t]*```[ \\t]*$', 'gm'))]
+  .map((m) => m[1].split(/\r?\n/).map((l) => l.trim()).filter(Boolean));
+const SMOKE_EXPECT = [
+  ['приказ таймера (маркера нет)', (o) => /no refresh witness/.test(o) && parseHook(o).hookSpecificOutput?.hookEventName === 'UserPromptSubmit'],
+  ['приказ исполнить /resume', (o) => isResumeOrder(o)],
+  ['тишина', (o) => o === ''],
+];
+const shBlocks = smokeBlocks('sh'), psBlocks = smokeBlocks('powershell');
+ok(shBlocks.length === 1 && psBlocks.length === 1, 's14 проба README: по ОДНОМУ блоку на оболочку — ```sh и ```powershell', `sh: ${shBlocks.length} · powershell: ${psBlocks.length}`);
+ok((shBlocks[0] || []).length === SMOKE_EXPECT.length && (psBlocks[0] || []).length === SMOKE_EXPECT.length,
+   `s14 проба README: в каждом блоке ровно ${SMOKE_EXPECT.length} строки — у каждой выписано ожидание по позиции`,
+   `sh: ${(shBlocks[0] || []).length} · powershell: ${(psBlocks[0] || []).length}`);
+// POSIX-оболочка на Windows — ТОЛЬКО bash из поставки Git: `bash.exe` из PATH может оказаться WSL, а это другой мир файлов.
+const gitBash = (() => {
+  if (process.platform !== 'win32') return '/bin/sh';
+  try {
+    const cand = resolve(execFileSync('git', ['--exec-path'], { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(), '..', '..', '..', 'bin', 'bash.exe');
+    return existsSync(cand) ? cand : null;
+  } catch { return null; }
+})();
+const SHELLS = [
+  { tag: 'sh', ext: 'sh', exe: gitBash, args: [], lines: shBlocks[0] || [], why: 'POSIX-оболочка не найдена (на Windows ищется bash поставки Git)' },
+  { tag: 'powershell', ext: 'ps1', exe: process.platform === 'win32' ? 'powershell.exe' : null,
+    args: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File'], lines: psBlocks[0] || [],
+    why: 'Windows PowerShell есть только на Windows — блок ```powershell на этой платформе не исполнялся' },
+];
+const SM = join(ROOT, 'smoke-fx'); seedHooks(SM);             // развёрнутые хуки, маркера НЕТ — как велит README
+for (const sh of SHELLS) {
+  if (!sh.exe) { console.log(`⚪ SKIPPED [${sh.tag}]: ${sh.why}`); continue; }
+  const outs = sh.lines.map((line, i) => {
+    const file = join(SM, `smoke-${sh.tag}-${i + 1}.${sh.ext}`);
+    writeFileSync(file, line + '\n');
+    try { return execFileSync(sh.exe, [...sh.args, file], { cwd: SM, stdio: ['ignore', 'pipe', 'pipe'], timeout: 30000, windowsHide: true }).toString().trim(); }
+    catch (e) { return `<SHELL-FAILED: ${String(e.message).slice(0, 160)}>`; }
+  });
+  SMOKE_EXPECT.forEach(([what, judge], i) => ok(judge(outs[i] ?? '<строки нет>'),
+    `s14 проба README [${sh.tag}] строка ${i + 1}: ${what}`, `${sh.lines[i] || '<строки нет>'} → ${String(outs[i]).slice(0, 140)}`));
+}
 
 // ---------------------------------------------------------------- O5: образцы под другие системы
 // Фаза O5 (план 60): у каждой системы с ПОДТВЕРЖДЁННЫМ живым контрактом — свой образец конфига.
@@ -236,6 +330,9 @@ ok(!sampleTxt('sample-codex-hooks.json').includes('--emit'),
 // (EXP-0047, и ровно этот механизм породил вхождение №1 этого же бага).
 console.log('\n=== s14/O5: имена событий образцов против подтверждённого контракта (bugs/66 №4) ===');
 const EVENT_CONTRACT = {
+  // bugs/118 F1: фрагмент Claude Code — ЕДИНСТВЕННЫЙ конфиг, который владелец мержит себе руками, — в ось
+  // не попадал: охват брался по паттерну имени `sample-*.json`. Теперь судится каждый `*.json` модуля.
+  'settings-fragment.json':        ['SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий)
   'sample-codex-hooks.json':       ['SessionStart', 'UserPromptSubmit'],  // researches/19 §OpenAI Codex
   'sample-cursor-hooks.json':      ['sessionStart'],                      // researches/19 §Cursor
   'sample-copilot-hooks.json':     ['sessionStart'],                      // researches/19 §GitHub Copilot
@@ -258,8 +355,11 @@ const contractDiff = (file, json) => {
   const got = [...eventNamesOf(json)].sort();
   return { want, got, extra: got.filter((e) => !want.includes(e)), missing: want.filter((e) => !got.includes(e)) };
 };
-const samplesOnDisk = readdirSync(join(S, '.kaif', 'hooks')).filter((n) => /^sample-.*\.json$/.test(n)).sort();
-ok(samplesOnDisk.length > 0, `s14/O5 ось имён: образцы найдены в развёрнутом модуле (${samplesOnDisk.length})`);
+// Охват — СОСТАВ модуля, а не паттерн имени (bugs/118 F1): конфиг с любым именем либо несёт названный
+// контракт, либо краснит ось. Терпимое чтение каталога: на красном прогоне без модуля свод досчитывает остальное.
+const samplesOnDisk = (() => { try { return readdirSync(join(S, '.kaif', 'hooks')).filter((n) => /\.json$/.test(n)).sort(); } catch { return []; } })();
+ok(samplesOnDisk.includes('settings-fragment.json') && samplesOnDisk.length > 1,
+   `s14/O5 ось имён: конфиги найдены в развёрнутом модуле, фрагмент Claude Code среди них (${samplesOnDisk.length})`, samplesOnDisk.join(', '));
 for (const f of samplesOnDisk) {
   if (!EVENT_CONTRACT[f]) {
     ok(false, `s14/O5 ось имён: у образца ${f} НЕ НАЗВАН контракт событий — выпиши его из researches/19`);
@@ -285,6 +385,67 @@ for (const [f, from, to] of [['sample-cursor-hooks.json', 'sessionStart', 'Sessi
      `лишние: [${d.extra.join(', ')}] · недостающие: [${d.missing.join(', ')}]`);
   ok(Buffer.compare(bytesBefore, readFileSync(p)) === 0,
      `s14/O5 ось имён: доказательство не тронуло сам образец ${f} (побайтная сверка до/после)`);
+}
+
+// ------------------------------------------------- ОСЬ ПАР «скрипт ↔ событие» (bugs/118 F1)
+// Ось имён судит, КАКИЕ события названы, и не судит, КАКОЙ скрипт под каким стоит: мутант, где
+// `prompt-resume-word.mjs` и `stop-status-guard.mjs` поменяны местами, проходил свод 68/68 зелёным — а приказ
+// `/resume` на `Stop` не приходит никогда, и оба хука умирают молча, неотличимо от неподключённого модуля.
+// Ожидаемая пара берётся из ШАПКИ самого развёрнутого скрипта (`Claude Code event: <Имя>`) — не из конфига
+// и не из таблицы в этом своде: третьей рукописной копии того же факта ось НЕ заводит (класс bugs/118 —
+// страж судит копию истины). Судятся конфиги формы Claude Code — фрагмент и образец Codex (README модуля:
+// «same field names»); у остальных образцов один скрипт на одно событие, их пару держат ось имён и матрица
+// `must`/`mustNot` вместе. Адресат мутанта назван заранее (EXP-0059): обмен двух скриптов во фрагменте
+// краснит ровно ассерт пар фрагмента — ось имён и текстовый ассерт «адресует все четыре» остаются зелёными.
+console.log('\n=== s14: каждый скрипт стоит под СВОИМ событием (bugs/118 F1) ===');
+const PAIR_AXIS = ['settings-fragment.json', 'sample-codex-hooks.json'];
+const headerEventOf = (script) => {
+  try { return (readFileSync(join(S, '.kaif', 'hooks', script), 'utf8').match(/Claude Code event: (\w+)/) || [])[1] || null; } catch { return null; }
+};
+const stringsOf = (node, acc = []) => {
+  if (typeof node === 'string') acc.push(node);
+  else if (Array.isArray(node)) node.forEach((n) => stringsOf(n, acc));
+  else if (node && typeof node === 'object') for (const [k, v] of Object.entries(node)) if (!k.startsWith('_')) stringsOf(v, acc);
+  return acc;
+};
+// [скрипт, событие] обходом КЛЮЧЕЙ события (тот же признак события, что у `eventNamesOf`), а не текста файла
+const pairsOf = (json) => {
+  const acc = [];
+  const walk = (node) => {
+    if (Array.isArray(node)) { node.forEach(walk); return; }
+    if (!node || typeof node !== 'object') return;
+    for (const [k, v] of Object.entries(node)) {
+      if (k.startsWith('_')) continue;
+      const isEvent = !CONTAINER_KEYS.has(k) && Array.isArray(v) && v.length && v.every((e) => e && typeof e === 'object');
+      if (isEvent) { for (const s of stringsOf(v)) for (const m of s.matchAll(/\.kaif\/hooks\/([\w-]+\.mjs)/g)) acc.push([m[1], k]); }
+      else walk(v);
+    }
+  };
+  walk(json);
+  return acc;
+};
+const pairDiff = (json) => pairsOf(json).filter(([script, event]) => headerEventOf(script) !== event)
+  .map(([script, event]) => `${script} стоит под ${event}, а его шапка называет ${headerEventOf(script)}`);
+for (const f of PAIR_AXIS) {
+  const json = readJson(join(S, '.kaif', 'hooks', f));
+  const pairs = json ? pairsOf(json) : [];
+  const bad = json ? pairDiff(json) : ['конфиг не читается'];
+  ok(pairs.length > 0 && bad.length === 0, `s14 ось пар ${f}: каждый скрипт стоит под событием из своей шапки (${pairs.length} пар)`, bad.join(' · '));
+}
+{
+  const fragPairs = pairsOf(readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {}).map(([s]) => s).sort();
+  ok(JSON.stringify(fragPairs) === JSON.stringify(HOOK_FILES.slice(0, 4).sort()),
+     's14 ось пар: фрагмент подключает ровно четыре развёрнутых скрипта, каждый один раз', fragPairs.join(', '));
+  // Мутационное доказательство живёт В СВОДЕ (EXP-0016): обмен двух скриптов в разобранной КОПИИ (EXP-0077).
+  const p = join(S, '.kaif', 'hooks', 'settings-fragment.json');
+  const bytesBefore = (() => { try { return readFileSync(p); } catch { return Buffer.alloc(0); } })();
+  const swapped = JSON.parse(JSON.stringify(readJson(p))
+    .split('prompt-resume-word.mjs').join('@@SWAP@@').split('stop-status-guard.mjs').join('prompt-resume-word.mjs').split('@@SWAP@@').join('stop-status-guard.mjs'));
+  const bad = swapped ? pairDiff(swapped) : [];
+  ok(bad.length === 2 && bad.some((b) => b.startsWith('prompt-resume-word.mjs стоит под Stop')) && bad.some((b) => b.startsWith('stop-status-guard.mjs стоит под UserPromptSubmit')),
+     's14 ось пар: мутация фрагмента (resume-word ↔ stop-status-guard) КРАСНАЯ и называет обе пары', bad.join(' · '));
+  ok(bytesBefore.length > 0 && Buffer.compare(bytesBefore, (() => { try { return readFileSync(p); } catch { return Buffer.alloc(0); } })()) === 0,
+     's14 ось пар: доказательство не тронуло сам фрагмент (побайтная сверка до/после)');
 }
 
 // поведение форм: один приказ, четыре конверта (проверяется на РАЗВЁРНУТЫХ копиях)

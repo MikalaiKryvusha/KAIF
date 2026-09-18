@@ -83,7 +83,7 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.7": [
-      "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". TWO THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\"",
+      "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". TWO THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
       "THE OWNER'S WORD IS A QUOTE, THE AGENT'S WORD IS SIGNED (epic AW; origin issue #55, 🔴🔴🔴 TOP by the owner's word: \"you write some nonsense yourself, then read it back and interpret it as MY word\" — a \"the owner's decision P1: wait\" comment in live code, whose real owner word was \"do as you see fit\", held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no quote): AGENT_GUIDE (both layers) gains \"Authorship of a decision\" — every recorded decision carries its author ([OWNER] \"<verbatim>\" · date, or the interview address, vs [AI]); \"do as you see fit\" is a MANDATE recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; the source of truth about the owner's words is the chat and interviews/, everything else is a retelling. The NEW optional tool module .kaif/tools/kaif-attribution-lint.mjs (check [paths…] [--write-baseline] / selftest, SKIPPED=3) counts references to the owner's will with no verbatim quote and no interview address within ±2 lines as debt with a baseline that only shrinks; /fable-judge hunts \"an agent decision worn as the owner's word\".",
       "PROVENANCE MARKS ARE LEGAL IN DRAFTS TO THE OWNER (epic AW; origin issue #55 comment — a field agent, forbidden to mark outside the canon, invented \"(my taste)\", and a pronoun has no owner a day later): kaif-provenance `check` no longer refuses [AI]…[/AI] outside canonArtifacts — marks are REQUIRED in the declared canon and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, never entries of the acceptance registry). AGENT_GUIDE (both layers): the write-gate draft carries the marks on the agent's lines; a pronoun is not a provenance mark; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked. /interview step 3a says the same.",
       "DELIVERY ACCOUNTING IS REMOVED (epic DR; the origin owner's word, 2026-09-12: \"remove the DELIVERY feature from KAIF — projects started writing it, but I do not use it and see no value in it\"): the core command `delivery`, the SYSTEMS_REGISTRY.md canon document and its skeleton .kaif/_systems-registry-template.md (retired by this update), the `Kind:` line of bug documents, the forced `DELIVERY:` line of /end-chat-soft, /end-chat-force and the four loops, the delivery-line hunt of /fable-judge and the MASTER_PLAN \"Delivery vector\" block are gone. This SUPERSEDES the 2.5 \"DELIVERY ACCOUNTING\" and 2.6 \"SYSTEMS_REGISTRY.md\" entries of this task: do NOT build a registry, do NOT print the line. /what-next keeps its 2.6 form; METRIC: now reads the main phase's acceptance metric (criteria closed k of n) from MASTER_PLAN.md / the active plan, and kaif-ranking-lint judges the same form.",
@@ -15596,7 +15596,9 @@ else usage(`unknown command "${CMD}"`);
 // "…"}}. A hook must never break the session: any internal error → exit 0 silently.
 // [TESTED: 2026-08-07 · polygon s14: fresh marker → silent; missing marker → order ("no refresh
 //  witness"); marker older than the interval → order naming the age; MALFORMED marker → judged by
-//  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks]
+//  the file's mtime instead, so malformed+fresh is SILENT and malformed+old speaks — the "old" half
+//  was claimed here before any assert fed it; s14 asserts it since 2026-09-18 (origin bug 121), along
+//  with a BOM-led event and a BOM-led marker reading exactly like their clean twins]
 //
 // PORTABILITY — `--emit <shape>` (epic O phase O5, contracts live-fetched 2026-08-07). The
 // timer is the hook systems disagree about MOST: only two of the surveyed systems let a
@@ -15631,7 +15633,9 @@ try {
 
   let cwd = process.cwd();
   try {
-    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
+    // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it) — origin bug 119.
+    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — fall back to process.cwd() */ }
 
@@ -15641,7 +15645,9 @@ try {
   let ageMin = Infinity;
   try {
     let at = NaN;
-    try { at = Date.parse(JSON.parse(readFileSync(markerPath, 'utf8')).at); } catch { /* malformed JSON/at */ }
+    // (same BOM tolerance as stdin: a marker written by `Set-Content -Encoding UTF8` carries one, and a
+    // parse failure here would silently swap the marker's own `at` for the file mtime)
+    try { at = Date.parse(JSON.parse(readFileSync(markerPath, 'utf8').replace(/^\uFEFF/, '')).at); } catch { /* malformed JSON/at */ }
     if (Number.isNaN(at)) at = statSync(markerPath).mtimeMs;
     ageMin = (Date.now() - at) / 60000;
   } catch { /* no marker at all — stays Infinity */ }
@@ -15731,7 +15737,11 @@ try {
 
   let prompt = null;
   try {
-    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    // A leading U+FEFF is dropped before the parse: Windows PowerShell 5.1 on a UTF-8 console puts
+    // the three bytes in front of ANY string piped into a native command, so the hand-run smoke of
+    // .kaif/hooks/README.md fell silent on a valid event (origin bugs 119/121). RFC 8259 §8.1: a
+    // parser "MAY ignore the presence of a byte order mark rather than treating it as an error".
+    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (typeof input.prompt === 'string') prompt = input.prompt;
   } catch { /* unreadable stdin — no text, no predicate, no output */ }
 
@@ -15768,18 +15778,22 @@ lacking them.
 
 ## What ships here
 
-| Script | Event (Claude Code) | Predicate (anti-noise) | Action |
-|---|---|---|---|
-| `session-start-refresh.mjs` | `SessionStart`, matcher `compact\|clear` | none — compaction is itself rare | injects the ORDER to re-read the re-read core + stamp the witness |
-| `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | injects the refresh order; silent while the marker is fresh |
-| `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h; **once per session** | soft block: update STATUS.md or say why nothing changed |
-| `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires — and ANY first word from that family fires, including a file named `resume.log`, "Resume the deployment" or the Russian noun for a CV: one extra entry ritual is the named price | injects the ORDER to run `/resume` in full before the rest of the message; silent on every other prompt and on an event without a `prompt` field |
+| Script | Event (Claude Code) | Predicate (anti-noise) | Repeats? | Action |
+|---|---|---|---|---|
+| `session-start-refresh.mjs` | `SessionStart`, matcher `compact\|clear` | none — compaction is itself rare | one order per compaction or clear | injects the ORDER to re-read the re-read core + stamp the witness |
+| `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
+| `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
+| `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires — and ANY first word from that family fires, including a file named `resume.log`, "Resume the deployment" or the Russian noun for a CV: one extra entry ritual is the named price | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message; silent on every other prompt and on an event without a `prompt` field |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
-predicate and a cooldown; injections are ORDERS to re-read, never document bodies (the output
-cap is 10 000 characters, and pasting docs would spend the context the refresh restores);
-`Stop` is the only blocking hook, and even it fires at most once per session. A hook never
-breaks the session: on any internal error it exits 0 silently.
+predicate, or names why it needs none, and the table above says which; a suppression window
+exists where repeating would be noise (`Stop` fires at most once per session) and is absent ON
+PURPOSE where repeating is the point — a reminder that goes away unobeyed teaches that it can be
+ignored, so the timer repeats until the marker is re-stamped, and every message that opens with
+the resume word is a separate order; injections are ORDERS to re-read, never document bodies
+(the output cap is 10 000 characters, and pasting docs would spend the context the refresh
+restores); `Stop` is the only blocking hook. A hook never breaks the session: on any internal
+error it exits 0 silently.
 
 ## Opt-in — an explicit owner step
 
@@ -15791,13 +15805,33 @@ config. To enable:
 2. Merge that object into `.claude/settings.json` (shared with the team, committed) or
    `.claude/settings.local.json` (personal), with the owner's consent recorded where your
    project records decisions.
-3. Reload the session (hook configs are read at session start). Smoke: run
-   `node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null` with no `.kaif/refresh-marker.json`
-   present — it must print a JSON order; stamp a fresh marker — it must print nothing. The
-   redirect matters: the hook reads its event JSON from stdin, so a hand-run without it waits on
-   the terminal forever (field: a two-minute timeout on the first try). For the fourth hook:
-   `printf '{"prompt":"resume\\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs` must print
-   the order to run `/resume`; the same line with `"plan the day"` alone must print nothing.
+3. Reload the session (hook configs are read at session start), then smoke the scripts by hand
+   from the project root, with no `.kaif/refresh-marker.json` present. Use the block of YOUR
+   shell — a redirect or a `printf` that one shell understands is a parse error in another.
+
+   POSIX shells (bash, zsh, sh — Git Bash on Windows too):
+
+   ```sh
+   node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null
+   printf '{"prompt":"resume\\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   printf '{"prompt":"plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   ```
+
+   Windows PowerShell (5.1 and later):
+
+   ```powershell
+   '' | node .kaif/hooks/prompt-refresh-timer.mjs
+   '{"prompt":"resume\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   '{"prompt":"plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   ```
+
+   In either block the first line must print a JSON order (stamp a fresh marker and it must print
+   nothing), the second must print the order to run `/resume`, the third must print nothing. The
+   empty stdin on the first line matters: the hook reads its event JSON from stdin, so a hand-run
+   without it waits on the terminal forever (field: a two-minute timeout on the first try). If
+   the second line stays silent, the event did not parse — check that the JSON reached the script
+   intact (the byte-order mark PowerShell puts in front of a piped string is dropped by the
+   scripts themselves).
 
 To disable: remove the entries from your settings file. The markdown ritual keeps working
 either way.
@@ -16032,7 +16066,10 @@ try {
 
   let source = 'compact';
   try {
-    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
+    // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it). Unstripped, a
+    // `clear` event fell back to the default and ordered the WRONG trigger stamp — origin bug 119.
+    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (input.source) source = String(input.source);
   } catch { /* unreadable stdin — keep the default source label; the order still stands */ }
 
@@ -16144,7 +16181,9 @@ try {
   let cwd = process.cwd();
   let sessionId = 'unknown-session';
   try {
-    const input = JSON.parse(readFileSync(0, 'utf8') || '{}');
+    // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
+    // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it) — origin bug 119.
+    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (input.cwd) cwd = String(input.cwd);
     if (input.session_id) sessionId = String(input.session_id);
   } catch { /* unreadable stdin — defaults keep the guard functional */ }

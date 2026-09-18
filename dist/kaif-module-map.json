@@ -5437,19 +5437,19 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "c4b808210f8cb1302154209656066c4b3a6f0b5b9d1dd9b73e93a95c0e02a603",
+        "sha256": "7d2be6b3f30bafa3e65a336f0c49acee00b2f41dd80c6473e484082ba9dd97da",
         "lines": [
           10,
-          24
+          28
         ]
       },
       {
         "signature": "## Opt-in — an explicit owner step",
         "class": "static",
-        "sha256": "40f0108a8cc9984534946979396794a8a6d058856e8f425e513aa82096e358ce",
+        "sha256": "31fc9296cefaa7e6e4f457ac9907d7d36dc29debd50c608e1de2e2d45965bb93",
         "lines": [
-          25,
-          45
+          29,
+          69
         ]
       },
       {
@@ -5457,8 +5457,8 @@
         "class": "static",
         "sha256": "582a1b80a9e457e6e589fe807a5ad9f98af9dec3f22d737cddea506f6ddd70d9",
         "lines": [
-          46,
-          104
+          70,
+          128
         ]
       }
     ],
