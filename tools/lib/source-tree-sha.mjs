@@ -27,7 +27,10 @@
 //                 builder imports beyond module-map-lib) are not fingerprinted — add them here when the builder does;
 //                 version.json is projected (every key except `build`), so a field the builder starts reading from
 //                 `build` would be invisible — it reads none today (grep "version.json" tools/build-framework.mjs)
-// ON-REAL-PATH:   2026-09-18 09:07 +03:00 — the origin's own tree made stale on purpose (a probe file under framework/, no
+// ON-REAL-PATH:   2026-09-18 11:06 +03:00 — THREE trees of one commit (the origin's working tree with mixed EOL · a `git archive`
+//                 export · a clean worktree checkout) read "fresh" with one fingerprint and no rebuild, and the polygon ran green
+//                 right after a commit that bumped `build` (tools/sandbox/probes/dist-fresh-on-clean-exports.mjs); before that,
+//                 2026-09-18 09:07 +03:00 — the origin's own tree made stale on purpose (a probe file under framework/, no
 //                 rebuild): `npm run test:core` refused before the first suite, naming both fingerprints; probe removed → green
 // [TESTED: 2026-09-18 · the polygon gate observed on a REAL stale tree of the origin — a probe file dropped under
 //  framework/ without a rebuild → `npm run test:core` refused before the first suite ("dist is stale — rebuild …
