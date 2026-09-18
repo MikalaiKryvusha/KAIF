@@ -124,22 +124,19 @@ const flat = (s) => s.replace(/\r?\n>?\s*/g, ' ').replace(/\s+/g, ' ');
 // понятия записаны другой формулировкой. Здесь зеркала собраны грепом по ПОНЯТИЮ.
 // Пропись в этих строках намеренно переведена в цифры — по прецеденту §8.2 (зеркало, которое
 // трудно проверить, не проверяют вовсе).
+// 2.7 (эпик CB, стрижка истока под бюджет ядра, 2026-09-18): копия дерева репозитория в `AGENT_GUIDE.md` СНЯТА — дерево
+// ведётся в одном месте, внешней карте. Три зеркала гида («the N skill templates» · «the N directory-README templates» ·
+// «sandbox/s01–sNN (N сводов)») ушли вместе с парой: лучший способ стеречь зеркало — не держать его (PHILOSOPHY → DRY);
+// та же копия дважды протухала (bugs/60, bugs/68). Число классов стража витрины живёт в таблице инструментов, а она
+// переехала в `HOUSE_RULES.md` §1 — зеркало переадресовано туда.
 const LAYOUT_MIRRORS = [
-  { name: 'AGENT_GUIDE — дерево: шаблоны навыков', file: 'AGENT_GUIDE.md',
-    re: /the (\d+) skill templates/, keys: ['skills'] },
-  { name: 'AGENT_GUIDE — дерево: README директорий', file: 'AGENT_GUIDE.md',
-    re: /the (\d+) directory-README templates/, keys: ['readmes'] },
-  // 2.7 (epic DR): s20 retired with the delivery vector — the range end no longer equals the count,
-  // so the tree quotes the COUNT explicitly and the guard reads that, never the range end.
-  { name: 'AGENT_GUIDE — дерево: своды полигона', file: 'AGENT_GUIDE.md',
-    re: /sandbox\/s01–s\d+ \((\d+) свод/, keys: ['suites'] },
   { name: 'внешняя карта — дерево: шаблоны README', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
     re: /(\d+) шаблон\S* README директорий/, keys: ['readmes'] },
   { name: 'внешняя карта — дерево: своды полигона', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
     re: /sandbox\/s01…s\d+\*\.mjs \((\d+) свод/, keys: ['suites'] },
   { name: 'внешняя карта — порядковый номер пояснительной записки', file: 'PROJECT_STRUCTURE_EXTERNAL_MAP.md',
     re: /\((\d+)-й ключевой документ/, keys: ['docs'] },
-  { name: 'AGENT_GUIDE — реестр стражей: классы showcase-lint', file: 'AGENT_GUIDE.md',
+  { name: 'HOUSE_RULES — реестр стражей: классы showcase-lint', file: 'HOUSE_RULES.md',
     re: /Страж ВИТРИНЫ[^|]*?(\d+) классов волны/, keys: ['showcaseClasses'] },
 ];
 
@@ -417,7 +414,7 @@ function checkLayoutAxis(live, findings) {
     });
   }
   // Перечисления опциональных модулей поставки — по ИМЕНАМ.
-  for (const file of ['AGENT_GUIDE.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md']) {
+  for (const file of ['PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md']) {
     const path = join(ROOT, file);
     if (!existsSync(path)) continue;
     const text = readFileSync(path, 'utf8');
@@ -429,7 +426,7 @@ function checkLayoutAxis(live, findings) {
     const missing = live.toolModules.filter((n) => !named(n));
     if (missing.length) findings.push(`перечисление tool-модулей (${file}): не названы — ${missing.join(', ')}`);
   }
-  return LAYOUT_MIRRORS.length + 3;
+  return LAYOUT_MIRRORS.length + 2;
 }
 
 function check() {
@@ -488,7 +485,7 @@ function selftest() {
   // Ось раскладки (bugs/68) добавила внешнюю карту — и правило выше сработало НЕМЕДЛЕННО:
   // селфтест покраснел «чистая копия — зелёный» ровно на том, что нового файла в песочнице нет.
   const ROOT_FILES = ['AGENT_GUIDE.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PHILOSOPHY.md',
-                      'PROJECT_STRUCTURE_EXTERNAL_MAP.md'];
+                      'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'HOUSE_RULES.md'];   // HOUSE_RULES — дом зеркала классов витрины (CB 2.7)
   for (const f of ROOT_FILES) cpSync(join(ROOT, f), join(SBX, f));
   // Той же оси нужен САМ страж витрины: его `--classes` — живой источник числа классов.
   cpSync(join(ROOT, 'tools', 'showcase-lint.mjs'), join(SBX, 'tools', 'showcase-lint.mjs'));
@@ -500,7 +497,9 @@ function selftest() {
   // обязаны существовать в песочнице — иначе «чистая копия» покраснела бы от отсутствия файла.
   // Плюс один языковой пакет — ось ключей мутируется тем же механизмом (bugs/55, вхождение 3).
   const PACK_REL = 'framework/templates/languages/ru/skill-triggers.json';
-  const ORIGINALS = { 'README.md': readme, 'AGENT_GUIDE.md': guide,
+  const EXT_MAP = 'PROJECT_STRUCTURE_EXTERNAL_MAP.md';
+  const extMap = readFileSync(join(ROOT, EXT_MAP), 'utf8');
+  const ORIGINALS = { 'README.md': readme, 'AGENT_GUIDE.md': guide, [EXT_MAP]: extMap,
                       'STATUS.md': readFileSync(join(ROOT, 'STATUS.md'), 'utf8'),
                       [PACK_REL]: readFileSync(join(ROOT, PACK_REL), 'utf8') };
   const run = () => {
@@ -567,11 +566,12 @@ function selftest() {
   // (11) ось РАСКЛАДКИ (bugs/68) — счётчик в ДЕРЕВЕ канон-карты. Раньше эта поверхность не
   //      стереглась вовсе: «the 28 skill templates» простояло при 35, а страж был зелёным.
   //      Цель берётся ИЗ ТЕКСТА (bugs/60): зашитое «the 35 skill templates» простояло при 37.
-  const gTree = retarget(guide, /the (\d+) skill templates/);
-  const hitTree = Boolean(gTree) && mutate('AGENT_GUIDE.md', gTree[0], `the ${Number(gTree[1]) - 1} skill templates`);
+  //      С 2.7 (CB) дерево живёт ТОЛЬКО во внешней карте — мутируется его счётчик там (копия в гиде снята вместе с зеркалами).
+  const gTree = retarget(extMap, /(\d+) (шаблон\S* README директорий)/);
+  const hitTree = Boolean(gTree) && mutate(EXT_MAP, gTree[0], `${Number(gTree[1]) - 1} ${gTree[2]}`);
   const brokenTree = run(); restore();
   // (12) ось РАСКЛАДКИ — перечисление tool-модулей ПО ИМЕНАМ: счёт остаётся тем же, имя чужое.
-  const hitModule = mutate('AGENT_GUIDE.md', 'kaif-requirements-lint', 'kaif-requirements-linter');
+  const hitModule = mutate(EXT_MAP, 'kaif-requirements-lint', 'kaif-requirements-linter');
   const brokenModule = run(); restore();
   // (13) ось ДОКУМЕНТОВ (bugs/66 №5) — ПРОПАВШАЯ строка Таблицы 1 в ОДНОЙ половине. До этой оси
   //      Таблица 1 не была зоной вовсе: удаление строки не видел ни counters-guard, ни
