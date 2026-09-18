@@ -3035,7 +3035,11 @@ mirrored into every declared agent system (§7.3). Groups:
   "not a defect"; survivors become bug docs and feed the guardrails. Since 2.2 the run also leaves
   audit reports in `reports/KAIF_AUDIT/` — one document per finding family plus a summary with the
   coverage map and the limits — and each finding is written as an eight-field contract a weaker
-  model can execute (skeletons: the skill's `references/audit-report-template.md`).
+  model can execute (skeletons: the skill's `references/audit-report-template.md`). Rewritten by its
+  executor in 2.7 (epic CR) and then proven by a functional run on a real zone: the reference now
+  carries the reviewer and skeptic briefs and the effective-FP procedure, the newest summary that IS
+  a revision is named as the run's baseline, and the seven places where the executor stopped were
+  fixed in the text.
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
@@ -5561,8 +5565,10 @@ afterwards.
 
 ## Step 0 — baseline, scope, budget, and the ground before the hunt
 
-1. **Find the baseline** *[mechanical]*: the newest `reports/KAIF_AUDIT/*_SUMMARY.md` IS the record
-   of the last revision. Its coverage map, its Limits and its closing "what the NEXT run must
+1. **Find the baseline** *[mechanical]*: the newest `reports/KAIF_AUDIT/*_SUMMARY.md` that IS a
+   revision — it carries a methodology table (zones · reviewers · axes) AND a coverage map — is the
+   record of the last revision. The folder may hold summaries of another genre (a triage table of an
+   earlier run's findings carries neither): skip them, take the newest that carries both. Its coverage map, its Limits and its closing "what the NEXT run must
    change" are this run's inputs. No summary yet → run 1: the whole codebase. The run is due when
    the owner asks or when that summary is older than the cadence `AGENT_GUIDE.md` names (four
    weeks when it names none) — no setting is invented for it.
@@ -5570,10 +5576,12 @@ afterwards.
    --stat`) plus the zones the baseline said to take next. Zones are cut by language / layer /
    subsystem — and by CANON DOCUMENT: a promise in the canon with no mechanism behind it is an
    omission, hunted from the document side (the pairs registry is its deterministic layer).
-3. **Name the budget and the stop rule** in the chat before starting: reviewers · skeptics · the
-   token or time ceiling; the run stops when the zone list is exhausted or the noise budget
-   (reference §5) is hit. The summary records what was actually spent (the origin's first run: 13
-   agents, about 1.2 M tokens, three zones).
+3. **Name the budget and the stop rule** in the chat before starting: reviewers · skeptics · a
+   ceiling in units the executor CAN measure — agents and wall-clock time; tokens only where the
+   harness shows a counter (an invented number is worse than none). The run stops when the zone
+   list is exhausted or the noise budget (reference §5) is hit. The summary records what was
+   actually spent in the same units (the origin's first run: 13 agents, three zones; its "about
+   1.2 M tokens" was read by the owner from the interface, not by the agent).
 4. **Record the scope line in the chat**: what is hunted — **defects · vulnerabilities · frauds ·
    contradictions · omissions**, including the omission of something the canon promised — and what
    is NOT hunted (excluded classes, reference §5): a revision reporting everything is ignored
@@ -5581,17 +5589,26 @@ afterwards.
 5. **Map the ground** *[judgment]*: subsystems, boundaries, contracts, what each zone is FOR, before
    any hunting — a reviewer who does not know a boundary reports crossing it as a defect. The map
    goes into the report's methodology table, so the next run inherits it.
-6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, every `.kaif/tools/*`
-   module (`check` and `selftest`), the project's own guards (the tools table of `AGENT_GUIDE.md`),
-   the pairs registry, and the greps of the paid classes — the `Repro:` lines of the `EXPERIENCE.md`
-   entries tagged with the zone's tags. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A
-   finding is not a finding until verified", point 1); what code can find, the model is not spent
-   on. Nothing in this step raises a window or a sound on the owner's machine: a contour generator
+6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, the `.kaif/tools/*`
+   modules WHOSE SCOPE CROSSES THE ZONE (`check` and `selftest`; a module that reads nothing in the
+   zone is not run for it, and the summary names which were run), the project's own guards (the
+   tools table of `AGENT_GUIDE.md`), the pairs registry, and the greps of the paid classes — the
+   `Repro:` lines of the `EXPERIENCE.md` entries tagged with the zone's tags. A repository that
+   BUILDS the framework instead of deploying it has no `.kaif/`: the same modules live where its
+   tools table says. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A finding is not a
+   finding until verified", point 1); what code can find, the model is not spent on. A tool that
+   answers "nothing to judge here" (its own exit code, e.g. `SKIPPED=3`) is evidence too — of
+   ABSENCE: where the canon promises such declarations for this zone, the absence becomes an axis
+   for the reviewers (a canon promise with no mechanism); where it does not, it goes into Limits
+   as "not applicable" — and it is never read as green. Nothing in this step raises a window or a sound on the owner's machine: a contour generator
    or a live page is never started by a reviewer — the executor starts it, announced.
 
 ## Step 1 — zone and arm the reviewers
 
-- One reviewer per zone, parallel where the harness allows; each reviewer receives a WRITTEN brief
+- One reviewer per zone — or, for a single small zone, two or more cut by the zone's CLAIM
+  CLUSTERS (what the zone promises, not its directories; reference §7: reviewers cut that way came
+  at one defect from different sides and raised no duplicate card) — parallel where the harness
+  allows; each reviewer receives a WRITTEN brief
   (reference §7) — its zone, the paid classes, the axes, the excluded classes, the card form, the
   budget — never the whole skill, and never "look for problems".
 - Arm EVERY reviewer with the project's own **paid-for failure classes**: the `EXPERIENCE.md`
@@ -5620,7 +5637,10 @@ execute the fix are the repro stated as a class condition, the verification comm
 card, and the link to a paid class. Every finding is also marked against the baseline — `new` /
 `known: <bugs/NN or EXP-NNNN>` / `regression of <id>` — with the feedback loop's own fingerprint,
 `kaif-fp: <surface> :: <symptom-class> :: v<major.minor>`, and its `Dedup attestation:` line
-naming the commands grepped (`/report-bug`); never a second key minted here.
+naming the commands grepped (`/report-bug`) — both live IN THE AUDIT CARD always; whether the
+project's bug document repeats them is that project's `/report-bug` rule (a deployment's
+`bugs/KAIF/` tickets carry them; a project whose bugs are its own may not). Never a second key
+minted here.
 
 ## Step 3 — the adversarial skeptic (mandatory, not optional)
 

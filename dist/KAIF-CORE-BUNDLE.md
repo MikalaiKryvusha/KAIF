@@ -98,6 +98,7 @@
       "A FREE SEAT ASKS FOR WORK, AND A GENERATED CONSTITUTION KEEPS EVERY OBLIGATION OF ITS TEMPLATE (epic FR; origin issue #68 — a field seat finished its half of a smoke, committed, reported to its neighbour and to the owner, and stopped, while `STATUS.md` named three tickets \"claimed by nobody\" and a second seat sat idle on the board; the owner ended the idling himself). Two halves of one defect. (1) THE OBLIGATION: \"idle — report to the Manager\" lived as a TRAILING CLAUSE of the rule about blockers, and the rule is inverted relative to its cost — a blocker is felt by the agent, availability only by the dispatcher. The constitution template now carries it as its own § 2 rule 6 with an exit condition: task closed and no next one → ONE message to the Manager before the turn ends, naming what is done, what remains and which candidates you can take, by name from `STATUS.md` or the board (\"I am free, may I take X / Y / Z\"); idling without it is an UNCLOSED task, idling the owner had to end is a defect. The board template says the same from its side: a row set to `🟢 free` carries the request in the SAME write, and the board tool contract gains `--free --asking \"<candidates>\"` (item 7; `audit-waiting` becomes item 8). § 9 puts `TEAM_CONSTITUTION.md` into every seat's RE-READ CORE while more than one role window is open — named in the refresh marker's `docs` at every trigger. (2) THE GATE: the obligation did not survive GENERATION — the field constitution kept 5 of the template's 9 § 2 rules and nothing noticed, because a shorter document looks like editorial tightening rather than loss. `check` now compares a `TEAM_CONSTITUTION.md` in the project root against the template that shipped with the skill (found in the deployed `.claude/.agents/.grok/.cline` skills): obligations are the bold anchors of § 2's numbered items plus the nine invariant `## N.` headings, headings matched by NUMBER (which survives translation) and rules by anchor — and when NOT ONE anchor matches, the document is translated, so the axis says so and counts instead (\"cannot match translated anchors: 10 expected in §2, 5 found\"), printing the template's own order so the loss has something to be restored from. Every loss is named: `⚠ TEAM_CONSTITUTION.md lost N obligation(s) of the template: §2 \"A free seat asks for work.\" …`. A warning, never a failure — the constitution is the owner's document; a deliberate omission is DECLARED beside the item with `<!-- constitution-ok: <why> -->`, and a tree with no constitution or no template is silent. /team-deployment now runs `check` and READS its lines at operation 3 step 1, at the start of the adopt inventory, and in \"Done when\".",
       "A LIVE OWNER PAGE IS CLOSED ONLY BY A CHECKED COMMAND, THE ANSWER SURVIVES THE SERVER, AND A TEST PAGE NEVER CALLS THE OWNER (epic LP; origin issue #66 — the project owner's word, rendered from Russian: \"the contour closed and I did not give my answers — I WAS WRITING AT THAT MOMENT\": a neighbour session said \"close that page\" and an agent killed the process; and the origin owner's word on interview 032: \"no choice, no 'save as' — everything works for the user as it did! JS itself writes the file to the computer, into the project folder\"). Three changes of the shipped generator .kaif/tools/contour/. (1) `<doc> --close` is the ONLY way to end a live page from outside: it reads the lock — port · pid · title · the page's last input · draft state (the pulse `/alive?i=&d=&s=` carries them, and the first keystroke after a pause pulses within a second) — prints them so the agent can compare with the window it was told about, and REFUSES with exit 4 while the last input is younger than the quiet threshold (180 s, `contour.closeQuietMs`), while the page itself is younger than it (the owner may be reading), or while a draft is unsaved; otherwise it asks the page's OWN server to end (a token from the lock — a pid read from a file is never killed without `--force`, and the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word \"<quote>\"` and logs the quote. /owner-reviews I46, spec §5, AGENT_GUIDE \"Showing is an action\" in both layers. (2) The app window runs on its OWN browser profile inside the project — `.kaif/contour-window/`, added to .gitignore by the machinery (ignore-first), with the three sign-in-off flags and an `account_info` check after launch — so the draft is on the owner's disk IN THE PROJECT; Save with the server gone stores the answer there — IndexedDB first, measured on disk half a second after the write even when the browser is then killed (`localStorage` needs about six and keeps only a copy and the typed draft) — and the page says \"saved on this computer, the agent will pick it up\" — no dialog, no rescue ring; the next `--queue --list`, `--check` or show picks it up: a headless run of the same profile on the same port posts it back (deferred while a browser still holds the profile — the owner's window is open), it is recorded as the owner's decision with `recovered: true` (the provenance comment in the md says \"picked up from the owner's computer\"), the lock is released; an unsaved draft is named and kept. Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified. /owner-reviews I47, spec §3/§4. (3) An unknown flag REFUSES before any page, sound or call (exit 1, the core's bug-33 rule; the 2.6 generator let `--close` fall through to the show and CALLED the owner) — spec §2; and at the origin the polygon refuses to run against a STALE dist (a fingerprint of framework/** in kaif-manifest.json `sourceTree`). /fable-judge hunts a page closed past its command and an answer left on the owner's machine.",
       "A QUESTION TO THE OWNER IS ASKED AFTER THE ARCHAEOLOGY, NOT BEFORE IT (epic AQ; origin issue #70 — an audited field deployment brought one owner 13 questions that his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: \"you are asking ME? did you look into GOAL.md, smart guy, before asking?\" · \"you ask me questions without having looked at the history of decisions... we have discussed this already. Search.\"). A question to the owner is a CLAIM that the matter is not settled yet, and nothing verified it: the rule \"do not ask what is already decided\" stood twice in `/interview` as PROSE with no command, the form door (`--check`, 2.7 QL1) judged only the FORM of a question, and not one interview of five deployments on the author's disk carried a trace of a search (223 documents, measured 2026-09-18). Now the same door has a SECOND axis. A LIVE question of a document whose header date is on or after 2026-09-18 opens only WITH the attestation of the search that was actually run, standing between the heading and its FIRST option: `<!-- archaeology: grep -rniE \"<the heading's words>\" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | \"<the prior answer>\" + address> -->`. Without it the pre-flight refuses with exit 3 and PRINTS the ready command built from the question's own heading (words of 4+ letters, 6+ searched by their stem, function words dropped) — so the fix is a copy-paste, not a lookup. `N > 0` with `prior: none` is refused too (the search FOUND and the prior answer is not named; legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation: the axis promises the agent SEARCHED and said with what, never that it found. Exempt: answered questions, documents with no questions, the declared `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class), and EVERY document dated before that day — the axis judges FORWARD, so the field's old interviews never turn red, and `--check` says which of the two it did (`archaeology: N of M live questions attested` / `archaeology: not judged — header date ... is before ...`). The header date is read from the `Created` line when the head has one, so an ANSWER date standing above it never ages an old document forward. `/interview` step 3d carries the five steps for the agent's hand (run the printed command · READ the hits, not the count · write the attestation · a prior answer found → drop the question and carry the decision over with `--mark-implemented`, or reformulate it as \"the prior answer was X; Y has changed\" · the door refuses what skipped this), and the judge hunts a question asked past its archaeology.",
+      "`/code-revision` WAS REWRITTEN BY ITS EXECUTOR AND THEN RUN (epic CR; the owner's word: \"not just a REVIEW, but a full rewrite of the skill by Claude Fable itself, for itself and for AI agents of its class of mind\"). The 2.1–2.6 text was written by an OBSERVER of two audits and was true as a description and incomplete as an instruction exactly where the observer had seen things \"done by themselves\". The skill keeps its steps 0–5; Step 0 is now \"baseline, scope, budget, and the ground before the hunt\" (the same module renamed — your update replaces the heading, never doubles it), and the reference gained §5 the effective-FP procedure, §7 the reviewer brief and §8 the skeptic brief: a subagent receives a WRITTEN brief, never the whole skill. The rewritten text was then proven the only way an instruction can be — by EXECUTION on a real small zone (twelve cards, eleven survivors of six independent skeptics, four class documents) — and the run's SECOND result, seven places where the executor stopped, was fixed in the text: the baseline is the newest summary that IS a revision (a methodology table AND a coverage map — a triage table of another genre is skipped); the deterministic layer runs the modules whose scope CROSSES the zone, and a build repository with no `.kaif/` takes them from its own tools table; the budget is named in units the executor can measure (agents · wall-clock time — tokens only where a counter exists); one small zone may be cut between reviewers by CLAIM CLUSTERS; the `kaif-fp` fingerprint always lives in the audit card, and the bug document follows the project's own `/report-bug` rule; files in `KAIF_AUDIT/` are indexed by DATE; and a tool answering \"nothing to judge here\" is evidence of ABSENCE, never a green. If your project kept a local copy of the skill with its own edits, re-read those against the new Step 0 and Step 1.",
       "A LESSON REPEATED TWICE GOES RED, AND THE CLASS IS THE UNIT OF COUNT (epic EL; origin issue #69 — an audit of one field project's whole experience journal: \"7 of 120 failure entries mechanized (5.8 %), 14 of 15 failure classes recurred AFTER their lesson was written, 4 AFTER a guard was built, five lessons written 6–17 times in different words\"; a recurrence of closed #14, whose fix landed as prose plus one origin-only tool). The rule \"two strikes → a mechanism, never a third reminder\" had a carrier for ONE entry — the Mechanization field — and none for the RECURRENCE: tags are free and overlap, so \"the same class\" was visible only to a human who read the journal end to end. (1) THE UNIT: an entry now carries `class: <slug>` on its own line under the heading (`/experience` step 2 and the EXPERIENCE.md template, which also ships a STARTER class list — the classes that audit had already measured — as a controlled, open list: a new class is added to the list in the same write). (2) THE DEADLINE AS A COMMAND: NEW optional tool module .kaif/tools/kaif-experience-lint.mjs (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`; rules as data, keywords per language, ids not assumed numeric) reddens on the SECOND failure entry (`❌` / `❌→✅`) of one class with no `mechanized:` and names the class and BOTH entries by id; it warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and for a journal outside a project tree addresses are not checked at all — said aloud) and when a slug is outside the header list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · full text: git log -p -S \"<id>\"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and \"not judged\" never reads as \"clean\". (3) THE TWO FATES, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->`, an empty declaration being itself a finding and every declared class printed on the summary line (that list only shrinks). A second `none-cheap:` inside one class is therefore not an answer. The command belongs in the closing ritual: /end-chat-soft now runs it in both layers. /fable-judge hunts \"lesson repeated without a mechanism\"."
     ],
     "2.6": [
@@ -3281,7 +3282,11 @@ mirrored into every declared agent system (§7.3). Groups:
   "not a defect"; survivors become bug docs and feed the guardrails. Since 2.2 the run also leaves
   audit reports in `reports/KAIF_AUDIT/` — one document per finding family plus a summary with the
   coverage map and the limits — and each finding is written as an eight-field contract a weaker
-  model can execute (skeletons: the skill's `references/audit-report-template.md`).
+  model can execute (skeletons: the skill's `references/audit-report-template.md`). Rewritten by its
+  executor in 2.7 (epic CR) and then proven by a functional run on a real zone: the reference now
+  carries the reviewer and skeptic briefs and the effective-FP procedure, the newest summary that IS
+  a revision is named as the run's baseline, and the seven places where the executor stopped were
+  fixed in the text.
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.
@@ -4154,8 +4159,10 @@ afterwards.
 
 ## Step 0 — baseline, scope, budget, and the ground before the hunt
 
-1. **Find the baseline** *[mechanical]*: the newest `reports/KAIF_AUDIT/*_SUMMARY.md` IS the record
-   of the last revision. Its coverage map, its Limits and its closing "what the NEXT run must
+1. **Find the baseline** *[mechanical]*: the newest `reports/KAIF_AUDIT/*_SUMMARY.md` that IS a
+   revision — it carries a methodology table (zones · reviewers · axes) AND a coverage map — is the
+   record of the last revision. The folder may hold summaries of another genre (a triage table of an
+   earlier run's findings carries neither): skip them, take the newest that carries both. Its coverage map, its Limits and its closing "what the NEXT run must
    change" are this run's inputs. No summary yet → run 1: the whole codebase. The run is due when
    the owner asks or when that summary is older than the cadence `AGENT_GUIDE.md` names (four
    weeks when it names none) — no setting is invented for it.
@@ -4163,10 +4170,12 @@ afterwards.
    --stat`) plus the zones the baseline said to take next. Zones are cut by language / layer /
    subsystem — and by CANON DOCUMENT: a promise in the canon with no mechanism behind it is an
    omission, hunted from the document side (the pairs registry is its deterministic layer).
-3. **Name the budget and the stop rule** in the chat before starting: reviewers · skeptics · the
-   token or time ceiling; the run stops when the zone list is exhausted or the noise budget
-   (reference §5) is hit. The summary records what was actually spent (the origin's first run: 13
-   agents, about 1.2 M tokens, three zones).
+3. **Name the budget and the stop rule** in the chat before starting: reviewers · skeptics · a
+   ceiling in units the executor CAN measure — agents and wall-clock time; tokens only where the
+   harness shows a counter (an invented number is worse than none). The run stops when the zone
+   list is exhausted or the noise budget (reference §5) is hit. The summary records what was
+   actually spent in the same units (the origin's first run: 13 agents, three zones; its "about
+   1.2 M tokens" was read by the owner from the interface, not by the agent).
 4. **Record the scope line in the chat**: what is hunted — **defects · vulnerabilities · frauds ·
    contradictions · omissions**, including the omission of something the canon promised — and what
    is NOT hunted (excluded classes, reference §5): a revision reporting everything is ignored
@@ -4174,17 +4183,26 @@ afterwards.
 5. **Map the ground** *[judgment]*: subsystems, boundaries, contracts, what each zone is FOR, before
    any hunting — a reviewer who does not know a boundary reports crossing it as a defect. The map
    goes into the report's methodology table, so the next run inherits it.
-6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, every `.kaif/tools/*`
-   module (`check` and `selftest`), the project's own guards (the tools table of `AGENT_GUIDE.md`),
-   the pairs registry, and the greps of the paid classes — the `Repro:` lines of the `EXPERIENCE.md`
-   entries tagged with the zone's tags. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A
-   finding is not a finding until verified", point 1); what code can find, the model is not spent
-   on. Nothing in this step raises a window or a sound on the owner's machine: a contour generator
+6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, the `.kaif/tools/*`
+   modules WHOSE SCOPE CROSSES THE ZONE (`check` and `selftest`; a module that reads nothing in the
+   zone is not run for it, and the summary names which were run), the project's own guards (the
+   tools table of `AGENT_GUIDE.md`), the pairs registry, and the greps of the paid classes — the
+   `Repro:` lines of the `EXPERIENCE.md` entries tagged with the zone's tags. A repository that
+   BUILDS the framework instead of deploying it has no `.kaif/`: the same modules live where its
+   tools table says. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A finding is not a
+   finding until verified", point 1); what code can find, the model is not spent on. A tool that
+   answers "nothing to judge here" (its own exit code, e.g. `SKIPPED=3`) is evidence too — of
+   ABSENCE: where the canon promises such declarations for this zone, the absence becomes an axis
+   for the reviewers (a canon promise with no mechanism); where it does not, it goes into Limits
+   as "not applicable" — and it is never read as green. Nothing in this step raises a window or a sound on the owner's machine: a contour generator
    or a live page is never started by a reviewer — the executor starts it, announced.
 
 ## Step 1 — zone and arm the reviewers
 
-- One reviewer per zone, parallel where the harness allows; each reviewer receives a WRITTEN brief
+- One reviewer per zone — or, for a single small zone, two or more cut by the zone's CLAIM
+  CLUSTERS (what the zone promises, not its directories; reference §7: reviewers cut that way came
+  at one defect from different sides and raised no duplicate card) — parallel where the harness
+  allows; each reviewer receives a WRITTEN brief
   (reference §7) — its zone, the paid classes, the axes, the excluded classes, the card form, the
   budget — never the whole skill, and never "look for problems".
 - Arm EVERY reviewer with the project's own **paid-for failure classes**: the `EXPERIENCE.md`
@@ -4213,7 +4231,10 @@ execute the fix are the repro stated as a class condition, the verification comm
 card, and the link to a paid class. Every finding is also marked against the baseline — `new` /
 `known: <bugs/NN or EXP-NNNN>` / `regression of <id>` — with the feedback loop's own fingerprint,
 `kaif-fp: <surface> :: <symptom-class> :: v<major.minor>`, and its `Dedup attestation:` line
-naming the commands grepped (`/report-bug`); never a second key minted here.
+naming the commands grepped (`/report-bug`) — both live IN THE AUDIT CARD always; whether the
+project's bug document repeats them is that project's `/report-bug` rule (a deployment's
+`bugs/KAIF/` tickets carry them; a project whose bugs are its own may not). Never a second key
+minted here.
 
 ## Step 3 — the adversarial skeptic (mandatory, not optional)
 
@@ -4293,6 +4314,9 @@ tasks: never `DONE`-tagged, never rewritten, corrections appended. One run produ
 |---|---|---|
 | `<date>_<scope>_SUMMARY.md` | the owner, and the next revision | verdict first · scope & methodology · coverage map · family table · inventory of confirmed/refuted · limits |
 | `<date>_<scope>_<family-slug>.md` | the executors who will fix | one FAMILY: its mechanism, then a finding card per occurrence |
+
+In `KAIF_AUDIT/` the index of a file is its DATE, not a running number: the `NN_<name>.md` form of
+`reports/README.md` belongs to the other report folders.
 
 One document per finding family — never one per finding, and never one per subsystem. The family
 is the unit because a class is what a fix must close (`BUG_FIXING_FRAMEWORK.md` → "Close the class,

@@ -19,6 +19,9 @@ tasks: never `DONE`-tagged, never rewritten, corrections appended. One run produ
 | `<date>_<scope>_SUMMARY.md` | the owner, and the next revision | verdict first · scope & methodology · coverage map · family table · inventory of confirmed/refuted · limits |
 | `<date>_<scope>_<family-slug>.md` | the executors who will fix | one FAMILY: its mechanism, then a finding card per occurrence |
 
+In `KAIF_AUDIT/` the index of a file is its DATE, not a running number: the `NN_<name>.md` form of
+`reports/README.md` belongs to the other report folders.
+
 One document per finding family — never one per finding, and never one per subsystem. The family
 is the unit because a class is what a fix must close (`BUG_FIXING_FRAMEWORK.md` → "Close the class,
 not the instance"), and because it lets the next revision recognise a NEW FACE of a known class

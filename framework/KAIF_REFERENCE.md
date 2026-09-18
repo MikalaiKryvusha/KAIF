@@ -167,7 +167,11 @@ mirrored into every declared agent system (§7.3). Groups:
   "not a defect"; survivors become bug docs and feed the guardrails. Since 2.2 the run also leaves
   audit reports in `reports/KAIF_AUDIT/` — one document per finding family plus a summary with the
   coverage map and the limits — and each finding is written as an eight-field contract a weaker
-  model can execute (skeletons: the skill's `references/audit-report-template.md`).
+  model can execute (skeletons: the skill's `references/audit-report-template.md`). Rewritten by its
+  executor in 2.7 (epic CR) and then proven by a functional run on a real zone: the reference now
+  carries the reviewer and skeptic briefs and the effective-FP procedure, the newest summary that IS
+  a revision is named as the run's baseline, and the seven places where the executor stopped were
+  fixed in the text.
 - **Shipping:** `release` (owner-confirmed only).
 - **Execution discipline (vendored from fable-method, MIT):** `fable-method` · `fable-loop` ·
   `fable-judge` · `fable-domain`.

@@ -1,0 +1,129 @@
+# Bug 121 — Единственный документ подключения хуков обещает не то, что делает модуль: проба не исполняется на оболочке владельца, «каждый хук несёт cooldown» опровергнуто своей же таблицей, `[TESTED]` шире свидетеля (3 вхождения)
+
+**Status:** 🔴 OPEN — найдено ревизией кода 2026-09-18 09:14 +03:00 (прогон 2 `/code-revision`, зона `framework/hooks/`);
+правок в зоне НЕ делалось, фикс — отдельной задачей.
+**Severity:** S2 — теряется час владельца и доверие к модулю: он исполняет дымовую пробу дословно, получает
+ошибку разбора своей оболочки и читает это как «модуль не работает»; рядом — утверждение о свойстве,
+которого у модуля нет. Железо и данные не пострадали.
+**Version/build:** KAIF 2.7 (открыта), HEAD `df8110b`, build 557. Носители:
+`framework/hooks/README.md:36`, `:40`, `:19-20` (против `:14`), `framework/hooks/prompt-refresh-timer.mjs:22-24`.
+**When/context:** 2026-09-18 08:31 → 09:14 +03:00, отдельный worktree `agent-a3e6a3faf66ceda0c`, шаг CR5
+плана `plans/63`.
+**Fix accepted when (observable):**
+- Ситуация. Владелец на Windows (профиль хоста записан в каноне: PowerShell 5.1 Desktop, pwsh 7 не
+  установлен) открывает `.kaif/hooks/README.md` и исполняет шаг 3 «Smoke» дословно; отдельно — читает
+  абзац «Design rules baked in» и шапку `prompt-refresh-timer.mjs`.
+- Действие. Исполнить КАЖДУЮ командную строку раздела «Opt-in» в PowerShell и в Git Bash; прочитать абзац
+  `:19-20` против таблицы `:12-17`; сверить перечень свойств маркера `[TESTED]` с ассертами `s14`.
+- Результат. В каждой оболочке проба исполняется и печатает ОБЕЩАННОЕ («печатает приказ» / «печатает
+  ничего»); утверждение о cooldown совпадает с таблицей и с шапками четырёх скриптов; каждое свойство,
+  перечисленное в `[TESTED]`, подано хотя бы одним ассертом свода.
+- Проверка. Машинная половина: суд или свод исполняет строки «Opt-in» обеих форм и сверяет вывод;
+  пара `check-framework` «hooks README ↔ шапки хуков» краснеет, пока README несёт формулу «every hook
+  carries a … cooldown» при наличии скрипта со строкой `No cooldown`; `s14` несёт ассерт
+  «битый маркер + СТАРЫЙ mtime → приказ, называющий возраст».
+
+## Symptom
+
+| # | Место | Обещано | Наблюдено |
+|---|---|---|---|
+| 1 | `README.md:36`, `:40` (шаг 3 «Smoke») | «must print a JSON order» / «must print nothing» | PowerShell 5.1: `ParserError: The '<' operator is reserved for future use.`; `cmd /c "… < /dev/null"`: `The system cannot find the path specified.`, exit 1; `printf` в PowerShell отсутствует. В Git Bash обе строки работают. Слов Windows/PowerShell/cmd в модуле — ноль |
+| 2 | `README.md:19-20` | «(they are canon requirements, not preferences): every hook carries a predicate and a cooldown» | своя же таблица `:14` пишет `none — compaction is itself rare` в колонке предиката; шапка поставленного `prompt-resume-word.mjs:16` пишет `No cooldown`; окно подавления раз-в-сессию есть у ОДНОГО хука из четырёх; машинных сверок оси ноль |
+| 3 | `prompt-refresh-timer.mjs:22-24` | `[TESTED: … polygon s14: … MALFORMED marker → … malformed+fresh is SILENT and malformed+old speaks]` | свод подаёт битый маркер ОДИН раз и только со свежим mtime (`utimesSync` в `s14` касается только `STATUS.md`); ассерта «malformed+old» нет; отчёта-свидетеля нет. Сегодня поведение соответствует заявленному, но НАЗВАННЫЙ свидетель четвёртого свойства не наблюдал |
+
+Полные карточки восьми полей — `reports/KAIF_AUDIT/2026-09-18_hooks_opt-in-doc-promises-otherwise.md`
+(F9 Act · F10 Attend · F11 Track).
+
+## Repro (deterministic)
+
+Класс-условие: любой проект, где документ, исполняемый ЧЕЛОВЕКОМ, даёт команду без названной оболочки, а
+профиль хоста в каноне записан другой.
+
+1. PowerShell 5.1: `node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null` → `ParserError`, exit 1.
+   `Get-Command printf` → не найдено. `cmd /c "node .kaif\hooks\prompt-refresh-timer.mjs < /dev/null"` →
+   `The system cannot find the path specified.`, exit 1.
+   Контроль (работают, но в README их нет): `'' | node .kaif/hooks/prompt-refresh-timer.mjs` (PowerShell) и
+   `cmd /c "node … < NUL"` → приказ, exit 0.
+2. Git Bash: строка `:36` → приказ, exit 0; строка `:40`, поданная ИЗ ФАЙЛА (`bash smoke.sh`) → приказ
+   `/resume`.
+3. `sed -n '14p;19,20p' framework/hooks/README.md` и `sed -n '16p' framework/hooks/prompt-resume-word.mjs`
+   — утверждение против своих же строк.
+4. `grep -c "not json at all" tools/sandbox/s14-refresh-hooks.mjs` → 1; `grep -n utimesSync
+   tools/sandbox/s14-refresh-hooks.mjs` → только `STATUS.md`. Проба: битый маркер + mtime 2 ч назад →
+   приказ «last refresh 120 min ago» (свойство живо, но не наблюдается сводом).
+
+## Forensics
+
+- Прогоны исполнителя 2026-09-18: 08:47 (PowerShell — `ParserError`; `printf` NOT FOUND) · 08:48–08:49
+  (Git Bash — обе строки печатают приказ; строка `:40` извлечена из README скриптом и исполнена из файла,
+  чтобы не потерять уровень экранирования — `EXP-0121`) · 09:09 (битый маркер: свежий mtime → тишина,
+  старый mtime → приказ «last refresh 120 min ago»).
+- Независимо у скептиков: `cmd` (`The system cannot find the path specified.`, exit 1); Windows-эквиваленты
+  работают; мутант `at = Date.now()` в ветке фолбэка (`:70`) проходит `s14` 68/68 зелёным — то есть
+  четвёртое свойство не стережётся ничем.
+- Греп `windows|powershell|cmd\.exe|BOM|CRLF` по `framework/hooks/` → 0. `/dev/null` по `framework/**/*.md`
+  → `README.md:36` и `framework/skills/kaif-version/SKILL.md:28` (там в фенсе ```bash со словом «e.g.» —
+  жанр примера, не пробы). История строки: `plans/86_DONE:221`, `plans/87_DONE:196` — `< /dev/null` вписан
+  ради починки зависания на stdin, Windows не назван ни словом.
+- `grep -caiE cooldown tools/check-framework.mjs` → 0; в `s14` слово `cooldown` только у стража STATUS.
+
+## Root cause / Hypotheses
+
+README модуля — единственный документ, по которому человек подключает хуки (машинерия `settings.json` не
+правит по решению проекта), и именно поэтому он НИКЕМ не исполняется машинно: ассертов на его командные
+строки нет, пар на его утверждения нет. Каждая из трёх строк родилась правдивой в своём контексте
+(POSIX-починка зависания stdin; принцип «предикат и cooldown» до появления четвёртого хука; маркер
+`[TESTED]` до того, как свод перестал расти вместе с перечнем) — и осталась непроверяемой, когда контекст
+сменился. Класс оплачен дважды: `bugs/71` (правило объявлено механизированным без исполнителя) и
+`TESTING_FRAMEWORK.md` (заявление шире наблюдения).
+
+## Fix plan (or the fix, if done)
+
+1. **F9:** проба ДВУМЯ строками на систему — POSIX (как сейчас) и Windows (`'' | node .kaif\hooks\…` или
+   `cmd /c "node … < NUL"`); событие четвёртого хука подавать ФАЙЛОМ (`node … < event.json`, рядом готовый
+   `event-sample.json`) — это же обходит BOM (`bugs/119` F6); строка-подсказка «если позитивный случай
+   молчит — проверьте, что JSON валиден».
+2. **F10:** переписать утверждение по наблюдаемому («каждый хук несёт предикат ИЛИ объявленную причину его
+   отсутствия; окно подавления несёт только `Stop`; таймер и `resume`-хук повторяются намеренно — цена
+   названа в шапках») и добавить в таблицу `:12-17` колонку «Cooldown».
+3. **F11:** один ассерт в `s14` рядом со `:115` — битый маркер + `utimesSync` на 2 ч назад → приказ,
+   называющий возраст; ИЛИ сузить текст маркера до трёх наблюдённых свойств. Любая из двух половин, не обе.
+   Мутант-эталон для красного — `if (Number.isNaN(at)) { statSync(markerPath); at = Date.now(); }`, а НЕ
+   удаление фолбэка целиком (оно краснеет по другой причине).
+4. НЕ трогать: сами хуки (кросс-платформенны); POSIX-форму пробы; текст полевого урока про двухминутный
+   таймаут; осознанный размен «таймер и `resume`-хук повторяются» и правило «`Stop` — единственный
+   блокирующий»; ассерт `s14:115` и сам фолбэк на mtime; образцовый маркер `prompt-resume-word.mjs:30-38`.
+
+`TWINS: searched (а) командные строки поставки с POSIX-синтаксисом, адресованные ЧЕЛОВЕКУ как проба —
+found 1 вне этого бага: framework/skills/kaif-version/SKILL.md:28 (2>/dev/null, в фенсе bash, со словом
+«e.g.» — пример агенту, не проба владельцу; не тот жанр). (б) маркеры [TESTED] в framework/hooks/*.mjs —
+found 4: три хука 2.2 называют свидетелем только полигон (у таймера перечень ШИРЕ того, что полигон
+читает — это F11; у session-start-refresh и stop-status-guard перечни сверены построчно с ассертами s14 и
+совпадают), четвёртый (prompt-resume-word.mjs:30-38) называет АДРЕС отчёта и является эталоном формы.
+(в) утверждения README о свойствах ВСЕХ хуков — found 2: :19-20 (cooldown — это F10) и :22-23 («A hook
+never breaks the session: on any internal error it exits 0 silently») — проверено пробами: держится во
+всех четырёх (try/catch обнимает весь путь, process.exit(0) вне try), дефектом не является.`
+
+## Decisions made without the owner
+
+Заполняется при закрытии. На момент заведения: `[ИИ]` три вхождения в один класс-документ (общий механизм
+— документ подключения без машинной сверки); `[ИИ]` тяжесть S2 за класс (F9 — Act, F11 — Track); `[ИИ]`
+половина находки F9 про экранирование в руках агента НЕ включена в баг — она опровергнута как названный
+датированный урок `EXP-0135`/`EXP-0121`.
+
+## Links
+
+`reports/KAIF_AUDIT/2026-09-18_hooks_opt-in-doc-promises-otherwise.md` (карточки 8 полей) ·
+`reports/KAIF_AUDIT/2026-09-18_hooks_SUMMARY.md` · `testcases/reports/2026-09-18_code-revision-rewrite.md` ·
+`bugs/71` (правило канона объявлено механизированным без исполнителя) · `bugs/119` F6 (BOM — тот же путь
+на Windows) · `EXPERIENCE.md` EXP-0121, EXP-0135 · `AGENT_GUIDE.md:239-240` (профиль хоста),
+`framework/AGENT_GUIDE.md:790-792` («знай, в какой ты оболочке») · `plans/86_DONE`, `plans/87_DONE`
+(история строки пробы) · `TESTING_FRAMEWORK.md` (правила маркеров) · `plans/63` (CR5).
+
+**Hygiene:** обе командные строки «Opt-in» исполнены в трёх оболочках (Git Bash, PowerShell 5.1, `cmd`);
+проба поведения хука на шести состояниях маркера; мутант `at = Date.now()` — свод зелёный; `s14` 68/68 на
+нетронутом `dist/`; сверка цитат скриптом 41/42 (промах — вспомогательная цитата F10, `:13-14` вместо
+`:12-13`; первичная цитата верна).
+**Functional run:** ЧАСТИЧНО — командные строки документа исполнены на РЕАЛЬНОЙ машине владельца
+(Windows 11, PowerShell 5.1 Desktop, `cmd`, Git Bash) и их вывод прочитан; живого подключения модуля в
+чужой агентской системе не было. Отчёт прогона — `testcases/reports/2026-09-18_code-revision-rewrite.md`.

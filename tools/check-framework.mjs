@@ -711,6 +711,22 @@ errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
       'framework/skills/fable-judge/SKILL.md',
       ['**Lesson repeated without a mechanism (KAIF 2.7).**',
        'lesson-repeated-without-a-mechanism']],
+    // CR (2.7, the owner's word #113): the skill rewritten by its executor was then RUN, and the seven places where the
+    // executor stopped were fixed in both layers — the payload and the origin's translated copy move together.
+    ['code-revision ↔ the seven fixes of the functional run (payload skill)',
+      'framework/skills/code-revision/SKILL.md',
+      ['WHOSE SCOPE CROSSES THE ZONE', 'in units the executor CAN measure', 'IN THE AUDIT CARD always',
+       'it is never read as green', 'an invented number is worse than none']],
+    ['code-revision ↔ the seven fixes of the functional run (wrapper skill)',
+      '.claude/skills/code-revision/SKILL.md',
+      ['ЧЕЙ ОХВАТ ПЕРЕСЕКАЕТ ЗОНУ', 'УМЕЕТ измерить', 'В КАРТОЧКЕ АУДИТА всегда', 'улика ОТСУТСТВИЯ',
+       'выдуманное число хуже отсутствующего']],
+    ['code-revision ↔ audit files are indexed by date (payload reference)',
+      'framework/skills/code-revision/references/audit-report-template.md',
+      ['the index of a file is its DATE, not a running number']],
+    ['code-revision ↔ audit files are indexed by date (wrapper reference)',
+      '.claude/skills/code-revision/references/audit-report-template.md',
+      ['индекс файла — ДАТА, а не порядковый номер']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to
