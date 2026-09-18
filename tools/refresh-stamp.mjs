@@ -18,7 +18,8 @@
 //  верным ходом. Момент в маркере совпал с системными часами, а не с памятью сессии.
 //  2026-09-18 14:10 +03:00 · граница списка `--docs`: `--docs A B --note "n"` → docs [A, B]; `--note "n" --docs
 //  A B` → те же [A, B]; `--docs A --note "n" stray` → [A]; `--docs --note "n"` → отказ кодом 1. До правки первая
-//  форма писала в `docs` ТРИ элемента, третьим — текст заметки (наблюдено живьём на маркере сессии 67 в 14:08).]
+//  форма писала в `docs` ТРИ элемента, третьим — текст заметки (наблюдено живьём на маркере сессии 67 в 14:08);
+//  отчёт — testcases/reports/2026-09-18_session67-side-runs.md, прогоны 1–2; лёгкий судья дельты переисполнил на копии.]
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

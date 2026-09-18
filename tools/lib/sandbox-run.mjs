@@ -66,9 +66,29 @@ export function failed(e, { root, cwd, args }) {
   } catch { /* best-effort forensics: a failed dump must not hide the original failure */ }
   return { code: e.status ?? 1, out: out + `\n[full output of the failed run → ${dump}]` };
 }
+// ── Полигон не ходит в сеть по умолчанию (bugs/109) ───────────────────────────────────────────────
+// КАЖДЫЙ `update` (и bootstrap-`install`, и `diff --source`) сразу после строки версии спрашивает артефакт ПРЕДЫДУЩЕГО
+// релиза — старые тексты шаблонов для настоящих диффов (`buildSyntheticBaseline` ядра). Без `--baseline` это живой вызов
+// `github.com/…/releases/download/v<текущая>/…` — до трёх подряд, с `AbortSignal.timeout`. Своды этот флаг почти нигде
+// не передавали, то есть прогон полигона делал десятки сетевых запросов, и именно в ЭТОМ окне пять раз умирал `node`
+// нативным крахом Windows (`status 3221226505`), в пятый — без всякой параллельной нагрузки. Поэтому общий раннер
+// дописывает команде, которая может пойти в сеть и флага не несёт, `--baseline <ПУСТОЙ каталог корня прогона>`: ядро
+// читает каталог с диска, ничего не находит и идёт тем же путём, каким идёт без сети («no … artifact reachable»).
+// Свод, которому НУЖНЫ старые тексты, передаёт свой `--baseline` сам — его раннер не трогает. Это и митигация, и опыт
+// над гипотезой: вернётся крах при герметичном полигоне — сеть ни при чём. Выключатель для намеренного онлайн-прогона —
+// `KAIF_SANDBOX_NETWORK=1`.
+const REACHES_NETWORK_RE = /^\s*(?:update|install|diff)(?:\s|$)/;
+const HAS_BASELINE_RE = /(?:^|\s)--baseline(?:\s|=|$)/;
+export function hermeticArgs(root, args) {
+  if (process.env.KAIF_SANDBOX_NETWORK === '1' || !REACHES_NETWORK_RE.test(args) || HAS_BASELINE_RE.test(args)) return args;
+  const empty = join(root, 'no-network-baseline');
+  mkdirSync(empty, { recursive: true });
+  return `${args} --baseline ${empty}`;
+}
 /** Стандартный раннер команд ядра свода: `run(cwd, args)` → `{ code, out }`, stderr слит в out. */
 export function coreRunner(root, { maxBuffer = 64 * 1024 * 1024 } = {}) {
-  return (cwd, args) => {
+  return (cwd, rawArgs) => {
+    const args = hermeticArgs(root, rawArgs);
     try { return { code: 0, out: execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe', maxBuffer }).toString() }; }
     catch (e) { return failed(e, { root, cwd, args }); }
   };
@@ -117,7 +137,20 @@ function selftest() {
   const dump = join(root, 'run-fail-1.log');
   ok(r.code === 3 && existsSync(dump), 'red command: exit code kept, run-fail-1.log written');
   const d = existsSync(dump) ? readFileSync(dump, 'utf8') : '';
-  ok(/^# update --x\n# cwd /.test(d) && /# status 3 /.test(d) && /line one/.test(d) && /boom/.test(d), 'dump carries the command, cwd, status and the full stdout+stderr');
+  ok(/^# update --x --baseline [^\n]*no-network-baseline\n# cwd /.test(d) && /# status 3 /.test(d) && /line one/.test(d) && /boom/.test(d), 'dump carries the EFFECTIVE command (with the injected --baseline), cwd, status and the full stdout+stderr');
+  // bugs/109: the runner keeps the polygon off the network — the core under a suite receives --baseline <an empty local
+  // dir> whenever the command could fetch the previous release and carries no --baseline of its own.
+  writeFileSync(core, 'console.log(JSON.stringify(process.argv.slice(2)));\n');
+  const argvOf = (a) => { try { return JSON.parse(run(root, a).out.trim().split(/\r?\n/).pop()); } catch { return []; } };
+  const withFlag = (a) => { const v = argvOf(a); const i = v.indexOf('--baseline'); return i >= 0 ? v[i + 1] : null; };
+  ok(['update --source X', 'install --lang ru', 'diff --source X'].every((a) => { const b = withFlag(a); return Boolean(b) && existsSync(b) && b.endsWith('no-network-baseline'); }),
+    'hermetic: update · install · diff without --baseline receive --baseline <an existing empty dir of the run root>');
+  ok(withFlag('update --source X --baseline D:/own') === 'D:/own' && argvOf('update --source X --baseline D:/own').filter((x) => x === '--baseline').length === 1,
+    'hermetic: a command that carries its own --baseline is left alone');
+  ok(withFlag('check --gate-budgets') === null && withFlag('report bugs/KAIF/01_x.md') === null, 'hermetic: commands that never fetch a baseline are left alone');
+  process.env.KAIF_SANDBOX_NETWORK = '1';
+  ok(withFlag('update --source X') === null, 'hermetic: KAIF_SANDBOX_NETWORK=1 switches the injection off (a deliberate online run)');
+  delete process.env.KAIF_SANDBOX_NETWORK;
   ok(/\[full output of the failed run → /.test(r.out), 'the assert line points at the dump');
   writeFileSync(core, "console.log('green'); console.error('note');\n");
   const g = run(root, 'check');

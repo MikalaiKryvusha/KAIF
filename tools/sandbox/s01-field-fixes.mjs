@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { join, resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { must, failed } from '../lib/sandbox-run.mjs';
+import { must, failed, hermeticArgs } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = join(REPO, 'dist');
@@ -27,15 +27,18 @@ const ok = (cond, name, extra = '') => {
   console.log((cond ? '✅ ' : '❌ ') + name + (cond || !extra ? '' : ' — ' + extra));
   if (!cond) failures++;
 };
-// Запуск ядра в песочнице: возвращает { code, out }
-const run = (cwd, args) => {
+// Запуск ядра в песочнице: возвращает { code, out }. Команда, которая пошла бы в сеть за артефактом прежнего релиза,
+// получает `--baseline <пустой каталог>` общим помощником — полигон герметичен по сети (bugs/109).
+const run = (cwd, rawArgs) => {
+  const args = hermeticArgs(ROOT, rawArgs);
   try {
     const out = execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args}`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };
   } catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: args }); }
 };
 // Первый запуск (ядра ещё нет в песочнице) — из dist
-const runDist = (cwd, args) => {
+const runDist = (cwd, rawArgs) => {
+  const args = hermeticArgs(ROOT, rawArgs);
   try {
     const out = execSync(`node ${join(DIST, 'KAIF-CORE.mjs')} ${args}`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };

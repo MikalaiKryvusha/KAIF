@@ -102,11 +102,17 @@ function scanPayloadCyrillic(fwRoot) {
 //                     judged by this function: red, every file named with its code points; `--selftest`: a synthetic
 //                     tree with the character inside a .mjs body and inside a .md body is red by name, the same tree
 //                     with a byte-order mark at offset 0 only, and the clean tree, stay silent
-//     GAP:            documents outside framework/ and tools/ are not judged (bugs/, plans/, the journal — there the
+//     GAP:            the SET of code points was chosen by the session, not taken from an authority (delta judge of f4915af):
+//                     outside it stay U+2066-U+2069 (the other half of the bidirectional controls), U+2028/U+2029, and the
+//                     look-alikes U+00A0 and U+2011 — thirteen living sites of those two sit in literals of tools/ today;
+//                     widening the set means normalising them in the same move (registry of 2.8, ideas/30 item 21);
+//                     documents outside framework/ and tools/ are not judged (bugs/, plans/, the journal — there the
 //                     probe reports and a human fixes by meaning); a character somebody WANTS in a body has no exemption
 //                     on purpose — write it as an escape or build it from its code
-//     ON-REAL-PATH:   2026-09-18 — the origin's own build, the path every session walks: REFUSED at 12:57 +03:00 on the
-//                     living tree before the normalisation (twenty files named), green at 14:27 and 14:44 after it; on a
+//     ON-REAL-PATH:   2026-09-18 — the path every session walks is the origin's build, whose LAST step runs this validator
+//                     and exits with its code. The VALIDATOR was seen REFUSING at 12:57 +03:00 on the living tree before the
+//                     normalisation (twenty files named; the whole build was not started at that moment); the whole BUILD
+//                     was seen green at 14:27 and 14:44 after it; on a
 //                     copy of the tree with the character put back into the shipped core and into one tool — exit 1 and
 //                     the two sites named (report testcases/reports/2026-09-18_invisible-characters.md, runs 1, 10, 12)
 const INVISIBLE_ZONES = ['framework', 'tools'];

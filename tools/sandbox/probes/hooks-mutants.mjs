@@ -62,6 +62,16 @@ const MUTANTS = [
       return b.replace(sh, 'node .kaif/hooks/prompt-refresh-timer.mjs').replace(ps, 'node .kaif/hooks/prompt-refresh-timer.mjs');
     },
     expect: ['s14 проба README: каждая строка каждого блока даёт хуку stdin'] },
+  // M6 and M7 — the two bypasses the delta judge of f4915af found in the FIRST edition of that static assert: a line that
+  // looks like it feeds stdin and does not. The assert is now tied to the hook call itself; these two keep it so.
+  { name: 'M6 README: the feed is COMMENTED OUT in the sh block (delta judge, finding 2)',
+    dest: '.kaif/hooks/README.md',
+    fn: (b) => b.replace('node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null', 'node .kaif/hooks/prompt-refresh-timer.mjs # < /dev/null'),
+    expect: ['s14 проба README: каждая строка каждого блока даёт хуку stdin'] },
+  { name: 'M7 README: the hook stands on the LEFT of the pipe in the powershell block (delta judge, finding 2)',
+    dest: '.kaif/hooks/README.md',
+    fn: (b) => b.replace("'' | node .kaif/hooks/prompt-refresh-timer.mjs", 'node .kaif/hooks/prompt-refresh-timer.mjs | node -e "process.stdin.pipe(process.stdout)"'),
+    expect: ['s14 проба README: каждая строка каждого блока даёт хуку stdin'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));

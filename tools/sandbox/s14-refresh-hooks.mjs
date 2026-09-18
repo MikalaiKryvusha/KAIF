@@ -242,7 +242,13 @@ ok((shBlocks[0] || []).length === SMOKE_EXPECT.length && (psBlocks[0] || []).len
    `sh: ${(shBlocks[0] || []).length} · powershell: ${(psBlocks[0] || []).length}`);
 // Статическая половина оси (F1 судьи сессии 67). Пустой набор строк — красный, а не пустая истина: на сборке без блоков
 // ассерт обязан упасть вместе с остальными, иначе он зеленеет тем охотнее, чем меньше README обещает.
-const feedsStdin = (line) => /<\s*\/dev\/null\s*$/.test(line) || /\|\s*node\s/.test(line);
+// Обе ветки привязаны к САМОМУ ХУКУ, хвост после « #» срезается (находка 2 лёгкого судьи дельты f4915af: строки
+// `node <хук> # < /dev/null` и `node <хук> | node -e …` проходили 88/0 — первая редакция видела форму текста, а не то,
+// что stdin получает ХУК).
+const HOOK_CALL = 'node\\s+\\.kaif/hooks/\\S+';
+const FED_BY_REDIRECT = new RegExp(HOOK_CALL + '\\s*<\\s*/dev/null\\s*$');
+const FED_BY_PIPE = new RegExp('\\|\\s*' + HOOK_CALL + '\\s*$');
+const feedsStdin = (line) => { const code = line.replace(/\s#.*$/, ''); return FED_BY_REDIRECT.test(code) || FED_BY_PIPE.test(code); };
 const smokeLines = [...(shBlocks[0] || []).map((l) => ['sh', l]), ...(psBlocks[0] || []).map((l) => ['powershell', l])];
 const starving = smokeLines.filter(([, l]) => !feedsStdin(l));
 ok(smokeLines.length > 0 && starving.length === 0,
