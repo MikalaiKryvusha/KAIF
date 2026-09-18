@@ -56,6 +56,21 @@ closed phases, finished sessions, shipped releases — move VERBATIM into `PROJE
 from its header ("remove this line — will the next agent err?" · "readable in one sitting?"; soft
 target ~200 lines). Leave the file the way you'd want to find it.
 
+**Then the budget DOOR — after the trim, not instead of it:**
+
+```
+node .kaif/kaif-core.mjs check --gate-budgets
+```
+
+Exit 1 means a document of the re-read core is over its budget in the project's OWN lines (the lines
+you wrote; modules that arrived byte-equal to the template are not counted), and each line names the
+document, the two numbers and the ADDRESS its overflow moves to. Move the content there and run it
+again. Raising a budget is not the cure, and neither is committing past a red gate: the whole point of
+the flag is that the closing ritual STOPS here (2.7, epic CB; origin issue #71, the owner's own audit
+of one project — "three core documents above budget, the warning printed for weeks and acted on
+once"). Bare `check` keeps printing the same numbers as advice and exits 0, so nothing else in the
+update road fails on a long document.
+
 ### Step 2. Refresh README (when reality moved)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If the README

@@ -3196,7 +3196,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; closed work moves to the chronicle — the bonsai trim). | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; since 2.7 the budget counts the project's OWN lines and the warning names the chronicle as the address; closed work moves to the chronicle — the bonsai trim, and `check --gate-budgets` is the door the closing ritual runs after it). | Agent, after every task. |
 | `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
@@ -3501,7 +3501,7 @@ per-module preview against another version — a v1 manifest gets a synthetic ba
 deployed version, `--baseline` overrides its source; a bare `github.com/<owner>/<repo>` source
 resolves to its latest-release assets) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
-machinery's module cut) · `checkpoint` · `update-verify` · `check` (since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms; a warning, read by the same function as `report`) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · `version` · `report
+machinery's module cut) · `checkpoint` · `update-verify` · `check` (since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms; a warning, read by the same function as `report`) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · (since 2.7, epic CB — origin issues #43/#45/#71 — the size budgets of the re-read core are judged by the project's OWN lines: a disk module whose (signature, sha256) pair is in the deployment's `moduleShas` ARRIVED and is not counted, so a 1655-line `AGENT_GUIDE.md` with 300 arrived lines is judged at 1355; the warning carries `own lines N of budget ~M` and the ADDRESS the overflow moves to, taken per document from `DOC_BUDGETS` — the chronicle for `STATUS.md`, the chronicle · `researches/` · a house-rules file for the rest; three fallbacks name themselves in the line instead of going silent — no module cut for the file, a file translated WHOLESALE (not one template signature survives, so a by-signature cut is impossible by construction) and an OWNER-SEEDED document whose shipped skeleton the project wrote over, all three counting every line as the project's own; `--gate-budgets` turns the advice into a DOOR — exit 1 after every other axis has spoken, one `<document>: own lines N of budget M → <address>` line each, while the bare `check` keeps the warning and exit 0 so no update road fails on a long document; the closing ritual `/end-chat-soft` runs the flag. The same epic judges the SKILL LANGUAGE MIX by the share of foreign-script prose tokens instead of a single occurrence of a script — fenced blocks and inline code spans are not prose, a body with not one token in the owner's script is ENGLISH as before, and a body that keeps the owner's script while at or above the named threshold of its tokens are foreign is a MIX, named with its percentage: a fully English skill carrying three stray localized words used to be invisible to both counts) · `version` · `report
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
@@ -4803,6 +4803,21 @@ closed phases, finished sessions, shipped releases — move VERBATIM into `PROJE
 (newest on top; move, don't rewrite). Then re-read what remains of `STATUS.md` with the two tests
 from its header ("remove this line — will the next agent err?" · "readable in one sitting?"; soft
 target ~200 lines). Leave the file the way you'd want to find it.
+
+**Then the budget DOOR — after the trim, not instead of it:**
+
+```
+node .kaif/kaif-core.mjs check --gate-budgets
+```
+
+Exit 1 means a document of the re-read core is over its budget in the project's OWN lines (the lines
+you wrote; modules that arrived byte-equal to the template are not counted), and each line names the
+document, the two numbers and the ADDRESS its overflow moves to. Move the content there and run it
+again. Raising a budget is not the cure, and neither is committing past a red gate: the whole point of
+the flag is that the closing ritual STOPS here (2.7, epic CB; origin issue #71, the owner's own audit
+of one project — "three core documents above budget, the warning printed for weeks and acted on
+once"). Bare `check` keeps printing the same numbers as advice and exits 0, so nothing else in the
+update road fails on a long document.
 
 ### Step 2. Refresh README (when reality moved)
 

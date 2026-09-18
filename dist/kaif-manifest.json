@@ -4,11 +4,11 @@
   "released": "2026-09-06",
   "codename": "Mindful KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "366ccd65227ce1066112a1b3f5183e0ff5589d4537e2b8d8ff54b9dd516d42d6",
-    "KAIF-CORE-BUNDLE.md": "3670159e16d2115cc0434b9aa6b35c9ce8f2f311bea526b4b8e404b6b076bfcd"
+    "KAIF-CORE.mjs": "dfe9bd3d0c8830974b4d49c6655fff9d420b68ada2135da3ef801d3268f0e969",
+    "KAIF-CORE-BUNDLE.md": "8eb4fa3efd59803f386b5a96afda831023e6957c75291fb5fcc593a70847d121"
   },
   "sourceTree": {
-    "sha256": "fb964cacd5799df337cfde4d03714fa275b3a8ee4c8fe9b32e6766aea7e03ef6",
+    "sha256": "68dc1fe4d1ba1e4b2be5c1deec001af02b5f09055d2af35ea318ee96b4e6e08b",
     "files": 203
   },
   "assets": {

@@ -128,9 +128,23 @@ const UPDATE_TASK = 'KAIF_UPDATE_TASK.md';
 // core re-read hourly, STATUS at 6× its target with the debt acknowledged inside the file).
 // `check` WARNS above a budget, never fails: the cure is move-out (chronicle, researches/, a
 // house-rules file), not a bigger number. ONE place for the numbers — the canon points here.
-const DOC_BUDGETS = { 'STATUS.md': 200, 'GOAL.md': 300, 'MASTER_PLAN.md': 300,
-  'PROJECT_STRUCTURE_EXTERNAL_MAP.md': 300, 'PHILOSOPHY.md': 300, 'TESTING_FRAMEWORK.md': 300,
-  'BUG_FIXING_FRAMEWORK.md': 300, 'REQUIREMENTS_FRAMEWORK.md': 250, 'AGENT_GUIDE.md': 1200 };
+// Since 2.7 (epic CB, origin issues #43/#45 + the field pain of three deployments) the budget is
+// judged by the project's OWN lines, and each row carries the ADDRESS the overflow moves to: a
+// warning that says "too long" without saying "where to" is a warning the agent cannot execute
+// (AGENT_GUIDE → "The form of an obligation"). STATUS has its own address, because its overflow
+// is closed history and the chronicle is where closed history lives.
+const MOVE_OUT_ADDRESS = 'the chronicle PROJECT_HISTORY.md · researches/ · a house-rules file';
+const DOC_BUDGETS = {
+  'STATUS.md': { budget: 200, overflowTo: 'the chronicle PROJECT_HISTORY.md (move closed history VERBATIM — the /end-chat-soft bonsai trim)' },
+  'GOAL.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
+  'MASTER_PLAN.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
+  'PROJECT_STRUCTURE_EXTERNAL_MAP.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
+  'PHILOSOPHY.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
+  'TESTING_FRAMEWORK.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
+  'BUG_FIXING_FRAMEWORK.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
+  'REQUIREMENTS_FRAMEWORK.md': { budget: 250, overflowTo: MOVE_OUT_ADDRESS },
+  'AGENT_GUIDE.md': { budget: 1200, overflowTo: MOVE_OUT_ADDRESS },
+};
 
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
@@ -235,6 +249,17 @@ const SCRIPTS = { ru: /[А-Яа-яЁё]/, uk: /[А-Яа-я]/, be: /[А-Яа-я]/
 const OVERLAP_LOCALIZED_BELOW = 0.6;
 const OVERLAP_MIN_WORDS = 12;      // below this a body carries no evidence either way — abstain
 const PROSE_WORD = /[\p{L}][\p{L}\p{M}'-]{2,}/gu;
+// Prose is what a HUMAN language claim can be made about; a command, a path or a flag is not
+// (2.7, epic CB, plan 95 risk б). A localized skill quotes English machinery by the dozen — the
+// language-mix axis strips fenced blocks and inline code spans before it counts a single token.
+// BOUNDARY, observed and written down rather than assumed: an UNCLOSED fence is not stripped — the
+// pattern needs the closing fence — so the code below it is counted as prose and the body can be
+// named a mix. That is the fail-safe direction (a document with an unbalanced fence is broken in a
+// way other gates already care about), and it is said here instead of in a claim that the axis
+// "does not count code".
+const stripCodeSpans = (t) => String(t)
+  .replace(/^([`~]{3,})[\s\S]*?^\1[^\n]*$/gm, ' ')   // fenced blocks, closed by the same fence
+  .replace(/`[^`\n]*`/g, ' ');                       // inline code spans (never across a newline)
 const distinctWords = (t) => new Set(String(t).toLowerCase().match(PROSE_WORD) || []);
 function proseOverlap(diskText, newText) {
   const disk = distinctWords(diskText);
@@ -406,10 +431,19 @@ const FROZEN_PACKS = ['ar', 'de', 'es', 'fr', 'hi', 'ja', 'pt', 'zh-hans'];
 // arrived as "a raw English body with a localized alias line glued on" and read as a defect;
 // the packs are owner-doc-only BY DESIGN — the framework is English-first). One honest line
 // names exactly what arrives in English and needs manual transfer if the owner wants it local.
-function logPackHonesty(files, deploy) {
-  if (LANG === 'en') return;
+//
+// Since 2.7 (epic CB, criterion 3) this returns its lines instead of printing them, because WHERE
+// they are printed decides how they READ. On the install road they used to be the first thing on
+// the screen — before a single file was written and long before the success line — and a field
+// reader took "INCOMPLETE BY DESIGN" for a refusal. cmdInstall now prints them AFTER "deployed
+// mechanically": the same words, read as a note about a finished install instead of its verdict.
+// The update road prints them where it always did — an update can die mid-flight, and a boundary
+// declared before the tree is touched is better there than a boundary that may never be reached.
+function packHonesty(files, deploy) {
+  const out = [];
+  if (LANG === 'en') return out;
   if (FROZEN_PACKS.includes(LANG)) {
-    log(`⟳ language pack "${LANG}" is FROZEN at its KAIF 2.2 state (origin decision #56): it deploys as before but receives no updates — en/ru are the maintained packs. A frozen pack is revived on community demand: open an issue at the origin.`);
+    out.push(`⟳ language pack "${LANG}" is FROZEN at its KAIF 2.2 state (origin decision #56): it deploys as before but receives no updates — en/ru are the maintained packs. A frozen pack is revived on community demand: open an issue at the origin.`);
   }
   const prefix = `templates/languages/${LANG}/`.toLowerCase();
   let hasPack = false;
@@ -420,7 +454,7 @@ function logPackHonesty(files, deploy) {
     hasPack = true;
     if (lower !== prefix + 'skill-triggers.json') packed.add(f.path.slice(prefix.length));
   }
-  if (!hasPack) return;   // no pack for this language at all — the task's `language` item owns the honesty
+  if (!hasPack) return out;   // no pack for this language at all — the task's `language` item owns the honesty
   const enDocs = deploy.filter((f) => f.path.endsWith('.md') && !packed.has(f.path)
     && !/^\.claude\/skills\//.test(f.path) && !f.path.startsWith('.kaif/spheres/')
     && !f.path.startsWith('templates/languages/')).map((f) => f.path).sort();
@@ -428,8 +462,15 @@ function logPackHonesty(files, deploy) {
   // sites do (bugs/99 №2: "all 35 skill bodies" one line above "31 skills trigger-aliased" of
   // the same run; the 4 ORIGIN_TIED skills never land on an anonymous install).
   const skills = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path)).length;
-  log(`⟳ language pack "${LANG}" is INCOMPLETE BY DESIGN (the framework is English-first): it localizes ${packed.size} owner doc(s). Arriving in ENGLISH and needing manual transfer if you want them localized: ${enDocs.join(', ')} + all ${skills} skill bodies (their trigger aliases ARE localized).`);
+  // The line names what to DO with the boundary, not only what it is (2.7, epic CB): a declared
+  // limit with no address is a limit the reader can only accept. Both addresses are named — the
+  // origin's tracker for a pack that should exist, and the project's own bugs/KAIF/ for a defect
+  // in what did arrive, which the `report` command then delivers.
+  out.push(`⟳ language pack "${LANG}" is INCOMPLETE BY DESIGN (the framework is English-first): it localizes ${packed.size} owner doc(s). Arriving in ENGLISH and needing manual transfer if you want them localized: ${enDocs.join(', ')} + all ${skills} skill bodies (their trigger aliases ARE localized).`);
+  out.push(`  ↳ WHAT TO REPORT: a pack file that should exist for "${LANG}" but did not arrive, or a localized file that arrived damaged — file it as a KAIF defect in bugs/KAIF/NN_*.md and deliver it with \`node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md\`, or open it directly at ${ORIGIN}/issues. The boundary above is BY DESIGN and is not a defect — do not report it.`);
+  return out;
 }
+const logPackHonesty = (files, deploy) => { for (const s of packHonesty(files, deploy)) log(s); };
 
 // ---------------------------------------------------------------------------- placeholder autofill
 // Detect real project values mechanically. Undetected placeholders stay literal and
@@ -2412,6 +2453,58 @@ function runFinalGates(taskFile, tag, verb) {
   selfCleanArtifacts(taskFile, anonDeploy);
 }
 
+// OWN lines of a budgeted document (2.7, epic CB; origin issues #43/#45, three field reports): the
+// size budget used to count EVERY line, so a deployment whose AGENT_GUIDE.md ran 1655 lines with 300
+// of them byte-equal to the shipped template was warned about canon it never wrote — and the only
+// executable answer, "move YOUR content out", was invisible under the arrived text. The carrier
+// already existed and is REUSED here rather than invented: moduleAudit() compares the disk's module
+// cut against `moduleShas` of the deploy manifest by the pair (signature, sha256). A disk module
+// whose pair is in the deployed cut ARRIVED; every other line is the project's own.
+//
+// Three honest fallbacks, each of them said aloud in the warning, never silently:
+//   • no manifest, or no cut for this file → every line counts as own (the fail-safe direction: the
+//     budget keeps working exactly as it did before 2.7 rather than going quiet);
+//   • the file was translated WHOLESALE — not ONE template signature survives on disk, so
+//     by-signature comparison is not applicable BY CONSTRUCTION (bugs/36, and `i18n: translated` is
+//     real state on two field deployments) → every line counts as own, and the line says the arrived
+//     canon cannot be told apart from the project's own text. The predicate is the SHAPE of the loss,
+//     not the marker: a file whose every template signature is gone cannot be cut either way, and the
+//     arithmetic is the same in both branches — the flag only chooses which sentence is printed.
+// The same shape has TWO causes, and calling them both "translated" is a lie the run on real state
+// caught: an OWNER-SEEDED document (STATUS, GOAL, MASTER_PLAN, the external map) ships a skeleton the
+// project then writes over completely, so its template signatures are gone in every healthy
+// deployment — nothing was translated, the document is simply the project's own. Same arithmetic,
+// honest sentence: the branch splits on OWNER_SEEDED, which the core already knows.
+// Returns { total, own, arrived, basis } — `basis` is what the warning says about itself.
+function ownLines(doc) {
+  const raw = readFileSync(doc, 'utf8');
+  const total = raw.replace(/\r?\n$/, '').split(/\r?\n/).length;
+  let cut = null;
+  try { if (okOnDisk(DEPLOY_MANIFEST)) cut = (readJson(DEPLOY_MANIFEST).moduleShas || {})[doc] || null; }
+  catch { cut = null; }                                   // unreadable manifest — the marker gate flags it separately
+  if (!cut || !cut.length) return { total, own: total, arrived: 0, basis: 'no-cut' };
+  const disk = splitModules(normEol(raw));
+  const diskSigs = new Set(disk.map((d) => d.signature));
+  // `<preamble>` is machinery's, not the owner's (bug 43): it survives every translation and so
+  // carries no evidence about whether this file was translated.
+  const judged = cut.filter((e) => e.signature !== '<preamble>');
+  if (judged.length && !judged.some((e) => diskSigs.has(e.signature)))
+    return { total, own: total, arrived: 0, basis: OWNER_SEEDED.includes(doc) ? 'owner-seeded' : 'translated' };
+  // The key is sha FIRST: a sha256 is 64 hex characters of fixed length, so concatenating it with an
+  // arbitrary signature is unambiguous and needs no separator byte at all. (A raw NUL separator here
+  // cost nothing at runtime and made this whole file read as BINARY to grep — caught by the judge.)
+  const arrivedPairs = new Set(cut.map((e) => `${e.sha256}${e.signature}`));
+  let arrived = 0;
+  disk.forEach((m, i) => {
+    if (!arrivedPairs.has(`${normSha(modText(m))}${m.signature}`)) return;
+    let n = m.lines.length;
+    // the last module carries the empty tail the final newline produces — `total` strips it too
+    if (i === disk.length - 1 && n && m.lines[n - 1] === '') n--;
+    arrived += n;
+  });
+  return { total, own: Math.max(0, total - arrived), arrived, basis: 'cut' };
+}
+
 // The module audit (field proposal A, third 2.0 report §5): re-cut the DISK with the same
 // splitter and compare per-signature against the manifest — it catches the class the module
 // machinery itself can break ("a module lost its identity"), which no line-level check sees.
@@ -2498,7 +2591,10 @@ async function cmdInstall() {
     try { const j = readJson(KAIF_JSON); if (j.language) LANG = checkedLang(j.language, 'the deploy marker'); } catch { /* CLI default stands */ }
   }
   const { deploy, translated, overridePaths } = applyLanguage(files);
-  logPackHonesty(files, deploy);   // the pack boundary is declared, not discovered post-factum
+  // The pack boundary is declared, not discovered post-factum — but AFTER the success line, never
+  // before it (2.7, epic CB, criterion 3): printed first, "INCOMPLETE BY DESIGN" is the opening
+  // sentence of an install that has not yet written a file, and the field read it as a refusal.
+  const packNotes = packHonesty(files, deploy);
   const values = stableValues();   // a re-run/bootstrap over an existing deploy keeps ITS values (bug 26)
   const unresolved = new Set();
 
@@ -2835,6 +2931,7 @@ async function cmdInstall() {
   consumeRehearsal(rehearsal);   // 2.6 (UR1): one-shot on THIS route too — the auto record used to survive the bootstrap it rehearsed (origin #42)
   clearUpdateJournal();   // bootstrap road completed — nothing left to resume
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translatedOnDisk ? ` · ${translatedOnDisk} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
+  for (const s of packNotes) log(s);   // the pack boundary reads as a note on a finished install, never as its verdict (2.7, CB)
   // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
   // are absent from it, and the first thing the human sees when trying one is "no such command" —
   // which reads as "the install failed". Saying it HERE costs one line and prevents that diagnosis.
@@ -2945,19 +3042,45 @@ function cmdCheck() {
   // Language mix (2.5, epic US; field #32 R-C: a ru deployment's own skill directory was already
   // bilingual — 18 of 45 skills English — and no gate said a word). Skills are agent-read and stay
   // English by policy; the count is HONESTY about the tree, not a defect: a warning, never a failure.
+  // Since 2.7 (epic CB, criterion 2) MIX is judged by the SHARE of foreign-script prose tokens, not
+  // by a single occurrence of a script: `re.test(body)` made one English word in a Russian skill
+  // indistinguishable from an English skill, and — the other way round — a fully English skill with
+  // three stray Cyrillic words read as localized and was invisible to the count. Two states, one
+  // named threshold:
+  //   • not ONE token in the owner's script → ENGLISH (exactly the old predicate, by tokens) — the
+  //     count below, unchanged in wording, because English arrival is policy and not a defect;
+  //   • the owner's script present AND the foreign share at or above the threshold → MIXED, named
+  //     with its percentage, because that is a half-finished translation and nothing said a word.
+  // Below the threshold the skill is localized and this axis stays silent.
+  // Code is NOT prose (plan 95 risk б): a Russian skill quotes commands, paths and flags by the
+  // dozen, and counting them would redden every legitimate localized skill — fenced blocks and
+  // inline code spans are removed before tokenizing.
+  // The threshold was MEASURED, not chosen: over the origin's own 37-skill ru layer (2026-09-18) the
+  // 29 skills carrying the owner's script run 0.003 … 0.130 foreign share, and the 8 English ones
+  // run 1.000; one skill (English body, three stray Cyrillic words) sits at 0.993 — invisible to the
+  // old predicate and named as a mix by this one. The threshold sits inside that gap, far from both
+  // sides, and below one half, so a body whose paragraphs are half English is named.
+  const LANGUAGE_MIX_FOREIGN_SHARE = 0.35;
   try {
     const lang = String(readJson(KAIF_JSON).language || 'en').toLowerCase();
     const re = SCRIPTS[lang];
     if (lang !== 'en' && re && existsSync('.claude/skills')) {
       let total = 0, english = 0;
+      const mixed = [];
       for (const n of readdirSync('.claude/skills')) {
         const p = `.claude/skills/${n}/SKILL.md`;
         if (!okOnDisk(p)) continue;
         total++;
         const body = splitModules(normEol(readFileSync(p, 'utf8'))).filter((m) => m.signature !== '<preamble>').map(modText).join('\n');
-        if (!re.test(body)) english++;
+        const tokens = stripCodeSpans(body).match(PROSE_WORD) || [];
+        let own = 0;
+        for (const t of tokens) if (re.test(t)) own++;
+        const share = tokens.length ? (tokens.length - own) / tokens.length : 0;
+        if (!own) { english++; continue; }
+        if (share >= LANGUAGE_MIX_FOREIGN_SHARE) mixed.push(`${n} (${Math.round(share * 100)} % foreign)`);
       }
       if (english) console.error(`⚠ language mix: ${english} of ${total} skills are English (language: ${lang}) — skills are agent-read and arrive English by policy; translate on demand, and expect NEW skills to arrive English too`);
+      if (mixed.length) console.error(`⚠ language mix: ${mixed.length} of ${total} skills are a MIX — at or above ${Math.round(LANGUAGE_MIX_FOREIGN_SHARE * 100)} % of their prose tokens are not ${lang} while the rest is: ${mixed.slice(0, 5).join(', ')}${mixed.length > 5 ? ` (${mixed.length - 5} more)` : ''} — a half-finished translation reads as two documents to an agent; finish it or leave the skill English`);
     }
   } catch { /* unreadable marker — the marker gate flags it separately */ }
   warnSphereLibrary();
@@ -2965,21 +3088,44 @@ function cmdCheck() {
   // PROMISED a warning at the ~200-line soft target and shipped prose only, field STATUS files
   // grew to 1647/1928 lines because "there was no one to warn"; the other eight: 2.5, epic CN).
   // A warning, never a failure; each warning names the budget it measured against.
+  // Since 2.7 (epic CB) the number judged is the project's OWN lines — see ownLines() — and each
+  // warning carries the ADDRESS its overflow moves to, from the one table above. `--gate-budgets`
+  // turns the advice into a DOOR for the closing ritual (origin issue #71, proposal 3: "three core
+  // documents above budget, the warning printed for weeks and acted on once"); with no flag the
+  // behaviour is exactly what it was — a warning and exit 0, because a warning that can fail a
+  // mid-update `check` would block work the budget was never meant to block.
   // @guard doc-budgets
-  // THREAT:         the re-read core grows past what a session can hold and nobody warns (field: a 5.8k-line
-  //                 core re-read hourly, STATUS at 6× its target with the debt acknowledged inside the file)
-  // PROVED-AGAINST: sandbox s16 — a deployed copy with AGENT_GUIDE / STATUS padded by filler lines; the mutant
-  //                 with this warning disabled reddens exactly the three addressed asserts (2026-09-04)
-  // GAP:            filler is not organic growth — real sections raise the line count the same way, but a
-  //                 document that stays under budget while its CONTENT rots is not this guard's threat
-  // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.5 update
-  for (const [doc, budget] of Object.entries(DOC_BUDGETS)) {
+  // THREAT:         the re-read core grows past what a session can hold and nobody warns (field: a 5.8k-line core re-read hourly, STATUS at
+  //                 6× its target); since 2.7 also: the warning counted ARRIVED canon as the project's own lines, so a deployment was told to
+  //                 shorten text it never wrote (field: AGENT_GUIDE.md 1661 lines, 596 of them arrived), and it cost nothing to ignore —
+  //                 three core documents above budget, the line printed for weeks and acted on once (origin issue #71)
+  // PROVED-AGAINST: sandbox s16 on a deployed copy, 44 asserts — a fresh install padded with OWN modules is SILENT while over budget in total
+  //                 lines and under it in own lines; padded past the OWN budget it is named `own lines N of budget ~M`, own+arrived adds up to
+  //                 wc -l, and it carries its address (STATUS: the chronicle); wholesale-translated, owner-seeded and no-module-cut each say
+  //                 which they are; a deployment INSIDE its budgets keeps the gate open (exit 0, nothing printed) while an overflow closes it
+  //                 with exit 1 from the DOOR and not from an unrecognised flag; bare `check` stays 0; an unknown flag still refuses. Red: the
+  //                 2.6 core (KAIF_DIST) 27 of 44; five mutants of THIS block's predicates on a COPY of dist — own-lines returns the whole file
+  //                 (3 red), the gate never closes (5), the mix threshold at 0 (2) and at 1 (4), owner-seeded folded into translated (2); none invisible
+  // GAP:            it counts LINES, not weight — a document under its own-line budget can still be unreadably long; a MODULE edited by one
+  //                 character counts WHOLE, the unit of the deployed cut being the module; a translated or owner-seeded file is judged as if
+  //                 every line were its own — honest but over-naming, and the line says so; the gate fires only where ASKED FOR, so a ritual
+  //                 that never runs the flag is as toothless as the warning was, and nothing here sees that
+  // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.7 update. Observed instead, and it is seeded state, not that
+  //                 path: the command over two field deployments' manifest-listed files copied into a temp tree — 3 and 4 PRINTED numbers read back
+  //                 against wc -l and their own moduleShas, 0 disagreements, the other 6 and 5 documents silent on both sides, sources re-hashed
+  //                 unchanged; the cross-check re-implements the same algorithm, so it catches an assembly error and never one of the algorithm.
+  //                 It paid for itself anyway: it is what showed an owner-seeded document reading as "translated wholesale"
+  const overBudget = [];
+  for (const [doc, { budget, overflowTo }] of Object.entries(DOC_BUDGETS)) {
     if (!okOnDisk(doc)) continue;
-    const n = readFileSync(doc, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
-    if (n > budget)
-      console.error(`⚠ ${doc}: ${n} lines against its budget of ~${budget} — ${doc === 'STATUS.md'
-        ? 'time for a bonsai trim: move closed history verbatim into PROJECT_HISTORY.md (the /end-chat-soft rules)'
-        : 'move content OUT (chronicle, researches/, a house-rules file) rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)'}`);
+    const { total, own, basis } = ownLines(doc);
+    if (own <= budget) continue;
+    overBudget.push({ doc, own, budget, overflowTo });
+    const how = basis === 'cut' ? `${total} lines on disk, ${total - own} of them arrived with KAIF and are not counted`
+      : basis === 'owner-seeded' ? `${total} lines on disk, all of them yours — this is an owner-seeded document whose shipped skeleton the project wrote over, so there is no arrived canon to subtract`
+      : basis === 'translated' ? `${total} lines on disk, translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours`
+      : `${total} lines on disk, no deployed module cut for this file — every line counts as yours`;
+    console.error(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
   }
   // The re-read core ↔ the /resume ritual (2.7, epic TR; origin issue #59 + the 2.7 scope recon: a
   // field /resume opened 5 of the 9 re-read core documents and nobody said a word — the skill's
@@ -3123,6 +3269,16 @@ function cmdCheck() {
       }
     }
   } catch { /* unreadable constitution or template — nothing to compare, and no other gate depends on it */ }
+  // The budget DOOR of the closing ritual (2.7, epic CB6; origin issue #71 proposal 3 — the owner's
+  // own audit: "three core documents above budget, the warning printed for weeks and executed once").
+  // It stands HERE, after every other axis has spoken, so the run that fails on it still reports
+  // everything else it saw; and it is opt-in by flag, because a budget is a reading cost, not a
+  // broken deployment — `update-verify` and `verify-final` must never fail on it.
+  if (has('--gate-budgets') && overBudget.length) {
+    for (const o of overBudget)
+      console.error(`✖ ${o.doc}: own lines ${o.own} of budget ${o.budget} → ${o.overflowTo}`);
+    die(`--gate-budgets: ${overBudget.length} document(s) of the re-read core are over their budget in the project's OWN lines — move the content out to the address named on each line, then run this again (raising a budget is not the cure; origin issue #71)`);
+  }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }
 
@@ -3599,7 +3755,7 @@ function cmdModules() {
 const COMMANDS = {
   help:            { fn: cmdHelp,         desc: 'this list (also the bare-run and --help default)', flags: {}, pos: 0 },
   version:         { fn: cmdVersion,      desc: 'report the deployed version from .kaif/kaif.json', flags: {}, pos: 0 },
-  check:           { fn: cmdCheck,        desc: 'validate the deployed manifest (marker schema, mirrors, two-headed docs)', flags: { '--bundle': true, '--agents': true, '--mode': true, '--lang': true }, pos: 0 },
+  check:           { fn: cmdCheck,        desc: 'validate the deployed manifest (marker schema, mirrors, two-headed docs); --gate-budgets makes the size budgets of the re-read core a DOOR — exit 1 on a document over budget in the project\'s OWN lines (the closing ritual runs it)', flags: { '--bundle': true, '--agents': true, '--mode': true, '--lang': true, '--gate-budgets': false }, pos: 0 },
   diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version', flags: { '--source': true, '--baseline': true, '--lang': true }, pos: 0 },
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly); over an existing deployment it is an update-by-bootstrap — --rehearsal <receipt> binds it to a sandbox copy\'s verdicts', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false, '--rehearsal': true }, pos: 0 },
