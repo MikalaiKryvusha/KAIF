@@ -1,12 +1,8 @@
 # INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)
 
-<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing
-page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still
-runs its own contour checks it against these lines BEFORE opening a page to the owner. The long-form canon
-(43 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the
-part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt
-per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were
-typed as paragraphs). -->
+<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these lines BEFORE opening a page to the owner.
+The long-form canon (43 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
+This page has a BUDGET (120 lines, judged by the origin's suite s22): a new article is written at the width of the table below, or it pays for its lines by tightening an old one. -->
 
 ## 1. Source document — what the page is built from
 
@@ -37,6 +33,10 @@ self-check after render: count(radio groups) == count(questions)  →  mismatch 
 The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs
 <doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
 no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut).
+**Second axis of the same door — ARCHAEOLOGY (2.7, origin issue #70: 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days after his answer).** A LIVE question of a document whose header date is on or after `2026-09-18` opens only WITH the attestation of the search that was actually run, standing between its heading and its FIRST option:
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
+Without it the door exits 3 and PRINTS that ready command; `N > 0` with `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
+Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
 
 ## 3. Records — three files, derived names, never overwritten
 

@@ -3172,7 +3172,17 @@ bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
 showing, outcomes and exit codes, the call, the faces and flags of the shipped generator under
-`.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
+`.kaif/tools/contour/`). The form check is a door of its own — `review.mjs <doc> --check`: parse,
+pre-flight and render self-check with no server, no sound and no call (2.7, epic QL, origin issue #56) —
+and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, epic AQ, origin issue #70:
+13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
+after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
+of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
+read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
+too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
+two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)
@@ -5757,6 +5767,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 - Verify the technical facts that determine which options are even possible (e.g. "can this dialog be
   removed?", "does the library have the needed API?"). A question without verified groundwork is a bad question.
 - Look at past interviews (`ls interviews/`) so you don't duplicate accepted decisions and keep one style.
+  Looking is not searching: the search per question, its command and its attestation are **step 3d**, and
+  the contour's door refuses a question that skipped it.
 
 ### Step 2. Create the interview document
 - Name: `interviews/interview_NNN_<short_topic>.md`, where `NNN` is the next free number
@@ -5817,7 +5829,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 - Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
   pad, but don't starve the interview either: a cramped interview that misses what the agent actually
   needed to clarify is worse than a few extra questions.
-- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
+- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews — and this one is not
+  kept by resolve: it is **step 3d**, a command whose result is written under the question.
 
 ### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after
 
@@ -5899,8 +5912,44 @@ Before opening the page, run the shipped generator's form check — `node .kaif/
 <interview.md> --check` — and fix what it names (a pre-flight refusal, or a block that looks like a question but
 is not in the form `### Q<n>.`). The check is a door of its own: it never serves, never sounds, never calls and
 never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
-only the window is not opened). A project that runs its own contour checks the document against that page by hand.
+only the window is not opened). The same door has a SECOND axis — the archaeology of every live question (step 3d,
+2.7, origin issue #70): no attestation, exit 3, and the refusal prints the search command to run.
+A project that runs its own contour checks the document against that page by hand.
 Paragraph headings like `**A. …**` are not options.
+
+### Step 3d. Archaeology BEFORE the question — search, read, attest (KAIF 2.7)
+
+A question to the owner is a CLAIM that the matter is not settled yet, and nothing used to verify it.
+One field owner answered the same questions thirteen times, one of them 44 days after his own answer
+(origin issue #70; his words, rendered from Russian: "you are asking ME? did you look into GOAL.md,
+smart guy, before asking?" · "you ask me questions without having looked at the history of decisions…
+we have discussed this already. Search."). So the search is a step with a command, and its result is
+written under the question — never "I looked at the interviews" in the agent's memory:
+
+1. **Run the search.** The door prints the ready command for the question's own heading — `node
+   .kaif/tools/contour/review.mjs <interview.md> --check` — and it looks like
+   `grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/ GOAL.md MASTER_PLAN.md plans/`.
+   Run it as printed; broaden it when the topic has a synonym, never narrow it.
+2. **READ the hits** — the files, not the number. A count with nothing read is the same claim unverified.
+3. **Write the attestation** between the question heading and its FIRST option:
+   ```
+   <!-- archaeology: grep -rniE "…" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->
+   ```
+   `N` and the file list come from the run that just happened. `N = 0` is an honest attestation: the axis
+   does not promise a find, it promises you searched and said with what.
+4. **A prior answer found → the question does not go to the owner.** Either DROP it and carry the decision
+   over from the old answer (`node .kaif/tools/contour/review.mjs --mark-implemented <old interview.md> <Q>
+   --where <commit or file>`, step 5), or reformulate it as "the prior answer was X; Y has changed — confirm
+   it or change it", with the old answer quoted and addressed. Re-serving a settled question is the defect.
+5. **The door refuses what skipped this step.** A live question of a document dated on or after 2026-09-18
+   without the attestation: exit 3, the grep printed, nothing shown and nobody called — the same for `--check`
+   and for any show. Hits found with `prior: none` is refused too: name the prior answer, or write
+   `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
+   `<!-- archaeology: n/a — <reason> -->`. Interviews dated before that day are never judged (the field's
+   history is not rewritten), and `--check` says so out loud: `archaeology: not judged — header date …`.
+
+Where the project runs a questions guard, the same class is an axis of it (the origin: `questions-guard`,
+axis G11); `/fable-judge` hunts a question asked past its archaeology.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
@@ -9846,6 +9895,9 @@ or cut it. Prebuilt spheres in this repo are maintained with the framework itsel
 //   P8  — markdown mini-renderer, zero dependencies, escaping is the FIRST action.
 //   §2 of the spec — PRE-FLIGHT: a question with no options in list/table form and no declared free
 //         field must not open (the #51 defect: options typed as paragraphs → a page without radios).
+//   §2, second axis (2.7, origin issue #70) — ARCHAEOLOGY: a LIVE question of a document dated on or
+//         after ARCHAEOLOGY_SINCE must not open without the attestation of the search that was run
+//         (`<!-- archaeology: … → N hits · read: … · prior: … -->`); the refusal prints the READY grep.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve, basename, extname } from 'node:path';
@@ -10079,11 +10131,153 @@ function finishQuestion(q, docClosed) {
     o.label = label ? label[1].trim() : o.letter + ')';
     o.text = full.replace(/^\s*-\s+/, '');
   }
+  // AQ (2.7): where the options START — the archaeology attestation lives ABOVE this line, between
+  // the heading and the first option (a question with no options keeps its whole body as the zone).
+  q.firstOptionLine = -1;
+  for (let j = 0; j < q.body.length; j++) {
+    if (!q.optionTableLines.has(j) && !OPTION_START_RE.test(q.body[j])) continue;
+    q.firstOptionLine = j; break;
+  }
   // the recommended letter is taken from the prose OUTSIDE the options and hung on the option itself
   const proseLines = q.body.filter((l, j) => !q.optionTableLines.has(j) && !OPTION_START_RE.test(l));
   const rec = proseLines.join('\n').match(RECOMMEND_RE);
   q.recommended = rec && q.options.some((o) => o.letter === rec[1]) ? rec[1] : null;
   q.answered = docClosed || q.answers.some((a) => a.text); // rule 4
+}
+
+// ── AQ (2.7, origin issue #70): ARCHAEOLOGY — the question is a CLAIM, and the claim is verified ──
+// A question to the owner says "this is not settled yet". Nothing verified it: the field brought one
+// owner the same question thirteen times, once 44 days after he had answered it ("you are asking ME?
+// did you look into GOAL.md, smart guy, before asking?"). So every LIVE question of a document dated
+// on or after the threshold carries an attestation of the search that was actually run, between the
+// question heading and its first option:
+//   <!-- archaeology: grep -rniE "<nouns>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->
+// The axis judges FORWARD, by the document's header date (the `Created` line when there is one, else
+// the first ISO date of the head): the field's old interviews must never turn red, and a document
+// without a date is not provably new. Exempt: answered questions, documents with no questions, and a
+// declared exception `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class).
+// The axis does not promise the search FINDS anything — it promises the agent searched and recorded
+// with what; `N = 0` is a legal, honest attestation. What it does refuse is `N > 0` with `prior: none`:
+// hits were found and the prior answer is not named (legal: `prior: unrelated — <why>`).
+export const ARCHAEOLOGY_SINCE = '2026-09-18';       // the day the door was shipped; older documents stay silent
+export const ARCHAEOLOGY_PATHS = 'interviews/ GOAL.md MASTER_PLAN.md plans/';
+export const ARCHAEOLOGY_MIN_LETTERS = 4;            // a searchable word of the heading — 4+ letters, machine, no judgement
+export const ARCHAEOLOGY_MIN_LETTERS_FALLBACK = 3;   // a heading of short words only still gets a command
+export const ARCHAEOLOGY_MAX_WORDS = 6;              // the printed command stays one readable line
+// A word of 6+ letters is searched by its STEM — the last two characters are cut. Languages that
+// inflect (the origin's own documents are Russian) would otherwise search for one case form and miss
+// the prior answer written in another; the cut costs extra hits, and an extra hit only asks the agent
+// to read and say `prior: unrelated — <why>`, while a missed hit is exactly the defect of issue #70.
+// A stem never gets shorter than ARCHAEOLOGY_STEM_MIN. The first functional run cut two six-letter words
+// down to four characters, and that command returned 895 hits over the origin's own tree; five characters
+// keep the inflections and cost less (measured on the same question, same tree: 895 → 844 hits, 135 files).
+// The axis does not promise a NARROW command — it promises the search happened and the attestation says
+// what was read; a heading whose words are the project's own subject will always hit a lot.
+export const ARCHAEOLOGY_STEM_FROM = 6;
+export const ARCHAEOLOGY_STEM_CUT = 2;
+export const ARCHAEOLOGY_STEM_MIN = 5;
+const ARCHAEOLOGY_RE = /<!--\s*archaeology:([\s\S]*?)-->/u;
+const ARCHAEOLOGY_NA_RE = /<!--\s*archaeology:\s*n\/a\s*[-—–:]*\s*\S/u;
+const ARCHAEOLOGY_HITS_RE = /(?:→|->)\s*(\d+)\s*hits/iu;
+const ARCHAEOLOGY_PRIOR_RE = /prior:\s*([\s\S]*)$/iu;
+const ARCHAEOLOGY_PRIOR_NONE_RE = /^\s*none(?![\p{L}\d])/iu;
+const STOP_WORDS = new Set(String(PARSER.archaeologyStopWords || '').split('|').filter(Boolean));
+
+/** The document's header date: the `Created` line of the head when present, else its first ISO date. */
+export function headerDate(md) {
+  const head = normalize(md).split('\n').slice(0, HEAD_LINES);
+  const createdRe = new RegExp('^\\s*>?\\s*\\*{0,2}(?:' + PARSER.createdLabels + ')', 'iu');
+  for (const line of head) {                            // the creation date OUTRANKS an answer date above it
+    if (!createdRe.test(line)) continue;
+    const m = line.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+    if (m) return m[1];
+  }
+  return (head.join('\n').match(/\b(\d{4}-\d{2}-\d{2})\b/) || [])[1] || null;
+}
+
+/** The searchable words of a question heading — MACHINE: letters only, 4+ long, stop words dropped. */
+export function archaeologyWords(title) {
+  const bare = String(title || '').replace(/`[^`]*`/gu, ' ').replace(/[*_]/gu, ' ');
+  const pick = (min) => {
+    const out = [];
+    for (const w of bare.match(new RegExp('[\\p{L}]{' + min + ',}', 'gu')) || []) {
+      const t = w.toLowerCase();
+      if (STOP_WORDS.has(t)) continue;
+      const stem = t.length >= ARCHAEOLOGY_STEM_FROM
+        ? t.slice(0, Math.max(ARCHAEOLOGY_STEM_MIN, t.length - ARCHAEOLOGY_STEM_CUT)) : t;
+      if (out.includes(stem)) continue;
+      out.push(stem);
+    }
+    return out;
+  };
+  const words = pick(ARCHAEOLOGY_MIN_LETTERS);
+  return (words.length ? words : pick(ARCHAEOLOGY_MIN_LETTERS_FALLBACK)).slice(0, ARCHAEOLOGY_MAX_WORDS);
+}
+
+/** The READY command for a question heading — the door prints it, the agent copies and runs it. */
+export function archaeologyGrep(title) {
+  const words = archaeologyWords(title);
+  return words.length ? 'grep -rniE "' + words.join('|') + '" ' + ARCHAEOLOGY_PATHS : null;
+}
+
+/** The attestation of ONE question: what stands between its heading and its first option. */
+export function archaeologyOf(q) {
+  const body = q.body || [];
+  const zone = (q.firstOptionLine >= 0 ? body.slice(0, q.firstOptionLine) : body).join('\n');
+  if (ARCHAEOLOGY_NA_RE.test(zone)) return { exempt: true };
+  const m = zone.match(ARCHAEOLOGY_RE);
+  if (!m) return { present: false };
+  const hits = m[1].match(ARCHAEOLOGY_HITS_RE);
+  const prior = m[1].match(ARCHAEOLOGY_PRIOR_RE);
+  if (!hits || !prior) return { present: true, formOk: false };
+  return { present: true, formOk: true, hits: Number(hits[1]), priorNone: ARCHAEOLOGY_PRIOR_NONE_RE.test(prior[1]) };
+}
+
+/**
+ * The archaeology of a whole document: judged only FORWARD by the header date. Problems are DATA
+ * (the shipped door prints them in English, the origin's guard in the owner's language) — one parse
+ * for both sides, so the two never hold two truths about one question.
+ */
+export function archaeology(md) {
+  const date = headerDate(md);
+  const out = { judged: Boolean(date) && date >= ARCHAEOLOGY_SINCE, since: ARCHAEOLOGY_SINCE,
+    headerDate: date, live: 0, attested: 0, exempt: 0, problems: [] };
+  const live = parseQuestions(md).filter((q) => !q.answered);
+  out.live = live.length;
+  if (!out.judged) return out;
+  for (const q of live) {
+    const grep = archaeologyGrep(q.title);
+    const a = archaeologyOf(q);
+    if (a.exempt) { out.exempt++; continue; }
+    if (!a.present) {
+      if (grep) out.problems.push({ id: q.id, kind: 'missing', grep });
+      else out.exempt++;                                 // no searchable word in the heading — no command to print
+      continue;
+    }
+    if (!a.formOk) { out.problems.push({ id: q.id, kind: 'malformed', grep }); continue; }
+    out.attested++;
+    if (a.hits > 0 && a.priorNone) out.problems.push({ id: q.id, kind: 'hits-without-prior', hits: a.hits, grep });
+  }
+  return out;
+}
+
+/** The problem lines of the archaeology axis, in the machinery's own language (like the #51 refusal). */
+function archaeologyProblems(md) {
+  const ARCH = (grep) => '<!-- archaeology: ' + (grep || 'grep -rniE "<nouns>" ' + ARCHAEOLOGY_PATHS)
+    + ' → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->';
+  return archaeology(md).problems.map((p) => {
+    if (p.kind === 'hits-without-prior')
+      return p.id + ': archaeology says ' + p.hits + ' hits and `prior: none` — the search FOUND something and no prior'
+        + ' answer is named. Read the hits and name the prior answer with its address, or write `prior: unrelated — <why>`'
+        + ' (origin issue #70: the same question came back to one owner thirteen times).';
+    if (p.kind === 'malformed')
+      return p.id + ': the archaeology line is not in the form — it must carry `→ N hits` and `prior: …`: ' + ARCH(p.grep);
+    return p.id + ': no archaeology line — a question to the owner CLAIMS "this is not settled yet", and the claim is'
+      + ' unverified. Run the search:  ' + p.grep + '  — read the hits, then put the attestation between the question'
+      + ' heading and its first option: ' + ARCH(p.grep)
+      + ' (a prior answer found → drop the question and carry the decision over, or reformulate it as "the prior answer'
+      + ' was X; Y changed"). Declared exception: <!-- archaeology: n/a — <reason> -->.';
+  });
 }
 
 // ── Spec §2: PRE-FLIGHT — the form of every open question, judged before any page opens ───────
@@ -10101,6 +10295,9 @@ export function preflight(md) {
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +
         ' or declare a free field: <!-- questions-guard:no-scenario <reason> -->');
   }
+  // AQ (2.7, origin issue #70): the SECOND axis of the same door — the question's archaeology. A free
+  // field exempts the FORM, never the claim: a free-form question to the owner is a claim too.
+  problems.push(...archaeologyProblems(md));
   return problems;
 }
 
@@ -10122,7 +10319,8 @@ export function checkForm(md) {
     else if (CANDIDATE_Q_RE.test(line)) candidates.push({ line: i + 1, text: line.trim(), recognised: false });
   });
   return { blocks: candidates.length, questions, recognised: questions.map((q) => q.id),
-    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md) };
+    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md),
+    archaeology: archaeology(md) }; // AQ (2.7): the door says out loud what it judged and what it did not
 }
 
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────
@@ -10360,6 +10558,7 @@ import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -11361,6 +11560,12 @@ export function checkDoc(root, docPath, log = console.log) {
   if (cf.unrecognised.length) { log(t.check.unrecognised(cf.unrecognised.length)); for (const u of cf.unrecognised) log(t.check.line(u.line, u.text)); }
   const nAns = cf.questions.filter((q) => q.answered).length;
   log(t.check.counts(cf.questions.length - nAns, nAns));
+  // AQ (2.7, origin issue #70): the archaeology axis speaks in BOTH directions — how many live
+  // questions carry their attestation, or why the document is not judged at all.
+  const arch = cf.archaeology;
+  if (cf.questions.length) log(arch.judged
+    ? t.check.archaeology(arch.attested, arch.live, arch.exempt)
+    : t.check.archaeologyOld(arch.headerDate, arch.since));
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -11451,6 +11656,36 @@ export function selftest(log = console.log) {
   const partialPage = buildPage(root, CHK);
   ok(partialPage.html.includes('not recognised: 2 question-like block(s)'), 'the page header says out loud that 2 question-like blocks are not on it');
   rmSync(join(root, CHK), { force: true }); // the fixture must not join the queue counted by the batch cases below
+  // AQ (2.7, origin issue #70): the SECOND axis of the same door — the archaeology of a live question.
+  // Both answers of every rule: red without the attestation (and the READY command printed), green with
+  // it; red on hits-without-prior, green on `prior: unrelated`; silent on an answered question, on a
+  // declared n/a and on a document whose header date is before the threshold (it says which).
+  const AQD = 'interviews/interview_099_archaeology.md';
+  const aqHead = (date) => '# Interview #099\n\n> Status: awaiting\n> Created: ' + date + '\n\n';
+  const aqQ = (attestation, answer) => '### Q1. What do we name the game currency?\n\n' + attestation
+    + '| Option | Meaning |\n|---|---|\n| **A** | crystals |\n| **B** | coins |\n\n**Answer:**' + (answer || '') + '\n';
+  const AQ_CMD = 'grep -rniE "name|game|curren" ' + ARCHAEOLOGY_PATHS; // 6+ letters are searched by their stem
+  const AQ_OK = '<!-- archaeology: ' + AQ_CMD + ' → 0 hits · read: none · prior: none -->\n\n';
+  const aqCheck = (body) => { writeFileSync(join(root, AQD), body); lines.length = 0; return checkDoc(root, AQD, cap); };
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('')) === 3 && lines.some((l) => /Q1: no archaeology line/.test(l)) && lines.some((l) => l.includes(AQ_CMD)),
+    'archaeology: a live question of a document dated on the threshold without the attestation → exit 3, and the door prints the READY grep of the heading nouns');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK)) === 0 && lines.some((l) => /archaeology: 1 of 1 live question/.test(l)),
+    'archaeology: the attestation with 0 hits and `prior: none` → exit 0, and --check says 1 of 1 attested (N = 0 is honest, the axis never promises a find)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits'))) === 3 && lines.some((l) => /3 hits and `prior: none`/.test(l)),
+    'archaeology: hits found and no prior answer named → exit 3 (the #70 class: the owner had answered it already)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits').replace('prior: none', 'prior: unrelated — the hits are about the shop layout'))) === 0,
+    'archaeology: `prior: unrelated — <why>` is a legal answer to hits');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: searched a bit -->\n\n')) === 3 && lines.some((l) => /not in the form/.test(l)),
+    'archaeology: an attestation without `N hits` and `prior:` is NOT an attestation → exit 3 (fail-closed, never a silent pass)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: n/a — a naming question, the taste class -->\n\n')) === 0,
+    'archaeology: the declared exception `n/a — <reason>` → exit 0');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('', ' A) crystals')) === 0,
+    'archaeology: an ANSWERED question is out of the axis (nothing is owed to the owner any more)');
+  ok(aqCheck(aqHead('2026-09-01') + aqQ('')) === 0 && lines.some((l) => /not judged/.test(l) && /2026-09-01/.test(l)),
+    'archaeology: a document dated before the threshold → exit 0, and the door says out loud it was NOT judged and why');
+  ok(headerDate('# I\n\n> Status: answered 2026-09-18 10:00\n> Created: 2026-09-13 09:47\n') === '2026-09-13',
+    'archaeology: the header date is the CREATION line — an answer date standing above it never ages an old document forward');
+  rmSync(join(root, AQD), { force: true });
   // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
   const IMPL = 'interviews/interview_097_impl.md';
   writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
@@ -11731,6 +11966,29 @@ export const PARSER = {
   identityOwnerLabels: 'Author\\s*/\\s*owner|Автор\\s*/\\s*владелец',
   // headings of the questions section, dropped from the prose render (cards are the only form)
   questionsSectionHeadings: 'QUESTIONS|Вопросы',
+  // the CREATION line of the document head (`> Created: …` · `> **Создан:** …`) — the archaeology axis
+  // (AQ 2.7) takes the document's date from it, so an ANSWER date standing above never ages a document
+  // forward and an old interview stays silent.
+  createdLabels: 'Created|Создан\\p{L}*|Дата\\s+создания',
+  // AQ (2.7, origin issue #70): words the grep command of a question heading drops — pure function
+  // words of both shipped languages. The pick is machine (letters, length, this list), never a
+  // judgement about nouns: a stop list is data a project can read, an opinion is not.
+  archaeologyStopWords: [
+    'чтобы', 'какой', 'какая', 'какое', 'какие', 'когда', 'нужно', 'нужен', 'нужна', 'надо', 'ли',
+    'если', 'или', 'этот', 'этого', 'этом', 'эта', 'это', 'эти', 'там', 'тоже', 'также', 'так',
+    'быть', 'будет', 'было', 'есть', 'делаем', 'делать', 'берём', 'брать', 'можно', 'нельзя',
+    'сейчас', 'потом', 'после', 'перед', 'между', 'через', 'вместо', 'кроме', 'себя', 'свой',
+    'своя', 'своё', 'свои', 'него', 'them', 'that', 'this', 'these', 'those',
+    'with', 'without', 'from', 'into', 'onto', 'over', 'under', 'after', 'before', 'between',
+    'what', 'which', 'when', 'where', 'whom', 'whose', 'should', 'shall', 'would', 'could',
+    'does', 'done', 'will', 'have', 'been', 'being', 'make', 'made', 'take', 'takes', 'keep',
+    'instead', 'about', 'also', 'else', 'than', 'then', 'they', 'your', 'ours', 'only', 'ever',
+    // добавлено первым функциональным прогоном оси (2026-09-18): команда по живому вопросу соседнего
+    // развёртывания несла «выше», «того», «первы», «перва» — служебные слова заголовка, не предмет.
+    'выше', 'ниже', 'того', 'тому', 'тогда', 'потому', 'первый', 'первая', 'первое', 'первые',
+    'первыми', 'второй', 'вторая', 'третий', 'каждый', 'каждая', 'каждое', 'самый', 'самая',
+    'above', 'below', 'first', 'second', 'third', 'again', 'still',
+  ].join('|'),
 };
 
 // ── Owner-facing dictionaries ────────────────────────────────────────────────────────────────
@@ -11810,6 +12068,12 @@ const EN = {
     unrecognised: (n) => 'not recognised: ' + n + ' block(s) look like questions but are not in the form `### Q<n>.` — the page would open WITHOUT them:',
     line: (l, text) => '  line ' + l + ': ' + text,
     counts: (w, a) => 'unanswered ' + w + ', answered ' + a,
+    // AQ (2.7, origin issue #70): the door says what it judged AND what it did not — a silent axis
+    // that never says "not judged" reads as a green one (the bug-34 class).
+    archaeology: (n, m, ex) => 'archaeology: ' + n + ' of ' + m + ' live question(s) attested'
+      + (ex ? ' (' + ex + ' exempt: declared n/a)' : ''),
+    archaeologyOld: (date, since) => 'archaeology: not judged — header date '
+      + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -11888,6 +12152,10 @@ const RU = {
     unrecognised: (n) => 'не узнано: ' + n + ' блок(ов) похожи на вопрос, но не в форме `### В<n>.` / `### Q<n>.` — страница откроется БЕЗ них:',
     line: (l, text) => '  строка ' + l + ': ' + text,
     counts: (w, a) => 'без ответа ' + w + ', отвечено ' + a,
+    archaeology: (n, m, ex) => 'археология: аттестовано ' + n + ' из ' + m + ' живых вопрос(ов)'
+      + (ex ? ' (вне оси: ' + ex + ' — объявленное n/a)' : ''),
+    archaeologyOld: (date, since) => 'археология: не судится — дата шапки '
+      + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',
@@ -15238,13 +15506,9 @@ addresses the reader can open.>
 ``````md
 # INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)
 
-<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing
-page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still
-runs its own contour checks it against these lines BEFORE opening a page to the owner. The long-form canon
-(43 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the
-part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt
-per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were
-typed as paragraphs). -->
+<!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these lines BEFORE opening a page to the owner.
+The long-form canon (43 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
+This page has a BUDGET (120 lines, judged by the origin's suite s22): a new article is written at the width of the table below, or it pays for its lines by tightening an old one. -->
 
 ## 1. Source document — what the page is built from
 
@@ -15275,6 +15539,10 @@ self-check after render: count(radio groups) == count(questions)  →  mismatch 
 The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs
 <doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
 no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut).
+**Second axis of the same door — ARCHAEOLOGY (2.7, origin issue #70: 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days after his answer).** A LIVE question of a document whose header date is on or after `2026-09-18` opens only WITH the attestation of the search that was actually run, standing between its heading and its FIRST option:
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
+Without it the door exits 3 and PRINTS that ready command; `N > 0` with `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
+Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
 
 ## 3. Records — three files, derived names, never overwritten
 

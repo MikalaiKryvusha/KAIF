@@ -25,6 +25,9 @@
 //   P8  — markdown mini-renderer, zero dependencies, escaping is the FIRST action.
 //   §2 of the spec — PRE-FLIGHT: a question with no options in list/table form and no declared free
 //         field must not open (the #51 defect: options typed as paragraphs → a page without radios).
+//   §2, second axis (2.7, origin issue #70) — ARCHAEOLOGY: a LIVE question of a document dated on or
+//         after ARCHAEOLOGY_SINCE must not open without the attestation of the search that was run
+//         (`<!-- archaeology: … → N hits · read: … · prior: … -->`); the refusal prints the READY grep.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, resolve, basename, extname } from 'node:path';
@@ -258,11 +261,153 @@ function finishQuestion(q, docClosed) {
     o.label = label ? label[1].trim() : o.letter + ')';
     o.text = full.replace(/^\s*-\s+/, '');
   }
+  // AQ (2.7): where the options START — the archaeology attestation lives ABOVE this line, between
+  // the heading and the first option (a question with no options keeps its whole body as the zone).
+  q.firstOptionLine = -1;
+  for (let j = 0; j < q.body.length; j++) {
+    if (!q.optionTableLines.has(j) && !OPTION_START_RE.test(q.body[j])) continue;
+    q.firstOptionLine = j; break;
+  }
   // the recommended letter is taken from the prose OUTSIDE the options and hung on the option itself
   const proseLines = q.body.filter((l, j) => !q.optionTableLines.has(j) && !OPTION_START_RE.test(l));
   const rec = proseLines.join('\n').match(RECOMMEND_RE);
   q.recommended = rec && q.options.some((o) => o.letter === rec[1]) ? rec[1] : null;
   q.answered = docClosed || q.answers.some((a) => a.text); // rule 4
+}
+
+// ── AQ (2.7, origin issue #70): ARCHAEOLOGY — the question is a CLAIM, and the claim is verified ──
+// A question to the owner says "this is not settled yet". Nothing verified it: the field brought one
+// owner the same question thirteen times, once 44 days after he had answered it ("you are asking ME?
+// did you look into GOAL.md, smart guy, before asking?"). So every LIVE question of a document dated
+// on or after the threshold carries an attestation of the search that was actually run, between the
+// question heading and its first option:
+//   <!-- archaeology: grep -rniE "<nouns>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->
+// The axis judges FORWARD, by the document's header date (the `Created` line when there is one, else
+// the first ISO date of the head): the field's old interviews must never turn red, and a document
+// without a date is not provably new. Exempt: answered questions, documents with no questions, and a
+// declared exception `<!-- archaeology: n/a — <reason> -->` (a naming question, the taste class).
+// The axis does not promise the search FINDS anything — it promises the agent searched and recorded
+// with what; `N = 0` is a legal, honest attestation. What it does refuse is `N > 0` with `prior: none`:
+// hits were found and the prior answer is not named (legal: `prior: unrelated — <why>`).
+export const ARCHAEOLOGY_SINCE = '2026-09-18';       // the day the door was shipped; older documents stay silent
+export const ARCHAEOLOGY_PATHS = 'interviews/ GOAL.md MASTER_PLAN.md plans/';
+export const ARCHAEOLOGY_MIN_LETTERS = 4;            // a searchable word of the heading — 4+ letters, machine, no judgement
+export const ARCHAEOLOGY_MIN_LETTERS_FALLBACK = 3;   // a heading of short words only still gets a command
+export const ARCHAEOLOGY_MAX_WORDS = 6;              // the printed command stays one readable line
+// A word of 6+ letters is searched by its STEM — the last two characters are cut. Languages that
+// inflect (the origin's own documents are Russian) would otherwise search for one case form and miss
+// the prior answer written in another; the cut costs extra hits, and an extra hit only asks the agent
+// to read and say `prior: unrelated — <why>`, while a missed hit is exactly the defect of issue #70.
+// A stem never gets shorter than ARCHAEOLOGY_STEM_MIN. The first functional run cut two six-letter words
+// down to four characters, and that command returned 895 hits over the origin's own tree; five characters
+// keep the inflections and cost less (measured on the same question, same tree: 895 → 844 hits, 135 files).
+// The axis does not promise a NARROW command — it promises the search happened and the attestation says
+// what was read; a heading whose words are the project's own subject will always hit a lot.
+export const ARCHAEOLOGY_STEM_FROM = 6;
+export const ARCHAEOLOGY_STEM_CUT = 2;
+export const ARCHAEOLOGY_STEM_MIN = 5;
+const ARCHAEOLOGY_RE = /<!--\s*archaeology:([\s\S]*?)-->/u;
+const ARCHAEOLOGY_NA_RE = /<!--\s*archaeology:\s*n\/a\s*[-—–:]*\s*\S/u;
+const ARCHAEOLOGY_HITS_RE = /(?:→|->)\s*(\d+)\s*hits/iu;
+const ARCHAEOLOGY_PRIOR_RE = /prior:\s*([\s\S]*)$/iu;
+const ARCHAEOLOGY_PRIOR_NONE_RE = /^\s*none(?![\p{L}\d])/iu;
+const STOP_WORDS = new Set(String(PARSER.archaeologyStopWords || '').split('|').filter(Boolean));
+
+/** The document's header date: the `Created` line of the head when present, else its first ISO date. */
+export function headerDate(md) {
+  const head = normalize(md).split('\n').slice(0, HEAD_LINES);
+  const createdRe = new RegExp('^\\s*>?\\s*\\*{0,2}(?:' + PARSER.createdLabels + ')', 'iu');
+  for (const line of head) {                            // the creation date OUTRANKS an answer date above it
+    if (!createdRe.test(line)) continue;
+    const m = line.match(/\b(\d{4}-\d{2}-\d{2})\b/);
+    if (m) return m[1];
+  }
+  return (head.join('\n').match(/\b(\d{4}-\d{2}-\d{2})\b/) || [])[1] || null;
+}
+
+/** The searchable words of a question heading — MACHINE: letters only, 4+ long, stop words dropped. */
+export function archaeologyWords(title) {
+  const bare = String(title || '').replace(/`[^`]*`/gu, ' ').replace(/[*_]/gu, ' ');
+  const pick = (min) => {
+    const out = [];
+    for (const w of bare.match(new RegExp('[\\p{L}]{' + min + ',}', 'gu')) || []) {
+      const t = w.toLowerCase();
+      if (STOP_WORDS.has(t)) continue;
+      const stem = t.length >= ARCHAEOLOGY_STEM_FROM
+        ? t.slice(0, Math.max(ARCHAEOLOGY_STEM_MIN, t.length - ARCHAEOLOGY_STEM_CUT)) : t;
+      if (out.includes(stem)) continue;
+      out.push(stem);
+    }
+    return out;
+  };
+  const words = pick(ARCHAEOLOGY_MIN_LETTERS);
+  return (words.length ? words : pick(ARCHAEOLOGY_MIN_LETTERS_FALLBACK)).slice(0, ARCHAEOLOGY_MAX_WORDS);
+}
+
+/** The READY command for a question heading — the door prints it, the agent copies and runs it. */
+export function archaeologyGrep(title) {
+  const words = archaeologyWords(title);
+  return words.length ? 'grep -rniE "' + words.join('|') + '" ' + ARCHAEOLOGY_PATHS : null;
+}
+
+/** The attestation of ONE question: what stands between its heading and its first option. */
+export function archaeologyOf(q) {
+  const body = q.body || [];
+  const zone = (q.firstOptionLine >= 0 ? body.slice(0, q.firstOptionLine) : body).join('\n');
+  if (ARCHAEOLOGY_NA_RE.test(zone)) return { exempt: true };
+  const m = zone.match(ARCHAEOLOGY_RE);
+  if (!m) return { present: false };
+  const hits = m[1].match(ARCHAEOLOGY_HITS_RE);
+  const prior = m[1].match(ARCHAEOLOGY_PRIOR_RE);
+  if (!hits || !prior) return { present: true, formOk: false };
+  return { present: true, formOk: true, hits: Number(hits[1]), priorNone: ARCHAEOLOGY_PRIOR_NONE_RE.test(prior[1]) };
+}
+
+/**
+ * The archaeology of a whole document: judged only FORWARD by the header date. Problems are DATA
+ * (the shipped door prints them in English, the origin's guard in the owner's language) — one parse
+ * for both sides, so the two never hold two truths about one question.
+ */
+export function archaeology(md) {
+  const date = headerDate(md);
+  const out = { judged: Boolean(date) && date >= ARCHAEOLOGY_SINCE, since: ARCHAEOLOGY_SINCE,
+    headerDate: date, live: 0, attested: 0, exempt: 0, problems: [] };
+  const live = parseQuestions(md).filter((q) => !q.answered);
+  out.live = live.length;
+  if (!out.judged) return out;
+  for (const q of live) {
+    const grep = archaeologyGrep(q.title);
+    const a = archaeologyOf(q);
+    if (a.exempt) { out.exempt++; continue; }
+    if (!a.present) {
+      if (grep) out.problems.push({ id: q.id, kind: 'missing', grep });
+      else out.exempt++;                                 // no searchable word in the heading — no command to print
+      continue;
+    }
+    if (!a.formOk) { out.problems.push({ id: q.id, kind: 'malformed', grep }); continue; }
+    out.attested++;
+    if (a.hits > 0 && a.priorNone) out.problems.push({ id: q.id, kind: 'hits-without-prior', hits: a.hits, grep });
+  }
+  return out;
+}
+
+/** The problem lines of the archaeology axis, in the machinery's own language (like the #51 refusal). */
+function archaeologyProblems(md) {
+  const ARCH = (grep) => '<!-- archaeology: ' + (grep || 'grep -rniE "<nouns>" ' + ARCHAEOLOGY_PATHS)
+    + ' → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->';
+  return archaeology(md).problems.map((p) => {
+    if (p.kind === 'hits-without-prior')
+      return p.id + ': archaeology says ' + p.hits + ' hits and `prior: none` — the search FOUND something and no prior'
+        + ' answer is named. Read the hits and name the prior answer with its address, or write `prior: unrelated — <why>`'
+        + ' (origin issue #70: the same question came back to one owner thirteen times).';
+    if (p.kind === 'malformed')
+      return p.id + ': the archaeology line is not in the form — it must carry `→ N hits` and `prior: …`: ' + ARCH(p.grep);
+    return p.id + ': no archaeology line — a question to the owner CLAIMS "this is not settled yet", and the claim is'
+      + ' unverified. Run the search:  ' + p.grep + '  — read the hits, then put the attestation between the question'
+      + ' heading and its first option: ' + ARCH(p.grep)
+      + ' (a prior answer found → drop the question and carry the decision over, or reformulate it as "the prior answer'
+      + ' was X; Y changed"). Declared exception: <!-- archaeology: n/a — <reason> -->.';
+  });
 }
 
 // ── Spec §2: PRE-FLIGHT — the form of every open question, judged before any page opens ───────
@@ -280,6 +425,9 @@ export function preflight(md) {
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +
         ' or declare a free field: <!-- questions-guard:no-scenario <reason> -->');
   }
+  // AQ (2.7, origin issue #70): the SECOND axis of the same door — the question's archaeology. A free
+  // field exempts the FORM, never the claim: a free-form question to the owner is a claim too.
+  problems.push(...archaeologyProblems(md));
   return problems;
 }
 
@@ -301,7 +449,8 @@ export function checkForm(md) {
     else if (CANDIDATE_Q_RE.test(line)) candidates.push({ line: i + 1, text: line.trim(), recognised: false });
   });
   return { blocks: candidates.length, questions, recognised: questions.map((q) => q.id),
-    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md) };
+    unrecognised: candidates.filter((c) => !c.recognised), problems: preflight(md),
+    archaeology: archaeology(md) }; // AQ (2.7): the door says out loud what it judged and what it did not
 }
 
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────

@@ -107,7 +107,17 @@ bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
 showing, outcomes and exit codes, the call, the faces and flags of the shipped generator under
-`.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
+`.kaif/tools/contour/`). The form check is a door of its own — `review.mjs <doc> --check`: parse,
+pre-flight and render self-check with no server, no sound and no call (2.7, epic QL, origin issue #56) —
+and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, epic AQ, origin issue #70:
+13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
+after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
+of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
+read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
+too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
+two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)

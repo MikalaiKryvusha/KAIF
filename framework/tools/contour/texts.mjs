@@ -51,6 +51,29 @@ export const PARSER = {
   identityOwnerLabels: 'Author\\s*/\\s*owner|Автор\\s*/\\s*владелец',
   // headings of the questions section, dropped from the prose render (cards are the only form)
   questionsSectionHeadings: 'QUESTIONS|Вопросы',
+  // the CREATION line of the document head (`> Created: …` · `> **Создан:** …`) — the archaeology axis
+  // (AQ 2.7) takes the document's date from it, so an ANSWER date standing above never ages a document
+  // forward and an old interview stays silent.
+  createdLabels: 'Created|Создан\\p{L}*|Дата\\s+создания',
+  // AQ (2.7, origin issue #70): words the grep command of a question heading drops — pure function
+  // words of both shipped languages. The pick is machine (letters, length, this list), never a
+  // judgement about nouns: a stop list is data a project can read, an opinion is not.
+  archaeologyStopWords: [
+    'чтобы', 'какой', 'какая', 'какое', 'какие', 'когда', 'нужно', 'нужен', 'нужна', 'надо', 'ли',
+    'если', 'или', 'этот', 'этого', 'этом', 'эта', 'это', 'эти', 'там', 'тоже', 'также', 'так',
+    'быть', 'будет', 'было', 'есть', 'делаем', 'делать', 'берём', 'брать', 'можно', 'нельзя',
+    'сейчас', 'потом', 'после', 'перед', 'между', 'через', 'вместо', 'кроме', 'себя', 'свой',
+    'своя', 'своё', 'свои', 'него', 'them', 'that', 'this', 'these', 'those',
+    'with', 'without', 'from', 'into', 'onto', 'over', 'under', 'after', 'before', 'between',
+    'what', 'which', 'when', 'where', 'whom', 'whose', 'should', 'shall', 'would', 'could',
+    'does', 'done', 'will', 'have', 'been', 'being', 'make', 'made', 'take', 'takes', 'keep',
+    'instead', 'about', 'also', 'else', 'than', 'then', 'they', 'your', 'ours', 'only', 'ever',
+    // добавлено первым функциональным прогоном оси (2026-09-18): команда по живому вопросу соседнего
+    // развёртывания несла «выше», «того», «первы», «перва» — служебные слова заголовка, не предмет.
+    'выше', 'ниже', 'того', 'тому', 'тогда', 'потому', 'первый', 'первая', 'первое', 'первые',
+    'первыми', 'второй', 'вторая', 'третий', 'каждый', 'каждая', 'каждое', 'самый', 'самая',
+    'above', 'below', 'first', 'second', 'third', 'again', 'still',
+  ].join('|'),
 };
 
 // ── Owner-facing dictionaries ────────────────────────────────────────────────────────────────
@@ -130,6 +153,12 @@ const EN = {
     unrecognised: (n) => 'not recognised: ' + n + ' block(s) look like questions but are not in the form `### Q<n>.` — the page would open WITHOUT them:',
     line: (l, text) => '  line ' + l + ': ' + text,
     counts: (w, a) => 'unanswered ' + w + ', answered ' + a,
+    // AQ (2.7, origin issue #70): the door says what it judged AND what it did not — a silent axis
+    // that never says "not judged" reads as a green one (the bug-34 class).
+    archaeology: (n, m, ex) => 'archaeology: ' + n + ' of ' + m + ' live question(s) attested'
+      + (ex ? ' (' + ex + ' exempt: declared n/a)' : ''),
+    archaeologyOld: (date, since) => 'archaeology: not judged — header date '
+      + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -208,6 +237,10 @@ const RU = {
     unrecognised: (n) => 'не узнано: ' + n + ' блок(ов) похожи на вопрос, но не в форме `### В<n>.` / `### Q<n>.` — страница откроется БЕЗ них:',
     line: (l, text) => '  строка ' + l + ': ' + text,
     counts: (w, a) => 'без ответа ' + w + ', отвечено ' + a,
+    archaeology: (n, m, ex) => 'археология: аттестовано ' + n + ' из ' + m + ' живых вопрос(ов)'
+      + (ex ? ' (вне оси: ' + ex + ' — объявленное n/a)' : ''),
+    archaeologyOld: (date, since) => 'археология: не судится — дата шапки '
+      + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',

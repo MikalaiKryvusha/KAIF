@@ -45,6 +45,7 @@ import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -1046,6 +1047,12 @@ export function checkDoc(root, docPath, log = console.log) {
   if (cf.unrecognised.length) { log(t.check.unrecognised(cf.unrecognised.length)); for (const u of cf.unrecognised) log(t.check.line(u.line, u.text)); }
   const nAns = cf.questions.filter((q) => q.answered).length;
   log(t.check.counts(cf.questions.length - nAns, nAns));
+  // AQ (2.7, origin issue #70): the archaeology axis speaks in BOTH directions — how many live
+  // questions carry their attestation, or why the document is not judged at all.
+  const arch = cf.archaeology;
+  if (cf.questions.length) log(arch.judged
+    ? t.check.archaeology(arch.attested, arch.live, arch.exempt)
+    : t.check.archaeologyOld(arch.headerDate, arch.since));
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -1136,6 +1143,36 @@ export function selftest(log = console.log) {
   const partialPage = buildPage(root, CHK);
   ok(partialPage.html.includes('not recognised: 2 question-like block(s)'), 'the page header says out loud that 2 question-like blocks are not on it');
   rmSync(join(root, CHK), { force: true }); // the fixture must not join the queue counted by the batch cases below
+  // AQ (2.7, origin issue #70): the SECOND axis of the same door — the archaeology of a live question.
+  // Both answers of every rule: red without the attestation (and the READY command printed), green with
+  // it; red on hits-without-prior, green on `prior: unrelated`; silent on an answered question, on a
+  // declared n/a and on a document whose header date is before the threshold (it says which).
+  const AQD = 'interviews/interview_099_archaeology.md';
+  const aqHead = (date) => '# Interview #099\n\n> Status: awaiting\n> Created: ' + date + '\n\n';
+  const aqQ = (attestation, answer) => '### Q1. What do we name the game currency?\n\n' + attestation
+    + '| Option | Meaning |\n|---|---|\n| **A** | crystals |\n| **B** | coins |\n\n**Answer:**' + (answer || '') + '\n';
+  const AQ_CMD = 'grep -rniE "name|game|curren" ' + ARCHAEOLOGY_PATHS; // 6+ letters are searched by their stem
+  const AQ_OK = '<!-- archaeology: ' + AQ_CMD + ' → 0 hits · read: none · prior: none -->\n\n';
+  const aqCheck = (body) => { writeFileSync(join(root, AQD), body); lines.length = 0; return checkDoc(root, AQD, cap); };
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('')) === 3 && lines.some((l) => /Q1: no archaeology line/.test(l)) && lines.some((l) => l.includes(AQ_CMD)),
+    'archaeology: a live question of a document dated on the threshold without the attestation → exit 3, and the door prints the READY grep of the heading nouns');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK)) === 0 && lines.some((l) => /archaeology: 1 of 1 live question/.test(l)),
+    'archaeology: the attestation with 0 hits and `prior: none` → exit 0, and --check says 1 of 1 attested (N = 0 is honest, the axis never promises a find)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits'))) === 3 && lines.some((l) => /3 hits and `prior: none`/.test(l)),
+    'archaeology: hits found and no prior answer named → exit 3 (the #70 class: the owner had answered it already)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits').replace('prior: none', 'prior: unrelated — the hits are about the shop layout'))) === 0,
+    'archaeology: `prior: unrelated — <why>` is a legal answer to hits');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: searched a bit -->\n\n')) === 3 && lines.some((l) => /not in the form/.test(l)),
+    'archaeology: an attestation without `N hits` and `prior:` is NOT an attestation → exit 3 (fail-closed, never a silent pass)');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: n/a — a naming question, the taste class -->\n\n')) === 0,
+    'archaeology: the declared exception `n/a — <reason>` → exit 0');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ('', ' A) crystals')) === 0,
+    'archaeology: an ANSWERED question is out of the axis (nothing is owed to the owner any more)');
+  ok(aqCheck(aqHead('2026-09-01') + aqQ('')) === 0 && lines.some((l) => /not judged/.test(l) && /2026-09-01/.test(l)),
+    'archaeology: a document dated before the threshold → exit 0, and the door says out loud it was NOT judged and why');
+  ok(headerDate('# I\n\n> Status: answered 2026-09-18 10:00\n> Created: 2026-09-13 09:47\n') === '2026-09-13',
+    'archaeology: the header date is the CREATION line — an answer date standing above it never ages an old document forward');
+  rmSync(join(root, AQD), { force: true });
   // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
   const IMPL = 'interviews/interview_097_impl.md';
   writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');

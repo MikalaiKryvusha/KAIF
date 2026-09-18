@@ -2934,7 +2934,17 @@ bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
 showing, outcomes and exit codes, the call, the faces and flags of the shipped generator under
-`.kaif/tools/contour/`). It is not a skeleton to fill: a session checks a page against it in a minute,
+`.kaif/tools/contour/`). The form check is a door of its own — `review.mjs <doc> --check`: parse,
+pre-flight and render self-check with no server, no sound and no call (2.7, epic QL, origin issue #56) —
+and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, epic AQ, origin issue #70:
+13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
+after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
+of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
+read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
+too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
+two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window)
@@ -4762,6 +4772,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 - Verify the technical facts that determine which options are even possible (e.g. "can this dialog be
   removed?", "does the library have the needed API?"). A question without verified groundwork is a bad question.
 - Look at past interviews (`ls interviews/`) so you don't duplicate accepted decisions and keep one style.
+  Looking is not searching: the search per question, its command and its attestation are **step 3d**, and
+  the contour's door refuses a question that skipped it.
 
 ### Step 2. Create the interview document
 - Name: `interviews/interview_NNN_<short_topic>.md`, where `NNN` is the next free number
@@ -4822,7 +4834,8 @@ If it shapes brand/architecture/UX for the long term — interview.
 - Group: usually 1–5 questions per interview; when the topic genuinely needs it — **up to 10**. Don't
   pad, but don't starve the interview either: a cramped interview that misses what the agent actually
   needed to clarify is worse than a few extra questions.
-- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews.
+- Don't ask what's already decided in `plans/`/`MASTER_PLAN.md` or past interviews — and this one is not
+  kept by resolve: it is **step 3d**, a command whose result is written under the question.
 
 ### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after
 
@@ -4904,8 +4917,44 @@ Before opening the page, run the shipped generator's form check — `node .kaif/
 <interview.md> --check` — and fix what it names (a pre-flight refusal, or a block that looks like a question but
 is not in the form `### Q<n>.`). The check is a door of its own: it never serves, never sounds, never calls and
 never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
-only the window is not opened). A project that runs its own contour checks the document against that page by hand.
+only the window is not opened). The same door has a SECOND axis — the archaeology of every live question (step 3d,
+2.7, origin issue #70): no attestation, exit 3, and the refusal prints the search command to run.
+A project that runs its own contour checks the document against that page by hand.
 Paragraph headings like `**A. …**` are not options.
+
+### Step 3d. Archaeology BEFORE the question — search, read, attest (KAIF 2.7)
+
+A question to the owner is a CLAIM that the matter is not settled yet, and nothing used to verify it.
+One field owner answered the same questions thirteen times, one of them 44 days after his own answer
+(origin issue #70; his words, rendered from Russian: "you are asking ME? did you look into GOAL.md,
+smart guy, before asking?" · "you ask me questions without having looked at the history of decisions…
+we have discussed this already. Search."). So the search is a step with a command, and its result is
+written under the question — never "I looked at the interviews" in the agent's memory:
+
+1. **Run the search.** The door prints the ready command for the question's own heading — `node
+   .kaif/tools/contour/review.mjs <interview.md> --check` — and it looks like
+   `grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/ GOAL.md MASTER_PLAN.md plans/`.
+   Run it as printed; broaden it when the topic has a synonym, never narrow it.
+2. **READ the hits** — the files, not the number. A count with nothing read is the same claim unverified.
+3. **Write the attestation** between the question heading and its FIRST option:
+   ```
+   <!-- archaeology: grep -rniE "…" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->
+   ```
+   `N` and the file list come from the run that just happened. `N = 0` is an honest attestation: the axis
+   does not promise a find, it promises you searched and said with what.
+4. **A prior answer found → the question does not go to the owner.** Either DROP it and carry the decision
+   over from the old answer (`node .kaif/tools/contour/review.mjs --mark-implemented <old interview.md> <Q>
+   --where <commit or file>`, step 5), or reformulate it as "the prior answer was X; Y has changed — confirm
+   it or change it", with the old answer quoted and addressed. Re-serving a settled question is the defect.
+5. **The door refuses what skipped this step.** A live question of a document dated on or after 2026-09-18
+   without the attestation: exit 3, the grep printed, nothing shown and nobody called — the same for `--check`
+   and for any show. Hits found with `prior: none` is refused too: name the prior answer, or write
+   `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
+   `<!-- archaeology: n/a — <reason> -->`. Interviews dated before that day are never judged (the field's
+   history is not rewritten), and `--check` says so out loud: `archaeology: not judged — header date …`.
+
+Where the project runs a questions guard, the same class is an axis of it (the origin: `questions-guard`,
+axis G11); `/fable-judge` hunts a question asked past its archaeology.
 
 ### Step 4. Ask the owner — via the document
 The default, autonomy-friendly method: the owner answers **right in the md document** (fills the
