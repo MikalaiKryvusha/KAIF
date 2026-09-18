@@ -39,7 +39,12 @@ Update `STATUS.md`:
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson
 emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the handover is
-passed. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
+passed — and then run `node .kaif/tools/kaif-experience-lint.mjs check`: a SECOND failure entry of one
+`class:` with no `mechanized:` is red and names the class and both entries by id (2.7, epic EL; origin
+issue #69 — 14 of 15 failure classes recurred AFTER their lesson was written). Fix it before the
+handover by naming the guard in the entry, or by re-checking the price once for the whole class and
+declaring it (`<!-- class-ok: <slug> — <why> -->`) — never by writing a third record; a journal with not
+one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
 If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing

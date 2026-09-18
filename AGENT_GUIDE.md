@@ -556,7 +556,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md       ← the 37 skill templates
 │   ├── installer/                   ← KAIF-CORE.mjs (machinery) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/  ← 9 language packs (owner docs + skill-triggers.json)
-│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint · kaif-guard-lint · kaif-scenario-lint · kaif-ranking-lint · kaif-attribution-lint · kaif-testrun-lint · kaif-voice-lint · contour/)
+│   ├── tools/                       ← optional tool modules → .kaif/tools/ (kaif-provenance · kaif-canon-lint · kaif-requirements-lint · kaif-guard-lint · kaif-scenario-lint · kaif-ranking-lint · kaif-attribution-lint · kaif-testrun-lint · kaif-voice-lint · kaif-experience-lint · contour/)
 │   ├── hooks/                       ← optional refresh-hooks module → .kaif/hooks/ (epic O; owner opt-in)
 │   ├── kaif-unpack.mjs              ← the mechanical unpacker (embedded as a FILE: block)
 │   ├── module-classes.json          ← manual module-class overrides (classes are otherwise computed)
@@ -567,7 +567,7 @@ KAIF/
 │                                      kaif-module-map.json
 ├── assets/                          ← GENERATED README diagrams (3 × light/dark × EN/RU)
 └── tools/  (build-framework.mjs · check-framework.mjs · module-map-lib.mjs · sandbox-suite.mjs
-           · sandbox/s01–s27 (26 сводов, без s20) · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
+           · sandbox/s01–s28 (27 сводов, без s20) · build-diagrams.mjs · readme-pdf.mjs · commit.mjs · kaif.mjs)
 ```
 
 **ПРАВИЛО:** `framework/` — источник истины для полезной нагрузки; `KAIF.md` генерируется из него.
@@ -631,7 +631,7 @@ node tools/readme-pdf.mjs          # regenerate README.pdf from README.md
 Здесь нет runtime-приложения. Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам
 исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF-FULL.md` сбалансированы и
 полны — подсчёт ДИНАМИЧЕСКИЙ, актуальные цифры печатает сама сборка (сейчас: 14 ключевых документов +
-7 README + 37 навыков + 1 распаковщик = 59; бандл 181 блок; карта — 797 модулей) — не переписывай эти
+7 README + 37 навыков + 1 распаковщик = 59; бандл 182 блока; карта — 797 модулей) — не переписывай эти
 числа руками, сверяйся с выводом сборки; (3) `npm run test:core` — песочный полигон зелёный целиком;
 (4) ссылки на файлы/навыки/пути в документах разрешаются; (5) английский и русский README остаются
 синхронными; (6) PDF рендерится.

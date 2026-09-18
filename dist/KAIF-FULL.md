@@ -2542,6 +2542,7 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 >
 > ```
 > ### EXP-0001 · 2026-01-01 · ✅ · #tag #area
+> class: <slug from the class list below — the UNIT OF RECURRENCE>
 > **Context:** one line — what was being done.
 > **Tried / did:** the approach, briefly.
 > **Result:** ✅/❌ — what happened.
@@ -2561,6 +2562,44 @@ files/modules. When an entry stops being current context, move it verbatim to PR
 > after its entry was recorded, the journal has proven insufficient — the lesson MUST become
 > executable (a linter rule, a guard, a gate), and the entry gains the line
 > `mechanized: <the tool>`. Two strikes → a mechanism, never a third reminder.
+>
+> **The deadline is RUN, not remembered** (2.7, epic EL; origin issue #69 — a field audit of one
+> project's journal: 14 of 15 failure classes recurred AFTER their lesson was written, five lessons
+> written 6–17 times in different words, 5.8 % mechanized): `node .kaif/tools/kaif-experience-lint.mjs
+> check` reads the `class:` field as the UNIT of recurrence and reddens on the SECOND failure entry of
+> one class with no `mechanized:`, naming the class and both entries by id. Two fates clear it, both
+> WRITTEN: name the guard in the entry (`mechanized: <the tool>`), or re-check the price once for the
+> WHOLE class and declare it — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty
+> declaration is itself a finding; the declared classes are printed on the summary line and that list
+> only shrinks). A third record is never a fate. It also warns when
+> `mechanized:` names a command this project does not contain, and when a slug is outside the list
+> below; `--shrink EXP-NNNN` collapses a MECHANIZED entry to one line pointing at its guard (shows by
+> default, `--yes` writes — the text itself stays in the git history). The command belongs in the
+> closing ritual (`/end-chat-soft`).
+>
+> **The class list of this journal** — a CONTROLLED list, not a closed one: pick a slug from it, and
+> when a lesson genuinely brings a new class, add the slug here in the same write (the linter warns
+> about an unlisted slug, it never refuses). The starter list below is what a field audit had already
+> measured (origin issue #69) — replace and grow it with your project's own classes.
+>
+> <!-- classes: question-already-answered, guard-not-proven-against-threat, shown-as-link,
+>      claim-before-evidence, owner-decision-not-applied, text-in-agents-world,
+>      etalon-from-dirty-tree, shell-lied, escaping-layer, twins-missed,
+>      field-dropped-in-rebuild -->
+>
+> | Class slug | The failure it names |
+> |---|---|
+> | `question-already-answered` | the owner is asked what his own past word, the goal doc or a run already decided |
+> | `guard-not-proven-against-threat` | a guard shipped without being seen red on the threat it claims to stop |
+> | `shown-as-link` | showing replaced by a link or a path instead of the thing itself |
+> | `claim-before-evidence` | a claim written wider than the observation behind it |
+> | `owner-decision-not-applied` | a decision the owner gave is recorded and not carried into the artifact |
+> | `text-in-agents-world` | text written for the agent's own world instead of the owner's |
+> | `etalon-from-dirty-tree` | a reference/etalon captured from a tree that was not clean |
+> | `shell-lied` | the shell or the tool swallowed/rewrote what was passed to it |
+> | `escaping-layer` | one escaping level lost between the tool and the file |
+> | `twins-missed` | one of two layers/copies moved and the twin stayed behind |
+> | `field-dropped-in-rebuild` | a field or section silently lost when an artifact was regenerated |
 >
 > The `#tags` are **trigger-tags**: before a task, grep by the task's tags and QUOTE the relevant
 > lessons in your report (id + one line) — or state "no relevant lessons". An unquoted recall is
@@ -3340,6 +3379,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
+| `kaif-experience-lint.mjs` | The recurrence deadline of `EXPERIENCE.md` — "Two strikes → a mechanism, never a third reminder" (2.7, epic EL; origin issue #69 — a field audit of one project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, five lessons written 6–17 times in different words) as an advisory linter (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`): the field `class: <slug>` on its own line under the entry heading is the UNIT of recurrence, and the SECOND failure entry (`❌` or `❌→✅`) of one class with no `mechanized:` is a finding that names the class and BOTH entries by id. Two fates clear it, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty declaration is itself a finding; declared classes are printed on the summary line and that list only shrinks). It also carries the field rules of the origin's own guard (exactly one of `mechanized:` / `none-cheap: <why>` / `subject-lesson`; a trap by form may not answer `subject-lesson`) against an inherited-debt baseline the caller passes, warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and addresses are not checked at all for a journal outside a project tree — said aloud) and when a slug is outside the journal's class list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · repro … · full text: git log -p -S "<id>"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and "not judged" never reads as "clean". Keywords are a per-language table; ids are not assumed numeric (a field journal writes `EXP-NEW-<slug>`). |
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
@@ -4305,6 +4345,7 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
 2. **Write one entry** at the **top** of the `## Entries` section, in the canonical format:
    ```
    ### EXP-NNNN · <ISO date> · <✅|❌|❌→✅> · #tag #area
+   class: <slug>
    **Context:** one line.
    **Tried / did:** briefly.
    **Result:** ✅/❌ — what happened.
@@ -4324,6 +4365,12 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
      `none-cheap: <why>`.
    ```
    - `EXP-NNNN` = next id (highest existing + 1, zero-padded).
+   - `class: <slug>` is the **unit of recurrence** — REQUIRED on its own line, right under the heading:
+     tags are free and overlap, so "the same class" was visible only to a human who read the whole
+     journal (origin issue #69: 14 of 15 failure classes recurred AFTER their lesson was written, five
+     lessons written 6–17 times in different words). Take the slug from the CLASS LIST in the journal's
+     header (`<!-- classes: … -->` or the "Lesson classes" section); a genuinely new class is legal —
+     add its slug to that list in the SAME write. Lowercase latin, digits, dashes.
    - Pick 1–3 short `#tags` **inline on the entry** (there is no central tag cloud) — reuse an existing tag
      where one fits (grep the file to see what's in use), so `grep '#tag'` collects related experiences.
    - Keep it SHORT and grep-friendly: stable id, ISO date, outcome marker, inline tags.
@@ -4333,6 +4380,17 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    the entry's Mechanization field flips to `mechanized: <the tool>`. Two strikes → a mechanism, never
    a third reminder — that deadline stands; step 0 asks the question at the FIRST capture so the
    second burn stops being the price of asking.
+5. **Run the deadline, don't remember it:** `node .kaif/tools/kaif-experience-lint.mjs check` — a SECOND
+   failure entry of one `class:` with no `mechanized:` is a finding naming the class and both entries by
+   id. Two fates clear it, both WRITTEN: name the guard in the entry (`mechanized: <the tool>`), or
+   re-check the price once for the whole class and declare it —
+   `<!-- class-ok: <slug> — <why mechanizing it is not cheaply possible> -->` in the journal (an empty
+   declaration is itself a finding, and the declared classes are printed on the summary line: that list
+   only shrinks). A third record is never a fate;
+   it also warns when `mechanized:` names a command the project does not contain and when a slug is
+   outside the header's list. `--shrink EXP-NNNN` collapses a MECHANIZED entry to one line pointing at
+   its guard (shows by default; `--yes` writes — the text itself stays in the git history). A journal with
+   not one `class:` exits 3 = SKIPPED, said aloud: "not judged" is never "clean".
 
 ## Mode B — RECALL lessons ("recount your experience")
 
@@ -5751,7 +5809,12 @@ Update `STATUS.md`:
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson
 emerged in this chat, capture it in `EXPERIENCE.md` (skill: `/experience`) before the handover is
-passed. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
+passed — and then run `node .kaif/tools/kaif-experience-lint.mjs check`: a SECOND failure entry of one
+`class:` with no `mechanized:` is red and names the class and both entries by id (2.7, epic EL; origin
+issue #69 — 14 of 15 failure classes recurred AFTER their lesson was written). Fix it before the
+handover by naming the guard in the entry, or by re-checking the price once for the whole class and
+declaring it (`<!-- class-ok: <slug> — <why> -->`) — never by writing a third record; a journal with not
+one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
 If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing
