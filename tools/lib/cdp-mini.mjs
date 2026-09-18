@@ -70,10 +70,13 @@ export function killBrowser(proc) {
  * Launch a HEADLESS Chromium on `profileDir` (its own `--user-data-dir`), attach one page at `url`,
  * return { proc, evaluate(js) → value, close() }. `extraArgs` — e.g. the three sign-in-off flags.
  */
-export async function headlessPage(url, { profileDir, extraArgs = [], exe = findBrowser() } = {}) {
+export async function headlessPage(url, { profileDir, extraArgs = [], exe = findBrowser(), app = false } = {}) {
   if (!exe) throw new Error('no Chromium at a known path — headless run impossible');
+  // `app: true` — the page IS an `--app` window (display-mode: standalone), the way the contour raises it on the owner's
+  // screen; default — a TAB opened next to about:blank (display-mode: browser). RL D-F2 (2.7): the page promises "the
+  // agent will pick it up" only in the app window, so a suite modelling the owner's window must open one.
   const args = ['--remote-debugging-port=0', '--user-data-dir=' + profileDir, '--no-first-run', '--no-default-browser-check',
-    '--disable-gpu', '--headless=new', ...extraArgs, 'about:blank'];
+    '--disable-gpu', '--headless=new', ...extraArgs, app ? '--app=' + url : 'about:blank'];
   const proc = spawn(exe, args, { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise((res, rej) => {
     let buf = '';
@@ -82,16 +85,35 @@ export async function headlessPage(url, { profileDir, extraArgs = [], exe = find
     proc.on('exit', () => { clearTimeout(t); rej(new Error('the browser died on start')); });
   });
   const cdp = await CDP.connect(wsUrl);
-  const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
+  let targetId = null;
+  if (app) { // the --app window is already the page: find its target instead of opening a tab beside it
+    const until = Date.now() + LAUNCH_TIMEOUT_MS;
+    while (!targetId && Date.now() < until) {
+      const { targetInfos } = await cdp.send('Target.getTargets');
+      const t = targetInfos.find((x) => x.type === 'page' && x.url.startsWith(url));
+      if (t) targetId = t.targetId; else await sleep(100);
+    }
+    if (!targetId) { try { cdp.ws.close(); } catch { /* closed */ } killBrowser(proc); throw new Error('the --app window did not appear within ' + LAUNCH_TIMEOUT_MS + ' ms'); }
+  } else ({ targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' }));
   const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
   for (const d of ['Page', 'Runtime']) await cdp.send(d + '.enable', {}, sessionId);
-  await cdp.send('Page.navigate', { url }, sessionId);
+  if (!app) await cdp.send('Page.navigate', { url }, sessionId);
   await sleep(700); // a local self-contained page renders at once
   const evaluate = async (expression) => {
     const r = await cdp.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }, sessionId);
     if (r.exceptionDetails) throw new Error('eval: ' + ((r.exceptionDetails.exception || {}).description || 'exception'));
     return r.result.value;
   };
+  // The --app window starts on about:blank and navigates by itself (observed: first evaluate saw about:blank with no
+  // fields, the next one 500 ms later the page) — wait until the document at `url` is complete before handing it over.
+  if (app) {
+    const until = Date.now() + LAUNCH_TIMEOUT_MS;
+    const expr = 'location.href.indexOf(' + JSON.stringify(url) + ')===0&&document.readyState===\'complete\'';
+    while (!(await evaluate(expr))) {
+      if (Date.now() > until) { try { cdp.ws.close(); } catch { /* closed */ } killBrowser(proc); throw new Error('the --app window did not load ' + url + ' within ' + LAUNCH_TIMEOUT_MS + ' ms'); }
+      await sleep(100);
+    }
+  }
   const close = () => { try { cdp.ws.close(); } catch { /* closed */ } killBrowser(proc); };
   // A GRACEFUL close (Browser.close) flushes localStorage to disk — a hard kill within ~5 s of a write loses it
   // (probe run 1 of 2026-09-13: kill after 1500 ms → "READBACK equal: false"). The owner closes his window normally;

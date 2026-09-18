@@ -105,8 +105,9 @@ raised in a batch next to a live question.
   worse than a crash: a crash is seen at once, silence eats an hour.
 - **I11. A rescue ring on the client.** Recording failed → the human's text comes back onto the
   page: a field with the full content, a Copy button, a Retry button, the save button re-enabled.
-  Since 2.7 this is the path of a server that ANSWERED with a refusal and of a browser with no local
-  store; a server that is simply GONE is I47's path — the answer is stored locally, no ring.
+  Since 2.7 this is the path of a server that ANSWERED with a refusal, of a browser with no local
+  store and of a page in a TAB; a server that is simply GONE under the app window is I47's path — the
+  answer is stored locally, no ring.
   The human's work has no right to exist only in the RAM of someone else's process.
 - **I12. A draft in the browser.** `localStorage` on every input, restored on page load with a
   visible "picked up N fields" notice. Insurance never lives inside the thing it insures against —
@@ -341,6 +342,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   TELLS the owner in its next message (the provenance comment is invisible on a rendered page). While a
   browser still holds the profile — the owner's window is open — the pick-up is DEFERRED: a second browser on
   a held profile would hand its page to that window. A draft not yet saved is named and kept.
+  Only the app window promises the pick-up — the page OBSERVES it (`display-mode: standalone`); a page in a
+  TAB lives in a browser profile the agent never reads, so there Save with the server gone takes I11's path:
+  the rescue ring with the answer text, Copy and Retry, and no word about the agent (2.7, court finding D-F2).
   Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified — say so.
 
 ## The named class: "handling the human's work"
@@ -664,13 +668,14 @@ server that outlives the silence threshold → red.
   not a check.
 - **QA6. Cleanup:** debug windows and browser profiles are extinguished at the run's end — the
   owner works at the same machine.
-- **QA7. The dead-server headless check:** capture the live page → kill the server → type an
+- **QA7. The dead-server headless check:** capture the live page IN AN APP WINDOW (headless `--app`, as the
+  owner sees it) → kill the server → type an
   answer in a real headless browser → click → read the DOM. The etalon since 2.7 (I47 — the answer
   survives the server), all five: the answer stored on this computer (`__submitted`) = true · NO
   rescue ring while the local store works = true · the save button switched off (no second click
   is needed) = true · the draft persisted = true · the status honest ("saved on this computer").
   The 2.6 etalon (rescue block shown · button re-enabled · the answer in the ring) now holds only
-  for a browser with no local store and for a server that ANSWERED with a refusal (I11).
+  for a browser with no local store, for a page in a TAB and for a server that ANSWERED with a refusal (I11).
 
 ## Rakes to warn about (in falling price order)
 

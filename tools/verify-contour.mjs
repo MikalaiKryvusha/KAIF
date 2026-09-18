@@ -22,6 +22,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, readdirSync
 import { join, resolve, dirname } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { tempRoot } from './lib/temp-root.mjs';
+import { headlessPage } from './lib/cdp-mini.mjs'; // RL D-F2 (2.7): QA7 models the owner's --app window
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   normalize, bodyHash, parseQuestions, recordDecision, readDecision, checkApproval,
@@ -738,7 +739,11 @@ async function main() {
           if (m) { clearTimeout(t); res(m[1]); }
         });
       });
-      const page = await attachPage(browser.cdp, url3);
+      // RL D-F2 (суд версии 2.7): местная запись при мёртвом сервере — свойство ОКНА контура (--app на профиле проекта,
+      // display-mode: standalone); вкладка теперь честно показывает кольцо спасения (свод s22 D, случай вкладки). Блок
+      // моделирует окно владельца — безоконное окно --app на своём профиле; прежде он цеплял ВКЛАДКУ и тем стерёг дефект.
+      const page = await headlessPage(url3, { profileDir: tempRoot('verify-qa7-window'), app: true,
+        extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
       child.kill('SIGKILL'); // сервер умирает ВНЕЗАПНО, унося RAM-состояние
       await sleep(500);
       await page.evaluate([ // действия человека: набрал ответ, нажал «Записать»
@@ -782,7 +787,7 @@ async function main() {
       check('кнопка записи погашена — второй клик не нужен = true', dom.saveEnabled === false);
       check('черновик подхвачен (localStorage) = true', dom.draftPersisted === true);
       check('статус честный («сохранён на этом компьютере») = true', dom.statusHonest === true);
-      await browser.cdp.send('Target.closeTarget', { targetId: page.targetId });
+      await page.closeGracefully();
     } catch (e) {
       check('QA7 исполнился', false, e.message); // причина падения — в строку, не в маску
     }

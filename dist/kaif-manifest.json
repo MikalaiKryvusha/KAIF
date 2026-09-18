@@ -1,14 +1,14 @@
 {
   "framework": "KAIF",
-  "version": "2.6",
-  "released": "2026-09-06",
-  "codename": "Mindful KAIF",
+  "version": "2.7",
+  "released": "2026-09-18",
+  "codename": "Audited KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "db14b918a0149eacd919c23b1ca076e1053d3c3cecd5f5f83e781e87e3ad989e",
-    "KAIF-CORE-BUNDLE.md": "633b29aa66f8cd2f1e95b4fe827f1b8acb7182ae1fb37eb0aad425e9e8986177"
+    "KAIF-CORE-BUNDLE.md": "1160844e61f0ad8759830d2c93dcf0dfa0f459cb8b23a8dde3a06f6c2a506771"
   },
   "sourceTree": {
-    "sha256": "90a60466177cb9d47b3e7f04a7fd13a99e6861b4ced2df2a126447fd094ea0cf",
+    "sha256": "113da90d4d4d6541c069ba2a1b2d9188d54fc9e0b7a1c112cca625488769b290",
     "files": 203
   },
   "assets": {

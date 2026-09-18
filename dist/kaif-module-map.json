@@ -1,7 +1,7 @@
 {
   "framework": "KAIF",
-  "version": "2.6",
-  "released": "2026-09-06",
+  "version": "2.7",
+  "released": "2026-09-18",
   "moduleCount": 798,
   "files": {
     "AGENT_GUIDE.md": [
@@ -3490,10 +3490,10 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "3334e931e6cdf41c248a0cff10c8f36dba22ce1267f89dd2facb66046a78e8f1",
+        "sha256": "db7903da5499656893336ffa59ff81ece2dcc95f42983788d6cb380fc873b160",
         "lines": [
           52,
-          345
+          349
         ]
       },
       {
@@ -3501,8 +3501,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          346,
-          357
+          350,
+          361
         ]
       },
       {
@@ -3510,8 +3510,8 @@
         "class": "static",
         "sha256": "89329e4df17a11bb38fa7a8d82395186f01e604e4bb58ac5d7835a39cc430250",
         "lines": [
-          358,
-          407
+          362,
+          411
         ]
       },
       {
@@ -3519,8 +3519,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          408,
-          417
+          412,
+          421
         ]
       },
       {
@@ -3528,8 +3528,8 @@
         "class": "static",
         "sha256": "00a9322b97b28da62f0169e9a1240c4f37197c9c9b134b1b29f10c1bfeeb4b73",
         "lines": [
-          418,
-          529
+          422,
+          533
         ]
       },
       {
@@ -3537,8 +3537,8 @@
         "class": "static",
         "sha256": "0b9388849b72578dc3226d0d363c54ffed63e371a68e0bab3521c135ac4b7643",
         "lines": [
-          530,
-          563
+          534,
+          567
         ]
       },
       {
@@ -3546,8 +3546,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          564,
-          579
+          568,
+          583
         ]
       },
       {
@@ -3555,17 +3555,17 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          580,
-          650
+          584,
+          654
         ]
       },
       {
         "signature": "## The acceptance checklist (QA1–QA7) — accepting a built contour",
         "class": "static",
-        "sha256": "27590e71c707143a8f302fea3ccca6aeebcae13aab015d867690d57a8d87701d",
+        "sha256": "5e2985ee5e5c92b97244766f1cbec12c8858705acfb102ea9ad54a5153358f3c",
         "lines": [
-          651,
-          674
+          655,
+          679
         ]
       },
       {
@@ -3573,8 +3573,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          675,
-          694
+          680,
+          699
         ]
       },
       {
@@ -3582,8 +3582,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          695,
-          706
+          700,
+          711
         ]
       }
     ],
@@ -5760,7 +5760,7 @@
       {
         "signature": "## 4. The page — what the owner must see",
         "class": "static",
-        "sha256": "77d9ad690edfdc027785ea71a0f54eb4bb80b5df9427902d9d253649fa45dc30",
+        "sha256": "f81efd93742d439f279209ff4c3e6d99fcee702ab2e6c325dbb2af8a0b2f97c7",
         "lines": [
           50,
           70

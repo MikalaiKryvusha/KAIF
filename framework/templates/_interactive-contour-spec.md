@@ -62,7 +62,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   ("picked up N fields"). No path may leave the Save button disabled with no visible error. **The answer survives the server** (2.7, LP, origin issue #66;
   the owner's word: "JS writes the file to the computer, into the project folder — no choice, no 'save as'"): the window runs on its own profile in the project
   (`.kaif/contour-window/`, ignore-first, sign-in-off flags, `account_info` checked after launch); Save with the server gone stores the answer there, IndexedDB the primary carrier — durable half a second after the write even if the browser dies ("saved on this
-  computer, the agent will pick it up" — no dialog); the next `--queue --list` / `--check` / show picks it up headless on the same profile and port (the origin; deferred while a browser still holds the profile) →
+  computer, the agent will pick it up" — no dialog; only in the app window, `display-mode: standalone` observed by the page: a TAB lives in a profile the agent never reads, so it gets the rescue ring with the answer text and no promise); the next `--queue --list` / `--check` / show picks it up headless on the same profile and port (the origin; deferred while a browser still holds the profile) →
   recorded as the owner's decision with `recovered: true`, the lock released; an unsaved draft is named and kept.
 - The page polls `/alive?i=&d=&s=` (ms since input · draft fields · saved) every 15 s (envelope 10–60 s) and says out loud when the server goes silent; the lock
   keeps that input state (2.7, LP) so `--close` can read it from another process.

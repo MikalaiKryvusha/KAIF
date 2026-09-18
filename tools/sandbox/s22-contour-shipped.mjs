@@ -400,7 +400,9 @@ if (!exe) {
   const prof = join(D, '.kaif', 'contour-window');
   const gen2 = spawnGen(D, [DOC, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '20000' });
   const url2 = await gen2.url;
-  const page = await headlessPage(url2, { profileDir: prof, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+  // RL D-F2 (суд версии 2.7): окно владельца — ОКНО --app (display-mode: standalone), как его поднимает контур; только в нём
+  // страница обещает забор. Прежде свод цеплял страницу ВКЛАДКОЙ — и тем самым стерёг обещание забора из вкладки, то есть дефект.
+  const page = await headlessPage(url2, { profileDir: prof, app: true, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
   const TEXT = 'Ответ владельца пережил сервер ' + Date.now(); // «Ответ владельца пережил сервер N» — кириллица кодами (EXP-0135)
   const typed = await page.evaluate("(function(){var t=document.getElementsByName('text:" + DOC + ":Q1')[0];t.value=" + JSON.stringify(TEXT) + ";t.dispatchEvent(new Event('input',{bubbles:true}));return t.value})()");
   ok(typed === TEXT, 's22 D: headless-страница на профиле проекта — текст введён в поле Q1 (событие input → черновик в localStorage)', String(typed).slice(0, 80));
@@ -431,6 +433,28 @@ if (!exe) {
   ok(!existsSync(DLOCK), 's22 D: замок снят после забора');
   r = runGen(D, ['--queue', '--list']);
   ok(r.code === 0 && !/recovered|recovery:/.test(r.out), 's22 D: повторный --queue --list — забирать нечего, ни строки о забое, браузер не поднимался', r.out.slice(-200));
+  // (6) RL D-F2 (суд версии 2.7, форма — проба судьи D): страница ВКЛАДКОЙ на ЧУЖОМ профиле (рабочий браузер владельца) при
+  //     мёртвом сервере НЕ обещает «агент заберёт» — это хранилище агент не читает никогда; она показывает кольцо спасения с
+  //     текстом ответа и оставляет кнопки живыми («Повторить запись» после перезапуска контура). До починки вкладка писала
+  //     «сохранён на этом компьютере … агент его заберёт» и клала ответ туда, откуда забора нет.
+  const DOC_TAB = 'interviews/interview_067_probe.md';
+  writeFileSync(join(D, DOC_TAB), GOOD_052.replace('#052', '#067'));
+  const foreign = join(ROOT, 'foreign-browser-profile');
+  const gen3 = spawnGen(D, [DOC_TAB, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '20000' });
+  const url3 = await gen3.url;
+  const tab = await headlessPage(url3, { profileDir: foreign, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+  const TEXT3 = 'Ответ во вкладке ' + Date.now();
+  await tab.evaluate("(function(){var t=document.getElementsByName('text:" + DOC_TAB + ":Q1')[0];t.value=" + JSON.stringify(TEXT3) + ";t.dispatchEvent(new Event('input',{bubbles:true}));return t.value})()");
+  gen3.child.kill(); await wait(1000);
+  const st3 = await tab.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(res){var t0=Date.now();(function poll(){var ring=document.querySelector('#rescue');" +
+    "if((ring.style.display==='block'&&document.querySelector('#rescuetext').value)||/сохранён/.test(document.querySelector('#status').textContent)||Date.now()-t0>7000){res(JSON.stringify({status:document.querySelector('#status').textContent,banner:document.querySelector('#banner').textContent," +
+    "ring:ring.style.display,ringText:document.querySelector('#rescuetext').value,submitted:!!localStorage.getItem('owner-review:" + DOC_TAB + ":__submitted'),saveEnabled:!document.querySelector('#save').disabled," +
+    "tabnote:document.querySelector('#tabnote').style.display}))}else setTimeout(poll,200)})()})})()");
+  const s3 = JSON.parse(st3);
+  ok(!/сохранён на этом компьютере|заберёт/.test(s3.status + s3.banner) && /НЕ уйдёт/.test(s3.status) && s3.ring === 'block' && s3.ringText.includes(TEXT3) && !s3.submitted && s3.saveEnabled && s3.tabnote === 'block',
+     's22 D: ВКЛАДКА на чужом профиле, сервер убит, «Записать» → «ответ НЕ уйдёт», кольцо спасения с текстом ответа, кнопки живы, __submitted нет, жёлтая полоса вкладки — ни слова «сохранён на этом компьютере»/«заберёт» (RL D-F2)', st3.slice(0, 500));
+  await tab.closeGracefully();
+  rmSync(join(D, 'interviews', 'decisions', 'interview_067_probe.lock'), { force: true });
 }
 
 // ================================================================ итог

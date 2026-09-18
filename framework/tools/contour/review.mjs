@@ -737,6 +737,12 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var saved=false,closeTimer=null,lastPayload=null;",
     // LP (#66): input state for the pulse (`--close` reads it from the lock) and the local save when the server is gone
     "var lastInput=0,lsOk=true,submittedLocally=false;try{localStorage.setItem(DK+'__probe','1');localStorage.removeItem(DK+'__probe')}catch(e){lsOk=false}",
+    // RL D-F2 (2.7, court of the version): the answer survives a dead server ONLY in the contour's own --app window — it runs
+    // on the project profile the agent reads back. A TAB lives in some other browser profile the agent never reads, so
+    // there the page must not promise the pick-up: it falls back to the rescue ring (the text · Copy · Retry). The window
+    // is OBSERVED by the page (display-mode: standalone — true only for --app, measured headed and headless:
+    // tools/sandbox/probes/display-mode-headless.mjs), never assumed from what the launcher tried to open.
+    "var inApp=false;try{inApp=!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)}catch(e){}",
     "function draftCount(){var n=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k.indexOf(DK)===0&&k!==DK+'__submitted'&&k!==DK+'__probe')n++}}catch(e){}return n}",
     // The SUBMITTED answer's PRIMARY carrier is IndexedDB (it wins at pick-up; a copy goes to localStorage, written synchronously just before): measured on this class of machine, IndexedDB is on disk 0.5 s after the
     // write under a hard kill of the browser, localStorage only after ~6 s (the recon's table of kills at 0.5–15 s). A copy
@@ -766,7 +772,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: auto-close is an ATTEMPT; a refusal → an honest request; cancelled by pagehide
     "  setTimeout(function(){window.close();closeTimer=setTimeout(function(){status(TX.closeYourself,'err')},CFG.reserveMs)},CFG.closeMs)})",
-    " .catch(function(e){saveLocally(p,e)})}", // LP (#66): the server is gone → the answer is saved on this computer, no dialog
+    " .catch(function(e){if(inApp)saveLocally(p,e);else rescue(p,TX.serverGone)})}", // LP (#66): the server is gone → in the app window the answer is saved on this computer, no dialog; in a tab — the rescue ring (RL D-F2)
     "document.addEventListener('click',function(e){var t=e.target;",
     " if(t&&t.classList&&t.classList.contains('savedoc'))doSave(t.getAttribute('data-doc'));",
     " if(t&&t.id==='retry'&&lastPayload)doSave(lastPayload.doc)});",
@@ -776,8 +782,8 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
     // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
     "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none'})",
-    " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=lsOk?TX.serverGoneLocal:TX.serverGone;",
-    "  if(!lsOk){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
+    " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
+    "  if(!(lsOk&&inApp)){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
     "  if(!submittedLocally)enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
     // I14/DEF6: closing the page is an EVENT for the server (fast path — the beacon names the window role)
@@ -792,8 +798,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // owner's working browser — `display-mode: standalone` is true only in the app window (measured on Chrome, headed
     // and headless; locationbar.visible is true everywhere and useless). A tab → a yellow note to the owner + one
     // POST so the agent's log says it too. The window the launcher opened is the agent's claim; this is the observation.
-    "(function(){var app=false;try{app=!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)}catch(e){}",
-    " if(app)return;var tn=$('#tabnote');if(tn){tn.style.display='block';tn.textContent=TX.tabnote}",
+    "(function(){if(inApp)return;var tn=$('#tabnote');if(tn){tn.style.display='block';tn.textContent=TX.tabnote}",
     " try{fetch('/tab',{method:'POST'})}catch(e){}})();",
     "restoreDraft();",
   ].join('\n');
