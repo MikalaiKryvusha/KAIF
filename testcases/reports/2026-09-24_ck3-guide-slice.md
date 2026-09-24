@@ -31,7 +31,8 @@
 | 8 | ≈ 2026-09-24 21:43 +03:00 | часть Б (группа 3 — таксономия, хуки, языки, форма обязательства, первое слово, вступление витрины, полка `/what-next`): скрипты по текущим файлам · `node tools/canon-inventory.mjs --diff v2.7 --with framework/KAIF_REFERENCE.md --declared plans/118_epic117_CK_light_canon_budget_exits.md` | EN 1156 → 1141, RU 1148 → 1132; четыре файла — kept 699 · changed 43 · declared 32 · moved-out 0 · lost 0 · код 0; колон 5,56 и 3,64 |
 | 9 | ≈ 2026-09-24 21:44 +03:00 | `node tools/build-framework.mjs` · `node framework/tools/kaif-attribution-lint.mjs check` · `node tools/counters-guard.mjs` | сборка зелёная; авторство — 1 новая (история #22 в §17 прочитана как слово владельца) → объявленное исключение на строке с причиной, new 0; модулей 815 |
 | 10 | ≈ 2026-09-24 21:45 +03:00 | `node tools/sandbox/probes/canon-inventory-mutants.mjs` (с новым замером уязвимости) · тот же замер на копии инструмента с веткой первого издания | 11/11 и exposure 0 из 774 · копия — 119 из 774 (замер умеет краснеть) |
-| 11 | ≈ 2026-09-24 21:44 +03:00 → | `npm run test:core` · лёгкий аудит группы 3 чистым экземпляром | см. коммит части Б |
+| 11 | ≈ 2026-09-24 21:44–21:48 +03:00 | `npm run test:core` · лёгкий аудит группы 3 чистым экземпляром | «all 27 suites green» · NO MATERIAL LOSS (каждый адрес русской копии открыт); часть Б закоммичена `3e7e47e` |
+| 12 | ≈ 2026-09-24 21:51–21:55 +03:00 | группа 4 (секция git: #37 и «два файла владельца») · `node tools/canon-inventory.mjs --diff HEAD framework/AGENT_GUIDE.md AGENT_GUIDE.md --with framework/KAIF_REFERENCE.md` · `node tools/build-framework.mjs` · `node tools/counters-guard.mjs` · `npm run test:core` | kept 612 · changed 4 · lost 0 · moved-out 0; EN 1141 → 1139, RU 1132 → 1130; модулей 816; «all 27 suites green»; четыре изменённых предложения вычитаны — правило цело, снята скобка с историей |
 
 ## 4. Проверки
 

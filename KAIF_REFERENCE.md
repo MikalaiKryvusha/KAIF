@@ -742,3 +742,10 @@ diagnosis: "it reads as if you write English in Russian words."
 
 The metric-not-date shelf of `/what-next` (KAIF 2.6, origin issue #53): an agent quoted the rule against ranking by recency and in
 the same answer ranked yesterday's and today's word of the owner above the main phase and 87 open bugs.
+
+### `AGENT_GUIDE.md` → Git workflow
+
+- **The `AUTH:` carve-out is stated in the git paragraph** because that paragraph is read before every task (origin issue #37):
+  two TOP tickets sat "Delivered upstream: NOT YET" for hours under the very sentence that should have released them.
+- **The commit tool names its set out loud** because of a field incident: a tool that staged everything after the agent's
+  inspection carried two of the owner's files into the origin under an agent's message minutes after he dropped them into the tree.

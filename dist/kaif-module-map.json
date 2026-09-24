@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.7",
   "released": "2026-09-18",
-  "moduleCount": 815,
+  "moduleCount": 816,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -179,10 +179,10 @@
       {
         "signature": "## Git workflow",
         "class": "static",
-        "sha256": "8c033b97130e7990a973f6f77f2df04560aeb595518b8ce703945d436a5037da",
+        "sha256": "b063e3249924d8de5ac278fca8ce66748b13922d79c3cf8388ba7b228924a28e",
         "lines": [
           592,
-          625
+          623
         ]
       },
       {
@@ -190,8 +190,8 @@
         "class": "adaptive",
         "sha256": "a88e5bda530a6f64e35315365e6d3503a8c2856b783d7fb42a4ed4eab74a9e45",
         "lines": [
-          626,
-          644
+          624,
+          642
         ]
       },
       {
@@ -199,8 +199,8 @@
         "class": "static",
         "sha256": "61ee7522a8b9834b8b8d74a1935533dff419971b0263d59be246ce577c6e210c",
         "lines": [
-          645,
-          658
+          643,
+          656
         ]
       },
       {
@@ -208,8 +208,8 @@
         "class": "static",
         "sha256": "848a4d8e09aa1d52de062cd94ea590e9283c239cc31326f8729ffb8a833a4be6",
         "lines": [
-          659,
-          676
+          657,
+          674
         ]
       },
       {
@@ -217,8 +217,8 @@
         "class": "static",
         "sha256": "af8c7e763a3b77a745abfa4df3e4349d669133eec73da9c7c6aa8a51cf97a4dd",
         "lines": [
-          677,
-          697
+          675,
+          695
         ]
       },
       {
@@ -226,8 +226,8 @@
         "class": "static",
         "sha256": "725a6f3265c0e6cd3c70cbdb277bfc7e0c16e40c9a3ad519a91d5ca7cb63f6d7",
         "lines": [
-          698,
-          810
+          696,
+          808
         ]
       },
       {
@@ -235,8 +235,8 @@
         "class": "static",
         "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
         "lines": [
-          811,
-          818
+          809,
+          816
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
         "lines": [
-          819,
-          829
+          817,
+          827
         ]
       },
       {
@@ -253,8 +253,8 @@
         "class": "static",
         "sha256": "c0cf558619786198ea462bd3ba421b25ab8a0c6b69299ed3aaed86b3da28ba63",
         "lines": [
-          830,
-          920
+          828,
+          918
         ]
       },
       {
@@ -262,8 +262,8 @@
         "class": "static",
         "sha256": "91af81dadc884adb2d1b374216d312d673952e8af0705488cbe627f18d84f7ee",
         "lines": [
-          921,
-          1114
+          919,
+          1112
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1115,
-          1129
+          1113,
+          1127
         ]
       },
       {
@@ -280,8 +280,8 @@
         "class": "static",
         "sha256": "39594e7a14c3a852c8179bcab9b314e007b2a13c6db79123766922f9723a76d4",
         "lines": [
-          1130,
-          1142
+          1128,
+          1140
         ]
       }
     ],
@@ -1703,6 +1703,15 @@
         "lines": [
           740,
           744
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Git workflow",
+        "class": "static",
+        "sha256": "7d820b1348ae7940cf42356abce337e503eb4981a0fed1147198271570212f99",
+        "lines": [
+          745,
+          751
         ]
       }
     ],

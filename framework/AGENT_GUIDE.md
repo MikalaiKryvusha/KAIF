@@ -600,8 +600,7 @@ so the agent doesn't improvise.>`
 > standing authorization for routine commits/pushes per the policy above. Everything beyond it —
 > releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
 > the owner's quoted words (an `AUTH:` line).
-> **One named carve-out, stated HERE because this is the paragraph read before every task** (origin
-> issue #37: two TOP tickets sat "Delivered upstream: NOT YET" for hours under this very sentence): a
+> **One named carve-out, stated HERE because this is the paragraph read before every task:** a
 > ticket about a defect of KAIF ITSELF, filed to the framework's OWN origin, is delivered under the
 > KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line —
 > file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
@@ -614,8 +613,7 @@ so the agent doesn't improvise.>`
   (lock files, manifests, formatters): an agent trusts its tools even more blindly than itself — read
   those diffs line by line. The rule is only executable if the set you inspect is the set that ships:
   a commit tool that stages everything (`git add -A`) AFTER your inspection makes the two different
-  sets, and the field cost was two of the owner's files leaving under an agent's message minutes
-  after he dropped them into the tree. So the tool NAMES its set out loud before committing, and a
+  sets. So the tool NAMES its set out loud before committing, and a
   NEW file in the tree stops a sweeping commit rather than riding along — declare the set instead.
 - **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
   after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
