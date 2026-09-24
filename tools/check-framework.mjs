@@ -13,6 +13,7 @@ import { join, dirname, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from './lib/temp-root.mjs';
 import { scanText as scanInvisible, label as invisibleLabel } from './lib/invisible-chars.mjs';
+import { readBudgets } from './budget-gate.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -195,6 +196,52 @@ function selfProofWhyKeys() {
   if (!got.some((e) => e.includes('"Gone.md → Anything" names a file'))) fails.push('ключ §17 на несуществующий файл НЕ назван');
   if (got.some((e) => e.includes('The live section'))) fails.push('живой ключ §17 назван висячим');
   if (!danglingWhyKeys('# R\n\n## 16. Where\n', read).some((e) => e.includes('is missing'))) fails.push('записка без §17 НЕ названа');
+  return fails;
+}
+
+// 5j. The delivery templates of the re-read core stay under budget × (100 − TEMPLATE_RESERVE_PCT) % (2.8, epic CK, step CK5.1;
+//     plans/117 criterion 1; the reserve — researches/33 §7 (б), revised twice on 2026-09-25). A template ON its budget leaves a
+//     deployment translated wholesale — where the budget gate counts every line as the project's own — no room for the project's
+//     adaptation of the method modules, and its first closing after the update stops. The budgets come from ONE place, `DOC_BUDGETS`
+//     of the delivery core, read by `readBudgets()` of the origin's budget door (tools/budget-gate.mjs) — no copy of a number here.
+// @guard template-ceiling
+// THREAT:         a delivery template grows back to its budget (the guide: 356 lines in 1.6 → 1200 in 2.7, exactly ON 1200) and every
+//                 deployment translated wholesale stops on its first closing after the update
+// PROVED-AGAINST: `--selftest` — a 1200-line guide against budget 1200 (the v2.7 shape) → named with its lines, ceiling and budget; the
+//                 guide at its ceiling → silent; a missing template → named; a budget table read short (eight rows) → named
+// GAP:            lines of the TEMPLATE, not of a translation — the ratio is measured on the origin's own pairs (×0.99–1.04) and the
+//                 eight frozen language packs are unmeasured; the reserve is sized by the two field shapes the probe measured (+56 and
+//                 +58 after the 2.8 moves), a heavier deployment is left to the budget gate, which names the move-out
+// ON-REAL-PATH:   NOT YET — the path is the first field closing after an update to 2.8 on a deployment translated wholesale
+const TEMPLATE_RESERVE_PCT = 10;   // source: researches/33 §7 (б), «Пересмотрено второй раз» — the field probe
+                                   // tools/sandbox/probes/ck50-field-guide-growth.mjs: at 90 % the two measured shapes keep 19 and 21 lines
+const CORE_DOC_COUNT = 9;          // the re-read core (AGENT_GUIDE → Document taxonomy, tier 1)
+const templateCeiling = (budget) => Math.floor((budget * (100 - TEMPLATE_RESERVE_PCT)) / 100);   // integer arithmetic, no 0.9 drift
+function templatesOverCeiling(budgets, lineCountOf) {
+  if (budgets.length !== CORE_DOC_COUNT)
+    return [`template ceiling (CK 2.8): the budget table read ${budgets.length} row(s) of ${CORE_DOC_COUNT} from framework/installer/KAIF-CORE.mjs — fix readBudgets() in tools/budget-gate.mjs (a guard that cannot read its numbers never passes)`];
+  const found = [];
+  for (const { doc, budget } of budgets) {
+    const n = lineCountOf(doc);
+    const ceiling = templateCeiling(budget);
+    if (n === null) found.push(`template ceiling (CK 2.8): framework/${doc} is missing — a template of the re-read core is not in the payload`);
+    else if (n > ceiling) found.push(`template ceiling (CK 2.8): framework/${doc} is ${n} lines, above its ceiling ${ceiling} (budget ${budget} less the ${TEMPLATE_RESERVE_PCT} % reserve) — move content out (the rationale to KAIF_REFERENCE.md §17, project facts to the house-rules skeleton); never raise the budget`);
+  }
+  return found;
+}
+function selfProofTemplateCeiling() {
+  const fails = [];
+  const docs = ['STATUS.md', 'GOAL.md', 'MASTER_PLAN.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PHILOSOPHY.md', 'TESTING_FRAMEWORK.md',
+    'BUG_FIXING_FRAMEWORK.md', 'REQUIREMENTS_FRAMEWORK.md', 'AGENT_GUIDE.md'];
+  const budgets = docs.map((doc) => ({ doc, budget: doc === 'AGENT_GUIDE.md' ? 1200 : 300 }));
+  const sizes = (guide) => (doc) => (doc === 'AGENT_GUIDE.md' ? guide : 200);
+  let got = templatesOverCeiling(budgets, sizes(1200));
+  if (got.length !== 1 || !got[0].includes('framework/AGENT_GUIDE.md is 1200 lines, above its ceiling 1080 (budget 1200'))
+    fails.push(`мутант «руководство в 1200 строк» (форма v2.7) не назван как ожидалось: ${got.join(' | ') || 'молчание'}`);
+  if (templatesOverCeiling(budgets, sizes(1080)).length) fails.push('руководство ровно на потолке 1080 названо — потолок включительный');
+  got = templatesOverCeiling(budgets, (doc) => (doc === 'GOAL.md' ? null : 200));
+  if (!got.some((e) => e.includes('framework/GOAL.md is missing'))) fails.push('пропавший шаблон ядра НЕ назван');
+  if (!templatesOverCeiling(budgets.slice(1), sizes(200)).some((e) => e.includes('read 8 row(s) of 9'))) fails.push('таблица бюджетов, прочитанная не целиком, НЕ названа');
   return fails;
 }
 
@@ -414,6 +461,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of iFails) console.error('✖ selfproof 5h (bugs/122): ' + f);
   if (iFails.length) { console.error(`\n❌ check-framework --selftest: гард 5h — ${iFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5h: невидимый символ в теле .mjs и в теле .md назван ПОИМЁННО (файл · кодовая точка · готовый ход); BOM в нулевой позиции файла и чистое дерево молчат');
+  const cFails = selfProofTemplateCeiling();
+  for (const f of cFails) console.error('✖ selfproof 5j (CK 2.8): ' + f);
+  if (cFails.length) { console.error(`\n❌ check-framework --selftest: гард 5j — ${cFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5j: шаблон в 1200 строк при бюджете 1200 назван с потолком; шаблон на потолке молчит; пропавший шаблон и неполная таблица названы');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -528,6 +579,10 @@ if (skills.includes('release')) {
 // 5i. Reference §17 keys resolve to live canon headings — declared with its self-proof near the top.
 errors.push(...danglingWhyKeys(readFileSync(join(ROOT, 'framework', 'KAIF_REFERENCE.md'), 'utf8'),
   (f) => { const p = join(ROOT, 'framework', f); return existsSync(p) ? readFileSync(p, 'utf8') : null; }));
+// 5j. The delivery templates of the re-read core stay under their ceiling — declared with its self-proof near the top.
+errors.push(...templatesOverCeiling(readBudgets(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8')),
+  (doc) => { const p = join(ROOT, 'framework', doc); if (!existsSync(p)) return null;
+    const l = readFileSync(p, 'utf8').split(/\r?\n/); if (l[l.length - 1] === '') l.pop(); return l.length; }));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the
