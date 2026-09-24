@@ -277,7 +277,7 @@ ok(tfAfter.includes('UPSTREAM ADDITION 9.9 (testing)'), 'U7 фикстура: ф
 ok(crlf <= lf, `U7: доминирующая конвенция (LF) сохранена после замены (CRLF ${crlf} · LF ${lf})`);
 
 // ---------------------------------------------------------------- U6: новый английский навык на ru-развёртывании
-console.log('\n=== U6 (P3 / #32 R-C, U2 п. 2): английские новинки названы в задании; check считает языковую смесь ===');
+console.log('\n=== U6 (P3 / #32 R-C, U2 п. 2): английские новинки названы в задании; check не повторяет их счёт без i18n (K14 2.8) ===');
 const T4 = join(ROOT, 'u6'); mkdirSync(T4); seed(T4);
 must(run, T4, 'install --lang ru');
 r = run(T4, `update --source ${SRC99}`);
@@ -286,7 +286,9 @@ ok(existsSync(join(T4, '.claude/skills/new-skill/SKILL.md')), 'U6 фикстур
 const task4 = readFileSync(join(T4, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/\*\*language-arrivals\*\*[^\n]*new-skill/.test(task4), 'U6: задание называет пункт `language-arrivals` с новым английским навыком', task4.split('\n').filter((l) => /\*\*[a-z-]+\*\*/.test(l)).map((l) => l.slice(0, 40)).join(' | '));
 r = run(T4, 'check');
-ok(/language mix: \d+ of \d+ skills are English/.test(r.out), 'U6: `check` печатает счёт языковой смеси (`language mix: N of M skills are English`)', r.out.slice(-300));
+// 2.8 (epic CK, K14): the English count is policy on a deployment that did not declare `i18n: translated` — the arrival is named ONCE,
+// by the update task above, and `check` no longer repeats "N of M skills are English" on every run (both states — s16 section K14).
+ok(/manifest satisfied/.test(r.out) && !/language mix: \d+ of \d+ skills are English/.test(r.out), 'U6: на ru-развёртывании без `i18n` `check` НЕ повторяет счёт английских навыков на каждом прогоне — новинку назвало задание обновления (K14 2.8)', r.out.slice(-300));
 
 // ---------------------------------------------------------------- U9: check краснит непарный маркер (критерий 2, вторая половина)
 console.log('\n=== U9 (P2, check): END без BEGIN — структурно невалидный документ, check красный ===');

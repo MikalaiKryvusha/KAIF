@@ -78,7 +78,9 @@ const MUTANTS = [
     expect: ['появилась отдельная строка о СМЕСИ',
              'назван смесью С ДОЛЕЙ В ПРОЦЕНТАХ',
              'доля zz-mixed лежит около половины',
-             'английское тело с тремя кириллическими словами'] },
+             'английское тело с тремя кириллическими словами',
+             // K14 (CK5.8): the English-count line is judged NEXT TO the mix line, so a run with no mix line reddens it too
+             'жива и отдельна от строки о смеси'] },
   { name: 'M5 the owner-seeded branch is gone — one shape, one (wrong) sentence',
     from: "basis: OWNER_SEEDED.includes(doc) ? 'owner-seeded' : 'translated' };",
     to: "basis: 'translated' };",
@@ -151,6 +153,16 @@ const MUTANTS = [
     from: "typeof templateLines[doc] === 'number' ?",
     to: "false ?",
     expect: ['переведённый целиком: строка называет длину шаблона'] },
+  // M17 — the move-out address names its FILE and the command that creates it (2.8, epic CK, step CK5.5).
+  { name: 'M17 the move-out address names no file again (the 2.7 wording)',
+    from: "const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';",
+    to: "const MOVE_OUT_ADDRESS = 'the chronicle PROJECT_HISTORY.md · researches/ · a house-rules file';",
+    expect: ['адрес выноса для документа НЕ-STATUS', 'гейт печатает строку'] },
+  // M18 — the English-skills count speaks only with `i18n: translated` (2.8, epic CK, step CK5.8, K14).
+  { name: 'M18 the English-skills line prints on every deployment again (the i18n flag ignored)',
+    from: 'if (english && translatedWrapper) console.error(',
+    to: 'if (english) console.error(',
+    expect: ['у развёртывания без i18n строки'] },
   { name: 'M11 a gate with no debt writes no base file (so the next overflow is "first")',
     from: "    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
     to: "    if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",

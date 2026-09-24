@@ -133,9 +133,13 @@ const UPDATE_TASK = 'KAIF_UPDATE_TASK.md';
 // warning that says "too long" without saying "where to" is a warning the agent cannot execute
 // (AGENT_GUIDE → "The form of an obligation"). STATUS has its own address, because its overflow
 // is closed history and the chronicle is where closed history lives.
-const MOVE_OUT_ADDRESS = 'the chronicle PROJECT_HISTORY.md · researches/ · a house-rules file';
+// Since 2.8 (epic CK; a field judge's finding on the house-rules skeleton, and K16 of the 2.8 recon — STATUS had the chronicle as
+// its ONLY address, while standing rules and reference tables are not closed history) every address names its FILE and the
+// command that creates it: the house-rules file is copied from the shipped skeleton on first use. Plain single-quoted strings on
+// purpose: the origin's budget door (tools/budget-gate.mjs → readBudgets) and the build's ceiling guard read this table as TEXT.
+const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';
 const DOC_BUDGETS = {
-  'STATUS.md': { budget: 200, overflowTo: 'the chronicle PROJECT_HISTORY.md (move closed history VERBATIM — the /end-chat-soft bonsai trim)' },
+  'STATUS.md': { budget: 200, overflowTo: 'the chronicle PROJECT_HISTORY.md (move closed history VERBATIM — the /end-chat-soft bonsai trim) · HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for standing rules and reference tables' },
   'GOAL.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
   'MASTER_PLAN.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
   'PROJECT_STRUCTURE_EXTERNAL_MAP.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
@@ -3128,7 +3132,12 @@ function cmdCheck() {
         if (!own) { english++; continue; }
         if (share >= LANGUAGE_MIX_FOREIGN_SHARE) mixed.push(`${n} (${Math.round(share * 100)} % foreign)`);
       }
-      if (english) console.error(`⚠ language mix: ${english} of ${total} skills are English (language: ${lang}) — skills are agent-read and arrive English by policy; translate on demand, and expect NEW skills to arrive English too`);
+      // The ENGLISH count speaks only on a deployment whose wrapper is translated wholesale (`i18n: translated`): there an English
+      // skill stands out. Elsewhere English skills are the policy, and the line printed "37 of 37 skills are English" on every run
+      // of every deployment with a language pack — noise that buried the lines that matter (2.8, epic CK; K14 of the 2.8 recon).
+      // The MIX line below is a defect wherever it appears and stays unconditional.
+      const translatedWrapper = String(readJson(KAIF_JSON).i18n || '').toLowerCase() === 'translated';
+      if (english && translatedWrapper) console.error(`⚠ language mix: ${english} of ${total} skills are English (language: ${lang}) — skills are agent-read and arrive English by policy; translate on demand, and expect NEW skills to arrive English too`);
       if (mixed.length) console.error(`⚠ language mix: ${mixed.length} of ${total} skills are a MIX — at or above ${Math.round(LANGUAGE_MIX_FOREIGN_SHARE * 100)} % of their prose tokens are not ${lang} while the rest is: ${mixed.slice(0, 5).join(', ')}${mixed.length > 5 ? ` (${mixed.length - 5} more)` : ''} — a half-finished translation reads as two documents to an agent; finish it or leave the skill English`);
     }
   } catch { /* unreadable marker — the marker gate flags it separately */ }
@@ -3277,8 +3286,10 @@ function cmdCheck() {
   //                 covers that side); an issue number that points at the WRONG issue reads as delivered — the axis
   //                 sees that an issue is named, not that it is the right one; a `#NN` in the project language's own
   //                 words ("в истоке #37") is not recognised and gets named — the fail-safe direction
-  // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.7 update (seeded real state
-  //                 is not that path)
+  // ON-REAL-PATH:   observed on four field deployments tracking the origin, each on its own first `check` after the 2.7 update (field
+  //                 reports #76, #79, #83, #93): one named 13 tickets with no readable delivery state, and 0 signal warnings after they were
+  //                 fixed; one stayed silent because all four of its tickets carried an issue URL; one named 9 of 18 tickets, 3 of them
+  //                 delivered and unreadable; one found a ticket filed locally and never sent, which it then sent (origin bugs/117 → DONE)
   try {
     const jm = readJson(KAIF_JSON);
     const KAIF_BUGS = 'bugs/KAIF';

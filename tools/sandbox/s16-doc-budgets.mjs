@@ -166,8 +166,9 @@ const mArr = r.out.match(/⚠ AGENT_GUIDE\.md: own lines (\d+) of budget ~1200 \
 ok(Boolean(mArr) && Number(mArr[3]) > 0 && Number(mArr[1]) + Number(mArr[3]) === Number(mArr[2]) && Number(mArr[2]) === agBig,
    's16 критерий 1: строка говорит ВСЛУХ, сколько строк приехало, и арифметика сходится (свои + приехавшие = строки на диске)',
    mArr ? `own=${mArr[1]} disk=${mArr[2]} arrived=${mArr[3]} wc=${agBig}` : r.out);
-ok(/AGENT_GUIDE\.md: own lines[^\n]*move content OUT to the chronicle PROJECT_HISTORY\.md · researches\/ · a house-rules file/.test(r.out),
-   's16 критерий 1: адрес выноса для документа НЕ-STATUS — летопись · researches/ · дом. правила', r.out);
+// CK5.5 (2.8): адрес называет ФАЙЛ и команду, которая его создаёт (находка лёгкого судьи CK4.5): домашние правила первыми.
+ok(/AGENT_GUIDE\.md: own lines[^\n]*move content OUT to HOUSE_RULES\.md \(no file yet: cp \.kaif\/_house-rules-template\.md HOUSE_RULES\.md\) for local rules, routes and tools · the chronicle PROJECT_HISTORY\.md · researches\//.test(r.out),
+   's16 критерий 1: адрес выноса для документа НЕ-STATUS называет файл домашних правил с командой копии · летопись · researches/', r.out);
 
 own('STATUS.md', 300, 'Собственные записи проекта');
 const stBig = lines('STATUS.md');
@@ -176,6 +177,8 @@ ok(/⚠ STATUS\.md: own lines \d+ of budget ~200/.test(r.out),
    `s16 критерий 1: STATUS (${stBig} строк) назван собственными строками против бюджета 200`, r.out);
 ok(/STATUS\.md: own lines[^\n]*move content OUT to the chronicle PROJECT_HISTORY\.md \(move closed history VERBATIM/.test(r.out),
    's16 критерий 1: у STATUS СВОЙ адрес выноса — летопись, дословным переносом (стрижка бонсая)', r.out);
+ok(/STATUS\.md: own lines[^\n]*bonsai trim\) · HOUSE_RULES\.md \(no file yet: cp \.kaif\/_house-rules-template\.md HOUSE_RULES\.md\) for standing rules and reference tables/.test(r.out),
+   's16 CK5.5: у STATUS второй адрес — домашние правила для стоячих правил и справочных таблиц (K16: летопись была единственной)', r.out);
 
 // Документ ВНЕ ядра перечитывания — раздуваем сильнее любого бюджета, предупреждения быть не должно.
 const outside = ['PROJECT_HISTORY.md', 'EXPERIENCE.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'].find((d) => existsSync(join(S, d)));
@@ -197,7 +200,7 @@ const gate = run('check --gate-budgets');
 // 2.6, где двери нет вовсе (найдено судьёй прогона; тот же класс, что EXP-0127).
 ok(gate.code === 1 && !/unknown flag/.test(gate.out),
    's16 критерий 4: `check --gate-budgets` на превышении — код выхода 1 ИМЕННО от двери, а не от непонятого флага', gate.out.slice(-400));
-ok(/✖ AGENT_GUIDE\.md: own lines \d+ of budget 1200 → the chronicle PROJECT_HISTORY\.md · researches\/ · a house-rules file/.test(gate.out),
+ok(/✖ AGENT_GUIDE\.md: own lines \d+ of budget 1200 → HOUSE_RULES\.md \(no file yet: cp \.kaif\/_house-rules-template\.md HOUSE_RULES\.md\) for local rules, routes and tools · the chronicle PROJECT_HISTORY\.md · researches\//.test(gate.out),
    's16 критерий 4: гейт печатает строку `<документ>: own lines N of budget M → <адрес выноса>` (AGENT_GUIDE)', gate.out);
 ok(/✖ STATUS\.md: own lines \d+ of budget 200 → the chronicle PROJECT_HISTORY\.md/.test(gate.out),
    's16 критерий 4: та же строка у STATUS — со СВОИМ адресом', gate.out);
@@ -352,8 +355,16 @@ ok(!/zz-code-heavy/.test(mix.out),
    's16 критерий 2 (риск б): токены в бэктиках и код-блоках не считаются — RU-навык с командами не смесь', mix.out);
 ok(/zz-stray \(9\d % foreign\)/.test(mix.out),
    's16 критерий 2: английское тело с тремя кириллическими словами — СМЕСЬ ~99 %, форма, невидимая старому `re.test(body)`', mix.out);
-ok(/⚠ language mix: \d+ of \d+ skills are English \(language: ru\)/.test(mix.out),
-   's16 смесь: прежняя строка «N of M skills are English» жива и отдельна (английский приход — политика, не дефект)', mix.out);
+// K14 (2.8, эпик CK, шаг CK5.8): строка «N of M skills are English» печатается только у развёртывания с `i18n: translated` —
+// без флага английские навыки — политика, и строка была шумом на каждом прогоне; строка о СМЕСИ остаётся всегда.
+ok(!/⚠ language mix: \d+ of \d+ skills are English/.test(mix.out),
+   's16 смесь (K14): у развёртывания без i18n строки «N of M skills are English» нет — английские навыки там политика, не находка', mix.out);
+const mkMix = readFileSync(MARKER, 'utf8');
+writeFileSync(MARKER, JSON.stringify({ ...JSON.parse(mkMix), i18n: 'translated' }, null, 2) + '\n');
+const mixTr = run('check');
+ok(/⚠ language mix: \d+ of \d+ skills are English \(language: ru\)/.test(mixTr.out) && /skills are a MIX/.test(mixTr.out),
+   's16 смесь (K14): у развёртывания с i18n translated строка «N of M skills are English» жива и отдельна от строки о смеси', mixTr.out.slice(-600));
+writeFileSync(MARKER, mkMix);
 
 // ================================================================ (5) две честные запасные ветки
 console.log('\n=== s16: файл переведён целиком · среза модулей нет — обе ветки говорят о себе вслух ===');
