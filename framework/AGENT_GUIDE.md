@@ -175,8 +175,12 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    plans, bugs, ideas, researches, interviews, homeworks, reports. Their form is set by their
    directory README and skill templates; their header — by the header-meta norm below.
 4. **OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent
-   that modify or extend KAIF in this specific project. Local law — it governs here and travels
-   nowhere.
+   that modify or extend KAIF in this specific project — the owner's standing rules and the systems,
+   stands, routes and tools the agent works with here. Local law — it governs here and travels
+   nowhere. Its file is `HOUSE_RULES.md` at the project root, copied from the shipped skeleton on
+   first use — a standing rule of the owner, a route or recipe worth keeping, a project section
+   moving out of an over-budget document: `cp .kaif/_house-rules-template.md HOUSE_RULES.md`;
+   `/resume` reads it when it exists.
 5. **Project working documents.** Everything of the owner's project itself — code, assets,
    documents that are not the framework's. KAIF governs how the agent works on them, not what
    they are.

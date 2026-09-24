@@ -102,7 +102,11 @@ bundle-only skeletons of the
 same family serve the testing canon: `.kaif/_testcases-template.md` (2.3 — the case set per feature,
 `TESTING_FRAMEWORK.md` → the activities chain) and `.kaif/_testrun-report-template.md` (2.7, epic TR —
 the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD>_<work>.md`;
-`TESTING_FRAMEWORK.md` → "An executed run produces its report"). One more
+`TESTING_FRAMEWORK.md` → "An executed run produces its report"). A fourth skeleton (2.8, epic CK; origin issues
+#89 #90) gives tier 4 of the document taxonomy its file: `.kaif/_house-rules-template.md`, copied to `HOUSE_RULES.md`
+at the project root on first use — a standing rule of the owner (`/fix-vision` step 3), a route or recipe worth
+keeping, a project-subject section moving out of an over-budget guide; the copy is the project's, `/resume` reads it
+at entry, and it is not one of the fourteen key documents. One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of

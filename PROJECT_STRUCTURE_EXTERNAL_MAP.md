@@ -40,7 +40,7 @@ KAIF/
 │   ├── skills/<name>/SKILL.md             # шаблоны навыков (число печатает сборка; generic, плейсхолдеры команд)
 │   ├── installer/                         # KAIF-CORE.mjs (машинерия установки/обновления) · KAIF-LOADER.mjs · _thin-intro.md
 │   ├── templates/languages/<lang>/        # 9 языковых пакетов: owner-доки + skill-triggers.json (алиасы)
-│   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы)
+│   ├── templates/_*-template.md           # скелеты опциональных артефактов → .kaif/ (портрет голоса · тест-кейсы · отчёт прогона · домашние правила)
 │   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint, kaif-ranking-lint, kaif-attribution-lint, kaif-testrun-lint, kaif-voice-lint, kaif-experience-lint → .kaif/tools/);
 │   │                                      # с 2.6 сборщик обходит поддиректории (framework/tools/contour/ → .kaif/tools/contour/ — генератор контура, эпик IC, шаг IC3)

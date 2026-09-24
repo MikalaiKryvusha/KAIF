@@ -320,8 +320,12 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    plans, bugs, ideas, researches, interviews, homeworks, reports. Their form is set by their
    directory README and skill templates; their header — by the header-meta norm below.
 4. **OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent
-   that modify or extend KAIF in this specific project. Local law — it governs here and travels
-   nowhere.
+   that modify or extend KAIF in this specific project — the owner's standing rules and the systems,
+   stands, routes and tools the agent works with here. Local law — it governs here and travels
+   nowhere. Its file is `HOUSE_RULES.md` at the project root, copied from the shipped skeleton on
+   first use — a standing rule of the owner, a route or recipe worth keeping, a project section
+   moving out of an over-budget document: `cp .kaif/_house-rules-template.md HOUSE_RULES.md`;
+   `/resume` reads it when it exists.
 5. **Project working documents.** Everything of the owner's project itself — code, assets,
    documents that are not the framework's. KAIF governs how the agent works on them, not what
    they are.
@@ -2892,7 +2896,11 @@ bundle-only skeletons of the
 same family serve the testing canon: `.kaif/_testcases-template.md` (2.3 — the case set per feature,
 `TESTING_FRAMEWORK.md` → the activities chain) and `.kaif/_testrun-report-template.md` (2.7, epic TR —
 the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD>_<work>.md`;
-`TESTING_FRAMEWORK.md` → "An executed run produces its report"). One more
+`TESTING_FRAMEWORK.md` → "An executed run produces its report"). A fourth skeleton (2.8, epic CK; origin issues
+#89 #90) gives tier 4 of the document taxonomy its file: `.kaif/_house-rules-template.md`, copied to `HOUSE_RULES.md`
+at the project root on first use — a standing rule of the owner (`/fix-vision` step 3), a route or recipe worth
+keeping, a project-subject section moving out of an over-budget guide; the copy is the project's, `/resume` reads it
+at entry, and it is not one of the fourteen key documents. One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -3818,6 +3826,7 @@ hole exactly there; owners kept having to re-order the full pass by hand:
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow
 - `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` — internal map: abstractions and interactions
 - `KAIF_FRAMEWORK.md` — the deployment record: which KAIF is deployed here and how
+- **If the project has one:** `HOUSE_RULES.md` — the owner's standing rules and the systems, stands, routes and tools of this project (tier 4 — read at entry, not part of the re-read core; the condition comes first, so `check` does not demand the file)
 - `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
 
 If relevant to open questions:
@@ -5250,7 +5259,8 @@ the rule form of Step 3 — the owner's verbatim words stay at their source.
 - **`GOAL.md`** — changes to the vision itself (what we want in the end, for whom).
 - **`MASTER_PLAN.md`** — changes of priorities/scope; if the shift is big, re-derive via `/revision`.
 - **A standing working rule of the owner** → the project's house-rules file (tier 4 of the document taxonomy —
-  create `HOUSE_RULES.md` at the project root if there is none yet) as a strict rule: imperative, numbered, with
+  `HOUSE_RULES.md` at the project root; none yet → `cp .kaif/_house-rules-template.md HOUSE_RULES.md`) as a strict rule in its section "The owner's standing rules" (a
+  file without that section — add it): imperative, numbered, with
   its exceptions, plus one provenance line `[OWNER] <date> · <where the verbatim lives>`. Commit the owner's
   message verbatim first (`AGENT_GUIDE.md`, checklist step 18) and cite that commit; a block of raw messages in
   the rulebook is a defect (`AGENT_GUIDE.md` → "Authorship of a decision").
@@ -6782,7 +6792,8 @@ intact and working — we only remove what KAIF added, surgically.
      the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
-   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
+   - **Content artifacts (kept in partial, removed in full):** the house-rules file `HOUSE_RULES.md` and the voice portrait
+     `AUTHOR_STYLOMETRY.md` (if present), `bugs/`, `interviews/`, `ideas/`,
      `researches/`, `homeworks/`, `plans/`, `reports/`, etc.
    - **NEVER touched:** the user's own project files and directories.
 

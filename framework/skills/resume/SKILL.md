@@ -28,6 +28,7 @@ hole exactly there; owners kept having to re-order the full pass by hand:
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow
 - `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` — internal map: abstractions and interactions
 - `KAIF_FRAMEWORK.md` — the deployment record: which KAIF is deployed here and how
+- **If the project has one:** `HOUSE_RULES.md` — the owner's standing rules and the systems, stands, routes and tools of this project (tier 4 — read at entry, not part of the re-read core; the condition comes first, so `check` does not demand the file)
 - `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
 
 If relevant to open questions:

@@ -889,6 +889,22 @@ errors.push(...scanInvisibleCharacters(ROOT));
     ['own work ↔ /fable-judge hunts re-derived own work',
       'framework/skills/fable-judge/SKILL.md',
       ['**Re-derived own work (KAIF 2.8).**', 're-derived-own-work', 'eight marked KAIF patches']],
+    // CK4.5 (2.8, origin issues #89/#90): tier 4 has a FILE — the skeleton carries the rule form of an owner's standing
+    // rule, the canon and /fix-vision carry the command that produces the copy, /resume reads the copy at entry
+    ['house rules ↔ the skeleton carries the copy command and the owner-rule form', 'framework/templates/_house-rules-template.md',
+      ['cp .kaif/_house-rules-template.md HOUSE_RULES.md', '[OWNER] <date and time> · <where the verbatim lives']],
+    ['house rules ↔ AGENT_GUIDE taxonomy tier 4 names the file and the copy command', 'framework/AGENT_GUIDE.md',
+      ['cp .kaif/_house-rules-template.md HOUSE_RULES.md']],
+    ['house rules ↔ /fix-vision step 3 copies the skeleton', 'framework/skills/fix-vision/SKILL.md',
+      ['cp .kaif/_house-rules-template.md HOUSE_RULES.md']],
+    ['house rules ↔ /resume Step 1 reads the copy when it exists', 'framework/skills/resume/SKILL.md',
+      ['- **If the project has one:** `HOUSE_RULES.md` — ']],
+    ['house rules ↔ AGENT_GUIDE taxonomy tier 4 names the file and the copy command (wrapper)', 'AGENT_GUIDE.md',
+      ['cp .kaif/_house-rules-template.md HOUSE_RULES.md']],
+    ['house rules ↔ /fix-vision step 3 copies the skeleton (wrapper)', '.claude/skills/fix-vision/SKILL.md',
+      ['cp .kaif/_house-rules-template.md HOUSE_RULES.md']],
+    ['house rules ↔ /resume Step 1 reads the copy when it exists (wrapper)', '.claude/skills/resume/SKILL.md',
+      ['- **Если он есть:** `HOUSE_RULES.md` — ']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to

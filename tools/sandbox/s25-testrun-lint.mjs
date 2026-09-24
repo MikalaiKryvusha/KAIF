@@ -33,7 +33,7 @@ import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { failed } from '../lib/sandbox-run.mjs';
+import { failed, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // Шов KAIF_DIST: свод судит РАЗВЁРНУТУЮ копию из dist; подставь старый dist — красный доказан (s23:21).
@@ -275,6 +275,71 @@ ok(r.code === 0 && /lost 3 obligation\(s\) of the template: /.test(r.out) && !r.
 rmSync(CONST, { force: true });
 r = runCore('check');
 ok(r.code === 0 && constLines(r.out).length === 0, 's25 без TEAM_CONSTITUTION.md — ось молчит', r.out);
+
+// ---------------------------------------------------------------- (5) скелет домашних правил (CK 2.8)
+// Эпик CK 2.8 (plans/118, шаг CK4.5; тикеты origin #89/#90): у яруса 4 таксономии есть ФАЙЛ. На СВЕЖЕЙ развёрнутой копии
+// (копия S выше изрезана мутантами /resume) — скелет приехал установкой; руководство, /fix-vision и /resume называют его;
+// заполненная копия HOUSE_RULES.md переживает update побайтно (файл проекта — машинерия его не пишет), а скелет обновляется.
+// update герметичен: coreRunner подставляет --baseline (bugs/109).
+console.log('\n=== s25: развёрнутая копия — скелет домашних правил (CK 2.8) ===');
+const SH = join(ROOT, 'deploy-hr');
+mkdirSync(join(SH, '.kaif', 'install'), { recursive: true });
+cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(SH, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'));
+cpSync(join(DIST, 'KAIF-CORE.mjs'), join(SH, '.kaif', 'kaif-core.mjs'));
+const runHr = coreRunner(ROOT);
+r = runHr(SH, 'install');
+ok(r.code === 0, 's25 свежая копия для скелета — install exit 0', r.out.slice(-400));
+const HR_TPL = join(SH, '.kaif', '_house-rules-template.md');
+const HR_CP = 'cp .kaif/_house-rules-template.md HOUSE_RULES.md';
+const readSh = (rel) => existsSync(join(SH, rel)) ? readFileSync(join(SH, rel), 'utf8') : '';
+ok(existsSync(HR_TPL), 's25 скелет домашних правил приехал установкой: .kaif/_house-rules-template.md');
+ok(readSh('.kaif/_house-rules-template.md').includes('[OWNER] <date and time> · <where the verbatim lives'),
+   's25 скелет несёт форму правила владельца со строкой происхождения (раздел 1)');
+ok(readSh('AGENT_GUIDE.md').includes(HR_CP), 's25 развёрнутое руководство (ярус 4) несёт команду копии скелета');
+ok(readSh('.claude/skills/fix-vision/SKILL.md').includes(HR_CP), 's25 развёрнутый /fix-vision (шаг 3) несёт команду копии скелета');
+ok(/^- \*\*If the project has one:\*\* `HOUSE_RULES\.md` — /m.test(readSh('.claude/skills/resume/SKILL.md')),
+   's25 развёрнутый /resume называет HOUSE_RULES.md условным буллетом шага 1 (условие первым — ось ядра файла не требует)');
+// копия по команде канона + одно правило владельца; затем update с версией выше — копия цела побайтно
+const HR = join(SH, 'HOUSE_RULES.md');
+if (existsSync(HR_TPL)) cpSync(HR_TPL, HR);
+else writeFileSync(HR, '# House rules\n');
+writeFileSync(HR, readFileSync(HR, 'utf8') + '\n### R2. Close every ticket with a short comment\n\n1. Write the comment.\n\n[OWNER] 2026-09-24 22:30 +03:00 · commit 1a2b3c4\n');
+const hrBefore = readFileSync(HR);
+r = runHr(SH, 'check');
+ok(r.code === 0 && !/HOUSE_RULES/.test(r.out), 's25 копия с HOUSE_RULES.md — check зелёный и про файл проекта молчит', r.out.slice(-400));
+const SRC_HR = join(ROOT, 'src-hr-9.9'); mkdirSync(SRC_HR);
+cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(SRC_HR, 'KAIF-CORE-BUNDLE.md'));
+cpSync(join(DIST, 'KAIF-CORE.mjs'), join(SRC_HR, 'KAIF-CORE.mjs'));
+writeFileSync(join(SRC_HR, 'kaif-manifest.json'), JSON.stringify({ ...JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')), version: '9.9' }, null, 2) + '\n');
+r = runHr(SH, `update --source ${SRC_HR}`);
+ok(r.code === 0, 's25 update → 9.9 поверх копии с HOUSE_RULES.md — exit 0', r.out.slice(-400));
+ok(readFileSync(HR).equals(hrBefore), 's25 update не тронул HOUSE_RULES.md — файл проекта цел побайтно');
+ok(readSh('.kaif/_house-rules-template.md').includes(HR_CP), 's25 после update скелет на месте в .kaif/ — копия проекта и скелет живут раздельно');
+// формы адреса строки происхождения: три формы подсказки скелета принимает РАЗВЁРНУТЫЙ линтер авторства; адрес «по памяти»
+// и незаполненная копия краснеют (лёгкий судья CK4.5, находки 1–2: подсказка вела в две формы, на которых линтер краснел,
+// а кавычки заглушки в окне ±2 строки зеленили любую строку)
+const ATTR = join(SH, '.kaif', 'tools', 'kaif-attribution-lint.mjs');
+ok(existsSync(ATTR), 's25 линтер авторства приехал установкой: .kaif/tools/kaif-attribution-lint.mjs');
+const runAttr = (file) => {
+  try { return { code: 0, out: execSync(`node ${ATTR} check ${file} 2>&1`, { cwd: SH, stdio: 'pipe' }).toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: SH, args: file }); }
+};
+const hrTpl = readSh('.kaif/_house-rules-template.md');
+const PROV_RE = /^\[OWNER\] <date and time> · <where the verbatim lives[^\n]*$/m;
+ok(PROV_RE.test(hrTpl), 's25 фикстура: у скелета одна строка происхождения-заглушка');
+const HR_PROBE = join(SH, 'HOUSE_RULES_PROBE.md');
+for (const addr of ['commit 1a2b3c4', 'interview #034, Q1', 'decision #12']) {
+  writeFileSync(HR_PROBE, hrTpl.replace(PROV_RE, `[OWNER] 2026-09-24 22:30 +03:00 · ${addr}`));
+  r = runAttr('HOUSE_RULES_PROBE.md');
+  ok(r.code === 0, `s25 заполненная копия с адресом «${addr}» — линтер авторства зелёный`, r.out.slice(-300));
+}
+writeFileSync(HR_PROBE, hrTpl.replace(PROV_RE, '[OWNER] 2026-09-24 22:30 +03:00 · I remember it from chat'));
+r = runAttr('HOUSE_RULES_PROBE.md');
+ok(r.code === 1, 's25 копия с адресом «по памяти» — линтер авторства красный', r.out.slice(-300));
+writeFileSync(HR_PROBE, hrTpl);
+r = runAttr('HOUSE_RULES_PROBE.md');
+ok(r.code === 1, 's25 незаполненная копия скелета — линтер авторства красный (заглушка не адрес)', r.out.slice(-300));
+rmSync(HR_PROBE, { force: true });
 
 if (failures) { console.error(`\n❌ s25: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s25 testrun-lint: all ${asserts} checks green`);

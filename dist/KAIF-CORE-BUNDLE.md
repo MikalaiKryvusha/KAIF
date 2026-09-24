@@ -94,7 +94,8 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.8": [
-      "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is 277 lines instead of 300: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules."
+      "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is 277 lines instead of 300: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules.",
+      "THE RULEBOOK TAKES THE RULE, NOT THE QUOTE — AND TIER 4 HAS A FILE (2.8, epic CK; origin issues #89 and #90 — a field owner asked to \"mark my instructions in your guides so this is not lost\", and the agent poured those raw chat messages into AGENT_GUIDE.md; another spent forty minutes re-deriving a device route that sat in its own `paths/` directory). (1) `AGENT_GUIDE.md` → \"Authorship of a decision\" gains a fifth rule: an owner's standing instruction enters the guide or the house-rules file as a strict rule — imperative, numbered, with its exceptions — plus ONE provenance line `[OWNER] <date> · <where the verbatim lives>` (the commit that recorded it verbatim first, the interview, the decisions log); a block of raw chat messages in the rulebook is a defect. The attribution linter accepts a commit address on the line (\"commit\" next to a hash of ≥ 7 hex digits) as the source, so that provenance line no longer reddens. (2) `/fix-vision` routes a standing working rule to the house-rules file in that form and names the notes section as the template does (\"Notes from the human\"). (3) Checklist step 2 and a new Context-router row: a task on a surface the project already touched starts from your own work — the house-rules file, `researches/`, the project's tools — cited, or \"no own work found\" written; `/fable-judge` hunts re-derived own work. (4) NEW skeleton `.kaif/_house-rules-template.md` (tier 4): `cp .kaif/_house-rules-template.md HOUSE_RULES.md` on first use; `/resume` reads `HOUSE_RULES.md` when it exists. The shipped file is only the skeleton in `.kaif/`; your `HOUSE_RULES.md` is the project's and an update leaves it byte for byte. If your project already keeps such a file under another name, keep it and point the new `/resume` bullet at it; if your `HOUSE_RULES.md` has its own layout, `/fix-vision` adds a section \"The owner's standing rules\" to it rather than reshaping the file."
     ],
     "2.7": [
       "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
@@ -278,6 +279,7 @@
     ".claude/skills/team-deployment/references/team-status-board-template.md": "framework/skills/team-deployment/references/team-status-board-template.md",
     ".claude/skills/team-deployment/SKILL.md": "framework/skills/team-deployment/SKILL.md",
     ".claude/skills/what-next/SKILL.md": "framework/skills/what-next/SKILL.md",
+    ".kaif/_house-rules-template.md": "framework/templates/_house-rules-template.md",
     ".kaif/_owner-voice-template.md": "framework/templates/_owner-voice-template.md",
     ".kaif/_testcases-template.md": "framework/templates/_testcases-template.md",
     ".kaif/_testrun-report-template.md": "framework/templates/_testrun-report-template.md",
@@ -597,8 +599,12 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    plans, bugs, ideas, researches, interviews, homeworks, reports. Their form is set by their
    directory README and skill templates; their header — by the header-meta norm below.
 4. **OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent
-   that modify or extend KAIF in this specific project. Local law — it governs here and travels
-   nowhere.
+   that modify or extend KAIF in this specific project — the owner's standing rules and the systems,
+   stands, routes and tools the agent works with here. Local law — it governs here and travels
+   nowhere. Its file is `HOUSE_RULES.md` at the project root, copied from the shipped skeleton on
+   first use — a standing rule of the owner, a route or recipe worth keeping, a project section
+   moving out of an over-budget document: `cp .kaif/_house-rules-template.md HOUSE_RULES.md`;
+   `/resume` reads it when it exists.
 5. **Project working documents.** Everything of the owner's project itself — code, assets,
    documents that are not the framework's. KAIF governs how the agent works on them, not what
    they are.
@@ -3156,7 +3162,11 @@ bundle-only skeletons of the
 same family serve the testing canon: `.kaif/_testcases-template.md` (2.3 — the case set per feature,
 `TESTING_FRAMEWORK.md` → the activities chain) and `.kaif/_testrun-report-template.md` (2.7, epic TR —
 the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD>_<work>.md`;
-`TESTING_FRAMEWORK.md` → "An executed run produces its report"). One more
+`TESTING_FRAMEWORK.md` → "An executed run produces its report"). A fourth skeleton (2.8, epic CK; origin issues
+#89 #90) gives tier 4 of the document taxonomy its file: `.kaif/_house-rules-template.md`, copied to `HOUSE_RULES.md`
+at the project root on first use — a standing rule of the owner (`/fix-vision` step 3), a route or recipe worth
+keeping, a project-subject section moving out of an over-budget guide; the copy is the project's, `/resume` reads it
+at entry, and it is not one of the fourteen key documents. One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -5754,7 +5764,8 @@ the rule form of Step 3 — the owner's verbatim words stay at their source.
 - **`GOAL.md`** — changes to the vision itself (what we want in the end, for whom).
 - **`MASTER_PLAN.md`** — changes of priorities/scope; if the shift is big, re-derive via `/revision`.
 - **A standing working rule of the owner** → the project's house-rules file (tier 4 of the document taxonomy —
-  create `HOUSE_RULES.md` at the project root if there is none yet) as a strict rule: imperative, numbered, with
+  `HOUSE_RULES.md` at the project root; none yet → `cp .kaif/_house-rules-template.md HOUSE_RULES.md`) as a strict rule in its section "The owner's standing rules" (a
+  file without that section — add it): imperative, numbered, with
   its exceptions, plus one provenance line `[OWNER] <date> · <where the verbatim lives>`. Commit the owner's
   message verbatim first (`AGENT_GUIDE.md`, checklist step 18) and cite that commit; a block of raw messages in
   the rulebook is a defect (`AGENT_GUIDE.md` → "Authorship of a decision").
@@ -6432,7 +6443,8 @@ intact and working — we only remove what KAIF added, surgically.
      the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
-   - **Content artifacts (kept in partial, removed in full):** `bugs/`, `interviews/`, `ideas/`,
+   - **Content artifacts (kept in partial, removed in full):** the house-rules file `HOUSE_RULES.md` and the voice portrait
+     `AUTHOR_STYLOMETRY.md` (if present), `bugs/`, `interviews/`, `ideas/`,
      `researches/`, `homeworks/`, `plans/`, `reports/`, etc.
    - **NEVER touched:** the user's own project files and directories.
 
@@ -8517,6 +8529,7 @@ hole exactly there; owners kept having to re-order the full pass by hand:
 - `PROJECT_STRUCTURE_EXTERNAL_MAP.md` — external map: modules, files, data flow
 - `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` — internal map: abstractions and interactions
 - `KAIF_FRAMEWORK.md` — the deployment record: which KAIF is deployed here and how
+- **If the project has one:** `HOUSE_RULES.md` — the owner's standing rules and the systems, stands, routes and tools of this project (tier 4 — read at entry, not part of the re-read core; the condition comes first, so `check` does not demand the file)
 - `EXPERIENCE.md` — recall relevant lessons (grep by the task's tags) so you don't repeat a known dead end
 
 If relevant to open questions:
@@ -16724,6 +16737,77 @@ addresses the reader can open.>
 
 <`pass` · `fail` · `blocked` · `partial` — one of the four, then the reason in one sentence. A
 `[TESTED: …]` marker that cites this run names this file.>
+``````
+
+> **FILE: `.kaif/_house-rules-template.md`** — the house-rules skeleton — tier 4 of the taxonomy; the guide's tier-4 rule and /fix-vision step 3 copy it to HOUSE_RULES.md on first use; /resume and the router read the copy
+
+``````md
+# House rules — <PROJECT NAME>
+
+> **How to use this file.** COPY it to the project root on first use —
+> `cp .kaif/_house-rules-template.md HOUSE_RULES.md` — then fill the copy and delete the sections
+> this project does not need; never fill this template in place. The owner reads this file, so the
+> copy is written in the project's working language (`.kaif/kaif.json` → `language`), headings
+> included. First use is whichever comes first: the owner gives a standing working rule
+> (`/fix-vision` step 3) · the agent records a route, a recipe or a convention it will need again ·
+> a re-read core document crosses its size budget and a project-subject section has to move out.
+>
+> **What belongs here.** Tier 4 of the document taxonomy (`AGENT_GUIDE.md`): local law that governs
+> this project and travels nowhere. `AGENT_GUIDE.md` answers HOW the agent works (the KAIF method);
+> this file answers WITH WHAT it works here — the owner's standing rules, the systems, stands,
+> devices, routes, tools and product facts of THIS project. It is outside the nine re-read core
+> documents and has no size budget; `/resume` reads it at session entry, and the context router
+> sends a task on a surface the project already touched here first.
+
+**Created:** <date> · **Owner:** <name> · **Moved here from the guide:** <section → date, or "nothing yet">
+
+## 1. The owner's standing rules
+
+Each rule is a strict rule in the agent's wording — imperative, numbered, its exceptions named — with
+ONE provenance line. The owner's verbatim words stay at their source (the commit that recorded them
+verbatim first, the interview, the decisions log); a block of raw chat messages here is a defect
+(`AGENT_GUIDE.md` → "The rulebook takes the rule, not the quote").
+
+### R1. <rule title — what to do, as a command>
+
+1. <step, imperative>
+2. <step, imperative>
+- **Exception:** <when the rule does not apply — or none>
+
+[OWNER] <date and time> · <where the verbatim lives: commit <hash> · interview #NNN, QN · decision #NN>
+
+## 2. External systems and access
+
+| System | What the agent does there | Entry point (URL, CLI, API) | Where the credentials live |
+|---|---|---|---|
+| <tracker / stage / prod / analytics> | <read · write · deploy> | <address> | <secret store or env var — NEVER the secret itself> |
+
+## 3. Stands, environments and devices
+
+| Stand / device | What it is for | How the agent reaches it | Known traps (with the lesson id) |
+|---|---|---|---|
+| <stage · prod · emulator · phone> | <purpose> | <command> | <EXP-NNNN or "none known"> |
+
+## 4. Routes, recipes and conventions — the index of own work
+
+Where the project's accumulated work lives: step files, device routes, recorded recipes, style
+measurements of the project's own texts. A task on a surface listed here starts by opening the entry
+and citing it (`AGENT_GUIDE.md` → checklist step 2).
+
+| Surface | Where the work lives | What it covers |
+|---|---|---|
+| <feature / screen / procedure> | <path> | <one line> |
+
+## 5. Tools of this project
+
+| Command | What it does | What it guards |
+|---|---|---|
+| `<command>` | <one line> | <the defect class it catches, or "—"> |
+
+## 6. Product knowledge
+
+<Domain facts the agent needs and must not re-derive: the glossary, the entities and their roles, the
+numbers that must not change. A fact the owner owns carries the owner's provenance line, like a rule.>
 ``````
 
 > **FILE: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** — interactive-contour contract page — verbatim; the shipped generator implements it, a project contour is checked against it

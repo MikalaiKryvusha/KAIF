@@ -26,7 +26,8 @@ the rule form of Step 3 — the owner's verbatim words stay at their source.
 - **`GOAL.md`** — changes to the vision itself (what we want in the end, for whom).
 - **`MASTER_PLAN.md`** — changes of priorities/scope; if the shift is big, re-derive via `/revision`.
 - **A standing working rule of the owner** → the project's house-rules file (tier 4 of the document taxonomy —
-  create `HOUSE_RULES.md` at the project root if there is none yet) as a strict rule: imperative, numbered, with
+  `HOUSE_RULES.md` at the project root; none yet → `cp .kaif/_house-rules-template.md HOUSE_RULES.md`) as a strict rule in its section "The owner's standing rules" (a
+  file without that section — add it): imperative, numbered, with
   its exceptions, plus one provenance line `[OWNER] <date> · <where the verbatim lives>`. Commit the owner's
   message verbatim first (`AGENT_GUIDE.md`, checklist step 18) and cite that commit; a block of raw messages in
   the rulebook is a defect (`AGENT_GUIDE.md` → "Authorship of a decision").
