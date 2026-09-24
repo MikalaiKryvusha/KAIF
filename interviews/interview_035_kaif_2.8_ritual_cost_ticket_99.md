@@ -100,7 +100,7 @@ NDim — Opus 5.5, окно 1M — это около 23 % памяти при в
   - Проверка. `grep -c "#99" ideas/31*.md` → 1.
 - **D)** Свой вариант — впишите.
 
-**Answer:**
+**Answer:** A) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 25 сентября 2026, 01:32 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 
