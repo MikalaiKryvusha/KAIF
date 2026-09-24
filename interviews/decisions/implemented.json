@@ -20,5 +20,15 @@
       "at": "2026-09-24T15:38:31.654Z",
       "where": "32ed37e"
     }
+  },
+  "interviews/interview_034_kaif_2.8_scope.md": {
+    "Q1": {
+      "at": "2026-09-24T16:04:42.687Z",
+      "where": "plans/117_EPIC_kaif_2.8.md"
+    },
+    "Q2": {
+      "at": "2026-09-24T16:04:42.774Z",
+      "where": "ideas/31_kaif_2.9_scope.md"
+    }
   }
 }
