@@ -445,5 +445,35 @@ ok(/node \.kaif\/tools\/kaif-attribution-lint\.mjs check`/.test(trimPart),
 ok(/kaif-attribution-lint\.mjs check <dir>/.test(trimPart),
    's16 стрижка (K17): и называет явный путь для директории вне охвата линта по умолчанию', trimPart.slice(-700) || 'trim/door headings not found');
 
+// ================================================================ (9) цена входа в чат в токенах (2.8, эпик CK, шаг CK5.9 (а))
+// Тикет #99: полевой /resume читал ≈ 230 тыс. токенов, и ни одна строка этого не говорила; интервью №035, Q2 = A — строка
+// справкой, закрытие не останавливает. Свод пересчитывает число по диску НЕЗАВИСИМО (те же две ставки — замер пробы
+// tools/sandbox/probes/ck59-token-calibration.mjs) и судит строку ядра по нему; второй случай — домашние правила известного веса.
+console.log('\n=== s16: цена входа в чат в токенах — справкой ===');
+const CORE9 = ['STATUS.md', 'AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'TESTING_FRAMEWORK.md',
+  'REQUIREMENTS_FRAMEWORK.md', 'GOAL.md', 'MASTER_PLAN.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md'].filter((d) => existsSync(join(S, d)));
+const tokensOf = (docs) => docs.reduce((t, d) => {
+  let a = 0, o = 0;
+  for (const ch of readFileSync(join(S, d), 'utf8')) { if (ch.charCodeAt(0) < 128) a++; else o++; }
+  return t + a / 2.5 + o / 1.9;
+}, 0);
+const ENTRY = /ℹ entry cost: \/resume reads (\d+) re-read core document\(s\)( \+ HOUSE_RULES\.md)? ~ (\d+)k tokens — (\d+) % of a 1M-token model window \(reference, never a stop/;
+r = run('check');
+let em = r.out.match(ENTRY);
+const want9 = tokensOf(CORE9);
+ok(r.code === 0 && Boolean(em) && Number(em[1]) === CORE9.length && !em[2] && Number(em[3]) === Math.round(want9 / 1000) &&
+   Number(em[4]) === Math.round(want9 * 100 / 1e6),
+   's16 цена входа (CK5.9): `check` печатает строку стоимости входа — число тысяч токенов и доля окна 1M равны пересчёту по диску, код 0',
+   em ? `line=${em[0]} want=${Math.round(want9 / 1000)}k` : r.out.slice(-600));
+const HR = join(S, 'HOUSE_RULES.md');
+writeFileSync(HR, '# House rules\n\n' + 'a'.repeat(25000) + '\n', 'utf8');   // ≈ 10k токенов ASCII — вес известен
+r = run('check');
+em = r.out.match(ENTRY);
+const wantH = tokensOf([...CORE9, 'HOUSE_RULES.md']);
+ok(r.code === 0 && Boolean(em) && Boolean(em[2]) && Number(em[3]) === Math.round(wantH / 1000) && Number(em[3]) >= Math.round(want9 / 1000) + 9,
+   's16 цена входа (CK5.9): с домашними правилами строка называет «+ HOUSE_RULES.md», и число выросло на их вес (≈ 10 тыс.)',
+   em ? `line=${em[0]} want=${Math.round(wantH / 1000)}k` : r.out.slice(-600));
+unlinkSync(HR);
+
 if (failures) { console.error(`\n❌ s16: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s16 doc-budgets: all ${asserts} checks green`);

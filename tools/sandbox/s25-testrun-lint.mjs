@@ -306,7 +306,11 @@ else writeFileSync(HR, '# House rules\n');
 writeFileSync(HR, readFileSync(HR, 'utf8') + '\n### R2. Close every ticket with a short comment\n\n1. Write the comment.\n\n[OWNER] 2026-09-24 22:30 +03:00 · commit 1a2b3c4\n');
 const hrBefore = readFileSync(HR);
 r = runHr(SH, 'check');
-ok(r.code === 0 && !/HOUSE_RULES/.test(r.out), 's25 копия с HOUSE_RULES.md — check зелёный и про файл проекта молчит', r.out.slice(-400));
+// С 2.8 (эпик CK, шаг CK5.9) справочная строка цены входа НАЗЫВАЕТ файл — /resume его читает; жалобой она не является.
+// Ассерт судит «ни одной жалобы на файл проекта», а строку цены — отдельно: она обязана его сосчитать.
+const hrComplaints = r.out.split(/\r?\n/).filter((l) => !l.startsWith('ℹ entry cost:')).join('\n');
+ok(r.code === 0 && !/HOUSE_RULES/.test(hrComplaints) && /ℹ entry cost:[^\n]*\+ HOUSE_RULES\.md/.test(r.out),
+   's25 копия с HOUSE_RULES.md — check зелёный, жалоб на файл проекта нет, а строка цены входа его считает', r.out.slice(-400));
 const SRC_HR = join(ROOT, 'src-hr-9.9'); mkdirSync(SRC_HR);
 cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(SRC_HR, 'KAIF-CORE-BUNDLE.md'));
 cpSync(join(DIST, 'KAIF-CORE.mjs'), join(SRC_HR, 'KAIF-CORE.mjs'));

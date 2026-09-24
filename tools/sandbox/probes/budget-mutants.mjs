@@ -158,6 +158,17 @@ const MUTANTS = [
     from: "const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';",
     to: "const MOVE_OUT_ADDRESS = 'the chronicle PROJECT_HISTORY.md · researches/ · a house-rules file';",
     expect: ['адрес выноса для документа НЕ-STATUS', 'гейт печатает строку'] },
+  // M19/M20 — the entry cost of a chat in tokens (2.8, epic CK, step CK5.9 (a); origin issue #99): a wrong window changes the
+  // share only; a line that never prints reddens both cases.
+  { name: 'M19 the entry-cost share is taken of a 200k window while the line says 1M',
+    from: 'MODEL_WINDOW_TOKENS = 1000000;',
+    to: 'MODEL_WINDOW_TOKENS = 200000;',
+    expect: ['`check` печатает строку стоимости входа'] },
+  { name: 'M20 the entry-cost line never prints',
+    from: 'if (entryCore.length) {',
+    to: 'if (false) {',
+    expect: ['`check` печатает строку стоимости входа',
+             'строка называет «+ HOUSE_RULES.md», и число выросло на их вес'] },
   // M18 — the English-skills count speaks only with `i18n: translated` (2.8, epic CK, step CK5.8, K14).
   { name: 'M18 the English-skills line prints on every deployment again (the i18n flag ignored)',
     from: 'if (english && translatedWrapper) console.error(',

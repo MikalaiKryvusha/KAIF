@@ -3228,6 +3228,28 @@ function cmdCheck() {
       : `${total} lines on disk, no deployed module cut for this file — every line counts as yours`;
     console.error(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
   }
+  // The ENTRY COST of a chat in tokens (2.8, epic CK, step CK5.9; origin issue #99 — a field /resume read about 230k tokens and
+  // nothing ever said so; the owner chose the cheap half: the line is REFERENCE, it never stops a closing). Lines are the
+  // budget's unit, tokens are what the model pays: /resume reads the nine re-read core documents, and HOUSE_RULES.md where it
+  // exists. Two named rates: ASCII at 2.5 characters per token (the model page: "1M tokens ~ 2.5M characters"); any other
+  // character at 1.9 (the ticket's own measurement on a mostly Cyrillic core document: 140,597 bytes = 40,880 tokens, 29,203
+  // ASCII + 55,246 other characters; the origin keeps the probe tools/sandbox/probes/ck59-token-calibration.mjs). One
+  // calibration point, so the line says "~"; the window is 1M tokens, and the line names it in words instead of hiding it.
+  // [TESTED: 2026-09-25 · s16 section (9): the thousands and the share equal an independent recount from disk, a house-rules file of
+  //  known weight adds its tokens; red on the 2.7 core; mutants M19/M20 red on exactly those asserts; functional run on copies of a
+  //  field deployment's nine documents: "~ 225k tokens — 23 % of a 1M-token model window" — testcases/reports/2026-09-25_ck59a-entry-cost.md]
+  const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9, MODEL_WINDOW_TOKENS = 1000000;
+  const entryCore = Object.keys(DOC_BUDGETS).filter((d) => okOnDisk(d));
+  const entryHouse = okOnDisk('HOUSE_RULES.md');
+  if (entryCore.length) {
+    let entryTokens = 0;
+    for (const d of entryHouse ? [...entryCore, 'HOUSE_RULES.md'] : entryCore) {
+      let ascii = 0, other = 0;
+      for (const ch of readFileSync(d, 'utf8')) { if (ch.charCodeAt(0) < 128) ascii++; else other++; }
+      entryTokens += ascii / ASCII_CHARS_PER_TOKEN + other / OTHER_CHARS_PER_TOKEN;
+    }
+    console.error(`ℹ entry cost: /resume reads ${entryCore.length} re-read core document(s)${entryHouse ? ' + HOUSE_RULES.md' : ''} ~ ${Math.round(entryTokens / 1000)}k tokens — ${Math.round((entryTokens * 100) / MODEL_WINDOW_TOKENS)} % of a 1M-token model window (reference, never a stop; ~ ${ASCII_CHARS_PER_TOKEN} ASCII / ${OTHER_CHARS_PER_TOKEN} other characters per token)`);
+  }
   // The re-read core ↔ the /resume ritual (2.7, epic TR; origin issue #59 + the 2.7 scope recon: a
   // field /resume opened 5 of the 9 re-read core documents and nobody said a word — the skill's
   // list and the documents on disk drift silently). The core is the budgeted nine above (ONE
