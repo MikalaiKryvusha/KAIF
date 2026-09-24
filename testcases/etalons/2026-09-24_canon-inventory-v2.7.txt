@@ -1,0 +1,773 @@
+framework/AGENT_GUIDE.md @ v2.7: obligations 334 — bullet 49 · code 2 · row 42 · sentence 151 · step 90
+  3 [sentence] § <project_name> - ai agent guide — «This file is read by the AI agent before every task.»
+  4 [sentence] § <project_name> - ai agent guide — «Keep it accurate — a fresh agent session with empty context relies entirely on this document to get to work.»
+  7 [sentence] § <project_name> - ai agent guide — «<!-- KAIF:CREED:BEGIN --> <!-- On deploy: fill <AUTHOR>, render the creed in the owner's language; the owner may reword it — it is the owner's text. -»
+  16 [sentence] § 🙏 the prayer before work — «🔴 **AGENT, SAY IT IN THE CHAT BEFORE STARTING ANY WORK** — in full, together with the creed above: on session entry (`/resume`), before any non-trivi»
+  18 [sentence] § 🙏 the prayer before work — «Do not skip items and do not paraphrase.»
+  19 [sentence] § 🙏 the prayer before work — «Cadence is the owner's setting — one box is ticked here: ☑ full text before every non-trivial task and on every refresh (default) · ☐ full text once p»
+  23 [step] § 🙏 the prayer before work — «**SIMPLICITY ABOVE ALL.** If it is taking long, I overcomplicated it — the task is not hard. Stuck → re-understand the task, don't pile on complexity.»
+  25 [step] § 🙏 the prayer before work — «**OCCAM.** I do not multiply entities. Of two solutions I take the one with fewer moving parts.»
+  26 [step] § 🙏 the prayer before work — «**PARETO.** I look for the 20 % that gives 80 % of the value. "Done and working" beats "perfect and late."»
+  28 [step] § 🙏 the prayer before work — «**CODE BEFORE COGNITION.** Whatever a script can do, a script does. The model keeps the judgment.»
+  29 [step] § 🙏 the prayer before work — «**OBSERVATION OVER GUESSING.** I don't recall — I look. A run, a measurement, a source instead of "it should work."»
+  31 [step] § 🙏 the prayer before work — «**THREE DOORS.** I close a gap with a source or with the owner's answer. Inventing is forbidden.»
+  32 [step] § 🙏 the prayer before work — «**HORSES, NOT ZEBRAS.** I check the simplest, most common explanation first.»
+  33 [step] § 🙏 the prayer before work — «**MURPHY.** I name the risks aloud and tier them. A named risk is half managed.»
+  34 [step] § 🙏 the prayer before work — «**BEST PRACTICES.** Almost everything was solved before me. I find the proven path before inventing my own.»
+  36 [step] § 🙏 the prayer before work — «**DRY.** One fact lives in one place. A pair is better REMOVED than watched.»
+  37 [step] § 🙏 the prayer before work — «**LEARN ONCE.** I check the experience log before the work and append the lesson after. I never walk into the same dead end twice.»
+  39 [step] § 🙏 the prayer before work — «**EISENHOWER.** Important and urgent — now; important, not urgent — into the plan; the rest — down.»
+  40 [step] § 🙏 the prayer before work — «**HANLON'S RAZOR.** Not malice — oversight. I debug the state of the world, not motives.»
+  41 [step] § 🙏 the prayer before work — «**DESCARTES' SQUARE.** At a hard fork I answer four questions, not two.»
+  42 [step] § 🙏 the prayer before work — «**SECOND ORDER.** I think three-five moves ahead, not about the win right now.»
+  43 [step] § 🙏 the prayer before work — «**KARMA.** I leave the repository better than I took it. No corner-cutting at the expense of the owner or the next session.»
+  46 [sentence] § 🙏 the prayer before work — «⚖️ **AND ONE BOUNDARY, SO THE PRAYER NEVER TURNS AGAINST THE OWNER:** Occam and Pareto apply INSIDE the machinery.»
+  53 [sentence] § 🙏 the prayer before work — «Everything should be simple (KISS + Occam).»
+  53 [sentence] § 🙏 the prayer before work — «Stuck → re-understand the task, find the built-in simple path, do NOT escalate complexity.»
+  56 [sentence] § 🙏 the prayer before work — «🤖 **AUTONOMOUS MODE.** When the human has stepped away / granted autonomy and there is no active interactive task, and `STATUS.md` has an open autono»
+  60 [sentence] § 🙏 the prayer before work — «Stop only on the skill's stop conditions.»
+  61 [sentence] § 🙏 the prayer before work — «Do not enter a loop if the human just gave a specific interactive task.»
+  67 [sentence] § 🙏 the prayer before work — «WHEN — and only when — the named time arrives, START `/end-chat-soft`: finish the current work to a natural cut, then run the full ceremonies unhurrie»
+  70 [sentence] § 🙏 the prayer before work — «Every loop skill defers to this rule.»
+  77 [step] § before every task - checklist — «Read STATUS.md # current state: what's done, where we are, what's next»
+  78 [step] § before every task - checklist — «Recall experience # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience)»
+  79 [step] § before every task - checklist — «git status # what changed, what's uncommitted»
+  80 [step] § before every task - checklist — «git log --oneline -5 # where we are in history»
+  81 [step] § before every task - checklist — «Read MEMORY.md (if present) # user profile, key decisions»
+  82 [step] § before every task - checklist — «Load ONLY the relevant slice # use the Context router below — read the required minimum + task-type docs, not everything»
+  83 [step] § before every task - checklist — «Execute by the fable loop # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before »
+  84 [step] § before every task - checklist — «Read the relevant plan # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the an»
+  85 [step] § before every task - checklist — «Recon before code (external truth) # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FI»
+  86 [step] § before every task - checklist — «Check the map & blast radius # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change»
+  87 [step] § before every task - checklist — «Run the build (if touching code) # <BUILD_COMMAND>»
+  88 [step] § before every task - checklist — «Use the test harness # <TEST_HARNESS> — drive/observe the software without a human»
+  89 [step] § before every task - checklist — «Comment the code # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-obs»
+  90 [step] § before every task - checklist — «Reflect on bugs in bugs/ # one md per bug; follow BUG_FIXING_FRAMEWORK.md»
+  91 [step] § before every task - checklist — «Capture experience # after a meaningful success/failure, append a lesson to EXPERIENCE.md (skill: /experience)»
+  92 [step] § before every task - checklist — «Periodically re-read the KEY canon documents — the re-read core (Document taxonomy below; triggers & witness — Context refresh below):»
+  94 [bullet] § before every task - checklist — «PHILOSOPHY.md ← the simplicity principle; if stuck, go here first»
+  95 [bullet] § before every task - checklist — «AGENT_GUIDE.md»
+  96 [bullet] § before every task - checklist — «STATUS.md»
+  97 [bullet] § before every task - checklist — «GOAL.md»
+  98 [bullet] § before every task - checklist — «MASTER_PLAN.md»
+  99 [bullet] § before every task - checklist — «REQUIREMENTS_FRAMEWORK.md»
+  100 [bullet] § before every task - checklist — «TESTING_FRAMEWORK.md»
+  101 [bullet] § before every task - checklist — «BUG_FIXING_FRAMEWORK.md»
+  102 [bullet] § before every task - checklist — «PROJECT_STRUCTURE_EXTERNAL_MAP.md Edit them when it would make future autonomous work more effective. The agent operates across sessions that lose con»
+  105 [step] § before every task - checklist — «Narrate in the chat, at least a little, in natural language — what you're doing right now — so the human can glance over and follow along.»
+  107 [step] § before every task - checklist — «Documents from the human (ideas, bugs, features): FIRST commit the original verbatim (git add + commit) — only then, in a following commit, fix typos »
+  112 [step] § before every task - checklist — «Writing into the owner's artifact? # text the human signs or reads as their own (docs, paper, site copy, a sheet, a UI string) → WRITE BY the portrait»
+  122 [sentence] § before every task - checklist — «Update it after every significant task.»
+  126 [sentence] § context router (progressive loading) - read only the slice you need — «Don't read every document "just in case" — that fills the context you're trying to protect.»
+  126 [sentence] § context router (progressive loading) - read only the slice you need — «Read the **required minimum** always, then only the documents for the task type; fetch more on demand.»
+  129 [row] § context router (progressive loading) - read only the slice you need — «| Task type | Read (minimum on top of the required minimum) |»
+  131 [row] § context router (progressive loading) - read only the slice you need — «| **Required minimum (always)** | `STATUS.md` · `PHILOSOPHY.md` (the principle set) · this router · `EXPERIENCE.md` (grep by tag) |»
+  132 [row] § context router (progressive loading) - read only the slice you need — «| Bug | `BUG_FIXING_FRAMEWORK.md` · `bugs/<this>` · the map (blast radius) |»
+  133 [row] § context router (progressive loading) - read only the slice you need — «| Testing / verifying anything | `TESTING_FRAMEWORK.md` (the 7 principles · `[NOT-TESTED]`/`[TESTED]` markers) · the sphere's verification sections |»
+  134 [row] § context router (progressive loading) - read only the slice you need — «| Writing requirements / acceptance criteria / a goal vector | `REQUIREMENTS_FRAMEWORK.md` (the ten criteria · stop-word dictionary · fit criterion) |»
+  135 [row] § context router (progressive loading) - read only the slice you need — «| Feature / idea | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>` |»
+  136 [row] § context router (progressive loading) - read only the slice you need — «| Refactor / edit | `AGENT_GUIDE.md` · the two maps (blast radius) |»
+  137 [row] § context router (progressive loading) - read only the slice you need — «| Planning | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |»
+  138 [row] § context router (progressive loading) - read only the slice you need — «| External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (c»
+  139 [row] § context router (progressive loading) - read only the slice you need — «| Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the proje»
+  142 [sentence] § context router (progressive loading) - read only the slice you need — «The required minimum is **not** subject to laziness: `PHILOSOPHY.md` always applies.»
+  146 [sentence] § document taxonomy - the five tiers — «Every document in the project sits in exactly one tier; the tier tells the agent what it owes the document — re-read it, know it, follow its regulatio»
+  149 [step] § document taxonomy - the five tiers — «**KEY canon documents — the re-read core.** What the agent re-reads regularly and keeps fresh in context (checklist step 16; `/resume` reads the full »
+  167 [step] § document taxonomy - the five tiers — «**EXTENDED canon documents.** The rest of the framework's canon — the internal map, the chronicle, the reference, the experience journal, the sphere a»
+  171 [step] § document taxonomy - the five tiers — «**WORKING canon documents.** The dynamic documents born under the framework's regulations — plans, bugs, ideas, researches, interviews, homeworks, rep»
+  174 [step] § document taxonomy - the five tiers — «**OTHER KAIF documents.** The "house rules": local agreements between this owner and the agent that modify or extend KAIF in this specific project. Lo»
+  177 [step] § document taxonomy - the five tiers — «**Project working documents.** Everything of the owner's project itself — code, assets, documents that are not the framework's. KAIF governs how the a»
+  187 [step] § context refresh - the re-read rule and its witness — «**The hour:** more than 60 minutes in a live session since the last refresh — refresh at least once per hour.»
+  189 [step] § context refresh - the re-read rule and its witness — «**A heavy task:** before starting a task that passes the heaviness test (Planning discipline below) in the same long-lived chat.»
+  191 [step] § context refresh - the re-read rule and its witness — «**After compaction / pause:** after a context compaction, a return from `/pause`, or a long idle gap.»
+  193 [step] § context refresh - the re-read rule and its witness — «**Ritual points:** `/resume` (the full canon pass), `/refresh-context`, and every iteration of the long loops (`/autoloop` · `/dayloop` · `/nightloop`»
+  197 [sentence] § context refresh - the re-read rule and its witness — «The witness has two parts, both mandatory:»
+  199 [bullet] § context refresh - the re-read rule and its witness — «**The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was re-read>], "trigger": "hour|heavy-task|compaction|ritual:»
+  204 [bullet] § context refresh - the re-read rule and its witness — «**The quote-acceptance** — updating the marker is legal ONLY together with quoting in the chat one concrete line from the re-read that is relevant to »
+  209 [sentence] § context refresh - the re-read rule and its witness — «A marker without the quote — or a claimed refresh with a stale marker — is fraud of the false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-w»
+  212 [sentence] § context refresh - the re-read rule and its witness — «On agent systems with lifecycle hooks, the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it mechanically: an ord»
+  217 [sentence] § context refresh - the re-read rule and its witness — «Activation is an explicit owner opt-in; a deployment without hooks never reddens.»
+  222 [sentence] § environment dossier - the agent knows its machine from its own notes — «Those are facts about a machine, and facts are PROBED, never recalled (`PHILOSOPHY.md` → observation instead of guessing).»
+  223 [sentence] § environment dossier - the agent knows its machine from its own notes — «The dossier is the section below: the agent fills it by running the probes, and every future session reads instead of rediscovering — or stepping on w»
+  227 [sentence] § environment dossier - the agent knows its machine from its own notes — «**How to collect** (the procedure lives in `/refresh-context`; run it at deployment and whenever the dossier goes stale).»
+  228 [sentence] § environment dossier - the agent knows its machine from its own notes — «Probe six axes, and probe them **in every shell available separately** — different shells are different worlds, and that difference is exactly what th»
+  232 [step] § environment dossier - the agent knows its machine from its own notes — «**OS / hardware** — OS version, CPU cores, RAM.»
+  233 [step] § environment dossier - the agent knows its machine from its own notes — «**Shells and encodings** — which shells exist, console codepage, the default ANSI encoding a redirect writes, each shell's locale.»
+  235 [step] § environment dossier - the agent knows its machine from its own notes — «**Toolchain** — language runtimes, package/build tools, VCS and their versions; and WHAT `tar` / `curl` / `find` resolve to in each shell (a system bi»
+  238 [step] § environment dossier - the agent knows its machine from its own notes — «**VCS policies** — line-ending policy, credential helper.»
+  239 [step] § environment dossier - the agent knows its machine from its own notes — «**Package managers** — what is available to install with.»
+  240 [step] § environment dossier - the agent knows its machine from its own notes — «**Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never copies of them.»
+  246 [sentence] § environment dossier - the agent knows its machine from its own notes — «A fact never probed is written `— not probed yet —`: a missing fact is honest, an invented one is a defect (`PHILOSOPHY.md` → the three doors).»
+  249 [sentence] § environment dossier - the agent knows its machine from its own notes — «**Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step (re-run the probes in column 3 and rewrite the values a»
+  253 [row] § environment dossier - the agent knows its machine from its own notes — «| Fact | Value | Probe |»
+  255 [row] § environment dossier - the agent knows its machine from its own notes — «| OS | `— not probed yet —` | (the OS version command of this platform) |»
+  256 [row] § environment dossier - the agent knows its machine from its own notes — «| CPU / RAM | `— not probed yet —` | |»
+  257 [row] § environment dossier - the agent knows its machine from its own notes — «| Shells available | `— not probed yet —` | |»
+  258 [row] § environment dossier - the agent knows its machine from its own notes — «| Console / ANSI encoding | `— not probed yet —` | |»
+  259 [row] § environment dossier - the agent knows its machine from its own notes — «| Locale per shell | `— not probed yet —` | |»
+  260 [row] § environment dossier - the agent knows its machine from its own notes — «| Runtimes and build tools | `— not probed yet —` | |»
+  261 [row] § environment dossier - the agent knows its machine from its own notes — «| `tar` / `curl` / `find` per shell | `— not probed yet —` | |»
+  262 [row] § environment dossier - the agent knows its machine from its own notes — «| VCS line-ending policy | `— not probed yet —` | |»
+  263 [row] § environment dossier - the agent knows its machine from its own notes — «| Package manager | `— not probed yet —` | |»
+  264 [row] § environment dossier - the agent knows its machine from its own notes — «| Quirks paid for by incidents | `— not probed yet —` | (links to `EXPERIENCE.md` ids) |»
+  268 [sentence] § environment dossier - the agent knows its machine from its own notes — «The dossier links to lessons by id and never copies their text; a behavioural rule discovered while probing goes to hygiene or `EXPERIENCE.md`, and on»
+  274 [sentence] § document header meta - the first screen answers "what is this" — «A future session must understand any knowledge-directory document without reading its body.»
+  274 [sentence] § document header meta - the first screen answers "what is this" — «Every WORKING canon document in `plans/`, `ideas/`, `researches/`, `homeworks/` opens with:»
+  277 [bullet] § document header meta - the first screen answers "what is this" — «**Line 1 — H1:** `# <Type> NN — <one-line essence>`.»
+  278 [bullet] § document header meta - the first screen answers "what is this" — «**Right after the H1 — a blockquote header** with fixed, lintable labels: **Created:** ISO date (plus by whom / on whose word, when it is not the proj»
+  286 [sentence] § document header meta - the first screen answers "what is this" — «`bugs/` and `interviews/` keep their own already-canonical header dialects (the `/report-bug` template header; `Topic:`/`Status:` read by the question»
+  289 [sentence] § document header meta - the first screen answers "what is this" — «Each field is either lintable or it is not in the schema; a header lint consults — it never blocks starting work.»
+  300 [sentence] § contours - the project's large logical modules — «Name contours explicitly and watch their edges: a contour whose boundary blurs is either reformulated or recorded as conscious debt with a backlog add»
+  306 [sentence] § recon artifacts - when the task has an external truth — «Three artifact types live in `researches/`, each replacing a specific kind of invention with observation (a session that "remembers" a domain invents »
+  309 [bullet] § recon artifacts - when the task has an external truth — «**Recon doc** (checklist step 9) — *describes* how the external truth actually works, read from the live source (old system's code, the running prod, »
+  315 [bullet] § recon artifacts - when the task has an external truth — «**Canon map** — for any domain with facts (a game world, a product, a brand, an API): a table of entities → their roles → mappings, **approved by the »
+  319 [bullet] § recon artifacts - when the task has an external truth — «**Parity inventory** — where a reference exists (an old system, a competitor, a brand book): a **countable** checklist, one row per element — `element»
+  325 [sentence] § recon artifacts - when the task has an external truth — «Adjacent, but NOT a fourth type: the **owner's voice portrait** — `AUTHOR_STYLOMETRY.md`, taken by `/owner-voice`.»
+  333 [sentence] § task execution discipline - the fable loop — «Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify the ask → define done → gather evidence → dec»
+  343 [sentence] § task execution discipline - the fable loop — «Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside the autonomous cycles, per backlog item.»
+  344 [sentence] § task execution discipline - the fable loop — «Whenever work is claimed complete (yours or another agent's), run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and »
+  346 [sentence] § task execution discipline - the fable loop — «**KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:** verification is not only *observed*, it is *prod»
+  347 [sentence] § task execution discipline - the fable loop — «New behaviour ships together with the artifact that checks it — test suite, checklist, fixture, guard — planned in the SAME step, never "later" (`TEST»
+  355 [sentence] § task execution discipline - the fable loop — «At a fork the forced artifact is one line at the decision point — `FORK: options <A | B | C> · price of error <what breaks if wrong> · consulted <doma»
+  359 [sentence] § task execution discipline - the fable loop — «`/fable-judge` hunts a fork decided without its `FORK:` line or with `consulted <own reasoning>` (the fork-without-recon hunt), an autonomous loop clo»
+  366 [sentence] § task execution discipline - the fable loop — «A check on the agent's clean stand is not a check of the owner's world, where everything is accumulated; before the word "done" about anything already»
+  374 [sentence] § task execution discipline - the fable loop — «**KAIF adds a fourth obligation — at step 4 (act) and step 5 (verify), for TEXT the owner reads as his own: THE TEXT IS WRITTEN BY THE OWNER'S PORTRAI»
+  381 [sentence] § task execution discipline - the fable loop — «Three steps, in this order, and the report names each:»
+  382 [step] § task execution discipline - the fable loop — «**Write BY the portrait — with it in your working context.** Before the first word, `node .kaif/tools/kaif-voice-lint.mjs load` prints `AUTHOR_STYLOME»
+  390 [step] § task execution discipline - the fable loop — «**Check INDEPENDENTLY by the same portrait.** The machine minute — `node .kaif/tools/kaif-voice-lint.mjs check <file…>` (the §8 table; no portrait or »
+  395 [step] § task execution discipline - the fable loop — «**Fix — only then it is written.** Every hit is rewritten by the portrait's hint or answered in its exception column (the owner's canon: his word or a»
+  398 [sentence] § task execution discipline - the fable loop — «The command judges the explicit patterns only; likeness stays the owner's verdict (the taste class). <!-- attribution-ok: names who judges likeness, n»
+  402 [sentence] § task execution discipline - the fable loop — «**KAIF adds a fifth obligation — at step 7 (report): A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT** (origin issue #63 — the owner's word in t»
+  405 [sentence] § task execution discipline - the fable loop — «The canon demands observation for tests and demanded nothing for statements in a report, so an agent could verify the proxy it can reach cheaply and s»
+  407 [sentence] § task execution discipline - the fable loop — «Every statement about the state of the world names WHAT observed it; when a proxy was observed instead of the thing, the proxy is said aloud:»
+  411 [row] § task execution discipline - the fable loop — «| Verified | Said today | Say instead |»
+  413 [row] § task execution discipline - the fable loop — «| the server answers 200 | "the page is open for you" | "the server answers 200; whether a window opened on your screen I did not check — do you see i»
+  414 [row] § task execution discipline - the fable loop — «| the deploy returned 0 | "the feature works in production" | "deploy 0, smoke 24/24; behaviour for real people — not checked" |»
+  415 [row] § task execution discipline - the fable loop — «| the file was written, the signal sent | "delivered to the owner" | "written and signalled; delivery is confirmed only by your word" |»
+  416 [row] § task execution discipline - the fable loop — «| the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |»
+  418 [sentence] § task execution discipline - the fable loop — «The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds; until then the only legal form is "I did X;»
+  419 [sentence] § task execution discipline - the fable loop — «The shipped contour prints this boundary itself at every window it raises (`Window: … — the launcher returned 0; whether a window is on the owner's sc»
+  421 [sentence] § task execution discipline - the fable loop — «`/fable-judge` hunts a claim wider than the run that backs it (the claim-wider-than-observation hunt).»
+  435 [step] § task execution discipline - the fable loop — «**Stop the current task.** The truth arrives in the middle of something else, and "right after this task" is exactly how the falsehood outlives the se»
+  437 [step] § task execution discipline - the fable loop — «**Enumerate every place the statement was published or recorded.** `git grep -n "<the phrase>"` for this repository; the outward channels by the comma»
+  441 [step] § task execution discipline - the fable loop — «**Correct or retract in EACH place** — an edit where the artifact is ours; a `correction: …` comment where the channel only appends; a deletion where »
+  445 [step] § task execution discipline - the fable loop — «**Read it back.** Open the corrected place and read what stands there now — an edit unread is a correction claimed, not made.»
+  447 [step] § task execution discipline - the fable loop — «**Name it in the reply to the owner** — `corrected: <where>`, one line per place; the closing ritual carries the same line (`Standing falsehood: none »
+  452 [sentence] § task execution discipline - the fable loop — «The boundary: a draft marked as a hypothesis is not one (it claimed nothing), and neither is an append-only journal entry, where a correction IS a new»
+  454 [sentence] § task execution discipline - the fable loop — «`/fable-judge` hunts a standing falsehood; `/end-chat-soft` and `/end-chat-force` ask about it by name at the close.»
+  477 [bullet] § planning discipline - the task ladder (/plan-task · /plan-epic) — «**Ordinary → `/plan-task`:** ONE operational plan — goal, done-criteria, steps with checkboxes, verification-by-observation, risks. Small enough? The »
+  480 [bullet] § planning discipline - the task ladder (/plan-task · /plan-epic) — «**Heavy → `/plan-epic`** — the full ladder, each rung an artifact:»
+  481 [step] § planning discipline - the task ladder (/plan-task · /plan-epic) — «**Research** — industry sweep (web) + local recon + the project's requirements, synthesized into a research doc in `researches/`. No code, no meta-pla»
+  483 [step] § planning discipline - the task ladder (/plan-task · /plan-epic) — «**Meta-plan** — one epic plan in `plans/`: phases, order, gates, acceptance criteria; vision-level forks go to `/interview` (work on unblocked phases »
+  485 [step] § planning discipline - the task ladder (/plan-task · /plan-epic) — «**Operational plans per phase** — R&D · testing · mock-ups · development · debugging · acceptance. Detail ONLY the next phase; the plan for phase N+1 »
+  488 [step] § planning discipline - the task ladder (/plan-task · /plan-epic) — «**Trace** — every operational step cites its meta-plan anchor line (the citing rule of checklist step 8); a step you cannot anchor is scope drift caug»
+  499 [sentence] § languages - routed by audience, never by directory — «Only the agent reads it → **English**, the language models read most reliably.»
+  505 [row] § languages - routed by audience, never by directory — «| The owner reads it → owner's language | Only the agent reads it → English |»
+  507 [row] § languages - routed by audience, never by directory — «| `GOAL.md` · `MASTER_PLAN.md` · `STATUS.md` · `KAIF_FRAMEWORK.md` | this guide · `PHILOSOPHY.md` · `BUG_FIXING_FRAMEWORK.md` · `TESTING_FRAMEWORK.md`»
+  508 [row] § languages - routed by audience, never by directory — «| epic meta-plans (`plans/NN_EPIC_*`) — the guide itself says the owner sees the whole shape there | operational plans' executor steps · working notes»
+  509 [row] § languages - routed by audience, never by directory — «| everything in `interviews/` and `homeworks/` — the owner answers inside the document | `researches/` (recon detail) · `EXPERIENCE.md` · the maps · t»
+  510 [row] § languages - routed by audience, never by directory — «| directory READMEs · `README.md` · release notes · every chat report to the owner | |»
+  514 [bullet] § languages - routed by audience, never by directory — «**Promotion rewrites.** A document the owner STARTS reading changes language — the audience decides, and the audience changed.»
+  516 [bullet] § languages - routed by audience, never by directory — «**Recon and executor detail stay English.** The owner meets their conclusions through the meta-plan, the interviews and the chat reports, which QUOTE »
+  527 [sentence] § languages - routed by audience, never by directory — «The Russian aliases of `/end-chat-soft` already said *pass the relay*, while the canon those aliases trigger said *baton* — the guide was arguing with»
+  532 [step] § languages - routed by audience, never by directory — «**Grep that skill's aliases for it** (language pack → `skill-triggers.json`) — an alias that names the thing IS the canonical translation; never coin »
+  534 [step] § languages - routed by audience, never by directory — «**Prefer the industry's word to a private one** — the payload speaks to strangers, and a term they can look up costs the owner no explanation.»
+  536 [step] § languages - routed by audience, never by directory — «**Read the translation aloud once.** A word that names a foodstuff, a body part or a joke in the owner's language is a defect, not a flavour — the own»
+  544 [sentence] § experience log - experience.md — «Skill: `/experience`.»
+  546 [sentence] § experience log - experience.md — «Living reference — never DONE-tagged.»
+  552 [row] § project identity (canon - use these, don't invent) — «| Field | Value |»
+  554 [row] § project identity (canon - use these, don't invent) — «| **Name / brand** | `<PROJECT_NAME>` |»
+  555 [row] § project identity (canon - use these, don't invent) — «| **Short name** | `<SHORT_NAME>` |»
+  556 [row] § project identity (canon - use these, don't invent) — «| **GitHub repository** | `<REPO_URL>` |»
+  557 [row] § project identity (canon - use these, don't invent) — «| **Local project folder** | `<LOCAL_PATH>` |»
+  558 [row] § project identity (canon - use these, don't invent) — «| **Author / owner** | `<AUTHOR>` |»
+  559 [row] § project identity (canon - use these, don't invent) — «| **License** | `<LICENSE>` |»
+  561 [sentence] § project identity (canon - use these, don't invent) — «Keep one canonical spelling for names/paths/URLs and use it everywhere.»
+  568 [sentence] § goal of the project — «Keep it short and concrete.>`»
+  575 [sentence] § architecture - the map — «Keep this in sync with PROJECT_STRUCTURE_EXTERNAL_MAP.md (the detailed map).»
+  583 [sentence] § architecture - the map — «**RULE:** `<state the key architectural invariant, e.g. "feature modules don't depend on each other">`.»
+  592 [code] § build — «<BUILD_COMMAND>»
+  595 [sentence] § build — «`<Note any environment gotchas: required toolchain version, env vars (e.g. JAVA_HOME), how to check for errors only, how to do a headless vs. interact»
+  604 [sentence] § test harness (how the agent observes & drives the software) — «Always prefer deterministic reproduction and objective verification over eyeballing.»
+  608 [row] § test harness (how the agent observes & drives the software) — «| Command | What it does |»
+  610 [row] § test harness (how the agent observes & drives the software) — «| `<cmd>` | `<...>` |»
+  618 [sentence] § git workflow — «A simple, effective default — used by this framework's own project — is: work ONLY in `main`, no feature branches; commit incrementally and often; to »
+  624 [sentence] § git workflow — «Everything beyond it — releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires the owner's quoted words (»
+  627 [sentence] § git workflow — «**One named carve-out, stated HERE because this is the paragraph read before every task** (origin issue #37: two TOP tickets sat "Delivered upstream: »
+  634 [sentence] § git workflow — «**Non-negotiable git hygiene (each rule exists because its violation burned a real project):**»
+  636 [bullet] § git workflow — «**`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you did not intend to change — STOP and explain it fir»
+  644 [bullet] § git workflow — «**Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY after its `.gitignore` line exists. A secret caugh»
+  647 [bullet] § git workflow — «**The owner's originals are inviolable.** A document from the owner is committed verbatim BEFORE any edit (checklist step 18) — never "improve" an ori»
+  655 [sentence] § commits — «A test edit without it is fraud by default (`/fable-judge` hunts exactly this — the quiet fitting of tests to new behavior is the most documented agen»
+  657 [sentence] § commits — «If yes — rebuild the fixtures so each test guards what it claims to guard, and say so in the commit.»
+  660 [sentence] § commits — «End every commit message with the co-author trailer:»
+  663 [code] § commits — «Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>»
+  671 [sentence] § document & text hygiene (field-paid rules) — «**Each document answers its own question — and takes its shape from its own kin.** README: *"what is this and how do I use it"* (the product, present »
+  676 [sentence] § document & text hygiene (field-paid rules) — «`PROJECT_HISTORY.md`: *"the closed past"* — the append-only chronicle: closed sessions/phases/releases MOVE there verbatim (the `/end-chat-soft` bonsa»
+  679 [sentence] § document & text hygiene (field-paid rules) — «Updating the README — draw on the current README and the owner's other repo storefronts (one storefront handwriting, not the agent's); updating the no»
+  685 [sentence] § the form of an obligation - a command, a step, or a checkbox — «Field measurement (origin issue #22): two rules of equal canonical weight sat in the same context — the one that had a command was honoured unprompted»
+  692 [sentence] § the form of an obligation - a command, a step, or a checkbox — «Therefore every obligation in a canon document carries one of three executable forms:»
+  694 [step] § the form of an obligation - a command, a step, or a checkbox — «**A command** — a runnable line the agent copies and runs;»
+  695 [step] § the form of an obligation - a command, a step, or a checkbox — «**A step** — a numbered plan or checklist entry with a verifiable exit condition;»
+  696 [step] § the form of an obligation - a command, a step, or a checkbox — «**A checkbox** — a box a ritual ticks.»
+  698 [sentence] § the form of an obligation - a command, a step, or a checkbox — «Prose stays as the rationale UNDER the carrier: it explains WHY, it never carries the obligation alone.»
+  699 [sentence] § the form of an obligation - a command, a step, or a checkbox — «Two corollaries: a rule that produces an ARTIFACT names the command that produces it — if no command exists, the rule is incomplete, so ship the comma»
+  706 [sentence] § a leading skill word is an order - the first word of the owner's message — «The owner opens a chat with the bare word `resume` and writes the task below it; a session that reads the word as a TOPIC starts the task and skips th»
+  709 [sentence] § a leading skill word is an order - the first word of the owner's message — «The class: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never mid-sentence" (`/kaif-go`) points the other way; nothing»
+  713 [step] § a leading skill word is an order - the first word of the owner's message — «**The first word of the owner's message is `resume` (`resume`, `/resume`, its Russian shorthand) → run `/resume` FIRST, in full, then read the rest as»
+  718 [step] § a leading skill word is an order - the first word of the owner's message — «**The same word mid-sentence stays prose** ("keep reading resume.log") — position decides. The boundary is deliberate: ANY first word from the family »
+  721 [step] § a leading skill word is an order - the first word of the owner's message — «**The mechanical half — `.kaif/hooks/prompt-resume-word.mjs`** (optional refresh-hooks module, wiring in its README) reads the first word of every pro»
+  734 [step] § the storefront - text a stranger reads — «**A translated half is written FROM THE MEANING, never from the draft.** Having written a paragraph in the second language, read every sentence aloud:»
+  739 [step] § the storefront - text a stranger reads — «**An instruction addresses the reader; it does not describe the universe.** "Drop", "Tell", "Approve", "Fill in" — imperative. Impersonal "the file is»
+  746 [step] § the storefront - text a stranger reads — «**No text ABOUT THE DOCUMENT ITSELF.** "Each skill has a row of its own in Table 3", "the manual counts 14 documents", "this document is the user manu»
+  750 [step] § the storefront - text a stranger reads — «**A number stands without excuses.** Provenance of a number lives in the working document; the storefront carries the number. "(measured in epic 1.5 a»
+  756 [step] § the storefront - text a stranger reads — «**Direct statement: no hint of a second level, no denial next to a number.** "In reality", "as a matter of fact", "strictly speaking" tell the reader »
+  760 [step] § the storefront - text a stranger reads — «**An internal word expands into a human name.** "Calendar" → "Time spent on the version", "the pair" → "the human + agent tandem", "Tokens" → "Tokens »
+  764 [step] § the storefront - text a stranger reads — «**One quantity, one row.** Metrics glued into one cell save space and cost readability; a table is allowed to grow threefold.»
+  766 [step] § the storefront - text a stranger reads — «**An estimate stands on a NAMED rate.** Every estimate constant carries an external source in the comment next to it, and the range is never wider tha»
+  769 [step] § the storefront - text a stranger reads — «**Private names do not ship.** Names of the owner's projects, clients and internal systems are replaced by a pseudonym that preserves the COUNT of ind»
+  772 [step] § the storefront - text a stranger reads — «**Checking the SOURCE is not checking the PUBLICATION.** Rendering rules belong to the foreign medium: a GitHub release body preserves line breaks, a »
+  777 [sentence] § the storefront - text a stranger reads — «**TEXT TRAVELS THROUGH FILES, NEVER THROUGH COMMAND-LINE ARGUMENTS.** Feeding a tool Cyrillic (or any non-ASCII), curly quotes, emoji, multi-line cont»
+  778 [sentence] § the storefront - text a stranger reads — «Write a UTF-8 file and pass the PATH.»
+  779 [sentence] § the storefront - text a stranger reads — «One class, four unlike faces — recognize it BY SYMPTOM, they hit every Windows project (and face 3 reproduces in JS/JSON/YAML anywhere):»
+  783 [step] § the storefront - text a stranger reads — «`python -c` + non-ASCII → `SyntaxError: (unicode error)` — or WORSE, silent mojibake written to the file (the console encoding corrupts the argument b»
+  785 [step] § the storefront - text a stranger reads — «backticks inside double quotes → the shell's command substitution eats chunks of text, prints "ok", and the document gets HOLES — no error at all; cau»
+  787 [step] § the storefront - text a stranger reads — «Windows paths inside strings → `truncated \uXXXX escape` (`\w`, `\u` read as escapes);»
+  788 [step] § the storefront - text a stranger reads — «different shells are different worlds: GNU tar takes `D:\…` for a remote host while bsdtar doesn't; a Git-Bash `/tmp` file is invisible to Windows Pyt»
+  801 [sentence] § the storefront - text a stranger reads — «The cost is asymmetric: the tool succeeds, the exit code is 0, the files are intact — the only thing corrupted is the output a HUMAN reads, so the age»
+  804 [sentence] § the storefront - text a stranger reads — «Keep argv of throwaway scripts ASCII-only; when the output must carry non-ASCII, print it from the body of a script FILE.»
+  811 [sentence] § the storefront - text a stranger reads — «Keep a light registry — a table, one row per pair: `truth → mirror(s) → the one-line check command`.»
+  812 [sentence] § the storefront - text a stranger reads — «`/end-chat-soft` and `/release` run the registry's commands and stop on drift; any new "X must match Y" enters the registry the day it is born.»
+  814 [sentence] § the storefront - text a stranger reads — «A mirrored/generated surface is edited at its SOURCE and rebuilt — never patched in place (the patch dies on the next rebuild, and the pair drifts aga»
+  816 [sentence] § the storefront - text a stranger reads — «Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.»
+  821 [sentence] § the storefront - text a stranger reads — «So every stamp of a MOMENT carries both, in the owner's local time:»
+  824 [bullet] § the storefront - text a stranger reads — «**Prose:** `YYYY-MM-DD HH:MM ±HH:MM` (`2026-08-08 07:13 +03:00`). **Machine receipts:** the same moment as full local ISO 8601 (`2026-08-08T07:13:00+0»
+  826 [bullet] § the storefront - text a stranger reads — «**Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was written down or committed. They differ, and the diff»
+  828 [bullet] § the storefront - text a stranger reads — «**Unlogged precision is never invented.** The exact minute was not captured? Write an honest `≈ 2026-08-07 10:05 +03:00`. An invented number is worse »
+  831 [bullet] § the storefront - text a stranger reads — «**What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status, receipts the machinery writes. **What is NOT** (a da»
+  836 [bullet] § the storefront - text a stranger reads — «**Forward-only, by construction.** The convention binds from the moment the project adopts it; older date-only stamps are history and are NEVER rewrit»
+  851 [sentence] § tools — «Keep it current — when you add or extend a tool, add a row here.>`»
+  854 [row] § tools — «| Command | What it does |»
+  856 [row] § tools — «| `<cmd>` | `<...>` |»
+  870 [sentence] § backlog & the done tag — «**Rule (do this every time you work with bug/idea files):**»
+  871 [bullet] § backlog & the done tag — «Finished a bug/idea and it is CONFIRMED closed (status ✅, verified) — rename immediately, inserting `DONE` after the number: `git mv <NN>_<name>.md <N»
+  873 [bullet] § backlog & the done tag — «A file in progress / partial / research-only — do NOT mark `DONE` (🔧/🟡/🔬 = not done yet).»
+  874 [bullet] § backlog & the done tag — «Use `git mv` (preserves history). Don't change the number.»
+  875 [bullet] § backlog & the done tag — «Reference docs in `plans/` (master_plan, project_map, etc.) are NOT tasks — never tag them DONE.»
+  876 [bullet] § backlog & the done tag — «**Closing any idea/bug/plan requires a "Decisions made without the owner" section** — every micro-decision the agent made solo while executing, and ho»
+  883 [sentence] § backlog & the done tag — «**Owner's drive-by notes mid-task go to the backlog, not into a task switch.** When the owner tosses an idea/improvement/bug into the chat while you a»
+  887 [sentence] § backlog & the done tag — «Do not drop the current task for the note, and do not hold it in your head until the session ends — a session's head is the worst storage there is.»
+  889 [sentence] § backlog & the done tag — «Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is vision-level → `/fix-vision`; it is an explicit "switch to»
+  890 [sentence] § backlog & the done tag — «**A recorded note is ranked by the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it sits in `/w»
+  898 [sentence] § backlog & the done tag — «Fix the bugs; and on the owner's explicit ask ("figure out why so many") open a **process document** in `plans/` — `owner's verdict (verbatim) → hones»
+  901 [sentence] § backlog & the done tag — «If the waves don't shrink, the remedies aren't working — revise them.»
+  904 [sentence] § backlog & the done tag — «**Backlog revision skill — `/check-backlog`:** walks `bugs/` and `plans/`, collects everything without a `DONE` tag as the open backlog, and tags genu»
+  907 [sentence] § backlog & the done tag — «**Bug reporting skill — `/report-bug`:** hit a defect during dev/test — file a dedicated md in `bugs/` by the canon, per `BUG_FIXING_FRAMEWORK.md`.»
+  917 [step] § backlog & the done tag — «**Prove it is a CLASS, not a one-off:** reproduce it deterministically and search where else the same mechanism bites (the twin check; neighbor deploy»
+  920 [step] § backlog & the done tag — «**Fix it LOCALLY, without waiting for upstream:** patch the deployed wrapper here (the doc, skill or guardrail that misled you); a guard born from the»
+  923 [step] § backlog & the done tag — «**File the signal** — skill `/report-bug`, its framework branch: `bugs/KAIF/` by template A (bug report) / B (improvement request), dedup attestation »
+  927 [step] § backlog & the done tag — «**Point the ticket at the local fix** (its "Local remediation" field): your local divergence and the upstream fix must be reconcilable at the next `/k»
+  930 [step] § backlog & the done tag — «**Close the loop at home:** capture the reusable lesson in `EXPERIENCE.md` (skill `/experience` — the same discipline as after any meaningful failure)»
+  935 [sentence] § backlog & the done tag — «**Proposing principles — a standing order.** The owner of KAIF explicitly directs deployed agents to bring new methodologies, principles, standards an»
+  939 [sentence] § backlog & the done tag — «The channel is the same feedback loop: an improvement request (skill `/report-bug`, template B) whose field evidence names where the practice is prove»
+  942 [sentence] § backlog & the done tag — «The frame is blameless: a weak model's failure is a signal of a missing guardrail, never "the model is dumb".»
+  945 [sentence] § backlog & the done tag — «**Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the human's vision — file it as an md in `ideas/` with »
+  953 [sentence] § decisions the agent must not make alone - interviews — «Before a significant new feature, and whenever a brand/UX/architecture fork appears, conduct an **interview** with the human using the `/interview` sk»
+  955 [sentence] § decisions the agent must not make alone - interviews — «Never make UI/UX/brand/ architecture decisions without confirmation.»
+  962 [sentence] § decisions the agent must not make alone - interviews — «**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a review, an approval, an answer — lives ONLY in `interv»
+  965 [sentence] § decisions the agent must not make alone - interviews — «Field fact: this rule gets broken even by agents that KNOW it — chat is cheaper in the moment — so a project that adopts the practice keeps a mechanic»
+  971 [sentence] § decisions the agent must not make alone - interviews — «The optional interactive contour on top (HTML render of an interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depen»
+  973 [sentence] § decisions the agent must not make alone - interviews — «The contour records not only that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport (`/owner-reviews` I40) — and »
+  977 [sentence] § decisions the agent must not make alone - interviews — «**And every question and every answer option is a SCENARIO of what the owner will see** — Situation · Action · Result · Check in the customer's langua»
+  983 [sentence] § decisions the agent must not make alone - interviews — «**And the voice of the conversation is the customer's language, never the agent's vocabulary** (the origin's decision #106, its bug 112): in option la»
+  990 [sentence] § decisions the agent must not make alone - interviews — «**The agent's confusion is a sign to search, never to refuse** (the origin owner's word, 2026-09-05, origin issue #50; his sentence, rendered from Rus»
+  993 [sentence] § decisions the agent must not make alone - interviews — «An owner's proposal that seems to contradict a model, a rule or a test the agent holds is a proposal NOT YET UNDERSTOOD — never a wrong one.»
+  997 [sentence] § decisions the agent must not make alone - interviews — «A message to the owner about his proposal saying "it breaks X", "cannot", "impossible", "contradicts" is not sendable without the evidence of steps 1–»
+  1000 [sentence] § decisions the agent must not make alone - interviews — «Rolling back work the owner asked for because a guard went red is a fork in `interviews/` with the guard's output quoted, never a report line — and th»
+  1002 [sentence] § decisions the agent must not make alone - interviews — «The owner's term enters the rule as the worked example: the Cyrillic spelling of "RPG" is the ordinary Russian way to write it, so "role-playing game"»
+  1009 [sentence] § decisions the agent must not make alone - interviews — «The rule does not become "always ask the owner": a question without steps 1–2 is the same defect with better manners.»
+  1010 [sentence] § decisions the agent must not make alone - interviews — «`/fable-judge` hunts "confusion delivered as verdict"; a project's question guard may carry the axis (the origin's does — G7, declared exception `<!--»
+  1014 [sentence] § decisions the agent must not make alone - interviews — «**A show has three legal outcomes, and a document brought to the owner has a READING VIEW (KAIF 2.7, origin issues #54/#58).** The owner may ANSWER, l»
+  1026 [sentence] § decisions the agent must not make alone - interviews — «"Lies at path…", "opens by double-click", "see file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a footn»
+  1028 [sentence] § decisions the agent must not make alone - interviews — «No separate show tool: the review contour opens any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the contour,»
+  1030 [sentence] § decisions the agent must not make alone - interviews — «**And the show is reported no wider than it was observed:** "the page is up" says the server answers; "it is before your eyes" is said only after a sc»
+  1032 [sentence] § decisions the agent must not make alone - interviews — «**And a text the owner reads as his own is shown only AFTER it is written BY his portrait, checked independently by it and fixed:** `node .kaif/tools/»
+  1039 [sentence] § decisions the agent must not make alone - interviews — «No machine can do it: the text being checked is your reply, it never lands on disk, and no repository tool can see it.»
+  1044 [sentence] § decisions the agent must not make alone - interviews — «You are forcing me to dig through project files again!" **And a page the owner looks at is CLOSED only by the command that checks it** — `node .kaif/t»
+  1054 [sentence] § decisions the agent must not make alone - interviews — «A reference INSTEAD of the content is the defect, and it is guarded mechanically, because the owner had already said it many times before it was writt»
+  1056 [sentence] § decisions the agent must not make alone - interviews — «An open question must be sufficient for me to understand the matter being decided!"»
+  1058 [sentence] § decisions the agent must not make alone - interviews — «**The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria (verify by observation, `TESTING_FRAMEWORK.md`) and v»
+  1061 [sentence] § decisions the agent must not make alone - interviews — «There the agent does not conclude; it **produces a MOCK-UP and files homework**: find the live best candidates → mock them QUICKLY on OUR OWN material»
+  1070 [sentence] § decisions the agent must not make alone - interviews — «**Action permission ≠ identity authorship.** A blanket "go ahead, don't ask me" removes confirmation FRICTION on actions; it never transfers authorshi»
+  1073 [sentence] § decisions the agent must not make alone - interviews — «Identity is NEVER the agent's decision, under any breadth of approval — a wide "yes" quietly disguises a taste question as a technical detail of shipp»
+  1076 [sentence] § decisions the agent must not make alone - interviews — «The fallback: ship under a neutral factual title — never a placeholder name (still a name someone must un-decide).»
+  1077 [sentence] § decisions the agent must not make alone - interviews — «Every shipped name carries a source artifact (*owner · channel · date*), and a brand mistake is fixed only by the owner — un-naming is a brand decisio»
+  1079 [sentence] § decisions the agent must not make alone - interviews — «(`/release` Step 0 enforces this at the decision point; `/fable-judge` hunts a shipped name with no source artifact.)»
+  1082 [sentence] § decisions the agent must not make alone - interviews — «**Authorship of a decision — the owner's word is a quote; the agent's word is signed** (origin issue #55, 🔴🔴🔴 TOP by the owner's word, rendered fro»
+  1085 [sentence] § decisions the agent must not make alone - interviews — «The canon gives the owner's decisions a special status — not to be revisited — and lets the agent decide the rest; both used to land in the same docum»
+  1092 [bullet] § decisions the agent must not make alone - interviews — «**Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>` (or the address of the interview and question that holds»
+  1097 [bullet] § decisions the agent must not make alone - interviews — «**A mandate is not a decision.** "Do as you see fit", "your call" and their equivalents in the owner's language transfer the CHOICE to the agent: the »
+  1100 [bullet] § decisions the agent must not make alone - interviews — «**"Not to be revisited" belongs to `[OWNER]` decisions only.** An `[AI]` decision is revised freely by any later session; the status is never inherite»
+  1102 [bullet] § decisions the agent must not make alone - interviews — «**The source of truth about the owner's words is the chat and `interviews/`** (the owner's own line). Everything else — a plan line, a code comment, a»
+  1110 [sentence] § decisions the agent must not make alone - interviews — «**Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where the owner's word IS the content): **new entitie»
+  1124 [sentence] § decisions the agent must not make alone - interviews — «And everything the AI PROPOSES as the owner's canon content — a lore line, a rule, a value, a table row — carries the same mark wherever it lives: in »
+  1129 [sentence] § decisions the agent must not make alone - interviews — «**A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the agent NEVER unmarks its own text.»
+  1130 [sentence] § decisions the agent must not make alone - interviews — «One mechanism buys three things: *trust* (the owner sees exactly what is theirs vs. generated — proofreading becomes scanning marks, not rereading eve»
+  1133 [sentence] § decisions the agent must not make alone - interviews — «The check is grep-cheap: AI text in a canon artifact without a mark — or a mark removed without the owner's word — is a fraud `/fable-judge` hunts.»
+  1134 [sentence] § decisions the agent must not make alone - interviews — «Mark at write time.»
+  1134 [sentence] § decisions the agent must not make alone - interviews — «The check IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json` (`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/to»
+  1143 [sentence] § decisions the agent must not make alone - interviews — «**The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never carry provenance marks (owner's decision, quoted:»
+  1145 [sentence] § decisions the agent must not make alone - interviews — «The reason is mechanical, not aesthetic: these two are PUBLISHED as-is, so a mark inside them ships scaffolding to every reader and reads as unfinishe»
+  1147 [sentence] § decisions the agent must not make alone - interviews — «The queue for the showcase is a different one and it stays mandatory: the owner PROOFREADS it (file the request as homework), and until they do, the t»
+  1149 [sentence] § decisions the agent must not make alone - interviews — «Two boundaries keep this from eating the rule: the exemption lists FILES, never a category ("public documents" would swallow the whole canon), and it »
+  1156 [bullet] § decisions the agent must not make alone - interviews — «**draft** — fast, OUTSIDE the owner's canon: sketches, research notes, ideas, spikes. No styleguide, no marks, no canon linter — cheap by design. A dr»
+  1158 [bullet] § decisions the agent must not make alone - interviews — «**canon** — anything entering the owner's canon artifacts walks the full pipeline: approved styleguide (`/derive-styleguide`) → write with provenance »
+  1162 [sentence] § decisions the agent must not make alone - interviews — «Model split (mark it in skills and task items): mechanical steps — running linters and gates, renames, arithmetic, re-syncs — any model; judgment step»
+  1177 [bullet] § code style — «Comment all non-trivial blocks and modules — what the code does and why, and what it connects to. This is for transparency, traceability, and future m»
+  1179 [bullet] § code style — «No magic numbers — named constants with clear names.»
+  1180 [bullet] § code style — «Prefer the platform/library's idiomatic, built-in way over a hand-rolled mechanism.»
+  1181 [bullet] § code style — «**Canonical order for everything compared or cached:** any output that is diffed, deduplicated, or cached must be deterministic — sorts with a full ti»
+  1185 [bullet] § code style — «`<add language/framework-specific rules here>`»
+  1193 [bullet] § notes from the human — «Always check the current time and the log file's time before reading logs — read fresh logs, not stale ones.»
+  1194 [bullet] § notes from the human — «Work autonomously without interactive questions. If you need information from the human, write an interview document and pause the session (so the hum»
+  1196 [bullet] § notes from the human — «If you find bugs in third-party libraries, file tickets for them via `gh` on the human's behalf.»
+  1197 [bullet] § notes from the human — «Actively test what you build, using whatever tooling lets you drive the software effectively.»
+  1198 [bullet] § notes from the human — «Periodically re-read and, where useful, improve your own guidance docs so a fresh session can be effective despite context loss. Steer and tune yourse»
+framework/TESTING_FRAMEWORK.md @ v2.7: obligations 74 — bullet 10 · code 7 · sentence 20 · step 37
+  3 [sentence] § testing_framework - how the agent tests what it creates — «Raw generated content — code, a document, an analysis, anything — **must not be trusted**.»
+  7 [sentence] § testing_framework - how the agent tests what it creates — «This document is the agent's testing canon; it applies to **every artifact in every sphere** — a function, a dataset, a legal clause, a bridge design,»
+  13 [step] § the seven principles of testing (the canon) — «**Testing shows the presence of defects, not their absence.** A green suite never proves the product has no bugs — bugs ALWAYS exist; testing lowers t»
+  15 [step] § the seven principles of testing (the canon) — «**Exhaustive testing is impossible.** You cannot check every input/state combination — prioritize by risk and value instead of pretending completeness»
+  17 [step] § the seven principles of testing (the canon) — «**Early testing saves the budget.** Verify at the requirements/plan stage; the later a defect is found, the more it costs (the waterfall skyscraper on»
+  19 [step] § the seven principles of testing (the canon) — «**Defects cluster.** Most bugs live in a few narrow modules — where one was found, hunt for more (the fable-method twin check is this principle mechan»
+  21 [step] § the seven principles of testing (the canon) — «**The pesticide paradox.** The same tests stop finding new bugs — vary the tests, angles, and data.»
+  22 [step] § the seven principles of testing (the canon) — «**Testing is context-dependent.** Methods are chosen per project and sphere — a payment system, a research paper, and a landing page are not tested al»
+  24 [step] § the seven principles of testing (the canon) — «**The absence-of-errors fallacy.** A defect-free product that does not solve the user's task is worthless — always test against the OWNER'S requiremen»
+  30 [sentence] § what the word "test" means - a functional run on the real product, by the user's path — «The word was never defined, and a session used it honestly while the owner read it as false (origin issue #62: "25 closed, all tested" on unit · self-»
+  37 [step] § what the word "test" means - a functional run on the real product, by the user's path — «**A test is a functional run on the REAL product (stage or production), by the user's path, whose result is READ.** The agent derives the scenarios fr»
+  41 [step] § what the word "test" means - a functional run on the real product, by the user's path — «**Hygiene is not a test.** Lint, unit tests, self-tests, mutation proofs, guards — mandatory (gate 5 stays), never called "testing" in a report, a mar»
+  45 [step] § what the word "test" means - a functional run on the real product, by the user's path — «**`[NOT-TESTED]` is inadmissible to production.** Marker rule 2 flips on a functional run only; the run report carries it SEPARATE from hygiene (`Hygi»
+  54 [sentence] § the testing activities - the chain that makes "tested" mean something — «Testing a feature is a chain of activities, not one observation — walk it in order, each step with its exit condition:»
+  57 [step] § the testing activities - the chain that makes "tested" mean something — «**Analyze the test basis.** Name the source of truth for the expected behaviour — a requirement, the owner's word, a spec, the canon map (`REQUIREMENT»
+  63 [step] § the testing activities - the chain that makes "tested" mean something — «**Design the observation set by named techniques.** Derive the cases with the standard instruments: equivalence partitioning · boundary values · decis»
+  68 [step] § the testing activities - the chain that makes "tested" mean something — «**Write the documentation before executing.** Test documentation lives in files, never in the session's head: a plan (what and why) · a suite / checkl»
+  74 [step] § the testing activities - the chain that makes "tested" mean something — «**Execute with bookkeeping.** Every case ends in a status — `pass` · `fail` · `blocked` · `skipped` — with the observation named (what ran, what was s»
+  77 [step] § the testing activities - the chain that makes "tested" mean something — «**Run the control case before calling the feature working.** Turn the controlling flag off / remove the controlling parameter and observe the feature »
+  80 [step] § the testing activities - the chain that makes "tested" mean something — «**File defects in the defined shape.** Steps to reproduce · expected vs actual · severity/priority · environment · evidence — then hand off to `BUG_FI»
+  86 [sentence] § test-status markers - the trust contract — «Every non-trivial artifact the agent generates carries an explicit, grep-friendly test status in its comment / accompanying note.»
+  90 [bullet] § test-status markers - the trust contract — «**`[NOT-TESTED]`** — freshly generated, raw. **Do not trust it.** The LLM "thought" it was right; that is not evidence.»
+  92 [bullet] § test-status markers - the trust contract — «**`[TESTED: <date> · <how it was verified / what was observed>]`** — verified by observation, with the evidence named (a run, a render, a recomputatio»
+  97 [step] § test-status markers - the trust contract — «**Creating raw content** (a non-trivial block/method/module/section) → write `[NOT-TESTED]` into its comment at birth. Commenting is already mandatory»
+  100 [step] § test-status markers - the trust contract — «**Meeting `[NOT-TESTED]`** (yours or inherited) → do not build on it blindly: plan its verification, verify **by observation** (fable-method Step 5: i»
+  104 [step] § test-status markers - the trust contract — «**Meeting `[TESTED: …]`** → you may trust it and need not re-test — but keep a grain of doubt (principle 1: bugs always exist). If evidence contradict»
+  106 [step] § test-status markers - the trust contract — «**Testing found a defect** → file it (`/report-bug`, method: `BUG_FIXING_FRAMEWORK.md`), fix, re-test, and only then mark `[TESTED]`.»
+  108 [step] § test-status markers - the trust contract — «**A false `[TESTED]`** — the marker present with no verification actually performed — is a fraud; `/fable-judge` hunts it like any false completion cl»
+  110 [step] § test-status markers - the trust contract — «**Carrier by artifact type:** code → the block/method comment; a document → the section's note; any other sphere → the nearest commentable carrier the»
+  112 [step] § test-status markers - the trust contract — «**A FEATURE marker requires a designed set.** `[TESTED]` on a feature is legal only alongside the written case set with its covered dimensions (the ac»
+  124 [sentence] § the work produces its own means of checking — «"Raw deserves no trust" binds the PRODUCER, not only the checker: building something includes building what checks it — a test suite, a check-list, te»
+  125 [sentence] § the work produces its own means of checking — «They are planned WITH the work and land in the SAME step, never "later": verification postponed to a later step is verification that never happens, an»
+  132 [sentence] § the work produces its own means of checking — «The contract in step form — walk it on every non-trivial piece of work:»
+  134 [step] § the work produces its own means of checking — «**Name the check while planning the work.** The same task step that builds X names what will check X — a suite · a checklist · test cases · a fixture »
+  136 [step] § the work produces its own means of checking — «**Land both in the same step.** The check enters the repository together with the work — never "later", never only in the session's scratchpad.»
+  138 [step] § the work produces its own means of checking — «**Prove the check on a broken version** before trusting its green (gate 5 below; `BUG_FIXING_FRAMEWORK.md` → Guards). A closed defect is additionally »
+  144 [sentence] § the work produces its own means of checking — «What is never legal is finishing non-trivial work with nothing that can re-check it.»
+  149 [sentence] § an executed run produces its report — «The chain above puts test documents BEFORE a run and the trust contract puts a marker INSIDE the claim — and nothing said what the run itself must lea»
+  152 [sentence] § an executed run produces its report — «A run that left no artifact is indistinguishable from a run that never happened.»
+  155 [step] § an executed run produces its report — «**Every executed run leaves a run report** — a live probe, a smoke, a polygon, a functional run — in the test-doc home, as a catalog by date: `cp .kai»
+  161 [step] § an executed run produces its report — «**Seven fields, none empty** — *Work* (what was tested and against which basis — the case set, the plan) · *Contour* (the part of the system and the s»
+  168 [step] § an executed run produces its report — «**A `[TESTED: …]` claim about a run names its report** — the marker carries the report's address (`testcases/reports/2026-09-12_polygon.md`) beside th»
+  172 [step] § an executed run produces its report — «**The linter judges the form, the judge judges the truth.** The optional tool module `node .kaif/tools/kaif-testrun-lint.mjs check` (`selftest`) redde»
+  182 [sentence] § green tests ≠ working - the observation gates — «A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible to every test and obvious to one minute of loo»
+  186 [step] § green tests ≠ working - the observation gates — «**Live smoke with your eyes on the log.** Run the real process (not only the tests) and read its first working cycle in the log — startup, the key ope»
+  188 [step] § green tests ≠ working - the observation gates — «**Self-sufficiency of the shipped artifact.** The image/bundle/package must start in isolation (a fresh container/directory) — a build that only works»
+  190 [step] § green tests ≠ working - the observation gates — «**Domain invariants, before/after.** Before the work, write down the numbers that must not change (counts, sums, sizes); after, compare. Comparing two»
+  193 [step] § green tests ≠ working - the observation gates — «**Countable quality proxies.** Where quality is visual or subjective, find what can be counted (animations per screen, panel-opacity checks, bundle gr»
+  196 [step] § green tests ≠ working - the observation gates — «**A check that has never failed proves nothing.** Every new guard/check is verified on a broken version first (see `BUG_FIXING_FRAMEWORK.md` → Guards)»
+  209 [code] § green tests ≠ working - the observation gates — «@guard <name>»
+  210 [code] § green tests ≠ working - the observation gates — «THREAT: the real event it exists for»
+  211 [code] § green tests ≠ working - the observation gates — «PROVED-AGAINST: what the red run actually did»
+  212 [code] § green tests ≠ working - the observation gates — «GAP: what the proof does NOT cover — or the word `none`, written after thinking»
+  213 [code] § green tests ≠ working - the observation gates — «ON-REAL-PATH: where it was seen working on the path the owner actually runs — or `NOT YET`»
+  215 [sentence] § green tests ≠ working - the observation gates — «A recorder whose tape must outlive the event it explains declares the same way — `@forensic <name>` · `EXPLAINS:` the event · `DURABLE-AT:` when the e»
+  218 [sentence] § green tests ≠ working - the observation gates — «The optional tool module `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) reds on a block with a missing field or a rejected `DURABLE-AT`; it »
+  221 [step] § green tests ≠ working - the observation gates — «**After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door the product offers, walk the real screens, read the con»
+  227 [step] § green tests ≠ working - the observation gates — «**Artifact integrity before shipping.** "It built" and "it is one build" are different claims: the shipped bundle carries exactly ONE build identity, »
+  232 [sentence] § green tests ≠ working - the observation gates — «Two placement rules, paid for by the same outage: gates 6–7 belong IN THE DEPLOY PATH, not in prose — one deploy door that runs them itself and fails »
+  235 [sentence] § green tests ≠ working - the observation gates — «And a post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before painting green — a smoke that is greenest »
+  242 [sentence] § the agent's stand is not the owner's real world - "done" about production comes after the real world — «The owner's world is ACCUMULATED: an old session, a saved profile, his own edits in the deployed tree, the cache of the previous build — and there it »
+  250 [code] § the agent's stand is not the owner's real world - "done" about production comes after the real world — «REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;»
+  251 [code] § the agent's stand is not the owner's real world - "done" about production comes after the real world — «data and machine — <his data, his device, his account>; path — <the door he actually walks>»
+  254 [sentence] § the agent's stand is not the owner's real world - "done" about production comes after the real world — «Each item has exactly two legal outcomes — *verified on the real world* (on his state, his data, his path) or *verified with real state taken from the»
+  260 [sentence] § the agent's stand is not the owner's real world - "done" about production comes after the real world — «`/fable-judge` hunts "done" about production without the difference line (the done-without-the-real-world hunt).»
+  269 [sentence] § the taste class - when the observer must be human — «The agent's own "sounds good to me" is not a verification and never flips a marker; the owner's recorded verdict is.»
+  274 [bullet] § how this composes with the rest of kaif — «**`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED before anything is made; this framework verifies what was MADE against it. Principle 3 (earl»
+  279 [bullet] § how this composes with the rest of kaif — «**fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework says WHAT must carry a status and how trust propa»
+  282 [bullet] § how this composes with the rest of kaif — «**`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.»
+  283 [bullet] § how this composes with the rest of kaif — «**The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint` (`.kaif/tools/`) runs gate 5's second half mechanically over e»
+  286 [bullet] § how this composes with the rest of kaif — «**The run-report form as a guard** — the optional tool module `kaif-testrun-lint` (`.kaif/tools/`) judges the seven fields and the date catalog of "An»
+  289 [bullet] § how this composes with the rest of kaif — «**`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).»
+  290 [bullet] § how this composes with the rest of kaif — «**Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and fraud table; principle 6 lives there.»
+  292 [bullet] § how this composes with the rest of kaif — «**The harness** — invest in tooling that makes verification observable and deterministic (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.»
+AGENT_GUIDE.md @ v2.7: obligations 292 — bullet 43 · code 4 · row 24 · sentence 142 · step 79
+  3 [sentence] § kaif - руководство для ai-агента — «Этот файл AI-агент читает перед каждой задачей.»
+  13 [sentence] § 🙏 молитва перед работой — «🔴 **АГЕНТ, ПРОИЗНЕСИ ЕЁ В ЧАТЕ ПЕРЕД НАЧАЛОМ ЛЮБОЙ РАБОТЫ** — целиком, вместе с символом веры выше: на входе в сессию (`/resume`), перед нетривиально»
+  16 [sentence] § 🙏 молитва перед работой — «Каденция — настройка владельца, здесь отмечена одна: ☑ полный текст перед каждой нетривиальной задачей и на каждом освежении (дефолт) · ☐ полный текст»
+  20 [step] § 🙏 молитва перед работой — «**ПРОСТОТА ВЫШЕ ВСЕГО.** Если долго — значит я усложнил, а не задача трудна. Застрял — заново понять задачу, а не громоздить.»
+  22 [step] § 🙏 молитва перед работой — «**ОККАМ.** Не умножаю сущностей. Из двух решений беру то, где меньше движущихся частей.»
+  23 [step] § 🙏 молитва перед работой — «**ПАРЕТО.** Ищу те 20 %, что дают 80 % пользы. «Сделано и работает» лучше «идеально и поздно».»
+  24 [step] § 🙏 молитва перед работой — «**КОД ПРЕЖДЕ КОГНИЦИИ.** Что может сделать скрипт — делает скрипт. Модели остаётся суждение.»
+  25 [step] § 🙏 молитва перед работой — «**НАБЛЮДЕНИЕ ВМЕСТО ДОГАДКИ.** Не помню — смотрю. Прогон, замер, источник вместо «должно работать».»
+  26 [step] § 🙏 молитва перед работой — «**ТРИ ДВЕРИ.** Пробел закрываю источником или вопросом владельцу. Выдумать — запрещено.»
+  27 [step] § 🙏 молитва перед работой — «**ЛОШАДИ, А НЕ ЗЕБРЫ.** Сперва проверяю самое простое и частое объяснение.»
+  28 [step] § 🙏 молитва перед работой — «**МЁРФИ.** Называю риски вслух и раскладываю по ярусам. Названный риск наполовину управляем.»
+  29 [step] § 🙏 молитва перед работой — «**ЛУЧШИЕ ПРАКТИКИ.** Почти всё решено до меня. Ищу проверенный путь, прежде чем изобретать.»
+  30 [step] § 🙏 молитва перед работой — «**DRY.** Один факт живёт в одном месте. Пару лучше УБРАТЬ, чем за ней следить.»
+  31 [step] § 🙏 молитва перед работой — «**УЧУСЬ ОДИН РАЗ.** Сверяюсь с опытом до работы, дописываю урок после. Дважды в один тупик не хожу.»
+  32 [step] § 🙏 молитва перед работой — «**ЭЙЗЕНХАУЭР.** Важное и срочное — сейчас; важное и не срочное — в план; прочее — вниз.»
+  33 [step] § 🙏 молитва перед работой — «**БРИТВА ХЭНЛОНА.** Не злой умысел, а недосмотр. Отлаживаю состояние мира, а не мотивы.»
+  34 [step] § 🙏 молитва перед работой — «**КВАДРАТ ДЕКАРТА.** На трудной развилке отвечаю на четыре вопроса, а не на два.»
+  35 [step] § 🙏 молитва перед работой — «**ВТОРОЙ ПОРЯДОК.** Думаю на три-пять ходов вперёд, а не о выигрыше прямо сейчас.»
+  36 [step] § 🙏 молитва перед работой — «**КАРМА.** Оставляю репозиторий лучше, чем взял. Не срезаю углы за счёт владельца и следующей сессии.»
+  45 [sentence] § 🙏 молитва перед работой — «Застрял → переосмысли и упрости, никогда не наращивай сложность.»
+  48 [sentence] § 🙏 молитва перед работой — «Поэтому здесь два слоя, и путать их нельзя:»
+  50 [step] § 🙏 молитва перед работой — «**Полезная нагрузка** — то, что фреймворк разворачивает в других проектах:»
+  51 [bullet] § 🙏 молитва перед работой — «`framework/` — канонические универсальные шаблоны (четырнадцать ключевых документов вкл. канон требований `REQUIREMENTS_FRAMEWORK.md`, летопись `PROJE»
+  52 [bullet] § 🙏 молитва перед работой — «`KAIF.md` — **самораспаковывающееся ядро**, СГЕНЕРИРОВАННОЕ из `framework/` инструментом `tools/build-framework.mjs`. Это единственный источник истины»
+  54 [step] § 🙏 молитва перед работой — «**Обвязка для dogfooding** — фреймворк, применённый к *этому* проекту (то, что ты читаешь, чтобы работать здесь):»
+  55 [bullet] § 🙏 молитва перед работой — «этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `.claude/skills/`, `plans/`, `bugs/`, `interviews/`.»
+  58 [sentence] § 🙏 молитва перед работой — «⚠️ **Когда кто-то разворачивает фреймворк в СВОЁМ проекте, он использует только `KAIF.md` — а НЕ файлы обвязки этого репозитория.** Не давай обвязке п»
+  61 [sentence] § 🙏 молитва перед работой — «Обычно нужно, чтобы оба слоя двигались вместе — держи их согласованными.»
+  68 [sentence] § 🙏 молитва перед работой — «КОГДА — и только когда — названное время наступило, СТАРТУЙ `/end-chat-soft`: доделай текущую работу до логического среза, затем все церемонии без спе»
+  70 [sentence] § 🙏 молитва перед работой — «Каждый навык цикла подчиняется этому правилу.»
+  78 [step] § перед каждой задачей - чек-лист — «Read STATUS.md # current state of the framework project»
+  79 [step] § перед каждой задачей - чек-лист — «Recall EXPERIENCE.md # grep by task tags — don't repeat known dead ends (skill: /experience)»
+  80 [step] § перед каждой задачей - чек-лист — «git status # what changed, what's uncommitted»
+  81 [step] § перед каждой задачей - чек-лист — «git log --oneline -5 # where we are in history»
+  82 [step] § перед каждой задачей - чек-лист — «Load only the relevant slice # use the Context router below — read the required minimum + task-type docs»
+  83 [step] § перед каждой задачей - чек-лист — «Execute by the fable loop # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before »
+  84 [step] § перед каждой задачей - чек-лист — «Read the relevant plan # MASTER_PLAN.md, PROJECT_STRUCTURE_EXTERNAL_MAP.md; кодишь — ЦИТИРУЙ план: # перед реализацией шага процитируй строку якоря, к»
+  91 [step] § перед каждой задачей - чек-лист — «Recon before code # задача опирается на внешнюю правду (старая система, чужой API, поведение # прода, док вендора)? ПЕРВЫЙ артефакт — разведдок в rese»
+  96 [step] § перед каждой задачей - чек-лист — «If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs»
+  97 [step] § перед каждой задачей - чек-лист — «Comment your code/tools; keep docs accurate # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAME»
+  98 [step] § перед каждой задачей - чек-лист — «For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)»
+  99 [step] § перед каждой задачей - чек-лист — «Capture EXPERIENCE.md # after a meaningful success/failure, append the lesson (skill: /experience)»
+  100 [step] § перед каждой задачей - чек-лист — «Periodically re-read the KEY canon docs # ядро перечитывания (см. «Таксономия документов»; # триггеры и свидетельство — «Освежение контекста»): PHILOS»
+  105 [step] § перед каждой задачей - чек-лист — «Narrate in the chat what you're doing»
+  106 [step] § перед каждой задачей - чек-лист — «Документы от владельца # СНАЧАЛА закоммить оригинал дословно (git add + commit), только потом — # правка следующим коммитом; голос и каждая мысль влад»
+  109 [step] § перед каждой задачей - чек-лист — «Письмо в артефакт владельца? # текст, который человек подписывает или читает как свой → ПИШИ ПО портрету # `AUTHOR_STYLOMETRY.md` С НИМ В РАБОЧЕМ КОНТ»
+  116 [sentence] § перед каждой задачей - чек-лист — «Обновляй его после каждой значимой задачи.»
+  120 [sentence] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «Всегда читай **обязательный минимум**, затем — документы под тип задачи; остальное дочитывай по необходимости.»
+  123 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Тип задачи | Читать (сверх обязательного минимума) |»
+  125 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| **Обязательный минимум (всегда)** | `STATUS.md` · `PHILOSOPHY.md` · этот роутер · `EXPERIENCE.md` (грепом по тегам) |»
+  126 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Правка шаблона (payload) | `AGENT_GUIDE.md` (слои) · инвариант пересборки · релевантный `framework/*` |»
+  127 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Баг | `BUG_FIXING_FRAMEWORK.md` · `bugs/<этот>` · карта (blast radius) |»
+  128 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Тестирование/проверка чего угодно | `TESTING_FRAMEWORK.md` (7 принципов · маркеры `[NOT-TESTED]`/`[TESTED]`) · секции верификации сферы |»
+  129 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Письмо требований / критериев приёмки / вектора цели | `REQUIREMENTS_FRAMEWORK.md` (десять критериев · стоп-словарь · fit criterion) |»
+  130 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Идея/фича | `ideas/<эта>` · `MASTER_PLAN.md` · релевантный `plans/<этот>` |»
+  131 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Планирование | `MASTER_PLAN.md` · `GOAL.md` · открытый беклог · секция «Дисциплина планирования» (тяжёлое → `/plan-epic`) |»
+  132 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Развёртывание/распаковка | `KAIF.md` §8 · манифест распаковщика |»
+  133 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Внешняя правда (старая система / чужой API / прод / док вендора) | разведдок в `researches/` — **сначала создай его**, если ещё нет (чек-лист, шаг 8»
+  134 [row] § контекст-роутер (ленивая загрузка) - читай только нужный срез — «| Письмо в артефакт владельца (текст, который человек подписывает или читает как свой) | `AUTHOR_STYLOMETRY.md` — портрет голоса владельца, когда он е»
+  138 [sentence] § таксономия документов - пять ярусов — «Каждый документ проекта живёт ровно в одном ярусе; ярус говорит агенту, что он документу должен — перечитывать, знать, вести по регламенту или не трог»
+  141 [step] § таксономия документов - пять ярусов — «**КЛЮЧЕВЫЕ канон-документы — ядро перечитывания.** То, что агент регулярно перечитывает и держит свежим в контексте (чек-лист, шаг 13; `/resume` читае»
+  160 [step] § таксономия документов - пять ярусов — «**РАСШИРЕННЫЕ канон-документы.** Остальной канон фреймворка — внутренняя карта, летопись, пояснительная записка, журнал опыта, библиотеки сфер и адапт»
+  164 [step] § таксономия документов - пять ярусов — «**РАБОЧИЕ канон-документы.** Динамические документы, рождающиеся по регламентам фреймворка, — планы, баги, идеи, исследования, интервью, домашки, отчё»
+  167 [step] § таксономия документов - пять ярусов — «**ПРОЧИЕ документы KAIF.** «Домашние правила»: локальные соглашения владельца и агента, модифицирующие или расширяющие KAIF в этом конкретном проекте.»
+  170 [step] § таксономия документов - пять ярусов — «**Рабочие документы проекта.** Всё, что принадлежит самому проекту владельца, — код, ассеты, документы вне фреймворка. KAIF управляет тем, КАК агент н»
+  180 [step] § освежение контекста - правило перечитывания и его свидетельство — «**Час:** в живой сессии прошло больше 60 минут с последнего освежения — освежайся минимум раз в час.»
+  182 [step] § освежение контекста - правило перечитывания и его свидетельство — «**Тяжёлая задача:** перед стартом задачи, проходящей тест тяжести («Дисциплина планирования» ниже), в том же долгоживущем чате.»
+  184 [step] § освежение контекста - правило перечитывания и его свидетельство — «**После сжатия/паузы:** после компакции контекста, возврата из `/pause`, длинного простоя.»
+  185 [step] § освежение контекста - правило перечитывания и его свидетельство — «**Точки ритуалов:** `/resume` (полный проход канона), `/refresh-context` и каждая итерация длинных циклов (`/autoloop` · `/dayloop` · `/nightloop` · `»
+  189 [sentence] § освежение контекста - правило перечитывания и его свидетельство — «Свидетельство двухчастное, обе части обязательны:»
+  191 [bullet] § освежение контекста - правило перечитывания и его свидетельство — «**Маркер** — `.kaif/refresh-marker.json`: `{ "at": "<ISO-метка>", "docs": [<что перечитано>], "trigger": "hour|heavy-task|compaction|ritual:<имя>" }`,»
+  196 [bullet] § освежение контекста - правило перечитывания и его свидетельство — «**Цитата-приёмка** — обновление маркера легально ТОЛЬКО вместе с цитатой в чате одной конкретной строки из перечитанного, релевантной текущей задаче (»
+  200 [sentence] § освежение контекста - правило перечитывания и его свидетельство — «Маркер без цитаты — или заявленное освежение при протухшем маркере — фрод класса ложного `[TESTED]`: `/fable-judge` охотится на него (охота «refresh-w»
+  203 [sentence] § освежение контекста - правило перечитывания и его свидетельство — «В системах с lifecycle-хуками его механически усиливает опциональный **модуль refresh-hooks** (`.kaif/hooks/`, подключение — в его README; в поставке »
+  215 [sentence] § досье окружения - агент знает свою машину из собственных заметок — «Досье — таблица (у истока — `HOUSE_RULES.md` §4): агент заполняет её прогоном проб, а каждая будущая сессия читает вместо того, чтобы переоткрывать — »
+  219 [sentence] § досье окружения - агент знает свою машину из собственных заметок — «**Как собирать** (процедура — в `/refresh-context`): пробы по шести осям, **в каждом доступном шелле отдельно** (разные шеллы — разные миры): ОС/желез»
+  223 [sentence] § досье окружения - агент знает свою машину из собственных заметок — «**Досье окружения истока** (таблица фактов машины с пробами, дата съёмки, правило протухания в четыре недели) вынесено в `HOUSE_RULES.md` → §4; переге»
+  228 [sentence] § досье окружения - агент знает свою машину из собственных заметок — «Досье ссылается на уроки по id и никогда не копирует их текст; правило поведения, найденное при сборе досье, уходит в гигиену или `EXPERIENCE.md`, а з»
+  234 [sentence] § шапка-мета документов - первый экран отвечает "что это" — «Будущая сессия обязана понять любой документ директорий знаний, не читая тела.»
+  234 [sentence] § шапка-мета документов - первый экран отвечает "что это" — «Каждый РАБОЧИЙ канон-документ в `plans/`, `ideas/`, `researches/`, `homeworks/` открывается так:»
+  237 [bullet] § шапка-мета документов - первый экран отвечает "что это" — «**Строка 1 — H1:** `# <Тип> NN — <суть одной строкой>`.»
+  238 [bullet] § шапка-мета документов - первый экран отвечает "что это" — «**Сразу после H1 — blockquote-шапка** с фиксированными линтуемыми метками (метки — на рабочем языке проекта; здесь: `Создан` / `Родитель` / `Статус` /»
+  247 [sentence] § шапка-мета документов - первый экран отвечает "что это" — «`bugs/` и `interviews/` сохраняют свои уже канонизированные диалекты шапок (шапка шаблона `/report-bug`; `Topic:`/`Status:`, которые читает страж вопр»
+  250 [sentence] § шапка-мета документов - первый экран отвечает "что это" — «Каждое поле либо линтуется, либо его нет в схеме; линтер шапки консультирует — он никогда не блокирует старт работы (страж: `node tools/doc-header-lin»
+  262 [sentence] § контуры - крупные логические модули проекта — «Называй контуры явно и следи за их кромками: контур с размывшейся границей либо переформулируется, либо фиксируется осознанным долгом с адресом в бекл»
+  269 [sentence] § разведартефакты - когда у задачи есть внешняя правда — «Три типа артефактов в `researches/`, каждый заменяет свой вид выдумки наблюдением (сессия, которая «помнит» домен, — выдумывает его):»
+  272 [bullet] § разведартефакты - когда у задачи есть внешняя правда — «**Разведдок** (чек-лист, шаг 8) — *описывает*, как внешняя правда устроена на самом деле, снято с живого источника (код старой системы, работающий про»
+  278 [bullet] § разведартефакты - когда у задачи есть внешняя правда — «**Канон-карта** — для домена с фактологией (мир игры, продукт, бренд, API): таблица сущностей → их ролей → соответствий, **утверждённая владельцем**. »
+  282 [bullet] § разведартефакты - когда у задачи есть внешняя правда — «**Инвентарь паритета** — где есть эталон (старая система, конкурент, бренд-бук): **исчислимый** чек-лист, по строке на элемент — `элемент → поведение »
+  288 [sentence] § разведартефакты - когда у задачи есть внешняя правда — «Рядом, но НЕ четвёртый тип: **портрет голоса владельца** — `AUTHOR_STYLOMETRY.md`, снимается навыком `/owner-voice`.»
+  296 [sentence] § дисциплина исполнения задачи - fable-цикл — «Любая нетривиальная задача исполняется по циклу **fable-method** (`.claude/skills/fable-method/`, EN): классифицируй запрос → определи «готово» → собе»
+  306 [sentence] § дисциплина исполнения задачи - fable-цикл — «Оркестровку (параллельный сбор свидетельств, адверсарные верификаторы) даёт `/fable-loop` — в циклах по пункту беклога.»
+  307 [sentence] § дисциплина исполнения задачи - fable-цикл — «Когда работа объявлена завершённой (твоя или чужая) — **`/fable-judge`**-проход перед тем, как считать её сделанной; в циклах и `/release` обязателен.»
+  311 [sentence] § дисциплина исполнения задачи - fable-цикл — «**KAIF добавляет к шагу 5 одно обязательство, и оно записано ЗДЕСЬ, а не внутри текста цикла:** проверка не только НАБЛЮДАЕТСЯ, но и ПРОИЗВОДИТСЯ.»
+  312 [sentence] § дисциплина исполнения задачи - fable-цикл — «Новое поведение выходит вместе с артефактом, который его проверяет, — свод, чек-лист, фикстура, страж, — спланированным В ТОМ ЖЕ шаге, никогда «потом»»
+  317 [sentence] § дисциплина исполнения задачи - fable-цикл — «**KAIF добавляет второе обязательство — к шагу 3 (реши), и записано оно здесь по той же причине: РАЗВИЛКА** (issue #36 поля; слово владельца: «НЕЛЬЗЯ »
+  320 [sentence] § дисциплина исполнения задачи - fable-цикл — «На развилке принудительный артефакт — одна строка в точке решения: `FORK: options <A | B | C> · price of error <что сломается при ошибке> · consulted »
+  326 [sentence] § дисциплина исполнения задачи - fable-цикл — «`/fable-judge` охотится на развилку без строки `FORK:` или с `consulted <own reasoning>` (охота «fork-without-recon»), на автономный цикл, закрытый до»
+  330 [sentence] § дисциплина исполнения задачи - fable-цикл — «**KAIF добавляет третье обязательство — к шагу 5 (проверь наблюдением) и к шагу 7 (доложи): «ГОТОВО» О ПРОДАКШЕНЕ — ПОСЛЕ РЕАЛЬНОГО МИРА** (issue #52 »
+  332 [sentence] § дисциплина исполнения задачи - fable-цикл — «Проверка на чистом стенде агента — не проверка мира владельца, где всё накоплено; перед словом «готово» о том, что уже в бою, отчёт несёт строку разно»
+  339 [sentence] § дисциплина исполнения задачи - fable-цикл — «**KAIF добавляет четвёртое обязательство — к шагу 4 (действуй) и шагу 5 (проверь), для ТЕКСТА, который владелец читает как свой: ТЕКСТ ПИШЕТСЯ ПО ПОРТ»
+  345 [sentence] § дисциплина исполнения задачи - fable-цикл — «После написания, по этой эе стилометрии ИИ агент проводит независимую проверку написанного, правит, и только после этого считает текст написанным и не»
+  347 [sentence] § дисциплина исполнения задачи - fable-цикл — «Три шага в этом порядке, и отчёт называет каждый:»
+  348 [step] § дисциплина исполнения задачи - fable-цикл — «**Пиши ПО портрету — с ним в своём рабочем контексте.** До первого слова `node framework/tools/kaif-voice-lint.mjs load` (у истока; в поле — `node .ka»
+  358 [step] § дисциплина исполнения задачи - fable-цикл — «**Проверь НЕЗАВИСИМО по тому же портрету.** Машинная минута — `node framework/tools/kaif-voice-lint.mjs check <файл…>` (у истока; в поле — `node .kaif»
+  364 [step] § дисциплина исполнения задачи - fable-цикл — «**Правь — только тогда текст написан.** Каждое попадание переписывается по подсказке портрета или отвечается в его колонке исключений (канон владельца»
+  367 [sentence] § дисциплина исполнения задачи - fable-цикл — «Команда судит только явные паттерны; похожесть остаётся вердиктом владельца (класс «вкус»).»
+  367 [sentence] § дисциплина исполнения задачи - fable-цикл — «`/fable-judge` охотится на текст владельцу, прошедший МИМО портрета (охота «owner text past the portrait»): написан без открытого портрета, проверен б»
+  371 [sentence] § дисциплина исполнения задачи - fable-цикл — «**KAIF добавляет пятое обязательство — к шагу 7 (доложи): ЗАЯВЛЕНИЕ НЕ ШИРЕ НАБЛЮДЕНИЯ, КОТОРОЕ ЗА НИМ СТОИТ** (issue #63 истока; слово владельца в ти»
+  376 [sentence] § дисциплина исполнения задачи - fable-цикл — «Каждое утверждение о состоянии мира называет, ЧЕМ оно наблюдалось; если наблюдалось прокси, а не сама вещь, — прокси говорится вслух:»
+  379 [row] § дисциплина исполнения задачи - fable-цикл — «| Проверено | Говорилось | Как надо |»
+  381 [row] § дисциплина исполнения задачи - fable-цикл — «| сервер отвечает 200 | «страница открыта у вас» | «сервер отвечает 200; открылось ли окно у вас на экране — не проверял: вы его видите?» |»
+  382 [row] § дисциплина исполнения задачи - fable-цикл — «| деплой вернул 0 | «фича работает в проде» | «деплой 0, смоук 24/24; поведение у живых людей — не проверено» |»
+  383 [row] § дисциплина исполнения задачи - fable-цикл — «| файл записан, сигнал отправлен | «доставлено владельцу» | «записано и просигналено; доставка подтверждается только вашим словом» |»
+  384 [row] § дисциплина исполнения задачи - fable-цикл — «| прибор напечатал ✅ | «проверено» | «проверка прибора прошла; на что он НЕ смотрел: …» |»
+  386 [sentence] § дисциплина исполнения задачи - fable-цикл — «Состояние ЭКРАНА ЧЕЛОВЕКА утверждается только после взгляда на экран — снимок стоит секунды; до него единственная законная форма: «я сделал X; проверь»
+  387 [sentence] § дисциплина исполнения задачи - fable-цикл — «Отгружаемый контур сам печатает эту границу у каждого поднятого окна (`Window: … — the launcher returned 0; whether a window is on the owner's screen »
+  389 [sentence] § дисциплина исполнения задачи - fable-цикл — «`/fable-judge` охотится на заявление шире прогона, который его подпирает (охота «claim wider than the observation»).»
+  404 [step] § дисциплина исполнения задачи - fable-цикл — «**Стоп текущей задаче.** Правда приходит посреди другого дела, и «сразу после этой задачи» — ровно то, как ложь переживает сессию.»
+  406 [step] § дисциплина исполнения задачи - fable-цикл — «**Перечисли каждое место, где утверждение опубликовано или записано.** `git grep -n "<фраза>"` по этому репозиторию; внешние каналы — командой, котору»
+  410 [step] § дисциплина исполнения задачи - fable-цикл — «**Поправь или отзови в КАЖДОМ** — правка, где артефакт наш; комментарий «поправка: …», где канал умеет только дописывать; удаление, где канал это позв»
+  414 [step] § дисциплина исполнения задачи - fable-цикл — «**Прочитай записанное обратно.** Открой поправленное место и прочитай, что там теперь стоит, — непрочитанная правка есть поправка заявленная, а не сде»
+  416 [step] § дисциплина исполнения задачи - fable-цикл — «**Назови это в ответе владельцу** — `исправлено: <где>`, по строке на место; ту же строку несёт ритуал закрытия («Стоячая ложь: нет | <список>»).»
+  421 [sentence] § дисциплина исполнения задачи - fable-цикл — «Граница: черновик с пометкой гипотезы — не она (он ничего не утверждал), и запись журнала append-only — тоже: там поправка ЕСТЬ новая запись, но эта н»
+  423 [sentence] § дисциплина исполнения задачи - fable-цикл — «`/fable-judge` охотится на стоячую ложь; `/end-chat-soft` и `/end-chat-force` спрашивают о ней по имени на закрытии.»
+  446 [bullet] § дисциплина планирования - лестница задач (/plan-task · /plan-epic) — «**Обычная → `/plan-task`:** ОДИН операционный план — цель, критерии «готово», шаги с чекбоксами, верификация наблюдением, риски. Совсем маленькая? Пла»
+  449 [bullet] § дисциплина планирования - лестница задач (/plan-task · /plan-epic) — «**Тяжёлая → `/plan-epic`** — полная лестница, каждая ступень — артефакт:»
+  450 [step] § дисциплина планирования - лестница задач (/plan-task · /plan-epic) — «**Research** — гуглёж индустрии + локальная разведка + требования проекта → research-документ в `researches/`. До него — ни кода, ни мета-плана.»
+  452 [step] § дисциплина планирования - лестница задач (/plan-task · /plan-epic) — «**Мета-план** — один план эпика в `plans/`: фазы, порядок, гейты, критерии приёмки; развилки видения → `/interview` (незаблокированные фазы идут парал»
+  454 [step] § дисциплина планирования - лестница задач (/plan-task · /plan-epic) — «**Операционные планы по фазам** — R&D · тестирование · макетирование · разработка · отладка · приёмка. Детализируется ТОЛЬКО ближайшая фаза; план фазы»
+  457 [step] § дисциплина планирования - лестница задач (/plan-task · /plan-epic) — «**Трассировка** — каждый операционный шаг цитирует строку-якорь мета-плана (правило цитирования из шага 7 чек-листа); шаг без якоря = дрейф скоупа, по»
+  468 [sentence] § опыт - experience.md — «Навык `/experience`.»
+  476 [row] § идентичность проекта (канон) — «| Поле | Значение |»
+  478 [row] § идентичность проекта (канон) — «| **Название / бренд** | **Krinik AI Framework (KAIF)** · рус. «Криник АИ Фреймворк (КАИФ)» |»
+  479 [row] § идентичность проекта (канон) — «| **Репозиторий GitHub** | https://github.com/MikalaiKryvusha/KAIF |»
+  480 [row] § идентичность проекта (канон) — «| **Локальная папка проекта** | `d:\work\ai_sandbox\KAIF` (Windows; с 2026-07-16, ранее — macOS `/Users/kryvusha/ai_sandbox/kriniks_ai_agent_framework»
+  481 [row] § идентичность проекта (канон) — «| **Автор / владелец** | Mikalai Kryvusha aka **KOT KRINIK** · Николай Кривуша aka Кот Криник |»
+  482 [row] § идентичность проекта (канон) — «| **Лицензия** | MIT |»
+  483 [row] § идентичность проекта (канон) — «| **Языки** | Английский (основной) + русский (переводная копия) |»
+  484 [row] § идентичность проекта (канон) — «| **Кодовое имя версии — БЕЗ КАВЫЧЕК** | `KAIF 2.2 — Yolden KAIF`, никогда `KAIF 2.2 — «Yolden KAIF»`. Слово владельца (2026-08-09 00:20 +03:00): «кав»
+  508 [sentence] § архитектура - карта репозитория — «**Языки — роутятся АУДИТОРИЕЙ, никогда директорией** (issue #6 поля; канон-вопрос — в `framework/AGENT_GUIDE.md` → «Languages»): создаёшь или переимен»
+  514 [bullet] § архитектура - карта репозитория — «**Публичная полезная нагрузка** (`framework/`, `KAIF.md`) — читатель = сообщество — **единственный** источник, на **английском**. Многоязычность — при»
+  518 [bullet] § архитектура - карта репозитория — «**Локальная обвязка для dogfooding** (этот `AGENT_GUIDE.md`, `STATUS.md`, `PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `GOAL.md`, `MASTER_PLAN.md`, кар»
+  534 [sentence] § архитектура - карта репозитория — «Ru-алиасы `/end-chat-soft` говорили «передай эстафету», а канон, который они зовут, говорил «батон»: руководство спорило со своими же триггерами, и вл»
+  538 [step] § архитектура - карта репозитория — «**Грепни алиасы навыка** (`framework/templates/languages/<язык>/skill-triggers.json`) — алиас, называющий эту вещь, И ЕСТЬ канонический перевод; второ»
+  540 [step] § архитектура - карта репозитория — «**Бери отраслевое слово вместо домашнего** — поставку читает посторонний, и термин, который он может загуглить, не стоит владельцу ни одного объяснени»
+  542 [step] § архитектура - карта репозитория — «**Прочитай перевод вслух один раз.** Слово, которое на языке владельца называет еду, часть тела или шутку, — дефект, а не колорит; вопрос владельца «а»
+  553 [code] § сборка (регенерация артефактов) — «node tools/build-framework.mjs # regenerate KAIF.md from framework/_intro.md + framework/*»
+  554 [code] § сборка (регенерация артефактов) — «node tools/build-diagrams.mjs # regenerate assets/*.svg (README diagrams) — run before readme-pdf»
+  555 [code] § сборка (регенерация артефактов) — «node tools/readme-pdf.mjs # regenerate README.pdf from README.md»
+  558 [sentence] § сборка (регенерация артефактов) — «**Никогда не правь `KAIF.md` вручную.** Правь `framework/_intro.md` (повествование) или шаблоны `framework/*`, затем заново запусти `build-framework.m»
+  559 [sentence] § сборка (регенерация артефактов) — «Сборка и есть «тест»: она должна пройти успешно, а встроенные блоки — оставаться сбалансированными.»
+  564 [sentence] § "тестирование" этого проекта — «Верификация = (1) `build-framework.mjs` отрабатывает чисто (в конце он сам исполняет `check-framework.mjs`); (2) встроенные блоки `FILE:` в `dist/KAIF»
+  576 [sentence] § git-процесс — «Работаем только в `main`, без feature-веток (простой дефолт, который рекомендует этот фреймворк).»
+  577 [sentence] § git-процесс — «Коммить инкрементально и часто.»
+  577 [sentence] § git-процесс — «Чтобы откатить — используй историю git (`git revert`, `git checkout <hash> -- file`).»
+  583 [sentence] § git-процесс — «**Одно названное исключение — ЗДЕСЬ, потому что этот абзац читается перед каждой задачей** (issue #37 поля: два TOP-тикета часами висели «Delivered up»
+  588 [sentence] § git-процесс — «**Второе названное исключение — ответ в issue origin и закрытие тикета после релиза по нему** (№84/№92/№93, слово владельца 2026-09-04: «Ты же разрабо»
+  597 [sentence] § git-процесс — «**Неотменяемая git-гигиена (каждое правило оплачено реальным инцидентом):**»
+  599 [bullet] § git-процесс — «**`git diff --stat` перед каждым коммитом — по тому набору, который РЕАЛЬНО УЕДЕТ.** Всё в нём, чего ты не намеревался менять, — СТОП и сначала объясн»
+  609 [bullet] § git-процесс — «**Сначала ignore, потом инструмент.** Новый инструмент, выгрузка, дамп, ключ или бинарь появляется в проекте ТОЛЬКО после строки в `.gitignore`. Секре»
+  612 [bullet] § git-процесс — «**Первоисточники владельца неприкосновенны.** Документ владельца коммитится дословно ДО любой правки (чек-лист, шаг 15) — никогда не «улучшай» оригина»
+  620 [sentence] § коммиты — «Правка теста без обоснования — фрод по умолчанию (`/fable-judge` охотится ровно на это — тихая подгонка тестов под новое поведение — самый документиро»
+  622 [sentence] § коммиты — «Если да — перестрой фикстуры так, чтобы каждый тест стерёг заявленное, и скажи об этом в коммите.»
+  625 [sentence] § коммиты — «Каждое сообщение завершается со-авторским трейлером с **ФАКТИЧЕСКИМ именем работающей модели** (решение владельца №54, интервью №012 Q1 = B — «по `git»
+  628 [code] § коммиты — «Co-Authored-By: <имя работающей модели> <noreply@anthropic.com>»
+  630 [sentence] § коммиты — «Имя знает только сама сессия, поэтому она его и передаёт: `node tools/commit.mjs --msg-file <путь> --as "<имя модели>"` (или `KAIF_AGENT_MODEL=<имя>`)»
+  634 [sentence] § коммиты — «Ретроспективу не переписываем — решение №55 (интервью №012 Q2 = A): история append-only, поправка это новая запись, а не правка старой.»
+  636 [sentence] § коммиты — «`node tools/commit.mjs "<msg>"` инкрементирует `version.json.build`, коммитит и пушит.»
+  640 [sentence] § гигиена документов и текста (правила, оплаченные полем) — «**Каждый документ отвечает на свой вопрос — и берёт форму у своей родни.** README: *«что это и как этим пользоваться»* (продукт, настоящее время).»
+  641 [sentence] § гигиена документов и текста (правила, оплаченные полем) — «Релиз-ноты: *«что изменилось в ЭТОЙ версии, нужно ли обновляться»* (строго дельта; всё общее — ССЫЛКОЙ на README; механическая проверка: абзац, которы»
+  645 [sentence] § гигиена документов и текста (правила, оплаченные полем) — «`PROJECT_HISTORY.md`: *«закрытое прошлое»* — дописываемая летопись: закрытые сессии/фазы/релизы ПЕРЕЕЗЖАЮТ туда дословно (стрижка бонсая в `/end-chat-»
+  647 [sentence] § гигиена документов и текста (правила, оплаченные полем) — «Обновляешь README — вдохновляйся текущим README и соседними витринами владельца (единый почерк витрины, не почерк агента); обновляешь ноты — прошлыми »
+  655 [sentence] § форма обязательства - команда, шаг или чекбокс — «Полевой замер (issue #22 истока): два правила равного канонического веса в одном контексте — правило с командой исполнялось само, правило прозой копил»
+  661 [sentence] § форма обязательства - команда, шаг или чекбокс — «Поэтому каждое обязательство канон-документа несёт одну из трёх исполнимых форм:»
+  663 [step] § форма обязательства - команда, шаг или чекбокс — «**Команда** — исполнимая строка, которую агент копирует и запускает;»
+  664 [step] § форма обязательства - команда, шаг или чекбокс — «**Шаг** — пункт нумерованного плана или чек-листа с проверяемым условием выхода;»
+  665 [step] § форма обязательства - команда, шаг или чекбокс — «**Чекбокс** — клетка, которую отмечает ритуал.»
+  667 [sentence] § форма обязательства - команда, шаг или чекбокс — «Проза остаётся обоснованием ПОД носителем: она объясняет ПОЧЕМУ и никогда не несёт обязательство одна.»
+  668 [sentence] § форма обязательства - команда, шаг или чекбокс — «Два следствия: правило, рождающее АРТЕФАКТ, называет команду, которая его производит, — нет команды, значит правило неполно: отгрузи команду, а не фор»
+  680 [sentence] § первое слово сообщения владельца - команда — «Нужно усилить внимание ИИ агента по KAIF к слову resume, резюм - если я это пишу, значит я ТРЕБУЮ перед началом работ агента выполнить им этот навык»;»
+  682 [sentence] § первое слово сообщения владельца - команда — «Класс за этим: триггер навыка перечисляет СЛОВА, а не их ПОЛОЖЕНИЕ; единственное правило канона о положении — пинок, «отдельностоящей командой, а не в»
+  689 [step] § первое слово сообщения владельца - команда — «**Первое слово сообщения владельца — `resume`: `resume`, `/resume` или `резюм…` — слова, которые называют это правило и его хук → исполни `/resume` ПЕ»
+  695 [step] § первое слово сообщения владельца - команда — «**То же слово в середине фразы остаётся прозой** («продолжай читать resume.log») — граница пинка не меняется; решает положение, а не слово. Граница на»
+  700 [step] § первое слово сообщения владельца - команда — «**Там, где у агентской системы есть lifecycle-хуки, механическая половина — `.kaif/hooks/prompt-resume-word.mjs`** (у истока — `framework/hooks/`, про»
+  706 [sentence] § первое слово сообщения владельца - команда — «`/fable-judge` охотится на сессию, чьё первое сообщение владельца открылось этим словом, а первые действия были задачей (охота «Resume word ignored»).»
+  711 [sentence] § витрина - текст, который читает посторонний человек — «Витрина (README, релиз-ноты, страница релиза, лендинг) отличается от рабочего документа одним: её читает человек, который не участвовал в разработке и»
+  715 [sentence] § витрина - текст, который читает посторонний человек — «Машинная часть — `node tools/showcase-lint.mjs` (тринадцать классов строки плюс четыре оси: симметрия половин · врап в теле релиза · равенство чисел н»
+  720 [step] § витрина - текст, который читает посторонний человек — «**Переводная половина пишется ОТ СМЫСЛА, а не переводом черновика.** Написав абзац на втором языке, прочитай каждое предложение вслух: живой человек т»
+  724 [step] § витрина - текст, который читает посторонний человек — «**Инструкция обращается к читателю, а не описывает мироздание.** «Положите», «Скажите», «Одобрите», «Заполните» — повелительное наклонение; безличное »
+  732 [step] § витрина - текст, который читает посторонний человек — «**Никакого текста О САМОМ ДОКУМЕНТЕ.** «Каждому навыку отведена своя строка Таблицы 3», «в руководстве описаны 14 документов», «настоящий документ явл»
+  736 [step] § витрина - текст, который читает посторонний человек — «**Число стоит без оправданий.** Провенанс числа живёт в рабочем документе, на витрине стоит число. «(измерено в эпике 1.5 по точным размерам)», «каждо»
+  741 [step] § витрина - текст, который читает посторонний человек — «**Прямая констатация: ни намёка на второй уровень, ни отрицания при числе.** «В действительности», «на самом деле», «строго говоря» сообщают читателю,»
+  745 [step] § витрина - текст, который читает посторонний человек — «**Внутреннее слово разворачивается в человеческое название.** «Календарь» → «Время работы над версией», «Пара» → «тандем человек + агент», «Токены» → »
+  749 [step] § витрина - текст, который читает посторонний человек — «**Одна величина — одна строка.** Склеенные в одну клетку метрики экономят место и отнимают читаемость; таблица имеет право вырасти втрое.»
+  751 [step] § витрина - текст, который читает посторонний человек — «**Оценка стоит на НАЗВАННОЙ ставке.** У каждой константы оценки — внешний источник в комментарии рядом с ней (`node tools/estimates-guard.mjs`); вилка»
+  754 [step] § витрина - текст, который читает посторонний человек — «**Приватные имена не едут в публичное.** Имена проектов владельца, клиентов и внутренних систем заменяются псевдонимом, который сохраняет СЧЁТ независ»
+  758 [step] § витрина - текст, который читает посторонний человек — «**Проверка ИСХОДНИКА не является проверкой ПУБЛИКАЦИИ.** Правила рендера принадлежат чужому носителю: тело релиза на GitHub сохраняет переводы строк, »
+  763 [sentence] § витрина - текст, который читает посторонний человек — «**ТЕКСТ ПЕРЕДАЁТСЯ ЧЕРЕЗ ФАЙЛЫ, А НЕ ЧЕРЕЗ АРГУМЕНТЫ КОМАНДНОЙ СТРОКИ.** Нужно скормить инструменту кириллицу (любой не-ASCII), кавычки-ёлочки, эмодзи»
+  765 [sentence] § витрина - текст, который читает посторонний человек — «Пиши UTF-8 файл и передавай ПУТЬ.»
+  769 [step] § витрина - текст, который читает посторонний человек — «`python -c` + не-ASCII → `SyntaxError: (unicode error)` — или ХУЖЕ: молчаливый мусор в файле (консольная кодировка портит аргумент до того, как его ув»
+  771 [step] § витрина - текст, который читает посторонний человек — «бэктики в двойных кавычках → подстановка команд шелла съедает куски текста, печатает «ok», а в документе ДЫРКИ — без единой ошибки; ловится только чте»
+  773 [step] § витрина - текст, который читает посторонний человек — «Windows-пути внутри строк → `truncated \uXXXX escape` (`\w`, `\u` читаются как escape);»
+  774 [step] § витрина - текст, который читает посторонний человек — «разные шеллы — разные миры: GNU tar принимает `D:\…` за удалённый хост, bsdtar — нет; файл из /tmp Git Bash невидим Windows-питону; `Set-Content` в Po»
+  778 [step] § витрина - текст, который читает посторонний человек — «git-bash (MSYS2) КОНВЕРТИРУЕТ argv Windows-программ как POSIX-пути: `/` → `\`, `:` → `;`, а `/Слово` разворачивается в `C:\Program Files\Git\Слово` — »
+  792 [sentence] § витрина - текст, который читает посторонний человек — «Цена асимметрична: инструмент отработал, код возврата 0, файлы целы — испорчен только ТОТ вывод, который читает человек, а агент своего нарушения не в»
+  794 [sentence] § витрина - текст, который читает посторонний человек — «Ставь в argv одноразовых скриптов только ASCII; нужна кириллица в выводе — пиши её из тела скрипта-файла.»
+  801 [sentence] § витрина - текст, который читает посторонний человек — «Веди лёгкий реестр — таблицу, по строке на пару: `истина → зеркало(а) → команда сверки одной строкой`.»
+  802 [sentence] § витрина - текст, который читает посторонний человек — «`/end-chat-soft` и `/release` гоняют команды реестра и стопорятся на расхождении; любое новое «X обязан совпадать с Y» попадает в реестр в день рожден»
+  803 [sentence] § витрина - текст, который читает посторонний человек — «Дрейф ловится только СВЕРКОЙ ПАР — никогда чтением одного файла, каким бы внимательным оно ни было.»
+  806 [sentence] § витрина - текст, который читает посторонний человек — «**Реестр пар ЭТОГО проекта** (таблица `истина → зеркало → команда сверки`; расхождение = стоп до починки) живёт в `HOUSE_RULES.md` → §2 — `/end-chat-s»
+  813 [sentence] § витрина - текст, который читает посторонний человек — «Поэтому каждая метка МОМЕНТА несёт обе половины, в локальном времени владельца:»
+  816 [bullet] § витрина - текст, который читает посторонний человек — «**Проза:** `ГГГГ-ММ-ДД ЧЧ:ММ ±ЧЧ:ММ` (`2026-08-08 07:13 +03:00`). **Квитанции машинерии:** тот же момент полным локальным ISO 8601 (`2026-08-08T07:13:»
+  818 [bullet] § витрина - текст, который читает посторонний человек — «**Два момента различаются:** *принято* — когда прозвучало слово владельца; *зафиксировано* — когда это записано или закоммичено. Они расходятся, и рас»
+  820 [bullet] § витрина - текст, который читает посторонний человек — «**Момент БЕРЁТСЯ ПРОБОЙ в тот же инструментальный вызов, что и запись.** Не «сессия помнит, сколько прошло»: часов у неё нет, а ощущение времени берёт»
+  826 [bullet] § витрина - текст, который читает посторонний человек — «**Незалогированная точность не выдумывается.** Точная минута не снята — пиши честное `≈ 2026-08-07 10:05 +03:00`. Выдуманное число хуже отсутствующего»
+  828 [bullet] § витрина - текст, который читает посторонний человек — «**Форма метки не доказывает её правдивость.** Все девять выдуманных меток были идеально каноничны — дата, время, смещение зоны на месте, страж формы з»
+  833 [bullet] § витрина - текст, который читает посторонний человек — «**Что является меткой:** решения, закрытия задач/фаз/багов, вехи в поле «Статус:» документа, квитанции машинерии. **Что НЕ является** (даты достаточно»
+  838 [bullet] § витрина - текст, который читает посторонний человек — «**Действует вперёд по построению.** Канон связывает с момента принятия; более старые метки без времени — история, и они НЕ ПЕРЕПИСЫВАЮТСЯ (append-only»
+  845 [sentence] § push / аутентификация в github — «`gh` аутентифицирован (аккаунт `MikalaiKryvusha`).»
+  845 [sentence] § push / аутентификация в github — «Если прямой `git push` падает с `could not read Username` в неинтерактивной оболочке, один раз выполни `gh auth setup-git` (регистрирует `gh` как git »
+  847 [sentence] § push / аутентификация в github — «При `non-fast-forward` — `git pull --rebase`, затем повтори.»
+  853 [sentence] § инструменты — «Таблица инструментов истока (сборка · полигон · стражи · линтеры · коммит — что делает каждый и какой класс стережёт) вынесена в `HOUSE_RULES.md` → §1»
+  854 [sentence] § инструменты — «Три команды, без которых не обходится ни одна правка: `node tools/build-framework.mjs` · `npm run test:core` · `node tools/commit.mjs --msg-file <путь»
+  861 [sentence] § беклог и тег done — «В закрытые файлы `bugs/` и `ideas/` после их номера вставляется `DONE` (`git mv 03_x.md 03_DONE_x.md`) плюс добавляется секция статуса.»
+  863 [sentence] § беклог и тег done — «Навыки: `/check-backlog` (ревизия), `/report-bug` (завести дефект/проблему процесса), `/propose-idea` (предложить улучшение фреймворка — нужно одобрен»
+  866 [sentence] § беклог и тег done — «**Дефект в САМОМ KAIF — контур пяти шагов** (полевое решение владельца, канонизировано в 2.2, эпик M: «если ИИ агент заметил дефект в методологии рабо»
+  869 [sentence] § беклог и тег done — «Когда грабля существует из-за того, КАК сформулирован или ведёт себя сам фреймворк: (1) докажи, что это КЛАСС — детерминированное репро + twin-поиск, »
+  886 [sentence] § беклог и тег done — «Канал — тот же контур: запрос на улучшение (шаблон B, `/report-bug`) с доказательной базой «где проверено боем» (проекты, часы, источники); судьба пре»
+  891 [sentence] § беклог и тег done — «**Закрытие любой идеи/бага/плана требует секции «Решения, принятые агентом без владельца»** — каждое микрорешение, принятое агентом в одиночку по ходу»
+  895 [sentence] § беклог и тег done — «Неразрешённые допущения (строки fable `PENDING:`) закрываются здесь же: каждое — *подтверждено / опровергнуто / спрошено*, ни одно не выпадает молча.»
+  898 [sentence] § беклог и тег done — «Когда владелец мимоходом кидает в чат идею/улучшение/баг, НЕ касающиеся задачи в работе: зафиксируй документом сразу (`/propose-idea` → `ideas/`, `/re»
+  903 [sentence] § беклог и тег done — «Сначала классифицируй: наброс КАСАЕТСЯ текущей задачи → это уточнение, применяй; уровень видения → `/fix-vision`; явное «переключись» → переключайся.»
+  905 [sentence] § беклог и тег done — «**Записанный наброс ранжируется метрикой, а не датой** (2.6, тикет #53): до `/fix-vision` он лежит в `/what-next` на полке «свежие слова владельца — н»
+  922 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Бренд, объём, форма фреймворка, что относится к v1, а что — позже: всё это проходит через `/interview` (`interviews/interview_NNN_*.md`), а не через а»
+  930 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**Место вопросов — жёсткое правило.** Всё, чего агент хочет ОТ владельца — развилка, вычитка, одобрение, ответ, — живёт ТОЛЬКО в `interviews/` (или в »
+  933 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Полевой факт: правило нарушают даже агенты, которые его ЗНАЮТ — чат дешевле в моменте, — поэтому проект, принявший практику, держит механического стра»
+  939 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Опциональный интерактивный контур сверху (HTML-рендер интервью, фиксируемые решения в один клик) — `/owner-reviews`; сила ответа не зависит от транспо»
+  941 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Контур записывает не только, что вопрос ЕСТЬ и что он ОТВЕЧЕН, но и что он ПОКАЗАН — когда и каким транспортом (`/owner-reviews` I40), — а у команды о»
+  945 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**И каждый вопрос, и каждый вариант ответа — СЦЕНАРИЙ того, что владелец увидит** — Ситуация · Действие · Результат · Проверка на языке заказчика, тех»
+  951 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**И голос беседы — язык заказчика, не словарь агента** (№106, `bugs/112`): в подписях вариантов и строках Ситуация · Действие · Результат каждая вещь »
+  957 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**Смущение агента — знак искать, а не отказывать** (слово владельца 2026-09-05, issue #50, дословно: «если я тебе что-то предлагаю, и тебя это смущает»
+  964 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Сообщение владельцу о его предложении со словами «ломает X», «не умеет», «невозможно», «противоречит» без улик шагов 1–2 не отправляется — вместо него»
+  966 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Откат работы, которую владелец велел, из-за красного стража — развилка в `interviews/` с цитатой вывода стража, никогда строка отчёта; стражи при этом»
+  971 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Полевой случай (#50, три инцидента за сутки в одном проекте): ответ владельца «нужно писать role-playing game и RPG одновременно» прочитан как третий »
+  975 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Правило не превращается в «всегда спрашивай владельца»: вопрос без шагов 1–2 — тот же дефект с лучшими манерами.»
+  976 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «У истока класс стережёт ось G7 `node tools/questions-guard.mjs` (вердикт о предложении владельца без блока `Разведка:` рядом; объявленное исключение —»
+  984 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Страж гоняется в `/end-chat-soft` и `/release` вместе с реестром пар; свод канона контура — `s12` в `npm run test:core`.»
+  997 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Для агента работа «показана», когда артефакт СУЩЕСТВУЕТ; для человека — когда она У НЕГО ПЕРЕД ГЛАЗАМИ, и действие между этими состояниями принадлежит»
+  1000 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Формулировки «лежит по пути…», «открывается двойным кликом», «см. файл X» в адрес человека запрещены как способ показа; путь называется ПОСЛЕ показа —»
+  1002 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Отдельный инструмент показа не заводится: контур вычитки открывает любой markdown (контур показа = контур вопросов, `/owner-reviews` I15–I17); контура»
+  1004 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**И показ докладывается не шире, чем наблюдался:** «страница поднята» значит, что сервер отвечает; «она у вас перед глазами» говорится только после сн»
+  1006 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**А текст, который владелец читает как свой, показывается только ПОСЛЕ того, как написан ПО его портрету, независимо проверен по нему и выправлен:** `»
+  1017 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Механическая половина существует ровно одна и названа поимённо: вопросы владельцу стережёт `node tools/questions-guard.mjs`, ось «вопрос ОТПРАВЛЯЕТ в »
+  1020 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Ты опять принуждаешь меня капаться в файлах проекта!» **А страницу, на которую владелец смотрит, ЗАКРЫВАЕТ только команда, которая её проверяет** (KAI»
+  1032 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Ссылка ВМЕСТО содержания — дефект, и он стережётся механически (`node tools/questions-guard.mjs`, ось «вопрос ОТПРАВЛЯЕТ в документ»), потому что влад»
+  1038 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**Класс «вкус» — критерий, который агент не может измерить.** Канон покрывает измеримое (проверка наблюдением, `TESTING_FRAMEWORK.md`) и развилки виде»
+  1053 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Идентичность — НИКОГДА не решение агента, ни при каком объёме одобрения: широкое «добро» тихо маскирует вопрос вкуса под техническую деталь выпуска — »
+  1056 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Запасной выход — нейтральный фактический заголовок, никогда имя-заглушка (заглушка — тоже имя, которое придётся отменять).»
+  1058 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «У каждого отгруженного имени — артефакт источника (*владелец · канал · дата*), и брендовую ошибку исправляет только владелец: переименование — тоже бр»
+  1059 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «(`/release` Шаг 0 держит это в точке решения; `/fable-judge` охотится на отгруженное имя без артефакта источника.)»
+  1065 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Канон даёт решениям владельца особый статус — «не пересматривать» — и разрешает агенту решать остальное; оба ложились в документ одинаковыми словами, »
+  1072 [bullet] § решения, которые агент не должен принимать в одиночку - интервью — «**У каждого записанного решения есть автор.** Владельца — `[OWNER] «дословно» · дата и время` (русская пара — `[ВЛАДЕЛЕЦ]`; или адрес интервью и вопро»
+  1076 [bullet] § решения, которые агент не должен принимать в одиночку - интервью — «**Мандат — не решение.** «Давай как ты считаешь», «на твоё усмотрение», «do as you see fit» передают ВЫБОР агенту: запись — `[ИИ] по мандату — «слова »
+  1079 [bullet] § решения, которые агент не должен принимать в одиночку - интервью — «**«Не пересматривать» — только у решений `[OWNER]`.** Решение `[ИИ]` любая следующая сессия пересматривает свободно; статус не наследуется молчанием.»
+  1081 [bullet] § решения, которые агент не должен принимать в одиночку - интервью — «**Источник истины о словах владельца — чат и `interviews/`** (его собственная строка). Всё остальное — строка плана, комментарий в коде, отчёт — ПЕРЕС»
+  1090 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**Write-gate на канон-артефакты владельца** (правила, лор, бренд-тексты, продуктовые документы — всё, где слово владельца И ЕСТЬ содержание): **новые »
+  1103 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «И всё, что ИИ ПРЕДЛАГАЕТ как содержимое канона владельца — строку лора, правило, значение, строку таблицы, — несёт ту же пометку, где бы оно ни лежало»
+  1108 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**Пометка И ЕСТЬ очередь на приёмку:** снимает её только слово владельца («глава принята») — агент НИКОГДА не снимает пометки со своего текста сам.»
+  1112 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Проверка дёшева грепом: ИИ-текст в канон-артефакте без пометки — или пометка, снятая без слова владельца, — фрод, на который охотится `/fable-judge`.»
+  1114 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Проверка МЕХАНИЗИРОВАНА (опциональные модули поставки, 2.0): объяви канон в `.kaif/kaif.json` (`"canonArtifacts": […]`) и включи в гейты `node .kaif/t»
+  1123 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «**ВИТРИНА ИЗЪЯТА, и изъятие названо ПОИМЁННО** (решение №65, слово владельца дословно, контур 2026-08-09 00:14 +03:00: «README и релиз ноутсы не попад»
+  1125 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «`README` и релиз-ноты пометок не несут никогда.»
+  1125 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Причина механическая, а не вкусовая: эти два артефакта ПУБЛИКУЮТСЯ как есть, поэтому пометка внутри них отгружает служебную разметку каждому читателю »
+  1128 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Очередь для витрины другая, и она остаётся обязательной: витрину ВЫЧИТЫВАЕТ владелец (просьба оформляется домашкой), и до вычитки текст непринят ровно»
+  1130 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Две границы держат изъятие от расползания: оно перечисляет ФАЙЛЫ, а не категорию («публичные документы» проглотили бы весь канон), и покрывает только »
+  1136 [bullet] § решения, которые агент не должен принимать в одиночку - интервью — «**черновик** — быстро, ВНЕ канона владельца: наброски, разведдоки, идеи, спайки. Без стайлгайда, пометок и линтера — дёшево по замыслу. Черновик никог»
+  1138 [bullet] § решения, которые агент не должен принимать в одиночку - интервью — «**канон** — всё, что входит в канон-артефакты владельца, идёт полным конвейером: утверждённый стайлгайд (`/derive-styleguide`) → письмо с провенанс-по»
+  1141 [sentence] § решения, которые агент не должен принимать в одиночку - интервью — «Разделение по силе модели (помечай в навыках и пунктах задач): механические шаги — прогон линтеров и гейтов, переименования, арифметика, ресинки — люб»
+  1152 [bullet] § стиль кода и документации — «Проза этого фреймворка и есть его продукт — держи её ясной, конкретной и согласованной. Английский — основной; русская копия зеркалит его.»
+  1154 [bullet] § стиль кода и документации — «Комментируй инструменты (`tools/*.mjs`) — что делает каждый блок и зачем.»
+  1155 [bullet] § стиль кода и документации — «Меняя шаблон, помни про два слоя (полезная нагрузка vs. обвязка) и про шаг пересборки.»
+  1156 [bullet] § стиль кода и документации — «Никаких магических значений в инструментах — только именованные константы.»
+  1157 [bullet] § стиль кода и документации — «**Канонический порядок для всего сравниваемого/кэшируемого:** любой вывод, который диффится, дедуплицируется или кэшируется, обязан быть детерминирова»
+  1166 [bullet] § заметки от владельца — «Фреймворк должен оставаться **универсальным** — абстрагируйся от исходного проекта и от автора. Исходный проект — лишь исток и может приводиться как п»
+  1168 [bullet] § заметки от владельца — «**Глубокое объясняй просто — это и есть признак понимания** (указание владельца, 2026-07-26). KAIF масштабен и глубок, но подавать его надо легко и по»
+  1176 [bullet] § заметки от владельца — «Сохраняй реальное свойство **самораспаковки**: всё необходимое для развёртывания должно жить внутри `KAIF.md`.»
+  1178 [bullet] § заметки от владельца — «Поддерживай **два языка**: английский (основной) и русский (переводная копия). Держи их синхронными.»
+  1179 [bullet] § заметки от владельца — «Этот проект обёрнут сам собой — но развёртывание в пользовательские проекты управляется ТОЛЬКО `KAIF.md`.»
+  1181 [bullet] § заметки от владельца — «**Поменьше ссылок на проекты-доноры — тем более в поставке** (слово владельца 2026-09-04 14:47 +03:00, №90: «нужно поменьше ссылаться на какие-либо пр»
+  1184 [bullet] § заметки от владельца — «**Механика KAIF отгружается только полной** (слово владельца 2026-09-05 14:38 +03:00, №97, дословно: «Или ты делаешь механики так, чтобы они не ставил»
+  1188 [bullet] § заметки от владельца — «**Вопрос владельцу — сценарием того, что он увидит** (слово владельца 2026-09-05 14:38 +03:00, №98, дословно: «Я просил описывать требования поведенче»
+TESTING_FRAMEWORK.md @ v2.7: obligations 69 — bullet 10 · code 7 · sentence 15 · step 37
+  3 [sentence] § testing_framework - как агент тестирует то, что создаёт — «Сырому сгенерированному контенту — коду, документу, анализу, чему угодно — **доверять нельзя**.»
+  14 [step] § семь принципов тестирования (канон) — «**Тестирование показывает наличие дефектов, а не доказывает их отсутствие.** Зелёный прогон не доказывает, что багов нет — баги ЕСТЬ ВСЕГДА; тестирова»
+  16 [step] § семь принципов тестирования (канон) — «**Исчерпывающее тестирование невозможно.** Все комбинации входов и условий не проверить — приоритизируй по риску и ценности, а не изображай полноту.»
+  18 [step] § семь принципов тестирования (канон) — «**Раннее тестирование экономит бюджет.** Проверяй уже на этапе требований/плана; чем позже найден дефект, тем он дороже (небоскрёб по waterfall на неп»
+  20 [step] § семь принципов тестирования (канон) — «**Скопление дефектов.** Большинство ошибок живёт в нескольких узких модулях — где нашёл одну, ищи рядом (twin check fable-method — этот принцип, механ»
+  22 [step] § семь принципов тестирования (канон) — «**Парадокс пестицида.** Одинаковые тесты перестают находить новые баги — меняй тесты, углы, данные.»
+  23 [step] § семь принципов тестирования (канон) — «**Зависимость от контекста.** Методы тестирования подбираются под проект и сферу — платёжную систему, научную статью и лендинг не тестируют одинаково.»
+  25 [step] § семь принципов тестирования (канон) — «**Заблуждение об отсутствии ошибок.** Безошибочный продукт, не решающий задачу пользователя, бесполезен — всегда тестируй против требований ВЛАДЕЛЬЦА »
+  42 [step] § что значит слово "тест" - функциональный прогон по реальному продукту путём пользователя — «**Тест — функциональный прогон по РЕАЛЬНОМУ продукту (стейдж или прод) путём пользователя, результат которого ПРОЧИТАН.** Агент выводит сценарии из фу»
+  46 [step] § что значит слово "тест" - функциональный прогон по реальному продукту путём пользователя — «**Гигиена — не тест.** Линтер, юнит-тесты, селфтесты, мутационные доказательства, стражи — обязательны (гейт 5 остаётся) и никогда не называются «тест»
+  51 [step] § что значит слово "тест" - функциональный прогон по реальному продукту путём пользователя — «**`[NOT-TESTED]` в продакшен не допускается.** Правило маркера 2 переключается только функциональным прогоном; отчёт прогона несёт его ОТДЕЛЬНО от гиг»
+  58 [sentence] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «Причина её существования оплачена полем (issue #21 истока): без обязанности спроектировать набор наблюдений агент прогнал ОДИН happy path, доложил «фи»
+  60 [sentence] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «Тестирование фичи — цепочка активностей, а не одно наблюдение; проходи её по порядку, у каждого шага — условие выхода:»
+  63 [step] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «**Разбери тестовый базис.** Назови источник истины ожидаемого поведения — требование, слово владельца, спека, канон-карта (их форму задаёт `REQUIREMEN»
+  68 [step] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «**Спроектируй набор наблюдений именованными техниками.** Выводи кейсы стандартными инструментами: эквивалентное разбиение · граничные значения · табли»
+  73 [step] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «**Запиши документацию до исполнения.** Тестовая документация живёт в файлах, а не в голове сессии: план (что и зачем) · сюита/чек-лист (упорядоченный »
+  79 [step] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «**Исполняй с учётом.** Каждый кейс кончается статусом — `pass` · `fail` · `blocked` · `skipped` — с названным наблюдением (что запускалось, что увиден»
+  82 [step] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «**Прогони контрольный кейс до вердикта «работает».** Выключи управляющий флаг / убери управляющий параметр и наблюдай, как фича НЕ работает: проверка »
+  85 [step] § тестовые активности - цепочка, из-за которой "проверено" что-то значит — «**Оформляй дефекты в заданной форме.** Шаги воспроизведения · ожидаемое против фактического · severity/priority · окружение · улики — и передавай в `B»
+  95 [bullet] § маркеры тест-статуса - контракт доверия — «**`[NOT-TESTED]`** — свежесгенерированное, сырое. **Доверять нельзя.** LLM «думала», что это верно, — это не улика.»
+  97 [bullet] § маркеры тест-статуса - контракт доверия — «**`[TESTED: <дата> · <как проверено / что наблюдалось>]`** — проверено наблюдением, улика названа (прогон, рендер, пересчёт, сверка с источником).»
+  102 [step] § маркеры тест-статуса - контракт доверия — «**Создал сырое** (нетривиальный блок/метод/модуль/секцию) → впиши `[NOT-TESTED]` в его комментарий при рождении. Комментирование и так обязательно (`A»
+  105 [step] § маркеры тест-статуса - контракт доверия — «**Встретил `[NOT-TESTED]`** (своё или унаследованное) → не строй на нём вслепую: запланируй проверку, проверь **наблюдением** (fable-method, шаг 5: за»
+  109 [step] § маркеры тест-статуса - контракт доверия — «**Встретил `[TESTED: …]`** → доверять можно, перепроверять не нужно — но держи толику сомнения (принцип 1: баги есть всегда). Улики противоречат марке»
+  111 [step] § маркеры тест-статуса - контракт доверия — «**Тест нашёл дефект** → заведи его (`/report-bug`, метод — `BUG_FIXING_FRAMEWORK.md`), почини, перепроверь и только затем ставь `[TESTED]`.»
+  113 [step] § маркеры тест-статуса - контракт доверия — «**Ложный `[TESTED]`** — маркер без реально проведённой проверки — это фрод; `/fable-judge` охотится на него как на любое ложное заявление о завершении»
+  115 [step] § маркеры тест-статуса - контракт доверия — «**Носитель по типу артефакта:** код — комментарий блока/метода; документ — примечание секции; иная сфера — ближайший комментируемый носитель по конвен»
+  117 [step] § маркеры тест-статуса - контракт доверия — «**Маркер на ФИЧЕ требует спроектированного набора.** `[TESTED]` на фиче легален только рядом с письменным набором кейсов и его покрытыми измерениями (»
+  130 [sentence] § работа производит и средство своей проверки — ««Сырому доверия нет» связывает ПРОИЗВОДИТЕЛЯ, а не только проверяющего: сделать что-то — значит сделать и то, чем это проверяется: test suite, чек-лис»
+  131 [sentence] § работа производит и средство своей проверки — «Они планируются ВМЕСТЕ с работой и ложатся В ТОТ ЖЕ шаг, а не «потом»: проверка, отложенная на следующий шаг, — проверка, которой не будет, а проверка»
+  138 [sentence] § работа производит и средство своей проверки — «Контракт в форме шагов — проходи его на каждой нетривиальной работе:»
+  140 [step] § работа производит и средство своей проверки — «**Назови проверку при планировании работы.** Тот же шаг задачи, что строит X, называет, чем X проверяется, — свод · чек-лист · тест-кейсы · фикстура ·»
+  142 [step] § работа производит и средство своей проверки — «**Положи обе в один шаг.** Проверка входит в репозиторий вместе с работой — никогда «потом» и никогда только в скретчпаде сессии.»
+  144 [step] § работа производит и средство своей проверки — «**Докажи проверку на сломанной версии**, прежде чем верить её зелёному (гейт 5 ниже; `BUG_FIXING_FRAMEWORK.md` → Стражи). Закрытый дефект дополнительн»
+  155 [sentence] § исполненный прогон рождает отчёт — «Цепочка выше кладёт тест-документы ДО прогона, контракт доверия — маркер ВНУТРИ заявления, и никто не говорил, что обязан оставить после себя сам прог»
+  161 [step] § исполненный прогон рождает отчёт — «**Каждый исполненный прогон оставляет отчёт** — живая проба, смоук, полигон, функциональный прогон — в доме тест-документов, каталогом по дате: `cp .k»
+  167 [step] § исполненный прогон рождает отчёт — «**Семь полей, ни одного пустого** — *Работа* (что проверялось и против какого базиса — набор кейсов, план) · *Контур* (часть системы и стенд: окружени»
+  174 [step] § исполненный прогон рождает отчёт — «**Заявление `[TESTED: …]` о прогоне называет его отчёт** — маркер несёт адрес отчёта (`testcases/reports/2026-09-12_polygon.md`) рядом с датой и улико»
+  177 [step] § исполненный прогон рождает отчёт — «**Линтер судит форму, судья — правду.** Опциональный tool-модуль `node .kaif/tools/kaif-testrun-lint.mjs check` (`selftest`; у истока — `node framewor»
+  191 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**Живой смоук с глазами на логе.** Запусти настоящий процесс (не только тесты) и прочитай его первый рабочий цикл в логе — старт, ключевую операцию, о»
+  193 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**Самодостаточность отгружаемого артефакта.** Образ/бандл/пакет обязан стартовать в изоляции (свежий контейнер/каталог) — сборка, работающая только вн»
+  195 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**Инварианты домена, до/после.** До работы выпиши числа, которые не должны измениться (счётчики, суммы, размеры); после — сверь. Сверка двух чисел — т»
+  198 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**Считаемые прокси качества.** Где качество визуально или субъективно — найди, что можно посчитать (анимации на экран, проверка прозрачности панелей, »
+  201 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**Проверка, которая ни разу не падала, ничего не доказывает.** Каждый новый страж сначала проверяется на сломанной версии (см. `BUG_FIXING_FRAMEWORK.m»
+  214 [code] § зелёные тесты ≠ работает - гейты наблюдения — «@guard <имя>»
+  215 [code] § зелёные тесты ≠ работает - гейты наблюдения — «THREAT: реальное событие, ради которого он существует»
+  216 [code] § зелёные тесты ≠ работает - гейты наблюдения — «PROVED-AGAINST: что на самом деле делал красный прогон»
+  217 [code] § зелёные тесты ≠ работает - гейты наблюдения — «GAP: чего доказательство НЕ покрывает — или слово `none`, написанное подумав»
+  218 [code] § зелёные тесты ≠ работает - гейты наблюдения — «ON-REAL-PATH: где он наблюдён работающим на пути, которым ходит владелец, — или `NOT YET`»
+  220 [sentence] § зелёные тесты ≠ работает - гейты наблюдения — «Самописец, чья лента обязана пережить событие, которое объясняет, объявляется так же — `@forensic <имя>` · `EXPLAINS:` событие · `DURABLE-AT:` когда у»
+  223 [sentence] § зелёные тесты ≠ работает - гейты наблюдения — «Опциональный tool-модуль `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) краснеет на блоке без поля и на отвергнутом `DURABLE-AT`; срабатывае»
+  226 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**После деплоя гейт — сам продакшен, войдённый КАК ПОЛЬЗОВАТЕЛЬ.** Войди той дверью, которую продукт предлагает, пройди настоящие экраны, прочитай кон»
+  232 [step] § зелёные тесты ≠ работает - гейты наблюдения — «**Целостность артефакта до отгрузки.** «Собралось» и «это одна сборка» — разные утверждения: отгружаемый бандл несёт ровно ОДНУ идентичность сборки, и»
+  237 [sentence] § зелёные тесты ≠ работает - гейты наблюдения — «Два правила размещения, оплаченные тем же инцидентом: гейты 6–7 живут В ПУТИ ДЕПЛОЯ, а не в прозе — одна дверь деплоя сама гоняет их и падает на любом»
+  240 [sentence] § зелёные тесты ≠ работает - гейты наблюдения — «И пост-деплойный смоук обязан УМЕТЬ УПАСТЬ на мёртвом продукте: докажи, что было что мерить, прежде чем красить зелёным, — смоук, зеленеющий тем сильн»
+  246 [sentence] § стенд агента ≠ реальный мир владельца - "готово" о продакшене произносится после реального мира — «Агент проверяет свою работу на чистом, только что созданном стенде — свежий браузер, чистый чекаут, новый пользователь, сегодняшняя сборка — и говорит»
+  247 [sentence] § стенд агента ≠ реальный мир владельца - "готово" о продакшене произносится после реального мира — «Мир владельца НАКОПЛЕН: старая сессия, сохранённый профиль, его собственные правки в развёрнутом дереве, кеш прошлой сборки — там ломается, а все приб»
+  254 [code] § стенд агента ≠ реальный мир владельца - "готово" о продакшене произносится после реального мира — «РЕАЛЬНЫЙ МИР: накоплено — <что уже есть в мире владельца: сессии, профили, данные, правки>;»
+  255 [code] § стенд агента ≠ реальный мир владельца - "готово" о продакшене произносится после реального мира — «данные и техника — <его данные, его устройство, его учётка>; путь — <дверь, которой он ходит на самом деле>»
+  258 [sentence] § стенд агента ≠ реальный мир владельца - "готово" о продакшене произносится после реального мира — «У каждого пункта ровно два законных исхода — *проверено на реальном* (на его состоянии, его данных, его пути) или *проверено с реальным состоянием, сн»
+  264 [sentence] § стенд агента ≠ реальный мир владельца - "готово" о продакшене произносится после реального мира — «`/fable-judge` охотится на «готово» о продакшене без строки разности (охота «done without the real world»).»
+  278 [bullet] § как это стыкуется с остальным kaif — «**`REQUIREMENTS_FRAMEWORK.md`** — формирует ТРЕБУЕМОЕ до того, как что-то сделано; этот фреймворк проверяет СДЕЛАННОЕ против него. Принцип 3 (раннее т»
+  281 [bullet] § как это стыкуется с остальным kaif — «**fable-method** — шаг 5 (проверка наблюдением) — это КАК выполняется одна проверка; этот документ — ЧТО обязано нести статус и как распространяется д»
+  284 [bullet] § как это стыкуется с остальным kaif — «**`/fable-judge`** — трактует маркеры как заявления: невоспроизводимый `[TESTED]` = REFUTED.»
+  285 [bullet] § как это стыкуется с остальным kaif — «**Блок объявления стража как страж** — опциональный tool-модуль `kaif-guard-lint` (`.kaif/tools/`; в истоке — `framework/tools/`) гоняет вторую полови»
+  288 [bullet] § как это стыкуется с остальным kaif — «**Форма отчёта прогона как страж** — опциональный tool-модуль `kaif-testrun-lint` (`.kaif/tools/`; в истоке — `framework/tools/`) судит семь полей и к»
+  291 [bullet] § как это стыкуется с остальным kaif — «**`BUG_FIXING_FRAMEWORK.md`** — куда уходят находки тестирования (по документу на дефект; 3 попытки → исследование).»
+  293 [bullet] § как это стыкуется с остальным kaif — «**Сферы** (`.kaif/spheres/`) — определяют улики сферы, смысл «проверено наблюдением» и таблицу фродов; принцип 6 живёт там.»
+  295 [bullet] § как это стыкуется с остальным kaif — «**Харнесс** — вкладывайся в инструментовку, делающую проверку наблюдаемой и детерминированной (`AGENT_GUIDE.md` → тестовый стенд); прикидка на глаз — »
