@@ -4,7 +4,8 @@
 > **Родитель:** `plans/117_EPIC_kaif_2.8.md` строка 1, критерии 1–4 · `researches/32` §2а (#84 #85), §2в (#89 #90), §2д (Q-§2,
 > Q-§2.4-5, N12, K14, K16, K17) · `plans/95` (эпик CB 2.7 — ворота, которые этот эпик доводит).
 > **Статус:** 🟢 готов к старту 2026-09-24 19:06 +03:00 (коммит `2d897c5`) — шаги CK0–CK2 детализированы; CK3–CK6 — контуром, детализация на
-> закрытии CK2 (разведдок CK1 задаёт метод).
+> закрытии CK2 (разведдок CK1 задаёт метод). **CK0 ✅ 2026-09-24 20:16 +03:00** (сессия 71: входы совпали, базовая линия —
+> `testcases/reports/2026-09-24_ck-light-canon.md`); в работе — CK1.
 > **Вовне:** правки канона поставки едут полю обновлением 2.8 — каждая переехавшая секция объявлена в
 > `renamesByVersion['2.8']`, смена контракта ворот — в `POLICY_CHANGES_BY_VERSION['2.8']`; ответы в #84 #85 #89 #90 #93 — на RL.
 
@@ -34,10 +35,10 @@
 
 ### CK0 — нулёвка актуализации входов (≈ 0,1 чата)
 
-- [ ] Сверить входы плана против HEAD (№76): `git log --oneline 6af0dad..HEAD -- framework/AGENT_GUIDE.md framework/TESTING_FRAMEWORK.md framework/installer/KAIF-CORE.mjs framework/tools/kaif-attribution-lint.mjs framework/tools/kaif-experience-lint.mjs framework/skills/fix-vision/SKILL.md` — правки после разведки → поправить план по фактам.
-- [ ] Снять базовую линию ДО: `git show v2.7:framework/AGENT_GUIDE.md | wc -lw` и то же для `TESTING_FRAMEWORK.md`, корневых `AGENT_GUIDE.md` и `TESTING_FRAMEWORK.md`; число строк происхождения (регэксп разведчика `researches/32` §2д Q-§2: `issue #N` · `epic XX` · `KAIF x.y` · «слово владельца» / «owner's word»); вывод — файлом в отчёт прогона.
-- [ ] Прочитать ассерты свода `s16` о бюджете шаблона (`grep -n "1200" tools/sandbox/s16-doc-budgets.mjs`) и места бюджетов в ядре (`KAIF-CORE.mjs` `DOC_BUDGETS` :137–147, `ownLines` :2491, гейт :3281) — что сломает сжатие и что обязано остаться.
-- **Выход:** базовая линия записана; план поправлен или помечен «входы совпали».
+- [x] Сверить входы плана против HEAD (№76): `git log --oneline 6af0dad..HEAD -- framework/AGENT_GUIDE.md framework/TESTING_FRAMEWORK.md framework/installer/KAIF-CORE.mjs framework/tools/kaif-attribution-lint.mjs framework/tools/kaif-experience-lint.mjs framework/skills/fix-vision/SKILL.md` — правки после разведки → поправить план по фактам. **Входы совпали** (0 коммитов; сессия 71, ≈ 2026-09-24 20:12 +03:00).
+- [x] Снять базовую линию ДО: `git show v2.7:framework/AGENT_GUIDE.md | wc -lw` и то же для `TESTING_FRAMEWORK.md`, корневых `AGENT_GUIDE.md` и `TESTING_FRAMEWORK.md`; число строк происхождения (регэксп разведчика `researches/32` §2д Q-§2: `issue #N` · `epic XX` · `KAIF x.y` · «слово владельца» / «owner's word»); вывод — файлом в отчёт прогона. **Снято:** `node tools/sandbox/probes/ck0-canon-baseline.mjs` → `testcases/reports/2026-09-24_ck-light-canon.md` §4а — шаблоны 1200 и 300 строк, 39 и 11 строк происхождения; корневые 1191 и 300, 50 и 9. Регэксп разведчика не был записан — меряем впредь ЗАПИСАННЫМ регэкспом пробы (7 → 39 на v2.4 → v2.7 против «12 → 33» разведчика). «Короче» судится строками: `wc -w` в Git Bash без `LC_ALL=C.UTF-8` завышает русский текст (отчёт §5).
+- [x] Прочитать ассерты свода `s16` о бюджете шаблона (`grep -n "1200" tools/sandbox/s16-doc-budgets.mjs`) и места бюджетов в ядре (`KAIF-CORE.mjs` `DOC_BUDGETS` :137–147, `ownLines` **:2479** (было :2491), гейт :3281) — что сломает сжатие и что обязано остаться. **Сломает:** `s16` случай 1 (`:130–139`, посылка «шаблон ровно 1200» — фикстура от длины шаблона в CK3) · стерегомые строки `tools/check-framework.mjs` (13 + 2 строки таблицы о шаблонах, 10 + 2 о корневых копиях — фраза под стражем сохраняется или переезжает со стражем) · двенадцать сводов полигона читают шаблоны. **Не мешает:** страж роста поставки `s16` судит «≤ бюджета» (отчёт §4в).
+- **Выход:** базовая линия записана; план поправлен или помечен «входы совпали». ✅ 2026-09-24 20:16 +03:00 (сессия 71).
 
 ### CK1 — разведдок метода (≈ 0,3 чата; лестница `/plan-epic`, ступень research — до кода)
 
