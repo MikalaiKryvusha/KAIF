@@ -3015,6 +3015,15 @@ function cmdCheck() {
     if (!Array.isArray(j.agents) || !j.agents.length) schemaIssues.push('agents is not a non-empty array');
     if (typeof j.language !== 'string' || !j.language) schemaIssues.push('language missing');
     for (const k of ['agent', 'agentsSupported']) if (k in j) schemaIssues.push(`superseded field "${k}" present (an older schema — update should have dropped it)`);
+    // `archives` (2.8, epic CK): optional; an object of "<re-read core document>": "<digest>" | { digest, owner }
+    if ('archives' in j) {
+      if (!j.archives || typeof j.archives !== 'object' || Array.isArray(j.archives)) schemaIssues.push('archives is not an object of "<core document>": "<digest>" | { "digest", "owner" }');
+      else for (const [k, v] of Object.entries(j.archives)) {
+        if (!(k in DOC_BUDGETS)) schemaIssues.push(`archives names "${k}", which is not a document of the re-read core`);
+        const d = typeof v === 'string' ? v : v && typeof v === 'object' ? v.digest : null;
+        if (typeof d !== 'string' || !d) schemaIssues.push(`archives["${k}"] names no digest`);
+      }
+    }
     for (const s of schemaIssues) { console.error(`✖ marker schema: ${s} (Reference §12.1)`); missing++; }
   } catch { console.error('✖ marker unreadable as JSON'); missing++; }
   // Two-headed deployed docs (bug 31; field: project D's /pause and /kaif-remove, project C's doubled // source-kept: two independent field projects
@@ -3153,9 +3162,39 @@ function cmdCheck() {
   //                 against wc -l and their own moduleShas, 0 disagreements, the other 6 and 5 documents silent on both sides, sources re-hashed
   //                 unchanged; the cross-check re-implements the same algorithm, so it catches an assembly error and never one of the algorithm.
   //                 It paid for itself anyway: it is what showed an owner-seeded document reading as "translated wholesale"
+  // A declared ARCHIVE of the owner (2.8, epic CK; origin issue #84 — a field owner decided his GOAL.md is the verbatim append-only
+  // archive of his words and the operative layer is a separate digest; the gate's only cure, "move content out", was exactly what his
+  // decision forbids the agent). `.kaif/kaif.json` → "archives": { "<core document>": "<digest path>" } or { "digest": …, "owner":
+  // "<where his word lives>" } — declared only by the owner, like canonArtifacts. The budget is then judged on the DIGEST and the
+  // archive's size is printed as information, never a stop; a digest that is missing or does not name its archive leaves the archive
+  // judged as before (researches/33 §7 (г)). The judge hunts an archive declared without the owner's word.
+  // [TESTED: 2026-09-25 01:12 +03:00 · suite s16 section (7) green; red on the 2.7 core 5 of its 6 asserts (the sixth — an undeclared
+  //  archive warns — is the old behaviour); mutants M13–M15 of tools/sandbox/probes/budget-mutants.mjs red exactly on their addressees;
+  //  report testcases/reports/2026-09-25_ck53-owner-archive.md]
+  let archives = {};
+  try { archives = readJson(KAIF_JSON).archives || {}; } catch { archives = {}; }
+  const archiveOf = (doc) => {
+    const a = archives && typeof archives === 'object' ? archives[doc] : null;
+    if (!a) return null;
+    return typeof a === 'string' ? { digest: a, owner: '' } : { digest: String(a.digest || ''), owner: String(a.owner || '') };
+  };
+  const fileLines = (p) => readFileSync(p, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
   const overBudget = [];
   for (const [doc, { budget, overflowTo }] of Object.entries(DOC_BUDGETS)) {
     if (!okOnDisk(doc)) continue;
+    const arch = archiveOf(doc);
+    if (arch) {
+      const digestOk = arch.digest && okOnDisk(arch.digest) && readFileSync(arch.digest, 'utf8').includes(doc);
+      if (digestOk) {
+        const dl = fileLines(arch.digest);
+        console.error(`ℹ ${doc}: a declared archive of the owner (${fileLines(doc)} lines — information, never a stop); its digest ${arch.digest} carries the budget: ${dl} of ~${budget}${arch.owner ? '' : ` — the declaration names no owner's word: write "archives": { "${doc}": { "digest": "${arch.digest}", "owner": "<where his word lives>" } }`}`);
+        if (dl <= budget) continue;
+        overBudget.push({ doc, own: dl, budget, overflowTo });
+        console.error(`⚠ ${doc}: own lines ${dl} of budget ~${budget} (the digest ${arch.digest} of a declared archive — the operative text, every line counts) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
+        continue;
+      }
+      console.error(`ℹ ${doc}: declared an archive, but its digest ${arch.digest ? `${arch.digest} ${okOnDisk(arch.digest) ? `does not name ${doc}` : 'is missing'}` : 'is not named'} — the archive is judged as a document until the digest exists and points to it`);
+    }
     const { total, own, basis } = ownLines(doc);
     if (own <= budget) continue;
     overBudget.push({ doc, own, budget, overflowTo });

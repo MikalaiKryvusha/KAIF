@@ -22,7 +22,10 @@
 //  2026-09-25 00:58 +03:00 · TWELVE mutants after epic CK 2.8, step CK5.2 (the ratchet of the door): M2 re-anchored to the new door
 //  line, M6 grown to +130 lines (the template now stands at its build ceiling 1080, +63 no longer crossed the budget), M7–M12 one per
 //  predicate of budgetRatchet() and its write; `--list` named the addressees, the judging run — all twelve red exactly on them, no
-//  invisible mutant; report testcases/reports/2026-09-25_ck52-budget-ratchet.md]
+//  invisible mutant; report testcases/reports/2026-09-25_ck52-budget-ratchet.md.
+//  2026-09-25 01:12 +03:00 · FIFTEEN mutants after step CK5.3 (the owner's declared archive): M13–M15 added, M2/M8/M12 gained the
+//  archive gate asserts they now also redden; judging run — all fifteen red exactly on their named addressees; report
+//  testcases/reports/2026-09-25_ck53-owner-archive.md]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -62,7 +65,8 @@ const MUTANTS = [
              'новое превышение в базу не записывается',
              'ВЫЧИЩЕН из базы',
              'первое закрытие НОВОЙ версии',
-             'нечитаемая база'] },
+             'нечитаемая база',
+             'без дайджеста стоп остаётся'] },
   { name: 'M3 mix threshold 0 — every localized skill reads as a mix',
     from: '  const LANGUAGE_MIX_FOREIGN_SHARE = 0.35;',
     to: '  const LANGUAGE_MIX_FOREIGN_SHARE = 0;',
@@ -109,7 +113,8 @@ const MUTANTS = [
              'та же строка у STATUS',
              'итог гейта называет ЧИСЛО документов',
              'гейт называет верный ход',
-             'НОВЫЙ выход за бюджет'] },
+             'НОВЫЙ выход за бюджет',
+             'без дайджеста стоп остаётся'] },
   { name: 'M9 a version change never re-records the debt (an update\'s growth is punished)',
     from: '  const fresh = !base || base.version !== version;',
     to: '  const fresh = !base;',
@@ -118,12 +123,29 @@ const MUTANTS = [
     from: "    if (fresh) { docs[o.doc] = o.own; verdicts.push({ ...o, pass: true,",
     to: "    if (fresh) { docs[o.doc] = o.own; verdicts.push({ ...o, pass: false,",
     expect: ['первое закрытие без базы ЗАПИСЫВАЕТ',
-             'первое закрытие НОВОЙ версии'] },
+             'первое закрытие НОВОЙ версии',
+             'объявленный архив с дайджестом проходит дверь'] },
   { name: 'M10 the base never tightens after a shrink',
     from: '    docs[o.doc] = Math.min(before, o.own);',
     to: '    docs[o.doc] = before;',
     expect: ['база затягивается',
              'выросший документ базу НЕ поднимает'] },
+  // M13–M15 — the owner's declared ARCHIVE (2.8, epic CK, step CK5.3; origin issue #84 p. 1).
+  { name: 'M13 a digest need not name its archive',
+    from: "readFileSync(arch.digest, 'utf8').includes(doc);",
+    to: "true;",
+    expect: ['дайджест, который не называет свой архив'] },
+  { name: 'M14 the archive declaration is ignored (the archive is judged as a document)',
+    from: '    const arch = archiveOf(doc);',
+    to: '    const arch = null;',
+    expect: ['объявленный архив с дайджестом проходит дверь',
+             'объявление без слова владельца называется вслух',
+             'дайджест, который не называет свой архив',
+             'без дайджеста стоп остаётся'] },
+  { name: 'M15 the marker schema accepts an archive that is not a core document',
+    from: '        if (!(k in DOC_BUDGETS)) schemaIssues.push(',
+    to: '        if (false) schemaIssues.push(',
+    expect: ['архив, названный не документом ядра'] },
   { name: 'M11 a gate with no debt writes no base file (so the next overflow is "first")',
     from: "    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
     to: "    if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",

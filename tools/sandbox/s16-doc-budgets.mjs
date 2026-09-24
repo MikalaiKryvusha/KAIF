@@ -27,6 +27,9 @@
 //       `.kaif/budget-baseline.json` · первая дверь версии без базы записывает долг и пропускает · стояние,
 //       рост и новое превышение останавливают · убывание проходит и затягивает базу · ушедший под бюджет
 //       документ вычищен · смена версии переписывает долг · нечитаемая база — стоп с подсказкой.
+//   (7) ОБЪЯВЛЕННЫЙ АРХИВ владельца (2.8, эпик CK, шаг CK5.3; тикет #84 п. 1): архив с дайджестом проходит
+//       дверь, размер архива — справка · объявление без слова владельца названо · дайджест без имени архива и
+//       пропавший дайджест архива не прикрывают · архив не из ядра — находка схемы маркера.
 //   (5) ТРИ ЧЕСТНЫЕ ЗАПАСНЫЕ ВЕТКИ, каждая говорит о себе вслух: файл, переведённый ЦЕЛИКОМ (ни
 //       одна сигнатура шаблона не выжила — риск (а) плана) · документ owner-seeded той же формы,
 //       который проект пишет сам и переводом не является · среза модулей у файла нет вовсе. Во
@@ -285,6 +288,46 @@ r = run('check --gate-budgets');
 ok(r.code === 1 && /budget-baseline\.json is unreadable — restore it from git/.test(r.out),
    's16 храповик: нечитаемая база — никогда не бесплатный проход, строка называет, как восстановить', r.out.slice(-400));
 unlinkSync(BASE);
+
+// ================================================================ (7) объявленный архив владельца (2.8, эпик CK, шаг CK5.3)
+// Тикет истока #84 п. 1: владелец поля решил, что его GOAL.md — дословный дописываемый АРХИВ его слов, а рабочий слой живёт в
+// отдельном дайджесте; единственное лекарство двери — «вынеси» — ровно то, что его решение запрещает агенту. Маркер:
+// "archives": { "<документ ядра>": "<дайджест>" | { "digest", "owner" } }; бюджет несёт дайджест, размер архива — справка.
+console.log('\n=== s16: объявленный архив владельца судится по своему дайджесту ===');
+const mkArch = readFileSync(MARKER, 'utf8');
+const withArchives = (archivesValue) => {
+  const m = JSON.parse(mkArch.replace(/^\uFEFF/, ''));
+  writeFileSync(MARKER, JSON.stringify({ ...m, archives: archivesValue }, null, 2) + '\n');
+};
+own('GOAL.md', 400, 'Дословные слова владельца');               // архив владельца растёт дописыванием
+writeFileSync(join(S, 'DIGEST.md'), `# Дайджест\n\nРабочий слой видения; полный текст владельца — GOAL.md (архив).\n\n- пункт 1\n- пункт 2\n`);
+r = run('check');
+ok(/⚠ GOAL\.md: own lines \d+ of budget ~300/.test(r.out),
+   's16 архив: без объявления разросшийся GOAL.md судится как документ — строка превышения есть', r.out.slice(-600));
+withArchives({ 'GOAL.md': { digest: 'DIGEST.md', owner: 'interview 017, Q3' } });
+r = run('check --gate-budgets');
+ok(r.code === 0 && /ℹ GOAL\.md: a declared archive of the owner \(\d+ lines — information, never a stop\); its digest DIGEST\.md carries the budget: \d+ of ~300/.test(r.out)
+   && !/GOAL\.md: own lines/.test(r.out) && !/names no owner's word/.test(r.out),
+   's16 архив: объявленный архив с дайджестом проходит дверь — размер архива справкой, бюджет несёт дайджест', r.out.slice(-600));
+withArchives({ 'GOAL.md': 'DIGEST.md' });
+r = run('check');
+ok(/ℹ GOAL\.md: a declared archive[^\n]*the declaration names no owner's word/.test(r.out),
+   's16 архив: объявление без слова владельца называется вслух — с готовой формой записи', r.out.slice(-600));
+writeFileSync(join(S, 'DIGEST.md'), '# Дайджест\n\nРабочий слой без ссылки на полный текст.\n');
+r = run('check');
+ok(/ℹ GOAL\.md: declared an archive, but its digest DIGEST\.md does not name GOAL\.md — the archive is judged as a document/.test(r.out)
+   && /⚠ GOAL\.md: own lines \d+ of budget ~300/.test(r.out),
+   's16 архив: дайджест, который не называет свой архив, архива не прикрывает — строка превышения на месте', r.out.slice(-600));
+withArchives({ 'GOAL.md': { digest: 'NO-SUCH-DIGEST.md', owner: 'interview 017, Q3' } });
+r = run('check --gate-budgets');
+ok(r.code === 1 && /digest NO-SUCH-DIGEST\.md is missing/.test(r.out) && /✖ GOAL\.md: own lines \d+ of budget 300/.test(r.out),
+   's16 архив: без дайджеста стоп остаётся (тикет #84: «Without a digest the stop stays»)', r.out.slice(-600));
+withArchives({ 'NOTES.md': 'DIGEST.md' });
+r = run('check');
+ok(r.code === 1 && /marker schema: archives names "NOTES\.md", which is not a document of the re-read core/.test(r.out),
+   's16 архив: архив, названный не документом ядра, — находка схемы маркера', r.out.slice(-400));
+writeFileSync(MARKER, mkArch);
+if (existsSync(BASE)) unlinkSync(BASE);
 
 // ================================================================ (2) смесь языков по доле токенов
 console.log('\n=== s16: смесь языков судится по ДОЛЕ токенов чужой письменности ===');

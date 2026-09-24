@@ -76,7 +76,8 @@ commit that file with the closing. The first run of a version records the debt a
 passes (`↳ … debt recorded`); after that a document above budget passes only while its own lines
 SHRINK (`↳ … shrinking A → B`), and growth, a standstill or a new overflow stop the closing (`✖`).
 Move at least one line out per closing until the document is under budget; it then leaves the file.
-An unreadable base stops the door too — restore it from git.
+An unreadable base stops the door too — restore it from git. A verbatim document the owner declared
+his archive (`.kaif/kaif.json` → `archives`) is judged by its digest; never declare one on your own.
 
 ### Step 2. Refresh README (when reality moved)
 

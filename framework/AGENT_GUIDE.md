@@ -159,7 +159,8 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    eight in the core's `DOC_BUDGETS` table; `node .kaif/kaif-core.mjs check` WARNS by name above a
    budget (never a failure) and when a core document is missing from the Step-1 bullets of the
    deployed `/resume`. Crossing a budget means move-out — chronicle, `researches/`, a house-rules
-   file — not a bigger number.
+   file — not a bigger number; a verbatim document the owner declares his ARCHIVE (`.kaif/kaif.json`
+   → `archives`, by his word only) is judged by its digest, and the archive's size is information.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
    may skip them when refreshing context, but knows they exist and works with them when the router
@@ -596,9 +597,6 @@ End every commit message with the co-author trailer:
 ```
 Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
 ```
-
-`<If you use a commit/version tool (e.g. tools/commit.mjs that bumps a build number, commits, pushes),
-document it here.>`
 
 ## Document & text hygiene (field-paid rules)
 

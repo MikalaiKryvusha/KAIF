@@ -471,6 +471,7 @@ the owner's name is not a leak.
 | `language` | The owner's working language. |
 | `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
 | `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
+| `archives` | Optional (2.8): `{ "<re-read core document>": "<digest path>" }` or `{ "<document>": { "digest": "<path>", "owner": "<where the owner's word lives>" } }` — a verbatim document the OWNER declares his archive; set only on his word, like `canonArtifacts`. The size budget is judged on the digest (which must name its archive), the archive's size is printed as information; a digest that is missing or does not name its archive leaves the archive judged as a document. `check` validates the shape. |
 | `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
 | `history` | Update history: `{from, to, route, date}` entries; `date` is a moment — local ISO 8601 with the offset (§12.3). |
 

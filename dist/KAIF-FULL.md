@@ -304,7 +304,8 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    eight in the core's `DOC_BUDGETS` table; `node .kaif/kaif-core.mjs check` WARNS by name above a
    budget (never a failure) and when a core document is missing from the Step-1 bullets of the
    deployed `/resume`. Crossing a budget means move-out — chronicle, `researches/`, a house-rules
-   file — not a bigger number.
+   file — not a bigger number; a verbatim document the owner declares his ARCHIVE (`.kaif/kaif.json`
+   → `archives`, by his word only) is judged by its digest, and the archive's size is information.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
    may skip them when refreshing context, but knows they exist and works with them when the router
@@ -741,9 +742,6 @@ End every commit message with the co-author trailer:
 ```
 Co-Authored-By: <YOUR AGENT/MODEL> <noreply@anthropic.com>
 ```
-
-`<If you use a commit/version tool (e.g. tools/commit.mjs that bumps a build number, commits, pushes),
-document it here.>`
 
 ## Document & text hygiene (field-paid rules)
 
@@ -3187,6 +3185,7 @@ the owner's name is not a leak.
 | `language` | The owner's working language. |
 | `i18n` | Optional: `"translated"` — the wrapper is translated wholesale (§7.4); updates record it automatically when the translation net recognizes translated files on a non-English deployment. |
 | `canonArtifacts` | Declared owner canon paths for the provenance module (§13.3). Seeded `[]` at deploy/update — the conscious "no canon yet" state; a MISSING key makes the provenance gate exit 3 "SKIPPED". |
+| `archives` | Optional (2.8): `{ "<re-read core document>": "<digest path>" }` or `{ "<document>": { "digest": "<path>", "owner": "<where the owner's word lives>" } }` — a verbatim document the OWNER declares his archive; set only on his word, like `canonArtifacts`. The size budget is judged on the digest (which must name its archive), the archive's size is printed as information; a digest that is missing or does not name its archive leaves the archive judged as a document. `check` validates the shape. |
 | `aiMarks` | Optional: localized provenance mark pairs as open tags in the owner's script (the `[AI]`/`[AI-ed]` analogs a translated wrapper uses, two entries); closers are derived by inserting `/`, and the English pair always works. Literal examples live in the tool's header, not here — an EN template body must stay free of owner-script text (§7.4's translation net judges bodies). |
 | `history` | Update history: `{from, to, route, date}` entries; `date` is a moment — local ISO 8601 with the offset (§12.3). |
 
@@ -6017,7 +6016,8 @@ commit that file with the closing. The first run of a version records the debt a
 passes (`↳ … debt recorded`); after that a document above budget passes only while its own lines
 SHRINK (`↳ … shrinking A → B`), and growth, a standstill or a new overflow stop the closing (`✖`).
 Move at least one line out per closing until the document is under budget; it then leaves the file.
-An unreadable base stops the door too — restore it from git.
+An unreadable base stops the door too — restore it from git. A verbatim document the owner declared
+his archive (`.kaif/kaif.json` → `archives`) is judged by its digest; never declare one on your own.
 
 ### Step 2. Refresh README (when reality moved)
 
