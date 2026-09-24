@@ -700,3 +700,44 @@ freshly built stand, while the owner's world is accumulated.
   #55); since 2.7 the marks are legal in any document brought to the owner.
 - **The showcase exemption:** the owner's decision, quoted: "README and the release notes are not subject to the mandatory
   provenance-mark rules `[AI]`".
+
+### `AGENT_GUIDE.md` → Document taxonomy — the five tiers
+
+The by-name warning about a re-read core document missing from `/resume` Step 1 (KAIF 2.7, epic TR, origin issue #59): a field
+ritual opened 5 of the 9 core documents, and nothing said a word.
+
+### `AGENT_GUIDE.md` → Context refresh — the re-read rule and its witness
+
+The fourth hook of the refresh-hooks module — the order to run `/resume` when the owner's message opens with the word `resume` —
+arrived in KAIF 2.7 (epic RS).
+
+### `AGENT_GUIDE.md` → Languages — routed by AUDIENCE, never by directory
+
+The routing question replaced a directory list because the field cost of a frozen list was an owner discovering his own roadmap in
+a foreign language within hours of install (issue #6; his words, translated: "I speak Russian, actually"). The trigger-alias rule
+(KAIF 2.7, epic HO; issue #57 — a field deployment in Russian; the owner's words, translated: "That is not a 'baton' — that is local
+slang. In the industry this is called a HANDOVER, and what we write into STATUS is often written into a HANDOVER.md"; and, before
+that, simply: "What does Baton mean?"): rendered literally, the English `baton` landed on the Russian word for a LOAF OF BREAD. The
+fix is not a better dictionary but a source of truth that already existed — the Russian aliases of `/end-chat-soft` already said
+*pass the relay*, while the canon those aliases trigger said *baton*: the guide was arguing with its own triggers, and the owner
+arbitrated for the triggers.
+
+### `AGENT_GUIDE.md` → The form of an obligation — a command, a step, or a checkbox
+
+Field measurement (origin issue #22): two rules of equal canonical weight sat in the same context — the one that had a command was
+honoured unprompted; the one stated as prose accumulated debt for 90 minutes and was paid only when the owner asked. <!-- attribution-ok: a field measurement of rule forms, no decision of the owner is claimed -->
+
+### `AGENT_GUIDE.md` → A leading skill word is an order — the first word of the owner's message
+
+KAIF 2.7, epic RS; the origin's owner, rendered from Russian: "if I write it, I REQUIRE the agent to run that skill before starting
+the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it.
+
+### `AGENT_GUIDE.md` → The storefront — text a stranger reads
+
+The rules are paid for by a wave of twenty-odd defects the owner found by eye in a single pass, and by the owner's own root
+diagnosis: "it reads as if you write English in Russian words."
+
+### `AGENT_GUIDE.md` → Backlog & the DONE tag
+
+The metric-not-date shelf of `/what-next` (KAIF 2.6, origin issue #53): an agent quoted the rule against ranking by recency and in
+the same answer ranked yesterday's and today's word of the owner above the main phase and 87 open bugs.

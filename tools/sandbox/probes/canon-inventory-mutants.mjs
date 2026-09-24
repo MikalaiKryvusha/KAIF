@@ -6,7 +6,9 @@
 // The second edition adds the four holes the CK2 judge found: a rule deleted whole while its command lives in a kept rule
 // (came out `changed`, exit 0), a rule moved out of the canon set (passed as `moved`), a gate sentence inverted, and telegraphese.
 // Run:   node tools/sandbox/probes/canon-inventory-mutants.mjs          (writes only into the OS temp dir; no window, no sound)
-// [NOT-TESTED] — Hygiene of the tool it proves; the probe itself is judged by its control case and the tool's selftest.
+// [NOT-TESTED] — Hygiene of the tool it proves; the probe itself is judged by its control case and the tool's selftest. Its
+// exposure check was proven red on a NAMED broken version (≈ 2026-09-24 21:45 +03:00): a copy of the tool with the first edition's
+// clause-at-risk branch put back lets 119 of 774 single deletions through; the tool — 0 of 774.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { writeFileSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -74,5 +76,19 @@ for (const m of mutants) {
   if (!ok) failed++;
   console.log(`${ok ? 'OK  ' : 'FAIL'} ${m.name} — ${tail} · exit ${r.status}${ok ? '' : ` · expected ${JSON.stringify(m.expect)}${m.printed ? ` and ${m.printed}` : ''}`}`);
 }
-console.log(failed ? `\n${failed} of ${mutants.length} mutant(s) FAILED (traces: ${dir})` : `\nall ${mutants.length} mutants behaved (traces: ${dir})`);
+// EXPOSURE (the CK2 judge's method, EXP-0152): delete every v2.7 obligation of the four canon files ONE AT A TIME and count the
+// deletions the tool does not call `lost`. Hand-made mutants prove the failures their author imagined; this proves all of them.
+// The first edition of the tool let 119 of 659 single deletions through as `changed`, exit 0.
+const { diff } = await import(pathToFileURL(TOOL).href);
+let exposedTotal = 0, unitsTotal = 0;
+for (const f of ['framework/AGENT_GUIDE.md', 'framework/TESTING_FRAMEWORK.md', 'AGENT_GUIDE.md', 'TESTING_FRAMEWORK.md']) {
+  const units = inventory(execFileSync('git', ['show', `v2.7:${f}`], { encoding: 'utf8', maxBuffer: 64 << 20 }), f);
+  let exposed = 0;
+  for (let i = 0; i < units.length; i++) if (diff(units, units.filter((_, j) => j !== i).map((u) => ({ ...u, inSet: true }))).lost.length !== 1) exposed++;
+  exposedTotal += exposed; unitsTotal += units.length;
+}
+const exposureOk = exposedTotal === 0;
+if (!exposureOk) failed++;
+console.log(`${exposureOk ? 'OK  ' : 'FAIL'} exposure — ${exposedTotal} of ${unitsTotal} single deletions of v2.7 obligations NOT reported as lost`);
+console.log(failed ? `\n${failed} check(s) FAILED (traces: ${dir})` : `\nall ${mutants.length} mutants behaved, exposure 0 (traces: ${dir})`);
 process.exit(failed ? 1 : 0);

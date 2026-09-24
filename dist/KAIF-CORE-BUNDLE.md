@@ -94,7 +94,7 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.8": [
-      "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is 277 lines instead of 300: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations) and the interviews section lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules."
+      "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is 277 lines instead of 300: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules."
     ],
     "2.7": [
       "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
@@ -583,9 +583,8 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
    target), the other eight in ONE place, the budget table of the core machinery (`DOC_BUDGETS`);
    `node .kaif/kaif-core.mjs check` names the document, its line count and its budget when it
-   WARNS above one (a warning, never a failure) — and, since 2.7 (epic TR, origin issue #59), the same
-   command warns BY NAME when a core document is missing from the Step-1 bullets of the deployed
-   `/resume` skill: a field ritual opened 5 of 9 and nothing said a word. Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
+   WARNS above one (a warning, never a failure) — and the same command warns BY NAME when a core document
+   is missing from the Step-1 bullets of the deployed `/resume` skill. Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
    not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
@@ -635,7 +634,7 @@ false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
 the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
 mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
-once-per-session STATUS guard — and, since 2.7, the order to run `/resume` when the owner's message
+once-per-session STATUS guard — and the order to run `/resume` when the owner's message
 opens with the word `resume` (the leading-word rule, "A leading skill word is an order" below).
 Activation is an explicit owner opt-in; a deployment without hooks never reddens.
 
@@ -906,8 +905,7 @@ The owner reads it → the owner's working language — **<OWNER_LANGUAGE>** her
 `language`). Only the agent reads it → **English**, the language models read most reliably. A
 directory list cannot carry this rule: skills keep creating owner-facing artifacts long after
 install (epic meta-plans, interviews, homework), and any list is frozen at the moment it was
-written — the field cost was an owner discovering his own roadmap in a foreign language within
-hours of install (issue #6; his words, translated: "I speak Russian, actually").
+written.
 
 | The owner reads it → owner's language | Only the agent reads it → English |
 |---|---|
@@ -924,16 +922,9 @@ Two boundaries stop the rule from drifting:
   meta-plan, the interviews and the chat reports, which QUOTE the material in the owner's
   language — exactly what the self-sufficient-question rule already demands.
 
-**A term that turns absurd in the owner's language is checked against that skill's own trigger aliases**
-(KAIF 2.7, epic HO; issue #57 — a field deployment in Russian; the owner's words, translated: "That is
-not a 'baton' — that is local slang. In the industry this is called a HANDOVER, and what we write into
-STATUS is often written into a HANDOVER.md"; and, before that, simply: "What does Baton mean?").
-Rendered literally, the English `baton` landed on the Russian word for a LOAF OF BREAD. The fix is not
-a better dictionary — it is a source of truth that already existed: the language pack's
-`skill-triggers.json` carries the phrases the OWNER actually says to invoke the skill, and those
-phrases are the canonical rendering of its terms. The Russian aliases of `/end-chat-soft` already said
-*pass the relay*, while the canon those aliases trigger said *baton* — the guide was arguing with its
-own triggers, and the owner arbitrated for the triggers. So, when you write or localize a term of the
+**A term that turns absurd in the owner's language is checked against that skill's own trigger aliases**:
+the language pack's `skill-triggers.json` carries the phrases the OWNER actually says to invoke the skill,
+and those phrases are the canonical rendering of its terms. So, when you write or localize a term of the
 agent's craft:
 
 1. **Grep that skill's aliases for it** (language pack → `skill-triggers.json`) — an alias that names
@@ -1089,10 +1080,7 @@ notes (`gh release view <prev>`). Mixing these scopes is a defect, not a style c
 
 ### The form of an obligation — a command, a step, or a checkbox
 
-A weak model under load honours an obligation in proportion to how EXECUTABLE its form is. Field
-measurement (origin issue #22): two rules of equal canonical weight sat in the same context — the
-one that had a command was honoured unprompted; the one stated as prose accumulated debt for 90
-minutes and was paid only when the owner asked. The owner's razor behind this rule lives in
+A weak model under load honours an obligation in proportion to how EXECUTABLE its form is. The owner's razor behind this rule lives in
 `PHILOSOPHY.md` → "Code before cognition": models understand guidance, not prohibitions, and
 concrete step-by-step plans, not vague prose.
 
@@ -1112,8 +1100,7 @@ of "never Y") or moved into a guard that reddens by itself.
 
 The owner opens a chat with the bare word `resume` and writes the task below it; a session that
 reads the word as a TOPIC starts the task and skips the entry ritual — no canon, no owner's queue,
-no creed — and nothing in the tree says so (KAIF 2.7, epic RS; the origin's owner, rendered from
-Russian: "if I write it, I REQUIRE the agent to run that skill before starting the work"). The
+no creed — and nothing in the tree says so. The
 class: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never
 mid-sentence" (`/kaif-go`) points the other way; nothing mechanical reads the prompt.
 
@@ -1134,9 +1121,7 @@ mid-sentence" (`/kaif-go`) points the other way; nothing mechanical reads the pr
 
 The storefront (README, release notes, a release page, a landing page) differs from a working
 document in one way: it is read by someone who took no part in the work and is not obliged to know
-a single one of our words. The rules below are paid for by a wave of twenty-odd defects the owner
-found by eye in a single pass, and by the owner's own root diagnosis: "it reads as if you write
-English in Russian words."
+a single one of our words.
 
 1. **A translated half is written FROM THE MEANING, never from the draft.** Having written a
    paragraph in the second language, read every sentence aloud: would a living person say this? If
@@ -1295,7 +1280,7 @@ continuing the current task") and return to the interrupted work. Do not drop th
 note, and do not hold it in your head until the session ends — a session's head is the worst storage
 there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
 vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
-the metric, not by its date** (2.6, origin issue #53): until `/fix-vision` puts it into GOAL/MASTER_PLAN it
+the metric, not by its date**: until `/fix-vision` puts it into GOAL/MASTER_PLAN it
 sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
 row 1 is what moves the main phase's acceptance metric or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
 judge hunts "recency ranked over metric".
@@ -3764,6 +3749,47 @@ freshly built stand, while the owner's world is accumulated.
   #55); since 2.7 the marks are legal in any document brought to the owner.
 - **The showcase exemption:** the owner's decision, quoted: "README and the release notes are not subject to the mandatory
   provenance-mark rules `[AI]`".
+
+### `AGENT_GUIDE.md` → Document taxonomy — the five tiers
+
+The by-name warning about a re-read core document missing from `/resume` Step 1 (KAIF 2.7, epic TR, origin issue #59): a field
+ritual opened 5 of the 9 core documents, and nothing said a word.
+
+### `AGENT_GUIDE.md` → Context refresh — the re-read rule and its witness
+
+The fourth hook of the refresh-hooks module — the order to run `/resume` when the owner's message opens with the word `resume` —
+arrived in KAIF 2.7 (epic RS).
+
+### `AGENT_GUIDE.md` → Languages — routed by AUDIENCE, never by directory
+
+The routing question replaced a directory list because the field cost of a frozen list was an owner discovering his own roadmap in
+a foreign language within hours of install (issue #6; his words, translated: "I speak Russian, actually"). The trigger-alias rule
+(KAIF 2.7, epic HO; issue #57 — a field deployment in Russian; the owner's words, translated: "That is not a 'baton' — that is local
+slang. In the industry this is called a HANDOVER, and what we write into STATUS is often written into a HANDOVER.md"; and, before
+that, simply: "What does Baton mean?"): rendered literally, the English `baton` landed on the Russian word for a LOAF OF BREAD. The
+fix is not a better dictionary but a source of truth that already existed — the Russian aliases of `/end-chat-soft` already said
+*pass the relay*, while the canon those aliases trigger said *baton*: the guide was arguing with its own triggers, and the owner
+arbitrated for the triggers.
+
+### `AGENT_GUIDE.md` → The form of an obligation — a command, a step, or a checkbox
+
+Field measurement (origin issue #22): two rules of equal canonical weight sat in the same context — the one that had a command was
+honoured unprompted; the one stated as prose accumulated debt for 90 minutes and was paid only when the owner asked. <!-- attribution-ok: a field measurement of rule forms, no decision of the owner is claimed -->
+
+### `AGENT_GUIDE.md` → A leading skill word is an order — the first word of the owner's message
+
+KAIF 2.7, epic RS; the origin's owner, rendered from Russian: "if I write it, I REQUIRE the agent to run that skill before starting
+the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it.
+
+### `AGENT_GUIDE.md` → The storefront — text a stranger reads
+
+The rules are paid for by a wave of twenty-odd defects the owner found by eye in a single pass, and by the owner's own root
+diagnosis: "it reads as if you write English in Russian words."
+
+### `AGENT_GUIDE.md` → Backlog & the DONE tag
+
+The metric-not-date shelf of `/what-next` (KAIF 2.6, origin issue #53): an agent quoted the rule against ranking by recency and in
+the same answer ranked yesterday's and today's word of the owner above the main phase and 87 open bugs.
 ``````
 
 > **FILE: `plans/README.md`** — create the directory and drop this README

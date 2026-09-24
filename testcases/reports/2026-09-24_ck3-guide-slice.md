@@ -27,7 +27,11 @@
 | 4 | ≈ 2026-09-24 21:31 +03:00 | `node tools/build-framework.mjs` · `node tools/counters-guard.mjs` · `node framework/tools/kaif-attribution-lint.mjs check` · `node tools/questions-guard.mjs` · `node tools/doc-header-lint.mjs` | сборка зелёная (стерегомые строки и 5i целы); модулей 808; авторство — 2 НОВЫХ находки (мои строки-указатели «решение владельца в журнале» без номера, одна из них уже уехала коммитом CK3.3) — переписаны адресом журнала, new 0; вопросы 0; шапки 0 |
 | 5 | ≈ 2026-09-24 21:31–21:34 +03:00 | `node tools/build-framework.mjs` · `npm run test:core` | сборка зелёная; «all 27 suites green» |
 | 6 | ≈ 2026-09-24 21:31–21:38 +03:00 | смысловой аудит чистым экземпляром по двум секциям обоих слоёв целиком, §17, реестру и адресам | NO MATERIAL LOSS; 19 стерегомых строк — счёт равен v2.7; вне скоупа изменений нет; находки — §5, починены |
-| 7 | ≈ 2026-09-24 21:39 +03:00 | `node tools/canon-inventory.mjs --diff v2.7 …` (как 3) · `node framework/tools/kaif-attribution-lint.mjs check` · `node tools/build-framework.mjs` · `node tools/counters-guard.mjs` · `npm run test:core` | kept 712 · declared 26 · lost 0; авторство new 0; сборка и счётчики зелёные; полигон — см. коммит |
+| 7 | ≈ 2026-09-24 21:39–21:42 +03:00 | `node tools/canon-inventory.mjs --diff v2.7 …` (как 3) · `node framework/tools/kaif-attribution-lint.mjs check` · `node tools/build-framework.mjs` · `node tools/counters-guard.mjs` · `npm run test:core` | kept 712 · declared 26 · lost 0; авторство new 0; сборка и счётчики зелёные; «all 27 suites green» — часть А закоммичена `7e27171` |
+| 8 | ≈ 2026-09-24 21:43 +03:00 | часть Б (группа 3 — таксономия, хуки, языки, форма обязательства, первое слово, вступление витрины, полка `/what-next`): скрипты по текущим файлам · `node tools/canon-inventory.mjs --diff v2.7 --with framework/KAIF_REFERENCE.md --declared plans/118_epic117_CK_light_canon_budget_exits.md` | EN 1156 → 1141, RU 1148 → 1132; четыре файла — kept 699 · changed 43 · declared 32 · moved-out 0 · lost 0 · код 0; колон 5,56 и 3,64 |
+| 9 | ≈ 2026-09-24 21:44 +03:00 | `node tools/build-framework.mjs` · `node framework/tools/kaif-attribution-lint.mjs check` · `node tools/counters-guard.mjs` | сборка зелёная; авторство — 1 новая (история #22 в §17 прочитана как слово владельца) → объявленное исключение на строке с причиной, new 0; модулей 815 |
+| 10 | ≈ 2026-09-24 21:45 +03:00 | `node tools/sandbox/probes/canon-inventory-mutants.mjs` (с новым замером уязвимости) · тот же замер на копии инструмента с веткой первого издания | 11/11 и exposure 0 из 774 · копия — 119 из 774 (замер умеет краснеть) |
+| 11 | ≈ 2026-09-24 21:44 +03:00 → | `npm run test:core` · лёгкий аудит группы 3 чистым экземпляром | см. коммит части Б |
 
 ## 4. Проверки
 
@@ -48,6 +52,10 @@
   скобке; три адреса русской копии уточнены — вторая цитата к #67 лежит в `researches/30` §2е, реплика владельца по #50 и «90 записей» —
   только в `git show v2.7:AGENT_GUIDE.md`, у цитаты #55 два расходящихся пересказа (`plans/101` против v2.7) — записано в реестре.
 - Дефектов поставки — ноль.
+- **Замер для порога CK5:** срез без потерь (вынос историй, цитат и тегов версий) дал руководству 1200 → 1141 (−5 %), канону тестирования
+  300 → 276 (−8 %). Порог «шаблон ≤ 0,8 × бюджета» (≤ 960 и ≤ 240) так недостижим: остаток — правила и их объясняющая проза, а не
+  свидетельства. Дальше — либо второй проход (сжатие объясняющей прозы тем же конвейером, риск телеграфа выше), либо пересмотр запаса
+  на детализации CK5 по этому замеру.
 
 ## 6. Следы
 
