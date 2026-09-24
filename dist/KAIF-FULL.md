@@ -5984,7 +5984,10 @@ passed — and then run `node .kaif/tools/kaif-experience-lint.mjs check`: a SEC
 issue #69 — 14 of 15 failure classes recurred AFTER their lesson was written). Fix it before the
 handover by naming the guard in the entry, or by re-checking the price once for the whole class and
 declaring it (`<!-- class-ok: <slug> — <why> -->`) — never by writing a third record; a journal with not
-one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
+one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. A journal that arrived from
+before the fields existed prints its old entries as warnings on every closing: record that inherited debt ONCE —
+`node .kaif/tools/kaif-experience-lint.mjs check --write-baseline` writes `.kaif/experience-lint.baseline.json`, which every
+later `check` reads; commit it (a later write only shrinks it, and a new entry is never adopted — origin issue #80). If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
 If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing

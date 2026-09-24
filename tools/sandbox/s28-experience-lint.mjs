@@ -146,10 +146,36 @@ ok(r.code === 0 && /selftest OK/.test(r.out), 's28 РАЗВЁРНУТЫЙ мод
 // свежий журнал развёртывания (шаблон): классов ещё нет — «не судилось» вслух, не «чисто»
 r = run(`check ${JOURNAL}`, S, DEPLOYED);
 ok(r.code === 3 && /SKIPPED/.test(r.out), 's28 свежий журнал развёртывания (шаблон) — SKIPPED (exit 3), не зелёный', r.out);
+// базовая линия унаследованного долга записывается РАЗВЁРНУТЫМ модулем (2.8, эпик CK, шаг CK5.7; тикет #80: у поля 88–246
+// записей до полей, а записать линию умела только обёртка истока); файл — рядом с журналом, `.kaif/`; линия только убывает
+const LEG = join(ROOT, 'legacy');
+mkdirSync(LEG, { recursive: true });
+const LEG_J = join(LEG, 'EXPERIENCE.md');
+writeFileSync(LEG_J, HEAD() + entry('EXP-0004', '❌', 'shown-as-link', 'mechanized: `tools/showcase-lint.mjs`') +
+  entry('EXP-0003', '❌', null) + entry('EXP-0002', '❌', null) + entry('EXP-0001', '❌', null), 'utf8');
+const LEG_B = join(LEG, '.kaif', 'experience-lint.baseline.json');
+r = run('check', LEG, DEPLOYED);
+ok(r.code === 0 && /EXP-0001 \(line \d+\): a failure entry with no `class:/.test(r.out) && !existsSync(LEG_B),
+   's28 база (CK5.7): до записи линии унаследованные записи без class: предупреждают поимённо, файла линии нет', r.out);
+r = run('check --write-baseline', LEG, DEPLOYED);
+const legIds = existsSync(LEG_B) ? JSON.parse(readFileSync(LEG_B, 'utf8')).ids : [];
+ok(r.code === 0 && /baseline written[^\n]*4 entries/.test(r.out) && legIds.length === 4,
+   's28 база (CK5.7): `check --write-baseline` развёрнутого модуля пишет .kaif/experience-lint.baseline.json — 4 записи', r.out);
+r = run('check', LEG, DEPLOYED);
+ok(r.code === 0 && /inherited field debt 4/.test(r.out) && !/a failure entry with no `class:/.test(r.out),
+   's28 база (CK5.7): голый `check` читает линию сам — долг назван в сводке, поимённых предупреждений нет', r.out);
+writeFileSync(LEG_J, readFileSync(LEG_J, 'utf8').replace('### EXP-0004', entry('EXP-0005', '❌', null).trimEnd() + '\n\n### EXP-0004'), 'utf8');
+r = run('check --write-baseline', LEG, DEPLOYED);
+const legIds2 = existsSync(LEG_B) ? JSON.parse(readFileSync(LEG_B, 'utf8')).ids : [];
+ok(/was 4; 1 entry written after the first capture NOT adopted/.test(r.out) && legIds2.length === 4 && !legIds2.includes('EXP-0005') &&
+   /EXP-0005 \(line \d+\): a failure entry with no `class:/.test(r.out),
+   's28 база (CK5.7): повторная запись линию не растит — новая запись не принята и предупреждает поимённо', r.out);
 // проводка команды: строка крайнего срока стоит в развёрнутом /end-chat-soft
 const CLOSING = join(S, '.claude', 'skills', 'end-chat-soft', 'SKILL.md');
 const closing = existsSync(CLOSING) ? readFileSync(CLOSING, 'utf8') : '';
 ok(/kaif-experience-lint\.mjs check/.test(closing), 's28 развёрнутый /end-chat-soft несёт команду крайнего срока', closing.slice(0, 200));
+ok(/kaif-experience-lint\.mjs check --write-baseline/.test(closing) && /experience-lint\.baseline\.json/.test(closing),
+   's28 база (CK5.7): развёрнутый /end-chat-soft называет запись линии унаследованного долга и её файл', closing.slice(0, 200));
 const CAPTURE = join(S, '.claude', 'skills', 'experience', 'SKILL.md');
 const capture = existsSync(CAPTURE) ? readFileSync(CAPTURE, 'utf8') : '';
 ok(/^\s*class: <slug>/m.test(capture) && /class-ok:/.test(capture), 's28 развёрнутый /experience несёт поле class: и объявленную цену класса', capture.slice(0, 200));

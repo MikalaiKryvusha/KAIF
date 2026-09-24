@@ -4900,7 +4900,10 @@ passed — and then run `node .kaif/tools/kaif-experience-lint.mjs check`: a SEC
 issue #69 — 14 of 15 failure classes recurred AFTER their lesson was written). Fix it before the
 handover by naming the guard in the entry, or by re-checking the price once for the whole class and
 declaring it (`<!-- class-ok: <slug> — <why> -->`) — never by writing a third record; a journal with not
-one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
+one `class:` exits 3 = SKIPPED, and that is said aloud, never read as clean. A journal that arrived from
+before the fields existed prints its old entries as warnings on every closing: record that inherited debt ONCE —
+`node .kaif/tools/kaif-experience-lint.mjs check --write-baseline` writes `.kaif/experience-lint.baseline.json`, which every
+later `check` reads; commit it (a later write only shrinks it, and a new entry is never adopted — origin issue #80). If a previous `/end-chat-force` left a "ceremonies skipped" debt line in `STATUS.md` —
 this closure pays it: run what was skipped and remove the line.
 
 If the project keeps a **truth↔mirror pairs registry**, run its check commands before handing
@@ -13333,6 +13336,8 @@ function cmdSelftest() {
 // Commands:
 //   node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>]   # default: EXPERIENCE.md
 //        [--verbose]   # list every pre-class failure entry instead of the one fold line (origin issue #80)
+//        [--write-baseline]   # record the inherited field debt ONCE (default file .kaif/experience-lint.baseline.json,
+//                             # read by every later bare `check`); a later write only shrinks it (origin issue #80)
 //   node .kaif/tools/kaif-experience-lint.mjs --shrink EXP-NNNN [journal] [--yes]   # show; --yes writes
 //   node .kaif/tools/kaif-experience-lint.mjs selftest                              # PROVE every rule (EN + RU)
 //
@@ -13372,12 +13377,16 @@ function cmdSelftest() {
 //  removed from EXP-0001…EXP-0116): this module prints ONE no-class line for 90 entries, the HEAD module 90 lines,
 //  --verbose 90 —
 //  report: testcases/reports/2026-09-24_ck57-experience-fold.md]
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
 const argv = process.argv.slice(2);
 const EXIT_SKIPPED = 3;
 const DEFAULT_JOURNAL = 'EXPERIENCE.md';
+// The inherited field debt of a DEPLOYED project lives next to the journal, under .kaif/ (origin issue #80: a journal updated
+// from 2.6 carries 88–246 entries written before the fields existed, and the shipped module could not record them — only the
+// origin's own wrapper could). `check --write-baseline` records it; a bare `check` reads it when it is there.
+const DEFAULT_BASELINE = join('.kaif', 'experience-lint.baseline.json');
 
 // ---------------------------------------------------------------------------
 // The fields per language. A project whose owner writes in another language adds a row; the engine
@@ -13625,10 +13634,32 @@ const positional = () => {
   return out;
 };
 
-function loadBaseline(path) {
-  if (!path) return new Set();
+// An explicit `--baseline <file>` must exist; without the flag the project's own file next to the journal is read when present.
+function loadBaseline(path, fallback) {
+  if (!path) return fallback && existsSync(fallback) ? new Set(JSON.parse(readFileSync(fallback, 'utf8')).ids || []) : new Set();
   if (!existsSync(path)) { console.error(`\u2716 experience-lint: no baseline at ${path}`); process.exit(1); }
   return new Set(JSON.parse(readFileSync(path, 'utf8')).ids || []);
+}
+
+// `check --write-baseline`: the first capture records every entry id of the journal; a later one only SHRINKS the line \u2014 it keeps
+// the ids still present and adopts none written since (those are exactly what the field rules are for), and says how many it
+// refused. Same contract as the origin's wrapper and the attribution lint's baseline: an always-red guard teaches itself to be
+// ignored, a baseline that grows teaches the same thing quieter.
+// [TESTED: 2026-09-25 · suite s28 on the DEPLOYED module: write → 4 ids, a bare check reads it, a second write adopts no new
+//  entry; red on the 2.7 dist; functional run on a copy of a field journal (122 entries): one fold warning before, 0 after,
+//  "inherited field debt 122" — testcases/reports/2026-09-25_ck57b-experience-baseline.md]
+function writeBaseline(text, path) {
+  const ids = parseEntries(text).map((e) => e.id);
+  const prev = existsSync(path) ? new Set(JSON.parse(readFileSync(path, 'utf8')).ids || []) : null;
+  const kept = prev ? ids.filter((id) => prev.has(id)) : ids;
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, JSON.stringify({
+    note: 'inherited field debt of the lesson journal (origin issues #14, #80): it only SHRINKS, new entries are never adopted; a repeated class is never silenced by it',
+    capturedAt: new Date().toISOString(), ids: kept,
+  }, null, 2) + '\n', 'utf8');
+  console.log(`experience-lint: baseline written \u2014 ${path}, ${kept.length} entr${kept.length === 1 ? 'y' : 'ies'}` +
+    `${prev ? ` (was ${prev.size}; ${ids.length - kept.length} entr${ids.length - kept.length === 1 ? 'y' : 'ies'} written after the first capture NOT adopted \u2014 the line only shrinks)` : ''}` +
+    ' \u2014 commit it with the closing');
 }
 
 function check() {
@@ -13639,7 +13670,9 @@ function check() {
   }
   const text = readFileSync(journal, 'utf8');
   const root = dirname(resolve(journal));
-  const baseline = loadBaseline(flagValue('--baseline'));
+  const ownBaseline = join(root, DEFAULT_BASELINE);
+  if (argv.includes('--write-baseline')) writeBaseline(text, flagValue('--baseline') || ownBaseline);
+  const baseline = loadBaseline(flagValue('--baseline'), ownBaseline);
   const { entries, list, declared, addressable, findings, warnings } = lint(text, { root, baseline, verbose: argv.includes('--verbose') });
   const classed = entries.filter((e) => e.klass);
   if (!classed.length) {
@@ -13905,7 +13938,7 @@ function selftest() {
 if (argv.includes('--shrink')) shrinkCmd();
 else if (argv[0] === 'check' || argv.length === 0) check();
 else if (argv[0] === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
+else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] [--write-baseline] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
 ``````
 
 > **FILE: `.kaif/tools/kaif-guard-lint.mjs`** — optional tool module — verbatim
