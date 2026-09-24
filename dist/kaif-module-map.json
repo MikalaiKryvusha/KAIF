@@ -2460,10 +2460,10 @@
       {
         "signature": "### Step 1. Record status & the handover in STATUS.md",
         "class": "static",
-        "sha256": "f574f5986f3fe6342d0fae8d16c798fe9ebd2a569d4386372ade827d51612a8e",
+        "sha256": "a759eb21a546384c9d3f5ad73877358b5107366ca5b537ae138f765d7274b7e6",
         "lines": [
           31,
-          81
+          88
         ]
       },
       {
@@ -2471,8 +2471,8 @@
         "class": "static",
         "sha256": "4e8599aeac84993369d303fdb7c012d1f1891acca2d35e1681076ae1c298d666",
         "lines": [
-          82,
-          86
+          89,
+          93
         ]
       },
       {
@@ -2480,8 +2480,8 @@
         "class": "static",
         "sha256": "c249136cd205896996db62b65d8aebc72f20c4c30b820c864d7cd2d721986329",
         "lines": [
-          87,
-          92
+          94,
+          99
         ]
       },
       {
@@ -2489,8 +2489,8 @@
         "class": "adaptive",
         "sha256": "6bc315e9289e6fb2e7c5f80c593e055d379bf5b9a1710827654a850c0e80ecac",
         "lines": [
-          93,
-          106
+          100,
+          113
         ]
       },
       {
@@ -2498,8 +2498,8 @@
         "class": "static",
         "sha256": "870d9f9a177f73f55a7fdbeca2b2d6bc5704f35c0b2fca9add1437104f47e7dc",
         "lines": [
-          107,
-          121
+          114,
+          128
         ]
       },
       {
@@ -2507,8 +2507,8 @@
         "class": "static",
         "sha256": "c3aa9b2465934f62c753d8300d28d356795065e45778db5b5018d97402c56a56",
         "lines": [
-          122,
-          132
+          129,
+          139
         ]
       }
     ],

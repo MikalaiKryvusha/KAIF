@@ -432,5 +432,18 @@ ok(Boolean(mNo) && Number(mNo[1]) === lines('AGENT_GUIDE.md'),
    's16 без среза собственных строк РОВНО столько, сколько на диске',
    mNo ? `own=${mNo[1]} disk=${lines('AGENT_GUIDE.md')}` : r.out);
 
+// ================================================================ (8) стрижка повторяет линт авторства (2.8, эпик CK, шаг CK5.8, K17)
+// Полевой отчёт: строки-указатели стрижки — новая проза, одна из них сказала «по слову владельца» без его слов, а досье, куда
+// стрижка вынесла живую справку, лежало вне охвата линта по умолчанию. Навык закрытия, развёрнутый в проект, обязан назвать
+// прогон линта авторства МЕЖДУ стрижкой и дверью бюджета и явный путь для директории вне охвата.
+console.log('\n=== s16: стрижка бонсая повторяет линт авторства (K17) ===');
+const ecs = readFileSync(join(S, '.claude', 'skills', 'end-chat-soft', 'SKILL.md'), 'utf8');
+const trimAt = ecs.indexOf('**The bonsai trim'), doorAt = ecs.indexOf('**Then the budget DOOR');
+const trimPart = trimAt >= 0 && doorAt > trimAt ? ecs.slice(trimAt, doorAt) : '';
+ok(/node \.kaif\/tools\/kaif-attribution-lint\.mjs check`/.test(trimPart),
+   's16 стрижка (K17): развёрнутый /end-chat-soft велит прогнать линт авторства ПОСЛЕ стрижки и ДО двери бюджета', trimPart.slice(-700) || 'trim/door headings not found');
+ok(/kaif-attribution-lint\.mjs check <dir>/.test(trimPart),
+   's16 стрижка (K17): и называет явный путь для директории вне охвата линта по умолчанию', trimPart.slice(-700) || 'trim/door headings not found');
+
 if (failures) { console.error(`\n❌ s16: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s16 doc-budgets: all ${asserts} checks green`);

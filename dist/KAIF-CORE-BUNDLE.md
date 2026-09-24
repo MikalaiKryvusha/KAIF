@@ -4912,6 +4912,13 @@ closed phases, finished sessions, shipped releases — move VERBATIM into `PROJE
 from its header ("remove this line — will the next agent err?" · "readable in one sitting?"; soft
 target ~200 lines). Leave the file the way you'd want to find it.
 
+The trim writes NEW prose — the pointer lines that stay behind ("moved to …", "decided by the owner") — so where the
+attribution module is deployed, run it after the trim, before the commit: `node .kaif/tools/kaif-attribution-lint.mjs check`.
+A pointer that says "by the owner's word" without his words is a new finding; fix it with the quote or its address. The lint's
+default scope is the seven knowledge directories plus the root `*.md`: if the trim moved text into a directory outside it, name
+that directory — `node .kaif/tools/kaif-attribution-lint.mjs check <dir>` — or the moved text is never read (2.8, epic CK; a field
+report: the trim of one STATUS added one such pointer, and the dossier it created lay outside the default scope).
+
 **Then the budget DOOR — after the trim, not instead of it:**
 
 ```
