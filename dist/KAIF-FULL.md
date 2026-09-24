@@ -3448,6 +3448,16 @@ The living showcase is the origin README. The execution discipline is documented
 when testing's checks run against what the requirements demanded. The thinking canon is
 `PHILOSOPHY.md`. This reference documents the FRAMEWORK; the project's own architecture lives in
 the project's two maps.
+
+## 17. Why the canon says so (informative)
+
+This section is INFORMATIVE: it carries no rule of its own, and a rule found only here is not a rule. The canon documents keep
+each rule as a step, a command or a checkbox with one clause of "why"; the rest of its birth certificate — the incident that paid
+for it, the owner's word that ordered it, the version that shipped it — lives here, so the rule reads short at the moment of
+decision and its reason is still one lookup away. Each entry is keyed by the canon section it explains: the file, an arrow, and
+the section heading verbatim. The build fails on an entry whose heading no longer exists in that file, so an entry cannot
+outlive its rule silently. Read the entry BEFORE changing or dropping a rule: a rule whose reason you cannot see is a fence
+whose purpose you have not yet found.
 ``````
 
 

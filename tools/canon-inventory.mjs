@@ -272,7 +272,8 @@ export function divergence(a, b) {
   while (p < a.length && p < b.length && a[p] === b[p]) p++;
   let s = 0;
   while (s < a.length - p && s < b.length - p && a[a.length - 1 - s] === b[b.length - 1 - s]) s++;
-  const cut = (x) => `${p > CONTEXT ? '…' : ''}${x.slice(Math.max(0, p - CONTEXT), x.length - s)}⟦${x.slice(p, x.length - s)}⟧${x.slice(x.length - s, x.length - s + CONTEXT)}${s > CONTEXT ? '…' : ''}`;
+  // контекст ДО участка · ⟦участок⟧ · контекст ПОСЛЕ — середина печатается ровно один раз
+  const cut = (x) => `${p > CONTEXT ? '…' : ''}${x.slice(Math.max(0, p - CONTEXT), p)}⟦${x.slice(p, x.length - s)}⟧${x.slice(x.length - s, x.length - s + CONTEXT)}${s > CONTEXT ? '…' : ''}`;
   return { was: cut(a), now: cut(b) };
 }
 
@@ -349,7 +350,8 @@ function selftest() {
   run('a removal declared in the ledger', (l) => l.filter((x) => !x.startsWith('1. Read')), { lost: 0, declared: 1 }, '- «Read STATUS.md» → HOUSE_RULES.md § Reading order');
   run('a too-short ledger prefix is ignored', (l) => l.filter((x) => !x.startsWith('1. Read')), { lost: 1, declared: 0 }, '- «Read» → anywhere');
   const d = divergence('a'.repeat(200) + ' within 60 minutes ' + 'b'.repeat(50), 'a'.repeat(200) + ' within 90 minutes ' + 'b'.repeat(50));
-  const divOk = d.was.includes('⟦6⟧') && d.now.includes('⟦9⟧');
+  // точная форма: 40 знаков контекста, участок ОДИН раз, 40 знаков после (первая редакция печатала середину дважды)
+  const divOk = d.was === `…${'a'.repeat(32)} within ⟦6⟧0 minutes ${'b'.repeat(30)}…` && d.now.includes('⟦9⟧') && d.was.split('within').length === 2;
   cases.push(divOk);
   console.log(`${divOk ? '✅' : '✖'} a change past character 150 is printed at the place it happened (${d.was.slice(-40)})`);
   const m1 = meter('One two three four five, six seven eight nine ten.\n\n- Short, list, item.');

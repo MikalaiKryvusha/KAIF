@@ -153,6 +153,51 @@ function selfProofInvisible() {
   return fails;
 }
 
+// 5i. Reference §17 «Why the canon says so» (2.8, epic CK, step CK3.2; researches/33 §7 (а)). The canon keeps each rule short and
+//     moves its birth certificate into this INFORMATIVE section, one entry per canon section, keyed `### \`<FILE>\` → <heading>`.
+//     An entry whose heading no longer exists in framework/<FILE> is a reason that outlived its rule (or a key that never matched):
+//     red, the key named. Declared here with its self-proof (`--selftest`), invoked in the numbered checks after 5c.
+// @guard reference-why-keys
+// THREAT:         a slimmed canon section is renamed or dropped and its «why» entry stays behind, pointing at nothing — the next
+//                 session reads a reason for a rule that is gone, or cannot find the reason for the rule that is there
+// PROVED-AGAINST: `--selftest` fixture — one entry keyed to an existing heading (silent), one keyed to a heading the canon does
+//                 not carry (named), one naming a file that does not exist (named), and a Reference without §17 (named)
+// GAP:            the guard checks that the KEY resolves, not that the entry's text still explains the rule — that is the judge's
+// ON-REAL-PATH:   NOT YET — first real entries land with CK3.3 (the testing canon's slice)
+const WHY_SECTION_RE = /^## 17\. Why the canon says so/m;
+const WHY_KEY_RE = /^### `([^`]+)` → (.+?)\s*$/;
+function danglingWhyKeys(refText, readCanon) {
+  const at = refText.search(WHY_SECTION_RE);
+  if (at < 0) return ['Reference §17 "Why the canon says so" is missing — the canon points there for the reason behind its rules (epic CK 2.8)'];
+  const rest = refText.slice(at);
+  const next = rest.slice(3).search(/^## /m);
+  const body = next < 0 ? rest : rest.slice(0, next + 3);
+  const found = [];
+  for (const line of body.split(/\r?\n/)) {
+    const m = line.match(WHY_KEY_RE);
+    if (!m) continue;
+    const canon = readCanon(m[1]);
+    if (canon === null) { found.push(`Reference §17 entry "${m[1]} → ${m[2]}" names a file the payload does not carry`); continue; }
+    const has = canon.split(/\r?\n/).some((l) => /^#{2,6} /.test(l) && l.replace(/^#{2,6} /, '').trim() === m[2]);
+    if (!has) found.push(`Reference §17 entry "${m[1]} → ${m[2]}" is dangling — framework/${m[1]} has no section with that heading (rename the key with the section, or move the reason with the rule)`);
+  }
+  return found;
+}
+function selfProofWhyKeys() {
+  const fails = [];
+  const canon = { 'T.md': '# T\n\n## The live section\n\ntext\n' };
+  const read = (f) => (f in canon ? canon[f] : null);
+  const ref = '# R\n\n## 16. Where\n\nx\n\n## 17. Why the canon says so (informative)\n\n### `T.md` → The live section\n\nwhy\n\n' +
+    '### `T.md` → The renamed section\n\nwhy\n\n### `Gone.md` → Anything\n\nwhy\n';
+  const got = danglingWhyKeys(ref, read);
+  if (got.length !== 2) fails.push(`ожидалось ровно две находки §17, получено ${got.length}: ${got.join(' | ')}`);
+  if (!got.some((e) => e.includes('"T.md → The renamed section" is dangling'))) fails.push('висячий ключ §17 НЕ назван');
+  if (!got.some((e) => e.includes('"Gone.md → Anything" names a file'))) fails.push('ключ §17 на несуществующий файл НЕ назван');
+  if (got.some((e) => e.includes('The live section'))) fails.push('живой ключ §17 назван висячим');
+  if (!danglingWhyKeys('# R\n\n## 16. Where\n', read).some((e) => e.includes('is missing'))) fails.push('записка без §17 НЕ названа');
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -369,6 +414,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of iFails) console.error('✖ selfproof 5h (bugs/122): ' + f);
   if (iFails.length) { console.error(`\n❌ check-framework --selftest: гард 5h — ${iFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5h: невидимый символ в теле .mjs и в теле .md назван ПОИМЁННО (файл · кодовая точка · готовый ход); BOM в нулевой позиции файла и чистое дерево молчат');
+  const wFails = selfProofWhyKeys();
+  for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
+  if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5i: висячий ключ §17 записки и ключ на несуществующий файл названы ПОИМЁННО; живой ключ молчит; записка без §17 названа');
   const fails = selfProofPayloadCyrillic();
   for (const f of fails) console.error('✖ selfproof 5d: ' + f);
   const halfFails = selfProofHalves();
@@ -476,6 +525,9 @@ if (skills.includes('release')) {
       errors.push('root KAIF_REFERENCE.md diverged from framework/KAIF_REFERENCE.md — never edit the root copy; edit the source and rebuild');
   }
 }
+// 5i. Reference §17 keys resolve to live canon headings — declared with its self-proof near the top.
+errors.push(...danglingWhyKeys(readFileSync(join(ROOT, 'framework', 'KAIF_REFERENCE.md'), 'utf8'),
+  (f) => { const p = join(ROOT, 'framework', f); return existsSync(p) ? readFileSync(p, 'utf8') : null; }));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the

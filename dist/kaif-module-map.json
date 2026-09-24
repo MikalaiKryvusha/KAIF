@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.7",
   "released": "2026-09-18",
-  "moduleCount": 798,
+  "moduleCount": 799,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -1550,6 +1550,15 @@
         "lines": [
           575,
           583
+        ]
+      },
+      {
+        "signature": "## 17. Why the canon says so (informative)",
+        "class": "static",
+        "sha256": "e02e472145f7b7ed7a2f50c53ae73153a828aeec2a2d10b322ca5d5d4f3f9c90",
+        "lines": [
+          584,
+          593
         ]
       }
     ],
