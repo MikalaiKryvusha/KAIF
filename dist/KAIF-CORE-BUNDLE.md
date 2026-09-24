@@ -152,6 +152,9 @@
     }
   ],
   "policyChanges": {
+    "2.8": [
+      "The closing gate of the size budgets is a RATCHET (2.8, epic CK; origin issue #84 — a field STATUS of 447 lines against 200, shrinking since the last closing, stopped every closing like a fresh overflow): `node .kaif/kaif-core.mjs check --gate-budgets` now reads and rewrites `.kaif/budget-baseline.json` on every run — commit that file with the closing. The first gate of the version records the debt above budget and passes; after that a document above budget passes only while its own lines SHRINK, and growth, a standstill or a new overflow stop the closing; a document back under budget leaves the file. An unreadable base stops the gate (restore it from git) — it is never a free pass."
+    ],
     "2.7": [
       "The owner's word is a quote, the agent's word is signed (2.7, epic AW; origin issue #55, the owner's TOP): every recorded decision carries its author — [OWNER] \"<verbatim>\" · date (or the interview address) for the owner, [AI] for the agent; \"do as you see fit\" is a mandate and is recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; a reference to the owner's will with no verbatim quote and no interview address within two lines is debt — the NEW optional module `node .kaif/tools/kaif-attribution-lint.mjs check` counts it (adopt once with --write-baseline; the baseline only shrinks; `selftest` proves both answers). If a plan, a code comment or a report in this deployment says \"the owner's decision\" from memory — either quote him, sign it [AI], or mark `<!-- attribution-ok: … -->` with the address of the quote. AGENT_GUIDE (both layers) → \"Authorship of a decision\"; the judge hunts \"an agent decision worn as the owner's word\".",
       "Provenance marks are legal outside the canon (2.7, epic AW; origin issue #55 comment): `kaif-provenance check` no longer refuses [AI]…[/AI] in a file that is not a declared canon artifact — marks are REQUIRED in canonArtifacts and LEGAL in any document the agent brings to the owner (an interview, a table, a proposal); `report` lists the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts for the owner's eye, not the acceptance registry). Mark the text you PROPOSE as the owner's canon content (a lore line, a rule, a value) wherever it lives; never a pronoun — \"(my taste)\" has no owner a day later; the question's own scaffolding (option letters, the recommendation, the scenario lines) is not marked.",
@@ -3059,7 +3062,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; since 2.7 the budget counts the project's OWN lines and the warning names the chronicle as the address; closed work moves to the chronicle — the bonsai trim, and `check --gate-budgets` is the door the closing ritual runs after it). | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; since 2.7 the budget counts the project's OWN lines and the warning names the chronicle as the address; closed work moves to the chronicle — the bonsai trim, and `check --gate-budgets` is the door the closing ritual runs after it; since 2.8 the door is a ratchet over the committed `.kaif/budget-baseline.json` — a document above budget passes only while its own lines shrink). | Agent, after every task. |
 | `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
@@ -4923,6 +4926,13 @@ the flag is that the closing ritual STOPS here (2.7, epic CB; origin issue #71, 
 of one project — "three core documents above budget, the warning printed for weeks and acted on
 once"). Bare `check` keeps printing the same numbers as advice and exits 0, so nothing else in the
 update road fails on a long document.
+
+Since 2.8 the door is a RATCHET over `.kaif/budget-baseline.json`, which it rewrites on every run —
+commit that file with the closing. The first run of a version records the debt above budget and
+passes (`↳ … debt recorded`); after that a document above budget passes only while its own lines
+SHRINK (`↳ … shrinking A → B`), and growth, a standstill or a new overflow stop the closing (`✖`).
+Move at least one line out per closing until the document is under budget; it then leaves the file.
+An unreadable base stops the door too — restore it from git.
 
 ### Step 2. Refresh README (when reality moved)
 

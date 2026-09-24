@@ -71,6 +71,13 @@ of one project — "three core documents above budget, the warning printed for w
 once"). Bare `check` keeps printing the same numbers as advice and exits 0, so nothing else in the
 update road fails on a long document.
 
+Since 2.8 the door is a RATCHET over `.kaif/budget-baseline.json`, which it rewrites on every run —
+commit that file with the closing. The first run of a version records the debt above budget and
+passes (`↳ … debt recorded`); after that a document above budget passes only while its own lines
+SHRINK (`↳ … shrinking A → B`), and growth, a standstill or a new overflow stop the closing (`✖`).
+Move at least one line out per closing until the document is under budget; it then leaves the file.
+An unreadable base stops the door too — restore it from git.
+
 ### Step 2. Refresh README (when reality moved)
 
 Bring `README.md` in line with reality: phase status, working features, instructions. If the README

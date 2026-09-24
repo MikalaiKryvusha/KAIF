@@ -2798,7 +2798,7 @@ Fourteen key documents ship with a deployment (thirteen project documents plus t
 | `REQUIREMENTS_FRAMEWORK.md` | How requirements are written and checked: goal vector + acceptance criteria first, the ten quality criteria, EARS, fit criterion, the stop-word dictionary as a lintable guard (2.2, epic N). | Deployed verbatim. |
 | `GOAL.md` | The owner's vision. | **The owner.** |
 | `MASTER_PLAN.md` | The phased road from the current state to the GOAL. | Agent derives (`/revision`). |
-| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; since 2.7 the budget counts the project's OWN lines and the warning names the chronicle as the address; closed work moves to the chronicle — the bonsai trim, and `check --gate-budgets` is the door the closing ritual runs after it). | Agent, after every task. |
+| `STATUS.md` | The living SUMMARY of now and the handover between sessions (soft target ~200 lines — the first of the re-read core's size budgets that `check` warns above, all nine since 2.5; since 2.7 the budget counts the project's OWN lines and the warning names the chronicle as the address; closed work moves to the chronicle — the bonsai trim, and `check --gate-budgets` is the door the closing ritual runs after it; since 2.8 the door is a ratchet over the committed `.kaif/budget-baseline.json` — a document above budget passes only while its own lines shrink). | Agent, after every task. |
 | `PROJECT_HISTORY.md` | The append-only chronicle: closed sessions/phases/releases, newest first; NOT in `/resume`'s canon set — archaeology on demand (2.1, epic H). | Agent, at `/end-chat-soft`'s trim. |
 | `EXPERIENCE.md` | The grep-friendly journal of lessons with trigger tags. | Agent (`/experience`). |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` | The external map: directories, files. | Agent maintains. |
@@ -6011,6 +6011,13 @@ the flag is that the closing ritual STOPS here (2.7, epic CB; origin issue #71, 
 of one project — "three core documents above budget, the warning printed for weeks and acted on
 once"). Bare `check` keeps printing the same numbers as advice and exits 0, so nothing else in the
 update road fails on a long document.
+
+Since 2.8 the door is a RATCHET over `.kaif/budget-baseline.json`, which it rewrites on every run —
+commit that file with the closing. The first run of a version records the debt above budget and
+passes (`↳ … debt recorded`); after that a document above budget passes only while its own lines
+SHRINK (`↳ … shrinking A → B`), and growth, a standstill or a new overflow stop the closing (`✖`).
+Move at least one line out per closing until the document is under budget; it then leaves the file.
+An unreadable base stops the door too — restore it from git.
 
 ### Step 2. Refresh README (when reality moved)
 

@@ -146,6 +146,35 @@ const DOC_BUDGETS = {
   'AGENT_GUIDE.md': { budget: 1200, overflowTo: MOVE_OUT_ADDRESS },
 };
 
+// The budget RATCHET of the closing gate (2.8, epic CK; origin issue #84 — a field STATUS of 447 lines against 200, shrinking since
+// the last closing, stopped every closing like a fresh overflow). The gate remembers, per document, the own lines it stood at ABOVE
+// its budget at the last closing — BUDGET_BASELINE, committed with the closing, rewritten only by `check --gate-budgets`. A document
+// above budget passes only while it SHRINKS, and the base tightens with it; growth stops, and so does a standstill (the origin
+// owner's word the rule rests on: entropy must decrease, not increase — industry ratchets let an unchanged count pass, this one
+// does not, on purpose). A document that crosses its budget with no base line stops: a new overflow is never free. The FIRST gate
+// run of a version — no file yet, or one written under another version — records the debt and passes: debt that predates the
+// ratchet, or that an update moved, is recorded, not punished. A document back under budget leaves the file ("the life goal of a
+// baseline file is to not exist" — PHPStan); the file itself stays, because its presence is what makes the next overflow new.
+// [TESTED: 2026-09-25 00:58 +03:00 · suite s16 section (6) green on the deployed copy; red on the 2.7 core through KAIF_DIST — 13 of 59,
+//  every ratchet assert and only they; the six ratchet mutants M7–M12 of tools/sandbox/probes/budget-mutants.mjs red exactly on their
+//  named addressees; report testcases/reports/2026-09-25_ck52-budget-ratchet.md]
+const BUDGET_BASELINE = '.kaif/budget-baseline.json';
+function budgetRatchet(overBudget, base, version) {
+  const fresh = !base || base.version !== version;
+  const was = fresh ? {} : (base.docs || {});
+  const docs = {}; const verdicts = [];
+  for (const o of overBudget) {
+    if (fresh) { docs[o.doc] = o.own; verdicts.push({ ...o, pass: true, why: `debt recorded in ${BUDGET_BASELINE} (first gate of ${version}) — from the next closing it passes only while it shrinks` }); continue; }
+    const before = was[o.doc];
+    if (before === undefined) { verdicts.push({ ...o, pass: false, why: 'crossed its budget since the last closing — a new overflow is never free' }); continue; }
+    docs[o.doc] = Math.min(before, o.own);
+    if (o.own < before) verdicts.push({ ...o, pass: true, why: `shrinking ${before} → ${o.own} since the last closing — the base tightens` });
+    else verdicts.push({ ...o, pass: false, why: o.own > before ? `grew ${before} → ${o.own} since the last closing` : `stood still at ${o.own} since the last closing — above budget every closing moves at least one line out` });
+  }
+  const sorted = Object.fromEntries(Object.keys(docs).sort().map((k) => [k, docs[k]]));   // canonical order: the file is diffed in review
+  return { verdicts, next: { version, docs: sorted } };
+}
+
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 // die() is right for sync paths — but process.exit() over LIVE undici handles trips a libuv
@@ -3109,11 +3138,16 @@ function cmdCheck() {
   //                 which they are; a deployment INSIDE its budgets keeps the gate open (exit 0, nothing printed) while an overflow closes it
   //                 with exit 1 from the DOOR and not from an unrecognised flag; bare `check` stays 0; an unknown flag still refuses. Red: the
   //                 2.6 core (KAIF_DIST) 27 of 44; five mutants of THIS block's predicates on a COPY of dist — own-lines returns the whole file
-  //                 (3 red), the gate never closes (5), the mix threshold at 0 (2) and at 1 (4), owner-seeded folded into translated (2); none invisible
+  //                 (3 red), the gate never closes (5), the mix threshold at 0 (2) and at 1 (4), owner-seeded folded into translated (2); none invisible.
+  //                 Since 2.8 the door is a ratchet (budgetRatchet): s16 section (6) — first gate records and passes, standstill / growth / new
+  //                 overflow stop, a shrink passes and tightens the base, a document under budget leaves it, a version change re-records, an
+  //                 unreadable base stops; red on the 2.7 core 13 of 59; six mutants of its predicates, each red on its own asserts
   // GAP:            it counts LINES, not weight — a document under its own-line budget can still be unreadably long; a MODULE edited by one
   //                 character counts WHOLE, the unit of the deployed cut being the module; a translated or owner-seeded file is judged as if
   //                 every line were its own — honest but over-naming, and the line says so; the gate fires only where ASKED FOR, so a ritual
-  //                 that never runs the flag is as toothless as the warning was, and nothing here sees that
+  //                 that never runs the flag is as toothless as the warning was, and nothing here sees that; the ratchet's base is a
+  //                 committed file an agent can delete or rewrite by hand — the next gate then records the debt afresh, and only the
+  //                 review of that file (and the judge) sees it
   // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.7 update. Observed instead, and it is seeded state, not that
   //                 path: the command over two field deployments' manifest-listed files copied into a temp tree — 3 and 4 PRINTED numbers read back
   //                 against wc -l and their own moduleShas, 0 disagreements, the other 6 and 5 documents silent on both sides, sources re-hashed
@@ -3278,10 +3312,23 @@ function cmdCheck() {
   // It stands HERE, after every other axis has spoken, so the run that fails on it still reports
   // everything else it saw; and it is opt-in by flag, because a budget is a reading cost, not a
   // broken deployment — `update-verify` and `verify-final` must never fail on it.
-  if (has('--gate-budgets') && overBudget.length) {
-    for (const o of overBudget)
-      console.error(`✖ ${o.doc}: own lines ${o.own} of budget ${o.budget} → ${o.overflowTo}`);
-    die(`--gate-budgets: ${overBudget.length} document(s) of the re-read core are over their budget in the project's OWN lines — move the content out to the address named on each line, then run this again (raising a budget is not the cure; origin issue #71)`);
+  // Since 2.8 the door is a RATCHET (budgetRatchet above): it reads and rewrites BUDGET_BASELINE on every run, including a green one —
+  // the file's presence is what makes a later overflow a new one. An unreadable base is never a free pass: restore it from git.
+  if (has('--gate-budgets')) {
+    let base = null;
+    if (existsSync(BUDGET_BASELINE)) {
+      try { base = readJson(BUDGET_BASELINE); }
+      catch { die(`--gate-budgets: ${BUDGET_BASELINE} is unreadable — restore it from git (\`git checkout -- ${BUDGET_BASELINE}\`); an unreadable baseline is never a free pass`); }
+    }
+    let version = null; try { version = readJson(KAIF_JSON).version || null; } catch { version = null; }
+    const { verdicts, next } = budgetRatchet(overBudget, base, version);
+    const body = JSON.stringify({ _note: `The budget ratchet of the closing gate (KAIF 2.8): own lines of each re-read-core document that stood ABOVE its budget at the last closing. Rewritten by \`node .kaif/kaif-core.mjs check --gate-budgets\` — commit it with the closing, never edit it by hand.`, version: next.version, docs: next.docs }, null, 2) + '\n';
+    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);
+    for (const v of verdicts)
+      console.error(`${v.pass ? '↳' : '✖'} ${v.doc}: own lines ${v.own} of budget ${v.budget} → ${v.overflowTo} — ${v.why}`);
+    const stops = verdicts.filter((v) => !v.pass);
+    if (stops.length)
+      die(`--gate-budgets: ${stops.length} document(s) of the re-read core are over their budget in the project's OWN lines and did not shrink — move the content out to the address named on each line, then run this again (raising a budget is not the cure; origin issue #71)`);
   }
   log(`✅ manifest satisfied: ${paths.length} files + ${agents.length} agent artifacts present${drifted ? ` (⚠ ${drifted} drifted mirrors — see above)` : ''}`);
 }

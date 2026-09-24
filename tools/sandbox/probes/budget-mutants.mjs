@@ -18,7 +18,11 @@
 //  2026-09-18 14:46 +03:00 · SIX mutants after the session judge's finding F2 (M6 is the judge's own mutant — the shipped
 //  template grown past its budget — which the suite had passed 44/44): red 3 · 5 · 2 · 4 · 2 · 1 on 17 named asserts; the
 //  first run of M6 (14:45) was an honest BAD — this runner cuts a red line at its first " — ", and the new assert's name
-//  lost its addressee there; the name was rewritten without the dash — the same report, the post-judge addendum, row С3]
+//  lost its addressee there; the name was rewritten without the dash — the same report, the post-judge addendum, row С3.
+//  2026-09-25 00:58 +03:00 · TWELVE mutants after epic CK 2.8, step CK5.2 (the ratchet of the door): M2 re-anchored to the new door
+//  line, M6 grown to +130 lines (the template now stands at its build ceiling 1080, +63 no longer crossed the budget), M7–M12 one per
+//  predicate of budgetRatchet() and its write; `--list` named the addressees, the judging run — all twelve red exactly on them, no
+//  invisible mutant; report testcases/reports/2026-09-25_ck52-budget-ratchet.md]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -34,17 +38,31 @@ const MUTANTS = [
   { name: 'M1 own-lines returns EVERY line (the arrived cut is ignored)',
     from: "  return { total, own: Math.max(0, total - arrived), arrived, basis: 'cut' };",
     to: "  return { total, own: total, arrived, basis: 'cut' };",
-    expect: ['приехавший канон (1200) не считается',
+    expect: ['приехавший канон (',
              'названное число собственных строк МЕНЬШЕ',
-             'строка говорит ВСЛУХ, сколько строк приехало'] },
+             'строка говорит ВСЛУХ, сколько строк приехало',
+             'ВЫЧИЩЕН из базы'] },
   { name: 'M2 the door never closes (--gate-budgets always exits 0)',
-    from: "  if (has('--gate-budgets') && overBudget.length) {",
-    to: "  if (false && has('--gate-budgets') && overBudget.length) {",
-    expect: ['`check --gate-budgets` на превышении',
+    from: "  if (has('--gate-budgets')) {",
+    to: "  if (false && has('--gate-budgets')) {",
+    expect: ['зелёный прогон двери записал базу',
+             '`check --gate-budgets` на превышении',
              'гейт печатает строку',
              'та же строка у STATUS',
              'итог гейта называет ЧИСЛО документов',
-             'гейт называет верный ход'] },
+             'гейт называет верный ход',
+             'первое закрытие без базы ЗАПИСЫВАЕТ',
+             'база хранит ровно те',
+             'СТОЯНИЕ выше бюджета',
+             'УБЫВАНИЕ проходит',
+             'база затягивается',
+             'РОСТ останавливает',
+             'выросший документ базу НЕ поднимает',
+             'НОВЫЙ выход за бюджет',
+             'новое превышение в базу не записывается',
+             'ВЫЧИЩЕН из базы',
+             'первое закрытие НОВОЙ версии',
+             'нечитаемая база'] },
   { name: 'M3 mix threshold 0 — every localized skill reads as a mix',
     from: '  const LANGUAGE_MIX_FOREIGN_SHARE = 0.35;',
     to: '  const LANGUAGE_MIX_FOREIGN_SHARE = 0;',
@@ -65,17 +83,56 @@ const MUTANTS = [
   // M6 — the mutant the session-67 judge ran (J2) and the suite could NOT see: the SHIPPED template grows past its
   // budget. Arrived lines are no longer counted for the project, so nothing on a fresh deployment warned any more —
   // the payload-growth guard was lost in the move to own lines, and the payload stands exactly on the limit.
-  { name: 'M6 the shipped AGENT_GUIDE template grows past its budget (+63 lines in the bundle copy; judge finding F2)',
+  // Since 2.8 the template stands at its build CEILING (1080 of 1200, guard 5j of tools/check-framework.mjs), so +63 no longer
+  // crosses the budget; +130 does — the suite's payload-growth guard is the second line behind the build's ceiling.
+  { name: 'M6 the shipped AGENT_GUIDE template grows past its budget (+130 lines in the bundle copy; judge finding F2)',
     file: 'KAIF-CORE-BUNDLE.md',
     fn: (bundle) => {
       const head = bundle.indexOf('\n> **FILE: `AGENT_GUIDE.md`**');
       const open = head < 0 ? -1 : bundle.indexOf(FENCE, head);
       const close = open < 0 ? -1 : bundle.indexOf('\n' + FENCE, open + FENCE.length);
       if (close < 0) return bundle;                                  // block not found → "did NOT apply"
-      const extra = Array.from({ length: 63 }, (_, i) => `inflated shipped line ${i + 1} — mutant`).join('\n');
+      const extra = Array.from({ length: 130 }, (_, i) => `inflated shipped line ${i + 1} — mutant`).join('\n');
       return bundle.slice(0, close) + '\n' + extra + bundle.slice(close);
     },
     expect: ['в ПОСТАВЛЕННОМ виде внутри своего бюджета'] },
+  // M7–M11 — the RATCHET of the door (2.8, epic CK, step CK5.2): one mutant per predicate of budgetRatchet() and of its write.
+  { name: 'M7 a standstill above budget passes (industry ratchet, not fork (e))',
+    from: '    if (o.own < before) verdicts.push(',
+    to: '    if (o.own <= before) verdicts.push(',
+    expect: ['СТОЯНИЕ выше бюджета'] },
+  { name: 'M8 a new overflow is free (no base line → pass)',
+    from: "    if (before === undefined) { verdicts.push({ ...o, pass: false,",
+    to: "    if (before === undefined) { verdicts.push({ ...o, pass: true,",
+    expect: ['`check --gate-budgets` на превышении',
+             'гейт печатает строку',
+             'та же строка у STATUS',
+             'итог гейта называет ЧИСЛО документов',
+             'гейт называет верный ход',
+             'НОВЫЙ выход за бюджет'] },
+  { name: 'M9 a version change never re-records the debt (an update\'s growth is punished)',
+    from: '  const fresh = !base || base.version !== version;',
+    to: '  const fresh = !base;',
+    expect: ['первое закрытие НОВОЙ версии'] },
+  { name: 'M12 the first gate of the ratchet stops instead of recording the debt',
+    from: "    if (fresh) { docs[o.doc] = o.own; verdicts.push({ ...o, pass: true,",
+    to: "    if (fresh) { docs[o.doc] = o.own; verdicts.push({ ...o, pass: false,",
+    expect: ['первое закрытие без базы ЗАПИСЫВАЕТ',
+             'первое закрытие НОВОЙ версии'] },
+  { name: 'M10 the base never tightens after a shrink',
+    from: '    docs[o.doc] = Math.min(before, o.own);',
+    to: '    docs[o.doc] = before;',
+    expect: ['база затягивается',
+             'выросший документ базу НЕ поднимает'] },
+  { name: 'M11 a gate with no debt writes no base file (so the next overflow is "first")',
+    from: "    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
+    to: "    if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",
+    expect: ['зелёный прогон двери записал базу',
+             '`check --gate-budgets` на превышении',
+             'гейт печатает строку',
+             'та же строка у STATUS',
+             'итог гейта называет ЧИСЛО документов',
+             'гейт называет верный ход'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-budget-mutants-'));

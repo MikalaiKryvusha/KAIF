@@ -23,6 +23,10 @@
 //       гейт) · на превышении — код 1 ИМЕННО от двери, а не от непонятого флага, и строка
 //       `<документ>: own lines N of budget M → <адрес>` на каждом · без флага прежнее поведение
 //       и код 0 · незнакомый флаг `check` по-прежнему ОТКАЗЫВАЕТ (bugs/33 не сломан).
+//   (6) ХРАПОВИК двери (2.8, эпик CK, шаг CK5.2; тикет истока #84): зелёный прогон пишет пустую базу
+//       `.kaif/budget-baseline.json` · первая дверь версии без базы записывает долг и пропускает · стояние,
+//       рост и новое превышение останавливают · убывание проходит и затягивает базу · ушедший под бюджет
+//       документ вычищен · смена версии переписывает долг · нечитаемая база — стоп с подсказкой.
 //   (5) ТРИ ЧЕСТНЫЕ ЗАПАСНЫЕ ВЕТКИ, каждая говорит о себе вслух: файл, переведённый ЦЕЛИКОМ (ни
 //       одна сигнатура шаблона не выжила — риск (а) плана) · документ owner-seeded той же формы,
 //       который проект пишет сам и переводом не является · среза модулей у файла нет вовсе. Во
@@ -123,6 +127,10 @@ ok(shipped.code === 0,
 const gateGreen = run('check --gate-budgets');
 ok(gateGreen.code === 0 && !/own lines/.test(gateGreen.out) && /manifest satisfied/.test(gateGreen.out),
    's16 критерий 4: на развёртывании ВНУТРИ бюджетов гейт не закрывается — код 0 и ни одной строки о бюджете', gateGreen.out.slice(-400));
+const BASE = join(S, '.kaif', 'budget-baseline.json');
+const baseDocs = () => { try { return JSON.parse(readFileSync(BASE, 'utf8')).docs || {}; } catch { return null; } };
+ok(existsSync(BASE) && baseDocs() && Object.keys(baseDocs()).length === 0,
+   's16 храповик: зелёный прогон двери записал базу без долга (её наличие делает следующее превышение новым)', existsSync(BASE) ? readFileSync(BASE, 'utf8') : 'файла нет');
 for (const doc of ['AGENT_GUIDE.md', 'STATUS.md'])
   ok(existsSync(join(S, doc)), `s16 фикстура: ${doc} развёрнут (иначе раздувать нечего)`);
 
@@ -200,6 +208,83 @@ ok(r.code === 0 && /own lines \d+ of budget ~/.test(r.out),
 r = run('check --no-such-flag');
 ok(r.code === 1 && /unknown flag for check: --no-such-flag/.test(r.out) && /refusing to run check/.test(r.out),
    's16 критерий 4: незнакомый флаг `check` по-прежнему ОТКАЗЫВАЕТ поимённо (bugs/33 не сломан)', r.out.slice(-400));
+
+// ================================================================ (6) храповик убывающего долга (2.8, эпик CK, шаг CK5.2)
+// Тикет истока #84: STATUS поля 447 строк при 200, убывающий с прошлого закрытия, останавливал каждое закрытие как свежее
+// превышение. Дверь помнит СОБСТВЕННЫЕ строки документа выше бюджета на прошлом закрытии (`.kaif/budget-baseline.json`):
+// проходит только убывание; рост, стояние (развилка (е) — слово владельца №75) и новый выход за бюджет останавливают; первый
+// прогон двери версии записывает долг и пропускает; документ под бюджетом уходит из базы, сам файл остаётся.
+console.log('\n=== s16: храповик — выше бюджета проходит только убывание ===');
+const MARKER = join(S, '.kaif', 'kaif.json');
+// убрать k последних строк файла — это строки последнего СОБСТВЕННОГО модуля (фикстура own() дописывает в конец)
+const trim = (doc, k) => {
+  const p = join(S, doc);
+  const l = readFileSync(p, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/);
+  writeFileSync(p, l.slice(0, l.length - k).join('\n') + '\n');
+};
+const ownOf = (out, doc) => { const m = out.match(new RegExp(`${doc.replace('.', '\\.')}: own lines (\\d+) of budget`)); return m ? Number(m[1]) : null; };
+if (existsSync(BASE)) unlinkSync(BASE);                    // первое закрытие после обновления: базы нет
+r = run('check --gate-budgets');
+ok(r.code === 0 && /↳ STATUS\.md: own lines \d+ of budget 200[^\n]*debt recorded in \.kaif\/budget-baseline\.json/.test(r.out)
+   && /↳ AGENT_GUIDE\.md: own lines \d+ of budget 1200[^\n]*debt recorded/.test(r.out),
+   's16 храповик: первое закрытие без базы ЗАПИСЫВАЕТ долг и проходит (код 0), строка называет файл базы', r.out.slice(-600));
+const st0 = ownOf(r.out, 'STATUS.md'), ag0 = ownOf(r.out, 'AGENT_GUIDE.md');
+ok(baseDocs() && baseDocs()['STATUS.md'] === st0 && baseDocs()['AGENT_GUIDE.md'] === ag0 && st0 > 200,
+   's16 храповик: база хранит ровно те собственные строки, что напечатаны',
+   JSON.stringify(baseDocs()) + ` st0=${st0} ag0=${ag0}`);
+
+r = run('check --gate-budgets');                           // ничего не менялось с прошлого закрытия
+ok(r.code === 1 && /✖ STATUS\.md: own lines \d+ of budget 200[^\n]*stood still at \d+ since the last closing/.test(r.out),
+   's16 храповик: СТОЯНИЕ выше бюджета останавливает закрытие (слово владельца №75: энтропия должна убывать)', r.out.slice(-600));
+
+trim('STATUS.md', 10); trim('AGENT_GUIDE.md', 5);          // закрытие вынесло строки из обоих
+r = run('check --gate-budgets');
+const st1 = ownOf(r.out, 'STATUS.md');
+ok(r.code === 0 && st1 === st0 - 10 && /↳ STATUS\.md: [^\n]*shrinking \d+ → \d+ since the last closing/.test(r.out),
+   's16 храповик: УБЫВАНИЕ проходит (код 0) и строка называет было → стало', r.out.slice(-600));
+ok(baseDocs() && baseDocs()['STATUS.md'] === st1 && baseDocs()['AGENT_GUIDE.md'] === ag0 - 5,
+   's16 храповик: база затягивается вслед за убыванием', JSON.stringify(baseDocs()) + ` st1=${st1}`);
+
+own('STATUS.md', 20, 'Рост после закрытия');              // STATUS вырос, руководство вынесло ещё строку
+trim('AGENT_GUIDE.md', 1);
+r = run('check --gate-budgets');
+ok(r.code === 1 && /✖ STATUS\.md: [^\n]*grew \d+ → \d+ since the last closing/.test(r.out) && /↳ AGENT_GUIDE\.md: [^\n]*shrinking/.test(r.out),
+   's16 храповик: РОСТ останавливает закрытие, а соседний документ, который убывает, называется проходящим', r.out.slice(-600));
+ok(baseDocs() && baseDocs()['STATUS.md'] === st1,
+   's16 храповик: выросший документ базу НЕ поднимает — долг меряется от прежней точки', JSON.stringify(baseDocs()));
+
+trim('STATUS.md', 22); trim('AGENT_GUIDE.md', 1);          // вернуть оба ниже базы
+const BF = join(S, 'BUG_FIXING_FRAMEWORK.md');
+const bfOriginal = existsSync(BF) ? readFileSync(BF, 'utf8') : null;
+ok(bfOriginal !== null, 's16 фикстура: BUG_FIXING_FRAMEWORK.md развёрнут (кандидат в новое превышение)');
+if (bfOriginal !== null) own('BUG_FIXING_FRAMEWORK.md', 400, 'Новый раздел проекта');
+r = run('check --gate-budgets');
+ok(r.code === 1 && /✖ BUG_FIXING_FRAMEWORK\.md: own lines \d+ of budget 300[^\n]*crossed its budget since the last closing — a new overflow is never free/.test(r.out),
+   's16 храповик: НОВЫЙ выход за бюджет при действующей базе останавливает — бесплатного превышения нет', r.out.slice(-600));
+ok(baseDocs() && baseDocs()['BUG_FIXING_FRAMEWORK.md'] === undefined,
+   's16 храповик: новое превышение в базу не записывается — иначе следующий прогон пропустил бы его «убыванием»', JSON.stringify(baseDocs()));
+if (bfOriginal !== null) writeFileSync(BF, bfOriginal);
+
+const stNow = lines('STATUS.md');
+trim('STATUS.md', 150);                                    // STATUS ушёл под бюджет по собственным строкам,
+trim('AGENT_GUIDE.md', 1);                                 // руководство вынесло строку — иначе оно законно «стоит на месте»
+r = run('check --gate-budgets');
+ok(r.code === 0 && !/STATUS\.md: own lines/.test(r.out) && baseDocs() && baseDocs()['STATUS.md'] === undefined && baseDocs()['AGENT_GUIDE.md'] !== undefined,
+   's16 храповик: документ, ушедший под бюджет, ВЫЧИЩЕН из базы, файл остаётся с остальным долгом', JSON.stringify(baseDocs()) + ` status ${stNow} → ${lines('STATUS.md')}`);
+
+const marker = readFileSync(MARKER, 'utf8');
+const mk = JSON.parse(marker.replace(/^\uFEFF/, ''));
+writeFileSync(MARKER, JSON.stringify({ ...mk, version: `${mk.version}-fixture` }, null, 2) + '\n');
+r = run('check --gate-budgets');                           // обновление сменило версию: долг переписывается один раз
+ok(r.code === 0 && /↳ AGENT_GUIDE\.md: [^\n]*debt recorded in \.kaif\/budget-baseline\.json \(first gate of [^)]*-fixture\)/.test(r.out),
+   's16 храповик: первое закрытие НОВОЙ версии переписывает базу и проходит — долг, сдвинутый обновлением, записан, а не наказан', r.out.slice(-600));
+writeFileSync(MARKER, marker);
+
+writeFileSync(BASE, '{ not json');
+r = run('check --gate-budgets');
+ok(r.code === 1 && /budget-baseline\.json is unreadable — restore it from git/.test(r.out),
+   's16 храповик: нечитаемая база — никогда не бесплатный проход, строка называет, как восстановить', r.out.slice(-400));
+unlinkSync(BASE);
 
 // ================================================================ (2) смесь языков по доле токенов
 console.log('\n=== s16: смесь языков судится по ДОЛЕ токенов чужой письменности ===');
