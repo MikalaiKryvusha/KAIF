@@ -93,6 +93,9 @@
       "THE SCENARIO FORM of an acceptance criterion (epic SF; origin issue #39 — the owner's word: \"this is what I lacked in all my KAIF projects\"): REQUIREMENTS_FRAMEWORK gains the optional four-line form — Situation · Action · Result · Check — the owner's language for a requirement, whose fourth line is the runnable test; Given/When/Then plus the machine check the agent era adds; EARS maps onto it (WHILE/WHEN → Situation/Action, \"shall\" → Result), Scale · Meter · Target live in the Check line; seven rules of form (three with ❌/✅ pairs; rules 1–6 and the line order are linted, rule 7 is the judge's); an owner-written Check may be empty (the agent fills it), an agent-edited Check during execution is judged like a weakened test. The four lines stand in /plan-task's criteria block and are named in /plan-epic, /propose-idea, /report-bug; /interview explains a mechanic scenario-first. NEW optional tool module .kaif/tools/kaif-scenario-lint.mjs (check | selftest; rules as data, keywords per language, SKIPPED=3 without a scenario). The form stays a project's choice — the canon never requires it.",
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
+    "2.8": [
+      "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is 277 lines instead of 300: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. The same slimming reaches `AGENT_GUIDE.md` in this version."
+    ],
     "2.7": [
       "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
       "THE OWNER'S WORD IS A QUOTE, THE AGENT'S WORD IS SIGNED (epic AW; origin issue #55, 🔴🔴🔴 TOP by the owner's word: \"you write some nonsense yourself, then read it back and interpret it as MY word\" — a \"the owner's decision P1: wait\" comment in live code, whose real owner word was \"do as you see fit\", held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no quote): AGENT_GUIDE (both layers) gains \"Authorship of a decision\" — every recorded decision carries its author ([OWNER] \"<verbatim>\" · date, or the interview address, vs [AI]); \"do as you see fit\" is a MANDATE recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; the source of truth about the owner's words is the chat and interviews/, everything else is a retelling. The NEW optional tool module .kaif/tools/kaif-attribution-lint.mjs (check [paths…] [--write-baseline] / selftest, SKIPPED=3) counts references to the owner's will with no verbatim quote and no interview address within ±2 lines as debt with a baseline that only shrinks; /fable-judge hunts \"an agent decision worn as the owner's word\".",
@@ -2103,11 +2106,11 @@ This both helps the ecosystem and documents why you worked around it.
 
 Raw generated content — code, a document, an analysis, anything — **must not be trusted**. It may *look*
 logical and working and still be broken, or fail the owner's actual requirements (the idea, the plan, the
-vision). An early defect that rides silently to production is the most expensive kind — it destroys
-projects from the inside. Testing is a distinct, first-class part of ALL work, not a formality after it.
-This document is the agent's testing canon; it applies to **every artifact in every sphere** — a function,
-a dataset, a legal clause, a bridge design, a thought (what "verify" means in your sphere is defined by
-the project's sphere library: its *Verification by observation* and *Minimum evidence set* sections).
+vision); an early defect that rides silently to production is the most expensive kind. Testing is a
+distinct, first-class part of ALL work, not a formality after it. This document is the agent's testing
+canon; it applies to **every artifact in every sphere** — a function, a dataset, a legal clause, a bridge
+design, a thought (what "verify" means in your sphere is defined by the project's sphere library: its
+*Verification by observation* and *Minimum evidence set* sections).
 
 ## The seven principles of testing (the canon)
 
@@ -2128,12 +2131,9 @@ the project's sphere library: its *Verification by observation* and *Minimum evi
 
 ## What the word "test" means — a functional run on the real product, by the user's path
 
-The word was never defined, and a session used it honestly while the owner read it as false (origin
-issue #62: "25 closed, all tested" on unit · self-test · mutant, recounted by the owner-QA as **3 of
-25**). The owner then defined "by hand" for an AI agent (decision #116, rendered): it writes itself the
-scenarios from the functionality of the module, the feature, the fixed bug, writes itself the machinery,
-and in the real product — stage or production — walks the application: presses the buttons, reads the
-lines, looks at the screen, reads the logs — as a QA would by hand. So:
+The agent does by machinery what a QA does by hand: it derives the scenarios from the functionality of
+the module, the feature or the fixed bug, then walks the real product — stage or production — the way the
+user does, pressing the buttons, reading the lines, looking at the screen and reading the logs. So:
 
 1. **A test is a functional run on the REAL product (stage or production), by the user's path, whose
    result is READ.** The agent derives the scenarios from the functionality under test (the chain
@@ -2150,10 +2150,8 @@ lines, looks at the screen, reads the logs — as a QA would by hand. So:
 ## The testing activities — the chain that makes "tested" mean something
 
 The trust contract below says how much to TRUST a result; this section says how the testing WORK
-is done. Field-paid reason for its existence (origin issue #21): with no obligation to design the
-observation set, an agent ran ONE happy path, reported the feature as working, and the owner
-produced five uncovered cases in about a minute. Testing a feature is a chain of activities, not
-one observation — walk it in order, each step with its exit condition:
+is done. Testing a feature is a chain of activities, not one observation — walk it in order, each
+step with its exit condition:
 
 1. **Analyze the test basis.** Name the source of truth for the expected behaviour — a
    requirement, the owner's word, a spec, the canon map (`REQUIREMENTS_FRAMEWORK.md` shapes
@@ -2212,23 +2210,18 @@ of the project language:
    other sphere → the nearest commentable carrier the sphere convention offers.
 7. **A FEATURE marker requires a designed set.** `[TESTED]` on a feature is legal only alongside the
    written case set with its covered dimensions (the activities chain above); a single observation
-   flips the marker of a single CASE, never of the feature. "It worked once on the happy path" is a
-   case-level fact — a marker satisfied by one observation certifies that something was observed,
-   while silently claiming the feature was tested: two different statements (origin issue #21).
+   flips the marker of a single CASE, never of the feature: "it worked once on the happy path" is a
+   case-level fact.
 
 Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
-marker preserves that fact **across sessions**, for future agents and posterity — who else will know the
-foundation was load-tested?
+marker preserves that fact **across sessions**, for future agents.
 
 ## The work produces its own means of checking
 
-"Raw deserves no trust" binds the PRODUCER, not only the checker: building something includes
-building what checks it — a test suite, a check-list, test cases, a fixture, a guard. They are
-planned WITH the work and land in the SAME step, never "later": verification postponed to a later
-step is verification that never happens, and verification that lives only in a session's scratchpad
-dies with the session. This is principle 3 (early testing) applied to production rather than to
-inspection, and it is why the harness section below exists — the harness is what makes the checking
-repeatable once it exists.
+Building something includes building what checks it — a test suite, a check-list, test cases, a
+fixture, a guard. They are planned WITH the work and land in the SAME step, never "later":
+verification postponed to a later step is verification that never happens, and verification that
+lives only in a session's scratchpad dies with the session.
 
 The contract in step form — walk it on every non-trivial piece of work:
 
@@ -2247,11 +2240,7 @@ that can re-check it.
 
 ## An executed run produces its report
 
-The chain above puts test documents BEFORE a run and the trust contract puts a marker INSIDE the
-claim — and nothing said what the run itself must leave behind. Field-paid (origin issue #59; the
-owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe twice, wrote `[TESTED]` and "stage
-accepted", and the owner could see neither a command, nor a moment, nor what was found. A run that
-left no artifact is indistinguishable from a run that never happened. So:
+A run that left no artifact is indistinguishable from a run that never happened. So:
 
 1. **Every executed run leaves a run report** — a live probe, a smoke, a polygon, a functional
    run — in the test-doc home, as a catalog by date:
@@ -2298,13 +2287,9 @@ ships, walk the gates that apply:
    version first (see `BUG_FIXING_FRAMEWORK.md` → Guards); goldens for refactors are byte-exact —
    an empty diff is proof, "the numbers look the same" is not.
    **And the broken version is NAMED — together with its distance from the THREAT.** Reddening a
-   guard against *a* broken version is necessary and not sufficient: four field guards in one
-   evening were each green and mutation-proven — and each proven against the failure that was
-   convenient to simulate (a process death on a digital twin instead of a machine freeze; a
-   readback after a CLEAN close instead of a death without one; one warning instead of an
-   accumulation; the first step instead of any step). The machine hung, and the fuse built for it
-   recorded nothing (origin issue #35). A green mutation over a wrong-threat fixture does not
-   withhold confidence — it ISSUES it, falsely. So every guard declares, next to itself, four
+   guard against *a* broken version is necessary and not sufficient: a guard proven against the
+   failure that was convenient to simulate, instead of the threat it exists for, does not withhold
+   confidence — it ISSUES it, falsely. So every guard declares, next to itself, four
    greppable lines, and a guard is DONE only when the last one is no longer `NOT YET`:
    ```
    @guard <name>
@@ -2323,29 +2308,25 @@ ships, walk the gates that apply:
    the product offers, walk the real screens, read the console — only then is "deployed" a fact.
    A smoke that only walks public surfaces proves the landing page is alive, not the product: if
    the product has authenticated state, an unauthenticated smoke is NOT evidence about the
-   product. (Field-paid: three deploys in one night served an application that did not start at
-   all, with every local instrument green — origin issue #18.)
+   product.
 7. **Artifact integrity before shipping.** "It built" and "it is one build" are different claims:
    the shipped bundle carries exactly ONE build identity, asserted mechanically before upload. An
    output directory that is not cleaned between builds ships a mixture of two builds — every
    individual file valid, the SET broken — and mixtures fail in ways no test sees.
 
-Two placement rules, paid for by the same outage: gates 6–7 belong IN THE DEPLOY PATH, not in
-prose — one deploy door that runs them itself and fails on any red step (where the agent system
-has hooks, deny the raw deploy command; a rule that lives only in a document is a rule the
-shipping session skips under pressure). And a post-deploy smoke must be able to FAIL on a dead
-product: prove there was something to measure before painting green — a smoke that is greenest
-when the product is emptiest is worse than no smoke.
+Two placement rules: gates 6–7 belong IN THE DEPLOY PATH, not in prose — one deploy door that runs
+them itself and fails on any red step (where the agent system has hooks, deny the raw deploy command;
+a rule that lives only in a document is a rule the shipping session skips under pressure). And a
+post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
+painting green — a smoke that is greenest when the product is emptiest is worse than no smoke.
 
 ## The agent's stand is not the owner's real world — "done" about production comes after the real world
 
 The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a
 new user, today's build — and says "done". The owner's world is ACCUMULATED: an old session, a saved
 profile, his own edits in the deployed tree, the cache of the previous build — and there it breaks,
-while every instrument of the agent was green by construction (KAIF 2.6; origin issue #52; the
-owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in
-production). Before the word "done" about anything already in production, the report carries the
-difference line:
+while every instrument of the agent was green by construction. Before the word "done" about anything
+already in production, the report carries the difference line:
 
 ```
 REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;
@@ -2378,8 +2359,7 @@ a verification and never flips a marker; the owner's recorded verdict is.
   boundary does not close the door on requirements analysis: deriving the test basis FROM the
   requirements is step 1 of the activities chain here.
 - **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
-  says WHAT must carry a status and how trust propagates. The triviality gate still applies: a trivial
-  change verified by its one obvious check needs no ceremony beyond its normal comment.
+  says WHAT must carry a status and how trust propagates.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
 - **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
   (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
@@ -2392,13 +2372,12 @@ a verification and never flips a marker; the owner's recorded verdict is.
   fraud table; principle 6 lives there.
 - **The harness** — invest in tooling that makes verification observable and deterministic
   (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
+- **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that
+  paid for a rule, the owner's word) lives in `.kaif/KAIF_REFERENCE.md` §17, under the same heading; read the
+  entry before changing or dropping a rule.
 
-*Grounding: the seven principles and the activities chain (test basis → design techniques →
-documentation → execution → defect reporting) are the ISTQB canon (istqb.org; ru: testbase.ru) —
-distilled here for an AI agent across all spheres; the run report is the ISO/IEC/IEEE 29119-3 test
-execution log and test completion report distilled to seven fields. The activities section, the
-feature/case marker rule, gates 6–7 and the run report were paid for in the field: origin issues #21,
-#18 and #59.*
+*Grounding: the seven principles and the activities chain are the ISTQB canon (istqb.org; ru: testbase.ru);
+the run report is the ISO/IEC/IEEE 29119-3 test execution log and test completion report, distilled to seven fields.*
 ``````
 
 > **FILE: `REQUIREMENTS_FRAMEWORK.md`** — project root — universal, write verbatim
@@ -3719,6 +3698,57 @@ decision and its reason is still one lookup away. Each entry is keyed by the can
 the section heading verbatim. The build fails on an entry whose heading no longer exists in that file, so an entry cannot
 outlive its rule silently. Read the entry BEFORE changing or dropping a rule: a rule whose reason you cannot see is a fence
 whose purpose you have not yet found.
+
+### `TESTING_FRAMEWORK.md` → What the word "test" means — a functional run on the real product, by the user's path
+
+The word was never defined, and a session used it honestly while the owner read it as false (origin issue #62: "25 closed,
+all tested" on unit · self-test · mutant, recounted by the owner-QA as 3 of 25). The owner then defined "by hand" for an AI
+agent (origin decision #116, rendered): it writes itself the scenarios from the functionality of the module, the feature, the
+fixed bug, writes itself the machinery, and in the real product — stage or production — walks the application: presses the
+buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL.
+
+### `TESTING_FRAMEWORK.md` → The testing activities — the chain that makes "tested" mean something
+
+Field-paid (origin issue #21): with no obligation to design the observation set, an agent ran ONE happy path, reported the
+feature as working, and the owner produced five uncovered cases in about a minute. The chain is the ISTQB activities canon
+(test basis → design techniques → documentation → execution → defect reporting), distilled for an AI agent. KAIF 2.3, epic X.
+
+### `TESTING_FRAMEWORK.md` → Test-status markers — the trust contract
+
+Rule 7 (a FEATURE marker requires a designed set) comes from the same ticket as the activities chain (origin issue #21): a
+marker satisfied by one observation certifies that something was observed, while silently claiming the feature was tested —
+two different statements. The markers exist as the persistent memory of verification: the check in the moment dies with the
+session, the marker tells future agents and posterity that the foundation was load-tested.
+
+### `TESTING_FRAMEWORK.md` → The work produces its own means of checking
+
+"Raw deserves no trust" binds the PRODUCER, not only the checker. The section is principle 3 (early testing) applied to
+production rather than to inspection, and it is why the harness exists: the harness is what makes the checking repeatable once
+it exists. The triviality gate is stated here once; until 2.8 a second, looser copy (a trivial change needs "no ceremony beyond
+its normal comment" — no marker named) stood under "How this composes with the rest of KAIF", and the surviving copy is the one
+that names the comment AND the marker. KAIF 2.2, task T6.
+
+### `TESTING_FRAMEWORK.md` → An executed run produces its report
+
+The chain puts test documents BEFORE a run and the trust contract puts a marker INSIDE the claim — and nothing said what the
+run itself leaves behind. Field-paid (origin issue #59; the owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe
+twice, wrote `[TESTED]` and "stage accepted", and the owner could see neither a command, nor a moment, nor what was found. The
+seven fields are the ISO/IEC/IEEE 29119-3 test execution log and test completion report, distilled. KAIF 2.7, epic TR.
+
+### `TESTING_FRAMEWORK.md` → Green tests ≠ working — the observation gates
+
+Gate 5, the named broken version (origin issue #35): four field guards in one evening were each green and mutation-proven —
+and each proven against the failure that was convenient to simulate (a process death on a digital twin instead of a machine
+freeze; a readback after a CLEAN close instead of a death without one; one warning instead of an accumulation; the first step
+instead of any step). The machine hung, and the fuse built for it recorded nothing. KAIF 2.5, epic CN.
+Gates 6–7 and their two placement rules (origin issue #18): three deploys in one night served an application that did not
+start at all, with every local instrument green. KAIF 2.3, epic X.
+
+### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
+
+KAIF 2.6, origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is
+already in production. The class was named after three refusals of an incident-shaped fix: the agent verifies on a clean,
+freshly built stand, while the owner's world is accumulated.
 ``````
 
 > **FILE: `plans/README.md`** — create the directory and drop this README

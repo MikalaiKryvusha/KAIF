@@ -141,7 +141,8 @@ export function inventory(text, file) {
     for (const p of para.parts) { starts.push({ at: joined.length ? joined.length + 1 : 0, line: p.line }); joined = joined ? joined + ' ' + p.text : p.text; }
     const protectedText = joined.replace(ABBREV_RE, (m) => m.slice(0, -1) + DOT);
     let offset = 0;
-    for (const s of protectedText.split(/(?<=[.!?…])\s+(?=[\p{Lu}«"(`*\[])/u)) {
+    // Конец предложения — точка, за которой может стоять закрывающее выделение или скобка («…OWNER.** Three steps»).
+    for (const s of protectedText.split(/(?<=[.!?…][*_»")\]]*)\s+(?=[\p{Lu}«"(`*\[])/u)) {
       const at = protectedText.indexOf(s, offset);
       offset = at + s.length;
       const line = starts.filter((x) => x.at <= at).pop().line;
@@ -305,6 +306,7 @@ function selftest() {
     '```', 'node tools/commit.mjs --msg-file <path>', 'a.md → b.md', '```', '', '## Tail', '', '- Keep the prose clear and concrete in every document of the canon.',
     '- Rename a closed file only with `git mv` so the history survives.',
     '', 'A rule sentence, e.g. this one, must not split at the abbreviation.', '', 'Run `git mv` when you rename a closed file.',
+    '', '**A bold rule must end here.** Keep the next sentence its own unit.',
     'Cadence is the owner\'s setting: ☑ full text before every task · ☐ once per session.',
   ].join('\n');
   const inv = inventory(base, 'g.md');
@@ -320,11 +322,13 @@ function selftest() {
     cases.push(ok);
     console.log(`${ok ? '✅' : '✖'} ${name} — ${JSON.stringify(got)}${ok ? '' : ` expected ${JSON.stringify(expect)}`}`);
   };
-  // 2 шага · 1 чекбокс · 5 предложений (must · update — повелительный · e.g.-правило · run `git mv` · ☑/☐) · 2 строки таблицы
-  // · 1 команда блока (строка-пример со стрелкой — не она) · 2 пункта списка = 13; объясняющая проза — не обязательство
+  // 2 шага · 1 чекбокс · 7 предложений (must · update — повелительный · e.g.-правило · run `git mv` · ☑/☐ · жирное правило с
+  // точкой внутри выделения · следующее за ним «Keep…» — ОТДЕЛЬНО) · 2 строки таблицы · 1 команда блока (строка-пример со стрелкой —
+  // не она) · 2 пункта списка = 15; объясняющая проза — не обязательство
   const kinds = countByKind(inv);
-  const invOk = inv.length === 13 && /bullet 2/.test(kinds) && /step 2/.test(kinds) && /checkbox 1/.test(kinds) && /row 2/.test(kinds)
-    && /code 1/.test(kinds) && /sentence 5/.test(kinds) && inv.some((u) => u.text.includes('e.g. this one, must not split'));
+  const invOk = inv.length === 15 && /bullet 2/.test(kinds) && /step 2/.test(kinds) && /checkbox 1/.test(kinds) && /row 2/.test(kinds)
+    && /code 1/.test(kinds) && /sentence 7/.test(kinds) && inv.some((u) => u.text.includes('e.g. this one, must not split'))
+    && inv.some((u) => u.text === 'a bold rule must end here') && inv.some((u) => u.text === 'keep the next sentence its own unit');
   cases.push(invOk);
   console.log(`${invOk ? '✅' : '✖'} inventory — ${inv.length} obligation(s): ${kinds}; «e.g.» does not split a sentence; the explaining prose is not one`);
   const lineOk = inv.find((u) => u.text.startsWith('update the status')).line === 13;

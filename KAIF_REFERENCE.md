@@ -591,3 +591,54 @@ decision and its reason is still one lookup away. Each entry is keyed by the can
 the section heading verbatim. The build fails on an entry whose heading no longer exists in that file, so an entry cannot
 outlive its rule silently. Read the entry BEFORE changing or dropping a rule: a rule whose reason you cannot see is a fence
 whose purpose you have not yet found.
+
+### `TESTING_FRAMEWORK.md` → What the word "test" means — a functional run on the real product, by the user's path
+
+The word was never defined, and a session used it honestly while the owner read it as false (origin issue #62: "25 closed,
+all tested" on unit · self-test · mutant, recounted by the owner-QA as 3 of 25). The owner then defined "by hand" for an AI
+agent (origin decision #116, rendered): it writes itself the scenarios from the functionality of the module, the feature, the
+fixed bug, writes itself the machinery, and in the real product — stage or production — walks the application: presses the
+buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL.
+
+### `TESTING_FRAMEWORK.md` → The testing activities — the chain that makes "tested" mean something
+
+Field-paid (origin issue #21): with no obligation to design the observation set, an agent ran ONE happy path, reported the
+feature as working, and the owner produced five uncovered cases in about a minute. The chain is the ISTQB activities canon
+(test basis → design techniques → documentation → execution → defect reporting), distilled for an AI agent. KAIF 2.3, epic X.
+
+### `TESTING_FRAMEWORK.md` → Test-status markers — the trust contract
+
+Rule 7 (a FEATURE marker requires a designed set) comes from the same ticket as the activities chain (origin issue #21): a
+marker satisfied by one observation certifies that something was observed, while silently claiming the feature was tested —
+two different statements. The markers exist as the persistent memory of verification: the check in the moment dies with the
+session, the marker tells future agents and posterity that the foundation was load-tested.
+
+### `TESTING_FRAMEWORK.md` → The work produces its own means of checking
+
+"Raw deserves no trust" binds the PRODUCER, not only the checker. The section is principle 3 (early testing) applied to
+production rather than to inspection, and it is why the harness exists: the harness is what makes the checking repeatable once
+it exists. The triviality gate is stated here once; until 2.8 a second, looser copy (a trivial change needs "no ceremony beyond
+its normal comment" — no marker named) stood under "How this composes with the rest of KAIF", and the surviving copy is the one
+that names the comment AND the marker. KAIF 2.2, task T6.
+
+### `TESTING_FRAMEWORK.md` → An executed run produces its report
+
+The chain puts test documents BEFORE a run and the trust contract puts a marker INSIDE the claim — and nothing said what the
+run itself leaves behind. Field-paid (origin issue #59; the owner-QA's word: "THERE WAS NO TESTING"): the agent ran a probe
+twice, wrote `[TESTED]` and "stage accepted", and the owner could see neither a command, nor a moment, nor what was found. The
+seven fields are the ISO/IEC/IEEE 29119-3 test execution log and test completion report, distilled. KAIF 2.7, epic TR.
+
+### `TESTING_FRAMEWORK.md` → Green tests ≠ working — the observation gates
+
+Gate 5, the named broken version (origin issue #35): four field guards in one evening were each green and mutation-proven —
+and each proven against the failure that was convenient to simulate (a process death on a digital twin instead of a machine
+freeze; a readback after a CLEAN close instead of a death without one; one warning instead of an accumulation; the first step
+instead of any step). The machine hung, and the fuse built for it recorded nothing. KAIF 2.5, epic CN.
+Gates 6–7 and their two placement rules (origin issue #18): three deploys in one night served an application that did not
+start at all, with every local instrument green. KAIF 2.3, epic X.
+
+### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
+
+KAIF 2.6, origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is
+already in production. The class was named after three refusals of an incident-shaped fix: the agent verifies on a clean,
+freshly built stand, while the owner's world is accumulated.
