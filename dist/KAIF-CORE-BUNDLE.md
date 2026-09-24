@@ -497,7 +497,9 @@ relies entirely on this document to get to work.
 
 ```
 1. Read STATUS.md                 # current state: what's done, where we are, what's next
-2. Recall experience              # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience)
+2. Recall experience & own work    # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience);
+                                  # a surface the project already touched (a device, a route, a stand, a recipe) → find your
+                                  # own work (the house-rules file, researches/, the project's tools) and cite it, or write "no own work found"
 3. git status                     # what changed, what's uncommitted
 4. git log --oneline -5           # where we are in history
 5. Read MEMORY.md (if present)    # user profile, key decisions
@@ -556,6 +558,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Writing requirements / acceptance criteria / a goal vector | `REQUIREMENTS_FRAMEWORK.md` (the ten criteria · stop-word dictionary · fit criterion) |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
+| A surface the project already touched (a device, a route, a stand, a recipe) | the house-rules file (`HOUSE_RULES.md`, if the project has one) and `researches/` first — cite your own work, or write "no own work found" |
 | Changing or dropping a rule of the canon | its entry in `.kaif/KAIF_REFERENCE.md` §17, keyed by the rule's section heading — why the rule exists and what paid for it |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
@@ -1451,7 +1454,7 @@ decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
 **Authorship of a decision — the owner's word is a quote; the agent's word is signed.** The canon gives
 the owner's decisions a special status — not to be revisited — so an agent's choice recorded in the
-owner's words would become unrevisable. Four rules and a guard:
+owner's words would become unrevisable. Five rules and a guard:
 - **Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>`
   (or the address of the interview and question that holds the verbatim text — `interview #NNN, QN`);
   the agent's — `[AI]` (the "Decisions made without the owner" section of a plan or a bug is the same
@@ -1464,11 +1467,15 @@ owner's words would become unrevisable. Four rules and a guard:
   by any later session; the status is never inherited by silence.
 - **The source of truth about the owner's words is the chat and `interviews/`** (the owner's own
   line). Everything else — a plan line, a code comment, a report — is a RETELLING and reads as one: a
-  reference to the owner's will with no verbatim quote and no interview address beside it is the
-  finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
+  reference to the owner's will with no verbatim quote and no address of its source beside it (the interview, the
+  "commit the original verbatim first" commit, the decision number) is the finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
   prints the debt with a baseline that only shrinks (`--write-baseline` once, `selftest` proves both
   answers; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line).
   `/fable-judge` hunts "an agent decision worn as the owner's word".
+- **The rulebook takes the rule, not the quote.** An owner's standing instruction enters this guide or the house-rules file as a
+  strict rule — imperative, numbered, with its exceptions — plus one provenance line `[OWNER] <date> · <where the verbatim lives>`
+  (the "commit the original verbatim first" commit, the interview, the decision-journal row); his words stay at that source. A block
+  of raw chat messages inside the rulebook is a defect.
 
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
@@ -1549,8 +1556,9 @@ interpretation. Interviews are for vision-level forks that outlive the task.
 
 ## Notes from the human
 
-`<Free-form, high-signal guidance from the project owner — the kind of thing that doesn't fit a
-category but matters. Examples this framework was distilled from:>`
+`<High-signal guidance from the project owner that changes how the framework itself works here — each note in rule
+form with its provenance line [OWNER] <date> · <where the verbatim lives>; standing rules about the project go to the
+house-rules file. Examples this framework was distilled from:>`
 - Always check the current time and the log file's time before reading logs — read fresh logs, not stale ones.
 - Work autonomously without interactive questions. If you need information from the human, write an
   interview document and pause the session (so the human is signaled to come answer), rather than blocking.
@@ -3573,7 +3581,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
-| `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
+| `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or on its own line the address of the commit that holds the owner's words verbatim (`commit <hash>`, since 2.8 — the owner's standing rule enters the rulebook as a rule, his words stay at the source), or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
 | `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--sections <regex>]` / `check <files…> [--warn]` / `selftest`): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
@@ -5184,14 +5192,14 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
-> Kept verbatim except seven marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
+> Kept verbatim except eight marked KAIF patches: (1) non-code work is judged by the **KAIF sphere
 > library's fraud table** (upstream: `references/domains/`); (2) suite mode needs upstream's `eval/`
 > directory, which KAIF does not vendor — clone the upstream repo to run it; (3) the **guardrail
 > hunts** block in step 4 (added in KAIF 1.6 — weak-model guardrails, `plans/16`); (4) the
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism**, **budget-raised-instead-of-content-moved** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text · a budget raised to make a gate green is the gate, not the document, being fixed). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism**, **budget-raised-instead-of-content-moved** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text · a budget raised to make a gate green is the gate, not the document, being fixed); (8) the KAIF 2.8 hunt in the same block — **re-derived-own-work** (a task on a surface the project already worked on starts from the project's own prior work, cited). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5250,6 +5258,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Lesson repeated without a mechanism (KAIF 2.7).** A journal entry about a FAILURE (`❌` or `❌→✅`) whose `class:` slug already carries another failure entry with no `mechanized:` — a second, a sixth, a seventeenth record of one class — is a finding of the skipped-deadline class: the journal has become the default sink and "two strikes → a mechanism, never a third reminder" was answered with more prose (`EXPERIENCE.md` header and `/experience` step 0; origin issue #69 — an audit of one field project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, 4 after a guard was built, five lessons written 6–17 times in different words; a recurrence of closed #14, whose fix landed as prose and one origin-only tool). Two fates are legal and both are WRITTEN: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the class list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->`; a second `none-cheap:` inside one class is not a fate, and a declaration with no reason in words is itself the finding. Hunt also: an entry with no `class:` at all (recurrence cannot be counted for it, and a missing field reads as a clean journal); a `mechanized:` naming a command, script or path the project does not contain (a mechanization nobody can run is a claim — an ignored runtime path is not one); a class list that grew a synonym slug for a class that already exists (the same class in two words is the audit's "six to seventeen times" in machine form); a session close that reports the journal captured while the deadline command was never run. Re-run: `node .kaif/tools/kaif-experience-lint.mjs check` — the `repeat` line names the class and BOTH entries by id; `exit 3` (`SKIPPED`) means not one entry carries the field, which is a finding about the journal, never a green.
    - **Question asked past its archaeology (KAIF 2.7).** A live question brought to the owner — a page raised, a document queued, a question asked pointedly in the chat — in a document dated on or after `2026-09-18` whose body carries no archaeology attestation between the question heading and its first option (`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files|none> · prior: <none | "<the prior answer>" + address> -->`), or whose attestation says `N > 0` with `prior: none`, or whose `read:` names no file while `N > 0`, is a finding: a question to the owner is a CLAIM that the matter is not settled yet, and the claim was delivered unverified (`AGENT_GUIDE.md` → the place of questions; `/interview` step 3d; origin issue #70 — an audited field deployment brought one owner 13 questions his own prior answers, `GOAL.md` or a stand run had already settled, one of them 44 days after his answer; his words: "you are asking ME? did you look into GOAL.md, smart guy, before asking?" · "we have discussed this already. Search."). Hunt also: an attestation whose command was never run (no `N`, no `read:`, the form left as the template's placeholders); a found prior answer named in `prior:` while the question was still shown unchanged — the legal moves are dropping it and carrying the decision over (`--mark-implemented`) or reformulating it as "the prior answer was X; Y has changed"; a `n/a — <reason>` exception on a question that plainly has something to search for. Re-run: `node .kaif/tools/contour/review.mjs <doc> --check` (exit 3 names every unattested question and PRINTS the command), and where the deployment guards its questions, its own axis (the origin: `node tools/questions-guard.mjs`, G11). `N = 0` is NOT a finding — the axis promises the search happened, never that it found; a document dated before that day is never judged.
    - **Budget raised instead of content moved (KAIF 2.7).** A size budget of the re-read core that CHANGED in the same session a budget gate went from red to green — the number in `DOC_BUDGETS` (or in the project's own budget table) edited upward, `--gate-budgets` now exit 0, and nothing moved to the address the warning named — is the test-weakening class applied to the framework's own weight: the gate reads whatever number the table holds, so raising it is the one cheap way past a door whose printed cure is "move content OUT to <address>, rather than raise the budget" (origin issue #71 — the owner's own audit of one project: three core documents above budget, the warning printed for weeks and acted on once; `AGENT_GUIDE` → Document taxonomy, tier 1). The legal answer is a MOVE, and it is visible as one: closed history verbatim in `PROJECT_HISTORY.md`, a section in `researches/`, a house-rules file — the same lines, a different address. A budget genuinely wrong for a project is raised ONCE, with the owner's word quoted or `[AI]` signed beside the new number and the reason in words, never inside the session the gate refused. Hunt also: a closing that REPORTS the bonsai trim while `node .kaif/kaif-core.mjs check --gate-budgets` was never run (the trim is the work, the gate is the proof, and only the second one can fail); a session that answered a red gate by deleting content rather than moving it (the chronicle is append-only — lines leave `STATUS.md` alive or they do not leave); and "own lines" read as a licence — arrived canon is not counted BY THE MODULE, so a template module edited by one character counts whole and shrinking it is not a move either. Re-run: `node .kaif/kaif-core.mjs check --gate-budgets` before and after the claimed fix, and `git diff` the budget table: a green gate whose diff touches the numbers and not the documents is the finding.
+   - **Re-derived own work (KAIF 2.8).** The task sat on a surface the project had already worked on — a route, a device, a stand, a recipe recorded in the house-rules file, `researches/` or the project's tools — and the session re-derived it, or asked the owner for it, without citing its own prior work or writing "no own work found" (`AGENT_GUIDE.md` checklist step 2). Evidence: grep the house-rules file and `researches/` for the surface's name; a hit the report never cites is the finding.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -5719,7 +5728,7 @@ Round 11 repeated the protocol for chart 5: the gates were drafted first, then b
 ``````md
 ---
 name: fix-vision
-description: Capture the owner's latest VISIONARY chat messages — vision corrections, priorities, brand and direction given while the agent worked — and fix them into the project's KAIF documents (GOAL.md, MASTER_PLAN.md, the owner's notes in AGENT_GUIDE.md). Use when the human says "fix the vision", "capture my vision", "зафиксируй видение", "обнови видение из чата", OR when the agent notices vision-level guidance accumulating in the chat that is not yet reflected in the docs.
+description: Capture the owner's latest VISIONARY chat messages — vision corrections, priorities, brand and direction given while the agent worked — and fix them into the project's KAIF documents (GOAL.md, MASTER_PLAN.md, the house-rules file, the owner's notes in AGENT_GUIDE.md). Use when the human says "fix the vision", "capture my vision", "зафиксируй видение", "обнови видение из чата", OR when the agent notices vision-level guidance accumulating in the chat that is not yet reflected in the docs.
 ---
 
 # /fix-vision — fix the owner's vision from the chat into the docs
@@ -5738,12 +5747,18 @@ opposed to one-off task instructions.
 
 ### Step 2. Distill
 Turn each into a short principle **in the owner's voice**. Keep the owner's wording where it carries
-meaning; never paraphrase the intent away. Convert relative dates to absolute.
+meaning; never paraphrase the intent away. Convert relative dates to absolute. A standing WORKING RULE takes
+the rule form of Step 3 — the owner's verbatim words stay at their source.
 
 ### Step 3. Fix into the documents
 - **`GOAL.md`** — changes to the vision itself (what we want in the end, for whom).
 - **`MASTER_PLAN.md`** — changes of priorities/scope; if the shift is big, re-derive via `/revision`.
-- **`AGENT_GUIDE.md` → "Notes from the owner"** — durable working-style directives.
+- **A standing working rule of the owner** → the project's house-rules file (tier 4 of the document taxonomy —
+  create `HOUSE_RULES.md` at the project root if there is none yet) as a strict rule: imperative, numbered, with
+  its exceptions, plus one provenance line `[OWNER] <date> · <where the verbatim lives>`. Commit the owner's
+  message verbatim first (`AGENT_GUIDE.md`, checklist step 18) and cite that commit; a block of raw messages in
+  the rulebook is a defect (`AGENT_GUIDE.md` → "Authorship of a decision").
+- **`AGENT_GUIDE.md` → "Notes from the human"** — only what changes the framework's own procedure here.
 - The agent system's persistent memory, if it has one — a pointer, not a copy (DRY).
 
 ### Step 4. De-duplicate & report
@@ -12800,6 +12815,9 @@ export function texts(language) {
 //     `interview #NNN`, `interview_NNN`;
 //   · the number of a RECORDED decision (`решение №109`, `decision #12`, `MASTER_PLAN §7 №95`) — a
 //     number counts only with a registry word on the same line: a bare `№55` is an issue, a page, anything;
+//   · ON THE ATTRIBUTION'S OWN LINE: the address of the commit that holds the owner's words verbatim — "commit" / «коммит»
+//     next to a hash of 7+ hex digits with at least one digit (2.8, epic CK, origin issue #89: the rulebook takes the rule,
+//     the verbatim words stay at the source — `[OWNER] <date> · verbatim in commit <hash>`);
 //   · the declared exception on the line — `<!-- attribution-ok: <where the quote lives> -->`;
 // or the line is signed as the AGENT's own decision ([AI] / [AI-ed] / the localized `aiMarks` pair of
 // .kaif/kaif.json) — a signed agent decision is no attribution. A "Decisions made without the owner"
@@ -12851,6 +12869,11 @@ export function texts(language) {
 //  both languages named, clean fixture exit 0, baseline swallows the old debt and reddens on the new
 //  line only, a rewrite with a NEW finding present is refused unless --adopt-new, empty tree SKIPPED
 //  (exit 3); live run over the origin — see STATUS "Инструменты"]
+// 2.8, epic CK (origin issue #89) — a COMMIT address grounds an attribution ON ITS OWN LINE: selftest 34 cases (the CK4 judge's
+// forms: `commit: <hash>`, a commit URL → clean; `recommit`, an all-hex word, a hash on a neighbour line → findings); proven against the NAMED 2.7
+// edition (≈ 2026-09-24 21:57 +03:00): the field form «[OWNER] 2026-09-22 · verbatim in commit 6411a9ed» → 1 finding under the 2.7
+// module, 0 under this one; "verbatim in the commit above" (no hash) and a bare hash without the commit word stay findings.
+// [NOT-TESTED] as a functional run for the new axis — the field path is a deployment's /fix-vision writing a rule into house rules.
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
@@ -12915,6 +12938,13 @@ const INTERVIEW_RE = /interviews\/|интервью\s*№\s*\d|interview\s*#\s*\
 // anywhere on the line would ground a bare "(issue №55)" through the attribution's own wording.
 const DECISION_ADDRESS_RE = /(?:решени[а-яё]*\s+(?:владельца\s+)?№\s*\d+|№\s*\d+\s*\(?\s*решени|decision\s*#\s*\d+|№\s*\d+\s*\(?\s*decision|§\s*7\s*№\s*\d+|MASTER_PLAN[^\n]{0,40}№\s*\d+|журнал[а-яё]*\s+решений[^\n]{0,20}№\s*\d+)/iu;
 const decisionAddress = (l) => DECISION_ADDRESS_RE.test(l);
+// A COMMIT address (2.8, epic CK; origin issue #89): the owner's standing rule enters the rulebook as a rule, and his verbatim words
+// stay at the source — most often the "commit the original verbatim first" commit. The commit word must sit NEXT to a hash of 7+ hex
+// digits ("verbatim in commit 6411a9ed", "коммит `2d897c5`"): a bare hash is anything, and "the commit above" names nothing.
+// Left: not a letter ("recommit" is not the word). Between word and hash: spaces, `:`, `#`, `/`, a backtick — "commit: 3c2da82",
+// ".../commit/3c2da82". The hash carries at least one DIGIT, so an all-hex English word ("defaced") is not a hash. It grounds only
+// the attribution's OWN line (see lintText): the provenance form is one line, and hashes stand everywhere in plans and reports.
+const COMMIT_ADDRESS_RE = /(?<!\p{L})(?:commits?|коммит[а-яё]*)[\s:#/`]*(?=[0-9a-f]*\d)[0-9a-f]{7,40}(?![0-9a-z])/iu;
 const OK_MARK_RE = /<!--\s*attribution-ok:/iu;
 // The agent's own signature on the line — a signed agent decision is not an attribution.
 const DEFAULT_AGENT_MARKS = ['[AI]', '[AI-ed]', '[ИИ]', '[ИИ-ред]'];
@@ -12963,7 +12993,7 @@ export function lintText(src, marks = DEFAULT_AGENT_MARKS) {
     if (OK_MARK_RE.test(raw)) continue;                 // the declared exception names where the quote lives
     if (marks.some((m) => raw.includes(m))) continue;   // signed as the agent's decision
     const lo = Math.max(0, i - WINDOW), hi = Math.min(lines.length - 1, i + WINDOW);
-    let grounded = false;
+    let grounded = COMMIT_ADDRESS_RE.test(raw);         // a commit address grounds its own line only
     for (let j = lo; j <= hi && !grounded; j++) if (grounds(lines[j])) grounded = true;
     if (grounded) continue;
     out.push({ line: i + 1, text: raw.trim() });
@@ -13042,7 +13072,7 @@ function cmdCheck() {
     return;
   }
   const debt = findings.length - fresh.length;
-  for (const f of fresh) console.error(`✖ ${f.file}:${f.line} — attribution to the owner without his words: «${f.text.slice(0, 120)}» (no verbatim quote, quote line, interview address or decision number within ±${WINDOW} lines; sign it [AI] if it is the agent's, quote him if it is his, or mark <!-- attribution-ok: … -->)`);
+  for (const f of fresh) console.error(`✖ ${f.file}:${f.line} — attribution to the owner without his words: «${f.text.slice(0, 120)}» (no verbatim quote, quote line, interview address or decision number within ±${WINDOW} lines, and no commit address on the line itself; sign it [AI] if it is the agent's, for his standing rule write "[OWNER] <date> · verbatim in commit <hash>", quote him if it is his decision, or mark <!-- attribution-ok: … -->)`);
   const prunable = baseline ? known.size - debt : 0;
   const tail = baseline ? ` · debt ${debt} (baseline ${BASELINE}${prunable > 0 ? `, ${prunable} entr${prunable === 1 ? 'y' : 'ies'} no longer found — rewrite it` : ''})` : (findings.length ? ' · no baseline yet — adopt with --write-baseline' : '');
   if (fresh.length) { console.error(`✖ attribution-lint: ${fresh.length} NEW finding(s) in ${scanned} file(s)${tail}`); process.exit(1); }
@@ -13081,6 +13111,16 @@ function cmdSelftest() {
   expect('EN: signed [AI] by mandate → clean', `[AI] by mandate — "do as you see fit": wait for the receipt; the owner's decision is not claimed.\n`, 0);
   expect('EN: the owner\'s signature without his words → finding', `[OWNER] wait, no threshold · 2026-09-08 — not to be revisited.\n`, 1);
   expect('EN: the owner\'s signature with his words → clean', `[OWNER] "do as you see fit" · 2026-09-08.\n`, 0);
+  // 2.8, epic CK (origin issue #89): the rulebook takes the RULE, the verbatim words stay at the source — a commit address grounds it.
+  expect('EN: the owner\'s rule with the commit address of his verbatim words → clean (#89 field form)', `[OWNER] 2026-09-22 · verbatim in commit 6411a9ed\n`, 0);
+  expect('RU: правило владельца с адресом коммита → clean', `[ВЛАДЕЛЕЦ] 2026-09-22 · дословно — коммит \`2d897c5\`\n`, 0);
+  expect('EN: "verbatim in the commit" with no hash → finding', `[OWNER] 2026-09-22 · verbatim in the commit above.\n`, 1);
+  expect('EN: a bare hash without the commit word → finding', `[OWNER] 2026-09-22 · 6411a9ed\n`, 1);
+  // CK4 judge: the forms a real line uses, and the three loose matches of the first edition
+  expect('EN: "commit: <hash>" and a commit URL → clean', `[OWNER] 2026-09-22 · verbatim in commit: 3c2da82\n\n\n\n[OWNER] 2026-09-23 · https://github.com/o/r/commit/3c2da82\n`, 0);
+  expect('EN: "recommit 1234567" is not the commit word → finding', `[OWNER] 2026-09-22 · recommit 1234567\n`, 1);
+  expect('EN: an all-hex English word is not a hash ("commit defaced") → finding', `[OWNER] 2026-09-22 · commit defaced\n`, 1);
+  expect('EN: a commit hash on a NEIGHBOUR line grounds nothing', `The owner decided to drop the Android build.\nFixed in commit 80a18eb.\n`, 1);
   expect('invisible: ❌ counter-example → clean', `❌ the owner's decision with no quote — the bad form.\n`, 0);
   expect('invisible: inline code and a fenced block → clean', 'Use `the owner\'s decision` and `[OWNER]` as the pattern.\n\n```\nthe owner\'s decision P1: wait\n```\n', 0);
   expect('invisible: a `>` quote line is never a finding → clean', `> Решение владельца П1: ждать — цитата из старого документа.\n`, 0);

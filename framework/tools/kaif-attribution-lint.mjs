@@ -11,6 +11,9 @@
 //     `interview #NNN`, `interview_NNN`;
 //   · the number of a RECORDED decision (`решение №109`, `decision #12`, `MASTER_PLAN §7 №95`) — a
 //     number counts only with a registry word on the same line: a bare `№55` is an issue, a page, anything;
+//   · ON THE ATTRIBUTION'S OWN LINE: the address of the commit that holds the owner's words verbatim — "commit" / «коммит»
+//     next to a hash of 7+ hex digits with at least one digit (2.8, epic CK, origin issue #89: the rulebook takes the rule,
+//     the verbatim words stay at the source — `[OWNER] <date> · verbatim in commit <hash>`);
 //   · the declared exception on the line — `<!-- attribution-ok: <where the quote lives> -->`;
 // or the line is signed as the AGENT's own decision ([AI] / [AI-ed] / the localized `aiMarks` pair of
 // .kaif/kaif.json) — a signed agent decision is no attribution. A "Decisions made without the owner"
@@ -62,6 +65,11 @@
 //  both languages named, clean fixture exit 0, baseline swallows the old debt and reddens on the new
 //  line only, a rewrite with a NEW finding present is refused unless --adopt-new, empty tree SKIPPED
 //  (exit 3); live run over the origin — see STATUS "Инструменты"]
+// 2.8, epic CK (origin issue #89) — a COMMIT address grounds an attribution ON ITS OWN LINE: selftest 34 cases (the CK4 judge's
+// forms: `commit: <hash>`, a commit URL → clean; `recommit`, an all-hex word, a hash on a neighbour line → findings); proven against the NAMED 2.7
+// edition (≈ 2026-09-24 21:57 +03:00): the field form «[OWNER] 2026-09-22 · verbatim in commit 6411a9ed» → 1 finding under the 2.7
+// module, 0 under this one; "verbatim in the commit above" (no hash) and a bare hash without the commit word stay findings.
+// [NOT-TESTED] as a functional run for the new axis — the field path is a deployment's /fix-vision writing a rule into house rules.
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
@@ -126,6 +134,13 @@ const INTERVIEW_RE = /interviews\/|интервью\s*№\s*\d|interview\s*#\s*\
 // anywhere on the line would ground a bare "(issue №55)" through the attribution's own wording.
 const DECISION_ADDRESS_RE = /(?:решени[а-яё]*\s+(?:владельца\s+)?№\s*\d+|№\s*\d+\s*\(?\s*решени|decision\s*#\s*\d+|№\s*\d+\s*\(?\s*decision|§\s*7\s*№\s*\d+|MASTER_PLAN[^\n]{0,40}№\s*\d+|журнал[а-яё]*\s+решений[^\n]{0,20}№\s*\d+)/iu;
 const decisionAddress = (l) => DECISION_ADDRESS_RE.test(l);
+// A COMMIT address (2.8, epic CK; origin issue #89): the owner's standing rule enters the rulebook as a rule, and his verbatim words
+// stay at the source — most often the "commit the original verbatim first" commit. The commit word must sit NEXT to a hash of 7+ hex
+// digits ("verbatim in commit 6411a9ed", "коммит `2d897c5`"): a bare hash is anything, and "the commit above" names nothing.
+// Left: not a letter ("recommit" is not the word). Between word and hash: spaces, `:`, `#`, `/`, a backtick — "commit: 3c2da82",
+// ".../commit/3c2da82". The hash carries at least one DIGIT, so an all-hex English word ("defaced") is not a hash. It grounds only
+// the attribution's OWN line (see lintText): the provenance form is one line, and hashes stand everywhere in plans and reports.
+const COMMIT_ADDRESS_RE = /(?<!\p{L})(?:commits?|коммит[а-яё]*)[\s:#/`]*(?=[0-9a-f]*\d)[0-9a-f]{7,40}(?![0-9a-z])/iu;
 const OK_MARK_RE = /<!--\s*attribution-ok:/iu;
 // The agent's own signature on the line — a signed agent decision is not an attribution.
 const DEFAULT_AGENT_MARKS = ['[AI]', '[AI-ed]', '[ИИ]', '[ИИ-ред]'];
@@ -174,7 +189,7 @@ export function lintText(src, marks = DEFAULT_AGENT_MARKS) {
     if (OK_MARK_RE.test(raw)) continue;                 // the declared exception names where the quote lives
     if (marks.some((m) => raw.includes(m))) continue;   // signed as the agent's decision
     const lo = Math.max(0, i - WINDOW), hi = Math.min(lines.length - 1, i + WINDOW);
-    let grounded = false;
+    let grounded = COMMIT_ADDRESS_RE.test(raw);         // a commit address grounds its own line only
     for (let j = lo; j <= hi && !grounded; j++) if (grounds(lines[j])) grounded = true;
     if (grounded) continue;
     out.push({ line: i + 1, text: raw.trim() });
@@ -253,7 +268,7 @@ function cmdCheck() {
     return;
   }
   const debt = findings.length - fresh.length;
-  for (const f of fresh) console.error(`✖ ${f.file}:${f.line} — attribution to the owner without his words: «${f.text.slice(0, 120)}» (no verbatim quote, quote line, interview address or decision number within ±${WINDOW} lines; sign it [AI] if it is the agent's, quote him if it is his, or mark <!-- attribution-ok: … -->)`);
+  for (const f of fresh) console.error(`✖ ${f.file}:${f.line} — attribution to the owner without his words: «${f.text.slice(0, 120)}» (no verbatim quote, quote line, interview address or decision number within ±${WINDOW} lines, and no commit address on the line itself; sign it [AI] if it is the agent's, for his standing rule write "[OWNER] <date> · verbatim in commit <hash>", quote him if it is his decision, or mark <!-- attribution-ok: … -->)`);
   const prunable = baseline ? known.size - debt : 0;
   const tail = baseline ? ` · debt ${debt} (baseline ${BASELINE}${prunable > 0 ? `, ${prunable} entr${prunable === 1 ? 'y' : 'ies'} no longer found — rewrite it` : ''})` : (findings.length ? ' · no baseline yet — adopt with --write-baseline' : '');
   if (fresh.length) { console.error(`✖ attribution-lint: ${fresh.length} NEW finding(s) in ${scanned} file(s)${tail}`); process.exit(1); }
@@ -292,6 +307,16 @@ function cmdSelftest() {
   expect('EN: signed [AI] by mandate → clean', `[AI] by mandate — "do as you see fit": wait for the receipt; the owner's decision is not claimed.\n`, 0);
   expect('EN: the owner\'s signature without his words → finding', `[OWNER] wait, no threshold · 2026-09-08 — not to be revisited.\n`, 1);
   expect('EN: the owner\'s signature with his words → clean', `[OWNER] "do as you see fit" · 2026-09-08.\n`, 0);
+  // 2.8, epic CK (origin issue #89): the rulebook takes the RULE, the verbatim words stay at the source — a commit address grounds it.
+  expect('EN: the owner\'s rule with the commit address of his verbatim words → clean (#89 field form)', `[OWNER] 2026-09-22 · verbatim in commit 6411a9ed\n`, 0);
+  expect('RU: правило владельца с адресом коммита → clean', `[ВЛАДЕЛЕЦ] 2026-09-22 · дословно — коммит \`2d897c5\`\n`, 0);
+  expect('EN: "verbatim in the commit" with no hash → finding', `[OWNER] 2026-09-22 · verbatim in the commit above.\n`, 1);
+  expect('EN: a bare hash without the commit word → finding', `[OWNER] 2026-09-22 · 6411a9ed\n`, 1);
+  // CK4 judge: the forms a real line uses, and the three loose matches of the first edition
+  expect('EN: "commit: <hash>" and a commit URL → clean', `[OWNER] 2026-09-22 · verbatim in commit: 3c2da82\n\n\n\n[OWNER] 2026-09-23 · https://github.com/o/r/commit/3c2da82\n`, 0);
+  expect('EN: "recommit 1234567" is not the commit word → finding', `[OWNER] 2026-09-22 · recommit 1234567\n`, 1);
+  expect('EN: an all-hex English word is not a hash ("commit defaced") → finding', `[OWNER] 2026-09-22 · commit defaced\n`, 1);
+  expect('EN: a commit hash on a NEIGHBOUR line grounds nothing', `The owner decided to drop the Android build.\nFixed in commit 80a18eb.\n`, 1);
   expect('invisible: ❌ counter-example → clean', `❌ the owner's decision with no quote — the bad form.\n`, 0);
   expect('invisible: inline code and a fenced block → clean', 'Use `the owner\'s decision` and `[OWNER]` as the pattern.\n\n```\nthe owner\'s decision P1: wait\n```\n', 0);
   expect('invisible: a `>` quote line is never a finding → clean', `> Решение владельца П1: ждать — цитата из старого документа.\n`, 0);

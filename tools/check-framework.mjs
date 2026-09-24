@@ -885,6 +885,10 @@ errors.push(...scanInvisibleCharacters(ROOT));
       'framework/skills/fable-judge/SKILL.md',
       ['**Budget raised instead of content moved (KAIF 2.7).**',
        'budget-raised-instead-of-content-moved']],
+    // CK (2.8, origin issue #90): the own-work step of the checklist is judged — the hunt and its declaration in the header
+    ['own work ↔ /fable-judge hunts re-derived own work',
+      'framework/skills/fable-judge/SKILL.md',
+      ['**Re-derived own work (KAIF 2.8).**', 're-derived-own-work', 'eight marked KAIF patches']],
     // The RECON MAP ↔ the DELIVERY (bugs/72 №5). The map promised Antigravity "two of three" with
     // a STATUS guard, while the sample deliberately ships one hook and suite s14 asserts the guard
     // is ABSENT — a map read as a promise sends a field owner looking for a hook we refused to

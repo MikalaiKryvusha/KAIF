@@ -75,7 +75,9 @@ relies entirely on this document to get to work.
 
 ```
 1. Read STATUS.md                 # current state: what's done, where we are, what's next
-2. Recall experience              # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience)
+2. Recall experience & own work    # grep EXPERIENCE.md by the task's tags — don't repeat known dead ends (skill: /experience);
+                                  # a surface the project already touched (a device, a route, a stand, a recipe) → find your
+                                  # own work (the house-rules file, researches/, the project's tools) and cite it, or write "no own work found"
 3. git status                     # what changed, what's uncommitted
 4. git log --oneline -5           # where we are in history
 5. Read MEMORY.md (if present)    # user profile, key decisions
@@ -134,6 +136,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Writing requirements / acceptance criteria / a goal vector | `REQUIREMENTS_FRAMEWORK.md` (the ten criteria · stop-word dictionary · fit criterion) |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
+| A surface the project already touched (a device, a route, a stand, a recipe) | the house-rules file (`HOUSE_RULES.md`, if the project has one) and `researches/` first — cite your own work, or write "no own work found" |
 | Changing or dropping a rule of the canon | its entry in `.kaif/KAIF_REFERENCE.md` §17, keyed by the rule's section heading — why the rule exists and what paid for it |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
@@ -1029,7 +1032,7 @@ decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
 **Authorship of a decision — the owner's word is a quote; the agent's word is signed.** The canon gives
 the owner's decisions a special status — not to be revisited — so an agent's choice recorded in the
-owner's words would become unrevisable. Four rules and a guard:
+owner's words would become unrevisable. Five rules and a guard:
 - **Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>`
   (or the address of the interview and question that holds the verbatim text — `interview #NNN, QN`);
   the agent's — `[AI]` (the "Decisions made without the owner" section of a plan or a bug is the same
@@ -1042,11 +1045,15 @@ owner's words would become unrevisable. Four rules and a guard:
   by any later session; the status is never inherited by silence.
 - **The source of truth about the owner's words is the chat and `interviews/`** (the owner's own
   line). Everything else — a plan line, a code comment, a report — is a RETELLING and reads as one: a
-  reference to the owner's will with no verbatim quote and no interview address beside it is the
-  finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
+  reference to the owner's will with no verbatim quote and no address of its source beside it (the interview, the
+  "commit the original verbatim first" commit, the decision number) is the finding. The optional tool module counts them: `node .kaif/tools/kaif-attribution-lint.mjs check`
   prints the debt with a baseline that only shrinks (`--write-baseline` once, `selftest` proves both
   answers; the declared exception is `<!-- attribution-ok: <where the quote lives> -->` on the line).
   `/fable-judge` hunts "an agent decision worn as the owner's word".
+- **The rulebook takes the rule, not the quote.** An owner's standing instruction enters this guide or the house-rules file as a
+  strict rule — imperative, numbered, with its exceptions — plus one provenance line `[OWNER] <date> · <where the verbatim lives>`
+  (the "commit the original verbatim first" commit, the interview, the decision-journal row); his words stay at that source. A block
+  of raw chat messages inside the rulebook is a defect.
 
 **Write-gate on the owner's canon artifacts** (rules, lore, brand texts, product docs — anything where
 the owner's word IS the content): **new entities** (mechanics, facts, decisions) enter only through a
@@ -1127,8 +1134,9 @@ interpretation. Interviews are for vision-level forks that outlive the task.
 
 ## Notes from the human
 
-`<Free-form, high-signal guidance from the project owner — the kind of thing that doesn't fit a
-category but matters. Examples this framework was distilled from:>`
+`<High-signal guidance from the project owner that changes how the framework itself works here — each note in rule
+form with its provenance line [OWNER] <date> · <where the verbatim lives>; standing rules about the project go to the
+house-rules file. Examples this framework was distilled from:>`
 - Always check the current time and the log file's time before reading logs — read fresh logs, not stale ones.
 - Work autonomously without interactive questions. If you need information from the human, write an
   interview document and pause the session (so the human is signaled to come answer), rather than blocking.
