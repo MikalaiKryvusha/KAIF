@@ -95,7 +95,8 @@
     ],
     "2.8": [
       "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is 277 lines instead of 300: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules.",
-      "THE RULEBOOK TAKES THE RULE, NOT THE QUOTE — AND TIER 4 HAS A FILE (2.8, epic CK; origin issues #89 and #90 — a field owner asked to \"mark my instructions in your guides so this is not lost\", and the agent poured those raw chat messages into AGENT_GUIDE.md; another spent forty minutes re-deriving a device route that sat in its own `paths/` directory). (1) `AGENT_GUIDE.md` → \"Authorship of a decision\" gains a fifth rule: an owner's standing instruction enters the guide or the house-rules file as a strict rule — imperative, numbered, with its exceptions — plus ONE provenance line `[OWNER] <date> · <where the verbatim lives>` (the commit that recorded it verbatim first, the interview, the decisions log); a block of raw chat messages in the rulebook is a defect. The attribution linter accepts a commit address on the line (\"commit\" next to a hash of ≥ 7 hex digits) as the source, so that provenance line no longer reddens. (2) `/fix-vision` routes a standing working rule to the house-rules file in that form and names the notes section as the template does (\"Notes from the human\"). (3) Checklist step 2 and a new Context-router row: a task on a surface the project already touched starts from your own work — the house-rules file, `researches/`, the project's tools — cited, or \"no own work found\" written; `/fable-judge` hunts re-derived own work. (4) NEW skeleton `.kaif/_house-rules-template.md` (tier 4): `cp .kaif/_house-rules-template.md HOUSE_RULES.md` on first use; `/resume` reads `HOUSE_RULES.md` when it exists. The shipped file is only the skeleton in `.kaif/`; your `HOUSE_RULES.md` is the project's and an update leaves it byte for byte. If your project already keeps such a file under another name, keep it and point the new `/resume` bullet at it; if your `HOUSE_RULES.md` has its own layout, `/fix-vision` adds a section \"The owner's standing rules\" to it rather than reshaping the file."
+      "THE RULEBOOK TAKES THE RULE, NOT THE QUOTE — AND TIER 4 HAS A FILE (2.8, epic CK; origin issues #89 and #90 — a field owner asked to \"mark my instructions in your guides so this is not lost\", and the agent poured those raw chat messages into AGENT_GUIDE.md; another spent forty minutes re-deriving a device route that sat in its own `paths/` directory). (1) `AGENT_GUIDE.md` → \"Authorship of a decision\" gains a fifth rule: an owner's standing instruction enters the guide or the house-rules file as a strict rule — imperative, numbered, with its exceptions — plus ONE provenance line `[OWNER] <date> · <where the verbatim lives>` (the commit that recorded it verbatim first, the interview, the decisions log); a block of raw chat messages in the rulebook is a defect. The attribution linter accepts a commit address on the line (\"commit\" next to a hash of ≥ 7 hex digits) as the source, so that provenance line no longer reddens. (2) `/fix-vision` routes a standing working rule to the house-rules file in that form and names the notes section as the template does (\"Notes from the human\"). (3) Checklist step 2 and a new Context-router row: a task on a surface the project already touched starts from your own work — the house-rules file, `researches/`, the project's tools — cited, or \"no own work found\" written; `/fable-judge` hunts re-derived own work. (4) NEW skeleton `.kaif/_house-rules-template.md` (tier 4): `cp .kaif/_house-rules-template.md HOUSE_RULES.md` on first use; `/resume` reads `HOUSE_RULES.md` when it exists. The shipped file is only the skeleton in `.kaif/`; your `HOUSE_RULES.md` is the project's and an update leaves it byte for byte. If your project already keeps such a file under another name, keep it and point the new `/resume` bullet at it; if your `HOUSE_RULES.md` has its own layout, `/fix-vision` adds a section \"The owner's standing rules\" to it rather than reshaping the file.",
+      "THE EXPERIENCE LINTER NO LONGER BURIES ITS ONE LINE (2.8, epic CK; origin issue #80 — a field journal printed 88 per-entry no-class warnings above the line that mattered, on every closing): failure entries without `class:` that come before the journal's first classed entry are history outside the field rules, so `node .kaif/tools/kaif-experience-lint.mjs check` prints ONE line for all of them — \"N failure entries carry no `class:` and predate the first classed entry (EXP-…[, date]) — outside the field rules; list them: --verbose …\". \"Before\" is the entry's place in the journal, read in the direction most of its dates show; an unclassed failure placed after that entry, or dated later than it, stays its own warning, and a journal whose order its dates cannot tell (no dates, a single date) is not folded at all. Nothing to do in your project; `--verbose` lists the history — classify it from the newest end, and the fold line shrinks as you go."
     ],
     "2.7": [
       "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
@@ -13330,6 +13331,7 @@ function cmdSelftest() {
 //
 // Commands:
 //   node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>]   # default: EXPERIENCE.md
+//        [--verbose]   # list every pre-class failure entry instead of the one fold line (origin issue #80)
 //   node .kaif/tools/kaif-experience-lint.mjs --shrink EXP-NNNN [journal] [--yes]   # show; --yes writes
 //   node .kaif/tools/kaif-experience-lint.mjs selftest                              # PROVE every rule (EN + RU)
 //
@@ -13362,6 +13364,13 @@ function cmdSelftest() {
 //  reasoning (a numeric-only id skipped 13 of 328 entries; an ignored runtime path read as a dangling
 //  guard; guard addresses "missing" for a journal outside its tree; a declaration whose reason carried
 //  `<...>` dropped silently) — report: testcases/reports/2026-09-18_experience-lint.md]
+// [TESTED: 2026-09-24 · the no-class fold (2.8, epic CK step CK5.7, origin issue #80): selftest 75 cases green (fold,
+//  oldest-first, --verbose, same-day history, a misplaced newer entry, a one-date journal); three mutants on copies —
+//  the two earlier editions (by date alone · direction from the first and last entries) and the later-date guard
+//  removed — each red on its own case; a copy of the origin's journal made into the field's shape (the class line
+//  removed from EXP-0001…EXP-0116): this module prints ONE no-class line for 90 entries, the HEAD module 90 lines,
+//  --verbose 90 —
+//  report: testcases/reports/2026-09-24_ck57-experience-fold.md]
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 
@@ -13440,6 +13449,7 @@ export function parseEntries(text) {
     return {
       ...e,
       failure: FAILURE_MARK.test(e.heading),
+      date: (/\b(\d{4}-\d{2}-\d{2})\b/.exec(e.heading) || [null, null])[1],
       rawClass: raw,
       klass: raw && SLUG.test(raw) ? raw : null,
       mech: FIELD_MECH.test(e.body),
@@ -13532,9 +13542,36 @@ export const RULES = [
       .filter((e) => e.klass && !baseline.has(e.id) && e.trap && !e.mech && !e.none)
       .map((e) => `${e.id} (line ${e.line}): the text reduces to an order of actions (a trap by form) — it needs \`${KEYWORDS.en.mechanized}:\` or \`${KEYWORDS.en.noneCheap}: <why>\`, never \`${KEYWORDS.en.subject}\``) },
   // A failure entry with no class is invisible to the deadline — the axis says so instead of counting it green.
-  { id: 'no-class', kind: 'warning', run: ({ entries, baseline }) => entries
-      .filter((e) => e.failure && !e.klass && !baseline.has(e.id))
-      .map((e) => `${e.id} (line ${e.line}): a failure entry with no \`${KEYWORDS.en.klass}: <slug>\`${e.rawClass ? ` (the value "${e.rawClass}" is not a slug — lowercase latin, digits and dashes)` : ''} — recurrence cannot be counted for it`) },
+  // History written BEFORE the journal's first classed entry is outside the field rules by the release's own words, so it
+  // folds into ONE line (origin issue #80: 88 per-entry lines buried the one line that mattered, on every closing); an
+  // unclassed failure written after it stays its own warning: that one is a real finding. "Before" is the entry's PLACE in
+  // the journal, read in the journal's own direction, AND never a later date than the edge entry's: comparing dates alone
+  // left same-day history unfolded (a copy of the origin's journal: 5 lines instead of 1), and a direction guessed from the
+  // first and last entries alone was flipped by ONE misplaced entry, folding a real warning (light judge of CK5.7). So the
+  // direction is the MAJORITY of adjacent dated pairs, and a journal whose order the dates cannot tell (no dates, one date,
+  // a tie) is not folded at all — the noise stays, a real warning is never hidden.
+  { id: 'no-class', kind: 'warning', run: ({ entries, baseline, verbose }) => {
+    const bare = entries.filter((e) => e.failure && !e.klass && !baseline.has(e.id));
+    const dated = entries.filter((e) => e.date);
+    let down = 0, up = 0;
+    for (let i = 1; i < dated.length; i++) {
+      if (dated[i].date < dated[i - 1].date) down++;
+      else if (dated[i].date > dated[i - 1].date) up++;
+    }
+    const direction = down > up ? 'newest-first' : up > down ? 'oldest-first' : null;
+    const classedAt = entries.map((e, i) => (e.klass ? i : -1)).filter((i) => i >= 0);
+    const edge = direction && classedAt.length ? (direction === 'newest-first' ? Math.max(...classedAt) : Math.min(...classedAt)) : -1;
+    const first = edge >= 0 ? entries[edge] : null;
+    const legacy = first && !verbose ? bare.filter((e) => {
+      const i = entries.indexOf(e);
+      const beyond = direction === 'newest-first' ? i > edge : i < edge;
+      return beyond && !(e.date && first.date && e.date > first.date);
+    }) : [];
+    const fold = legacy.length ? [`${legacy.length} failure entr${legacy.length === 1 ? 'y carries' : 'ies carry'} no \`${KEYWORDS.en.klass}:\` and` +
+      ` predate${legacy.length === 1 ? 's' : ''} the first classed entry (${first.id}${first.date ? `, ${first.date}` : ''}) — outside the field` +
+      ` rules; list them: --verbose (classify from the newest end: the fold shrinks as you go)`] : [];
+    return fold.concat(bare.filter((e) => !legacy.includes(e))
+      .map((e) => `${e.id} (line ${e.line}): a failure entry with no \`${KEYWORDS.en.klass}: <slug>\`${e.rawClass ? ` (the value "${e.rawClass}" is not a slug — lowercase latin, digits and dashes)` : ''} — recurrence cannot be counted for it`)); } },
   // A slug outside the header's list: a warning, because a new class is what a new lesson brings.
   { id: 'unlisted-class', kind: 'warning', run: ({ entries, list }) => {
       if (!list) return [];
@@ -13552,7 +13589,7 @@ export const RULES = [
 ];
 export const RULE_IDS = RULES.map((r) => r.id);
 
-export function lint(text, { root = '.', baseline = new Set(), tree = null, addressable = null } = {}) {
+export function lint(text, { root = '.', baseline = new Set(), tree = null, addressable = null, verbose = false } = {}) {
   const entries = parseEntries(text);
   const list = classList(text);
   const { declared, empty } = declaredClasses(text);
@@ -13563,7 +13600,7 @@ export function lint(text, { root = '.', baseline = new Set(), tree = null, addr
   const realTree = { exists: (rel) => existsSync(join(root, rel)), ignored: (rel) => isIgnored(rel, root) };
   const t = tree || realTree;
   const addr = addressable === null ? (existsSync(join(root, 'package.json')) || existsSync(join(root, 'tools'))) : addressable;
-  const ctx = { entries, text, root, baseline, list, declared, declaredEmpty: empty, addressable: addr, tree: t };
+  const ctx = { entries, text, root, baseline, list, declared, declaredEmpty: empty, addressable: addr, tree: t, verbose };
   const findings = [], warnings = [];
   for (const rule of RULES)
     for (const msg of rule.run(ctx)) (rule.kind === 'finding' ? findings : warnings).push({ id: rule.id, msg });
@@ -13602,7 +13639,7 @@ function check() {
   const text = readFileSync(journal, 'utf8');
   const root = dirname(resolve(journal));
   const baseline = loadBaseline(flagValue('--baseline'));
-  const { entries, list, declared, addressable, findings, warnings } = lint(text, { root, baseline });
+  const { entries, list, declared, addressable, findings, warnings } = lint(text, { root, baseline, verbose: argv.includes('--verbose') });
   const classed = entries.filter((e) => e.klass);
   if (!classed.length) {
     console.log(`\u26A0 experience-lint SKIPPED — not one entry of ${journal} carries \`${KEYWORDS.en.klass}: <slug>\` (${entries.length} entries read);` +
@@ -13820,6 +13857,42 @@ function selftest() {
   const lg = lint(legacy, { root: '.', tree: TREE, addressable: true });
   say(lg.findings.length === 0 && lg.warnings.map((w) => w.id).join() === 'no-class',
     `a journal updated from 2.6 - legacy entries under one 2.7 lesson: 0 findings, one no-class warning (got [${lg.findings.map((f) => f.id)}] / [${lg.warnings.map((w) => w.id)}])`);
+  // Origin issue #80 (a field journal: 88 per-entry no-class lines on every closing): pre-class history folds into ONE
+  // line; an unclassed failure written AFTER the first classed entry stays its own warning; --verbose lists them all.
+  const foldJ = '# EXPERIENCE\n\n## Entries\n\n### EXP-0012 \u00B7 2026-09-20 \u00B7 \u274C \u00B7 #x\n**Lesson:** after the first classed one.\n\n' +
+    '### EXP-0011 \u00B7 2026-09-18 \u00B7 \u274C \u00B7 #x\nclass: shown-as-link\n**Lesson:** y\n**Mechanization:** mechanized: `tools/showcase-lint.mjs`\n\n' +
+    '### EXP-0003 \u00B7 2026-09-01 \u00B7 \u274C \u00B7 #x\n**Lesson:** a.\n\n### EXP-0002 \u00B7 2026-08-01 \u00B7 \u274C \u00B7 #x\n**Lesson:** b.\n\n' +
+    '### EXP-0001 \u00B7 2026-07-01 \u00B7 \u274C \u00B7 #x\n**Lesson:** c.\n';
+  const fw = lint(foldJ, { root: '.', tree: TREE, addressable: true }).warnings.filter((w) => w.id === 'no-class').map((w) => w.msg);
+  say(fw.length === 2 && /^3 failure entries carry no/.test(fw[0]) && /\(EXP-0011, 2026-09-18\)/.test(fw[0]) && /^EXP-0012 /.test(fw[1]),
+    `#80: three pre-class entries fold into ONE line naming the first classed entry; the entry written after it stays its own (got ${JSON.stringify(fw)})`);
+  // the same journal written oldest-first (the dates say so) folds the same three and keeps the same one
+  const oldestFirst = foldJ.split(/\n(?=### )/).slice(1).reverse().join('\n').replace(/^/, '# EXPERIENCE\n\n## Entries\n\n');
+  const fo = lint(oldestFirst, { root: '.', tree: TREE, addressable: true }).warnings.filter((w) => w.id === 'no-class').map((w) => w.msg);
+  say(fo.length === 2 && /^3 failure entries carry no/.test(fo[0]) && /^EXP-0012 /.test(fo[1]),
+    `#80: an oldest-first journal folds the same pre-class history (got ${JSON.stringify(fo)})`);
+  const fv = lint(foldJ, { root: '.', tree: TREE, addressable: true, verbose: true }).warnings.filter((w) => w.id === 'no-class');
+  say(fv.length === 4 && fv.every((w) => /^EXP-00\d\d /.test(w.msg)), `#80: --verbose lists every unclassed failure entry by id (got ${fv.length})`);
+  // Light judge of CK5.7: the three shapes that broke the first two editions, each locked by a case.
+  const ent = (id, date, klass, lesson) => `### ${id} · ${date} · ❌ · #x\n` + (klass ? `class: ${klass}\n` : '') +
+    `**Lesson:** ${lesson}.\n` + (klass ? '**Mechanization:** mechanized: `tools/showcase-lint.mjs`\n' : '') + '\n';
+  const J = (...es) => '# EXPERIENCE\n\n## Entries\n\n' + es.join('');
+  const noClassOf = (text) => lint(text, { root: '.', tree: TREE, addressable: true }).warnings.filter((w) => w.id === 'no-class').map((w) => w.msg);
+  // (1) history written the SAME day as the first classed entry is history too (a date-only fold kept it per entry)
+  const sameDay = noClassOf(J(ent('EXP-0005', '2026-09-18', null, 'after'), ent('EXP-0004', '2026-09-18', 'shown-as-link', 'y'),
+    ent('EXP-0003', '2026-09-18', null, 'same day, before'), ent('EXP-0002', '2026-09-10', null, 'b'), ent('EXP-0001', '2026-09-01', null, 'c')));
+  say(sameDay.length === 2 && /^3 failure entries carry no/.test(sameDay[0]) && /^EXP-0005 /.test(sameDay[1]),
+    `#80: history of the same day as the first classed entry folds with the rest (got ${JSON.stringify(sameDay)})`);
+  // (2) ONE newer entry appended at the bottom of a newest-first journal neither flips the direction nor hides itself
+  const misplaced = noClassOf(J(ent('EXP-0010', '2026-09-22', null, 'newer'), ent('EXP-0009', '2026-09-21', 'shown-as-link', 'y'),
+    ent('EXP-0003', '2026-09-03', null, 'a'), ent('EXP-0002', '2026-09-02', null, 'b'), ent('EXP-0001', '2026-09-01', null, 'c'),
+    ent('EXP-0011', '2026-09-23', null, 'appended at the bottom')));
+  say(misplaced.length === 3 && /^3 failure entries carry no/.test(misplaced[0]) && misplaced.some((m) => /^EXP-0010 /.test(m)) && misplaced.some((m) => /^EXP-0011 /.test(m)),
+    `#80: a misplaced newer entry at the bottom stays its own warning, the history still folds (got ${JSON.stringify(misplaced)})`);
+  // (3) a journal whose order the dates cannot tell (one date) is not folded at all — nothing real is ever hidden
+  const oneDay = noClassOf(J(ent('EXP-0003', '2026-09-18', null, 'a'), ent('EXP-0002', '2026-09-18', 'shown-as-link', 'y'), ent('EXP-0001', '2026-09-18', null, 'c')));
+  say(oneDay.length === 2 && oneDay.every((m) => /^EXP-000\d /.test(m)),
+    `#80: an undecidable order (one date) folds nothing — every unclassed failure stays its own line (got ${JSON.stringify(oneDay)})`);
   // Prose that merely contains the word "class:" mid-sentence is NOT the field (a field journal does this).
   const prose = CLEAN.en.replace('**Lesson:** showing was replaced by a link.', '**Lesson:** the owner named the class: the dossier was supposed to make it impossible.');
   say(lint(prose, { root: '.', tree: TREE, addressable: true }).entries.filter((e) => e.klass).length === 3, 'prose with "class:" mid-sentence is not the field (got a fourth class)');
@@ -13831,7 +13904,7 @@ function selftest() {
 if (argv.includes('--shrink')) shrinkCmd();
 else if (argv[0] === 'check' || argv.length === 0) check();
 else if (argv[0] === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
+else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
 ``````
 
 > **FILE: `.kaif/tools/kaif-guard-lint.mjs`** — optional tool module — verbatim
