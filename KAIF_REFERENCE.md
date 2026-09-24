@@ -642,3 +642,62 @@ start at all, with every local instrument green. KAIF 2.3, epic X.
 KAIF 2.6, origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is
 already in production. The class was named after three refusals of an incident-shaped fix: the agent verifies on a clean,
 freshly built stand, while the owner's world is accumulated.
+
+### `AGENT_GUIDE.md` → Task execution discipline — the fable loop
+
+- **The `AUTH:` carve-out stands in its own line** because it lost twice, origin issues #37 and #65, while it lived as prose in the
+  git paragraph: the broad "confirm outward actions" reflex won both times. KAIF 2.7, epic SD.
+- **The fork** (origin issue #36; the owner's word: a fork is NOT the agent's to decide alone) — the field case behind it is the
+  black box of `PHILOSOPHY.md` → the fourth door. KAIF 2.5, epic CN.
+- **The real world** (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what
+  is already in production). KAIF 2.6, epic RW.
+- **The owner's portrait** (origin issue #61): a field agent rewrote a player sheet through seven rounds under the owner's eyes
+  without opening the portrait once. The origin owner's word, 2026-09-12, rendered from Russian: "the AI agent writes the text in
+  the voice and by the rules the owner's stylometry prescribes; after writing, by that same stylometry, the agent runs an
+  independent check of what it wrote, fixes it, and only then counts the text as written and brings it to the owner for approval"
+  — and minutes later: write BY the stylometry, WITH IT IN THE WORKING CACHE. KAIF 2.7, epic VC.
+- **A claim no wider than its observation** (origin issue #63; the owner's word in the ticket, rendered from Russian: "you assert
+  what you did not check"): the agent had verified `curl` → 200 on the local server and reported "the page is open, waiting for
+  you for three hours" — a screenshot showed no browser window at all. The canon demanded observation for tests and nothing for
+  statements in a report, so an agent could verify the proxy it can reach cheaply and state a fact about the thing it never
+  looked at — honestly, in good faith, with a green check behind it. KAIF 2.7, epic CL.
+- **A falsehood corrected where it stands** (origin issue #67; the project owner's word in the ticket, rendered from Russian: "the
+  agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie"
+  — said the moment he caught the live case: "you wrote that in the comments and left it there, and it is a lie"). KAIF 2.7, epic SF.
+- **Why the obligations attach at the call point:** weaving a KAIF clause into the vendored skills' text would fork the vendor
+  and quietly break the sync ritual that ports upstream changes without a merge.
+
+### `AGENT_GUIDE.md` → Decisions the agent must NOT make alone — interviews
+
+- **The place of questions:** in the field such a guard surfaced two questions nobody saw, hanging 5 and 13 days. The exit
+  condition of the queue (I42) comes from field issue #47 — the owner's word: questions to the owner are priority number ONE.
+- **Every question is a scenario:** origin decision #98 — two questions phrased as technical explanations came back as "I don't
+  understand the problem — as a customer". **The customer's language:** origin decision #106 and its bug 112.
+- **Confusion is a sign to search** (origin issue #50; the owner's word, 2026-09-05, rendered from Russian: "if I propose something
+  and it confuses you, you don't understand it — that is your direct sign to go and search the internet for what I meant, or to ask
+  me"). The field case, three instances in one day in one project: the owner's answer "write role-playing game and RPG at once" was
+  read as a third tag, the edit rolled back and "not done" delivered as a finding — the owner: "nothing breaks!"; a ten-second
+  search, or a look at the catalogue (90 records already carried the pair), would have settled it in a minute instead of forty. The
+  guard's tag-pair model was RIGHT; the reading was wrong. KAIF 2.6, epic FK.
+- **Three legal outcomes and the reading view:** origin issues #54/#58 and origin bug 113; the field page carried 18 535 characters
+  of settled matter above the one live question. KAIF 2.7, epic QL.
+- **Showing is an action:** the field words that paid for it — "I will NOT open it by double-click! You are forcing me to dig
+  through project files again!" An earlier wording claimed the rule was "guarded mechanically" — indicative, about a check that did
+  not exist, and a weak session reads such a sentence as a guarantee already met (origin bug 71).
+- **A question is self-sufficient:** an agent wrote "the goals are listed in researches/18" and believed it had shown them. The
+  owner had said it many times before it was written down: "do not send me digging through MD documents! An open question must be
+  sufficient for me to understand the matter being decided!"
+- **The taste class:** in the field both suggested demo URLs turned out dead — a link is not an artifact to perceive.
+- **Action permission ≠ identity authorship:** a blanket "yes" once disguised a naming question as a technical detail of shipping —
+  the field incident behind the rule.
+- **Authorship of a decision** (origin issue #55, TOP by the owner's word, rendered from Russian: "you write some nonsense yourself,
+  then read it back and interpret it as MY word"; "everything else you must mark as `[AI]`, so that not EVERYTHING written is taken
+  for my word"; "my words are what I write to you here, and in the interviews"). Both kinds of decision used to land in the same
+  document in the same words, and a day later a fresh session could tell them apart only by trusting the previous one. The field: a
+  "the owner's decision P1: wait, no threshold" comment in live code — the owner's actual word at that fork was "do as you see fit"
+  — held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no
+  quote. KAIF 2.7, epic AW.
+- **Provenance marks outside the canon:** a field agent, forbidden to mark outside the canon, invented "(my taste)" (origin issue
+  #55); since 2.7 the marks are legal in any document brought to the owner.
+- **The showcase exemption:** the owner's decision, quoted: "README and the release notes are not subject to the mandatory
+  provenance-mark rules `[AI]`".

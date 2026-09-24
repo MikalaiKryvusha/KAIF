@@ -134,6 +134,7 @@ Don't read every document "just in case" — that fills the context you're tryin
 | Writing requirements / acceptance criteria / a goal vector | `REQUIREMENTS_FRAMEWORK.md` (the ten criteria · stop-word dictionary · fit criterion) |
 | Feature / idea     | `ideas/<this>` · `MASTER_PLAN.md` · the relevant `plans/<this>`        |
 | Refactor / edit    | `AGENT_GUIDE.md` · the two maps (blast radius)                         |
+| Changing or dropping a rule of the canon | its entry in `.kaif/KAIF_REFERENCE.md` §17, keyed by the rule's section heading — why the rule exists and what paid for it |
 | Planning           | `MASTER_PLAN.md` · `GOAL.md` · open backlog · the Planning-discipline section (heavy → `/plan-epic`) |
 | External truth involved (old system / foreign API / prod / vendor doc) | the recon doc in `researches/` — **create it first** if it doesn't exist (checklist step 9) |
 | Writing into the owner's artifact (text the human signs or reads as their own) | `AUTHOR_STYLOMETRY.md` — the owner's voice portrait, when the project has one (`/owner-voice`): LOADED into the working context before the first word — `node .kaif/tools/kaif-voice-lint.mjs load` — and the text is written BY it · the artifact's styleguide · after writing, the independent check by the same portrait: `node .kaif/tools/kaif-voice-lint.mjs check <file…>` + the §7B pass by a clean instance |
@@ -338,9 +339,8 @@ follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in
 ticket about a defect of KAIF itself, filed to the framework's own origin, is delivered under the KAIF
 owner's standing authorization in the same move as filing — `node .kaif/kaif-core.mjs report
 bugs/KAIF/NN_*.md`, `/report-bug` step 3 — and awaits no `AUTH:` line; every other outward action still
-waits for the owner's quoted words. Origin issue #65: the carve-out lived as prose in the git paragraph
-and lost twice, #37 and #65, to the broad "confirm outward actions" reflex — a narrow exception written
-away from the rule it excepts does not hold). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
+waits for the owner's quoted words — a narrow exception written away from the rule it excepts does not
+hold). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
 the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
 run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
 **KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:**
@@ -349,8 +349,8 @@ that checks it — test suite, checklist, fixture, guard — planned in the SAME
 (`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Step 5 of the vendored loop
 asks you to observe a check; this line is what obliges you to have made one.
 
-**KAIF adds a second obligation at step 3 (decide), stated here for the same reason — the FORK
-(origin issue #36; the owner's word: a fork is NOT the agent's to decide alone).** A fork is any
+**KAIF adds a second obligation at step 3 (decide), stated here for the same reason — the FORK: a
+fork is NOT the agent's to decide alone.** A fork is any
 choice with ≥ 2 options AND a non-zero price of error or irreversibility (a variable name or the
 order of two lines is not one). At a fork the forced artifact is one line at the decision point —
 `FORK: options <A | B | C> · price of error <what breaks if wrong> · consulted <domain authority ·
@@ -362,8 +362,8 @@ hunt), an autonomous loop closed before its armed boundary with a non-empty pool
 early-finish hunt, `/guarded-loop`); both are named in the judge's KAIF patch block.
 
 **KAIF adds a third obligation — at step 5 (verify by observation) and step 7 (report): "DONE" ABOUT
-PRODUCTION COMES AFTER THE REAL WORLD** (origin issue #52; the owner's word: the agent is OBLIGED to verify
-on the real world so as not to break what is already in production). A check on the agent's clean stand is
+PRODUCTION COMES AFTER THE REAL WORLD**: the agent is OBLIGED to verify on the real world so as not to break what is
+already in production. A check on the agent's clean stand is
 not a check of the owner's world, where everything is accumulated; before the word "done" about anything
 already live, the report carries the difference line `REAL WORLD: accumulated · data and machine · path`
 with the outcome "verified on the real world" / "verified with real state" on every item; "not verified
@@ -373,17 +373,12 @@ done-without-the-real-world hunt).
 
 **KAIF adds a fourth obligation — at step 4 (act) and step 5 (verify), for TEXT the owner reads as his own:
 THE TEXT IS WRITTEN BY THE OWNER'S PORTRAIT, THEN CHECKED INDEPENDENTLY BY THE SAME PORTRAIT, FIXED — AND
-ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER** (origin issue #61 — a field agent rewrote a player sheet
-through seven rounds under the owner's eyes without opening the portrait once; the origin owner's word,
-2026-09-12, rendered from Russian: "the AI agent writes the text in the voice and by the rules the owner's
-stylometry prescribes; after writing, by that same stylometry, the agent runs an independent check of what
-it wrote, fixes it, and only then counts the text as written and brings it to the owner for approval").
+ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER.**
 Three steps, in this order, and the report names each:
 1. **Write BY the portrait — with it in your working context.** Before the first word,
    `node .kaif/tools/kaif-voice-lint.mjs load` prints `AUTHOR_STYLOMETRY.md` into your context (`--sections
    <regex>` for the modules the unit needs — the rules §2, the lexicon §2-C, the anti-portrait §5, the
-   before/after pairs §6) and leaves the witness `.kaif/voice-marker.json`; write by it while it is there (the
-   owner's word: write BY the stylometry, WITH IT IN THE WORKING CACHE). A draft written "natively" and
+   before/after pairs §6) and leaves the witness `.kaif/voice-marker.json`; write by it while it is there. A draft written "natively" and
    re-voiced afterwards is the class this obligation closes, not its execution — `check` refuses a text with
    no load witness, last written before the first load, or written more than an hour after the last load (the
    hour rule of context refresh: the portrait had left the cache) — "written past the portrait".
@@ -399,13 +394,8 @@ The command judges the explicit patterns only; likeness stays the owner's verdic
 `/fable-judge` hunts owner text past the portrait (the owner-text-past-the-portrait hunt): written without
 the portrait open, checked by no independent pass, or shown before the fixes.
 
-**KAIF adds a fifth obligation — at step 7 (report): A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT**
-(origin issue #63 — the owner's word in the ticket, rendered from Russian: "you assert what you did not check";
-the agent had verified `curl` → 200 on the local server and reported "the page is open, waiting for you for
-three hours" — a screenshot showed no browser window at all). The canon demands observation for tests and
-demanded nothing for statements in a report, so an agent could verify the proxy it can reach cheaply and state
-a fact about the thing it never looked at — honestly, in good faith, with a green check behind it. Every
-statement about the state of the world names WHAT observed it; when a proxy was observed instead of the thing,
+**KAIF adds a fifth obligation — at step 7 (report): A CLAIM IS NEVER WIDER THAN THE OBSERVATION BEHIND IT.**
+A verified proxy is not an observation of the thing itself. Every statement about the state of the world names WHAT observed it; when a proxy was observed instead of the thing,
 the proxy is said aloud:
 
 | Verified | Said today | Say instead |
@@ -424,10 +414,7 @@ claim-wider-than-observation hunt). The same rule, seen from the other side, def
 observation — the judge hunts that too (the tested-on-hygiene-alone hunt).
 
 **KAIF adds a sixth obligation — at step 4 (act) and step 7 (report), for a claim ALREADY PUBLISHED:
-A FALSEHOOD IS CORRECTED WHERE IT STANDS** (origin issue #67; the project owner's word in the ticket, rendered
-from Russian: "the agent leaves a lie and forgets to correct the lie where it left it, once it has found out
-that something in the past was a lie" — said the moment he caught the live case: "you wrote that in the
-comments and left it there, and it is a lie"). The fifth obligation bounds a claim at its BIRTH; this one
+A FALSEHOOD IS CORRECTED WHERE IT STANDS.** The fifth obligation bounds a claim at its BIRTH; this one
 bounds how long a born falsehood survives once it is known. The trigger is an EVENT, not a step: the minute a
 past statement of yours is identified as false — by the owner's word, by a measurement, by a later run — <!-- attribution-ok: a trigger of the rule, no decision of the owner is claimed -->
 whatever you are doing at the time. Five steps, in this order, BEFORE the work continues:
@@ -454,12 +441,10 @@ neither is an append-only journal entry, where a correction IS a new entry — b
 entry it corrects. `/fable-judge` hunts a standing falsehood; `/end-chat-soft` and `/end-chat-force` ask about
 it by name at the close.
 
-The addition lives here on purpose. These skills are vendored **verbatim** from
-[fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and are kept byte-identical so
-the sync ritual in their headers can diff against upstream and port changes without a merge. Weaving a
-KAIF-specific clause into their text would fork the vendor and quietly break that ritual — so the
-project's own obligations attach at the CALL POINT, which is this section. The sphere library plays the
-role of their domain adapters for the same reason.
+The additions live here, at the CALL POINT, on purpose: the skills are vendored **verbatim** from
+[fable-method](https://github.com/Sahir619/fable-method) (Sahir619, MIT) and kept byte-identical so the sync
+ritual in their headers can diff against upstream — never weave a KAIF clause into their text. The sphere
+library plays the role of their domain adapters for the same reason.
 
 ### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
 
@@ -962,35 +947,30 @@ for the long term — interview.
 **The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
 review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue
 document), never in the tail of a plan, research, or bug file. The one exception stays: the single
-pointed task-level question in chat (above). Field fact: this rule gets broken even by agents that
-KNOW it — chat is cheaper in the moment — so a project that adopts the practice keeps a mechanical
+pointed task-level question in chat (above). The rule gets broken even by agents that KNOW it — chat
+is cheaper in the moment — so a project that adopts the practice keeps a mechanical
 guard ("no unanswered questions outside interviews; every interview carries a status"; a guard of a
 text rule runs ~10 false hits per real one — exceptions are explicit, with the reason on the line),
 and a tool counts as ADOPTED only when a ritual contains the executable command that shows
-violations ("show all unanswered interviews") — in the field such a guard surfaced two questions
-nobody saw, hanging 5 and 13 days. The optional interactive contour on top (HTML render of an
+violations ("show all unanswered interviews"). The optional interactive contour on top (HTML render of an
 interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
 the transport (equivalence rule in `/interview`: HTML = md = chat). The contour records not only
 that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
 (`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
 has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
-(I42; field issue #47 — the owner's word: questions to the owner are priority number ONE). **And
+(I42: questions to the owner are priority number ONE). **And
 every question and every answer option is a SCENARIO of what the owner will see** — Situation ·
 Action · Result · Check in the customer's language, the technical explanation UNDER it and never
-instead of it (`/interview` step 3a; the origin's owner decision #98: two questions phrased as
-technical explanations came back as "I don't understand the problem — as a customer"); a live
+instead of it (`/interview` step 3a); a live
 question without the four lines is a guard finding, the declared exception is a marker with a
 reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
-language, never the agent's vocabulary** (the origin's decision #106, its bug 112): in option labels and in
+language, never the agent's vocabulary**: in option labels and in
 the Situation · Action · Result lines every named thing is what the owner will see after it; epic codes,
 plan addresses, tool names, flags and canon terms live only in the Check line and in the technical note
 under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions
 guard, the declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
 
-**The agent's confusion is a sign to search, never to refuse** (the origin owner's word, 2026-09-05,
-origin issue #50; his sentence, rendered from Russian: "if I propose something and it confuses you,
-you don't understand it — that is your direct sign to go and search the internet for what I meant,
-or to ask me"). An owner's proposal that seems to contradict a model, a rule or a test the agent
+**The agent's confusion is a sign to search, never to refuse.** An owner's proposal that seems to contradict a model, a rule or a test the agent
 holds is a proposal NOT YET UNDERSTOOD — never a wrong one. The order is the owner's, and search
 comes first: (1) a web search for what the owner most likely meant — the term of the owner's domain
 and its usage; (2) a measurement over the owner's own data — the catalogue, the archive, prior
@@ -999,24 +979,17 @@ proposal saying "it breaks X", "cannot", "impossible", "contradicts" is not send
 evidence of steps 1–2 — an interview with a `Recon:` block (`query:` · `found:` · `measurement:`;
 `/interview` step 3b) is written instead. Rolling back work the owner asked for because a guard
 went red is a fork in `interviews/` with the guard's output quoted, never a report line — and the
-guards are not disarmed (in the field case the tag-pair model was RIGHT; the reading was wrong). The
-owner's term enters the rule as the worked example: the Cyrillic spelling of "RPG" is the ordinary
+guards are not disarmed. The owner's term enters the rule as the worked example: the Cyrillic spelling of "RPG" is the ordinary
 Russian way to write it, so "role-playing game" and "RPG" each have their own Russian twin — two
-complete pairs, not a third tag without one. Field case (#50, three instances in one day in one
-project): the owner's answer "write role-playing game and RPG at once" was read as a third tag, the
-edit rolled back and "not done" delivered as a finding — the owner: "nothing breaks!"; a ten-second
-search, or a look at the catalogue (90 records already carried the pair), would have settled it in
-a minute instead of forty. The rule does not become "always ask the owner": a question without steps
+complete pairs, not a third tag without one. The rule does not become "always ask the owner": a question without steps
 1–2 is the same defect with better manners. `/fable-judge` hunts "confusion delivered as verdict"; a
 project's question guard may carry the axis (the origin's does — G7, declared exception
 `<!-- questions-guard:verdict-ok reason -->`).
 
-**A show has three legal outcomes, and a document brought to the owner has a READING VIEW (KAIF 2.7,
-origin issues #54/#58).** The owner may ANSWER, leave a REMARK, or say «read, no remarks» — the third is a
-recorded verdict, never a refused page (the shipped contour records it as `noRemarks`; origin bug 113). And the
+**A show has three legal outcomes, and a document brought to the owner has a READING VIEW.** The owner may ANSWER, leave a REMARK, or say «read, no remarks» — the third is a
+recorded verdict, never a refused page (the shipped contour records it as `noRemarks`). And the
 page the owner opens shows the LIVE questions first; everything answered and the document's text stand below
-as one collapsed archive — nothing is removed, the order of reading changes (the field: 18 535 characters of
-settled matter above the one live question). The same discipline as STATUS ↔ the chronicle: what is closed
+as one collapsed archive — nothing is removed, the order of reading changes. The same discipline as STATUS ↔ the chronicle: what is closed
 leaves the top.
 
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
@@ -1029,7 +1002,7 @@ footnote of where it landed — never as an errand. No separate show tool: the r
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
 contour, open the file with the system opener. **And the show is reported no wider than it was observed:**
 "the page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until
-then, "please check whether you see it" (the fable loop's fifth KAIF obligation; origin issue #63). **And a text the owner reads as his own is shown only
+then, "please check whether you see it" (the fable loop's fifth KAIF obligation). **And a text the owner reads as his own is shown only
 AFTER it is written BY his portrait, checked independently by it and fixed:**
 `node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
 (the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
@@ -1037,23 +1010,16 @@ hidden, and a draft written natively and shown "for a look" is the class itself.
 the moment of sending, and that is said plainly:** before sending a reply, grep it for
 "double-click / opens offline / see file / lies at" next to an artifact extension — a hit means the
 show was replaced by a link. No machine can do it: the text being checked is your reply, it never
-lands on disk, and no repository tool can see it. An earlier wording of this line claimed the rule
-was "guarded mechanically" — indicative, about a check that did not exist, and a weak session reads
-such a sentence as a guarantee already met. Exactly one mechanical half exists and it is named:
+lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named:
 questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
-document". Field words that paid for this rule: "I will NOT open it by double-click! You are
-forcing me to dig through project files again!" **And a page the owner looks at is CLOSED only by the command that checks
+document". **And a page the owner looks at is CLOSED only by the command that checks
 it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
-covers artifacts; a question is not an artifact, and the gap let the same grievance return through
-it: an agent wrote "the goals are listed in `researches/18`" and believed it had shown them. It had
-not. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
+covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
 variants — is QUOTED INTO the question as a table, a list, or a citation, however long that makes
 it. A reference alongside the quoted content is legitimate: it confirms rather than dispatches.
-A reference INSTEAD of the content is the defect, and it is guarded mechanically, because the owner
-had already said it many times before it was written down: "do not send me digging through MD
-documents! An open question must be sufficient for me to understand the matter being decided!"
+A reference INSTEAD of the content is the defect, and it is guarded mechanically.
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
@@ -1061,8 +1027,7 @@ lies a third class: the acceptance criterion is a PERCEPTION adjective (beautifu
 pleasant, readable, "feels right") — grep-detectable in the ask. There the agent does not conclude;
 it **produces a MOCK-UP and files homework**: find the live best candidates → mock them QUICKLY on
 OUR OWN material → hand the human an ARTIFACT to perceive (never a link, never someone else's
-benchmark — a human judging sound needs sound, not a score; in the field both suggested demo URLs
-turned out dead) → record the verdict as canon (the owner's taste is not re-litigated by the
+benchmark — a human judging sound needs sound, not a score) → record the verdict as canon (the owner's taste is not re-litigated by the
 agent). Comparison contract: all candidates on ONE same material, blind labels, the key stored
 beside them. The homework doc carries two standing fields: *"ready to see/hear right now"* (paths
 to artifacts) and *"verdicts already given"* (so no verdict is ever asked twice).
@@ -1072,23 +1037,16 @@ confirmation FRICTION on actions; it never transfers authorship of IDENTITY — 
 codenames, product and feature names, slogans, any brand string a human reads first (the test: it
 is read first and says how the product presents itself). Identity is NEVER the agent's decision,
 under any breadth of approval — a wide "yes" quietly disguises a taste question as a technical
-detail of shipping, which is exactly how the field incident happened. The right move under blanket
+detail of shipping. The right move under blanket
 approval: do everything else and ask ONE pointed question about the name. The fallback: ship under
 a neutral factual title — never a placeholder name (still a name someone must un-decide). Every
 shipped name carries a source artifact (*owner · channel · date*), and a brand mistake is fixed
 only by the owner — un-naming is a brand decision too. (`/release` Step 0 enforces this at the
 decision point; `/fable-judge` hunts a shipped name with no source artifact.)
 
-**Authorship of a decision — the owner's word is a quote; the agent's word is signed** (origin issue
-#55, 🔴🔴🔴 TOP by the owner's word, rendered from Russian: "you write some nonsense yourself, then read
-it back and interpret it as MY word"; "everything else you must mark as `[AI]`, so that not EVERYTHING
-written is taken for my word"; "my words are what I write to you here, and in the interviews"). The canon
-gives the owner's decisions a special status — not to be revisited — and lets the agent decide the rest;
-both used to land in the same document in the same words, and a day later a fresh session could tell
-them apart only by trusting the previous one: an agent's choice wearing the owner's name became
-unrevisable (field: a "the owner's decision P1: wait, no threshold" comment in live code — the owner's
-actual word at that fork was "do as you see fit" — held a run for 119 s while the owner's machine died;
-430 of 1083 references to the owner's will in one deployment carried no quote). Four rules and a guard:
+**Authorship of a decision — the owner's word is a quote; the agent's word is signed.** The canon gives
+the owner's decisions a special status — not to be revisited — so an agent's choice recorded in the
+owner's words would become unrevisable. Four rules and a guard:
 - **Every recorded decision carries its author.** The owner's — `[OWNER] "<verbatim>" · <date>`
   (or the address of the interview and question that holds the verbatim text — `interview #NNN, QN`);
   the agent's — `[AI]` (the "Decisions made without the owner" section of a plan or a bug is the same
@@ -1123,8 +1081,7 @@ like `[NOT-TESTED]`). Everything the AI writes into the owner's canon artifacts 
 paired mark: `[AI]…[/AI]` — written by the AI; `[AI-ed]…[/AI-ed]` — the owner's text, edited by the AI.
 And everything the AI PROPOSES as the owner's canon content — a lore line, a rule, a value, a table row
 — carries the same mark wherever it lives: in an interview, a draft, a table brought to the owner
-(origin issue #55: a field agent, forbidden to mark outside the canon, invented "(my taste)" — and a
-pronoun has no owner a day later: **a pronoun is not a provenance mark**; the question's own
+(**a pronoun is not a provenance mark** — "(my taste)" has no owner a day later; the question's own
 scaffolding — option letters, the recommendation, the scenario lines — is not marked).
 **A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
 agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
@@ -1135,14 +1092,13 @@ mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark 
 IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 (`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/tools/kaif-provenance.mjs check` into your
 gates — pair integrity everywhere; marks are REQUIRED in the declared canon and LEGAL in any document
-the agent brings to the owner (since 2.7 the "marks only in the canon" refusal is gone); `report` lists
+the agent brings to the owner; `report` lists
 the canon blocks awaiting acceptance and, separately, the marks outside the canon (drafts — for the
 owner's eye, not the acceptance registry); `accept <file>` strips marks into the registry and carries
 the OWNER'S word only.
 
 **The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never
-carry provenance marks (owner's decision, quoted: *"README and the release notes are not subject to
-the mandatory provenance-mark rules `[AI]`"*). The reason is mechanical, not aesthetic: these two are
+carry provenance marks. The reason is mechanical, not aesthetic: these two are
 PUBLISHED as-is, so a mark inside them ships scaffolding to every reader and reads as unfinished
 work — while a mark's whole purpose is to be an internal acceptance queue. The queue for the showcase
 is a different one and it stays mandatory: the owner PROOFREADS it (file the request as homework),

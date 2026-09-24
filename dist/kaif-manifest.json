@@ -5,10 +5,10 @@
   "codename": "Audited KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "db14b918a0149eacd919c23b1ca076e1053d3c3cecd5f5f83e781e87e3ad989e",
-    "KAIF-CORE-BUNDLE.md": "7b8f0161d0aa1d3380baf0d41cd4e6b694a27f84c479bf15688c55b9d3cb19c3"
+    "KAIF-CORE-BUNDLE.md": "8546c4fc2713e38cc6c9d1c5b86a4ee27262f153acf0e4565c6949fc69d15d26"
   },
   "sourceTree": {
-    "sha256": "12839bdcf0c955b578e4e601dec49dc3673f0bc0d2096623b0e4929cb15b7ade",
+    "sha256": "0660cac428f68a1abeb5030ca4ecdd641d128b2ebba160086bf0a1ad374dfa11",
     "files": 203
   },
   "assets": {
