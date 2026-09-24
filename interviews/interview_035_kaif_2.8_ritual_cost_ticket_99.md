@@ -51,7 +51,7 @@
   - Проверка. `grep -c "#99" ideas/31*.md` → 1.
 - **D)** Свой вариант — впишите.
 
-**Answer:**
+**Answer:** D) — я не уверен, что память модели 200к токенов всего лишь. Я работаю с Опус 5.5 - ты и есть опус 5.5. Найди в интернете твои ТТХ. <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 25 сентября 2026, 01:26 (+03:00) -->
 
 ## Proposed implementation plan (after answers)
 

@@ -1,0 +1,15 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_035_kaif_2.8_ritual_cost_ticket_99.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-09-24T22:26:01.020Z",
+  "atHuman": "25 сентября 2026, 01:26 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "D",
+      "text": "я не уверен, что память модели 200к токенов всего лишь. Я работаю с Опус 5.5 - ты и есть опус 5.5. Найди в интернете твои ТТХ.",
+      "comment": ""
+    }
+  }
+}
