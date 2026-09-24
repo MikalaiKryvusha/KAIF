@@ -359,6 +359,7 @@ ok(/⚠ language mix: \d+ of \d+ skills are English \(language: ru\)/.test(mix.o
 console.log('\n=== s16: файл переведён целиком · среза модулей нет — обе ветки говорят о себе вслух ===');
 const PH = join(S, 'PHILOSOPHY.md');
 ok(existsSync(PH), 's16 фикстура: PHILOSOPHY.md развёрнут (кандидат в «переведён целиком»)');
+const phTemplate = existsSync(PH) ? lines('PHILOSOPHY.md') : null;   // развёрнут побайтно из шаблона — его длина и есть длина шаблона
 if (existsSync(PH)) {
   // перевод ЦЕЛИКОМ: ни одна сигнатура шаблона не выживает по построению (bugs/36, риск (а) плана)
   const translated = readFileSync(PH, 'utf8').split('\n')
@@ -369,6 +370,12 @@ if (existsSync(PH)) {
 r = run('check');
 ok(/⚠ PHILOSOPHY\.md: own lines \d+ of budget ~300[^\n]*translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours/.test(r.out),
    's16 риск (а): файл, переведённый целиком, считает собственными ВСЕ строки и ГОВОРИТ это (по-сигнатурное сравнение неприменимо)', r.out);
+// CK5.4 (2.8): мера переведённого целиком файла — те же строки; строка называет длину развёрнутого шаблона (поле манифеста
+// templateLines), оставленное им место и дом местных разделов (развилка (в) researches/33 §7; тикет #85 п. 2).
+const mTpl = r.out.match(/⚠ PHILOSOPHY\.md: own lines \d+ of budget ~300[^\n]*the shipped template is (\d+) lines, which leaves ≈ (\d+) for your translation's growth and your own adaptation — local sections belong in HOUSE_RULES\.md/);
+ok(Boolean(mTpl) && Number(mTpl[1]) === phTemplate && Number(mTpl[1]) + Number(mTpl[2]) === 300,
+   's16 переведённый целиком: строка называет длину шаблона, оставленное им место до бюджета и дом местных разделов',
+   mTpl ? `template=${mTpl[1]} left=${mTpl[2]} deployed=${phTemplate}` : r.out.slice(-600));
 const phLines = lines('PHILOSOPHY.md');
 const mPh = r.out.match(/⚠ PHILOSOPHY\.md: own lines (\d+) of budget/);
 ok(Boolean(mPh) && Number(mPh[1]) === phLines,

@@ -214,6 +214,9 @@ if (!val('--mode') && okOnDisk(KAIF_JSON)) {
 const normEol = (s) => s.replace(/\r\n/g, '\n');
 const normSha = (data) => sha256(normEol(String(data)));           // EOL-normalized sha: CRLF never
 const fileShaNorm = (p) => normSha(readFileSync(p, 'utf8'));       // fakes a divergence (bug 12)
+// Lines of a text the way `wc -l` counts a file that ends in a newline; the newline is taken by its code point.
+const LF = String.fromCharCode(10);
+const textLines = (s) => { const n = normEol(String(s)); return (n.endsWith(LF) ? n.slice(0, -1) : n).split(LF).length; };
 // Two-part version compare (major.minor) — ONE definition (2.6, UR3; origin #44's own correction:
 // the same closure lived twice, inside newsInterval and policyInterval, and the stale-claims
 // filter that needed it had neither in scope).
@@ -1948,10 +1951,12 @@ async function cmdUpdate() {
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
   const templateShas = {};
   const moduleShas = {};
+  const templateLines = {};   // 2.8, epic CK: the deployed template's length — the budget warning of a file translated wholesale names the room it left
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
     templateShas[f.path] = normSha(f.content);
     if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(f.content), meta.moduleClasses);
+    if (f.path in DOC_BUDGETS) templateLines[f.path] = textLines(f.content);
   }
   const marker = { ...cur, version: man.version, released: man.released };
   // Seed the canonArtifacts key on updates of older deployments too (bug 34 — see cmdInstall).
@@ -1965,7 +1970,7 @@ async function cmdUpdate() {
   }
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
-    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
+    agents: agentPaths, shas, templateShas, moduleShas, templateLines, kept: adopted,
     values: persistValues(values), fills, marker }, null, 2) + '\n');   // `fills` — the hand-filled slots, derived (2.6, UR2)
 
   const dep = handleDeprecations(meta, old, fills);
@@ -2836,16 +2841,18 @@ async function cmdInstall() {
   for (const p of [...deployedPaths, ...agentPaths]) if (okOnDisk(p)) shas[p] = fileSha(p);
   const templateShas = {};
   const moduleShas = {};
+  const templateLines = {};   // 2.8, epic CK: the deployed template's length — the budget warning of a file translated wholesale names the room it left
   for (const f of deploy) {
     if (isSkippedAnon(f.path)) continue;
     templateShas[f.path] = normSha(f.content);
     if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(f.content), meta.moduleClasses);
+    if (f.path in DOC_BUDGETS) templateLines[f.path] = textLines(f.content);
   }
   // `marker` — a pristine snapshot of .kaif/kaif.json: weak models sometimes REWRITE the
   // marker instead of adding a key (field-caught, ДЗ-02 run 5), losing version/agents/language;
   // the final gates self-heal from this snapshot.
   writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
-    agents: agentPaths, shas, templateShas, moduleShas, kept: adopted,
+    agents: agentPaths, shas, templateShas, moduleShas, templateLines, kept: adopted,
     values: persistValues(values), fills: cls ? cls.fills : {}, marker }, null, 2) + '\n');   // `fills` — hand-filled slots, derived on a classified bootstrap (2.6, UR2)
 
   // 5) the final cognitive task for the agent: fresh install → adaptation;
@@ -3179,6 +3186,14 @@ function cmdCheck() {
     return typeof a === 'string' ? { digest: a, owner: '' } : { digest: String(a.digest || ''), owner: String(a.owner || '') };
   };
   const fileLines = (p) => readFileSync(p, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
+  // The deployed template's length per budgeted document (2.8, epic CK, fork (в) of researches/33 §7: a file translated wholesale is
+  // measured in the SAME lines, and the room for it is the template's reserve — the warning names that room and where local sections go).
+  // A manifest written before 2.8 has no `templateLines`: the warning then keeps its 2.7 wording, never an invented number.
+  // [TESTED: 2026-09-25 01:30 +03:00 · s16 section (5): the warning of a file translated wholesale names the template's length (equal to
+  //  the deployed file before translation) and the room to the budget; red on the 2.7 core; mutant M16 of tools/sandbox/probes/budget-mutants.mjs
+  //  red on exactly that assert; report testcases/reports/2026-09-25_ck54-translated-measure.md]
+  let templateLines = {};
+  try { if (okOnDisk(DEPLOY_MANIFEST)) templateLines = readJson(DEPLOY_MANIFEST).templateLines || {}; } catch { templateLines = {}; }
   const overBudget = [];
   for (const [doc, { budget, overflowTo }] of Object.entries(DOC_BUDGETS)) {
     if (!okOnDisk(doc)) continue;
@@ -3200,7 +3215,7 @@ function cmdCheck() {
     overBudget.push({ doc, own, budget, overflowTo });
     const how = basis === 'cut' ? `${total} lines on disk, ${total - own} of them arrived with KAIF and are not counted`
       : basis === 'owner-seeded' ? `${total} lines on disk, all of them yours — this is an owner-seeded document whose shipped skeleton the project wrote over, so there is no arrived canon to subtract`
-      : basis === 'translated' ? `${total} lines on disk, translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours`
+      : basis === 'translated' ? `${total} lines on disk, translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours${typeof templateLines[doc] === 'number' ? `; the shipped template is ${templateLines[doc]} lines, which leaves ≈ ${Math.max(0, budget - templateLines[doc])} for your translation's growth and your own adaptation — local sections belong in HOUSE_RULES.md` : ''}`
       : `${total} lines on disk, no deployed module cut for this file — every line counts as yours`;
     console.error(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
   }

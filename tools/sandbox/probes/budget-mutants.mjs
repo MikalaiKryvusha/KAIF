@@ -146,6 +146,11 @@ const MUTANTS = [
     from: '        if (!(k in DOC_BUDGETS)) schemaIssues.push(',
     to: '        if (false) schemaIssues.push(',
     expect: ['архив, названный не документом ядра'] },
+  // M16 — the measure of a file translated wholesale (2.8, epic CK, step CK5.4; origin issue #85 p. 2).
+  { name: 'M16 the translated-wholesale warning no longer names the room the template left',
+    from: "typeof templateLines[doc] === 'number' ?",
+    to: "false ?",
+    expect: ['переведённый целиком: строка называет длину шаблона'] },
   { name: 'M11 a gate with no debt writes no base file (so the next overflow is "first")',
     from: "    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
     to: "    if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",
