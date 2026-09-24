@@ -1,12 +1,10 @@
 # TESTING_FRAMEWORK — how the agent tests what it creates
 
-Raw generated content — code, a document, an analysis, anything — **must not be trusted**. It may *look*
-logical and working and still be broken, or fail the owner's actual requirements (the idea, the plan, the
-vision); an early defect that rides silently to production is the most expensive kind. Testing is a
-distinct, first-class part of ALL work, not a formality after it. This document is the agent's testing
-canon; it applies to **every artifact in every sphere** — a function, a dataset, a legal clause, a bridge
-design, a thought (what "verify" means in your sphere is defined by the project's sphere library: its
-*Verification by observation* and *Minimum evidence set* sections).
+Raw generated content — code, a document, an analysis, anything — **must not be trusted**: it may *look*
+logical and working and still be broken or fail the owner's actual requirements, and an early defect that
+rides silently to production is the most expensive kind. Testing is a first-class part of ALL work, not a
+formality after it; this canon applies to **every artifact in every sphere** (what "verify" means in your
+sphere is defined by the sphere library's *Verification by observation* and *Minimum evidence set*).
 
 ## The seven principles of testing (the canon)
 
@@ -115,9 +113,7 @@ marker preserves that fact **across sessions**, for future agents.
 ## The work produces its own means of checking
 
 Building something includes building what checks it — a test suite, a check-list, test cases, a
-fixture, a guard. They are planned WITH the work and land in the SAME step, never "later":
-verification postponed to a later step is verification that never happens, and verification that
-lives only in a session's scratchpad dies with the session.
+fixture, a guard — planned WITH the work and landing in the SAME step, never "later".
 
 The contract in step form — walk it on every non-trivial piece of work:
 
@@ -211,9 +207,8 @@ ships, walk the gates that apply:
    individual file valid, the SET broken — and mixtures fail in ways no test sees.
 
 Two placement rules: gates 6–7 belong IN THE DEPLOY PATH, not in prose — one deploy door that runs
-them itself and fails on any red step (where the agent system has hooks, deny the raw deploy command;
-a rule that lives only in a document is a rule the shipping session skips under pressure). And a
-post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
+them itself and fails on any red step (where the agent system has hooks, deny the raw deploy command).
+And a post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
 painting green — a smoke that is greenest when the product is emptiest is worse than no smoke.
 
 ## The agent's stand is not the owner's real world — "done" about production comes after the real world
@@ -249,11 +244,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
-- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED before anything is made; this framework
-  verifies what was MADE against it. Principle 3 (early testing) is executed at the requirements
-  stage by that canon; bugs are what is born where the two meet (`BUG_FIXING_FRAMEWORK.md`). The
-  boundary does not close the door on requirements analysis: deriving the test basis FROM the
-  requirements is step 1 of the activities chain here.
+- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
+  against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
+  basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
 - **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
   says WHAT must carry a status and how trust propagates.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.

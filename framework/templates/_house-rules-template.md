@@ -40,11 +40,37 @@ verbatim first, the interview, the decisions log); a block of raw chat messages 
 
 ## 3. Stands, environments and devices
 
+The commands of the test harness live here, one row each — the stand or device the command drives, what it is for, the
+command itself in "How the agent reaches it", its known traps; the project's harness guide, if it has one, gets a row too
+(`AGENT_GUIDE.md` → "Test harness").
+
 | Stand / device | What it is for | How the agent reaches it | Known traps (with the lesson id) |
 |---|---|---|---|
 | <stage · prod · emulator · phone> | <purpose> | <command> | <EXP-NNNN or "none known"> |
 
-## 4. Routes, recipes and conventions — the index of own work
+## 4. Environment dossier — the facts of the machine
+
+The procedure — six axes, probed in every shell separately — is `AGENT_GUIDE.md` → "Environment dossier";
+`/refresh-context` regenerates this table. Write one row per fact: **fact → value → probe command**.
+
+> **Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step
+> (re-run the probes in column 3 and rewrite the values and this date) · **Staleness: facts older
+> than four weeks are HYPOTHESES — re-probe before relying on them.**
+
+| Fact | Value | Probe |
+|---|---|---|
+| OS | `— not probed yet —` | (the OS version command of this platform) |
+| CPU / RAM | `— not probed yet —` | |
+| Shells available | `— not probed yet —` | |
+| Console / ANSI encoding | `— not probed yet —` | |
+| Locale per shell | `— not probed yet —` | |
+| Runtimes and build tools | `— not probed yet —` | |
+| `tar` / `curl` / `find` per shell | `— not probed yet —` | |
+| VCS line-ending policy | `— not probed yet —` | |
+| Package manager | `— not probed yet —` | |
+| Quirks paid for by incidents | `— not probed yet —` | (links to `EXPERIENCE.md` ids) |
+
+## 5. Routes, recipes and conventions — the index of own work
 
 Where the project's accumulated work lives: step files, device routes, recorded recipes, style
 measurements of the project's own texts. A task on a surface listed here starts by opening the entry
@@ -53,14 +79,18 @@ and citing it (`AGENT_GUIDE.md` → checklist step 2).
 | Surface | Where the work lives | What it covers |
 |---|---|---|
 | <feature / screen / procedure> | <path> | <one line> |
+| Push and forge authentication | <the command, e.g. `gh auth setup-git`> | how pushing is authenticated here; non-fast-forward → `git pull --rebase` → retry (`AGENT_GUIDE.md` → "Push / GitHub authentication") |
 
-## 5. Tools of this project
+## 6. Tools of this project
+
+Every automation tool of the project (build, commit, release, codegen, graphics…) — a row the day it is added
+(`AGENT_GUIDE.md` → "Tools").
 
 | Command | What it does | What it guards |
 |---|---|---|
 | `<command>` | <one line> | <the defect class it catches, or "—"> |
 
-## 6. Product knowledge
+## 7. Product knowledge
 
 <Domain facts the agent needs and must not re-derive: the glossary, the entities and their roles, the
 numbers that must not change. A fact the owner owns carries the owner's provenance line, like a rule.>

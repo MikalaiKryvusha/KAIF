@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.7",
   "released": "2026-09-18",
-  "moduleCount": 824,
+  "moduleCount": 832,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -26,10 +26,10 @@
       {
         "signature": "## Before every task — checklist",
         "class": "adaptive",
-        "sha256": "a79fb8dafbf33bebd853039002c98235ce7fb60630fea91e84de3ef025244138",
+        "sha256": "2de77080765e8982f0a84b8c78befd5f85e5d9dd00a71107d2f564466e5619fa",
         "lines": [
           74,
-          125
+          122
         ]
       },
       {
@@ -37,35 +37,35 @@
         "class": "static",
         "sha256": "18d9c289375ce23a45c812efa6a9bbf63c16558eb7631c9b282c2c32c811fb7a",
         "lines": [
-          126,
-          147
+          123,
+          144
         ]
       },
       {
         "signature": "### Document taxonomy — the five tiers",
         "class": "static",
-        "sha256": "154079d2818910e9eb7874e3f8dd953956d9560be68911895b7338bf91e09d88",
+        "sha256": "4227cb14a1e05d60018b8e7e83b8c87c02eccc16c805ab353922485539fb5630",
         "lines": [
-          148,
-          187
+          145,
+          180
         ]
       },
       {
         "signature": "### Context refresh — the re-read rule and its witness",
         "class": "static",
-        "sha256": "4d7910d0d44a09d1a9993773d5ab611d6f77af7468f6ab4aa252d913e488ea79",
+        "sha256": "657d31432bcd006d9825585e3b0663e9cc41e6e66aa407ddbfb37fd8058f21fc",
         "lines": [
-          188,
-          225
+          181,
+          216
         ]
       },
       {
         "signature": "### Environment dossier — the agent knows its machine from its own notes",
-        "class": "adaptive",
-        "sha256": "ba03e5d1654e3183f041d8f80380611aaed2e22c77cd38709735a4b60d75e810",
+        "class": "static",
+        "sha256": "61d8f196f24859a708725db8c75564586ef6816c3d4d88aa1b5cbeb987a59d8f",
         "lines": [
-          226,
-          278
+          217,
+          253
         ]
       },
       {
@@ -73,8 +73,8 @@
         "class": "static",
         "sha256": "cab17544c78f089dfed261222ae0f0eed93905cb2e9c395ceaa1c3e800d91d7a",
         "lines": [
-          279,
-          298
+          254,
+          273
         ]
       },
       {
@@ -82,35 +82,35 @@
         "class": "static",
         "sha256": "a895c3489b5097363fbbb7e72361fcc67ca4f968ccd163f1b24bdfe1bfc12513",
         "lines": [
-          299,
-          310
+          274,
+          285
         ]
       },
       {
         "signature": "### Recon artifacts — when the task has an external truth",
         "class": "static",
-        "sha256": "8e8a492d7358abf312dd76ddda13119312702950689910e4f88ca5307ca29101",
+        "sha256": "4d2d7802744ad79b8d292c29d0e33defa654fce798f196d0c836e42f3bbe7a1c",
         "lines": [
-          311,
-          337
+          286,
+          310
         ]
       },
       {
         "signature": "### Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "39928f0607d4d68f100e376a630542be12a91d2a3e5968a10fb124862ed27d96",
+        "sha256": "da98a517bbb18f7a81b7fccd1dad242eef96ce72b162f719d5b0cb6b680af2f2",
         "lines": [
-          338,
-          454
+          311,
+          425
         ]
       },
       {
         "signature": "### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)",
         "class": "static",
-        "sha256": "b1fc4f233d85e9d1005640f23e7bd0d225ca4fb5aee6175ca3db530e1460be00",
+        "sha256": "119bc957f76bc9881dda35f4279765854c4f168992cbf05a789601f32f2c6b73",
         "lines": [
-          455,
-          485
+          426,
+          450
         ]
       },
       {
@@ -118,8 +118,8 @@
         "class": "adaptive",
         "sha256": "fbe37c4e739ca44879573f0fe92e69ab78f106078ebef12c1ed5ac430a241506",
         "lines": [
-          486,
-          522
+          451,
+          487
         ]
       },
       {
@@ -127,8 +127,8 @@
         "class": "static",
         "sha256": "c1407cdfc19241e83b46751222cc522857c6b8344b1ee764af59c654d9c17edd",
         "lines": [
-          523,
-          532
+          488,
+          497
         ]
       },
       {
@@ -136,26 +136,26 @@
         "class": "adaptive",
         "sha256": "18da84d8f4ca31cfb21c4c7b9fcebe3b80f3dc0d61a13ede3351e44c81e251a6",
         "lines": [
-          533,
-          548
+          498,
+          513
         ]
       },
       {
         "signature": "## Goal of the project",
         "class": "static",
-        "sha256": "4bb2839da554cc515191a65d936345ceba5309849aad8c0a958812060820df3f",
+        "sha256": "b090072f3dfef200a24fcc3fa5021cfc52719fa657fb8f35e87e6de1e00df3fd",
         "lines": [
-          549,
-          554
+          514,
+          520
         ]
       },
       {
         "signature": "## Architecture — the map",
         "class": "static",
-        "sha256": "dc1c7b739d251b671539898faeac13013b64984619e154f92af7208ced65dd6e",
+        "sha256": "697d3da600411caacae1cd022f4dc609b53ebeb0aee76ff44f71aa4c403bffc0",
         "lines": [
-          555,
-          571
+          521,
+          529
         ]
       },
       {
@@ -163,17 +163,17 @@
         "class": "adaptive",
         "sha256": "98cea13f34c8dacf866d048849d56f77dc4a5a80753a713152f33fdf674e6c24",
         "lines": [
-          572,
-          582
+          530,
+          540
         ]
       },
       {
         "signature": "## Test harness (how the agent observes & drives the software)",
         "class": "static",
-        "sha256": "004093c52eacf2037e8a428b75167644b923c6e6f33777b5b339aeb6c78c6661",
+        "sha256": "bbd30123b55ea4a5c29e985999dbd2ceb0d0404407127462405f1cbb9f9640c1",
         "lines": [
-          583,
-          598
+          541,
+          551
         ]
       },
       {
@@ -181,8 +181,8 @@
         "class": "static",
         "sha256": "b063e3249924d8de5ac278fca8ce66748b13922d79c3cf8388ba7b228924a28e",
         "lines": [
-          599,
-          630
+          552,
+          583
         ]
       },
       {
@@ -190,8 +190,8 @@
         "class": "adaptive",
         "sha256": "a88e5bda530a6f64e35315365e6d3503a8c2856b783d7fb42a4ed4eab74a9e45",
         "lines": [
-          631,
-          649
+          584,
+          602
         ]
       },
       {
@@ -199,8 +199,8 @@
         "class": "static",
         "sha256": "61ee7522a8b9834b8b8d74a1935533dff419971b0263d59be246ce577c6e210c",
         "lines": [
-          650,
-          663
+          603,
+          616
         ]
       },
       {
@@ -208,62 +208,62 @@
         "class": "static",
         "sha256": "848a4d8e09aa1d52de062cd94ea590e9283c239cc31326f8729ffb8a833a4be6",
         "lines": [
-          664,
-          681
+          617,
+          634
         ]
       },
       {
         "signature": "### A leading skill word is an order — the first word of the owner's message",
         "class": "static",
-        "sha256": "af8c7e763a3b77a745abfa4df3e4349d669133eec73da9c7c6aa8a51cf97a4dd",
+        "sha256": "9aca33a69654c0b91abb772ac0411fedf884447884f32ab65a3779cbeb543400",
         "lines": [
-          682,
-          702
+          635,
+          653
         ]
       },
       {
         "signature": "### The storefront — text a stranger reads",
         "class": "static",
-        "sha256": "725a6f3265c0e6cd3c70cbdb277bfc7e0c16e40c9a3ad519a91d5ca7cb63f6d7",
+        "sha256": "872672bff29f5e324e33cfceae3a2a2229b296fc79134b70f2e97def1d5bc2b1",
         "lines": [
-          703,
-          815
+          654,
+          760
         ]
       },
       {
         "signature": "## Push / GitHub authentication",
         "class": "static",
-        "sha256": "e216f22bd9fcda69f9bb17462c85df04353ab036ccad95b195617482f130bd14",
+        "sha256": "e26ec6f304e4428dd2186a4a5d09e3e27d616fd9152c6f72c084e71ef055baf0",
         "lines": [
-          816,
-          823
+          761,
+          768
         ]
       },
       {
         "signature": "## Tools",
         "class": "static",
-        "sha256": "0cdf019921b419efc58fb793029d5da56413a89a673295aea13315a20c78217a",
+        "sha256": "d7ec9fd48ca89d5864c7aefb8ae3324523b9d902aa07a6b3f58980ac69590e15",
         "lines": [
-          824,
-          834
+          769,
+          776
         ]
       },
       {
         "signature": "## Backlog & the DONE tag",
         "class": "static",
-        "sha256": "c0cf558619786198ea462bd3ba421b25ab8a0c6b69299ed3aaed86b3da28ba63",
+        "sha256": "7ce7d088fbaab08cf3dc229798fe326a8bd00b585db564d1d3f21b5c8f771f99",
         "lines": [
-          835,
-          925
+          777,
+          860
         ]
       },
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "e6b72c2d5075f53299c499b0e58d00ce7a95d66b3399d3b1f1cfee70809c8242",
+        "sha256": "1d2bba3777cf5abc9c0bb3621b5b6635395722922059be65aedbbfec8f8ae8db",
         "lines": [
-          926,
-          1123
+          861,
+          1052
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1124,
-          1138
+          1053,
+          1067
         ]
       },
       {
@@ -280,8 +280,8 @@
         "class": "static",
         "sha256": "6b5147dbe005de07faaa808b917e2d48a559c1a3ff072ac0c4a1c23c6ef4b533",
         "lines": [
-          1139,
-          1152
+          1068,
+          1081
         ]
       }
     ],
@@ -572,10 +572,10 @@
       {
         "signature": "# TESTING_FRAMEWORK — how the agent tests what it creates",
         "class": "static",
-        "sha256": "43abe39f40dbe8f39d9540fe9083993417a61693a3850a1d2d6d674c64b776e7",
+        "sha256": "7328b7324a1bc03a9fd8c8be48c60251340ded979ee7845ab23af683eab9b83c",
         "lines": [
           1,
-          10
+          8
         ]
       },
       {
@@ -583,8 +583,8 @@
         "class": "static",
         "sha256": "52113b5f953886e9d975064ea9943c3e797bcd9b4b462147d8680857708a217f",
         "lines": [
-          11,
-          27
+          9,
+          25
         ]
       },
       {
@@ -592,8 +592,8 @@
         "class": "static",
         "sha256": "071ed8fb58f8c21c49104f04f4646d06cd704239f8a4c709bd2c939b446d4e37",
         "lines": [
-          28,
-          45
+          26,
+          43
         ]
       },
       {
@@ -601,8 +601,8 @@
         "class": "static",
         "sha256": "34509bee939efb8ef6d0e398edb05a47373a9acfdc1ef0e5b30f364b358457f0",
         "lines": [
-          46,
-          78
+          44,
+          76
         ]
       },
       {
@@ -610,17 +610,17 @@
         "class": "static",
         "sha256": "dafe75ef2a65809e0e8e54a1235d85ed87ea0ffac734dc44bd81838ff0c4a7a8",
         "lines": [
-          79,
-          114
+          77,
+          112
         ]
       },
       {
         "signature": "## The work produces its own means of checking",
         "class": "static",
-        "sha256": "2360e65b299495d38fdaf62ec734b58491cccfa7e883be7d0ea7188a275e4d3a",
+        "sha256": "68e7c8fdac96d97b08cf17851e0ea66d828c340f26281611a1e17328f6ec2c1a",
         "lines": [
-          115,
-          136
+          113,
+          132
         ]
       },
       {
@@ -628,17 +628,17 @@
         "class": "static",
         "sha256": "fc232dd2e2ed6e50b7589ef1f3802b926349986a668700c22e64c12e7a469ee1",
         "lines": [
-          137,
-          165
+          133,
+          161
         ]
       },
       {
         "signature": "## Green tests ≠ working — the observation gates",
         "class": "static",
-        "sha256": "b7dc4fcb02a1bc03761109f7715f7bee689a36b94b94b8fe07968bf15b569e12",
+        "sha256": "957dc18756e31a76b916d97bcdaedfa14a5bc8f7cf367e0034a4685bb281f474",
         "lines": [
-          166,
-          218
+          162,
+          213
         ]
       },
       {
@@ -646,8 +646,8 @@
         "class": "static",
         "sha256": "892562f7c7c1a4739ed79a6c5242be280bc7e5b0f950b140370f0a3a43aa282f",
         "lines": [
-          219,
-          240
+          214,
+          235
         ]
       },
       {
@@ -655,17 +655,17 @@
         "class": "static",
         "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
         "lines": [
-          241,
-          249
+          236,
+          244
         ]
       },
       {
         "signature": "## How this composes with the rest of KAIF",
         "class": "static",
-        "sha256": "05f3c6f0cb81b0c932adbff7c9962e658fcc784fe7c5a1a6850bad92dc58a26f",
+        "sha256": "606886b42f9e7cc389a89463aef4a89dc3770c0664d56f1fc38f8502a97aaa76",
         "lines": [
-          250,
-          277
+          245,
+          270
         ]
       }
     ],
@@ -1222,10 +1222,10 @@
       {
         "signature": "## 5. The document system",
         "class": "static",
-        "sha256": "59fc51914e05edc4a2e818ff98a1c5eb638b9ed9b483501d179d5e7586f9ed75",
+        "sha256": "c337582759f4f664140ab0f9e0050797725d2e7fa711bf1eee36431ed5cd47d2",
         "lines": [
           71,
-          143
+          145
         ]
       },
       {
@@ -1233,8 +1233,8 @@
         "class": "static",
         "sha256": "665d0d99ef87637d6bd3adddcf26ed4a95467366719e15385076394a090be2bb",
         "lines": [
-          144,
-          188
+          146,
+          190
         ]
       },
       {
@@ -1242,8 +1242,8 @@
         "class": "static",
         "sha256": "44b78cbd335e6c360797eb999463e3350c5cdeddfd24863d99ef2dc43e2e2494",
         "lines": [
-          189,
-          190
+          191,
+          192
         ]
       },
       {
@@ -1251,8 +1251,8 @@
         "class": "static",
         "sha256": "ab9545bf0b5c0084d28525d3c6b340269d9b11588e49c3b7adf201745648df3f",
         "lines": [
-          191,
-          196
+          193,
+          198
         ]
       },
       {
@@ -1260,8 +1260,8 @@
         "class": "static",
         "sha256": "9b3903056691250cfd30eba26d93ed8a0a924846f0bf729c2a987697508e9358",
         "lines": [
-          197,
-          209
+          199,
+          211
         ]
       },
       {
@@ -1269,8 +1269,8 @@
         "class": "static",
         "sha256": "ecf66ec956e4700a97c14e67fd661d3f3ad3ba6c994439e1a0d75395f3fdcd1c",
         "lines": [
-          210,
-          216
+          212,
+          218
         ]
       },
       {
@@ -1278,8 +1278,8 @@
         "class": "static",
         "sha256": "f80792979f1957a1dce9ba23d5f0a04f2f19e984ae458859d34668540d1dc3fe",
         "lines": [
-          217,
-          232
+          219,
+          234
         ]
       },
       {
@@ -1287,8 +1287,8 @@
         "class": "static",
         "sha256": "66d071013b370b4635401b41a9effc13a92bb0aef9b1de176b6709750423d850",
         "lines": [
-          233,
-          239
+          235,
+          241
         ]
       },
       {
@@ -1296,8 +1296,8 @@
         "class": "static",
         "sha256": "b27c64dc7d55013ee51ededaff11f50a814c42219a4415a3b1e7e38de8d97962",
         "lines": [
-          240,
-          241
+          242,
+          243
         ]
       },
       {
@@ -1305,8 +1305,8 @@
         "class": "static",
         "sha256": "44109a5c776d9b1bd49517062c2f7f78cd76aa440299ff56adbde404a088579a",
         "lines": [
-          242,
-          246
+          244,
+          248
         ]
       },
       {
@@ -1314,8 +1314,8 @@
         "class": "static",
         "sha256": "19de524fadf452b1f7be3d8ba98b6a0f3380d194ff8bfbc27acf5bd339c8a529",
         "lines": [
-          247,
-          254
+          249,
+          256
         ]
       },
       {
@@ -1323,8 +1323,8 @@
         "class": "static",
         "sha256": "c83fa0768eacc805178e0bd10afb9179fe36439b3e7ba732abdd8efd47f051e6",
         "lines": [
-          255,
-          256
+          257,
+          258
         ]
       },
       {
@@ -1332,8 +1332,8 @@
         "class": "static",
         "sha256": "8b8bdc6ce3bd10afd5939f6cf7a96f975df27aa5aa86b174dc25c6524af00cf4",
         "lines": [
-          257,
-          266
+          259,
+          268
         ]
       },
       {
@@ -1341,8 +1341,8 @@
         "class": "static",
         "sha256": "2a5b3fbc6beb91b8bb48060abd0c684d7d8527684b7b35d42444090bcb6b1fc6",
         "lines": [
-          267,
-          271
+          269,
+          273
         ]
       },
       {
@@ -1350,8 +1350,8 @@
         "class": "static",
         "sha256": "a13da19c3d2690635f7b77a44c0bdaea11e217d178eeab90bf65280646a9a06a",
         "lines": [
-          272,
-          291
+          274,
+          293
         ]
       },
       {
@@ -1359,8 +1359,8 @@
         "class": "static",
         "sha256": "bfe93071404fa914402b99a75cbd57a40103105b9f6b7366687ba17b3c9ed982",
         "lines": [
-          292,
-          293
+          294,
+          295
         ]
       },
       {
@@ -1368,8 +1368,8 @@
         "class": "adaptive",
         "sha256": "46869cbb7f2e605af1331f99012237f474f5c3d9e929a8a54ef18abea55beb2d",
         "lines": [
-          294,
-          306
+          296,
+          308
         ]
       },
       {
@@ -1377,8 +1377,8 @@
         "class": "static",
         "sha256": "be42a6f445ab674d0e2803bc8e7a2a1c43c5c97edd1df5dde70612a11eaacb20",
         "lines": [
-          307,
-          342
+          309,
+          344
         ]
       },
       {
@@ -1386,8 +1386,8 @@
         "class": "static",
         "sha256": "1544c3741c400f3419702080368b4cbc97ec4dd11a1bc2e5804a7038d8428b42",
         "lines": [
-          343,
-          366
+          345,
+          368
         ]
       },
       {
@@ -1395,8 +1395,8 @@
         "class": "static",
         "sha256": "482e52c71eb2d7abdba4a8f948ec7b59f6e88fff6a2c3e959ac0ad363803f6e2",
         "lines": [
-          367,
-          374
+          369,
+          376
         ]
       },
       {
@@ -1404,8 +1404,8 @@
         "class": "static",
         "sha256": "325171663ed7b5bf8ff971a88ccfc1c5ba7dd2a661617ad11fd18eac6336e6cd",
         "lines": [
-          375,
-          380
+          377,
+          382
         ]
       },
       {
@@ -1413,8 +1413,8 @@
         "class": "static",
         "sha256": "16e95c45a56a09a36130c416cf0b23f294d04d01d2dd4a80cff97e42d2868d11",
         "lines": [
-          381,
-          386
+          383,
+          388
         ]
       },
       {
@@ -1422,8 +1422,8 @@
         "class": "static",
         "sha256": "bca1950bfeb87a68283707669bd0e377f25a2cd5eb8e2cecdf798021210cc945",
         "lines": [
-          387,
-          410
+          389,
+          412
         ]
       },
       {
@@ -1431,8 +1431,8 @@
         "class": "static",
         "sha256": "9139b7739b8464629a44d99c2046e96e964c8bf60c8e1bbc36606967f8894e82",
         "lines": [
-          411,
-          425
+          413,
+          427
         ]
       },
       {
@@ -1440,8 +1440,8 @@
         "class": "static",
         "sha256": "ad110ec27bae4a7026246cfe0ec52e2602ab842342c829837be8b36b61e22e9b",
         "lines": [
-          426,
-          427
+          428,
+          429
         ]
       },
       {
@@ -1449,8 +1449,8 @@
         "class": "static",
         "sha256": "bcff53dfede208a04ec9f4e8dad4bc5d776ba388dfdabac29756452a8417d12c",
         "lines": [
-          428,
-          433
+          430,
+          435
         ]
       },
       {
@@ -1458,8 +1458,8 @@
         "class": "static",
         "sha256": "2ac0a888bff20e43e4cc1ab04c648898e525ad70ad501b0a85d1ad8da1d799bf",
         "lines": [
-          434,
-          440
+          436,
+          442
         ]
       },
       {
@@ -1467,8 +1467,8 @@
         "class": "static",
         "sha256": "8debd5a1abab165b5f2c6b6ba8e64954415fafd9cb15d95154ef535a7e8672e6",
         "lines": [
-          441,
-          455
+          443,
+          457
         ]
       },
       {
@@ -1476,8 +1476,8 @@
         "class": "static",
         "sha256": "6f7648b0a57f98886eb1637a224810c7759713f5097d9b67bedb71174295f054",
         "lines": [
-          456,
-          457
+          458,
+          459
         ]
       },
       {
@@ -1485,8 +1485,8 @@
         "class": "static",
         "sha256": "abe02cb2a81bb6d438f38f5611287bc435a797759e7f8a0fadf2b8f2453cd56b",
         "lines": [
-          458,
-          476
+          460,
+          478
         ]
       },
       {
@@ -1494,8 +1494,8 @@
         "class": "static",
         "sha256": "217214fec2234d4f7d095721805e1ba39e2dee28621224b412257971549b13b3",
         "lines": [
-          477,
-          485
+          479,
+          487
         ]
       },
       {
@@ -1503,8 +1503,8 @@
         "class": "static",
         "sha256": "ebf4c256d3e38aebfcb1e555c7047795d02a8ca469c58ffcf55b7fbb56153d52",
         "lines": [
-          486,
-          494
+          488,
+          496
         ]
       },
       {
@@ -1512,8 +1512,8 @@
         "class": "static",
         "sha256": "003ce058cd7cc128879e3e00791dcdb65305fe5c5a30b549661d8fde22a90ce9",
         "lines": [
-          495,
-          504
+          497,
+          506
         ]
       },
       {
@@ -1521,8 +1521,8 @@
         "class": "static",
         "sha256": "f8b1f25f5b3bdda9521f697c6c273bc9e8519bc570fd6f9f83c8ced3dc98cf94",
         "lines": [
-          505,
-          521
+          507,
+          523
         ]
       },
       {
@@ -1530,8 +1530,8 @@
         "class": "static",
         "sha256": "0ce0a6ebc32be3e5b4af47f6301325bc935ffdd9187ee551f0ea8bb1ff8bb388",
         "lines": [
-          522,
-          565
+          524,
+          567
         ]
       },
       {
@@ -1539,8 +1539,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          566,
-          578
+          568,
+          580
         ]
       },
       {
@@ -1548,8 +1548,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          579,
-          587
+          581,
+          589
         ]
       },
       {
@@ -1557,8 +1557,8 @@
         "class": "static",
         "sha256": "e02e472145f7b7ed7a2f50c53ae73153a828aeec2a2d10b322ca5d5d4f3f9c90",
         "lines": [
-          588,
-          597
+          590,
+          599
         ]
       },
       {
@@ -1566,8 +1566,8 @@
         "class": "static",
         "sha256": "f1eb8b5d60d8e38a8e60b31792c2ced224d501b19b99f62b87776329103acbc0",
         "lines": [
-          598,
-          605
+          600,
+          607
         ]
       },
       {
@@ -1575,8 +1575,8 @@
         "class": "static",
         "sha256": "1612157c91aec3d625dcfd4dbfefefaeb4f25456a3098e6cd773affa55c070cd",
         "lines": [
-          606,
-          611
+          608,
+          613
         ]
       },
       {
@@ -1584,17 +1584,17 @@
         "class": "static",
         "sha256": "e8d18b25f1903d2591db789e71d65a3c492e61499ba70de3ed06a0dcc8c87e6f",
         "lines": [
-          612,
-          618
+          614,
+          620
         ]
       },
       {
         "signature": "### `TESTING_FRAMEWORK.md` → The work produces its own means of checking",
         "class": "static",
-        "sha256": "9e1654cf1bfcb1d2eb9cbc4b840654ac2a481e463ea9411a8ab636fc02d95c06",
+        "sha256": "4ea74ff13ff4bf7be4d99944266790a9007da65691fb793101c90a8b2e57524c",
         "lines": [
-          619,
-          626
+          621,
+          629
         ]
       },
       {
@@ -1602,17 +1602,17 @@
         "class": "static",
         "sha256": "5628af9f9f9b91cc5fd9315ae553830d2d661f28191eb3006afd2408ba66b743",
         "lines": [
-          627,
-          633
+          630,
+          636
         ]
       },
       {
         "signature": "### `TESTING_FRAMEWORK.md` → Green tests ≠ working — the observation gates",
         "class": "static",
-        "sha256": "e72d46ebbd3e160b047a2fefb6ee8e3c49aa8f4c03ebcc27fbc855dcd510ab63",
+        "sha256": "f72d4db874c50f6139cf6ba4173a868ed48c33f933bc5692a5f5b495b94953bc",
         "lines": [
-          634,
-          642
+          637,
+          646
         ]
       },
       {
@@ -1620,26 +1620,26 @@
         "class": "static",
         "sha256": "826946b97cc4b1cfe8b0436ef94df455e5f4fd36a1a47631942879c479647aaf",
         "lines": [
-          643,
-          648
+          647,
+          652
         ]
       },
       {
         "signature": "### `AGENT_GUIDE.md` → Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "f79a110b6d470980364748f9d1a66ccd172335946fe097984155d2b76f712f68",
+        "sha256": "978a252ba4a8e44c79b42a7690f1137152355d50489cab33544504ac67429dfe",
         "lines": [
-          649,
-          672
+          653,
+          680
         ]
       },
       {
         "signature": "### `AGENT_GUIDE.md` → Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "1c56237e76c85ea801d5f96e34d89892292a864d6fb5da5aa19e64520c5ed07d",
+        "sha256": "fef4a9cd8b9166636f67870d0b6b3d29651a72afda1a2c921083073ee9877f5f",
         "lines": [
-          673,
-          707
+          681,
+          719
         ]
       },
       {
@@ -1647,8 +1647,8 @@
         "class": "static",
         "sha256": "1d6c9d864f839f77a25d160c64894f35bc8d0301f32360b99dce13f54cc1d287",
         "lines": [
-          708,
-          712
+          720,
+          724
         ]
       },
       {
@@ -1656,8 +1656,8 @@
         "class": "static",
         "sha256": "c1515f210fed3042b01d558d2e8c80b9b697a3f267b2e2bb4bbb1c22394e7a64",
         "lines": [
-          713,
-          717
+          725,
+          729
         ]
       },
       {
@@ -1665,8 +1665,8 @@
         "class": "static",
         "sha256": "7af7735e7828f03a80677aeb4da3b1b00e561dcc78be863fcbdfa48054175514",
         "lines": [
-          718,
-          728
+          730,
+          740
         ]
       },
       {
@@ -1674,35 +1674,35 @@
         "class": "static",
         "sha256": "6623e80c05377f674c5de22ca1dce0ecf413fd3a33f455e1581302aee8022622",
         "lines": [
-          729,
-          733
+          741,
+          745
         ]
       },
       {
         "signature": "### `AGENT_GUIDE.md` → A leading skill word is an order — the first word of the owner's message",
         "class": "static",
-        "sha256": "2a2303c66a3d431c9f41619e81610a5867e95046cb0ae32c82b348e606c2108e",
+        "sha256": "15b64e071993fe1280a6ed93d597b4d71fc45a3e86552aec746f5c3b71b95f35",
         "lines": [
-          734,
-          738
+          746,
+          752
         ]
       },
       {
         "signature": "### `AGENT_GUIDE.md` → The storefront — text a stranger reads",
         "class": "static",
-        "sha256": "76e2cbc9ca64a6fa4f68b4324cac5853a06be3fed7483ac8bf048e194e55d9ed",
+        "sha256": "068b1d1fbfdcb4ad5a803bd69bb7e3cc11f0d8ab9f6be53560f5f1c65849b293",
         "lines": [
-          739,
-          743
+          753,
+          762
         ]
       },
       {
         "signature": "### `AGENT_GUIDE.md` → Backlog & the DONE tag",
         "class": "static",
-        "sha256": "66fd2302c0773ef3452651a511e64645b0bf1b180a7a2d94cba224879dddab8b",
+        "sha256": "37270bdb49877ebc54fb99fbe8468b16bddd65c83b0d5c03ab93afd9eab883ef",
         "lines": [
-          744,
-          748
+          763,
+          771
         ]
       },
       {
@@ -1710,8 +1710,71 @@
         "class": "static",
         "sha256": "7d820b1348ae7940cf42356abce337e503eb4981a0fed1147198271570212f99",
         "lines": [
-          749,
-          755
+          772,
+          778
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)",
+        "class": "static",
+        "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
+        "lines": [
+          779,
+          785
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Environment dossier — the agent knows its machine from its own notes",
+        "class": "static",
+        "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
+        "lines": [
+          786,
+          791
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Goal of the project",
+        "class": "static",
+        "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
+        "lines": [
+          792,
+          796
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Architecture — the map",
+        "class": "static",
+        "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
+        "lines": [
+          797,
+          802
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Test harness (how the agent observes & drives the software)",
+        "class": "static",
+        "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
+        "lines": [
+          803,
+          809
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Tools",
+        "class": "static",
+        "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
+        "lines": [
+          810,
+          815
+        ]
+      },
+      {
+        "signature": "### `AGENT_GUIDE.md` → Push / GitHub authentication",
+        "class": "static",
+        "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
+        "lines": [
+          816,
+          820
         ]
       }
     ],
@@ -4096,10 +4159,10 @@
       {
         "signature": "## What to do",
         "class": "static",
-        "sha256": "20c98e7486ebebef78725b7e4ad26ddb303951eb481c378bf9d580795fbb453c",
+        "sha256": "0c678693aa088bcef466e947b998bd2db5a4ecf62da9034f6216c94eed25ad3d",
         "lines": [
           11,
-          56
+          58
         ]
       },
       {
@@ -4107,8 +4170,8 @@
         "class": "static",
         "sha256": "3728a89fb383a71183a9489e08109cb0372005f873e34498015831147c1dfb41",
         "lines": [
-          57,
-          61
+          59,
+          63
         ]
       }
     ],
@@ -5922,37 +5985,46 @@
       {
         "signature": "## 3. Stands, environments and devices",
         "class": "static",
-        "sha256": "6f58d810d22c7188263f8f8ed703fc4efa88616623e845f462007b021aa7813a",
+        "sha256": "15fc80644fd28ba24adf6ed068aa2248d51fd0d3d276eabff29e128cf0132d4c",
         "lines": [
           41,
-          46
+          50
         ]
       },
       {
-        "signature": "## 4. Routes, recipes and conventions — the index of own work",
+        "signature": "## 4. Environment dossier — the facts of the machine",
         "class": "static",
-        "sha256": "e9c43a0737b7938d50e3013ebab1906654c140f6caa1b89d8f208c7e057a2c9c",
+        "sha256": "70c5ae5c667d529be429db6f8fc299bce845e62fd2788de1267417ffb763e2e7",
         "lines": [
-          47,
-          56
+          51,
+          72
         ]
       },
       {
-        "signature": "## 5. Tools of this project",
+        "signature": "## 5. Routes, recipes and conventions — the index of own work",
         "class": "static",
-        "sha256": "6b8bfe30ec99ba1e58ad7a61d35fd1ddcd23a0c23fe8c56bde1aab34bad6e395",
+        "sha256": "3805e05c177ea9893dd86ebb9d1d5671975811a1e0771992f6177dfa81363cc5",
         "lines": [
-          57,
-          62
+          73,
+          83
         ]
       },
       {
-        "signature": "## 6. Product knowledge",
+        "signature": "## 6. Tools of this project",
         "class": "static",
-        "sha256": "69294b05c834461f2022b68d2f0c8eac8db31a8b71be7886a87a18d15c73195d",
+        "sha256": "d53c7cbfd5309df0852971af3c749c3f0c108d0ccdbe0b92ea758cf6028ec523",
         "lines": [
-          63,
-          67
+          84,
+          92
+        ]
+      },
+      {
+        "signature": "## 7. Product knowledge",
+        "class": "static",
+        "sha256": "177e6432e2dcadf21f3e387bbd67abc1a043fc677434deb7ec9309476ba6a2cd",
+        "lines": [
+          93,
+          97
         ]
       }
     ],

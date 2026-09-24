@@ -256,14 +256,11 @@ relies entirely on this document to get to work.
     structured format for AI consumption (the human's voice and every thought preserved; their original
     wording stays reachable in git history). After implementing from such a document, write the status
     and the implementation date back into it.
-19. Writing into the owner's artifact?   # text the human signs or reads as their own (docs, paper, site
-    copy, a sheet, a UI string) → WRITE BY the portrait `AUTHOR_STYLOMETRY.md` WITH IT IN YOUR WORKING
-    CONTEXT: node .kaif/tools/kaif-voice-lint.mjs load BEFORE the first word (prints its rules, lexicon,
-    anti-portrait and pairs into the context, leaves the witness .kaif/voice-marker.json); after writing —
-    an INDEPENDENT check by the same portrait: node .kaif/tools/kaif-voice-lint.mjs check <file…> (the §8
-    table + the witness; /owner-voice check) + the §7B pass by a clean instance; fix — only then the text
-    is written, and only then it goes to the owner for approval; SKIPPED (no portrait / no §8 table) is
-    said in the report, never read as green; no portrait after a second style rejection → propose taking one
+19. Writing into the owner's artifact?   # text the human signs or reads as their own → the fable loop's fourth
+    KAIF obligation below: node .kaif/tools/kaif-voice-lint.mjs load BEFORE the first word, write BY the portrait
+    AUTHOR_STYLOMETRY.md, check independently (node .kaif/tools/kaif-voice-lint.mjs check <file…> + a clean-instance
+    §7B pass), fix — only then it goes to the owner; SKIPPED is said, never read as green; no portrait after a second
+    style rejection → propose taking one
 ```
 
 → **`STATUS.md`** is the master state file. Update it after every significant task.
@@ -299,19 +296,15 @@ document — re-read it, know it, follow its regulation, or leave it alone:
    in context (checklist step 16; `/resume` reads the full set): `GOAL.md` · `AGENT_GUIDE.md` ·
    `PHILOSOPHY.md` · `REQUIREMENTS_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` ·
    `BUG_FIXING_FRAMEWORK.md` · `STATUS.md` · `MASTER_PLAN.md` ·
-   `PROJECT_STRUCTURE_EXTERNAL_MAP.md`. The key documents reference every other document of the
-   framework — having read them, the agent knows what else exists and when to fetch it. NOTE two
-   distinct sets: this re-read core (nine) is smaller than the SHIPPED key-document set (fourteen,
-   Reference §5) — `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`, `EXPERIENCE.md` (grepped by tag, never
-   re-read whole), `PROJECT_HISTORY.md` (archaeology on demand), `KAIF_FRAMEWORK.md` and
-   `KAIF_REFERENCE.md` ship as key documents but are fetched by the context router, not re-read on
-   schedule. Each of the nine carries a SIZE BUDGET in lines — the re-read ritual costs O(core),
-   and a core that only grows starves the sessions it instructs; `STATUS.md` ~200 (the owner's
-   target), the other eight in ONE place, the budget table of the core machinery (`DOC_BUDGETS`);
-   `node .kaif/kaif-core.mjs check` names the document, its line count and its budget when it
-   WARNS above one (a warning, never a failure) — and the same command warns BY NAME when a core document
-   is missing from the Step-1 bullets of the deployed `/resume` skill. Crossing a budget means move-out — chronicle, `researches/`, a house-rules file —
-   not a bigger number.
+   `PROJECT_STRUCTURE_EXTERNAL_MAP.md`. They reference every other document of the framework. The
+   SHIPPED key-document set is larger (fourteen, Reference §5): `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`,
+   `EXPERIENCE.md` (grepped by tag), `PROJECT_HISTORY.md`, `KAIF_FRAMEWORK.md` and `KAIF_REFERENCE.md`
+   are fetched by the context router, not re-read on schedule. Each of the nine carries a SIZE BUDGET
+   in lines — a core that only grows starves the sessions it instructs: `STATUS.md` ~200, the other
+   eight in the core's `DOC_BUDGETS` table; `node .kaif/kaif-core.mjs check` WARNS by name above a
+   budget (never a failure) and when a core document is missing from the Step-1 bullets of the
+   deployed `/resume`. Crossing a budget means move-out — chronicle, `researches/`, a house-rules
+   file — not a bigger number.
 2. **EXTENDED canon documents.** The rest of the framework's canon — the internal map, the
    chronicle, the reference, the experience journal, the sphere and adapter libraries. The agent
    may skip them when refreshing context, but knows they exist and works with them when the router
@@ -361,20 +354,19 @@ The witness has two parts, both mandatory:
 A marker without the quote — or a claimed refresh with a stale marker — is fraud of the
 false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 
-This markdown ritual is the complete contour on its own. On agent systems with lifecycle hooks,
-the optional **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it
-mechanically: an order to re-read after compaction, a marker-age timer on every prompt, a soft
-once-per-session STATUS guard — and the order to run `/resume` when the owner's message
-opens with the word `resume` (the leading-word rule, "A leading skill word is an order" below).
-Activation is an explicit owner opt-in; a deployment without hooks never reddens.
+The markdown ritual is complete on its own. On agent systems with lifecycle hooks the optional
+**refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it — re-read after
+compaction, a marker-age timer, a once-per-session STATUS guard, `/resume` on a leading `resume` —
+by the owner's explicit opt-in; a deployment without hooks never reddens.
 
 ### Environment dossier — the agent knows its machine from its own notes
 
 A session that REMEMBERS the environment invents it: which shell is running, what `tar` actually
 is in this PATH, which encoding a redirect writes. Those are facts about a machine, and facts are
-PROBED, never recalled (`PHILOSOPHY.md` → observation instead of guessing). The dossier is the
-section below: the agent fills it by running the probes, and every future session reads instead
-of rediscovering — or stepping on what was already paid for.
+PROBED, never recalled (`PHILOSOPHY.md` → observation instead of guessing). The dossier is a table
+in the house-rules file — `HOUSE_RULES.md` → "Environment dossier" (copy the skeleton on first use,
+Document taxonomy tier 4; a file from before 2.8 lacks the section — copy it from the skeleton): the
+agent fills it by running the probes, and every future session reads instead of rediscovering.
 
 **How to collect** (the procedure lives in `/refresh-context`; run it at deployment and whenever
 the dossier goes stale). Probe six axes, and probe them **in every shell available separately** —
@@ -392,34 +384,17 @@ capture:
 6. **Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never
    copies of them.
 
-**Format.** One table, one row per fact, three columns — **fact → value → probe command** — so a
-future session can re-derive any single value without re-deriving the procedure. The section
-header carries three things: the **date the facts were taken**, the **regeneration command**, and
-the **staleness rule**. A fact never probed is written `— not probed yet —`: a missing fact is
-honest, an invented one is a defect (`PHILOSOPHY.md` → the three doors).
-
-> **Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step
-> (re-run the probes in column 3 and rewrite the values and this date) · **Staleness: facts older
-> than four weeks are HYPOTHESES — re-probe before relying on them.**
-
-| Fact | Value | Probe |
-|---|---|---|
-| OS | `— not probed yet —` | (the OS version command of this platform) |
-| CPU / RAM | `— not probed yet —` | |
-| Shells available | `— not probed yet —` | |
-| Console / ANSI encoding | `— not probed yet —` | |
-| Locale per shell | `— not probed yet —` | |
-| Runtimes and build tools | `— not probed yet —` | |
-| `tar` / `curl` / `find` per shell | `— not probed yet —` | |
-| VCS line-ending policy | `— not probed yet —` | |
-| Package manager | `— not probed yet —` | |
-| Quirks paid for by incidents | `— not probed yet —` | (links to `EXPERIENCE.md` ids) |
+**Format** — it ships in the skeleton's dossier section: one row per fact, **fact → value → probe
+command**; the header carries the **date the facts were taken**, the **regeneration command** and
+the **staleness rule** (older than four weeks → a hypothesis, re-probe). A fact never probed is
+written `— not probed yet —`: a missing fact is honest, an invented one is a defect
+(`PHILOSOPHY.md` → the three doors).
 
 **The DRY boundary with "Document and text hygiene"** below: the dossier holds FACTS of the
 machine (what is installed, what `tar` is, which encoding); hygiene holds RULES OF BEHAVIOUR
 derived from incidents (text through files, read back what you wrote). The dossier links to
 lessons by id and never copies their text; a behavioural rule discovered while probing goes to
-hygiene or `EXPERIENCE.md`, and only its link stays here.
+hygiene or `EXPERIENCE.md`, and only its link stays in the dossier.
 
 ### Document header meta — the first screen answers "what is this"
 
@@ -474,11 +449,9 @@ observation (a session that "remembers" a domain invents it):
   A recon doc *describes*; the inventory *counts* — a session can read a description and still invent,
   but it cannot argue with a row.
 
-Adjacent, but NOT a fourth type: the **owner's voice portrait** — `AUTHOR_STYLOMETRY.md`, taken by
-`/owner-voice`. It replaces the same
-kind of invention with observation — the owner's own texts instead of a session "remembering" their
-style — but it is a CANON document the owner accepts, and it is routed by task type ("writing into the
-owner's artifact"), not by external truth.
+Adjacent, but NOT a fourth type: the **owner's voice portrait** `AUTHOR_STYLOMETRY.md` (`/owner-voice`)
+— the owner's own texts instead of a remembered style; a CANON document the owner accepts, routed by
+task type ("writing into the owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
@@ -497,8 +470,7 @@ run a **`/fable-judge`** pass before presenting it as done — mandatory in the 
 **KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:**
 verification is not only *observed*, it is *produced*. New behaviour ships together with the artifact
 that checks it — test suite, checklist, fixture, guard — planned in the SAME step, never "later"
-(`TESTING_FRAMEWORK.md` → "The work produces its own means of checking"). Step 5 of the vendored loop
-asks you to observe a check; this line is what obliges you to have made one.
+(`TESTING_FRAMEWORK.md` → "The work produces its own means of checking").
 
 **KAIF adds a second obligation at step 3 (decide), stated here for the same reason — the FORK: a
 fork is NOT the agent's to decide alone.** A fork is any
@@ -557,9 +529,8 @@ the proxy is said aloud:
 | the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |
 
 The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds;
-until then the only legal form is "I did X; please check whether you see Y". The shipped contour prints this
-boundary itself at every window it raises (`Window: … — the launcher returned 0; whether a window is on the
-owner's screen this line does not verify`). `/fable-judge` hunts a claim wider than the run that backs it (the
+until then the only legal form is "I did X; please check whether you see Y". `/fable-judge` hunts a claim
+wider than the run that backs it (the
 claim-wider-than-observation hunt). The same rule, seen from the other side, defines the word "test"
 (`TESTING_FRAMEWORK.md` → "What the word "test" means"): hygiene reported as "tested" is a claim wider than its
 observation — the judge hunts that too (the tested-on-hygiene-alone hunt).
@@ -599,11 +570,9 @@ library plays the role of their domain adapters for the same reason.
 
 ### Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
 
-Nearly everything in this industry has golden standards, best practices, published research — or at
-least documented practitioner lore. **A major epic feature therefore starts with a web recon of the
-industry's golden practices and a research doc in `researches/`** — this extends "recon before code"
-(checklist step 9) from *external truth* to *industry knowledge*: the state of the art is an external
-truth too, and a session that skips the sweep re-invents solved problems badly.
+**A major epic feature starts with a web recon of the industry's golden practices and a research doc in
+`researches/`** — "recon before code" (checklist step 9) extended from *external truth* to *industry
+knowledge*: a session that skips the sweep re-invents solved problems badly.
 
 **The heaviness test** (checkable, not taste). A task is HEAVY when **≥2** of these hold:
 touches ≥3 subsystems or canon documents · rests on an external truth or an industry standard ·
@@ -623,10 +592,6 @@ decisions. Otherwise it is ordinary.
      never all upfront (they would be fiction by the time you reach them).
   4. **Trace** — every operational step cites its meta-plan anchor line (the citing rule of
      checklist step 8); a step you cannot anchor is scope drift caught before the diff.
-
-The ladder is not ceremony for its own sake: research is where the epic gets its evidence base,
-the meta-plan is where the owner sees the whole shape once, and phase-by-phase operational plans are
-what keeps a context-losing session executing the RIGHT next step instead of re-deriving the epic.
 
 ### Languages — routed by AUDIENCE, never by directory
 
@@ -693,24 +658,17 @@ successes). Living reference — never DONE-tagged.
 
 ## Goal of the project
 
-`<ONE-PARAGRAPH STATEMENT OF WHAT THIS PROJECT IS AND FOR WHOM. Keep it short and concrete.>`
+The owner's vision is `GOAL.md` and the path to it is `MASTER_PLAN.md` — both in the re-read core; read the goal
+there, in its one copy.
 
 ---
 
 ## Architecture — the map
 
-`<HIGH-LEVEL MODULE/COMPONENT MAP. The directory layout, the modules, and the dependency rules between
-them. Keep this in sync with PROJECT_STRUCTURE_EXTERNAL_MAP.md (the detailed map). Example:>`
-
-```
-<module-a>      ← entry point / app
-<module-b>      ← <responsibility>
-<module-c>      ← <responsibility>
-```
+The map lives in its two documents, one copy each: `PROJECT_STRUCTURE_EXTERNAL_MAP.md` (files, modules, data
+flow) and `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` (abstractions and their relations). Only the invariant stands here:
 
 **RULE:** `<state the key architectural invariant, e.g. "feature modules don't depend on each other">`.
-
-Full file map and data flows live in `PROJECT_STRUCTURE_EXTERNAL_MAP.md`.
 
 ---
 
@@ -730,14 +688,9 @@ for errors only, how to do a headless vs. interactive build.>`
 `<Describe the tooling the agent uses to run, observe, and drive the software WITHOUT a human — the
 single most important investment for autonomous work. For a GUI app: a UI-automation/inspection tool.
 For a server: a request runner + log tail. For a CLI: scripted invocations + golden outputs. Always
-prefer deterministic reproduction and objective verification over eyeballing. Grow this tooling over
-time and document new commands here.>`
-
-| Command | What it does |
-|---------|--------------|
-| `<cmd>` | `<...>` |
-
-> Full harness guide: `<path to your harness/automation guide, if any>`.
+prefer deterministic reproduction and objective verification over eyeballing.>` Grow this tooling
+over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` →
+"Stands, environments and devices" — the day it is born.
 
 ---
 
@@ -827,10 +780,8 @@ of "never Y") or moved into a guard that reddens by itself.
 ### A leading skill word is an order — the first word of the owner's message
 
 The owner opens a chat with the bare word `resume` and writes the task below it; a session that
-reads the word as a TOPIC starts the task and skips the entry ritual — no canon, no owner's queue,
-no creed — and nothing in the tree says so. The
-class: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never
-mid-sentence" (`/kaif-go`) points the other way; nothing mechanical reads the prompt.
+reads the word as a TOPIC skips the entry ritual — no canon, no owner's queue, no creed — and
+nothing in the tree says so.
 
 1. **The first word of the owner's message is `resume` (`resume`, `/resume`, its Russian
    shorthand) → run `/resume` FIRST, in full, then read the rest as the task.** The ritual is not
@@ -916,30 +867,24 @@ caught otherwise); prefer the file tools (Write/Edit) over the shell for editing
 runs processes, it does not carry content.
 
 **The rule binds the ARGUMENT, not the document.** It covers ANY non-ASCII in argv — including the
-agent's own housekeeping strings: a `print()`/`echo` reporting progress from a throwaway script, a
-run label, a debug message. The temptation to file those under "not covered" is strong (no document
-is edited, nothing ships) — and that is exactly how sessions that KNOW the rule break it. The cost
-is asymmetric: the tool succeeds, the exit code is 0, the files are intact — the only thing
-corrupted is the output a HUMAN reads, so the agent never sees its own violation and hears about it
-from the owner. Keep argv of throwaway scripts ASCII-only; when the output must carry non-ASCII,
+agent's own housekeeping strings (a progress `print()`/`echo` of a throwaway script, a run label, a
+debug message): the tool exits 0, the files are intact, and only the output a HUMAN reads is
+corrupted, so the agent never sees its own violation. Keep argv of throwaway scripts ASCII-only; when the output must carry non-ASCII,
 print it from the body of a script FILE.
 
-**The truth↔mirror pairs registry.** The costliest field defects were not complex code but DRIFT
-between a source of truth and its mirror: a deploy manifest pinning an old engine version while
-prod ran a newer one, a comment contradicting the compose file it describes, a producer's contract
-diverging from its consumer. A weak session updates the side it SEES and does not know the other
-side exists. Keep a light registry — a table, one row per pair:
+**The truth↔mirror pairs registry.** DRIFT between a source of truth and its mirror — a deploy
+manifest pinning an old engine while prod runs a newer one, a comment contradicting its compose
+file, a producer's contract diverging from its consumer — is the costliest field defect: a weak
+session updates the side it SEES. Keep a light registry — a table, one row per pair:
 `truth → mirror(s) → the one-line check command`. `/end-chat-soft` and `/release` run the registry's
 commands and stop on drift; any new "X must match Y" enters the registry the day it is born.
 A mirrored/generated surface is edited at its SOURCE and rebuilt — never patched in place (the
 patch dies on the next rebuild, and the pair drifts again).
 Drift is caught only by CHECKING PAIRS — never by reading one file, however carefully.
 
-**A stamp carries the DATE AND THE TIME.** A bare date answers "which day" and loses the ordering
-inside it — and the day is exactly where a project's decisions collide: three decisions on one date
-read as simultaneous, a closure looks like it preceded the decision that caused it, and the session
-that rebuilds the story guesses the order. So every stamp of a MOMENT carries both, in the owner's
-local time:
+**A stamp carries the DATE AND THE TIME.** A bare date loses the ordering inside the day — exactly
+where decisions collide, and the session that rebuilds the story guesses the order. So every stamp
+of a MOMENT carries both, in the owner's local time:
 
 - **Prose:** `YYYY-MM-DD HH:MM ±HH:MM` (`2026-08-08 07:13 +03:00`). **Machine receipts:** the same
   moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
@@ -960,20 +905,17 @@ local time:
 
 ## Push / GitHub authentication
 
-`<Document how pushing and GitHub operations are authenticated in this environment (e.g. `gh auth
-setup-git` to use the gh token as a git credential helper), and the recovery steps if a push fails
-(non-fast-forward → git pull --rebase → retry).>`
+Record the recipe — how pushing and forge operations are authenticated here (e.g. `gh auth setup-git`)
+and the recovery when a push fails (non-fast-forward → `git pull --rebase` → retry) — as a row of the
+house-rules file, `HOUSE_RULES.md` → "Routes, recipes and conventions".
 
 ---
 
 ## Tools
 
-`<Table of the project's automation tools (build, commit, release, codegen, graphics, etc.). Keep it
-current — when you add or extend a tool, add a row here.>`
-
-| Command | What it does |
-|---------|--------------|
-| `<cmd>` | `<...>` |
+The project's automation tools (build, commit, release, codegen, graphics…) are one table in the
+house-rules file — `HOUSE_RULES.md` → "Tools of this project"; when you add or extend a tool, add
+its row there the same day.
 
 ---
 
@@ -1018,21 +960,17 @@ WAVE of bugs at once, the wave itself is a symptom that the process leaked — w
 it. Fix the bugs; and on the owner's explicit ask ("figure out why so many") open a **process document**
 in `plans/` — `owner's verdict (verbatim) → honest diagnosis of the process → remedies as process
 changes → steps with checkboxes` — and execute it alongside the fixes. Health metric: the owner's next
-wave is SMALLER. If the waves don't shrink, the remedies aren't working — revise them. The goal is not
-"zero bugs"; it is "the owner stops finding them in batches."
+wave is SMALLER — the owner stops finding them in batches; waves that don't shrink mean the remedies
+aren't working — revise them.
 
 **Backlog revision skill — `/check-backlog`:** walks `bugs/` and `plans/`, collects everything without a
 `DONE` tag as the open backlog, and tags genuinely-closed files DONE (with a status section appended).
 
 **Bug reporting skill — `/report-bug`:** hit a defect during dev/test — file a dedicated md in `bugs/`
-by the canon, per `BUG_FIXING_FRAMEWORK.md`. The agent keeps its own bug backlog — one doc per defect,
-nothing lost.
+by the canon, per `BUG_FIXING_FRAMEWORK.md`: one doc per defect, nothing lost.
 
-**A defect in KAIF ITSELF — the five-step contour** (an owner's field decision, adopted as canon:
-*"if the AI agent noticed a defect in the KAIF work methodology, fix it in the local KAIF — and file
-a bug report to the neighboring KAIF project, to the AI agent developing KAIF; it will then be fixed
-in KAIF in a coming update"*). When the rake exists because of how the framework itself is worded or
-behaves — not because of this project's code:
+**A defect in KAIF ITSELF — the five-step contour.** When the rake exists because of how the framework
+itself is worded or behaves — not because of this project's code:
 
 1. **Prove it is a CLASS, not a one-off:** reproduce it deterministically and search where else the
    same mechanism bites (the twin check; neighbor deployments on disk are read-only evidence — never
@@ -1052,15 +990,12 @@ behaves — not because of this project's code:
    until an update actually retires it, and add a `STATUS.md` line if it changes how the next
    session works.
 
-**Proposing principles — a standing order.** The owner of KAIF explicitly directs deployed agents
-to bring new methodologies, principles, standards and frameworks into KAIF when they are GENUINELY
-battle-tested by real-world production use — and to recommend retiring what does not work in
-practice and only gets in the way (`PHILOSOPHY.md` → "The principle set is battle-tested, not
-sacred"). The channel is the same feedback loop: an improvement request (skill `/report-bug`,
-template B) whose field evidence names where the practice is proven (projects, hours, sources);
-the fate of every proposal is the KAIF owner's decision — the framework's vision belongs to its
-author. The frame is blameless: a weak model's failure is a signal of a missing guardrail, never
-"the model is dumb".
+**Proposing principles — a standing order.** Bring into KAIF the methodologies, principles and
+standards GENUINELY battle-tested in production, and recommend retiring what does not work
+(`PHILOSOPHY.md` → "The principle set is battle-tested, not sacred"): an improvement request
+(`/report-bug`, template B) whose evidence names where the practice is proven (projects, hours,
+sources); every proposal's fate is the KAIF owner's decision. The frame is blameless: a weak
+model's failure is a signal of a missing guardrail, never "the model is dumb".
 
 **Idea proposal skill — `/propose-idea`:** had a worthwhile idea that fits the master plan and the
 human's vision — file it as an md in `ideas/` with status "❓ awaiting human approval." An
@@ -1074,10 +1009,12 @@ Before a significant new feature, and whenever a brand/UX/architecture fork appe
 **interview** with the human using the `/interview` skill: closed A/B/C questions, recommendation first,
 answered by the human directly in `interviews/interview_NNN_<topic>.md`. Never make UI/UX/brand/
 architecture decisions without confirmation. Everything else — decide yourself with sensible defaults
-and report in the chat.
+and report in the chat. Rule of thumb: *is it cheap to reverse?* If yes — decide yourself; if it shapes
+brand/architecture/UX for the long term — interview.
 
-Rule of thumb: *is it cheap to reverse?* If yes — decide yourself. If it shapes brand/architecture/UX
-for the long term — interview.
+Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
+per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
+interpretation. Interviews are for vision-level forks that outlive the task.
 
 **The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
 review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue
@@ -1128,10 +1065,9 @@ as one collapsed archive — nothing is removed, the order of reading changes. T
 leaves the top.
 
 **Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
-doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. For the
-agent the work feels shown when the artifact EXISTS; for the human it is shown when it is BEFORE
-THEIR EYES, and the action between those two states belongs to the agent, who knows the path and
-the command (the owner doesn't and shouldn't). "Lies at path…", "opens by double-click", "see
+doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. The work is
+shown when it is BEFORE THE HUMAN'S EYES, not when the artifact exists — the action between belongs
+to the agent, who knows the path and the command. "Lies at path…", "opens by double-click", "see
 file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
 footnote of where it landed — never as an errand. No separate show tool: the review contour opens
 any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
@@ -1223,10 +1159,8 @@ And everything the AI PROPOSES as the owner's canon content — a lore line, a r
 (**a pronoun is not a provenance mark** — "(my taste)" has no owner a day later; the question's own
 scaffolding — option letters, the recommendation, the scenario lines — is not marked).
 **A mark IS the acceptance queue:** only the owner's word removes it ("the chapter is accepted") — the
-agent NEVER unmarks its own text. One mechanism buys three things: *trust* (the owner sees exactly what
-is theirs vs. generated — proofreading becomes scanning marks, not rereading everything), *rollback*
-(an unaccepted block is safe to remove), and *safety for future agents* (never take unaccepted `[AI]`
-text for the owner's canon). The check is grep-cheap: AI text in a canon artifact without a mark — or a
+agent NEVER unmarks its own text, and unaccepted `[AI]` text is never taken for the owner's canon. The
+check is grep-cheap: AI text in a canon artifact without a mark — or a
 mark removed without the owner's word — is a fraud `/fable-judge` hunts. Mark at write time. The check
 IS mechanized (optional module, shipped): declare the canon in `.kaif/kaif.json`
 (`"canonArtifacts": ["rules/", …]`) and wire `node .kaif/tools/kaif-provenance.mjs check` into your
@@ -1237,9 +1171,8 @@ owner's eye, not the acceptance registry); `accept <file>` strips marks into the
 the OWNER'S word only.
 
 **The SHOWCASE is exempt, and the exemption is named by file.** `README` and the release notes never
-carry provenance marks. The reason is mechanical, not aesthetic: these two are
-PUBLISHED as-is, so a mark inside them ships scaffolding to every reader and reads as unfinished
-work — while a mark's whole purpose is to be an internal acceptance queue. The queue for the showcase
+carry provenance marks: they are PUBLISHED as-is, and a mark there ships scaffolding to every
+reader. The queue for the showcase
 is a different one and it stays mandatory: the owner PROOFREADS it (file the request as homework),
 and until they do, the text is unaccepted exactly as a marked block would be. Two boundaries keep
 this from eating the rule: the exemption lists FILES, never a category ("public documents" would
@@ -1259,10 +1192,6 @@ renames, arithmetic, re-syncs — any model; judgment steps — deriving the sty
 acceptance calls — a strong model only. Everything machine-checkable is checked by CODE; LLMs keep
 the judgment — this split is the operational face of one principle, `PHILOSOPHY.md` → «Code before
 cognition» (80% deterministic / 20% the model); it is stated once there and applied here.
-
-Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
-per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
-interpretation. Interviews are for vision-level forks that outlive the task.
 
 ---
 
@@ -1781,13 +1710,11 @@ This both helps the ecosystem and documents why you worked around it.
 ``````md
 # TESTING_FRAMEWORK — how the agent tests what it creates
 
-Raw generated content — code, a document, an analysis, anything — **must not be trusted**. It may *look*
-logical and working and still be broken, or fail the owner's actual requirements (the idea, the plan, the
-vision); an early defect that rides silently to production is the most expensive kind. Testing is a
-distinct, first-class part of ALL work, not a formality after it. This document is the agent's testing
-canon; it applies to **every artifact in every sphere** — a function, a dataset, a legal clause, a bridge
-design, a thought (what "verify" means in your sphere is defined by the project's sphere library: its
-*Verification by observation* and *Minimum evidence set* sections).
+Raw generated content — code, a document, an analysis, anything — **must not be trusted**: it may *look*
+logical and working and still be broken or fail the owner's actual requirements, and an early defect that
+rides silently to production is the most expensive kind. Testing is a first-class part of ALL work, not a
+formality after it; this canon applies to **every artifact in every sphere** (what "verify" means in your
+sphere is defined by the sphere library's *Verification by observation* and *Minimum evidence set*).
 
 ## The seven principles of testing (the canon)
 
@@ -1896,9 +1823,7 @@ marker preserves that fact **across sessions**, for future agents.
 ## The work produces its own means of checking
 
 Building something includes building what checks it — a test suite, a check-list, test cases, a
-fixture, a guard. They are planned WITH the work and land in the SAME step, never "later":
-verification postponed to a later step is verification that never happens, and verification that
-lives only in a session's scratchpad dies with the session.
+fixture, a guard — planned WITH the work and landing in the SAME step, never "later".
 
 The contract in step form — walk it on every non-trivial piece of work:
 
@@ -1992,9 +1917,8 @@ ships, walk the gates that apply:
    individual file valid, the SET broken — and mixtures fail in ways no test sees.
 
 Two placement rules: gates 6–7 belong IN THE DEPLOY PATH, not in prose — one deploy door that runs
-them itself and fails on any red step (where the agent system has hooks, deny the raw deploy command;
-a rule that lives only in a document is a rule the shipping session skips under pressure). And a
-post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
+them itself and fails on any red step (where the agent system has hooks, deny the raw deploy command).
+And a post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
 painting green — a smoke that is greenest when the product is emptiest is worse than no smoke.
 
 ## The agent's stand is not the owner's real world — "done" about production comes after the real world
@@ -2030,11 +1954,9 @@ a verification and never flips a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
-- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED before anything is made; this framework
-  verifies what was MADE against it. Principle 3 (early testing) is executed at the requirements
-  stage by that canon; bugs are what is born where the two meet (`BUG_FIXING_FRAMEWORK.md`). The
-  boundary does not close the door on requirements analysis: deriving the test basis FROM the
-  requirements is step 1 of the activities chain here.
+- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
+  against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
+  basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
 - **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
   says WHAT must carry a status and how trust propagates.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
@@ -2900,7 +2822,9 @@ the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD
 #89 #90) gives tier 4 of the document taxonomy its file: `.kaif/_house-rules-template.md`, copied to `HOUSE_RULES.md`
 at the project root on first use — a standing rule of the owner (`/fix-vision` step 3), a route or recipe worth
 keeping, a project-subject section moving out of an over-budget guide; the copy is the project's, `/resume` reads it
-at entry, and it is not one of the fourteen key documents. One more
+at entry, and it is not one of the fourteen key documents. Since 2.8 it is also where the guide's project FACTS live —
+the stands and harness commands, the environment dossier table (`/refresh-context` regenerates it there), the tools
+table and the push recipe — while the guide keeps the method and one pointer line per section. One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -3417,7 +3341,8 @@ session, the marker tells future agents and posterity that the foundation was lo
 production rather than to inspection, and it is why the harness exists: the harness is what makes the checking repeatable once
 it exists. The triviality gate is stated here once; until 2.8 a second, looser copy (a trivial change needs "no ceremony beyond
 its normal comment" — no marker named) stood under "How this composes with the rest of KAIF", and the surviving copy is the one
-that names the comment AND the marker. KAIF 2.2, task T6.
+that names the comment AND the marker. KAIF 2.2, task T6. Why "the same step, never later": verification postponed to a later
+step is verification that never happens, and verification that lives only in a session's scratchpad dies with the session.
 
 ### `TESTING_FRAMEWORK.md` → An executed run produces its report
 
@@ -3433,7 +3358,8 @@ and each proven against the failure that was convenient to simulate (a process d
 freeze; a readback after a CLEAN close instead of a death without one; one warning instead of an accumulation; the first step
 instead of any step). The machine hung, and the fuse built for it recorded nothing. KAIF 2.5, epic CN.
 Gates 6–7 and their two placement rules (origin issue #18): three deploys in one night served an application that did not
-start at all, with every local instrument green. KAIF 2.3, epic X.
+start at all, with every local instrument green. KAIF 2.3, epic X. The deploy door and the hook that denies the raw deploy
+command exist because a rule that lives only in a document is a rule the shipping session skips under pressure.
 
 ### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
 
@@ -3464,6 +3390,10 @@ freshly built stand, while the owner's world is accumulated.
   — said the moment he caught the live case: "you wrote that in the comments and left it there, and it is a lie"). KAIF 2.7, epic SF.
 - **Why the obligations attach at the call point:** weaving a KAIF clause into the vendored skills' text would fork the vendor
   and quietly break the sync ritual that ports upstream changes without a merge.
+- **The first obligation (a check is produced, not only observed):** step 5 of the vendored loop asks the agent to observe a
+  check; the KAIF line is what obliges it to have made one.
+- **The shipped contour speaks the fifth obligation itself:** at every window it raises it prints `Window: … — the launcher
+  returned 0; whether a window is on the owner's screen this line does not verify`, so the proxy is named where it is produced.
 
 ### `AGENT_GUIDE.md` → Decisions the agent must NOT make alone — interviews
 
@@ -3497,8 +3427,12 @@ freshly built stand, while the owner's world is accumulated.
   quote. KAIF 2.7, epic AW.
 - **Provenance marks outside the canon:** a field agent, forbidden to mark outside the canon, invented "(my taste)" (origin issue
   #55); since 2.7 the marks are legal in any document brought to the owner.
-- **The showcase exemption:** the owner's decision, quoted: "README and the release notes are not subject to the mandatory
-  provenance-mark rules `[AI]`".
+- **Why one mark does three jobs:** *trust* — the owner sees exactly what is his and what was generated, so proofreading becomes
+  scanning marks instead of rereading everything; *rollback* — an unaccepted block is safe to remove; *safety for future agents* —
+  unaccepted `[AI]` text is never mistaken for the owner's canon.
+- **The showcase exemption:** the owner's decision (origin decision #65), quoted: "README and the release notes are not subject to the mandatory
+  provenance-mark rules `[AI]`". The reason is mechanical, not aesthetic: a mark's whole purpose is an internal acceptance queue,
+  and in a text published as-is it reads to every stranger as unfinished work.
 
 ### `AGENT_GUIDE.md` → Document taxonomy — the five tiers
 
@@ -3529,17 +3463,28 @@ honoured unprompted; the one stated as prose accumulated debt for 90 minutes and
 ### `AGENT_GUIDE.md` → A leading skill word is an order — the first word of the owner's message
 
 KAIF 2.7, epic RS; the origin's owner, rendered from Russian: "if I write it, I REQUIRE the agent to run that skill before starting
-the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it.
+the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it. The class behind
+it: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never mid-sentence" (`/kaif-go`) points the other
+way; and nothing mechanical read the prompt until the hook.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 
 The rules are paid for by a wave of twenty-odd defects the owner found by eye in a single pass, and by the owner's own root
 diagnosis: "it reads as if you write English in Russian words."
+The paragraphs that follow the ten rules under the same heading carry their own reasons. **Text through files — the argument:**
+the temptation to file a throwaway script's progress line under "not covered" is strong (no document is edited, nothing ships),
+and that is exactly how sessions that KNOW the rule break it; the owner is the one who sees the corrupted output. **A stamp
+carries the date and the time:** on one date three decisions read as simultaneous, and a closure looks as if it preceded the
+decision that caused it.
 
 ### `AGENT_GUIDE.md` → Backlog & the DONE tag
 
 The metric-not-date shelf of `/what-next` (KAIF 2.6, origin issue #53): an agent quoted the rule against ranking by recency and in
 the same answer ranked yesterday's and today's word of the owner above the main phase and 87 open bugs.
+The five-step contour for a defect in KAIF itself is an owner's field decision, adopted as canon: *"if the AI agent noticed a defect
+in the KAIF work methodology, fix it in the local KAIF — and file a bug report to the neighboring KAIF project, to the AI agent
+developing KAIF; it will then be fixed in KAIF in a coming update"*. The standing order to propose principles is the KAIF owner's
+explicit direction to deployed agents; the framework's vision belongs to its author, so every proposal's fate is his.
 
 ### `AGENT_GUIDE.md` → Git workflow
 
@@ -3547,6 +3492,48 @@ the same answer ranked yesterday's and today's word of the owner above the main 
   two TOP tickets sat "Delivered upstream: NOT YET" for hours under the very sentence that should have released them.
 - **The commit tool names its set out loud** because of a field incident: a tool that staged everything after the agent's
   inspection carried two of the owner's files into the origin under an agent's message minutes after he dropped them into the tree.
+
+### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
+
+Nearly everything in the industry has golden standards, best practices, published research or at least documented practitioner
+lore — the state of the art is an external truth too, which is why an epic starts with a recon. The ladder is not ceremony for its
+own sake: research gives the epic its evidence base, the meta-plan is where the owner sees the whole shape once, and phase-by-phase
+operational plans keep a context-losing session executing the RIGHT next step instead of re-deriving the epic.
+
+### `AGENT_GUIDE.md` → Environment dossier — the agent knows its machine from its own notes
+
+The dossier TABLE moved to the house-rules file in KAIF 2.8 (epic CK, measured on field deployments): the guide is the
+method, and the facts of one machine are local law — tier 4. Two field deployments had grown this section by 5 and 13 lines, and a
+guide translated wholesale counts every such line against its budget. The origin keeps its own dossier the same way.
+
+### `AGENT_GUIDE.md` → Goal of the project
+
+Until 2.8 the section asked for a one-paragraph restatement of `GOAL.md` — a second copy of the goal, a pair that drifts. The
+field grew it by 5 lines per deployment; KAIF 2.8 (epic CK) leaves a pointer to the one copy.
+
+### `AGENT_GUIDE.md` → Architecture — the map
+
+Until 2.8 the section carried a module map that its own text said to "keep in sync with" the external map — a declared drift
+pair, and a pair is better removed than watched. KAIF 2.8 (epic CK) keeps the one line that is a rule here — the key invariant —
+and points to the two map documents.
+
+### `AGENT_GUIDE.md` → Test harness (how the agent observes & drives the software)
+
+The harness COMMANDS moved to the house-rules file ("Stands, environments and devices") in KAIF 2.8, epic CK: the largest
+growth measured in the field was this table — 64 lines in one deployment, a 151-line section in another — and in a guide
+translated wholesale every line of it counts against the budget. The principle — the harness is the most important investment
+for autonomous work — stays in the guide.
+
+### `AGENT_GUIDE.md` → Tools
+
+The tools table moved to the house-rules file ("Tools of this project") in KAIF 2.8, epic CK: the 2.8 skeleton had grown a
+table of the same columns, one fact in two homes (a twin of step CK4.5 found by the field measurement). The origin has kept
+its tools table in its house-rules file since 2.7.
+
+### `AGENT_GUIDE.md` → Push / GitHub authentication
+
+The push recipe moved to the house-rules file ("Routes, recipes and conventions") in KAIF 2.8, epic CK: it is a recipe of one
+environment, and one field deployment grew the section from 8 to 36 lines.
 ``````
 
 
@@ -4327,9 +4314,11 @@ restores it quickly and forms a current backlog.
    rewrite `.kaif/refresh-marker.json` and quote in the chat one line from the re-read relevant to
    the current work.
 
-3. **Check the environment dossier** (`AGENT_GUIDE.md` → Environment dossier). Read the "Taken"
-   date in the section header: **older than four weeks, or values still `— not probed yet —`
-   (a fresh deployment) → re-run the probes in column 3 and rewrite the values and the date.**
+3. **Check the environment dossier** (the rule — `AGENT_GUIDE.md` → Environment dossier; the table —
+   `HOUSE_RULES.md` → "Environment dossier"; no file yet → `cp .kaif/_house-rules-template.md HOUSE_RULES.md`; a file
+   from before 2.8 without that section → copy the section from `.kaif/_house-rules-template.md`).
+   Read the "Taken" date in the section header: **older than four weeks, or values still `— not probed
+   yet —` (a fresh deployment) → re-run the probes in column 3 and rewrite the values and the date.**
    Probe in EVERY shell available separately — the difference between shells is the point. Fresh
    dossier → skip this step; it is not a per-refresh ritual, it is a staleness check. A fact you
    could not probe stays `— not probed yet —`: a missing fact is honest, an invented one is a

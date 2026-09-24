@@ -106,7 +106,9 @@ the seven-field report an EXECUTED run leaves at `<testdocs>/reports/<YYYY-MM-DD
 #89 #90) gives tier 4 of the document taxonomy its file: `.kaif/_house-rules-template.md`, copied to `HOUSE_RULES.md`
 at the project root on first use — a standing rule of the owner (`/fix-vision` step 3), a route or recipe worth
 keeping, a project-subject section moving out of an over-budget guide; the copy is the project's, `/resume` reads it
-at entry, and it is not one of the fourteen key documents. One more
+at entry, and it is not one of the fourteen key documents. Since 2.8 it is also where the guide's project FACTS live —
+the stands and harness commands, the environment dossier table (`/refresh-context` regenerates it there), the tools
+table and the push recipe — while the guide keeps the method and one pointer line per section. One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -623,7 +625,8 @@ session, the marker tells future agents and posterity that the foundation was lo
 production rather than to inspection, and it is why the harness exists: the harness is what makes the checking repeatable once
 it exists. The triviality gate is stated here once; until 2.8 a second, looser copy (a trivial change needs "no ceremony beyond
 its normal comment" — no marker named) stood under "How this composes with the rest of KAIF", and the surviving copy is the one
-that names the comment AND the marker. KAIF 2.2, task T6.
+that names the comment AND the marker. KAIF 2.2, task T6. Why "the same step, never later": verification postponed to a later
+step is verification that never happens, and verification that lives only in a session's scratchpad dies with the session.
 
 ### `TESTING_FRAMEWORK.md` → An executed run produces its report
 
@@ -639,7 +642,8 @@ and each proven against the failure that was convenient to simulate (a process d
 freeze; a readback after a CLEAN close instead of a death without one; one warning instead of an accumulation; the first step
 instead of any step). The machine hung, and the fuse built for it recorded nothing. KAIF 2.5, epic CN.
 Gates 6–7 and their two placement rules (origin issue #18): three deploys in one night served an application that did not
-start at all, with every local instrument green. KAIF 2.3, epic X.
+start at all, with every local instrument green. KAIF 2.3, epic X. The deploy door and the hook that denies the raw deploy
+command exist because a rule that lives only in a document is a rule the shipping session skips under pressure.
 
 ### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
 
@@ -670,6 +674,10 @@ freshly built stand, while the owner's world is accumulated.
   — said the moment he caught the live case: "you wrote that in the comments and left it there, and it is a lie"). KAIF 2.7, epic SF.
 - **Why the obligations attach at the call point:** weaving a KAIF clause into the vendored skills' text would fork the vendor
   and quietly break the sync ritual that ports upstream changes without a merge.
+- **The first obligation (a check is produced, not only observed):** step 5 of the vendored loop asks the agent to observe a
+  check; the KAIF line is what obliges it to have made one.
+- **The shipped contour speaks the fifth obligation itself:** at every window it raises it prints `Window: … — the launcher
+  returned 0; whether a window is on the owner's screen this line does not verify`, so the proxy is named where it is produced.
 
 ### `AGENT_GUIDE.md` → Decisions the agent must NOT make alone — interviews
 
@@ -703,8 +711,12 @@ freshly built stand, while the owner's world is accumulated.
   quote. KAIF 2.7, epic AW.
 - **Provenance marks outside the canon:** a field agent, forbidden to mark outside the canon, invented "(my taste)" (origin issue
   #55); since 2.7 the marks are legal in any document brought to the owner.
-- **The showcase exemption:** the owner's decision, quoted: "README and the release notes are not subject to the mandatory
-  provenance-mark rules `[AI]`".
+- **Why one mark does three jobs:** *trust* — the owner sees exactly what is his and what was generated, so proofreading becomes
+  scanning marks instead of rereading everything; *rollback* — an unaccepted block is safe to remove; *safety for future agents* —
+  unaccepted `[AI]` text is never mistaken for the owner's canon.
+- **The showcase exemption:** the owner's decision (origin decision #65), quoted: "README and the release notes are not subject to the mandatory
+  provenance-mark rules `[AI]`". The reason is mechanical, not aesthetic: a mark's whole purpose is an internal acceptance queue,
+  and in a text published as-is it reads to every stranger as unfinished work.
 
 ### `AGENT_GUIDE.md` → Document taxonomy — the five tiers
 
@@ -735,17 +747,28 @@ honoured unprompted; the one stated as prose accumulated debt for 90 minutes and
 ### `AGENT_GUIDE.md` → A leading skill word is an order — the first word of the owner's message
 
 KAIF 2.7, epic RS; the origin's owner, rendered from Russian: "if I write it, I REQUIRE the agent to run that skill before starting
-the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it.
+the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it. The class behind
+it: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never mid-sentence" (`/kaif-go`) points the other
+way; and nothing mechanical read the prompt until the hook.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 
 The rules are paid for by a wave of twenty-odd defects the owner found by eye in a single pass, and by the owner's own root
 diagnosis: "it reads as if you write English in Russian words."
+The paragraphs that follow the ten rules under the same heading carry their own reasons. **Text through files — the argument:**
+the temptation to file a throwaway script's progress line under "not covered" is strong (no document is edited, nothing ships),
+and that is exactly how sessions that KNOW the rule break it; the owner is the one who sees the corrupted output. **A stamp
+carries the date and the time:** on one date three decisions read as simultaneous, and a closure looks as if it preceded the
+decision that caused it.
 
 ### `AGENT_GUIDE.md` → Backlog & the DONE tag
 
 The metric-not-date shelf of `/what-next` (KAIF 2.6, origin issue #53): an agent quoted the rule against ranking by recency and in
 the same answer ranked yesterday's and today's word of the owner above the main phase and 87 open bugs.
+The five-step contour for a defect in KAIF itself is an owner's field decision, adopted as canon: *"if the AI agent noticed a defect
+in the KAIF work methodology, fix it in the local KAIF — and file a bug report to the neighboring KAIF project, to the AI agent
+developing KAIF; it will then be fixed in KAIF in a coming update"*. The standing order to propose principles is the KAIF owner's
+explicit direction to deployed agents; the framework's vision belongs to its author, so every proposal's fate is his.
 
 ### `AGENT_GUIDE.md` → Git workflow
 
@@ -753,3 +776,45 @@ the same answer ranked yesterday's and today's word of the owner above the main 
   two TOP tickets sat "Delivered upstream: NOT YET" for hours under the very sentence that should have released them.
 - **The commit tool names its set out loud** because of a field incident: a tool that staged everything after the agent's
   inspection carried two of the owner's files into the origin under an agent's message minutes after he dropped them into the tree.
+
+### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
+
+Nearly everything in the industry has golden standards, best practices, published research or at least documented practitioner
+lore — the state of the art is an external truth too, which is why an epic starts with a recon. The ladder is not ceremony for its
+own sake: research gives the epic its evidence base, the meta-plan is where the owner sees the whole shape once, and phase-by-phase
+operational plans keep a context-losing session executing the RIGHT next step instead of re-deriving the epic.
+
+### `AGENT_GUIDE.md` → Environment dossier — the agent knows its machine from its own notes
+
+The dossier TABLE moved to the house-rules file in KAIF 2.8 (epic CK, measured on field deployments): the guide is the
+method, and the facts of one machine are local law — tier 4. Two field deployments had grown this section by 5 and 13 lines, and a
+guide translated wholesale counts every such line against its budget. The origin keeps its own dossier the same way.
+
+### `AGENT_GUIDE.md` → Goal of the project
+
+Until 2.8 the section asked for a one-paragraph restatement of `GOAL.md` — a second copy of the goal, a pair that drifts. The
+field grew it by 5 lines per deployment; KAIF 2.8 (epic CK) leaves a pointer to the one copy.
+
+### `AGENT_GUIDE.md` → Architecture — the map
+
+Until 2.8 the section carried a module map that its own text said to "keep in sync with" the external map — a declared drift
+pair, and a pair is better removed than watched. KAIF 2.8 (epic CK) keeps the one line that is a rule here — the key invariant —
+and points to the two map documents.
+
+### `AGENT_GUIDE.md` → Test harness (how the agent observes & drives the software)
+
+The harness COMMANDS moved to the house-rules file ("Stands, environments and devices") in KAIF 2.8, epic CK: the largest
+growth measured in the field was this table — 64 lines in one deployment, a 151-line section in another — and in a guide
+translated wholesale every line of it counts against the budget. The principle — the harness is the most important investment
+for autonomous work — stays in the guide.
+
+### `AGENT_GUIDE.md` → Tools
+
+The tools table moved to the house-rules file ("Tools of this project") in KAIF 2.8, epic CK: the 2.8 skeleton had grown a
+table of the same columns, one fact in two homes (a twin of step CK4.5 found by the field measurement). The origin has kept
+its tools table in its house-rules file since 2.7.
+
+### `AGENT_GUIDE.md` → Push / GitHub authentication
+
+The push recipe moved to the house-rules file ("Routes, recipes and conventions") in KAIF 2.8, epic CK: it is a recipe of one
+environment, and one field deployment grew the section from 8 to 36 lines.

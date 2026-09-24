@@ -9,8 +9,9 @@
 > (`tools/canon-inventory.mjs`, отчёт `testcases/reports/2026-09-24_ck2-canon-inventory.md`) · **CK3.2 ✅ 21:08 · CK3.3 ✅ 21:21** ·
 > CK3.4 — вынос историй сделан (руководство 1200 → 1139, канон тестирования 300 → 276, `lost 0`), порог «≤ 0,8 × бюджета» выносом
 > недостижим — решение на детализации CK5 · **CK4 ✅ 22:49** (сессия 71: отчёты `testcases/reports/2026-09-24_ck4-owner-rule-and-own-work.md`
-> и `2026-09-24_ck45-house-rules-skeleton.md`) · **CK5.0 ✅ 2026-09-25 00:11 +03:00** (сессия 72: запас 25 % остаётся — замер поля
-> `testcases/reports/2026-09-25_ck50-field-guide-growth.md`); следующий — CK5.0а (второй проход до потолка 0,8 и близнец CK4.5), затем CK5.1–CK5.8.
+> и `2026-09-24_ck45-house-rules-skeleton.md`) · **CK5.0 ✅ 2026-09-25 00:11 +03:00, пересмотрено 00:21** (сессия 72: запас 10 % вместе с
+> переездом фактов проекта из руководства — замер поля `testcases/reports/2026-09-25_ck50-field-guide-growth.md` и находка 8 лёгкого судьи);
+> следующий — CK5.0а (переезд и шаблоны под потолок 0,9), затем CK5.1–CK5.8.
 > **Вовне:** правки канона поставки едут полю обновлением 2.8 — каждая переехавшая секция объявлена в
 > `renamesByVersion['2.8']`, смена контракта ворот — в `POLICY_CHANGES_BY_VERSION['2.8']`; ответы в #84 #85 #89 #90 #93 — на RL.
 
@@ -188,6 +189,49 @@ CK4.5 — пункт 4 таксономии РАСШИРЕН файлом, ко�
 (дословные слова владельца остаются в источниках; проверено до правки):
 - «**Вопрос владельцу — сценарием того, что он увидит** (слово владельца» → заглавное правило стоит дословно; слово владельца дословно — журнал решений `MASTER_PLAN.md` №98 (интервью №023, Q3)
 
+CK5.0а, переезд фактов проекта — `framework/AGENT_GUIDE.md` → скелет домашних правил `framework/templates/_house-rules-template.md`
+(файл вне набора; в модулях руководства остаются правило и строка-указатель, заголовки не менялись):
+- «The dossier is the section below» → то же правило: «The dossier is a table in the house-rules file — `HOUSE_RULES.md` → "Environment dossier" … the agent fills it by running the probes, and every future session reads instead of rediscovering» (плюс строка для файла до 2.8 — по находке аудитора CK5.0а)
+- «Taken: `<date>` · Regeneration» → шапка таблицы досье — скелет, раздел «Environment dossier»; процедура и форма — та же секция руководства
+- «| Fact | Value | Probe |» → таблица фактов досье — скелет, раздел «Environment dossier»
+- «| OS | `— not probed yet —`» → там же
+- «| CPU / RAM | `— not probed» → там же
+- «| Shells available |» → там же
+- «| Console / ANSI encoding |» → там же
+- «| Locale per shell |» → там же
+- «| Runtimes and build tools |» → там же
+- «| `tar` / `curl` / `find` per shell |» → там же
+- «| VCS line-ending policy |» → там же
+- «| Package manager |» → там же
+- «| Quirks paid for by incidents |» → там же
+- «| Command | What it does |» → шапки таблиц стенда и инструментов — скелет, разделы «Stands, environments and devices» и «Tools of this project»
+- «| `<cmd>` | `<...>` |» → строки-образцы тех же таблиц — там же
+- «Keep it current — when you add or extend a tool, add a row here.» → то же правило строкой модуля «Tools»: «when you add or extend a tool, add its row there the same day»
+- «Always prefer deterministic reproduction and objective verification over eyeballing.» → то же предложение в том же плейсхолдере «Test harness»; за ним — строка о таблице в файле домашних правил
+- «Keep it short and concrete.» → плейсхолдер пересказа цели снят вместе с копией: «Goal of the project» — указатель на `GOAL.md`; почему — `framework/KAIF_REFERENCE.md` §17, запись «Goal of the project»
+- «Keep this in sync with PROJECT_STRUCTURE_EXTERNAL_MAP.md» → пара снята: модуль — указатель на две карты и строка инварианта; почему — §17, запись «Architecture — the map»
+
+CK5.0а, сжатие до потолка 0,9 — `framework/AGENT_GUIDE.md`:
+- «Activation is an explicit owner opt-in; a deployment without hooks never reddens.» → то же правило в том же абзаце: «by the owner's explicit opt-in; a deployment without hooks never reddens»
+- «The shipped contour prints this boundary itself at every window it raises» → факт о поставочном контуре, не правило агента — §17, запись «Task execution discipline — the fable loop»
+- «The class: a skill's trigger lists WORDS, never their POSITION» → разбор класса — §17, запись «A leading skill word is an order…»
+- «The cost is asymmetric: the tool succeeds, the exit code is 0» → то же правило придаточным того же абзаца («the tool exits 0, the files are intact, and only the output a HUMAN reads is corrupted»); соблазн «не покрыто» — §17, запись «The storefront — text a stranger reads»
+- «If the waves don't shrink, the remedies aren't working — revise them.» → то же правило в предыдущем предложении («waves that don't shrink mean the remedies aren't working — revise them»)
+- «The owner of KAIF explicitly directs deployed agents to bring new methodologies» → то же правило повелительно: «Bring into KAIF the methodologies… GENUINELY battle-tested…»; слово владельца — §17, запись «Backlog & the DONE tag»
+- «One mechanism buys three things» → правило «unaccepted `[AI]` text is never taken for the owner's canon» стоит в предыдущем предложении; три пользы — §17, запись «Decisions the agent must NOT make alone — interviews»
+- «`README` and the release notes never carry provenance marks (owner's decision» → то же правило: «`README` and the release notes never carry provenance marks: they are PUBLISHED as-is…»; слово владельца — §17, та же запись
+- «The reason is mechanical, not aesthetic: these two are PUBLISHED as-is» → то же обоснование одним придаточным в том же предложении; полное — §17, та же запись
+
+CK5.0а, близнец в обвязке — корневой `AGENT_GUIDE.md` (рецепт push переехал дословно одной строкой таблицы):
+- «`gh` аутентифицирован (аккаунт `MikalaiKryvusha`).» → `HOUSE_RULES.md` §6 «Маршруты и рецепты истока», строка «Push и операции GitHub», дословно
+- «Если прямой `git push` падает с `could not read Username`» → там же, дословно
+- «При `non-fast-forward` — `git pull --rebase`, затем повтори.» → там же, дословно
+
+CK5.0а — `framework/TESTING_FRAMEWORK.md`:
+- «Raw generated content — code, a document, an analysis, anything — **must not be trusted**.» → то же предложение, двоеточием слито со следующим
+- «They are planned WITH the work and land in the SAME step, never "later"» → то же правило в предыдущем предложении («planned WITH the work and landing in the SAME step, never "later"»); почему — §17, запись «The work produces its own means of checking»
+- «Two placement rules, paid for by the same outage» → те же два правила размещения в том же абзаце; «правило только в документе» — §17, запись «Green tests ≠ working…»
+
 ### CK4 — файл домашних правил и правило владельца правилом (≈ 0,5 чата; детализировано на закрытии CK3, ≈ 2026-09-24 21:56 +03:00)
 
 Входы сверены (сессия 71): имя раздела заметок — «Notes from the human» в шаблоне и в ядре (`KAIF-CORE.mjs:863` пункт портрета,
@@ -228,11 +272,13 @@ CK4.5 — пункт 4 таксономии РАСШИРЕН файлом, ко�
 канону тестирования −8 % — до потолка 25 % он не доводит.
 
 - [x] **CK5.0 Пересмотр развилки (б) по замеру — первый ход шага.** Решение `[ИИ]` 2026-09-24 (B, 25 %) принималось до замера.
-      **✅ Решено (сессия 72): запас 25 % остаётся, потолок шаблона — 0,8 × бюджета; рекомендация B (10 %) отозвана замером.**
-      Замер поля — `node tools/sandbox/probes/ck50-field-guide-growth.mjs <развёртывания>`, отчёт
+      **✅ Решено (сессия 72), со вторым пересмотром: запас 10 % — потолок шаблона 0,9 × бюджета — ВМЕСТЕ с переездом фактов проекта
+      из руководства.** Замер поля — `node tools/sandbox/probes/ck50-field-guide-growth.mjs <развёртывания>`, отчёт
       `testcases/reports/2026-09-25_ck50-field-guide-growth.md`: модули шаблона, которые правил проект, выросли на +168 (KAGO) и +130
-      (KUMM) строк; та же форма, переведённая целиком, при потолке 0,9 встаёт на первом закрытии (1291 и 1253 при 1200), при 0,8 проходит
-      (1166 и 1128). Строка `FORK:` и обоснование — `researches/33` §7 (б), «Пересмотрено 2026-09-25». Следствие — CK5.0а до стража CK5.1.
+      (KUMM) строк; без переезда та же форма, переведённая целиком, при 0,9 встаёт (1291 и 1253 при 1200). Первый пересмотр (коммит
+      `55554c7`) поэтому оставил 25 %; лёгкий судья этого коммита (находка 8) показал, что исход решает не запас, а где живут факты проекта:
+      после переездов CK5.0а рост +56 и +58, и при 0,9 обе формы проходят (1179 и 1181). Строки `FORK:` — `researches/33` §7 (б), оба
+      «Пересмотрено 2026-09-25». Следствие — CK5.0а до стража CK5.1.
       История хода до решения (сохранена):
       Новое наблюдение: `ownLines` не считает своими модули, приехавшие побайтно равными шаблону, поэтому у непереведённого
       развёртывания длина шаблона бюджет почти не ест (кроме правленых модулей и развёртывания без манифеста — `no-cut`);
@@ -251,20 +297,26 @@ CK4.5 — пункт 4 таксономии РАСШИРЕН файлом, ко�
       ест запас (поле: 579 местных строк вынесены из руководства, #85 — теперь их дом `HOUSE_RULES.md`). Перевод +4 % (≈ 46
       строк) плюс вдвое выросшие модули (≈ 92; «вдвое» — допущение, не замер) — ≈ 140 строк, больше 120 строк варианта B: рекомендацию сверить с этим числом до
       решения.
-- [ ] **CK5.0а Второй проход до потолка 0,8 — и близнец шага CK4.5** (следствие CK5.0; до стража CK5.1, иначе сборка красная).
-      Цели: `framework/AGENT_GUIDE.md` 1151 → ≤ 960 (−191) · `TESTING_FRAMEWORK.md` 276 → ≤ 240 (−36) · `PHILOSOPHY.md` 257 → ≤ 240
-      (−17) · `REQUIREMENTS_FRAMEWORK.md` 215 → ≤ 200 (−15); пять остальных ниже потолка. Метод — метод CK3: «свидетельство о
-      рождении» уезжает в `KAIF_REFERENCE.md` §17 под заголовком секции, правило остаётся шагом, командой или чекбоксом с одним
-      придаточным «зачем» (тест строки Anthropic — `researches/33` §1). **Близнец CK4.5 (DRY):** таблицы фактов проекта уходят из
-      руководства в скелет домашних правил — таблица команд стенда («Test harness») → §3, таблица инструментов («Tools») → §5, таблица
-      фактов досье окружения → раздел скелета; в руководстве остаются правило и строка-указатель, процедура досье остаётся, `/refresh-context`
-      пишет факты в файл домашних правил (так уже устроен исток: `HOUSE_RULES.md` §1, §4; так вынес поле — отчёт CK5.0 §4б). Корневые
-      копии четырёх документов следуют содержанию (реестр пар `HOUSE_RULES.md` §2). До правки — `grep` сводов, читающих модули «Test
-      harness», «Tools» и досье (EXP-0148: смена того, где живёт факт, может молча разоружить ассерт).
-      **Проверка:** `node tools/canon-inventory.mjs --diff v2.7 --with framework/KAIF_REFERENCE.md --declared plans/118_epic117_CK_light_canon_budget_exits.md`
-      → `lost 0` (переезд таблицы — строкой реестра снятий с адресом) · `wc -l` четырёх шаблонов не выше потолка · аудит чистым
-      экземпляром — файлом в отчёт · метр голоса (`researches/33` §6) · сборка · полигон в одиночку · переезд таблиц объявлен полю
-      заметкой шаблона 2.8.
+- [x] **CK5.0а Переезд фактов проекта и шаблоны под потолок 0,9** (следствие CK5.0; до стража CK5.1, иначе сборка красная).
+      **✅ 2026-09-25 00:39 +03:00 (сессия 72):** руководство 1151 → 1080, канон тестирования 276 → 269; инвентарь по четырём файлам —
+      `lost 0`, `moved-out 0` (реестр снятий «CK5.0а …»); смысловой аудит чистым экземпляром — NO MATERIAL LOSS, девять замечаний
+      исполнены; класс модуля досье — вычисляемый `static`; сборка и полигон зелёные дважды; отчёт
+      `testcases/reports/2026-09-25_ck50a-project-facts-move.md`.
+      **Переезд (близнец шага CK4.5, DRY):** таблица команд стенда («Test harness») → раздел скелета «Stands, environments and devices»,
+      таблица инструментов («Tools») → «Tools of this project», таблица фактов досье окружения → новый раздел скелета «Environment
+      dossier» (процедура досье остаётся в руководстве, `/refresh-context` пишет факты в файл домашних правил), рецепт push → «Routes,
+      recipes and conventions»; абзац «Goal of the project» — указатель на `GOAL.md`, карта «Architecture — the map» — указатель на две
+      карты и строка ключевого инварианта (обе дублировали свой источник — пара, которую лучше убрать). Заголовки модулей не меняются —
+      у поля правленый модуль остаётся, дельта шаблона едет в задании обновления. Так уже устроен исток (`HOUSE_RULES.md` §1, §4) и так
+      вынесло поле (отчёт CK5.0 §4б). **Потолок:** `framework/AGENT_GUIDE.md` 1151 → ≤ 1080 · `TESTING_FRAMEWORK.md` 276 → ≤ 270;
+      остальные семь ниже. Недостающее добирается методом CK3: «свидетельство о рождении» — в `KAIF_REFERENCE.md` §17 под заголовком
+      секции, правило остаётся шагом, командой или чекбоксом с одним придаточным «зачем». Корневые копии следуют содержанию правил
+      (реестр пар `HOUSE_RULES.md` §2). До правки — `grep` сводов, читающих модули «Test harness», «Tools» и досье (EXP-0148): ни один
+      их не читает (сессия 72).
+      **Проверка:** `node tools/canon-inventory.mjs --diff v2.7 framework/AGENT_GUIDE.md framework/TESTING_FRAMEWORK.md --with framework/KAIF_REFERENCE.md --with framework/templates/_house-rules-template.md --declared plans/118_epic117_CK_light_canon_budget_exits.md`
+      → `lost 0`, `moved-out 0` (переезд — строкой реестра снятий с адресом) · `wc -l` шаблонов не выше потолка · аудит чистым
+      экземпляром — файлом в отчёт · метр голоса (`researches/33` §6) · сборка · полигон в одиночку · переезд объявлен полю заметкой
+      шаблона 2.8.
 - [ ] **CK5.1 Страж сборки «шаблон ≤ бюджет × (1 − запас)».** Одна именованная константа с источником в комментарии, девять
       шаблонов; мутант «руководство в 1200 строк» красный (строка «Проверка» критерия 1 `plans/117`).
 - [ ] **CK5.2 Храповик** по развилкам (д) и (е): база `.kaif/budget-baseline.json` (коммитится), проход при убывании, стоп при
