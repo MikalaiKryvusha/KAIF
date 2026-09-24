@@ -163,5 +163,10 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_034_kaif_2.8_scope.md": {
+    "questions": 2,
+    "parsedOptions": 8,
+    "candidateLines": 8
   }
 }
