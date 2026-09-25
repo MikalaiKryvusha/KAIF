@@ -98,7 +98,7 @@
       {
         "signature": "### Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "02c4ac37e5cf41031ff2482ab798eeaf93833591a328191bab7990996f12db47",
+        "sha256": "bc6e05ff5537371e88a00e1add6d7e3277f1556d3e34298a195811f591feec1d",
         "lines": [
           294,
           408
@@ -179,7 +179,7 @@
       {
         "signature": "## Git workflow",
         "class": "static",
-        "sha256": "b063e3249924d8de5ac278fca8ce66748b13922d79c3cf8388ba7b228924a28e",
+        "sha256": "0f91d7842cc285f7fb99034180d2f092e510b9d9a8ac5eab247a3507c77715e4",
         "lines": [
           535,
           566
@@ -1438,7 +1438,7 @@
       {
         "signature": "### 10.7 Commands",
         "class": "static",
-        "sha256": "8d20a1be8e71d3eb91bae391a9b2d7041e522455fa5ef6d24d8147bca0a52820",
+        "sha256": "807983066a01ca0b73c7a6497052f3011f1b275681b121e68bd1cebe9c0c77ea",
         "lines": [
           405,
           428
@@ -1875,10 +1875,10 @@
       {
         "signature": "# `reports/` — the agent's reports on cognitively heavy work",
         "class": "static",
-        "sha256": "007faf90b92e8cb9b4e1494a72f95b0498b8e4e09016077b373235f3e7b7fe52",
+        "sha256": "bffca1825e907e457858ab601a8b086639c6133fd23259278d53648434a97b90",
         "lines": [
           1,
-          31
+          33
         ]
       }
     ],
@@ -3592,10 +3592,10 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "58432d710eb7c8517453c871c78bfa3a7b382a4ec18897826ac1e88fe1c698f8",
+        "sha256": "8b1e10eb52ac1e050afd3505a189404018a23c4e42913aae5ad155caa2dd0225",
         "lines": [
           25,
-          103
+          108
         ]
       },
       {
@@ -3603,8 +3603,8 @@
         "class": "static",
         "sha256": "ed2fbbc607c4c7c783f3d3cf04090c458ff988c30bcce6a4b68e2aa6392a8f32",
         "lines": [
-          104,
-          109
+          109,
+          114
         ]
       }
     ],

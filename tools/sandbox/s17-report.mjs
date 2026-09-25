@@ -90,6 +90,12 @@ cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(S, '.kaif', 'install', 'KAIF-CORE
 cpSync(join(DIST, 'KAIF-CORE.mjs'), join(S, '.kaif', 'kaif-core.mjs'));
 let r = run('install');
 ok(r.code === 0, 's17 install exit 0', r.out.slice(-400));
+// 2.8 CH1 (#78): the field-report item of the install task — on tracking: origin (the default install) it names the delivery line and
+// the report command; on anonymous it never reaches for the origin (s04 S13-M3 guards that side)
+{ const at = existsSync(join(S, 'KAIF_ADAPTATION_TASK.md')) ? readFileSync(join(S, 'KAIF_ADAPTATION_TASK.md'), 'utf8') : '';
+  const fr = at.slice(at.indexOf('- **field-report**'), at.indexOf('When done, run:', at.indexOf('- **field-report**')));
+  ok(fr.includes('**Delivered upstream:** NOT YET') && fr.includes('node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/'),
+     's17/CH1: задание установки на tracking: origin — пункт отчёта несёт строку доставки и команду report', fr.slice(0, 300)); }
 r = run('help');
 ok(/^\s*report\s+⚠/m.test(r.out), 's17 help называет команду report (мутирующая)', r.out);
 
@@ -188,7 +194,7 @@ ok(/NOT YET/.test(ticketLine()), 's17/C-H3: тикет не тронут');
 // адреса и на «NOT YET + адрес» (формы строк доставки реального поля: 46 тикетов четырёх развёртываний, отчёт 2026-09-13
 // SD); три мутанта блока — без ворот tracking (anonymous ✖), без ветки «доставлен» (доставленный ✖), фильтр NN_*.md
 // расширен (README ✖); ядро второй редакции, где уликой был любой `#цифры` (скретчпад dist-hashany) — на «see step #2».
-const SILENT = /undelivered KAIF signal|no readable delivery state/;
+const SILENT = /undelivered KAIF signal|undelivered KAIF field report|no readable delivery state/;
 console.log('\n=== 2.7 SD (#65): check молчит только на доставленном; NOT YET, переведённое поле и обещание — названы; anonymous и README — молчат ===');
 writeTicket();                                           // NOT YET на tracking: origin (установлен выше)
 r = run('check');
@@ -238,10 +244,32 @@ r = run('check');
 ok(r.code === 0 && /⚠ KAIF signal with no readable delivery state: bugs\/KAIF\/11_step_reference\.md — "\*\*Delivered upstream:\*\* ⏳ sending this session — see step #2 of the skill" is neither NOT YET nor an issue URL or #NN/.test(r.out),
    's17/SD: «#2» в тексте обещания («see step #2 of the skill») — не номер issue, тикет назван, не принят за доставку', r.out.slice(-400));
 rmSync(join(S, STEPREF));
+// 2.8 CH1 (plans/121, критерий 10; тикет origin #78): полевой отчёт обновления — сигнал KAIF, доставляется тем же движением, что
+// написан. Ось check читает отчёты 2.8+ тем же чтением строки доставки; отчёт 2.7 молчит — локальный по канону своего времени.
+console.log('\n=== 2.8 CH1 (#78): полевой отчёт 2.8+ без доставки назван check, report доставляет, отчёт 2.7 и anonymous молчат ===');
+mkdirSync(join(S, 'reports', 'KAIF_UPDATES'), { recursive: true });
+const FR = 'reports/KAIF_UPDATES/FIXTURE_KAIF_2.8_UPDATE_REPORT.md', FR_OLD = 'reports/KAIF_UPDATES/FIXTURE_KAIF_2.7_UPDATE_REPORT.md';
+writeFileSync(join(S, FR), '# FIXTURE — KAIF 2.8 update report\n\n**Delivered upstream:** NOT YET — written this update\n\n## 1. Chronology\n\nfixture\n');
+writeFileSync(join(S, FR_OLD), '# FIXTURE — KAIF 2.7 update report\n\n## 1. Chronology\n\nlocal by the canon of 2.7\n');
+r = run('check');
+ok(r.code === 0 && /⚠ undelivered KAIF field report: reports\/KAIF_UPDATES\/FIXTURE_KAIF_2\.8_UPDATE_REPORT\.md/.test(r.out)
+   && /node \.kaif\/kaif-core\.mjs report reports\/KAIF_UPDATES\/FIXTURE_KAIF_2\.8_UPDATE_REPORT\.md/.test(r.out) && !/FIXTURE_KAIF_2\.7/.test(r.out),
+   's17/CH1 (критерий 10): полевой отчёт 2.8 с NOT YET назван check поимённо с готовой командой report; отчёт 2.7 молчит', r.out.slice(-500));
+r = run(`report ${FR}`);
+ok(r.code === 0 && /✔ delivered/.test(r.out) && /^\*\*Delivered upstream:\*\* https?:\/\//m.test(readFileSync(join(S, FR), 'utf8')),
+   's17/CH1: report доставляет полевой отчёт (подменный gh) и пишет адрес issue в его строку доставки', r.out.slice(-200));
+r = run('check');
+ok(r.code === 0 && !/field report/.test(r.out), 's17/CH1: после доставки check о полевом отчёте молчит', r.out.slice(-300));
+writeFileSync(join(S, FR), '# FIXTURE — KAIF 2.8 update report\n\n## 1. Chronology\n\nno delivery line\n');
+r = run('check');
+ok(r.code === 0 && /⚠ KAIF field report with no readable delivery state: reports\/KAIF_UPDATES\/FIXTURE_KAIF_2\.8_UPDATE_REPORT\.md — no `\*\*Delivered upstream:\*\*` line/.test(r.out),
+   's17/CH1: полевой отчёт 2.8 без строки доставки — назван «no readable delivery state» с формой строки и командой', r.out.slice(-400));
+writeFileSync(join(S, FR), '# FIXTURE — KAIF 2.8 update report\n\n**Delivered upstream:** NOT YET — written this update\n\n## 1. Chronology\n\nfixture\n');
 writeTicket(); setTracking('anonymous');
 r = run('check');
-ok(r.code === 0 && !SILENT.test(r.out), 's17/SD: tracking: anonymous — NOT YET законно, check молчит', r.out.slice(-300));
+ok(r.code === 0 && !SILENT.test(r.out), 's17/SD: tracking: anonymous — NOT YET законно, check молчит (и о тикете, и о полевом отчёте 2.8 — CH1)', r.out.slice(-300));
 setTracking('origin');
+rmSync(join(S, FR)); rmSync(join(S, FR_OLD));
 
 if (failures) { console.error(`\n❌ s17: ${failures} failure(s)`); process.exit(1); }
 console.log('\n✅ s17 report: all green');

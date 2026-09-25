@@ -93,6 +93,11 @@ diverged places. Your cognitive work is that task, not the migration.
    does not verify green without the report. A rake that is an explicit framework defect/improvement
    also gets its own ticket: skill `/report-bug`, templates A/B (delivery upstream follows the
    deployment's tracking mode — an anonymous deployment never reaches for the origin).
+   **The report itself is a KAIF signal** (2.8, origin issue #78): on tracking: origin deliver it in the same move —
+   `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md` (the KAIF owner's standing authorization, origin issue #15;
+   no owner's approval is awaited). **Re-measure before a public correction:** a correction to an already delivered ticket goes
+   out only after the judge's finding behind it is RE-MEASURED by a command, and the update judge runs in a clean context (a
+   subagent or a fresh pass that has not read the update's reasoning).
 
 6. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
    removes the transient installer files.

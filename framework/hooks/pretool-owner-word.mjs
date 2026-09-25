@@ -36,6 +36,10 @@
 // ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
 //                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
 //                 recorded as reasoning); the one-refusal edition — NOT YET observed live
+// [TESTED: 2026-09-25 23:35:16 +03:00 · the one-refusal edition: s14 106 green (+2: one refusal delivered → the next call passes; a refusal
+//  for an older message does not cover a newer one), on dist v2.7 19 failures — exactly two new; hooks-mutants 12 of 12 (M12 red exactly on
+//  «one refusal delivered», 23:35:38); on the REAL transcript after the refusals for the 23:33 message: exit 0 — report
+//  testcases/reports/2026-09-25_ow11-page-scale-and-gate-once.md]
 // [TESTED: 2026-09-25 22:07:30 +03:00 · s14: the eight cases green, on dist v2.7 red by name; hooks-mutants M11 red exactly on its three
 //  addressees (22:08:57); run by hand on the REAL transcript of the origin session: exit 2 quoting the owner's unanswered mid-turn message at 22:05:33,
 //  exit 0 at 22:19:26 once a text answer was in the record — report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]

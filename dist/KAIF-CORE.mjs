@@ -984,6 +984,16 @@ function cmdResume() {
 // The ONE cognitive deliverable left to the AI agent. Every item ends in a forced
 // checkpoint line (the fable-method lesson: weak models follow rules at decision
 // points, not rules in lists) that verify-final greps for mechanically.
+// 2.8, epic CH (origin issue #78): the delivery sentence of the field-report item (install and update) — ONLY on tracking: origin, read
+// from the marker; an unreadable marker omits it (the private direction). An anonymous deployment's task never reaches for the origin
+// (s04 S13-M3 — the anonymous profile's invariant; the polygon caught the first edition, which wrote it for every deployment).
+function fieldReportDelivery() {
+  let tracking = null;
+  try { tracking = readJson(KAIF_JSON).tracking; } catch { tracking = null; }
+  return tracking === 'origin'
+    ? " Open it with an H1 and, right under it, the line `**Delivered upstream:** NOT YET` (English, machine-read); DELIVER it in the same move — `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md` writes the issue URL into that line (the KAIF owner's standing authorization, origin issues #15 and #78: no owner's approval is awaited)."
+    : '';
+}
 function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   const needTranslate = LANG !== 'en' && translated === 0;
   const items = [];
@@ -1008,9 +1018,9 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // Epic M (feedback loop): the install report is MANDATORY and written even when everything went
   // smoothly (deviations lead it, smooth is one line). Section SKELETON only — the genre canon
   // lives in reports/README.md; a full template body here would bloat the task (the field rake:
-  // a 352-line task with 80 useful). The item deliberately never mentions the origin — report
-  // delivery upstream is the skills' business and must not leak into an anonymous deployment.
-  items.push(['field-report', `MANDATORY field install report (the framework's feedback loop — written even when the install went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_INSTALL_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers · 2. Friction and rakes (verbatim evidence; an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What confused a cold agent (top 3) · 4. Final state and judge verdict (run a /fable-judge pass over the install; every number is a command's output).`]);
+  // a 352-line task with 80 useful). The item names the origin ONLY on tracking: origin — fieldReportDelivery() (2.8, epic CH,
+  // origin #78: there the report is delivered in the same move); an anonymous deployment's task never reaches for the origin.
+  items.push(['field-report', `MANDATORY field install report (the framework's feedback loop — written even when the install went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_INSTALL_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers · 2. Friction and rakes (verbatim evidence; an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What confused a cold agent (top 3) · 4. Final state and judge verdict (run a /fable-judge pass over the install; every number is a command's output).${fieldReportDelivery()}`]);
   items.push(['verify', 'Run `node .kaif/kaif-core.mjs verify-final` — it checks these checkpoints and self-cleans the installer. Then commit `chore: deploy KAIF`.']);
 
   const lines = [
@@ -1357,7 +1367,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // sits between the judge pass and update-verify/commit so the report can QUOTE the verdict and
   // the gate greps its checkpoint. Never mentions the origin: delivery upstream is the skills'
   // business and must not leak into an anonymous deployment's task text.
-  items.push(['field-report', `MANDATORY field update report (the framework's feedback loop — written even when the update went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_UPDATE_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers (machinery counters, gates) · 2. Rakes — each with severity, verbatim evidence, cost, repro (an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What was exercised vs NOT (honest list) · 4. Wishes for the next version (by cost, descending) · 5. Final state and the judge verdict quoted verbatim (decision #46). Every number is a command's output; every rake carries verbatim evidence. Then run \`node .kaif/kaif-core.mjs update-verify\`.`]);
+  items.push(['field-report', `MANDATORY field update report (the framework's feedback loop — written even when the update went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_UPDATE_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers (machinery counters, gates) · 2. Rakes — each with severity, verbatim evidence, cost, repro (an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What was exercised vs NOT (honest list) · 4. Wishes for the next version (by cost, descending) · 5. Final state and the judge verdict quoted verbatim (decision #46). Every number is a command's output; every rake carries verbatim evidence.${fieldReportDelivery()} Then run \`node .kaif/kaif-core.mjs update-verify\`.`]);
   const news = newsInterval(meta, fromVersion);
   const diffSections = [];
   for (const p of modFiles) {
@@ -3414,7 +3424,10 @@ function cmdCheck() {
   //                 three mutants of this block — the tracking gate removed (anonymous → ✖), the delivered branch
   //                 removed (delivered → ✖), the NN_*.md filter widened (README → ✖). Real state: the 46 ticket files
   //                 of four field deployments copied into fresh installs (plans/109, run report 2026-09-13 SD)
-  // GAP:            a ticket never written at all is invisible here (the judge's "signal filed, not delivered" hunt
+  //                 2.8, epic CH (origin #78): the same axis reads the field reports of 2.8+ in reports/KAIF_UPDATES — s17 CH1:
+//                 NOT YET named with the report command, delivered through the gh stand-in → silent, no line → named, a 2.7
+//                 report → silent, tracking: anonymous → silent
+// GAP:            a ticket never written at all is invisible here (the judge's "signal filed, not delivered" hunt
   //                 covers that side); an issue number that points at the WRONG issue reads as delivered — the axis
   //                 sees that an issue is named, not that it is the right one; a `#NN` in the project language's own
   //                 words ("в истоке #37") is not recognised and gets named — the fail-safe direction
@@ -3425,6 +3438,8 @@ function cmdCheck() {
   try {
     const jm = readJson(KAIF_JSON);
     const KAIF_BUGS = 'bugs/KAIF';
+    const FIELD_REPORTS = 'reports/KAIF_UPDATES';  // 2.8, epic CH (origin #78): an update/install field report is a signal too
+    const FIELD_REPORT_SINCE = [2, 8];             // older reports were local by the canon of their time («A report stays LOCAL…»)
     if (jm.tracking === 'origin' && existsSync(KAIF_BUGS)) {
       for (const f of readdirSync(KAIF_BUGS).filter((n) => /^\d+_.*\.md$/i.test(n)).sort()) {   // tickets are bugs/KAIF/NN_*.md
         const p = KAIF_BUGS + '/' + f;
@@ -3433,6 +3448,20 @@ function cmdCheck() {
           console.error(`⚠ undelivered KAIF signal: ${p} — "Delivered upstream: NOT YET" on tracking: origin is a debt with an owner, not a resting state (origin issue #65): node .kaif/kaif-core.mjs report ${p}`);
         else if (ds.state !== 'delivered')
           console.error(`⚠ KAIF signal with no readable delivery state: ${p} — ${ds.state === 'missing' ? 'no `**Delivered upstream:**` line (the field name is machine-read: it stays verbatim in English in any project language)' : ds.state === 'ambiguous' ? `"${ds.line.trim().slice(0, 120)}" says NOT YET and names an issue (${ds.evidence}) at once` : `"${ds.line.trim().slice(0, 120)}" is neither NOT YET nor an issue URL or #NN`}; delivered → write only \`**Delivered upstream:** <issue URL or #NN>\`; not sent → write \`**Delivered upstream:** NOT YET — <why>\` with no issue URL or #NN and run node .kaif/kaif-core.mjs report ${p} (origin issue #65)`);
+      }
+    }
+    // the field reports of 2.8+ — the version is read from the report's own file name (<PROJECT>_KAIF_<X.Y>_<UPDATE|INSTALL>_REPORT.md),
+    // the same one reading of the delivery line (deliveryState) as the tickets above
+    if (jm.tracking === 'origin' && existsSync(FIELD_REPORTS)) {
+      for (const f of readdirSync(FIELD_REPORTS).sort()) {
+        const v = f.match(/_KAIF_(\d+)\.(\d+)_(?:UPDATE|INSTALL)_REPORT\.md$/i);
+        if (!v || Number(v[1]) * 1000 + Number(v[2]) < FIELD_REPORT_SINCE[0] * 1000 + FIELD_REPORT_SINCE[1]) continue;
+        const p = FIELD_REPORTS + '/' + f;
+        const ds = deliveryState(readFileSync(p, 'utf8'));
+        if (ds.state === 'not-yet')
+          console.error(`⚠ undelivered KAIF field report: ${p} — a field report is a KAIF signal, delivered in the same move as it is written (origin issues #15, #78; no owner's approval is awaited): node .kaif/kaif-core.mjs report ${p}`);
+        else if (ds.state !== 'delivered')
+          console.error(`⚠ KAIF field report with no readable delivery state: ${p} — ${ds.state === 'missing' ? 'no `**Delivered upstream:**` line' : `"${ds.line.trim()}" is not NOT YET or a single issue URL or #NN`}: open the report with an H1 and \`**Delivered upstream:** NOT YET\`, then run node .kaif/kaif-core.mjs report ${p}`);
       }
     }
   } catch { /* unreadable marker or directory — the marker gate flags it separately */ }
@@ -3608,7 +3637,7 @@ function deliveryState(text) {
 }
 function cmdReport() {
   const ticket = args.slice(1).find((a) => !a.startsWith('-')); // the flag may precede the path (court RL 2.5, C-H2)
-  if (!ticket || ticket.startsWith('--')) die('usage: kaif-core report <path to bugs/KAIF/NN_*.md> [--dry-run]');
+  if (!ticket || ticket.startsWith('--')) die('usage: kaif-core report <path to bugs/KAIF/NN_*.md or reports/KAIF_UPDATES/*_REPORT.md> [--dry-run]');
   const dryRun = args.includes('--dry-run');
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
   const j = readJson(KAIF_JSON);
