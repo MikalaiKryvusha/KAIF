@@ -249,6 +249,7 @@ OW2 (эпик OW, `plans/119`; место под правило «слово в�
 - «**Package managers** — what is available to install with.» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
 - «**Behavioural quirks** — LINKS to the lessons already paid for» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
 - «A fact never probed is written `— not probed yet —`» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать); в руководстве остался указатель «How to collect»
+- «**The same word mid-sentence stays prose** ("keep reading resume.log") — position decides.» → изменён по критерию 5 `plans/117` (находки D-F4 суда 2.7 и Q-R7 разведки 2.8): граница «ЛЮБОЕ первое слово семейства» сужена — повелительный глагол перед словом остаётся приказом, существительное заголовком с двоеточием — проза; тот же пункт 2 того же раздела `framework/AGENT_GUIDE.md`
 
 ### CK4 — файл домашних правил и правило владельца правилом (≈ 0,5 чата; детализировано на закрытии CK3, ≈ 2026-09-24 21:56 +03:00)
 

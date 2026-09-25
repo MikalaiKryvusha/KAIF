@@ -6,7 +6,9 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite once per mutant (five today) — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (ten today) — run it ALONE, not beside the polygon (origin bug 109).
+// [TESTED: 2026-09-25 17:43 +03:00 · TEN mutants after OW2 (M8 the imperative before the word dropped · M9 the heading exclusion dropped · M10 the stop
+//  branch dropped): «10 mutants red exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow2-owner-word-mid-turn.md]
 // [TESTED: 2026-09-18 12:12 +03:00 · run on the origin after the fix — four mutants, each red exactly on its named
 //  addressees (2 · 1 · 1 · 1) and green elsewhere (85/86 of 87); the first run at 12:09 refused M4 with "mutation did not
 //  apply" — report testcases/reports/2026-09-18_hooks-optin-smoke.md, runs 7 and 9.
@@ -72,6 +74,19 @@ const MUTANTS = [
     dest: '.kaif/hooks/README.md',
     fn: (b) => b.replace("'' | node .kaif/hooks/prompt-refresh-timer.mjs", 'node .kaif/hooks/prompt-refresh-timer.mjs | node -e "process.stdin.pipe(process.stdout)"'),
     expect: ['s14 проба README: каждая строка каждого блока даёт хуку stdin'] },
+  // 2.8, epic OW, OW2 (criterion 5 of plans/117): the three new predicates of the leading-word hook.
+  { name: 'M8 resume-word: the imperative before the word dropped ("execute resume" silent again — recon Q-R7)',
+    dest: '.kaif/hooks/prompt-resume-word.mjs',
+    fn: (b) => b.replace('(?:(?:run|do|execute|start|\\u0432\\u044b\\u043f\\u043e\\u043b\\u043d\\u0438|\\u0437\\u0430\\u043f\\u0443\\u0441\\u0442\\u0438|\\u0441\\u0434\\u0435\\u043b\\u0430\\u0439|\\u043d\\u0430\\u0447\\u043d\\u0438)\\s+)?', ''),
+    expect: ['s14 resume-word: «выполни resume»'] },
+  { name: 'M9 resume-word: the heading exclusion dropped (the Russian noun with a colon fires again — court D-F4)',
+    dest: '.kaif/hooks/prompt-resume-word.mjs',
+    fn: (b) => b.replace('(?!\\s*:)', ''),
+    expect: ['s14 resume-word: «Резюме: …»'] },
+  { name: 'M10 stop-word: the stop branch dropped (a leading stop reaches the model with no order)',
+    dest: '.kaif/hooks/prompt-resume-word.mjs',
+    fn: (b) => b.replace('if (prompt !== null && LEADING_STOP.test(prompt)) {', 'if (false) {'),
+    expect: ['s14 stop-word: «стоп» первым словом', 's14 stop-word: «СТОП!»', 's14 stop-word: «stop, …»'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));

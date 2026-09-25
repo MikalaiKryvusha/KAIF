@@ -560,8 +560,9 @@ agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook c
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
-session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand → the
-order to run `/resume` in full before the work; silent on every other message — Claude Code only,
+session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
+before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
+a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
 predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
@@ -765,6 +766,15 @@ KAIF 2.7, epic RS; the origin's owner, rendered from Russian: "if I write it, I 
 the work" — said because agents kept reading the leading `resume` as a topic and starting the task below it. The class behind
 it: a skill's trigger lists WORDS, never their POSITION; the kick's "standalone, never mid-sentence" (`/kaif-go`) points the other
 way; and nothing mechanical read the prompt until the hook.
+
+### `AGENT_GUIDE.md` → The owner's word mid-turn — the system signs its author
+
+KAIF 2.8, epic OW; origin bug 123 (S1): a session read the owner's "STOP" — delivered mid-turn, signed by the agent system as
+the user's — as text inside a tool result, applied the rule for data to it and worked on for minutes, then wrote down that no
+order had come. The recon of the delivery across the agent systems of the adapters (the origin's researches/34): the systems
+queue a mid-turn message or steer the turn with it at the next tool boundary, and sign the author; no vendor promises that a
+prompt hook fires for it — hence the hook branch is an amplifier. The question branch was paid for by the origin itself: the
+session that wrote this recon answered the owner's mid-turn question after six tool calls, and he had to repeat it.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 

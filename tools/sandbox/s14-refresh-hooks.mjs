@@ -149,6 +149,22 @@ ok(isResumeOrder(resumeHook('/resume')), 's14 resume-word: «/resume» — пр�
 ok(resumeHook('делаем эпик LP') === '', 's14 resume-word: промпт без слова — ТИШИНА', resumeHook('делаем эпик LP').slice(0, 120));
 ok(resumeHook('продолжай читать resume.log и скажи, что видишь') === '', 's14 resume-word: слово не первым (проза, граница пинка) — ТИШИНА');
 ok(resumeHook(undefined) === '', 's14 resume-word: событие без поля prompt — ТИШИНА (предикат по тексту не угадывается)');
+// [TESTED: 2026-09-25 17:43 +03:00 · +7 случаев OW2 — 95 проверок зелёные; на dist v2.7 — «ПРОВАЛОВ: 5», ровно пять новых поведений («resume:» и «стопка» — прежнее
+//  поведение, зелёные по построению); мутанты M8–M10 tools/sandbox/probes/hooks-mutants.mjs — на адресатах; отчёт testcases/reports/2026-09-25_ow2-owner-word-mid-turn.md]
+// 2.8, эпик OW, шаг OW2 (критерий 5 plans/117; находки D-F4 суда 2.7 и Q-R7 разведки 2.8): повелительный глагол перед словом — всё
+// ещё приказ (так открывались две полевые сессии, и хук молчал); существительное заголовком — «Резюме: …» с двоеточием — проза.
+// Ведущее «стоп» — приказ остановиться (усилитель правила «слово владельца посреди хода»; «стопка» — не слово «стоп»).
+const isStopOrder = (o) => {
+  const j = parseHook(o); const c = j.hookSpecificOutput?.additionalContext || '';
+  return j.hookSpecificOutput?.hookEventName === 'UserPromptSubmit' && /OPENS with the word "stop"/.test(c) && /Stop NOW/.test(c) && !/\/resume/.test(c);
+};
+ok(isResumeOrder(resumeHook('выполни resume\nпродолжаем делать версию 2.8')), 's14 resume-word: «выполни resume» — повелительный глагол перед словом, приказ (Q-R7)');
+ok(resumeHook('Резюме: за сессию закрыто три шага') === '', 's14 resume-word: «Резюме: …» — существительное заголовком, ТИШИНА (D-F4)', resumeHook('Резюме: за сессию закрыто три шага').slice(0, 120));
+ok(isResumeOrder(resumeHook('resume: continue the plan')), 's14 resume-word: английское «resume:» — по-прежнему приказ (граница — русское существительное)');
+ok(isStopOrder(resumeHook('стоп')), 's14 stop-word: «стоп» первым словом — приказ остановиться в этом ходу');
+ok(isStopOrder(resumeHook('СТОП! статус и стоп')), 's14 stop-word: «СТОП!» (регистр, знак) — приказ остановиться');
+ok(isStopOrder(resumeHook('stop, why did you publish it?')), 's14 stop-word: «stop, …» — приказ остановиться (цена несимметрична: стоп и ответ)');
+ok(resumeHook('стопка книг на столе') === '', 's14 stop-word: «стопка» — не слово «стоп», ТИШИНА');
 
 // ---------------------------------------------------------------- поведение: страж STATUS
 // git-фикстура: работа в сессии есть (грязное дерево) И STATUS.md старше 3 ч → мягкий блок;

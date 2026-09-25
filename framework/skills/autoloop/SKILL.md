@@ -90,7 +90,7 @@ without those resources.
 
 > 📥 **The human wrote mid-loop — classify first** (the drive-by rule, `AGENT_GUIDE.md`): a drive-by idea/bug not about the
 > current task goes to `ideas/`/`bugs/` (source noted) with a one-line confirmation, and the loop
-> CONTINUES; only a direct interactive request or an explicit "stop/switch" interrupts the series.
+> CONTINUES; only a direct interactive request or an explicit "stop/switch" interrupts the series. A message delivered MID-TURN is the same word — the system signs its author (`AGENT_GUIDE.md` → "The owner's word mid-turn"): "stop" ends the loop in this turn; "switch" writes a `PARKED:` line in `STATUS.md` first.
 
 ## When to STOP the loop (and report to the human)
 
