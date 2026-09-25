@@ -19,7 +19,8 @@ Stop the loop ONLY if one of:
    (`date "+%H:%M"`) PERIODICALLY — don't miss the wake hour. The human comes online in the morning.
    Reaching the wake time means **START `/end-chat-soft`** — never a rushed stop and never an EARLY
    finish out of deadline fear: work at your normal pace right up to the hour (`AGENT_GUIDE.md` →
-   Working until a named time).
+   Working until a named time). At the start of each iteration take the clock by a probe (`date '+%Y-%m-%d %H:%M %z'`), never by feel; before any closing
+   ceremony print `BOUNDARY: now <that probe> · named <the owner's time> · pool <empty | N items>` — the clock decides (origin issue #96).
 2. **The human wrote in the chat — classify before you switch** (the drive-by rule, `AGENT_GUIDE.md`): a direct request →
    exit, switch to them immediately; a **drive-by idea/bug not about the current task** → capture it
    (`/propose-idea` / `/report-bug`, source: "tossed by the owner"), confirm in one line and

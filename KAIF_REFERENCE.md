@@ -796,7 +796,11 @@ The paragraphs that follow the ten rules under the same heading carry their own 
 the temptation to file a throwaway script's progress line under "not covered" is strong (no document is edited, nothing ships),
 and that is exactly how sessions that KNOW the rule break it; the owner is the one who sees the corrupted output. **A stamp
 carries the date and the time:** on one date three decisions read as simultaneous, and a closure looks as if it preceded the
-decision that caused it.
+decision that caused it. A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the adoption stay silent
+without any baseline file to maintain. **The moment is probed** (2.8, origin issue #96): the origin had fixed the class for itself —
+the probe in the same call and a stamp-truth guard (a moment may not be later than the commit that wrote it) — and had never
+shipped it; a field session stamped its documents 1–5 minutes ahead of the clock and told its owner at 11:50 that it had missed
+12:00. A future `at` in the refresh marker silences the timer hook as well (origin bugs/119 №2 — the write side).
 
 ### `AGENT_GUIDE.md` → Backlog & the DONE tag
 

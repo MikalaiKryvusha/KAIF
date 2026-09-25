@@ -140,7 +140,9 @@ place and its missing retraction command instead of answering `none`.
   then say goodbye; /end-chat-force — capture the essentials and say goodbye right now.**
 - This skill is also the closing move of timed autonomous runs: a named end time means "START
   /end-chat-soft at that time" (`AGENT_GUIDE.md` → Working until a named time) — never an early
-  finish out of deadline fear.
+  finish out of deadline fear. When a named time started this closing, the report opens with
+  `BOUNDARY: now <ISO of a date probe in the same call> · named <ISO> · pool <empty | N items>` — the clock decides, never the
+  agent's estimate (origin issue #96: "did not make it by 12:00" said at 11:50).
 - If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the
   human about the divergence.
 - Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.

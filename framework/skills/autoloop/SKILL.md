@@ -96,7 +96,8 @@ without those resources.
 
 - The owner NAMED an end time for this run and it has arrived → **start `/end-chat-soft`**; until
   that time — normal pace, no early finish out of deadline fear (`AGENT_GUIDE.md` → Working until
-  a named time).
+  a named time). At the start of each iteration take the clock by a probe (`date '+%Y-%m-%d %H:%M %z'`), never by feel; before any closing
+  ceremony print `BOUNDARY: now <that probe> · named <the owner's time> · pool <empty | N items>` — the clock decides (origin issue #96).
 - The autonomous pool is exhausted (everything left needs the human/resources).
 - A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and
   pause. (A project running the `/owner-reviews` contour queues the interview to its "N accumulated"

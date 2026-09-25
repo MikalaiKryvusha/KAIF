@@ -198,8 +198,8 @@ A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not pr
 The witness has two parts, both mandatory:
 
 - **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
-  re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten by the agent at
-  the moment of the refresh. Session state, never project history: its `.gitignore` line ships
+  re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten at the refresh,
+  `at` from a clock probe (`date -Iseconds`) — never a moment by feel. Session state, never project history: its `.gitignore` line ships
   with the machinery's ignore-first set. Machine-readable by design — a judge or a hook reads the
   marker's age in one command.
 - **The quote-acceptance** — updating the marker is legal ONLY together with quoting in the chat
@@ -744,9 +744,10 @@ of a MOMENT carries both, in the owner's local time:
   moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
 - **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
   written down or committed. They differ, and the difference is often the interesting part.
-- **Unlogged precision is never invented.** The exact minute was not captured? Write an honest
-  `≈ 2026-08-07 10:05 +03:00`. An invented number is worse than a missing one (the three-doors rule
-  in `PHILOSOPHY.md`).
+- **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
+  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5
+  minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too. Not captured → an honest
+  `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
   noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
@@ -754,8 +755,7 @@ of a MOMENT carries both, in the owner's local time:
   release, a third-party deprecation) — those are not moments of our decision.
 - **Forward-only, by construction.** The convention binds from the moment the project adopts it;
   older date-only stamps are history and are NEVER rewritten (append-only — a correction is a new
-  entry). A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the
-  adoption stay silent without any baseline file to maintain.
+  entry); a guard for the rule scopes itself by the stamp's own date (`KAIF_REFERENCE.md` §17).
 
 ## Push / GitHub authentication
 

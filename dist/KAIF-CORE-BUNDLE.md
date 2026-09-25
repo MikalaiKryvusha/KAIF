@@ -655,8 +655,8 @@ A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not pr
 The witness has two parts, both mandatory:
 
 - **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
-  re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten by the agent at
-  the moment of the refresh. Session state, never project history: its `.gitignore` line ships
+  re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten at the refresh,
+  `at` from a clock probe (`date -Iseconds`) — never a moment by feel. Session state, never project history: its `.gitignore` line ships
   with the machinery's ignore-first set. Machine-readable by design — a judge or a hook reads the
   marker's age in one command.
 - **The quote-acceptance** — updating the marker is legal ONLY together with quoting in the chat
@@ -1201,9 +1201,10 @@ of a MOMENT carries both, in the owner's local time:
   moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
 - **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
   written down or committed. They differ, and the difference is often the interesting part.
-- **Unlogged precision is never invented.** The exact minute was not captured? Write an honest
-  `≈ 2026-08-07 10:05 +03:00`. An invented number is worse than a missing one (the three-doors rule
-  in `PHILOSOPHY.md`).
+- **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
+  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5
+  minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too. Not captured → an honest
+  `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
   noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
@@ -1211,8 +1212,7 @@ of a MOMENT carries both, in the owner's local time:
   release, a third-party deprecation) — those are not moments of our decision.
 - **Forward-only, by construction.** The convention binds from the moment the project adopts it;
   older date-only stamps are history and are NEVER rewritten (append-only — a correction is a new
-  entry). A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the
-  adoption stay silent without any baseline file to maintain.
+  entry); a guard for the rule scopes itself by the stamp's own date (`KAIF_REFERENCE.md` §17).
 
 ## Push / GitHub authentication
 
@@ -3826,7 +3826,11 @@ The paragraphs that follow the ten rules under the same heading carry their own 
 the temptation to file a throwaway script's progress line under "not covered" is strong (no document is edited, nothing ships),
 and that is exactly how sessions that KNOW the rule break it; the owner is the one who sees the corrupted output. **A stamp
 carries the date and the time:** on one date three decisions read as simultaneous, and a closure looks as if it preceded the
-decision that caused it.
+decision that caused it. A guard for this rule scopes itself by the stamp's OWN date: stamps dated before the adoption stay silent
+without any baseline file to maintain. **The moment is probed** (2.8, origin issue #96): the origin had fixed the class for itself —
+the probe in the same call and a stamp-truth guard (a moment may not be later than the commit that wrote it) — and had never
+shipped it; a field session stamped its documents 1–5 minutes ahead of the clock and told its owner at 11:50 that it had missed
+12:00. A future `at` in the refresh marker silences the timer hook as well (origin bugs/119 №2 — the write side).
 
 ### `AGENT_GUIDE.md` → Backlog & the DONE tag
 
@@ -4173,7 +4177,8 @@ without those resources.
 
 - The owner NAMED an end time for this run and it has arrived → **start `/end-chat-soft`**; until
   that time — normal pace, no early finish out of deadline fear (`AGENT_GUIDE.md` → Working until
-  a named time).
+  a named time). At the start of each iteration take the clock by a probe (`date '+%Y-%m-%d %H:%M %z'`), never by feel; before any closing
+  ceremony print `BOUNDARY: now <that probe> · named <the owner's time> · pool <empty | N items>` — the clock decides (origin issue #96).
 - The autonomous pool is exhausted (everything left needs the human/resources).
 - A serious UI/UX/brand/architecture fork the agent must NOT decide alone → file an `/interview` and
   pause. (A project running the `/owner-reviews` contour queues the interview to its "N accumulated"
@@ -4721,7 +4726,8 @@ Stop the loop ONLY if one of:
    (take another), a crash (investigate/fix). These are normal working situations.
 3. **The owner NAMED an end time when starting this run** ("work until 11", "for an hour") and it
    has arrived → **start `/end-chat-soft`**; until that time — normal pace, no early finish out of
-   deadline fear (`AGENT_GUIDE.md` → Working until a named time).
+   deadline fear (`AGENT_GUIDE.md` → Working until a named time). At the start of each iteration take the clock by a probe (`date '+%Y-%m-%d %H:%M %z'`), never by feel; before any closing
+   ceremony print `BOUNDARY: now <that probe> · named <the owner's time> · pool <empty | N items>` — the clock decides (origin issue #96).
 
 ⚠️ **No time-stop, no pauses, no time checks** (unless the owner named an end time — condition 3).
 Unlike the night loop, don't stop at any hour and don't
@@ -5085,7 +5091,9 @@ place and its missing retraction command instead of answering `none`.
   then say goodbye; /end-chat-force — capture the essentials and say goodbye right now.**
 - This skill is also the closing move of timed autonomous runs: a named end time means "START
   /end-chat-soft at that time" (`AGENT_GUIDE.md` → Working until a named time) — never an early
-  finish out of deadline fear.
+  finish out of deadline fear. When a named time started this closing, the report opens with
+  `BOUNDARY: now <ISO of a date probe in the same call> · named <ISO> · pool <empty | N items>` — the clock decides, never the
+  agent's estimate (origin issue #96: "did not make it by 12:00" said at 11:50).
 - If a push is rejected (non-fast-forward) — `git pull --rebase`, retry the push, then tell the
   human about the divergence.
 - Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.
@@ -5343,7 +5351,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Mutation addressivity (KAIF 2.1).** A guard proven by mutation must name its addressees BEFORE the run: *mutant M → exactly checks P₁…Pₙ go red, and only they; intact code → 0 red*. A mutation that reddens only side checks — or a guard "proven" with no named addressees — proves nothing (field: a green smoke that forgave the entire error class it was supposed to catch).
    - **Refresh witness (KAIF 2.2).** A claimed context refresh must carry its two-part witness (`AGENT_GUIDE.md` → Context refresh): `.kaif/refresh-marker.json` rewritten at the claimed moment AND a chat quote of one concrete line from the re-read. A marker without the quote — or a refresh claimed against a stale marker — is fraud of the false-`[TESTED]` class.
    - **Fork without recon (KAIF 2.5).** A choice with ≥ 2 options and a non-zero price of error must carry its `FORK: options · price of error · consulted` line at the decision point (`AGENT_GUIDE.md` → the fable loop; `PHILOSOPHY.md` → the fourth door), and the `consulted` slot must name a domain authority, a recon doc or the owner — `consulted <own reasoning>`, or no line at all on a fork that had a price, is the finding (field: a black box set to dump "on close only", decided from the model's head, wrote zero bytes when the machine froze — origin issue #36).
-   - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30).
+   - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30). Since KAIF 2.8 (origin issue #96) the same in `/end-chat-soft`, `/dayloop`, `/nightloop` and `/autoloop` when the owner named an end time: a close with no `BOUNDARY:` line whose `now` came from a clock probe in the same call, a verdict about the named hour ("time is up", "did not make it") with no probe behind it, and any stamp of a moment written without a probe in the same call — a field session stamped 1–5 minutes ahead of the clock and said at 11:50 it had missed 12:00.
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives (a metric, a phase, a count — read from the plan, the code or a run, never from a question).
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
@@ -6805,7 +6813,8 @@ Stop the loop ONLY if one of:
    (`date "+%H:%M"`) PERIODICALLY — don't miss the wake hour. The human comes online in the morning.
    Reaching the wake time means **START `/end-chat-soft`** — never a rushed stop and never an EARLY
    finish out of deadline fear: work at your normal pace right up to the hour (`AGENT_GUIDE.md` →
-   Working until a named time).
+   Working until a named time). At the start of each iteration take the clock by a probe (`date '+%Y-%m-%d %H:%M %z'`), never by feel; before any closing
+   ceremony print `BOUNDARY: now <that probe> · named <the owner's time> · pool <empty | N items>` — the clock decides (origin issue #96).
 2. **The human wrote in the chat — classify before you switch** (the drive-by rule, `AGENT_GUIDE.md`): a direct request →
    exit, switch to them immediately; a **drive-by idea/bug not about the current task** → capture it
    (`/propose-idea` / `/report-bug`, source: "tossed by the owner"), confirm in one line and
