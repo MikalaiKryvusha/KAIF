@@ -24,10 +24,15 @@
 // (3) 2.8, эпик CK, шаг CK5.9 (б) — голая загрузка печатает разделы для письма (РАЗВЁРНУТЫЙ модуль из dist): тело равно нарезке,
 //     итог называет строки и цену в токенах, каждый оставленный раздел назван, его готовая команда грузит ровно его, `--all` —
 //     целиком, `--all` с `--sections` — usage; скелет поставки грузится разделами для письма.
+// (4) 2.8, эпик VO, шаг VO2 — жанр у строк §8 на РАЗВЁРНУТОМ модуле: check --genre essay · ticket · document · без жанра · чужой
+//     жанр; load --genre essay добавляет §3, голая загрузка грузит §1 (ТЕСТ ИЗМЕНЁН в (3): §1 — раздел для письма, plans/120 VO2).
 // [TESTED: 2026-09-25 · «all 54 checks green»; на dist v2.7 швом KAIF_DIST — «7 of 54 check(s) failed», ровно новые ассерты;
 //  шесть мутантов tools/sandbox/probes/voice-mutants.mjs красны ровно на адресатах; ТЕСТ ИЗМЕНЁН: ассерт голой загрузки раздела (1)
 //  требует теперь строки «no writing section … the whole of it is loaded» — у его фикстуры пронумерованы только §8 и §9, и без этой
 //  строки он проходил бы по чужой причине; отчёт — testcases/reports/2026-09-25_ck59b-portrait-writing-sections.md]
+// [TESTED: 2026-09-25 15:39 +03:00 · «all 61 checks green»; на dist v2.7 швом KAIF_DIST — «14 of 61 check(s) failed»: 7 прежних (разделы для письма) и все
+//  7 новых раздела (4); мутанты M7/M8 tools/sandbox/probes/voice-mutants.mjs красны ровно на адресатах; ТЕСТ ИЗМЕНЁН в (3): §1 «Как
+//  читать» — раздел для письма (19 из 29 строк, оставлено 5) — plans/120 VO2, строка FORK; отчёт testcases/reports/2026-09-25_vo2-genre-labels.md]
 import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -197,7 +202,7 @@ const W = join(ROOT, 'writing');
 mkdirSync(W, { recursive: true });
 const WP_HEAD = ['# Портрет голоса — тестовый, с разделами', 'связующая записка', ''];
 const WP = [   // [заголовок, тело, раздел для письма?]
-  ['Реестр корпусов', 'строки', false], ['0. Шесть запретов', 'запрет', true], ['1. Как читать', 'чтение', false],
+  ['Реестр корпусов', 'строки', false], ['0. Шесть запретов', 'запрет', true], ['1. Как читать', 'чтение', true],
   ['2. Портрет — регистр РАЗБОР', 'правило', true], ['Правила: Пунктуация и ритм', 'пунктуация', false],
   ['Правила: Морфология и грамматика', 'морфология', false], ['2-С. Словник', 'оборот', true],
   ['5. Анти-портрет', 'маркер', true], ['6. Пары ДО/ПОСЛЕ', 'пара', true], ['6Б. ДО/ПОСЛЕ, регистр ЛОР', 'пара лора', true],
@@ -212,11 +217,11 @@ const kS = (t) => (t < 1000 ? `~${Math.round(t)}` : `~${Math.round(t / 1000)}k`)
 const deployed = (args) => (existsSync(DEPLOYED_LINT) ? runLint(args, W, DEPLOYED_LINT) : { code: -1, out: 'module absent' });
 const markerW = () => { try { return JSON.parse(readFileSync(join(W, '.kaif', 'voice-marker.json'), 'utf8')); } catch { return {}; } };
 r = deployed('load');
-ok(r.code === 0 && bodyOf(r.out) === WRITING_CUT, 's26 голая загрузка печатает голову и разделы для письма §0 · §2 · §2-С · §5 · §6 · §6Б · §7, без реестра, §1, §8, §9 и модулей «Правила»', r.out.slice(-700));
-ok(r.out.includes(`(17 of 29 line(s), sections: writing — the head and §0 · §2 · §2-С · §5 · §6 · §6Б · §7; ${kS(tokS(WRITING_CUT))} of ${kS(tokS(WHOLE))} tokens)`) && markerW().sections === 'writing' && markerW().lines === 17,
-   's26 итог голой загрузки называет строки, разделы и цену в токенах (17 из 29 строк); свидетель sections writing', r.out.slice(-700));
+ok(r.code === 0 && bodyOf(r.out) === WRITING_CUT, 's26 голая загрузка печатает голову и разделы для письма §0 · §1 · §2 · §2-С · §5 · §6 · §6Б · §7, без реестра, §8, §9 и модулей «Правила»', r.out.slice(-700));
+ok(r.out.includes(`(19 of 29 line(s), sections: writing — the head and §0 · §1 · §2 · §2-С · §5 · §6 · §6Б · §7; ${kS(tokS(WRITING_CUT))} of ${kS(tokS(WHOLE))} tokens)`) && markerW().sections === 'writing' && markerW().lines === 19,
+   's26 итог голой загрузки называет строки, разделы и цену в токенах (19 из 29 строк); свидетель sections writing', r.out.slice(-700));
 const leftLines = r.out.split(/\r?\n/).filter((l) => /tokens  «.*» — --sections "/.test(l));
-ok(/ℹ not loaded — 6 section\(s\)/.test(r.out) && /load --all/.test(r.out) && leftLines.length === 6 && WP.filter(([, , w]) => !w).every(([t]) => leftLines.some((l) => l.includes(`«${t}»`))),
+ok(/ℹ not loaded — 5 section\(s\)/.test(r.out) && /load --all/.test(r.out) && leftLines.length === 5 && WP.filter(([, , w]) => !w).every(([t]) => leftLines.some((l) => l.includes(`«${t}»`))),
    's26 итог называет каждый оставленный раздел с весом и командой и называет --all для всего портрета', r.out.slice(-900));
 let exact = 0;
 for (const l of leftLines) {
@@ -225,11 +230,43 @@ for (const l of leftLines) {
   const got = bodyOf(one.out).split('\n').filter((x) => x.startsWith('## ')).map((x) => x.slice(3));
   if (one.code === 0 && got.length === 1 && got[0] === m[1]) exact++;
 }
-ok(leftLines.length === 6 && exact === 6, `s26 каждая напечатанная команда раздела ASCII и грузит ровно свой раздел, оба модуля «Правила» тоже (${exact} of ${leftLines.length})`);
+ok(leftLines.length === 5 && exact === 5, `s26 каждая напечатанная команда раздела ASCII и грузит ровно свой раздел, оба модуля «Правила» тоже (${exact} of ${leftLines.length})`);
 r = deployed('load --all');
 ok(r.code === 0 && bodyOf(r.out) === WHOLE && markerW().sections === 'all' && /\(29 line\(s\), sections: all; /.test(r.out), 's26 load --all печатает весь портрет, 29 строк; свидетель sections all', r.out.slice(-500));
 r = deployed('load --all --sections "^8"');
 ok(r.code === 2 && /--all and --sections exclude each other/.test(r.out), 's26 load --all вместе с --sections: usage (exit 2), ничего не загружено', r.out);
+
+// ---------------------------------------------------------------- (4) 2.8: жанр у строк §8 (развёрнутая копия)
+// Эпик VO 2.8, шаг VO2 (plans/120); тикет истока #102 — на прозе владельца строки рабочих текстов давали 214 остановок из 217.
+// Метка открывает подсказку строки; имена жанров и правило применимости — как у инструмента хранилища ядра (voice-check.mjs):
+// [работа] — все жанры, кроме essay · [документ] — только document · [проза] — только essay · без метки — везде.
+console.log('\n=== s26: жанр у строк §8 — check --genre, load --genre essay ===');
+const G = join(ROOT, 'genre');
+mkdirSync(G, { recursive: true });
+writeFileSync(join(G, 'AUTHOR_STYLOMETRY.md'), ['# Портрет — жанры', '', '## 1. Как читать', 'чтение', '', '## 3. Свободная проза', 'регистр прозы', '',
+  '## 8. Машинные эвристики', '', '| паттерн | класс | подсказка |', '|---|---|---|',
+  '| `/\\bснова\\b/i` | stop | [работа] Автор пишет «вновь». |', '| `/\\bто есть\\b/i` | stop | [документ] Уточнение — скобкой. |',
+  '| `/\\bнадеюсь, это поможет\\b/i` | stop | Рамки ассистента нет. |', ''].join('\n'));
+const gd = (args) => (existsSync(DEPLOYED_LINT) ? runLint(args, G, DEPLOYED_LINT) : { code: -1, out: 'module absent' });
+r = gd('load');
+writeFileSync(join(G, 'essay.md'), 'Он снова вышел к морю, то есть к себе.\n');
+r = gd('check essay.md --genre essay');
+ok(r.code === 0 && !/«снова»/.test(r.out) && !/«то есть»/.test(r.out) && /genre essay: 2 rule\(s\) of other genres silent/.test(r.out),
+   's26 check --genre essay: строки [работа] и [документ] молчат на эссе, итог называет две молчащие строки', r.out);
+r = gd('check essay.md --genre ticket');
+ok(r.code === 1 && /essay\.md:1 — «снова» → \[работа\]/.test(r.out) && !/«то есть»/.test(r.out),
+   's26 check --genre ticket: строка [работа] называет попадание, строка [документ] молчит', r.out);
+r = gd('check essay.md --genre document');
+ok(r.code === 1 && /«снова»/.test(r.out) && /«то есть» → \[документ\]/.test(r.out), 's26 check --genre document: действуют обе метки', r.out);
+r = gd('check essay.md');
+ok(r.code === 1 && /2 rule\(s\) of AUTHOR_STYLOMETRY\.md §8 carry a genre label/.test(r.out) && /«снова»/.test(r.out) && /«то есть»/.test(r.out),
+   's26 check без --genre: судят все строки, как прежде, и прогон называет строки с меткой жанра', r.out);
+r = gd('check essay.md --genre prose');
+ok(r.code === 2 && /--genre is one of: document · ticket · comment · message · reply · essay/.test(r.out), 's26 check --genre с чужим именем: usage (exit 2)', r.out);
+r = gd('load --genre essay');
+ok(r.code === 0 && /## 3\. Свободная проза/.test(bodyOf(r.out)) && /sections: writing, genre essay/.test(r.out), 's26 load --genre essay: свободная проза §3 входит в разделы для письма', r.out.slice(-400));
+r = gd('load');
+ok(r.code === 0 && !/## 3\. Свободная проза/.test(bodyOf(r.out)) && /## 1\. Как читать/.test(bodyOf(r.out)), 's26 голая загрузка: §1 грузится, §3 — нет (он для эссе)', r.out.slice(-400));
 
 if (failures) { console.error(`\n❌ s26: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s26 voice-lint: all ${asserts} checks green`);

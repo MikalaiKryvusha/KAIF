@@ -98,7 +98,7 @@
       {
         "signature": "### Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "158fa1541171f1fc2be8c8870833d58a3a85c0653808a007fff7d6c900414bcd",
+        "sha256": "02c4ac37e5cf41031ff2482ab798eeaf93833591a328191bab7990996f12db47",
         "lines": [
           312,
           426
@@ -1528,7 +1528,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "eb7ba962c6e8c8c584f535f831f41aad45e38e311a92a5d241af155ea95b1613",
+        "sha256": "c56aaf9329c286813be1fc3a4cad0429508bcedc4de043dfc13f2031f5c57aeb",
         "lines": [
           531,
           574
@@ -3843,7 +3843,7 @@
       {
         "signature": "## The writing contract — by the portrait, independently checked, then the owner",
         "class": "static",
-        "sha256": "1d618b6ba175274e75d90c4380c3feccb2c520ba6f6fac52c23d28b93d5fe039",
+        "sha256": "bd3452b51fed9932f9236403fa6f484ef45c553562dda7455dfb5bb4b35d26f8",
         "lines": [
           37,
           72
@@ -3852,10 +3852,10 @@
       {
         "signature": "## Mode `check` — the machine half of the independent check",
         "class": "static",
-        "sha256": "9d53a21334f0e5d896ff30323456d5e2cb95ba696bc450dcac96e99b13ef6954",
+        "sha256": "52e4121d7826c6c368233609b0710124e4cd5bdacdfc286f5990372fae226d99",
         "lines": [
           73,
-          119
+          122
         ]
       },
       {
@@ -3863,8 +3863,8 @@
         "class": "static",
         "sha256": "4d9e40b5283a24c1d010838fc0116174e6e3da711c6e3af309d9dd7de2c85cdc",
         "lines": [
-          120,
-          158
+          123,
+          161
         ]
       },
       {
@@ -3872,8 +3872,8 @@
         "class": "static",
         "sha256": "cfd646ea4662f0b75078166bf17b0112d606afd7324334cb09d8ede9341aecb6",
         "lines": [
-          159,
-          204
+          162,
+          207
         ]
       },
       {
@@ -3881,8 +3881,8 @@
         "class": "static",
         "sha256": "791a8edca44a8f1458a9a2cc86ae916a6cb7f3d12ff8824371ac6e18a4c04330",
         "lines": [
-          205,
-          212
+          208,
+          215
         ]
       },
       {
@@ -3890,8 +3890,8 @@
         "class": "static",
         "sha256": "363f3912473697663b050ccedd5e54c0a13d725887dfeb2286ee57f2dc3f7aa3",
         "lines": [
-          213,
-          220
+          216,
+          223
         ]
       }
     ],
@@ -5772,7 +5772,7 @@
       {
         "signature": "## 7. The self-check checklist (layered)",
         "class": "static",
-        "sha256": "3ab4ac295ac8e9a7f4d3567d0d24c50bf783228a78f1bd848a2091afe5550819",
+        "sha256": "0568f4fd1820795abf915ee4fb885f0d4e67ff9231008e4e78386ed5a79542d7",
         "lines": [
           108,
           118
@@ -5781,10 +5781,10 @@
       {
         "signature": "## 8. Machine heuristics",
         "class": "static",
-        "sha256": "3569f490205dab22972b1af5eb5b7eddd2e8365c641c402bc9a9d5dd74071a1d",
+        "sha256": "623089f3473437e38deaec1e1b3f9ca8ee94175aa3c9c781393b99eab3c504eb",
         "lines": [
           119,
-          142
+          144
         ]
       },
       {
@@ -5792,8 +5792,8 @@
         "class": "static",
         "sha256": "7b78eec1abbd72a50d754025201ebaf858dcccebd84f776ed97df7340d6be063",
         "lines": [
-          143,
-          160
+          145,
+          162
         ]
       },
       {
@@ -5801,8 +5801,8 @@
         "class": "static",
         "sha256": "08a98e34df84b5cfd12e4807e3081aa0c21b72f021f8aa6e66ceadad75e0bc52",
         "lines": [
-          161,
-          171
+          163,
+          173
         ]
       }
     ],

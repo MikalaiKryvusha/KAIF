@@ -1,14 +1,16 @@
 // tools/sandbox/probes/voice-mutants.mjs — a PROBE (not a polygon suite): the adversarial proof of suite s26's writing-selection
 // asserts (2.8, epic CK, step CK5.9 (b) — a bare `kaif-voice-lint load` prints the portrait's writing sections, `--all` the whole,
-// the summary names every section left out with a ready ASCII `--sections` regex). Six mutants of the PREDICATES of the new
+// the summary names every section left out with a ready ASCII `--sections` regex; 2.8 epic VO — the genre labels and §1). Eight mutants of the PREDICATES of the new
 // behaviour are applied to the module's FILE block inside a COPY of dist/KAIF-CORE-BUNDLE.md in the OS temp dir (never to the tree,
 // EXP-0077); s26 runs against the copy through the KAIF_DIST seam (its sections (2) and (3) judge the DEPLOYED module), and the red
 // assert lines are compared with the addressees named here BEFORE the run (EXP-0059): mutant M → exactly these asserts go red, and
 // only they. A mutant whose anchor does not match EXACTLY ONCE is a refusal, never a green (origin bug 122); a suite that did not
 // reach its verdict line proves nothing (EXP-0158) and is BAD.
 // Run it after touching `load` of framework/tools/kaif-voice-lint.mjs or s26:   node tools/sandbox/probes/voice-mutants.mjs
-// Needs a FRESH dist (rebuild first); runs the suite once per mutant (six) — run it ALONE, not beside the polygon (origin bug 109).
+// Needs a FRESH dist (rebuild first); runs the suite once per mutant (eight) — run it ALONE, not beside the polygon (origin bug 109).
 // Raises no window and no sound. `--list` prints the red asserts of every mutant without judging (to re-name addressees).
+// [TESTED: 2026-09-25 15:39 +03:00 · alone, on a fresh dist: all EIGHT red exactly on their named addressees (7 · 2 · 3 · 1 · 1 · 5 · 2 · 5); the first run of
+//  the eight was an honest BAD of M1 — its selection-off also reddens the two load asserts of the new section (4), named since; testcases/reports/2026-09-25_vo2-genre-labels.md]
 // [TESTED: 2026-09-25 10:57 +03:00 · alone, on a fresh dist: all six red exactly on their named addressees (5 · 2 · 3 · 1 · 1 · 5), no
 //  invisible mutant; the first run (10:56) was an honest BAD of the runner itself — the red names were compared with their «❌ »
 //  prefix, and M2's one-line anchor also stands in kaif-requirements-lint.mjs (matched twice → refused, as designed); report
@@ -31,11 +33,15 @@ const LEFT = 's26 итог называет каждый оставленный 
 const REGEX = 's26 каждая напечатанная команда раздела ASCII';
 const ALL = 's26 load --all печатает весь портрет';
 const BOTH = 's26 load --all вместе с --sections';
+const GENRE_ESSAY = 's26 check --genre essay';
+const GENRE_TICKET = 's26 check --genre ticket';
+const GENRE_BARE = 's26 голая загрузка: §1 грузится';
+const GENRE_LOAD = 's26 load --genre essay';
 
 const MUTANTS = [
   { name: 'M1 a bare load prints the whole portrait (the writing selection never runs)',
     from: '  } else if (!ALL) {', to: '  } else if (false && !ALL) {',
-    expect: [SKELETON, BODY, SUMMARY, LEFT, REGEX] },
+    expect: [SKELETON, BODY, SUMMARY, LEFT, REGEX, GENRE_LOAD, GENRE_BARE] },
   { name: 'M2 --all is not recognised',
     // two lines: the one-line anchor also stands in kaif-requirements-lint.mjs, and a mutant there would prove nothing here
     from: "const WARN = argv.includes('--warn');\nconst ALL = argv.includes('--all');", to: "const WARN = argv.includes('--warn');\nconst ALL = false;",
@@ -52,6 +58,13 @@ const MUTANTS = [
   { name: 'M6 subsections are not writing sections (the recon\'s first rule: «2-С» and «6Б» dropped)',
     from: '(?:-?[A-Za-zА-Яа-яЁё]|\\.\\d+)*)[.)]', to: ')[.)]',
     expect: [SKELETON, BODY, SUMMARY, LEFT, REGEX] },
+  // 2.8, epic VO, step VO2 (plans/120): the genre labels of §8 rows and §1 among the writing sections
+  { name: 'M7 genre labels are ignored (every row judges every genre — origin ticket #102 back)',
+    from: '  if (!genre || !rule.labels || !rule.labels.length) return true;', to: '  if (true) return true;',
+    expect: [GENRE_ESSAY, GENRE_TICKET] },
+  { name: 'M8 §1 is not a writing section (the portrait\'s own "how to read" / order of work left out)',
+    from: "export const WRITING_SECTIONS = ['0', '1', '2', '5', '6', '7'];", to: "export const WRITING_SECTIONS = ['0', '2', '5', '6', '7'];",
+    expect: [BODY, SUMMARY, LEFT, REGEX, GENRE_BARE] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-voice-mutants-'));

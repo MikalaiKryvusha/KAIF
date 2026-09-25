@@ -98,7 +98,8 @@
       "THE RULEBOOK TAKES THE RULE, NOT THE QUOTE — AND TIER 4 HAS A FILE (2.8, epic CK; origin issues #89 and #90 — a field owner asked to \"mark my instructions in your guides so this is not lost\", and the agent poured those raw chat messages into AGENT_GUIDE.md; another spent forty minutes re-deriving a device route that sat in its own `paths/` directory). (1) `AGENT_GUIDE.md` → \"Authorship of a decision\" gains a fifth rule: an owner's standing instruction enters the guide or the house-rules file as a strict rule — imperative, numbered, with its exceptions — plus ONE provenance line `[OWNER] <date> · <where the verbatim lives>` (the commit that recorded it verbatim first, the interview, the decisions log); a block of raw chat messages in the rulebook is a defect. The attribution linter accepts a commit address on the line (\"commit\" next to a hash of ≥ 7 hex digits) as the source, so that provenance line no longer reddens. (2) `/fix-vision` routes a standing working rule to the house-rules file in that form and names the notes section as the template does (\"Notes from the human\"). (3) Checklist step 2 and a new Context-router row: a task on a surface the project already touched starts from your own work — the house-rules file, `researches/`, the project's tools — cited, or \"no own work found\" written; `/fable-judge` hunts re-derived own work. (4) NEW skeleton `.kaif/_house-rules-template.md` (tier 4): `cp .kaif/_house-rules-template.md HOUSE_RULES.md` on first use; `/resume` reads `HOUSE_RULES.md` when it exists. The shipped file is only the skeleton in `.kaif/`; your `HOUSE_RULES.md` is the project's and an update leaves it byte for byte. If your project already keeps such a file under another name, keep it and point the new `/resume` bullet at it; if your `HOUSE_RULES.md` has its own layout, `/fix-vision` adds a section \"The owner's standing rules\" to it rather than reshaping the file.",
       "THE EXPERIENCE LINTER NO LONGER BURIES ITS ONE LINE (2.8, epic CK; origin issue #80 — a field journal printed 88 per-entry no-class warnings above the line that mattered, on every closing): failure entries without `class:` that come before the journal's first classed entry are history outside the field rules, so `node .kaif/tools/kaif-experience-lint.mjs check` prints ONE line for all of them — \"N failure entries carry no `class:` and predate the first classed entry (EXP-…[, date]) — outside the field rules; list them: --verbose …\". \"Before\" is the entry's place in the journal, read in the direction most of its dates show; an unclassed failure placed after that entry, or dated later than it, stays its own warning, and a journal whose order its dates cannot tell (no dates, a single date) is not folded at all. Nothing to do in your project; `--verbose` lists the history — classify it from the newest end, and the fold line shrinks as you go.",
       "PROJECT FACTS MOVED FROM THE GUIDE TO THE HOUSE-RULES FILE (2.8, epic CK; measured on the field: the modules a project fills grew by 130–168 lines in two deployments, and a guide translated wholesale counts every such line against its budget). The guide keeps the method and one pointer line per section, under the SAME headings: \"Test harness\" keeps its principle, its commands go to `HOUSE_RULES.md` → \"Stands, environments and devices\"; \"Tools\" → \"Tools of this project\"; the environment-dossier TABLE → the skeleton's new section \"Environment dossier\" (the procedure stays in the guide; `/refresh-context` step 3 now writes the facts there); \"Push / GitHub authentication\" → \"Routes, recipes and conventions\"; \"Goal of the project\" points to `GOAL.md` and \"Architecture — the map\" to the two map documents, keeping only its key invariant — both were copies of their source. What to do: where your guide carries these filled modules, the update keeps them (they are yours) and ships the template delta in the task — move your tables and recipe into `HOUSE_RULES.md` (no file yet → `cp .kaif/_house-rules-template.md HOUSE_RULES.md`), leave the pointer line, and drop the goal paragraph and module map in favour of `GOAL.md` and the maps (move anything they held that the maps lack into the maps first). A guide translated wholesale does the same by hand.",
-      "THE PRICE OF A CHAT IS PRINTED, AND THE VOICE PORTRAIT LOADS ITS WRITING SECTIONS (2.8, epic CK; origin issue #99 — a field /resume read ~230k tokens, and a ~170k-token voice portrait was loaded whole before every text, with nothing saying so): (1) `node .kaif/kaif-core.mjs check` prints one reference line — what /resume reads, in thousands of tokens and as a share of a 1M-token model window (never a stop); (2) a bare `node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait's WRITING sections — §0 · §2 · §5 · §6 · §7 with their subsections, §2-C the lexicon among them — with their price in tokens, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole portrait as before; `check` and the load witness are unchanged. What to do: nothing to merge; keep your portrait's section NUMBERS as the skeleton has them (a portrait with none of the writing sections numbered is loaded whole, said aloud), and when a text needs a module the bare load left out (a second register, the detailed rule modules), load it by the regex the summary printed."
+      "THE PRICE OF A CHAT IS PRINTED, AND THE VOICE PORTRAIT LOADS ITS WRITING SECTIONS (2.8, epic CK; origin issue #99 — a field /resume read ~230k tokens, and a ~170k-token voice portrait was loaded whole before every text, with nothing saying so): (1) `node .kaif/kaif-core.mjs check` prints one reference line — what /resume reads, in thousands of tokens and as a share of a 1M-token model window (never a stop); (2) a bare `node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait's WRITING sections — §0 · §2 · §5 · §6 · §7 with their subsections, §2-C the lexicon among them — with their price in tokens, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole portrait as before; `check` and the load witness are unchanged. What to do: nothing to merge; keep your portrait's section NUMBERS as the skeleton has them (a portrait with none of the writing sections numbered is loaded whole, said aloud), and when a text needs a module the bare load left out (a second register, the detailed rule modules), load it by the regex the summary printed.",
+      "THE VOICE PORTRAIT KNOWS ITS GENRES (2.8, epic VO; origin issue #102 — a portrait's work-only §8 rows stopped the owner's own prose 214 times of 217): a §8 row whose hint OPENS with a genre label — `[work]`/`[работа]` every genre but the essay, `[document]`/`[документ]` documents only, `[prose]`/`[проза]` the essay only — judges only its genres; `node .kaif/tools/kaif-voice-lint.mjs check <file…> --genre <document|ticket|comment|message|reply|essay>` silences the rows of other genres, and without `--genre` every row judges every text while the run names the labelled rows. The writing sections of a bare `load` now include §1 (how to read the portrait), and `load --genre essay` adds the prose register §3. A portrait without labels changes nothing."
     ],
     "2.7": [
       "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
@@ -780,13 +781,13 @@ ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER.**
 Three steps, in this order, and the report names each:
 1. **Write BY the portrait — with it in your working context.** Before the first word,
    `node .kaif/tools/kaif-voice-lint.mjs load` prints the writing sections of `AUTHOR_STYLOMETRY.md` into your context — the
-   bans §0, the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6, the checklist §7; it names the rest
+   bans §0, how to read it §1, the rules §2, the lexicon §2-C, the anti-portrait §5, the pairs §6, the checklist §7 (`--genre essay`: + prose §3); it names the rest
    with their `--sections` commands, `--all` loads the whole — and leaves the witness `.kaif/voice-marker.json`; write by it while it is there. A draft written "natively" and
    re-voiced afterwards is the class this obligation closes, not its execution — `check` refuses a text with
    no load witness, last written before the first load, or written more than an hour after the last load (the
    hour rule of context refresh: the portrait had left the cache) — "written past the portrait".
 2. **Check INDEPENDENTLY by the same portrait.** The machine minute —
-   `node .kaif/tools/kaif-voice-lint.mjs check <file…>` (the §8 table; no portrait or a §8 without the table
+   `node .kaif/tools/kaif-voice-lint.mjs check <file…> --genre <genre>` (the §8 table — a row labelled for another genre stays silent; no portrait or a §8 without the table
    → `SKIPPED=3`, said in the report in those words, never read as green) — and the semantic pass §7B by a
    CLEAN instance: a subagent, or a fresh pass forbidden to see the writer's rationale (the judge of the
    rewrite pipeline, applied to every unit). The writer's own glance is not an independent check.
@@ -3522,7 +3523,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
 | `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or on its own line the address of the commit that holds the owner's words verbatim (`commit <hash>`, since 2.8 — the owner's standing rule enters the rulebook as a rule, his words stay at the source), or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
 | `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
-| `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--all | --sections <regex>]` / `check <files…> [--warn]` / `selftest`): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache; since 2.8 — epic CK, origin issue #99, a field portrait of ~170k tokens loaded whole for every unit — a bare `load` prints the WRITING sections, §0 · §2 · §5 · §6 · §7 with their subsections, §2-C among them, and their price in tokens at the rates of the entry-cost line of `check`, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole; a portrait with none of them numbered is printed whole, said aloud); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
+| `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--all | --sections <regex>] [--genre <genre>]` / `check <files…> [--genre <genre>] [--warn]` / `selftest`; since 2.8 — epic VO, origin issue #102 — a §8 row whose hint opens with a genre label `[work]`·`[document]`·`[prose]` (or the same three words in the portrait's language — the Russian mirrors ship in the module) judges only its genres, the same names and rule as the owner's core storage tool; the writing sections of a bare `load` include §1, `--genre essay` adds §3): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache; since 2.8 — epic CK, origin issue #99, a field portrait of ~170k tokens loaded whole for every unit — a bare `load` prints the WRITING sections, §0 · §2 · §5 · §6 · §7 with their subsections, §2-C among them, and their price in tokens at the rates of the entry-cost line of `check`, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole; a portrait with none of them numbered is printed whole, said aloud); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 | `kaif-experience-lint.mjs` | The recurrence deadline of `EXPERIENCE.md` — "Two strikes → a mechanism, never a third reminder" (2.7, epic EL; origin issue #69 — a field audit of one project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, five lessons written 6–17 times in different words) as an advisory linter (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`): the field `class: <slug>` on its own line under the entry heading is the UNIT of recurrence, and the SECOND failure entry (`❌` or `❌→✅`) of one class with no `mechanized:` is a finding that names the class and BOTH entries by id. Two fates clear it, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty declaration is itself a finding; declared classes are printed on the summary line and that list only shrinks). It also carries the field rules of the origin's own guard (exactly one of `mechanized:` / `none-cheap: <why>` / `subject-lesson`; a trap by form may not answer `subject-lesson`) against an inherited-debt baseline the caller passes, warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and addresses are not checked at all for a journal outside a project tree — said aloud) and when a slug is outside the journal's class list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · repro … · full text: git log -p -S "<id>"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and "not judged" never reads as "clean". Keywords are a per-language table; ids are not assumed numeric (a field journal writes `EXP-NEW-<slug>`). |
 
@@ -7549,8 +7550,8 @@ Three steps, in this order — and the report of the unit names each:
 
 1. **Write BY the portrait — with it in your working context.** Before the first word:
    `node .kaif/tools/kaif-voice-lint.mjs load` prints the WRITING sections of `AUTHOR_STYLOMETRY.md` — the
-   bans §0, the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6, the checklist
-   §7 — INTO YOUR WORKING CONTEXT, names every other section with its weight and a ready `--sections`
+   bans §0, how to read it §1, the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6, the checklist
+   §7 (with `--genre essay` also the prose register §3) — INTO YOUR WORKING CONTEXT, names every other section with its weight and a ready `--sections`
    command (load one the unit needs; `--all` loads the whole portrait) and leaves the witness `.kaif/voice-marker.json`;
    write by it while it is there — the owner's word: write BY the stylometry, WITH IT IN THE WORKING
    CACHE — the lexicon's turn of phrase, not a synonym; the skeleton of the section the owner uses; the
@@ -7578,8 +7579,8 @@ A rule that yields an artifact names the command that produces it — this is th
 machine half of step 2 above (the semantic half is the clean-instance pass §7B):
 
 ```
-node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>]   # step 1: the portrait into your context + the witness
-node .kaif/tools/kaif-voice-lint.mjs check <file…> [--warn]        # step 2, the machine half
+node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>] [--genre <genre>]   # step 1: the portrait into your context + the witness
+node .kaif/tools/kaif-voice-lint.mjs check <file…> --genre <genre> [--warn]        # step 2, the machine half; genres: document · ticket · comment · message · reply · essay
 ```
 
 - **What it reads:** the §8 TABLE of `AUTHOR_STYLOMETRY.md` (or the file named in `.kaif/kaif.json`
@@ -7593,8 +7594,11 @@ node .kaif/tools/kaif-voice-lint.mjs check <file…> [--warn]        # step 2, t
   THAN AN HOUR after the last load before it (the hour rule of context refresh: the portrait had left
   the cache — reload before every unit) — "written past the portrait", exit 1, never muted by
   `--warn`; it warns when the portrait changed since the load. A bare `load` prints the writing sections
-  (§0 · §2 · §5 · §6 · §7 with their subsections, §2-C among them) and its price in tokens, and names
-  the rest — a portrait with none of them numbered is loaded whole, said aloud; `--all` loads the whole;
+  (§0 · §1 · §2 · §5 · §6 · §7 with their subsections, §2-C among them; `--genre essay` adds §3) and its price in tokens, and names
+  the rest — a portrait with none of them numbered is loaded whole, said aloud; `--all` loads the whole. A §8 row whose hint OPENS with
+  a genre label judges only its genres — `[work]` every genre but essay, `[document]` only document, `[prose]` only essay (or
+  the same words in the portrait's language — the module reads the Russian mirrors too) (2.8, origin issue #102: work-only rows stopped the owner's prose 214 times of 217); `check --genre`
+  silences the rows of other genres, and without it every row judges every text and the run says the labels exist;
   `load --sections <regex>` that matches no section loads nothing and writes no witness. The witness is a marker with the marker class's
   boundary: it proves the load ran, not that the print was read — the judge reads the named modules
   against the text.
@@ -15402,7 +15406,7 @@ else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home]
 //           system clock; the marker is session state, ignored by git like the refresh marker). Since 2.8
 //           (epic CK; origin issue #99 p. 3 — a field portrait weighed ~170k tokens and was loaded whole for
 //           every unit) a bare `load` prints the WRITING sections: the head before the first H2 and the H2
-//           sections numbered 0 · 2 · 5 · 6 · 7 with their subsections — 2-C among them (the owner's bans, the
+//           sections numbered 0 · 1 · 2 · 5 · 6 · 7 (2.8 epic VO: + §1; `--genre essay` + §3) with their subsections — 2-C among them (the owner's bans, the
 //           rules, the lexicon, the anti-portrait, the before/after pairs, the checklist), prints what that costs in tokens, and names
 //           every section it left out with its weight and a ready ASCII-only `--sections` command; `--all`
 //           prints the whole portrait; a portrait with no numbered writing section is printed whole, said aloud;
@@ -15455,7 +15459,7 @@ else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home]
 //                                                                        # --sections: the head + the H2 sections
 //                                                                        # matching) + write the witness — BEFORE
 //                                                                        # the first word
-//   node .kaif/tools/kaif-voice-lint.mjs check <files…> [--warn]         # portrait: AUTHOR_STYLOMETRY.md at the
+//   node .kaif/tools/kaif-voice-lint.mjs check <files…> [--genre <genre>] [--warn]  # a row labelled [work]/[document]/[prose] (or RU) judges only its genres; portrait: AUTHOR_STYLOMETRY.md at the
 //                                                                        # project root, or .kaif/kaif.json → voicePortrait
 //   node .kaif/tools/kaif-voice-lint.mjs selftest                        # PROVE every answer on in-memory fixtures (EN + RU)
 // [TESTED: 2026-09-12 · selftest 48 cases green in 2 languages (a hit named 7:«Remember that» / 7:«Помни, что» with the row's
@@ -15487,6 +15491,12 @@ else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home]
 //  load equals an independent cut, 142 printed regexes run and exact, --all whole (origin 991 of 3957 lines, ~37k of ~169k tokens);
 //  the functional run found an unanchored regex that loaded two sections and a field «6Б» the first rule missed — both fixed before
 //  commit; polygon `all 27 suites green`; report testcases/reports/2026-09-25_ck59b-portrait-writing-sections.md]
+// [TESTED: 2026-09-25 15:39 +03:00 · 2.8, epic VO, step VO2 (origin issue #102) — genre labels and §1: selftest 62 cases (+5: labels in both languages,
+//  the applicability of all six genres equal to the core storage tool's rule, the check filter, the essay load); s26 on the DEPLOYED
+//  module 61 of 61 (on dist v2.7 — 14 red, the 7 new genre asserts among them); mutants M7 «labels ignored» and M8 «§1 not a writing
+//  section» red exactly on their addressees; differential probe vo2-genre-parity — 126 verdicts, 0 disagreements with the storage tool;
+//  functional run on the owner's own prose (7 excerpts of the private prose module, counts only): no genre — 4 hits, all from [работа]
+//  rows; --genre essay — 0, green; --genre ticket — 4; eight real portraits load §1 with every ready regex exact; report testcases/reports/2026-09-25_vo2-genre-labels.md]
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15498,7 +15508,9 @@ const WARN = argv.includes('--warn');
 const ALL = argv.includes('--all');
 const SECTIONS_AT = argv.indexOf('--sections');
 const SECTIONS_ARG = SECTIONS_AT >= 0 ? argv[SECTIONS_AT + 1] : null;
-const FILES = argv.slice(1).filter((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--sections');
+const GENRE_AT = argv.indexOf('--genre');
+const GENRE_ARG = GENRE_AT >= 0 ? argv[GENRE_AT + 1] : null;
+const FILES = argv.slice(1).filter((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--sections' && all[i - 1] !== '--genre');
 const EXIT_FINDINGS = 1;
 const EXIT_USAGE = 2;
 const EXIT_SKIPPED = 3;
@@ -15509,13 +15521,34 @@ const FRAGMENT_MAX = 80;
 const LOADS_KEPT = 100;               // the load history a witness keeps (the oldest fall off)
 export const STALE_MINUTES = 60;      // the hour rule of context refresh: an older load is no longer "in the cache"
 export const BOUNDARY = 'likeness is not judged — that verdict is the owner\'s (the taste class); the linter catches only the explicit patterns of the portrait\'s §8 table';
-const USAGE = 'usage: node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>] | check <files…> [--warn] | selftest';
+const USAGE = 'usage: node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>] [--genre <genre>] | check <files…> [--genre <genre>] [--warn] | selftest';
 // The WRITING sections a bare `load` prints (2.8, epic CK; the origin's plan names the decision and its sources): the numbered
 // H2 sections the canon's fourth obligation and the portrait's own "how to use" name for writing — §0 the bans the owner dictated,
-// §2 the rules, §5 the anti-portrait, §6 the before/after pairs, §7 the checklist run before handing a text over — each WITH its
-// lettered or dotted subsections: §2-C the lexicon (a Cyrillic «2-С» as well — a field portrait types it so), a field «6Б» of more
-// pairs, a «2.1»; «4.1» stays with its §4. A title opens with its label: digits, then subsection parts, then «.» or «)» and a space.
-export const WRITING_SECTIONS = ['0', '2', '5', '6', '7'];
+// §1 how to read the portrait (a 2.x core: the order of work and its terms — the core tells the writer to keep §0–§3 in context;
+// epic VO), §2 the rules, §5 the anti-portrait, §6 the before/after pairs, §7 the checklist run before handing a text over — each
+// WITH its lettered or dotted subsections: §2-C the lexicon (a Cyrillic «2-С» as well — a field portrait types it so), a field
+// «6Б» of more pairs, a «2.1»; «4.1» stays with its §4. §3 — the second register, free prose — joins with `--genre essay`.
+// A title opens with its label: digits, then subsection parts, then «.» or «)» and a space.
+export const WRITING_SECTIONS = ['0', '1', '2', '5', '6', '7'];
+export const PROSE_SECTION = '3';
+// Genres and genre labels (2.8, epic VO; origin ticket #102) — the SAME genre names and the SAME rule as the tool of the owner's core
+// storage (its `voice-check.mjs`), so one label means one thing in both: a §8 row whose hint OPENS with a label judges only its
+// genres — [работа]/[work] every genre but essay, [документ]/[document] only document, [проза]/[prose] only essay; a row without a
+// label judges every text. A bracketed word that is not a label (a «[see §5]») is left in the hint and labels nothing.
+export const GENRES = ['document', 'ticket', 'comment', 'message', 'reply', 'essay'];
+const LABEL_WORDS = { work: /^(?:работа|work)$/i, document: /^(?:документ|document)$/i, prose: /^(?:проза|prose)$/i };
+const HINT_LABELS = /^\s*((?:\[[^\]\n]+\]\s*)+)/;
+export function labelsOf(hint) {
+  const m = HINT_LABELS.exec(hint || '');
+  if (!m) return [];
+  return [...m[1].matchAll(/\[([^\]]+)\]/g)]
+    .map((x) => Object.keys(LABEL_WORDS).find((k) => LABEL_WORDS[k].test(x[1].trim())))
+    .filter(Boolean);
+}
+export function applies(rule, genre) {
+  if (!genre || !rule.labels || !rule.labels.length) return true;
+  return rule.labels.some((l) => (l === 'work' && genre !== 'essay') || (l === 'document' && genre === 'document') || (l === 'prose' && genre === 'essay'));
+}
 const WRITING_LABEL = /^((\d+)(?:-?[A-Za-zА-Яа-яЁё]|\.\d+)*)[.)]\s/u;
 // Tokens at the SAME two rates as the entry-cost line of the core's `check` (KAIF-CORE.mjs; the origin's build holds the pair):
 // ASCII at 2.5 characters per token (the model page: "1M tokens ~ 2.5M characters"), any other character at 1.9 (origin issue
@@ -15636,7 +15669,7 @@ export function parsePortrait(text) {
         try { excRe = new RegExp(unicodeBody(em[1]), 'u' + (em[2].includes('i') ? 'i' : '')); }
         catch (e) { notes.push(`row at line ${row.n}: the exception regex does not compile — ${e.message}`); }
       }
-      rules.push({ line: row.n, source, re, cls, hint, exception, excRe });
+      rules.push({ line: row.n, source, re, cls, hint, exception, excRe, labels: labelsOf(hint) });
     }
   }
   if (!recognised) return { status: 'no-table', rules: [], notes, tables };
@@ -15669,12 +15702,13 @@ export function sectionsMatching(text, re) {
 // The WRITING selection of a bare `load` → { text, matched, kept: [{ title, label }], left: [{ title, tokens }] }: the head plus the
 // H2 sections whose label's leading number is one of WRITING_SECTIONS. `matched` = 0 — a portrait with no numbered writing section:
 // the caller prints it whole and says so (a portrait missing from the working context costs more than a heavy one).
-export function writingSelection(text) {
+export function writingSelection(text, extra = []) {
   const { head, sections } = h2Sections(text);
   const kept = [], left = [];
+  const numbers = [...WRITING_SECTIONS, ...extra];
   for (const s of sections) {
     const m = WRITING_LABEL.exec(s.title.trim());
-    if (m && WRITING_SECTIONS.includes(m[2])) kept.push({ ...s, label: m[1] });
+    if (m && numbers.includes(m[2])) kept.push({ ...s, label: m[1] });
     else left.push({ ...s, tokens: tokensOf(s.lines.join('\n')) });
   }
   return { text: joinCut(head, kept), matched: kept.length, kept, left };
@@ -15795,6 +15829,8 @@ function load() {
   if (!existsSync(portrait)) skipped(`no portrait at ${portrait} (${DEFAULT_PORTRAIT} at the project root, or ${MARKER} → voicePortrait) — nothing to load`);
   const text = readFileSync(portrait, 'utf8');
   if (ALL && SECTIONS_AT >= 0) usage('--all and --sections exclude each other — nothing loaded, no witness written');
+  if (GENRE_AT >= 0 && !GENRES.includes(GENRE_ARG)) usage(`--genre is one of: ${GENRES.join(' · ')} — nothing loaded, no witness written`);
+  const extra = GENRE_ARG === 'essay' ? [PROSE_SECTION] : [];   // the free-prose register joins the writing sections of an essay
   let filter = null;
   if (SECTIONS_AT >= 0) {
     if (!SECTIONS_ARG || SECTIONS_ARG.startsWith('--')) usage('--sections needs a regex — nothing loaded, no witness written');
@@ -15808,9 +15844,9 @@ function load() {
     if (!sel.matched) usage(`no H2 section of ${portrait} matches --sections ${SECTIONS_ARG} — nothing loaded, no witness written`);
     printed = sel.text; sections = filter.source;
   } else if (!ALL) {
-    const sel = writingSelection(text);
-    if (sel.matched) { printed = sel.text; sections = 'writing'; left = sel.left; why = ` — the head and ${sel.kept.map((s) => '§' + s.label).join(' · ')}`; }
-    else why = ` — no writing section (${WRITING_SECTIONS.map((n) => '§' + n).join(' · ')} or their subsections) is numbered in this portrait, so the whole of it is loaded`;
+    const sel = writingSelection(text, extra);
+    if (sel.matched) { printed = sel.text; sections = extra.length ? `writing, genre ${GENRE_ARG}` : 'writing'; left = sel.left; why = ` — the head and ${sel.kept.map((s) => '§' + s.label).join(' · ')}`; }
+    else why = ` — no writing section (${[...WRITING_SECTIONS, ...extra].map((n) => '§' + n).join(' · ')} or their subsections) is numbered in this portrait, so the whole of it is loaded`;
   }
   printed = printed.replace(/\s*$/, '');
   process.stdout.write(printed + '\n');
@@ -15851,8 +15887,15 @@ function check() {
   if (p.status === 'no-section') skipped(`${portrait} has no §8 "Machine heuristics" section`);
   if (p.status === 'no-table') skipped(`§8 of ${portrait} carries no pattern table (${p.tables ? 'its table lacks the pattern/hint columns' : 'prose only'}) — nothing for the linter to read; put the greps into the table pattern · class · hint · exception (the shipped skeleton .kaif/_owner-voice-template.md shows the form)`);
   if (p.status === 'no-rules') skipped(`the §8 table of ${portrait} holds no rule — placeholders are not rules`);
-  const stops = p.rules.filter((r) => r.cls === 'stop').length;
-  const positives = p.rules.length - stops;
+  if (GENRE_AT >= 0 && !GENRES.includes(GENRE_ARG)) usage(`--genre is one of: ${GENRES.join(' · ')}`);
+  const genre = GENRE_AT >= 0 ? GENRE_ARG : null;
+  // A row labelled for another genre stays silent on this text (origin ticket #102: a portrait's work-only rows stopped the owner's
+  // own prose 214 times of 217); without --genre every row judges every text, as before, and the run says the labels exist.
+  const rules = p.rules.filter((r) => applies(r, genre));
+  const labelled = p.rules.filter((r) => r.labels.length).length;
+  if (!genre && labelled) console.log(`ℹ ${labelled} rule(s) of ${portrait} §8 carry a genre label — without --genre every rule judges every text; name the text's genre: --genre ${GENRES.join('|')}`);
+  const stops = rules.filter((r) => r.cls === 'stop').length;
+  const positives = rules.length - stops;
   const marker = readMarker(), pSha = sha256(portraitText);
   const names = FILES.map((f) => f.replace(/\\/g, '/'));
   let nHits = 0, nWitness = 0, nW = 0, judged = 0, silenced = 0;
@@ -15862,7 +15905,7 @@ function check() {
   const perFile = !(runWitness.findings.length && (!loadsOf(marker).length || (marker && marker.portrait && marker.portrait !== portrait)));
   if (!perFile) { nWitness += FILES.length; console.log(`✖ ${runWitness.findings[0]} — ${FILES.length} file(s): ${names.join(', ')}`); }
   FILES.forEach((f, i) => {
-    const r = lintText(names[i], readFileSync(f, 'utf8'), p.rules);
+    const r = lintText(names[i], readFileSync(f, 'utf8'), rules);
     for (const x of r.findings) { nHits++; console.log(`${WARN ? '⚠' : '✖'} ${fmt(x)}`); }
     for (const w of r.warnings) { nW++; console.log(`⚠ ${w.file} — ${w.msg}`); }
     if (perFile) {
@@ -15873,6 +15916,7 @@ function check() {
     judged += r.judged; silenced += r.silenced;
   });
   const scope = `${FILES.length} file(s), ${judged} line(s) against ${portrait} §8 (${stops} stop rule(s) · ${positives} positive(s)` +
+    (genre ? ` · genre ${genre}: ${p.rules.length - rules.length} rule(s) of other genres silent` : '') +
     (silenced ? ` · ${silenced} hit(s) silenced by a row's exception` : '') + ')';
   const nF = nHits + nWitness;
   if (nF && !(WARN && !nWitness)) {
@@ -15989,9 +16033,28 @@ function selftest() {
   say(sectionsMatching(FIX.en.portrait, /^zzz/).matched === 0, '--sections that matches nothing reports zero (the caller refuses to load)');
   // the writing selection of a bare load (2.8)
   const w = writingSelection(WRITING_FIX);
-  say(w.kept.map((s) => s.label).join(' ') === '0 2 2.1 2-С 5 6 6Б 7', `the writing selection keeps §0 · §2 · §5 · §6 · §7 with their subsections in file order — a dotted 2.1, a Cyrillic «2-С», «6)» and a field «6Б» (got ${w.kept.map((s) => s.label).join(' ')})`);
-  say(/^# Portrait — head line\nthe binding note/.test(w.text) && !/## Corpus registry|## 1\.|## 4\.1|## 8\.|## 9\.|## Правила/.test(w.text), 'the writing text carries the head and never the registry, §1, §4.1, §8, §9 or the unnumbered modules');
-  say(w.left.map((s) => s.title).join(' | ') === 'Corpus registry | 1. How to read | Правила: Синтаксис и период | Правила: Пунктуация и ритм | Правила: Морфология и грамматика | Правила: Лексика | Правила: Графика | 4.1. Where the owner equals the school | 8. Machine heuristics | 9. Portrait journal', `every left-out section is named, in file order (got ${w.left.map((s) => s.title).join(' | ')})`);
+  say(w.kept.map((s) => s.label).join(' ') === '0 1 2 2.1 2-С 5 6 6Б 7', `the writing selection keeps §0 · §1 · §2 · §5 · §6 · §7 with their subsections in file order — a dotted 2.1, a Cyrillic «2-С», «6)» and a field «6Б» (got ${w.kept.map((s) => s.label).join(' ')})`);
+  say(/^# Portrait — head line\nthe binding note/.test(w.text) && /## 1\. How to read/.test(w.text) && !/## Corpus registry|## 4\.1|## 8\.|## 9\.|## Правила/.test(w.text), 'the writing text carries the head and §1 (how to read) and never the registry, §4.1, §8, §9 or the unnumbered modules');
+  say(w.left.map((s) => s.title).join(' | ') === 'Corpus registry | Правила: Синтаксис и период | Правила: Пунктуация и ритм | Правила: Морфология и грамматика | Правила: Лексика | Правила: Графика | 4.1. Where the owner equals the school | 8. Machine heuristics | 9. Portrait journal', `every left-out section is named, in file order (got ${w.left.map((s) => s.title).join(' | ')})`);
+  // genre (2.8, epic VO; origin ticket #102): labels, the applicability rule of the core's storage tool, the check filter, the essay load
+  const lab = (h) => labelsOf(h).join('+');
+  say(lab('[работа] Назови') === 'work' && lab('[документ] x') === 'document' && lab('[prose] y') === 'prose' && lab('[Work][document] z') === 'work+document',
+    `a label opening the hint is read in both languages and in either case, several in a row (got ${lab('[работа] Назови')} · ${lab('[Work][document] z')})`);
+  say(lab('[see §5] the rule') === '' && lab('the rule [работа]') === '' && lab('no label') === '', 'a bracketed word that is not a label, a label not OPENING the hint, no brackets — no label');
+  const matrix = { work: 'document ticket comment message reply', document: 'document', prose: 'essay', none: 'document ticket comment message reply essay' };
+  const got = Object.keys(matrix).map((l) => GENRES.filter((g) => applies({ labels: l === 'none' ? [] : [l] }, g)).join(' '));
+  say(JSON.stringify(got) === JSON.stringify(Object.values(matrix)) && applies({ labels: ['work'] }, null),
+    `applicability equals the storage tool's rule for every label and each of the six genres; no genre — every row (got ${got.join(' | ')})`);
+  const GP = '# P\n\n## 8. Machine heuristics\n\n| pattern | class | hint |\n|---|---|---|\n| `Remember that` | stop | [work] state the rule |\n| `Note that` | stop | say it plainly |\n';
+  const gp = parsePortrait(GP);
+  const onEssay = lintText('e.md', 'Remember that. Note that.\n', gp.rules.filter((r) => applies(r, 'essay')));
+  const onTicket = lintText('t.md', 'Remember that. Note that.\n', gp.rules.filter((r) => applies(r, 'ticket')));
+  say(gp.rules[0].labels.join() === 'work' && onEssay.findings.map((f) => f.fragment).join() === 'Note that' && onTicket.findings.length === 2,
+    `a [work] row is silent on an essay and names its hit on a ticket; an unlabelled row judges both (essay: ${onEssay.findings.map((f) => f.fragment).join()}; ticket: ${onTicket.findings.length})`);
+  const PF = [...WRITING_FIX.slice(0, 7), '## 3. The second register — prose', 'prose rule', ...WRITING_FIX.slice(7)].join('\n');
+  const plain = writingSelection(PF), essay = writingSelection(PF, [PROSE_SECTION]);
+  say(!plain.kept.some((s) => s.label === '3') && plain.left.some((s) => s.title.startsWith('3.')) && essay.kept.some((s) => s.label === '3') && /prose rule/.test(essay.text),
+    'a bare load leaves §3 (free prose) out and names it; the load of an essay keeps it');
   const titles = h2Sections(WRITING_FIX).sections.map((s) => s.title);
   const sels = w.left.map((s) => ({ title: s.title, ...selectorFor(s.title, titles) }));
   say(sels.every((x) => /^[\x20-\x7e]+$/.test(x.sel) && !/["'`\\]/.test(x.sel) && !/\$./.test(x.sel)), `the ready regexes are ASCII with no quote or backslash, a dollar only as the end anchor (got ${sels.map((x) => x.sel).join(' , ')})`);
@@ -16786,7 +16849,7 @@ actually moves a model — descriptions alone do not.
 The checklist is the INDEPENDENT check that follows writing BY this portrait — the text is first written
 by §2/§2-C/§5/§6, then checked here, then fixed, and only then it counts as written and goes to the owner
 (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation). 7A — the machine minute:
-`node .kaif/tools/kaif-voice-lint.mjs check <file…>` — the shipped module runs the §8 table (stop-patterns
+`node .kaif/tools/kaif-voice-lint.mjs check <file…> --genre <genre>` — the shipped module runs the §8 table (stop-patterns
 and required positives) over the artifact and prints every hit with the row's hint; `SKIPPED` is said in
 the report, never read as green. 7B — the semantic pass by a CLEAN instance (a subagent, or a fresh pass
 forbidden to see the writer's rationale) against the anti-portrait and the pairs. 7C — the second
@@ -16800,7 +16863,9 @@ grep stays silent. They live HERE, as the table below — the owner edits the pa
 them, and the shipped linter reads THIS table (`node .kaif/tools/kaif-voice-lint.mjs check <file…>`):
 prose in this section is invisible to it, and a §8 without the table makes the linter say `SKIPPED`
 aloud rather than pass green. Calibrate on the live artifact first (`--warn` prints the hits without
-reddening); noise above signal = the row is narrowed or deleted, never the guard weakened.
+reddening); noise above signal = the row is narrowed or deleted, never the guard weakened. A row that belongs to one genre
+OPENS its hint with a label — `[work]` (every genre but the essay), `[document]` (documents only), `[prose]` (the essay only);
+`check --genre <document|ticket|comment|message|reply|essay>` silences the rows of other genres, a row without a label judges every text.
 
 | pattern | class | hint | legal exception |
 |---|---|---|---|

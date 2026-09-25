@@ -12,7 +12,7 @@
 //  missed that portrait's lexicon «2-С», typed in Cyrillic; the functional run of the module (ck59b-load-field.mjs) found it; this
 //  probe now cuts by the module's rule — the re-run is in testcases/reports/2026-09-25_ck59b-portrait-writing-sections.md]
 import { readFileSync, existsSync } from 'node:fs';
-const WRITING = ['0', '2', '5', '6', '7'];
+const WRITING = ['0', '1', '2', '5', '6', '7'];   // §1 since 2.8 epic VO, step VO2 (plans/120); CK5.9 measured 0 · 2 · 5 · 6 · 7
 const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9;   // the same rates as the entry-cost line of `check` (KAIF-CORE.mjs)
 const tok = (s) => { let a = 0, o = 0; for (const ch of s) { if (ch.charCodeAt(0) < 128) a++; else o++; } return a / ASCII_CHARS_PER_TOKEN + o / OTHER_CHARS_PER_TOKEN; };
 const files = process.argv.slice(2);

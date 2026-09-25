@@ -12,7 +12,7 @@
 //           system clock; the marker is session state, ignored by git like the refresh marker). Since 2.8
 //           (epic CK; origin issue #99 p. 3 — a field portrait weighed ~170k tokens and was loaded whole for
 //           every unit) a bare `load` prints the WRITING sections: the head before the first H2 and the H2
-//           sections numbered 0 · 2 · 5 · 6 · 7 with their subsections — 2-C among them (the owner's bans, the
+//           sections numbered 0 · 1 · 2 · 5 · 6 · 7 (2.8 epic VO: + §1; `--genre essay` + §3) with their subsections — 2-C among them (the owner's bans, the
 //           rules, the lexicon, the anti-portrait, the before/after pairs, the checklist), prints what that costs in tokens, and names
 //           every section it left out with its weight and a ready ASCII-only `--sections` command; `--all`
 //           prints the whole portrait; a portrait with no numbered writing section is printed whole, said aloud;
@@ -65,7 +65,7 @@
 //                                                                        # --sections: the head + the H2 sections
 //                                                                        # matching) + write the witness — BEFORE
 //                                                                        # the first word
-//   node .kaif/tools/kaif-voice-lint.mjs check <files…> [--warn]         # portrait: AUTHOR_STYLOMETRY.md at the
+//   node .kaif/tools/kaif-voice-lint.mjs check <files…> [--genre <genre>] [--warn]  # a row labelled [work]/[document]/[prose] (or RU) judges only its genres; portrait: AUTHOR_STYLOMETRY.md at the
 //                                                                        # project root, or .kaif/kaif.json → voicePortrait
 //   node .kaif/tools/kaif-voice-lint.mjs selftest                        # PROVE every answer on in-memory fixtures (EN + RU)
 // [TESTED: 2026-09-12 · selftest 48 cases green in 2 languages (a hit named 7:«Remember that» / 7:«Помни, что» with the row's
@@ -97,6 +97,12 @@
 //  load equals an independent cut, 142 printed regexes run and exact, --all whole (origin 991 of 3957 lines, ~37k of ~169k tokens);
 //  the functional run found an unanchored regex that loaded two sections and a field «6Б» the first rule missed — both fixed before
 //  commit; polygon `all 27 suites green`; report testcases/reports/2026-09-25_ck59b-portrait-writing-sections.md]
+// [TESTED: 2026-09-25 15:39 +03:00 · 2.8, epic VO, step VO2 (origin issue #102) — genre labels and §1: selftest 62 cases (+5: labels in both languages,
+//  the applicability of all six genres equal to the core storage tool's rule, the check filter, the essay load); s26 on the DEPLOYED
+//  module 61 of 61 (on dist v2.7 — 14 red, the 7 new genre asserts among them); mutants M7 «labels ignored» and M8 «§1 not a writing
+//  section» red exactly on their addressees; differential probe vo2-genre-parity — 126 verdicts, 0 disagreements with the storage tool;
+//  functional run on the owner's own prose (7 excerpts of the private prose module, counts only): no genre — 4 hits, all from [работа]
+//  rows; --genre essay — 0, green; --genre ticket — 4; eight real portraits load §1 with every ready regex exact; report testcases/reports/2026-09-25_vo2-genre-labels.md]
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -108,7 +114,9 @@ const WARN = argv.includes('--warn');
 const ALL = argv.includes('--all');
 const SECTIONS_AT = argv.indexOf('--sections');
 const SECTIONS_ARG = SECTIONS_AT >= 0 ? argv[SECTIONS_AT + 1] : null;
-const FILES = argv.slice(1).filter((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--sections');
+const GENRE_AT = argv.indexOf('--genre');
+const GENRE_ARG = GENRE_AT >= 0 ? argv[GENRE_AT + 1] : null;
+const FILES = argv.slice(1).filter((a, i, all) => !a.startsWith('--') && all[i - 1] !== '--sections' && all[i - 1] !== '--genre');
 const EXIT_FINDINGS = 1;
 const EXIT_USAGE = 2;
 const EXIT_SKIPPED = 3;
@@ -119,13 +127,34 @@ const FRAGMENT_MAX = 80;
 const LOADS_KEPT = 100;               // the load history a witness keeps (the oldest fall off)
 export const STALE_MINUTES = 60;      // the hour rule of context refresh: an older load is no longer "in the cache"
 export const BOUNDARY = 'likeness is not judged — that verdict is the owner\'s (the taste class); the linter catches only the explicit patterns of the portrait\'s §8 table';
-const USAGE = 'usage: node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>] | check <files…> [--warn] | selftest';
+const USAGE = 'usage: node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>] [--genre <genre>] | check <files…> [--genre <genre>] [--warn] | selftest';
 // The WRITING sections a bare `load` prints (2.8, epic CK; the origin's plan names the decision and its sources): the numbered
 // H2 sections the canon's fourth obligation and the portrait's own "how to use" name for writing — §0 the bans the owner dictated,
-// §2 the rules, §5 the anti-portrait, §6 the before/after pairs, §7 the checklist run before handing a text over — each WITH its
-// lettered or dotted subsections: §2-C the lexicon (a Cyrillic «2-С» as well — a field portrait types it so), a field «6Б» of more
-// pairs, a «2.1»; «4.1» stays with its §4. A title opens with its label: digits, then subsection parts, then «.» or «)» and a space.
-export const WRITING_SECTIONS = ['0', '2', '5', '6', '7'];
+// §1 how to read the portrait (a 2.x core: the order of work and its terms — the core tells the writer to keep §0–§3 in context;
+// epic VO), §2 the rules, §5 the anti-portrait, §6 the before/after pairs, §7 the checklist run before handing a text over — each
+// WITH its lettered or dotted subsections: §2-C the lexicon (a Cyrillic «2-С» as well — a field portrait types it so), a field
+// «6Б» of more pairs, a «2.1»; «4.1» stays with its §4. §3 — the second register, free prose — joins with `--genre essay`.
+// A title opens with its label: digits, then subsection parts, then «.» or «)» and a space.
+export const WRITING_SECTIONS = ['0', '1', '2', '5', '6', '7'];
+export const PROSE_SECTION = '3';
+// Genres and genre labels (2.8, epic VO; origin ticket #102) — the SAME genre names and the SAME rule as the tool of the owner's core
+// storage (its `voice-check.mjs`), so one label means one thing in both: a §8 row whose hint OPENS with a label judges only its
+// genres — [работа]/[work] every genre but essay, [документ]/[document] only document, [проза]/[prose] only essay; a row without a
+// label judges every text. A bracketed word that is not a label (a «[see §5]») is left in the hint and labels nothing.
+export const GENRES = ['document', 'ticket', 'comment', 'message', 'reply', 'essay'];
+const LABEL_WORDS = { work: /^(?:работа|work)$/i, document: /^(?:документ|document)$/i, prose: /^(?:проза|prose)$/i };
+const HINT_LABELS = /^\s*((?:\[[^\]\n]+\]\s*)+)/;
+export function labelsOf(hint) {
+  const m = HINT_LABELS.exec(hint || '');
+  if (!m) return [];
+  return [...m[1].matchAll(/\[([^\]]+)\]/g)]
+    .map((x) => Object.keys(LABEL_WORDS).find((k) => LABEL_WORDS[k].test(x[1].trim())))
+    .filter(Boolean);
+}
+export function applies(rule, genre) {
+  if (!genre || !rule.labels || !rule.labels.length) return true;
+  return rule.labels.some((l) => (l === 'work' && genre !== 'essay') || (l === 'document' && genre === 'document') || (l === 'prose' && genre === 'essay'));
+}
 const WRITING_LABEL = /^((\d+)(?:-?[A-Za-zА-Яа-яЁё]|\.\d+)*)[.)]\s/u;
 // Tokens at the SAME two rates as the entry-cost line of the core's `check` (KAIF-CORE.mjs; the origin's build holds the pair):
 // ASCII at 2.5 characters per token (the model page: "1M tokens ~ 2.5M characters"), any other character at 1.9 (origin issue
@@ -246,7 +275,7 @@ export function parsePortrait(text) {
         try { excRe = new RegExp(unicodeBody(em[1]), 'u' + (em[2].includes('i') ? 'i' : '')); }
         catch (e) { notes.push(`row at line ${row.n}: the exception regex does not compile — ${e.message}`); }
       }
-      rules.push({ line: row.n, source, re, cls, hint, exception, excRe });
+      rules.push({ line: row.n, source, re, cls, hint, exception, excRe, labels: labelsOf(hint) });
     }
   }
   if (!recognised) return { status: 'no-table', rules: [], notes, tables };
@@ -279,12 +308,13 @@ export function sectionsMatching(text, re) {
 // The WRITING selection of a bare `load` → { text, matched, kept: [{ title, label }], left: [{ title, tokens }] }: the head plus the
 // H2 sections whose label's leading number is one of WRITING_SECTIONS. `matched` = 0 — a portrait with no numbered writing section:
 // the caller prints it whole and says so (a portrait missing from the working context costs more than a heavy one).
-export function writingSelection(text) {
+export function writingSelection(text, extra = []) {
   const { head, sections } = h2Sections(text);
   const kept = [], left = [];
+  const numbers = [...WRITING_SECTIONS, ...extra];
   for (const s of sections) {
     const m = WRITING_LABEL.exec(s.title.trim());
-    if (m && WRITING_SECTIONS.includes(m[2])) kept.push({ ...s, label: m[1] });
+    if (m && numbers.includes(m[2])) kept.push({ ...s, label: m[1] });
     else left.push({ ...s, tokens: tokensOf(s.lines.join('\n')) });
   }
   return { text: joinCut(head, kept), matched: kept.length, kept, left };
@@ -405,6 +435,8 @@ function load() {
   if (!existsSync(portrait)) skipped(`no portrait at ${portrait} (${DEFAULT_PORTRAIT} at the project root, or ${MARKER} → voicePortrait) — nothing to load`);
   const text = readFileSync(portrait, 'utf8');
   if (ALL && SECTIONS_AT >= 0) usage('--all and --sections exclude each other — nothing loaded, no witness written');
+  if (GENRE_AT >= 0 && !GENRES.includes(GENRE_ARG)) usage(`--genre is one of: ${GENRES.join(' · ')} — nothing loaded, no witness written`);
+  const extra = GENRE_ARG === 'essay' ? [PROSE_SECTION] : [];   // the free-prose register joins the writing sections of an essay
   let filter = null;
   if (SECTIONS_AT >= 0) {
     if (!SECTIONS_ARG || SECTIONS_ARG.startsWith('--')) usage('--sections needs a regex — nothing loaded, no witness written');
@@ -418,9 +450,9 @@ function load() {
     if (!sel.matched) usage(`no H2 section of ${portrait} matches --sections ${SECTIONS_ARG} — nothing loaded, no witness written`);
     printed = sel.text; sections = filter.source;
   } else if (!ALL) {
-    const sel = writingSelection(text);
-    if (sel.matched) { printed = sel.text; sections = 'writing'; left = sel.left; why = ` — the head and ${sel.kept.map((s) => '§' + s.label).join(' · ')}`; }
-    else why = ` — no writing section (${WRITING_SECTIONS.map((n) => '§' + n).join(' · ')} or their subsections) is numbered in this portrait, so the whole of it is loaded`;
+    const sel = writingSelection(text, extra);
+    if (sel.matched) { printed = sel.text; sections = extra.length ? `writing, genre ${GENRE_ARG}` : 'writing'; left = sel.left; why = ` — the head and ${sel.kept.map((s) => '§' + s.label).join(' · ')}`; }
+    else why = ` — no writing section (${[...WRITING_SECTIONS, ...extra].map((n) => '§' + n).join(' · ')} or their subsections) is numbered in this portrait, so the whole of it is loaded`;
   }
   printed = printed.replace(/\s*$/, '');
   process.stdout.write(printed + '\n');
@@ -461,8 +493,15 @@ function check() {
   if (p.status === 'no-section') skipped(`${portrait} has no §8 "Machine heuristics" section`);
   if (p.status === 'no-table') skipped(`§8 of ${portrait} carries no pattern table (${p.tables ? 'its table lacks the pattern/hint columns' : 'prose only'}) — nothing for the linter to read; put the greps into the table pattern · class · hint · exception (the shipped skeleton .kaif/_owner-voice-template.md shows the form)`);
   if (p.status === 'no-rules') skipped(`the §8 table of ${portrait} holds no rule — placeholders are not rules`);
-  const stops = p.rules.filter((r) => r.cls === 'stop').length;
-  const positives = p.rules.length - stops;
+  if (GENRE_AT >= 0 && !GENRES.includes(GENRE_ARG)) usage(`--genre is one of: ${GENRES.join(' · ')}`);
+  const genre = GENRE_AT >= 0 ? GENRE_ARG : null;
+  // A row labelled for another genre stays silent on this text (origin ticket #102: a portrait's work-only rows stopped the owner's
+  // own prose 214 times of 217); without --genre every row judges every text, as before, and the run says the labels exist.
+  const rules = p.rules.filter((r) => applies(r, genre));
+  const labelled = p.rules.filter((r) => r.labels.length).length;
+  if (!genre && labelled) console.log(`ℹ ${labelled} rule(s) of ${portrait} §8 carry a genre label — without --genre every rule judges every text; name the text's genre: --genre ${GENRES.join('|')}`);
+  const stops = rules.filter((r) => r.cls === 'stop').length;
+  const positives = rules.length - stops;
   const marker = readMarker(), pSha = sha256(portraitText);
   const names = FILES.map((f) => f.replace(/\\/g, '/'));
   let nHits = 0, nWitness = 0, nW = 0, judged = 0, silenced = 0;
@@ -472,7 +511,7 @@ function check() {
   const perFile = !(runWitness.findings.length && (!loadsOf(marker).length || (marker && marker.portrait && marker.portrait !== portrait)));
   if (!perFile) { nWitness += FILES.length; console.log(`✖ ${runWitness.findings[0]} — ${FILES.length} file(s): ${names.join(', ')}`); }
   FILES.forEach((f, i) => {
-    const r = lintText(names[i], readFileSync(f, 'utf8'), p.rules);
+    const r = lintText(names[i], readFileSync(f, 'utf8'), rules);
     for (const x of r.findings) { nHits++; console.log(`${WARN ? '⚠' : '✖'} ${fmt(x)}`); }
     for (const w of r.warnings) { nW++; console.log(`⚠ ${w.file} — ${w.msg}`); }
     if (perFile) {
@@ -483,6 +522,7 @@ function check() {
     judged += r.judged; silenced += r.silenced;
   });
   const scope = `${FILES.length} file(s), ${judged} line(s) against ${portrait} §8 (${stops} stop rule(s) · ${positives} positive(s)` +
+    (genre ? ` · genre ${genre}: ${p.rules.length - rules.length} rule(s) of other genres silent` : '') +
     (silenced ? ` · ${silenced} hit(s) silenced by a row's exception` : '') + ')';
   const nF = nHits + nWitness;
   if (nF && !(WARN && !nWitness)) {
@@ -599,9 +639,28 @@ function selftest() {
   say(sectionsMatching(FIX.en.portrait, /^zzz/).matched === 0, '--sections that matches nothing reports zero (the caller refuses to load)');
   // the writing selection of a bare load (2.8)
   const w = writingSelection(WRITING_FIX);
-  say(w.kept.map((s) => s.label).join(' ') === '0 2 2.1 2-С 5 6 6Б 7', `the writing selection keeps §0 · §2 · §5 · §6 · §7 with their subsections in file order — a dotted 2.1, a Cyrillic «2-С», «6)» and a field «6Б» (got ${w.kept.map((s) => s.label).join(' ')})`);
-  say(/^# Portrait — head line\nthe binding note/.test(w.text) && !/## Corpus registry|## 1\.|## 4\.1|## 8\.|## 9\.|## Правила/.test(w.text), 'the writing text carries the head and never the registry, §1, §4.1, §8, §9 or the unnumbered modules');
-  say(w.left.map((s) => s.title).join(' | ') === 'Corpus registry | 1. How to read | Правила: Синтаксис и период | Правила: Пунктуация и ритм | Правила: Морфология и грамматика | Правила: Лексика | Правила: Графика | 4.1. Where the owner equals the school | 8. Machine heuristics | 9. Portrait journal', `every left-out section is named, in file order (got ${w.left.map((s) => s.title).join(' | ')})`);
+  say(w.kept.map((s) => s.label).join(' ') === '0 1 2 2.1 2-С 5 6 6Б 7', `the writing selection keeps §0 · §1 · §2 · §5 · §6 · §7 with their subsections in file order — a dotted 2.1, a Cyrillic «2-С», «6)» and a field «6Б» (got ${w.kept.map((s) => s.label).join(' ')})`);
+  say(/^# Portrait — head line\nthe binding note/.test(w.text) && /## 1\. How to read/.test(w.text) && !/## Corpus registry|## 4\.1|## 8\.|## 9\.|## Правила/.test(w.text), 'the writing text carries the head and §1 (how to read) and never the registry, §4.1, §8, §9 or the unnumbered modules');
+  say(w.left.map((s) => s.title).join(' | ') === 'Corpus registry | Правила: Синтаксис и период | Правила: Пунктуация и ритм | Правила: Морфология и грамматика | Правила: Лексика | Правила: Графика | 4.1. Where the owner equals the school | 8. Machine heuristics | 9. Portrait journal', `every left-out section is named, in file order (got ${w.left.map((s) => s.title).join(' | ')})`);
+  // genre (2.8, epic VO; origin ticket #102): labels, the applicability rule of the core's storage tool, the check filter, the essay load
+  const lab = (h) => labelsOf(h).join('+');
+  say(lab('[работа] Назови') === 'work' && lab('[документ] x') === 'document' && lab('[prose] y') === 'prose' && lab('[Work][document] z') === 'work+document',
+    `a label opening the hint is read in both languages and in either case, several in a row (got ${lab('[работа] Назови')} · ${lab('[Work][document] z')})`);
+  say(lab('[see §5] the rule') === '' && lab('the rule [работа]') === '' && lab('no label') === '', 'a bracketed word that is not a label, a label not OPENING the hint, no brackets — no label');
+  const matrix = { work: 'document ticket comment message reply', document: 'document', prose: 'essay', none: 'document ticket comment message reply essay' };
+  const got = Object.keys(matrix).map((l) => GENRES.filter((g) => applies({ labels: l === 'none' ? [] : [l] }, g)).join(' '));
+  say(JSON.stringify(got) === JSON.stringify(Object.values(matrix)) && applies({ labels: ['work'] }, null),
+    `applicability equals the storage tool's rule for every label and each of the six genres; no genre — every row (got ${got.join(' | ')})`);
+  const GP = '# P\n\n## 8. Machine heuristics\n\n| pattern | class | hint |\n|---|---|---|\n| `Remember that` | stop | [work] state the rule |\n| `Note that` | stop | say it plainly |\n';
+  const gp = parsePortrait(GP);
+  const onEssay = lintText('e.md', 'Remember that. Note that.\n', gp.rules.filter((r) => applies(r, 'essay')));
+  const onTicket = lintText('t.md', 'Remember that. Note that.\n', gp.rules.filter((r) => applies(r, 'ticket')));
+  say(gp.rules[0].labels.join() === 'work' && onEssay.findings.map((f) => f.fragment).join() === 'Note that' && onTicket.findings.length === 2,
+    `a [work] row is silent on an essay and names its hit on a ticket; an unlabelled row judges both (essay: ${onEssay.findings.map((f) => f.fragment).join()}; ticket: ${onTicket.findings.length})`);
+  const PF = [...WRITING_FIX.slice(0, 7), '## 3. The second register — prose', 'prose rule', ...WRITING_FIX.slice(7)].join('\n');
+  const plain = writingSelection(PF), essay = writingSelection(PF, [PROSE_SECTION]);
+  say(!plain.kept.some((s) => s.label === '3') && plain.left.some((s) => s.title.startsWith('3.')) && essay.kept.some((s) => s.label === '3') && /prose rule/.test(essay.text),
+    'a bare load leaves §3 (free prose) out and names it; the load of an essay keeps it');
   const titles = h2Sections(WRITING_FIX).sections.map((s) => s.title);
   const sels = w.left.map((s) => ({ title: s.title, ...selectorFor(s.title, titles) }));
   say(sels.every((x) => /^[\x20-\x7e]+$/.test(x.sel) && !/["'`\\]/.test(x.sel) && !/\$./.test(x.sel)), `the ready regexes are ASCII with no quote or backslash, a dollar only as the end anchor (got ${sels.map((x) => x.sel).join(' , ')})`);

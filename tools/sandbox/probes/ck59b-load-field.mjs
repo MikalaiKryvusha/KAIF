@@ -2,7 +2,7 @@
 // criterion 21 of plans/117; origin issue #99 p. 3) — `kaif-voice-lint load` walked the way a writing agent walks it, over COPIES of
 // real voice portraits. For every portrait named: the copy goes into a fresh temp project as AUTHOR_STYLOMETRY.md, then
 //   (1) a bare `load` — the printed body must equal the WRITING selection recomputed HERE by an independent cut (the head before the
-//       first H2 plus the H2 sections numbered 0 · 2 · 5 · 6 · 7 with their lettered or dotted subsections — the rule as the module's
+//       first H2 plus the H2 sections numbered 0 · 1 · 2 · 5 · 6 · 7 (§1 since 2.8 epic VO) with their lettered or dotted subsections — the rule as the module's
 //       header states it; the recon's first rule, 0 · 2 · 2-C · 5 · 6 · 7 with a Latin letter only, missed a field «2-С» typed in
 //       Cyrillic and a field «6Б» of more pairs — this probe's first run found both), and the summary's lines and tokens must equal
 //       the recount;
@@ -16,6 +16,8 @@
 //  two more field projects, the owner's private voice core): 8 of 8 OK, 142 printed regexes run and exact, sources unchanged; its
 //  first run found a field portrait's «6Б» that the module then read wrong and a lexicon «2-С» that the recon's rule missed; red with
 //  KAIF_VOICE_LINT=<the 2.7 module> — 2 of 2 BAD; report testcases/reports/2026-09-25_ck59b-portrait-writing-sections.md]
+// [TESTED: 2026-09-25 15:39 +03:00 · epic VO, §1 among the writing sections: the same eight portraits (the origin now a snapshot of core 2.2) — 8 of 8 OK,
+//  every ready regex exact, sources unchanged; origin 462 of 642 lines (~18k of ~25k tokens); report testcases/reports/2026-09-25_vo2-genre-labels.md]
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -25,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const LINT = process.env.KAIF_VOICE_LINT ? resolve(process.env.KAIF_VOICE_LINT) : join(REPO, 'framework', 'tools', 'kaif-voice-lint.mjs');
-const WRITING = ['0', '2', '5', '6', '7'];
+const WRITING = ['0', '1', '2', '5', '6', '7'];   // §1 since 2.8 epic VO, step VO2 (plans/120); CK5.9 measured 0 · 2 · 5 · 6 · 7
 const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9;     // the rates of the core's entry-cost line
 const tok = (s) => { let a = 0, o = 0; for (const ch of s) { if (ch.charCodeAt(0) < 128) a++; else o++; } return a / ASCII_CHARS_PER_TOKEN + o / OTHER_CHARS_PER_TOKEN; };
 const k = (t) => (t < 1000 ? `~${Math.round(t)}` : `~${Math.round(t / 1000)}k`);

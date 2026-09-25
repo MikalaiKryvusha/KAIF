@@ -356,13 +356,13 @@ ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER.**
 Three steps, in this order, and the report names each:
 1. **Write BY the portrait — with it in your working context.** Before the first word,
    `node .kaif/tools/kaif-voice-lint.mjs load` prints the writing sections of `AUTHOR_STYLOMETRY.md` into your context — the
-   bans §0, the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6, the checklist §7; it names the rest
+   bans §0, how to read it §1, the rules §2, the lexicon §2-C, the anti-portrait §5, the pairs §6, the checklist §7 (`--genre essay`: + prose §3); it names the rest
    with their `--sections` commands, `--all` loads the whole — and leaves the witness `.kaif/voice-marker.json`; write by it while it is there. A draft written "natively" and
    re-voiced afterwards is the class this obligation closes, not its execution — `check` refuses a text with
    no load witness, last written before the first load, or written more than an hour after the last load (the
    hour rule of context refresh: the portrait had left the cache) — "written past the portrait".
 2. **Check INDEPENDENTLY by the same portrait.** The machine minute —
-   `node .kaif/tools/kaif-voice-lint.mjs check <file…>` (the §8 table; no portrait or a §8 without the table
+   `node .kaif/tools/kaif-voice-lint.mjs check <file…> --genre <genre>` (the §8 table — a row labelled for another genre stays silent; no portrait or a §8 without the table
    → `SKIPPED=3`, said in the report in those words, never read as green) — and the semantic pass §7B by a
    CLEAN instance: a subagent, or a fresh pass forbidden to see the writer's rationale (the judge of the
    rewrite pipeline, applied to every unit). The writer's own glance is not an independent check.
