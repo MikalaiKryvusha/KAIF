@@ -585,14 +585,18 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
     // bugs/62: вопрос, который владелец не может ОТВЕТИТЬ в один клик. Отказ называет верный ход
     // (семейство 12) — обе легальные формы варианта и законный выход «свободный вопрос».
     ...iv.unanswerable.map((u) => (u.arch
-      ? { ...u, kind: u.arch.kind === 'hits-unread'
+      ? { ...u, kind: u.arch.kind === 'placeholder'
+            ? 'АРХЕОЛОГИЯ: строка аттестации не заполнена — заглушки <…> шаблона (G11, суд OW10)'
+            : u.arch.kind === 'hits-unread'
             ? 'АРХЕОЛОГИЯ: попадания есть, ни одно не прочитано (G11, issue #74)'
             : u.arch.kind === 'hits-without-prior'
             ? 'АРХЕОЛОГИЯ: попадания есть, прошлый ответ не назван (G11, issue #70)'
             : u.arch.kind === 'malformed'
             ? 'АРХЕОЛОГИЯ: аттестация не в форме (G11, issue #70)'
             : 'ВОПРОС БЕЗ АРХЕОЛОГИИ (G11, issue #70)',
-          text: u.arch.kind === 'hits-unread'
+          text: u.arch.kind === 'placeholder'
+            ? `${u.q}: в аттестации остались заглушки <…> шаблона — впиши, что ПРОЧИТАНО (файлы или none), и прошлый ответ (none, ответ с адресом или unrelated — почему)`
+            : u.arch.kind === 'hits-unread'
             ? `${u.q}: аттестация говорит «→ ${u.arch.hits} hits» и «read: none» — поиск НАШЁЛ, а прочитано ничего; прочитай попадания `
               + '(дверь ищет сама: node tools/review.mjs --search "<вопрос>") и назови прочитанное, затем прошлый ответ или `prior: unrelated — <почему>`'
             : u.arch.kind === 'hits-without-prior'

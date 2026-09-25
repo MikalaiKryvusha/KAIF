@@ -1679,6 +1679,10 @@ export async function selftest(log = console.log) {
   ok(aqCheck(aqHead('2026-09-20') + aqQ(AQ_OK.replace('0 hits', '2 hits').replace('read: none', 'read: ' + OW5_PRIOR)
     .replace('prior: none', 'prior: unrelated — a different screen'))) === 0,
     'archaeology: hits with the file READ and `prior: unrelated — <why>` → exit 0 (the door refuses the unread find, never the find)');
+  // judge OW10 H3: the ready line `--search` prints, pasted UNFILLED (its <…> placeholders) — refused, never «attested»
+  ok(aqCheck(aqHead('2026-09-20') + aqQ('<!-- archaeology: search "name|game|curren" → 2 hits · read: <what you read | none> · prior: <none | "<prior answer>" + address | unrelated — why> -->\n\n')) === 3
+    && lines.some((l) => /template's <…> placeholders/.test(l)),
+    'archaeology: the search\'s ready attestation pasted UNFILLED (<…> placeholders) → exit 3 — an unfilled line attests nothing (judge OW10 H3)');
   rmSync(join(root, OW5_PRIOR), { force: true }); rmSync(join(root, AQD), { force: true });
   // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
   const IMPL = 'interviews/interview_097_impl.md';

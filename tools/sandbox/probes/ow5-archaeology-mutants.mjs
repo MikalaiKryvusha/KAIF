@@ -13,6 +13,9 @@ const M = [
   ['search case-sensitive (the #74 threat)', 'core.mjs', ".join('|'), 'iu');", ".join('|'), 'u');", ['finds a CAPITAL Cyrillic word']],
   ['unread hits accepted', 'core.mjs', "    if (a.hits > 0 && a.readNone) out.problems.push({ id: q.id, kind: 'hits-unread', hits: a.hits, grep });",
     "    if (false) out.problems.push({ id: q.id, kind: 'hits-unread', hits: a.hits, grep });", ['`N hits · read: none` → exit 3']],
+  // judge OW10 H3: the search's ready line pasted unfilled passed as «attested» — the placeholder rule, removed, must redden exactly its case
+  ['template placeholders accepted (judge OW10 H3)', 'core.mjs', '  if (ARCHAEOLOGY_PLACEHOLDER_RE.test(m[1])) return { present: true, formOk: false, placeholder: true };',
+    '  if (false) return { present: true, formOk: false, placeholder: true };', ['pasted UNFILLED']],
 ];
 let bad = 0;
 for (const [name, file, from, to, exp] of M) {

@@ -10624,6 +10624,7 @@ const ARCHAEOLOGY_HITS_RE = /(?:→|->)\s*(\d+)\s*hits/iu;
 const ARCHAEOLOGY_PRIOR_RE = /prior:\s*([\s\S]*)$/iu;
 const ARCHAEOLOGY_PRIOR_NONE_RE = /^\s*none(?![\p{L}\d])/iu;
 const ARCHAEOLOGY_READ_NONE_RE = /read:\s*none(?![\p{L}\d])/iu;   // OW5 (2.8, #74): hits found and NOTHING read — refused
+const ARCHAEOLOGY_PLACEHOLDER_RE = /<[^<>]*>/u;   // judge OW10 H3: a `<…>` of the template left unfilled is not an attestation
 const STOP_WORDS = new Set(String(PARSER.archaeologyStopWords || '').split('|').filter(Boolean));
 
 /** The document's header date: the `Created` line of the head when present, else its first ISO date. */
@@ -10694,6 +10695,7 @@ export function archaeologyOf(q) {
   const hits = m[1].match(ARCHAEOLOGY_HITS_RE);
   const prior = m[1].match(ARCHAEOLOGY_PRIOR_RE);
   if (!hits || !prior) return { present: true, formOk: false };
+  if (ARCHAEOLOGY_PLACEHOLDER_RE.test(m[1])) return { present: true, formOk: false, placeholder: true }; // the search's ready line pasted unfilled
   return { present: true, formOk: true, hits: Number(hits[1]), priorNone: ARCHAEOLOGY_PRIOR_NONE_RE.test(prior[1]), readNone: ARCHAEOLOGY_READ_NONE_RE.test(m[1]) };
 }
 
@@ -10718,7 +10720,7 @@ export function archaeology(md) {
       else out.exempt++;                                 // no searchable word in the heading — no command to print
       continue;
     }
-    if (!a.formOk) { out.problems.push({ id: q.id, kind: 'malformed', grep }); continue; }
+    if (!a.formOk) { out.problems.push({ id: q.id, kind: a.placeholder ? 'placeholder' : 'malformed', grep }); continue; }
     out.attested++;
     if (a.hits > 0 && a.readNone) out.problems.push({ id: q.id, kind: 'hits-unread', hits: a.hits, grep });   // OW5 (#74)
     else if (a.hits > 0 && a.priorNone) out.problems.push({ id: q.id, kind: 'hits-without-prior', hits: a.hits, grep });
@@ -10731,6 +10733,9 @@ function archaeologyProblems(md) {
   const ARCH = (grep) => '<!-- archaeology: ' + (grep || 'grep -rniE "<nouns>" ' + ARCHAEOLOGY_PATHS)
     + ' → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->';
   return archaeology(md).problems.map((p) => {
+    if (p.kind === 'placeholder')
+      return p.id + ': the archaeology line still carries the template\'s <…> placeholders — fill what you READ (files or `none`) and the prior'
+        + ' answer (`none`, the prior answer with its address, or `unrelated — <why>`); an unfilled line attests nothing.';
     if (p.kind === 'hits-unread')
       return p.id + ': archaeology says ' + p.hits + ' hits and `read: none` — the search FOUND something and nothing was read. Read the hits'
         + ' (the door searches for you: review.mjs --search "<the question>") and name what you read, then the prior answer or `prior: unrelated — <why>`.';
@@ -12680,6 +12685,10 @@ export async function selftest(log = console.log) {
   ok(aqCheck(aqHead('2026-09-20') + aqQ(AQ_OK.replace('0 hits', '2 hits').replace('read: none', 'read: ' + OW5_PRIOR)
     .replace('prior: none', 'prior: unrelated — a different screen'))) === 0,
     'archaeology: hits with the file READ and `prior: unrelated — <why>` → exit 0 (the door refuses the unread find, never the find)');
+  // judge OW10 H3: the ready line `--search` prints, pasted UNFILLED (its <…> placeholders) — refused, never «attested»
+  ok(aqCheck(aqHead('2026-09-20') + aqQ('<!-- archaeology: search "name|game|curren" → 2 hits · read: <what you read | none> · prior: <none | "<prior answer>" + address | unrelated — why> -->\n\n')) === 3
+    && lines.some((l) => /template's <…> placeholders/.test(l)),
+    'archaeology: the search\'s ready attestation pasted UNFILLED (<…> placeholders) → exit 3 — an unfilled line attests nothing (judge OW10 H3)');
   rmSync(join(root, OW5_PRIOR), { force: true }); rmSync(join(root, AQD), { force: true });
   // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
   const IMPL = 'interviews/interview_097_impl.md';
