@@ -6,7 +6,7 @@
 // usage: node tools/sandbox/probes/ck59b-portrait-writing-share.mjs <portrait.md>…   (no argument → usage, exit 2)
 // [TESTED: 2026-09-25 09:34 +03:00 · run over the voice portraits of three field deployments and of the origin, plus the shipped
 //  skeleton: NDim ~37k of ~170k tokens (4.5×) · KAGO ~73k of ~223k (3.1×) · Unliminium ~17k of ~34k (2.0×) · origin ~37k of ~169k
-//  (4.6×) · skeleton 73 of 170 lines (2.4×); the numbers are recorded in plans/118, step CK5.9 (b)]
+//  (4.6×) · skeleton 73 of 170 lines, ~2k of ~5k tokens (2.4× in tokens); the numbers are recorded in plans/118, step CK5.9 (b)]
 import { readFileSync, existsSync } from 'node:fs';
 const WRITING = ['0', '2', '2-C', '5', '6', '7'];
 const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9;   // the same rates as the entry-cost line of `check` (KAIF-CORE.mjs)
