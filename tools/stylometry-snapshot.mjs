@@ -42,8 +42,8 @@
 //  утечки и после фикса молчит. Пересборка против побайтного эталона: 114 слов убрано, новых
 //  токенов нет ни одного, кроме знака схлопывания.]
 
-import { readFileSync, writeFileSync, existsSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, rmSync, mkdirSync } from 'node:fs';
+import { join, basename, dirname } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { tempRoot } from './lib/temp-root.mjs';
 
@@ -51,7 +51,31 @@ const ROOT = process.cwd();
 const DEFAULT_SOURCE = 'd:/work/krinik_voice/AUTHOR_STYLOMETRY.md';
 const CONFIG_PATH = join(ROOT, 'tools', 'stylometry-snapshot.config.json');
 const HEADER_PATH = join(ROOT, 'tools', 'stylometry-snapshot-header.md');
+const HEADER_V2_PATH = join(ROOT, 'tools', 'stylometry-snapshot-header-v2.md');
 const OUT_PATH = join(ROOT, 'AUTHOR_STYLOMETRY.md');
+
+// ── Раскладка ядра 2.x (ядро голоса 2.2, 2026-09-25; эпик VO 2.8, `plans/120` шаг VO1) ───────────
+// Ядро 2.x переписано целиком: правила стоят строками таблиц и пунктами, а не заголовками `### З1.`;
+// рядом с ядром в хранилище живут два ПРИВАТНЫХ слоя — рабочий (формы и образцы рабочих жанров) и
+// модуль прозы (дословные отрывки прозы) — и в публичный слепок не едут никогда (#103 п. 3). Раскладку
+// узнаём по первой строке источника, профиль чистки — `v2` конфига (решение №60 в силе: правила едут,
+// непубличные фразы владельца — нет).
+// [TESTED: 2026-09-25 15:17 +03:00 · сессия 74: слепок истока собран из ядра 2.2 (`c4bbf85`) — приёмка пятью осями зелёная, `--check`
+//  совпадает; `--selftest` K1–K21 зелёный; шесть мутантов краснеют ровно на адресатах K16–K21; ось 5 красная на дереве утечки `19e19ff`
+//  и молчит на исправлении; путь 1.x побайтно цел (`--check` на ядре 1.2 — «совпадает»). Отчёт —
+//  testcases/reports/2026-09-25_vo1-snapshot-core22.md]
+const LAYOUT_V2_H1 = /^# Ядро голоса и мышления /;
+const PRIVATE_LAYER_H1 = /^# (Рабочий слой|Модуль прозы) ядра голоса/;
+const PRIVATE_LAYER_FILES = ['AUTHOR_STYLOMETRY_WORK.md', 'AUTHOR_STYLOMETRY_PROSE.md'];
+// Образец руки автора (§2.6 ядра 2.x) — целый текст владельца БЕЗ кавычек: построчная чистка его не
+// видит по построению, поэтому он судится БЛОКОМ — публичен в этом репозитории (каждая строка найдена
+// кодом) или заменяется строкой-объявлением.
+const SAMPLE_OPEN = /^<образец id="([^"]+)"[^>]*>\s*$/;
+const SAMPLE_CLOSE = /^<\/образец>\s*$/;
+const SAMPLE_PROBE_WORDS = 8;
+const SAMPLE_MIN_LINE_WORDS = 5;
+// Правило ядра 2.x — идентификатор в первой ячейке строки таблицы или в жирной метке пункта.
+const RULE_ID_V2 = /(?:^\|\s*|^-\s*\*\*)((?:З|МШ|ГЛ|ШВ|ДК|ПР|R)\d+)(?=[\s.|·*])/gmu;
 
 // ── Правила чистки ──────────────────────────────────────────────────────────
 // Языковой токен: короткий спан без конечной пунктуации. Порог 3 слова выведен ЗАМЕРОМ по
@@ -92,6 +116,119 @@ function loadConfig() {
     return { allowSpans: [], publicEvidence: {}, dropSections: [], stopAfter: null };
   }
   return JSON.parse(readFileSync(CONFIG_PATH, 'utf8'));
+}
+
+/** Раскладка источника: 2 — ядро 2.x (узнаётся по заголовку), 1 — портрет 1.x. */
+function layoutOf(sourcePath) {
+  const first = readFileSync(sourcePath, 'utf8').split(/\r?\n/, 1)[0] || '';
+  return LAYOUT_V2_H1.test(first) ? 2 : 1;
+}
+
+/** Текст без переносов, отступов и маркеров цитаты — общий знаменатель поиска публичности (и оси 5). */
+const normWords = (s) => s.replace(/\r?\n[ \t]*(?:>[ \t]*)*/g, ' ').replace(/\s+/g, ' ').trim();
+
+/**
+ * Профиль чистки под раскладку источника. Для 2.x — блок `v2` конфига: белый список несёт причину
+ * на каждый спан, а публичность фразы и образца проверяет КОД по файлу этого репозитория — запись
+ * конфига, которую файл не подтверждает, роняет сборку (fail-closed: «публично» без улики — выдумка).
+ */
+function effectiveConfig(cfg, sourcePath) {
+  if (layoutOf(sourcePath) !== 2) return { ...cfg, layout: 1, headerPath: HEADER_PATH };
+  const v2 = cfg.v2;
+  if (!v2) throw new Error('источник — ядро 2.x, а в конфиге нет профиля `v2` — слепок НЕ пересобран');
+  const publicSpans = Object.entries(v2.publicSpans || {});
+  for (const [span, file] of publicSpans) {
+    const full = join(ROOT, file);
+    if (!existsSync(full) || !normWords(readFileSync(full, 'utf8')).includes(normWords(span))) {
+      throw new Error(`публичность фразы не подтверждена файлом ${file}: «${span.slice(0, 60)}» — слепок НЕ пересобран`);
+    }
+  }
+  return {
+    ...cfg,
+    layout: 2,
+    headerPath: HEADER_V2_PATH,
+    startAtHeading: v2.startAtHeading,
+    dropSections: v2.dropSections || [],
+    // Белый список 1.x наследуется: он пересмотрен кругами проверки слепка 1.x; записи v2 — сверх него, с причиной.
+    allowSpans: [...(cfg.allowSpans || []), ...(v2.allowSpans || []).map((a) => a.span), ...publicSpans.map(([span]) => span)],
+    publicSpans: publicSpans.map(([span]) => span),
+    publicEvidence: {},
+    publicSamples: v2.publicSamples || {},
+  };
+}
+
+/**
+ * Образец публичен, когда конфиг называет файл этого репозитория И каждая строка образца (от пяти слов)
+ * найдена в нём первыми восемью словами. Конфиг назвал файл, а файл строку не подтвердил — отказ.
+ */
+function samplePublic(id, block, cfg) {
+  const file = (cfg.publicSamples || {})[id];
+  if (!file) return false;
+  const full = join(ROOT, file);
+  const hay = existsSync(full) ? normWords(readFileSync(full, 'utf8')) : '';
+  for (const l of block) {
+    const words = l.trim().split(/\s+/).filter(Boolean);
+    if (words.length < SAMPLE_MIN_LINE_WORDS) continue;
+    const probe = words.slice(0, SAMPLE_PROBE_WORDS).join(' ');
+    if (!hay.includes(probe)) {
+      throw new Error(`образец ${id} назван публичным (${file}), но строка «${probe}…» в файле не найдена — слепок НЕ пересобран`);
+    }
+  }
+  return true;
+}
+
+/**
+ * Ось 5 приёмки — фраза, которую слепок СХЛОПНУЛ как непубличную, не стоит ни в одном отслеживаемом файле
+ * репозитория (кроме самого слепка). Оплачено сессией 74: отчёт шага VO0 процитировал непубличные фразы
+ * владельца из ядра 2.2 и ушёл в origin (`19e19ff`) — слепок их прятал, а соседний документ публиковал.
+ * Короче трёх слов не судится (частые обороты дали бы шум). `grepFn` — шов для селфтеста.
+ */
+const ELSEWHERE_MIN_WORDS = 3;
+// Поиск идёт по СКЛЕЕННОМУ тексту файла: markdown переносит фразу на следующую строку, иногда с отступом или маркером
+// цитаты `>`, и построчный `git grep` такую фразу не видит (прогон по дереву `19e19ff`: из двух процитированных фраз
+// построчный поиск нашёл одну — вторая была разорвана переносом).
+const TEXT_EXT = /\.(md|mjs|js|json|txt|html|yml|yaml)$/i;
+let trackedCache = null;
+const glue = (s) => s.replace(/\r?\n[ \t]*(?:>[ \t]*)*/g, ' ').replace(/[ \t]+/g, ' ');
+function trackedTexts() {
+  if (trackedCache) return trackedCache;
+  const files = execFileSync('git', ['-C', ROOT, 'ls-files'], { encoding: 'utf8' }).split('\n')
+    .filter((f) => f && TEXT_EXT.test(f) && f !== 'AUTHOR_STYLOMETRY.md');
+  trackedCache = files.map((f) => {
+    try { return { f, text: glue(readFileSync(join(ROOT, f), 'utf8')) }; } catch { return { f, text: '' }; }
+  });
+  return trackedCache;
+}
+function gitGrepFiles(span) {
+  const needle = glue(span);
+  return trackedTexts().filter(({ text }) => text.includes(needle)).map(({ f }) => f);
+}
+function leakedElsewhere(spans, grepFn = gitGrepFiles) {
+  const failures = [];
+  for (const span of new Set(spans)) {
+    if (span.trim().split(/\s+/).filter(Boolean).length < ELSEWHERE_MIN_WORDS) continue;
+    const files = grepFn(span);
+    if (files.length) failures.push(`непубличная фраза, схлопнутая слепком, стоит в ${files.slice(0, 3).join(', ')}: «${span.slice(0, 40)}…»`);
+  }
+  return failures;
+}
+
+/**
+ * ПРИВАТНОЕ содержимое слоёв рядом с ядром 2.x — для оси n-грамм: блоки `<образец>` рабочего слоя (живые тексты
+ * рабочих жанров владельца) и модуля прозы (дословная проза). Правила, которые слой пересказывает из ядра, сюда
+ * не входят: они и есть ядро, и сверка с ними давала бы ложный красный (первый прогон 2.x — «слова и глифы
+ * образца в свой текст не…» из §2.6). Нет слоя или в нём нет ни одного образца — приёмка не полна (fail-closed).
+ */
+const LAYER_SAMPLE = /<образец[^>]*>\r?\n([\s\S]*?)\r?\n<\/образец>/g;
+function privateLayerTexts(sourcePath) {
+  const dir = dirname(sourcePath);
+  return PRIVATE_LAYER_FILES.map((f) => {
+    const p = join(dir, f);
+    if (!existsSync(p)) throw new Error(`приватный слой ${f} не найден рядом с ядром (${dir}) — ось против него не исполнима, слепок НЕ пересобран`);
+    const samples = [...readFileSync(p, 'utf8').matchAll(LAYER_SAMPLE)].map((m) => m[1]);
+    if (!samples.length) throw new Error(`в приватном слое ${f} нет ни одного блока <образец> — ось против него не исполнима, слепок НЕ пересобран`);
+    return { file: f, text: samples.join('\n\n'), samples: samples.length };
+  });
 }
 
 /** Разрешён ли спан к публикации без схлопывания.
@@ -277,7 +414,14 @@ function sourceProvenance(sourcePath) {
 /** Сборка слепка. */
 function build(sourcePath, cfg) {
   const src = readFileSync(sourcePath, 'utf8').split(/\r?\n/);
-  const stats = { rules: 0, evidenceGroups: 0, publicQuotes: 0, elided: [], anonymized: 0, privateNames: 0, dropped: [], evidenceTails: 0 };
+  // Приватный слой в роли источника — отказ ДО первой строки (#103 п. 3): рабочий слой и модуль
+  // прозы не едут никуда, кроме приватных проектов автора. Узнаём по заголовку слоя и по имени файла —
+  // не по упоминанию имени: само ядро называет свои слои указателем.
+  if (PRIVATE_LAYER_H1.test(src[0] || '') || PRIVATE_LAYER_FILES.includes(basename(sourcePath))) {
+    throw new Error(`источник — приватный слой ядра (${basename(sourcePath)}): в публичный слепок он не едет — слепок НЕ пересобран`);
+  }
+  const stats = { rules: 0, evidenceGroups: 0, publicQuotes: 0, elided: [], anonymized: 0, privateNames: 0, dropped: [], evidenceTails: 0,
+    samplesKept: [], samplesDropped: [], keptSampleTexts: [] };
   const allow = cfg.allowSpans || [];
   const privateNames = loadPrivateNames();
   const out = [];
@@ -319,6 +463,29 @@ function build(sourcePath, cfg) {
     if (skippingSection) {
       if (/^## /.test(line)) skippingSection = null;
       else continue;
+    }
+
+    // Образец руки автора (ядро 2.x, §2.6) — судится БЛОКОМ: публичный в этом репозитории едет как
+    // есть (имена обезличены), непубличный заменяется строкой-объявлением с адресом в приватное ядро.
+    const sampleHit = cfg.layout === 2 && line.match(SAMPLE_OPEN);
+    if (sampleHit) {
+      const id = sampleHit[1];
+      const block = [];
+      let j = i + 1;
+      while (j < src.length && !SAMPLE_CLOSE.test(src[j])) { block.push(src[j]); j += 1; }
+      if (j >= src.length) throw new Error(`образец ${id} не закрыт — слепок НЕ пересобран`);
+      out.push(scrubLine(line, allow, stats, privateNames));
+      if (samplePublic(id, block, cfg)) {
+        for (const b of block) out.push(anonymizeStr(b, privateNames, stats));
+        stats.samplesKept.push(id);
+        stats.keptSampleTexts.push(block.join(' '));
+      } else {
+        out.push(`«…» — непубличный текст владельца (решение №60); образец — в приватном ядре \`krinik-stylometry:AUTHOR_STYLOMETRY.md\` §2.6, ${id}`);
+        stats.samplesDropped.push(id);
+      }
+      out.push(src[j]);
+      i = j;
+      continue;
     }
 
     // Доказательная цитата из личного корпуса — не едет. Цитата вправе занимать НЕСКОЛЬКО строк:
@@ -432,6 +599,9 @@ function build(sourcePath, cfg) {
   }
   let body = rebuilt.join('\n');
 
+  // Ядро 2.x: правило — идентификатор в первой ячейке строки таблицы или в жирной метке пункта.
+  if (cfg.layout === 2) stats.rules = new Set([...body.matchAll(RULE_ID_V2)].map((m) => m[1])).size;
+
   // srcLines едут наружу вместе со сборкой: приёмке нужен ТОТ ЖЕ исходник, из которого собран
   // слепок, а второе чтение файла завело бы вторую истину (круг R2: боевой вызов приёмки
   // третьего аргумента не получал вовсе, и независимая ось молча не исполнялась).
@@ -491,8 +661,26 @@ function evidenceChunksFromSource(srcLines) {
  * Приёмка собранного: доказать, что личное НЕ протекло. Красный — стоп, не предупреждение.
  * Три оси; третья не зависит от глифов кавычек и потому переживает появление новой их формы.
  */
-function selfCheck(body, allow, srcLines = null) {
+function selfCheck(body, allow, srcLines = null, layers = []) {
   const failures = [];
+  // 4. (ядро 2.x) Ни одно окно из восьми слов ПРИВАТНОГО СЛОЯ (рабочий слой, модуль прозы) не
+  //    встречается в слепке, кроме разрешённого (белый список, публичные образцы). Ось не смотрит ни
+  //    на кавычки, ни на блоки — она ловит слой, вставленный в ядро голым текстом, где чистка слепа.
+  if (layers.length) {
+    const bw = wordsOf(body);
+    const bodyGrams = new Set();
+    for (let k = 0; k + NGRAM_WORDS <= bw.length; k += 1) bodyGrams.add(bw.slice(k, k + NGRAM_WORDS).join(' '));
+    const allowedText = wordsOf(allow.join('\n')).join(' ');
+    for (const { file, text } of layers) {
+      const lw = wordsOf(text);
+      for (let k = 0; k + NGRAM_WORDS <= lw.length; k += 1) {
+        const gram = lw.slice(k, k + NGRAM_WORDS).join(' ');
+        if (!bodyGrams.has(gram) || allowedText.includes(gram)) continue;
+        failures.push(`фрагмент приватного слоя ${file} в слепке: «${gram.slice(0, 70)}…»`);
+        break;
+      }
+    }
+  }
   // 1. Ни одного заголовка произведения в адресах (примета та же, что у чистки — узкая по левому краю).
   const titled = body.match(/(?<![\wА-Яа-яЁё/])\d{3}_[a-zа-яё][^\s`«»:,;)\]]*\.md/gi);
   if (titled) failures.push(`адрес с заголовком произведения: ${[...new Set(titled)].slice(0, 3).join(', ')}`);
@@ -691,6 +879,78 @@ const CANARIES = [
   },
 ];
 
+/** Строки таблицы §8 (разбор линтера голоса: строка, открытая ячейкой паттерна). */
+const section8Rows = (text) => {
+  const at = text.search(/^## 8\. /m);
+  if (at < 0) return [];
+  const rest = text.slice(at);
+  const end = rest.slice(4).search(/^## /m);
+  return (end < 0 ? rest : rest.slice(0, end + 4)).split('\n').filter((l) => /^\|\s*`\//.test(l));
+};
+
+/** Селфтест форм 2.x. Каждая форма — своя мутация КОПИИ источника во временном корне; число красных — в ответе. */
+function selfTestV2(sourcePath, cfg, root, src, at) {
+  let red = 0;
+  const ok = (cond, id, what) => {
+    if (cond) console.log(`✅ селфтест: ${id} — ${what}`);
+    else { console.error(`❌ селфтест: ${id} — ${what}: НЕ выполнено`); red += 1; }
+  };
+  const layers = privateLayerTexts(sourcePath);
+  const privNames = loadPrivateNames();
+  const allowAll = (b) => [...new Set([...cfg.allowSpans, ...b.stats.keptSampleTexts, ...cfg.allowSpans.map((a) => anonymizeStr(a, privNames))])];
+
+  // K16 — непубличный образец §2.6 не едет: на его месте строка-объявление.
+  const k16 = join(root, 'k16', 'AUTHOR_STYLOMETRY.md');
+  mkdirSync(dirname(k16), { recursive: true });
+  const sample = ['', '<образец id="ОБ99" жанр="проба">', 'KANARYSAMPLE он шёл по улице и думал о ней долго и мучительно, а город молчал', '</образец>'];
+  writeFileSync(k16, [...src.slice(0, at + 1), ...sample, ...src.slice(at + 1)].join('\n'), 'utf8');
+  const b16 = build(k16, cfg);
+  ok(!b16.body.includes('KANARYSAMPLE') && b16.stats.samplesDropped.includes('ОБ99'), 'K16-непубличный образец', 'снят, на месте — объявление');
+
+  // K17 — приватный слой в роли источника: отказ по имени файла и по заголовку слоя.
+  const k17a = join(root, 'k17', 'AUTHOR_STYLOMETRY_WORK.md');
+  const k17b = join(root, 'k17', 'layer-renamed.md');
+  mkdirSync(dirname(k17a), { recursive: true });
+  writeFileSync(k17a, src.join('\n'), 'utf8');
+  writeFileSync(k17b, ['# Рабочий слой ядра голоса проба', ...src.slice(1)].join('\n'), 'utf8');
+  const refused = (p) => { try { build(p, cfg); return false; } catch { return true; } };
+  ok(refused(k17a) && refused(k17b), 'K17-слой как источник', 'отказ и по имени файла, и по заголовку слоя');
+
+  // K18 — образец приватного слоя, вставленный в ядро ГОЛЫМ текстом (без кавычек и без блока): ось 4 краснеет.
+  const layerWords = layers[0].text.replace(/\s+/g, ' ').trim().split(' ').slice(0, 16).join(' ');
+  const k18 = join(root, 'k18', 'AUTHOR_STYLOMETRY.md');
+  mkdirSync(dirname(k18), { recursive: true });
+  writeFileSync(k18, [...src.slice(0, at + 1), '', `Иллюстрация без кавычек: ${layerWords}`, ...src.slice(at + 1)].join('\n'), 'utf8');
+  const b18 = build(k18, cfg);
+  const f18 = selfCheck(b18.body, allowAll(b18), b18.srcLines, layers);
+  ok(f18.some((f) => f.startsWith('фрагмент приватного слоя')), 'K18-слой голым текстом', 'ось приватных слоёв краснеет');
+
+  // K19 — таблица §8 едет побайтно (после обезличивания имён), строка к строке.
+  const clean = build(sourcePath, cfg);
+  const srcRows = section8Rows(src.join('\n')).map((l) => anonymizeStr(l, privNames));
+  const bodyRows = section8Rows(clean.body);
+  ok(srcRows.length > 0 && JSON.stringify(srcRows) === JSON.stringify(bodyRows), 'K19-таблица §8', `${bodyRows.length} строк побайтно`);
+
+  // K20 — «публично» без улики: фраза, которой нет в названном файле, и образец, чья строка не найдена, — отказ.
+  let k20a = false;
+  try { effectiveConfig({ ...loadConfig(), v2: { ...loadConfig().v2, publicSpans: { 'KANARYPUBLIC такой фразы нет ни в одном файле': 'GOAL.md' } } }, sourcePath); }
+  catch { k20a = true; }
+  let k20b = false;
+  try { samplePublic('ОБ98', ['KANARYPUBLIC строка образца которой нет в файле вовсе'], { publicSamples: { 'ОБ98': 'GOAL.md' } }); }
+  catch { k20b = true; }
+  ok(k20a && k20b, 'K20-публичность без улики', 'отказ и для фразы, и для образца');
+
+  // K21 — схлопнутая фраза стоит в другом файле репозитория (класс утечки 19e19ff): ось 5 краснеет, без находки — молчит.
+  const hit = leakedElsewhere(['KANARYELSEWHERE фраза владельца в чужом отчёте'], () => ['testcases/reports/проба.md']);
+  const miss = leakedElsewhere(['KANARYELSEWHERE фраза владельца в чужом отчёте'], () => []);
+  ok(hit.length === 1 && miss.length === 0, 'K21-утечка рядом', 'находка краснеет, чистота молчит');
+
+  // Чистая копия 2.x — все пять осей молчат.
+  const cleanFail = selfCheck(clean.body, allowAll(clean), clean.srcLines, layers);
+  ok(cleanFail.length === 0, 'K16–K21 чистая копия 2.x', `приёмка молчит${cleanFail.length ? ' (' + cleanFail[0] + ')' : ''}`);
+  return red;
+}
+
 function selfTest(sourcePath, cfg) {
   if (!existsSync(sourcePath)) {
     console.error(`селфтест: приватное ядро недоступно (${sourcePath}) — доказать нечего.`);
@@ -774,6 +1034,9 @@ function selfTest(sourcePath, cfg) {
     red += 1;
   }
 
+  // ── K16–K21: формы раскладки 2.x (ядро голоса 2.2; эпик VO 2.8, plans/120 шаг VO1) ───────────────
+  if (cfg.layout === 2) red += selfTestV2(sourcePath, cfg, root, src, at);
+
   if (red) {
     console.error(`\n❌ селфтест красный: ${red} проверок(и). Корень прогона оставлен: ${root}`);
     process.exit(1);
@@ -802,18 +1065,33 @@ if (!existsSync(sourcePath)) {
   process.exit(2);
 }
 
-const cfg = loadConfig();
+let cfg;
+try {
+  cfg = effectiveConfig(loadConfig(), sourcePath);
+} catch (e) {
+  console.error(`❌ ${e.message}`);
+  process.exit(2);
+}
 
 if (args.includes('--selftest')) {
   selfTest(sourcePath, cfg);
   process.exit(0);
 }
 
-const { body, stats, srcLines } = build(sourcePath, cfg);
+let built;
+let layers = [];
+try {
+  built = build(sourcePath, cfg);
+  if (cfg.layout === 2) layers = privateLayerTexts(sourcePath);
+} catch (e) {
+  console.error(`❌ ${e.message}`);
+  process.exit(2);
+}
+const { body, stats, srcLines } = built;
 const prov = sourceProvenance(sourcePath);
 
 // Публичные цитаты владельца — легальные исключения самопроверки: они вытянуты ИЗ ЭТОГО репо кодом.
-const publicQuoteTexts = [];
+const publicQuoteTexts = [...stats.keptSampleTexts];
 for (const list of Object.values(cfg.publicEvidence || {})) {
   for (const a of list) publicQuoteTexts.push(pullPublicQuote(a));
 }
@@ -825,7 +1103,11 @@ const allowRaw = [...(cfg.allowSpans || []), ...publicQuoteTexts];
 const privNamesForCheck = loadPrivateNames();
 const allowForCheck = [...new Set([...allowRaw, ...allowRaw.map((a) => anonymizeStr(a, privNamesForCheck))])];
 
-const header = readFileSync(HEADER_PATH, 'utf8')
+const header = readFileSync(cfg.headerPath, 'utf8')
+  .replace('{{SAMPLES_KEPT}}', stats.samplesKept.join(' · ') || 'нет')
+  .replace('{{SAMPLES_DROPPED}}', stats.samplesDropped.join(' · ') || 'нет')
+  .replace('{{ELIDED}}', String(new Set(stats.elided.map((e) => e.span)).size))
+  .replace('{{PUBLIC_SPANS}}', String((cfg.publicSpans || []).length))
   .replace(
     '{{CORE_VERSION}}',
     prov.version
@@ -851,7 +1133,11 @@ if (!srcLines || !srcLines.length) {
   console.error('Слепок НЕ пересобирается: молчаливый зелёный на приёмке личного — ложь о проверке.');
   process.exit(2);
 }
-const failures = selfCheck(body, allowForCheck, srcLines);
+// Ось 5 — только для раскладки 2.x: слепок 1.x объявлял публичность одними адресами доказательств и осторожно
+// схлопывал и то, что публично в планах этого репозитория, — на нём ось дала бы 32 «находки» публичного, а не утечки
+// (прогон 2026-09-25 15:15). GAP, названный вслух: у слепка 1.x оси 5 нет.
+const failures = [...selfCheck(body, allowForCheck, srcLines, layers),
+  ...(cfg.layout === 2 ? leakedElsewhere(stats.elided.map((e) => e.span)) : [])];
 
 const reportIdx = args.indexOf('--report');
 if (reportIdx >= 0 && args[reportIdx + 1]) {
@@ -868,7 +1154,9 @@ console.log(
   `слепок: правил ${stats.rules} · публичных цитат владельца ${stats.publicQuotes} · ` +
     `адресов в приватное ядро ${stats.evidenceGroups} · схлопнуто спанов ${stats.elided.length} ` +
     `(уникальных ${new Set(stats.elided.map((e) => e.span)).size}) · обезличено адресов ${stats.anonymized} · ` +
-    `снято секций ${stats.dropped.length}`
+    `снято секций ${stats.dropped.length}` +
+    (cfg.layout === 2 ? ` · раскладка 2.x: образцов публичных ${stats.samplesKept.length}, снято ${stats.samplesDropped.length} · ` +
+      `ось приватных слоёв: ${layers.map((l) => l.file).join(', ')}` : '')
 );
 console.log(`источник: ${sourcePath} @ ${prov.sha} (${prov.date})`);
 
