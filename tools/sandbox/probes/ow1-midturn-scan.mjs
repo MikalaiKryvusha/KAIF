@@ -10,7 +10,8 @@
 // [TESTED: 2026-09-25 14:39–14:43 +03:00 · session 74: the transcript of session 67 — 28 mid-turn messages (human 13 · peer 3 ·
 //  task-notification 12), the human rows cross-checked by one-off reads of the same records (#1770, #3388, #3419: rendered text and the
 //  agent's next actions — 2 tool calls after «СТОП ЧАТА НЕМЕДЛЕННО», matching the probe); this session's transcript — 7 task-notification,
-//  0 human (the empty branch); no argument — usage, exit 2. Findings in researches/34 §1]
+//  0 human (the empty branch); no argument — usage, exit 2. Findings in researches/34 §1; runs of it — testcases/reports/2026-09-25_ow2-owner-word-mid-turn.md
+//  and the OW10 judge (the 19:32 recurrence: 18 calls, no answer)]
 import { readFileSync, existsSync } from 'node:fs';
 
 const [file, ...flags] = process.argv.slice(2);
@@ -47,10 +48,10 @@ recs.forEach((r, i) => {
     const a = afterMessage(i);
     humanMax = Math.max(humanMax, a.tools);
     const secs = a.replyAt ? Math.round((Date.parse(a.replyAt) - Date.parse(r.timestamp)) / 1000) : null;
-    tail = ` · tool calls before the first reply: ${a.tools} · reply after ${secs === null ? '—' : secs + ' s'}`;
+    tail = ` · tool calls before the first TEXT: ${a.tools} · text after ${secs === null ? '—' : secs + ' s'} (read it: is it the answer?)`;
   }
   console.log(`#${i + 1} ${r.timestamp} ${who}${tail}${QUOTE ? ' :: ' + text.slice(0, QUOTE_CHARS) : ` (${text.length} chars)`}`);
 });
 const total = Object.values(bySender).reduce((s, n) => s + n, 0);
 console.log(`mid-turn messages: ${total} — ${Object.entries(bySender).map(([k, n]) => `${k} ${n}`).join(' · ') || 'none'}`);
-console.log(`human: max tool calls before the first reply = ${humanMax}`);
+console.log(`human: max tool calls before the first text = ${humanMax} — a text is not an answer until the judge READS it (judge OW10 H9)`);

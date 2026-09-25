@@ -1039,8 +1039,10 @@ errors.push(...scanInvisibleCharacters(ROOT));
     // The hooks module README once claimed a universal — "every hook carries a predicate and a cooldown" —
     // while its own table said "none" for one predicate and a shipped script's header said "No cooldown"
     // (bugs/121 F10). The observed wording replaced it; the retired universal is forbidden so it cannot
-    // come back the next time a hook is added. Whitespace-tolerant: the original wrapped mid-phrase.
-    [/every hook carries a\s+predicate and a\s+cooldown/, 'the retired universal about the hooks module ("every hook carries a predicate and a cooldown") — one suppression window exists, on `Stop`; say what each hook does (bugs/121 F10)'],
+    // come back the next time a hook is added. Whitespace-tolerant: the original wrapped mid-phrase. Case-insensitive since 2.8 (epic OW):
+    // KAIF_REFERENCE carried it capitalized at a sentence start and the case-sensitive pattern never saw it — found when the fifth hook
+    // (the owner-word gate, no cooldown at all) made the sentence false twice over.
+    [/every hook carries a\s+predicate and a\s+cooldown/i, 'the retired universal about the hooks module ("every hook carries a predicate and a cooldown") — one suppression window exists, on `Stop`; say what each hook does (bugs/121 F10)'],
   ];
   // the sweep walks the WHOLE payload (judge finding: docs+readmes+skills alone left spheres/
   // adapters/templates/installer unguarded — a future leak there would ship silently)

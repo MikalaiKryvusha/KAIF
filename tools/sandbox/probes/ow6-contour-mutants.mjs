@@ -9,7 +9,8 @@ import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const SRC = 'framework/tools/contour';
-const LIVE_AFTER_PARTIAL = ['a partial save (Q1 of three)', 'a save of the OLD revision', 'the same save repeated', 'the second partial save MERGES', 'the LAST answer ends'];
+const LIVE_AFTER_PARTIAL = ['a partial save (Q1 of three)', 'a save of the OLD revision', 'the same save repeated', 'the second partial save MERGES', 'the LAST answer ends',
+  'a page closed after a partial save']; // judge OW10 H6: a save that closes the contour never reaches «closed after N saved answers»
 const M = [
   ['a save closes the contour (the norm №126 revokes)', 'review.mjs', '            if (left > 0) { // OW6', '            if (false) { // OW6', LIVE_AFTER_PARTIAL],
   ['revision check removed (the stale-tab gap)', 'review.mjs', '            if (payload.rev !== revNow) {', '            if (false) {',
@@ -18,6 +19,10 @@ const M = [
     "  if (false) {", ['the second record of the same page MERGES', 'the second partial save MERGES']],
   ['draft carried over by number (no fingerprint)', 'review.mjs', `"function dkey(n){var h=qhOf(n);return DK+n+(h?'#'+h:'')}",`,
     `"function dkey(n){return DK+n}",`, ['a draft key carries its question']],
+  // judge OW10 H11 · H6
+  ['a recovered answer of an older revision written by numbers', 'review.mjs', '  const staleRevision = Boolean(payload.rev) && payload.rev !== docRev(root, doc);',
+    '  const staleRevision = false;', ['an answer saved for an OLDER revision is kept as data']],
+  ['a close after partial saves says «without an answer»', 'review.mjs', '            savedInRun += nAns;', '', ['a page closed after a partial save']],
   ['the page does not re-read itself after a partial save', 'review.mjs', "location.reload();return}\",", "status(fmt(TX.left,{n:res.j.left}),'okmsg');return}\",",
     ['a partial save re-reads the page']],
 ];

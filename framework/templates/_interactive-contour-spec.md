@@ -67,7 +67,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 
 ## 5. Process — outcomes, patience, wake-up
 
-- Exactly three outcomes, all in the process log: **decision recorded → exit 0** · **page closed without an answer → exit 2** · **interrupted → exit 130**. Pre-flight refusal is exit 3.
+- Exactly three outcomes, all in the process log: **decision recorded → exit 0** · **page closed without an answer — or after N saved answers, already recorded (2.8) → exit 2** · **interrupted → exit 130**. Pre-flight refusal is exit 3.
 - On the proofreading and mockup faces «Done» with empty fields is a decision recorded too — the record carries `noRemarks: true` («looked, no
   remarks» is the most frequent verdict on an artifact, and the page says so under the field); the page never refuses it. Only the interview face still needs an answer or a comment (origin bug 113).
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.

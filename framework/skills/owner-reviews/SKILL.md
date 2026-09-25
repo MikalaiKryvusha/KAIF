@@ -84,8 +84,8 @@ raised in a batch next to a live question.
 - **I7. Autonomous loops accumulate, never block.** The queue is a STATE FILE — never move live
   documents into a pending folder (moving breaks every link to them from status and plans); one
   "N accumulated" page (each card linking to its document) calls the owner ONCE per batch. Paired
-  with I8, the batch page must not live long: the owner answers one document, the contour closes
-  and wakes the agent; if the queue still holds items, re-raising the batch is the agent's duty.
+  with I8 (2.8): the page lives until its last question and the waiter wakes the agent on each answer;
+  a batch page closed while items still wait — re-raising the batch is the agent's duty.
 
 **The waiting-and-wake loop (I8–I14):**
 

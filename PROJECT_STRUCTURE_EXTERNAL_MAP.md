@@ -44,7 +44,7 @@ KAIF/
 │   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint, kaif-ranking-lint, kaif-attribution-lint, kaif-testrun-lint, kaif-voice-lint, kaif-experience-lint → .kaif/tools/);
 │   │                                      # с 2.6 сборщик обходит поддиректории (framework/tools/contour/ → .kaif/tools/contour/ — генератор контура, эпик IC, шаг IC3)
-│   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (4 скрипта + образец конфига + README; эпик O; четвёртый — prompt-resume-word, эпик RS 2.7)
+│   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (5 скриптов + образец конфига + README; эпик O; четвёртый — prompt-resume-word, эпик RS 2.7; пятый — pretool-owner-word, эпик OW 2.8)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
 │   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
 │   ├── spheres/*                          # библиотеки терминов по сферам (+ _index, _template)

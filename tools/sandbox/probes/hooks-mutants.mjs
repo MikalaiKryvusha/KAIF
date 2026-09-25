@@ -6,7 +6,9 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite once per mutant (ten today) — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (eleven today) — run it ALONE, not beside the polygon (origin bug 109).
+// [TESTED: 2026-09-25 22:08:57 +03:00 · ELEVEN mutants after the owner-word gate (M11 reasoning counted as an answer): «11 mutants red
+//  exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
 // [TESTED: 2026-09-25 17:43 +03:00 · TEN mutants after OW2 (M8 the imperative before the word dropped · M9 the heading exclusion dropped · M10 the stop
 //  branch dropped): «10 mutants red exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow2-owner-word-mid-turn.md]
 // [TESTED: 2026-09-18 12:12 +03:00 · run on the origin after the fix — four mutants, each red exactly on its named
@@ -87,6 +89,12 @@ const MUTANTS = [
     dest: '.kaif/hooks/prompt-resume-word.mjs',
     fn: (b) => b.replace('if (prompt !== null && LEADING_STOP.test(prompt)) {', 'if (false) {'),
     expect: ['s14 stop-word: «стоп» первым словом', 's14 stop-word: «СТОП!»', 's14 stop-word: «stop, …»'] },
+  // 2.8, the owner-word gate (bug 123, recurrence 19:32): reasoning counted as an answer — the exact threat — reddens every case where the
+  // owner's message has reasoning after it and no text
+  { name: 'M11 owner-word: reasoning counted as an answer (the 19:32 threat — an answer composed and never emitted passes)',
+    dest: '.kaif/hooks/pretool-owner-word.mjs',
+    fn: (b) => b.replace("if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) process.exit(0);", 'if (c.length > 0) process.exit(0);'),
+    expect: ['s14 owner-word: сообщение владельца посреди хода без ТЕКСТА', 's14 owner-word: после сообщения — только размышления', 's14 owner-word: старое сообщение отвечено, новое — нет'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));

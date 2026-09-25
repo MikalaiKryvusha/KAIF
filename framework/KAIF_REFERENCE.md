@@ -557,15 +557,18 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Five scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
 session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
-other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Every hook carries a
-predicate and a cooldown; injections are orders to re-read, never document bodies. Activation
+other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
+typed mid-turn has no TEXT answer after it in the transcript → the tool call is refused, the reason quotes the owner's words; Claude
+Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
+on `Stop`, and the gate has none — it refuses every call until the text answer is in the record; injections are orders, never
+document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
 complete contour on its own.
@@ -775,7 +778,11 @@ the user's — as text inside a tool result, applied the rule for data to it and
 order had come. The recon of the delivery across the agent systems of the adapters (the origin's researches/34): the systems
 queue a mid-turn message or steer the turn with it at the next tool boundary, and sign the author; no vendor promises that a
 prompt hook fires for it — hence the hook branch is an amplifier. The question branch was paid for by the origin itself: the
-session that wrote this recon answered the owner's mid-turn question after six tool calls, and he had to repeat it.
+session that wrote this recon answered the owner's mid-turn question after six tool calls, and the owner had to repeat it. And the
+session that shipped the rule met it again the same evening (2026-09-25, 19:32): its answer to the owner's mid-turn question was
+composed in the reasoning and never emitted as text — 18 tool calls, the owner unanswered; the transcript showed it. Hence the
+mechanical half the origin owner asked for that evening: the gate `pretool-owner-word.mjs` (event `PreToolUse`) refuses every tool
+call while the owner's latest mid-turn message has no text answer in the transcript — the rule says «answer AS TEXT» for the same reason.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 

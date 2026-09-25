@@ -13,7 +13,7 @@
 // Красный доказан против HEAD-бандла ДО поставки модуля (в нём FILE-блоков .kaif/hooks нет —
 // деплой-ассерты падали; наблюдение зафиксировано в plans/57).
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, utimesSync, readdirSync } from 'node:fs';
-import { execSync, execFileSync } from 'node:child_process';
+import { execSync, execFileSync, spawnSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
@@ -56,6 +56,7 @@ let r = run(S, 'install');
 ok(r.code === 0, 's14 install exit 0', r.out.slice(-400));
 const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'stop-status-guard.mjs',
                     'prompt-resume-word.mjs', // 2.7, эпик RS: первое слово промпта resume → приказ /resume
+                    'pretool-owner-word.mjs', // 2.8, эпик OW: слово владельца посреди хода без ТЕКСТА в ответ → вызов отказан (bugs/123)
                     'settings-fragment.json', 'README.md',
                     // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
                     'sample-codex-hooks.json', 'sample-cursor-hooks.json',
@@ -75,7 +76,7 @@ ok(!!(frag.hooks && frag.hooks.SessionStart && frag.hooks.UserPromptSubmit && fr
 ok(frag.hooks && frag.hooks.SessionStart?.[0]?.matcher === 'compact|clear',
    's14 фрагмент конфига: SessionStart с matcher compact|clear');
 const fragTxt = JSON.stringify(frag);
-ok(HOOK_FILES.slice(0, 4).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)),
+ok(HOOK_FILES.slice(0, 5).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)) && frag.hooks && Array.isArray(frag.hooks.PreToolUse),
    's14 фрагмент конфига: команды указывают на все четыре развёрнутых скрипта (четвёртый — resume-word, 2.7)');
 
 // ---------------------------------------------------------------- поведение: SessionStart
@@ -366,7 +367,7 @@ console.log('\n=== s14/O5: имена событий образцов проти
 const EVENT_CONTRACT = {
   // bugs/118 F1: фрагмент Claude Code — ЕДИНСТВЕННЫЙ конфиг, который владелец мержит себе руками, — в ось
   // не попадал: охват брался по паттерну имени `sample-*.json`. Теперь судится каждый `*.json` модуля.
-  'settings-fragment.json':        ['SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий)
+  'settings-fragment.json':        ['PreToolUse', 'SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий); PreToolUse — 2.8, живой fetch 2026-09-25 code.claude.com/docs/en/hooks.md («Before a tool call executes. Can block it»)
   'sample-codex-hooks.json':       ['SessionStart', 'UserPromptSubmit'],  // researches/19 §OpenAI Codex
   'sample-cursor-hooks.json':      ['sessionStart'],                      // researches/19 §Cursor
   'sample-copilot-hooks.json':     ['sessionStart'],                      // researches/19 §GitHub Copilot
@@ -468,8 +469,8 @@ for (const f of PAIR_AXIS) {
 }
 {
   const fragPairs = pairsOf(readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {}).map(([s]) => s).sort();
-  ok(JSON.stringify(fragPairs) === JSON.stringify(HOOK_FILES.slice(0, 4).sort()),
-     's14 ось пар: фрагмент подключает ровно четыре развёрнутых скрипта, каждый один раз', fragPairs.join(', '));
+  ok(JSON.stringify(fragPairs) === JSON.stringify(HOOK_FILES.slice(0, 5).sort()),
+     's14 ось пар: фрагмент подключает ровно пять развёрнутых скриптов, каждый один раз (пятый — pretool-owner-word, 2.8)', fragPairs.join(', '));
   // Мутационное доказательство живёт В СВОДЕ (EXP-0016): обмен двух скриптов в разобранной КОПИИ (EXP-0077).
   const p = join(S, '.kaif', 'hooks', 'settings-fragment.json');
   const bytesBefore = (() => { try { return readFileSync(p); } catch { return Buffer.alloc(0); } })();
@@ -510,6 +511,42 @@ ok(junkJs.hookSpecificOutput?.additionalContext?.length > 0,
 //     требующего wiring, — check зелёный (первый check выше уже это доказал; здесь явно).
 // (2) Контраст целостности: УДАЛЕНИЕ файлов модуля — MISSING, ровно как у tool-модулей
 //     (прецедент проверен живьём: rm .kaif/tools/kaif-provenance.mjs → check exit 1 MISSING).
+// 2.8 (эпик OW; bugs/123 и его рецидив 2026-09-25 19:32 — 18 вызовов, ответ составлен в размышлении и не выведен; хук — по слову
+// владельца истока того же вечера): перед каждым вызовом главного потока хук читает запись сессии; последнее сообщение владельца,
+// пришедшее посреди хода, без ТЕКСТОВОГО блока агента после него — вызов отказан (код 2), причина несёт его слова. На v2.7 файла нет —
+// все случаи красны.
+console.log('\n=== s14: хук pretool-owner-word — слово владельца посреди хода без ответа текстом (эпик OW 2.8, bugs/123) ===');
+{
+  const TR = join(ROOT, 'transcripts'); mkdirSync(TR, { recursive: true });
+  const J = (o) => JSON.stringify(o);
+  const mid = (text, kind = 'human') => J({ type: 'attachment', timestamp: '2026-09-25T16:32:07.936Z', attachment: { type: 'queued_command', prompt: text, origin: { kind } } });
+  const asst = (...blocks) => J({ type: 'assistant', timestamp: '2026-09-25T16:32:35.977Z', message: { role: 'assistant', content: blocks } });
+  const think = { type: 'thinking', thinking: '' }, tool = { type: 'tool_use', name: 'Bash', input: {} }, say = (t) => ({ type: 'text', text: t });
+  const HOOK = join(S, '.kaif', 'hooks', 'pretool-owner-word.mjs');
+  const gate = (name, lines, extra = {}) => {
+    const p = join(TR, name + '.jsonl'); writeFileSync(p, lines.join('\n') + '\n');
+    const r = spawnSync(process.execPath, [HOOK], { input: JSON.stringify({ hook_event_name: 'PreToolUse', cwd: S, tool_name: 'Bash', transcript_path: p, ...extra }), encoding: 'utf8' });
+    return { code: r.status, err: String(r.stderr || '') };
+  };
+  let g = gate('unanswered', [asst(think, tool), mid('ну что, сколько процентов версии 2.8 сделано?'), asst(think, tool)]);
+  ok(g.code === 2 && /сколько процентов версии 2\.8/.test(g.err) && /AS TEXT/.test(g.err),
+     's14 owner-word: сообщение владельца посреди хода без ТЕКСТА после него → вызов отказан (код 2), причина несёт его слова и «AS TEXT»', 'code ' + g.code + ': ' + g.err.slice(0, 160));
+  g = gate('reasoning-only', [mid('стоп'), asst(think, think, tool), asst(think, think, tool)]);
+  ok(g.code === 2, 's14 owner-word: после сообщения — только размышления и вызовы (форма рецидива 19:32) → отказ', 'code ' + g.code);
+  g = gate('answered', [mid('стоп'), asst(think, say('Остановился: на шаге сборки.'), tool)]);
+  ok(g.code === 0 && g.err === '', 's14 owner-word: ответ ТЕКСТОМ после сообщения → вызов пропущен, тишина', 'code ' + g.code + ': ' + g.err.slice(0, 120));
+  g = gate('newer-unanswered', [mid('старый вопрос'), asst(say('ответ на старый'), tool), mid('новый вопрос'), asst(think, tool)]);
+  ok(g.code === 2 && /новый вопрос/.test(g.err), 's14 owner-word: старое сообщение отвечено, новое — нет → отказ по НОВОМУ (судится последнее)', 'code ' + g.code);
+  g = gate('peer', [mid('сведения соседней сессии', 'peer'), asst(think, tool)]);
+  ok(g.code === 0, 's14 owner-word: сообщение соседней сессии — не слово владельца → тишина', 'code ' + g.code);
+  g = gate('subagent', [mid('стоп'), asst(think, tool)], { agent_id: 'a1b2' });
+  ok(g.code === 0, 's14 owner-word: вызов субагента (agent_id) пропущен — владельцу отвечает главный поток', 'code ' + g.code);
+  g = gate('quiet', [asst(think, tool), asst(say('работаю'), tool)]);
+  ok(g.code === 0, 's14 owner-word: сообщений посреди хода нет → тишина', 'code ' + g.code);
+  const gm = spawnSync(process.execPath, [HOOK], { input: JSON.stringify({ hook_event_name: 'PreToolUse', cwd: S, transcript_path: join(TR, 'missing.jsonl') }), encoding: 'utf8' });
+  ok(gm.status === 0, 's14 owner-word: записи сессии нет → тишина (хук никогда не ломает сессию)', 'code ' + gm.status);
+}
+
 console.log('\n=== s14: деплой без ПОДКЛЮЧЕНИЯ хуков — инвариант §9.10 ===');
 ok(!existsSync(join(S, '.claude', 'settings.json')) && !existsSync(join(S, '.claude', 'settings.local.json')),
    's14 без подключения: settings.json в песочнице НЕТ — хуки развёрнуты, но не активированы');
@@ -520,5 +557,5 @@ r = run(S, 'check');
 ok(r.code !== 0 && /MISSING or empty: \.kaif\/hooks\//.test(r.out),
    's14 контраст: УДАЛЕНИЕ файлов модуля — честный MISSING (целостность поставки, как у tool-модулей)', r.out.slice(-300));
 
-console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 4 хука по живому контракту)'}`);
+console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 5 хуков по живому контракту)'}`);
 process.exit(failures ? 1 : 0);

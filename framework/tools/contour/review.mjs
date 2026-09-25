@@ -1098,7 +1098,9 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       } catch { /* a lock that cannot be written is reported by the listen step, not here */ }
     };
     const noticeMode = notice && !batch;
-    const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
+    let savedInRun = 0; // OW6 (judge OW10 H6): answers already recorded by this page — a close after them loses nothing and says so
+    const unreadOutcome = () => (noticeMode ? 'notice left unread'
+      : savedInRun > 0 ? 'page closed after ' + savedInRun + ' saved answer(s) — recorded, nothing lost' : 'page closed without an answer');
     const unreadSuffix = noticeMode ? ' The notice is NOT delivered (no "' + t.btn.read + '" mark, I38) — it repeats in the next batch.' : '';
     // OW6 (2.8): the pulse is answered with the revision on disk — only for a document this contour shows
     const pulseRev = (d) => (d && (batch ? pendingDocs(root).some((x) => x.doc === d) : d === relDoc(root, docPath)) ? docRev(root, d) : null);
@@ -1189,6 +1191,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts, rev: payload.rev }, cfg);
             const left = leftIn(root, doc); // OW6: the page stays while this is above zero
             const nAns = Object.keys(record.answers || {}).length;
+            savedInRun += nAns;
             const arts = Object.entries(record.artifacts || {});
             const nApproved = arts.filter(([, a]) => a.status === 'approved').length;
             const rest = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
@@ -1234,7 +1237,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
           if (beaconTimer) clearTimeout(beaconTimer);
           beaconTimer = setTimeout(() => { // T3: ~3 s — does the page come back after a reload?
             outcome = unreadOutcome();
-            log('Outcome: page closed without an answer — ending the contour (I14, beacon fast path).' + unreadSuffix);
+            log('Outcome: ' + outcome + ' — ending the contour (I14, beacon fast path).' + unreadSuffix);
             finish(EXIT_CLOSED);
           }, BEACON_RELOAD_GRACE_MS);
         });
@@ -1915,6 +1918,27 @@ export async function selftest(log = console.log) {
   await sl(200); rmSync(LK, { force: true });
   const w2 = await Promise.race([waiter2, sl(3000).then(() => 'timeout')]);
   ok(w2 === 2, 'waiter: the contour it saw ended without a new record (its lock gone) → exit 2, nothing to apply (OW6)');
+  // (5) judge OW10 H11: an answer picked up from the owner's machine for an OLDER revision is recorded as data, never written by numbers
+  writeFileSync(join(root, MD), three);
+  const recS = recordRecovered(root, MD, { answers: { Q1: { choice: 'B', text: '', comment: '' } }, rev: 'an-older-revision' }, cfg);
+  ok(recS.staleRevision === true && readFileSync(join(root, MD), 'utf8') === three && decOf(MD).answers.Q1.choice === 'B',
+    'recovery: an answer saved for an OLDER revision is kept as data (staleRevision), the document is untouched (OW6, judge OW10 H11)');
+  const recF = recordRecovered(root, MD, { answers: { Q1: { choice: 'A', text: '', comment: '' } }, rev: bodyHash(three) }, cfg);
+  ok(!recF.staleRevision && /A\)/.test(readFileSync(join(root, MD), 'utf8')), 'recovery, control: the same revision is written into the document (OW6)');
+  rmSync(join(root, MD), { force: true });
+  // (6) judge OW10 H6: a page closed after partial saves says the answers are recorded — never «without an answer»
+  writeFileSync(join(root, MD), three);
+  const slog3 = [];
+  const served3 = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog3.push(String(l)) });
+  let url3 = null;
+  for (let i = 0; i < 100 && !url3; i++) { url3 = (slog3.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!url3) await sl(50); }
+  if (url3) await fetch(url3 + 'decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ doc: MD, answers: { Q1: { choice: 'A', text: '', comment: '' } }, comment: '', face: 'interview', rev: bodyHash(three) }) }).catch(() => null);
+  if (url3) await fetch(url3 + 'closed', { method: 'POST', body: 'doc:unsaved' }).catch(() => null);
+  const e3 = await Promise.race([served3, sl(BEACON_RELOAD_GRACE_MS + 3000).then(() => null)]);
+  ok(e3 && e3.exitCode === 2 && /page closed after 1 saved answer\(s\) — recorded, nothing lost/.test(e3.outcome || ''),
+    'a page closed after a partial save: exit 2 and «closed after 1 saved answer(s) — recorded, nothing lost» (OW6, judge OW10 H6)');
+  rmSync(join(root, MD), { force: true });
   } // OW6
 
   rmSync(root, { recursive: true, force: true });
