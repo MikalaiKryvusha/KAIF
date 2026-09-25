@@ -19,6 +19,9 @@
 //  KAIF_DIST=<dist 2.6> → «❌ s28: 9 of 34 check(s) failed» — красные адресованы отсутствующим модулю,
 //  полю `class:` шаблона и вердиктам развёрнутой копии; отчёт прогона
 //  testcases/reports/2026-09-18_experience-lint.md]
+// [TESTED: 2026-09-25 · сессия 74, находка 2 судьи CK6 — у свёртки журнала не было ассерта: «all 37 checks green»; на dist v2.7 — «5 of 37»
+//  (четыре ассерта базы и ассерт свёртки; ассерт `--verbose` на 2.7 законно зелёный — старый модуль и так перечисляет всех); три мутанта
+//  tools/sandbox/probes/fold-mutants.mjs красны ровно на адресатах; отчёт testcases/reports/2026-09-25_ck6-epic-judge-fixes.md]
 import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -179,6 +182,26 @@ ok(/kaif-experience-lint\.mjs check --write-baseline/.test(closing) && /experien
 const CAPTURE = join(S, '.claude', 'skills', 'experience', 'SKILL.md');
 const capture = existsSync(CAPTURE) ? readFileSync(CAPTURE, 'utf8') : '';
 ok(/^\s*class: <slug>/m.test(capture) && /class-ok:/.test(capture), 's28 развёрнутый /experience несёт поле class: и объявленную цену класса', capture.slice(0, 200));
+// свёртка (2.8, эпик CK, шаг CK5.7; тикет #80 — 88 поимённых строк без класса над единственной важной на каждом закрытии; случай добавлен
+// сессией 74 по находке 2 судьи CK6: у фикстуры LEG выше все записи одной датой, порядок журнала не определяется, и свёртка по построению
+// не срабатывала — ни один ассерт её не судил). Журнал «новые сверху», даты убывают: 88 записей о провале НИЖЕ первой записи с классом —
+// ОДНОЙ строкой; запись без класса ВЫШЕ неё — своим предупреждением; `--verbose` перечисляет всех поимённо. Запись выше — ТОГО ЖЕ дня,
+// что первая запись с классом: её от истории отличает только МЕСТО в журнале (с более поздней датой её спасало бы условие по дате, и
+// мутант «свёртка не смотрит на место» проходил бы этот ассерт — первый прогон пробы fold-mutants это показал).
+const FOLD = join(ROOT, 'fold');
+mkdirSync(FOLD, { recursive: true });
+const day = (n) => new Date(Date.UTC(2026, 0, 1) + n * 86400000).toISOString().slice(0, 10);
+const datedEntry = (id, n, klass, mech) => entry(id, '❌', klass, mech).replace('2026-01-01', day(n));
+let foldJ = HEAD() + datedEntry('EXP-0091', 90, null) + datedEntry('EXP-0090', 90, 'shown-as-link', 'mechanized: `tools/showcase-lint.mjs`');
+for (let k = 89; k >= 2; k--) foldJ += datedEntry(`EXP-${String(k).padStart(4, '0')}`, k, null);
+writeFileSync(join(FOLD, 'EXPERIENCE.md'), foldJ, 'utf8');
+r = run('check', FOLD, DEPLOYED);
+ok(r.code === 0 && (r.out.match(/88 failure entries carry no `class:` and predate the first classed entry \(EXP-0090/g) || []).length === 1 &&
+   (r.out.match(/a failure entry with no `class:/g) || []).length === 1 && /EXP-0091 \(line \d+\): a failure entry with no `class:/.test(r.out),
+   's28 свёртка (CK5.7): 88 записей о провале до первой записи с классом ОДНОЙ строкой, запись без класса после неё поимённо', r.out.slice(-700));
+r = run('check --verbose', FOLD, DEPLOYED);
+ok(r.code === 0 && (r.out.match(/a failure entry with no `class:/g) || []).length === 89 && !/failure entries carry no/.test(r.out),
+   's28 свёртка (CK5.7): --verbose перечисляет все 89 записей поимённо, строки свёртки нет', r.out.slice(-300));
 
 if (failures) { console.error(`\n❌ s28: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s28 experience-lint: all ${asserts} checks green`);

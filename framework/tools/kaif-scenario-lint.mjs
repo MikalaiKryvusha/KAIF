@@ -39,6 +39,10 @@
 //  broken fixture exit 1 with 14 findings in 14 scenarios (each rule named twice — EN + RU), clean
 //  fixture exit 0 with 1 warning, template-only and empty trees SKIPPED (exit 3); the origin's own
 //  plans/bugs/ideas (233 files) — SKIPPED: no scenario started there]
+// [TESTED: 2026-09-25 · 2.8 (a finding of the CK epic judge): a numbered item «N. **[rule]**» closes the scenario block — the
+//  origin's meta-plan of 2.8 lists its criteria so, and the linter read 6 scenarios with 5 false «order» findings that hid 4 real
+//  ones; now 21 scenarios and exactly the 4 real findings (criteria 10, 13 ×2, 17); selftest 35 cases with the new case «a numbered
+//  list of criteria without blank lines» in both languages, red on a copy without the break (2 of 35 — exactly the new case)]
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -114,7 +118,9 @@ export function parseScenarios(src) {
       if (!t.trim()) break;                                            // blank line — end of block
       const it = item.exec(t);
       if (it) { cur = it[1]; block.keys.push(cur); block.text[cur] = it[2]; continue; }
-      if (/^\s*- /.test(t) || /^\s*\*\*/.test(t) || /^#/.test(t)) break; // another list / a heading
+      // another list, a heading — or the next NUMBERED item (2.8: a list of criteria «N. **[rule]**» with its scenario indented below
+      // and no blank line between items merged every criterion into one «order» finding and hid the real ones behind it)
+      if (/^\s*- /.test(t) || /^\s*\d+[.)]\s/.test(t) || /^\s*\*\*/.test(t) || /^#/.test(t)) break;
       block.text[cur] = (block.text[cur] || '') + ' ' + t.trim();        // continuation line
     }
     out.push(block);
@@ -235,6 +241,11 @@ function selftest() {
     // The warning path: an empty Check is a warning, never a finding.
     const w = parseScenarios(render(lang, [...FIX[lang].clean[0].slice(0, 3), ''])).flatMap((b) => lint(b));
     say(w.length === 1 && w[0].findings.length === 0 && w[0].warnings.length === 1, `${lang}: empty Check — a warning, not a finding`);
+    // A numbered list of criteria, each scenario indented under its item, NO blank line between items: two scenarios, no «order».
+    const listed = FIX[lang].clean.map((l, i) => `${i + 1}. **[rule ${i + 1}]**\n` + render(lang, l).trimEnd().split('\n').map((x) => '   ' + x).join('\n')).join('\n') + '\n';
+    const lb = parseScenarios(listed);
+    const lf = lb.flatMap((b) => lint(b).findings);
+    say(lb.length === FIX[lang].clean.length && lf.length === 0, `${lang}: a numbered list of criteria without blank lines — ${lb.length} scenario(s), 0 findings${lf.length ? ' (got ' + lf.map((x) => x.id).join(',') + ')' : ''}`);
   }
   // Invisibility: a fenced template and a ❌ counter-example are not scenarios.
   const inv = parseScenarios('```\n' + render('en', FIX.en.clean[0]) + '```\n❌ Result. Works correctly.\n> - Situation. quoted\n');
