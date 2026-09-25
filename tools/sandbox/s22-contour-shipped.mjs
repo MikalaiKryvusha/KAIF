@@ -489,6 +489,83 @@ if (!exe) {
      's22 D: ВКЛАДКА на чужом профиле, сервер убит, «Записать» → «ответ НЕ уйдёт», кольцо спасения с текстом ответа, кнопки живы, __submitted нет, жёлтая полоса вкладки — ни слова «сохранён на этом компьютере»/«заберёт» (RL D-F2)', st3.slice(0, 500));
   await tab.closeGracefully();
   rmSync(join(D, 'interviews', 'decisions', 'interview_067_probe.lock'), { force: true });
+
+  { // (7) OW6 (2.8, слово владельца №126 — ответы записываются по одному во всех проектах; зазор редакции соседнего полевого проекта):
+  //     настоящий генератор и страница окном --app на профиле проекта, три вопроса, сторож --wait рядом. Q1 → «Осталось вопросов: 2»,
+  //     процесс жив, сторож 0; Q2 → decision.json сливает Q1 и Q2; агент переписал Q3, пока вкладка открыта → запись Q3 отказана (409),
+  //     текст на странице, решение без Q3; «Открыть новую редакцию» → черновик переписанного Q3 — блоком «Черновик прошлой редакции»;
+  //     ответ на Q3 в новой редакции — контур завершается кодом 0. На v2.7 первая же запись закрывает контур — раздел красный.
+  const DOC_P = 'interviews/interview_068_partial.md';
+  const qP = (k, text) => ['### Q' + k + '. ' + text, '', '- **A)** первый', '- **B)** второй', '', '**Answer:**', ''].join('\n');
+  writeFileSync(join(D, DOC_P), ['# Interview #068 — частичная запись', '', '> Topic: проба', "> Status: **🟡 awaiting the owner's answers**", '',
+    qP(1, 'Первый вопрос?'), qP(2, 'Второй вопрос?'), qP(3, 'Третий вопрос?')].join('\n'));
+  const DEC_P = join(D, 'interviews', 'decisions', 'interview_068_partial.decision.json');
+  const decP = () => (existsSync(DEC_P) ? JSON.parse(readFileSync(DEC_P, 'utf8')) : {});
+  const spawnWait = () => {
+    const c = spawn(process.execPath, [join(D, '.kaif', 'tools', 'contour', 'review.mjs'), '--wait', DOC_P], { cwd: D, env: quietEnv(), stdio: ['ignore', 'pipe', 'pipe'] });
+    let o = ''; c.stdout.on('data', (d) => { o += d; }); c.stderr.on('data', (d) => { o += d; });
+    return new Promise((res) => { c.on('exit', (code) => res({ code, out: o })); setTimeout(() => { try { c.kill(); } catch { /* gone */ } res({ code: 'timeout', out: o }); }, 20000); });
+  };
+  const gen4 = spawnGen(D, [DOC_P, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '120000' });
+  const url4 = await gen4.url;
+  const page4 = await headlessPage(url4, { profileDir: prof, app: true, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+  const ev = async (js) => { try { return await page4.evaluate(js); } catch { return null; } }; // the window may be gone (v2.7 closes it after the first save)
+  const until = async (expr, ms = 12000) => { const t0 = Date.now(); for (;;) { try { const v = await ev(expr); if (v) return v; } catch { /* the page is navigating */ } if (Date.now() - t0 > ms) return null; await wait(200); } };
+  const pick = (q, v) => ev("(function(){var r=document.getElementsByName('choice:" + DOC_P + ":" + q + "');for(var i=0;i<r.length;i++)if(r[i].value==='" + v + "'){r[i].checked=true;saveDraft(r[i]);return true}return false})()");
+  const clickSave = () => ev("(function(){document.querySelector('#save').click();return true})()");
+  const statusOf = (re) => until("(function(){var s=document.querySelector('#status');return s&&" + re + ".test(s.textContent)?s.textContent:''})()");
+  // the owner's profile carries a draft of the OLD form (a key without the question's fingerprint — a page before 2.8): it is shown as a
+  // draft of a previous revision with its text and never placed onto a question by number (on v2.7 it lands in Q2 — red)
+  await ev("(function(){localStorage.setItem(CFG.draftKey+':text:" + DOC_P + ":Q2','старый черновик без отпечатка');location.reload();return true})()");
+  const legacy = await until("(function(){var t=document.querySelector('section.qcard.danger textarea');return t?t.value:''})()", 8000);
+  const q2text = await ev("(function(){var t=document.getElementsByName('text:" + DOC_P + ":Q2')[0];return t?t.value:null})()");
+  ok(legacy && legacy.includes('старый черновик без отпечатка') && q2text === '',
+     's22 D: черновик СТАРОГО образца (ключ без отпечатка вопроса, страница до 2.8) — блоком «Черновик прошлой редакции» с текстом, на Q2 по номеру НЕ сел (OW6, реальный мир: черновики в профиле владельца)',
+     'legacy «' + String(legacy).slice(0, 80) + '» q2 «' + q2text + '»');
+  // Q1
+  const w1 = spawnWait(); await wait(500);
+  await pick('Q1', 'A'); await clickSave();
+  const st1 = await statusOf('/Осталось вопросов: 2/');
+  const r1 = await w1;
+  const fold1 = await until("(function(){var d=document.querySelector('details.archive');return d&&!d.open&&/Q1/.test(d.textContent)?'folded':''})()", 5000);
+  ok(st1 && gen4.exit() === null && r1.code === 0 && /Recorded: interviews\/interview_068_partial\.md — Q1 = A · questions left: 2/.test(r1.out) && decP().answers && decP().answers.Q1,
+     's22 D: ответ на Q1 из трёх → страница перечитана и говорит «Осталось вопросов: 2», процесс ЖИВ, сторож --wait завершился кодом 0 с «Q1 = A · questions left: 2» (OW6, критерий 20)',
+     'status «' + st1 + '» gen ' + gen4.exit() + ' wait ' + r1.code + ': ' + r1.out.slice(-200));
+  ok(fold1 === 'folded', 's22 D: отвеченный Q1 свёрнут в «архив решённого», живые вопросы — первыми (OW6)', String(fold1));
+  // Q2
+  const w2 = spawnWait(); await wait(500);
+  await pick('Q2', 'B'); await clickSave();
+  const st2 = await statusOf('/Осталось вопросов: 1/');
+  const r2 = await w2;
+  const d2 = decP();
+  ok(st2 && r2.code === 0 && d2.answers && d2.answers.Q1 && d2.answers.Q2 && d2.records === 2 && gen4.exit() === null,
+     's22 D: ответ на Q2 → «Осталось вопросов: 1», decision.json СЛИВАЕТ Q1 и Q2 (records 2), сторож 0, процесс жив (OW6)', JSON.stringify(d2).slice(0, 300));
+  // the stale tab: the agent rewrites Q3 while the page is open; the owner saves Q3 from the old revision
+  await pick('Q3', 'A');
+  writeFileSync(join(D, DOC_P), readFileSync(join(D, DOC_P), 'utf8').replace('Третий вопрос?', 'Третий вопрос, переписанный агентом?'));
+  await clickSave();
+  const st3j = await until("(function(){var b=document.querySelector('#banner');if(!b||b.style.display!=='block'||!/ИЗМЕНЁН/.test(b.textContent))return '';" +
+    "return JSON.stringify({banner:b.textContent,ring:document.querySelector('#rescue').style.display,text:document.querySelector('#rescuetext').value,saveOff:document.querySelector('#save').disabled})})()");
+  const s3 = st3j ? JSON.parse(st3j) : {};
+  const md3 = readFileSync(join(D, DOC_P), 'utf8');
+  ok(s3.ring === 'block' && /"Q3"/.test(s3.text || '') && s3.saveOff && !(decP().answers || {}).Q3 && /переписанный агентом\?\n\n- \*\*A\)\*\* первый\n- \*\*B\)\*\* второй\n\n\*\*Answer:\*\*\n/.test(md3.replace(/\r\n/g, '\n')),
+     's22 D: СТАРАЯ вкладка — агент переписал Q3, владелец жмёт «Записать» → полоса «Документ ИЗМЕНЁН», текст ответа в кольце спасения, запись выключена; в решении и в документе Q3 НЕТ (OW6, зазор редакции)',
+     String(st3j).slice(0, 300));
+  // the new revision: the draft of the rewritten Q3 comes back as a draft of a previous revision, never onto the rewritten question
+  await ev("(function(){document.querySelector('#banner button').click();return true})()");
+  const orph = await until("(function(){var t=document.querySelector('section.qcard.danger textarea');return t?t.value:''})()");
+  const q3checked = await ev("(function(){var r=document.getElementsByName('choice:" + DOC_P + ":Q3');for(var i=0;i<r.length;i++)if(r[i].checked)return true;return false})()");
+  ok(orph && orph.includes('choice:' + DOC_P + ':Q3') && q3checked === false,
+     's22 D: «Открыть новую редакцию» → черновик переписанного Q3 — блоком «Черновик прошлой редакции» с текстом, на новый Q3 он НЕ сел (OW6, отпечаток вопроса)', String(orph).slice(0, 200));
+  // the last answer ends the contour
+  await pick('Q3', 'B'); await clickSave();
+  for (let i = 0; i < 60 && gen4.exit() === null; i++) await wait(200);
+  const md4 = readFileSync(join(D, DOC_P), 'utf8');
+  ok(gen4.exit() === 0 && (decP().answers || {}).Q3 && (md4.match(/owner-review: by/g) || []).length === 3,
+     's22 D: ответ на Q3 в новой редакции — ПОСЛЕДНИЙ → контур завершился кодом 0; в документе три записанных ответа (OW6, I8)', 'gen ' + gen4.exit() + ' ' + JSON.stringify(decP()).slice(0, 200));
+  try { await page4.closeGracefully(); } catch { /* the window is already gone */ }
+  rmSync(join(D, 'interviews', 'decisions', 'interview_068_partial.lock'), { force: true });
+  } // (7)
 }
 
 // ================================================================ итог

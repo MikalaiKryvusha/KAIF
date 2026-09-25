@@ -36,6 +36,7 @@ const BROWSERS = [ // DEF8-порядок; пути стандартные, по
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
 ];
 const STEP_TIMEOUT_MS = 10000;   // C9: жёсткий срок каждого шага CDP
+const SELFTEST_TIMEOUT_MS = 60000; // OW6 (2.8): селфтест генератора поднимает ЖИВОЙ сервер (частичная запись, 409, сторож) — срок стережёт зависание, не скорость
 const LAUNCH_TIMEOUT_MS = 15000; // C9: срок старта браузера
 // Бюджет ожидания смерти по вахте тишины: порог 400 мс + два страйка тиками по 150 мс + запас
 // на старт процесса. Не «побольше на всякий случай» — иначе зависший контур читался бы как
@@ -234,6 +235,10 @@ const FILL_AND_SAVE_JS = [
   " if(!radio.checked)radio.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true}));",
   " var txt=document.getElementsByName('text:interviews/interview_101_fixture.md:Q1')[0];",
   " txt.value='и свой текст';txt.dispatchEvent(new Event('input',{bubbles:true}));",
+  // OW6 (2.8): страница живёт до ПОСЛЕДНЕГО вопроса — открыт и табличный Q3; отвечаем оба, и последний ответ завершает контур (I8);
+  // частичную запись (страница остаётся, «Осталось вопросов: N», сторож) доказывают s22 (7) и селфтест генератора
+  " var r3=document.querySelector('input[name=\"choice:interviews/interview_101_fixture.md:Q3\"][value=\"A\"]');",
+  " if(r3&&!r3.checked)r3.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true}));",
   " document.querySelector('#save').click();return true})()",
 ].join('');
 
@@ -247,7 +252,7 @@ async function main() {
   try {
     block('1. Селфтесты ядра и стража (C10-блок 1)');
     const core = spawnSync(process.execPath, [join(ROOT, 'tools/lib/review-core.mjs'), '--selftest'],
-      { encoding: 'utf8', timeout: STEP_TIMEOUT_MS });
+      { encoding: 'utf8', timeout: SELFTEST_TIMEOUT_MS });
     check('селфтест ядра зелёный', core.status === 0, (core.stdout || '').split('\n').find((l) => l.includes('✗')) || '');
     const guard = spawnSync(process.execPath, [join(ROOT, 'tools/questions-guard.mjs'), '--selftest'],
       { encoding: 'utf8', timeout: STEP_TIMEOUT_MS });
@@ -498,9 +503,10 @@ async function main() {
         " t.value='варианты не нравятся — переделай';t.dispatchEvent(new Event('input',{bubbles:true}));",
         " document.querySelector('#save').click();return true})()",
       ].join(''));
-      const qServed = await Promise.race([qPromise, sleep(8000).then(() => null)]);
-      check('запись прошла и для вопроса без выбора', qServed !== null && qServed.outcome === 'decision recorded',
-        qServed ? qServed.outcome : 'не завершился за 8 с');
+      // OW6 (2.8): комментарий без выбора — не ответ, вопрос остаётся открытым, и страница ОСТАЁТСЯ (сторож будит агента по записи)
+      const qServed = await Promise.race([qPromise, sleep(4000).then(() => null)]);
+      check('запись прошла и для вопроса без выбора; вопрос открыт — страница ОСТАЁТСЯ (OW6)', qServed === null && readDecision(fixtureRoot, qRel) !== null,
+        qServed ? 'контур завершился: ' + qServed.outcome : 'решения нет');
       const qDec = readDecision(fixtureRoot, qRel);
       check('комментарий-без-выбора в снимке (третье состояние: варианты отвергнуты)',
         qDec && qDec.answers && qDec.answers.Q1 && qDec.answers.Q1.comment === 'варианты не нравятся — переделай'
@@ -510,6 +516,8 @@ async function main() {
       check('комментарий разнесён в md, вопрос остался ОТКРЫТЫМ (выбор из текста не выводится)',
         qMd.includes('варианты не нравятся — переделай') && !parseQuestions(qMd).find((q) => q.id === 'Q1').answered);
       await browser.cdp.send('Target.closeTarget', { targetId: qPage.targetId }).catch(() => {});
+      const qEnd = await Promise.race([qPromise, sleep(9000).then(() => null)]); // закрытое окно — событие (маяк, ~3 с)
+      check('окно закрыто без ответа → контур завершился сам (I14)', qEnd !== null, qEnd ? qEnd.outcome : 'не завершился за 9 с');
     }
 
     etalonBlock();
@@ -761,7 +769,7 @@ async function main() {
       // нужен); кольцо остаётся только для браузера без локального хранилища. Проба читает ОБА носителя. Прежние ожидания
       // блока (кольцо показано · кнопка снова активна · текст в кольце) стерегли поведение 2.6 и заменены ЭТИМИ.
       const PROBE_JS = [
-        "(function(){var draft=null,sub=null;try{draft=localStorage.getItem(CFG.draftKey+':text:interviews/interview_101_fixture.md:Q1');sub=localStorage.getItem(CFG.draftKey+':__submitted')}catch(e){}",
+        "(function(){var draft=null,sub=null;try{draft=localStorage.getItem(dkey('text:interviews/interview_101_fixture.md:Q1'));sub=localStorage.getItem(CFG.draftKey+':__submitted')}catch(e){}",
         " return new Promise(function(done){var fin=function(idb){done(",
         " {rescueShown:document.querySelector('#rescue').style.display==='block',",
         "  submittedIdb:!!(idb&&String(idb).indexOf('ответ в мёртвый сервер')>=0),",
@@ -823,7 +831,8 @@ async function main() {
           (docA.match(/type="radio"/g) || []).length === 4);
         const bad = await fetch(base + '/d/' + encodeURIComponent('../../secrets.md'));
         check('путь вне очереди отвергнут (адресная строка не читает репозиторий)', bad.status === 404);
-        const r1 = await post('/decide', { doc: 'interviews/interview_201_a.md', answers: { Q1: { choice: 'A' }, Q2: { choice: 'B' } }, comment: '' });
+        const r1 = await post('/decide', { doc: 'interviews/interview_201_a.md', answers: { Q1: { choice: 'A' }, Q2: { choice: 'B' } }, comment: '',
+          rev: bodyHash(readFileSync(join(qRoot, 'interviews', 'interview_201_a.md'), 'utf8')) }); // OW6: запись несёт ревизию, как страница
         check('запись первого документа прошла и назвала остаток', r1.ok === true && r1.more === 1, JSON.stringify(r1));
         await fetch(base + '/closed', { method: 'POST', body: 'doc:saved' });
         await sleep(700);

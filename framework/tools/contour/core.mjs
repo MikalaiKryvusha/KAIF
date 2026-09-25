@@ -597,8 +597,9 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.comments ? { comments: payload.comments } : {}),
     ...(payload.noRemarks ? { noRemarks: true } : {}), // bugs/113: "looked, no remarks" — a legal verdict on an artifact
     ...(payload.recovered ? { recovered: true } : {}), // LP (2.7, #66): the answer was saved on the owner's computer while the server was gone and picked up by the agent
+    ...(payload.staleRevision ? { staleRevision: true } : {}), // OW6 (2.8): made against an older revision — kept as data, not written into the document
   };
-  const isMd = extname(abs).toLowerCase() === '.md';
+  const isMd = extname(abs).toLowerCase() === '.md' && !payload.staleRevision; // OW6: an older revision's answer never lands by question numbers
   if (isMd) {
     const src = readFileSync(abs, 'utf8');
     const eol = /\r\n/.test(src) ? '\r\n' : '\n';
@@ -643,8 +644,23 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     if (touched) writeFileSync(abs, lines.join(eol), 'utf8');
   }
   const p = decisionPaths(root, docPath, cfg);
+  // OW6 (2.8, the KAIF owner's word — answers are saved ONE AT A TIME in every project): a record from the SAME page — its `rev` is
+  // the document revision the previous record left (`revAfter`) — MERGES into the decision; a new revision of the document starts a
+  // new decision (old answers never land on renumbered questions). The archive (place 3) keeps every record as it came.
+  // [TESTED: 2026-09-25 19:37–20:01 · selftest: two records of one page merge, another revision starts a new decision; s22 D (7) on the
+  //  deployed copy: records 2 after two saves; mutant «merge removed» red exactly on both cases; report testcases/reports/2026-09-25_ow6-partial-save-revision.md]
+  if (payload.rev) record.rev = payload.rev;
+  if (isMd) record.revAfter = bodyHash(readFileSync(abs, 'utf8'));
+  const prev = existsSync(p.decision) ? readJson(p.decision) : null;
+  const decision = { ...record };                          // place 2 — merged; the archive and the caller get THIS record as it came
+  if (prev && payload.rev && prev.revAfter === payload.rev && (prev.kind || 'interview') === record.kind) {
+    if (prev.answers || record.answers) decision.answers = { ...(prev.answers || {}), ...(record.answers || {}) };
+    if (prev.artifacts || record.artifacts) decision.artifacts = { ...(prev.artifacts || {}), ...(record.artifacts || {}) };
+    if (!record.comment && prev.comment) decision.comment = prev.comment;
+    decision.records = (prev.records || 1) + 1;
+  }
   mkdirSync(resolve(root, cfg.archiveDir), { recursive: true });
-  writeFileSync(p.decision, JSON.stringify(record, null, 2) + '\n', 'utf8');      // place 2
+  writeFileSync(p.decision, JSON.stringify(decision, null, 2) + '\n', 'utf8');    // place 2
   writeFileSync(p.archive(at), JSON.stringify(record, null, 2) + '\n', 'utf8');   // place 3 — never rewritten
   return record;
 }

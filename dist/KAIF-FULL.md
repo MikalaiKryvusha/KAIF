@@ -2854,7 +2854,9 @@ of a document dated on or after `2026-09-18` opens only with the attestation of 
 read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
 option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
 too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
-two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
+two it did). Since 2.8 (epic OW, origin issues #74 · #82) the door searches itself for a question in ANY transport, a
+chat question too — `review.mjs --search "<the question>"`, no shell and no locale (a capital Cyrillic letter was lost
+by `grep -i` in Git Bash; the printed grep carries `LC_ALL=C.UTF-8`) — and `N > 0` with `read: none` is refused. `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB is the primary carrier, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
@@ -5130,10 +5132,11 @@ smart guy, before asking?" · "you ask me questions without having looked at the
 we have discussed this already. Search."). So the search is a step with a command, and its result is
 written under the question — never "I looked at the interviews" in the agent's memory:
 
-1. **Run the search.** The door prints the ready command for the question's own heading — `node
-   .kaif/tools/contour/review.mjs <interview.md> --check` — and it looks like
-   `grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/ GOAL.md MASTER_PLAN.md plans/`.
-   Run it as printed; broaden it when the topic has a synonym, never narrow it.
+1. **Run the search.** The door searches itself — `node .kaif/tools/contour/review.mjs --search "<the question>"`
+   (2.8: no shell and no locale decide whether a capital Cyrillic letter is found; the same for a question asked in
+   the chat) — or prints the ready command for the question's own heading, `node .kaif/tools/contour/review.mjs
+   <interview.md> --check`: `LC_ALL=C.UTF-8 grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/
+   GOAL.md MASTER_PLAN.md plans/`. Run it as printed; broaden it when the topic has a synonym, never narrow it.
 2. **READ the hits** — the files, not the number. A count with nothing read is the same claim unverified.
 3. **Write the attestation** between the question heading and its FIRST option:
    ```
@@ -5147,8 +5150,8 @@ written under the question — never "I looked at the interviews" in the agent's
    it or change it", with the old answer quoted and addressed. Re-serving a settled question is the defect.
 5. **The door refuses what skipped this step.** A live question of a document dated on or after 2026-09-18
    without the attestation: exit 3, the grep printed, nothing shown and nobody called — the same for `--check`
-   and for any show. Hits found with `prior: none` is refused too: name the prior answer, or write
-   `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
+   and for any show. Hits found with `read: none` (2.8) or `prior: none` is refused too: read the hits, name the
+   prior answer, or write `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
    `<!-- archaeology: n/a — <reason> -->`. Interviews dated before that day are never judged (the field's
    history is not rewritten), and `--check` says so out loud: `archaeology: not judged — header date …`.
 
@@ -7183,12 +7186,18 @@ raised in a batch next to a live question.
 
 **The waiting-and-wake loop (I8–I14):**
 
-- **I8. Saving wakes the waiter.** Field wording, vendored verbatim: *"The contour must WAKE the
-  waiting agent on save. The agent learns of events by the TERMINATION of a process it started —
-  therefore a long-lived server and a wake-up are mutually exclusive, and the wake-up wins. Any
-  recorded decision terminates the contour; if anything remains unanswered, re-opening the page is
-  the AGENT's duty, never the human's."* Every check before this one asserted the path TO the
-  human; the path BACK is what the contour exists for.
+- **I8. Saving wakes the waiter — and the page lives until its last question.** Field wording of 2.2,
+  vendored verbatim: *"The contour must WAKE the waiting agent on save. The agent learns of events by
+  the TERMINATION of a process it started — therefore a long-lived server and a wake-up are mutually
+  exclusive, and the wake-up wins. Any recorded decision terminates the contour; if anything remains
+  unanswered, re-opening the page is the AGENT's duty, never the human's."* The first half stands;
+  the conclusion is REVISED in 2.8 by the KAIF owner's word — answers are saved one at a time in every
+  project, as on the field page he pointed to: the process that ends is a separate WAITER
+  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one), and
+  the page's server lives while anything on it is unanswered and ends with the last answer. Start
+  both as tracked background tasks (I31); on each waiter exit apply the answer and start the waiter
+  again while questions are left — re-opening a page the owner still has is never the agent's move.
+  Every check before this one asserted the path TO the human; the path BACK is what the contour exists for.
 - **I9. The machine's patience is infinite.** Waiting for a human's answer has NO timeout by
   default — the default is `0`, not "a big number" (a finite default gives the same defect, just
   rarer, and a rare defect is worse: it arrives when nobody expects it). A finite limit is an
@@ -7305,6 +7314,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   (`display-mode: standalone` is false there). And the generator comes up on the PREVIOUS run's port
   when that process is gone (I29 mechanized): the draft of the window that outlived the process is
   restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
+  **Next to the page — the waiter (2.8, I8):** the same way, `node .kaif/tools/contour/review.mjs --wait <doc>` — it
+  ends with exit 0 on each recorded answer (the page stays open while questions are left) and with 2 when
+  the contour ended without one; apply the answer, start the waiter again while questions are left.
 
 **The call (I32–I36):**
 
@@ -7586,8 +7598,9 @@ hand over a path is born (I15).
   rides to the synthesizer as a FILE and the command itself is ASCII-only · print plain text to
   the console — the exit code does not prove the human heard.
 - **C9. Accumulation — and immediately I8.** The queue is a state file; live documents are
-  never moved (I7). Any save closes the contour; if the queue still holds unanswered items,
-  re-raising the page is the agent's duty (I8). The command that holds the server MUST have a
+  never moved (I7). A save no longer closes the contour (2.8): the page lives until its last
+  question and the waiter wakes the agent on each answer (I8); a queue still holding unanswered items
+  after its page closed — re-raising the page is the agent's duty. The command that holds the server MUST have a
   build-and-exit flag (`--no-serve`) — otherwise any synchronous caller, your own QA run first
   of all, hangs forever; and every child call inside the guard carries a hard deadline.
 - **C10. The QA run in a live browser — eleven blocks, the minimal field set that caught

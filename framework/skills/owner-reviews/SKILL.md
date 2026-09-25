@@ -89,12 +89,18 @@ raised in a batch next to a live question.
 
 **The waiting-and-wake loop (I8–I14):**
 
-- **I8. Saving wakes the waiter.** Field wording, vendored verbatim: *"The contour must WAKE the
-  waiting agent on save. The agent learns of events by the TERMINATION of a process it started —
-  therefore a long-lived server and a wake-up are mutually exclusive, and the wake-up wins. Any
-  recorded decision terminates the contour; if anything remains unanswered, re-opening the page is
-  the AGENT's duty, never the human's."* Every check before this one asserted the path TO the
-  human; the path BACK is what the contour exists for.
+- **I8. Saving wakes the waiter — and the page lives until its last question.** Field wording of 2.2,
+  vendored verbatim: *"The contour must WAKE the waiting agent on save. The agent learns of events by
+  the TERMINATION of a process it started — therefore a long-lived server and a wake-up are mutually
+  exclusive, and the wake-up wins. Any recorded decision terminates the contour; if anything remains
+  unanswered, re-opening the page is the AGENT's duty, never the human's."* The first half stands;
+  the conclusion is REVISED in 2.8 by the KAIF owner's word — answers are saved one at a time in every
+  project, as on the field page he pointed to: the process that ends is a separate WAITER
+  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one), and
+  the page's server lives while anything on it is unanswered and ends with the last answer. Start
+  both as tracked background tasks (I31); on each waiter exit apply the answer and start the waiter
+  again while questions are left — re-opening a page the owner still has is never the agent's move.
+  Every check before this one asserted the path TO the human; the path BACK is what the contour exists for.
 - **I9. The machine's patience is infinite.** Waiting for a human's answer has NO timeout by
   default — the default is `0`, not "a big number" (a finite default gives the same defect, just
   rarer, and a rare defect is worse: it arrives when nobody expects it). A finite limit is an
@@ -211,6 +217,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   (`display-mode: standalone` is false there). And the generator comes up on the PREVIOUS run's port
   when that process is gone (I29 mechanized): the draft of the window that outlived the process is
   restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
+  **Next to the page — the waiter (2.8, I8):** the same way, `node .kaif/tools/contour/review.mjs --wait <doc>` — it
+  ends with exit 0 on each recorded answer (the page stays open while questions are left) and with 2 when
+  the contour ended without one; apply the answer, start the waiter again while questions are left.
 
 **The call (I32–I36):**
 
@@ -492,8 +501,9 @@ hand over a path is born (I15).
   rides to the synthesizer as a FILE and the command itself is ASCII-only · print plain text to
   the console — the exit code does not prove the human heard.
 - **C9. Accumulation — and immediately I8.** The queue is a state file; live documents are
-  never moved (I7). Any save closes the contour; if the queue still holds unanswered items,
-  re-raising the page is the agent's duty (I8). The command that holds the server MUST have a
+  never moved (I7). A save no longer closes the contour (2.8): the page lives until its last
+  question and the waiter wakes the agent on each answer (I8); a queue still holding unanswered items
+  after its page closed — re-raising the page is the agent's duty. The command that holds the server MUST have a
   build-and-exit flag (`--no-serve`) — otherwise any synchronous caller, your own QA run first
   of all, hangs forever; and every child call inside the guard carries a hard deadline.
 - **C10. The QA run in a live browser — eleven blocks, the minimal field set that caught

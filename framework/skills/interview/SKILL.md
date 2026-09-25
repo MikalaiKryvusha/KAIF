@@ -194,10 +194,11 @@ smart guy, before asking?" · "you ask me questions without having looked at the
 we have discussed this already. Search."). So the search is a step with a command, and its result is
 written under the question — never "I looked at the interviews" in the agent's memory:
 
-1. **Run the search.** The door prints the ready command for the question's own heading — `node
-   .kaif/tools/contour/review.mjs <interview.md> --check` — and it looks like
-   `grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/ GOAL.md MASTER_PLAN.md plans/`.
-   Run it as printed; broaden it when the topic has a synonym, never narrow it.
+1. **Run the search.** The door searches itself — `node .kaif/tools/contour/review.mjs --search "<the question>"`
+   (2.8: no shell and no locale decide whether a capital Cyrillic letter is found; the same for a question asked in
+   the chat) — or prints the ready command for the question's own heading, `node .kaif/tools/contour/review.mjs
+   <interview.md> --check`: `LC_ALL=C.UTF-8 grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/
+   GOAL.md MASTER_PLAN.md plans/`. Run it as printed; broaden it when the topic has a synonym, never narrow it.
 2. **READ the hits** — the files, not the number. A count with nothing read is the same claim unverified.
 3. **Write the attestation** between the question heading and its FIRST option:
    ```
@@ -211,8 +212,8 @@ written under the question — never "I looked at the interviews" in the agent's
    it or change it", with the old answer quoted and addressed. Re-serving a settled question is the defect.
 5. **The door refuses what skipped this step.** A live question of a document dated on or after 2026-09-18
    without the attestation: exit 3, the grep printed, nothing shown and nobody called — the same for `--check`
-   and for any show. Hits found with `prior: none` is refused too: name the prior answer, or write
-   `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
+   and for any show. Hits found with `read: none` (2.8) or `prior: none` is refused too: read the hits, name the
+   prior answer, or write `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
    `<!-- archaeology: n/a — <reason> -->`. Interviews dated before that day are never judged (the field's
    history is not rewritten), and `--check` says so out loud: `archaeology: not judged — header date …`.
 

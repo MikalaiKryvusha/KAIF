@@ -3139,7 +3139,9 @@ of a document dated on or after `2026-09-18` opens only with the attestation of 
 read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
 option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
 too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
-two it did). `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
+two it did). Since 2.8 (epic OW, origin issues #74 · #82) the door searches itself for a question in ANY transport, a
+chat question too — `review.mjs --search "<the question>"`, no shell and no locale (a capital Cyrillic letter was lost
+by `grep -i` in Git Bash; the printed grep carries `LC_ALL=C.UTF-8`) — and `N > 0` with `read: none` is refused. `/interview` step 3d carries the same five steps for the agent's hand. It is not a skeleton to fill: a session checks a page against it in a minute,
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB is the primary carrier, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
@@ -6246,10 +6248,11 @@ smart guy, before asking?" · "you ask me questions without having looked at the
 we have discussed this already. Search."). So the search is a step with a command, and its result is
 written under the question — never "I looked at the interviews" in the agent's memory:
 
-1. **Run the search.** The door prints the ready command for the question's own heading — `node
-   .kaif/tools/contour/review.mjs <interview.md> --check` — and it looks like
-   `grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/ GOAL.md MASTER_PLAN.md plans/`.
-   Run it as printed; broaden it when the topic has a synonym, never narrow it.
+1. **Run the search.** The door searches itself — `node .kaif/tools/contour/review.mjs --search "<the question>"`
+   (2.8: no shell and no locale decide whether a capital Cyrillic letter is found; the same for a question asked in
+   the chat) — or prints the ready command for the question's own heading, `node .kaif/tools/contour/review.mjs
+   <interview.md> --check`: `LC_ALL=C.UTF-8 grep -rniE "<the heading's words: 4+ letters, 6+ by their stem>" interviews/
+   GOAL.md MASTER_PLAN.md plans/`. Run it as printed; broaden it when the topic has a synonym, never narrow it.
 2. **READ the hits** — the files, not the number. A count with nothing read is the same claim unverified.
 3. **Write the attestation** between the question heading and its FIRST option:
    ```
@@ -6263,8 +6266,8 @@ written under the question — never "I looked at the interviews" in the agent's
    it or change it", with the old answer quoted and addressed. Re-serving a settled question is the defect.
 5. **The door refuses what skipped this step.** A live question of a document dated on or after 2026-09-18
    without the attestation: exit 3, the grep printed, nothing shown and nobody called — the same for `--check`
-   and for any show. Hits found with `prior: none` is refused too: name the prior answer, or write
-   `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
+   and for any show. Hits found with `read: none` (2.8) or `prior: none` is refused too: read the hits, name the
+   prior answer, or write `prior: unrelated — <why>`. A question with nothing to search — a name, the taste class — declares
    `<!-- archaeology: n/a — <reason> -->`. Interviews dated before that day are never judged (the field's
    history is not rewritten), and `--check` says so out loud: `archaeology: not judged — header date …`.
 
@@ -6935,12 +6938,18 @@ raised in a batch next to a live question.
 
 **The waiting-and-wake loop (I8–I14):**
 
-- **I8. Saving wakes the waiter.** Field wording, vendored verbatim: *"The contour must WAKE the
-  waiting agent on save. The agent learns of events by the TERMINATION of a process it started —
-  therefore a long-lived server and a wake-up are mutually exclusive, and the wake-up wins. Any
-  recorded decision terminates the contour; if anything remains unanswered, re-opening the page is
-  the AGENT's duty, never the human's."* Every check before this one asserted the path TO the
-  human; the path BACK is what the contour exists for.
+- **I8. Saving wakes the waiter — and the page lives until its last question.** Field wording of 2.2,
+  vendored verbatim: *"The contour must WAKE the waiting agent on save. The agent learns of events by
+  the TERMINATION of a process it started — therefore a long-lived server and a wake-up are mutually
+  exclusive, and the wake-up wins. Any recorded decision terminates the contour; if anything remains
+  unanswered, re-opening the page is the AGENT's duty, never the human's."* The first half stands;
+  the conclusion is REVISED in 2.8 by the KAIF owner's word — answers are saved one at a time in every
+  project, as on the field page he pointed to: the process that ends is a separate WAITER
+  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one), and
+  the page's server lives while anything on it is unanswered and ends with the last answer. Start
+  both as tracked background tasks (I31); on each waiter exit apply the answer and start the waiter
+  again while questions are left — re-opening a page the owner still has is never the agent's move.
+  Every check before this one asserted the path TO the human; the path BACK is what the contour exists for.
 - **I9. The machine's patience is infinite.** Waiting for a human's answer has NO timeout by
   default — the default is `0`, not "a big number" (a finite default gives the same defect, just
   rarer, and a rare defect is worse: it arrives when nobody expects it). A finite limit is an
@@ -7057,6 +7066,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   (`display-mode: standalone` is false there). And the generator comes up on the PREVIOUS run's port
   when that process is gone (I29 mechanized): the draft of the window that outlived the process is
   restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
+  **Next to the page — the waiter (2.8, I8):** the same way, `node .kaif/tools/contour/review.mjs --wait <doc>` — it
+  ends with exit 0 on each recorded answer (the page stays open while questions are left) and with 2 when
+  the contour ended without one; apply the answer, start the waiter again while questions are left.
 
 **The call (I32–I36):**
 
@@ -7338,8 +7350,9 @@ hand over a path is born (I15).
   rides to the synthesizer as a FILE and the command itself is ASCII-only · print plain text to
   the console — the exit code does not prove the human heard.
 - **C9. Accumulation — and immediately I8.** The queue is a state file; live documents are
-  never moved (I7). Any save closes the contour; if the queue still holds unanswered items,
-  re-raising the page is the agent's duty (I8). The command that holds the server MUST have a
+  never moved (I7). A save no longer closes the contour (2.8): the page lives until its last
+  question and the waiter wakes the agent on each answer (I8); a queue still holding unanswered items
+  after its page closed — re-raising the page is the agent's duty. The command that holds the server MUST have a
   build-and-exit flag (`--no-serve`) — otherwise any synchronous caller, your own QA run first
   of all, hangs forever; and every child call inside the guard carries a hard deadline.
 - **C10. The QA run in a live browser — eleven blocks, the minimal field set that caught
@@ -10844,8 +10857,9 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.comments ? { comments: payload.comments } : {}),
     ...(payload.noRemarks ? { noRemarks: true } : {}), // bugs/113: "looked, no remarks" — a legal verdict on an artifact
     ...(payload.recovered ? { recovered: true } : {}), // LP (2.7, #66): the answer was saved on the owner's computer while the server was gone and picked up by the agent
+    ...(payload.staleRevision ? { staleRevision: true } : {}), // OW6 (2.8): made against an older revision — kept as data, not written into the document
   };
-  const isMd = extname(abs).toLowerCase() === '.md';
+  const isMd = extname(abs).toLowerCase() === '.md' && !payload.staleRevision; // OW6: an older revision's answer never lands by question numbers
   if (isMd) {
     const src = readFileSync(abs, 'utf8');
     const eol = /\r\n/.test(src) ? '\r\n' : '\n';
@@ -10890,8 +10904,23 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     if (touched) writeFileSync(abs, lines.join(eol), 'utf8');
   }
   const p = decisionPaths(root, docPath, cfg);
+  // OW6 (2.8, the KAIF owner's word — answers are saved ONE AT A TIME in every project): a record from the SAME page — its `rev` is
+  // the document revision the previous record left (`revAfter`) — MERGES into the decision; a new revision of the document starts a
+  // new decision (old answers never land on renumbered questions). The archive (place 3) keeps every record as it came.
+  // [TESTED: 2026-09-25 19:37–20:01 · selftest: two records of one page merge, another revision starts a new decision; s22 D (7) on the
+  //  deployed copy: records 2 after two saves; mutant «merge removed» red exactly on both cases; report testcases/reports/2026-09-25_ow6-partial-save-revision.md]
+  if (payload.rev) record.rev = payload.rev;
+  if (isMd) record.revAfter = bodyHash(readFileSync(abs, 'utf8'));
+  const prev = existsSync(p.decision) ? readJson(p.decision) : null;
+  const decision = { ...record };                          // place 2 — merged; the archive and the caller get THIS record as it came
+  if (prev && payload.rev && prev.revAfter === payload.rev && (prev.kind || 'interview') === record.kind) {
+    if (prev.answers || record.answers) decision.answers = { ...(prev.answers || {}), ...(record.answers || {}) };
+    if (prev.artifacts || record.artifacts) decision.artifacts = { ...(prev.artifacts || {}), ...(record.artifacts || {}) };
+    if (!record.comment && prev.comment) decision.comment = prev.comment;
+    decision.records = (prev.records || 1) + 1;
+  }
   mkdirSync(resolve(root, cfg.archiveDir), { recursive: true });
-  writeFileSync(p.decision, JSON.stringify(record, null, 2) + '\n', 'utf8');      // place 2
+  writeFileSync(p.decision, JSON.stringify(decision, null, 2) + '\n', 'utf8');    // place 2
   writeFileSync(p.archive(at), JSON.stringify(record, null, 2) + '\n', 'utf8');   // place 3 — never rewritten
   return record;
 }
@@ -10983,6 +11012,7 @@ import {
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
   archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
+  readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -10992,6 +11022,8 @@ const AUTOCLOSE_DELAY_MS = 2000;      // DEF2: window.close() attempt after the 
 const AUTOCLOSE_RESERVE_MS = 2000;    // DEF2: reserve for a refused close → an honest request
 const SERVER_DEATH_MS = 2500;         // DEF3: server death after the save (the window has time to go)
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 s after the beacon — reload vs close
+const WAIT_POLL_MS = 2000;            // OW6 (2.8): the waiter polls the decision file(s) — the field device the KAIF owner pointed to polls every 2 s
+const QH_LEN = 12;                    // OW6: hex chars of a question's fingerprint in a draft key (title + body of the question)
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -11035,7 +11067,7 @@ const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
 // the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
-const KNOWN_FLAGS = ['--search', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
+const KNOWN_FLAGS = ['--search', '--wait', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
   '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
   '--where', '--close', '--force', '--owner-word'];
 const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
@@ -11358,6 +11390,7 @@ export function buildPage(root, docPath) {
   };
   const questions = parsed.map((q) => ({
     doc: rel, id: q.id, title: q.title, answered: q.answered || Boolean(implMap[q.id]), target: q.target,
+    qh: bodyHash(q.title + '\n' + (q.body || []).join('\n')).slice(0, QH_LEN), // OW6: the draft key's fingerprint of THIS question
     bodyHtml: proseOf(q), recommended: q.recommended,
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text), recommended: o.letter === q.recommended })),
     existing: [...q.answers.filter((a) => a.text).map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
@@ -11409,7 +11442,7 @@ export function buildPage(root, docPath) {
   const html = pageShell(cfg, {
     title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + esc(title) + '</span>' + summary + formNote,
     main: mainHtml,
-    questions, artifacts, face: 'interview',
+    questions, artifacts, face: 'interview', rev: docHash,
   });
   return { html, questions, artifacts, docHash, kind, title, rel, face: 'interview' };
 }
@@ -11424,7 +11457,7 @@ export function buildNoticePage(root, docPath) {
     title, kind: t.kind.notice,
     heading: '<span class="kind">' + t.kind.notice + '</span><span>' + esc(title) + '</span> <span class="tag notice">' + t.tag.noAnswerNote + '</span>',
     main: '<div class="doc">' + renderMd(md) + '</div>' + noticeCommentBlock(rel, t),
-    questions: [], notices: [rel], noticeDoc: rel, face: 'notice',
+    questions: [], notices: [rel], noticeDoc: rel, face: 'notice', rev: bodyHash(md),
   });
   return { html, questions: [], docHash: bodyHash(md), kind: t.kind.notice, title, rel, face: 'notice' };
 }
@@ -11444,7 +11477,7 @@ export function buildProofreadPage(root, docPath) {
     title, kind: t.kind.proofread,
     heading: '<span class="kind">' + t.kind.proofread + '</span><span>' + esc(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
     main: '<h2>' + t.head.paragraphs + ' (' + paras.length + ')</h2>' + cards + docCommentBlock(rel, t) + '<p class="muted">' + esc(t.ph.noRemarks) + '</p>',
-    questions: [], face: 'proofread', faceDoc: rel, paragraphs: paras.map((p) => p.id),
+    questions: [], face: 'proofread', faceDoc: rel, paragraphs: paras.map((p) => p.id), rev: bodyHash(md),
   });
   return { html, questions: [], docHash: bodyHash(md), kind: t.kind.proofread, title, rel, paragraphs: paras.length, face: 'proofread' };
 }
@@ -11465,7 +11498,7 @@ export function buildMockupPage(root, imagePath) {
     heading: '<span class="kind">' + t.kind.mockup + '</span><span>' + esc(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
     main: '<h2>' + t.head.mockup + '</h2><div class="mock"><img src="' + src + '" alt="' + esc(title) + '"></div>' +
       '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="5" placeholder="' + esc(t.ph.mockup) + '"></textarea></p>' + '<p class="muted">' + esc(t.ph.noRemarks) + '</p>',
-    questions: [], face: 'mockup', faceDoc: rel,
+    questions: [], face: 'mockup', faceDoc: rel, rev: bodyHash(data.toString('base64')),
   });
   return { html, questions: [], docHash: bodyHash(data.toString('base64')), kind: t.kind.mockup, title, rel, face: 'mockup' };
 }
@@ -11587,19 +11620,21 @@ function aCard(a, t) {
 }
 
 function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [], batch = false, notices = [], noticeDoc = null,
-  index = false, face = 'interview', faceDoc = null, paragraphs = [] }) {
+  index = false, face = 'interview', faceDoc = null, paragraphs = [], rev = null }) {
   const t = T(cfg);
   const qjson = JSON.stringify(questions).replace(/</g, '\\u003c');
   const singleDoc = batch ? null : ((questions[0] && questions[0].doc) || (artifacts[0] && artifacts[0].doc) || noticeDoc || faceDoc || null);
   const cfgJson = JSON.stringify({
     batch, index, face, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
+    rev, doc: singleDoc, // OW6 (2.8): the revision this page was built from — every save carries it, the pulse compares it
     notices, paragraphs,
     artifacts: artifacts.map((a) => ({ doc: a.doc, id: a.id, exists: a.exists, sha256: a.sha256 })),
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
       needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, serverGoneLocal: t.st.serverGoneLocal, savedLocally: t.st.savedLocally, closeYourself: t.st.closeYourself,
-      copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote },
+      copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote,
+      left: t.st.left('{n}'), stale: t.st.stale, rewritten: t.st.rewritten, orphan: t.st.orphan, reloadRev: t.btn.reloadRev }, // OW6
   }).replace(/</g, '\\u003c');
   // P5: both themes via prefers-color-scheme; colours are variables; contrast is built into the pairs.
   const css = `
@@ -11672,11 +11707,20 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "function status(msg,cls){var s=$('#status');s.textContent=msg;s.className=cls||''}",
     // I12: the browser draft — every field in localStorage, restored with a note
     "var DK=CFG.draftKey+':';",
-    "function saveDraft(el){try{localStorage.setItem(DK+el.name,el.type==='radio'?(el.checked?el.value:''):el.value)}catch(e){}}",
+    // OW6 (2.8): a draft key carries the FINGERPRINT of its question — in a new revision of the document a draft comes back only onto
+    // the same question; a draft of a changed or removed question (or of a page before 2.8) is shown as «draft of a previous revision»
+    "function qhOf(n){var p=n.split(':');if(p.length<3)return'';var id=p[p.length-1],d=p.slice(1,p.length-1).join(':');for(var i=0;i<QS.length;i++)if(QS[i].doc===d&&QS[i].id===id)return QS[i].qh||'';return''}",
+    "function dkey(n){var h=qhOf(n);return DK+n+(h?'#'+h:'')}",
+    "function saveDraft(el){try{localStorage.setItem(dkey(el.name),el.type==='radio'?(el.checked?el.value:''):el.value)}catch(e){}}",
     "function restoreDraft(){var n=0;var els=document.querySelectorAll('[data-draft]');",
-    " for(var i=0;i<els.length;i++){var el=els[i];var v=null;try{v=localStorage.getItem(DK+el.name)}catch(e){}",
+    " for(var i=0;i<els.length;i++){var el=els[i];var v=null;try{v=localStorage.getItem(dkey(el.name))}catch(e){}",
     "  if(v===null||v==='')continue;",
     "  if(el.type==='radio'){if(el.value===v&&!el.checked){el.checked=true;n++}}else if(!el.value){el.value=v;n++}}",
+    " var orph=[];try{for(var j=0;j<localStorage.length;j++){var k=localStorage.key(j);if(k.indexOf(DK)!==0)continue;var nm=k.slice(DK.length).split('#')[0];",
+    "  if(nm.indexOf('__')===0)continue;var ov=localStorage.getItem(k);if(ov&&k!==dkey(nm))orph.push(nm+': '+ov)}}catch(e){}",
+    " if(orph.length){var od=document.createElement('section');od.className='qcard danger';var op=document.createElement('p');op.className='err';op.textContent=TX.orphan;",
+    "  var ot=document.createElement('textarea');ot.rows=Math.min(12,orph.length*2+1);ot.value=orph.join(String.fromCharCode(10));od.appendChild(op);od.appendChild(ot);",
+    "  var mn=document.querySelector('main');if(mn)mn.insertBefore(od,mn.firstChild)}",
     " if(n>0)status(fmt(TX.draft,{n:n}),'okmsg')}",
     // P3: a radio cleared by a second click; activation taken over on pointerdown (no native double click)
     "document.addEventListener('pointerdown',function(e){var lab=e.target&&e.target.closest?e.target.closest('label.opt'):null;",
@@ -11712,7 +11756,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "function rescue(payload,msg){status(fmt(TX.err,{m:msg}),'err');var r=$('#rescue');r.style.display='block';",
     " $('#rescuetext').value=JSON.stringify(payload,null,2);enableButtons(true)}",
     "function enableButtons(on){var bs=document.querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].disabled=!on}",
-    "var saved=false,closeTimer=null,lastPayload=null;",
+    "var saved=false,closeTimer=null,lastPayload=null,saving=false;",
     // LP (#66): input state for the pulse (`--close` reads it from the lock) and the local save when the server is gone
     "var lastInput=0,lsOk=true,submittedLocally=false;try{localStorage.setItem(DK+'__probe','1');localStorage.removeItem(DK+'__probe')}catch(e){lsOk=false}",
     // RL D-F2 (2.7, court of the version): the answer survives a dead server ONLY in the contour's own --app window — it runs
@@ -11734,23 +11778,37 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "function isNotice(doc){var n=CFG.notices||[];for(var i=0;i<n.length;i++)if(n[i]===doc)return true;return false}",
     "function hasArtifacts(doc){var A=CFG.artifacts||[];for(var i=0;i<A.length;i++)if(A[i].doc===doc&&A[i].exists)return true;return false}",
     "function hasComments(p){for(var k in (p.comments||{}))return true;return false}",
-    "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;lastPayload=p;",
+    // OW6 (2.8): after a partial save the drafts of the SAVED questions go (the others stay); a save against another revision, or a
+    // pulse that sees one, turns saving off and offers the new revision — the owner's text stays on the page
+    "function clearSaved(p){var ids=Object.keys(p.answers||{});try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));",
+    " for(var k=0;k<ks.length;k++){if(ks[k].indexOf(DK)!==0)continue;var nm=ks[k].slice(DK.length).split('#')[0];",
+    "  if(p.comment&&nm==='doccomment:'+p.doc)localStorage.removeItem(ks[k]);",
+    "  for(var j=0;j<ids.length;j++)if(nm==='choice:'+p.doc+':'+ids[j]||nm==='text:'+p.doc+':'+ids[j]||nm==='comment:'+p.doc+':'+ids[j])localStorage.removeItem(ks[k])}}catch(e){}}",
+    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent=msg+' ';var bt=document.createElement('button');bt.type='button';",
+    " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);",
+    " var sv=document.querySelectorAll('#save,.savedoc,#retry');for(var i=0;i<sv.length;i++)sv[i].disabled=true}",
+    "function staleSave(p){rescue(p,TX.stale);newRevision(TX.stale)}",
+    "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;p.rev=CFG.rev;lastPayload=p;",
     // bugs/113: on the proofreading and mockup faces "Done" with empty fields is a LEGAL outcome — "looked, no remarks"
     // (the most frequent verdict on an artifact); only the interview face still needs an answer or a comment.
     " var quiet=CFG.face==='proofread'||CFG.face==='mockup';",
     " if(quiet&&!(p.comment||'').trim()&&!hasComments(p))p.noRemarks=true;",
     " if(!p.read&&!quiet&&Object.keys(p.answers).length===0&&!(p.comment||'').trim()&&!p.artifacts&&!hasComments(p)){",
     "  status(hasArtifacts(doc)?TX.needArt:TX.nothing,'err');return}",
-    " enableButtons(false);status(TX.saving);",
+    " enableButtons(false);status(TX.saving);saving=true;",
     " fetch('/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})",
-    " .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})",
-    " .then(function(res){if(!res.ok||!res.j.ok){rescue(p,res.j.reason||'server refused');return}",
+    " .then(function(r){return r.json().then(function(j){return{ok:r.ok,st:r.status,j:j}})})",
+    " .then(function(res){saving=false;if(res.st===409){staleSave(p);return}if(!res.ok||!res.j.ok){rescue(p,res.j.reason||'server refused');return}",
+    // OW6 (2.8): questions left → the page STAYS: the saved answers' drafts go, the page re-reads itself (a fresh build, I1 — the answered
+    // question moves to the settled fold, the other drafts come back) and says how many are left
+    "  if(res.j.rev)CFG.rev=res.j.rev;",
+    "  if(CFG.face==='interview'&&res.j.left>0){clearSaved(p);try{sessionStorage.setItem(DK+'__left',String(res.j.left))}catch(e){}location.reload();return}",
     "  saved=true;status(fmt(TX.saved,{w:res.j.written}),'okmsg');",
     "  try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));",
     "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: auto-close is an ATTEMPT; a refusal → an honest request; cancelled by pagehide
     "  setTimeout(function(){window.close();closeTimer=setTimeout(function(){status(TX.closeYourself,'err')},CFG.reserveMs)},CFG.closeMs)})",
-    " .catch(function(e){if(inApp)saveLocally(p,e);else rescue(p,TX.serverGone)})}", // LP (#66): the server is gone → in the app window the answer is saved on this computer, no dialog; in a tab — the rescue ring (RL D-F2)
+    " .catch(function(e){saving=false;if(inApp)saveLocally(p,e);else rescue(p,TX.serverGone)})}", // LP (#66): the server is gone → in the app window the answer is saved on this computer, no dialog; in a tab — the rescue ring (RL D-F2)
     "document.addEventListener('click',function(e){var t=e.target;",
     " if(t&&t.classList&&t.classList.contains('savedoc'))doSave(t.getAttribute('data-doc'));",
     " if(t&&t.id==='retry'&&lastPayload)doSave(lastPayload.doc)});",
@@ -11759,7 +11817,9 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " try{document.execCommand('copy');status(TX.copied,'okmsg')}catch(e){status(TX.copyManually,'err')}});",
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
     // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
-    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none'})",
+    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none';return r.json().catch(function(){return null})})",
+    // OW6 (2.8): the pulse names the document's revision on disk — another one than this page was built from → saving off, the new revision offered
+    " .then(function(j){if(j&&j.rev&&CFG.rev&&j.rev!==CFG.rev&&!saving&&!saved)newRevision(TX.rewritten)})",
     " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
     "  if(!(lsOk&&inApp)){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
     "  if(!submittedLocally)enableButtons(true)})}",
@@ -11779,6 +11839,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "(function(){if(inApp)return;var tn=$('#tabnote');if(tn){tn.style.display='block';tn.textContent=TX.tabnote}",
     " try{fetch('/tab',{method:'POST'})}catch(e){}})();",
     "restoreDraft();",
+    "try{var lf=sessionStorage.getItem(DK+'__left');if(lf!==null){sessionStorage.removeItem(DK+'__left');status(fmt(TX.left,{n:lf}),'okmsg')}}catch(e){}", // OW6
   ].join('\n');
 
   const saveLabel = face === 'proofread' || face === 'mockup' ? t.btn.done : t.btn.save;
@@ -11865,6 +11926,58 @@ function checkLock(root, key) {
 }
 
 // ── The server: raise → show → call → wait → record → die (I8) ───────────────────────────────
+// OW6 (2.8): the revision of a document — the hash its page is built from (the text; the base64 of an image)
+function docRev(root, rel) {
+  const abs = resolve(root, rel);
+  if (!existsSync(abs)) return null;
+  return IMAGE_MIME[extname(abs).toLowerCase()] ? bodyHash(readFileSync(abs).toString('base64')) : bodyHash(readFileSync(abs, 'utf8'));
+}
+// OW6: how many questions of a document are still unanswered (0 for anything that is not markdown)
+function leftIn(root, rel) {
+  const abs = resolve(root, rel);
+  if (!/\.md$/i.test(abs) || !existsSync(abs)) return 0;
+  return parseQuestions(readFileSync(abs, 'utf8')).filter((q) => !q.answered).length;
+}
+// OW6 (2.8; the KAIF owner's word — answers are saved one at a time in every project; the field device he pointed to wakes its agent
+// by a separate waiter): the WAITER — the process the agent starts to be woken by the next recorded answer while the page stays open
+// (I8: the agent learns of an event by the END of a process it started). Exit 0 on a new record — it names the document, the answers
+// so far and the questions left; exit 2 when the contour it saw ended without one. Patience is infinite (I9). No document → the queue.
+// [TESTED: 2026-09-25 19:37–20:01 · selftest: exit 0 on a partial record, exit 2 when the lock it saw is gone; s22 D (7): a separate
+//  process on the deployed copy printed «Recorded: … — Q1 = A · questions left: 2» and exited 0; report testcases/reports/2026-09-25_ow6-partial-save-revision.md]
+export function waitForRecord(root, docPath = null, { log = console.log, pollMs = WAIT_POLL_MS } = {}) {
+  const cfg = cfgOf(root), dir = decisionsAbs(root, cfg);
+  const files = () => (docPath ? [decisionPaths(root, docPath, cfg).decision]
+    : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
+  const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
+  const start = new Map(files().map((f) => [f, stamp(f)]));
+  const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
+  let lockSeen = existsSync(lock);
+  log('Waiting for the next recorded answer' + (docPath ? ' on ' + relDoc(root, docPath) : ' in the queue') + ' — exit 0 when one is recorded (OW6, I8).');
+  return new Promise((done) => {
+    const tick = setInterval(() => {
+      for (const f of files()) {
+        const s = stamp(f);
+        if (s === null || start.get(f) === s) continue;
+        clearInterval(tick);
+        let d = {};
+        try { d = JSON.parse(readFileSync(f, 'utf8')); } catch { /* a record being written — named by its file below */ }
+        const rel = d.document || relDoc(root, f);
+        const answers = Object.entries(d.answers || {}).map(([q, a]) => q + ' = ' + (a.choice || (a.text ? 'text' : 'comment'))).join(', ');
+        log('Recorded: ' + rel + (answers ? ' — ' + answers : '') + ' · questions left: ' + leftIn(root, rel)
+          + ' — apply it; while questions are left, start --wait again (the page stays open).');
+        done(0);
+        return;
+      }
+      if (existsSync(lock)) lockSeen = true;
+      else if (lockSeen) {
+        clearInterval(tick);
+        log('The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
+        done(2);
+      }
+    }, pollMs);
+  });
+}
+
 export function serveContour(root, { docPath = null, batch = false, notice = false, face = 'interview' }, opts = {}) {
   const cfg = cfgOf(root), t = T(cfg);
   const { open = true, signal = true, timeoutMs = 0, log = console.log, includeStale = false } = opts; // I9: default 0 — no timeout
@@ -11917,6 +12030,8 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
     const noticeMode = notice && !batch;
     const unreadOutcome = () => (noticeMode ? 'notice left unread' : 'page closed without an answer');
     const unreadSuffix = noticeMode ? ' The notice is NOT delivered (no "' + t.btn.read + '" mark, I38) — it repeats in the next batch.' : '';
+    // OW6 (2.8): the pulse is answered with the revision on disk — only for a document this contour shows
+    const pulseRev = (d) => (d && (batch ? pendingDocs(root).some((x) => x.doc === d) : d === relDoc(root, docPath)) ? docRev(root, d) : null);
     const server = createServer((req, res) => {
       const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
       if (req.method === 'GET' && req.url === '/') {
@@ -11940,7 +12055,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
           inputState = { lastInputAt: sinceInput >= 0 ? Date.now() - sinceInput : inputState.lastInputAt, draftFields: Number.isFinite(draftFields) ? draftFields : 0, saved: savedFlag };
           writeLock();
         }
-        ok({ ok: true });
+        ok({ ok: true, rev: pulseRev(q.get('doc')) }); // OW6: the page compares its revision with the document on disk
       } else if (req.method === 'POST' && req.url === '/tab') { // I26 (#64): the page says it is a TAB, not the app window
         if (!tabReported) {
           tabReported = true;
@@ -11954,6 +12069,26 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
           try { // I10: any refusal is loud, with the reason on the page
             const payload = JSON.parse(body);
             const doc = batch ? payload.doc : relDoc(root, docPath);
+            // OW6 (2.8; the S1 of a neighbour field project — an old tab wrote answers into a rewritten document by question numbers):
+            // the page answers the REVISION it was built from; another revision — or none (a page of an older contour) — is refused
+            // loudly and the text stays on the page; the same save repeated after a lost response is recognised, never written twice
+            const revNow = docRev(root, doc);
+            if (payload.rev !== revNow) {
+              const prevDec = readDecision(root, doc, cfg);
+              const same = (a, b) => Boolean(a && b) && ['choice', 'text', 'comment'].every((k) => (a[k] || '') === (b[k] || ''));
+              const dup = Boolean(payload.rev) && Boolean(prevDec) && prevDec.rev === payload.rev && Object.keys(payload.answers || {}).length > 0
+                && Object.entries(payload.answers).every(([q, a]) => same(a, (prevDec.answers || {})[q]));
+              if (dup) {
+                ok({ ok: true, duplicate: true, written: doc + ' (' + t.st.duplicate + ')', left: leftIn(root, doc), rev: revNow, doc });
+                log('Save repeated — already recorded (' + doc + '), nothing written twice (OW6).');
+                return;
+              }
+              res.writeHead(409, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, stale: true, rev: revNow, reason: t.st.stale }));
+              log('SAVE REFUSED (409): the page was built from another revision of ' + doc + (payload.rev ? '' : ' (no revision — a page of an older contour)')
+                + ' — nothing written; the owner has the text on the page (OW6).');
+              return;
+            }
             const hasAnswers = payload.answers && Object.keys(payload.answers).length > 0;
             // NON-EMPTY ANSWERS OUTRANK ANY CLASSIFICATION (origin bugs/106): the owner's work is never dropped.
             const asNotice = !hasAnswers && ((notice && !batch) || readQueue(root).some((i) => i.doc === doc && isNoticeItem(i)));
@@ -11981,18 +12116,25 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
               setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED);
               return;
             }
-            const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts }, cfg);
+            const record = recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts, rev: payload.rev }, cfg);
+            const left = leftIn(root, doc); // OW6: the page stays while this is above zero
             const nAns = Object.keys(record.answers || {}).length;
             const arts = Object.entries(record.artifacts || {});
             const nApproved = arts.filter(([, a]) => a.status === 'approved').length;
             const rest = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
             const artWord = arts.length ? ', outbound decided ' + arts.length + ' (approved ' + nApproved + ')' : '';
-            ok({ ok: true, written: doc + ' + decision.json + archive (' + nAns + ' answer(s)' + artWord + ')', more: rest, doc });
+            ok({ ok: true, written: doc + ' + decision.json + archive (' + nAns + ' answer(s)' + artWord + ')', more: rest, doc, left, rev: docRev(root, doc) });
             outcome = 'decision recorded';
             const answersWord = Object.entries(record.answers || {}).map(([q, a]) => q + ' = ' + (a.choice || (a.text ? 'text' : 'comment'))).join(', ');
             if (arts.length) log('Outbound decision: ' + arts.map(([id, a]) => id + ' — ' + a.status).join(', ') + '. Sending is a separate agent step through a gate that calls the same checkApproval.');
             if (rest > 0) { // the batch does NOT end on the first document (origin bugs/52)
               log('Recorded: ' + doc + ' (' + answersWord + ', by ' + record.by + '). Documents left in the queue: ' + rest + ' — the page STAYS open, the contour waits.');
+              outcome = null;
+              return;
+            }
+            if (left > 0) { // OW6 (2.8, the KAIF owner's word — answers one at a time; I8): the page STAYS while anything is unanswered
+              log('Recorded: ' + doc + ' (' + (answersWord || 'comment only') + ', by ' + record.by + '). Questions left: ' + left
+                + ' — the page STAYS open; the waiter (--wait) wakes the agent (OW6, I8).');
               outcome = null;
               return;
             }
@@ -12181,7 +12323,11 @@ function recordRecovered(root, doc, payload, cfg) {
     const noRemarks = Boolean(payload.noRemarks) && !(payload.comment || '').trim() && Object.keys(payload.comments || {}).length === 0;
     return recordDecision(root, doc, { kind: face, comment: payload.comment, comments: payload.comments, ...(noRemarks ? { noRemarks: true } : {}), recovered: true }, cfg);
   }
-  return recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts, recovered: true }, cfg);
+  // OW6 (2.8): an answer saved on the owner's machine for an OLDER revision of the document is NOT written into it by question numbers —
+  // it is recorded as data (the decision and its archive) and named out loud by the caller
+  const staleRevision = Boolean(payload.rev) && payload.rev !== docRev(root, doc);
+  return recordDecision(root, doc, { answers: payload.answers, comment: payload.comment, artifacts: payload.artifacts, recovered: true,
+    rev: payload.rev, ...(staleRevision ? { staleRevision: true } : {}) }, cfg);
 }
 function recoverOne(root, key, lock, exe, log, result) {
   const cfg = cfgOf(root);
@@ -12330,7 +12476,7 @@ export function checkDoc(root, docPath, log = console.log) {
 
 // ── Selftest (no browser): pre-flight red on the "options as paragraphs" fixture, green on the
 // canonical forms; the three faces render; records land in three places; the fact of showing ────
-export function selftest(log = console.log) {
+export async function selftest(log = console.log) {
   let n = 0, bad = 0;
   const ok = (cond, name) => { n++; if (!cond) { bad++; log('  x ' + name); } else log('  v ' + name); };
   const root = mkdtempSync(join(tmpdir(), 'kaif-contour-'));
@@ -12606,6 +12752,75 @@ export function selftest(log = console.log) {
     'call phrase: the owner\'s name, the project, the class and both numbers');
   ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }, cfg).includes('notices'), 'call phrase: no notices — no mention of them');
 
+  { // OW6 (2.8, the KAIF owner's word — answers are saved one at a time in every project). (1) The decision MERGES the records of one
+  // page (its rev = the revision the previous record left); a record of another revision starts a new decision; the archive keeps each.
+  const MQ = (k) => '### Q' + k + '. Pick ' + k + '?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n';
+  const three = '# Interview #008\n\n> Status: awaiting\n\n' + MQ(1) + '\n' + MQ(2) + '\n' + MQ(3);
+  const MD = 'interviews/interview_008_merge.md';
+  writeFileSync(join(root, MD), three);
+  const decOf = (d) => JSON.parse(readFileSync(decisionPaths(root, d, cfg).decision, 'utf8'));
+  const rec1 = recordDecision(root, MD, { answers: { Q1: { choice: 'A' } }, rev: bodyHash(three) }, cfg);
+  const rec2 = recordDecision(root, MD, { answers: { Q2: { choice: 'B' } }, rev: decOf(MD).revAfter }, cfg);
+  const d2 = decOf(MD);
+  ok(rec1.answers.Q1 && !rec2.answers.Q1 && d2.answers.Q1 && d2.answers.Q2 && d2.records === 2,
+    'decision: the second record of the same page MERGES — Q1 and Q2 in decision.json (records 2); the record itself carries only Q2 (OW6)');
+  recordDecision(root, MD, { answers: { Q3: { choice: 'A' } }, rev: 'another-revision' }, cfg);
+  const d3 = decOf(MD);
+  ok(d3.answers.Q3 && !d3.answers.Q1 && !d3.records, 'decision: a record of ANOTHER revision starts a new decision — old answers never ride along (OW6)');
+  rmSync(join(root, MD), { force: true });
+  // (2) The page carries its revision into every save, re-reads itself after a partial save, keys drafts by the question's fingerprint
+  writeFileSync(join(root, MD), three);
+  const pg = buildPage(root, MD);
+  ok(pg.html.includes('"rev":"' + bodyHash(three) + '"') && pg.html.includes('p.rev=CFG.rev') && pg.html.includes("sessionStorage.setItem(DK+'__left'")
+    && pg.html.includes("String(res.j.left))}catch(e){}location.reload();return}") && pg.questions.every((q) => /^[0-9a-f]{12}$/.test(q.qh)) && pg.html.includes("return DK+n+(h?'#'+h:'')"),
+    'page: the revision rides in every save; a partial save re-reads the page; a draft key carries its question\'s fingerprint (OW6)');
+  // (3) The LIVE server: three questions; Q1 saved → 2 left, the process LIVES, the waiter wakes (0); a save of the OLD revision → 409;
+  // the same save repeated → 200 duplicate; Q2 → the decision merges; Q3 → the contour ends with exit 0
+  const sl = (ms) => new Promise((r) => setTimeout(r, ms));
+  const slog = [];
+  const served = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog.push(String(l)) });
+  let ended = null; served.then((v) => { ended = v; });
+  let url = null;
+  for (let i = 0; i < 100 && !url; i++) { url = (slog.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!url) await sl(50); }
+  const post = (body) => fetch(url + 'decide', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(async (r) => ({ status: r.status, j: await r.json() })).catch((e) => ({ status: 0, j: { reason: String(e) } }));
+  if (!url) ok(false, 'live server: the page is up (OW6)');
+  else {
+    // a real page pulses; without it a quiet environment (the polygon's: silence 0.9 s) ends the server between two saves
+    const beat = setInterval(() => { fetch(url + 'alive?i=-1&d=0&s=0').catch(() => {}); }, 200);
+    const rev0 = bodyHash(three);
+    const waiter = waitForRecord(root, MD, { log: () => {}, pollMs: 100 });
+    const a1 = { doc: MD, answers: { Q1: { choice: 'A', text: '', comment: '' } }, comment: '', face: 'interview', rev: rev0 };
+    const r1 = await post(a1);
+    const w1 = await Promise.race([waiter, sl(3000).then(() => 'timeout')]);
+    await sl(SERVER_DEATH_MS + 300);
+    ok(r1.status === 200 && r1.j.left === 2 && r1.j.rev && r1.j.rev !== rev0 && ended === null && slog.some((l) => /Questions left: 2 — the page STAYS open/.test(l)),
+      'live server: a partial save (Q1 of three) → «left 2», a new revision, the process LIVES and says the page stays (OW6, I8)');
+    ok(w1 === 0, 'live server: the waiter wakes with exit 0 on the partial record — the agent learns without the page closing (OW6)');
+    const r2 = await post({ ...a1, answers: { Q2: { choice: 'B', text: '', comment: '' } } });
+    ok(r2.status === 409 && r2.j.stale && !decOf(MD).answers.Q2, 'live server: a save of the OLD revision → 409, nothing written (OW6, the stale-tab gap)');
+    const r2d = await post(a1);
+    ok(r2d.status === 200 && r2d.j.duplicate && r2d.j.left === 2, 'live server: the same save repeated after a lost response → 200 «duplicate», not written twice (OW6)');
+    const r3 = await post({ ...a1, answers: { Q2: { choice: 'B', text: '', comment: '' } }, rev: r1.j.rev });
+    const d4 = decOf(MD);
+    ok(r3.status === 200 && r3.j.left === 1 && d4.answers.Q1 && d4.answers.Q2 && d4.records === 2, 'live server: the second partial save MERGES the decision — Q1 and Q2 (OW6)');
+    const r4 = await post({ ...a1, answers: { Q3: { choice: 'A', text: '', comment: '' } }, rev: r3.j.rev });
+    for (let i = 0; i < 80 && ended === null; i++) await sl(50);
+    ok(r4.status === 200 && r4.j.left === 0 && ended && ended.exitCode === 0, 'live server: the LAST answer ends the contour with exit 0 (I8)');
+    clearInterval(beat);
+  }
+  if (ended === null) { try { await fetch(url + 'close?t=x', { method: 'POST' }); } catch { /* best effort */ } }
+  rmSync(join(root, MD), { force: true });
+  // (4) The waiter ends with 2 when the contour it saw ended without a new record — its lock gone (the page closed; the beacon path of
+  // the server itself is proved by s22 and verify-contour)
+  const LK = lockPath(root, basename(MD));
+  writeFileSync(LK, '{}\n');
+  const waiter2 = waitForRecord(root, MD, { log: () => {}, pollMs: 50 });
+  await sl(200); rmSync(LK, { force: true });
+  const w2 = await Promise.race([waiter2, sl(3000).then(() => 'timeout')]);
+  ok(w2 === 2, 'waiter: the contour it saw ended without a new record (its lock gone) → exit 2, nothing to apply (OW6)');
+  } // OW6
+
   rmSync(root, { recursive: true, force: true });
   log(bad ? 'SELFTEST RED: ' + bad + ' of ' + n : 'contour selftest green: ' + n + ' checks (pre-flight red on the "options as paragraphs" fixture, three faces, records, showing)');
   if (bad) process.exit(1);
@@ -12642,6 +12857,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' <image> --mockup         (the image + comments)\n' +
       '       ' + CLI_NAME + ' --queue [--include-stale] | --queue --list | --enqueue <doc.md> [--notice] | --selftest\n' +
       '       ' + CLI_NAME + ' --mark-shown <doc.md> [--transport chat]\n' +
+      '       ' + CLI_NAME + ' --wait [<doc.md>]      (the waiter: exit 0 on the next recorded answer, 2 when the contour ended without one)\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
       '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
       'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
@@ -12650,7 +12866,11 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   };
   const cfg = cfgOf(root);
   if (!cfg.markerFound) console.log('note: no .kaif/kaif.json here — defaults in use (project "' + cfg.projectName + '", owner "' + cfg.ownerName + '", language ' + cfg.language + ').');
-  if (args.includes('--selftest')) { selftest(); process.exit(0); }
+  if (args.includes('--selftest')) { selftest().then(() => process.exit(0)); return; }
+  if (args.includes('--wait')) { // OW6 (2.8): the waiter — started by the agent next to a live page; ends on the next recorded answer
+    waitForRecord(root, docPath || null).then((code) => { process.exitCode = code; });
+    return;
+  }
   if (args.includes('--enqueue')) {
     if (!docPath) usage();
     let items;
@@ -12876,7 +13096,7 @@ const EN = {
     paragraph: 'Comment on this paragraph', mockup: 'What to change on the mockup',
     noRemarks: 'No remarks — just press Done: that is a recorded verdict too',
     artComment: 'What to fix (when rejecting — by meaning, or the agent will not know what to change)' },
-  btn: { save: 'Save decision', saveDoc: 'Save decisions for this document', read: 'OK, read', done: 'Done',
+  btn: { reloadRev: 'Open the new revision', save: 'Save decision', saveDoc: 'Save decisions for this document', read: 'OK, read', done: 'Done',
     copy: 'Copy', retry: 'Retry saving', approve: '<strong>Approve</strong> — send as is',
     reject: '<strong>Reject</strong> — do not send' },
   art: { goesOut: 'Goes out', missing: (file) => 'File <code>' + file + '</code> not found — nothing to approve. This is a defect, not your choice.',
@@ -12890,6 +13110,12 @@ const EN = {
     serverGoneLocal: 'The contour server is unreachable — keep writing and press Save as usual: the answer is saved on this computer, in the project folder, and the agent will pick it up.',
     savedLocally: 'The server is unreachable — your answer is saved on this computer (in the project folder); the agent will pick it up. You can close the window.',
     closeYourself: 'The browser refused to close the window — please close it yourself',
+    // OW6 (2.8): answers are saved one at a time — the page stays; a save against another revision of the document is refused
+    left: (n) => 'Saved. Questions left: ' + n + ' — the page stays open; answer the rest now or later.',
+    stale: 'The document was CHANGED after this page opened — this answer was NOT saved. Your text is below; open the new revision: drafts of unchanged questions come back.',
+    rewritten: 'The document was rewritten after this page opened — saving here is off. Open the new revision:',
+    orphan: 'Draft of a previous revision — these questions changed or are gone; your text is kept here:',
+    duplicate: 'already recorded',
     copied: 'Copied to the clipboard', copyManually: 'Select and copy by hand',
     rescue: 'Saving failed — your text is below, it is not lost.', noticeHint: 'Without the mark the notice comes back.',
     selfcheck: (r, q) => 'PAGE SELF-CHECK FAILED: ' + r + ' radio group(s) for ' + q + ' question(s) — the form is broken, do not answer here; tell the agent.',
@@ -12973,7 +13199,7 @@ const RU = {
     paragraph: 'Замечание к этому абзацу', mockup: 'Что поправить на макете',
     noRemarks: 'Замечаний нет — просто нажмите «Готово»: это тоже записанное решение',
     artComment: 'Что поправить (при отклонении — обязательно по смыслу, иначе агент не знает, что менять)' },
-  btn: { save: 'Записать решение', saveDoc: 'Записать решения по этому документу', read: 'ОК, прочитано', done: 'Готово',
+  btn: { reloadRev: 'Открыть новую редакцию', save: 'Записать решение', saveDoc: 'Записать решения по этому документу', read: 'ОК, прочитано', done: 'Готово',
     copy: 'Скопировать', retry: 'Повторить запись', approve: '<strong>Одобряю</strong> — отправить как есть',
     reject: '<strong>Отклоняю</strong> — не отправлять' },
   art: { goesOut: 'Уйдёт наружу', missing: (file) => 'Файл <code>' + file + '</code> не найден — одобрять нечего. Это дефект, а не ваш выбор.',
@@ -12987,6 +13213,12 @@ const RU = {
     serverGoneLocal: 'Сервер контура недоступен — пишите дальше и нажмите «Записать» как обычно: ответ сохранится на этом компьютере, в папке проекта, и агент его заберёт.',
     savedLocally: 'Сервер недоступен — ответ сохранён на этом компьютере (в папке проекта); агент его заберёт. Окно можно закрыть.',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
+    // OW6 (2.8): ответы записываются по одному — страница остаётся; запись по другой редакции документа отказывается
+    left: (n) => 'Записано. Осталось вопросов: ' + n + ' — страница остаётся открытой; на остальные можно ответить сейчас или позже.',
+    stale: 'Документ ИЗМЕНЁН после того, как страница открылась, — этот ответ НЕ записан. Ваш текст ниже; откройте новую редакцию: черновики неизменённых вопросов вернутся.',
+    rewritten: 'Документ переписан после того, как страница открылась, — запись здесь выключена. Откройте новую редакцию:',
+    orphan: 'Черновик прошлой редакции — эти вопросы изменились или исчезли; ваш текст сохранён здесь:',
+    duplicate: 'уже записано',
     copied: 'Скопировано в буфер', copyManually: 'Выделите и скопируйте вручную',
     rescue: 'Запись не прошла — ваш текст ниже, он не потерян.', noticeHint: 'Без пометки сообщение придёт снова.',
     selfcheck: (r, q) => 'САМОПРОВЕРКА СТРАНИЦЫ НЕ ПРОШЛА: радиогрупп ' + r + ' на ' + q + ' вопрос(ов) — форма сломана, здесь не отвечайте; скажите агенту.',
@@ -17522,9 +17754,9 @@ self-check after render: count(radio groups) == count(questions)  →  mismatch 
 
 The generator runs this pre-flight itself. **The form check is a door of its own** (2.7, origin issue #56): `review.mjs <doc> --check` = parse + pre-flight + render self-check → `blocks N, recognised M: …` + what was NOT recognised, exit 3 / 0;
 no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: it serves and CALLS (only the window stays shut). **An unknown flag REFUSES before any page, sound or call — exit 1** (2.7, epic LP, origin issue #66: the 2.6 generator let `--close` fall through to the show and called the owner); the known flags are printed with the refusal.
-**Second axis of the same door — ARCHAEOLOGY (2.7, origin issue #70: 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days after his answer).** A LIVE question of a document whose header date is on or after `2026-09-18` opens only WITH the attestation of the search that was actually run, standing between its heading and its FIRST option:
-`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
-Without it the door exits 3 and PRINTS that ready command; `N > 0` with `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
+**Second axis of the same door — ARCHAEOLOGY (2.7, origin issue #70: 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days after his answer).** A LIVE question of a document whose header date is on or after `2026-09-18` opens only WITH the attestation of the search that was actually run, standing between its heading and its FIRST option; the door searches itself for a question in ANY transport, a chat question too (2.8, origin issues #74 · #82: `review.mjs --search "<the question>"` — no shell and no locale decide whether a capital Cyrillic letter is found; the printed grep carries `LC_ALL=C.UTF-8`):
+`<!-- archaeology: search "<the heading's words>" → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
+Without it the door exits 3 and PRINTS the ready command; `N > 0` with `read: none` or `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
 Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
 
 ## 3. Records — three files, derived names, never overwritten
@@ -17532,7 +17764,7 @@ Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->
 | Fact | Where | Shape |
 |---|---|---|
 | the answer | back into the source md, at `**Answer:**` | `X) <text> <!-- owner-review: by <owner> · <local time> -->` |
-| the decision | `<decisionsDir>/<doc-basename>.decision.json` | `{ kind, document, by, at (ISO), atHuman (local words), comment, answers: { Q1: { choice, text, comment } } }` — plus `recovered: true` when the answer was saved on the owner's computer while the server was gone and picked up by the agent (2.7, LP); the provenance comment in the md says it too |
+| the decision | `<decisionsDir>/<doc-basename>.decision.json` | `{ kind, document, by, at (ISO), atHuman (local words), comment, answers: { Q1: { choice, text, comment } } }` — plus `recovered: true` when the answer was saved on the owner's computer while the server was gone and picked up by the agent (2.7, LP); the provenance comment in the md says it too; the saves of ONE page MERGE into it (2.8, `rev` → `revAfter`), a new revision of the document starts a new decision |
 | the archive | `<decisionsDir>/archive/<doc-basename>--<ISO>.json` | a copy per save; never rewritten |
 | the fact of SHOWING | `<decisionsDir>/shown.json` | `{ "<doc>": { "at": "<ISO>", "transport": "page \| batch \| chat" } }` — written when the window opens, or by hand for a pointed chat question (`--mark-shown <doc> --transport chat`) |
 | the queue | `<decisionsDir>/queue.json` | a STATE file — live documents are never moved into a pending folder |
@@ -17545,20 +17777,17 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 - **Reading view (2.7, origin issue #54):** LIVE questions first; everything answered and the document's text below as ONE
   collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
-- **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window
-  height; the status is a pill under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop,
-  phone) hides it (2.7, origin issue #60, the owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no
-  `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
+- **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window height; the status is a pill
+  under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
+  owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency banner ("server silent") may stay pinned.
-- Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save
-  returns the text onto the page with Copy and Retry; a draft lives in `localStorage` and is restored on load
-  ("picked up N fields"). No path may leave the Save button disabled with no visible error. **The answer survives the server** (2.7, LP, origin issue #66;
-  the owner's word: "JS writes the file to the computer, into the project folder — no choice, no 'save as'"): the window runs on its own profile in the project
-  (`.kaif/contour-window/`, ignore-first, sign-in-off flags, `account_info` checked after launch); Save with the server gone stores the answer there, IndexedDB the primary carrier — durable half a second after the write even if the browser dies ("saved on this
-  computer, the agent will pick it up" — no dialog; only in the app window, `display-mode: standalone` observed by the page: a TAB lives in a profile the agent never reads, so it gets the rescue ring with the answer text and no promise); the next `--queue --list` / `--check` / show picks it up headless on the same profile and port (the origin; deferred while a browser still holds the profile) →
-  recorded as the owner's decision with `recovered: true`, the lock released; an unsaved draft is named and kept.
-- The page polls `/alive?i=&d=&s=` (ms since input · draft fields · saved) every 15 s (envelope 10–60 s) and says out loud when the server goes silent; the lock
-  keeps that input state (2.7, LP) so `--close` can read it from another process.
+- Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save returns the text onto the page with Copy and Retry; a draft lives in `localStorage` and is restored on load ("picked up N fields"). No path may leave the Save button disabled with no
+  visible error. **The answer survives the server** (2.7, LP, origin issue #66; the owner's word: "JS writes the file to the computer, into the project folder — no choice, no 'save as'"): the window runs on its own profile in the project (`.kaif/contour-window/`, ignore-first, sign-in-off flags,
+  `account_info` checked after launch); Save with the server gone stores the answer there, IndexedDB the primary carrier — durable half a second after the write even if the browser dies ("saved on this computer, the agent will pick it up" — no dialog; only in the app window, `display-mode:
+  standalone` observed by the page: a TAB lives in a profile the agent never reads, so it gets the rescue ring with the answer text and no promise); the next `--queue --list` / `--check` / show picks it up headless on the same profile and port (the origin; deferred while a browser still holds the
+  profile) → recorded as the owner's decision with `recovered: true`, the lock released; an unsaved draft is named and kept.
+- The page polls `/alive?i=&d=&s=&doc=` (ms since input · draft fields · saved · the document) every 15 s (envelope 10–60 s) and says out loud when the server
+  goes silent; the lock keeps that input state (2.7, LP) so `--close` can read it from another process; the answer names the document's revision on disk (2.8).
 - Time shown to a human is LOCAL words; ISO lives in the records.
 
 ## 5. Process — outcomes, patience, wake-up
@@ -17567,14 +17796,16 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 - On the proofreading and mockup faces «Done» with empty fields is a decision recorded too — the record carries `noRemarks: true` («looked, no
   remarks» is the most frequent verdict on an artifact, and the page says so under the field); the page never refuses it. Only the interview face still needs an answer or a comment (origin bug 113).
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.
-- Saving TERMINATES the process — that termination is how the waiting agent wakes up; start the contour as a
-  tracked background task. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence
-  watch (~3 min, two strikes).
+- Answers are saved ONE AT A TIME (2.8, the KAIF owner's word): the page LIVES while its document has an unanswered question («Saved. Questions left:
+  N», the answered one moves to the settled fold, the other drafts stay); the last answer ends it with exit 0. The agent is woken by a separate WAITER
+  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one; apply the
+  answer, start it again while questions are left. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence watch (~3 min, two strikes).
+- A save carries the REVISION its page was built from: another revision (the document rewritten under an open tab) → 409, the text stays on the page with
+  «Open the new revision»; a repeated save is recognised; a draft key carries its question's fingerprint — a draft never lands on a rewritten question.
 - One document — one window (a lock with pid and address); a free port (`listen(0)`) — the previous run's port FIRST when
   that process is gone (the draft lives in its origin), a taken port named in the log; a separate app window (`--app=`),
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
-- **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title
-  ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
+- **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
   A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile.
 
@@ -17595,12 +17826,12 @@ not installed") and the contour drops to beeps + banner rather than speaking noi
 | mockup review (an image + comments) | `… <image> --mockup` | `kind: "mockup"` |
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
+| search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended |
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
-`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` /
-`contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults `ownerName` / `projectName`),
-`contour.decisionsDir` (default `interviews/decisions`),
+`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice
+addresses the owner and names the project; defaults `ownerName` / `projectName`), `contour.decisionsDir` (default `interviews/decisions`),
 `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute

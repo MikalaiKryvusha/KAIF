@@ -178,5 +178,15 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_037_kaif_2.8_ticket_105_bug_report_canon.md": {
+    "questions": 1,
+    "parsedOptions": 3,
+    "candidateLines": 3
+  },
+  "interviews/interview_038_kaif_2.8_release_in_three_chats.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
   }
 }
