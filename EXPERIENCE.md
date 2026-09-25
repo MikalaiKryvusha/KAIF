@@ -128,8 +128,8 @@
 итога называет зоны стража, среди них `reports/RELEASE_NOTES_*.md` и `reports/KAIF_AUDIT`.
 **Trigger:** кладёшь документ в `reports/` (аудит, ноты) → до коммита `node tools/private-names-guard.mjs`.
 **Not for:** рабочие документы вне зон стража (`plans/`, `testcases/`) — там источник называется один раз по канону.
-**Механизация:** механизации нет: причина — не успел доказать красным до закрытия сессии 73; кандидат — условие 1c `commit.mjs:223`
-заменить на «коммит несёт хоть один путь» и случай `--selftest` на временном репозитории (пункт CK6 `plans/118`).
+**Механизация:** механизировано: `tools/commit.mjs` — преполёт 1c зовёт `private-names-guard` на каждом непустом коммите
+(`privateNamesGateNeeded`, сессия 74, пункт CK6 `plans/118`); `--selftest` — формы `290dbbb` и `a80df20`, на прежнем условии обе красные.
 
 ### EXP-0158 · 2026-09-25 · ❌→✅ · #mutants #setup-step #probe #invisible-mutant #suites #ck
 класс: tool-lied-silently

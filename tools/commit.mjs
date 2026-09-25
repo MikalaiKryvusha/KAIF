@@ -41,6 +41,18 @@ const newFilesOutsideIntent = (porcelainZ, { only, withNew }) => {
 // закрывается здесь. В argv-режиме проверка не запускается: там позиционные слова И ЕСТЬ сообщение.
 const FLAGS = { '--msg-file': true, '--as': true, '--only': true, '--allow-revert': true,
                 '--with-new': false, '--selftest': false, '--no-push': false };
+// ── Преполёт 1c: когда звать стража приватных имён (EXP-0159, пункт CK6 plans/118) ───────────────
+// Прежнее условие — «коммит несёт путь поставки» (framework/ · dist/ · KAIF.md · README · AUTHOR_STYLOMETRY) — было ВТОРОЙ
+// копией зон стража, и она разошлась с первой: страж судит и reports/KAIF_AUDIT, и ноты релизов, а бриф судьи с приватными
+// именами двух проектов ушёл в origin молча (290dbbb), следом молча прошёл коммит одного HOUSE_RULES.md (a80df20). Пару
+// «зоны стража ↔ триггер гейта» лучше убрать, чем за ней следить: страж стоит 0,6 с и сам знает свои зоны, поэтому он зовётся
+// на КАЖДОМ коммите, который что-то несёт. Функция чистая — её доказывает `--selftest`.
+// [TESTED: 2026-09-25 · сессия 74: `--selftest` — формы 290dbbb и a80df20 зовут стража, пустой набор — нет; на копии инструмента с
+//  прежним условием обе формы красные («2 провалов»); функциональный прогон tools/sandbox/probes/commit-1c-leak-run.mjs — коммит
+//  документа с приватным именем в reports/KAIF_AUDIT во временном репозитории остановлен (код 1, HEAD на месте), инструмент 5dab517
+//  его закоммитил; отчёт testcases/reports/2026-09-25_ck6-private-names-every-commit.md]
+const privateNamesGateNeeded = (stagedNameStatus) => stagedNameStatus.length > 0;
+
 const strayArgs = (argv) => {
   const stray = [];
   for (let i = 2; i < argv.length; i++) {
@@ -78,10 +90,18 @@ if (process.argv.includes('--selftest')) {
     strayArgs(['n', 'c', '--msg-file', 'm.txt', '--as', 'Model X', '--only', 'a.mjs', '--only', 'b.mjs']).length === 0);
   T('опечатка флага не проглатывается',
     strayArgs(['n', 'c', '--msg-file', 'm.txt', '--onlyy', 'a.mjs']).includes('--onlyy'));
+  // Преполёт 1c: форма утечки 290dbbb (коммит несёт ТОЛЬКО документ в reports/KAIF_AUDIT) и форма a80df20 (только HOUSE_RULES.md)
+  // обязаны звать стража — прежнее условие по путям поставки на обеих молчало; пустой набор стража не зовёт.
+  T('1c: коммит одного брифа в reports/KAIF_AUDIT зовёт стража приватных имён (форма утечки 290dbbb)',
+    privateNamesGateNeeded(['A\treports/KAIF_AUDIT/2026-09-25_ck6_epic_judge_brief.md']) === true);
+  T('1c: коммит одного HOUSE_RULES.md зовёт стража (форма a80df20)',
+    privateNamesGateNeeded(['M\tHOUSE_RULES.md']) === true);
+  T('1c: пустой набор стража не зовёт', privateNamesGateNeeded([]) === false);
   for (const f of fails) console.error('✖ selftest commit-gate: ' + f);
   if (fails.length) { console.error(`\n❌ commit --selftest: ${fails.length} провалов (bugs/79)`); process.exit(1); }
   console.log('✅ commit --selftest: гейт неожиданного файла краснеет на чужом новом файле и молчит на ' +
-              'названном; посторонний аргумент назван поимённо (bugs/79)');
+              'названном; посторонний аргумент назван поимённо (bugs/79); преполёт 1c зовёт стража приватных имён на любом ' +
+              'непустом коммите — и на форме утечки 290dbbb (EXP-0159)');
   process.exit(0);
 }
 
@@ -215,16 +235,15 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
   if (!only.length && staged.length) {
     console.log('   (не то множество? → node tools/commit.mjs --only <путь> … — уедет ровно названное)');
   }
-  // ПРЕПОЛЁТ 1c: приватные имена не едут в поставку (находка W2-1 суда W1, 2026-08-21).
+  // ПРЕПОЛЁТ 1c: приватные имена не едут наружу (находка W2-1 суда W1, 2026-08-21).
   // Класс: шаг ритуала (/end-chat-soft, private-names-guard) держится на внимании сессии — утечка U′2
-  // пережила закрытие эпика именно так. Здесь шаг становится гейтом ровно в момент, когда
-  // отравление возможно: коммит несёт поверхность поставки/витрины/слепка.
-  const DELIVERY_RE = /^(framework\/|dist\/|KAIF\.md$|README\.|AUTHOR_STYLOMETRY)/;
-  if (staged.some((l) => DELIVERY_RE.test(l.split('\t').pop()))) {
+  // пережила закрытие эпика именно так. Здесь шаг становится гейтом на каждом коммите, который что-то
+  // несёт: зоны знает сам страж (поставка, витрина, слепок, ноты, реестры суда) — копии зон здесь нет (EXP-0159).
+  if (privateNamesGateNeeded(staged)) {
     try {
       execFileSync(process.execPath, [join(ROOT, 'tools', 'private-names-guard.mjs')], { cwd: ROOT, stdio: 'inherit' });
     } catch {
-      console.error('\n✋ коммит остановлен преполётом 1c: private-names-guard красный — приватное имя едет в поставку/витрину. Алиасы — .kaif/private-names.json.');
+      console.error('\n✋ коммит остановлен преполётом 1c: private-names-guard красный — приватное имя едет в поставку, витрину или отчёт суда. Алиасы — .kaif/private-names.json.');
       process.exit(1);
     }
   }
