@@ -62,10 +62,10 @@
       {
         "signature": "### Environment dossier — the agent knows its machine from its own notes",
         "class": "static",
-        "sha256": "61d8f196f24859a708725db8c75564586ef6816c3d4d88aa1b5cbeb987a59d8f",
+        "sha256": "87fa740f3bbab327659a3f77dcc9a9cca3c9ff5e8f1a7cabb71d99a79d232b57",
         "lines": [
           218,
-          254
+          236
         ]
       },
       {
@@ -73,8 +73,8 @@
         "class": "static",
         "sha256": "cab17544c78f089dfed261222ae0f0eed93905cb2e9c395ceaa1c3e800d91d7a",
         "lines": [
-          255,
-          274
+          237,
+          256
         ]
       },
       {
@@ -82,8 +82,8 @@
         "class": "static",
         "sha256": "a895c3489b5097363fbbb7e72361fcc67ca4f968ccd163f1b24bdfe1bfc12513",
         "lines": [
-          275,
-          286
+          257,
+          268
         ]
       },
       {
@@ -91,8 +91,8 @@
         "class": "static",
         "sha256": "4d2d7802744ad79b8d292c29d0e33defa654fce798f196d0c836e42f3bbe7a1c",
         "lines": [
-          287,
-          311
+          269,
+          293
         ]
       },
       {
@@ -100,8 +100,8 @@
         "class": "static",
         "sha256": "02c4ac37e5cf41031ff2482ab798eeaf93833591a328191bab7990996f12db47",
         "lines": [
-          312,
-          426
+          294,
+          408
         ]
       },
       {
@@ -109,8 +109,8 @@
         "class": "static",
         "sha256": "119bc957f76bc9881dda35f4279765854c4f168992cbf05a789601f32f2c6b73",
         "lines": [
-          427,
-          451
+          409,
+          433
         ]
       },
       {
@@ -118,8 +118,8 @@
         "class": "adaptive",
         "sha256": "fbe37c4e739ca44879573f0fe92e69ab78f106078ebef12c1ed5ac430a241506",
         "lines": [
-          452,
-          488
+          434,
+          470
         ]
       },
       {
@@ -127,8 +127,8 @@
         "class": "static",
         "sha256": "c1407cdfc19241e83b46751222cc522857c6b8344b1ee764af59c654d9c17edd",
         "lines": [
-          489,
-          498
+          471,
+          480
         ]
       },
       {
@@ -136,8 +136,8 @@
         "class": "adaptive",
         "sha256": "18da84d8f4ca31cfb21c4c7b9fcebe3b80f3dc0d61a13ede3351e44c81e251a6",
         "lines": [
-          499,
-          514
+          481,
+          496
         ]
       },
       {
@@ -145,8 +145,8 @@
         "class": "static",
         "sha256": "b090072f3dfef200a24fcc3fa5021cfc52719fa657fb8f35e87e6de1e00df3fd",
         "lines": [
-          515,
-          521
+          497,
+          503
         ]
       },
       {
@@ -154,8 +154,8 @@
         "class": "static",
         "sha256": "697d3da600411caacae1cd022f4dc609b53ebeb0aee76ff44f71aa4c403bffc0",
         "lines": [
-          522,
-          530
+          504,
+          512
         ]
       },
       {
@@ -163,8 +163,8 @@
         "class": "adaptive",
         "sha256": "98cea13f34c8dacf866d048849d56f77dc4a5a80753a713152f33fdf674e6c24",
         "lines": [
-          531,
-          541
+          513,
+          523
         ]
       },
       {
@@ -172,8 +172,8 @@
         "class": "static",
         "sha256": "bbd30123b55ea4a5c29e985999dbd2ceb0d0404407127462405f1cbb9f9640c1",
         "lines": [
-          542,
-          552
+          524,
+          534
         ]
       },
       {
@@ -181,8 +181,8 @@
         "class": "static",
         "sha256": "b063e3249924d8de5ac278fca8ce66748b13922d79c3cf8388ba7b228924a28e",
         "lines": [
-          553,
-          584
+          535,
+          566
         ]
       },
       {
@@ -190,8 +190,8 @@
         "class": "adaptive",
         "sha256": "9823dcb9befc599463605e1357df12260064338aacc0167faf74aeef7588db7d",
         "lines": [
-          585,
-          600
+          567,
+          582
         ]
       },
       {
@@ -199,8 +199,8 @@
         "class": "static",
         "sha256": "61ee7522a8b9834b8b8d74a1935533dff419971b0263d59be246ce577c6e210c",
         "lines": [
-          601,
-          614
+          583,
+          596
         ]
       },
       {
@@ -208,8 +208,8 @@
         "class": "static",
         "sha256": "848a4d8e09aa1d52de062cd94ea590e9283c239cc31326f8729ffb8a833a4be6",
         "lines": [
-          615,
-          632
+          597,
+          614
         ]
       },
       {
@@ -217,8 +217,8 @@
         "class": "static",
         "sha256": "9aca33a69654c0b91abb772ac0411fedf884447884f32ab65a3779cbeb543400",
         "lines": [
-          633,
-          651
+          615,
+          633
         ]
       },
       {
@@ -226,8 +226,8 @@
         "class": "static",
         "sha256": "872672bff29f5e324e33cfceae3a2a2229b296fc79134b70f2e97def1d5bc2b1",
         "lines": [
-          652,
-          758
+          634,
+          740
         ]
       },
       {
@@ -235,8 +235,8 @@
         "class": "static",
         "sha256": "e26ec6f304e4428dd2186a4a5d09e3e27d616fd9152c6f72c084e71ef055baf0",
         "lines": [
-          759,
-          766
+          741,
+          748
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "d7ec9fd48ca89d5864c7aefb8ae3324523b9d902aa07a6b3f58980ac69590e15",
         "lines": [
-          767,
-          774
+          749,
+          756
         ]
       },
       {
@@ -253,8 +253,8 @@
         "class": "static",
         "sha256": "7ce7d088fbaab08cf3dc229798fe326a8bd00b585db564d1d3f21b5c8f771f99",
         "lines": [
-          775,
-          858
+          757,
+          840
         ]
       },
       {
@@ -262,8 +262,8 @@
         "class": "static",
         "sha256": "1d2bba3777cf5abc9c0bb3621b5b6635395722922059be65aedbbfec8f8ae8db",
         "lines": [
-          859,
-          1050
+          841,
+          1032
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1051,
-          1065
+          1033,
+          1047
         ]
       },
       {
@@ -280,8 +280,8 @@
         "class": "static",
         "sha256": "a150f5dbf5b41e7ff824ddbd117246ec802c1404ea3d9135a910444e8d9faff5",
         "lines": [
-          1066,
-          1079
+          1048,
+          1061
         ]
       }
     ],
@@ -5994,10 +5994,10 @@
       {
         "signature": "## 4. Environment dossier — the facts of the machine",
         "class": "static",
-        "sha256": "70c5ae5c667d529be429db6f8fc299bce845e62fd2788de1267417ffb763e2e7",
+        "sha256": "f35ae1975f38d407505f8501219e9617c9437a87b26f078ee19060b1c1bb35b6",
         "lines": [
           51,
-          72
+          86
         ]
       },
       {
@@ -6005,8 +6005,8 @@
         "class": "static",
         "sha256": "3805e05c177ea9893dd86ebb9d1d5671975811a1e0771992f6177dfa81363cc5",
         "lines": [
-          73,
-          83
+          87,
+          97
         ]
       },
       {
@@ -6014,8 +6014,8 @@
         "class": "static",
         "sha256": "d53c7cbfd5309df0852971af3c749c3f0c108d0ccdbe0b92ea758cf6028ec523",
         "lines": [
-          84,
-          92
+          98,
+          106
         ]
       },
       {
@@ -6023,8 +6023,8 @@
         "class": "static",
         "sha256": "177e6432e2dcadf21f3e387bbd67abc1a043fc677434deb7ec9309476ba6a2cd",
         "lines": [
-          93,
-          97
+          107,
+          111
         ]
       }
     ],

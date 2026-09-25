@@ -50,8 +50,22 @@ command itself in "How the agent reaches it", its known traps; the project's har
 
 ## 4. Environment dossier — the facts of the machine
 
-The procedure — six axes, probed in every shell separately — is `AGENT_GUIDE.md` → "Environment dossier";
-`/refresh-context` regenerates this table. Write one row per fact: **fact → value → probe command**.
+The rule — `AGENT_GUIDE.md` → "Environment dossier"; `/refresh-context` regenerates this table (its dossier step). Probe six
+axes, and probe them **in every shell available separately** — different shells are different worlds:
+
+1. **OS / hardware** — OS version, CPU cores, RAM.
+2. **Shells and encodings** — which shells exist, console codepage, the default ANSI encoding a
+   redirect writes, each shell's locale.
+3. **Toolchain** — language runtimes, package/build tools, VCS and their versions; and WHAT
+   `tar` / `curl` / `find` resolve to in each shell (a system binary, a GNU tool, or a shell
+   alias to something else entirely — check the command TYPE, not just its path).
+4. **VCS policies** — line-ending policy, credential helper.
+5. **Package managers** — what is available to install with.
+6. **Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never
+   copies of them.
+
+Write one row per fact: **fact → value → probe command**. A fact never probed is written `— not probed yet —`: a missing
+fact is honest, an invented one is a defect (`PHILOSOPHY.md` → the three doors).
 
 > **Environment dossier.** Taken: `<date>` · Regeneration: `/refresh-context` → the dossier step
 > (re-run the probes in column 3 and rewrite the values and this date) · **Staleness: facts older

@@ -224,27 +224,9 @@ in the house-rules file — `HOUSE_RULES.md` → "Environment dossier" (copy the
 Document taxonomy tier 4; a file from before 2.8 lacks the section — copy it from the skeleton): the
 agent fills it by running the probes, and every future session reads instead of rediscovering.
 
-**How to collect** (the procedure lives in `/refresh-context`; run it at deployment and whenever
-the dossier goes stale). Probe six axes, and probe them **in every shell available separately** —
-different shells are different worlds, and that difference is exactly what the dossier exists to
-capture:
-
-1. **OS / hardware** — OS version, CPU cores, RAM.
-2. **Shells and encodings** — which shells exist, console codepage, the default ANSI encoding a
-   redirect writes, each shell's locale.
-3. **Toolchain** — language runtimes, package/build tools, VCS and their versions; and WHAT
-   `tar` / `curl` / `find` resolve to in each shell (a system binary, a GNU tool, or a shell
-   alias to something else entirely — check the command TYPE, not just its path).
-4. **VCS policies** — line-ending policy, credential helper.
-5. **Package managers** — what is available to install with.
-6. **Behavioural quirks** — LINKS to the lessons already paid for (`EXPERIENCE.md` ids), never
-   copies of them.
-
-**Format** — it ships in the skeleton's dossier section: one row per fact, **fact → value → probe
-command**; the header carries the **date the facts were taken**, the **regeneration command** and
-the **staleness rule** (older than four weeks → a hypothesis, re-probe). A fact never probed is
-written `— not probed yet —`: a missing fact is honest, an invented one is a defect
-(`PHILOSOPHY.md` → the three doors).
+**How to collect** — `/refresh-context`, its dossier step, at deployment and whenever the dossier goes stale; the
+six axes, the row format and the staleness rule stand in the skeleton's dossier section. Probe **in every shell
+available separately** — different shells are different worlds, and that difference is what the dossier captures.
 
 **The DRY boundary with "Document and text hygiene"** below: the dossier holds FACTS of the
 machine (what is installed, what `tar` is, which encoding); hygiene holds RULES OF BEHAVIOUR

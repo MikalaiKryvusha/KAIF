@@ -241,6 +241,15 @@ CK5.0а — `framework/TESTING_FRAMEWORK.md`:
 - «They are planned WITH the work and land in the SAME step, never "later"» → то же правило в предыдущем предложении («planned WITH the work and landing in the SAME step, never "later"»); почему — §17, запись «The work produces its own means of checking»
 - «Two placement rules, paid for by the same outage» → те же два правила размещения в том же абзаце; «правило только в документе» — §17, запись «Green tests ≠ working…»
 
+OW2 (эпик OW, `plans/119`; место под правило «слово владельца посреди хода» — руководство стоит на 1078 из 1080) — `framework/AGENT_GUIDE.md` → «Environment dossier»:
+- «**OS / hardware** — OS version, CPU cores, RAM.» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
+- «**Shells and encodings** — which shells exist, console codepage» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
+- «**Toolchain** — language runtimes, package/build tools» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
+- «**VCS policies** — line-ending policy, credential helper.» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
+- «**Package managers** — what is available to install with.» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
+- «**Behavioural quirks** — LINKS to the lessons already paid for» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать)
+- «A fact never probed is written `— not probed yet —`» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать); в руководстве остался указатель «How to collect»
+
 ### CK4 — файл домашних правил и правило владельца правилом (≈ 0,5 чата; детализировано на закрытии CK3, ≈ 2026-09-24 21:56 +03:00)
 
 Входы сверены (сессия 71): имя раздела заметок — «Notes from the human» в шаблоне и в ядре (`KAIF-CORE.mjs:863` пункт портрета,
