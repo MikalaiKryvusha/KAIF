@@ -75,6 +75,12 @@ console.log('\n=== s22 A: свежая установка из бандла — 
 const P = join(ROOT, 'fresh'); seed(P);
 must(run, P, 'install --lang ru');
 for (const f of CONTOUR_FILES) ok(existsSync(join(P, f)), 's22 A: приехал ' + f);
+// OW9 (2.8, тикет #104): скелет страницы объяснения картинкой приезжает установкой и не делает ни одного запроса с машины
+const EXPL = join(P, '.kaif', '_explain-page-template.html');
+const explT = existsSync(EXPL) ? readFileSync(EXPL, 'utf8') : '';
+ok(explT.includes('<h3>Comparison</h3>') && explT.includes('<h3>Sequence in time</h3>') && explT.includes('<h3>Fork of outcomes</h3>') && explT.includes('dl class="scenario"')
+   && !/(?:src|href)\s*=\s*["']?\s*(?:https?:)?\/\//i.test(explT) && !/url\(\s*["']?\s*(?:https?:)?\/\//i.test(explT) && !/@import|<link\b|<script\b/i.test(explT),
+   's22 A: скелет страницы объяснения приехал (.kaif/_explain-page-template.html): сравнение · лента времени · дерево исходов · сценарий подписью; ни одного запроса наружу (OW9, #104)', explT ? explT.slice(0, 120) : 'нет файла');
 // CL (2.7, #63): отгружаемый генератор называет границу собственного заявления у каждого поднятого окна —
 // «the launcher returned 0; whether a window is on the owner's screen this line does not verify»
 ok(existsSync(join(P, '.kaif', 'tools', 'contour', 'review.mjs')) && /this line does not verify/.test(readFileSync(join(P, '.kaif', 'tools', 'contour', 'review.mjs'), 'utf8')),
@@ -526,7 +532,9 @@ if (!exe) {
   };
   const gen4 = spawnGen(D, [DOC_P, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '120000' });
   const url4 = await gen4.url;
-  const page4 = await headlessPage(url4, { profileDir: prof, app: true, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+  // the owner's window size — the contour launches its --app window at 1100×900; the overlap of the banner's button with the floating
+  // Save block was found by looking at a real frame and depends on the width
+  const page4 = await headlessPage(url4, { profileDir: prof, app: true, extraArgs: ['--window-size=1100,900', '--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
   const ev = async (js) => { try { return await page4.evaluate(js); } catch { return null; } }; // the window may be gone (v2.7 closes it after the first save)
   const until = async (expr, ms = 12000) => { const t0 = Date.now(); for (;;) { try { const v = await ev(expr); if (v) return v; } catch { /* the page is navigating */ } if (Date.now() - t0 > ms) return null; await wait(200); } };
   const pick = (q, v) => ev("(function(){var r=document.getElementsByName('choice:" + DOC_P + ":" + q + "');for(var i=0;i<r.length;i++)if(r[i].value==='" + v + "'){r[i].checked=true;saveDraft(r[i]);return true}return false})()");
@@ -563,11 +571,13 @@ if (!exe) {
   writeFileSync(join(D, DOC_P), readFileSync(join(D, DOC_P), 'utf8').replace('Третий вопрос?', 'Третий вопрос, переписанный агентом?'));
   await clickSave();
   const st3j = await until("(function(){var b=document.querySelector('#banner');if(!b||b.style.display!=='block'||!/ИЗМЕНЁН/.test(b.textContent))return '';" +
-    "return JSON.stringify({banner:b.textContent,ring:document.querySelector('#rescue').style.display,text:document.querySelector('#rescuetext').value,saveOff:document.querySelector('#save').disabled})})()");
+    "var bt=b.querySelector('button'),rc=bt?bt.getBoundingClientRect():null;" +
+    "return JSON.stringify({banner:b.textContent,ring:document.querySelector('#rescue').style.display,text:document.querySelector('#rescuetext').value,saveOff:document.querySelector('#save').disabled," +
+    "btnFree:!!(bt&&(function(){var fb=document.querySelector('.fab').getBoundingClientRect();return rc.right<=fb.left||rc.left>=fb.right||rc.bottom<=fb.top||rc.top>=fb.bottom})())})})()");
   const s3 = st3j ? JSON.parse(st3j) : {};
   const md3 = readFileSync(join(D, DOC_P), 'utf8');
-  ok(s3.ring === 'block' && /"Q3"/.test(s3.text || '') && s3.saveOff && !(decP().answers || {}).Q3 && /переписанный агентом\?\n\n- \*\*A\)\*\* первый\n- \*\*B\)\*\* второй\n\n\*\*Answer:\*\*\n/.test(md3.replace(/\r\n/g, '\n')),
-     's22 D: СТАРАЯ вкладка — агент переписал Q3, владелец жмёт «Записать» → полоса «Документ ИЗМЕНЁН», текст ответа в кольце спасения, запись выключена; в решении и в документе Q3 НЕТ (OW6, зазор редакции)',
+  ok(s3.ring === 'block' && /"Q3"/.test(s3.text || '') && s3.saveOff && s3.btnFree && !(decP().answers || {}).Q3 && /переписанный агентом\?\n\n- \*\*A\)\*\* первый\n- \*\*B\)\*\* второй\n\n\*\*Answer:\*\*\n/.test(md3.replace(/\r\n/g, '\n')),
+     's22 D: СТАРАЯ вкладка — агент переписал Q3, владелец жмёт «Записать» → полоса «Документ ИЗМЕНЁН», кнопка «Открыть новую редакцию» не пересекается с плавающим блоком «Записать» (окно 1100×900 — размер окна владельца), текст ответа в кольце спасения, запись выключена; в решении и в документе Q3 НЕТ (OW6, зазор редакции)',
      String(st3j).slice(0, 300));
   // the new revision: the draft of the rewritten Q3 comes back as a draft of a previous revision, never onto the rewritten question
   await ev("(function(){document.querySelector('#banner button').click();return true})()");

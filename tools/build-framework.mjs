@@ -558,6 +558,12 @@ function bundleBlocks() {
   if (existsSync(join(FW, 'templates', '_house-rules-template.md')))
     blocks.push(embedBundle('framework/templates/_house-rules-template.md', '.kaif/_house-rules-template.md',
       'the house-rules skeleton — tier 4 of the taxonomy; the guide\'s tier-4 rule and /fix-vision step 3 copy it to HOUSE_RULES.md on first use; /resume and the router read the copy'));
+  // the explanation-page skeleton (2.8, epic OW, origin issue #104 — a field owner: frames, a time line and an outcome tree on one page
+  // were «100 times clearer» than paragraphs): same delivery shape as the other skeletons — the agent COPIES it next to the project's
+  // owner pages, fills it and opens it; self-contained by construction (no request leaves the machine — it may carry private screenshots)
+  if (existsSync(join(FW, 'templates', '_explain-page-template.html')))
+    blocks.push(embedBundle('framework/templates/_explain-page-template.html', '.kaif/_explain-page-template.html',
+      'the explanation-page skeleton — AGENT_GUIDE "Showing is an action": a comparison, a sequence in time or a fork of outcomes is explained with a picture; the agent copies, fills and opens it'));
   // the interactive-contour CONTRACT page (2.6, epic IC; owner decision №101 — origin issues #19/#38/#47/#51):
   // one page a session verifies in a minute before opening an owner-facing page; bundle-only, like the
   // other .kaif/_* skeletons — the long-form canon stays in the /owner-reviews skill

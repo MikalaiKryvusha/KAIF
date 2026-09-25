@@ -269,10 +269,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "4fbafa9f778a6434d6e4e6ceda327bdf225238311586134158dc7ed9a6f8f2f6",
+        "sha256": "2f865786705079089508b0099bf5aaa496b950e506ad6218ace7642f1d36aecb",
         "lines": [
           860,
-          1048
+          1052
         ]
       },
       {
@@ -280,8 +280,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1049,
-          1063
+          1053,
+          1067
         ]
       },
       {
@@ -289,8 +289,8 @@
         "class": "static",
         "sha256": "a150f5dbf5b41e7ff824ddbd117246ec802c1404ea3d9135a910444e8d9faff5",
         "lines": [
-          1064,
-          1077
+          1068,
+          1081
         ]
       }
     ],
@@ -3321,10 +3321,10 @@
       {
         "signature": "### Step 3a. Every question and every option — a scenario of what the owner will see, the formula after",
         "class": "static",
-        "sha256": "75c2a595aebea11e35ea527113a5074f156a5bfe3ed0cd89374d2914fa2a8206",
+        "sha256": "e3e5fc2a2a115ea3f29718b0a24adfa68dc1f84a3eba503c1b0ac4a3c5502e36",
         "lines": [
           103,
-          154
+          158
         ]
       },
       {
@@ -3332,8 +3332,8 @@
         "class": "static",
         "sha256": "04fd843a09fda10da1c00e730812d12a58e2a12c433bf57a310a27043c4e3693",
         "lines": [
-          155,
-          173
+          159,
+          177
         ]
       },
       {
@@ -3341,8 +3341,8 @@
         "class": "static",
         "sha256": "00be9cbde7ad90367354626af47021b3a3c6a5a8e164ad7c4fb74a086eb99def",
         "lines": [
-          174,
-          187
+          178,
+          191
         ]
       },
       {
@@ -3350,8 +3350,8 @@
         "class": "static",
         "sha256": "0571356eca211e00c7951a495a0ffcc474ef6721ea64167d6337e800d4f5155a",
         "lines": [
-          188,
-          222
+          192,
+          226
         ]
       },
       {
@@ -3359,8 +3359,8 @@
         "class": "static",
         "sha256": "d6862b9574321dc349aadd9227378945dde0e402873d4475f9d2ca67cebb51ee",
         "lines": [
-          223,
-          237
+          227,
+          241
         ]
       },
       {
@@ -3368,8 +3368,8 @@
         "class": "static",
         "sha256": "1a1f00e2ed5c248774c5ad8980d91e28dd91c8e95ad0f687e252df61fa4e2535",
         "lines": [
-          238,
-          269
+          242,
+          273
         ]
       },
       {
@@ -3377,8 +3377,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          270,
-          274
+          274,
+          278
         ]
       }
     ],

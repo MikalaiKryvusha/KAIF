@@ -298,6 +298,7 @@
     ".claude/skills/team-deployment/references/team-status-board-template.md": "framework/skills/team-deployment/references/team-status-board-template.md",
     ".claude/skills/team-deployment/SKILL.md": "framework/skills/team-deployment/SKILL.md",
     ".claude/skills/what-next/SKILL.md": "framework/skills/what-next/SKILL.md",
+    ".kaif/_explain-page-template.html": "framework/templates/_explain-page-template.html",
     ".kaif/_house-rules-template.md": "framework/templates/_house-rules-template.md",
     ".kaif/_owner-voice-template.md": "framework/templates/_owner-voice-template.md",
     ".kaif/_testcases-template.md": "framework/templates/_testcases-template.md",
@@ -1358,27 +1359,31 @@ page the owner opens shows the LIVE questions first; everything answered and the
 as one collapsed archive — nothing is removed, the order of reading changes. The same discipline as STATUS ↔ the chronicle: what is closed
 leaves the top.
 
-**Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
-doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. The work is
-shown when it is BEFORE THE HUMAN'S EYES, not when the artifact exists — the action between belongs
-to the agent, who knows the path and the command. "Lies at path…", "opens by double-click", "see
-file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
-footnote of where it landed — never as an errand. No separate show tool: the review contour opens
-any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. **And the show is reported no wider than it was observed:**
-"the page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until
-then, "please check whether you see it" (the fable loop's fifth KAIF obligation). **And a text the owner reads as his own is shown only
-AFTER it is written BY his portrait, checked independently by it and fixed:**
-`node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
-(the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
+**Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon doc, a report, a render, a PDF, a
+mockup, an image, a sound — the agent OPENS ITSELF. The work is shown when it is BEFORE THE HUMAN'S EYES, not when the artifact exists
+— the action between belongs to the agent, who knows the path and the command. "Lies at path…", "opens by double-click", "see file X"
+addressed to the human are banned as a way of showing; name the path AFTER the show, as a footnote of where it landed — never as an
+errand. No separate show tool: the review contour opens any markdown (the show contour = the question contour, `/owner-reviews`
+I15–I17); without the contour, open the file with the system opener. **And the show is reported no wider than it was observed:** "the
+page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until then, "please check whether you
+see it" (the fable loop's fifth KAIF obligation). **And a text the owner reads as his own is shown only AFTER it is written BY his
+portrait, checked independently by it and fixed:** `node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass
+before the first show (the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
 hidden, and a draft written natively and shown "for a look" is the class itself. **The executor of this check is THE AGENT ITSELF at
-the moment of sending, and that is said plainly:** before sending a reply, grep it for
-"double-click / opens offline / see file / lies at" next to an artifact extension — a hit means the
-show was replaced by a link. No machine can do it: the text being checked is your reply, it never
-lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named:
-questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
-document". **And a page the owner looks at is CLOSED only by the command that checks
-it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
+the moment of sending, and that is said plainly:** before sending a reply, grep it for "double-click / opens offline / see file / lies
+at" next to an artifact extension — a hit means the show was replaced by a link. No machine can do it: the text being checked is your
+reply, it never lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named: questions to the
+owner are guarded by the questions-guard axis "a question that dispatches into a document". **And a page the owner looks at
+is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66;
+`/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
+
+**A comparison, a sequence in time or a fork of outcomes is explained with a PICTURE** (2.8, origin issue #104 — a field owner found a
+page with frames, a time line and an outcome tree a hundred times clearer than text; the words are quoted in the issue). COMPARISON
+(design vs build, before vs after) → the two frames side by side in one picture, labelled; SEQUENCE IN TIME (a race, a retry, a
+lifecycle) → a time line: events as dots, durations as bars, the user's action marked; FORK OF OUTCOMES → an outcome tree, each leaf:
+what the client shows · what the server did · the verdict by colour. Build it on the shipped skeleton —
+`cp .kaif/_explain-page-template.html <dir>/<what>.html` (self-contained: no request leaves the machine) — open it for the owner and
+write ONE line to it in the chat; the four-line scenario is its caption, never the whole explanation. Its look is the owner's taste.
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
 covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
@@ -6172,6 +6177,10 @@ line empty, and filling it is the agent's work. An option, written this way:
   - Result. You see the page close — nobody shows you this page again, and no question to you.
   - Check. The agent's console prints `Outcome: proofread recorded (<doc>, no remarks, by …)`.
 ```
+
+**A COMPARISON, a sequence in time or a fork of outcomes — the picture first** (2.8, origin issue #104): when the question hinges on
+design vs build, before vs after, or a race with several outcomes, build the explanation page first (`cp .kaif/_explain-page-template.html
+<dir>/<name>.html`; AGENT_GUIDE.md → "Showing is an action") and open it; the scenario is its caption, the question names the page.
 
 Where the project runs a questions guard, a live question whose body carries none of the four lines
 is a finding (the origin: `questions-guard`, axis G6); the declared exception is a marker with a
@@ -11744,13 +11753,13 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .fab { position:fixed; top:12px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
   .fab #status { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; text-align:right } .fab #status:empty { display:none }
-  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header { padding-right:170px } }
+  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
-  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 20px; font-weight:600; z-index:6 }
+  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 230px 8px 20px; font-weight:600; z-index:6 } /* OW6: room for the floating Save button, as the header has */
   /* I26 (#64): the page found itself in a TAB, not in the contour's own window — a yellow note, never the red banner:
      the answer still goes through; what is at risk is the draft (it lives in this tab) and the auto-close. */
   #tabnote { display:none; background:#fde68a; color:#1d1d1f; padding:8px 20px; font-weight:600; border-bottom:1px solid #f59e0b }`;
@@ -11840,10 +11849,10 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " for(var k=0;k<ks.length;k++){if(ks[k].indexOf(DK)!==0)continue;var nm=ks[k].slice(DK.length).split('#')[0];",
     "  if(p.comment&&nm==='doccomment:'+p.doc)localStorage.removeItem(ks[k]);",
     "  for(var j=0;j<ids.length;j++)if(nm==='choice:'+p.doc+':'+ids[j]||nm==='text:'+p.doc+':'+ids[j]||nm==='comment:'+p.doc+':'+ids[j])localStorage.removeItem(ks[k])}}catch(e){}}",
-    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent=msg+' ';var bt=document.createElement('button');bt.type='button';",
-    " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);",
+    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent='';var bt=document.createElement('button');bt.type='button';",
+    " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.style.marginRight='10px';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);b.appendChild(document.createTextNode(msg));",
     " var sv=document.querySelectorAll('#save,.savedoc,#retry');for(var i=0;i<sv.length;i++)sv[i].disabled=true}",
-    "function staleSave(p){rescue(p,TX.stale);newRevision(TX.stale)}",
+    "function staleSave(p){rescue(p,TX.stale);status('','');newRevision(TX.stale)}", // the banner and the ring carry the message — the pill never covers the button
     "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;p.rev=CFG.rev;lastPayload=p;",
     // bugs/113: on the proofreading and mockup faces "Done" with empty fields is a LEGAL outcome — "looked, no remarks"
     // (the most frequent verdict on an artifact); only the interview face still needs an answer or a comment.
@@ -17818,6 +17827,106 @@ Every automation tool of the project (build, commit, release, codegen, graphics�
 
 <Domain facts the agent needs and must not re-derive: the glossary, the entities and their roles, the
 numbers that must not change. A fact the owner owns carries the owner's provenance line, like a rule.>
+``````
+
+> **FILE: `.kaif/_explain-page-template.html`** — the explanation-page skeleton — AGENT_GUIDE "Showing is an action": a comparison, a sequence in time or a fork of outcomes is explained with a picture; the agent copies, fills and opens it
+
+``````md
+<!doctype html>
+<!-- KAIF EXPLANATION PAGE (2.8, origin issue #104; the field owner, verbatim in the issue: a page with frames, a time line and an outcome
+     tree was «100 times clearer» than paragraphs). When what you explain to the owner is a COMPARISON (design vs build, before vs after),
+     a SEQUENCE IN TIME (a race, a retry, a lifecycle) or a FORK OF OUTCOMES, build THIS page first and write ONE line to it in the chat.
+     1. Copy it where the project keeps owner pages:  cp .kaif/_explain-page-template.html <dir>/<what-is-explained>.html
+     2. Keep the blocks the explanation needs, delete the rest; one <section> per question.
+     3. Open it for the owner — showing is an action (AGENT_GUIDE.md), never a path in the chat.
+     The page is SELF-CONTAINED: no request leaves the machine (it may carry private screenshots) — images are files next to the page
+     or data: URIs, pictures are inline SVG. The four-line scenario stays as the caption under the picture; it is never the whole
+     explanation. The look is the owner's taste: he judges it, the agent does not. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PROJECT · what is explained</title>
+<style>
+  :root { --bg:#16171b; --card:#202127; --ink:#ececf0; --muted:#a0a0a8; --line:#3a3a42;
+    --none:#22c55e; --improve:#f59e0b; --bug:#f87171; --accent:#60a5fa; --user:#c084fc; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#f7f7f5; --card:#ffffff; --ink:#1d1d1f; --muted:#6b6b70; --line:#d9d9de;
+      --none:#16a34a; --improve:#d97706; --bug:#dc2626; --accent:#2563eb; --user:#9333ea; } }
+  * { box-sizing:border-box }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui, "Segoe UI", sans-serif }
+  header { padding:14px 20px; border-bottom:1px solid var(--line); background:var(--card) }
+  header strong { color:var(--accent) } header .sum { color:var(--muted); margin-left:8px }
+  main { max-width:980px; margin:0 auto; padding:16px 20px 48px }
+  section.q { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 18px; margin:18px 0 }
+  h2 { font-size:18px; margin:4px 0 12px }
+  .tag { font-size:12px; font-weight:600; padding:2px 8px; border-radius:999px; vertical-align:middle; color:#0b1020 }
+  .tag.decided { background:var(--none) } .tag.checking { background:var(--improve) } .tag.bug { background:var(--bug) }
+  h3 { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:16px 0 8px }
+  /* COMPARISON — two frames side by side in ONE picture, each labelled */
+  .pair { display:grid; grid-template-columns:1fr 1fr; gap:12px }
+  .pair figure { margin:0; border:1px solid var(--line); border-radius:10px; padding:8px; text-align:center }
+  .pair img { max-width:100%; height:auto; border-radius:6px }
+  .pair figcaption { font-size:13px; color:var(--muted); margin-top:6px }
+  .ph { min-height:140px; display:flex; align-items:center; justify-content:center; border:2px dashed var(--line); border-radius:6px; color:var(--muted); font-size:13px; padding:10px }
+  /* SEQUENCE IN TIME — events are dots, durations are bars, the user's action is marked */
+  svg.timeline { width:100%; height:auto; display:block }
+  svg.timeline text { fill:var(--ink); font:12px system-ui, sans-serif } svg.timeline .muted { fill:var(--muted) }
+  /* FORK OF OUTCOMES — each leaf: what the client shows · what the server did · the verdict by colour */
+  .tree .root { border:1px solid var(--line); border-radius:10px; padding:8px 12px; margin:0 auto 10px; max-width:520px; text-align:center }
+  .tree .leaves { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px }
+  .leaf { border:1px solid var(--line); border-left:6px solid var(--muted); border-radius:10px; padding:8px 12px; font-size:14px }
+  .leaf.none { border-left-color:var(--none) } .leaf.improve { border-left-color:var(--improve) } .leaf.bug { border-left-color:var(--bug) }
+  .leaf b { display:block; margin-bottom:4px } .leaf .side { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em }
+  /* the four-line scenario — the CAPTION under the picture */
+  dl.scenario { display:grid; grid-template-columns:max-content 1fr; gap:4px 12px; margin:14px 0 0; padding-top:10px; border-top:1px solid var(--line); font-size:14px }
+  dl.scenario dt { color:var(--muted) } dl.scenario dd { margin:0 }
+  @media (max-width:640px) { .pair { grid-template-columns:1fr } }
+</style>
+</head>
+<body>
+<header><strong>PROJECT</strong> · what is explained <span class="sum">— one line: what the owner decides here</span></header>
+<main>
+
+<section class="q">
+  <h2>Q1. The question in the owner's words <span class="tag checking">checking</span></h2>
+
+  <h3>Comparison</h3>
+  <div class="pair">
+    <figure><div class="ph">the design frame — replace with &lt;img src="design.png" alt="design"&gt;</div><figcaption>Design: what it promises</figcaption></figure>
+    <figure><div class="ph">the build's frame — replace with &lt;img src="build.png" alt="build"&gt;</div><figcaption>Build: what the user sees</figcaption></figure>
+  </div>
+
+  <h3>Sequence in time</h3>
+  <svg class="timeline" viewBox="0 0 900 150" role="img" aria-label="time line">
+    <line x1="30" y1="80" x2="870" y2="80" stroke="currentColor" stroke-opacity=".35" stroke-width="2"/>
+    <circle cx="80" cy="80" r="7" style="fill:var(--accent)"/><text x="80" y="60" text-anchor="middle">event 1</text><text class="muted" x="80" y="110" text-anchor="middle">0 s</text>
+    <rect x="160" y="72" width="360" height="16" rx="8" style="fill:var(--accent)" fill-opacity=".35"/><text x="340" y="60" text-anchor="middle">a duration (2–8 s)</text>
+    <circle cx="420" cy="80" r="9" style="fill:var(--user)"/><text x="420" y="130" text-anchor="middle" style="fill:var(--user)">the user's action</text>
+    <circle cx="640" cy="80" r="7" style="fill:var(--bug)"/><text x="640" y="60" text-anchor="middle">the system's answer</text><text class="muted" x="640" y="110" text-anchor="middle">+0.3 s</text>
+  </svg>
+
+  <h3>Fork of outcomes</h3>
+  <div class="tree">
+    <div class="root">the fork: what happened at the moment of the user's action</div>
+    <div class="leaves">
+      <div class="leaf none"><b>a) outcome</b><span class="side">client</span> what the user sees<br><span class="side">server</span> what it did<br><span class="side">verdict</span> no finding</div>
+      <div class="leaf improve"><b>b) outcome</b><span class="side">client</span> …<br><span class="side">server</span> …<br><span class="side">verdict</span> improvement</div>
+      <div class="leaf bug"><b>c) outcome</b><span class="side">client</span> …<br><span class="side">server</span> …<br><span class="side">verdict</span> bug</div>
+    </div>
+  </div>
+
+  <dl class="scenario">
+    <dt>Situation</dt><dd>the state of the world with concrete values</dd>
+    <dt>Action</dt><dd>exactly one action</dd>
+    <dt>Result</dt><dd>what is seen from outside</dd>
+    <dt>Check</dt><dd>the command or query and its expected output</dd>
+  </dl>
+</section>
+
+</main>
+</body>
+</html>
 ``````
 
 > **FILE: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** — interactive-contour contract page — verbatim; the shipped generator implements it, a project contour is checked against it

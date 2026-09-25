@@ -122,6 +122,10 @@ line empty, and filling it is the agent's work. An option, written this way:
   - Check. The agent's console prints `Outcome: proofread recorded (<doc>, no remarks, by …)`.
 ```
 
+**A COMPARISON, a sequence in time or a fork of outcomes — the picture first** (2.8, origin issue #104): when the question hinges on
+design vs build, before vs after, or a race with several outcomes, build the explanation page first (`cp .kaif/_explain-page-template.html
+<dir>/<name>.html`; AGENT_GUIDE.md → "Showing is an action") and open it; the scenario is its caption, the question names the page.
+
 Where the project runs a questions guard, a live question whose body carries none of the four lines
 is a finding (the origin: `questions-guard`, axis G6); the declared exception is a marker with a
 reason on the line — `<!-- questions-guard:no-scenario <reason> -->` — legal only for a question

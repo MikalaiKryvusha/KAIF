@@ -5,11 +5,11 @@
   "codename": "Audited KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "6f0543f309eb264f2eb1e2cf3fe5e580617cf2910b3d4a836eec1616357922da",
-    "KAIF-CORE-BUNDLE.md": "f209cb45aa9600a140d1ebc908597daaa9f12fea1183613f8c52f1c3aac59bd2"
+    "KAIF-CORE-BUNDLE.md": "b6090ddc59dfb8518ea6d3e7a3a2d42de8bc6355c8fd26ba2ee0adcd73ce24b7"
   },
   "sourceTree": {
-    "sha256": "ac15d332059a2379b678f0550339b4b325f960595ced138a73e66fba887962ed",
-    "files": 207
+    "sha256": "e314d93a9a8553f1b54ae0144fd28b07b5d236d6f0feb313e7b0ebc2ab3143d2",
+    "files": 208
   },
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",

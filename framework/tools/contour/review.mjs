@@ -758,13 +758,13 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .fab { position:fixed; top:12px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
   .fab #status { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; text-align:right } .fab #status:empty { display:none }
-  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header { padding-right:170px } }
+  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
-  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 20px; font-weight:600; z-index:6 }
+  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 230px 8px 20px; font-weight:600; z-index:6 } /* OW6: room for the floating Save button, as the header has */
   /* I26 (#64): the page found itself in a TAB, not in the contour's own window — a yellow note, never the red banner:
      the answer still goes through; what is at risk is the draft (it lives in this tab) and the auto-close. */
   #tabnote { display:none; background:#fde68a; color:#1d1d1f; padding:8px 20px; font-weight:600; border-bottom:1px solid #f59e0b }`;
@@ -854,10 +854,10 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " for(var k=0;k<ks.length;k++){if(ks[k].indexOf(DK)!==0)continue;var nm=ks[k].slice(DK.length).split('#')[0];",
     "  if(p.comment&&nm==='doccomment:'+p.doc)localStorage.removeItem(ks[k]);",
     "  for(var j=0;j<ids.length;j++)if(nm==='choice:'+p.doc+':'+ids[j]||nm==='text:'+p.doc+':'+ids[j]||nm==='comment:'+p.doc+':'+ids[j])localStorage.removeItem(ks[k])}}catch(e){}}",
-    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent=msg+' ';var bt=document.createElement('button');bt.type='button';",
-    " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);",
+    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent='';var bt=document.createElement('button');bt.type='button';",
+    " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.style.marginRight='10px';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);b.appendChild(document.createTextNode(msg));",
     " var sv=document.querySelectorAll('#save,.savedoc,#retry');for(var i=0;i<sv.length;i++)sv[i].disabled=true}",
-    "function staleSave(p){rescue(p,TX.stale);newRevision(TX.stale)}",
+    "function staleSave(p){rescue(p,TX.stale);status('','');newRevision(TX.stale)}", // the banner and the ring carry the message — the pill never covers the button
     "function doSave(doc){var p=collect(doc);if(isNotice(doc))p.read=true;p.rev=CFG.rev;lastPayload=p;",
     // bugs/113: on the proofreading and mockup faces "Done" with empty fields is a LEGAL outcome — "looked, no remarks"
     // (the most frequent verdict on an artifact); only the interview face still needs an answer or a comment.

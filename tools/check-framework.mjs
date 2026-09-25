@@ -1168,7 +1168,8 @@ if (existsSync(distDir)) {
     // root-level framework/templates/*.md are embedded as .kaif/ payloads (e.g. the owner-voice
     // portrait skeleton); languages/ underneath is counted separately as lang-pack files
     const tmplDir = join(ROOT, 'framework', 'templates');
-    const tmpls = existsSync(tmplDir) ? readdirSync(tmplDir).filter((f) => f.endsWith('.md')).length : 0;
+    // 2.8 (epic OW, OW9): the explanation-page skeleton is an .html template — the count sees what the build ships
+    const tmpls = existsSync(tmplDir) ? readdirSync(tmplDir).filter((f) => /\.(md|html)$/.test(f)).length : 0;
     const wantBundle = 1 + docs.length + readmes.length + skills.length + refs + spheres + toolMods + hookFiles + tmpls + langFiles;
     if (bundleBlocks !== wantBundle)
       errors.push(`bundle FILE blocks: found ${bundleBlocks}, expected ${wantBundle} (1 manifest + ${docs.length} docs + ${readmes.length} readmes + ${skills.length} skills + ${refs} refs + ${spheres} spheres + ${toolMods} tool modules + ${hookFiles} hook files + ${tmpls} templates + ${langFiles} lang-pack files)`);

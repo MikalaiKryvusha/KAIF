@@ -126,5 +126,18 @@ export async function headlessPage(url, { profileDir, extraArgs = [], exe = find
     if (!done) killBrowser(proc);
     return done;
   };
-  return { proc, evaluate, close, closeGracefully, exe };
+  // OW9 (2.8, origin issue #104): a frame of the page as the owner would see it — a PNG (base64) for an explanation page; `full` takes
+  // the whole scroll height. [TESTED: 2026-09-25 20:39–20:50 · the frames of the shipped contour page and the full frame of the explanation
+  // mockup were taken with it and READ — a covered button was found on one; report testcases/reports/2026-09-25_ow9-explain-with-picture.md]
+  const screenshot = async ({ full = false } = {}) => {
+    let clip;
+    if (full) {
+      const m = await cdp.send('Page.getLayoutMetrics', {}, sessionId);
+      const size = m.cssContentSize || m.contentSize;
+      clip = { x: 0, y: 0, width: Math.ceil(size.width), height: Math.ceil(size.height), scale: 1 };
+    }
+    const r = await cdp.send('Page.captureScreenshot', { format: 'png', ...(clip ? { clip, captureBeyondViewport: true } : {}) }, sessionId);
+    return r.data;
+  };
+  return { proc, evaluate, close, closeGracefully, screenshot, exe };
 }

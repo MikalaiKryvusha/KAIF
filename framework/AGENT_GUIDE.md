@@ -915,27 +915,31 @@ page the owner opens shows the LIVE questions first; everything answered and the
 as one collapsed archive — nothing is removed, the order of reading changes. The same discipline as STATUS ↔ the chronicle: what is closed
 leaves the top.
 
-**Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon
-doc, a report, a render, a PDF, a mockup, an image, a sound — the agent OPENS ITSELF. The work is
-shown when it is BEFORE THE HUMAN'S EYES, not when the artifact exists — the action between belongs
-to the agent, who knows the path and the command. "Lies at path…", "opens by double-click", "see
-file X" addressed to the human are banned as a way of showing; name the path AFTER the show, as a
-footnote of where it landed — never as an errand. No separate show tool: the review contour opens
-any markdown (the show contour = the question contour, `/owner-reviews` I15–I17); without the
-contour, open the file with the system opener. **And the show is reported no wider than it was observed:**
-"the page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until
-then, "please check whether you see it" (the fable loop's fifth KAIF obligation). **And a text the owner reads as his own is shown only
-AFTER it is written BY his portrait, checked independently by it and fixed:**
-`node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass before the first show
-(the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
+**Showing is an action, not a link.** Whatever the agent wants the human to PERCEIVE — a recon doc, a report, a render, a PDF, a
+mockup, an image, a sound — the agent OPENS ITSELF. The work is shown when it is BEFORE THE HUMAN'S EYES, not when the artifact exists
+— the action between belongs to the agent, who knows the path and the command. "Lies at path…", "opens by double-click", "see file X"
+addressed to the human are banned as a way of showing; name the path AFTER the show, as a footnote of where it landed — never as an
+errand. No separate show tool: the review contour opens any markdown (the show contour = the question contour, `/owner-reviews`
+I15–I17); without the contour, open the file with the system opener. **And the show is reported no wider than it was observed:** "the
+page is up" says the server answers; "it is before your eyes" is said only after a screenshot — until then, "please check whether you
+see it" (the fable loop's fifth KAIF obligation). **And a text the owner reads as his own is shown only AFTER it is written BY his
+portrait, checked independently by it and fixed:** `node .kaif/tools/kaif-voice-lint.mjs check <file…>` plus a clean-instance §7B pass
+before the first show (the fable loop's fourth KAIF obligation) — a `SKIPPED` is reported, a hit is rewritten or answered, never
 hidden, and a draft written natively and shown "for a look" is the class itself. **The executor of this check is THE AGENT ITSELF at
-the moment of sending, and that is said plainly:** before sending a reply, grep it for
-"double-click / opens offline / see file / lies at" next to an artifact extension — a hit means the
-show was replaced by a link. No machine can do it: the text being checked is your reply, it never
-lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named:
-questions to the owner are guarded by the questions-guard axis "a question that dispatches into a
-document". **And a page the owner looks at is CLOSED only by the command that checks
-it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
+the moment of sending, and that is said plainly:** before sending a reply, grep it for "double-click / opens offline / see file / lies
+at" next to an artifact extension — a hit means the show was replaced by a link. No machine can do it: the text being checked is your
+reply, it never lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named: questions to the
+owner are guarded by the questions-guard axis "a question that dispatches into a document". **And a page the owner looks at
+is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66;
+`/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
+
+**A comparison, a sequence in time or a fork of outcomes is explained with a PICTURE** (2.8, origin issue #104 — a field owner found a
+page with frames, a time line and an outcome tree a hundred times clearer than text; the words are quoted in the issue). COMPARISON
+(design vs build, before vs after) → the two frames side by side in one picture, labelled; SEQUENCE IN TIME (a race, a retry, a
+lifecycle) → a time line: events as dots, durations as bars, the user's action marked; FORK OF OUTCOMES → an outcome tree, each leaf:
+what the client shows · what the server did · the verdict by colour. Build it on the shipped skeleton —
+`cp .kaif/_explain-page-template.html <dir>/<what>.html` (self-contained: no request leaves the machine) — open it for the owner and
+write ONE line to it in the chat; the four-line scenario is its caption, never the whole explanation. Its look is the owner's taste.
 
 **A QUESTION IS SELF-SUFFICIENT — the subject of the decision lives INSIDE it.** The rule above
 covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
