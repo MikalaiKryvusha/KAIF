@@ -1167,18 +1167,36 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   // installed — not only the one being replaced. A one-version window made the blind spot grow
   // with the age of the lie (a README badge stuck on 2.2 survived three green updates: no later
   // interval had fromVersion === "2.2"). Every exemption below stays exactly as it was; the
-  // adjacency regex is built per token found on the line.
+  // pair is judged per token found on the line (below; the 16-character window of the old adjacency rule stays, and its negative
+  // guards still reject a LONGER version number — "21.6", "1.6.3", "1.60" — never a sentence period: "… KAIF 1.6." is a claim).
   const VERSION_TOKEN = /(?<!\d)(?<!\d\.)\d+\.\d+(?!\d|\.\d)/g;
-  const adjacentCache = new Map();
-  const adjacent = (v) => {
-    if (!adjacentCache.has(v)) {
-      const escVer = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      // the negative guards reject a LONGER version number ("21.6", "1.6.3", "1.60"), never a
-      // sentence period right after the token ("… KAIF 1.6." is a claim, sandbox-caught)
-      adjacentCache.set(v, new RegExp(`(?:kaif|каиф)[^\\n]{0,16}${escVer}(?!\\d|\\.\\d)|(?<!\\d)(?<!\\d\\.)${escVer}[^\\n]{0,16}(?:kaif|каиф)`, 'i'));
+  // 2.8 (epic SC; origin #75 · #91 · N3 · N4): a claim is a PAIR — the framework's word and a version that BELONGS to it. The gap between
+  // them carries no other name and no conjunction: «KAIF и Acme Space 2.0» is the product's version (N3), «KAIF version 2.7» and
+  // «**Версия KAIF** | 1.6» are claims. A capitalized word in the gap is another name unless it is a version word.
+  const PAIR_CONJUNCTIONS = new Set(['и', 'или', 'а', 'с', 'and', 'or', 'with', 'vs', 'plus']);
+  const PAIR_VERSION_WORDS = new Set(['v', 'ver', 'version', 'versions', 'release', 'версия', 'версии', 'версию', 'версией', 'релиз', 'релиза']);
+  // `reverse` (the version BEFORE the word): a capitalized word right before KAIF is the release's codename — «2.7 «Audited KAIF»» is a
+  // claim (the SC2 field run lost a real README line to the forward rule) — so there only a conjunction blocks
+  const pairGap = (gap, reverse = false) => !/[&+]/.test(gap) && (gap.match(/\p{L}+/gu) || []).every((w) => !PAIR_CONJUNCTIONS.has(w.toLowerCase())
+    && (reverse || !/^\p{Lu}/u.test(w) || PAIR_VERSION_WORDS.has(w.toLowerCase())));
+  // judged from EVERY occurrence of the framework word (and of the version) separately — one regex over the line lost an overlapping
+  // pair: in «/kaif-go — с KAIF 2.2» the first match took `/kaif` with the gap «-go — с KAIF » and hid the real pair (SC2 field run)
+  const pairCache = new Map();
+  const isPair = (v, text) => {
+    if (!pairCache.has(v)) {
+      const e = v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      pairCache.set(v, { fwd: new RegExp(`^([^\\n]{0,16}?)${e}(?!\\d|\\.\\d)`), ver: new RegExp(`(?<!\\d)(?<!\\d\\.)${e}(?!\\d|\\.\\d)`, 'g'), rev: /^([^\n]{0,16}?)(?:kaif|каиф)/i });
     }
-    return adjacentCache.get(v);
+    const { fwd, ver, rev } = pairCache.get(v);
+    for (const m of text.matchAll(/kaif|каиф/gi)) { const r = fwd.exec(text.slice(m.index + m[0].length)); if (r && pairGap(r[1])) return true; }
+    for (const m of text.matchAll(ver)) { const r = rev.exec(text.slice(m.index + m[0].length)); if (r && pairGap(r[1], true)) return true; }
+    return false;
   };
+  // a script pin speaks the CODE's vocabulary (#91): a quoted old version assigned to (or compared with) an identifier that NAMES a pin —
+  // `EXPECTED_VERSION`, `kaifVersion`, `REQUIRED_KAIF_VERSION`, `pinnedVersion` — in a script that names the framework; a bare `version`
+  // is the product's own or an XML attribute (`'<?xml version="1.0"'` was named by the first cut on a real tree)
+  const PIN_ID = /[\w$]*(?:kaif[\w$]*version|(?:expected|required|pinned|min|target)[\w$]*version)[\w$]*['"]?\s*(?:[:=]|[!=]==?)/i;
+  const scriptPin = (v, text) => PIN_ID.test(text) && new RegExp(`['"\`]v?${v.replace(/\./g, '\\.')}['"\`]`).test(text);
   const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
   const byFile = new Map();  // directory before the walk reached the only real public claim (field report Г4)
   // 2.8 (epic SC; origin #77): the files are the ones git sees (kaifWalk) — nested copies once took the whole cap and one
@@ -1202,7 +1220,9 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
     // A file byte-identical to the CURRENT template cannot carry a stale PROJECT claim — its
     // text is upstream's own prose (bug 30: ten hits were fable-judge's "added in KAIF 1.6").
     if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;
-    const lines = readFileSync(p, 'utf8').split('\n');
+    const text = readFileSync(p, 'utf8');
+    const lines = text.split('\n');
+    const namesKaif = !isProse && (/kaif|каиф/i.test(p) || /kaif|каиф/i.test(text));
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (line.includes(toVersion)) continue;
@@ -1218,7 +1238,10 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> —
       // and the scan converges to zero instead of re-litigating history each time.
       if (/KAIF-VERSION-OK/i.test(line) || (i > 0 && /KAIF-VERSION-OK/i.test(lines[i - 1]))) continue;
-      if (/\b\d{4}-\d{2}/.test(line)) continue;  // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4) // source-kept: two independent field reports
+      // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4) // source-kept: two independent field reports
+      // — judged OUTSIDE parentheses since 2.8 (origin #75): «Version KAIF 2.1 (released 2026-07-31)» in the deployment record is a claim,
+      // and it lied four intervals behind the whole-line date rule
+      if (/\b\d{4}-\d{2}/.test(isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : line)) continue;
       if (p === 'STATUS.md' && /предыдущ|previous/i.test(line)) continue;   // history, not a claim
       // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
       // staleness (field report Г4: rewriting them would forge it); judge the line with its
@@ -1227,8 +1250,11 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // A parenthesis right after `]` is a markdown link/image TARGET, not an attribution — the
       // shields.io badge keeps its version inside exactly such a target (`![…](…KAIF%202.2…)`),
       // and stripping it hid origin #44's own README line from the scan (2.6, polygon-caught).
-      const judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
-      const claimed = older.find((v) => adjacent(v).test(judged));
+      let judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
+      // a parenthesis WRAPPED onto the next line (N4 · K-R4: «(KAIF 2.6; origin issue #52; the» ⏎ «field owner …) and»): the head of a line
+      // up to an unmatched `)` continues a parenthesis from above, and an unclosed `(` runs to the end of its line
+      if (isProse) judged = judged.replace(/^[^(]*?\)/, '').replace(/(?<!\])\([^)]*$/, '');
+      const claimed = older.find((v) => isPair(v, judged)) || (namesKaif ? older.find((v) => scriptPin(v, scan)) : undefined);
       if (!claimed) continue;
       if (!byFile.has(p)) byFile.set(p, []);
       // a token older than the one just replaced is NAMED — the reader must not assume fromVersion
@@ -4251,6 +4277,30 @@ async function cmdDiff() {
   log(`⟳ rehearsal recorded: ${Object.keys(verdicts).length} wholesale verdict(s) → ${REHEARSAL} — the next update over this tree freezes any file whose verdict differs`);
 }
 
+// stale-claims — re-run the scan for lines asserting an OLDER version, READ-ONLY (2.8, epic SC). The task item says "fix these, then
+// re-run the scan", and until now only `checkpoint stale-claims` re-ran it (ticking the item on the way); the origin's build also runs
+// it over the shipped templates (check-framework 5m). The interval defaults to the last update receipt. Exit 1 only when the walk
+// FAILED — a scan that could not see part of the tree is never a clean result.
+// [TESTED: 2026-09-26 02:36:32 +03:00 · run by the delivered core on copies of four real 2.7 deployments after their own update — the
+//  interval taken from the receipt, exit 0, every line read (report testcases/reports/2026-09-26_sc2-claim-is-a-pair.md)]
+function cmdStaleClaims() {
+  let from = val('--from'), to = val('--to');
+  if (!from || !to) {
+    const rc = okOnDisk(LAST_UPDATE) ? (() => { try { return readJson(LAST_UPDATE); } catch { return null; } })() : null;
+    const mk = okOnDisk(KAIF_JSON) ? (() => { try { return readJson(KAIF_JSON); } catch { return null; } })() : null;
+    from = from || (rc && rc.from);
+    to = to || (rc && rc.to) || (mk && mk.version);
+  }
+  if (!from || !to) die('stale-claims: name the interval — --from <old version> --to <new version> (the defaults come from the last update receipt, and this tree has none)');
+  const man = okOnDisk(DEPLOY_MANIFEST) ? (() => { try { return readJson(DEPLOY_MANIFEST); } catch { return null; } })() : null;
+  const hits = scanStaleClaims(String(from), String(to), man && man.templateShas);
+  const claims = hits.filter((h) => !h.startsWith('shown ') && !h.startsWith(WALK_NOTE));
+  const failed = hits.some((h) => h.startsWith(WALK_NOTE) && h.includes('walk FAILED'));
+  for (const h of hits) log('  · ' + h);
+  log(`stale-claims ${from} → ${to}: ${claims.length} line(s) assert an older version${failed ? ' — the walk FAILED: the result is incomplete, not clean' : ''} (read-only; a correct line takes <!-- KAIF-VERSION-OK: reason --> on it or on the line above)`);
+  if (failed) process.exit(1);
+}
+
 function cmdVerifyFinal() {
   runFinalGates(TASK_FILE, 'KAIF-ADAPT', 'verify-final');
   log('✅ verify-final passed — KAIF install is complete and self-cleaned. Commit: chore: deploy KAIF');
@@ -4287,6 +4337,7 @@ const COMMANDS = {
   check:           { fn: cmdCheck,        desc: 'validate the deployed manifest (marker schema, mirrors, two-headed docs); --gate-budgets makes the size budgets of the re-read core a DOOR — exit 1 on a document over budget in the project\'s OWN lines (the closing ritual runs it)', flags: { '--bundle': true, '--agents': true, '--mode': true, '--lang': true, '--gate-budgets': false }, pos: 0 },
   diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version; --source <x> --render <file> prints that file as install of <x> writes it here (language, fills, mode) — the oracle of a hand merge', flags: { '--source': true, '--baseline': true, '--lang': true, '--render': true }, pos: 0 },
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
+  'stale-claims':  { fn: cmdStaleClaims,  desc: 're-run the scan for lines asserting an older version, read-only — --from <v> --to <v> (default: the last update receipt); exit 1 only when the walk failed', flags: { '--from': true, '--to': true }, pos: 0 },
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly); over an existing deployment it is an update-by-bootstrap — --rehearsal <receipt> binds it to a sandbox copy\'s verdicts', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false, '--rehearsal': true }, pos: 0 },
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release; --rehearsal <receipt> binds the run to a sandbox copy\'s verdicts', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true, '--rehearsal': true }, pos: 0 },
   resume:          { fn: cmdResume,       mutating: true, desc: 'restore the pre-update tree after a crashed update (per .kaif/update-journal.json)', flags: {}, pos: 0 },

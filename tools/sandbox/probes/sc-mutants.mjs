@@ -5,6 +5,8 @@
 // section proves nothing (budget-mutants, CK5.6).
 // Run it after touching the KAIF-WALK block or the scan of framework/installer/KAIF-CORE.mjs, or s29 (fresh dist first):
 //   node tools/sandbox/probes/sc-mutants.mjs          — ALONE, not beside the polygon (origin bug 109); no window, no sound.
+// [TESTED: 2026-09-26 02:44:27 +03:00 · twelve mutants (SC1 M1–M5 · SC2 M6–M12) red exactly on their named addressees; report
+//  testcases/reports/2026-09-26_sc2-claim-is-a-pair.md]
 // [TESTED: 2026-09-26 01:43:34 +03:00 · five mutants red exactly on their named addressees (2 · 1 · 1 · 1 · 2) on the first run;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
@@ -35,6 +37,28 @@ const MUTANTS = [
   { name: 'M5 the scan drops the walk\'s lines (the item says nothing about what it could not see)', suite: S, tag: '❌ ',
     from: '  hits.push(...walkNotes(tree));\n', to: '',
     expect: ['W1: пункт называет «skipped 2»', 'W2: пункт называет «skipped 2»'] },
+  // ── SC2 (criterion 17): the claim is judged as a pair ──
+  { name: 'M6 any dated line is skipped again (#75 — the deployment record dated inside a parenthesis goes unnamed)', suite: S, tag: '❌ ',
+    from: "      if (/\\b\\d{4}-\\d{2}/.test(isProse ? scan.replace(/(?<!\\])\\([^)]*\\)/g, '') : line)) continue;", to: "      if (/\\b\\d{4}-\\d{2}/.test(line)) continue;",
+    expect: ['C1 (#75)'] },
+  { name: 'M7 a script pin needs the framework word within 16 characters again (#91)', suite: S, tag: '❌ ',
+    from: ' || (namesKaif ? older.find((v) => scriptPin(v, scan)) : undefined)', to: '',
+    expect: ['C2 (#91)'] },
+  { name: 'M8 any version near the framework word is a claim again (N3 — the product version is named)', suite: S, tag: '❌ ',
+    from: 'if (r && pairGap(r[1])) return true; }', to: 'if (r) return true; }',
+    expect: ['C3 (N3)'] },
+  { name: 'M9 a parenthesis wrapped onto the next line is not stripped again (N4 · K-R4)', suite: S, tag: '❌ ',
+    from: "      if (isProse) judged = judged.replace(/^[^(]*?\\)/, '').replace(/(?<!\\])\\([^)]*$/, '');\n", to: '',
+    expect: ['C4 (N4)'] },
+  { name: 'M10 the codename before the word reads as another name again (a real README claim is lost)', suite: S, tag: '❌ ',
+    from: 'if (r && pairGap(r[1], true)) return true; }', to: 'if (r && pairGap(r[1])) return true; }',
+    expect: ['C5:'] },
+  { name: 'M11 only the first framework word of a line is judged again (an overlapping pair is swallowed)', suite: S, tag: '❌ ',
+    from: '    for (const m of text.matchAll(/kaif|каиф/gi)) {', to: '    for (const m of [...text.matchAll(/kaif|каиф/gi)].slice(0, 1)) {',
+    expect: ['C6:'] },
+  { name: 'M12 any `version` identifier makes a pin again (an XML attribute is named)', suite: S, tag: '❌ ',
+    from: 'const scriptPin = (v, text) => PIN_ID.test(text) &&', to: 'const scriptPin = (v, text) => /version/i.test(text) &&',
+    expect: ['C7:'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-sc-mutants-'));

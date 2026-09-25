@@ -19,6 +19,9 @@
 // mutants — tools/sandbox/probes/sc-mutants.mjs.
 // [TESTED: 2026-09-26 01:42:55 +03:00 · 12 checks green (the first run: 1 red — a fixture defect, fixed); on v2.7 6 red by name
 //  (01:43:15); report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 02:44:44 +03:00 · SC2 section C — 20 checks green; on v2.7 C1–C4 red by name (C5–C7 guard rules 2.7 never had —
+//  their red is mutants M10–M12); three of them (C5 codename · C6 overlapping pair · C7 XML is no pin) came from the functional run on
+//  four real trees, which found them as defects of the first cut; report testcases/reports/2026-09-26_sc2-claim-is-a-pair.md]
 import { readFileSync, writeFileSync, mkdirSync, symlinkSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -139,6 +142,33 @@ if (a >= 0 && b > a) {
   w = viaGit('No such file or directory').kaifWalk(['.']);
   ok(w.skipped.length === 1 && w.skipped[0].startsWith('secret') && !w.failed.length, 'W3c: git «No such file» (битая ссылка) — SKIPPED с именем', JSON.stringify(w));
 }
+
+// ---------------------------------------------------------------- C: a version claim is judged as a PAIR (SC2; origin #75 · #91 · N3 · N4)
+console.log('\n=== C (#75 · #91 · N3 · N4): заявление о версии судится парой «KAIF ↔ версия», а не формой строки ===');
+const TC = join(ROOT, 'c'); mkdirSync(TC); seed(TC);
+must(run, TC, 'install');
+const C1 = 'Версия KAIF 2.1 (релиз от 2026-07-31)';                         // the deployment record's line, dated only INSIDE the parenthesis
+writeFileSync(join(TC, 'KAIF_FRAMEWORK.md'), readFileSync(join(TC, 'KAIF_FRAMEWORK.md'), 'utf8') + `\n${C1}\n`);
+mkdirSync(join(TC, 'tools'), { recursive: true });
+writeFileSync(join(TC, 'tools', 'kaif-gate.mjs'), "// the project's own KAIF gate: the update is finished when this pin moves\nconst EXPECTED_VERSION = '2.4';\n");
+writeFileSync(join(TC, 'NOTES.md'), '# Notes\n\nМы строим KAIF и Acme Space 2.0 вместе.\n');   // the product's version beside the framework's word
+writeFileSync(join(TC, 'RULES.md'), '# Rules\n\nThe rule arrived with this release (KAIF 2.6; origin issue #52; the\nfield owner asked for it) and stays.\n');   // a wrapped attribution
+// three shapes the functional run on real trees taught (SC2, 2026-09-26): the release's codename BEFORE the word is no other name;
+// a second framework word on the line is judged on its own (the first used to swallow it); an XML `version="1.0"` is no pin
+writeFileSync(join(TC, 'DEPLOYED.md'), '# Deployed\n\nЗдесь развёрнута версия **2.1 «Strong KAIF»**.\n');
+writeFileSync(join(TC, 'SEE.md'), '# See\n\nSee docs/kaif-notes: KAIF 2.2 is deployed here.\n');
+writeFileSync(join(TC, 'tools', 'kaif-sheet.mjs'), "// draws the KAIF sheet\nwriteFileSync(out, '<?xml version=\"1.0\" encoding=\"UTF-8\"?>');\n");
+r = run(TC, `update --source ${SRC99}`);
+ok(r.code === 0, 'C update →9.9 exit 0', r.out.slice(-300));
+item = staleItem(TC);
+const kfLine = readFileSync(join(TC, 'KAIF_FRAMEWORK.md'), 'utf8').split('\n').findIndex((l) => l === C1) + 1;
+ok(item.includes(`KAIF_FRAMEWORK.md:${kfLine} — ${C1}`) && item.includes('(asserts 2.1)'), 'C1 (#75): строка записи о развёртывании с датой ВНУТРИ скобки названа (asserts 2.1)', item.split('\n').filter((l) => /KAIF_FRAMEWORK/.test(l)).join(' | ').slice(0, 300));
+ok(/tools\/kaif-gate\.mjs:2 — const EXPECTED_VERSION = '2\.4';/.test(item), 'C2 (#91): пин версии в скрипте проекта назван словарём кода (EXPECTED_VERSION)', item.split('\n').filter((l) => /kaif-gate/.test(l)).join(' | ') || item.slice(0, 300));
+ok(!item.includes('NOTES.md'), 'C3 (N3): «KAIF и Acme Space 2.0» — версия продукта, НЕ заявление о KAIF', item.split('\n').filter((l) => /NOTES/.test(l)).join(' | '));
+ok(!item.includes('RULES.md'), 'C4 (N4): атрибуция в скобке, перенесённой на вторую строку, НЕ заявление (обе строки)', item.split('\n').filter((l) => /RULES/.test(l)).join(' | '));
+ok(item.includes('DEPLOYED.md:3'), 'C5: «2.1 «Strong KAIF»» — кодовое имя перед словом KAIF не чужое имя: заявление названо', item.split('\n').filter((l) => /DEPLOYED/.test(l)).join(' | ') || item.slice(0, 200));
+ok(item.includes('SEE.md:3'), 'C6: второе слово KAIF в строке судится само (первое, «docs/kaif-notes», его не глотает)', item.split('\n').filter((l) => /SEE\.md/.test(l)).join(' | ') || item.slice(0, 200));
+ok(!item.includes('kaif-sheet.mjs'), 'C7: `version="1.0"` в XML — не пин версии KAIF', item.split('\n').filter((l) => /kaif-sheet/.test(l)).join(' | '));
 
 console.log(failures ? `\n❌ s29: ${failures} red` : '\n✅ s29: all green');
 process.exit(failures ? 1 : 0);
