@@ -10,9 +10,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 const SRC = 'framework/tools/contour';
 const M = [
-  ['matcher finds nothing', "  return pendingDocs(root).filter((d) => d.questions > 0 && d.unanswered === 0 && d.implementedOpen.length === 0)", "  return pendingDocs(root).filter(() => false)", 'the agent\'s debt named FIRST'],
+  ['canonical matcher finds nothing', "  const canon = pendingDocs(root).filter((d) => d.questions > 0 && d.unanswered === 0 && d.implementedOpen.length === 0).map((d) => d.doc);", "  const canon = [];", 'the agent\'s debt named FIRST'],
   ['stale silent again', "  for (const d of stale) lines.push('! ' + t.list.stale(d.doc, d.days, STALE_QUEUE_DAYS, CLI_NAME));", "", 'a stale queue document is NAMED'],
   ['queue read without its shape check', "return Array.isArray(v) ? v : []; }", "return v; }", ['a queue file of another shape', 'a write into the foreign queue is REFUSED']],   // the write path reads the object too
+  ['status-block words ignored', "    .filter((rel) => statusBlockAwaitsApplication(readFileSync(resolve(root, rel), 'utf8'))) : [];", "    .filter(() => false) : [];", 'the field form'],
   ['write over a foreign queue', "  if (queueShape(root, cfg) === 'foreign') throw new ForeignQueueError(", "  if (false) throw new ForeignQueueError(", 'a write into the foreign queue is REFUSED'],
 ];
 let bad = 0;

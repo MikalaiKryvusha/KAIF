@@ -25,6 +25,8 @@
 export const PARSER = {
   // option letters in list form `- **A)** …` and table form `| **A** | … |`
   letters: 'A-ZА-Я',
+  // OW3 (2.8, #86): the words by which a document's STATUS BLOCK says its answers await application — the field's own proven matcher
+  awaitingApplication: 'awaiting application|ждут\\s+внесения|ждёт\\s+внесения|ждет\\s+внесения',
   // question heading prefixes: `### Q1.` (EN) · `### В1.` (RU)
   questionPrefixes: 'Q|В',
   // a heading that LOOKS like a question but is not in the form above (QL1, origin #56): `### Question 3` · `### Вопрос 3`

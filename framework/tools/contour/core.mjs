@@ -140,6 +140,18 @@ const STATUS_CLOSED_RE = new RegExp(PARSER.statusClosed, 'iu');
 const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
 
+// OW3 (2.8, origin issue #86): the whole STATUS BLOCK — the status line and the quote lines that continue it — says the answers await
+// application. A field marks it on a continuation line under a ticked "answered" (its S1: an 11-day-old decision stayed invisible);
+// the canonical sign (every question answered, the status not closed) misses that form, so the debt view reads both.
+const AWAITING_APPLICATION_RE = new RegExp(PARSER.awaitingApplication, 'iu');
+export function statusBlockAwaitsApplication(md) {
+  const lines = normalize(md).split('\n').slice(0, HEAD_LINES);
+  const at = lines.findIndex((l) => STATUS_LINE_RE.test(l));
+  if (at < 0) return false;
+  const block = [lines[at]];
+  for (let i = at + 1; i < lines.length && /^\s*>/.test(lines[i]) && !STATUS_LINE_RE.test(lines[i]) && !/^\s*>\s*\*{0,2}[\p{L} ]{2,30}:\*{0,2}/u.test(lines[i].replace(/^\s*>\s*·\s*/, '> ')); i++) block.push(lines[i]);
+  return AWAITING_APPLICATION_RE.test(block.join(' '));
+}
 export function docStatus(md) {
   const head = normalize(md).split('\n').slice(0, HEAD_LINES).join('\n');
   const m = head.match(STATUS_LINE_RE);

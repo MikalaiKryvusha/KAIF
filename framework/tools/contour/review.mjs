@@ -48,6 +48,7 @@ import {
   docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
+  statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -337,16 +338,21 @@ export function implementedGate(root) {
 // found an 11-day-old decision of his unapplied himself: a view folded old answers into one counter behind a date. Here it is named,
 // with the days since the answer, with NO date cutoff — and first in the list, ahead of the owner's queue.
 // [TESTED: 2026-09-25 18:26 +03:00 · selftest (debt named first with the age since the answer; a stale document named), s22 on the deployed copy, red on the
-//  2.7 core, mutants «matcher finds nothing» · «stale silent again»; on a clone of the #86 field deployment the section is EMPTY — that field
-//  marks «answered, not applied» with a closing tick, the view reads the canon form only (GAP, next step in plans/119 OW3); report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
+//  2.7 core, mutants «canonical matcher finds nothing» · «stale silent again» · «status-block words ignored»; corrected 2026-09-25 18:52 +03:00: the first
+//  edition was blind to the #86 field's form (a ticked status, «awaiting application» on a continuation line) — after the FORK B finish the
+//  field clone at its S1-era state names the #86 decision «answered 17 d ago»; report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
 export function answeredAgeDays(root, rel, now = new Date()) {
   let at = NaN;
   try { at = Date.parse(JSON.parse(readFileSync(decisionPaths(root, rel).decision, 'utf8')).at); } catch { at = NaN; }
   return Number.isNaN(at) ? queueDocAgeDays(root, rel, now) : Math.max(0, Math.floor((now.getTime() - at) / DAY_MS));
 }
 export function awaitingApplication(root, now = new Date()) {
-  return pendingDocs(root).filter((d) => d.questions > 0 && d.unanswered === 0 && d.implementedOpen.length === 0)
-    .map((d) => ({ ...d, days: answeredAgeDays(root, d.doc, now) }))
+  const canon = pendingDocs(root).filter((d) => d.questions > 0 && d.unanswered === 0 && d.implementedOpen.length === 0).map((d) => d.doc);
+  // the field's form (FORK B of plans/119 OW3): the status block itself says the answers await application — read from each interview
+  const ivDir = resolve(root, 'interviews');
+  const said = existsSync(ivDir) ? readdirSync(ivDir).filter((x) => /^interview_\d+.*\.md$/.test(x)).map((f) => 'interviews/' + f)
+    .filter((rel) => statusBlockAwaitsApplication(readFileSync(resolve(root, rel), 'utf8'))) : [];
+  return [...new Set([...canon, ...said])].map((doc) => ({ doc, days: answeredAgeDays(root, doc, now) }))
     .sort((a, b) => b.days - a.days || a.doc.localeCompare(b.doc));
 }
 
@@ -1635,6 +1641,13 @@ export function selftest(log = console.log) {
     'answered, status not closed → the agent\'s debt named FIRST with its age since the answer (11 d), no date cutoff (#86)');
   ok(lq3.stale.some((d) => d.doc === OLD) && lq3.lines.some((l) => l.includes(OLD) && l.startsWith('! ')), 'a stale queue document is NAMED in the list without a browser, never silent (#86)');
   rmSync(join(root, DEBT), { force: true }); rmSync(dp.decision, { force: true });
+  // the field's form (#86 S1): a ticked «answered» status whose continuation line says the answers await application, question headings the
+  // canon parser does not read — named all the same (FORK B of plans/119 OW3: the field's own proven matcher reads the status block)
+  const FIELD = 'interviews/interview_004_field_form.md';
+  writeFileSync(join(root, FIELD), '# Interview #004\n\n> **Status:** ✅ answered by the owner 2026-08-20 (both fields).\n> · **AWAITING APPLICATION**: the plane is populated only by its own kind.\n\n### A1. The plane?\n\n**Answer:** A\n');
+  const lq4 = listQueue(root, { now });
+  ok(lq4.awaiting.some((d) => d.doc === FIELD) && lq4.lines.some((l) => l.includes(FIELD)), 'the field form — a ticked status whose status block says «awaiting application» — named as the agent\'s debt (#86, FORK B)');
+  rmSync(join(root, FIELD), { force: true });
 
   // the call phrase names the class and the numbers; the owner is addressed by callName
   ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
