@@ -47,7 +47,7 @@ const MOD = join(P, '.kaif', 'tools', 'kaif-ranking-lint.mjs');
 ok(existsSync(MOD), 's23 A: модуль приехал установкой');
 let r = runLint(P, ['selftest']);
 ok(r.code === 0 && /selftest OK/.test(r.out), 's23 A: selftest зелёный', r.out);
-ok(/#53 fixture[^\n]*RED/.test(r.out) && /7 rules × 2 languages/.test(r.out), 's23 A: selftest называет фикстуру #53 красной и семь правил × два языка', r.out);
+ok(/#53 fixture[^\n]*RED/.test(r.out) && /9 rules × 2 languages/.test(r.out), 's23 A: selftest называет фикстуру #53 красной и девять правил × два языка (два правила долга перед владельцем — OW3 2.8)', r.out);
 
 // ---------------------------------------------------------------- B: черновик из инцидента #53 → exit 1; исправленный → 0; чужой → 3
 console.log('\n=== s23 B: черновик #53 красный, исправленный зелёный, чужой документ SKIPPED ===');
@@ -61,7 +61,7 @@ writeFileSync(join(P, 'drafts', 'what-next-53.md'), [
 ].join('\n'));
 r = runLint(P, ['check', 'drafts/what-next-53.md']);
 ok(r.code === 1, 's23 B: черновик #53 → exit 1', 'exit ' + r.code + ': ' + r.out.slice(-300));
-for (const id of ['no-metric', 'no-main-phase', 'recency-first', 'no-shelf', 'no-debt'])
+for (const id of ['no-metric', 'no-main-phase', 'recency-first', 'no-shelf', 'no-debt', 'no-owner-debt'])
   ok(new RegExp('— ' + id + ':').test(r.out), 's23 B: находка «' + id + '» названа', r.out.slice(-400));
 writeFileSync(join(P, 'drafts', 'what-next-fixed.md'), [
   '# Что дальше', '',
@@ -72,10 +72,29 @@ writeFileSync(join(P, 'drafts', 'what-next-fixed.md'), [
   '| 2. Верификация Яндекса | критерий 5 | — | 0,25 чата |',
   '| 3. Каталог: пустые карточки | — | bugs/30 | 0,5 чата |', '',
   'Свежие слова владельца — не ранжированы метрикой (→ /fix-vision): «MVP мессенджера» (сегодня), «перепись условий» (вчера).',
-  'Техдолг: открытых багов 87 · красных 30 · разъехавшихся пар 0.', '',
+  'Техдолг: открытых багов 87 · красных 30 · разъехавшихся пар 0.',
+  'Долг перед владельцем: нет.', '',
 ].join('\n'));
 r = runLint(P, ['check', 'drafts/what-next-fixed.md']);
 ok(r.code === 0 && /ranking-lint OK/.test(r.out), 's23 B: исправленный ответ → exit 0', r.out.slice(-300));
+// OW3 (2.8, #86 S1): долг перед владельцем назван — строка 1 обязана закрыть его; решение, ответ на которое пролежал 11 дней за планом, — форма #86
+const debtDraft = (row1Closes) => [
+  '# Что дальше', '',
+  'METRIC: критерии приёмки главной фазы закрыты 9 из 15 (2026-09-25)',
+  'MAIN PHASE: Фаза 2 — Охват (v2)', '',
+  '| шаг | moves | closes | трудоёмкость |', '|---|---|---|---|',
+  '| 1. Серия трафика: индексация каталога | критерий 3 (Каталог) | ' + row1Closes + ' | 0,5 чата |',
+  '| 2. Внести решение владельца о плане Анлим | — | интервью №066 В1 | 0,25 чата |', '',
+  'Свежие слова владельца — не ранжированы метрикой (→ /fix-vision): нет.',
+  'Техдолг: открытых багов 87 · красных 30 · разъехавшихся пар 0.',
+  'Долг перед владельцем: интервью №066 В1 (отвечено 11 дн. назад, ждёт внесения).', '',
+].join('\n');
+writeFileSync(join(P, 'drafts', 'what-next-debt.md'), debtDraft('bugs/12'));
+r = runLint(P, ['check', 'drafts/what-next-debt.md']);
+ok(r.code === 1 && /— owner-debt-not-first:/.test(r.out), 's23 B: долг перед владельцем назван, строка 1 его не закрывает → exit 1, «owner-debt-not-first» (OW3, #86)', r.out.slice(-300));
+writeFileSync(join(P, 'drafts', 'what-next-debt.md'), debtDraft('bugs/12 · интервью №066 В1'));
+r = runLint(P, ['check', 'drafts/what-next-debt.md']);
+ok(r.code === 0 && /ranking-lint OK/.test(r.out), 's23 B: строка 1 закрывает долг перед владельцем → exit 0 (OW3)', r.out.slice(-300));
 writeFileSync(join(P, 'drafts', 'plan.md'), '# План\n\nПроза без ответа /what-next.\n\n| a | b |\n|---|---|\n| 1 | 2 |\n');
 r = runLint(P, ['check', 'drafts/plan.md']);
 ok(r.code === 3 && /SKIPPED/.test(r.out), 's23 B: документ без ответа → SKIPPED (exit 3), не «чисто»', 'exit ' + r.code + ': ' + r.out.slice(-200));

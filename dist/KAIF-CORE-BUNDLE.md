@@ -1885,6 +1885,21 @@ Two caps that keep the protection layer from becoming the project's main source 
 
 ---
 
+## The owner's debt comes first — a bug he flagged, a decision he answered
+
+An owner's answered decision once waited eleven days behind planned work; he found it unapplied himself, mid-game (origin issue #86).
+The field owner's words, rendered from Russian (quoted in that issue): "the calendar says September 19; I decided on the 8th — what were you doing
+for 11 days?" The canon ranked WORK by the metric and the plan, and nothing said that DEBT preempts them. Four steps:
+
+1. **A bug the owner flagged and a decision he answered but you have not applied are job number one** — ahead of the plan and the
+   metric. The task in flight goes to its nearest clean cut (a green commit), then the debt.
+2. **"Apply it together with X" never parks the decision in X's queue** — raise X with it, or apply the decision alone.
+3. **Filing a bug is fixing it in the same move — or writing when:** `Fixing: <this session | after <commit or plan step>>` in the
+   bug document; "later" without an address is not a plan.
+4. **Where the debt is seen:** `node .kaif/tools/contour/review.mjs --queue --list` names his decisions awaiting application FIRST,
+   with their age and no date cutoff; `/what-next` carries the "Owner debt:" line and its row 1 closes it
+   (`node .kaif/tools/kaif-ranking-lint.mjs check <draft>`); `/resume` step 2 takes the debt above everything.
+
 ## Instrumentation — build a test harness, don't guess
 
 The single biggest force multiplier for autonomous debugging is a **harness**: tooling that lets the
@@ -8632,6 +8647,8 @@ line of every waiting document — and the same exit condition.
 
 Pick a single direction for this session. Priority (descending):
 
+0. **The owner's debt** — his decisions awaiting application (the first section of the queue command of step 1b) and the bugs
+   he flagged come before everything below (`BUG_FIXING_FRAMEWORK.md` → "The owner's debt comes first"; KAIF 2.8, origin issue #86).
 1. **Open bugs with real symptoms** — if `STATUS.md` lists an open bug with reproducible symptoms, it's
    priority #1. Work by `BUG_FIXING_FRAMEWORK.md`.
 2. **Next item from the `STATUS.md` "where to continue" checklist** — if bugs are clear.
@@ -9598,7 +9615,7 @@ priority claim by itself — a fresh incident earns its rank by the metric, not 
 ### Step 3. Answer in chat — in the FIXED FORM (KAIF 2.6, origin issue #53)
 The rule "the newest pain is not a priority claim" stood here as prose, and a field agent quoted it and
 broke it in the same answer. Prose does not rank; the form does. The answer OPENS with two lines read
-from the documents, never from memory, then the table, then two mandatory lines:
+from the documents, never from memory, then the table, then three mandatory lines:
 
 ```
 METRIC: <the main phase's acceptance metric — criteria closed k of n, read from MASTER_PLAN.md / the active plan, with its date>
@@ -9610,17 +9627,23 @@ MAIN PHASE: <the phase MASTER_PLAN.md marks as the main one now; no mark → the
 
 Fresh owner words — not ranked by the metric (→ /fix-vision): <words of the last 48 h not yet in GOAL/MASTER_PLAN, or "none">
 Tech debt: open bugs N · red M · drifted pairs K
+Owner debt: <interview #NNN QN answered, awaiting application · bugs/NN the owner flagged — or "none">
 ```
 Rules of the table: every row carries `moves` (or `—`) and `closes`; a row with `moves: —` and an empty
 `closes` NEVER stands above a row that has at least one — and row 1 in particular moves the metric or
 closes something. A fresh word of the owner earns its rank by the metric, not by its date: until
 `/fix-vision` puts it into GOAL/MASTER_PLAN it sits on the shelf — visible, recorded, NOT ranked. The
-debt line is always there (count the open bugs, the red ones, the drifted registry pairs). Then:
+debt line is always there (count the open bugs, the red ones, the drifted registry pairs). **The owner-debt line comes first in the
+ranking (KAIF 2.8, origin issue #86 — an answered decision waited 11 days behind planned work):** his decisions awaiting application
+(the first section of `node .kaif/tools/contour/review.mjs --queue --list`, named with their age, no date cutoff) and the bugs he
+flagged; when it names any, ROW 1 closes one of them (`closes: interview #NNN QN · bugs/NN`) — debt preempts the plan and the metric;
+a debt is not a fresh word, so the shelf rule above does not apply to it. Then:
 1. **The ONE next step** — row 1, and *why it is next* (tie it to GOAL/MASTER_PLAN).
 2. **2–4 runner-ups** — the rest of the table, one line each.
 3. **Blocked on the owner** — open interviews/homework, if any.
 Lint the draft BEFORE printing it: `node .kaif/tools/kaif-ranking-lint.mjs check <draft.md>` — exit 1 names
-what is missing (no METRIC:, a fresh word on row 1, no shelf, no debt line); exit 3 means it saw no answer.
+what is missing (no METRIC:, a fresh word on row 1, no shelf, no debt line, no owner-debt line, an owner's debt row 1 does not
+close); exit 3 means it saw no answer.
 
 ### Step 4. Offer to start
 Offer to begin the top step immediately; on the owner's confirmation (or in an autonomous loop) — start.
@@ -10917,6 +10940,7 @@ import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
+  decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -11068,8 +11092,21 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
 }
 
 // ── The queue (I7): a state file; living documents stay where they are ───────────────────────
-export function readQueue(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), QUEUE_FILE), []); }
+// OW7 (2.8, epic OW; origin issue #100): the queue file of ANOTHER shape — a project's own, earlier contour keeps `{ items: [...] }` under
+// the same name — reads as no items of THIS contour (the living documents are still scanned in interviews/), is announced in one line, and
+// is NEVER written: "foreign reads as empty" alone would turn --enqueue and the notice mark into an overwrite of the project's queue.
+// [TESTED: 2026-09-25 18:26 +03:00 · selftest and s22 (`{"items":[]}` → the one line, exit not 1; --enqueue refused, the file byte for byte), red on the 2.7
+//  core, mutants «read without the shape check» · «write over a foreign queue»; on a clone of the #86 field deployment: exit 0, the line,
+//  no trace (was: TypeError); report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
+export function queueShape(root, cfg = cfgOf(root)) {
+  const p = join(decisionsAbs(root, cfg), QUEUE_FILE);
+  if (!existsSync(p)) return 'none';
+  return Array.isArray(readJsonOr(p, undefined)) ? 'ours' : 'foreign';   // unreadable JSON is foreign too: never overwritten
+}
+export class ForeignQueueError extends Error {}
+export function readQueue(root, cfg = cfgOf(root)) { const v = readJsonOr(join(decisionsAbs(root, cfg), QUEUE_FILE), []); return Array.isArray(v) ? v : []; }
 export function writeQueue(root, items, cfg = cfgOf(root)) {
+  if (queueShape(root, cfg) === 'foreign') throw new ForeignQueueError(T(cfg).list.foreignWrite(cfg.decisionsDir + '/' + QUEUE_FILE));
   mkdirSync(decisionsAbs(root, cfg), { recursive: true });
   writeFileSync(join(decisionsAbs(root, cfg), QUEUE_FILE), JSON.stringify(items, null, 2) + '\n', 'utf8');
 }
@@ -11188,6 +11225,24 @@ export function implementedGate(root) {
   return pendingDocs(root).filter((d) => d.implementedOpen.length > 0 && d.unanswered === 0).map((d) => ({ doc: d.doc, line: t.impl.gate(d.doc, d.implementedOpen) }));
 }
 
+// OW3 (2.8, epic OW; origin issue #86, S1): the AGENT's debt — a document whose every question is answered while its status is not
+// closed (the /interview canon closes the status LAST, after the propagation, so this state IS "answered, not applied"). A field owner
+// found an 11-day-old decision of his unapplied himself: a view folded old answers into one counter behind a date. Here it is named,
+// with the days since the answer, with NO date cutoff — and first in the list, ahead of the owner's queue.
+// [TESTED: 2026-09-25 18:26 +03:00 · selftest (debt named first with the age since the answer; a stale document named), s22 on the deployed copy, red on the
+//  2.7 core, mutants «matcher finds nothing» · «stale silent again»; on a clone of the #86 field deployment the section is EMPTY — that field
+//  marks «answered, not applied» with a closing tick, the view reads the canon form only (GAP, next step in plans/119 OW3); report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
+export function answeredAgeDays(root, rel, now = new Date()) {
+  let at = NaN;
+  try { at = Date.parse(JSON.parse(readFileSync(decisionPaths(root, rel).decision, 'utf8')).at); } catch { at = NaN; }
+  return Number.isNaN(at) ? queueDocAgeDays(root, rel, now) : Math.max(0, Math.floor((now.getTime() - at) / DAY_MS));
+}
+export function awaitingApplication(root, now = new Date()) {
+  return pendingDocs(root).filter((d) => d.questions > 0 && d.unanswered === 0 && d.implementedOpen.length === 0)
+    .map((d) => ({ ...d, days: answeredAgeDays(root, d.doc, now) }))
+    .sort((a, b) => b.days - a.days || a.doc.localeCompare(b.doc));
+}
+
 export function listQueue(root, { now = new Date(), includeStale = false } = {}) {
   const t = T(cfgOf(root));
   const shown = readShown(root);
@@ -11208,7 +11263,13 @@ export function listQueue(root, { now = new Date(), includeStale = false } = {})
   }
   const implGate = implementedGate(root); // I45: implemented-but-open is a gate of the same class as never-shown
   for (const g of implGate) lines.push('🔴 ' + g.line);
-  return { docs, never, lines, implGate, exitCode: never.length || implGate.length ? EXIT_NEVER_SHOWN : 0 };
+  // #86: a stale queue document is NAMED — it left the owner's showcase (I39), it never leaves the agent's sight
+  const stale = includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true, now }), now);
+  for (const d of stale) lines.push('! ' + t.list.stale(d.doc, d.days, STALE_QUEUE_DAYS, CLI_NAME));
+  if (queueShape(root) === 'foreign') lines.push('ℹ ' + t.list.foreign(cfgOf(root).decisionsDir + '/' + QUEUE_FILE)); // OW7 (#100): one line, no trace
+  const awaiting = awaitingApplication(root, now); // #86: the agent's debt — FIRST, by name, no date cutoff
+  const head = awaiting.length ? ['🔴 ' + t.list.awaiting(awaiting.length), ...awaiting.map((a) => '   ' + a.doc + ' — ' + t.list.answered(a.days))] : [];
+  return { docs, never, lines: [...head, ...lines], implGate, awaiting, stale, exitCode: never.length || implGate.length ? EXIT_NEVER_SHOWN : 0 };
 }
 
 // ── Building pages (I1: only from documents) ──────────────────────────────────────────────────
@@ -12443,6 +12504,30 @@ export function selftest(log = console.log) {
   writeFileSync(join(root, OLD), '# Interview #002\n\n> Status: awaiting\n> Created: 2026-01-01\n\n### Q1. Q?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
   ok(queueDocAgeDays(root, OLD, now) > STALE_QUEUE_DAYS && !ownerDocs(root, { now }).some((d) => d.doc === OLD) && ownerDocs(root, { now, includeStale: true }).some((d) => d.doc === OLD),
     'stale queue position leaves the owner\'s showcase; --include-stale brings it back on purpose (I39)');
+  // OW7 (2.8, #100): a queue file of another shape — read as no items with one line, never written (the project's file byte for byte)
+  const qf = join(decisionsAbs(root), QUEUE_FILE);
+  const ourQueue = existsSync(qf) ? readFileSync(qf) : null;
+  const FOREIGN_Q = '{"items":[{"doc":"interviews/interview_002_old.md","queued":"2026-09-05T06:45:00.000Z"}]}\n';
+  writeFileSync(qf, FOREIGN_Q);
+  let lqF = null, thrown = null;
+  try { lqF = listQueue(root, { now }); } catch (e) { thrown = e; }
+  ok(!thrown && queueShape(root) === 'foreign' && lqF.lines.some((l) => l.startsWith('ℹ ') && l.includes(QUEUE_FILE)), 'a queue file of another shape: the list prints one line about the project\'s own queue, no TypeError (OW7, #100)');
+  let refused = false;
+  try { enqueue(root, 'interviews/interview_002_old.md'); } catch (e) { refused = e instanceof ForeignQueueError; }
+  ok(refused && readFileSync(qf, 'utf8') === FOREIGN_Q, 'a write into the foreign queue is REFUSED and the project\'s file stays byte for byte (OW7 twin)');
+  if (ourQueue) writeFileSync(qf, ourQueue); else rmSync(qf, { force: true });
+  // #86 (2.8, OW3): the agent's debt — every question answered, the status not closed — named FIRST with the age since the answer and
+  // NO date cutoff (the document itself is older than the stale threshold); a stale queue document is named in the list, never silent.
+  const DEBT = 'interviews/interview_003_answered.md';
+  writeFileSync(join(root, DEBT), '# Interview #003\n\n> Status: awaiting\n> Created: 2026-08-01\n\n### Q1. Q?\n\n- **A)** one\n- **B)** two\n\n**Answer:** A\n');
+  const dp = decisionPaths(root, DEBT);
+  mkdirSync(resolve(dp.decision, '..'), { recursive: true });
+  writeFileSync(dp.decision, JSON.stringify({ kind: 'interview', document: DEBT, at: new Date(now.getTime() - 11 * DAY_MS).toISOString(), answers: { Q1: { choice: 'A' } } }));
+  const lq3 = listQueue(root, { now });
+  ok(lq3.awaiting.some((d) => d.doc === DEBT && d.days === 11) && lq3.lines[0].startsWith('🔴') && lq3.lines.some((l) => l.includes(DEBT) && l.includes(texts('en').list.answered(11))),
+    'answered, status not closed → the agent\'s debt named FIRST with its age since the answer (11 d), no date cutoff (#86)');
+  ok(lq3.stale.some((d) => d.doc === OLD) && lq3.lines.some((l) => l.includes(OLD) && l.startsWith('! ')), 'a stale queue document is NAMED in the list without a browser, never silent (#86)');
+  rmSync(join(root, DEBT), { force: true }); rmSync(dp.decision, { force: true });
 
   // the call phrase names the class and the numbers; the owner is addressed by callName
   ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
@@ -12496,7 +12581,9 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   if (args.includes('--selftest')) { selftest(); process.exit(0); }
   if (args.includes('--enqueue')) {
     if (!docPath) usage();
-    const items = enqueue(root, docPath, { kind: asNotice ? KIND_NOTICE : 'question' });
+    let items;
+    try { items = enqueue(root, docPath, { kind: asNotice ? KIND_NOTICE : 'question' }); }
+    catch (e) { if (e instanceof ForeignQueueError) { console.log('✖ ' + e.message); process.exit(1); } throw e; }
     console.log('Queued: ' + items.length + ' position(s)' + (asNotice ? ' (notice)' : '') + ' — shown as a batch by: ' + CLI_NAME + ' --queue');
     process.exit(0);
   }
@@ -12737,7 +12824,12 @@ const EN = {
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
     gate: (n) => 'GATE (I42): never shown — ' + n + '. Printing the queue is not delivering the question; showing is the agent\'s action.',
     how: (cmd) => 'Raise it as a page: ' + cmd + ' --queue · asked it pointedly in chat — record the fact: ' + cmd + ' --mark-shown <doc> --transport chat',
-    dead: 'A dead document with nothing to show → close it by status and it leaves the queue.' },
+    dead: 'A dead document with nothing to show → close it by status and it leaves the queue.',
+    awaiting: (n) => 'OWNER DECISIONS AWAIT APPLICATION — ' + n + ': every question answered, the status not closed. Apply them FIRST, ahead of the plan (#86), then close the status.',
+    answered: (d) => 'answered ' + d + ' d ago',
+    foreign: (f) => 'the project keeps its own queue: ' + f + ' is not this contour\'s shape — read as no items here and never written; its waiting documents are raised by the project\'s own contour (see HOUSE_RULES.md), the interviews are still scanned',
+    foreignWrite: (f) => 'not written: ' + f + ' is the project\'s own queue (another shape) — this contour never overwrites it; raise the document with the project\'s own contour',
+    stale: (doc, d, lim, cmd) => 'stale in the queue (' + d + ' d > ' + lim + '): ' + doc + ' — not in the list above; close it by status or show it on purpose: ' + cmd + ' --queue --include-stale' },
   transport: { page: 'page', batch: 'batch', chat: 'chat' },
   // the FOURTH fact — implemented (2.7 QL2, origin issue #54: an already-implemented question was raised again and produced a false second decision)
   impl: {
@@ -12827,7 +12919,12 @@ const RU = {
     never: 'НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует', empty: 'Очередь владельца пуста — ждущих документов нет.',
     gate: (n) => 'ГЕЙТ (I42): ни разу не показанных — ' + n + '. Напечатать очередь ≠ донести вопрос; показ — действие агента.',
     how: (cmd) => 'Подними страницей: ' + cmd + ' --queue · задал точечно в чате — запиши факт: ' + cmd + ' --mark-shown <док> --transport чат',
-    dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.' },
+    dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.',
+    awaiting: (n) => 'РЕШЕНИЯ ВЛАДЕЛЬЦА ЖДУТ ВНЕСЕНИЯ — ' + n + ': все вопросы отвечены, статус не закрыт. Внеси их ПЕРВЫМИ, раньше плана (#86), затем закрой статус.',
+    answered: (d) => 'отвечено ' + d + ' дн. назад',
+    foreign: (f) => 'очередь у проекта своя: ' + f + ' — не той формы, что у этого контура; здесь читается как пустая и никогда не пишется; её документы поднимает свой контур проекта (см. HOUSE_RULES.md), интервью сканируются как прежде',
+    foreignWrite: (f) => 'не записано: ' + f + ' — своя очередь проекта (другой формы); этот контур её никогда не перезаписывает — подними документ своим контуром проекта',
+    stale: (doc, d, lim, cmd) => 'протух в очереди (' + d + ' дн. > ' + lim + '): ' + doc + ' — в списке выше его нет; закрой статусом или покажи намеренно: ' + cmd + ' --queue --include-stale' },
   transport: { page: 'страница', batch: 'пачка', chat: 'чат' },
   impl: {
     marked: (doc, q, where, file) => 'Факт «внесено» записан (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,
@@ -14476,6 +14573,10 @@ function cmdAccept() {
 //   <shelf line>  "Fresh owner words — not ranked by the metric" / «Свежие слова владельца — не ранжированы
 //                 метрикой» (+ pointer to /fix-vision); may say "none" — but the shelf EXISTS;
 //   <debt line>   "Tech debt:" / «Техдолг:» with at least one number (open bugs · red · drifted pairs).
+//   <owner debt>  "Owner debt:" / «Долг перед владельцем:» (2.8, epic OW, OW3; origin issue #86, S1 — an owner's answered decision
+//                 waited 11 days behind planned work): the owner's decisions awaiting application (`interview #NNN QN`) and the bugs he
+//                 flagged (`bugs/NN`) — or "none". When it names any, ROW 1 closes one of them: debt preempts the plan; the #53 rule
+//                 (a fresh word is ranked by the metric) is untouched — a debt is not a fresh word.
 //
 // Boundaries, so the linter never becomes bureaucracy (same as kaif-scenario-lint):
 //   · keywords are a per-language table — a project adds a row; rules are DATA;
@@ -14504,14 +14605,18 @@ const DASH = /^\s*(?:—|-|–|none|нет)?\s*$/i;   // an empty `moves` / `clo
 // Keywords per language — the form's anchors. Latin anchors (METRIC:, MAIN PHASE:, moves, closes) are the
 // same in every language: they are the machine half of the form, the owner reads the table cells.
 export const KEYWORDS = {
-  en: { shelf: 'Fresh owner words', debt: 'Tech debt', fixVision: '/fix-vision' },
-  ru: { shelf: 'Свежие слова владельца', debt: 'Техдолг', fixVision: '/fix-vision' },
+  en: { shelf: 'Fresh owner words', debt: 'Tech debt', ownerDebt: 'Owner debt', fixVision: '/fix-vision' },
+  ru: { shelf: 'Свежие слова владельца', debt: 'Техдолг', ownerDebt: 'Долг перед владельцем', fixVision: '/fix-vision' },
 };
 const METRIC_RE = /^\s*\**METRIC:\**\s*(.*)$/i;
 const PHASE_RE = /^\s*\**MAIN PHASE:\**\s*(.*)$/i;
 const HEADER_RE = /^\s*\|.*\bmoves\b.*\|.*\bcloses\b.*\|/i;
 const SEP_RE = /^\s*\|(\s*:?-{2,}:?\s*\|)+\s*$/;
 const shelfRe = () => new RegExp('(' + Object.values(KEYWORDS).map((k) => k.shelf).join('|') + ')', 'i');
+const ownerDebtRe = () => new RegExp('^\\s*\\**(?:' + Object.values(KEYWORDS).map((k) => k.ownerDebt).join('|') + ')\\**\\s*:', 'i');
+// A debt item, normalised to one key in both languages: `interview #066 Q1` / «интервью №066 В1» → iv66q1 · `bugs/12` → bug12.
+export const debtItems = (s) => [...String(s || '').matchAll(/(?:interview|\u0438\u043d\u0442\u0435\u0440\u0432\u044c\u044e)\s*[#\u2116]?\s*0*(\d+)\s*,?\s*(?:Q|\u0412)(\d+)|bugs\/0*(\d+)/giu)]
+  .map((m) => (m[3] ? 'bug' + m[3] : 'iv' + m[1] + 'q' + m[2]));
 const debtRe = () => new RegExp('^\\s*\\**(?:' + Object.values(KEYWORDS).map((k) => k.debt).join('|') + ')\\**\\s*:', 'i');
 
 // ---------------------------------------------------------------------------
@@ -14548,6 +14653,7 @@ export function parseAnswer(src) {
     table: hIdx >= 0, tableLine: hIdx >= 0 ? visible[hIdx].n : null, rows,
     shelf: visible.some((v) => shelfRe().test(v.t)),
     debt: visible.find((v) => debtRe().test(v.t)) || null,
+    ownerDebt: visible.find((v) => ownerDebtRe().test(v.t)) || null,
   };
 }
 
@@ -14569,6 +14675,11 @@ export const RULES = [
     test: (a) => !a.shelf },
   { id: 'no-debt', msg: 'no "Tech debt:" line with numbers (open bugs · red · drifted pairs)',
     test: (a) => !a.debt || !/\d/.test(a.debt.t) },
+  { id: 'no-owner-debt', msg: 'no "Owner debt:" line — the owner\'s decisions awaiting application and the bugs he flagged (may say "none")',
+    test: (a) => !a.ownerDebt },
+  { id: 'owner-debt-not-first', msg: 'the owner\'s debt is named, and row 1 closes none of it — debt preempts the plan (#86)',
+    // an empty row 1 is recency-first's finding — this axis judges a row 1 that carries SOMETHING else than the debt
+    test: (a) => { const items = a.ownerDebt ? debtItems(a.ownerDebt.t) : []; return items.length > 0 && a.rows.length > 0 && carries(a.rows[0]) && !debtItems(a.rows[0].closes).some((k) => items.includes(k)); } },
 ];
 export const RULE_IDS = RULES.map((r) => r.id);
 
@@ -14606,26 +14717,28 @@ const CLEAN = {
     'MAIN PHASE: Phase 2 — Reach (v2), marked as the main one now in MASTER_PLAN.md',
     '',
     '| step | moves | closes | effort |', '|---|---|---|---|',
-    '| 1. Traffic series: index the catalogue | criterion 3 (Catalogue) | bugs/12 | 0.5 chat |',
+    '| 1. Traffic series: index the catalogue | criterion 3 (Catalogue) | bugs/12 · interview #066 Q1 | 0.5 chat |',
     '| 2. Yandex verification | criterion 5 | — | 0.25 chat |',
     '| 3. Refactor the console | — | plans/40 | 1 chat |',
     '| 4. Rename the sidebar | — | — | 0.25 chat |',
     '',
     'Fresh owner words — not ranked by the metric (→ /fix-vision): "MVP of the messenger" (today), "rewrite the terms" (yesterday).',
     'Tech debt: open bugs 87 · red 30 · drifted pairs 0.',
+    'Owner debt: interview #066 Q1 (answered 11 d ago, awaiting application) · bugs/12 (flagged by the owner).',
   ],
   ru: [
     'METRIC: критерии приёмки главной фазы закрыты 9 из 15 (2026-09-05)',
     'MAIN PHASE: Фаза 2 — Охват (v2), помечена «ГЛАВНОЕ СЕЙЧАС» в MASTER_PLAN.md',
     '',
     '| шаг | moves | closes | трудоёмкость |', '|---|---|---|---|',
-    '| 1. Серия трафика: индексация каталога | критерий 3 (Каталог) | bugs/12 | 0,5 чата |',
+    '| 1. Серия трафика: индексация каталога | критерий 3 (Каталог) | bugs/12 · интервью №066 В1 | 0,5 чата |',
     '| 2. Верификация Яндекса | критерий 5 | — | 0,25 чата |',
     '| 3. Рефакторинг консоли | — | plans/40 | 1 чат |',
     '| 4. Переименовать сайдбар | — | — | 0,25 чата |',
     '',
     'Свежие слова владельца — не ранжированы метрикой (→ /fix-vision): «MVP мессенджера» (сегодня), «перепись условий» (вчера).',
     'Техдолг: открытых багов 87 · красных 30 · разъехавшихся пар 0.',
+    'Долг перед владельцем: интервью №066 В1 (отвечено 11 дн. назад, ждёт внесения) · bugs/12 (отмечен владельцем).',
   ],
 };
 // The #53 incident, as the field agent answered it: fresh words on top, no metric, no phase, no shelf, no debt line.
@@ -14643,6 +14756,9 @@ const MUTATIONS = {
   'order': (L) => { const r = L.filter((l) => /^\| [0-9]\./.test(l)); return L.map((l) => l === r[1] ? r[3] : l === r[3] ? r[1] : l); },
   'no-shelf': (L) => L.filter((l) => !/Fresh owner words|Свежие слова владельца/.test(l)),
   'no-debt': (L) => L.filter((l) => !/^(Tech debt|Техдолг):/.test(l)),
+  'no-owner-debt': (L) => L.filter((l) => !/^(Owner debt|Долг перед владельцем):/.test(l)),
+  // row 1 (closes the debt) and row 2 (moves the metric, closes nothing) swap: both carry, so `order` and `recency-first` stay silent
+  'owner-debt-not-first': (L) => { const r = L.filter((l) => /^\| [0-9]\./.test(l)); return L.map((l) => l === r[0] ? r[1] : l === r[1] ? r[0] : l); },
 };
 
 function selftest() {
@@ -14658,7 +14774,7 @@ function selftest() {
     }
   }
   const f53 = lint(parseAnswer(FIX_53.join('\n') + '\n')).map((x) => x.id);
-  say(JSON.stringify([...f53].sort()) === JSON.stringify(['no-debt', 'no-main-phase', 'no-metric', 'no-shelf', 'order', 'recency-first']),
+  say(JSON.stringify([...f53].sort()) === JSON.stringify(['no-debt', 'no-main-phase', 'no-metric', 'no-owner-debt', 'no-shelf', 'order', 'recency-first']),
     `the #53 fixture (fresh words on top, no metric) is RED: [${f53.join(', ')}]`);
   say(parseAnswer('# A plan\n\nSome prose.\n\n| a | b |\n|---|---|\n| 1 | 2 |\n') === null, 'a plain document with an unrelated table is not an answer (SKIPPED path)');
   say(parseAnswer('> METRIC: quoted\n```\n| step | moves | closes |\n```\n') === null, 'a quoted METRIC: line and a fenced table are invisible');

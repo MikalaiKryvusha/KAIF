@@ -67,6 +67,8 @@ line of every waiting document — and the same exit condition.
 
 Pick a single direction for this session. Priority (descending):
 
+0. **The owner's debt** — his decisions awaiting application (the first section of the queue command of step 1b) and the bugs
+   he flagged come before everything below (`BUG_FIXING_FRAMEWORK.md` → "The owner's debt comes first"; KAIF 2.8, origin issue #86).
 1. **Open bugs with real symptoms** — if `STATUS.md` lists an open bug with reproducible symptoms, it's
    priority #1. Work by `BUG_FIXING_FRAMEWORK.md`.
 2. **Next item from the `STATUS.md` "where to continue" checklist** — if bugs are clear.

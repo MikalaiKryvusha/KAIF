@@ -142,7 +142,12 @@ const EN = {
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
     gate: (n) => 'GATE (I42): never shown — ' + n + '. Printing the queue is not delivering the question; showing is the agent\'s action.',
     how: (cmd) => 'Raise it as a page: ' + cmd + ' --queue · asked it pointedly in chat — record the fact: ' + cmd + ' --mark-shown <doc> --transport chat',
-    dead: 'A dead document with nothing to show → close it by status and it leaves the queue.' },
+    dead: 'A dead document with nothing to show → close it by status and it leaves the queue.',
+    awaiting: (n) => 'OWNER DECISIONS AWAIT APPLICATION — ' + n + ': every question answered, the status not closed. Apply them FIRST, ahead of the plan (#86), then close the status.',
+    answered: (d) => 'answered ' + d + ' d ago',
+    foreign: (f) => 'the project keeps its own queue: ' + f + ' is not this contour\'s shape — read as no items here and never written; its waiting documents are raised by the project\'s own contour (see HOUSE_RULES.md), the interviews are still scanned',
+    foreignWrite: (f) => 'not written: ' + f + ' is the project\'s own queue (another shape) — this contour never overwrites it; raise the document with the project\'s own contour',
+    stale: (doc, d, lim, cmd) => 'stale in the queue (' + d + ' d > ' + lim + '): ' + doc + ' — not in the list above; close it by status or show it on purpose: ' + cmd + ' --queue --include-stale' },
   transport: { page: 'page', batch: 'batch', chat: 'chat' },
   // the FOURTH fact — implemented (2.7 QL2, origin issue #54: an already-implemented question was raised again and produced a false second decision)
   impl: {
@@ -232,7 +237,12 @@ const RU = {
     never: 'НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует', empty: 'Очередь владельца пуста — ждущих документов нет.',
     gate: (n) => 'ГЕЙТ (I42): ни разу не показанных — ' + n + '. Напечатать очередь ≠ донести вопрос; показ — действие агента.',
     how: (cmd) => 'Подними страницей: ' + cmd + ' --queue · задал точечно в чате — запиши факт: ' + cmd + ' --mark-shown <док> --transport чат',
-    dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.' },
+    dead: 'Документ мёртв и показывать нечего → закрой его статусом, и он уйдёт из очереди.',
+    awaiting: (n) => 'РЕШЕНИЯ ВЛАДЕЛЬЦА ЖДУТ ВНЕСЕНИЯ — ' + n + ': все вопросы отвечены, статус не закрыт. Внеси их ПЕРВЫМИ, раньше плана (#86), затем закрой статус.',
+    answered: (d) => 'отвечено ' + d + ' дн. назад',
+    foreign: (f) => 'очередь у проекта своя: ' + f + ' — не той формы, что у этого контура; здесь читается как пустая и никогда не пишется; её документы поднимает свой контур проекта (см. HOUSE_RULES.md), интервью сканируются как прежде',
+    foreignWrite: (f) => 'не записано: ' + f + ' — своя очередь проекта (другой формы); этот контур её никогда не перезаписывает — подними документ своим контуром проекта',
+    stale: (doc, d, lim, cmd) => 'протух в очереди (' + d + ' дн. > ' + lim + '): ' + doc + ' — в списке выше его нет; закрой статусом или покажи намеренно: ' + cmd + ' --queue --include-stale' },
   transport: { page: 'страница', batch: 'пачка', chat: 'чат' },
   impl: {
     marked: (doc, q, where, file) => 'Факт «внесено» записан (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,

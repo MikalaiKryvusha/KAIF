@@ -199,6 +199,28 @@ ok(r.code === 0 && liveAt > 0 && above <= total * 0.01 && html53.indexOf('<detai
 rmSync(join(P, 'interviews', 'interview_053_probe.md'), { force: true });
 r = runGen(P, ['--queue', '--list']);
 ok(r.code === 0 && !/НИ РАЗУ/.test(r.out), 's22 B: после факта показа очередь — код 0 (I42)', r.out.slice(-300));
+// OW3 (2.8, #86 S1): долг агента — все вопросы отвечены, статус не закрыт, ответу 11 дней — назван ПЕРВЫМ поимённо, без отсечки по
+// возрасту (поле: решение владельца пролежало 11 дней за счётчиком «исторический долг»); код очереди прежний — это долг агента, не ворота показа.
+writeFileSync(join(P, 'interviews', 'interview_054_probe.md'), '# Interview #054 — отвечено, не внесено\n\n> Status: **🟡 awaiting**\n> Created: 2026-09-01\n\n### Q1. Берём?\n\n- **A)** да\n- **B)** нет\n\n**Answer:** A\n');
+writeFileSync(join(P, 'interviews', 'decisions', 'interview_054_probe.decision.json'), JSON.stringify({ kind: 'interview', document: 'interviews/interview_054_probe.md', at: new Date(Date.now() - 11 * 86400000).toISOString(), answers: { Q1: { choice: 'A' } } }));
+r = runGen(P, ['--queue', '--list']);
+const firstLine = (r.out.split(/\r?\n/).find((l) => l.trim()) || '');
+ok(r.code === 0 && /РЕШЕНИЯ ВЛАДЕЛЬЦА ЖДУТ ВНЕСЕНИЯ — 1/.test(firstLine) && /interviews\/interview_054_probe\.md — отвечено 11 дн\. назад/.test(r.out),
+   's22 B: ответ 11-дневной давности, статус не закрыт — первой строкой «РЕШЕНИЯ ВЛАДЕЛЬЦА ЖДУТ ВНЕСЕНИЯ», документ назван с возрастом ответа (OW3, #86)', r.out.slice(0, 400));
+rmSync(join(P, 'interviews', 'interview_054_probe.md'), { force: true });
+rmSync(join(P, 'interviews', 'decisions', 'interview_054_probe.decision.json'), { force: true });
+// OW7 (2.8, #100): файл очереди чужой формы (свой, более ранний контур проекта хранит `{ items: [...] }` под тем же именем) — одна строка
+// «очередь у проекта своя», код не 1, без трассы ошибки; запись в него отказана, файл проекта байт в байт (близнец, найденный чтением кода).
+const QF = join(P, 'interviews', 'decisions', 'queue.json');
+const ourQ = existsSync(QF) ? readFileSync(QF) : null;
+writeFileSync(QF, '{"items":[]}\n');
+r = runGen(P, ['--queue', '--list']);
+ok(r.code !== 1 && /очередь у проекта своя/.test(r.out) && !/TypeError|at pendingDocs/.test(r.out),
+   's22 B: файл очереди чужой формы {"items":[]} → код не 1, строка «очередь у проекта своя», без трассы (OW7, #100)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+r = runGen(P, ['--enqueue', 'interviews/interview_052_probe.md']);
+ok(r.code === 1 && /не записано/.test(r.out) && readFileSync(QF, 'utf8') === '{"items":[]}\n',
+   's22 B: --enqueue в чужую очередь — отказ кодом 1, файл проекта байт в байт (OW7, близнец)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+if (ourQ) writeFileSync(QF, ourQ); else rmSync(QF, { force: true });
 // Лица «вычитка» и «макет» рендерятся без браузера.
 mkdirSync(join(P, 'docs'), { recursive: true });
 writeFileSync(join(P, 'docs', 'DRAFT.md'), '# Черновик\n\nПервый абзац.\n\nВторой абзац.\n');

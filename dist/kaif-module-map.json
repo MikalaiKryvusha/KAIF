@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.7",
   "released": "2026-09-18",
-  "moduleCount": 834,
+  "moduleCount": 835,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -523,12 +523,21 @@
         ]
       },
       {
+        "signature": "## The owner's debt comes first — a bug he flagged, a decision he answered",
+        "class": "static",
+        "sha256": "9401dd3885fef5a31e0c7b8b37e3e2e60d844efbb02619ade86e06ff2c2e245b",
+        "lines": [
+          99,
+          113
+        ]
+      },
+      {
         "signature": "## Instrumentation — build a test harness, don't guess",
         "class": "static",
         "sha256": "fd01e1cd2411cbdf9c47393252cb31c97c0668c961dd2c8ed102be6554994aec",
         "lines": [
-          99,
-          119
+          114,
+          134
         ]
       },
       {
@@ -536,8 +545,8 @@
         "class": "static",
         "sha256": "283e696567e23c18bfb7ea15fab8f7e5c180b69b6eeef9262fbe548b2b98be6e",
         "lines": [
-          120,
-          141
+          135,
+          156
         ]
       },
       {
@@ -545,8 +554,8 @@
         "class": "static",
         "sha256": "f436890bf798822fc6e475a74b4ba0f27217f927d62dd3dd69db7a6504a6842a",
         "lines": [
-          142,
-          156
+          157,
+          171
         ]
       },
       {
@@ -554,8 +563,8 @@
         "class": "static",
         "sha256": "5e4ed7c405088b63f8bce7ee3db476837d3a7a6a580f1a81d256218782ba9e4c",
         "lines": [
-          157,
-          166
+          172,
+          181
         ]
       },
       {
@@ -563,8 +572,8 @@
         "class": "static",
         "sha256": "a5b138f59cc7095ebc7cbcc3ae6b42bebb24b5c28455ab228ae8f7232d82f466",
         "lines": [
-          167,
-          205
+          182,
+          220
         ]
       },
       {
@@ -572,8 +581,8 @@
         "class": "static",
         "sha256": "11b59801227bf6666400bb367a330dabadddc07cb1d0c9f9549b207abd662da0",
         "lines": [
-          206,
-          211
+          221,
+          226
         ]
       }
     ],
@@ -4435,10 +4444,10 @@
       {
         "signature": "## Step 2. Synthesize — choose the one main thing",
         "class": "static",
-        "sha256": "256f9fab79889826de717107e4af9e14a8b95263dad44b4471fc99f5b8003df2",
+        "sha256": "4566376f8b3f48c55d70ad12de0e081ce4ab398e07a31dac462952b887bde2d0",
         "lines": [
           66,
-          82
+          84
         ]
       },
       {
@@ -4446,8 +4455,8 @@
         "class": "static",
         "sha256": "145c5c387ea213935bc7900033ebeeec8bbdca49fc7d8ba6d207d365e09859b4",
         "lines": [
-          83,
-          89
+          85,
+          91
         ]
       },
       {
@@ -4455,8 +4464,8 @@
         "class": "static",
         "sha256": "70349f3f6138dedff3a6c122a82143408699b741ae0a21d72f397ed502ba8bd1",
         "lines": [
-          90,
-          94
+          92,
+          96
         ]
       }
     ],
@@ -5027,10 +5036,10 @@
       {
         "signature": "### Step 3. Answer in chat — in the FIXED FORM (KAIF 2.6, origin issue #53)",
         "class": "static",
-        "sha256": "35b1752a5fdbeb7445889aaef38222a81605d5d408f7e618aff752a8cf9e6b90",
+        "sha256": "eb78097c33b69131a8621863a7ede905850ddf34fa225c4a6164d89745c0bb04",
         "lines": [
           29,
-          55
+          61
         ]
       },
       {
@@ -5038,8 +5047,8 @@
         "class": "static",
         "sha256": "6269d7bd71f386935b8a2147820168f61980aa2f3b66fa9e4596329cbed5e925",
         "lines": [
-          56,
-          60
+          62,
+          66
         ]
       },
       {
@@ -5047,8 +5056,8 @@
         "class": "static",
         "sha256": "997fb15a83ab4052b36394d854dabdc3f525fe692b6abde3b7d92c437a5ff730",
         "lines": [
-          61,
-          65
+          67,
+          71
         ]
       }
     ],

@@ -47,6 +47,7 @@ import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
+  decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -198,8 +199,21 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
 }
 
 // ── The queue (I7): a state file; living documents stay where they are ───────────────────────
-export function readQueue(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), QUEUE_FILE), []); }
+// OW7 (2.8, epic OW; origin issue #100): the queue file of ANOTHER shape — a project's own, earlier contour keeps `{ items: [...] }` under
+// the same name — reads as no items of THIS contour (the living documents are still scanned in interviews/), is announced in one line, and
+// is NEVER written: "foreign reads as empty" alone would turn --enqueue and the notice mark into an overwrite of the project's queue.
+// [TESTED: 2026-09-25 18:26 +03:00 · selftest and s22 (`{"items":[]}` → the one line, exit not 1; --enqueue refused, the file byte for byte), red on the 2.7
+//  core, mutants «read without the shape check» · «write over a foreign queue»; on a clone of the #86 field deployment: exit 0, the line,
+//  no trace (was: TypeError); report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
+export function queueShape(root, cfg = cfgOf(root)) {
+  const p = join(decisionsAbs(root, cfg), QUEUE_FILE);
+  if (!existsSync(p)) return 'none';
+  return Array.isArray(readJsonOr(p, undefined)) ? 'ours' : 'foreign';   // unreadable JSON is foreign too: never overwritten
+}
+export class ForeignQueueError extends Error {}
+export function readQueue(root, cfg = cfgOf(root)) { const v = readJsonOr(join(decisionsAbs(root, cfg), QUEUE_FILE), []); return Array.isArray(v) ? v : []; }
 export function writeQueue(root, items, cfg = cfgOf(root)) {
+  if (queueShape(root, cfg) === 'foreign') throw new ForeignQueueError(T(cfg).list.foreignWrite(cfg.decisionsDir + '/' + QUEUE_FILE));
   mkdirSync(decisionsAbs(root, cfg), { recursive: true });
   writeFileSync(join(decisionsAbs(root, cfg), QUEUE_FILE), JSON.stringify(items, null, 2) + '\n', 'utf8');
 }
@@ -318,6 +332,24 @@ export function implementedGate(root) {
   return pendingDocs(root).filter((d) => d.implementedOpen.length > 0 && d.unanswered === 0).map((d) => ({ doc: d.doc, line: t.impl.gate(d.doc, d.implementedOpen) }));
 }
 
+// OW3 (2.8, epic OW; origin issue #86, S1): the AGENT's debt — a document whose every question is answered while its status is not
+// closed (the /interview canon closes the status LAST, after the propagation, so this state IS "answered, not applied"). A field owner
+// found an 11-day-old decision of his unapplied himself: a view folded old answers into one counter behind a date. Here it is named,
+// with the days since the answer, with NO date cutoff — and first in the list, ahead of the owner's queue.
+// [TESTED: 2026-09-25 18:26 +03:00 · selftest (debt named first with the age since the answer; a stale document named), s22 on the deployed copy, red on the
+//  2.7 core, mutants «matcher finds nothing» · «stale silent again»; on a clone of the #86 field deployment the section is EMPTY — that field
+//  marks «answered, not applied» with a closing tick, the view reads the canon form only (GAP, next step in plans/119 OW3); report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
+export function answeredAgeDays(root, rel, now = new Date()) {
+  let at = NaN;
+  try { at = Date.parse(JSON.parse(readFileSync(decisionPaths(root, rel).decision, 'utf8')).at); } catch { at = NaN; }
+  return Number.isNaN(at) ? queueDocAgeDays(root, rel, now) : Math.max(0, Math.floor((now.getTime() - at) / DAY_MS));
+}
+export function awaitingApplication(root, now = new Date()) {
+  return pendingDocs(root).filter((d) => d.questions > 0 && d.unanswered === 0 && d.implementedOpen.length === 0)
+    .map((d) => ({ ...d, days: answeredAgeDays(root, d.doc, now) }))
+    .sort((a, b) => b.days - a.days || a.doc.localeCompare(b.doc));
+}
+
 export function listQueue(root, { now = new Date(), includeStale = false } = {}) {
   const t = T(cfgOf(root));
   const shown = readShown(root);
@@ -338,7 +370,13 @@ export function listQueue(root, { now = new Date(), includeStale = false } = {})
   }
   const implGate = implementedGate(root); // I45: implemented-but-open is a gate of the same class as never-shown
   for (const g of implGate) lines.push('🔴 ' + g.line);
-  return { docs, never, lines, implGate, exitCode: never.length || implGate.length ? EXIT_NEVER_SHOWN : 0 };
+  // #86: a stale queue document is NAMED — it left the owner's showcase (I39), it never leaves the agent's sight
+  const stale = includeStale ? [] : staleQueueDocs(root, ownerDocs(root, { includeStale: true, now }), now);
+  for (const d of stale) lines.push('! ' + t.list.stale(d.doc, d.days, STALE_QUEUE_DAYS, CLI_NAME));
+  if (queueShape(root) === 'foreign') lines.push('ℹ ' + t.list.foreign(cfgOf(root).decisionsDir + '/' + QUEUE_FILE)); // OW7 (#100): one line, no trace
+  const awaiting = awaitingApplication(root, now); // #86: the agent's debt — FIRST, by name, no date cutoff
+  const head = awaiting.length ? ['🔴 ' + t.list.awaiting(awaiting.length), ...awaiting.map((a) => '   ' + a.doc + ' — ' + t.list.answered(a.days))] : [];
+  return { docs, never, lines: [...head, ...lines], implGate, awaiting, stale, exitCode: never.length || implGate.length ? EXIT_NEVER_SHOWN : 0 };
 }
 
 // ── Building pages (I1: only from documents) ──────────────────────────────────────────────────
@@ -1573,6 +1611,30 @@ export function selftest(log = console.log) {
   writeFileSync(join(root, OLD), '# Interview #002\n\n> Status: awaiting\n> Created: 2026-01-01\n\n### Q1. Q?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
   ok(queueDocAgeDays(root, OLD, now) > STALE_QUEUE_DAYS && !ownerDocs(root, { now }).some((d) => d.doc === OLD) && ownerDocs(root, { now, includeStale: true }).some((d) => d.doc === OLD),
     'stale queue position leaves the owner\'s showcase; --include-stale brings it back on purpose (I39)');
+  // OW7 (2.8, #100): a queue file of another shape — read as no items with one line, never written (the project's file byte for byte)
+  const qf = join(decisionsAbs(root), QUEUE_FILE);
+  const ourQueue = existsSync(qf) ? readFileSync(qf) : null;
+  const FOREIGN_Q = '{"items":[{"doc":"interviews/interview_002_old.md","queued":"2026-09-05T06:45:00.000Z"}]}\n';
+  writeFileSync(qf, FOREIGN_Q);
+  let lqF = null, thrown = null;
+  try { lqF = listQueue(root, { now }); } catch (e) { thrown = e; }
+  ok(!thrown && queueShape(root) === 'foreign' && lqF.lines.some((l) => l.startsWith('ℹ ') && l.includes(QUEUE_FILE)), 'a queue file of another shape: the list prints one line about the project\'s own queue, no TypeError (OW7, #100)');
+  let refused = false;
+  try { enqueue(root, 'interviews/interview_002_old.md'); } catch (e) { refused = e instanceof ForeignQueueError; }
+  ok(refused && readFileSync(qf, 'utf8') === FOREIGN_Q, 'a write into the foreign queue is REFUSED and the project\'s file stays byte for byte (OW7 twin)');
+  if (ourQueue) writeFileSync(qf, ourQueue); else rmSync(qf, { force: true });
+  // #86 (2.8, OW3): the agent's debt — every question answered, the status not closed — named FIRST with the age since the answer and
+  // NO date cutoff (the document itself is older than the stale threshold); a stale queue document is named in the list, never silent.
+  const DEBT = 'interviews/interview_003_answered.md';
+  writeFileSync(join(root, DEBT), '# Interview #003\n\n> Status: awaiting\n> Created: 2026-08-01\n\n### Q1. Q?\n\n- **A)** one\n- **B)** two\n\n**Answer:** A\n');
+  const dp = decisionPaths(root, DEBT);
+  mkdirSync(resolve(dp.decision, '..'), { recursive: true });
+  writeFileSync(dp.decision, JSON.stringify({ kind: 'interview', document: DEBT, at: new Date(now.getTime() - 11 * DAY_MS).toISOString(), answers: { Q1: { choice: 'A' } } }));
+  const lq3 = listQueue(root, { now });
+  ok(lq3.awaiting.some((d) => d.doc === DEBT && d.days === 11) && lq3.lines[0].startsWith('🔴') && lq3.lines.some((l) => l.includes(DEBT) && l.includes(texts('en').list.answered(11))),
+    'answered, status not closed → the agent\'s debt named FIRST with its age since the answer (11 d), no date cutoff (#86)');
+  ok(lq3.stale.some((d) => d.doc === OLD) && lq3.lines.some((l) => l.includes(OLD) && l.startsWith('! ')), 'a stale queue document is NAMED in the list without a browser, never silent (#86)');
+  rmSync(join(root, DEBT), { force: true }); rmSync(dp.decision, { force: true });
 
   // the call phrase names the class and the numbers; the owner is addressed by callName
   ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
@@ -1626,7 +1688,9 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   if (args.includes('--selftest')) { selftest(); process.exit(0); }
   if (args.includes('--enqueue')) {
     if (!docPath) usage();
-    const items = enqueue(root, docPath, { kind: asNotice ? KIND_NOTICE : 'question' });
+    let items;
+    try { items = enqueue(root, docPath, { kind: asNotice ? KIND_NOTICE : 'question' }); }
+    catch (e) { if (e instanceof ForeignQueueError) { console.log('✖ ' + e.message); process.exit(1); } throw e; }
     console.log('Queued: ' + items.length + ' position(s)' + (asNotice ? ' (notice)' : '') + ' — shown as a batch by: ' + CLI_NAME + ' --queue');
     process.exit(0);
   }
