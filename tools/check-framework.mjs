@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url';
 import { tempRoot } from './lib/temp-root.mjs';
 import { scanText as scanInvisible, label as invisibleLabel } from './lib/invisible-chars.mjs';
 import { readBudgets } from './budget-gate.mjs';
+import { walkerDrift, WALKER_COPIES, CORE_PATH as WALKER_CORE } from './sync-walker.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -272,6 +273,29 @@ function selfProofTokenRates() {
   return fails;
 }
 
+// 5l. One tree walker, seven copies (2.8, epic SC; origin #77 · Q-R1′): the core's KAIF-WALK block is the source, and each tool
+//     module that walks the tree carries a byte-identical copy (a deployed module cannot import the core — the 5k reason).
+// @guard walker-copies
+// THREAT:         the walker is fixed in the core (a new skip, a new failure branch) and one module keeps the old copy — that
+//                 scanner goes back to "no findings" over a tree it could not see, the #77 class returned through one door
+// PROVED-AGAINST: `--selftest` — equal blocks → silent; one changed line in a copy → that copy named; a copy without the block →
+//                 named; a core without the block → named
+// GAP:            the modules' USE of the walker (which files each keeps, how it prints the notes) is the modules' own — the
+//                 polygon's s29 judges that behaviour, this guard only the text of the copies
+// ON-REAL-PATH:   NOT YET — the path is the first change of the walker after 2.8
+function selfProofWalkerCopies() {
+  const fails = [];
+  const blk = '// ── KAIF-WALK:BEGIN — x\nfunction kaifWalk() { return 1; }\n// ── KAIF-WALK:END';
+  const core = `const a = 1;\n${blk}\nconst b = 2;`;
+  if (walkerDrift(core, { 'm.mjs': `import x;\n${blk}\n` }).length) fails.push('равная копия названа расхождением');
+  const drifted = walkerDrift(core, { 'm.mjs': `import x;\n${blk.replace('return 1', 'return 2')}\n` });
+  if (drifted.length !== 1 || !drifted[0].includes('m.mjs') || !drifted[0].includes('drifted')) fails.push(`изменённая копия не названа: ${drifted.join(' | ') || 'молчание'}`);
+  const missing = walkerDrift(core, { 'm.mjs': 'import x;\n' });
+  if (missing.length !== 1 || !missing[0].includes('no KAIF-WALK block')) fails.push(`копия без блока не названа: ${missing.join(' | ') || 'молчание'}`);
+  if (!walkerDrift('const a = 1;', { 'm.mjs': blk }).some((e) => e.includes('source of the one tree walker is gone'))) fails.push('ядро без блока НЕ названо');
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -496,6 +520,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of tFails) console.error('✖ selfproof 5k (CK 2.8): ' + f);
   if (tFails.length) { console.error(`\n❌ check-framework --selftest: гард 5k — ${tFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5k: ставка токенов модуля голоса, сдвинутая от ставки ядра, названа обеими парами чисел; пропавшая константа названа; равные ставки молчат');
+  const lFails = selfProofWalkerCopies();
+  for (const f of lFails) console.error('✖ selfproof 5l (SC 2.8): ' + f);
+  if (lFails.length) { console.error(`\n❌ check-framework --selftest: гард 5l — ${lFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5l: копия обходчика, разошедшаяся с блоком ядра, названа; копия без блока и ядро без блока названы; равные копии молчат');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -617,6 +645,9 @@ errors.push(...templatesOverCeiling(readBudgets(readFileSync(join(ROOT, 'framewo
 // 5k. The voice module's token rates equal the core's — declared with its self-proof near the top.
 errors.push(...tokenRatesDisagree(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8'),
   readFileSync(join(ROOT, 'framework', 'tools', 'kaif-voice-lint.mjs'), 'utf8')));
+// 5l. Every copy of the one tree walker equals the core's block — declared with its self-proof near the top.
+errors.push(...walkerDrift(readFileSync(join(ROOT, WALKER_CORE), 'utf8'),
+  Object.fromEntries(WALKER_COPIES.map((p) => [p, existsSync(join(ROOT, p)) ? readFileSync(join(ROOT, p), 'utf8') : null]))));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the

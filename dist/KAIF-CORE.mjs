@@ -1064,6 +1064,72 @@ function newsInterval(meta, fromVersion) {
   return vers.map((v) => [`**${v}:**`, ...byVer[v].map((n) => `- ${n}`)].join('\n')).join('\n\n');
 }
 
+// ── KAIF-WALK:BEGIN — ONE safe tree walker (2.8, epic SC; origin #77 · Q-R1′). The set of files is the one git sees
+// (`ls-files --cached --others --exclude-standard`: tracked plus untracked, never ignored); without git, a walk that skips
+// .git, node_modules and nested copies. A nested repository (a `.claude/worktrees/*` copy) is not this project; a broken
+// link is SKIPPED WITH A NAME, never a crash; an unreadable directory is FAILED — a scan that could not see part of the tree
+// must never read as clean (the old `try { walk() } catch {}` printed "no lines found" after one broken link). This block
+// in the core is the source: every tool module that walks the tree carries a byte-identical copy (a deployed module cannot
+// import the core), and the build refuses a drifted copy (check-framework 5l; `node tools/sync-walker.mjs` rewrites them).
+// [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
+//  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
+//  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+function kaifWalk(roots) {
+  const files = [], skipped = [], failed = [];
+  const nested = (p) => /(^|\/)\.claude\/worktrees(\/|$)/.test(p);
+  const take = (p) => {
+    if (nested(p)) return;
+    let st;
+    try { st = statSync(p); } catch (e) { skipped.push(`${p} (${e.code || 'unreadable'})`); return; }
+    if (st.isFile()) files.push(p);             // a link to a directory is not entered (git does not enter it either)
+  };
+  const walk = (dir) => {
+    let ents;
+    try { ents = readdirSync(dir, { withFileTypes: true }); } catch (e) { failed.push(`${dir} (${e.code || e.message})`); return; }
+    for (const d of ents) {
+      const p = dir === '.' ? d.name : `${dir}/${d.name}`;
+      if (d.name === '.git' || d.name === 'node_modules' || nested(p)) continue;
+      if (d.isDirectory()) walk(p); else take(p);
+    }
+  };
+  for (const r0 of roots) {
+    const r = walkRoot(r0);
+    let st;
+    try { st = statSync(r); } catch (e) {           // an absent root is the caller's business; a root that IS a broken link is named
+      const cut = r.lastIndexOf('/');
+      try { if (readdirSync(cut < 0 ? '.' : r.slice(0, cut) || '/').includes(r.slice(cut + 1))) skipped.push(`${r} (${e.code || 'unreadable'})`); }
+      catch { /* its parent is gone too — absent */ }
+      continue;
+    }
+    if (!st.isDirectory()) { take(r); continue; }
+    const git = spawnSync('git', ['-C', r, 'ls-files', '-z', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8', maxBuffer: 1 << 28 });
+    if (git.status !== 0) { walk(r); continue; }   // not a work tree, or no git on PATH
+    for (const rel of git.stdout.split('\0')) {
+      if (!rel || rel.endsWith('/')) continue;      // a nested repository is listed as a directory — not this project
+      take(r === '.' ? rel : `${r}/${rel}`);
+    }
+    // git names what it could not open: "No such file" is a broken link (skipped with a name); any other reason is part of the
+    // tree the scan did not see (failed)
+    for (const m of String(git.stderr || '').matchAll(/could not open directory '([^']+)': ([^\r\n]+)/g))
+      (/no such file/i.test(m[2]) ? skipped : failed).push(`${r === '.' ? '' : r + '/'}${m[1].replace(/\/$/, '')} (${m[2].trim()})`);
+  }
+  return { files: [...new Set(files)].sort(), skipped, failed };
+}
+// A root as the walk writes it (forward slashes, no leading ./, no trailing /) — a caller strips `walkRoot(dir) + '/'` from a
+// returned path to judge only the segments BELOW its root (a root inside a skipped directory is still walked when named).
+function walkRoot(r0) { return String(r0).replace(/\\/g, '/').replace(/^\.\/(?=.)/, '').replace(/(?<=.)\/$/, ''); }
+function walkRel(dir, p) { const r = walkRoot(dir); return r === '.' ? p : p.slice(r.length + 1); }
+// The walk's service lines, one wording for every scanner — `walk: ` opens each, so a reader of a scanner's hits tells them
+// from findings: a FAILED walk is never a clean result; a skipped path is counted and named.
+const WALK_NOTE = 'walk: ';
+function walkNotes(tree) {
+  const out = [];
+  if (tree.failed.length) out.push(`${WALK_NOTE}the tree walk FAILED at ${tree.failed.slice(0, 3).join(', ')}${tree.failed.length > 3 ? ` and ${tree.failed.length - 3} more` : ''} — the scan is INCOMPLETE, not clean`);
+  if (tree.skipped.length) out.push(`${WALK_NOTE}skipped ${tree.skipped.length} unreadable path(s) — a broken link, or a file git lists that the disk lacks: ${tree.skipped.slice(0, 3).join(', ')}${tree.skipped.length > 3 ? ', …' : ''}`);
+  return out;
+}
+// ── KAIF-WALK:END
+
 // The "assertion surface" scan (plan 21 §3.5, field gap П9; re-cut in bugs/35 — the 2.1 field
 // precision was ≈19 % and the noise trained operators to ignore the one guard written for the
 // public storefront): a stale CLAIM is the FRAMEWORK's version token ADJACENT to a framework
@@ -1115,65 +1181,65 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   };
   const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
   const byFile = new Map();  // directory before the walk reached the only real public claim (field report Г4)
-  const walk = (dir) => {
-    for (const n of readdirSync(dir)) {
-      const p = (dir === '.' ? '' : dir + '/') + n;
-      if (SKIP_DIRS.includes(n) || SKIP_FILES.includes(p)) continue;
-      if (statSync(p).isDirectory()) { walk(p); continue; }
-      // Prose AND the project's own scripts (2.5, epic US; field wish plans/73 U2 p.4, a field
-      // report p.14): a version pin in `package.json` scripts or a local guard asserting the OLD version
-      // is the claim that bites hardest — it fails CI after a green update. Lock FILES carry no
-      // claim of the project's own and are skipped — judged by the lock-file NAME, never by the
-      // word "lock" anywhere in a name: BLOCKERS.md and lockstep.mjs are claims like any other
-      // (court RL 2.5, E-H1: the by-word filter silently un-scanned prose 2.4 used to scan).
-      const isProse = /\.md$/i.test(n);
-      if (!isProse && !(n === 'package.json' || /\.(mjs|cjs|js|ts|sh|ps1|py|ya?ml|toml)$/i.test(n))) continue;
-      if (!isProse && /lock.ya?ml$/i.test(n)) continue;   // pnpm-lock.yaml — the one lock format the script whitelist lets through
-      // The chronicle's era volumes (PROJECT_HISTORY_<era>.md, the split its template prescribes)
-      // are journals of the past exactly like the main file — judge-caught before the first split.
-      if (/^PROJECT_HISTORY/.test(p)) continue;
-      // A file byte-identical to the CURRENT template cannot carry a stale PROJECT claim — its
-      // text is upstream's own prose (bug 30: ten hits were fable-judge's "added in KAIF 1.6").
-      if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;
-      const lines = readFileSync(p, 'utf8').split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (line.includes(toVersion)) continue;
-        // `%20` is a URL-encoded space: a shields.io badge writes `KAIF%202.2` and must read as
-        // "KAIF 2.2", never as version "202.2" (origin #44's own README line, polygon-caught).
-        const scan = line.replace(/%20/g, ' ');
-        const older = [...new Set(scan.match(VERSION_TOKEN) || [])].filter((v) => gt(toVersion, v));
-        if (!older.length) continue;
-        if (/^\s*>/.test(line)) continue;          // blockquote = the owner's quoted word (bugs/35, field report Г5)
-        // a 2.3 field wish (R2): a JUSTIFIED old-version mention re-flagged on EVERY interval,
-        // forever ("minutes per update, forever"). The canonical marker `KAIF-VERSION-OK` (an
-        // English greppable token, same family as [TESTED]/DONE) on the hit line or the line
-        // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> —
-        // and the scan converges to zero instead of re-litigating history each time.
-        if (/KAIF-VERSION-OK/i.test(line) || (i > 0 && /KAIF-VERSION-OK/i.test(lines[i - 1]))) continue;
-        if (/\b\d{4}-\d{2}/.test(line)) continue;  // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4) // source-kept: two independent field reports
-        if (p === 'STATUS.md' && /предыдущ|previous/i.test(line)) continue;   // history, not a claim
-        // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
-        // staleness (field report Г4: rewriting them would forge it); judge the line with its
-        // parenthesized segments removed, so only unparenthesized adjacency counts as a claim.
-        // In a SCRIPT parentheses are syntax, not attribution — `assert(v === 'KAIF 2.4')` IS the pin.
-        // A parenthesis right after `]` is a markdown link/image TARGET, not an attribution — the
-        // shields.io badge keeps its version inside exactly such a target (`![…](…KAIF%202.2…)`),
-        // and stripping it hid origin #44's own README line from the scan (2.6, polygon-caught).
-        const judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
-        const claimed = older.find((v) => adjacent(v).test(judged));
-        if (!claimed) continue;
-        if (!byFile.has(p)) byFile.set(p, []);
-        // a token older than the one just replaced is NAMED — the reader must not assume fromVersion
-        byFile.get(p).push(`${p}:${i + 1} — ${line.trim().slice(0, 100)}${claimed === fromVersion ? '' : ` (asserts ${claimed})`}`);
-      }
+  // 2.8 (epic SC; origin #77): the files are the ones git sees (kaifWalk) — nested copies once took the whole cap and one
+  // broken link emptied the scan into "no lines found"; a skipped path and a failed walk are service lines, never silence.
+  const tree = kaifWalk(['.']);
+  for (const p of tree.files) {
+    const n = p.slice(p.lastIndexOf('/') + 1);
+    if (p.split('/').some((seg) => SKIP_DIRS.includes(seg)) || SKIP_FILES.includes(p)) continue;
+    // Prose AND the project's own scripts (2.5, epic US; field wish plans/73 U2 p.4, a field
+    // report p.14): a version pin in `package.json` scripts or a local guard asserting the OLD version
+    // is the claim that bites hardest — it fails CI after a green update. Lock FILES carry no
+    // claim of the project's own and are skipped — judged by the lock-file NAME, never by the
+    // word "lock" anywhere in a name: BLOCKERS.md and lockstep.mjs are claims like any other
+    // (court RL 2.5, E-H1: the by-word filter silently un-scanned prose 2.4 used to scan).
+    const isProse = /\.md$/i.test(n);
+    if (!isProse && !(n === 'package.json' || /\.(mjs|cjs|js|ts|sh|ps1|py|ya?ml|toml)$/i.test(n))) continue;
+    if (!isProse && /lock.ya?ml$/i.test(n)) continue;   // pnpm-lock.yaml — the one lock format the script whitelist lets through
+    // The chronicle's era volumes (PROJECT_HISTORY_<era>.md, the split its template prescribes)
+    // are journals of the past exactly like the main file — judge-caught before the first split.
+    if (/^PROJECT_HISTORY/.test(p)) continue;
+    // A file byte-identical to the CURRENT template cannot carry a stale PROJECT claim — its
+    // text is upstream's own prose (bug 30: ten hits were fable-judge's "added in KAIF 1.6").
+    if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;
+    const lines = readFileSync(p, 'utf8').split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.includes(toVersion)) continue;
+      // `%20` is a URL-encoded space: a shields.io badge writes `KAIF%202.2` and must read as
+      // "KAIF 2.2", never as version "202.2" (origin #44's own README line, polygon-caught).
+      const scan = line.replace(/%20/g, ' ');
+      const older = [...new Set(scan.match(VERSION_TOKEN) || [])].filter((v) => gt(toVersion, v));
+      if (!older.length) continue;
+      if (/^\s*>/.test(line)) continue;          // blockquote = the owner's quoted word (bugs/35, field report Г5)
+      // a 2.3 field wish (R2): a JUSTIFIED old-version mention re-flagged on EVERY interval,
+      // forever ("minutes per update, forever"). The canonical marker `KAIF-VERSION-OK` (an
+      // English greppable token, same family as [TESTED]/DONE) on the hit line or the line
+      // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> —
+      // and the scan converges to zero instead of re-litigating history each time.
+      if (/KAIF-VERSION-OK/i.test(line) || (i > 0 && /KAIF-VERSION-OK/i.test(lines[i - 1]))) continue;
+      if (/\b\d{4}-\d{2}/.test(line)) continue;  // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4) // source-kept: two independent field reports
+      if (p === 'STATUS.md' && /предыдущ|previous/i.test(line)) continue;   // history, not a claim
+      // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
+      // staleness (field report Г4: rewriting them would forge it); judge the line with its
+      // parenthesized segments removed, so only unparenthesized adjacency counts as a claim.
+      // In a SCRIPT parentheses are syntax, not attribution — `assert(v === 'KAIF 2.4')` IS the pin.
+      // A parenthesis right after `]` is a markdown link/image TARGET, not an attribution — the
+      // shields.io badge keeps its version inside exactly such a target (`![…](…KAIF%202.2…)`),
+      // and stripping it hid origin #44's own README line from the scan (2.6, polygon-caught).
+      const judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
+      const claimed = older.find((v) => adjacent(v).test(judged));
+      if (!claimed) continue;
+      if (!byFile.has(p)) byFile.set(p, []);
+      // a token older than the one just replaced is NAMED — the reader must not assume fromVersion
+      byFile.get(p).push(`${p}:${i + 1} — ${line.trim().slice(0, 100)}${claimed === fromVersion ? '' : ` (asserts ${claimed})`}`);
     }
-  };
-  try { walk('.'); } catch { /* best-effort scan */ }
+  }
   const files = [...byFile.keys()];
   const hits = files.slice(0, CAP_FILES).flatMap((p) => byFile.get(p));
   if (files.length > CAP_FILES)   // honest truncation: "shown N of M", never a silent cut (field report Г4)
     hits.push(`shown ${CAP_FILES} of ${files.length} file(s) with hits — fix these, then re-run the scan (checkpoint stale-claims re-runs it)`);
+  hits.push(...walkNotes(tree));
   return hits;
 }
 
@@ -1361,9 +1427,15 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // #31 (2.5, epic US; field: the item was present in one run and absent in the next, and an
   // ABSENT item is indistinguishable from "nothing found" — a silent scanner failure would pass
   // as a clean tree): the item is UNCONDITIONAL on a version-changing update; an empty scan says so.
-  if (fromVersion) items.push(['stale-claims', staleClaims.length
-    ? `These lines still assert an OLD version (older than ${meta.version}; the one just replaced is ${fromVersion} — a line stuck on an earlier one names it) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`
-    : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)`]);
+  // 2.8 (epic SC; origin #77): the walk's own lines (`walk: …` — a skipped broken link, a FAILED walk) ride under the claims and
+  // never let "no lines found" stand for a tree the scan could not see.
+  const claimHits = staleClaims.filter((h) => !h.startsWith(WALK_NOTE));
+  const walkLines = staleClaims.filter((h) => h.startsWith(WALK_NOTE)).map((h) => `\n    · ${h}`).join('');
+  if (fromVersion) items.push(['stale-claims', claimHits.length
+    ? `These lines still assert an OLD version (older than ${meta.version}; the one just replaced is ${fromVersion} — a line stuck on an earlier one names it) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${claimHits.map((h) => `    · ${h}`).join('\n')}${walkLines}`
+    : staleClaims.some((h) => h.includes('walk FAILED'))
+      ? `the scan for claims of the OLD version (${fromVersion}) could NOT see the whole tree — this is not a clean result: fix what the walk names (a permission, a path), then re-run it (the checkpoint re-runs the scan):${walkLines}`
+      : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)${walkLines}`]);
   // The closing gates, forecast (2.8, epic CK, step CK5.6 — see closingGatesForecast): UNCONDITIONAL, like stale-claims, so that
   // "nothing stops the first closing" is a printed verdict and never an absent item.
   if (ownerVoice) items.push(['owner-voice-core', ownerVoiceInstruction(ownerVoice)]);
@@ -2480,17 +2552,13 @@ function anonLeakScan() {
   }
   if (manifestPaths) { for (const p of manifestPaths) scanFile(p); }
   else {
-    // no manifest to scope the scan — the conservative whole-tree walk, transients excluded
+    // no manifest to scope the scan — the conservative whole-tree walk (the files git sees, 2.8 SC), transients excluded;
+    // a walk that could not see part of the tree is a refusal, never a clean anonymity result
     const TRANSIENT = ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK, '.kaif/install', '.kaif/kaif-core.mjs', DEPLOY_MANIFEST];
-    const walk = (dir) => {
-      for (const n of readdirSync(dir)) {
-        const p = (dir === '.' ? '' : dir + '/') + n;
-        if (['.git', 'node_modules'].includes(n) || TRANSIENT.some((t) => p === t || p.startsWith(t + '/'))) continue;
-        if (statSync(p).isDirectory()) { walk(p); continue; }
-        scanFile(p);
-      }
-    };
-    walk('.');
+    const tree = kaifWalk(['.']);
+    for (const p of tree.files) if (!TRANSIENT.some((t) => p === t || p.startsWith(t + '/'))) scanFile(p);
+    for (const note of walkNotes(tree)) log('⚠ anonymity scan ' + note);
+    if (tree.failed.length) leaks.push(`the tree walk FAILED (${tree.failed.slice(0, 3).join(', ')}) — the scan is incomplete, not clean`);
   }
   for (const l of leaks) console.error(`✖ anonymity leak: ${l}`);
   if (leaks.length) console.error('  (if a flagged name belongs to the PROJECT OWNER, it is not a leak — set `git config user.name` to the owner\'s name so the scan can excuse it, or adjust the text with the owner)');
@@ -3942,9 +4010,11 @@ function cmdCheckpoint() {
       if (rec && rec.from && rec.to) {
         const hits = scanStaleClaims(rec.from, rec.to, man && man.templateShas);
         // the "shown N of M" truncation notice is a service line, not a hit — count real ones
-        const real = hits.filter((h) => !h.startsWith('shown ')).length;
+        const real = hits.filter((h) => !h.startsWith('shown ') && !h.startsWith(WALK_NOTE)).length;
+        const walkFailed = hits.some((h) => h.startsWith(WALK_NOTE) && h.includes('walk FAILED'));
         if (real) { log(`⚠ stale-claims scan re-ran: ${real} line(s) still assert the old version — the tick records anyway (stating why a line is correct is a legal completion):`); for (const h of hits) log('    · ' + h); }
-        else log('✔ stale-claims scan ran clean (executed by the checkpoint itself)');
+        else if (walkFailed) { log('⚠ stale-claims scan re-ran but could NOT see the whole tree — not a clean result (the tick records on your word):'); for (const h of hits) log('    · ' + h); }
+        else { log('✔ stale-claims scan ran clean (executed by the checkpoint itself)'); for (const h of hits) log('    · ' + h); }
       } else log('⚠ stale-claims scan skipped: no update receipt with from/to versions — tick records on your word');
     } catch (e) { log(`⚠ stale-claims scan errored (${e.message}) — tick records on your word`); }
   }

@@ -119,6 +119,12 @@
 //         the class list and the closing command arrive, and a FRESH deployment's journal is SKIPPED, never
 //         green. Red proven on the 2.6 core via KAIF_DIST and on six mutants of the axis (scratchpad
 //         el-mutants.mjs, report testcases/reports/2026-09-18_experience-lint.md)
+//   s29 — the scanners see the project as git sees it (epic SC 2.8, plan 123; origin #77 · Q-R1′): ONE safe tree walker —
+//         under git, twenty nested worktree copies and two broken links (a directory junction sorting before everything,
+//         a file link) leave the real README's old claim named, no path under .claude/worktrees, and "skipped 2"; without
+//         git the fallback walk skips the copies by name; the FAILED branch (an unreadable directory, git's "Permission
+//         denied") is proved on the delivered core's block with an injected file system; kaif-provenance check exits 0
+//         on the broken links. Red on the 2.7 core via KAIF_DIST; mutants — probes/sc-mutants.mjs
 // Usage: node tools/sandbox-suite.mjs   (npm run test:core)
 import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
@@ -149,7 +155,7 @@ const SUITES = ['s01-field-fixes.mjs', 's02-modular-update.mjs', 's03-receipts-t
                 's18-update-symmetries.mjs', 's19-scenario-lint.mjs', 's21-update-route.mjs',
                 's22-contour-shipped.mjs', 's23-ranking-lint.mjs', 's24-attribution-lint.mjs',
                 's25-testrun-lint.mjs', 's26-voice-lint.mjs', 's27-rename-map.mjs',
-                's28-experience-lint.mjs'];
+                's28-experience-lint.mjs', 's29-scanners.mjs'];
 // ── Preflight guard (bugs/59): no tool may take a scratch dir under a FIXED name in the shared
 // OS temp. A fixed name is a shared resource with no owner: two concurrent runs (two agent
 // sessions, the polygon next to a single suite, `--selftest` next to a plain run, CI next to a

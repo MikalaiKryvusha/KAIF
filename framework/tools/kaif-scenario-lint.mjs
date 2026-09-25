@@ -49,6 +49,73 @@ import { join } from 'node:path';
 // module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
 import { pathToFileURL as __kaifToUrl } from 'node:url';
 import { resolve as __kaifResolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+
+// ── KAIF-WALK:BEGIN — ONE safe tree walker (2.8, epic SC; origin #77 · Q-R1′). The set of files is the one git sees
+// (`ls-files --cached --others --exclude-standard`: tracked plus untracked, never ignored); without git, a walk that skips
+// .git, node_modules and nested copies. A nested repository (a `.claude/worktrees/*` copy) is not this project; a broken
+// link is SKIPPED WITH A NAME, never a crash; an unreadable directory is FAILED — a scan that could not see part of the tree
+// must never read as clean (the old `try { walk() } catch {}` printed "no lines found" after one broken link). This block
+// in the core is the source: every tool module that walks the tree carries a byte-identical copy (a deployed module cannot
+// import the core), and the build refuses a drifted copy (check-framework 5l; `node tools/sync-walker.mjs` rewrites them).
+// [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
+//  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
+//  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+function kaifWalk(roots) {
+  const files = [], skipped = [], failed = [];
+  const nested = (p) => /(^|\/)\.claude\/worktrees(\/|$)/.test(p);
+  const take = (p) => {
+    if (nested(p)) return;
+    let st;
+    try { st = statSync(p); } catch (e) { skipped.push(`${p} (${e.code || 'unreadable'})`); return; }
+    if (st.isFile()) files.push(p);             // a link to a directory is not entered (git does not enter it either)
+  };
+  const walk = (dir) => {
+    let ents;
+    try { ents = readdirSync(dir, { withFileTypes: true }); } catch (e) { failed.push(`${dir} (${e.code || e.message})`); return; }
+    for (const d of ents) {
+      const p = dir === '.' ? d.name : `${dir}/${d.name}`;
+      if (d.name === '.git' || d.name === 'node_modules' || nested(p)) continue;
+      if (d.isDirectory()) walk(p); else take(p);
+    }
+  };
+  for (const r0 of roots) {
+    const r = walkRoot(r0);
+    let st;
+    try { st = statSync(r); } catch (e) {           // an absent root is the caller's business; a root that IS a broken link is named
+      const cut = r.lastIndexOf('/');
+      try { if (readdirSync(cut < 0 ? '.' : r.slice(0, cut) || '/').includes(r.slice(cut + 1))) skipped.push(`${r} (${e.code || 'unreadable'})`); }
+      catch { /* its parent is gone too — absent */ }
+      continue;
+    }
+    if (!st.isDirectory()) { take(r); continue; }
+    const git = spawnSync('git', ['-C', r, 'ls-files', '-z', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8', maxBuffer: 1 << 28 });
+    if (git.status !== 0) { walk(r); continue; }   // not a work tree, or no git on PATH
+    for (const rel of git.stdout.split('\0')) {
+      if (!rel || rel.endsWith('/')) continue;      // a nested repository is listed as a directory — not this project
+      take(r === '.' ? rel : `${r}/${rel}`);
+    }
+    // git names what it could not open: "No such file" is a broken link (skipped with a name); any other reason is part of the
+    // tree the scan did not see (failed)
+    for (const m of String(git.stderr || '').matchAll(/could not open directory '([^']+)': ([^\r\n]+)/g))
+      (/no such file/i.test(m[2]) ? skipped : failed).push(`${r === '.' ? '' : r + '/'}${m[1].replace(/\/$/, '')} (${m[2].trim()})`);
+  }
+  return { files: [...new Set(files)].sort(), skipped, failed };
+}
+// A root as the walk writes it (forward slashes, no leading ./, no trailing /) — a caller strips `walkRoot(dir) + '/'` from a
+// returned path to judge only the segments BELOW its root (a root inside a skipped directory is still walked when named).
+function walkRoot(r0) { return String(r0).replace(/\\/g, '/').replace(/^\.\/(?=.)/, '').replace(/(?<=.)\/$/, ''); }
+function walkRel(dir, p) { const r = walkRoot(dir); return r === '.' ? p : p.slice(r.length + 1); }
+// The walk's service lines, one wording for every scanner — `walk: ` opens each, so a reader of a scanner's hits tells them
+// from findings: a FAILED walk is never a clean result; a skipped path is counted and named.
+const WALK_NOTE = 'walk: ';
+function walkNotes(tree) {
+  const out = [];
+  if (tree.failed.length) out.push(`${WALK_NOTE}the tree walk FAILED at ${tree.failed.slice(0, 3).join(', ')}${tree.failed.length > 3 ? ` and ${tree.failed.length - 3} more` : ''} — the scan is INCOMPLETE, not clean`);
+  if (tree.skipped.length) out.push(`${WALK_NOTE}skipped ${tree.skipped.length} unreadable path(s) — a broken link, or a file git lists that the disk lacks: ${tree.skipped.slice(0, 3).join(', ')}${tree.skipped.length > 3 ? ', …' : ''}`);
+  return out;
+}
+// ── KAIF-WALK:END
 const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
@@ -149,18 +216,21 @@ export function lint(block) {
 }
 
 // ---------------------------------------------------------------------------
+// 2.8 (epic SC; origin #77 · Q-R1′): the files git sees (kaifWalk above) — a broken link is skipped with a name, never a stack
+// trace; a walk that could not see part of the tree is named, never a clean pass.
+const TREE = { skipped: [], failed: [] };
 function collect(paths) {
   const files = [];
-  const walk = (p) => {
-    if (!existsSync(p)) return;
-    const st = statSync(p);
-    if (st.isDirectory()) {
-      for (const n of readdirSync(p).sort()) { if (SKIP_DIRS.has(n)) continue; walk(join(p, n)); }
-      return;
+  for (const p of paths) {
+    if (!existsSync(p)) continue;
+    const tree = kaifWalk([p]);
+    TREE.skipped.push(...tree.skipped); TREE.failed.push(...tree.failed);
+    for (const f of tree.files) {
+      const segs = walkRel(p, f).split('/');
+      if (segs.slice(0, -1).some((s) => SKIP_DIRS.has(s))) continue;
+      if (/\.md$/i.test(f)) files.push(f);
     }
-    if (/\.md$/i.test(p)) files.push(p.replace(/\\/g, '/'));
-  };
-  for (const p of paths) walk(p);
+  }
   return files;
 }
 
@@ -176,6 +246,8 @@ function check(paths) {
       for (const x of warnings) { nW++; console.log(`⚠ ${f}:${bl.line} — ${x.id}: ${x.msg}`); }
     }
   }
+  for (const n of walkNotes(TREE)) console.log((n.includes('walk FAILED') ? '✖ ' : '⚠ ') + n);
+  if (TREE.failed.length) { console.log('✖ scenario-lint: the tree walk failed — not scanned is not clean'); process.exit(1); }
   if (!scenarios) {
     console.log(`⚠ scenario-lint SKIPPED — no scenario block in ${files.length} file(s) under ${paths.join(' ')}; nothing was linted (exit ${EXIT_SKIPPED})`);
     process.exit(EXIT_SKIPPED);
