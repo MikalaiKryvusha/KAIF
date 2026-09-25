@@ -445,7 +445,7 @@ written.
 | `GOAL.md` · `MASTER_PLAN.md` · `STATUS.md` · `KAIF_FRAMEWORK.md` | this guide · `PHILOSOPHY.md` · `BUG_FIXING_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` · `REQUIREMENTS_FRAMEWORK.md` |
 | epic meta-plans (`plans/NN_EPIC_*`) — the guide itself says the owner sees the whole shape there | operational plans' executor steps · working notes in `bugs/` |
 | everything in `interviews/` and `homeworks/` — the owner answers inside the document | `researches/` (recon detail) · `EXPERIENCE.md` · the maps · the skills |
-| directory READMEs · `README.md` · release notes · every chat report to the owner | |
+| directory READMEs · `README.md` · release notes · every chat report to the owner — with the lines a skill asks for by name in it, written in the owner's language (2.8, origin issue #97) | the keys a machine or the judge greps in a document: `FORK:` · `AUTH:` · `INTENT:` · `TWINS:` · `PENDING:` |
 
 Two boundaries stop the rule from drifting:
 

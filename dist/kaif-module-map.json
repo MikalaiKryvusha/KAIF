@@ -116,7 +116,7 @@
       {
         "signature": "### Languages — routed by AUDIENCE, never by directory",
         "class": "adaptive",
-        "sha256": "fbe37c4e739ca44879573f0fe92e69ab78f106078ebef12c1ed5ac430a241506",
+        "sha256": "b20e8b6d9f39ecbef2c17a4759c0d161a1d14fe7e94b007d5a593c7f9f0258bd",
         "lines": [
           434,
           470
@@ -2404,7 +2404,7 @@
       {
         "signature": "## Step 1. The handover — only what must not be lost",
         "class": "static",
-        "sha256": "c438dd793d645b7927f14af6e4d27ead1cd749599eb5b1a0c450a68b7a1cd919",
+        "sha256": "a037b6b175afa0e970e8c204c7ce1a497a3dd5b8291d3642e98a20e7b4db1c2b",
         "lines": [
           11,
           30
@@ -2523,10 +2523,10 @@
       {
         "signature": "### Step 5. The farewell report",
         "class": "static",
-        "sha256": "870d9f9a177f73f55a7fdbeca2b2d6bc5704f35c0b2fca9add1437104f47e7dc",
+        "sha256": "95590516557c3dbdf728e4ed9695ac68598036e1ef6e3e2eb70efb18a19c310d",
         "lines": [
           121,
-          135
+          136
         ]
       },
       {
@@ -2534,8 +2534,8 @@
         "class": "static",
         "sha256": "c3aa9b2465934f62c753d8300d28d356795065e45778db5b5018d97402c56a56",
         "lines": [
-          136,
-          146
+          137,
+          147
         ]
       }
     ],
@@ -2682,7 +2682,7 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "699b780d1913df960a10d8a64f0cba755a0ce32ac930e84f00abd1294656997a",
+        "sha256": "80f06c95fdb4c04e00e62c59f76d50d98a9d07c8be6d08d7584ca8219554e41e",
         "lines": [
           23,
           85

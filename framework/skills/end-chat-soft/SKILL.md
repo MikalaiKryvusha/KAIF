@@ -125,7 +125,8 @@ the handover in one paragraph — the main thing the NEXT chat should do first. 
 
 One line of that report is asked BY NAME, because nothing else in the session asks it
 (`AGENT_GUIDE.md` → "a falsehood is corrected where it stands"): **which statement of this session
-turned out to be false, and where does it still stand?** Answer it in the report, verbatim:
+turned out to be false, and where does it still stand?** Answer it in the report, in the owner's language (`.kaif/kaif.json` →
+`language`; 2.8, origin issue #97 — the owner reads this line, no machine does); the English form is:
 
 `Standing falsehood: none` — or `Standing falsehood: <the statement> → corrected in <place>, <place>`
 
