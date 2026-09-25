@@ -46,6 +46,7 @@ If it shapes brand/architecture/UX for the long term — interview.
 
   > Topic: <one sentence on what this interview is about>
   > Source of the idea: <file/chat, date>
+  > Created: <YYYY-MM-DD HH:MM ±HH:MM — from `date` in the same call; the archaeology door judges questions from this date on>
   > Status: **🟡 awaiting the owner's answers**
 
   ## Context / what I already found in the code

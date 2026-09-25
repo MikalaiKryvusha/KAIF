@@ -29,7 +29,7 @@
 //         after ARCHAEOLOGY_SINCE must not open without the attestation of the search that was run
 //         (`<!-- archaeology: … → N hits · read: … · prior: … -->`); the refusal prints the READY grep.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve, basename, extname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { PARSER, texts } from './texts.mjs';
@@ -324,6 +324,7 @@ const ARCHAEOLOGY_NA_RE = /<!--\s*archaeology:\s*n\/a\s*[-—–:]*\s*\S/u;
 const ARCHAEOLOGY_HITS_RE = /(?:→|->)\s*(\d+)\s*hits/iu;
 const ARCHAEOLOGY_PRIOR_RE = /prior:\s*([\s\S]*)$/iu;
 const ARCHAEOLOGY_PRIOR_NONE_RE = /^\s*none(?![\p{L}\d])/iu;
+const ARCHAEOLOGY_READ_NONE_RE = /read:\s*none(?![\p{L}\d])/iu;   // OW5 (2.8, #74): hits found and NOTHING read — refused
 const STOP_WORDS = new Set(String(PARSER.archaeologyStopWords || '').split('|').filter(Boolean));
 
 /** The document's header date: the `Created` line of the head when present, else its first ISO date. */
@@ -357,10 +358,31 @@ export function archaeologyWords(title) {
   return (words.length ? words : pick(ARCHAEOLOGY_MIN_LETTERS_FALLBACK)).slice(0, ARCHAEOLOGY_MAX_WORDS);
 }
 
-/** The READY command for a question heading — the door prints it, the agent copies and runs it. */
+/** The READY command for a question heading — the door prints it, the agent copies and runs it. The UTF-8 locale is part of the command:
+ *  Git Bash's `grep -i` without it misses a capital Cyrillic letter (origin issue #74). The door can also search itself — archaeologySearch. */
 export function archaeologyGrep(title) {
   const words = archaeologyWords(title);
-  return words.length ? 'grep -rniE "' + words.join('|') + '" ' + ARCHAEOLOGY_PATHS : null;
+  return words.length ? 'LC_ALL=C.UTF-8 grep -rniE "' + words.join('|') + '" ' + ARCHAEOLOGY_PATHS : null;
+}
+// OW5 (2.8, origin issues #74 · #82): the door SEARCHES itself — in Node, Unicode-aware and case-insensitive, so no shell and no locale
+// decides whether a capital Cyrillic letter is found. Same words, same paths as the printed command; hits are LINES, like `grep -rn`.
+// [TESTED: 2026-09-25 19:07–19:10 · selftest 83 · s22 E on the deployed copy (red on v2.7) · mutant «search case-sensitive» red exactly on its
+//  case · on the origin in Git Bash without a locale the door found 473 lines = grep with LC_ALL=C.UTF-8, 30 more than a bare grep -i;
+//  report testcases/reports/2026-09-25_ow5-archaeology-any-transport.md]
+export function archaeologySearch(root, words, paths = ARCHAEOLOGY_PATHS) {
+  const out = { hits: 0, files: [], lines: [] };
+  if (!words.length) return out;
+  const re = new RegExp(words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'iu');
+  const files = [];
+  const walk = (p) => { if (!existsSync(p)) return; if (statSync(p).isDirectory()) { for (const f of readdirSync(p).sort()) walk(join(p, f)); } else if (/\.md$/i.test(p)) files.push(p); };
+  for (const rel of paths.split(/\s+/).filter(Boolean)) walk(resolve(root, rel));
+  for (const f of files) {
+    const lines = readFileSync(f, 'utf8').split(/\r?\n/);
+    let n = 0;
+    lines.forEach((l, i) => { if (re.test(l)) { n++; out.lines.push({ file: f, line: i + 1, text: l.trim().slice(0, 100) }); } });
+    if (n) { out.hits += n; out.files.push(f); }
+  }
+  return out;
 }
 
 /** The attestation of ONE question: what stands between its heading and its first option. */
@@ -373,7 +395,7 @@ export function archaeologyOf(q) {
   const hits = m[1].match(ARCHAEOLOGY_HITS_RE);
   const prior = m[1].match(ARCHAEOLOGY_PRIOR_RE);
   if (!hits || !prior) return { present: true, formOk: false };
-  return { present: true, formOk: true, hits: Number(hits[1]), priorNone: ARCHAEOLOGY_PRIOR_NONE_RE.test(prior[1]) };
+  return { present: true, formOk: true, hits: Number(hits[1]), priorNone: ARCHAEOLOGY_PRIOR_NONE_RE.test(prior[1]), readNone: ARCHAEOLOGY_READ_NONE_RE.test(m[1]) };
 }
 
 /**
@@ -399,7 +421,8 @@ export function archaeology(md) {
     }
     if (!a.formOk) { out.problems.push({ id: q.id, kind: 'malformed', grep }); continue; }
     out.attested++;
-    if (a.hits > 0 && a.priorNone) out.problems.push({ id: q.id, kind: 'hits-without-prior', hits: a.hits, grep });
+    if (a.hits > 0 && a.readNone) out.problems.push({ id: q.id, kind: 'hits-unread', hits: a.hits, grep });   // OW5 (#74)
+    else if (a.hits > 0 && a.priorNone) out.problems.push({ id: q.id, kind: 'hits-without-prior', hits: a.hits, grep });
   }
   return out;
 }
@@ -409,6 +432,9 @@ function archaeologyProblems(md) {
   const ARCH = (grep) => '<!-- archaeology: ' + (grep || 'grep -rniE "<nouns>" ' + ARCHAEOLOGY_PATHS)
     + ' → N hits · read: <files|none> · prior: <none | "<prior answer>" + address> -->';
   return archaeology(md).problems.map((p) => {
+    if (p.kind === 'hits-unread')
+      return p.id + ': archaeology says ' + p.hits + ' hits and `read: none` — the search FOUND something and nothing was read. Read the hits'
+        + ' (the door searches for you: review.mjs --search "<the question>") and name what you read, then the prior answer or `prior: unrelated — <why>`.';
     if (p.kind === 'hits-without-prior')
       return p.id + ': archaeology says ' + p.hits + ' hits and `prior: none` — the search FOUND something and no prior'
         + ' answer is named. Read the hits and name the prior answer with its address, or write `prior: unrelated — <why>`'

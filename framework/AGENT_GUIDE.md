@@ -868,7 +868,8 @@ brand/architecture/UX for the long term — interview.
 
 Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
 per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
-interpretation. Interviews are for vision-level forks that outlive the task.
+interpretation — after the archaeology search an interview question passes: `node .kaif/tools/contour/review.mjs --search "<question>"`
+(a question in ANY transport claims the matter is unsettled). Interviews are for vision-level forks that outlive the task.
 
 **The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
 review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue

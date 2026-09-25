@@ -46,6 +46,7 @@ description: Провести интервью с владельцем по от
 
   > Topic: <одно предложение о том, про что это интервью>
   > Source of the idea: <файл/чат, дата>
+  > Created: <ГГГГ-ММ-ДД ЧЧ:ММ ±ЧЧ:ММ — пробой `date` в том же вызове; дверь археологии судит вопросы с этой даты>
   > Status: **🟡 awaiting the owner's answers**
 
   ## Context / what I already found in the code

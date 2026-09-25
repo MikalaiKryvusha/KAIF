@@ -269,10 +269,10 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "1d2bba3777cf5abc9c0bb3621b5b6635395722922059be65aedbbfec8f8ae8db",
+        "sha256": "b011bf625cf8f018f63f5fd7da50ab165460be20f539f574ddb6d7233b0b7d89",
         "lines": [
           860,
-          1051
+          1052
         ]
       },
       {
@@ -280,8 +280,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1052,
-          1066
+          1053,
+          1067
         ]
       },
       {
@@ -289,8 +289,8 @@
         "class": "static",
         "sha256": "a150f5dbf5b41e7ff824ddbd117246ec802c1404ea3d9135a910444e8d9faff5",
         "lines": [
-          1067,
-          1080
+          1068,
+          1081
         ]
       }
     ],
@@ -3303,10 +3303,10 @@
       {
         "signature": "### Step 2. Create the interview document",
         "class": "static",
-        "sha256": "4d8eb5626add8e795a670c07844411cac03d85e3d551f4faf6dc990c6d62eaef",
+        "sha256": "5c021b2a9c17290c4db7b1408a1cd0efbc4b0109741920ab4262314f944cf119",
         "lines": [
           40,
-          74
+          75
         ]
       },
       {
@@ -3314,8 +3314,8 @@
         "class": "static",
         "sha256": "182198296c3c0f69a47a1ec69ea6e17c4302207dd1e9053c4ab1208d2a0a4f73",
         "lines": [
-          75,
-          101
+          76,
+          102
         ]
       },
       {
@@ -3323,8 +3323,8 @@
         "class": "static",
         "sha256": "75c2a595aebea11e35ea527113a5074f156a5bfe3ed0cd89374d2914fa2a8206",
         "lines": [
-          102,
-          153
+          103,
+          154
         ]
       },
       {
@@ -3332,8 +3332,8 @@
         "class": "static",
         "sha256": "04fd843a09fda10da1c00e730812d12a58e2a12c433bf57a310a27043c4e3693",
         "lines": [
-          154,
-          172
+          155,
+          173
         ]
       },
       {
@@ -3341,8 +3341,8 @@
         "class": "static",
         "sha256": "00be9cbde7ad90367354626af47021b3a3c6a5a8e164ad7c4fb74a086eb99def",
         "lines": [
-          173,
-          186
+          174,
+          187
         ]
       },
       {
@@ -3350,8 +3350,8 @@
         "class": "static",
         "sha256": "c6da72c3a45ff6a2cad6faa5d5c6b82a6a1c72e288b853a09af1a145dc8fbe13",
         "lines": [
-          187,
-          220
+          188,
+          221
         ]
       },
       {
@@ -3359,8 +3359,8 @@
         "class": "static",
         "sha256": "d6862b9574321dc349aadd9227378945dde0e402873d4475f9d2ca67cebb51ee",
         "lines": [
-          221,
-          235
+          222,
+          236
         ]
       },
       {
@@ -3368,8 +3368,8 @@
         "class": "static",
         "sha256": "1a1f00e2ed5c248774c5ad8980d91e28dd91c8e95ad0f687e252df61fa4e2535",
         "lines": [
-          236,
-          267
+          237,
+          268
         ]
       },
       {
@@ -3377,8 +3377,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          268,
-          272
+          269,
+          273
         ]
       }
     ],

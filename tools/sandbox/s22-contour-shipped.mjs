@@ -249,7 +249,8 @@ ok(r.code === 3 && /no archaeology line/.test(r.out) && /grep -rniE/.test(r.out)
 r = aqCheck(aqHead('2026-09-18') + aqQ(AQ_ATT));
 ok(r.code === 0 && /(археология|archaeology): (аттестовано 1 из 1|1 of 1)/.test(r.out),
    's22 E: та же фикстура С аттестацией → код 0, и дверь печатает «археология: аттестовано 1 из 1»', 'exit ' + r.code + ': ' + r.out.slice(-300));
-r = aqCheck(aqHead('2026-09-18') + aqQ(AQ_ATT.replace('0 hits', '5 hits')));
+// находки ПРОЧИТАНЫ (с 2.8 OW5 «read: none» при находках отказывается первым) — случай стережёт своё правило, «prior» не назван
+r = aqCheck(aqHead('2026-09-18') + aqQ(AQ_ATT.replace('0 hits', '5 hits').replace('read: none', 'read: plans/03_shop.md')));
 ok(r.code === 3 && /5 hits and `prior: none`/.test(r.out),
    's22 E: аттестация с «→ 5 hits» и «prior: none» → код 3 (поиск нашёл, прошлый ответ не назван)', 'exit ' + r.code + ': ' + r.out.slice(-300));
 r = aqCheck(aqHead('2026-09-18') + aqQ('', ' A) кристаллы'));
@@ -257,6 +258,17 @@ ok(r.code === 0, 's22 E: ОТВЕЧЕННЫЙ вопрос без аттеста
 r = aqCheck(aqHead('2026-09-01') + aqQ(''));
 ok(r.code === 0 && /(не судится|not judged)/.test(r.out) && /2026-09-01/.test(r.out),
    's22 E: дата шапки ДО порога → код 0, и дверь говорит вслух «не судится — дата шапки …» (история поля не краснеет)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+// OW5 (2.8, тикеты #74 · #82): поиск прошлого ответа — при ЛЮБОМ транспорте вопроса. Дверь ищет сама (Node, без шелла и локали):
+// заглавная кириллица находится; аттестация «N hits · read: none» — поиск нашёл, ничего не прочитано — отказ кодом 3.
+// «prior: unrelated» законен — отказать может ТОЛЬКО правило «ничего не прочитано» (на v2.7 та же фикстура — код 0)
+r = aqCheck(aqHead('2026-09-18') + aqQ(AQ_ATT.replace('0 hits', '5 hits').replace('prior: none', 'prior: unrelated — находки про магазин')));
+ok(r.code === 3 && /5 hits and `read: none`/.test(r.out),
+   's22 E: аттестация «→ 5 hits · read: none · prior: unrelated» → код 3 — поиск нашёл, ничего не прочитано (OW5, #74)', 'exit ' + r.code + ': ' + r.out.slice(-300));
+writeFileSync(join(P, 'interviews', 'interview_055_prior.md'), '# Interview #055\n\n> Status: answered\n\n### Q1. ВИТРИНА — какой первый экран?\n\n**Answer:** A\n');
+r = runGen(P, ['--search', 'Витрина или репозиторий?']);
+ok(r.code === 0 && /interview_055_prior\.md:5: .*ВИТРИНА/.test(r.out) && /→ [1-9]\d* hits/.test(r.out) && /attest: <!-- archaeology:/.test(r.out),
+   's22 E: --search «Витрина или репозиторий?» → код 0, находка с ЗАГЛАВНОЙ кириллицей названа файлом и строкой, готова строка аттестации (OW5, #74)', 'exit ' + r.code + ': ' + r.out.slice(-400));
+rmSync(join(P, 'interviews', 'interview_055_prior.md'), { force: true });
 rmSync(join(P, AQ_DOC), { force: true });
 
 // ================================================================ C: маршрут обновления (критерий 4)

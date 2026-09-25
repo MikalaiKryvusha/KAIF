@@ -49,6 +49,7 @@ import {
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
+  archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -101,7 +102,7 @@ const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
 // the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
-const KNOWN_FLAGS = ['--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
+const KNOWN_FLAGS = ['--search', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
   '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
   '--where', '--close', '--force', '--owner-word'];
 const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
@@ -1490,16 +1491,19 @@ export function selftest(log = console.log) {
   const aqHead = (date) => '# Interview #099\n\n> Status: awaiting\n> Created: ' + date + '\n\n';
   const aqQ = (attestation, answer) => '### Q1. What do we name the game currency?\n\n' + attestation
     + '| Option | Meaning |\n|---|---|\n| **A** | crystals |\n| **B** | coins |\n\n**Answer:**' + (answer || '') + '\n';
-  const AQ_CMD = 'grep -rniE "name|game|curren" ' + ARCHAEOLOGY_PATHS; // 6+ letters are searched by their stem
+  // the printed command carries the UTF-8 locale since 2.8 (OW5, #74: Git Bash's grep -i missed a capital Cyrillic letter without it)
+  const AQ_CMD = 'LC_ALL=C.UTF-8 grep -rniE "name|game|curren" ' + ARCHAEOLOGY_PATHS; // 6+ letters are searched by their stem
   const AQ_OK = '<!-- archaeology: ' + AQ_CMD + ' → 0 hits · read: none · prior: none -->\n\n';
   const aqCheck = (body) => { writeFileSync(join(root, AQD), body); lines.length = 0; return checkDoc(root, AQD, cap); };
   ok(aqCheck(aqHead('2026-09-18') + aqQ('')) === 3 && lines.some((l) => /Q1: no archaeology line/.test(l)) && lines.some((l) => l.includes(AQ_CMD)),
     'archaeology: a live question of a document dated on the threshold without the attestation → exit 3, and the door prints the READY grep of the heading nouns');
   ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK)) === 0 && lines.some((l) => /archaeology: 1 of 1 live question/.test(l)),
     'archaeology: the attestation with 0 hits and `prior: none` → exit 0, and --check says 1 of 1 attested (N = 0 is honest, the axis never promises a find)');
-  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits'))) === 3 && lines.some((l) => /3 hits and `prior: none`/.test(l)),
+  // the hits are READ in both fixtures below (since 2.8 OW5 `read: none` with hits is refused first) — each case guards its own rule
+  const AQ_READ = (s) => s.replace('read: none', 'read: plans/03_shop.md');
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_READ(AQ_OK.replace('0 hits', '3 hits')))) === 3 && lines.some((l) => /3 hits and `prior: none`/.test(l)),
     'archaeology: hits found and no prior answer named → exit 3 (the #70 class: the owner had answered it already)');
-  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_OK.replace('0 hits', '3 hits').replace('prior: none', 'prior: unrelated — the hits are about the shop layout'))) === 0,
+  ok(aqCheck(aqHead('2026-09-18') + aqQ(AQ_READ(AQ_OK.replace('0 hits', '3 hits').replace('prior: none', 'prior: unrelated — the hits are about the shop layout')))) === 0,
     'archaeology: `prior: unrelated — <why>` is a legal answer to hits');
   ok(aqCheck(aqHead('2026-09-18') + aqQ('<!-- archaeology: searched a bit -->\n\n')) === 3 && lines.some((l) => /not in the form/.test(l)),
     'archaeology: an attestation without `N hits` and `prior:` is NOT an attestation → exit 3 (fail-closed, never a silent pass)');
@@ -1512,6 +1516,21 @@ export function selftest(log = console.log) {
   ok(headerDate('# I\n\n> Status: answered 2026-09-18 10:00\n> Created: 2026-09-13 09:47\n') === '2026-09-13',
     'archaeology: the header date is the CREATION line — an answer date standing above it never ages an old document forward');
   rmSync(join(root, AQD), { force: true });
+  // OW5 (2.8, origin issues #74 · #82): the door SEARCHES itself — a CAPITAL Cyrillic word is found with no shell and no locale (Git
+  // Bash's grep -i without the UTF-8 locale missed it); `N hits · read: none` is refused — the search found something and nothing was
+  // read. The fixtures are escaped: the payload source stays ASCII (build guard), the strings are Cyrillic at run time.
+  const OW5_PRIOR = 'interviews/interview_006_prior.md';
+  writeFileSync(join(root, OW5_PRIOR), '# Interview #006\n\n> Status: answered\n\n### Q1. \u0412\u0418\u0422\u0420\u0418\u041d\u0410 \u2014 \u043a\u0430\u043a\u043e\u0439 \u043f\u0435\u0440\u0432\u044b\u0439 \u044d\u043a\u0440\u0430\u043d?\n\n**Answer:** A\n');
+  const ow5 = archaeologySearch(root, archaeologyWords('\u0412\u0438\u0442\u0440\u0438\u043d\u0430 \u0438\u043b\u0438 \u0440\u0435\u043f\u043e\u0437\u0438\u0442\u043e\u0440\u0438\u0439?'));
+  ok(ow5.files.some((f) => f.endsWith('interview_006_prior.md')) && ow5.hits >= 1,
+    'archaeology search: the door\'s own search finds a CAPITAL Cyrillic word — no shell, no locale decides (OW5, #74)');
+  ok(aqCheck(aqHead('2026-09-20') + aqQ(AQ_OK.replace('0 hits', '2 hits').replace('prior: none', 'prior: unrelated — a different screen'))) === 3
+    && lines.some((l) => /2 hits and `read: none`/.test(l)),
+    'archaeology: `N hits · read: none` → exit 3 even with a legal `prior: unrelated` — the search found something and nothing was read (OW5, #74)');
+  ok(aqCheck(aqHead('2026-09-20') + aqQ(AQ_OK.replace('0 hits', '2 hits').replace('read: none', 'read: ' + OW5_PRIOR)
+    .replace('prior: none', 'prior: unrelated — a different screen'))) === 0,
+    'archaeology: hits with the file READ and `prior: unrelated — <why>` → exit 0 (the door refuses the unread find, never the find)');
+  rmSync(join(root, OW5_PRIOR), { force: true }); rmSync(join(root, AQD), { force: true });
   // I44/I45 (QL2, #54): the fourth fact — implemented; the queue and the show refuse what is already implemented
   const IMPL = 'interviews/interview_097_impl.md';
   writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
@@ -1723,6 +1742,17 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   }
   // LP (#66): before the queue, the check or a show — pick up what the owner saved while a server was gone
   const afterRecovery = (fn) => recoverFromWindow(root, { log: console.log }).then(fn, (e) => { console.log('recovery failed: ' + e.message); fn(); });
+  if (args.includes('--search')) { // OW5 (2.8, #82 · #74): the archaeology of a question in ANY transport — a chat question too
+    const text = opt('--search');
+    if (!text) usage();
+    const words = archaeologyWords(text);
+    const r = archaeologySearch(root, words);
+    console.log('archaeology search: "' + words.join('|') + '" → ' + r.hits + ' hits in ' + r.files.length + ' file(s)');
+    for (const h of r.lines.slice(0, 12)) console.log('  ' + relDoc(root, h.file) + ':' + h.line + ': ' + h.text);
+    if (r.lines.length > 12) console.log('  … ' + (r.lines.length - 12) + ' more');
+    console.log('attest: <!-- archaeology: search "' + words.join('|') + '" → ' + r.hits + ' hits · read: <what you read | none> · prior: <none | "<prior answer>" + address | unrelated — why> -->');
+    process.exit(0);
+  }
   if (args.includes('--check')) { // QL1 (#56): the form check is a DOOR of its own — never the show
     if (!docPath) usage();
     afterRecovery(() => process.exit(checkDoc(root, docPath)));

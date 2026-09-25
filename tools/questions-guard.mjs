@@ -585,12 +585,17 @@ export function runGuard({ root, baselinePath, writeBaseline = false, log = cons
     // bugs/62: вопрос, который владелец не может ОТВЕТИТЬ в один клик. Отказ называет верный ход
     // (семейство 12) — обе легальные формы варианта и законный выход «свободный вопрос».
     ...iv.unanswerable.map((u) => (u.arch
-      ? { ...u, kind: u.arch.kind === 'hits-without-prior'
+      ? { ...u, kind: u.arch.kind === 'hits-unread'
+            ? 'АРХЕОЛОГИЯ: попадания есть, ни одно не прочитано (G11, issue #74)'
+            : u.arch.kind === 'hits-without-prior'
             ? 'АРХЕОЛОГИЯ: попадания есть, прошлый ответ не назван (G11, issue #70)'
             : u.arch.kind === 'malformed'
             ? 'АРХЕОЛОГИЯ: аттестация не в форме (G11, issue #70)'
             : 'ВОПРОС БЕЗ АРХЕОЛОГИИ (G11, issue #70)',
-          text: u.arch.kind === 'hits-without-prior'
+          text: u.arch.kind === 'hits-unread'
+            ? `${u.q}: аттестация говорит «→ ${u.arch.hits} hits» и «read: none» — поиск НАШЁЛ, а прочитано ничего; прочитай попадания `
+              + '(дверь ищет сама: node tools/review.mjs --search "<вопрос>") и назови прочитанное, затем прошлый ответ или `prior: unrelated — <почему>`'
+            : u.arch.kind === 'hits-without-prior'
             ? `${u.q}: аттестация говорит «→ ${u.arch.hits} hits» и `
               + '`prior: none` — поиск НАШЁЛ, а прошлый ответ не назван. Прочитай попадания и назови прошлый ответ '
               + 'адресом, либо напиши `prior: unrelated — <почему>`'
@@ -751,8 +756,11 @@ function selftest() {
     () => w('interviews/interview_096_x.md', IV_ARCH(ARCHAEOLOGY_SINCE, '')), true, 'БЕЗ АРХЕОЛОГИИ');
   mut('та же фикстура с аттестацией «→ 0 hits · prior: none» (G11) → зелёный', '0 нарушений: поиск состоялся и записан',
     () => w('interviews/interview_096_x.md', IV_ARCH(ARCHAEOLOGY_SINCE, ATT_0)), false, '');
-  mut('аттестация с «→ 4 hits» и «prior: none» (G11) → красный', 'нарушение «попадания есть, прошлый ответ не назван»',
-    () => w('interviews/interview_096_x.md', IV_ARCH(ARCHAEOLOGY_SINCE, ATT_0.replace('0 hits', '4 hits'))), true, 'прошлый ответ не назван');
+  // находки ПРОЧИТАНЫ (с 2.8 OW5 «read: none» при находках отказывается первым) — мутация стережёт своё правило, «prior» не назван
+  mut('аттестация с «→ 4 hits», прочитанным файлом и «prior: none» (G11) → красный', 'нарушение «попадания есть, прошлый ответ не назван»',
+    () => w('interviews/interview_096_x.md', IV_ARCH(ARCHAEOLOGY_SINCE, ATT_0.replace('0 hits', '4 hits').replace('read: none', 'read: plans/03_shop.md'))), true, 'прошлый ответ не назван');
+  mut('аттестация с «→ 4 hits · read: none» при законном «prior: unrelated» (G11, OW5 #74) → красный', 'нарушение «попадания есть, ни одно не прочитано»',
+    () => w('interviews/interview_096_x.md', IV_ARCH(ARCHAEOLOGY_SINCE, ATT_0.replace('0 hits', '4 hits').replace('prior: none', 'prior: unrelated — про магазин'))), true, 'ни одно не прочитано');
   mut('та же фикстура без аттестации, но дата шапки до порога (G11) → зелёный', '0 нарушений: ось действует вперёд, история не красится',
     () => w('interviews/interview_096_x.md', IV_ARCH('2026-09-05', '')), false, '');
 
