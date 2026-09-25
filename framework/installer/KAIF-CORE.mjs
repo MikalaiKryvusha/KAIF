@@ -1246,8 +1246,45 @@ function languageArrivalsOf(paths) {
   return (paths || []).filter((p) => p.endsWith('.md') && okOnDisk(p) && !re.test(readFileSync(p, 'utf8')));
 }
 
+// ── Owner-voice snapshot sync (2.8, epic VO, the origin's plans/120 VO3; origin issue #103) ─────────────────────────────────────
+// A project whose voice portrait DERIVES from the release's public voice snapshot — it names one of the markers the release's
+// bundle meta lists (`ownerVoice.markers`; the bundle, not the loader manifest: both update routes read it) — takes the new snapshot by REPLACEMENT, never a merge: the owner's word in issue #103
+// («не мержем, а заменой»). The file's form after it: an optional LOCAL part (a project preamble, a genre shell re-derived over the
+// new snapshot) ABOVE the snapshot's first line, then the snapshot byte for byte to the end — the checkpoint verifies that part by
+// sha256 (LF). A portrait that names none of the markers is another owner's: no item, not a byte touched. The machinery reads the
+// markers from the BUNDLE META and never knows whose voice it is.
+// [TESTED: 2026-09-25 16:07 +03:00 · s26 section (5) on the deployed core: item for a derived copy with a preamble, checkpoint refuses before the
+//  replacement and on a merge, accepts the replacement; another owner's portrait and a current one — no item; the hand-over at recheck for a
+//  task of the previous core; red on dist v2.7; mutants M9–M12 red on their addressees; field clones (two deployments, both routes) replaced
+//  and accepted, sources untouched; report testcases/reports/2026-09-25_vo3-portrait-replace.md]
+const PORTRAIT_FILE = 'AUTHOR_STYLOMETRY.md';
+const lfSha256 = (s) => createHash('sha256').update(String(s).replace(/\r\n/g, '\n'), 'utf8').digest('hex');
+/** The part of a portrait from the snapshot's first line to the end (LF), or null when the line is absent. */
+function snapshotTail(text, head) {
+  const lines = String(text).replace(/\r\n/g, '\n').split('\n');
+  const at = head ? lines.indexOf(head) : -1;
+  return at < 0 ? null : lines.slice(at).join('\n');
+}
+/** The update's verdict on the project's portrait against the release pin → null (nothing to do) or { marker, was, … pin }. */
+function portraitSync(pin) {
+  if (!pin || !/^[0-9a-f]{64}$/.test(pin.sha256 || '') || !Array.isArray(pin.markers) || !pin.head || !okOnDisk(PORTRAIT_FILE)) return null;
+  const text = readFileSync(PORTRAIT_FILE, 'utf8');
+  const marker = pin.markers.find((m) => text.includes(m));
+  if (!marker) { log(`· voice portrait: ${PORTRAIT_FILE} names none of the release snapshot's markers — another owner's portrait, left untouched`); return null; }
+  const tail = snapshotTail(text, pin.head);
+  if (tail !== null && lfSha256(tail) === pin.sha256) { log(`✔ voice portrait: ${PORTRAIT_FILE} already carries this release's snapshot (sha ${pin.sha256.slice(0, 12)})`); return null; }
+  const esc = marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const was = (new RegExp(`${esc}\\D{0,30}?(\\d+\\.\\d+)`).exec(text) || [])[1] || null;
+  return { ...pin, marker, was };
+}
+
+/** The owner-voice instruction — ONE text for the task item and for the refusal of `checkpoint recheck` (the hand-over). */
+function ownerVoiceInstruction(ownerVoice) {
+  return `Your voice portrait \`${PORTRAIT_FILE}\` derives from this release's public voice snapshot (it names «${ownerVoice.marker}»; the core it carries: ${ownerVoice.was || 'not stated'}), and the release ships the snapshot of core ${ownerVoice.core || 'not stated'}. The owner's word (origin issue #103): REPLACE the snapshot, never merge it. (1) Fetch the release file: \`curl -fsSL ${ownerVoice.url} -o ${PORTRAIT_FILE}.release\` — its sha256 (LF) is ${ownerVoice.sha256}. (2) Keep ONLY your local part — the lines ABOVE the snapshot (a project preamble; a genre shell, re-derived over the new snapshot by /owner-voice) — and put the release file after it BYTE FOR BYTE, from its first line «${ownerVoice.head}» to the end; a project tool that stamps its own blocks INTO the portrait runs after this checkpoint. (3) Name it in the update report: \`voice portrait: core ${ownerVoice.was || 'not stated'} → ${ownerVoice.core || 'not stated'} (replaced)\`. The checkpoint verifies the snapshot part by sha256 and refuses until it matches.`;
+}
+
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [] } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [], ownerVoice = null } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   // Checklists and decision tables inside framework files often carry the OWNER's recorded
@@ -1297,6 +1334,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
     : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)`]);
   // The closing gates, forecast (2.8, epic CK, step CK5.6 — see closingGatesForecast): UNCONDITIONAL, like stale-claims, so that
   // "nothing stops the first closing" is a printed verdict and never an absent item.
+  if (ownerVoice) items.push(['owner-voice-core', ownerVoiceInstruction(ownerVoice)]);
   items.push(['closing-gates', `The closing ritual (/end-chat-soft) runs these gates. Their verdicts over the tree as it stands NOW, after the mechanical pass (measured read-only — nothing was written); the merges ahead can move the numbers, and the checkpoint measures again. Where a line says STOPS, act before the first closing — move the content to the address the line names, fix the finding, or record the inherited debt with the command the lint names; a line that passes with debt recorded tells you what the NEXT closing will demand:\n${closingGatesForecast(meta.version).map((l) => `    · ${l}`).join('\n')}`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
@@ -2102,7 +2140,7 @@ async function cmdUpdate() {
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
     { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths), verdictMismatches,
-      sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback });
+      sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: portraitSync(meta.ownerVoice) });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — a field report, §4). Survives self-clean; update-verify stamps it when the gates pass.
@@ -3045,8 +3083,8 @@ async function cmdInstall() {
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
         cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches, modeSwitch,
-                sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback }
-            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback });
+                sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice) }
+            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice) });
     }
     if (existsSync(TASK_FILE)) {
       // Judge finding (L3): an adaptation IN PROGRESS (recorded checkpoints/verdict) must not
@@ -3705,6 +3743,14 @@ function cmdCheckpoint() {
       log('ℹ closing gates — this task was written by the previous core, which had no closing-gates item; where the first closing stops, measured now over the merged tree (read-only):');
       for (const l of closingGatesForecast(version)) log('    · ' + l);
     }
+    // The hand-over of the owner-voice snapshot sync (2.8, epic VO, VO3) — the same two-author route: a task written by a core older
+    // than 2.8 has no owner-voice-core item. The fresh core reads the release pin from the bundle this update brought and REFUSES
+    // while a derived portrait is not the release snapshot — the owner's word is a requirement, not a forecast (origin issue #103).
+    if (tag === 'KAIF-UPDATE' && !task.includes('kaif-core.mjs checkpoint owner-voice-core')) {
+      const b = parseBundle('.kaif/install/KAIF-CORE-BUNDLE.md', true);
+      const ov = b && b.meta ? portraitSync(b.meta.ownerVoice) : null;
+      if (ov) die(`checkpoint recheck REFUSED — this task was written by the previous core, which had no owner-voice-core item; the release requires it: ${ownerVoiceInstruction(ov)} After the replacement re-run \`node .kaif/kaif-core.mjs checkpoint recheck\`.`);
+    }
     // execFileSync + process.execPath: no shell (paths with $/backticks survive on POSIX),
     // no PATH lookup (the same node binary that runs this process runs the check).
     try {
@@ -3758,6 +3804,20 @@ function cmdCheckpoint() {
         else log('✔ stale-claims scan ran clean (executed by the checkpoint itself)');
       } else log('⚠ stale-claims scan skipped: no update receipt with from/to versions — tick records on your word');
     } catch (e) { log(`⚠ stale-claims scan errored (${e.message}) — tick records on your word`); }
+  }
+  if (id === 'owner-voice-core') {
+    // The item names the release pin in its own text (sha256 and the snapshot's first line): the tick verifies the snapshot part of
+    // the portrait against it and refuses until it matches — «заменой», checked by bytes, not attested (2.8, epic VO; issue #103).
+    const item = (task.match(/^- \*\*owner-voice-core\*\* — [^\n]*/m) || [''])[0];
+    const want = (item.match(/its sha256 \(LF\) is ([0-9a-f]{64})/) || [])[1];
+    const head = (item.match(/from its first line «([^»\n]+)»/) || [])[1];
+    if (!want || !head) die('checkpoint owner-voice-core REFUSED: the task item carries no release pin (sha256 / first line) — the task is not one this core wrote');
+    if (!okOnDisk(PORTRAIT_FILE)) die(`checkpoint owner-voice-core REFUSED: ${PORTRAIT_FILE} is not on disk — the release snapshot replaces it, never deletes it`);
+    const tail = snapshotTail(readFileSync(PORTRAIT_FILE, 'utf8'), head);
+    if (tail === null) die(`checkpoint owner-voice-core REFUSED: ${PORTRAIT_FILE} has no line «${head}» — the release snapshot is not in it yet (fetch it and put it after your local part, byte for byte)`);
+    const got = lfSha256(tail);
+    if (got !== want) die(`checkpoint owner-voice-core REFUSED: the snapshot part of ${PORTRAIT_FILE} (from «${head}» to the end) has sha256 ${got}, the release pins ${want} — replace, do not merge; a tool that stamps blocks into it runs after this checkpoint`);
+    log(`✔ voice portrait: the snapshot part of ${PORTRAIT_FILE} equals the release snapshot byte for byte (sha ${want.slice(0, 12)}) — executed by the checkpoint itself`);
   }
   if (id === 'closing-gates') {
     // The item is a forecast (2.8, epic CK, step CK5.6): the tick measures the gates again over the MERGED tree, for visibility, and

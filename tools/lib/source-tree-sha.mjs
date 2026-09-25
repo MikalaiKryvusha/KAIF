@@ -43,7 +43,9 @@ import { createHash } from 'node:crypto';
 
 /** The input set, relative to the repo root — kept as data so both sides and the selftest read the same list. */
 export const SOURCE_DIRS = ['framework'];
-export const SOURCE_FILES = ['tools/build-framework.mjs', 'tools/module-map-lib.mjs', 'version.json'];
+// AUTHOR_STYLOMETRY.md since 2.8 (epic VO, plans/120 VO3): the builder pins the owner-voice snapshot in the manifest, so a changed
+// snapshot is a changed input; absent in a tree (a clone without it) — skipped like any missing file.
+export const SOURCE_FILES = ['tools/build-framework.mjs', 'tools/module-map-lib.mjs', 'version.json', 'AUTHOR_STYLOMETRY.md'];
 
 function walk(dir, out) {
   for (const n of readdirSync(dir).sort()) {

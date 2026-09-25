@@ -26,6 +26,8 @@
 //     целиком, `--all` с `--sections` — usage; скелет поставки грузится разделами для письма.
 // (4) 2.8, эпик VO, шаг VO2 — жанр у строк §8 на РАЗВЁРНУТОМ модуле: check --genre essay · ticket · document · без жанра · чужой
 //     жанр; load --genre essay добавляет §3, голая загрузка грузит §1 (ТЕСТ ИЗМЕНЁН в (3): §1 — раздел для письма, plans/120 VO2).
+// (5) 2.8, эпик VO, шаг VO3 — портрет-потребитель получает слепок релиза ЗАМЕНОЙ на развёрнутом ядре: пин в бандле; update пишет пункт
+//     owner-voice-core копии с преамбулой; checkpoint отказывает до замены и на слиянии, принимает замену байт в байт; чужой и текущий — без пункта.
 // [TESTED: 2026-09-25 · «all 54 checks green»; на dist v2.7 швом KAIF_DIST — «7 of 54 check(s) failed», ровно новые ассерты;
 //  шесть мутантов tools/sandbox/probes/voice-mutants.mjs красны ровно на адресатах; ТЕСТ ИЗМЕНЁН: ассерт голой загрузки раздела (1)
 //  требует теперь строки «no writing section … the whole of it is loaded» — у его фикстуры пронумерованы только §8 и §9, и без этой
@@ -33,12 +35,16 @@
 // [TESTED: 2026-09-25 15:39 +03:00 · «all 61 checks green»; на dist v2.7 швом KAIF_DIST — «14 of 61 check(s) failed»: 7 прежних (разделы для письма) и все
 //  7 новых раздела (4); мутанты M7/M8 tools/sandbox/probes/voice-mutants.mjs красны ровно на адресатах; ТЕСТ ИЗМЕНЁН в (3): §1 «Как
 //  читать» — раздел для письма (19 из 29 строк, оставлено 5) — plans/120 VO2, строка FORK; отчёт testcases/reports/2026-09-25_vo2-genre-labels.md]
+// [TESTED: 2026-09-25 16:07 +03:00 · «all 71 checks green» (+10: раздел (5) — пин в бандле, пункт копии с преамбулой, отказ до замены и на слиянии, приём
+//  замены, передача в recheck для задания прежнего ядра и контроль, чужой и текущий портрет без пункта); на dist v2.7 — «22 of 71»: 8 из 10 новых
+//  красны, два ассерта передачи на ядре без неё зелены по построению — их красный дают мутанты M11 и M13; M9–M13 красны ровно на адресатах; отчёт testcases/reports/2026-09-25_vo3-portrait-replace.md]
 import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { failed } from '../lib/sandbox-run.mjs';
+import { failed, must, coreRunner } from '../lib/sandbox-run.mjs';
+import { createHash } from 'node:crypto';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // Шов KAIF_DIST: свод судит РАЗВЁРНУТУЮ копию из dist; подставь старый dist — красный доказан (s23:21).
@@ -267,6 +273,83 @@ r = gd('load --genre essay');
 ok(r.code === 0 && /## 3\. Свободная проза/.test(bodyOf(r.out)) && /sections: writing, genre essay/.test(r.out), 's26 load --genre essay: свободная проза §3 входит в разделы для письма', r.out.slice(-400));
 r = gd('load');
 ok(r.code === 0 && !/## 3\. Свободная проза/.test(bodyOf(r.out)) && /## 1\. Как читать/.test(bodyOf(r.out)), 's26 голая загрузка: §1 грузится, §3 — нет (он для эссе)', r.out.slice(-400));
+
+// ---------------------------------------------------------------- (5) 2.8: портрет-потребитель получает слепок релиза заменой (развёрнутое ядро)
+// Эпик VO 2.8, шаг VO3 (plans/120); тикет истока #103 — слово владельца: при обновлении на 2.8 «обновить ядро на новое, не мержем, а
+// заменой». Бандл несёт пин слепка (sha256 · первая строка · ядро · метки происхождения); update узнаёт портрет-потребитель по меткам
+// из БАНДЛА и пишет пункт owner-voice-core; контрольная точка сверяет часть слепка байт в байт. Чужой портрет и уже текущий — без пункта.
+console.log('\n=== s26: обновление 2.8 — портрет-потребитель получает слепок релиза заменой ===');
+const runC = coreRunner(ROOT);
+const lfSha = (t) => createHash('sha256').update(String(t).replace(/\r\n/g, '\n'), 'utf8').digest('hex');
+const BUNDLE_TEXT = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
+const metaM = BUNDLE_TEXT.match(/\*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\r?\n\r?\n`{6}json\r?\n([\s\S]*?)\r?\n`{6}/);
+const PIN = metaM ? (JSON.parse(metaM[1]).ownerVoice || null) : null;
+const SNAP = readFileSync(join(REPO, 'AUTHOR_STYLOMETRY.md'), 'utf8').replace(/\r\n/g, '\n');
+ok(PIN && PIN.sha256 === lfSha(SNAP) && PIN.head === SNAP.split('\n', 1)[0] && Array.isArray(PIN.markers) && PIN.markers.length > 0,
+   's26 бандл несёт пин слепка владельца: sha256 и первая строка — слепка истока, метки происхождения названы', JSON.stringify(PIN || {}).slice(0, 300));
+const relDir = (dir, version) => {
+  mkdirSync(dir, { recursive: true });
+  for (const f of ['KAIF-CORE-BUNDLE.md', 'KAIF-CORE.mjs']) cpSync(join(DIST, f), join(dir, f));
+  const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
+  man.version = version;
+  for (const f of ['KAIF-CORE-BUNDLE.md', 'KAIF-CORE.mjs']) man.sha256[f] = createHash('sha256').update(readFileSync(join(dir, f))).digest('hex');
+  writeFileSync(join(dir, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
+};
+const FROM_V26 = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
+const REL9 = join(ROOT, 'ov-rel-9.9'); relDir(REL9, '9.9');
+const RELOLD = join(ROOT, 'ov-rel-old'); relDir(RELOLD, FROM_V26);
+const deployC = (name, portrait) => {
+  const d = join(ROOT, name);
+  mkdirSync(join(d, '.kaif', 'install'), { recursive: true });
+  cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(d, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'));
+  cpSync(join(DIST, 'KAIF-CORE.mjs'), join(d, '.kaif', 'kaif-core.mjs'));
+  must(runC, d, 'install');   // установочный шаг: без развёртывания обновлять нечего
+  writeFileSync(join(d, 'AUTHOR_STYLOMETRY.md'), portrait);
+  return d;
+};
+const itemOf = (d) => { const t = existsSync(join(d, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(d, 'KAIF_UPDATE_TASK.md'), 'utf8') : ''; return (t.match(/^- \*\*owner-voice-core\*\* — [^\n]*/m) || [''])[0]; };
+const LOCAL = '<!-- local preamble of this project: the body below is a copy of the stylometry-snapshot.mjs output -->\n<!-- /local -->\n';
+// (а) копия старого слепка с локальной преамбулой
+const PA = deployC('ov-consumer', LOCAL + '# Портрет голоса владельца KAIF — публичный слепок правил\n\n| **Версия ядра** | **krinik-stylometry 1.2** (объявлена ядром) |\n\nстарое правило\n');
+const upA = must(runC, PA, `update --source ${REL9} --baseline ${RELOLD}`);
+const itA = itemOf(PA);
+ok(PIN && itA.includes(`its sha256 (LF) is ${PIN.sha256}`) && itA.includes(`from its first line «${PIN.head}»`) && /the core it carries: 1\.2/.test(itA) && itA.includes(`the snapshot of core ${PIN.core}`) && /REPLACE the snapshot, never merge it/.test(itA),
+   's26 update: портрет-потребитель получает пункт owner-voice-core — пин, первая строка, «ядро 1.2 → новое», замена, а не слияние', itA || upA.out.slice(-600));
+r = runC(PA, 'checkpoint owner-voice-core');
+ok(r.code !== 0 && /has no line «/.test(r.out), 's26 checkpoint owner-voice-core до замены — отказ: строки слепка релиза в портрете нет', r.out.slice(-400));
+writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), LOCAL + SNAP + 'строка, влитая слиянием\n');
+r = runC(PA, 'checkpoint owner-voice-core');
+ok(r.code !== 0 && /the release pins/.test(r.out), 's26 checkpoint owner-voice-core на слиянии вместо замены — отказ по sha256', r.out.slice(-400));
+writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), LOCAL + SNAP);
+r = runC(PA, 'checkpoint owner-voice-core');
+ok(r.code === 0 && /equals the release snapshot byte for byte/.test(r.out), 's26 checkpoint owner-voice-core после замены (преамбула + слепок байт в байт) — принят', r.out.slice(-400));
+// (г) ПЕРЕДАЧА — у поля 2.7 → 2.8 задание пишет РАЗВЁРНУТОЕ, прежнее ядро (свежее подменяется в конце, EXP-0157), и пункта owner-voice-core
+// в нём нет; отметку recheck ставит СВЕЖЕЕ ядро, и она отказывает, пока портрет-потребитель не заменён. Задание прежнего ядра моделируется
+// заданием без пункта (приём s16, CK5.6).
+const PD = deployC('ov-handover', LOCAL + '# Портрет голоса владельца KAIF — публичный слепок правил\n\n| **Версия ядра** | **krinik-stylometry 1.2** |\n');
+must(runC, PD, `update --source ${REL9} --baseline ${RELOLD}`);
+const TD = join(PD, 'KAIF_UPDATE_TASK.md');
+writeFileSync(TD, readFileSync(TD, 'utf8').replace(/^- \*\*owner-voice-core\*\* — [^\n]*\n  When done, run: [^\n]*\n/m, ''));
+r = runC(PD, 'checkpoint recheck');
+ok(r.code !== 0 && /this task was written by the previous core, which had no owner-voice-core item/.test(r.out) && PIN && r.out.includes(PIN.sha256),
+   's26 передача: задание прежнего ядра без пункта — recheck свежего ядра отказывает и печатает инструкцию с пином', r.out.slice(-500));
+writeFileSync(join(PD, 'AUTHOR_STYLOMETRY.md'), LOCAL + SNAP);
+r = runC(PD, 'checkpoint recheck');
+ok(r.code === 0 && !/had no owner-voice-core item/.test(r.out), 's26 передача: после замены recheck свежего ядра проходит', r.out.slice(-500));
+const PE = deployC('ov-with-item', LOCAL + '# Портрет голоса владельца KAIF — публичный слепок правил\n\n| **Версия ядра** | **krinik-stylometry 1.2** |\n');
+must(runC, PE, `update --source ${REL9} --baseline ${RELOLD}`);
+r = runC(PE, 'checkpoint recheck');
+ok(itemOf(PE) !== '' && !/had no owner-voice-core item/.test(r.out), 's26 передача: у задания с пунктом owner-voice-core recheck отказ не повторяет (портрет ещё не заменён — его судит пункт)', r.out.slice(-500));
+// (б) чужой портрет — ни пункта, ни байта
+const FOREIGN = '# Portrait of another owner\n\nrule one of that owner\n';
+const PB = deployC('ov-foreign', FOREIGN);
+const upB = must(runC, PB, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PB) === '' && readFileSync(join(PB, 'AUTHOR_STYLOMETRY.md'), 'utf8') === FOREIGN && /another owner's portrait, left untouched/.test(upB.out),
+   's26 update: чужой портрет (меток нет) — без пункта, файл байт в байт прежний, лог называет это', itemOf(PB) || upB.out.slice(-500));
+// (в) портрет уже текущий — без пункта
+const PC = deployC('ov-current', SNAP);
+const upC = must(runC, PC, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PC) === '' && /already carries this release's snapshot/.test(upC.out), 's26 update: портрет уже равен слепку релиза — без пункта', itemOf(PC) || upC.out.slice(-500));
 
 if (failures) { console.error(`\n❌ s26: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s26 voice-lint: all ${asserts} checks green`);

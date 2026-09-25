@@ -286,6 +286,7 @@ const TEMPLATE_NOTES_BY_VERSION = {
     'PROJECT FACTS MOVED FROM THE GUIDE TO THE HOUSE-RULES FILE (2.8, epic CK; measured on the field: the modules a project fills grew by 130–168 lines in two deployments, and a guide translated wholesale counts every such line against its budget). The guide keeps the method and one pointer line per section, under the SAME headings: "Test harness" keeps its principle, its commands go to `HOUSE_RULES.md` → "Stands, environments and devices"; "Tools" → "Tools of this project"; the environment-dossier TABLE → the skeleton\'s new section "Environment dossier" (the procedure stays in the guide; `/refresh-context` step 3 now writes the facts there); "Push / GitHub authentication" → "Routes, recipes and conventions"; "Goal of the project" points to `GOAL.md` and "Architecture — the map" to the two map documents, keeping only its key invariant — both were copies of their source. What to do: where your guide carries these filled modules, the update keeps them (they are yours) and ships the template delta in the task — move your tables and recipe into `HOUSE_RULES.md` (no file yet → `cp .kaif/_house-rules-template.md HOUSE_RULES.md`), leave the pointer line, and drop the goal paragraph and module map in favour of `GOAL.md` and the maps (move anything they held that the maps lack into the maps first). A guide translated wholesale does the same by hand.',
     'THE PRICE OF A CHAT IS PRINTED, AND THE VOICE PORTRAIT LOADS ITS WRITING SECTIONS (2.8, epic CK; origin issue #99 — a field /resume read ~230k tokens, and a ~170k-token voice portrait was loaded whole before every text, with nothing saying so): (1) `node .kaif/kaif-core.mjs check` prints one reference line — what /resume reads, in thousands of tokens and as a share of a 1M-token model window (never a stop); (2) a bare `node .kaif/tools/kaif-voice-lint.mjs load` prints the portrait\'s WRITING sections — §0 · §2 · §5 · §6 · §7 with their subsections, §2-C the lexicon among them — with their price in tokens, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole portrait as before; `check` and the load witness are unchanged. What to do: nothing to merge; keep your portrait\'s section NUMBERS as the skeleton has them (a portrait with none of the writing sections numbered is loaded whole, said aloud), and when a text needs a module the bare load left out (a second register, the detailed rule modules), load it by the regex the summary printed.',
     'THE VOICE PORTRAIT KNOWS ITS GENRES (2.8, epic VO; origin issue #102 — a portrait\'s work-only §8 rows stopped the owner\'s own prose 214 times of 217): a §8 row whose hint OPENS with a genre label — `[work]`/`[работа]` every genre but the essay, `[document]`/`[документ]` documents only, `[prose]`/`[проза]` the essay only — judges only its genres; `node .kaif/tools/kaif-voice-lint.mjs check <file…> --genre <document|ticket|comment|message|reply|essay>` silences the rows of other genres, and without `--genre` every row judges every text while the run names the labelled rows. The writing sections of a bare `load` now include §1 (how to read the portrait), and `load --genre essay` adds the prose register §3. A portrait without labels changes nothing.',
+    'THE OWNER\'S VOICE CORE REACHES YOUR PROJECT BY REPLACEMENT (2.8, epic VO; origin issue #103 — the owner\'s word: on the 2.8 update every project working by KAIF takes the new voice core «не мержем, а заменой»): the release pins its public voice snapshot (sha256, first line, core version, the markers of derivation). A portrait that derives from it and is not the snapshot gets the task item `owner-voice-core` — fetch the release file, keep only your local part above its first line (a project preamble; a genre shell re-derived over the new snapshot by /owner-voice), the snapshot after it byte for byte; the checkpoint compares by sha256. On the update route the task is written by your previous core, so the item is absent there and `checkpoint recheck` of the fresh core refuses with the same instruction until the replacement is done. A portrait of another owner (no marker) is never touched.',
   ],
   // INERT until version() says 2.6 (epic OQ, 2026-09-05): the codename line is appended by epic RL.
   '2.7': [
@@ -451,6 +452,25 @@ function embedBundle(src, dest, note) {
   return embedFile(src, dest, note);
 }
 
+// The owner-voice snapshot pin, carried in the BUNDLE meta (both update routes read the bundle; the loader keeps no manifest on
+// disk) — 2.8, epic VO, plans/120 step VO3; origin issue #103 — the owner's word: every project working by KAIF
+// takes the new voice core on the 2.8 update, «не мержем, а заменой»). The release names the origin's PUBLIC voice snapshot by sha256
+// (LF), its first line, the core version and the MARKERS by which a project's portrait shows that it derives from this snapshot; the
+// shipped machinery reads the markers from the manifest and never knows whose voice it is (the framework stays abstracted from its
+// author — GOAL.md). No snapshot at the root → no pin (null), and `update` offers nothing.
+// [TESTED: 2026-09-25 16:07 +03:00 · the pin of the origin's snapshot of core 2.2 in the bundle meta (sha, first line, core 2.2, three markers) — s26 section (5)
+//  asserts it equals the root snapshot; field clones of two deployments replaced by it on both routes; report testcases/reports/2026-09-25_vo3-portrait-replace.md]
+const OWNER_VOICE_FILE = 'AUTHOR_STYLOMETRY.md';
+const OWNER_VOICE_MARKERS = ['krinik-stylometry', 'krinik_voice', 'stylometry-snapshot.mjs'];
+function ownerVoicePin() {
+  const p = join(ROOT, OWNER_VOICE_FILE);
+  if (!existsSync(p)) return null;
+  const text = readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
+  const core = (/^\| \*\*Версия ядра\*\* \| \*\*\S+ (\d+(?:\.\d+)+)\*\*/m.exec(text) || [])[1] || null;
+  const repo = String(JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8')).origin || '').replace(/^https:\/\/github\.com\//, '').replace(/\/+$/, '');
+  return { file: OWNER_VOICE_FILE, sha256: createHash('sha256').update(text, 'utf8').digest('hex'), head: text.split('\n', 1)[0], core,
+    markers: OWNER_VOICE_MARKERS, url: `https://raw.githubusercontent.com/${repo}/v${version()}/${OWNER_VOICE_FILE}` };
+}
 function bundleBlocks() {
   const blocks = [];
   // Class overrides ship in the meta block so KAIF-CORE classifies modules with the SAME
@@ -460,7 +480,7 @@ function bundleBlocks() {
   const moduleClasses = Object.fromEntries(Object.entries(ovRaw).filter(([k]) => !k.startsWith('_')));
   const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES,
     templateNotesByVersion: TEMPLATE_NOTES_BY_VERSION, deprecations: DEPRECATIONS,
-    policyChanges: POLICY_CHANGES_BY_VERSION, renamesByVersion: RENAMES_BY_VERSION, moduleClasses };
+    policyChanges: POLICY_CHANGES_BY_VERSION, renamesByVersion: RENAMES_BY_VERSION, moduleClasses, ownerVoice: ownerVoicePin() };
   const renderMeta = (m) => `> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
     FENCE + 'json\n' + JSON.stringify(m, null, 2) + '\n' + FENCE + '\n';
   blocks.push(renderMeta(meta));   // re-rendered at the end of this function, once every entry is known

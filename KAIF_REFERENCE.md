@@ -366,9 +366,15 @@ update just wrote — the budget door through the same ratchet as `check --gate-
 attribution lints where deployed — each verdict named: passes, STOPS with its reason and address, or not judged;
 unconditional, so "nothing stops the first closing" is a printed verdict; and since `update` writes its task with the
 core deployed when it ran, a task written by an older core has no such item — then `checkpoint recheck`, run by the fresh
-core, names the same gates; 2.8, epic CK, N12 of the 2.8 recon) ·
+core, names the same gates; 2.8, epic CK, N12 of the 2.8 recon) · the owner-voice snapshot (2.8, epic VO; origin issue #103 —
+the owner's word: replace, not merge): the bundle meta pins the release's public voice snapshot (sha256 of its LF text, first line, core
+version, the markers by which a portrait shows it derives from it); a portrait that names a marker and is not the snapshot gets the
+`owner-voice-core` item — fetch, keep only the local part above the snapshot's first line, the snapshot after it byte for byte; a
+portrait that names no marker is another owner's and is never touched; on a task written by an older core the fresh core's `recheck`
+refuses with the same instruction until the replacement is done ·
 the news interval · executing
-checkpoints (`closing-gates` measures the gates again over the merged tree and records; `recheck` runs the
+checkpoints (`owner-voice-core` compares the snapshot part of the portrait with the pin by sha256 and refuses until they match;
+`closing-gates` measures the gates again over the merged tree and records; `recheck` runs the
 actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
 field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an
 update does not verify green without its report).
