@@ -108,7 +108,8 @@
       "A QUESTION IN ANY TRANSPORT PASSES THE SEARCH FOR A PRIOR ANSWER, AND THE SEARCH FINDS A CAPITAL CYRILLIC LETTER (2.8, epic OW; origin issues #74 · #82 — Git Bash's `grep -i` without a UTF-8 locale missed capital Cyrillic, and a question asked in the chat skipped the search): the door searches itself — `node .kaif/tools/contour/review.mjs --search \"<the question>\"` (no shell, no locale; hits by file and line, a ready attestation line); the printed grep carries `LC_ALL=C.UTF-8`; an attestation «N hits · read: none» is REFUSED (the search found something and nothing was read); the interview template carries a `Created` line; AGENT_GUIDE: a pointed question in the chat passes the same search. What to do: before a question to the owner in any form, run `--search`.",
       "ANSWERS ON THE OWNER'S PAGE ARE SAVED ONE AT A TIME, AND AN OLD TAB NEVER WRITES INTO A REWRITTEN DOCUMENT (2.8, epic OW; the KAIF owner's word: saving answers one at a time must be required in every project; the stale-tab S1 of a field project): the page LIVES while its document has an unanswered question («Saved. Questions left: N», the answered one folds into the settled archive, other drafts stay), the last answer ends the contour with exit 0; the agent is woken by a separate WAITER — `node .kaif/tools/contour/review.mjs --wait <doc>` (exit 0 on each recorded answer, 2 when the contour ended without one); the decision file MERGES the saves of one page; a save carries the revision its page was built from — another revision → 409, the text stays on the page with «Open the new revision»; a draft never lands on a rewritten question. What to do: if your loop waited for the contour's exit after a save, start the waiter next to the page as a tracked background task and restart it after each answer while questions are left (`/owner-reviews` I8, I31). A project running its OWN contour keeps it — the contract (.kaif/INTERACTIVE_CONTOUR_SPEC.md §5) now describes the partial save.",
       "THE CALL NAMES THE CALLING SESSION, AND THE OWNER'S HANDS ARE ASKED BY A CALL (2.8, epic OW; origin issues #95 · #98 — a request in the chat is not seen while the agent works; with three windows of one project the owner could not tell which one called): `node .kaif/tools/contour/review.mjs --call \"<what is needed>\" [--dry-run]` — sound → console line → voice; with more than one workspace every call says «<owner>, this is <session>. …», the console line is `CALL · <session>:`, the page window title carries the session; the name is derived — `KAIF_SESSION_NAME`, else the workspace directory (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name. What to do: when the work stops until the owner acts or answers, call — never leave the request only in the chat (AGENT_GUIDE; `/owner-reviews` I28b; `/team-deployment` workspaces).",
-      "A NEW HOOK GATES THE AGENT UNTIL IT ANSWERS THE OWNER'S WORD MID-TURN (2.8, epic OW; origin bug 123 — an answer to the owner's mid-turn question was composed in the reasoning and never emitted, 18 tool calls later): `.kaif/hooks/pretool-owner-word.mjs` (event `PreToolUse`, Claude Code) refuses every tool call while the owner's latest message typed mid-turn has no TEXT answer after it in the transcript; the reason quotes his words. What to do: the refresh-hooks module is opt-in — merge the `PreToolUse` entry of `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` by your owner's word.",
+      "A NEW HOOK MAKES THE AGENT ANSWER THE OWNER'S WORD MID-TURN (2.8, epic OW; origin bug 123 — an answer to the owner's mid-turn question was composed in the reasoning and never emitted, 18 tool calls later): `.kaif/hooks/pretool-owner-word.mjs` (event `PreToolUse`, Claude Code) refuses ONE tool call after the owner's message typed mid-turn that has no TEXT answer yet in the transcript; the reason quotes the owner's words and orders: answer as text by its kind, continue the work, repeat the answer in the final text of the turn (a text between tool calls can be recorded as reasoning and never reach the chat). It never stops the work: one refusal per message. What to do: the refresh-hooks module is opt-in — merge the `PreToolUse` entry of `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` by your owner's word.",
+      "CONTOUR PAGES ARE READABLE WITHOUT THE BROWSER'S ZOOM (2.8, origin issue #106 — a field owner asked three times in one evening and named the size): the shipped page renders at 1.7x the browser base through `html { zoom }` (the whole page, as Ctrl+Plus does — raising font-size alone turns the radio circles into dots), the Save button at 1.5x (its own zoom 1.5 / 1.7), and the narrow-window breakpoint is multiplied by the same scale (media queries do not see CSS zoom): `PAGE_SCALE` · `SAVE_SCALE` in `.kaif/tools/contour/review.mjs`, one clause in `.kaif/INTERACTIVE_CONTOUR_SPEC.md` §4. What to do: nothing for the shipped contour; a project's OWN contour page (a home generator) takes the same pair of constants — the zoom and the breakpoint travel together.",
       "A COMPARISON, A SEQUENCE IN TIME OR A FORK OF OUTCOMES IS EXPLAINED WITH A PICTURE (2.8, epic OW; origin issue #104 — a field owner found a page with frames, a time line and an outcome tree a hundred times clearer than text): NEW skeleton `.kaif/_explain-page-template.html` (self-contained, no request leaves the machine): two frames side by side · a time line with the user's action marked · an outcome tree with the verdict by colour · the four-line scenario as the caption. What to do: copy it next to your owner pages, fill it, open it for the owner and write one line to it in the chat (AGENT_GUIDE «Showing is an action»; `/interview` step 3a). Its look is the owner's taste."
     ],
     "2.7": [
@@ -1101,8 +1102,8 @@ tool result — and the agent system signs its author (Claude Code: "The user se
    owner's trust. An order signed as his passes the usual gates (for an outward act it IS his verbatim word); in doubt of its author
    ask ONE question — never a silent "not taken as permission". Mechanical halves: the leading-word hook orders a stop on a leading
    "stop" (a prompt hook firing on a mid-turn message is observed on one system, promised by none); the gate
-   `.kaif/hooks/pretool-owner-word.mjs` (2.8, `PreToolUse`) refuses every tool call while the owner's latest mid-turn message has no
-   TEXT answer after it. `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
+   `.kaif/hooks/pretool-owner-word.mjs` (2.8, `PreToolUse`) refuses ONE tool call after an owner's mid-turn message with no TEXT answer
+   yet: answer, go on working, repeat the answer in the turn's final text. `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
 
 ### The storefront — text a stranger reads
 
@@ -3593,9 +3594,9 @@ session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `re
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
-typed mid-turn has no TEXT answer after it in the transcript → the tool call is refused, the reason quotes the owner's words; Claude
+typed mid-turn has no TEXT answer after it in the transcript → ONE tool call is refused, the reason quotes the owner's words; Claude
 Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
-on `Stop`, and the gate has none — it refuses every call until the text answer is in the record; injections are orders, never
+on `Stop`, and the gate has none — it refuses one call per owner's message and the work goes on; injections are orders, never
 document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
@@ -3811,6 +3812,9 @@ session that shipped the rule met it again the same evening (2026-09-25, 19:32):
 composed in the reasoning and never emitted as text — 18 tool calls, the owner unanswered; the transcript showed it. Hence the
 mechanical half the origin owner asked for that evening: the gate `pretool-owner-word.mjs` (event `PreToolUse`) refuses every tool
 call while the owner's latest mid-turn message has no text answer in the transcript — the rule says «answer AS TEXT» for the same reason.
+Its first edition refused EVERY call until the answer showed in the record; that session's texts between calls kept landing as
+reasoning, so each mid-turn word stopped the work until the owner wrote again — and the owner's verdict came the same hour: answer by
+the gate, do not stop the work. The gate refuses once per message; its order makes the turn's final text carry the answer.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 
@@ -11080,6 +11084,13 @@ const SERVER_DEATH_MS = 2500;         // DEF3: server death after the save (the 
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 s after the beacon — reload vs close
 const WAIT_POLL_MS = 2000;            // OW6 (2.8): the waiter polls the decision file(s) — the field device the KAIF owner pointed to polls every 2 s
 const QH_LEN = 12;                    // OW6: hex chars of a question's fingerprint in a draft key (title + body of the question)
+// 2.8, origin issue #106 (a field owner's explicit word, three requests in one evening): owner-facing pages render at 1.7x the browser
+// base — the WHOLE page through CSS zoom, as Ctrl+Plus does (raising font-size alone turned the fixed radio circles into dots and slid
+// the title under the button) — and the primary Save button at 1.5x (its own zoom SAVE_SCALE / PAGE_SCALE). Media queries measure the
+// viewport, which CSS zoom does not change, so a width breakpoint travels multiplied by PAGE_SCALE: the two constants move together.
+export const PAGE_SCALE = 1.7;
+export const SAVE_SCALE = 1.5;
+const NARROW_PX = 560;                // the narrow-window breakpoint at scale 1 (rendered as NARROW_PX * PAGE_SCALE)
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -11732,6 +11743,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     :root { --bg:#17171a; --card:#212126; --ink:#ececf0; --muted:#a0a0a8; --line:#3a3a42;
       --wait:#f59e0b; --done:#22c55e; --you:#60a5fa; --danger:#f87171; --accent:#60a5fa;
       --tagink:#0b1020; --tagwait:#f59e0b; --tagdone:#22c55e; --tagyou:#60a5fa; } }
+  html { zoom:${PAGE_SCALE} } /* #106: the whole page at PAGE_SCALE, like Ctrl+Plus */
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
   /* The header SCROLLS WITH THE PAGE — the owner's word (2026-09-05): not sticky. Only the emergency banner may pin. */
   header { position:static; background:var(--card); border-bottom:1px solid var(--line); padding:10px 230px 10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
@@ -11774,8 +11786,9 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
      height; the status is a pill under it on its own background, gone when empty. A bottom bar is FORBIDDEN (spec §4). */
   .fab { position:fixed; top:12px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
+  .fab #save { zoom:${+(SAVE_SCALE / PAGE_SCALE).toFixed(3)} } /* #106: the primary Save button renders at SAVE_SCALE of the base */
   .fab #status { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; text-align:right } .fab #status:empty { display:none }
-  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
+  @media (max-width:${Math.round(NARROW_PX * PAGE_SCALE)}px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
@@ -12734,6 +12747,13 @@ export async function selftest(log = console.log) {
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.fab { position:static;') }).ok, 'self-check goes RED when the button stops floating (mutation on a copy)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.bar { position:fixed; bottom:0;') }).ok, 'self-check goes RED on a bar pinned to the bottom edge (the #60 page)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('<label class="opt"><input', '<label class="opt">**leak**<input') }).ok, 'self-check goes RED when an option label carries raw markdown');
+  // #106 (2.8): the page at 1.7x the browser base through zoom, the Save button at 1.5x, the narrow breakpoint scaled with the page
+  ok(plainPage.html.includes('html { zoom:1.7 }') && !/body \{[^}]*font:(?!15px)/.test(plainPage.html),
+    'the page renders at 1.7x the browser base through html zoom (the whole page, like Ctrl+Plus), the body font stays the 15px base (#106)');
+  ok(plainPage.html.includes('.fab #save { zoom:0.882 }') && Math.abs(PAGE_SCALE * 0.882 - SAVE_SCALE) < 0.01,
+    'the primary Save button carries its own zoom 1.5 / 1.7 = 0.882 — it renders at 1.5x the base (#106)');
+  ok(plainPage.html.includes('@media (max-width:952px)') && !plainPage.html.includes('max-width:560px'),
+    'the narrow-window breakpoint travels with the zoom: 560 x 1.7 = 952px, the unscaled 560px is gone (#106)');
   rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');
@@ -16768,11 +16788,15 @@ if (IS_MAIN) {
 #!/usr/bin/env node
 // pretool-owner-word.mjs — the OWNER'S WORD MID-TURN gate (KAIF 2.8, epic OW; optional refresh-hooks module, deployed to .kaif/hooks/;
 // origin bug 123 and its recurrence of 2026-09-25 19:32 — the origin owner asked for this hook the same evening; the owner's words are kept in the
-// origin). Claude Code event: PreToolUse — every tool call of the main thread.
+// origin). Claude Code event: PreToolUse — the tool calls of the main thread.
 //
 // What it does: a message the owner typed while the agent was working is recorded in the session transcript as `type: "attachment"`,
-// `attachment.type: "queued_command"`, `origin.kind: "human"`. If the LATEST such message has no assistant TEXT block after it, the tool
-// call is BLOCKED (exit 2) and the reason — the owner's words and what to do — goes to the agent. An answer that stayed in the agent's
+// `attachment.type: "queued_command"`, `origin.kind: "human"`. If the LATEST such message has no assistant TEXT block after it and this gate
+// has not refused for it yet, the tool call is BLOCKED (exit 2) ONCE and the reason — the owner's words and what to do — goes to the
+// agent: answer as text, go on working, repeat the answer in the final text of the turn; the next call passes. The first edition
+// refused EVERY call until a text answer showed in the record — and where the agent's texts between calls are recorded as reasoning,
+// each mid-turn word stopped the work until the owner wrote again; the origin owner's verdict (2026-09-25 23:28 +03:00, rendered from
+// Russian): answer by the hook and do not stop the work, keep working. An answer that stayed in the agent's
 // reasoning is not delivered: the recurrence of 19:32 made 18 tool calls with the answer composed and never emitted as text.
 // Silent on: a subagent's call (`agent_id` in the input — the main thread answers the owner), a peer's or a background message, the
 // prompt that opened the turn (it is not a queued command), no transcript, any internal error (a hook never breaks the session).
@@ -16788,12 +16812,17 @@ if (IS_MAIN) {
 //                 composed in the reasoning, never emitted)
 // PROVED-AGAINST: s14 — synthetic transcripts in the recorded shapes: a human queued_command with no text after it → exit 2 with the
 //                 owner's words; only reasoning and calls after it (the 19:32 shape) → 2; a text after it → 0; a peer → 0; a subagent
-//                 call → 0; no transcript → 0; red on v2.7 (no such hook); hooks-mutants M11
+//                 call → 0; no transcript → 0; one refusal delivered → the next call passes; a refusal for an older message does not
+//                 cover a newer one; red on v2.7 (no such hook); hooks-mutants M11 (reasoning counted as an answer), M12 (the refusal
+//                 repeated forever — the stop the owner rejected)
 // GAP:            the transcript lags — one call may pass before the message is visible (the next call is gated), one reminder may repeat
 //                 right after an answer; a text that does NOT answer passes (the judge reads it — AGENT_GUIDE, the mid-turn rule); agent
-//                 systems without a PreToolUse event
-// ON-REAL-PATH:   NOT YET — wired at the origin 2026-09-25 22:21 +03:00 (.claude/settings.json, PreToolUse); a refusal on a live tool call
-//                 is observed only when the owner's next mid-turn message meets a tool call
+//                 systems without a PreToolUse event; parallel calls of one message are refused together (one round); an answer
+//                 written between calls may still land as reasoning — the order makes the final text of the turn carry it; a
+//                 lagging refusal record may cost a second refusal
+// ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
+//                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
+//                 recorded as reasoning); the one-refusal edition — NOT YET observed live
 // [TESTED: 2026-09-25 22:07:30 +03:00 · s14: the eight cases green, on dist v2.7 red by name; hooks-mutants M11 red exactly on its three
 //  addressees (22:08:57); run by hand on the REAL transcript of the origin session: exit 2 quoting the owner's unanswered mid-turn message at 22:05:33,
 //  exit 0 at 22:19:26 once a text answer was in the record — report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
@@ -16810,6 +16839,10 @@ function readTail(path) {
     return buf.toString('utf8');
   } finally { closeSync(fd); }
 }
+const GATE_MARK = 'KAIF: the owner wrote while you were working'; // the start of this gate's reason — how its own refusal is recognised
+// a refusal of this gate as the transcript records it: a user record with an is_error tool_result whose text carries the mark
+const refusedHere = (x) => !!x && x.type === 'user' && !!x.message && Array.isArray(x.message.content)
+  && x.message.content.some((b) => b && b.type === 'tool_result' && b.is_error === true && flat(b.content).includes(GATE_MARK));
 const flat = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(flat).join('') : v && typeof v === 'object' ? flat(v.text ?? v.content ?? '') : '');
 
 try {
@@ -16831,14 +16864,16 @@ try {
   if (owner < 0) process.exit(0);
   for (let k = owner + 1; k < recs.length; k++) { // answered = an assistant TEXT block after it (reasoning is not delivered)
     const x = recs[k];
+    if (refusedHere(x)) process.exit(0); // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)
     const c = x && x.type === 'assistant' && x.message && Array.isArray(x.message.content) ? x.message.content : [];
     if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) process.exit(0);
   }
-  process.stderr.write('KAIF: the owner wrote while you were working' + (at ? ' (' + at + ')' : '') + ' and there is no TEXT answer after it yet: «'
-    + words.slice(0, QUOTE_CHARS) + (words.length > QUOTE_CHARS ? '…' : '') + '». Answer it NOW AS TEXT in the chat — an answer that stays in your'
-    + ' reasoning is not delivered — by its kind: a question → the answer; «stop» → stop and say where; «switch to Y» → a PARKED: line first,'
-    + ' then Y; a note → record it. If your text does not reach the chat, end the turn with the answer — the final text of a turn is delivered.'
-    + ' Then continue. (AGENT_GUIDE → «The owner\'s word mid-turn»; origin bug 123.)\n');
+  process.stderr.write(GATE_MARK + (at ? ' (' + at + ')' : '') + ' and there is no TEXT answer after it yet: «'
+    + words.slice(0, QUOTE_CHARS) + (words.length > QUOTE_CHARS ? '…' : '') + '». Answer it NOW AS TEXT in the chat, by its kind: a question →'
+    + ' the answer; «stop» → stop in this turn and say where; «switch to Y» → a PARKED: line first, then Y; a note → record it. Then CONTINUE'
+    + ' the work — this gate refuses only this one call for this message. A text between tool calls may be recorded as reasoning and never'
+    + ' reach the chat: repeat the answer in the final text of the turn, which is delivered. (AGENT_GUIDE → «The owner\'s word mid-turn»;'
+    + ' origin bug 123.)\n');
   process.exit(2);
 } catch { process.exit(0); }
 ``````
@@ -17090,7 +17125,7 @@ lacking them.
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
-| `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | on every tool call until a text answer is in the transcript; a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, then continue |
+| `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | ONCE per owner's message: the first tool call after it with no text answer yet is refused, the next passes — the work goes on (the origin owner's word, 2026-09-25); a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, continue, repeat the answer in the turn's final text |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -18134,7 +18169,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 
 - **Reading view (2.7, origin issue #54):** LIVE questions first; everything answered and the document's text below as ONE
   collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
-- A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
+- A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal. **Readable without the browser's zoom** (2.8, origin issue #106 — a field owner's explicit word): the page renders at 1.7× the browser base through `html { zoom }` — the whole page, as Ctrl+Plus does (raising font-size alone turns the radio circles into dots), the Save button at 1.5× (its own zoom 1.5 / 1.7), and every width breakpoint is multiplied by the same scale (media queries do not see CSS zoom).
 - **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window height; the status is a pill
   under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
   owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.

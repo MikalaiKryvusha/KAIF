@@ -522,6 +522,9 @@ console.log('\n=== s14: хук pretool-owner-word — слово владель�
   const mid = (text, kind = 'human') => J({ type: 'attachment', timestamp: '2026-09-25T16:32:07.936Z', attachment: { type: 'queued_command', prompt: text, origin: { kind } } });
   const asst = (...blocks) => J({ type: 'assistant', timestamp: '2026-09-25T16:32:35.977Z', message: { role: 'assistant', content: blocks } });
   const think = { type: 'thinking', thinking: '' }, tool = { type: 'tool_use', name: 'Bash', input: {} }, say = (t) => ({ type: 'text', text: t });
+  // the gate's own refusal as the transcript records it (observed live 2026-09-25 23:27): an is_error tool_result carrying its reason
+  const refused = (w) => J({ type: 'user', timestamp: '2026-09-25T16:32:40.000Z', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 't1', is_error: true,
+    content: 'PreToolUse:Bash hook error: [node .kaif/hooks/pretool-owner-word.mjs]: KAIF: the owner wrote while you were working (2026-09-25T16:32:07Z) and there is no TEXT answer after it yet: «' + w + '». …' }] } });
   const HOOK = join(S, '.kaif', 'hooks', 'pretool-owner-word.mjs');
   const gate = (name, lines, extra = {}) => {
     const p = join(TR, name + '.jsonl'); writeFileSync(p, lines.join('\n') + '\n');
@@ -529,14 +532,18 @@ console.log('\n=== s14: хук pretool-owner-word — слово владель�
     return { code: r.status, err: String(r.stderr || '') };
   };
   let g = gate('unanswered', [asst(think, tool), mid('ну что, сколько процентов версии 2.8 сделано?'), asst(think, tool)]);
-  ok(g.code === 2 && /сколько процентов версии 2\.8/.test(g.err) && /AS TEXT/.test(g.err),
-     's14 owner-word: сообщение владельца посреди хода без ТЕКСТА после него → вызов отказан (код 2), причина несёт его слова и «AS TEXT»', 'code ' + g.code + ': ' + g.err.slice(0, 160));
+  ok(g.code === 2 && /сколько процентов версии 2\.8/.test(g.err) && /AS TEXT/.test(g.err) && /CONTINUE/.test(g.err) && /final text of the turn/.test(g.err),
+     's14 owner-word: сообщение владельца посреди хода без ТЕКСТА после него → вызов отказан (код 2), причина несёт его слова, «AS TEXT», «CONTINUE» и «повтори итоговым текстом хода»', 'code ' + g.code + ': ' + g.err.slice(0, 160));
   g = gate('reasoning-only', [mid('стоп'), asst(think, think, tool), asst(think, think, tool)]);
   ok(g.code === 2, 's14 owner-word: после сообщения — только размышления и вызовы (форма рецидива 19:32) → отказ', 'code ' + g.code);
   g = gate('answered', [mid('стоп'), asst(think, say('Остановился: на шаге сборки.'), tool)]);
   ok(g.code === 0 && g.err === '', 's14 owner-word: ответ ТЕКСТОМ после сообщения → вызов пропущен, тишина', 'code ' + g.code + ': ' + g.err.slice(0, 120));
   g = gate('newer-unanswered', [mid('старый вопрос'), asst(say('ответ на старый'), tool), mid('новый вопрос'), asst(think, tool)]);
   ok(g.code === 2 && /новый вопрос/.test(g.err), 's14 owner-word: старое сообщение отвечено, новое — нет → отказ по НОВОМУ (судится последнее)', 'code ' + g.code);
+  g = gate('refused-once', [mid('стоп'), asst(think, tool), refused('стоп'), asst(think, tool)]);
+  ok(g.code === 0, 's14 owner-word: один отказ по сообщению доставлен → следующий вызов проходит, работа не встаёт (слово владельца 23:28)', 'code ' + g.code + ': ' + g.err.slice(0, 120));
+  g = gate('refused-then-new', [mid('первый'), asst(think, tool), refused('первый'), asst(think, tool), mid('второй'), asst(think, tool)]);
+  ok(g.code === 2 && /второй/.test(g.err), 's14 owner-word: отказ по старому сообщению не покрывает новое → отказ по новому', 'code ' + g.code + ': ' + g.err.slice(0, 120));
   g = gate('peer', [mid('сведения соседней сессии', 'peer'), asst(think, tool)]);
   ok(g.code === 0, 's14 owner-word: сообщение соседней сессии — не слово владельца → тишина', 'code ' + g.code);
   g = gate('subagent', [mid('стоп'), asst(think, tool)], { agent_id: 'a1b2' });

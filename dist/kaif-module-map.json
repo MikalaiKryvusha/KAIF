@@ -224,7 +224,7 @@
       {
         "signature": "### The owner's word mid-turn — the system signs its author",
         "class": "static",
-        "sha256": "e749d776b8e680360866ab809173b88457439bebf6a9863ab57e3edd34631f50",
+        "sha256": "684390114c3fff3a514e77727920fc2e14c9d44ef4c605bbefebf967592d02db",
         "lines": [
           635,
           652
@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "f530a2188aeb3a6efac48f0ca7a4005dd3b7ca932c6d19e0dee981526d1294e9",
+        "sha256": "785cfe1f48d4567acde30a05869e97f1e116ec0dbcf53bb7c460c2205a8bced1",
         "lines": [
           541,
           588
@@ -1708,10 +1708,10 @@
       {
         "signature": "### `AGENT_GUIDE.md` → The owner's word mid-turn — the system signs its author",
         "class": "static",
-        "sha256": "1419dcf857651ed639af747af72d6c6b8a02a02964fa286027fee5e45bb1253d",
+        "sha256": "a716f1f2b4d3dc34ff80f0360bb324ba47e26549c51e5c2afe14206430bcb05f",
         "lines": [
           774,
-          786
+          789
         ]
       },
       {
@@ -1719,8 +1719,8 @@
         "class": "static",
         "sha256": "068b1d1fbfdcb4ad5a803bd69bb7e3cc11f0d8ab9f6be53560f5f1c65849b293",
         "lines": [
-          787,
-          796
+          790,
+          799
         ]
       },
       {
@@ -1728,8 +1728,8 @@
         "class": "static",
         "sha256": "37270bdb49877ebc54fb99fbe8468b16bddd65c83b0d5c03ab93afd9eab883ef",
         "lines": [
-          797,
-          805
+          800,
+          808
         ]
       },
       {
@@ -1737,8 +1737,8 @@
         "class": "static",
         "sha256": "7d820b1348ae7940cf42356abce337e503eb4981a0fed1147198271570212f99",
         "lines": [
-          806,
-          812
+          809,
+          815
         ]
       },
       {
@@ -1746,8 +1746,8 @@
         "class": "static",
         "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
         "lines": [
-          813,
-          819
+          816,
+          822
         ]
       },
       {
@@ -1755,8 +1755,8 @@
         "class": "static",
         "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
         "lines": [
-          820,
-          825
+          823,
+          828
         ]
       },
       {
@@ -1764,8 +1764,8 @@
         "class": "static",
         "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
         "lines": [
-          826,
-          830
+          829,
+          833
         ]
       },
       {
@@ -1773,8 +1773,8 @@
         "class": "static",
         "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
         "lines": [
-          831,
-          836
+          834,
+          839
         ]
       },
       {
@@ -1782,8 +1782,8 @@
         "class": "static",
         "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
         "lines": [
-          837,
-          843
+          840,
+          846
         ]
       },
       {
@@ -1791,8 +1791,8 @@
         "class": "static",
         "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
         "lines": [
-          844,
-          849
+          847,
+          852
         ]
       },
       {
@@ -1800,8 +1800,8 @@
         "class": "static",
         "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
         "lines": [
-          850,
-          854
+          853,
+          857
         ]
       }
     ],
@@ -5689,7 +5689,7 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "f464e41815445594f3184dd96165f53c4b9158daf9a09398ffb98e905de9bdd3",
+        "sha256": "d385464baa6a57eebd9a10339d6db273b6aa0e0d8bcedd4a7fe7685086fc0cc5",
         "lines": [
           10,
           29
@@ -6095,7 +6095,7 @@
       {
         "signature": "## 4. The page — what the owner must see",
         "class": "static",
-        "sha256": "0730264a4d8d19c5b5dfcf309a0160bce1cdf7d8e4d74d845d7e9603004d647e",
+        "sha256": "cdbf7ab57f67b14ab3a7461d30cffd5af63b0b0866f8e69e0914f4e2892f2ec5",
         "lines": [
           50,
           67

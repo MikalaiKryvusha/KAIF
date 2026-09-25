@@ -63,6 +63,13 @@ const SERVER_DEATH_MS = 2500;         // DEF3: server death after the save (the 
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 s after the beacon — reload vs close
 const WAIT_POLL_MS = 2000;            // OW6 (2.8): the waiter polls the decision file(s) — the field device the KAIF owner pointed to polls every 2 s
 const QH_LEN = 12;                    // OW6: hex chars of a question's fingerprint in a draft key (title + body of the question)
+// 2.8, origin issue #106 (a field owner's explicit word, three requests in one evening): owner-facing pages render at 1.7x the browser
+// base — the WHOLE page through CSS zoom, as Ctrl+Plus does (raising font-size alone turned the fixed radio circles into dots and slid
+// the title under the button) — and the primary Save button at 1.5x (its own zoom SAVE_SCALE / PAGE_SCALE). Media queries measure the
+// viewport, which CSS zoom does not change, so a width breakpoint travels multiplied by PAGE_SCALE: the two constants move together.
+export const PAGE_SCALE = 1.7;
+export const SAVE_SCALE = 1.5;
+const NARROW_PX = 560;                // the narrow-window breakpoint at scale 1 (rendered as NARROW_PX * PAGE_SCALE)
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -715,6 +722,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     :root { --bg:#17171a; --card:#212126; --ink:#ececf0; --muted:#a0a0a8; --line:#3a3a42;
       --wait:#f59e0b; --done:#22c55e; --you:#60a5fa; --danger:#f87171; --accent:#60a5fa;
       --tagink:#0b1020; --tagwait:#f59e0b; --tagdone:#22c55e; --tagyou:#60a5fa; } }
+  html { zoom:${PAGE_SCALE} } /* #106: the whole page at PAGE_SCALE, like Ctrl+Plus */
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
   /* The header SCROLLS WITH THE PAGE — the owner's word (2026-09-05): not sticky. Only the emergency banner may pin. */
   header { position:static; background:var(--card); border-bottom:1px solid var(--line); padding:10px 230px 10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
@@ -757,8 +765,9 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
      height; the status is a pill under it on its own background, gone when empty. A bottom bar is FORBIDDEN (spec §4). */
   .fab { position:fixed; top:12px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
+  .fab #save { zoom:${+(SAVE_SCALE / PAGE_SCALE).toFixed(3)} } /* #106: the primary Save button renders at SAVE_SCALE of the base */
   .fab #status { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; text-align:right } .fab #status:empty { display:none }
-  @media (max-width:560px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
+  @media (max-width:${Math.round(NARROW_PX * PAGE_SCALE)}px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
@@ -1717,6 +1726,13 @@ export async function selftest(log = console.log) {
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.fab { position:static;') }).ok, 'self-check goes RED when the button stops floating (mutation on a copy)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.bar { position:fixed; bottom:0;') }).ok, 'self-check goes RED on a bar pinned to the bottom edge (the #60 page)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('<label class="opt"><input', '<label class="opt">**leak**<input') }).ok, 'self-check goes RED when an option label carries raw markdown');
+  // #106 (2.8): the page at 1.7x the browser base through zoom, the Save button at 1.5x, the narrow breakpoint scaled with the page
+  ok(plainPage.html.includes('html { zoom:1.7 }') && !/body \{[^}]*font:(?!15px)/.test(plainPage.html),
+    'the page renders at 1.7x the browser base through html zoom (the whole page, like Ctrl+Plus), the body font stays the 15px base (#106)');
+  ok(plainPage.html.includes('.fab #save { zoom:0.882 }') && Math.abs(PAGE_SCALE * 0.882 - SAVE_SCALE) < 0.01,
+    'the primary Save button carries its own zoom 1.5 / 1.7 = 0.882 — it renders at 1.5x the base (#106)');
+  ok(plainPage.html.includes('@media (max-width:952px)') && !plainPage.html.includes('max-width:560px'),
+    'the narrow-window breakpoint travels with the zoom: 560 x 1.7 = 952px, the unscaled 560px is gone (#106)');
   rmSync(join(root, ARCH), { force: true });
   ok(!selfCheck({ ...page, html: page.html.replace(/<input type="radio"[^>]*>/g, '') }).ok, 'self-check goes RED on a page whose radios were stripped (mutation on a copy)');
   ok(/header \{ position:static;/.test(page.html) && page.html.includes('<html lang="en">') && page.html.includes('Probe Project'), 'page: header scrolls with the page (position:static), lang and project name from the marker');

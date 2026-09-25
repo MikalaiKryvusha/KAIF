@@ -299,7 +299,7 @@ async function main() {
           " var l1=lum(body.color),l2=lum(body.backgroundColor);var contrast=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);",
           " return {cards:document.querySelectorAll('.qcard').length,opts:document.querySelectorAll('.opt input').length,",
           "  optsEnabled:document.querySelectorAll('.opt input:not([disabled])').length,",
-          "  tables:document.querySelectorAll('.doc table').length,stripe:cs.borderLeftWidth,",
+          "  tables:document.querySelectorAll('.doc table').length,stripe:cs.borderLeftWidth,zoom:parseFloat(getComputedStyle(document.documentElement).zoom)||1,",
           "  stripeDiff:cs.borderLeftColor!==csd.borderLeftColor,contrast:contrast,",
           "  overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,",
           "  fab:rect(),bar:!!document.querySelector('.bar'),fab2:(function(){window.scrollTo(0,1e9);return rect()})(),",
@@ -313,8 +313,10 @@ async function main() {
           probe.cards === 3 && probe.opts === 7 && probe.optsEnabled === 5,
           'cards=' + probe.cards + ' opts=' + probe.opts + ' enabled=' + probe.optsEnabled);
         check(tag + ': таблица отрендерена', probe.tables >= 1);
+        // #106 (2.8): the page is zoomed (PAGE_SCALE); the computed width is reported at the BASE scale after the engine snaps the zoomed
+        // border to whole device px (5 × 1.7 = 8.5 → 8 → 4.706) — so 5px within one device px (1 / zoom); a 4px stripe stays red
         check(tag + ': полоса состояния 5px и цветом различает wait/done (P1)',
-          probe.stripe === '5px' && probe.stripeDiff);
+          Math.abs(parseFloat(probe.stripe) - 5) < 1 / probe.zoom && probe.stripeDiff, 'stripe ' + probe.stripe + ' at zoom ' + probe.zoom + ' (base-scale px after the snap to whole device px)');
         check(tag + ': контраст текста ≥ 4.5', probe.contrast >= 4.5, 'фактически ' + probe.contrast.toFixed(2));
         check(tag + ': нет горизонтального переполнения', !probe.overflow);
         const inView = (f) => f && f.pos === 'fixed' && f.top >= 0 && f.bottom <= f.ih && f.right <= f.iw;

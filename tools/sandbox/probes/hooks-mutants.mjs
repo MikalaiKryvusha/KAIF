@@ -6,7 +6,7 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite once per mutant (eleven today) — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (twelve today) — run it ALONE, not beside the polygon (origin bug 109).
 // [TESTED: 2026-09-25 22:08:57 +03:00 · ELEVEN mutants after the owner-word gate (M11 reasoning counted as an answer): «11 mutants red
 //  exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
 // [TESTED: 2026-09-25 17:43 +03:00 · TEN mutants after OW2 (M8 the imperative before the word dropped · M9 the heading exclusion dropped · M10 the stop
@@ -94,7 +94,12 @@ const MUTANTS = [
   { name: 'M11 owner-word: reasoning counted as an answer (the 19:32 threat — an answer composed and never emitted passes)',
     dest: '.kaif/hooks/pretool-owner-word.mjs',
     fn: (b) => b.replace("if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) process.exit(0);", 'if (c.length > 0) process.exit(0);'),
-    expect: ['s14 owner-word: сообщение владельца посреди хода без ТЕКСТА', 's14 owner-word: после сообщения — только размышления', 's14 owner-word: старое сообщение отвечено, новое — нет'] },
+    expect: ['s14 owner-word: сообщение владельца посреди хода без ТЕКСТА', 's14 owner-word: после сообщения — только размышления', 's14 owner-word: старое сообщение отвечено, новое — нет', 's14 owner-word: отказ по старому сообщению не покрывает новое'] },
+  // the owner's word 2026-09-25 23:28 +03:00 — answer by the gate and do not stop the work: a gate that refuses forever is the stop he rejected
+  { name: 'M12 owner-word: the one refusal per message dropped (every call refused until a text shows — the stop the owner rejected)',
+    dest: '.kaif/hooks/pretool-owner-word.mjs',
+    fn: (b) => b.replace("    if (refusedHere(x)) process.exit(0); // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)\n", ''),
+    expect: ['s14 owner-word: один отказ по сообщению доставлен'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));

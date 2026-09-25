@@ -51,7 +51,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 
 - **Reading view (2.7, origin issue #54):** LIVE questions first; everything answered and the document's text below as ONE
   collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
-- A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal.
+- A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal. **Readable without the browser's zoom** (2.8, origin issue #106 — a field owner's explicit word): the page renders at 1.7× the browser base through `html { zoom }` — the whole page, as Ctrl+Plus does (raising font-size alone turns the radio circles into dots), the Save button at 1.5× (its own zoom 1.5 / 1.7), and every width breakpoint is multiplied by the same scale (media queries do not see CSS zoom).
 - **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window height; the status is a pill
   under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
   owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.

@@ -792,8 +792,8 @@ tool result — and the agent system signs its author (Claude Code: "The user se
    owner's trust. An order signed as his passes the usual gates (for an outward act it IS his verbatim word); in doubt of its author
    ask ONE question — never a silent "not taken as permission". Mechanical halves: the leading-word hook orders a stop on a leading
    "stop" (a prompt hook firing on a mid-turn message is observed on one system, promised by none); the gate
-   `.kaif/hooks/pretool-owner-word.mjs` (2.8, `PreToolUse`) refuses every tool call while the owner's latest mid-turn message has no
-   TEXT answer after it. `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
+   `.kaif/hooks/pretool-owner-word.mjs` (2.8, `PreToolUse`) refuses ONE tool call after an owner's mid-turn message with no TEXT answer
+   yet: answer, go on working, repeat the answer in the turn's final text. `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
 
 ### The storefront — text a stranger reads
 
@@ -3297,9 +3297,9 @@ session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `re
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
-typed mid-turn has no TEXT answer after it in the transcript → the tool call is refused, the reason quotes the owner's words; Claude
+typed mid-turn has no TEXT answer after it in the transcript → ONE tool call is refused, the reason quotes the owner's words; Claude
 Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
-on `Stop`, and the gate has none — it refuses every call until the text answer is in the record; injections are orders, never
+on `Stop`, and the gate has none — it refuses one call per owner's message and the work goes on; injections are orders, never
 document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
@@ -3515,6 +3515,9 @@ session that shipped the rule met it again the same evening (2026-09-25, 19:32):
 composed in the reasoning and never emitted as text — 18 tool calls, the owner unanswered; the transcript showed it. Hence the
 mechanical half the origin owner asked for that evening: the gate `pretool-owner-word.mjs` (event `PreToolUse`) refuses every tool
 call while the owner's latest mid-turn message has no text answer in the transcript — the rule says «answer AS TEXT» for the same reason.
+Its first edition refused EVERY call until the answer showed in the record; that session's texts between calls kept landing as
+reasoning, so each mid-turn word stopped the work until the owner wrote again — and the owner's verdict came the same hour: answer by
+the gate, do not stop the work. The gate refuses once per message; its order makes the turn's final text carry the answer.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 

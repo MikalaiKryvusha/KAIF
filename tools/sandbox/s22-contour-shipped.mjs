@@ -548,6 +548,12 @@ if (!exe) {
   ok(legacy && legacy.includes('старый черновик без отпечатка') && q2text === '',
      's22 D: черновик СТАРОГО образца (ключ без отпечатка вопроса, страница до 2.8) — блоком «Черновик прошлой редакции» с текстом, на Q2 по номеру НЕ сел (OW6, реальный мир: черновики в профиле владельца)',
      'legacy «' + String(legacy).slice(0, 80) + '» q2 «' + q2text + '»');
+  // #106 (2.8): the page in the owner's window renders at 1.7x the browser base and the Save button at 1.5x — read from the REAL window
+  // (computed style), not from the page source; on v2.7 the page has no zoom — red
+  const zoomed = await ev("(function(){var h=parseFloat(getComputedStyle(document.documentElement).zoom),s=parseFloat(getComputedStyle(document.getElementById('save')).zoom);return JSON.stringify({h:h,s:s})})()");
+  const zm = (() => { try { return JSON.parse(zoomed); } catch { return {}; } })();
+  ok(Math.abs(zm.h - 1.7) < 0.01 && (Math.abs(zm.h * zm.s - 1.5) < 0.03 || Math.abs(zm.s - 1.5) < 0.03),
+     's22 D: страница в окне владельца — масштаб 1,7 от базового размера браузера, кнопка «Записать» — 1,5 (#106)', 'zoom ' + zoomed);
   // Q1
   const w1 = spawnWait(); await wait(500);
   await pick('Q1', 'A'); await clickSave();
