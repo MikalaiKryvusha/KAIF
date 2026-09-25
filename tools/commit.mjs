@@ -8,6 +8,7 @@
 // в git log побайтно чистое (фикс-коммит bugs/46 прочитан обратно)]
 import { execSync, execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
@@ -52,6 +53,14 @@ const FLAGS = { '--msg-file': true, '--as': true, '--only': true, '--allow-rever
 //  документа с приватным именем в reports/KAIF_AUDIT во временном репозитории остановлен (код 1, HEAD на месте), инструмент 5dab517
 //  его закоммитил; отчёт testcases/reports/2026-09-25_ck6-private-names-every-commit.md]
 const privateNamesGateNeeded = (stagedNameStatus) => stagedNameStatus.length > 0;
+// ── Преполёт 1d: непубличные фразы владельца не едут коммитом (утечка 19e19ff, находка 5 судьи VO4) ─────────────────────────
+// Ось 5 генератора слепка стояла только в его собственном прогоне: утечка двух непубличных фраз в НОВЫХ файлах ушла в origin
+// коммитом и была найдена случайно. Здесь она гейт каждого непустого коммита: индекс + сообщение коммита. Код генератора →
+// решение: 0 — дальше · 3 — SKIPPED вслух (на машине нет приватного ядра — схлопывать нечего) и дальше · всё прочее — стоп
+// (приёмка личного падает ЗАКРЫТО: сломанная ось не зелёная). Функция чистая — её доказывает `--selftest`.
+// [TESTED: 2026-09-25 17:07 +03:00 · --selftest (четыре случая 1d); функциональный прогон tools/sandbox/probes/commit-1d-leak-run.mjs — фраза в новом
+//  файле и в сообщении — стоп, HEAD на месте, чистый коммит проходит, текста фразы в выводе нет; отчёт testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
+const leakGateAction = (status) => (status === 0 ? 'pass' : status === 3 ? 'skip' : 'stop');
 
 const strayArgs = (argv) => {
   const stray = [];
@@ -97,6 +106,10 @@ if (process.argv.includes('--selftest')) {
   T('1c: коммит одного HOUSE_RULES.md зовёт стража (форма a80df20)',
     privateNamesGateNeeded(['M\tHOUSE_RULES.md']) === true);
   T('1c: пустой набор стража не зовёт', privateNamesGateNeeded([]) === false);
+  T('1d: ось утечки зелёная — коммит идёт', leakGateAction(0) === 'pass');
+  T('1d: приватного ядра нет на машине (SKIPPED=3) — коммит идёт, строка печатается', leakGateAction(3) === 'skip');
+  T('1d: утечка (1) — стоп', leakGateAction(1) === 'stop');
+  T('1d: ось не исполнилась (2, иное) — стоп, приёмка личного падает закрыто', leakGateAction(2) === 'stop' && leakGateAction(null) === 'stop');
   for (const f of fails) console.error('✖ selftest commit-gate: ' + f);
   if (fails.length) { console.error(`\n❌ commit --selftest: ${fails.length} провалов (bugs/79)`); process.exit(1); }
   console.log('✅ commit --selftest: гейт неожиданного файла краснеет на чужом новом файле и молчит на ' +
@@ -244,6 +257,19 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
       execFileSync(process.execPath, [join(ROOT, 'tools', 'private-names-guard.mjs')], { cwd: ROOT, stdio: 'inherit' });
     } catch {
       console.error('\n✋ коммит остановлен преполётом 1c: private-names-guard красный — приватное имя едет в поставку, витрину или отчёт суда. Алиасы — .kaif/private-names.json.');
+      process.exit(1);
+    }
+  }
+  // ПРЕПОЛЁТ 1d (см. leakGateAction выше): индекс и сообщение коммита против фраз, которые слепок схлопнул.
+  if (staged.length) {
+    const leakMsg = join(tmpdir(), `kaif-commit-leak-${process.pid}.txt`);
+    writeFileSync(leakMsg, msg, 'utf8');
+    const lr = spawnSync(process.execPath, [join(ROOT, 'tools', 'stylometry-snapshot.mjs'), '--leak-only', '--also', leakMsg], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 26 });
+    rmSync(leakMsg, { force: true });
+    const action = leakGateAction(lr.status);
+    process.stdout.write((lr.stdout || '') + (lr.stderr || ''));
+    if (action === 'stop') {
+      console.error('\nкоммит остановлен преполётом 1d: непубличная фраза владельца едет этим коммитом (или ось утечки не исполнилась) — перепиши место описанием, не цитатой (решение №60).');
       process.exit(1);
     }
   }

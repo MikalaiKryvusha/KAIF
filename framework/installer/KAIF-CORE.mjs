@@ -1248,15 +1248,18 @@ function languageArrivalsOf(paths) {
 
 // ── Owner-voice snapshot sync (2.8, epic VO, the origin's plans/120 VO3; origin issue #103) ─────────────────────────────────────
 // A project whose voice portrait DERIVES from the release's public voice snapshot — it names one of the markers the release's
-// bundle meta lists (`ownerVoice.markers`; the bundle, not the loader manifest: both update routes read it) — takes the new snapshot by REPLACEMENT, never a merge: the owner's word in issue #103
+// bundle meta lists (`ownerVoice.markers`: the public snapshot's own labels; the bundle, not the loader manifest: both update routes read it) — takes the new snapshot by REPLACEMENT, never a merge: the owner's word in issue #103
 // («не мержем, а заменой»). The file's form after it: an optional LOCAL part (a project preamble, a genre shell re-derived over the
 // new snapshot) ABOVE the snapshot's first line, then the snapshot byte for byte to the end — the checkpoint verifies that part by
-// sha256 (LF). A portrait that names none of the markers is another owner's: no item, not a byte touched. The machinery reads the
-// markers from the BUNDLE META and never knows whose voice it is.
-// [TESTED: 2026-09-25 16:07 +03:00 · s26 section (5) on the deployed core: item for a derived copy with a preamble, checkpoint refuses before the
-//  replacement and on a merge, accepts the replacement; another owner's portrait and a current one — no item; the hand-over at recheck for a
-//  task of the previous core; red on dist v2.7; mutants M9–M12 red on their addressees; field clones (two deployments, both routes) replaced
-//  and accepted, sources untouched; report testcases/reports/2026-09-25_vo3-portrait-replace.md]
+// sha256 (LF), and the local part must carry no first line of a public snapshot (`ownerVoice.heads`): a previous snapshot kept above the
+// new one is a merge (the VO4 judge kept a whole 1.x portrait above it, and the tail check alone passed it). A portrait that names none
+// of the markers is not derived from the snapshot — another owner's, or a private copy of the core: no item, not a byte touched. The
+// machinery reads markers and heads from the BUNDLE META and never knows whose voice it is.
+// GAP: a merge that drops the previous snapshot's first line passes; a genre shell kept unchanged above the new snapshot passes — its
+// re-derivation is the /owner-voice agent's judgement.
+// [TESTED: 2026-09-25 17:19 +03:00 · s26 section (5) on the deployed core — the merge above the snapshot refused by the checkpoint and the hand-over, a private copy
+//  untouched; mutants M9–M16 red on their addressees; field clones of three deployments: the judge's merge on a real portrait refused, a private
+//  portrait kept out of git untouched on both routes; report testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
 const PORTRAIT_FILE = 'AUTHOR_STYLOMETRY.md';
 const lfSha256 = (s) => createHash('sha256').update(String(s).replace(/\r\n/g, '\n'), 'utf8').digest('hex');
 /** The part of a portrait from the snapshot's first line to the end (LF), or null when the line is absent. */
@@ -1265,14 +1268,25 @@ function snapshotTail(text, head) {
   const at = head ? lines.indexOf(head) : -1;
   return at < 0 ? null : lines.slice(at).join('\n');
 }
+/** A merge left ABOVE the snapshot: the local part — the lines before the snapshot's first line — carries the first line of a public
+ *  snapshot (this release's or an earlier layout's, `pin.heads`), so a previous snapshot still sits in the file → that line, or null. */
+function mergedAbove(text, pin) {
+  const lines = String(text).replace(/\r\n/g, '\n').split('\n');
+  const at = pin && pin.head ? lines.indexOf(pin.head) : -1;
+  if (at < 0) return null;
+  const heads = new Set([pin.head, ...(Array.isArray(pin.heads) ? pin.heads : [])]);
+  return lines.slice(0, at).find((l) => heads.has(l)) || null;
+}
 /** The update's verdict on the project's portrait against the release pin → null (nothing to do) or { marker, was, … pin }. */
 function portraitSync(pin) {
   if (!pin || !/^[0-9a-f]{64}$/.test(pin.sha256 || '') || !Array.isArray(pin.markers) || !pin.head || !okOnDisk(PORTRAIT_FILE)) return null;
   const text = readFileSync(PORTRAIT_FILE, 'utf8');
   const marker = pin.markers.find((m) => text.includes(m));
-  if (!marker) { log(`· voice portrait: ${PORTRAIT_FILE} names none of the release snapshot's markers — another owner's portrait, left untouched`); return null; }
+  if (!marker) { log(`· voice portrait: ${PORTRAIT_FILE} names none of the release snapshot's markers — not derived from it (another owner's portrait or a private copy), left untouched`); return null; }
   const tail = snapshotTail(text, pin.head);
-  if (tail !== null && lfSha256(tail) === pin.sha256) { log(`✔ voice portrait: ${PORTRAIT_FILE} already carries this release's snapshot (sha ${pin.sha256.slice(0, 12)})`); return null; }
+  const merged = mergedAbove(text, pin);
+  if (tail !== null && lfSha256(tail) === pin.sha256 && !merged) { log(`✔ voice portrait: ${PORTRAIT_FILE} already carries this release's snapshot (sha ${pin.sha256.slice(0, 12)})`); return null; }
+  if (merged) log(`· voice portrait: the local part of ${PORTRAIT_FILE} above the snapshot still carries «${merged}» — a merge, not a replacement`);
   const esc = marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const was = (new RegExp(`${esc}\\D{0,30}?(\\d+\\.\\d+)`).exec(text) || [])[1] || null;
   return { ...pin, marker, was };
@@ -3816,6 +3830,10 @@ function cmdCheckpoint() {
     const tail = snapshotTail(readFileSync(PORTRAIT_FILE, 'utf8'), head);
     if (tail === null) die(`checkpoint owner-voice-core REFUSED: ${PORTRAIT_FILE} has no line «${head}» — the release snapshot is not in it yet (fetch it and put it after your local part, byte for byte)`);
     const got = lfSha256(tail);
+    let heads = [];
+    try { const b = parseBundle('.kaif/install/KAIF-CORE-BUNDLE.md', true); heads = (b && b.meta && b.meta.ownerVoice && b.meta.ownerVoice.heads) || []; } catch { heads = []; }
+    const merged = mergedAbove(readFileSync(PORTRAIT_FILE, 'utf8'), { head, heads });
+    if (merged) die(`checkpoint owner-voice-core REFUSED: the local part of ${PORTRAIT_FILE} above «${head}» still carries «${merged}» — the first line of a public snapshot: the previous portrait is still in the file; replace, do not merge (keep only your local part above the release snapshot)`);
     if (got !== want) die(`checkpoint owner-voice-core REFUSED: the snapshot part of ${PORTRAIT_FILE} (from «${head}» to the end) has sha256 ${got}, the release pins ${want} — replace, do not merge; a tool that stamps blocks into it runs after this checkpoint`);
     log(`✔ voice portrait: the snapshot part of ${PORTRAIT_FILE} equals the release snapshot byte for byte (sha ${want.slice(0, 12)}) — executed by the checkpoint itself`);
   }

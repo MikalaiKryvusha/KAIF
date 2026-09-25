@@ -45,6 +45,7 @@
 import { readFileSync, writeFileSync, existsSync, rmSync, mkdirSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { tempRoot } from './lib/temp-root.mjs';
 
 const ROOT = process.cwd();
@@ -169,8 +170,10 @@ function samplePublic(id, block, cfg) {
   for (const l of block) {
     const words = l.trim().split(/\s+/).filter(Boolean);
     if (words.length < SAMPLE_MIN_LINE_WORDS) continue;
+    // строка образца сверяется ЦЕЛИКОМ (находка 8 судьи VO4: сверка первых восьми слов пропускала публичное начало с непубличным
+    // продолжением); SAMPLE_PROBE_WORDS остаётся длиной цитаты в сообщении отказа
     const probe = words.slice(0, SAMPLE_PROBE_WORDS).join(' ');
-    if (!hay.includes(probe)) {
+    if (!hay.includes(normWords(l))) {
       throw new Error(`образец ${id} назван публичным (${file}), но строка «${probe}…» в файле не найдена — слепок НЕ пересобран`);
     }
   }
@@ -203,12 +206,24 @@ function gitGrepFiles(span) {
   const needle = glue(span);
   return trackedTexts().filter(({ text }) => text.includes(needle)).map(({ f }) => f);
 }
+/** Тексты того, что едет в коммит: файлы ИНДЕКСА (новые — тоже; утечка 19e19ff сидела в новых файлах) и явно названные `--also`. */
+function stagedTexts(also = []) {
+  let names = [];
+  try { names = execFileSync('git', ['diff', '--cached', '--name-only', '--diff-filter=ACMR'], { cwd: ROOT, encoding: 'utf8' }).split('\n'); } catch { names = []; }
+  const staged = names.filter((f) => f && TEXT_EXT.test(f) && f !== 'AUTHOR_STYLOMETRY.md').map((f) => {
+    try { return { f, text: glue(execFileSync('git', ['show', `:${f}`], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 28 })) }; } catch { return { f, text: '' }; }
+  });
+  return [...staged, ...also.filter((p) => existsSync(p)).map((p) => ({ f: basename(p), text: glue(readFileSync(p, 'utf8')) }))];
+}
 function leakedElsewhere(spans, grepFn = gitGrepFiles) {
   const failures = [];
   for (const span of new Set(spans)) {
     if (span.trim().split(/\s+/).filter(Boolean).length < ELSEWHERE_MIN_WORDS) continue;
     const files = grepFn(span);
-    if (files.length) failures.push(`непубличная фраза, схлопнутая слепком, стоит в ${files.slice(0, 3).join(', ')}: «${span.slice(0, 40)}…»`);
+    // Фраза называется sha, а не текстом (находка 5 судьи VO4: вывод оси сам уносил 40 символов непубличной фразы в отчёты и чат);
+    // сам текст — в `--report <скретч>` на машине владельца.
+    const id = createHash('sha256').update(span, 'utf8').digest('hex').slice(0, 12);
+    if (files.length) failures.push(`непубличная фраза, схлопнутая слепком, стоит в ${files.slice(0, 3).join(', ')}: спан sha ${id} (${span.trim().split(/\s+/).length} слов; текст — в \`--report <скретч>\`, в вывод не печатается)`);
   }
   return failures;
 }
@@ -939,11 +954,19 @@ function selfTestV2(sourcePath, cfg, root, src, at) {
   try { samplePublic('ОБ98', ['KANARYPUBLIC строка образца которой нет в файле вовсе'], { publicSamples: { 'ОБ98': 'GOAL.md' } }); }
   catch { k20b = true; }
   ok(k20a && k20b, 'K20-публичность без улики', 'отказ и для фразы, и для образца');
+  // K20c — строка образца с ПУБЛИЧНЫМ началом (первые восемь слов стоят в GOAL.md) и непубличным продолжением — отказ (находка 8 судьи VO4)
+  const goalStart = readFileSync(join(ROOT, 'GOAL.md'), 'utf8').split(/\r?\n/)[0].trim().split(/\s+/).slice(0, 10).join(' ');
+  let k20c = false;
+  try { samplePublic('ОБ97', [`${goalStart} KANARYTAIL непубличное продолжение строки образца`], { publicSamples: { 'ОБ97': 'GOAL.md' } }); }
+  catch { k20c = true; }
+  ok(k20c, 'K20c-публичное начало строки образца', 'непубличное продолжение не проходит сверку первыми словами');
 
   // K21 — схлопнутая фраза стоит в другом файле репозитория (класс утечки 19e19ff): ось 5 краснеет, без находки — молчит.
   const hit = leakedElsewhere(['KANARYELSEWHERE фраза владельца в чужом отчёте'], () => ['testcases/reports/проба.md']);
   const miss = leakedElsewhere(['KANARYELSEWHERE фраза владельца в чужом отчёте'], () => []);
   ok(hit.length === 1 && miss.length === 0, 'K21-утечка рядом', 'находка краснеет, чистота молчит');
+  // находка называет фразу sha, никогда текстом (находка 5 судьи VO4 — вывод оси не должен сам уносить фразу)
+  ok(hit.length === 1 && !hit[0].includes('KANARYELSEWHERE') && /спан sha [0-9a-f]{12}/.test(hit[0]), 'K21-находка без текста', 'фраза названа sha, её текста в выводе нет');
 
   // Чистая копия 2.x — все пять осей молчат.
   const cleanFail = selfCheck(clean.body, allowAll(clean), clean.srcLines, layers);
@@ -1052,6 +1075,14 @@ function selfTest(sourcePath, cfg) {
 const args = process.argv.slice(2);
 const srcIdx = args.indexOf('--source');
 const sourcePath = srcIdx >= 0 ? args[srcIdx + 1] : DEFAULT_SOURCE;
+// `--leak-only` — ось 5 для преполёта коммита (1d tools/commit.mjs): только утечка, без пересборки слепка; приватного ядра нет на
+// машине — SKIPPED=3 вслух (ось стоит только там, где живут схлопнутые фразы), коммит решает сам.
+const LEAK_ONLY = args.includes('--leak-only');
+const ALSO = args.flatMap((a, i) => (a === '--also' && args[i + 1] ? [args[i + 1]] : []));
+if (LEAK_ONLY && !existsSync(sourcePath)) {
+  console.log(`SKIPPED=3 — ось утечки не исполнена: приватного ядра голоса нет на этой машине (${sourcePath}); непубличные фразы здесь некому схлопывать`);
+  process.exit(3);
+}
 
 // Сверка версий обязана работать и БЕЗ приватного источника — она для чужих машин тоже.
 if (args.includes('--version-check')) {
@@ -1088,6 +1119,19 @@ try {
   process.exit(2);
 }
 const { body, stats, srcLines } = built;
+if (LEAK_ONLY) {
+  if (cfg.layout !== 2) { console.log('SKIPPED=3 — ось утечки только для раскладки 2.x (у слепка 1.x её нет — GAP назван в приёмке)'); process.exit(3); }
+  const spans = stats.elided.map((e) => e.span);
+  const texts = stagedTexts(ALSO);
+  const leaks = leakedElsewhere(spans, (span) => { const needle = glue(span); return texts.filter(({ text }) => text.includes(needle)).map(({ f }) => f); });
+  if (leaks.length) {
+    for (const l of leaks) console.error('❌ ' + l);
+    console.error(`❌ ось утечки: ${leaks.length} непубличн. фраз(ы) владельца едут этим коммитом — решение №60 держит их вне публичного репозитория`);
+    process.exit(1);
+  }
+  console.log(`✅ ось утечки: ни одна из ${new Set(spans).size} схлопнутых фраз не стоит в том, что едет коммитом (${texts.length} файл(ов))`);
+  process.exit(0);
+}
 const prov = sourceProvenance(sourcePath);
 
 // Публичные цитаты владельца — легальные исключения самопроверки: они вытянуты ИЗ ЭТОГО репо кодом.
@@ -1151,7 +1195,8 @@ if (reportIdx >= 0 && args[reportIdx + 1]) {
 }
 
 console.log(
-  `слепок: правил ${stats.rules} · публичных цитат владельца ${stats.publicQuotes} · ` +
+  `слепок: правил ${stats.rules} · цитат-доказательств с публичным адресом (раскладка 1.x) ${stats.publicQuotes} · ` +
+    (cfg.layout === 2 ? `фраз владельца, уже публичных в репозитории (белый список 2.x) ${(cfg.publicSpans || []).length} · ` : '') +
     `адресов в приватное ядро ${stats.evidenceGroups} · схлопнуто спанов ${stats.elided.length} ` +
     `(уникальных ${new Set(stats.elided.map((e) => e.span)).size}) · обезличено адресов ${stats.anonymized} · ` +
     `снято секций ${stats.dropped.length}` +

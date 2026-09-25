@@ -1,14 +1,18 @@
 // tools/sandbox/probes/voice-mutants.mjs — a PROBE (not a polygon suite): the adversarial proof of suite s26's writing-selection
 // asserts (2.8, epic CK, step CK5.9 (b) — a bare `kaif-voice-lint load` prints the portrait's writing sections, `--all` the whole,
-// the summary names every section left out with a ready ASCII `--sections` regex; 2.8 epic VO — the genre labels and §1). Thirteen mutants of the PREDICATES of the new
+// the summary names every section left out with a ready ASCII `--sections` regex; 2.8 epic VO — the genre labels and §1). Sixteen mutants of the PREDICATES of the new
 // behaviour are applied to the module's FILE block inside a COPY of dist/KAIF-CORE-BUNDLE.md in the OS temp dir (never to the tree,
 // EXP-0077); s26 runs against the copy through the KAIF_DIST seam (its sections (2) and (3) judge the DEPLOYED module), and the red
 // assert lines are compared with the addressees named here BEFORE the run (EXP-0059): mutant M → exactly these asserts go red, and
 // only they. A mutant whose anchor does not match EXACTLY ONCE is a refusal, never a green (origin bug 122); a suite that did not
 // reach its verdict line proves nothing (EXP-0158) and is BAD.
 // Run it after touching `load` of framework/tools/kaif-voice-lint.mjs or s26:   node tools/sandbox/probes/voice-mutants.mjs
-// Needs a FRESH dist (rebuild first); runs the suite once per mutant (thirteen) — run it ALONE, not beside the polygon (origin bug 109).
+// Needs a FRESH dist (rebuild first); runs the suite once per mutant (sixteen) — run it ALONE, not beside the polygon (origin bug 109).
 // Raises no window and no sound. `--list` prints the red asserts of every mutant without judging (to re-name addressees).
+// [TESTED: 2026-09-25 17:19 +03:00 · alone, on a fresh dist: all SEVENTEEN red exactly on their named addressees — VO4: M14 (the private repository name a marker
+//  again — in the bundle meta), M15/M16 (a merge above the snapshot unseen by the checkpoint / the recognition), M17 (an unlabelled row silent under a
+//  genre); the first run of the sixteen was three honest BADs — M9 and M12 also redden the new asserts, M11's anchor moved with the merge rule — named
+//  and re-anchored since; report testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
 // [TESTED: 2026-09-25 16:10 +03:00 · alone, on a fresh dist: all THIRTEEN red exactly on their named addressees — M13 (the hand-over ignores the item)
 //  proves the strengthened control assert of s26 (5), which on the old form judged a replaced portrait and could fail on no mutation.
 // [TESTED: 2026-09-25 16:07 +03:00 · alone, on a fresh dist: all TWELVE red exactly on their named addressees (M9–M12 — the core predicates of the owner-voice
@@ -48,6 +52,12 @@ const OV_CURRENT = 's26 update: портрет уже равен слепку р
 const OV_HANDOVER = 's26 передача: задание прежнего ядра без пункта';
 const OV_HANDOVER_AFTER = 's26 передача: после замены recheck свежего ядра проходит';
 const OV_HANDOVER_CONTROL = 's26 передача: у задания с пунктом owner-voice-core recheck отказ не повторяет';
+const OV_PIN = 's26 бандл несёт пин слепка владельца';
+const OV_PRIVATE = 's26 update: приватная копия портрета';
+const OV_MERGE_ABOVE = 's26 checkpoint owner-voice-core на слиянии НАД слепком';
+const OV_HANDOVER_MERGE = 's26 передача: слияние НАД слепком';
+const GENRE_UNLABELLED = 's26 check --genre essay: строка без метки жанра срабатывает';
+const GENRE_ESSAY_COUNT = 's26 check --genre essay: строки [работа] и [документ] молчат на эссе';
 
 const MUTANTS = [
   { name: 'M1 a bare load prints the whole portrait (the writing selection never runs)',
@@ -79,19 +89,32 @@ const MUTANTS = [
   // 2.8, epic VO, step VO3 (plans/120): the owner-voice snapshot sync of the CORE (dist/KAIF-CORE.mjs, not the bundle)
   { name: 'M9 the markers are not checked (every portrait is taken for a consumer — another owner\'s portrait gets the item)', file: 'KAIF-CORE.mjs',
     from: '  const marker = pin.markers.find((m) => text.includes(m));', to: '  const marker = pin.markers[0];',
-    expect: [OV_FOREIGN] },
+    expect: [OV_FOREIGN, OV_PRIVATE] },   // VO4: a private copy is not a consumer either — the same predicate
   { name: 'M10 the checkpoint does not compare the sha (a merge passes for a replacement)', file: 'KAIF-CORE.mjs',
     from: '    if (got !== want) die(', to: '    if (false) die(',
     expect: [OV_MERGE] },
   { name: 'M11 a portrait already equal to the snapshot is not recognised (it gets the item anyway)', file: 'KAIF-CORE.mjs',
-    from: '  if (tail !== null && lfSha256(tail) === pin.sha256) {', to: '  if (false) {',
+    from: '  if (tail !== null && lfSha256(tail) === pin.sha256 && !merged) {', to: '  if (false) {',   // re-anchored after VO4 (the merge rule)
     expect: [OV_CURRENT, OV_HANDOVER_AFTER] },
   { name: 'M12 the hand-over at recheck is gone (a task of the previous core leaves a 1.x portrait in place — the field route 2.7 → 2.8)', file: 'KAIF-CORE.mjs',
     from: "    if (tag === 'KAIF-UPDATE' && !task.includes('kaif-core.mjs checkpoint owner-voice-core')) {", to: '    if (false) {',
-    expect: [OV_HANDOVER] },
+    expect: [OV_HANDOVER, OV_HANDOVER_MERGE] },   // VO4: the merge above the snapshot on the hand-over route needs the hand-over too
   { name: 'M13 the hand-over ignores the item (recheck refuses on the voice even where the task carries owner-voice-core)', file: 'KAIF-CORE.mjs',
     from: "    if (tag === 'KAIF-UPDATE' && !task.includes('kaif-core.mjs checkpoint owner-voice-core')) {", to: "    if (tag === 'KAIF-UPDATE') {",
     expect: [OV_HANDOVER_CONTROL] },
+  // VO4 (the light judge of epic VO): the pin's markers are the public snapshot's labels only; a merge ABOVE the snapshot is refused.
+  { name: 'M14 the private repository name is a marker again (a private copy of the portrait gets the item — the judge\'s deployment C)', file: 'KAIF-CORE-BUNDLE.md',
+    from: '    "markers": [\n      "krinik-stylometry",', to: '    "markers": [\n      "krinik_voice",\n      "krinik-stylometry",',
+    expect: [OV_PIN, OV_PRIVATE] },
+  { name: 'M15 the checkpoint is blind to a merge ABOVE the snapshot (the whole previous portrait kept above passes)', file: 'KAIF-CORE.mjs',
+    from: '    if (merged) die(`checkpoint owner-voice-core REFUSED: the local part', to: '    if (false) die(`checkpoint owner-voice-core REFUSED: the local part',
+    expect: [OV_MERGE_ABOVE] },
+  { name: 'M16 the recognition is blind to a merge ABOVE the snapshot (it reads as «already current», the hand-over stays silent)', file: 'KAIF-CORE.mjs',
+    from: '  if (tail !== null && lfSha256(tail) === pin.sha256 && !merged) {', to: '  if (tail !== null && lfSha256(tail) === pin.sha256) {',
+    expect: [OV_HANDOVER_MERGE] },
+  { name: 'M17 a row without a genre label goes silent under --genre (only labelled rows judge a genre)',
+    from: '  if (!genre || !rule.labels || !rule.labels.length) return true;', to: '  if (!genre) return true;\n  if (!rule.labels || !rule.labels.length) return false;',
+    expect: [GENRE_UNLABELLED, GENRE_ESSAY_COUNT] },   // the silent unlabelled row also changes the count of silent rows (2 → 3)
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-voice-mutants-'));

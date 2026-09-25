@@ -28,6 +28,9 @@
 //     жанр; load --genre essay добавляет §3, голая загрузка грузит §1 (ТЕСТ ИЗМЕНЁН в (3): §1 — раздел для письма, plans/120 VO2).
 // (5) 2.8, эпик VO, шаг VO3 — портрет-потребитель получает слепок релиза ЗАМЕНОЙ на развёрнутом ядре: пин в бандле; update пишет пункт
 //     owner-voice-core копии с преамбулой; checkpoint отказывает до замены и на слиянии, принимает замену байт в байт; чужой и текущий — без пункта.
+//     VO4 (судья эпика): пин — только публичные метки и первые строки обеих раскладок слепка; слияние НАД слепком (прежний портрет целиком выше)
+//     — отказ контрольной точки и передачи; приватная копия портрета (называет приватное хранилище, не слепок) — без пункта, байт в байт;
+//     раздел (4) — строка без метки жанра срабатывает при --genre.
 // [TESTED: 2026-09-25 · «all 54 checks green»; на dist v2.7 швом KAIF_DIST — «7 of 54 check(s) failed», ровно новые ассерты;
 //  шесть мутантов tools/sandbox/probes/voice-mutants.mjs красны ровно на адресатах; ТЕСТ ИЗМЕНЁН: ассерт голой загрузки раздела (1)
 //  требует теперь строки «no writing section … the whole of it is loaded» — у его фикстуры пронумерованы только §8 и §9, и без этой
@@ -37,7 +40,12 @@
 //  читать» — раздел для письма (19 из 29 строк, оставлено 5) — plans/120 VO2, строка FORK; отчёт testcases/reports/2026-09-25_vo2-genre-labels.md]
 // [TESTED: 2026-09-25 16:07 +03:00 · «all 71 checks green» (+10: раздел (5) — пин в бандле, пункт копии с преамбулой, отказ до замены и на слиянии, приём
 //  замены, передача в recheck для задания прежнего ядра и контроль, чужой и текущий портрет без пункта); на dist v2.7 — «22 of 71»: 8 из 10 новых
-//  красны, два ассерта передачи на ядре без неё зелены по построению — их красный дают мутанты M11 и M13; M9–M13 красны ровно на адресатах; отчёт testcases/reports/2026-09-25_vo3-portrait-replace.md]
+//  красны, два ассерта передачи на ядре без неё зелены по построению — их красный дают мутанты M11 и M13 (исправлено 2026-09-25 17:19 +03:00: это число
+//  прогона ДО переписки контрольного ассерта; после неё на v2.7 — «23 of 71», 9 из 10 новых, наблюдал судья VO4); M9–M13 красны ровно на адресатах; отчёт testcases/reports/2026-09-25_vo3-portrait-replace.md]
+// [TESTED: 2026-09-25 17:19 +03:00 · «all 75 checks green» (+4 VO4: пин — публичные метки и обе раскладки; слияние над слепком — отказ контрольной точки и
+//  передачи; приватная копия портрета — без пункта; строка без метки при --genre); на dist v2.7 — «27 of 75: раздел (4) — 8 из 8, раздел (5) — 12 из 13 (передача «после замены проходит» на ядре без неё зелёная по построению, её красный — M11), 7 прежних — выбор разделов»; мутанты voice-mutants.mjs — 17 из 17
+//  на адресатах (M14–M17 новые); ТЕСТ ИЗМЕНЁН: ассерт чужого портрета ждёт новую строку лога «not derived from it (another owner's portrait or a
+//  private copy)» — класс без меток теперь включает приватную копию; отчёт testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
 import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -264,6 +272,10 @@ ok(r.code === 1 && /essay\.md:1 — «снова» → \[работа\]/.test(r.
    's26 check --genre ticket: строка [работа] называет попадание, строка [документ] молчит', r.out);
 r = gd('check essay.md --genre document');
 ok(r.code === 1 && /«снова»/.test(r.out) && /«то есть» → \[документ\]/.test(r.out), 's26 check --genre document: действуют обе метки', r.out);
+// строка БЕЗ метки судит любой жанр (находка 8 судьи VO4: ассерта на это не было)
+writeFileSync(join(G, 'frame.md'), 'Вот ответ. Надеюсь, это поможет.\n');
+r = gd('check frame.md --genre essay');
+ok(r.code === 1 && /«Надеюсь, это поможет»/i.test(r.out), 's26 check --genre essay: строка без метки жанра срабатывает и на эссе', r.out);
 r = gd('check essay.md');
 ok(r.code === 1 && /2 rule\(s\) of AUTHOR_STYLOMETRY\.md §8 carry a genre label/.test(r.out) && /«снова»/.test(r.out) && /«то есть»/.test(r.out),
    's26 check без --genre: судят все строки, как прежде, и прогон называет строки с меткой жанра', r.out);
@@ -285,8 +297,10 @@ const BUNDLE_TEXT = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 const metaM = BUNDLE_TEXT.match(/\*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\r?\n\r?\n`{6}json\r?\n([\s\S]*?)\r?\n`{6}/);
 const PIN = metaM ? (JSON.parse(metaM[1]).ownerVoice || null) : null;
 const SNAP = readFileSync(join(REPO, 'AUTHOR_STYLOMETRY.md'), 'utf8').replace(/\r\n/g, '\n');
-ok(PIN && PIN.sha256 === lfSha(SNAP) && PIN.head === SNAP.split('\n', 1)[0] && Array.isArray(PIN.markers) && PIN.markers.length > 0,
-   's26 бандл несёт пин слепка владельца: sha256 и первая строка — слепка истока, метки происхождения названы', JSON.stringify(PIN || {}).slice(0, 300));
+const HEAD_1X = '# Портрет голоса владельца KAIF — публичный слепок правил';   // первая строка слепка раскладки 1.x (шаблон шапки генератора)
+ok(PIN && PIN.sha256 === lfSha(SNAP) && PIN.head === SNAP.split('\n', 1)[0] && Array.isArray(PIN.markers) && PIN.markers.length > 0
+   && !PIN.markers.includes('krinik_voice') && Array.isArray(PIN.heads) && PIN.heads.includes(PIN.head) && PIN.heads.includes(HEAD_1X),
+   's26 бандл несёт пин слепка владельца: sha256 и первая строка — слепка истока, метки — только публичные, первые строки обеих раскладок слепка', JSON.stringify(PIN || {}).slice(0, 300));
 const relDir = (dir, version) => {
   mkdirSync(dir, { recursive: true });
   for (const f of ['KAIF-CORE-BUNDLE.md', 'KAIF-CORE.mjs']) cpSync(join(DIST, f), join(dir, f));
@@ -323,6 +337,12 @@ ok(r.code !== 0 && /the release pins/.test(r.out), 's26 checkpoint owner-voice-c
 writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), LOCAL + SNAP);
 r = runC(PA, 'checkpoint owner-voice-core');
 ok(r.code === 0 && /equals the release snapshot byte for byte/.test(r.out), 's26 checkpoint owner-voice-core после замены (преамбула + слепок байт в байт) — принят', r.out.slice(-400));
+// (д) слияние НАД слепком (форма судьи VO4): прежний портрет целиком оставлен выше слепка релиза — хвост от первой строки слепка равен
+// пину, но локальная часть несёт первую строку публичного слепка прежней раскладки — это слияние, а не замена.
+const OLD1X = LOCAL + HEAD_1X + '\n\n| **Версия ядра** | **krinik-stylometry 1.2** (объявлена ядром) |\n\nстарое правило\n';
+writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), OLD1X + SNAP);
+r = runC(PA, 'checkpoint owner-voice-core');
+ok(r.code !== 0 && r.out.includes(`still carries «${HEAD_1X}»`), 's26 checkpoint owner-voice-core на слиянии НАД слепком (прежний портрет целиком выше) — отказ: локальная часть несёт первую строку слепка', r.out.slice(-400));
 // (г) ПЕРЕДАЧА — у поля 2.7 → 2.8 задание пишет РАЗВЁРНУТОЕ, прежнее ядро (свежее подменяется в конце, EXP-0157), и пункта owner-voice-core
 // в нём нет; отметку recheck ставит СВЕЖЕЕ ядро, и она отказывает, пока портрет-потребитель не заменён. Задание прежнего ядра моделируется
 // заданием без пункта (приём s16, CK5.6).
@@ -340,12 +360,27 @@ const PE = deployC('ov-with-item', LOCAL + '# Портрет голоса вла
 must(runC, PE, `update --source ${REL9} --baseline ${RELOLD}`);
 r = runC(PE, 'checkpoint recheck');
 ok(itemOf(PE) !== '' && !/had no owner-voice-core item/.test(r.out), 's26 передача: у задания с пунктом owner-voice-core recheck отказ не повторяет (портрет ещё не заменён — его судит пункт)', r.out.slice(-500));
+// слияние НАД слепком на маршруте передачи: узнавание не считает такой портрет текущим — recheck свежего ядра отказывает
+const PF = deployC('ov-handover-merge', OLD1X);
+must(runC, PF, `update --source ${REL9} --baseline ${RELOLD}`);
+const TF = join(PF, 'KAIF_UPDATE_TASK.md');
+writeFileSync(TF, readFileSync(TF, 'utf8').replace(/^- \*\*owner-voice-core\*\* — [^\n]*\n  When done, run: [^\n]*\n/m, ''));
+writeFileSync(join(PF, 'AUTHOR_STYLOMETRY.md'), OLD1X + SNAP);
+r = runC(PF, 'checkpoint recheck');
+ok(r.code !== 0 && /this task was written by the previous core, which had no owner-voice-core item/.test(r.out), 's26 передача: слияние НАД слепком — recheck свежего ядра отказывает (узнавание не считает его текущим)', r.out.slice(-500));
 // (б) чужой портрет — ни пункта, ни байта
 const FOREIGN = '# Portrait of another owner\n\nrule one of that owner\n';
 const PB = deployC('ov-foreign', FOREIGN);
 const upB = must(runC, PB, `update --source ${REL9} --baseline ${RELOLD}`);
-ok(itemOf(PB) === '' && readFileSync(join(PB, 'AUTHOR_STYLOMETRY.md'), 'utf8') === FOREIGN && /another owner's portrait, left untouched/.test(upB.out),
+ok(itemOf(PB) === '' && readFileSync(join(PB, 'AUTHOR_STYLOMETRY.md'), 'utf8') === FOREIGN && /not derived from it \(another owner's portrait or a private copy\), left untouched/.test(upB.out),
    's26 update: чужой портрет (меток нет) — без пункта, файл байт в байт прежний, лог называет это', itemOf(PB) || upB.out.slice(-500));
+// (е) приватная копия портрета владельца (судья VO4: развёртывание держит приватный портрет вне git и называет приватное хранилище, но
+// не публичный слепок) — в списке потребителей ядра её нет: ни пункта, ни байта
+const PRIVATE = '# Портрет голоса (приватная копия)\n\nисточник — приватное хранилище krinik_voice, рабочий слой и цитаты-доказательства\n';
+const PH = deployC('ov-private', PRIVATE);
+const upH = must(runC, PH, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PH) === '' && readFileSync(join(PH, 'AUTHOR_STYLOMETRY.md'), 'utf8') === PRIVATE && /not derived from it/.test(upH.out),
+   's26 update: приватная копия портрета (называет приватное хранилище, не слепок) — без пункта, файл байт в байт прежний', itemOf(PH) || upH.out.slice(-500));
 // (в) портрет уже текущий — без пункта
 const PC = deployC('ov-current', SNAP);
 const upC = must(runC, PC, `update --source ${REL9} --baseline ${RELOLD}`);

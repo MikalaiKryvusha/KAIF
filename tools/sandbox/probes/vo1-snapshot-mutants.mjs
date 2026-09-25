@@ -25,6 +25,10 @@ const MUTANTS = [
   { id: 'M4 белый список 2.x не читается', addressee: 'K19', from: '...(v2.allowSpans || []).map((a) => a.span), ...publicSpans.map(([span]) => span)],', to: '],' },
   { id: 'M5 публичность без проверки файлом', addressee: 'K20', from: '    if (!existsSync(full) || !normWords(readFileSync(full, \'utf8\')).includes(normWords(span))) {', to: '    if (false) {' },
   { id: 'M6 утечка рядом не судится', addressee: 'K21', from: '    if (files.length) failures.push(', to: '    if (false) failures.push(' },
+  // VO4 (находка 5 судьи): находка оси утечки называет фразу sha — мутант возвращает текст фразы в вывод
+  { id: 'M7 находка печатает текст фразы', addressee: 'K21', from: 'спан sha ${id} (', to: '«${span}» sha ${id} (' },
+  // VO4 (находка 8 судьи): строка образца сверяется целиком — мутант возвращает сверку первых восьми слов
+  { id: 'M8 образец сверяется началом строки', addressee: 'K20c', from: '    if (!hay.includes(normWords(l))) {', to: '    if (!hay.includes(probe)) {' },
 ];
 
 const run = () => spawnSync(process.execPath, [COPY, ...source, '--selftest'], { cwd: REPO, encoding: 'utf8', timeout: 120000 });
@@ -41,7 +45,8 @@ try {
     const r = run();
     const reds = redIds(r.stdout + r.stderr);
     const died = r.status !== 0 && r.status !== 1;
-    const good = r.status === 1 && reds.includes(m.addressee);
+    // красный ТОЛЬКО адресат (находка 8 судьи VO4: прежде судилось «адресат среди красных», лишний красный проходил молча)
+    const good = r.status === 1 && reds.length > 0 && reds.every((id) => id === m.addressee);
     if (!good) bad++;
     console.log(`${good ? 'RED ✓' : 'NOT RED ✗'} ${m.id} → exit ${r.status}${died ? ' (DIED — not a proof, EXP-0158)' : ''}, red ${JSON.stringify(reds)} (addressee ${m.addressee})`);
   }
