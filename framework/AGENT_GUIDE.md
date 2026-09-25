@@ -1066,7 +1066,7 @@ cognition» (80% deterministic / 20% the model); it is stated once there and app
 ## Notes from the human
 
 `<High-signal guidance from the project owner that changes how the framework itself works here — each note in rule
-form with its provenance line [OWNER] <date> · <where the verbatim lives>; standing rules about the project go to the
+form with its provenance line, as "The rulebook takes the rule, not the quote" above shows; standing rules about the project go to the
 house-rules file. Examples this framework was distilled from:>`
 - Always check the current time and the log file's time before reading logs — read fresh logs, not stale ones.
 - Work autonomously without interactive questions. If you need information from the human, write an

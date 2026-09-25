@@ -30,6 +30,10 @@
 //   (7) ОБЪЯВЛЕННЫЙ АРХИВ владельца (2.8, эпик CK, шаг CK5.3; тикет #84 п. 1): архив с дайджестом проходит
 //       дверь, размер архива — справка · объявление без слова владельца названо · дайджест без имени архива и
 //       пропавший дайджест архива не прикрывают · архив не из ядра — находка схемы маркера.
+//   (10) ЗАДАНИЕ ОБНОВЛЕНИЯ НАЗЫВАЕТ ВОРОТА ПЕРВОГО ЗАКРЫТИЯ (2.8, эпик CK, шаг CK5.6; N12 разведки 2.8): пункт closing-gates
+//       называет дверь бюджета (долг записывается, со второго закрытия — убывать), журнал опыта и линт авторства (стопы с
+//       адресами); прогноз только читает и СБЫВАЕТСЯ на настоящих воротах; отметка перемеряет дерево после слияний; чистое
+//       дерево — дверь открыта, стопов нет.
 //   (5) ТРИ ЧЕСТНЫЕ ЗАПАСНЫЕ ВЕТКИ, каждая говорит о себе вслух: файл, переведённый ЦЕЛИКОМ (ни
 //       одна сигнатура шаблона не выжила — риск (а) плана) · документ owner-seeded той же формы,
 //       который проект пишет сам и переводом не является · среза модулей у файла нет вовсе. Во
@@ -47,7 +51,8 @@ import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { failed, must } from '../lib/sandbox-run.mjs';
+import { failed, must, coreRunner } from '../lib/sandbox-run.mjs';
+import { createHash } from 'node:crypto';
 import { gate as budgetGate } from '../budget-gate.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -474,6 +479,104 @@ ok(r.code === 0 && Boolean(em) && Boolean(em[2]) && Number(em[3]) === Math.round
    's16 цена входа (CK5.9): с домашними правилами строка называет «+ HOUSE_RULES.md», и число выросло на их вес (≈ 10 тыс.)',
    em ? `line=${em[0]} want=${Math.round(wantH / 1000)}k` : r.out.slice(-600));
 unlinkSync(HR);
+
+// ================================================================ (10) задание обновления называет ворота первого закрытия (2.8, CK5.6)
+// N12 разведки 2.8: обновление до 2.7 принесло дверь бюджета, а его задание её не мерило — первое закрытие в поле встало на ней
+// (у одного развёртывания четыре документа, у другого STATUS 447/200). Теперь задание прогоняет машинные ворота закрытия на дереве,
+// которое само записало, ТОЛЬКО ЧТЕНИЕМ, и называет вердикт каждых. Фикстура — трое ворот сразу: STATUS выше бюджета собственными
+// строками, журнал опыта с повтором класса без механизма, находка авторства без базовой линии. Обновление — на синтетический релиз
+// 9.9 из той же сборки (приём s18); старые тексты — копия сборки под прежней версией (`--baseline`, герметично: bugs/109). Прогноз
+// судится ПРАВДОЙ: настоящие ворота на том же дереве обязаны сказать то же. Контроль — чистое дерево, где стопа нет ни одного.
+console.log('\n=== s16: задание обновления называет, на каких воротах остановится первое закрытие ===');
+const runU = coreRunner(ROOT);
+const FROM_V = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
+const release = (dir, version) => {   // каталог артефактов релиза: бандл и ядро этой сборки, манифест под названной версией
+  mkdirSync(dir, { recursive: true });
+  cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(dir, 'KAIF-CORE-BUNDLE.md'));
+  cpSync(join(DIST, 'KAIF-CORE.mjs'), join(dir, 'KAIF-CORE.mjs'));
+  const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
+  man.version = version;
+  // Пины — по ФАЙЛАМ этого каталога, оба: мутант пробы правит ядро копии dist, а её манифест пинит немутированное — `update` отказал
+  // бы по sha, свод умер бы на установочном шаге, и раздел не доказывал бы ничего (так прошёл первый прогон мутантов CK5.6).
+  for (const f of ['KAIF-CORE-BUNDLE.md', 'KAIF-CORE.mjs']) man.sha256[f] = createHash('sha256').update(readFileSync(join(dir, f))).digest('hex');
+  writeFileSync(join(dir, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
+};
+const SRC_NEXT = join(ROOT, 'rel-9.9'); release(SRC_NEXT, '9.9');
+const SRC_OLD = join(ROOT, 'rel-old'); release(SRC_OLD, FROM_V);
+const deployU = (name) => {
+  const d = join(ROOT, name);
+  mkdirSync(join(d, '.kaif', 'install'), { recursive: true });
+  cpSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), join(d, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'));
+  cpSync(join(DIST, 'KAIF-CORE.mjs'), join(d, '.kaif', 'kaif-core.mjs'));
+  must(runU, d, 'install');   // установочный шаг: без развёртывания обновлять нечего
+  return d;
+};
+const lintIn = (dir, mod) => {
+  try { return { code: 0, out: execSync(`node ${join('.kaif', 'tools', mod)} check 2>&1`, { cwd: dir, stdio: 'pipe' }).toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: dir, args: `${mod} check` }); }
+};
+const gatesItem = (t) => { const m = t.match(/^- \*\*closing-gates\*\* — [\s\S]*?(?=^- \*\*|^## )/m); return m ? m[0] : ''; };
+const JOURNAL = ['# EXPERIENCE', '', '<!-- classes: shown-as-link -->', '', '## Entries', '',
+  '### EXP-0002 · 2026-02-02 · ❌→✅ · #show', 'class: shown-as-link', '**Lesson:** showing was replaced by a link a second time.',
+  '**Repro:** `node tools/x.mjs`', '**Mechanization:** subject-lesson', '',
+  '### EXP-0001 · 2026-01-01 · ❌ · #show', 'class: shown-as-link', '**Lesson:** showing was replaced by a link.',
+  '**Repro:** `node tools/x.mjs`', '**Mechanization:** none-cheap: the class is a human judgement, no machine evidence', ''].join('\n');
+const U = deployU('upd-gates');
+const US = join(U, 'STATUS.md');
+writeFileSync(US, readFileSync(US, 'utf8').replace(/\r?\n$/, '') + '\n\n## Own history\n\n' +
+  Array.from({ length: 240 }, (_, i) => `own status line ${i + 1}`).join('\n') + '\n');
+writeFileSync(join(U, 'EXPERIENCE.md'), JOURNAL, 'utf8');
+mkdirSync(join(U, 'plans'), { recursive: true });
+writeFileSync(join(U, 'plans', '90_fixture.md'), '# Plan 90 — fixture\n\nВладелец велел убрать порог.\n', 'utf8');
+must(runU, U, `update --source ${SRC_NEXT} --baseline ${SRC_OLD}`);   // установочный шаг: его результат судится заданием ниже
+const taskU = existsSync(join(U, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(U, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
+const itemU = gatesItem(taskU);
+ok(/`node \.kaif\/kaif-core\.mjs checkpoint closing-gates`/.test(itemU),
+   's16 задание обновления (CK5.6): пункт closing-gates есть и несёт свою исполняющую отметку', taskU.slice(0, 1200) || 'задания нет');
+const ownU = ownOf(runU(U, 'check').out, 'STATUS.md');
+const doorU = itemU.match(/STATUS\.md: own lines (\d+) of budget 200 — passes: debt recorded in \.kaif\/budget-baseline\.json \(first gate of 9\.9\) — from the next closing it passes only while it shrinks; the overflow moves to the chronicle PROJECT_HISTORY\.md/);
+ok(Boolean(doorU) && ownU !== null && Number(doorU[1]) === ownU,
+   's16 задание обновления (CK5.6): дверь бюджета названа — STATUS своими строками, как считает check, первое закрытие записывает долг, со второго он обязан убывать, адрес выноса назван',
+   `task=${doorU ? doorU[1] : 'нет строки'} check=${ownU} · ${itemU.slice(0, 900)}`);
+ok(/lesson journal \(`node \.kaif\/tools\/kaif-experience-lint\.mjs check`\) — STOPS: [^\n]*class shown-as-link: EXP-0002, EXP-0001/.test(itemU),
+   's16 задание обновления (CK5.6): журнал опыта с повтором класса назван СТОПОМ первого закрытия, класс и обе записи названы', itemU.slice(0, 1400));
+ok(/decision attribution \(`node \.kaif\/tools\/kaif-attribution-lint\.mjs check`\) — STOPS: [^\n]*plans\/90_fixture\.md:3[^\n]*no baseline yet — adopt with --write-baseline/.test(itemU),
+   's16 задание обновления (CK5.6): находка авторства без базы названа СТОПОМ — с адресом строки и командой принятия долга', itemU.slice(0, 1800));
+ok(!['budget-baseline.json', 'experience-lint.baseline.json', 'attribution-lint.baseline.json'].some((f) => existsSync(join(U, '.kaif', f))),
+   's16 задание обновления (CK5.6): прогноз только читает — ни одной базы ворот обновление не записало');
+// Прогноз обязан СБЫТЬСЯ: настоящие ворота закрытия на том же дереве говорят то же, что задание.
+const realDoor = runU(U, 'check --gate-budgets');
+const realJournal = lintIn(U, 'kaif-experience-lint.mjs');
+const realAttr = lintIn(U, 'kaif-attribution-lint.mjs');
+ok(realDoor.code === 0 && /↳ STATUS\.md: own lines \d+ of budget 200 → [^\n]*debt recorded/.test(realDoor.out) && realJournal.code === 1 && realAttr.code === 1,
+   's16 задание обновления (CK5.6): прогноз сбылся на том же дереве — дверь пропускает с записью долга, оба линта останавливают',
+   `door ${realDoor.code} · journal ${realJournal.code} · attribution ${realAttr.code} · ${realDoor.out.slice(-300)}`);
+// Отметка перемеряет по дереву ПОСЛЕ слияний: база уже записана настоящей дверью (9.9), STATUS вырос — отметка называет стоп и записывается.
+writeFileSync(US, readFileSync(US, 'utf8') + 'own status line grown 1\nown status line grown 2\nown status line grown 3\n');
+const tickU = runU(U, 'checkpoint closing-gates');
+ok(tickU.code === 0 && /⚠ closing gates measured again: \d+ line\(s\) still STOP the first closing/.test(tickU.out) &&
+   /STATUS\.md: own lines \d+ of budget 200 — STOPS: grew \d+ → \d+ since the last closing/.test(tickU.out) &&
+   /^KAIF-UPDATE: closing-gates done$/m.test(readFileSync(join(U, 'KAIF_UPDATE_TASK.md'), 'utf8')),
+   's16 задание обновления (CK5.6): отметка closing-gates перемеряет дерево после слияний — рост STATUS назван стопом, отметка записана', tickU.out.slice(-900));
+// Контроль: чистое дерево — пункт есть, дверь открыта, ни одна строка не говорит STOPS.
+const U2 = deployU('upd-clean');
+must(runU, U2, `update --source ${SRC_NEXT} --baseline ${SRC_OLD}`);
+const itemU2 = gatesItem(existsSync(join(U2, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(U2, 'KAIF_UPDATE_TASK.md'), 'utf8') : '');
+ok(/budget door \(`node \.kaif\/kaif-core\.mjs check --gate-budgets`\) — open: every re-read core document is within its budget in own lines/.test(itemU2) && !/ — STOPS: /.test(itemU2),
+   's16 задание обновления (CK5.6): контроль — на чистом дереве дверь открыта и стопов нет ни одного', itemU2.slice(0, 1200) || 'пункта нет');
+// ПЕРЕДАЧА. `update` пишет задание ядром, которое было развёрнуто, когда он запущен (свежее подменяется в конце — маршрутная
+// заметка /kaif-update), поэтому у поля 2.7 → 2.8 пункта closing-gates в задании нет — это нашёл функциональный прогон по клону
+// полевого развёртывания, свод этого не видел: здесь развёрнутое ядро уже новое. Отметку recheck ставит СВЕЖЕЕ ядро, а recheck
+// есть в задании любой версии, — оно и называет ворота. Задание прежнего ядра моделируется заданием без пункта.
+const T2 = join(U2, 'KAIF_UPDATE_TASK.md');
+writeFileSync(T2, readFileSync(T2, 'utf8').replace(/^- \*\*closing-gates\*\* — [\s\S]*?(?=^- \*\*|^## )/m, ''));
+const handU2 = runU(U2, 'checkpoint recheck');
+ok(handU2.code === 0 && /ℹ closing gates — this task was written by the previous core/.test(handU2.out) &&
+   /    · budget door \(`node \.kaif\/kaif-core\.mjs check --gate-budgets`\) — open/.test(handU2.out),
+   's16 задание обновления (CK5.6): передача — у задания прежнего ядра пункта нет, и отметка recheck свежего ядра называет ворота первого закрытия', handU2.out.slice(-900));
+const handU = runU(U, 'checkpoint recheck');
+ok(handU.code === 0 && !/ℹ closing gates — this task was written by the previous core/.test(handU.out),
+   's16 задание обновления (CK5.6): у задания с пунктом closing-gates отметка recheck прогноз не повторяет', handU.out.slice(-600));
 
 if (failures) { console.error(`\n❌ s16: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s16 doc-budgets: all ${asserts} checks green`);

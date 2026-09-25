@@ -360,8 +360,14 @@ language arrivals (NEW files of the release that arrived English on a non-Englis
 2.5) · verdict mismatches (files frozen because the recorded rehearsal's wholesale verdict
 differed from this run's — both number sets named, 2.5) · mode switch (on an anonymous →
 origin transition, the kept files that were deployed with the anonymous wording — named for a
-re-read, 2.5) · the news interval · executing
-checkpoints (`recheck` runs the
+re-read, 2.5) · the closing gates (the machine gates of the closing ritual, run READ-ONLY over the tree the
+update just wrote — the budget door through the same ratchet as `check --gate-budgets`, the lesson-journal and
+attribution lints where deployed — each verdict named: passes, STOPS with its reason and address, or not judged;
+unconditional, so "nothing stops the first closing" is a printed verdict; and since `update` writes its task with the
+core deployed when it ran, a task written by an older core has no such item — then `checkpoint recheck`, run by the fresh
+core, names the same gates; 2.8, epic CK, N12 of the 2.8 recon) ·
+the news interval · executing
+checkpoints (`closing-gates` measures the gates again over the merged tree and records; `recheck` runs the
 actual check; `judge` requires `--verdict` with evidence; `field-report` demands the mandatory
 field update report on disk in `reports/KAIF_UPDATES/`, pinned to the delivered version — an
 update does not verify green without its report).

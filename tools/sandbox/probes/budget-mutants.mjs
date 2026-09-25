@@ -25,7 +25,12 @@
 //  invisible mutant; report testcases/reports/2026-09-25_ck52-budget-ratchet.md.
 //  2026-09-25 01:12 +03:00 · FIFTEEN mutants after step CK5.3 (the owner's declared archive): M13–M15 added, M2/M8/M12 gained the
 //  archive gate asserts they now also redden; judging run — all fifteen red exactly on their named addressees; report
-//  testcases/reports/2026-09-25_ck53-owner-archive.md]
+//  testcases/reports/2026-09-25_ck53-owner-archive.md
+//  2026-09-25 09:03–09:08 +03:00 · TWENTY-SEVEN mutants after step CK5.6 (the update task names where the first closing stops): M21–M27
+//  added, M2/M12/M21 gained section-(10) asserts; the first `--list` read "red 0" for M21–M25 — every run DIED at the section's
+//  setup step (the mutated core failed the manifest's sha pin), and a death the counter could not see; the suite now pins its
+//  release directory by its own files and this runner names a setup death BAD; judging run — all 27 red exactly on their
+//  addressees; report testcases/reports/2026-09-25_ck56-closing-gates-forecast.md]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -66,7 +71,8 @@ const MUTANTS = [
              'ВЫЧИЩЕН из базы',
              'первое закрытие НОВОЙ версии',
              'нечитаемая база',
-             'без дайджеста стоп остаётся'] },
+             'без дайджеста стоп остаётся',
+             'прогноз сбылся на том же дереве', 'отметка closing-gates перемеряет'] },
   { name: 'M3 mix threshold 0 — every localized skill reads as a mix',
     from: '  const LANGUAGE_MIX_FOREIGN_SHARE = 0.35;',
     to: '  const LANGUAGE_MIX_FOREIGN_SHARE = 0;',
@@ -126,7 +132,8 @@ const MUTANTS = [
     to: "    if (fresh) { docs[o.doc] = o.own; verdicts.push({ ...o, pass: false,",
     expect: ['первое закрытие без базы ЗАПИСЫВАЕТ',
              'первое закрытие НОВОЙ версии',
-             'объявленный архив с дайджестом проходит дверь'] },
+             'объявленный архив с дайджестом проходит дверь',
+             'дверь бюджета названа', 'прогноз сбылся на том же дереве'] },
   { name: 'M10 the base never tightens after a shrink',
     from: '    docs[o.doc] = Math.min(before, o.own);',
     to: '    docs[o.doc] = before;',
@@ -174,6 +181,37 @@ const MUTANTS = [
     from: 'if (english && translatedWrapper) console.error(',
     to: 'if (english) console.error(',
     expect: ['у развёртывания без i18n строки'] },
+  // M21–M25 — the update task names where the first closing stops (2.8, epic CK, step CK5.6; N12 of the 2.8 recon).
+  { name: 'M21 the update task carries no closing-gates item (the 2.7 task)',
+    from: "  items.push(['closing-gates', `The closing ritual",
+    to: "  if (false) items.push(['closing-gates', `The closing ritual",
+    expect: ['пункт closing-gates есть', 'дверь бюджета названа', 'журнал опыта с повтором класса', 'находка авторства без базы', 'отметка closing-gates перемеряет', '(CK5.6): контроль',
+             'прогноз не повторяет'] },   // no item in the task → the fresh core's recheck names the gates on the tree that has the stops
+  { name: 'M22 a lint that stops (exit 1) is read as "no verdict"',
+    from: '    else if (r.status === 1 && reds.length) {',
+    to: '    else if (r.status === 99 && reds.length) {',
+    expect: ['журнал опыта с повтором класса', 'находка авторства без базы'] },
+  { name: 'M23 every budget verdict of the forecast reads "passes"',
+    from: "${v.pass ? 'passes' : 'STOPS'}",
+    to: "${'passes'}",
+    expect: ['отметка closing-gates перемеряет'] },
+  { name: 'M24 the forecast WRITES the ratchet base (it must only read)',
+    from: '    const { verdicts } = budgetRatchet(budgetOverflow(() => {}), base, version);',
+    to: '    const { verdicts, next } = budgetRatchet(budgetOverflow(() => {}), base, version); writeFileSync(BUDGET_BASELINE, JSON.stringify({ version: next.version, docs: next.docs }));',
+    expect: ['прогноз только читает', 'прогноз сбылся на том же дереве'] },
+  { name: 'M25 the closing-gates checkpoint does not measure again',
+    from: '    const now = closingGatesForecast(version);',
+    to: '    const now = [];',
+    expect: ['отметка closing-gates перемеряет'] },
+  // M26/M27 — the hand-over to the fresh core at `checkpoint recheck` (a task written by an older core has no closing-gates item).
+  { name: 'M26 the fresh core never names the gates for an older core\'s task',
+    from: "    if (tag === 'KAIF-UPDATE' && !task.includes('kaif-core.mjs checkpoint closing-gates')) {",
+    to: "    if (false) {",
+    expect: ['передача'] },
+  { name: 'M27 the fresh core repeats the forecast even where the task carries the item',
+    from: "    if (tag === 'KAIF-UPDATE' && !task.includes('kaif-core.mjs checkpoint closing-gates')) {",
+    to: "    if (tag === 'KAIF-UPDATE') {",
+    expect: ['прогноз не повторяет'] },
   { name: 'M11 a gate with no debt writes no base file (so the next overflow is "first")',
     from: "    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
     to: "    if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",
@@ -207,8 +245,12 @@ for (const m of MUTANTS) {
   try { out = execFileSync(process.execPath, [SUITE], { cwd: REPO, env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe', maxBuffer: 1 << 26 }).toString(); }
   catch (e) { out = String(e.stdout || '') + String(e.stderr || ''); }
   const red = out.split(/\r?\n/).filter((l) => l.startsWith('❌ s16 ')).map((l) => l.split(' — ')[0]);
-  if (LIST_ONLY) { console.log(`### ${m.name} — red ${red.length}`); for (const r of red) console.log('    ' + r.slice(0, 200)); continue; }
-  const verdict = red.length > 0 && red.length === m.expect.length && m.expect.every((e) => red.some((r) => r.includes(e)));
+  // A suite that died in a SETUP step (sandbox-run.mjs `must`) never reached the sections after it: its red count is a partial
+  // proof, never a clean one (CK5.6: every mutant's run died at the new section's update, and the count read 0 — or the old number).
+  const died = out.includes('УСТАНОВОЧНЫЙ ШАГ УПАЛ');
+  if (LIST_ONLY) { console.log(`### ${m.name} — red ${red.length}${died ? ' — ⚠ the suite DIED in a setup step: the list is partial' : ''}`); for (const r of red) console.log('    ' + r.slice(0, 200)); continue; }
+  const verdict = !died && red.length > 0 && red.length === m.expect.length && m.expect.every((e) => red.some((r) => r.includes(e)));
+  if (died) console.log('    the suite DIED in a setup step — the sections after it never ran, so this mutant proves nothing');
   if (!verdict) bad++;
   console.log(`${verdict ? 'OK ' : 'BAD'} ${m.name}\n    red ${red.length} (named before the run: ${m.expect.length})`);
   for (const r of red) console.log('      ' + r.slice(0, 190));

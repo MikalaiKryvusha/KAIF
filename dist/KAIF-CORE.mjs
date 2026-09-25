@@ -179,6 +179,110 @@ function budgetRatchet(overBudget, base, version) {
   return { verdicts, next: { version, docs: sorted } };
 }
 
+// The budget MEASUREMENT of the re-read core (moved out of `check` in 2.8, epic CK, step CK5.6): `check` prints what it finds, and the
+// update task measures the same numbers silently to name, ahead of time, where the first closing stops. `say` receives every line
+// `check` prints, in order; the return value is the list the door (budgetRatchet) judges.
+function budgetOverflow(say) {
+  // A declared ARCHIVE of the owner (2.8, epic CK; origin issue #84 — a field owner decided his GOAL.md is the verbatim append-only
+  // archive of his words and the operative layer is a separate digest; the gate's only cure, "move content out", was exactly what his
+  // decision forbids the agent). `.kaif/kaif.json` → "archives": { "<core document>": "<digest path>" } or { "digest": …, "owner":
+  // "<where his word lives>" } — declared only by the owner, like canonArtifacts. The budget is then judged on the DIGEST and the
+  // archive's size is printed as information, never a stop; a digest that is missing or does not name its archive leaves the archive
+  // judged as before (researches/33 §7 (г)). The judge hunts an archive declared without the owner's word.
+  // [TESTED: 2026-09-25 01:12 +03:00 · suite s16 section (7) green; red on the 2.7 core 5 of its 6 asserts (the sixth — an undeclared
+  //  archive warns — is the old behaviour); mutants M13–M15 of tools/sandbox/probes/budget-mutants.mjs red exactly on their addressees;
+  //  report testcases/reports/2026-09-25_ck53-owner-archive.md]
+  let archives = {};
+  try { archives = readJson(KAIF_JSON).archives || {}; } catch { archives = {}; }
+  const archiveOf = (doc) => {
+    const a = archives && typeof archives === 'object' ? archives[doc] : null;
+    if (!a) return null;
+    return typeof a === 'string' ? { digest: a, owner: '' } : { digest: String(a.digest || ''), owner: String(a.owner || '') };
+  };
+  const fileLines = (p) => readFileSync(p, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
+  // The deployed template's length per budgeted document (2.8, epic CK, fork (в) of researches/33 §7: a file translated wholesale is
+  // measured in the SAME lines, and the room for it is the template's reserve — the warning names that room and where local sections go).
+  // A manifest written before 2.8 has no `templateLines`: the warning then keeps its 2.7 wording, never an invented number.
+  // [TESTED: 2026-09-25 01:30 +03:00 · s16 section (5): the warning of a file translated wholesale names the template's length (equal to
+  //  the deployed file before translation) and the room to the budget; red on the 2.7 core; mutant M16 of tools/sandbox/probes/budget-mutants.mjs
+  //  red on exactly that assert; report testcases/reports/2026-09-25_ck54-translated-measure.md]
+  let templateLines = {};
+  try { if (okOnDisk(DEPLOY_MANIFEST)) templateLines = readJson(DEPLOY_MANIFEST).templateLines || {}; } catch { templateLines = {}; }
+  const overBudget = [];
+  for (const [doc, { budget, overflowTo }] of Object.entries(DOC_BUDGETS)) {
+    if (!okOnDisk(doc)) continue;
+    const arch = archiveOf(doc);
+    if (arch) {
+      const digestOk = arch.digest && okOnDisk(arch.digest) && readFileSync(arch.digest, 'utf8').includes(doc);
+      if (digestOk) {
+        const dl = fileLines(arch.digest);
+        say(`ℹ ${doc}: a declared archive of the owner (${fileLines(doc)} lines — information, never a stop); its digest ${arch.digest} carries the budget: ${dl} of ~${budget}${arch.owner ? '' : ` — the declaration names no owner's word: write "archives": { "${doc}": { "digest": "${arch.digest}", "owner": "<where his word lives>" } }`}`);
+        if (dl <= budget) continue;
+        overBudget.push({ doc, own: dl, budget, overflowTo });
+        say(`⚠ ${doc}: own lines ${dl} of budget ~${budget} (the digest ${arch.digest} of a declared archive — the operative text, every line counts) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
+        continue;
+      }
+      say(`ℹ ${doc}: declared an archive, but its digest ${arch.digest ? `${arch.digest} ${okOnDisk(arch.digest) ? `does not name ${doc}` : 'is missing'}` : 'is not named'} — the archive is judged as a document until the digest exists and points to it`);
+    }
+    const { total, own, basis } = ownLines(doc);
+    if (own <= budget) continue;
+    overBudget.push({ doc, own, budget, overflowTo });
+    const how = basis === 'cut' ? `${total} lines on disk, ${total - own} of them arrived with KAIF and are not counted`
+      : basis === 'owner-seeded' ? `${total} lines on disk, all of them yours — this is an owner-seeded document whose shipped skeleton the project wrote over, so there is no arrived canon to subtract`
+      : basis === 'translated' ? `${total} lines on disk, translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours${typeof templateLines[doc] === 'number' ? `; the shipped template is ${templateLines[doc]} lines, which leaves ≈ ${Math.max(0, budget - templateLines[doc])} for your translation's growth and your own adaptation — local sections belong in HOUSE_RULES.md` : ''}`
+      : `${total} lines on disk, no deployed module cut for this file — every line counts as yours`;
+    say(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
+  }
+  return overBudget;
+}
+
+// Where the FIRST closing after an update stops (2.8, epic CK, step CK5.6; N12 of the 2.8 scope recon — the 2.7 update brought the
+// budget door and its task never measured it, so the first closing after the update stopped on it in the field: four documents in
+// one deployment, STATUS 447/200 in another). The update task runs the machine gates of the closing ritual (/end-chat-soft) over the
+// tree the update just wrote, READ-ONLY, and names each verdict: the budget door through the same measurement and ratchet that
+// `check --gate-budgets` uses (the base file is read, never written), and the two lint modules the ritual calls, where they are
+// deployed, through their own `check` (read-only by contract; exit 1 = a stop, exit 3 = not judged). A forecast, not a gate: the
+// merges ahead move the numbers, so the checkpoint measures again, and update-verify never fails on it — a budget is a reading
+// cost, not a broken deployment.
+// [TESTED: 2026-09-25 09:03–09:10 +03:00 · suite s16 section (10): the item names the door with the numbers `check` prints, a repeated lesson class
+//  and an attribution finding as STOPS, writes no base, comes TRUE on the real gates of the same tree, the checkpoint re-measures,
+//  a clean tree has no stop, and the hand-over at `checkpoint recheck`; red on the 2.7 core; mutants M21–M27 of
+//  tools/sandbox/probes/budget-mutants.mjs red on their addressees; functional run — clones of four field deployments on 2.7, both
+//  routes, forecast = real gate 24 of 24 (tools/sandbox/probes/ck56-field-forecast.mjs) — testcases/reports/2026-09-25_ck56-closing-gates-forecast.md]
+const CLOSING_LINTS = [
+  ['lesson journal', '.kaif/tools/kaif-experience-lint.mjs'],
+  ['decision attribution', '.kaif/tools/kaif-attribution-lint.mjs'],
+];
+const CLOSING_LINT_TIMEOUT_MS = 120000;   // method constant: a lint over a large field tree takes seconds; a hung one must not hang the update
+const CLOSING_LINT_SHOWN = 3;             // method constant: finding lines quoted per stopping lint — its last line always carries the count
+function closingGatesForecast(version) {
+  const lines = [];
+  const door = '`node .kaif/kaif-core.mjs check --gate-budgets`';
+  let base = null, unreadable = false;
+  if (existsSync(BUDGET_BASELINE)) { try { base = readJson(BUDGET_BASELINE); } catch { unreadable = true; } }
+  if (unreadable) lines.push(`budget door (${door}) — STOPS: ${BUDGET_BASELINE} is unreadable; restore it from git`);
+  else {
+    const { verdicts } = budgetRatchet(budgetOverflow(() => {}), base, version);
+    if (!verdicts.length) lines.push(`budget door (${door}) — open: every re-read core document is within its budget in own lines`);
+    for (const v of verdicts)
+      lines.push(`budget door (${door}) — ${v.doc}: own lines ${v.own} of budget ${v.budget} — ${v.pass ? 'passes' : 'STOPS'}: ${v.why}; the overflow moves to ${v.overflowTo}`);
+  }
+  for (const [name, mod] of CLOSING_LINTS) {
+    const cmd = `\`node ${mod} check\``;
+    if (!okOnDisk(mod)) { lines.push(`${name} (${cmd}) — not deployed here: the closing has nothing to run for it`); continue; }
+    const r = spawnSync(process.execPath, [mod, 'check'], { encoding: 'utf8', timeout: CLOSING_LINT_TIMEOUT_MS });
+    const reds = `${r.stdout || ''}\n${r.stderr || ''}`.split(/\r?\n/).filter((l) => l.startsWith('✖')).map((l) => l.slice(0, 240));
+    if (r.status === 0) lines.push(`${name} (${cmd}) — passes`);
+    else if (r.status === 1 && reds.length) {
+      const shown = reds.length > CLOSING_LINT_SHOWN + 1 ? [...reds.slice(0, CLOSING_LINT_SHOWN), `… ${reds.length - CLOSING_LINT_SHOWN - 1} more`, reds[reds.length - 1]] : reds;
+      lines.push(`${name} (${cmd}) — STOPS: ${shown.join(' | ')}`);
+    }
+    else if (r.status === 3) lines.push(`${name} (${cmd}) — not judged (exit 3, SKIPPED): the closing says so aloud and does not stop on it`);
+    else lines.push(`${name} (${cmd}) — gave no verdict (exit ${r.status === null ? 'none — timed out' : r.status}): run it yourself before the closing`);
+  }
+  return lines;
+}
+
 const log = (s) => console.log(s);
 const die = (s) => { console.error('✖ ' + s); process.exit(1); };
 // die() is right for sync paths — but process.exit() over LIVE undici handles trips a libuv
@@ -1191,6 +1295,9 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (fromVersion) items.push(['stale-claims', staleClaims.length
     ? `These lines still assert an OLD version (older than ${meta.version}; the one just replaced is ${fromVersion} — a line stuck on an earlier one names it) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${staleClaims.map((h) => `    · ${h}`).join('\n')}`
     : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)`]);
+  // The closing gates, forecast (2.8, epic CK, step CK5.6 — see closingGatesForecast): UNCONDITIONAL, like stale-claims, so that
+  // "nothing stops the first closing" is a printed verdict and never an absent item.
+  items.push(['closing-gates', `The closing ritual (/end-chat-soft) runs these gates. Their verdicts over the tree as it stands NOW, after the mechanical pass (measured read-only — nothing was written); the merges ahead can move the numbers, and the checkpoint measures again. Where a line says STOPS, act before the first closing — move the content to the address the line names, fix the finding, or record the inherited debt with the command the lint names; a line that passes with debt recorded tells you what the NEXT closing will demand:\n${closingGatesForecast(meta.version).map((l) => `    · ${l}`).join('\n')}`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
   // Epic M (feedback loop): the update report is MANDATORY, even for a smooth pass (deviations
@@ -3178,56 +3285,7 @@ function cmdCheck() {
   //                 against wc -l and their own moduleShas, 0 disagreements, the other 6 and 5 documents silent on both sides, sources re-hashed
   //                 unchanged; the cross-check re-implements the same algorithm, so it catches an assembly error and never one of the algorithm.
   //                 It paid for itself anyway: it is what showed an owner-seeded document reading as "translated wholesale"
-  // A declared ARCHIVE of the owner (2.8, epic CK; origin issue #84 — a field owner decided his GOAL.md is the verbatim append-only
-  // archive of his words and the operative layer is a separate digest; the gate's only cure, "move content out", was exactly what his
-  // decision forbids the agent). `.kaif/kaif.json` → "archives": { "<core document>": "<digest path>" } or { "digest": …, "owner":
-  // "<where his word lives>" } — declared only by the owner, like canonArtifacts. The budget is then judged on the DIGEST and the
-  // archive's size is printed as information, never a stop; a digest that is missing or does not name its archive leaves the archive
-  // judged as before (researches/33 §7 (г)). The judge hunts an archive declared without the owner's word.
-  // [TESTED: 2026-09-25 01:12 +03:00 · suite s16 section (7) green; red on the 2.7 core 5 of its 6 asserts (the sixth — an undeclared
-  //  archive warns — is the old behaviour); mutants M13–M15 of tools/sandbox/probes/budget-mutants.mjs red exactly on their addressees;
-  //  report testcases/reports/2026-09-25_ck53-owner-archive.md]
-  let archives = {};
-  try { archives = readJson(KAIF_JSON).archives || {}; } catch { archives = {}; }
-  const archiveOf = (doc) => {
-    const a = archives && typeof archives === 'object' ? archives[doc] : null;
-    if (!a) return null;
-    return typeof a === 'string' ? { digest: a, owner: '' } : { digest: String(a.digest || ''), owner: String(a.owner || '') };
-  };
-  const fileLines = (p) => readFileSync(p, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
-  // The deployed template's length per budgeted document (2.8, epic CK, fork (в) of researches/33 §7: a file translated wholesale is
-  // measured in the SAME lines, and the room for it is the template's reserve — the warning names that room and where local sections go).
-  // A manifest written before 2.8 has no `templateLines`: the warning then keeps its 2.7 wording, never an invented number.
-  // [TESTED: 2026-09-25 01:30 +03:00 · s16 section (5): the warning of a file translated wholesale names the template's length (equal to
-  //  the deployed file before translation) and the room to the budget; red on the 2.7 core; mutant M16 of tools/sandbox/probes/budget-mutants.mjs
-  //  red on exactly that assert; report testcases/reports/2026-09-25_ck54-translated-measure.md]
-  let templateLines = {};
-  try { if (okOnDisk(DEPLOY_MANIFEST)) templateLines = readJson(DEPLOY_MANIFEST).templateLines || {}; } catch { templateLines = {}; }
-  const overBudget = [];
-  for (const [doc, { budget, overflowTo }] of Object.entries(DOC_BUDGETS)) {
-    if (!okOnDisk(doc)) continue;
-    const arch = archiveOf(doc);
-    if (arch) {
-      const digestOk = arch.digest && okOnDisk(arch.digest) && readFileSync(arch.digest, 'utf8').includes(doc);
-      if (digestOk) {
-        const dl = fileLines(arch.digest);
-        console.error(`ℹ ${doc}: a declared archive of the owner (${fileLines(doc)} lines — information, never a stop); its digest ${arch.digest} carries the budget: ${dl} of ~${budget}${arch.owner ? '' : ` — the declaration names no owner's word: write "archives": { "${doc}": { "digest": "${arch.digest}", "owner": "<where his word lives>" } }`}`);
-        if (dl <= budget) continue;
-        overBudget.push({ doc, own: dl, budget, overflowTo });
-        console.error(`⚠ ${doc}: own lines ${dl} of budget ~${budget} (the digest ${arch.digest} of a declared archive — the operative text, every line counts) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
-        continue;
-      }
-      console.error(`ℹ ${doc}: declared an archive, but its digest ${arch.digest ? `${arch.digest} ${okOnDisk(arch.digest) ? `does not name ${doc}` : 'is missing'}` : 'is not named'} — the archive is judged as a document until the digest exists and points to it`);
-    }
-    const { total, own, basis } = ownLines(doc);
-    if (own <= budget) continue;
-    overBudget.push({ doc, own, budget, overflowTo });
-    const how = basis === 'cut' ? `${total} lines on disk, ${total - own} of them arrived with KAIF and are not counted`
-      : basis === 'owner-seeded' ? `${total} lines on disk, all of them yours — this is an owner-seeded document whose shipped skeleton the project wrote over, so there is no arrived canon to subtract`
-      : basis === 'translated' ? `${total} lines on disk, translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours${typeof templateLines[doc] === 'number' ? `; the shipped template is ${templateLines[doc]} lines, which leaves ≈ ${Math.max(0, budget - templateLines[doc])} for your translation's growth and your own adaptation — local sections belong in HOUSE_RULES.md` : ''}`
-      : `${total} lines on disk, no deployed module cut for this file — every line counts as yours`;
-    console.error(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
-  }
+  const overBudget = budgetOverflow((s) => console.error(s));
   // The ENTRY COST of a chat in tokens (2.8, epic CK, step CK5.9; origin issue #99 — a field /resume read about 230k tokens and
   // nothing ever said so; the owner chose the cheap half: the line is REFERENCE, it never stops a closing). Lines are the
   // budget's unit, tokens are what the model pays: /resume reads the nine re-read core documents, and HOUSE_RULES.md where it
@@ -3625,7 +3683,9 @@ function cmdCheckpoint() {
   // scanners for placeholders and stale-claims EXISTED and re-running them at tick time costs
   // zero — a tick that skips an existing scanner is self-attestation):
   //   recheck      — re-syncs the mirrors (closes the drift window — field report Г11), then runs the
-  //                  actual `check` and refuses to record on failure;
+  //                  actual `check` and refuses to record on failure; on a task written by a core older than
+  //                  2.8 (no closing-gates item) it first names where the first closing stops (the hand-over);
+  //   closing-gates — measures the closing gates again over the merged tree for VISIBILITY, never refuses;
   //   placeholders — runs the placeholder scanner and refuses while literal slots remain
   //                  (the item's contract is "fill each" — an unfilled slot is objective);
   //   stale-claims — re-runs the scanner for VISIBILITY (its contract allows "state why a
@@ -3636,6 +3696,15 @@ function cmdCheckpoint() {
     // The mirror re-sync used to live only in update-verify, leaving five agent systems on
     // contradicting skills for the whole merge window (bug 34, field report Г11) — close it here.
     resyncCopies();
+    // The hand-over of the closing-gates forecast (2.8, epic CK, step CK5.6): `update` writes its task with the core that was
+    // DEPLOYED when it ran (the fresh core is swapped in at the end — /kaif-update, the route note), so a task written by a core older
+    // than 2.8 has no closing-gates item. This tick runs the FRESH core, and `recheck` stands in the task of every version — so the
+    // fresh core names where the first closing stops here, over the merged tree (found by the functional run over a field clone).
+    if (tag === 'KAIF-UPDATE' && !task.includes('kaif-core.mjs checkpoint closing-gates')) {
+      let version = null; try { version = readJson(KAIF_JSON).version || null; } catch { version = null; }
+      log('ℹ closing gates — this task was written by the previous core, which had no closing-gates item; where the first closing stops, measured now over the merged tree (read-only):');
+      for (const l of closingGatesForecast(version)) log('    · ' + l);
+    }
     // execFileSync + process.execPath: no shell (paths with $/backticks survive on POSIX),
     // no PATH lookup (the same node binary that runs this process runs the check).
     try {
@@ -3689,6 +3758,16 @@ function cmdCheckpoint() {
         else log('✔ stale-claims scan ran clean (executed by the checkpoint itself)');
       } else log('⚠ stale-claims scan skipped: no update receipt with from/to versions — tick records on your word');
     } catch (e) { log(`⚠ stale-claims scan errored (${e.message}) — tick records on your word`); }
+  }
+  if (id === 'closing-gates') {
+    // The item is a forecast (2.8, epic CK, step CK5.6): the tick measures the gates again over the MERGED tree, for visibility, and
+    // records anyway — acting on a STOPS line or carrying it into the closing is the agent's call, and update-verify never fails on a
+    // budget. The version is the deployed one: after the update the marker already carries it.
+    let version = null; try { version = readJson(KAIF_JSON).version || null; } catch { version = null; }
+    const now = closingGatesForecast(version);
+    const stops = now.filter((l) => / — STOPS: /.test(l)).length;
+    log(stops ? `⚠ closing gates measured again: ${stops} line(s) still STOP the first closing — the tick records anyway:` : '✔ closing gates measured again: nothing stops the first closing (executed by the checkpoint itself):');
+    for (const l of now) log('    · ' + l);
   }
   if (id === 'field-report') {
     // Epic M / decision #46: an update or install is not green without its field report. The
