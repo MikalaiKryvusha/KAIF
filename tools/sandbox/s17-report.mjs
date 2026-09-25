@@ -244,6 +244,17 @@ r = run('check');
 ok(r.code === 0 && /⚠ KAIF signal with no readable delivery state: bugs\/KAIF\/11_step_reference\.md — "\*\*Delivered upstream:\*\* ⏳ sending this session — see step #2 of the skill" is neither NOT YET nor an issue URL or #NN/.test(r.out),
    's17/SD: «#2» в тексте обещания («see step #2 of the skill») — не номер issue, тикет назван, не принят за доставку', r.out.slice(-400));
 rmSync(join(S, STEPREF));
+// 2.8 CH4 (критерий 13; находка K-R3b): тикет, решённый ИСТОКОМ без issue (снятие, отгруженный фикс), — законное состояние покоя:
+// check молчит, report говорит «nothing to send» и gh не зовёт; ни доставкой, ни NOT YET оно не читается
+const RESOLVED = 'bugs/KAIF/12_resolved_in_origin.md';
+writeFileSync(join(S, RESOLVED), '# KAIF bug: resolved by the origin without an issue\n\nkaif-fp: sandbox :: fixture :: v2.8\n**Delivered upstream:** resolved in origin 2.8 — the feature was withdrawn\n\n## Symptom\n\nfixture\n');
+const callsBeforeResolved = calls().length;
+r = run('check');
+ok(r.code === 0 && !/12_resolved_in_origin/.test(r.out), 's17/CH4: «resolved in origin» — check молчит (законное состояние покоя)', r.out.slice(-300));
+r = run(`report ${RESOLVED}`);
+ok(r.code === 0 && /resolved in the origin/.test(r.out) && /nothing to send/.test(r.out) && calls().length === callsBeforeResolved,
+   's17/CH4: report на «resolved in origin» — «nothing to send», gh не зван', r.out.slice(-200));
+rmSync(join(S, RESOLVED));
 // 2.8 CH1 (plans/121, критерий 10; тикет origin #78): полевой отчёт обновления — сигнал KAIF, доставляется тем же движением, что
 // написан. Ось check читает отчёты 2.8+ тем же чтением строки доставки; отчёт 2.7 молчит — локальный по канону своего времени.
 console.log('\n=== 2.8 CH1 (#78): полевой отчёт 2.8+ без доставки назван check, report доставляет, отчёт 2.7 и anonymous молчат ===');

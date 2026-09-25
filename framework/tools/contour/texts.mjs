@@ -167,6 +167,9 @@ const EN = {
     marked: (doc, q, where, file) => 'Implemented recorded (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,
     gate: (doc, ids) => 'implemented, but open: ' + doc + ' ' + ids.join(', ') + ' → close the status (or fill the answer); an implemented question is never raised again (I45)',
     badge: (where, date) => 'implemented → ' + where + ' (' + date + ')',
+    withdrawnBadge: (why, date) => 'withdrawn — ' + why + ' (' + date + ')',
+    withdrawn: (doc, q, why, file) => 'Withdrawn recorded: ' + doc + ' ' + q + ' — ' + why + ' → ' + file + ' (the question became moot; never an answer on the owner\'s behalf)',
+    answeredNotWithdrawn: (doc, q) => doc + ' ' + q + ' is ANSWERED by the owner — only an open question is withdrawn; nothing recorded',
     noSuch: (doc, q, ids) => 'no question ' + q + ' in ' + doc + ' — known: ' + (ids.join(', ') || '(none)'),
   },
   // `--check <doc>` — the form check WITHOUT a page (2.7 QL1, origin issue #56: the only check was the show, and the show is the call)

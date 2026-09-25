@@ -396,6 +396,11 @@ clobbers recorded checkpoints.
 A release may retire artifacts earlier releases deployed: untouched instances are removed
 mechanically; locally edited ones are listed in the task. The mechanism that replaced another owns
 the cleanup of its predecessor.
+Since 2.8 (epic CH) a deprecation that retires a FEATURE names the phrases its projects built on (`search`) and its version
+(`since`): the update task of an interval that crosses it lists them with the fate of each hit by its signature — an order signed
+by the agent is removed as the agent's decision, one signed by the owner goes to the owner; a question it made moot is withdrawn
+(`review.mjs --mark-withdrawn`), a KAIF ticket it resolved reads `**Delivered upstream:** resolved in origin <version>` — a legal
+resting state, silent in `check`.
 
 ### 10.6 Policy changes
 

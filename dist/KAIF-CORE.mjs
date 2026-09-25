@@ -1333,6 +1333,12 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   if (verdictMismatches.length) items.push(['verdict-mismatch', `The wholesale verdict of these files DIFFERED between the recorded rehearsal and this run — each was FROZEN (kept intact; its template delta ships in the Module diffs below), so what the rehearsal showed you stays true: ${verdictMismatches.map((m) => `${m.path} (rehearsal: ${fmtVerdict(m.rehearsal)}; this run: ${fmtVerdict(m.live)})`).join(' · ')}. Merge each by hand from its diff, then file the mismatch WITH BOTH NUMBER SETS as a framework defect (skill /report-bug, template A) — it is the fingerprint of a classification that depended on something other than the tree.`]);
   if (ownerConvention.length) items.push(['owner-conventions', `The TEMPLATES of these owner documents changed their conventions in this release — carry the convention over WITHOUT touching the owner's content: ${ownerConvention.join(' · ')}`]);
   if (deprecations.length) items.push(['deprecations', `Upstream RETIRED these artifacts, but your copies carry local edits so nothing was removed mechanically — remove each yourself or keep it consciously: ${deprecations.join(' · ')}`]);
+  // 2.8, epic CH (criterion 13; findings N10 · K12 · K13 · K-R1b): a WITHDRAWN feature leaves the project's own texts standing — a local
+  // order built on it (signed by the agent, sometimes worn as the owner's), a question it made moot, a ticket it resolved. A deprecation
+  // that retires a feature names `search` and `since`; this item lists the phrases of the (from, to] interval with each hit's fate.
+  const withdrawn = (meta.deprecations || []).filter((d) => Array.isArray(d.search) && d.search.length && d.since
+    && gt(d.since, fromVersion || '0') && !gt(d.since, meta.version));
+  if (withdrawn.length) items.push(['withdrawn-phrases', `Upstream WITHDREW a feature your own texts may still build on — search the project's texts (guide, skills, plans, interviews, bugs, house rules) for its phrases and give EVERY hit a fate: ${withdrawn.map((d) => `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf; a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.`]);
   // P4 (2.5, epic US; #28 R3): the anonymous → origin switch cannot rewrite a file the owner edited,
   // so its text may still assert the OLD mode — name each one for a re-read instead of letting it
   // rot silently.
@@ -3446,7 +3452,7 @@ function cmdCheck() {
         const ds = deliveryState(readFileSync(p, 'utf8'));
         if (ds.state === 'not-yet')
           console.error(`⚠ undelivered KAIF signal: ${p} — "Delivered upstream: NOT YET" on tracking: origin is a debt with an owner, not a resting state (origin issue #65): node .kaif/kaif-core.mjs report ${p}`);
-        else if (ds.state !== 'delivered')
+        else if (ds.state !== 'delivered' && ds.state !== 'resolved')
           console.error(`⚠ KAIF signal with no readable delivery state: ${p} — ${ds.state === 'missing' ? 'no `**Delivered upstream:**` line (the field name is machine-read: it stays verbatim in English in any project language)' : ds.state === 'ambiguous' ? `"${ds.line.trim().slice(0, 120)}" says NOT YET and names an issue (${ds.evidence}) at once` : `"${ds.line.trim().slice(0, 120)}" is neither NOT YET nor an issue URL or #NN`}; delivered → write only \`**Delivered upstream:** <issue URL or #NN>\`; not sent → write \`**Delivered upstream:** NOT YET — <why>\` with no issue URL or #NN and run node .kaif/kaif-core.mjs report ${p} (origin issue #65)`);
       }
     }
@@ -3460,7 +3466,7 @@ function cmdCheck() {
         const ds = deliveryState(readFileSync(p, 'utf8'));
         if (ds.state === 'not-yet')
           console.error(`⚠ undelivered KAIF field report: ${p} — a field report is a KAIF signal, delivered in the same move as it is written (origin issues #15, #78; no owner's approval is awaited): node .kaif/kaif-core.mjs report ${p}`);
-        else if (ds.state !== 'delivered')
+        else if (ds.state !== 'delivered' && ds.state !== 'resolved')
           console.error(`⚠ KAIF field report with no readable delivery state: ${p} — ${ds.state === 'missing' ? 'no `**Delivered upstream:**` line' : `"${ds.line.trim()}" is not NOT YET or a single issue URL or #NN`}: open the report with an H1 and \`**Delivered upstream:** NOT YET\`, then run node .kaif/kaif-core.mjs report ${p}`);
       }
     }
@@ -3632,6 +3638,9 @@ function deliveryState(text) {
     || para.match(/\b(?:origin|issue)[ \t]+(?:\*\*)?(#\d+)\b/i);
   if (issue && issue[1]) issue[0] = issue[1];   // evidence prints as `#NN`, not with the words around it
   if (issue && !notYet) return { state: 'delivered', line, evidence: issue[0] };
+  // 2.8, epic CH (criterion 13; finding K-R3b): a ticket the ORIGIN resolved without an issue (a withdrawal, a fix that shipped) is a
+  // legal resting state — silent in `check`, «nothing to send» in `report`; never read as a delivery (no issue) nor as NOT YET
+  if (!issue && !notYet && /\bresolved in (?:the )?origin\b/i.test(para)) return { state: 'resolved', line };
   if (issue) return { state: 'ambiguous', line, evidence: issue[0] };
   return { state: notYet ? 'not-yet' : 'unrecognized', line };
 }
@@ -3656,6 +3665,7 @@ function cmdReport() {
   if (!h1 || ds.state === 'missing')
     die(`${ticket} is not a KAIF ticket: it needs an H1 title and a \`**Delivered upstream:**\` line (/report-bug templates A/B; the field name stays verbatim in English in any project language)`);
   if (ds.state === 'delivered') { log(`✔ already delivered: ${ds.evidence} — nothing sent (idempotent; edit the line by hand only if that issue is gone)`); return; }
+  if (ds.state === 'resolved') { log(`✔ resolved in the origin: "${ds.line.trim()}" — nothing to send (2.8, epic CH)`); return; }
   if (ds.state === 'ambiguous')
     die(`the Delivered upstream line says NOT YET and names an issue (${ds.evidence}) at once: "${ds.line.trim()}" — nothing sent: a delivered ticket must never be sent twice, and an undelivered one must never read as sent. Delivered by hand → keep only \`**Delivered upstream:** <issue URL or #NN>\`; not sent → keep \`**Delivered upstream:** NOT YET — <why it waits>\` without an issue URL or #NN (name a related issue in the body), then re-run`);
   if (ds.state === 'unrecognized')

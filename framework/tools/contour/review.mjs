@@ -114,7 +114,7 @@ const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call 
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
 // the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
 const KNOWN_FLAGS = ['--search', '--wait', '--call', '--dry-run', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
-  '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
+  '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented', '--mark-withdrawn', '--why',
   '--where', '--close', '--force', '--owner-word'];
 const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
 
@@ -356,11 +356,11 @@ export function recordShown(root, rels, transport, now = new Date()) {
 // The fact is written by the agent's hand at the moment the decision lands (never inferred); a document whose
 // every open question is implemented is never raised — the queue says so out loud and exits 2 until the status closes.
 export function readImplemented(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), IMPLEMENTED_FILE), {}); }
-export function recordImplemented(root, rel, qid, where, now = new Date()) {
+export function recordImplemented(root, rel, qid, where, now = new Date(), extra = {}) {
   const map = readImplemented(root);
   const key = String(rel).replace(/\\/g, '/');
   map[key] = map[key] || {};
-  map[key][qid] = { at: now.toISOString(), where };
+  map[key][qid] = { at: now.toISOString(), where, ...extra };   // extra: { withdrawn: true, why } — 2.8, epic CH
   mkdirSync(decisionsAbs(root), { recursive: true });
   writeFileSync(join(decisionsAbs(root), IMPLEMENTED_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
   return map;
@@ -369,6 +369,17 @@ export function implStateOf(rel, qs, implAll) {
   const impl = implAll[String(rel).replace(/\\/g, '/')] || {};
   const open = qs.filter((q) => !q.answered);
   return { open: open.length, unanswered: open.filter((q) => !impl[q.id]).length, implementedOpen: open.filter((q) => impl[q.id]).map((q) => q.id) };
+}
+// 2.8, epic CH (criterion 13; finding K13): a question a withdrawal made moot is WITHDRAWN by the agent with its reason — the implemented
+// fact with withdrawn: true (the queue then never raises it, the page says «withdrawn — <reason>»); an ANSWERED question is the owner's
+// word and is refused (exit 1, nothing recorded): a withdrawal is never an answer on the owner's behalf.
+export function markWithdrawn(root, doc, qid, why, cfg = cfgOf(root)) {
+  const qs = parseQuestions(readFileSync(resolve(root, doc), 'utf8'));
+  const q = qs.find((x) => x.id === qid);
+  if (!q) return { code: 1, line: T(cfg).impl.noSuch(doc, qid, qs.map((x) => x.id)) };
+  if (q.answered) return { code: 1, line: T(cfg).impl.answeredNotWithdrawn(doc, qid) };
+  recordImplemented(root, relDoc(root, doc), qid, 'withdrawn — ' + why, new Date(), { withdrawn: true, why });
+  return { code: 0, line: T(cfg).impl.withdrawn(doc, qid, why, cfg.decisionsDir + '/' + IMPLEMENTED_FILE) };
 }
 // Lines of the gate: documents whose EVERY open question is implemented (I45) — printed by the queue and the show.
 export function implementedGate(root) {
@@ -471,7 +482,8 @@ export function buildPage(root, docPath) {
     bodyHtml: proseOf(q), recommended: q.recommended,
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text), recommended: o.letter === q.recommended })),
     existing: [...q.answers.filter((a) => a.text).map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
-      ...(implMap[q.id] ? [t.impl.badge(implMap[q.id].where, String(implMap[q.id].at).slice(0, 10))] : [])],
+      ...(implMap[q.id] ? [implMap[q.id].withdrawn ? t.impl.withdrawnBadge(implMap[q.id].why, String(implMap[q.id].at).slice(0, 10))
+        : t.impl.badge(implMap[q.id].where, String(implMap[q.id].at).slice(0, 10))] : [])],
   }));
   const docHash = bodyHash(md);
   // question blocks are CUT from the prose render — the cards below are the only form of questions
@@ -1708,6 +1720,21 @@ export async function selftest(log = console.log) {
     'a document whose every open question is implemented is NOT raised; the queue names it with Q1 and exits 2 (I45)');
   const implPage = buildPage(root, IMPL);
   ok(implPage.questions[0].answered && implPage.html.includes('implemented → commit abc123'), 'the page renders an implemented question as settled, with its address');
+  // 2.8, epic CH (criterion 13): a question a withdrawal made moot — the same fact with withdrawn: true; the page says «withdrawn», the
+  // queue does not raise it; the CLI refuses an ANSWERED question (the owner's word stays)
+  {
+    const WD = 'interviews/interview_096_withdrawn.md';
+    writeFileSync(join(root, WD), '# Interview #096\n\n> Status: awaiting\n\n### Q1. Print the delivery line?\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n\n### Q2. Keep it?\n\n- **A)** yes\n- **B)** no\n\n**Answer:** A\n');
+    const w1 = markWithdrawn(root, WD, 'Q1', 'the delivery line is withdrawn in 2.7');
+    const wmap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+    ok(w1.code === 0 && wmap[WD] && wmap[WD].Q1.withdrawn === true && wmap[WD].Q1.why === 'the delivery line is withdrawn in 2.7' && !ownerDocs(root).some((d) => d.doc === WD),
+      'a question a withdrawal made moot: --mark-withdrawn records withdrawn: true with the reason, and the queue no longer raises it (2.8, criterion 13)');
+    ok(buildPage(root, WD).html.includes('withdrawn — the delivery line is withdrawn in 2.7') && !buildPage(root, WD).html.includes('implemented → withdrawn'),'the page renders a withdrawn question as «withdrawn — <reason>», never as implemented');
+    const w2 = markWithdrawn(root, WD, 'Q2', 'moot');
+    ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'))[WD].Q2,
+      'an ANSWERED question is refused (exit 1, nothing recorded) — a withdrawal is never an answer over the owner\'s word');
+    rmSync(join(root, WD), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
+  }
   rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
   // QL3 (#54): the reading view — live first, the settled and the text in one fold; nothing removed
   const ARCH = 'interviews/interview_096_arch.md';
@@ -1968,7 +1995,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
   // LP (2.7, #66; the core's bug-33 rule): an unknown flag REFUSES before any page, sound or call. The 2.6 generator let
   // `--close` fall through to the show — a page and a voice call for a flag nobody meant.
-  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word', '--call', '--search'];
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--mark-withdrawn', '--why', '--where', '--owner-word', '--call', '--search'];
   const unknown = args.filter((a, i) => a.startsWith('--') && !KNOWN_FLAGS.includes(a) && !valueFlags.includes(args[i - 1]));
   if (unknown.length) {
     console.error('✖ unknown flag' + (unknown.length > 1 ? 's' : '') + ': ' + unknown.join(' ') + ' — refusing BEFORE any page, sound or call (bug 33: a silently ignored flag shows something you did not ask for). Known flags: ' + KNOWN_FLAGS.join(' '));
@@ -1996,6 +2023,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' --wait [<doc.md>]      (the waiter: exit 0 on the next recorded answer, 2 when the contour ended without one)\n' +
       '       ' + CLI_NAME + ' --call "<what is needed>" [--dry-run]   (call the owner — hands or a quick answer; names the calling session)\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
+      '       ' + CLI_NAME + ' --mark-withdrawn <doc.md> <Q> --why <reason>   (an OPEN question a withdrawal made moot — never an answer on the owner\'s behalf, 2.8)\n' +
       '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
       'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
       'Run it as a TRACKED background task (I31). Contract: .kaif/INTERACTIVE_CONTOUR_SPEC.md');
@@ -2053,6 +2081,14 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     if (!docPath) usage();
     afterRecovery(() => process.exit(checkDoc(root, docPath)));
     return;
+  }
+  if (args.includes('--mark-withdrawn')) { // 2.8, epic CH (criterion 13): see markWithdrawn()
+    const i = args.indexOf('--mark-withdrawn');
+    const doc = args[i + 1], qid = args[i + 2], why = opt('--why');
+    if (!doc || !qid || qid.startsWith('--') || !why) usage();
+    const r = markWithdrawn(root, doc, qid, why, cfg);
+    console.log(r.line);
+    process.exit(r.code);
   }
   if (args.includes('--mark-implemented')) { // I44 (QL2, #54): the fourth fact — the agent's hand, at the moment of implementing, with an address
     const i = args.indexOf('--mark-implemented');

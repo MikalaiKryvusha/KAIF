@@ -326,7 +326,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   the owner's will (origin issue #54: "you brought me an OLD question… WHICH YOU YOURSELF ALREADY
   FIXED"). The fact lives next to the others (`<decisionsDir>/implemented.json`: `{ "<doc>": {
   "<Q>": { "at", "where" } } }`) and is written by `--mark-implemented <doc> <Q> --where <commit or
-  file>` — never inferred from a diff, never written "later": implementing and marking are one move.
+  file>` — never inferred from a diff, never written "later": implementing and marking are one move. A question a WITHDRAWAL
+  made moot (a release retired the feature it was about — 2.8, epic CH) takes the same fact through `--mark-withdrawn <doc> <Q>
+  --why <reason>` (`"withdrawn": true`); only an OPEN question is withdrawn — an answered one is the owner's word and stays.
 - **I45. The queue and the show REFUSE what is already implemented — out loud, exit 2.** A document
   whose every open question is implemented is not owed to the owner: `--queue`, `--queue --list` and
   a direct show print `implemented, but open: <doc> Q1 → close the status (or fill the answer)` and

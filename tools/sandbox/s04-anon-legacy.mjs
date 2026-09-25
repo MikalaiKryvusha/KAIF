@@ -12,7 +12,9 @@ import { splitModules, joinModules } from '../module-map-lib.mjs';
 import { must, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const DIST = join(REPO, 'dist');
+// KAIF_DIST — шов для доказательства красного против ЧУЖОЙ сборки (как в s14/s17/s22; добавлен 2.8 CH4 — без него случай снятой
+// возможности нельзя было покраснить на v2.7)
+const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
 // текущая версия репо — из dist, не из головы (хардкод «1.6» ломал полигон на бампе 2.0)
 const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 // Корень прогона УНИКАЛЕН по построению (bugs/59): каталог с фиксированным именем в общем
@@ -282,7 +284,8 @@ let bundleD = readFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
 if (!depKeyRe.test(bundleD)) throw new Error('S14d fixture: ключ deprecations не найден в мете бандла');
 bundleD = bundleD.replace(depKeyRe,
-  '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test"}, {"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test"}],');
+  '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test"}, {"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test"},'
+  + ' {"path": ".kaif/_fixture-retired-feature.md", "reason": "the fixture feature is withdrawn", "since": "9.9", "search": ["FIXTURE-RETIRED-PHRASE"]}],');
 // упразднённые файлы не должны ехать в новом бандле (иначе классификация их снова напишет)
 const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
   '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n[\\s\\S]*?\\n' + FENCE + '\\n?', 'm'), '');
@@ -307,6 +310,11 @@ ok(existsSync(HK) && readFileSync(HK, 'utf8').includes('LOCAL EDIT ON DEPRECATED
 const task14d = readFileSync(join(S14d, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task14d.includes('deprecations') && task14d.includes('help-kaif'),
    'S14d правленный упразднённый вынесен пунктом задачи');
+// 2.8 CH4 (plans/121, критерий 13): снятая ВОЗМОЖНОСТЬ называет фразы — задание перечисляет их с командой поиска и судьбой по подписи
+const wd14d = task14d.slice(task14d.indexOf('- **withdrawn-phrases**'));
+ok(task14d.includes('- **withdrawn-phrases**') && wd14d.includes('FIXTURE-RETIRED-PHRASE') && wd14d.includes('git grep -n -F -e "FIXTURE-RETIRED-PHRASE"')
+   && wd14d.includes('[AI]') && wd14d.includes('[OWNER]') && wd14d.includes('--mark-withdrawn') && wd14d.includes('resolved in origin'),
+   'S14d/CH4 (критерий 13): задание называет фразу снятой возможности, команду поиска и судьбу находки по подписи ([AI] · [OWNER] · --mark-withdrawn · resolved in origin)', wd14d.slice(0, 400));
 
 // ------------------------------------------------- S14e: bugs/57 — ДВА интервала bootstrap подряд
 // Ветка «задача несёт чек-поинты — не перезаписываем» (bugs/14) была завязана на НАЛИЧИЕ

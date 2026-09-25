@@ -109,6 +109,7 @@
       "ANSWERS ON THE OWNER'S PAGE ARE SAVED ONE AT A TIME, AND AN OLD TAB NEVER WRITES INTO A REWRITTEN DOCUMENT (2.8, epic OW; the KAIF owner's word: saving answers one at a time must be required in every project; the stale-tab S1 of a field project): the page LIVES while its document has an unanswered question («Saved. Questions left: N», the answered one folds into the settled archive, other drafts stay), the last answer ends the contour with exit 0; the agent is woken by a separate WAITER — `node .kaif/tools/contour/review.mjs --wait <doc>` (exit 0 on each recorded answer, 2 when the contour ended without one); the decision file MERGES the saves of one page; a save carries the revision its page was built from — another revision → 409, the text stays on the page with «Open the new revision»; a draft never lands on a rewritten question. What to do: if your loop waited for the contour's exit after a save, start the waiter next to the page as a tracked background task and restart it after each answer while questions are left (`/owner-reviews` I8, I31). A project running its OWN contour keeps it — the contract (.kaif/INTERACTIVE_CONTOUR_SPEC.md §5) now describes the partial save.",
       "THE CALL NAMES THE CALLING SESSION, AND THE OWNER'S HANDS ARE ASKED BY A CALL (2.8, epic OW; origin issues #95 · #98 — a request in the chat is not seen while the agent works; with three windows of one project the owner could not tell which one called): `node .kaif/tools/contour/review.mjs --call \"<what is needed>\" [--dry-run]` — sound → console line → voice; with more than one workspace every call says «<owner>, this is <session>. …», the console line is `CALL · <session>:`, the page window title carries the session; the name is derived — `KAIF_SESSION_NAME`, else the workspace directory (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name. What to do: when the work stops until the owner acts or answers, call — never leave the request only in the chat (AGENT_GUIDE; `/owner-reviews` I28b; `/team-deployment` workspaces).",
       "A NEW HOOK MAKES THE AGENT ANSWER THE OWNER'S WORD MID-TURN (2.8, epic OW; origin bug 123 — an answer to the owner's mid-turn question was composed in the reasoning and never emitted, 18 tool calls later): `.kaif/hooks/pretool-owner-word.mjs` (event `PreToolUse`, Claude Code) refuses ONE tool call after the owner's message typed mid-turn that has no TEXT answer yet in the transcript; the reason quotes the owner's words and orders: answer as text by its kind, continue the work, repeat the answer in the final text of the turn (a text between tool calls can be recorded as reasoning and never reach the chat). It never stops the work: one refusal per message. What to do: the refresh-hooks module is opt-in — merge the `PreToolUse` entry of `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` by your owner's word.",
+      "A WITHDRAWN FEATURE NO LONGER LEAVES YOUR TEXTS STANDING (2.8, epic CH): a deprecation that retires a feature now names the phrases to search (`search`, with its version `since`) — the update task lists them with the fate of each hit by its signature (an order signed by the agent is removed as the agent's decision; one signed by the owner goes to the owner as one question); a question the withdrawal made moot is withdrawn with `node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why \"<reason>\"` (open questions only — never an answer on the owner's behalf); a KAIF ticket the origin resolved without an issue reads `**Delivered upstream:** resolved in origin <version>` — silent in `check`. What to do: run the search the task item names, if it names one.",
       "THE FIELD REPORT OF AN UPDATE IS DELIVERED TO KAIF IN THE SAME MOVE AS IT IS WRITTEN (2.8, epic CH; origin issue #78 — the reports README said a report stays local until the owner approves it, against the KAIF owner's standing authorization for signals, origin issue #15): the field-report item of the update and install tasks now asks for an H1 and the line `**Delivered upstream:** NOT YET` and, on tracking: origin, `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md`; `check` names a 2.8+ field report that was not sent (older reports stay silent — they were local by the canon of their time); `/kaif-update` step 5 adds: a public correction to a delivered ticket only after re-measuring the judge's finding, the update judge in a clean context. What to do: deliver this update's own report with that command.",
       "CONTOUR PAGES ARE READABLE WITHOUT THE BROWSER'S ZOOM (2.8, origin issue #106 — a field owner asked three times in one evening and named the size): the shipped page renders at 1.7x the browser base through `html { zoom }` (the whole page, as Ctrl+Plus does — raising font-size alone turns the radio circles into dots), the Save button at 1.5x (its own zoom 1.5 / 1.7), and the narrow-window breakpoint is multiplied by the same scale (media queries do not see CSS zoom): `PAGE_SCALE` · `SAVE_SCALE` in `.kaif/tools/contour/review.mjs`, one clause in `.kaif/INTERACTIVE_CONTOUR_SPEC.md` §4. What to do: nothing for the shipped contour; a project's OWN contour page (a home generator) takes the same pair of constants — the zoom and the breakpoint travel together.",
       "A COMPARISON, A SEQUENCE IN TIME OR A FORK OF OUTCOMES IS EXPLAINED WITH A PICTURE (2.8, epic OW; origin issue #104 — a field owner found a page with frames, a time line and an outcome tree a hundred times clearer than text): NEW skeleton `.kaif/_explain-page-template.html` (self-contained, no request leaves the machine): two frames side by side · a time line with the user's action marked · an outcome tree with the verdict by colour · the four-line scenario as the caption. What to do: copy it next to your owner pages, fill it, open it for the owner and write one line to it in the chat (AGENT_GUIDE «Showing is an action»; `/interview` step 3a). Its look is the owner's taste."
@@ -162,7 +163,13 @@
     {
       "path": ".kaif/_systems-registry-template.md",
       "reason": "the DELIVERY feature is removed in 2.7 by the origin owner's word — no command reads a systems registry any more",
-      "successor": "none — the /what-next METRIC: line reads the main phase's acceptance criteria (closed k of n) from MASTER_PLAN.md"
+      "successor": "none — the /what-next METRIC: line reads the main phase's acceptance criteria (closed k of n) from MASTER_PLAN.md",
+      "since": "2.7",
+      "search": [
+        "DELIVERY:",
+        "SYSTEMS_REGISTRY",
+        "delivery metric"
+      ]
     }
   ],
   "policyChanges": {
@@ -3426,6 +3433,11 @@ clobbers recorded checkpoints.
 A release may retire artifacts earlier releases deployed: untouched instances are removed
 mechanically; locally edited ones are listed in the task. The mechanism that replaced another owns
 the cleanup of its predecessor.
+Since 2.8 (epic CH) a deprecation that retires a FEATURE names the phrases its projects built on (`search`) and its version
+(`since`): the update task of an interval that crosses it lists them with the fate of each hit by its signature — an order signed
+by the agent is removed as the agent's decision, one signed by the owner goes to the owner; a question it made moot is withdrawn
+(`review.mjs --mark-withdrawn`), a KAIF ticket it resolved reads `**Delivered upstream:** resolved in origin <version>` — a legal
+resting state, silent in `check`.
 
 ### 10.6 Policy changes
 
@@ -7221,7 +7233,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   the owner's will (origin issue #54: "you brought me an OLD question… WHICH YOU YOURSELF ALREADY
   FIXED"). The fact lives next to the others (`<decisionsDir>/implemented.json`: `{ "<doc>": {
   "<Q>": { "at", "where" } } }`) and is written by `--mark-implemented <doc> <Q> --where <commit or
-  file>` — never inferred from a diff, never written "later": implementing and marking are one move.
+  file>` — never inferred from a diff, never written "later": implementing and marking are one move. A question a WITHDRAWAL
+  made moot (a release retired the feature it was about — 2.8, epic CH) takes the same fact through `--mark-withdrawn <doc> <Q>
+  --why <reason>` (`"withdrawn": true`); only an OPEN question is withdrawn — an answered one is the owner's word and stays.
 - **I45. The queue and the show REFUSE what is already implemented — out loud, exit 2.** A document
   whose every open question is implemented is not owed to the owner: `--queue`, `--queue --list` and
   a direct show print `implemented, but open: <doc> Q1 → close the status (or fill the answer)` and
@@ -11154,7 +11168,7 @@ const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call 
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
 // the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
 const KNOWN_FLAGS = ['--search', '--wait', '--call', '--dry-run', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
-  '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
+  '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented', '--mark-withdrawn', '--why',
   '--where', '--close', '--force', '--owner-word'];
 const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
 
@@ -11396,11 +11410,11 @@ export function recordShown(root, rels, transport, now = new Date()) {
 // The fact is written by the agent's hand at the moment the decision lands (never inferred); a document whose
 // every open question is implemented is never raised — the queue says so out loud and exits 2 until the status closes.
 export function readImplemented(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), IMPLEMENTED_FILE), {}); }
-export function recordImplemented(root, rel, qid, where, now = new Date()) {
+export function recordImplemented(root, rel, qid, where, now = new Date(), extra = {}) {
   const map = readImplemented(root);
   const key = String(rel).replace(/\\/g, '/');
   map[key] = map[key] || {};
-  map[key][qid] = { at: now.toISOString(), where };
+  map[key][qid] = { at: now.toISOString(), where, ...extra };   // extra: { withdrawn: true, why } — 2.8, epic CH
   mkdirSync(decisionsAbs(root), { recursive: true });
   writeFileSync(join(decisionsAbs(root), IMPLEMENTED_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
   return map;
@@ -11409,6 +11423,17 @@ export function implStateOf(rel, qs, implAll) {
   const impl = implAll[String(rel).replace(/\\/g, '/')] || {};
   const open = qs.filter((q) => !q.answered);
   return { open: open.length, unanswered: open.filter((q) => !impl[q.id]).length, implementedOpen: open.filter((q) => impl[q.id]).map((q) => q.id) };
+}
+// 2.8, epic CH (criterion 13; finding K13): a question a withdrawal made moot is WITHDRAWN by the agent with its reason — the implemented
+// fact with withdrawn: true (the queue then never raises it, the page says «withdrawn — <reason>»); an ANSWERED question is the owner's
+// word and is refused (exit 1, nothing recorded): a withdrawal is never an answer on the owner's behalf.
+export function markWithdrawn(root, doc, qid, why, cfg = cfgOf(root)) {
+  const qs = parseQuestions(readFileSync(resolve(root, doc), 'utf8'));
+  const q = qs.find((x) => x.id === qid);
+  if (!q) return { code: 1, line: T(cfg).impl.noSuch(doc, qid, qs.map((x) => x.id)) };
+  if (q.answered) return { code: 1, line: T(cfg).impl.answeredNotWithdrawn(doc, qid) };
+  recordImplemented(root, relDoc(root, doc), qid, 'withdrawn — ' + why, new Date(), { withdrawn: true, why });
+  return { code: 0, line: T(cfg).impl.withdrawn(doc, qid, why, cfg.decisionsDir + '/' + IMPLEMENTED_FILE) };
 }
 // Lines of the gate: documents whose EVERY open question is implemented (I45) — printed by the queue and the show.
 export function implementedGate(root) {
@@ -11511,7 +11536,8 @@ export function buildPage(root, docPath) {
     bodyHtml: proseOf(q), recommended: q.recommended,
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text), recommended: o.letter === q.recommended })),
     existing: [...q.answers.filter((a) => a.text).map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
-      ...(implMap[q.id] ? [t.impl.badge(implMap[q.id].where, String(implMap[q.id].at).slice(0, 10))] : [])],
+      ...(implMap[q.id] ? [implMap[q.id].withdrawn ? t.impl.withdrawnBadge(implMap[q.id].why, String(implMap[q.id].at).slice(0, 10))
+        : t.impl.badge(implMap[q.id].where, String(implMap[q.id].at).slice(0, 10))] : [])],
   }));
   const docHash = bodyHash(md);
   // question blocks are CUT from the prose render — the cards below are the only form of questions
@@ -12748,6 +12774,21 @@ export async function selftest(log = console.log) {
     'a document whose every open question is implemented is NOT raised; the queue names it with Q1 and exits 2 (I45)');
   const implPage = buildPage(root, IMPL);
   ok(implPage.questions[0].answered && implPage.html.includes('implemented → commit abc123'), 'the page renders an implemented question as settled, with its address');
+  // 2.8, epic CH (criterion 13): a question a withdrawal made moot — the same fact with withdrawn: true; the page says «withdrawn», the
+  // queue does not raise it; the CLI refuses an ANSWERED question (the owner's word stays)
+  {
+    const WD = 'interviews/interview_096_withdrawn.md';
+    writeFileSync(join(root, WD), '# Interview #096\n\n> Status: awaiting\n\n### Q1. Print the delivery line?\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n\n### Q2. Keep it?\n\n- **A)** yes\n- **B)** no\n\n**Answer:** A\n');
+    const w1 = markWithdrawn(root, WD, 'Q1', 'the delivery line is withdrawn in 2.7');
+    const wmap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+    ok(w1.code === 0 && wmap[WD] && wmap[WD].Q1.withdrawn === true && wmap[WD].Q1.why === 'the delivery line is withdrawn in 2.7' && !ownerDocs(root).some((d) => d.doc === WD),
+      'a question a withdrawal made moot: --mark-withdrawn records withdrawn: true with the reason, and the queue no longer raises it (2.8, criterion 13)');
+    ok(buildPage(root, WD).html.includes('withdrawn — the delivery line is withdrawn in 2.7') && !buildPage(root, WD).html.includes('implemented → withdrawn'),'the page renders a withdrawn question as «withdrawn — <reason>», never as implemented');
+    const w2 = markWithdrawn(root, WD, 'Q2', 'moot');
+    ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'))[WD].Q2,
+      'an ANSWERED question is refused (exit 1, nothing recorded) — a withdrawal is never an answer over the owner\'s word');
+    rmSync(join(root, WD), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
+  }
   rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
   // QL3 (#54): the reading view — live first, the settled and the text in one fold; nothing removed
   const ARCH = 'interviews/interview_096_arch.md';
@@ -13008,7 +13049,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
   // LP (2.7, #66; the core's bug-33 rule): an unknown flag REFUSES before any page, sound or call. The 2.6 generator let
   // `--close` fall through to the show — a page and a voice call for a flag nobody meant.
-  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word', '--call', '--search'];
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--mark-withdrawn', '--why', '--where', '--owner-word', '--call', '--search'];
   const unknown = args.filter((a, i) => a.startsWith('--') && !KNOWN_FLAGS.includes(a) && !valueFlags.includes(args[i - 1]));
   if (unknown.length) {
     console.error('✖ unknown flag' + (unknown.length > 1 ? 's' : '') + ': ' + unknown.join(' ') + ' — refusing BEFORE any page, sound or call (bug 33: a silently ignored flag shows something you did not ask for). Known flags: ' + KNOWN_FLAGS.join(' '));
@@ -13036,6 +13077,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' --wait [<doc.md>]      (the waiter: exit 0 on the next recorded answer, 2 when the contour ended without one)\n' +
       '       ' + CLI_NAME + ' --call "<what is needed>" [--dry-run]   (call the owner — hands or a quick answer; names the calling session)\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
+      '       ' + CLI_NAME + ' --mark-withdrawn <doc.md> <Q> --why <reason>   (an OPEN question a withdrawal made moot — never an answer on the owner\'s behalf, 2.8)\n' +
       '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
       'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
       'Run it as a TRACKED background task (I31). Contract: .kaif/INTERACTIVE_CONTOUR_SPEC.md');
@@ -13093,6 +13135,14 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     if (!docPath) usage();
     afterRecovery(() => process.exit(checkDoc(root, docPath)));
     return;
+  }
+  if (args.includes('--mark-withdrawn')) { // 2.8, epic CH (criterion 13): see markWithdrawn()
+    const i = args.indexOf('--mark-withdrawn');
+    const doc = args[i + 1], qid = args[i + 2], why = opt('--why');
+    if (!doc || !qid || qid.startsWith('--') || !why) usage();
+    const r = markWithdrawn(root, doc, qid, why, cfg);
+    console.log(r.line);
+    process.exit(r.code);
   }
   if (args.includes('--mark-implemented')) { // I44 (QL2, #54): the fourth fact — the agent's hand, at the moment of implementing, with an address
     const i = args.indexOf('--mark-implemented');
@@ -13335,6 +13385,9 @@ const EN = {
     marked: (doc, q, where, file) => 'Implemented recorded (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,
     gate: (doc, ids) => 'implemented, but open: ' + doc + ' ' + ids.join(', ') + ' → close the status (or fill the answer); an implemented question is never raised again (I45)',
     badge: (where, date) => 'implemented → ' + where + ' (' + date + ')',
+    withdrawnBadge: (why, date) => 'withdrawn — ' + why + ' (' + date + ')',
+    withdrawn: (doc, q, why, file) => 'Withdrawn recorded: ' + doc + ' ' + q + ' — ' + why + ' → ' + file + ' (the question became moot; never an answer on the owner\'s behalf)',
+    answeredNotWithdrawn: (doc, q) => doc + ' ' + q + ' is ANSWERED by the owner — only an open question is withdrawn; nothing recorded',
     noSuch: (doc, q, ids) => 'no question ' + q + ' in ' + doc + ' — known: ' + (ids.join(', ') || '(none)'),
   },
   // `--check <doc>` — the form check WITHOUT a page (2.7 QL1, origin issue #56: the only check was the show, and the show is the call)
@@ -18184,7 +18237,7 @@ Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->
 | the archive | `<decisionsDir>/archive/<doc-basename>--<ISO>.json` | a copy per save; never rewritten |
 | the fact of SHOWING | `<decisionsDir>/shown.json` | `{ "<doc>": { "at": "<ISO>", "transport": "page \| batch \| chat" } }` — written when the window opens, or by hand for a pointed chat question (`--mark-shown <doc> --transport chat`) |
 | the queue | `<decisionsDir>/queue.json` | a STATE file — live documents are never moved into a pending folder |
-| the fact of IMPLEMENTING | `<decisionsDir>/implemented.json` | `{ "<doc>": { "<Q>": { "at": "<ISO>", "where": "<commit or file>" } } }` — the FOURTH fact (2.7, origin issue #54): written by the agent's hand the moment the decision lands in rules or code (`--mark-implemented <doc> <Q> --where <ref>`); a document whose every open question is implemented is never raised again — the queue and the show print `implemented, but open: <doc> Q1 → close the status` and exit 2 (`--queue --list` and a direct show: always; the batch `--queue`: the line is printed, exit 2 when nothing else waits) |
+| the fact of IMPLEMENTING | `<decisionsDir>/implemented.json` | `{ "<doc>": { "<Q>": { "at": "<ISO>", "where": "<commit or file>" } } }` — the FOURTH fact (2.7, origin issue #54): written by the agent's hand the moment the decision lands in rules or code (`--mark-implemented <doc> <Q> --where <ref>`); a document whose every open question is implemented is never raised again — the queue and the show print `implemented, but open: <doc> Q1 → close the status` and exit 2 (`--queue --list` and a direct show: always; the batch `--queue`: the line is printed, exit 2 when nothing else waits); an OPEN question a withdrawal made moot takes the same fact with `"withdrawn": true, "why"` — `--mark-withdrawn <doc> <Q> --why <reason>` (2.8), never an answer on the owner's behalf; an answered one is refused |
 
 Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → LF, trailing blanks cut, exactly one final newline). Text changed after approval = approval void.
 
