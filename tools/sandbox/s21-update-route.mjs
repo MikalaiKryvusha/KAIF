@@ -18,6 +18,11 @@
 //  из литеральных слотов и сопоставляла только с новым шаблоном — поймано этим сводом и соседями
 //  (s03 S10c, s11 U1) на первом прогоне, EXP-0112]
 //
+// [TESTED: 2026-09-26 02:22:17 +03:00 · 2.8 (эпик UP и починки суда UP6): 61 проверка зелёная; на v2.7 — 12 красных поимённо (B7 ·
+//  N1 ×2 · N2 · E-фикстура · E · E2 · N3 · N4 ×2 · A2b · A5); B8 и B6b на 2.7 зелёные по построению — их красный — мутанты M11 и M12
+//  пробы up-mutants; случаи #92 названы N1/N2 (D1/D2 — случаи bootstrap 2.6 ниже); отчёты testcases/reports/2026-09-26_up-update-loses-nothing.md ·
+//  testcases/reports/2026-09-26_up6-judge-fixes.md]
+//
 // Предсказания до первого прогона (2026-09-05, сессия 55) — красные на ядре cb42039 (2.5, build 467):
 //   A1 загрузчик с `--rehearsal <receipt>` на bootstrap → exit 0, «rehearsal verdicts loaded from <receipt>
 //      (1 file(s))», маркер 9.9 (HEAD: `unknown flag for install: --rehearsal`, exit 1, маркер прежний)
@@ -244,7 +249,7 @@ ok(r.code === 0 && /replaced \.claude\/skills\/autoloop\/SKILL\.md \(fills kept\
    'B7 (#73): заполнение со скобками («-PackDir <pack>») выведено — /autoloop заменён механически, заполнение цело, в задании его нет, fills в манифесте',
    r.out.split('\n').filter((l) => /autoloop|hand-filled/.test(l)).join(' | ').slice(0, 400));
 
-// D1 (2.8, эпик UP, тикет origin #92 · Q-R4 · K-R2a · суд F-F2): update-verify сверяет КАЖДЫЙ раздел, новый в выпуске, с диском — не только
+// N1 (2.8, эпик UP, тикет origin #92 · Q-R4 · K-R2a · суд F-F2): update-verify сверяет КАЖДЫЙ раздел, новый в выпуске, с диском — не только
 // то, что несло задание. Раздел доехал — тишина; раздела нет на диске — КРАСНЫЙ поимённо (прежний шаблон его не имел — это не удаление владельца).
 const AUTOLOOP = '.claude/skills/autoloop/SKILL.md';
 const NEW_SEC = '## A section new in 9.9';
@@ -253,35 +258,37 @@ const SRC99N = join(ROOT, 'src-9.9n'); writeSource(SRC99N, bundle99n, '9.9');
 const TD1 = join(ROOT, 'up-d1'); mkdirSync(TD1); seed(TD1);
 must(run, TD1, 'install');
 r = run(TD1, `update --source ${SRC99N} --baseline ${OLD}`);
-ok(r.code === 0, 'D1 update →9.9 (с новым разделом) exit 0', r.out.slice(-300));
+ok(r.code === 0, 'N1 update →9.9 (с новым разделом) exit 0', r.out.slice(-300));
 const d1Arrived = readFileSync(join(TD1, AUTOLOOP), 'utf8').includes(NEW_SEC);
 const rc1 = JSON.parse(readFileSync(join(TD1, '.kaif', 'last-update.json'), 'utf8'));
 let v1 = run(TD1, 'update-verify');
+const issuesOf = (o) => Number((String(o).match(/FAILED: (\d+) issues/) || [])[1] || 0);   // the gate's own count (court UP6, F6)
+const v1Issues = issuesOf(v1.out);
 ok(r.code === 0 && d1Arrived && (rc1.newModules || {})[AUTOLOOP]?.includes(NEW_SEC) && !/section of this release did not arrive/.test(v1.out),
-   'D1 (#92): раздел, новый в 9.9, доехал; квитанция называет его в newModules; update-verify о нём молчит', v1.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
+   'N1 (#92): раздел, новый в 9.9, доехал; квитанция называет его в newModules; update-verify о нём молчит', v1.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
 writeFileSync(join(TD1, AUTOLOOP), joinModules(splitModules(readFileSync(join(TD1, AUTOLOOP), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== NEW_SEC)));
 v1 = run(TD1, 'update-verify');
-ok(v1.code !== 0 && v1.out.includes('a section of this release did not arrive: ' + AUTOLOOP + ' :: ' + NEW_SEC),
-   'D1 (#92): раздела, нового в 9.9, на диске нет — update-verify КРАСНЫЙ и называет файл и раздел', v1.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
-// D2 (#92): модуль, ПРЕДЛОЖЕННЫЙ прошлым обновлением и не влитый, следующее читало как «удалил владелец» — теперь предлагает снова по квитанции.
+ok(v1.code !== 0 && issuesOf(v1.out) === v1Issues + 1 && v1.out.includes('a section of this release did not arrive: ' + AUTOLOOP + ' :: ' + NEW_SEC),
+   'N1 (#92): раздела, нового в 9.9, на диске нет — update-verify КРАСНЫЙ (счёт провалов +1) и называет файл и раздел', v1.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
+// N2 (#92): модуль, ПРЕДЛОЖЕННЫЙ прошлым обновлением и не влитый, следующее читало как «удалил владелец» — теперь предлагает снова по квитанции.
 const pickMod = (dir) => splitModules(readFileSync(join(dir, AUTOLOOP), 'utf8').replace(/\r\n/g, '\n')).find((m) => /^## /.test(m.signature) && !/^## The cycle/.test(m.signature));
 const TD2 = join(ROOT, 'up-d2'); mkdirSync(TD2); seed(TD2);
 must(run, TD2, 'install');
 const prop = pickMod(TD2);
-ok(!!prop, 'D2 фикстура: в /autoloop есть раздел, который 9.9 не меняет', prop && prop.signature);
+ok(!!prop, 'N2 фикстура: в /autoloop есть раздел, который 9.9 не меняет', prop && prop.signature);
 const dropProp = (dir) => writeFileSync(join(dir, AUTOLOOP), joinModules(splitModules(readFileSync(join(dir, AUTOLOOP), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== prop.signature)));
 dropProp(TD2);
 writeFileSync(join(TD2, '.kaif', 'last-update.json'), JSON.stringify({ from: '0.0', to: FROM, route: 'core-update', divergedModules: { [AUTOLOOP]: [prop.signature] } }, null, 2) + '\n');
 r = run(TD2, `update --source ${SRC99} --baseline ${OLD}`);
 const taskD2 = readTask(TD2);
 ok(r.code === 0 && taskD2.includes('proposed by the PREVIOUS update and never merged') && taskD2.includes(prop.signature),
-   'D2 (#92): модуль, предложенный прошлым обновлением и не влитый, предложен СНОВА (по квитанции), а не прочитан удалением владельца', taskD2.split('\n').filter((l) => /PREVIOUS|autoloop/.test(l)).join(' | ').slice(0, 300));
+   'N2 (#92): модуль, предложенный прошлым обновлением и не влитый, предложен СНОВА (по квитанции), а не прочитан удалением владельца', taskD2.split('\n').filter((l) => /PREVIOUS|autoloop/.test(l)).join(' | ').slice(0, 300));
 const TD3 = join(ROOT, 'up-d3'); mkdirSync(TD3); seed(TD3);
 must(run, TD3, 'install');
 dropProp(TD3);
 r = run(TD3, `update --source ${SRC99} --baseline ${OLD}`);
 ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
-   'D2 контроль: без записи прошлой квитанции отсутствующий неизменённый модуль остаётся удалением владельца (не предлагается)', readTask(TD3).split('\n').filter((l) => /PREVIOUS/.test(l)).join(' | ').slice(0, 200));
+   'N2 контроль: без записи прошлой квитанции отсутствующий неизменённый модуль остаётся удалением владельца (не предлагается)', readTask(TD3).split('\n').filter((l) => /PREVIOUS/.test(l)).join(' | ').slice(0, 200));
 
 // E (2.8, эпик UP, критерий 14 — мандат №125, ideas/30 п. 4): обновление ЯДРОМ ПРЕДЫДУЩЕГО ВЫПУСКА — так его запускает поле (EXP-0157).
 // Установка из артефактов релиза v2.7 (git show v2.7:dist/…), `update` делает ядро 2.7, `update-verify` — доставленное ядро: на целом
@@ -295,7 +302,10 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
   const snPaths = Object.keys(sn.files || {});
   if (!b27 || !c27) console.log('⏭ E: SKIPPED — git или тег v2.7 недоступны (артефакты релиза не извлечь)');
   else {
-    ok(sn.prev === 'v2.7' && snPaths.length > 0, 'E фикстура: мета бандла несёт sectionsNew против v2.7 (' + snPaths.length + ' файл(ов))', JSON.stringify(sn).slice(0, 200));
+    const gitLines = (...a) => { try { return execFileSync('git', a, { cwd: REPO, stdio: 'pipe' }).toString().split('\n').map((x) => x.trim()).filter(Boolean); } catch { return []; } };
+    const ownTags = new Set(gitLines('tag', '--points-at', 'HEAD'));
+    const wantPrev = gitLines('tag', '--list', 'v*', '--sort=-v:refname').filter((t) => /^v\d+\.\d+$/.test(t) && !ownTags.has(t))[0];
+    ok(sn.prev === wantPrev && snPaths.length > 0, 'E фикстура: мета бандла несёт sectionsNew против старшего тега выпуска, не своего (' + wantPrev + ', ' + snPaths.length + ' файл(ов))', JSON.stringify(sn).slice(0, 200));
     const TE = join(ROOT, 'e27'); mkdirSync(join(TE, '.kaif', 'install'), { recursive: true });
     writeFileSync(join(TE, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE, '.kaif', 'kaif-core.mjs'), c27);
     must(run, TE, 'install');
@@ -304,14 +314,98 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     const rcE = existsSync(join(TE, '.kaif', 'last-update.json')) ? JSON.parse(readFileSync(join(TE, '.kaif', 'last-update.json'), 'utf8')) : {};
     ok(r.code === 0 && rcE.from === '2.7' && !rcE.newModules, 'E: update 2.7 → 9.9 провело ЯДРО 2.7 (его квитанция без newModules)', r.out.slice(-300));
     let vE = run(TE, 'update-verify');
+    const vEIssues = issuesOf(vE.out);
     ok(!/section of this release did not arrive/.test(vE.out), 'E: доставленное ядро в update-verify молчит о разделах, новых с 2.7, — проход старого ядра их принёс', vE.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
     const pE = snPaths.find((p) => existsSync(join(TE, p)) && /\.claude\/skills\//.test(p)) || snPaths.find((p) => existsSync(join(TE, p)));
     const sE = pE ? sn.files[pE][0] : null;
     if (pE && sE) writeFileSync(join(TE, pE), joinModules(splitModules(readFileSync(join(TE, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
     vE = run(TE, 'update-verify');
-    ok(!!pE && vE.code !== 0 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
-       'E: раздела, нового с 2.7, на диске нет — доставленное ядро КРАСНОЕ поимённо, хотя квитанцию писало старое ядро', vE.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
+    ok(!!pE && vE.code !== 0 && issuesOf(vE.out) === vEIssues + 1 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
+       'E: раздела, нового с 2.7, на диске нет — доставленное ядро КРАСНОЕ поимённо (счёт провалов +1), хотя квитанцию писало старое ядро', vE.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
+    // E2 (суд UP6, F7): то же на ПЕРЕВЕДЁННОМ развёртывании — квитанция ядра 2.7 не знает translatedFiles, и английский файл судится сам
+    // (шаблон выпуска против текста на диске): недоехавший раздел в нём — КРАСНЫЙ, а не «проверь руками (файл переведён)»
+    const TE2 = join(ROOT, 'e27-tr'); mkdirSync(join(TE2, '.kaif', 'install'), { recursive: true });
+    writeFileSync(join(TE2, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE2, '.kaif', 'kaif-core.mjs'), c27);
+    must(run, TE2, 'install');
+    { const mk = JSON.parse(readFileSync(join(TE2, '.kaif', 'kaif.json'), 'utf8')); mk.i18n = 'translated'; writeFileSync(join(TE2, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n'); }
+    r = run(TE2, `update --source ${SRC_NOW}`);
+    ok(r.code === 0, 'E2 update 2.7 → 9.9 (ядро 2.7, переведённое развёртывание) exit 0', r.out.slice(-300));
+    if (pE && sE) writeFileSync(join(TE2, pE), joinModules(splitModules(readFileSync(join(TE2, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
+    const vE2 = run(TE2, 'update-verify');
+    ok(r.code === 0 && !!pE && vE2.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE) && !vE2.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + pE),
+       'E2 (F7): переведённое развёртывание, квитанция ядра 2.7 — английский файл без нового раздела КРАСНЫЙ, не «проверь руками»', vE2.out.split('\n').filter((l) => /section|✖|⚠/.test(l)).join(' | ').slice(0, 400));
   }
+}
+
+// N3 (court UP6, R2 — the #92 incident): on a TRANSLATED deployment an ENGLISH file with an unmerged module diff is judged like any
+// other — the gate used to skip every promised line on an i18n deployment, whatever the file.
+{
+  const TN3 = join(ROOT, 'up-n3'); mkdirSync(TN3); seed(TN3);
+  must(run, TN3, 'install');
+  const mk = JSON.parse(readFileSync(join(TN3, '.kaif', 'kaif.json'), 'utf8')); mk.i18n = 'translated';
+  writeFileSync(join(TN3, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n');
+  const TFW = join(TN3, 'TESTING_FRAMEWORK.md');
+  const tfMods = splitModules(readFileSync(TFW, 'utf8').replace(/\r\n/g, '\n'));
+  tfMods[1].lines.push('', 'An owner line inside the module upstream changes.');   // a local edit — the module diff goes to the task
+  writeFileSync(TFW, joinModules(tfMods));
+  r = run(TN3, `update --source ${SRC99} --baseline ${OLD}`);
+  ok(r.code === 0 && readTask(TN3).includes('UPSTREAM ADDITION 9.9 (testing)'), 'N3 фикстура: английский файл на переведённом развёртывании — дифф модуля в задании', r.out.slice(-300));
+  const v3 = run(TN3, 'update-verify');
+  ok(/promised upstream line not found on disk \(unmerged\?\): TESTING_FRAMEWORK\.md :: UPSTREAM ADDITION 9\.9 \(testing\)/.test(v3.out),
+     'N3 (R2): английский файл на переведённом развёртывании — невлитая строка апстрима НАЗВАНА (флаг развёртывания больше не судья)', v3.out.split('\n').filter((l) => /promised|TESTING/.test(l)).join(' | ').slice(0, 300));
+}
+
+// N4 (court UP6, R3 — K-R2a): `diff --source <x> --render <file>` prints the file exactly as `install` of <x> writes it HERE — language
+// override, trigger aliases, fills: rendered against the release this ru deployment was installed from, it equals the untouched disk.
+{
+  const TN4 = join(ROOT, 'up-n4'); mkdirSync(TN4); seed(TN4);
+  must(run, TN4, 'install --lang ru');
+  const render = (file) => { try { return execFileSync(process.execPath, [join(TN4, '.kaif', 'kaif-core.mjs'), 'diff', '--source', DIST, '--render', file, '--baseline', join(ROOT, 'no-network-baseline')], { cwd: TN4, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 1 << 26 }).toString(); } catch (e) { return 'FAILED: ' + String(e.stderr || e.message).slice(0, 200); } };
+  const same = (file) => render(file).replace(/\r\n/g, '\n') === readFileSync(join(TN4, file), 'utf8').replace(/\r\n/g, '\n');
+  const files = ['GOAL.md', CB, 'AGENT_GUIDE.md'];
+  const bad = files.filter((f) => !same(f));
+  ok(!bad.length, 'N4 (R3): рендер файла (обзор языка ru · навык с алиасами · руководство с заполнениями) побайтно равен тому, что записала установка', bad.join(', ') + ' :: ' + render(bad[0] || files[0]).slice(0, 160));
+  const miss = render('no/such-file.md');
+  ok(miss.startsWith('FAILED') && miss.includes('does not ship this file'), 'N4: рендер файла, которого выпуск не везёт, — отказ с именем', miss.slice(0, 200));
+}
+
+// A2b (court UP6, F4 — the field shape of #42 A2): the deployed core rehearsed (a 2.7 core writes an UNSIGNED record), the new core runs the
+// bootstrap — the record is named, ignored AND removed: left on disk it binds nothing, and every field agent deleted it by hand.
+{
+  const TA2b = join(ROOT, 'a2b'); mkdirSync(TA2b); seed(TA2b);
+  must(run, TA2b, 'install --lang ru');
+  const REH = join(TA2b, '.kaif', 'update-rehearsal.json');
+  writeFileSync(REH, JSON.stringify({ from: FROM, to: '9.9', source: 'sandbox', verdicts: {} }, null, 2) + '\n');
+  r = runLoader(TA2b, `--lang ru --source ${SRC99} --baseline ${OLD}`);
+  ok(r.code === 0 && /did not sign it \(before 2\.8\) — ignored and removed/.test(r.out) && !existsSync(REH),
+     'A2b (F4): авто-запись репетиции, не подписанная этим ядром, названа, отброшена И убрана с диска', r.out.split('\n').filter((l) => /rehearsal/.test(l)).join(' | ').slice(0, 300));
+}
+
+// A5 (court UP6, F5): a named --rehearsal that another core SIGNED is refused on the bootstrap route BEFORE the backup and the crash journal —
+// a refusal used to leave a journal that blocked the next update as "died mid-flight"
+{
+  const TA5 = join(ROOT, 'a5'); mkdirSync(TA5); seed(TA5);
+  must(run, TA5, 'install');
+  const RC5 = join(ROOT, 'a5-foreign-receipt.json');
+  writeFileSync(RC5, JSON.stringify({ from: FROM, to: '9.9', source: 'sandbox', core: 'f'.repeat(64), verdicts: {} }, null, 2) + '\n');
+  writeFileSync(join(TA5, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), bundle99);
+  r = run(TA5, `install --bundle .kaif/install/KAIF-CORE-BUNDLE.md --rehearsal ${RC5} --baseline ${OLD}`);
+  ok(r.code !== 0 && /written by another core/.test(r.out) && !existsSync(join(TA5, '.kaif', 'update-journal.json')),
+     'A5 (F5): чужая подписанная запись на bootstrap — отказ ДО копии дерева: журнала обновления нет', r.out.slice(-300));
+}
+
+// B8 (court UP6, F15): the exact garbage guard of fill derivation — a "fill" that carries a KNOWN slot token is a template line, not a hand
+// fill: it is never recorded (the autoloop line keeps the literal <TEST_HARNESS> inside what would otherwise read as the fill of <BUILD_COMMAND>)
+{
+  const TB8 = join(ROOT, 'b8'); mkdirSync(TB8); seed(TB8);
+  must(run, TB8, 'install');
+  const AL8 = join(TB8, AUTOLOOP);
+  const t8 = readFileSync(AL8, 'utf8');
+  writeFileSync(AL8, t8.replace('<BUILD_COMMAND>', 'run <TEST_HARNESS> first'));
+  r = run(TB8, `update --source ${SRC99} --baseline ${OLD}`);
+  const man8 = JSON.parse(readFileSync(join(TB8, '.kaif', 'deploy-manifest.json'), 'utf8'));
+  ok(r.code === 0 && !((man8.fills || {})['<BUILD_COMMAND>'] || '').includes('<TEST_HARNESS>'),
+     'B8 (F15): «заполнение», несущее известный токен слота, НЕ записано заполнением', JSON.stringify(man8.fills || {}).slice(0, 200));
 }
 
 const TB2 = join(ROOT, 'b2'); mkdirSync(TB2); seed(TB2);
@@ -327,6 +421,10 @@ ok(readFileSync(AG2, 'utf8').includes('| **Name / brand** | `Proper Name` |'), '
 r = run(TB2, `update --source ${SRC99} --baseline ${OLD}`);
 ok(r.code === 0, 'B6 update exit 0', r.out.slice(-400));
 ok(!/Project identity/.test(readTask(TB2)), 'B6 (#48 R3): модуль, уже равный новому заполненному шаблону, НЕ назван «carries local edits AND upstream changed it»', readTask(TB2).split('\n').filter((l) => /identity/.test(l)).join(' | ').slice(0, 300));
+// B6b (суд UP6, F8): H1 несёт имя проекта — записанное каноническое имя не «раздел, новый в выпуске»; update-verify не зовёт вернуть
+// заголовок `# <имя> — …` (совет дал бы документ с двумя H1)
+{ const vB6 = run(TB2, 'update-verify');
+  ok(!/a section of this release did not arrive: AGENT_GUIDE\.md :: # /.test(vB6.out), 'B6b (F8): имя проекта в H1 — не «недоехавший раздел» (update-verify молчит о H1)', vB6.out.split('\n').filter((l) => /did not arrive/.test(l)).join(' | ').slice(0, 300)); }
 
 // ================================================================ C (#44): окно stale-claims
 console.log('\n=== C (#44): stale-claims видит ЛЮБУЮ версию старше устанавливаемой; `gt` — одно объявление ===');

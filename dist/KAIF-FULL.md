@@ -3171,7 +3171,9 @@ The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git -c 
 committed line endings, 2.8, origin issue #81), re-init git in the copy, run the REAL update or bootstrap there and read its diff.
 This is not a model of the pass but the pass itself — field-proven byte-identical to the subsequent live run, up to line endings on
 a Windows tree with `core.autocrlf=true`. A rehearsal record and a copy's receipt carry the fingerprint of the core that wrote them
-(2.8, finding N17): another core's record is named and ignored — a 2.5 core's record once bound a newer core's bootstrap. Recommended
+(2.8, finding N17): the automatic record of another core is named, ignored and removed; a `--rehearsal` receipt that another core
+signed is refused; an unsigned one the owner names (a pre-2.8 copy) is applied with a warning — a 2.5 core's record once bound a
+newer core's bootstrap. Recommended
 before the first-ever update and on heavily localized deployments; `diff --source` remains the
 lighter per-module preview. The copy's receipt binds the live run on EITHER route (2.6): `update
 --rehearsal <receipt>` or `node KAIF-LOADER.mjs --lang <code> --rehearsal <receipt>` — the loader
@@ -7024,8 +7026,9 @@ diverged places. Your cognitive work is that task, not the migration.
      on a Windows tree with `core.autocrlf=true` a plain export rewrites them, 2.8, origin issue #81), `git init` there, run the
      REAL update/bootstrap in the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field the
      live pass matched the sandbox byte for byte, up to line endings on a `core.autocrlf=true` tree (compare there with
-     `git diff --ignore-cr-at-eol`). A rehearsal record binds only the core that wrote it (2.8): another core's record is named
-     and ignored. Prefer this on the first-ever update and on
+     `git diff --ignore-cr-at-eol`). A rehearsal record binds only the core that wrote it (2.8): the automatic record of another core is named,
+     ignored and removed; a `--rehearsal <receipt>` you name that another core SIGNED is refused (re-run the copy with this core);
+     an unsigned one you name (a pre-2.8 copy) is applied with a warning. Prefer this on the first-ever update and on
      any deployment with heavy localization. The copy's receipt (`<copy>/.kaif/last-update.json`)
      carries the verdicts it printed: hand it to the live run — `update --rehearsal
      <copy>/.kaif/last-update.json` on the core-update route, `node KAIF-LOADER.mjs --lang <code>

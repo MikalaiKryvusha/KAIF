@@ -242,6 +242,23 @@ ok(hF2.old === 0 && hF2.neu === 1 && readFileSync(fileF2, 'utf8').includes(OWNER
   `F2 правленое тело: правка цела, заголовок один, задание несёт «renamed IN ADVANCE» и строку апстрима (новых ${hF2.neu})`, taskF2.slice(0, 500));
 ok(!rF2.out.includes('the section arrives as new'), 'F2 лог НЕ пишет «the section arrives as new»', rF2.out);
 
+// ── G (суд UP6, R1 — Q-R4): объявленное переименование на ПЕРЕВЕДЁННОМ файле — слияние без записи; лог говорит, что дельта ушла
+// в задание, и никогда «(replaced)»: файл остаётся побайтно прежним, старый заголовок — с ним (до 2.8 лог писал «replaced»).
+console.log('\n=== G: переименование на переведённом файле — лог не пишет «replaced», файл цел ===');
+const TG = join(ROOT, 'g'); mkdirSync(TG); seed(TG);
+must(run, TG, 'install --lang ru');
+{ const mk = JSON.parse(readFileSync(join(TG, '.kaif', 'kaif.json'), 'utf8')); mk.i18n = 'translated'; writeFileSync(join(TG, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n'); }
+const fileG = join(TG, SKILL);
+const modsG = splitModules(readFileSync(fileG, 'utf8').replace(/\r\n/g, '\n'));
+for (const m of modsG) if (m.signature !== '<preamble>' && m.signature !== OLD_SIG && !/^# /.test(m.signature)) m.lines = [m.lines[0], '', 'Раздел переведён владельцем на русский язык целиком.'];
+writeFileSync(fileG, joinModules(modsG));   // every body in the owner's script except the module upstream renames (untouched)
+const beforeG = readFileSync(fileG, 'utf8');
+const rG = run(TG, `update --source ${SRC}`);
+ok(rG.code === 0, 'G update →9.9: exit 0', rG.out.slice(-300));
+ok(rG.out.includes(`renamed: ${SKILL} :: ${OLD_SIG} → ${NEW_SIG} (upstream delta in the task (i18n: translated)`) && !rG.out.includes(`→ ${NEW_SIG} (replaced)`)
+   && readFileSync(fileG, 'utf8') === beforeG,
+  'G (Q-R4): лог — «upstream delta in the task (i18n: translated)», не «(replaced)»; файл побайтно прежний', rG.out.split('\n').filter((l) => /renamed:/.test(l)).join(' | ').slice(0, 300));
+
 // ── D: живая карта 2.7 объявлена в сборщике ───────────────────────────────────────────────────
 console.log('\n=== D: пара 2.7 объявлена данными (не угадывается) ===');
 const builder = readFileSync(join(REPO, 'tools', 'build-framework.mjs'), 'utf8');

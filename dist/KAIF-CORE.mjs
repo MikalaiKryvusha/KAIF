@@ -1384,7 +1384,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const OWNER_LINES = "Careful: checklists/tables in these files may carry the OWNER'S recorded state (ticked boxes, decision rows) — fold the template changes around them, never reset them.";
   const items = [];
   if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
-  if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}. ${OWNER_LINES}`]);
+  if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery; the file as YOUR language deploys it, the oracle of that hand merge: \`node .kaif/kaif-core.mjs diff --source <the receipt's source> --render <file>\`, and the same with the previous release as the source gives the base): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}. ${OWNER_LINES}`]);
   // A translated-wholesale file names its upstream path and a READY diff command against the
   // origin's tags (2.5, epic US; field wish plans/73 U2 p.1, asked twice): for i18n deployments
   // the diffs ARE the delivery, and "find the upstream file yourself" was cognitive work per file.
@@ -1744,7 +1744,8 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
     const asOld = aheadFrom ? modText(dm).replace(dm.signature, aheadFrom) : modText(dm);   // the disk text under its OLD heading
     const renamedTo = renameTo.get(dm.signature);
     const newM = newBySig.get(dm.signature) || (renamedTo ? newBySig.get(renamedTo) : undefined);
-    if (renamedTo && newM) renamed.push({ from: dm.signature, to: renamedTo, outcome: oldE && dSha === oldE.sha256 ? 'replaced' : 'kept (local edits — see the task)' });
+    // 2.8 (court UP6, R1 — Q-R4): a file merged without writes (i18n translated) keeps its old heading; the log says what the disk got
+    if (renamedTo && newM) renamed.push({ from: dm.signature, to: renamedTo, outcome: oldE && dSha === oldE.sha256 ? (dryRun ? 'upstream delta in the task (i18n: translated) — nothing replaced on disk' : 'replaced') : 'kept (local edits — see the task)' });
     // Frontmatter is a named pseudo-module with one extra right (bug 43): equality with its old
     // template is judged MODULO the machinery-appended alias tail — the old text comes from the
     // baseline artifact and must agree with the deploy's own module snapshot before it is trusted.
@@ -2013,7 +2014,8 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     if (f.path.endsWith('.md') && oldModShas[f.path] && !OWNER_SEEDED.includes(f.path)) {
       const oldSigs = new Set(oldModShas[f.path].map((e) => e.signature));
       const renTargets = new Set((renames[f.path] || []).map(([, n]) => n));
-      const nw = splitModules(normEol(content)).map((m) => m.signature).filter((s) => s !== '<preamble>' && !oldSigs.has(s) && !renTargets.has(s));
+      // the H1 carries the project's name — a filled or re-recorded name is not a new section (the build skips H1 the same way; court UP6, F8)
+      const nw = splitModules(normEol(content)).map((m) => m.signature).filter((s) => s !== '<preamble>' && !/^# /.test(s) && !oldSigs.has(s) && !renTargets.has(s));
       if (nw.length) newModules[f.path] = nw;
     }
     if (OWNER_SEEDED.includes(f.path)) {
@@ -2340,7 +2342,10 @@ function loadRehearsal(from, to) {
   if (!r.core || (SELF_SHA && r.core !== SELF_SHA)) {
     const why = r.core ? `written by another core (${String(r.core).slice(0, 12)}…, this core ${String(SELF_SHA).slice(0, 12)}…)` : 'written by a core that did not sign it (before 2.8)';
     if (explicit && r.core) die(`--rehearsal ${explicit}: ${why} — its verdicts come from other logic; re-run the rehearsal (the sandbox copy) with this core`);
-    if (!explicit) { log(`⚠ rehearsal record ${path} ${why} — ignored: its verdicts come from other logic`); return null; }
+    if (!explicit) {   // one-shot like a consumed record: left on disk it binds nothing and every agent deleted it by hand (court UP6, F4)
+      try { unlinkSync(path); } catch { /* already gone */ }
+      log(`⚠ rehearsal record ${path} ${why} — ignored and removed: its verdicts come from other logic`); return null;
+    }
     log(`⚠ --rehearsal ${explicit}: ${why} — applied because you named it`);
   }
   const verdicts = r.verdicts || {};
@@ -2733,8 +2738,24 @@ function runFinalGates(taskFile, tag, verb) {
   // the task happened to carry. A new section absent on disk is RED and named: the previous template never had it, so its absence is
   // no deletion of the owner's. A translated file is only NAMED for a hand check — its headings are in the owner's language and the
   // English signature cannot be found there by construction (FORK C, plans/122 UP2).
+  // Is THIS file a translation? (court UP6, R2 · F7): the receipt's own list when it has one; without it (the field route — the
+  // outgoing core wrote the receipt) the file is judged against this release's template, body only, as the update judges it — the
+  // deployment's flag alone called English files "translated" and silenced both checks below for them.
+  const rcV = okOnDisk(LAST_UPDATE) ? (() => { try { return readJson(LAST_UPDATE); } catch { return null; } })() : null;
+  const trKnown = !!(rcV && Array.isArray(rcV.translatedFiles));
+  const trList = new Set((rcV && rcV.translatedFiles) || []);
+  let deployTranslated = false;
+  try { const j = okOnDisk(KAIF_JSON) ? readJson(KAIF_JSON) : {}; deployTranslated = String(j.i18n || '').toLowerCase() === 'translated'; if (j.language && ISO_639_1.has(String(j.language).toLowerCase().split('-')[0])) LANG = String(j.language).toLowerCase(); } catch { deployTranslated = false; }   // a gate never dies on the marker's language — `check` names a poisoned one
+  let tplTexts = null;
+  const tplOf = (p) => { if (!tplTexts) { try { const b = parseBundle(BUNDLE, true); tplTexts = new Map(((b && b.files) || []).map((f) => [f.path, f.content])); } catch { tplTexts = new Map(); } } return tplTexts.get(p); };
+  const fileTranslated = (p) => {
+    if (trKnown) return trList.has(p);
+    if (!deployTranslated || !okOnDisk(p)) return false;
+    const t = tplOf(p);
+    return t != null && bodyLocalized(readFileSync(p, 'utf8'), t);
+  };
   try {
-    const rc = okOnDisk(LAST_UPDATE) ? readJson(LAST_UPDATE) : null;
+    const rc = rcV;
     const expected = {};   // path → Set(signatures) — the receipt's own list and the bundle's (below)
     const addAll = (per) => { for (const [p, sigs] of Object.entries(per || {})) if (Array.isArray(sigs)) { expected[p] = expected[p] || new Set(); for (const s of sigs) expected[p].add(s); } };
     if (rc && rc.newModules && typeof rc.newModules === 'object') addAll(rc.newModules);
@@ -2743,18 +2764,14 @@ function runFinalGates(taskFile, tag, verb) {
     let sn = null;
     try { const bb = okOnDisk(BUNDLE) ? parseBundle(BUNDLE, true) : null; sn = bb && bb.meta && bb.meta.sectionsNew; } catch { sn = null; }
     if (rc && sn && sn.prev && sn.files && !gt(String(rc.from || '0'), String(sn.prev).replace(/^v/, ''))) addAll(sn.files);
-    const trKnown = !!(rc && Array.isArray(rc.translatedFiles));
-    let deployTranslated = false;
-    try { deployTranslated = okOnDisk(KAIF_JSON) && String(readJson(KAIF_JSON).i18n || '').toLowerCase() === 'translated'; } catch { deployTranslated = false; }
     if (Object.keys(expected).length) {
-      const tr = new Set((rc && rc.translatedFiles) || []);
       for (const [p, sigSet] of Object.entries(expected)) {
         const sigs = [...sigSet];
         if (!okOnDisk(p)) continue;
         const onDiskSigs = new Set(splitModules(normEol(readFileSync(p, 'utf8'))).map((m) => m.signature));
         for (const s of sigs) {
           if (onDiskSigs.has(s)) continue;
-          if (tr.has(p) || (!trKnown && deployTranslated)) { console.error(`⚠ a section new in this release — check it by hand (the file is translated; its English signature cannot be matched): ${p} :: ${s}`); continue; }
+          if (fileTranslated(p)) { console.error(`⚠ a section new in this release — check it by hand (the file is translated; its English signature cannot be matched): ${p} :: ${s} — the new template as your language deploys it: node .kaif/kaif-core.mjs diff --source <the update's source> --render ${p}`); continue; }
           console.error(`✖ a section of this release did not arrive: ${p} :: ${s} — the update delivered it (the previous template never had it, so its absence is not your deletion); merge it from the task, or restore it`);
           missing++;
         }
@@ -2764,8 +2781,9 @@ function runFinalGates(taskFile, tag, verb) {
   // Substance check (bug 17 / field report 08's 209-line method): every '+' line the update task
   // promised in its module diffs should exist on disk once the agent merged. A WARNING list, not
   // a failure — translated wrappers legitimately merge meanings, not bytes.
-  const i18nTranslated = okOnDisk(KAIF_JSON) && (() => { try { return String(readJson(KAIF_JSON).i18n || '').toLowerCase() === 'translated'; } catch { return false; } })();
-  if (!i18nTranslated && task.includes('## Module diffs')) {
+  // 2.8 (court UP6, R2 — the #92 incident: a whole interval's canon missing for 25 days while this gate was green on an i18n
+  // deployment): the promised lines are judged PER FILE — only a file that is itself a translation is skipped, never an English one.
+  if (task.includes('## Module diffs')) {
     let curFile = null, inDiff = false, unmergedLines = 0, skipSection = false;
     const perFile = new Map();
     // 2.6 (UR2; origin #48 R2): a promised line that carries a hand-filled slot is on disk in its
@@ -2780,7 +2798,7 @@ function runFinalGates(taskFile, tag, verb) {
       // demanding them would spam warnings at a correctly-behaving localized deployment.
       if (line.startsWith('**module:**')) { skipSection = line.includes('localized on disk'); continue; }
       if (line.startsWith('```')) { inDiff = line === '```diff'; continue; }
-      if (skipSection) continue;
+      if (skipSection || (curFile && fileTranslated(curFile))) continue;
       if (inDiff && curFile && line.startsWith('+ ') && line.length > 12 && okOnDisk(curFile)) {
         if (!perFile.has(curFile)) perFile.set(curFile, readFileSync(curFile, 'utf8'));
         if (!perFile.get(curFile).includes(line.slice(2)) && !perFile.get(curFile).includes(fillPlaceholders(line.slice(2), fills, new Set()))) {
@@ -3010,6 +3028,9 @@ async function cmdInstall() {
   let rehearsal = null;   // the recorded rehearsal this bootstrap is bound to (2.6, UR1) — consumed at the end, like cmdUpdate's
   if (!legacyOld && val('--rehearsal'))
     die('--rehearsal binds an update-by-bootstrap over an EXISTING deployment to a sandbox copy\'s receipt — this tree carries no .kaif/kaif.json, so there is nothing to rehearse against');
+  // 2.8 (court UP6, F5): the rehearsal is loaded BEFORE the backup and the crash journal — a refused --rehearsal used to leave a journal
+  // that blocked the next update as "died mid-flight" (cmdUpdate has loaded it first since 2.5)
+  const earlyRehearsal = legacyOld ? loadRehearsal(legacyOld.version, meta.version) : null;
   if (legacyOld) {
     if (legacyOld.version !== meta.version) {
       backupTree(deploy, legacyOld.version, meta.version); // rollback material BEFORE any write
@@ -3032,7 +3053,7 @@ async function cmdInstall() {
       // route now (the flag is in install's whitelist AND the loader's), and the auto record is
       // CONSUMED below exactly like cmdUpdate's — all three trees found it still on disk after
       // the update it rehearsed.
-      rehearsal = loadRehearsal(legacyOld.version, meta.version);
+      rehearsal = earlyRehearsal;
       cls = classifyAndApply(deploy, baseline, values, unresolved, legacyOld, texts, rehearsal, renameInterval(meta, legacyOld.version));
       cls.baselineOld = baseline; // deprecations later need the OLD template shas (step 5)
       adopted = cls.adopted;
@@ -4155,6 +4176,20 @@ async function cmdDiff() {
   unlinkSync(tmp);
   const { deploy: otherDeploy } = applyLanguage(files);
   const values = stableValues();   // preview must fill exactly like the deploy did (bug 26)
+  // 2.8 (court UP6, R3 — K-R2a: three field deployments built the same three-way comparison by hand, because nothing printed the
+  // file as it deploys in THEIR language): `--render <file>` prints ONLY that file as `install` of this source writes it for THIS
+  // deployment — its language (override and trigger aliases), its fills, its mode. The oracle of a hand merge: render the old source
+  // and the new one, compare both with the disk. Nothing is written, no rehearsal is recorded.
+  const renderPath = val('--render');
+  if (renderPath) {
+    const want = renderPath.replace(/\\/g, '/').replace(/^\.\//, '');
+    const f = otherDeploy.find((x) => x.path === want);
+    if (!f) die(`--render ${renderPath}: the ${man2.version} bundle does not ship this file (name it by its deployed path — AGENT_GUIDE.md, .claude/skills/<name>/SKILL.md, .kaif/KAIF_REFERENCE.md)`);
+    let text = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, new Set());
+    if (ANON && !f.path.endsWith('.mjs')) text = anonymize(text);
+    process.stdout.write(text);
+    return;
+  }
   // A v1 manifest has no module provenance, and the loop below would skip every file and print
   // a hollow "0 files / 0 nothing to do" — worse than an honest refusal, and it hit exactly the
   // first-ever update, the moment of highest risk (bug 21 / field report K3). Build the deployed
@@ -4250,7 +4285,7 @@ const COMMANDS = {
   help:            { fn: cmdHelp,         desc: 'this list (also the bare-run and --help default)', flags: {}, pos: 0 },
   version:         { fn: cmdVersion,      desc: 'report the deployed version from .kaif/kaif.json', flags: {}, pos: 0 },
   check:           { fn: cmdCheck,        desc: 'validate the deployed manifest (marker schema, mirrors, two-headed docs); --gate-budgets makes the size budgets of the re-read core a DOOR — exit 1 on a document over budget in the project\'s OWN lines (the closing ritual runs it)', flags: { '--bundle': true, '--agents': true, '--mode': true, '--lang': true, '--gate-budgets': false }, pos: 0 },
-  diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version', flags: { '--source': true, '--baseline': true, '--lang': true }, pos: 0 },
+  diff:            { fn: cmdDiff,         desc: 'audit disk vs deployed templates; --source <x> previews another version; --source <x> --render <file> prints that file as install of <x> writes it here (language, fills, mode) — the oracle of a hand merge', flags: { '--source': true, '--baseline': true, '--lang': true, '--render': true }, pos: 0 },
   modules:         { fn: cmdModules,      desc: 'print the module cut of a bundle as JSON (audit surface)', flags: { '--bundle': true }, pos: 0 },
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly); over an existing deployment it is an update-by-bootstrap — --rehearsal <receipt> binds it to a sandbox copy\'s verdicts', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false, '--rehearsal': true }, pos: 0 },
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release; --rehearsal <receipt> binds the run to a sandbox copy\'s verdicts', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true, '--rehearsal': true }, pos: 0 },
