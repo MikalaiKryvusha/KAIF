@@ -295,6 +295,7 @@ const TEMPLATE_NOTES_BY_VERSION = {
     'ANSWERS ON THE OWNER\'S PAGE ARE SAVED ONE AT A TIME, AND AN OLD TAB NEVER WRITES INTO A REWRITTEN DOCUMENT (2.8, epic OW; the KAIF owner\'s word: saving answers one at a time must be required in every project; the stale-tab S1 of a field project): the page LIVES while its document has an unanswered question («Saved. Questions left: N», the answered one folds into the settled archive, other drafts stay), the last answer ends the contour with exit 0; the agent is woken by a separate WAITER — `node .kaif/tools/contour/review.mjs --wait <doc>` (exit 0 on each recorded answer, 2 when the contour ended without one); the decision file MERGES the saves of one page; a save carries the revision its page was built from — another revision → 409, the text stays on the page with «Open the new revision»; a draft never lands on a rewritten question. What to do: if your loop waited for the contour\'s exit after a save, start the waiter next to the page as a tracked background task and restart it after each answer while questions are left (`/owner-reviews` I8, I31). A project running its OWN contour keeps it — the contract (.kaif/INTERACTIVE_CONTOUR_SPEC.md §5) now describes the partial save.',
     'THE CALL NAMES THE CALLING SESSION, AND THE OWNER\'S HANDS ARE ASKED BY A CALL (2.8, epic OW; origin issues #95 · #98 — a request in the chat is not seen while the agent works; with three windows of one project the owner could not tell which one called): `node .kaif/tools/contour/review.mjs --call "<what is needed>" [--dry-run]` — sound → console line → voice; with more than one workspace every call says «<owner>, this is <session>. …», the console line is `CALL · <session>:`, the page window title carries the session; the name is derived — `KAIF_SESSION_NAME`, else the workspace directory (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name. What to do: when the work stops until the owner acts or answers, call — never leave the request only in the chat (AGENT_GUIDE; `/owner-reviews` I28b; `/team-deployment` workspaces).',
     'A NEW HOOK MAKES THE AGENT ANSWER THE OWNER\'S WORD MID-TURN (2.8, epic OW; origin bug 123 — an answer to the owner\'s mid-turn question was composed in the reasoning and never emitted, 18 tool calls later): `.kaif/hooks/pretool-owner-word.mjs` (event `PreToolUse`, Claude Code) refuses ONE tool call after the owner\'s message typed mid-turn that has no TEXT answer yet in the transcript; the reason quotes the owner\'s words and orders: answer as text by its kind, continue the work, repeat the answer in the final text of the turn (a text between tool calls can be recorded as reasoning and never reach the chat). It never stops the work: one refusal per message. What to do: the refresh-hooks module is opt-in — merge the `PreToolUse` entry of `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` by your owner\'s word.',
+    'THE UPDATE LOSES NOTHING SILENTLY (2.8, epic UP; origin issues #72 · #73 · #81 · #92): a section you renamed IN ADVANCE to the heading the release declares gets the upstream delta (untouched body — replaced; edited — the delta in the task), and the log no longer says «arrives as new»; a module the previous update proposed and nobody merged is offered again (its receipt), never read as your deletion; `update-verify` checks EVERY section new in the release on disk — the release ships the list (`sectionsNew` in the bundle meta), so it works whatever core ran the update — and reds, naming the section, when one never arrived (a translated file: named for a hand check); a hand fill that carries `<` and `>` (`-PackDir <pack>`) is derived; the sandbox copy is exported with `git -c core.autocrlf=false archive`; a rehearsal record binds only the core that wrote it (another core\'s record is named and ignored). What to do: after `update-verify`, merge any section it names.',
     'A WITHDRAWN FEATURE NO LONGER LEAVES YOUR TEXTS STANDING (2.8, epic CH): a deprecation that retires a feature now names the phrases to search (`search`, with its version `since`) — the update task lists them with the fate of each hit by its signature (an order signed by the agent is removed as the agent\'s decision; one signed by the owner goes to the owner as one question); a question the withdrawal made moot is withdrawn with `node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<reason>"` (open questions only — never an answer on the owner\'s behalf); a KAIF ticket the origin resolved without an issue reads `**Delivered upstream:** resolved in origin <version>` — silent in `check`. What to do: run the search the task item names, if it names one.',
     'THE FIELD REPORT OF AN UPDATE IS DELIVERED TO KAIF IN THE SAME MOVE AS IT IS WRITTEN (2.8, epic CH; origin issue #78 — the reports README said a report stays local until the owner approves it, against the KAIF owner\'s standing authorization for signals, origin issue #15): the field-report item of the update and install tasks now asks for an H1 and the line `**Delivered upstream:** NOT YET` and, on tracking: origin, `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md`; `check` names a 2.8+ field report that was not sent (older reports stay silent — they were local by the canon of their time); `/kaif-update` step 5 adds: a public correction to a delivered ticket only after re-measuring the judge\'s finding, the update judge in a clean context. What to do: deliver this update\'s own report with that command.',
     'CONTOUR PAGES ARE READABLE WITHOUT THE BROWSER\'S ZOOM (2.8, origin issue #106 — a field owner asked three times in one evening and named the size): the shipped page renders at 1.7x the browser base through `html { zoom }` (the whole page, as Ctrl+Plus does — raising font-size alone turns the radio circles into dots), the Save button at 1.5x (its own zoom 1.5 / 1.7), and the narrow-window breakpoint is multiplied by the same scale (media queries do not see CSS zoom): `PAGE_SCALE` · `SAVE_SCALE` in `.kaif/tools/contour/review.mjs`, one clause in `.kaif/INTERACTIVE_CONTOUR_SPEC.md` §4. What to do: nothing for the shipped contour; a project\'s OWN contour page (a home generator) takes the same pair of constants — the zoom and the breakpoint travel together.',
@@ -500,6 +501,30 @@ function ownerVoicePin() {
       .map((f) => readFileSync(join(ROOT, f), 'utf8').replace(/\r\n/g, '\n').split('\n', 1)[0]))].sort(),
     url: `https://raw.githubusercontent.com/${repo}/v${version()}/${OWNER_VOICE_FILE}` };
 }
+// 2.8 (epic UP; origin issue #92 · court F-F2): the sections NEW since the previous release, per shipped md — update-verify checks each
+// on disk whatever core ran the update (in the field the OUTGOING core writes the task and the receipt and knows nothing of them). The
+// previous release is the latest v* tag and its shipped module map — the same evidence guard 5f reads; no git, no tag or no map there →
+// an empty list, said aloud. Rename targets declared for any version and H1 lines (deploy-time values) are never «new sections».
+function sectionsNewSincePrevRelease(entries, overrides) {
+  let prev = null, prevMap = null;
+  try {
+    prev = execSync('git tag --list "v*" --sort=-v:refname', { cwd: ROOT, stdio: 'pipe' }).toString().split('\n').map((s) => s.trim()).filter(Boolean)[0] || null;
+    if (prev) prevMap = JSON.parse(execSync(`git show ${prev}:dist/kaif-module-map.json`, { cwd: ROOT, stdio: 'pipe', maxBuffer: 1 << 26 }).toString());
+  } catch { prevMap = null; }
+  if (!prevMap || !prevMap.files) { console.log('ℹ sectionsNew: no previous release module map (no git, no tag or no map in it) — the list is empty'); return { prev: prev || null, files: {} }; }
+  const renameTargets = (dest) => new Set(Object.values(RENAMES_BY_VERSION).flatMap((per) => (per[dest] || []).map(([, n]) => n)));
+  const out = {};
+  for (const { src, dest } of entries) {
+    if (!dest.endsWith('.md') || !prevMap.files[dest]) continue;   // a file new as a whole arrives whole — not a section check
+    const content = readFileSync(join(ROOT, src), 'utf8').replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
+    const old = new Set(prevMap.files[dest].map((m) => m.signature));
+    const rt = renameTargets(dest);
+    const nw = mapFile(dest, content, overrides).map((m) => m.signature)
+      .filter((s) => s !== '<preamble>' && !/^# /.test(s) && !old.has(s) && !rt.has(s));
+    if (nw.length) out[dest] = nw;
+  }
+  return { prev, files: Object.fromEntries(Object.entries(out).sort((a, b) => a[0].localeCompare(b[0]))) };
+}
 function bundleBlocks() {
   const blocks = [];
   // Class overrides ship in the meta block so KAIF-CORE classifies modules with the SAME
@@ -608,6 +633,7 @@ function bundleBlocks() {
   // the diffs are the whole delivery, and "find the upstream file yourself" was work per file.
   // Sorted keys: the meta block is diffed and cached downstream (the canonical-ordering rule).
   meta.sources = Object.fromEntries(BUNDLE_ENTRIES.map(({ src, dest }) => [dest, src]).sort((a, b) => a[0].localeCompare(b[0])));
+  meta.sectionsNew = sectionsNewSincePrevRelease(BUNDLE_ENTRIES, ovRaw);   // 2.8, #92 — see the function
   blocks[0] = renderMeta(meta);
   return blocks;
 }

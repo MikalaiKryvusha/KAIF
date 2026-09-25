@@ -46,9 +46,12 @@ diverged places. Your cognitive work is that task, not the migration.
      in `.kaif/update-rehearsal.json`: the next `update` over this tree freezes any file whose live
      verdict differs from what you read here (task item `verdict-mismatch`, both number sets).
    - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
-     (`git archive HEAD | tar -x -C <tmpdir>`), `git init` there, run the REAL update/bootstrap in
-     the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field
-     the live pass matched the sandbox byte for byte. Prefer this on the first-ever update and on
+     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings;
+     on a Windows tree with `core.autocrlf=true` a plain export rewrites them, 2.8, origin issue #81), `git init` there, run the
+     REAL update/bootstrap in the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field the
+     live pass matched the sandbox byte for byte, up to line endings on a `core.autocrlf=true` tree (compare there with
+     `git diff --ignore-cr-at-eol`). A rehearsal record binds only the core that wrote it (2.8): another core's record is named
+     and ignored. Prefer this on the first-ever update and on
      any deployment with heavy localization. The copy's receipt (`<copy>/.kaif/last-update.json`)
      carries the verdicts it printed: hand it to the live run — `update --rehearsal
      <copy>/.kaif/last-update.json` on the core-update route, `node KAIF-LOADER.mjs --lang <code>

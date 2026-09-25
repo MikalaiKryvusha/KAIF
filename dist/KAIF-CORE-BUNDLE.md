@@ -109,6 +109,7 @@
       "ANSWERS ON THE OWNER'S PAGE ARE SAVED ONE AT A TIME, AND AN OLD TAB NEVER WRITES INTO A REWRITTEN DOCUMENT (2.8, epic OW; the KAIF owner's word: saving answers one at a time must be required in every project; the stale-tab S1 of a field project): the page LIVES while its document has an unanswered question («Saved. Questions left: N», the answered one folds into the settled archive, other drafts stay), the last answer ends the contour with exit 0; the agent is woken by a separate WAITER — `node .kaif/tools/contour/review.mjs --wait <doc>` (exit 0 on each recorded answer, 2 when the contour ended without one); the decision file MERGES the saves of one page; a save carries the revision its page was built from — another revision → 409, the text stays on the page with «Open the new revision»; a draft never lands on a rewritten question. What to do: if your loop waited for the contour's exit after a save, start the waiter next to the page as a tracked background task and restart it after each answer while questions are left (`/owner-reviews` I8, I31). A project running its OWN contour keeps it — the contract (.kaif/INTERACTIVE_CONTOUR_SPEC.md §5) now describes the partial save.",
       "THE CALL NAMES THE CALLING SESSION, AND THE OWNER'S HANDS ARE ASKED BY A CALL (2.8, epic OW; origin issues #95 · #98 — a request in the chat is not seen while the agent works; with three windows of one project the owner could not tell which one called): `node .kaif/tools/contour/review.mjs --call \"<what is needed>\" [--dry-run]` — sound → console line → voice; with more than one workspace every call says «<owner>, this is <session>. …», the console line is `CALL · <session>:`, the page window title carries the session; the name is derived — `KAIF_SESSION_NAME`, else the workspace directory (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name. What to do: when the work stops until the owner acts or answers, call — never leave the request only in the chat (AGENT_GUIDE; `/owner-reviews` I28b; `/team-deployment` workspaces).",
       "A NEW HOOK MAKES THE AGENT ANSWER THE OWNER'S WORD MID-TURN (2.8, epic OW; origin bug 123 — an answer to the owner's mid-turn question was composed in the reasoning and never emitted, 18 tool calls later): `.kaif/hooks/pretool-owner-word.mjs` (event `PreToolUse`, Claude Code) refuses ONE tool call after the owner's message typed mid-turn that has no TEXT answer yet in the transcript; the reason quotes the owner's words and orders: answer as text by its kind, continue the work, repeat the answer in the final text of the turn (a text between tool calls can be recorded as reasoning and never reach the chat). It never stops the work: one refusal per message. What to do: the refresh-hooks module is opt-in — merge the `PreToolUse` entry of `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` by your owner's word.",
+      "THE UPDATE LOSES NOTHING SILENTLY (2.8, epic UP; origin issues #72 · #73 · #81 · #92): a section you renamed IN ADVANCE to the heading the release declares gets the upstream delta (untouched body — replaced; edited — the delta in the task), and the log no longer says «arrives as new»; a module the previous update proposed and nobody merged is offered again (its receipt), never read as your deletion; `update-verify` checks EVERY section new in the release on disk — the release ships the list (`sectionsNew` in the bundle meta), so it works whatever core ran the update — and reds, naming the section, when one never arrived (a translated file: named for a hand check); a hand fill that carries `<` and `>` (`-PackDir <pack>`) is derived; the sandbox copy is exported with `git -c core.autocrlf=false archive`; a rehearsal record binds only the core that wrote it (another core's record is named and ignored). What to do: after `update-verify`, merge any section it names.",
       "A WITHDRAWN FEATURE NO LONGER LEAVES YOUR TEXTS STANDING (2.8, epic CH): a deprecation that retires a feature now names the phrases to search (`search`, with its version `since`) — the update task lists them with the fate of each hit by its signature (an order signed by the agent is removed as the agent's decision; one signed by the owner goes to the owner as one question); a question the withdrawal made moot is withdrawn with `node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why \"<reason>\"` (open questions only — never an answer on the owner's behalf); a KAIF ticket the origin resolved without an issue reads `**Delivered upstream:** resolved in origin <version>` — silent in `check`. What to do: run the search the task item names, if it names one.",
       "THE FIELD REPORT OF AN UPDATE IS DELIVERED TO KAIF IN THE SAME MOVE AS IT IS WRITTEN (2.8, epic CH; origin issue #78 — the reports README said a report stays local until the owner approves it, against the KAIF owner's standing authorization for signals, origin issue #15): the field-report item of the update and install tasks now asks for an H1 and the line `**Delivered upstream:** NOT YET` and, on tracking: origin, `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md`; `check` names a 2.8+ field report that was not sent (older reports stay silent — they were local by the canon of their time); `/kaif-update` step 5 adds: a public correction to a delivered ticket only after re-measuring the judge's finding, the update judge in a clean context. What to do: deliver this update's own report with that command.",
       "CONTOUR PAGES ARE READABLE WITHOUT THE BROWSER'S ZOOM (2.8, origin issue #106 — a field owner asked three times in one evening and named the size): the shipped page renders at 1.7x the browser base through `html { zoom }` (the whole page, as Ctrl+Plus does — raising font-size alone turns the radio circles into dots), the Save button at 1.5x (its own zoom 1.5 / 1.7), and the narrow-window breakpoint is multiplied by the same scale (media queries do not see CSS zoom): `PAGE_SCALE` · `SAVE_SCALE` in `.kaif/tools/contour/review.mjs`, one clause in `.kaif/INTERACTIVE_CONTOUR_SPEC.md` §4. What to do: nothing for the shipped contour; a project's OWN contour page (a home generator) takes the same pair of constants — the zoom and the breakpoint travel together.",
@@ -455,6 +456,45 @@
     "templates/languages/zh-Hans/researches/README.md": "framework/templates/languages/zh-Hans/researches/README.md",
     "templates/languages/zh-Hans/skill-triggers.json": "framework/templates/languages/zh-Hans/skill-triggers.json",
     "TESTING_FRAMEWORK.md": "framework/TESTING_FRAMEWORK.md"
+  },
+  "sectionsNew": {
+    "prev": "v2.7",
+    "files": {
+      ".kaif/KAIF_REFERENCE.md": [
+        "## 17. Why the canon says so (informative)",
+        "### `TESTING_FRAMEWORK.md` → What the word \"test\" means — a functional run on the real product, by the user's path",
+        "### `TESTING_FRAMEWORK.md` → The testing activities — the chain that makes \"tested\" mean something",
+        "### `TESTING_FRAMEWORK.md` → Test-status markers — the trust contract",
+        "### `TESTING_FRAMEWORK.md` → The work produces its own means of checking",
+        "### `TESTING_FRAMEWORK.md` → An executed run produces its report",
+        "### `TESTING_FRAMEWORK.md` → Green tests ≠ working — the observation gates",
+        "### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — \"done\" about production comes after the real world",
+        "### `AGENT_GUIDE.md` → Task execution discipline — the fable loop",
+        "### `AGENT_GUIDE.md` → Decisions the agent must NOT make alone — interviews",
+        "### `AGENT_GUIDE.md` → Document taxonomy — the five tiers",
+        "### `AGENT_GUIDE.md` → Context refresh — the re-read rule and its witness",
+        "### `AGENT_GUIDE.md` → Languages — routed by AUDIENCE, never by directory",
+        "### `AGENT_GUIDE.md` → The form of an obligation — a command, a step, or a checkbox",
+        "### `AGENT_GUIDE.md` → A leading skill word is an order — the first word of the owner's message",
+        "### `AGENT_GUIDE.md` → The owner's word mid-turn — the system signs its author",
+        "### `AGENT_GUIDE.md` → The storefront — text a stranger reads",
+        "### `AGENT_GUIDE.md` → Backlog & the DONE tag",
+        "### `AGENT_GUIDE.md` → Git workflow",
+        "### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)",
+        "### `AGENT_GUIDE.md` → Environment dossier — the agent knows its machine from its own notes",
+        "### `AGENT_GUIDE.md` → Goal of the project",
+        "### `AGENT_GUIDE.md` → Architecture — the map",
+        "### `AGENT_GUIDE.md` → Test harness (how the agent observes & drives the software)",
+        "### `AGENT_GUIDE.md` → Tools",
+        "### `AGENT_GUIDE.md` → Push / GitHub authentication"
+      ],
+      "AGENT_GUIDE.md": [
+        "### The owner's word mid-turn — the system signs its author"
+      ],
+      "BUG_FIXING_FRAMEWORK.md": [
+        "## The owner's debt comes first — a bug he flagged, a decision he answered"
+      ]
+    }
   }
 }
 ``````
@@ -3471,9 +3511,11 @@ calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 
 ### 10.8 Predicting a pass
 
-The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git archive`), re-init git
-in the copy, run the REAL update or bootstrap there and read its diff. This is not a model of the
-pass but the pass itself — field-proven byte-identical to the subsequent live run. Recommended
+The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git -c core.autocrlf=false archive` — the flag keeps the
+committed line endings, 2.8, origin issue #81), re-init git in the copy, run the REAL update or bootstrap there and read its diff.
+This is not a model of the pass but the pass itself — field-proven byte-identical to the subsequent live run, up to line endings on
+a Windows tree with `core.autocrlf=true`. A rehearsal record and a copy's receipt carry the fingerprint of the core that wrote them
+(2.8, finding N17): another core's record is named and ignored — a 2.5 core's record once bound a newer core's bootstrap. Recommended
 before the first-ever update and on heavily localized deployments; `diff --source` remains the
 lighter per-module preview. The copy's receipt binds the live run on EITHER route (2.6): `update
 --rehearsal <receipt>` or `node KAIF-LOADER.mjs --lang <code> --rehearsal <receipt>` — the loader
@@ -6682,9 +6724,12 @@ diverged places. Your cognitive work is that task, not the migration.
      in `.kaif/update-rehearsal.json`: the next `update` over this tree freezes any file whose live
      verdict differs from what you read here (task item `verdict-mismatch`, both number sets).
    - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
-     (`git archive HEAD | tar -x -C <tmpdir>`), `git init` there, run the REAL update/bootstrap in
-     the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field
-     the live pass matched the sandbox byte for byte. Prefer this on the first-ever update and on
+     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings;
+     on a Windows tree with `core.autocrlf=true` a plain export rewrites them, 2.8, origin issue #81), `git init` there, run the
+     REAL update/bootstrap in the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field the
+     live pass matched the sandbox byte for byte, up to line endings on a `core.autocrlf=true` tree (compare there with
+     `git diff --ignore-cr-at-eol`). A rehearsal record binds only the core that wrote it (2.8): another core's record is named
+     and ignored. Prefer this on the first-ever update and on
      any deployment with heavy localization. The copy's receipt (`<copy>/.kaif/last-update.json`)
      carries the verdicts it printed: hand it to the live run — `update --rehearsal
      <copy>/.kaif/last-update.json` on the core-update route, `node KAIF-LOADER.mjs --lang <code>

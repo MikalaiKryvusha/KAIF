@@ -707,7 +707,9 @@ const reEscape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Match ONE template text (a module, normally) against its disk text. A slot the disk still carries
 // LITERALLY is emitted as a literal, never as a capture — otherwise a lazy group happily split
 // `<YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>` at the space and "learned" garbage (polygon-caught
-// on the first run); a capture never spans `<`/`>` for the same reason.
+// on the first run). 2.8 (epic UP; origin issue #73): a capture MAY carry `<`/`>` — a fill like `pwsh build.ps1 -PackDir <pack>` is a
+// command with its own argument placeholder, and excluding the brackets read it as no fill at all (every interval a hand merge); the
+// garbage guard is exact instead: a captured value that contains a KNOWN slot token is rejected.
 function matchFills(template, disk) {
   const slots = slotsIn(template);
   if (!slots.length) return null;
@@ -721,7 +723,7 @@ function matchFills(template, disk) {
     const slot = m[1];
     if (literalOnDisk.has(slot)) pat += reEscape(slot);
     else if (groups.has(slot)) pat += `\\k<${groups.get(slot)}>`;
-    else { const g = `s${groups.size}`; groups.set(slot, g); pat += `(?<${g}>[^\\n<>]+?)`; }
+    else { const g = `s${groups.size}`; groups.set(slot, g); pat += `(?<${g}>[^\\n]+?)`; }
     last = m.index + slot.length;
   }
   pat += reEscape(template.slice(last));
@@ -730,7 +732,7 @@ function matchFills(template, disk) {
   const out = {};
   for (const [slot, g] of groups) {
     const v = hit.groups[g];
-    if (v && v.trim()) out[slot] = v;
+    if (v && v.trim() && !slotsIn(v).length) out[slot] = v;   // never a value that carries a known slot token (2.8, #73)
   }
   return out;
 }
@@ -1577,7 +1579,7 @@ function writeMatchingEol(path, content) {
   writeFileSync(path, out);
 }
 
-function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null, fills = null, renames = []) {
+function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null, fills = null, renames = [], prevProposed = null) {
   const disk = normEol(readFileSync(path, 'utf8'));
   const diskMods = splitModules(disk);
   if (joinModules(diskMods) !== disk) return null;                      // pathological file — file-level fallback
@@ -1640,11 +1642,17 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   // names a section THIS tree has — binding by declaration order instead would pick the hop for a
   // tree that started somewhere else and leave the real section behind as a duplicate.
   for (const [o, n] of declared) if (onDisk.has(o) && !renameFrom.has(n)) { renameTo.set(o, n); renameFrom.set(n, o); }
+  // 2.8 (epic UP; origin issue #72): the THIRD state of a declared pair — the old heading is gone from disk and the NEW one is already
+  // there (the owner renamed the section in advance — the canon's «fix it locally first»). The pair binds too: the disk section is judged
+  // against the OLD template module modulo its heading line. Until 2.8 this state lost upstream's delta silently while the log said
+  // «the section arrives as new» — nothing arrived (the new heading was on disk, so the insertion loop skipped it).
+  const renamedAhead = new Map();  // new signature (already on disk) → old signature (gone from disk)
+  for (const [o, n] of declared) if (!onDisk.has(o) && onDisk.has(n) && !renameFrom.has(n) && !renamedAhead.has(n)) renamedAhead.set(n, o);
   const renamed = [];              // [{ from, to, outcome }] — named in the log and in the task
   // A declared rename whose OLD heading is nowhere on disk: the owner removed or translated that
   // section. Not an error and never a crash — the update says so by name (once per target) and the
   // new module takes the ordinary "new in this release" road.
-  const renameMissing = declared.filter(([, n]) => !renameFrom.has(n))
+  const renameMissing = declared.filter(([, n]) => !renameFrom.has(n) && !renamedAhead.has(n))
     .filter(([, n], i, a) => a.findIndex(([, m]) => m === n) === i)
     .map(([o, n]) => ({ from: o, to: n }));
   // A declaration whose OLD heading IS on this disk but whose NEW heading the template does not
@@ -1659,17 +1667,19 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
   const out = [];
   for (const dm of diskMods) {
     const dSha = normSha(modText(dm));
-    const oldE = oldBySig.get(dm.signature);
+    const aheadFrom = renamedAhead.get(dm.signature);   // renamed in advance from this old heading (2.8, #72)
+    const oldE = oldBySig.get(dm.signature) || (aheadFrom ? oldBySig.get(aheadFrom) : undefined);
+    const asOld = aheadFrom ? modText(dm).replace(dm.signature, aheadFrom) : modText(dm);   // the disk text under its OLD heading
     const renamedTo = renameTo.get(dm.signature);
     const newM = newBySig.get(dm.signature) || (renamedTo ? newBySig.get(renamedTo) : undefined);
     if (renamedTo && newM) renamed.push({ from: dm.signature, to: renamedTo, outcome: oldE && dSha === oldE.sha256 ? 'replaced' : 'kept (local edits — see the task)' });
     // Frontmatter is a named pseudo-module with one extra right (bug 43): equality with its old
     // template is judged MODULO the machinery-appended alias tail — the old text comes from the
     // baseline artifact and must agree with the deploy's own module snapshot before it is trusted.
-    let untouchedMod = oldE && dSha === oldE.sha256;
+    let untouchedMod = oldE && (dSha === oldE.sha256 || (aheadFrom && normSha(asOld) === oldE.sha256));
     // 2.6 (UR2; origin #48 R2): untouched MODULO the hand-filled slots — the module's disk text with
     // the fills folded back equals the old template module exactly (matchFills / unfill above).
-    if (!untouchedMod && oldE && fills && normSha(unfill(modText(dm), fills)) === oldE.sha256) untouchedMod = true;
+    if (!untouchedMod && oldE && fills && normSha(unfill(asOld, fills)) === oldE.sha256) untouchedMod = true;
     if (!untouchedMod && oldE && dm.signature === '<preamble>' && oldTexts && oldTexts.has('<preamble>')) {
       const ot = oldTexts.get('<preamble>');
       if (normSha(ot) === oldE.sha256 && stripAliasTail(modText(dm)) === stripAliasTail(ot)) untouchedMod = true;
@@ -1689,6 +1699,7 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
         continue;
       }
       const newText = fills ? fillPlaceholders(modText(newM), fills, new Set()) : modText(newM);   // the new template module with the deployment's own fills folded in (2.6, UR2)
+      if (aheadFrom) renamed.push({ from: aheadFrom, to: dm.signature, outcome: dSha === normSha(newText) ? 'renamed in advance on disk — already current' : dryRun ? 'renamed in advance on disk — upstream delta in the task (i18n: translated)' : 'renamed in advance on disk — the new template module replaced it' });
       if (dSha === normSha(newText)) { out.push(dm); }                  // unchanged upstream too
       // The safety net never judges the preamble: machinery aliases make it carry the owner's
       // script by construction (bug 43) — the alias tail is preserved by the replacement below.
@@ -1719,6 +1730,12 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
       // (project-name healing) and the task rendered an empty "upstream changed it" diff.
       const newFilled = newM ? (fills ? fillPlaceholders(modText(newM), fills, new Set()) : modText(newM)) : null;
       if (newM && dSha === normSha(newFilled)) { /* already the new template — nothing to hand over */ }
+      else if (aheadFrom && newM) {
+        // renamed IN ADVANCE and edited (2.8, #72): upstream's delta beyond the heading goes to the task — never lost, never inserted twice
+        const upstreamChanged = normSha(modText(newM).replace(dm.signature, aheadFrom)) !== (oldE && oldE.sha256);
+        renamed.push({ from: aheadFrom, to: dm.signature, outcome: upstreamChanged ? 'renamed in advance on disk AND edited — upstream delta in the task' : 'renamed in advance on disk AND edited — upstream changed only the heading, nothing to merge' });
+        if (upstreamChanged) divergedList.push({ signature: dm.signature, note: `renamed IN ADVANCE on your disk (from "${aheadFrom}") AND carries local edits, and upstream changed the module — fold upstream's delta into your section by hand (nothing was inserted)`, diff: lineDiff(modText(dm), newFilled) });
+      }
       else if (renamedTo && newM)
         // The renamed-and-edited case — the one the duplicate came from. Your section stays where it
         // is, under its old heading; the item carries the rename and the diff, and NOTHING is inserted.
@@ -1745,6 +1762,12 @@ function mergeModules(path, newContent, oldMods, dryRun = false, oldTexts = null
     // release" items at zero upstream delta — bug 32, a field project's 19 phantoms); changed upstream
     // means the owner must reconcile — a diff, never a resurrection.
     const oldEIns = oldBySig.get(nm.signature);
+    // 2.8 (epic UP; origin issue #92): absent AND unchanged upstream reads as the owner's deletion — unless the PREVIOUS update proposed
+    // this very module and nobody merged it (its receipt's divergedModules): then it is offered again, never silently dropped.
+    if (oldEIns && oldEIns.sha256 === normSha(modText(nm)) && prevProposed && prevProposed.has(nm.signature)) {
+      divergedList.push({ signature: nm.signature, note: 'proposed by the PREVIOUS update and never merged — offered again (its absence is not your deletion: the previous task carried it)', diff: lineDiff('', modText(nm)) });
+      continue;
+    }
     if (oldEIns && oldEIns.sha256 === normSha(modText(nm))) continue;
     if (oldEIns) {
       const ot = oldTexts && oldTexts.has(nm.signature) && normSha(oldTexts.get(nm.signature)) === oldEIns.sha256
@@ -1891,6 +1914,12 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
   const addedPaths = [];                             // NEW files of this release — the language-arrivals item reads them back (2.5, epic US)
   const verdicts = {};                               // path → { baseFound, baseN, ceiling, outcome } for every wholesale candidate (P1, 2.5)
   const verdictMismatches = [];                      // files whose live verdict differed from the rehearsal's (P1, 2.5)
+  const newModules = {};                             // path → [signatures NEW in this release] — update-verify checks each on disk (2.8, #92)
+  const translatedFiles = [];                        // md files merged in dry-run (translated) — their new sections are named, not judged (2.8)
+  // the PREVIOUS update's proposals (its receipt, read before this update overwrites it) — offered again when still absent (2.8, #92)
+  let prevReceipt = null;
+  try { prevReceipt = okOnDisk(LAST_UPDATE) ? readJson(LAST_UPDATE) : null; } catch { prevReceipt = null; }
+  const prevProposedOf = (p) => new Set(((prevReceipt && prevReceipt.divergedModules) || {})[p] || []);
   // P1 (2.5, epic US; #27 R1): the rehearsal's verdict for this file, when one was recorded.
   const rehearsed = (p) => (rehearsal && rehearsal.verdicts && rehearsal.verdicts[p]) || null;
   const fmtV = (v) => `${v.outcome} — baseFound ${v.baseFound} of ${v.baseN}, ceiling ${v.ceiling}`;
@@ -1907,6 +1936,14 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     let content = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, unresolved);
     if (ANON && !f.path.endsWith('.mjs')) content = anonymize(content);
     f.content = content; // derived surfaces (system skill copies) must inherit the filled text (bug 05)
+    // 2.8 (epic UP; origin issue #92 · Q-R4 · K-R2a · F-F2): the sections NEW in this release — absent from the previous template's cut,
+    // not a declared rename target — recorded for update-verify, which reds on any of them that never arrived on disk.
+    if (f.path.endsWith('.md') && oldModShas[f.path] && !OWNER_SEEDED.includes(f.path)) {
+      const oldSigs = new Set(oldModShas[f.path].map((e) => e.signature));
+      const renTargets = new Set((renames[f.path] || []).map(([, n]) => n));
+      const nw = splitModules(normEol(content)).map((m) => m.signature).filter((s) => s !== '<preamble>' && !oldSigs.has(s) && !renTargets.has(s));
+      if (nw.length) newModules[f.path] = nw;
+    }
     if (OWNER_SEEDED.includes(f.path)) {
       // A MISSING owner doc is seeded from the template (a 1.2-era tree predates EXPERIENCE.md —
       // the classified legacy path must seed it exactly like a fresh install would; sandbox-caught).
@@ -1955,13 +1992,14 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     // sides and blinded the whole-file test for all 34 skills (bug 31; re-cut of bug 20/K2).
     const fileTranslated = i18nTranslated && f.path.endsWith('.md')
       && bodyLocalized(readFileSync(f.path, 'utf8'), content);
+    if (fileTranslated) translatedFiles.push(f.path);
     // Diverged file → the MODULAR merge when the previous deploy left a module cut (v2, md only):
     // untouched modules move mechanically, edited ones are kept and handed over with diffs.
     // A translated file goes through the SAME merge in dry-run: analysis without writes (K2).
     if (f.path.endsWith('.md') && oldModShas[f.path]) {
       const oldTexts = oldTplTexts[f.path] != null
         ? new Map(splitModules(normEol(oldTplTexts[f.path])).map((m) => [m.signature, modText(m)])) : null;
-      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts, fillsN ? fills : null, renames[f.path] || []);
+      const res = mergeModules(f.path, content, oldModShas[f.path], fileTranslated, oldTexts, fillsN ? fills : null, renames[f.path] || [], prevProposedOf(f.path));
       // The rename is SAID, always — an update that silently swaps a heading leaves the owner unable
       // to tell a rename from a delete-plus-add (2.7, epic HO; origin #57).
       for (const r of (res && res.renamed) || []) log(`↻ renamed: ${f.path} :: ${r.from} → ${r.to} (${r.outcome})`);
@@ -2041,7 +2079,7 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
     if (f.path.endsWith('.md') && localizedAgainst(readFileSync(f.path, 'utf8'), content))
       log(`⟳ ${f.path} is localized on disk — kept (no silent English takeover)`);
   }
-  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills };
+  return { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills, newModules, translatedFiles };
 }
 
 // ---------------------------------------------------------------------------- update (idea 14 / plan 15)
@@ -2100,7 +2138,7 @@ async function cmdUpdate() {
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
-  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills } =
+  const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills, newModules, translatedFiles } =
     classifyAndApply(deploy, old, values, unresolved, cur, oldBase, rehearsal, renameInterval(meta, cur.version));
   const sizeJumps = deploy
     .filter((f) => sizeBefore[f.path] && okOnDisk(f.path))
@@ -2179,6 +2217,7 @@ async function cmdUpdate() {
     counters: { replaced, mergedModules, added, kept },
     diverged, divergedModules: Object.fromEntries(Object.entries(divergedModules).map(([p, l]) => [p, l.map((d) => d.signature)])),
     ownerConvention, verdicts,      // the verdicts with their numbers: a later run (or the origin) compares receipts, not outcomes (P1, 2.5)
+    newModules, translatedFiles: [...new Set([...translatedFiles, ...translatedWholesale])],   // update-verify checks every new section (2.8, #92)
     deprecations: { retired: dep.removed, kept: dep.kept } });   // the kept ones are a debt the receipt must confess (#32 R-D, 2.5)
   consumeRehearsal(rehearsal);
   appendHistory(marker, cur.version, man.version, 'core-update');
@@ -2204,6 +2243,9 @@ function localStamp(d = new Date()) {
 
 const LAST_UPDATE = '.kaif/last-update.json';
 const REHEARSAL = '.kaif/update-rehearsal.json';
+// 2.8 (epic UP; finding N17): the fingerprint of THIS core — the file the process runs, line endings normalized. A rehearsal record
+// carries the fingerprint of the core that wrote it: its verdicts come from that core's logic, so it binds only runs of the same core.
+const SELF_SHA = (() => { try { return lfSha256(readFileSync(process.argv[1], 'utf8')); } catch { return null; } })();
 // P1 (2.5, epic US; #27 R1): the verdicts a rehearsal recorded — `diff --source` over THIS tree
 // (auto-consumed) or an update's receipt from a sandbox copy (`--rehearsal <path>`). A record binds
 // only the same interval: one for another from→to is named and ignored, never applied to the wrong
@@ -2221,6 +2263,14 @@ function loadRehearsal(from, to) {
   let r;
   try { r = readJson(path); } catch { if (explicit) die(`--rehearsal: not readable JSON: ${explicit}`); log(`⚠ ${path} is not readable JSON — rehearsal ignored`); return null; }
   if (String(r.from) !== String(from) || String(r.to) !== String(to)) { log(`⚠ rehearsal record ${path} is for ${r.from} → ${r.to}; this update is ${from} → ${to} — ignored`); return null; }
+  // 2.8 (N17): another core's record (or an unsigned one, written before 2.8) is named and ignored; an explicit --rehearsal the owner
+  // named that another core SIGNED refuses; an unsigned explicit one (a pre-2.8 copy's receipt) is applied with a warning — he named it.
+  if (!r.core || (SELF_SHA && r.core !== SELF_SHA)) {
+    const why = r.core ? `written by another core (${String(r.core).slice(0, 12)}…, this core ${String(SELF_SHA).slice(0, 12)}…)` : 'written by a core that did not sign it (before 2.8)';
+    if (explicit && r.core) die(`--rehearsal ${explicit}: ${why} — its verdicts come from other logic; re-run the rehearsal (the sandbox copy) with this core`);
+    if (!explicit) { log(`⚠ rehearsal record ${path} ${why} — ignored: its verdicts come from other logic`); return null; }
+    log(`⚠ --rehearsal ${explicit}: ${why} — applied because you named it`);
+  }
   const verdicts = r.verdicts || {};
   log(`⟳ rehearsal verdicts loaded from ${path} (${Object.keys(verdicts).length} file(s)) — a file whose live verdict differs is frozen`);
   return { path, explicit: !!explicit, verdicts };
@@ -2229,7 +2279,7 @@ function loadRehearsal(from, to) {
 // live verdicts); an explicit --rehearsal file is the owner's and is left alone.
 function consumeRehearsal(r) { if (r && !r.explicit) { try { unlinkSync(r.path); } catch { /* already gone */ } } }
 function writeReceipt(r) {
-  const receipt = { ...r, date: localStamp() };
+  const receipt = { ...r, date: localStamp(), core: SELF_SHA };   // the receipt of a sandbox copy is a rehearsal too (--rehearsal) — signed (2.8, N17)
   writeFileSync(LAST_UPDATE, JSON.stringify(receipt, null, 2) + '\n');
   log(`+ wrote ${LAST_UPDATE} (the update receipt — proof that outlives the self-clean)`);
 }
@@ -2611,6 +2661,38 @@ function runFinalGates(taskFile, tag, verb) {
     console.error(`✖ judge checkpoint has no verdict line — record it: node .kaif/kaif-core.mjs checkpoint judge --verdict-file <path-to-verdict.md> (or --verdict "<ascii one-liner>")`);
     missing++;
   }
+  // 2.8 (epic UP; origin issue #92 · Q-R4 · K-R2a · court F-F2): EVERY section new in this release is checked on disk — not only what
+  // the task happened to carry. A new section absent on disk is RED and named: the previous template never had it, so its absence is
+  // no deletion of the owner's. A translated file is only NAMED for a hand check — its headings are in the owner's language and the
+  // English signature cannot be found there by construction (FORK C, plans/122 UP2).
+  try {
+    const rc = okOnDisk(LAST_UPDATE) ? readJson(LAST_UPDATE) : null;
+    const expected = {};   // path → Set(signatures) — the receipt's own list and the bundle's (below)
+    const addAll = (per) => { for (const [p, sigs] of Object.entries(per || {})) if (Array.isArray(sigs)) { expected[p] = expected[p] || new Set(); for (const s of sigs) expected[p].add(s); } };
+    if (rc && rc.newModules && typeof rc.newModules === 'object') addAll(rc.newModules);
+    // the bundle's list (built against the previous release's module map): the FIELD route, where the outgoing core ran the update and its
+    // receipt knows nothing of the new sections — applied when this deployment came from that release or earlier
+    let sn = null;
+    try { const bb = okOnDisk(BUNDLE) ? parseBundle(BUNDLE, true) : null; sn = bb && bb.meta && bb.meta.sectionsNew; } catch { sn = null; }
+    if (rc && sn && sn.prev && sn.files && !gt(String(rc.from || '0'), String(sn.prev).replace(/^v/, ''))) addAll(sn.files);
+    const trKnown = !!(rc && Array.isArray(rc.translatedFiles));
+    let deployTranslated = false;
+    try { deployTranslated = okOnDisk(KAIF_JSON) && String(readJson(KAIF_JSON).i18n || '').toLowerCase() === 'translated'; } catch { deployTranslated = false; }
+    if (Object.keys(expected).length) {
+      const tr = new Set((rc && rc.translatedFiles) || []);
+      for (const [p, sigSet] of Object.entries(expected)) {
+        const sigs = [...sigSet];
+        if (!okOnDisk(p)) continue;
+        const onDiskSigs = new Set(splitModules(normEol(readFileSync(p, 'utf8'))).map((m) => m.signature));
+        for (const s of sigs) {
+          if (onDiskSigs.has(s)) continue;
+          if (tr.has(p) || (!trKnown && deployTranslated)) { console.error(`⚠ a section new in this release — check it by hand (the file is translated; its English signature cannot be matched): ${p} :: ${s}`); continue; }
+          console.error(`✖ a section of this release did not arrive: ${p} :: ${s} — the update delivered it (the previous template never had it, so its absence is not your deletion); merge it from the task, or restore it`);
+          missing++;
+        }
+      }
+    }
+  } catch { /* an unreadable receipt is named by its own gate */ }
   // Substance check (bug 17 / field report 08's 209-line method): every '+' line the update task
   // promised in its module diffs should exist on disk once the agent merged. A WARNING list, not
   // a failure — translated wrappers legitimately merge meanings, not bytes.
@@ -3052,7 +3134,9 @@ async function cmdInstall() {
       writeReceipt({ from: legacyOld.version, to: meta.version, route: bootRoute,
         counters: cls ? { replaced: cls.replaced, mergedModules: cls.mergedModules, added: cls.added, kept: cls.kept, adopted: adopted.length }
                       : { adopted: adopted.length },
-        classified: !!cls, verdicts: cls ? cls.verdicts : {} });
+        classified: !!cls, verdicts: cls ? cls.verdicts : {},
+        divergedModules: cls ? Object.fromEntries(Object.entries(cls.divergedModules || {}).map(([p, l]) => [p, l.map((d) => d.signature)])) : {},
+        newModules: cls ? cls.newModules : {}, translatedFiles: cls ? [...new Set([...(cls.translatedFiles || []), ...(cls.translatedWholesale || [])])] : [] });
       appendHistory(marker, legacyOld.version, meta.version, bootRoute);
       writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
     }
@@ -4058,7 +4142,7 @@ async function cmdDiff() {
     verdicts[f.path] = { ...res.verdict, outcome };
     log(`⟳ ${f.path}: baseFound ${res.verdict.baseFound} of ${res.verdict.baseN}, ceiling ${res.verdict.ceiling} → ${outcome}`);
   }
-  writeFileSync(REHEARSAL, JSON.stringify({ from: fromVer, to: man2.version, source: srcBase, at: localStamp(), verdicts }, null, 2) + '\n');
+  writeFileSync(REHEARSAL, JSON.stringify({ from: fromVer, to: man2.version, source: srcBase, at: localStamp(), core: SELF_SHA, verdicts }, null, 2) + '\n');
   log(`⟳ rehearsal recorded: ${Object.keys(verdicts).length} wholesale verdict(s) → ${REHEARSAL} — the next update over this tree freezes any file whose verdict differs`);
 }
 

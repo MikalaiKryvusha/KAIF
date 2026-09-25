@@ -41,7 +41,7 @@
 //   D2 (E-H3) bootstrap `--lang ru` с новым английским навыком → пункт language-arrivals в задании
 //      (зелёный и на HEAD — это ПОКРЫТИЕ каверзы суда, не фикс)
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -160,7 +160,10 @@ ok(!/verdict-mismatch/.test(readTask(TA)), 'A1: вердикт копии (froze
 const TA2 = join(ROOT, 'a2'); mkdirSync(TA2); seed(TA2);
 must(run, TA2, 'install --lang ru');
 const REH2 = join(TA2, '.kaif', 'update-rehearsal.json');
-writeFileSync(REH2, JSON.stringify({ from: FROM, to: '9.9', source: 'sandbox', verdicts: {} }, null, 2) + '\n');
+// 2.8 (эпик UP, N17): запись подписана отпечатком ядра, которое проведёт bootstrap (ядро источника, строки LF) — неподписанную новое
+// ядро называет и игнорирует; фикстура изображает запись ТОГО ЖЕ ядра, как её пишет `diff --source`
+const CORE_SIG = createHash('sha256').update(readFileSync(join(SRC99, 'KAIF-CORE.mjs'), 'utf8').replace(/\r\n/g, '\n'), 'utf8').digest('hex');
+writeFileSync(REH2, JSON.stringify({ from: FROM, to: '9.9', source: 'sandbox', core: CORE_SIG, verdicts: {} }, null, 2) + '\n');
 r = runLoader(TA2, `--lang ru --source ${SRC99} --baseline ${OLD}`);
 ok(r.code === 0 && /rehearsal verdicts loaded from \.kaif\/update-rehearsal\.json \(0 file\(s\)\)/.test(r.out), 'A2 фикстура: авто-запись по дефолтному пути подхвачена bootstrap-ом', r.out.split('\n').filter((l) => /rehearsal/.test(l)).join(' | ').slice(0, 300));
 ok(!existsSync(REH2), 'A2 (критерий 1): авто-запись ПОТРЕБЛЕНА обновлением, которое репетировала — одноразовая и на этом маршруте');
@@ -223,6 +226,93 @@ const manB = JSON.parse(readFileSync(join(TB, '.kaif', 'deploy-manifest.json'), 
 ok(manB.fills && manB.fills['<BUILD_COMMAND>'] === 'npm run build' && manB.fills['<TEST_HARNESS>'] === 'npm test', 'B5: манифест несёт `fills` (кэш выведенного; отсутствие = вывести заново)', JSON.stringify(manB.fills));
 r = run(TB, 'update-verify');
 ok(!/promised upstream line not found[^\n]*(<BUILD_COMMAND>|<TEST_HARNESS>)/.test(r.out), 'B4: update-verify не зовёт вернуть литерал слота — нет «promised upstream line … <BUILD_COMMAND>»', r.out.split('\n').filter((l) => /promised/.test(l)).join(' | ').slice(0, 400));
+
+// B7 (2.8, эпик UP, тикет origin #73): заполнение со СКОБКАМИ — команда с собственным плейсхолдером аргумента («-PackDir <pack>»).
+// До 2.8 захват исключал `<` и `>`: заполнение не выводилось, навык шёл ручным слиянием каждый интервал.
+const TB7 = join(ROOT, 'b7'); mkdirSync(TB7); seed(TB7);
+must(run, TB7, 'install');
+const AL7 = join(TB7, '.claude/skills/autoloop/SKILL.md');
+const PACK_FILL = 'pwsh tools/build.ps1 -PackDir <pack>';
+writeFileSync(AL7, readFileSync(AL7, 'utf8').split('<BUILD_COMMAND>').join(PACK_FILL).split('<TEST_HARNESS>').join('npm test'));
+const packBefore = (readFileSync(AL7, 'utf8').match(/-PackDir <pack>/g) || []).length;
+r = run(TB7, `update --source ${SRC99} --baseline ${OLD}`);
+const al7 = readFileSync(AL7, 'utf8');
+const man7 = JSON.parse(readFileSync(join(TB7, '.kaif', 'deploy-manifest.json'), 'utf8'));
+ok(r.code === 0 && /replaced \.claude\/skills\/autoloop\/SKILL\.md \(fills kept\)/.test(r.out) && al7.includes('UPSTREAM ADDITION 9.9 (autoloop)')
+   && (al7.match(/-PackDir <pack>/g) || []).length === packBefore && packBefore > 0 && !al7.includes('<BUILD_COMMAND>') && !/autoloop\/SKILL\.md/.test(readTask(TB7))
+   && man7.fills && man7.fills['<BUILD_COMMAND>'] === PACK_FILL,
+   'B7 (#73): заполнение со скобками («-PackDir <pack>») выведено — /autoloop заменён механически, заполнение цело, в задании его нет, fills в манифесте',
+   r.out.split('\n').filter((l) => /autoloop|hand-filled/.test(l)).join(' | ').slice(0, 400));
+
+// D1 (2.8, эпик UP, тикет origin #92 · Q-R4 · K-R2a · суд F-F2): update-verify сверяет КАЖДЫЙ раздел, новый в выпуске, с диском — не только
+// то, что несло задание. Раздел доехал — тишина; раздела нет на диске — КРАСНЫЙ поимённо (прежний шаблон его не имел — это не удаление владельца).
+const AUTOLOOP = '.claude/skills/autoloop/SKILL.md';
+const NEW_SEC = '## A section new in 9.9';
+const bundle99n = editBundleModule(bundle99, AUTOLOOP, /^## The cycle/, (m) => m.lines.push('', NEW_SEC, '', 'The body of the section new in 9.9.'));
+const SRC99N = join(ROOT, 'src-9.9n'); writeSource(SRC99N, bundle99n, '9.9');
+const TD1 = join(ROOT, 'up-d1'); mkdirSync(TD1); seed(TD1);
+must(run, TD1, 'install');
+r = run(TD1, `update --source ${SRC99N} --baseline ${OLD}`);
+ok(r.code === 0, 'D1 update →9.9 (с новым разделом) exit 0', r.out.slice(-300));
+const d1Arrived = readFileSync(join(TD1, AUTOLOOP), 'utf8').includes(NEW_SEC);
+const rc1 = JSON.parse(readFileSync(join(TD1, '.kaif', 'last-update.json'), 'utf8'));
+let v1 = run(TD1, 'update-verify');
+ok(r.code === 0 && d1Arrived && (rc1.newModules || {})[AUTOLOOP]?.includes(NEW_SEC) && !/section of this release did not arrive/.test(v1.out),
+   'D1 (#92): раздел, новый в 9.9, доехал; квитанция называет его в newModules; update-verify о нём молчит', v1.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
+writeFileSync(join(TD1, AUTOLOOP), joinModules(splitModules(readFileSync(join(TD1, AUTOLOOP), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== NEW_SEC)));
+v1 = run(TD1, 'update-verify');
+ok(v1.code !== 0 && v1.out.includes('a section of this release did not arrive: ' + AUTOLOOP + ' :: ' + NEW_SEC),
+   'D1 (#92): раздела, нового в 9.9, на диске нет — update-verify КРАСНЫЙ и называет файл и раздел', v1.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
+// D2 (#92): модуль, ПРЕДЛОЖЕННЫЙ прошлым обновлением и не влитый, следующее читало как «удалил владелец» — теперь предлагает снова по квитанции.
+const pickMod = (dir) => splitModules(readFileSync(join(dir, AUTOLOOP), 'utf8').replace(/\r\n/g, '\n')).find((m) => /^## /.test(m.signature) && !/^## The cycle/.test(m.signature));
+const TD2 = join(ROOT, 'up-d2'); mkdirSync(TD2); seed(TD2);
+must(run, TD2, 'install');
+const prop = pickMod(TD2);
+ok(!!prop, 'D2 фикстура: в /autoloop есть раздел, который 9.9 не меняет', prop && prop.signature);
+const dropProp = (dir) => writeFileSync(join(dir, AUTOLOOP), joinModules(splitModules(readFileSync(join(dir, AUTOLOOP), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== prop.signature)));
+dropProp(TD2);
+writeFileSync(join(TD2, '.kaif', 'last-update.json'), JSON.stringify({ from: '0.0', to: FROM, route: 'core-update', divergedModules: { [AUTOLOOP]: [prop.signature] } }, null, 2) + '\n');
+r = run(TD2, `update --source ${SRC99} --baseline ${OLD}`);
+const taskD2 = readTask(TD2);
+ok(r.code === 0 && taskD2.includes('proposed by the PREVIOUS update and never merged') && taskD2.includes(prop.signature),
+   'D2 (#92): модуль, предложенный прошлым обновлением и не влитый, предложен СНОВА (по квитанции), а не прочитан удалением владельца', taskD2.split('\n').filter((l) => /PREVIOUS|autoloop/.test(l)).join(' | ').slice(0, 300));
+const TD3 = join(ROOT, 'up-d3'); mkdirSync(TD3); seed(TD3);
+must(run, TD3, 'install');
+dropProp(TD3);
+r = run(TD3, `update --source ${SRC99} --baseline ${OLD}`);
+ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
+   'D2 контроль: без записи прошлой квитанции отсутствующий неизменённый модуль остаётся удалением владельца (не предлагается)', readTask(TD3).split('\n').filter((l) => /PREVIOUS/.test(l)).join(' | ').slice(0, 200));
+
+// E (2.8, эпик UP, критерий 14 — мандат №125, ideas/30 п. 4): обновление ЯДРОМ ПРЕДЫДУЩЕГО ВЫПУСКА — так его запускает поле (EXP-0157).
+// Установка из артефактов релиза v2.7 (git show v2.7:dist/…), `update` делает ядро 2.7, `update-verify` — доставленное ядро: на целом
+// дереве молчит о разделах, новых с 2.7; раздел, которого проход старого ядра не принёс, — КРАСНЫЙ поимённо (квитанция старого ядра
+// о нём не знает — список несёт мета бандла, `sectionsNew`). Нет git или тега → случай назван пропущенным (не зелёный молча).
+{
+  const gitShow = (p) => { try { return execFileSync('git', ['show', 'v2.7:' + p], { cwd: REPO, stdio: 'pipe', maxBuffer: 1 << 27 }); } catch { return null; } };
+  const b27 = gitShow('dist/KAIF-CORE-BUNDLE.md'), c27 = gitShow('dist/KAIF-CORE.mjs');
+  const metaNow = JSON.parse(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8').match(blockRe('kaif-bundle-manifest.json'))[2]);
+  const sn = metaNow.sectionsNew || { files: {} };
+  const snPaths = Object.keys(sn.files || {});
+  if (!b27 || !c27) console.log('⏭ E: SKIPPED — git или тег v2.7 недоступны (артефакты релиза не извлечь)');
+  else {
+    ok(sn.prev === 'v2.7' && snPaths.length > 0, 'E фикстура: мета бандла несёт sectionsNew против v2.7 (' + snPaths.length + ' файл(ов))', JSON.stringify(sn).slice(0, 200));
+    const TE = join(ROOT, 'e27'); mkdirSync(join(TE, '.kaif', 'install'), { recursive: true });
+    writeFileSync(join(TE, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE, '.kaif', 'kaif-core.mjs'), c27);
+    must(run, TE, 'install');
+    const SRC_NOW = join(ROOT, 'src-now-9.9'); writeSource(SRC_NOW, replaceBundleBlock(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8'), 'kaif-bundle-manifest.json', (j) => { const m = JSON.parse(j); m.version = '9.9'; return JSON.stringify(m, null, 2); }), '9.9');
+    r = run(TE, `update --source ${SRC_NOW}`);   // run by the 2.7 core deployed above
+    const rcE = existsSync(join(TE, '.kaif', 'last-update.json')) ? JSON.parse(readFileSync(join(TE, '.kaif', 'last-update.json'), 'utf8')) : {};
+    ok(r.code === 0 && rcE.from === '2.7' && !rcE.newModules, 'E: update 2.7 → 9.9 провело ЯДРО 2.7 (его квитанция без newModules)', r.out.slice(-300));
+    let vE = run(TE, 'update-verify');
+    ok(!/section of this release did not arrive/.test(vE.out), 'E: доставленное ядро в update-verify молчит о разделах, новых с 2.7, — проход старого ядра их принёс', vE.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
+    const pE = snPaths.find((p) => existsSync(join(TE, p)) && /\.claude\/skills\//.test(p)) || snPaths.find((p) => existsSync(join(TE, p)));
+    const sE = pE ? sn.files[pE][0] : null;
+    if (pE && sE) writeFileSync(join(TE, pE), joinModules(splitModules(readFileSync(join(TE, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
+    vE = run(TE, 'update-verify');
+    ok(!!pE && vE.code !== 0 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
+       'E: раздела, нового с 2.7, на диске нет — доставленное ядро КРАСНОЕ поимённо, хотя квитанцию писало старое ядро', vE.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
+  }
+}
 
 const TB2 = join(ROOT, 'b2'); mkdirSync(TB2); seed(TB2);
 must(run, TB2, 'install');

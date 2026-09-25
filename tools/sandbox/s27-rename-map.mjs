@@ -45,7 +45,7 @@
 //  красные» (дубль B, три молчащих лога, немое сломанное объявление E, карта не доехала в
 //  мета-блок), свод доходит до вердикта, не падает; отчёт прогона
 //  testcases/reports/2026-09-12_polygon-2.7-HO.md, прогоны 16 и 23]
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -213,6 +213,34 @@ const rE = run(TE, `update --source ${SRC_BROKEN}`);
 ok(rE.code === 0, 'E update →9.9 со сломанным объявлением: exit 0 (обновление не падает)', rE.out);
 ok(rE.out.includes(`rename declaration broken: ${SKILL} :: ${OLD_SIG} → ${NEW_SIG} (typo)`),
   'E лог называет сломанное объявление поимённо (старый → объявленный новый)', rE.out);
+
+// ── F: переименовано ЗАРАНЕЕ — старого заголовка на диске нет, новый уже есть (2.8, эпик UP, тикет origin #72) ────────────
+// Поле исполнило канон «сначала почини локально» и переименовало раздел до обновления. До 2.8 пара не привязывалась: дельта апстрима
+// терялась молча, а лог писал «the section arrives as new» — ничего не приходило (новый заголовок уже на диске).
+console.log('\n=== F: переименовано заранее — дельта апстрима доезжает (нетронутое тело) или уходит в задание (правленое), лог правдив ===');
+const ADDED = 'A line the release added along with the rename.';
+const TF1 = join(ROOT, 'f1'); mkdirSync(TF1); seed(TF1);
+must(run, TF1, 'install');
+const fileF1 = join(TF1, SKILL);
+writeFileSync(fileF1, readFileSync(fileF1, 'utf8').replace(OLD_SIG + '\n', NEW_SIG + '\n'));   // renamed in advance, body untouched
+const rF1 = run(TF1, `update --source ${SRC}`);
+ok(rF1.code === 0, 'F1 update →9.9: exit 0', rF1.out);
+const hF1 = heads(fileF1);
+ok(hF1.old === 0 && hF1.neu === 1 && readFileSync(fileF1, 'utf8').includes(ADDED),
+  `F1 нетронутое тело: заголовок один (новых ${hF1.neu}), строка, добавленная апстримом, ДОЕХАЛА`, rF1.out);
+ok(rF1.out.includes(`renamed: ${SKILL} :: ${OLD_SIG} → ${NEW_SIG} (renamed in advance on disk`) && !rF1.out.includes('the section arrives as new'),
+  'F1 лог называет «renamed in advance on disk» и НЕ пишет «the section arrives as new»', rF1.out);
+const TF2 = join(ROOT, 'f2'); mkdirSync(TF2); seed(TF2);
+must(run, TF2, 'install');
+const fileF2 = join(TF2, SKILL);
+writeFileSync(fileF2, readFileSync(fileF2, 'utf8').replace(OLD_SIG + '\n', NEW_SIG + '\n\n' + OWNER_LINE + '\n'));   // renamed in advance AND edited
+const rF2 = run(TF2, `update --source ${SRC}`);
+ok(rF2.code === 0, 'F2 update →9.9: exit 0', rF2.out);
+const hF2 = heads(fileF2);
+const taskF2 = existsSync(join(TF2, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(TF2, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
+ok(hF2.old === 0 && hF2.neu === 1 && readFileSync(fileF2, 'utf8').includes(OWNER_LINE) && taskF2.includes('renamed IN ADVANCE') && taskF2.includes(ADDED),
+  `F2 правленое тело: правка цела, заголовок один, задание несёт «renamed IN ADVANCE» и строку апстрима (новых ${hF2.neu})`, taskF2.slice(0, 500));
+ok(!rF2.out.includes('the section arrives as new'), 'F2 лог НЕ пишет «the section arrives as new»', rF2.out);
 
 // ── D: живая карта 2.7 объявлена в сборщике ───────────────────────────────────────────────────
 console.log('\n=== D: пара 2.7 объявлена данными (не угадывается) ===');

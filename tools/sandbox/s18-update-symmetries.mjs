@@ -55,7 +55,8 @@ import { splitModules, joinModules } from '../module-map-lib.mjs';
 import { must, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const DIST = join(REPO, 'dist');
+// KAIF_DIST — шов для доказательства красного против ЧУЖОЙ сборки (2.8, эпик UP: мутанты ядра доходят до свода только через него)
+const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
 // Корень прогона УНИКАЛЕН по построению (bugs/59): mkdtemp через tempRoot, явный путь — аргументом.
 const ROOT = tempRoot('symmetries', process.argv[2]);
 mkdirSync(ROOT, { recursive: true });
@@ -203,6 +204,7 @@ ok(existsSync(REH), 'U3б: репетиция записана в .kaif/update-r
 const reh = existsSync(REH) ? JSON.parse(readFileSync(REH, 'utf8')) : { verdicts: {} };
 ok(reh.from === FROM && reh.to === '9.9' && reh.verdicts['.claude/skills/check-backlog/SKILL.md']?.outcome === 'frozen' && reh.verdicts['.claude/skills/propose-idea/SKILL.md']?.outcome === 'merged',
    'U3б: запись репетиции несёт from/to и вердикты с исходами', JSON.stringify(reh).slice(0, 300));
+ok(/^[0-9a-f]{64}$/.test(String(reh.core || '')), 'U3б (2.8, N17): запись репетиции подписана отпечатком ядра, которое её сделало', String(reh.core));
 // подмена: «репетиция сказала frozen» для файла, который боевой прогон сольёт — ровно полевой P1 (#27 R1)
 // (на ядре без репетиции запись подделывается целиком — стражи ниже краснеют чисто, а не падают)
 reh.from = FROM; reh.to = '9.9';
@@ -362,6 +364,18 @@ let probe;
 try { probe = { code: 0, out: execSync(`node ${join(REPO, 'tools', 'sandbox', 'probes', 'bugs-100-two-folders.mjs')} --no-package ${join(ROOT, 'u14')} 2>&1`, { stdio: 'pipe' }).toString() }; }
 catch (e) { probe = { code: e.status ?? 1, out: (e.stdout || '').toString() + (e.stderr || '').toString() }; }
 ok(probe.code === 0 && /ОДИН вердикт/.test(probe.out), 'U14: дерево без package.json в папках alpha-project/beta-project — один вердикт (H1 вне счёта wholesale)', probe.out.split('\n').filter((l) => /baseFound|вердикт/.test(l)).join(' | ').slice(-400));
+
+// ---------------------------------------------------------------- U3в (2.8, эпик UP, находка N17): запись репетиции ЧУЖОГО ядра
+// Запись прогноза ядра 2.5 привязывала bootstrap нового ядра (оба полевых агента удалили её руками): запись без отпечатка ядра или с
+// чужим отпечатком обновление называет и не привязывает.
+console.log('\n=== U3в (N17): запись репетиции чужого ядра — названа и не привязана ===');
+const T8 = join(ROOT, 'u3v'); mkdirSync(T8); seed(T8);
+must(run, T8, 'install');
+writeFileSync(join(T8, '.kaif', 'update-rehearsal.json'), JSON.stringify({ from: FROM, to: '9.9', core: '0'.repeat(64),
+  verdicts: { '.claude/skills/check-backlog/SKILL.md': { outcome: 'frozen', baseFound: 0, baseN: 0, ceiling: 0 } } }, null, 2) + '\n');
+r = run(T8, `update --source ${SRC99}`);
+ok(r.code === 0 && /rehearsal record [^\n]*written by another core[^\n]*ignored/.test(r.out) && !/rehearsal verdicts loaded/.test(r.out),
+   'U3в (N17): запись с чужим отпечатком ядра названа и НЕ привязана', r.out.split('\n').filter((l) => /rehearsal/.test(l)).join(' | ').slice(0, 300));
 
 console.log(failures ? `\n❌ s18: ${failures} red` : '\n✅ s18: all green');
 process.exit(failures ? 1 : 0);
