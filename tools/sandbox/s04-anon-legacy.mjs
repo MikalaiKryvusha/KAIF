@@ -310,6 +310,12 @@ ok(existsSync(HK) && readFileSync(HK, 'utf8').includes('LOCAL EDIT ON DEPRECATED
 const task14d = readFileSync(join(S14d, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(task14d.includes('deprecations') && task14d.includes('help-kaif'),
    'S14d правленный упразднённый вынесен пунктом задачи');
+// 2.8 CH1 (судья CH5 F7): пункт отчёта в задании ОБНОВЛЕНИЯ — на tracking: origin строка доставки и команда report есть, иначе их нет
+{ const tr14d = JSON.parse(readFileSync(join(S14d, '.kaif', 'kaif.json'), 'utf8').replace(/^\uFEFF/, '')).tracking;
+  const fr14d = task14d.slice(task14d.indexOf('- **field-report**'), task14d.indexOf('\n- **', task14d.indexOf('- **field-report**') + 5) >>> 0 || undefined);
+  const says = fr14d.includes('**Delivered upstream:** NOT YET') && fr14d.includes('node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/');
+  ok(task14d.includes('- **field-report**') && (tr14d === 'origin' ? says : !says),
+     'S14d/CH1 (F7): пункт отчёта задания обновления на tracking: ' + tr14d + ' — строка доставки и команда report ' + (tr14d === 'origin' ? 'есть' : 'отсутствуют'), fr14d.slice(0, 300)); }
 // 2.8 CH4 (plans/121, критерий 13): снятая ВОЗМОЖНОСТЬ называет фразы — задание перечисляет их с командой поиска и судьбой по подписи
 const wd14d = task14d.slice(task14d.indexOf('- **withdrawn-phrases**'));
 ok(task14d.includes('- **withdrawn-phrases**') && wd14d.includes('FIXTURE-RETIRED-PHRASE') && wd14d.includes('git grep -n -F -e "FIXTURE-RETIRED-PHRASE"')

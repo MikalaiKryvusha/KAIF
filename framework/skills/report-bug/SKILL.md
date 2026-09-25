@@ -75,7 +75,8 @@ Both templates open with the machine-grepable fingerprint
 `**Delivered upstream:**` line under it is machine-read — `report` delivers by it, `check` reads the
 delivery state from it — so the field name stays verbatim (English, bold, its own line) in any
 project language; the value may be in the project language and carries EITHER the issue URL or `#NN`
-standing as the value OR the words `NOT YET` — never both (name a related issue in the body) (KAIF 2.7, epic SD: a field name
+standing as the value OR the words `NOT YET` — never both (name a related issue in the body) — OR, when the ORIGIN resolved it
+without an issue (a withdrawal, a shipped fix; 2.8), `resolved in origin <version>` (KAIF 2.7, epic SD: a field name
 translated into the project language hid a waiting ticket from both commands).
 
 ### Template A — KAIF bug report

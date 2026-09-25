@@ -356,11 +356,16 @@ export function recordShown(root, rels, transport, now = new Date()) {
 // The fact is written by the agent's hand at the moment the decision lands (never inferred); a document whose
 // every open question is implemented is never raised — the queue says so out loud and exits 2 until the status closes.
 export function readImplemented(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), IMPLEMENTED_FILE), {}); }
+// judge CH5 F10: a machine receipt is LOCAL ISO with its offset (the stamp canon) — toISOString() wrote UTC and the page's date slice
+// showed yesterday after midnight
+const localIso = (d) => { const p = (n) => String(n).padStart(2, '0'); const o = -d.getTimezoneOffset();
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds())
+    + (o >= 0 ? '+' : '-') + p(Math.floor(Math.abs(o) / 60)) + ':' + p(Math.abs(o) % 60); };
 export function recordImplemented(root, rel, qid, where, now = new Date(), extra = {}) {
   const map = readImplemented(root);
   const key = String(rel).replace(/\\/g, '/');
   map[key] = map[key] || {};
-  map[key][qid] = { at: now.toISOString(), where, ...extra };   // extra: { withdrawn: true, why } — 2.8, epic CH
+  map[key][qid] = { at: localIso(now), where, ...extra };   // extra: { withdrawn: true, why } — 2.8, epic CH
   mkdirSync(decisionsAbs(root), { recursive: true });
   writeFileSync(join(decisionsAbs(root), IMPLEMENTED_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
   return map;
@@ -1734,6 +1739,9 @@ export async function selftest(log = console.log) {
     ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'))[WD].Q2,
       'an ANSWERED question is refused (exit 1, nothing recorded) — a withdrawal is never an answer over the owner\'s word');
     rmSync(join(root, WD), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
+    // judge CH5 F2: the Russian pack carries its own form of each new text — a missing key falls back to English on an owner's page
+    ok(['withdrawnBadge', 'withdrawn', 'answeredNotWithdrawn'].every((k) => String(texts('ru').impl[k]('Q1', 'x', 'y', 'z')) !== String(texts('en').impl[k]('Q1', 'x', 'y', 'z'))),
+      'the Russian pack renders the three withdrawn texts in Russian (no English fallback on the owner\'s page)');
   }
   rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
   // QL3 (#54): the reading view — live first, the settled and the text in one fold; nothing removed

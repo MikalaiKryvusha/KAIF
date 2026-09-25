@@ -909,7 +909,7 @@ written.
 | `GOAL.md` · `MASTER_PLAN.md` · `STATUS.md` · `KAIF_FRAMEWORK.md` | this guide · `PHILOSOPHY.md` · `BUG_FIXING_FRAMEWORK.md` · `TESTING_FRAMEWORK.md` · `REQUIREMENTS_FRAMEWORK.md` |
 | epic meta-plans (`plans/NN_EPIC_*`) — the guide itself says the owner sees the whole shape there | operational plans' executor steps · working notes in `bugs/` |
 | everything in `interviews/` and `homeworks/` — the owner answers inside the document | `researches/` (recon detail) · `EXPERIENCE.md` · the maps · the skills |
-| directory READMEs · `README.md` · release notes · every chat report to the owner — with the lines a skill asks for by name in it, written in the owner's language (2.8, origin issue #97) | the keys a machine or the judge greps in a document: `FORK:` · `AUTH:` · `INTENT:` · `TWINS:` · `PENDING:` |
+| directory READMEs · `README.md` · release notes · every chat report to the owner — with the lines a skill asks for by name in it, written in the owner's language (2.8, origin issue #97) | the keys a machine or the judge greps in a document: `FORK:` · `AUTH:` · `INTENT:` · `TWINS:` · `PENDING:` · `BOUNDARY:` |
 
 Two boundaries stop the rule from drifting:
 
@@ -1208,7 +1208,7 @@ of a MOMENT carries both, in the owner's local time:
   moment as full local ISO 8601 (`2026-08-08T07:13:00+03:00`) — one convention, two renderings.
 - **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
   written down or committed. They differ, and the difference is often the interesting part.
-- **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
+- **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
   tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5
   minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too. Not captured → an honest
   `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
@@ -8533,7 +8533,8 @@ Both templates open with the machine-grepable fingerprint
 `**Delivered upstream:**` line under it is machine-read — `report` delivers by it, `check` reads the
 delivery state from it — so the field name stays verbatim (English, bold, its own line) in any
 project language; the value may be in the project language and carries EITHER the issue URL or `#NN`
-standing as the value OR the words `NOT YET` — never both (name a related issue in the body) (KAIF 2.7, epic SD: a field name
+standing as the value OR the words `NOT YET` — never both (name a related issue in the body) — OR, when the ORIGIN resolved it
+without an issue (a withdrawal, a shipped fix; 2.8), `resolved in origin <version>` (KAIF 2.7, epic SD: a field name
 translated into the project language hid a waiting ticket from both commands).
 
 ### Template A — KAIF bug report
@@ -11410,11 +11411,16 @@ export function recordShown(root, rels, transport, now = new Date()) {
 // The fact is written by the agent's hand at the moment the decision lands (never inferred); a document whose
 // every open question is implemented is never raised — the queue says so out loud and exits 2 until the status closes.
 export function readImplemented(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), IMPLEMENTED_FILE), {}); }
+// judge CH5 F10: a machine receipt is LOCAL ISO with its offset (the stamp canon) — toISOString() wrote UTC and the page's date slice
+// showed yesterday after midnight
+const localIso = (d) => { const p = (n) => String(n).padStart(2, '0'); const o = -d.getTimezoneOffset();
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds())
+    + (o >= 0 ? '+' : '-') + p(Math.floor(Math.abs(o) / 60)) + ':' + p(Math.abs(o) % 60); };
 export function recordImplemented(root, rel, qid, where, now = new Date(), extra = {}) {
   const map = readImplemented(root);
   const key = String(rel).replace(/\\/g, '/');
   map[key] = map[key] || {};
-  map[key][qid] = { at: now.toISOString(), where, ...extra };   // extra: { withdrawn: true, why } — 2.8, epic CH
+  map[key][qid] = { at: localIso(now), where, ...extra };   // extra: { withdrawn: true, why } — 2.8, epic CH
   mkdirSync(decisionsAbs(root), { recursive: true });
   writeFileSync(join(decisionsAbs(root), IMPLEMENTED_FILE), JSON.stringify(map, null, 2) + '\n', 'utf8');
   return map;
@@ -12788,6 +12794,9 @@ export async function selftest(log = console.log) {
     ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'))[WD].Q2,
       'an ANSWERED question is refused (exit 1, nothing recorded) — a withdrawal is never an answer over the owner\'s word');
     rmSync(join(root, WD), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
+    // judge CH5 F2: the Russian pack carries its own form of each new text — a missing key falls back to English on an owner's page
+    ok(['withdrawnBadge', 'withdrawn', 'answeredNotWithdrawn'].every((k) => String(texts('ru').impl[k]('Q1', 'x', 'y', 'z')) !== String(texts('en').impl[k]('Q1', 'x', 'y', 'z'))),
+      'the Russian pack renders the three withdrawn texts in Russian (no English fallback on the owner\'s page)');
   }
   rmSync(join(root, IMPL), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
   // QL3 (#54): the reading view — live first, the settled and the text in one fold; nothing removed
@@ -13498,6 +13507,9 @@ const RU = {
     marked: (doc, q, where, file) => 'Факт «внесено» записан (I44): ' + doc + ' ' + q + ' → ' + where + ' → ' + file,
     gate: (doc, ids) => 'внесено, но открыто: ' + doc + ' ' + ids.join(', ') + ' → закрой статус (или впиши ответ); внесённый вопрос очередь второй раз не поднимет (I45)',
     badge: (where, date) => 'внесено → ' + where + ' (' + date + ')',
+    withdrawnBadge: (why, date) => 'снят — ' + why + ' (' + date + ')',
+    withdrawn: (doc, q, why, file) => 'Факт «снят» записан: ' + doc + ' ' + q + ' — ' + why + ' → ' + file + ' (вопрос стал беспредметным; это не ответ за владельца)',
+    answeredNotWithdrawn: (doc, q) => doc + ' ' + q + ' ОТВЕЧЕН владельцем — снять можно только открытый вопрос; ничего не записано',
     noSuch: (doc, q, ids) => 'в ' + doc + ' нет вопроса ' + q + ' — известны: ' + (ids.join(', ') || '(нет)'),
   },
   check: {

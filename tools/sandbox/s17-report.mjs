@@ -247,13 +247,18 @@ rmSync(join(S, STEPREF));
 // 2.8 CH4 (критерий 13; находка K-R3b): тикет, решённый ИСТОКОМ без issue (снятие, отгруженный фикс), — законное состояние покоя:
 // check молчит, report говорит «nothing to send» и gh не зовёт; ни доставкой, ни NOT YET оно не читается
 const RESOLVED = 'bugs/KAIF/12_resolved_in_origin.md';
-writeFileSync(join(S, RESOLVED), '# KAIF bug: resolved by the origin without an issue\n\nkaif-fp: sandbox :: fixture :: v2.8\n**Delivered upstream:** resolved in origin 2.8 — the feature was withdrawn\n\n## Symptom\n\nfixture\n');
+const FROM_VER = JSON.parse(readFileSync(join(S, '.kaif', 'kaif.json'), 'utf8').replace(/^\uFEFF/, '')).version;   // not newer than the deployment
+writeFileSync(join(S, RESOLVED), '# KAIF bug: resolved by the origin without an issue\n\nkaif-fp: sandbox :: fixture :: v2.8\n**Delivered upstream:** resolved in origin ' + FROM_VER + ' — the feature was withdrawn\n\n## Symptom\n\nfixture\n');
 const callsBeforeResolved = calls().length;
 r = run('check');
 ok(r.code === 0 && !/12_resolved_in_origin/.test(r.out), 's17/CH4: «resolved in origin» — check молчит (законное состояние покоя)', r.out.slice(-300));
 r = run(`report ${RESOLVED}`);
 ok(r.code === 0 && /resolved in the origin/.test(r.out) && /nothing to send/.test(r.out) && calls().length === callsBeforeResolved,
    's17/CH4: report на «resolved in origin» — «nothing to send», gh не зван', r.out.slice(-200));
+// судья CH5 F4: «resolved» молчит только с существом — версия не новее развёрнутой; «resolved in origin 9.9» на этом развёртывании назван
+writeFileSync(join(S, RESOLVED), '# KAIF bug: resolved by a release this tree has not got\n\nkaif-fp: sandbox :: fixture :: v2.8\n**Delivered upstream:** resolved in origin 9.9 — shipped later\n\n## Symptom\n\nfixture\n');
+r = run('check');
+ok(r.code === 0 && /KAIF signal resolved in origin 9\.9 — newer than this deployment/.test(r.out), 's17/CH5 F4: «resolved in origin 9.9» новее развёртывания — назван, не молчит', r.out.slice(-300));
 rmSync(join(S, RESOLVED));
 // 2.8 CH1 (plans/121, критерий 10; тикет origin #78): полевой отчёт обновления — сигнал KAIF, доставляется тем же движением, что
 // написан. Ось check читает отчёты 2.8+ тем же чтением строки доставки; отчёт 2.7 молчит — локальный по канону своего времени.
@@ -273,7 +278,8 @@ r = run('check');
 ok(r.code === 0 && !/field report/.test(r.out), 's17/CH1: после доставки check о полевом отчёте молчит', r.out.slice(-300));
 writeFileSync(join(S, FR), '# FIXTURE — KAIF 2.8 update report\n\n## 1. Chronology\n\nno delivery line\n');
 r = run('check');
-ok(r.code === 0 && /⚠ KAIF field report with no readable delivery state: reports\/KAIF_UPDATES\/FIXTURE_KAIF_2\.8_UPDATE_REPORT\.md — no `\*\*Delivered upstream:\*\*` line/.test(r.out),
+ok(r.code === 0 && /⚠ KAIF field report with no readable delivery state: reports\/KAIF_UPDATES\/FIXTURE_KAIF_2\.8_UPDATE_REPORT\.md — no `\*\*Delivered upstream:\*\*` line/.test(r.out)
+   && r.out.includes('open the report with an H1 and `**Delivered upstream:** NOT YET`, then run node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/FIXTURE_KAIF_2.8_UPDATE_REPORT.md'),
    's17/CH1: полевой отчёт 2.8 без строки доставки — назван «no readable delivery state» с формой строки и командой', r.out.slice(-400));
 writeFileSync(join(S, FR), '# FIXTURE — KAIF 2.8 update report\n\n**Delivered upstream:** NOT YET — written this update\n\n## 1. Chronology\n\nfixture\n');
 writeTicket(); setTracking('anonymous');

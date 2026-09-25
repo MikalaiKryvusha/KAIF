@@ -6,8 +6,10 @@
 // a suite that died in a setup step proves nothing and is BAD (budget-mutants, CK5.6).
 // Run it after touching the field-report block of framework/installer/KAIF-CORE.mjs or s17:   node tools/sandbox/probes/ch1-report-mutants.mjs
 // Needs a FRESH dist (rebuild first); runs s17 once per mutant — ALONE, not beside the polygon (origin bug 109). No window, no sound.
-// [TESTED: 2026-09-25 23:52:09 +03:00 · three mutants red exactly on their named addressees (2 · 1 · 1), no death; report
-//  testcases/reports/2026-09-25_ch1-field-report-delivered.md]
+// [TESTED: 2026-09-26 01:06 +03:00 · FOUR mutants after the CH epic judge (F1: CH4 changed the predicate M3 was anchored to — the probe said BAD 1 of 3;
+//  M3 re-anchored, M4 «resolved state dropped» added) — red exactly on their named addressees (2 · 1 · 1 · 3), no death; report
+//  testcases/reports/2026-09-26_ch5-judge-fixes.md.
+//  2026-09-25 23:52:09 +03:00 · three mutants (2 · 1 · 1) — true until CH4 (876caae); report testcases/reports/2026-09-25_ch1-field-report-delivered.md]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -26,9 +28,14 @@ const MUTANTS = [
     to: '    if (existsSync(FIELD_REPORTS)) {',
     expect: ['s17/SD: tracking: anonymous'] },
   { name: 'M3 the delivered branch dropped (a delivered report is still named)',
-    from: "        else if (ds.state !== 'delivered')\n          console.error(`⚠ KAIF field report with no readable",
-    to: "        else if (true)\n          console.error(`⚠ KAIF field report with no readable",
+    // re-anchored after CH4 added the resolved state to the same predicate (judge CH5 F1: the old anchor matched 0 times — BAD)
+    from: "        else if (ds.state !== 'delivered' && ds.state !== 'resolved')\n          console.error(`⚠ KAIF field report with no readable",
+    to: "        else if (ds.state !== 'resolved')\n          console.error(`⚠ KAIF field report with no readable",
     expect: ['s17/CH1: после доставки check о полевом отчёте молчит'] },
+  { name: 'M4 the resolved state dropped (a ticket the origin resolved without an issue reads as unreadable — CH4, criterion 13)',
+    from: "  if (!issue && !notYet && /\\bresolved in (?:the )?origin\\b/i.test(para)) return { state: 'resolved', line };",
+    to: '',
+    expect: ['s17/CH4: «resolved in origin» — check молчит', 's17/CH4: report на «resolved in origin»', 's17/CH5 F4: «resolved in origin 9.9»'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-ch1-mutants-'));

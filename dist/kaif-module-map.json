@@ -116,7 +116,7 @@
       {
         "signature": "### Languages — routed by AUDIENCE, never by directory",
         "class": "adaptive",
-        "sha256": "b20e8b6d9f39ecbef2c17a4759c0d161a1d14fe7e94b007d5a593c7f9f0258bd",
+        "sha256": "82c0df14bd881f9851342b24c24a59b8dc66f40d96b323fe759edc86eed9be0b",
         "lines": [
           434,
           470
@@ -233,7 +233,7 @@
       {
         "signature": "### The storefront — text a stranger reads",
         "class": "static",
-        "sha256": "d3bb0a73b1c53c32cc8fa58cc08d0237fa1006d0dc8f33d4bb8ad814b233c93b",
+        "sha256": "ad6abe9241f5b0bd3afc2c505a5616359fb215a78732599bb3f42d7500f57031",
         "lines": [
           653,
           759
@@ -4361,10 +4361,10 @@
       {
         "signature": "## Branch first — a defect of the FRAMEWORK itself, not the project",
         "class": "static",
-        "sha256": "fde3e2417f14e401f9194a2bb591a1a86bd067b664b0794b6c6ec607985c0e84",
+        "sha256": "a68caa9ed525039ceee59395b8f8d4ce937b6a44a24730f4924e5fae0bf533c2",
         "lines": [
           30,
-          80
+          81
         ]
       },
       {
@@ -4372,8 +4372,8 @@
         "class": "static",
         "sha256": "5fad3e0c969c75c0479a1f2b34969caa2375735a348830b13708a77ee80bfa18",
         "lines": [
-          81,
-          112
+          82,
+          113
         ]
       },
       {
@@ -4381,8 +4381,8 @@
         "class": "static",
         "sha256": "898a0522c90dec83f1e8b2f344cb70615303dbe1d31bebb3d8bba668a8a383bd",
         "lines": [
-          113,
-          137
+          114,
+          138
         ]
       },
       {
@@ -4390,8 +4390,8 @@
         "class": "adaptive",
         "sha256": "8a2f6e0c48555f32889af83279cddcb90cf1996b348134f96210bb37c94e9990",
         "lines": [
-          138,
-          196
+          139,
+          197
         ]
       },
       {
@@ -4399,8 +4399,8 @@
         "class": "static",
         "sha256": "cc9cd26c93d2bde53041a566ba46133ed7bc717fb1ab6b8585da808d5a37330c",
         "lines": [
-          197,
-          200
+          198,
+          201
         ]
       }
     ],
