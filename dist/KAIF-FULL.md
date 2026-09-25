@@ -6011,6 +6011,10 @@ A pointer that says "by the owner's word" without his words is a new finding; fi
 default scope is the seven knowledge directories plus the root `*.md`: if the trim moved text into a directory outside it, name
 that directory — `node .kaif/tools/kaif-attribution-lint.mjs check <dir>` — or the moved text is never read (2.8, epic CK; a field
 report: the trim of one STATUS added one such pointer, and the dossier it created lay outside the default scope).
+A deployment that never recorded the lint's baseline stops here on its INHERITED findings at its first closing (the update task's
+`closing-gates` item names them): record that debt ONCE — `node .kaif/tools/kaif-attribution-lint.mjs check --write-baseline` writes
+`.kaif/attribution-lint.baseline.json`; commit it. From then on only NEW findings stop the closing, and the baseline only shrinks
+(2.8, epic CK; measured on four field deployments: 11 to 151 inherited findings each).
 
 **Then the budget DOOR — after the trim, not instead of it:**
 
