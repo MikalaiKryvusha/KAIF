@@ -86,10 +86,11 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 
 ## 6. The call — sound first, voice by language
 
-Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen
-by the deployment language (`.kaif/kaif.json` → `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine
-not installed") and the contour drops to beeps + banner rather than speaking noise. The rich engine is a MACHINE resource reached through the environment
-(`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window may cross midnight.
+Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen by the deployment language (`.kaif/kaif.json` →
+`language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops to beeps + banner rather than speaking noise. The
+rich engine is a MACHINE resource reached through the environment (`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window
+may cross midnight. **The call names the calling session** when the project has more than one workspace («<owner>, this is <session>. …», `CALL · <session>:`, the window title; `KAIF_SESSION_NAME`,
+else the workspace directory) — and `review.mjs --call "<what is needed>" [--dry-run]` carries a request for the owner's hands outside a page (2.8, #95 · #98).
 
 ## 7. Faces and flags (the shipped generator)
 
@@ -101,13 +102,13 @@ not installed") and the contour drops to beeps + banner rather than speaking noi
 | mockup review (an image + comments) | `… <image> --mockup` | `kind: "mockup"` |
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
+| call the owner — hands or a quick answer (2.8) | `… --call "<what is needed>" [--dry-run]` | the phrase names the calling session; `--dry-run` — printed, no sound |
 | search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended |
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
-Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
-`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice
-addresses the owner and names the project; defaults `ownerName` / `projectName`), `contour.decisionsDir` (default `interviews/decisions`),
-`contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
+Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of
+AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults `ownerName` / `projectName`),
+`contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute
 

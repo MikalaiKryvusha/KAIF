@@ -866,36 +866,32 @@ architecture decisions without confirmation. Everything else — decide yourself
 and report in the chat. Rule of thumb: *is it cheap to reverse?* If yes — decide yourself; if it shapes
 brand/architecture/UX for the long term — interview.
 
-Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
-per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
-interpretation — after the archaeology search an interview question passes: `node .kaif/tools/contour/review.mjs --search "<question>"`
-(a question in ANY transport claims the matter is unsettled). Interviews are for vision-level forks that outlive the task.
+Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview: per fable-method Step 0, ask
+exactly **one pointed question** in the chat that states your recommended interpretation — after the archaeology search an interview
+question passes: `node .kaif/tools/contour/review.mjs --search "<question>"` (a question in ANY transport claims the matter is
+unsettled). Interviews are for vision-level forks that outlive the task. **When the work STOPS until the owner acts or answers** — a
+password, a cable, a device to unlock, a one-line answer — **CALL the owner:**
+`node .kaif/tools/contour/review.mjs --call "<what is needed>"` (sound → banner → voice, naming the calling session); a request left
+only in the chat is not delivered: the owner does not watch the chat while you work (2.8, origin issues #95 · #98).
 
-**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
-review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue
-document), never in the tail of a plan, research, or bug file. The one exception stays: the single
-pointed task-level question in chat (above). The rule gets broken even by agents that KNOW it — chat
-is cheaper in the moment — so a project that adopts the practice keeps a mechanical
-guard ("no unanswered questions outside interviews; every interview carries a status"; a guard of a
-text rule runs ~10 false hits per real one — exceptions are explicit, with the reason on the line),
-and a tool counts as ADOPTED only when a ritual contains the executable command that shows
-violations ("show all unanswered interviews"). The optional interactive contour on top (HTML render of an
-interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
-the transport (equivalence rule in `/interview`: HTML = md = chat). The contour records not only
-that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
-(`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
-has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
-(I42: questions to the owner are priority number ONE). **And
-every question and every answer option is a SCENARIO of what the owner will see** — Situation ·
-Action · Result · Check in the customer's language, the technical explanation UNDER it and never
-instead of it (`/interview` step 3a); a live
-question without the four lines is a guard finding, the declared exception is a marker with a
-reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
-language, never the agent's vocabulary**: in option labels and in
-the Situation · Action · Result lines every named thing is what the owner will see after it; epic codes,
-plan addresses, tool names, flags and canon terms live only in the Check line and in the technical note
-under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions
-guard, the declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
+**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a review, an approval, an answer — lives
+ONLY in `interviews/` (or an explicitly named decision-queue document), never in the tail of a plan, research, or bug file. The one
+exception stays: the single pointed task-level question in chat (above). The rule gets broken even by agents that KNOW it — chat is
+cheaper in the moment — so a project that adopts the practice keeps a mechanical guard ("no unanswered questions outside interviews;
+every interview carries a status"; a guard of a text rule runs ~10 false hits per real one — exceptions are explicit, with the reason
+on the line), and a tool counts as ADOPTED only when a ritual contains the executable command that shows violations ("show all
+unanswered interviews"). The optional interactive contour on top (HTML render of an interview, recorded one-click decisions) is
+`/owner-reviews`; an answer's force never depends on the transport (equivalence rule in `/interview`: HTML = md = chat). The contour
+records not only that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport (`/owner-reviews` I40) —
+and the queue command has an EXIT CONDITION: a waiting document the owner has never seen stops the ritual (`/resume` step 1b) until it
+is raised or the reason is written (I42: questions to the owner are priority number ONE). **And every question and every answer option
+is a SCENARIO of what the owner will see** — Situation · Action · Result · Check in the customer's language, the technical explanation
+UNDER it and never instead of it (`/interview` step 3a); a live question without the four lines is a guard finding, the declared
+exception is a marker with a reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
+language, never the agent's vocabulary**: in option labels and in the Situation · Action · Result lines every named thing is what the
+owner will see after it; epic codes, plan addresses, tool names, flags and canon terms live only in the Check line and in the
+technical note under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions guard, the
+declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
 
 **The agent's confusion is a sign to search, never to refuse.** An owner's proposal that seems to contradict a model, a rule or a test the agent
 holds is a proposal NOT YET UNDERSTOOD — never a wrong one. The order is the owner's, and search

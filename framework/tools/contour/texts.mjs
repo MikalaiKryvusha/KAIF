@@ -143,8 +143,13 @@ const EN = {
       (nWait ? ': questions without an answer ' + nWait : '') + '. The page is open.',
     proofread: (o, p, title) => o + ', ' + p + ' asks for proofreading: "' + title + '". The page is open.',
     mockup: (o, p, title) => o + ', ' + p + ' asks you to look at a mockup: "' + title + '". The page is open.',
+    from: (s) => 'this is ' + s, // OW4 (2.8, #98): «<owner>, this is <session>. …»
     parts: { docs: (n) => 'documents ' + n, questions: (n) => 'questions without an answer ' + n, notices: (n) => 'unread notices ' + n },
   },
+  // OW4 (2.8, #98): how the voice says a session's name — known words and numbers; an unknown word stays as written
+  spoken: { words: [], // pairs [written, spoken] — a dictionary, not a schema: the pack's array is taken whole
+    ones: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'],
+    tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'] },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
@@ -245,8 +250,18 @@ const RU = {
       (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.',
     proofread: (o, p, title) => o + ', ' + p + ' просит вычитку: «' + title + '». Страница открыта.',
     mockup: (o, p, title) => o + ', ' + p + ' просит отсмотреть макет: «' + title + '». Страница открыта.',
+    from: (s) => 'это ' + s, // OW4 (2.8, #98): «<владелец>, это <сессия>. …»
     parts: { docs: (n) => 'документов ' + n, questions: (n) => 'вопросов без ответа ' + n, notices: (n) => 'сообщений непрочитанных ' + n },
   },
+  // OW4 (2.8, #98): как голос произносит имя сессии — латиницу и цифры синтезатор читает плохо («dev2» → «дев два»)
+  spoken: { words: [['main', 'мейн'], ['dev', 'дев'], ['master', 'мастер'], ['test', 'тест'], ['tester', 'тестер'], ['qa', 'кью эй'], ['prod', 'прод'],
+    ['stage', 'стейдж'], ['staging', 'стейджинг'], ['review', 'ревью'], ['reviewer', 'ревьюер'], ['docs', 'докс'], ['doc', 'док'], ['feature', 'фича'],
+    ['fix', 'фикс'], ['hotfix', 'хотфикс'], ['ops', 'опс'], ['lead', 'лид'], ['manager', 'менеджер'], ['design', 'дизайн'], ['designer', 'дизайнер'],
+    ['ui', 'ю ай'], ['api', 'эй пи ай'], ['backend', 'бэкенд'], ['frontend', 'фронтенд'], ['bug', 'баг'], ['release', 'релиз'], ['team', 'тим'],
+    ['agent', 'агент'], ['writer', 'райтер'], ['analyst', 'аналитик']],
+    ones: ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать', 'тринадцать',
+      'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'],
+    tens: ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'] },
   list: { waits: (d) => 'ждёт ' + d + ' дн.', shown: (date, ago, t) => 'показан: ' + date + ' — ' + ago + ' дн. назад (' + t + ')',
     never: 'НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует', empty: 'Очередь владельца пуста — ждущих документов нет.',
     gate: (n) => 'ГЕЙТ (I42): ни разу не показанных — ' + n + '. Напечатать очередь ≠ донести вопрос; показ — действие агента.',

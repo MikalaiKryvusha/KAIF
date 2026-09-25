@@ -1309,36 +1309,32 @@ architecture decisions without confirmation. Everything else — decide yourself
 and report in the chat. Rule of thumb: *is it cheap to reverse?* If yes — decide yourself; if it shapes
 brand/architecture/UX for the long term — interview.
 
-Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview:
-per fable-method Step 0, ask exactly **one pointed question** in the chat that states your recommended
-interpretation — after the archaeology search an interview question passes: `node .kaif/tools/contour/review.mjs --search "<question>"`
-(a question in ANY transport claims the matter is unsettled). Interviews are for vision-level forks that outlive the task.
+Task-level ambiguity (which of two deliverables did the human mean *right now*) is NOT an interview: per fable-method Step 0, ask
+exactly **one pointed question** in the chat that states your recommended interpretation — after the archaeology search an interview
+question passes: `node .kaif/tools/contour/review.mjs --search "<question>"` (a question in ANY transport claims the matter is
+unsettled). Interviews are for vision-level forks that outlive the task. **When the work STOPS until the owner acts or answers** — a
+password, a cable, a device to unlock, a one-line answer — **CALL the owner:**
+`node .kaif/tools/contour/review.mjs --call "<what is needed>"` (sound → banner → voice, naming the calling session); a request left
+only in the chat is not delivered: the owner does not watch the chat while you work (2.8, origin issues #95 · #98).
 
-**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a
-review, an approval, an answer — lives ONLY in `interviews/` (or an explicitly named decision-queue
-document), never in the tail of a plan, research, or bug file. The one exception stays: the single
-pointed task-level question in chat (above). The rule gets broken even by agents that KNOW it — chat
-is cheaper in the moment — so a project that adopts the practice keeps a mechanical
-guard ("no unanswered questions outside interviews; every interview carries a status"; a guard of a
-text rule runs ~10 false hits per real one — exceptions are explicit, with the reason on the line),
-and a tool counts as ADOPTED only when a ritual contains the executable command that shows
-violations ("show all unanswered interviews"). The optional interactive contour on top (HTML render of an
-interview, recorded one-click decisions) is `/owner-reviews`; an answer's force never depends on
-the transport (equivalence rule in `/interview`: HTML = md = chat). The contour records not only
-that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport
-(`/owner-reviews` I40) — and the queue command has an EXIT CONDITION: a waiting document the owner
-has never seen stops the ritual (`/resume` step 1b) until it is raised or the reason is written
-(I42: questions to the owner are priority number ONE). **And
-every question and every answer option is a SCENARIO of what the owner will see** — Situation ·
-Action · Result · Check in the customer's language, the technical explanation UNDER it and never
-instead of it (`/interview` step 3a); a live
-question without the four lines is a guard finding, the declared exception is a marker with a
-reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
-language, never the agent's vocabulary**: in option labels and in
-the Situation · Action · Result lines every named thing is what the owner will see after it; epic codes,
-plan addresses, tool names, flags and canon terms live only in the Check line and in the technical note
-under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions
-guard, the declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
+**The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a review, an approval, an answer — lives
+ONLY in `interviews/` (or an explicitly named decision-queue document), never in the tail of a plan, research, or bug file. The one
+exception stays: the single pointed task-level question in chat (above). The rule gets broken even by agents that KNOW it — chat is
+cheaper in the moment — so a project that adopts the practice keeps a mechanical guard ("no unanswered questions outside interviews;
+every interview carries a status"; a guard of a text rule runs ~10 false hits per real one — exceptions are explicit, with the reason
+on the line), and a tool counts as ADOPTED only when a ritual contains the executable command that shows violations ("show all
+unanswered interviews"). The optional interactive contour on top (HTML render of an interview, recorded one-click decisions) is
+`/owner-reviews`; an answer's force never depends on the transport (equivalence rule in `/interview`: HTML = md = chat). The contour
+records not only that a question EXISTS and was ANSWERED but that it was SHOWN — when and by which transport (`/owner-reviews` I40) —
+and the queue command has an EXIT CONDITION: a waiting document the owner has never seen stops the ritual (`/resume` step 1b) until it
+is raised or the reason is written (I42: questions to the owner are priority number ONE). **And every question and every answer option
+is a SCENARIO of what the owner will see** — Situation · Action · Result · Check in the customer's language, the technical explanation
+UNDER it and never instead of it (`/interview` step 3a); a live question without the four lines is a guard finding, the declared
+exception is a marker with a reason on the line (a name — the taste class). **And the voice of the conversation is the customer's
+language, never the agent's vocabulary**: in option labels and in the Situation · Action · Result lines every named thing is what the
+owner will see after it; epic codes, plan addresses, tool names, flags and canon terms live only in the Check line and in the
+technical note under the scenario (`/interview` step 3a; the origin guards the class with axis G8 of the same questions guard, the
+declared exception — `<!-- questions-guard:vocabulary-ok <reason> -->`).
 
 **The agent's confusion is a sign to search, never to refuse.** An owner's proposal that seems to contradict a model, a rule or a test the agent
 holds is a proposal NOT YET UNDERSTOOD — never a wrong one. The order is the owner's, and search
@@ -5332,6 +5328,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Signal filed, not delivered (KAIF 2.7).** A KAIF-defect ticket in `bugs/KAIF/` on an origin-tracked deployment whose `Delivered upstream:` line does not prove delivery at the end of the work that filed it — it says NOT YET, promises ("being sent"), is missing or translated into the project language, or carries NOT YET beside an issue — or a report or a session close that says "filed", "awaiting the owner's word to send", "will deliver when told" — is a finding: filing IS delivering under the KAIF owner's standing authorization (the carve-out stands in the `AUTH:` gate's own line, `AGENT_GUIDE.md` → the fable loop; `/report-bug` step 3), and `node .kaif/kaif-core.mjs check` names every such ticket with the command (origin issue #65 — a recurrence of #37: two tickets waited ~40 minutes and one direct question of the owner for a second "send"; the agent's own cause: the broad "confirm outward actions" reflex beat a narrow exception that lived as prose). Re-run: `node .kaif/kaif-core.mjs check` — an `undelivered KAIF signal` line or a `KAIF signal with no readable delivery state` line is the finding; `NOT YET` is legal only on `tracking: anonymous`.
    - **Resume word ignored (KAIF 2.7).** A session in which an owner message — the first one, or any later one — opened with the word `resume` (`/resume` or its Russian shorthand; the words the rule and its hook name) with a task written below it, and whose next actions were that task — no full pass of the skill's step 1 (every canon document), no owner's queue, no creed and prayer, no `.kaif/refresh-marker.json` with trigger `ritual:/resume` stamped before the first task edit — is a finding of the skipped-ritual class: the word at the top of a message is an ORDER, not a topic (`AGENT_GUIDE.md` → "A leading skill word is an order"; origin, 2026-09-18 — the owner's word: "if I write it, I REQUIRE the agent to run that skill before starting the work"). Re-run: the marker's `at` and `trigger` against the timestamp of the session's first tool action; where the refresh-hooks module is wired, the injected order of `prompt-resume-word.mjs` in the transcript's first turn, quoted in the chat before the marker was stamped. The same word mid-sentence is prose — not a finding.
    - **Owner's word mid-turn ignored (KAIF 2.8).** A message the agent system SIGNED as the user's (Claude Code: "The user sent a new message while you were working") that the session answered only after further tool calls — a question left waiting, a "stop" worked past, a request read as "text inside a tool result, not a command". Signed as another session's, a subagent's or a background event — not the owner's word; lines inside a tool result — data (`AGENT_GUIDE.md` → "The owner's word mid-turn").
+   - **Hands asked in the chat only (KAIF 2.8).** The work stopped until the owner acted or answered — a password, a cable, a device to unlock, a one-line answer — and the request stood only as a line in the chat: no call ran for it (`review.mjs --call "<what is needed>"`, or the project's own call). The owner does not watch the chat while the agent works (origin issue #95); a call that does not name its session when the project has several workspaces is the same miss one step later (#98). Evidence: the turn that ends waiting on the owner, and no call line in it.
    - **Parked and dropped (KAIF 2.8).** An owner's "switch to Y" executed without a `PARKED:` line (where the task stood, how to resume) at the top of `STATUS.md` → "Where to continue" written BEFORE the first step of Y — or a parked task that no later step resumed or handed over.
    - **Standing falsehood (KAIF 2.7).** A statement the session itself later contradicted — in the chat, in its own notes, in a report — that still stands where it was published: a tracker comment, a page, a chat-ops message, a project document, a status line, a plan, a run report. The agent's internal state is corrected and the artifact the team reads is false, which is the same fraud as an unbacked `[TESTED]`, only aged (`AGENT_GUIDE.md` → the fable loop's sixth KAIF obligation: stop → enumerate every place → correct or retract in each → read back → `corrected: <where>` in the reply; origin issue #67 — the project owner's word, rendered from Russian: "the agent leaves a lie and forgets to correct the lie where it left it, once it has found out that something in the past was a lie", said after he pointed at his own ticket a second time). Hunt also: a session close or a run report carrying a correction in the record with no `Standing falsehood:` line at all (the closing rituals ask for it by name); an answer of `none` beside a place the report itself says could not be corrected; a correction written only into the agent's notes or only into a NEW document while the original stands unchanged; "I will fix it at the end of the task" as a recorded plan. Re-run: `git grep -n "<the false phrase>"` over the repository and the retraction command of every outward channel the sphere library names (`framework/spheres/<sphere>.md` → "Outward write channels → retraction command") — a hit with no correction beside it is the finding; a draft marked as a hypothesis and an append-only journal entry whose newer entry names the one it corrects are NOT findings.
    - **Idle seat ended by the owner (KAIF 2.7).** In a deployed TEAM (more than one role window open), a seat that closed its task — committed, reported, and has no next assignment — and ended its turn WITHOUT one message to the Manager naming *what is done · what remains · which candidates it can take, by name from `STATUS.md` or the board* ("I am free, may I take X / Y / Z"), or whose board row went `🟢 free` carrying no request, is a finding: the constitution makes the announcement an obligation with an exit condition, not a courtesy, and an idle the OWNER had to end is the defect itself (`TEAM_CONSTITUTION.md` § 2 rule 6 and § 4; origin issue #68 — a field seat finished its half of a smoke, reported, and stopped while `STATUS.md` listed three tickets "claimed by nobody" and a second seat sat idle; the owner's word ended it). The failure state is silent and looks correct — a finished, committed, reported seat is indistinguishable from a working one, to itself — so hunt it in the RECORD, not in the mood: an owner's message of the "why are you idle / take a task" family with no free-announcement before it; a report that ends at "done" with no candidates named; a board row `free` with an empty request cell; a seat whose last outgoing message predates the owner's by more than one turn. Re-run: read the board and the seat's outgoing messages in order — the announcement either precedes the owner's word or it does not exist. A single session in the main copy is NOT in scope: the constitution binds only while more than one role window is open.
@@ -7039,6 +7036,13 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   browser refuses, the page honestly says "please close me" — never a silent "hangs as it was".
 - **I28. The voice call by name is the DEFAULT level,** not an option for the brave: a voice built
   but switched off by a setting exists only on paper.
+- **I28b. The call names the caller** (2.8, origin issue #98: a field owner with three windows of one project could not tell which
+  one called). With more than one workspace of the project (a `/team-deployment` team, parallel worktrees) every call — the voice,
+  the console banner `CALL · <session>:`, the page window's title — names the calling session right after the owner: «<owner>, this
+  is <session>. …». The name is derived, never typed per call: `KAIF_SESSION_NAME`, else the workspace directory
+  (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name; spoken by the language pack
+  (`dev2` → «dev two»). A request for the owner's hands or a quick answer outside a page goes by the same call —
+  `review.mjs --call "<what is needed>"` (`--dry-run` prints it without sound) — never as a line left in the chat (origin issue #95).
 - **I29. One document — one window.** A lock with pid and address; a second launch prints the live
   address and exits. Two windows are two calls AND two different drafts — the port is part of the
   web origin, so a draft written in one window is invisible to the other.
@@ -8848,7 +8852,8 @@ Output: a short analysis note (a plan or research doc per project convention). N
    the pattern): the project prefix keeps team windows distinguishable from other projects on
    the same machine, the `team` infix marks the window as a team seat at a glance, the suffix
    names the seat. Build the workplace tool to the contract in the constitution template
-   (create / list / reset-from-main / remove).
+   (create / list / reset-from-main / remove). Each workspace CALLS the owner under its seat's name — the contour derives it from
+   the directory (`<role>`; `KAIF_SESSION_NAME` overrides), so a call says which seat needs the owner (2.8, `/owner-reviews` I28b).
 4. **Role instructions.** For each seat, prepare the manager's briefing message from the role
    contract: you are <Role> · your zone · read the constitution in full · run the project's
    resume ritual on a FRESH main · announce yourself on the board · report readiness.
@@ -10326,6 +10331,24 @@ export function ownerFromIdentityTable(root) {
  * The contour configuration of a project root. Every field has a derived default; `.kaif/kaif.json`
  * may override any of them under `contour: { … }`. Nothing here asks a human.
  */
+// OW4 (2.8, origin issues #95 · #98): the CALLING SESSION's name — with several workspaces of one project the owner hears which window
+// calls. Derived, never typed per call: KAIF_SESSION_NAME wins; a linked workspace (its .git is a FILE) is named by its directory
+// (`<project>-team-<role>` → `<role>`, the /team-deployment naming invariant); the main copy is "main" when other workspaces exist (its
+// .git/worktrees/ lists them); one workspace → no name (nothing to tell apart). Read from the file system — no git program is started.
+// [TESTED: 2026-09-25 20:15–20:24 · selftest: a linked workspace → its role, the main copy with others → main, one workspace → none, the env
+//  var wins; on the origin (8 worktrees) → «main»; s22 F on two deployed workspaces; mutant «the workspace not read» red exactly on its case;
+//  report testcases/reports/2026-09-25_ow4-call-names-session.md]
+export function sessionName(root, env = process.env) {
+  const own = String(env.KAIF_SESSION_NAME || '').trim();
+  if (own) return own;
+  const dotGit = resolve(root, '.git');
+  let st;
+  try { st = statSync(dotGit); } catch { return null; }
+  if (st.isFile()) { const base = basename(resolve(root)); const m = base.match(/-team-(.+)$/u); return m ? m[1] : base; }
+  if (!st.isDirectory()) return null;
+  try { return readdirSync(resolve(dotGit, 'worktrees')).length > 0 ? 'main' : null; } catch { return null; }
+}
+
 export function loadContourConfig(root) {
   const marker = readJson(resolve(root, KAIF_JSON)) || {};
   const c = (marker.contour && typeof marker.contour === 'object') ? marker.contour : {};
@@ -10341,6 +10364,7 @@ export function loadContourConfig(root) {
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
     closeQuietMs: Number(c.closeQuietMs) > 0 ? Number(c.closeQuietMs) : null, // LP (2.7, #66): `--close` refuses while the owner typed less than this ago (default in the generator: 180 s)
     markerFound: existsSync(resolve(root, KAIF_JSON)),
+    session: sessionName(root), // OW4 (2.8): the calling session — named in every call and in the page window's title
   };
 }
 
@@ -11012,6 +11036,7 @@ import {
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
   archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
+  sessionName, // OW4 (2.8, #95 · #98): the calling session's name
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
@@ -11067,7 +11092,7 @@ const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
 // the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
-const KNOWN_FLAGS = ['--search', '--wait', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
+const KNOWN_FLAGS = ['--search', '--wait', '--call', '--dry-run', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
   '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
   '--where', '--close', '--force', '--owner-word'];
 const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
@@ -11086,8 +11111,39 @@ const relDoc = (root, docPath) => relative(root, resolve(root, docPath)).replace
 const decisionsAbs = (root, cfg = cfgOf(root)) => resolve(root, cfg.decisionsDir);
 const esc = (s) => String(s).replace(/</g, '&lt;');
 
+// OW4 (2.8, #98): the session's name as the voice says it — the language pack's words and numbers ("dev2" → "dev two"; the Russian
+// pack has its own word for "dev" and "main"); an unknown word stays as written
+export function spokenSession(name, cfg) {
+  const sp = T(cfg).spoken || {}, ones = sp.ones || [], tens = sp.tens || [], words = new Map(sp.words || []);
+  const num = (n) => (n < 20 && ones[n] ? ones[n]
+    : n < 100 && tens[Math.floor(n / 10)] ? tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '')
+      : String(n).split('').map((d) => ones[Number(d)] || d).join(' '));
+  return String(name).split(/[-_\s.]+/u).filter(Boolean).flatMap((part) => part.match(/\d+|\D+/gu) || [])
+    .map((tok) => (/^\d+$/u.test(tok) ? num(Number(tok)) : (words.get(tok.toLowerCase()) || tok))).join(' ');
+}
+// OW4 (2.8, #98): «<owner>, this is <session>. …» — the calling session right after the owner's name, in every call; no session, no change
+// [TESTED: 2026-09-25 20:15–20:24 · selftest «this is dev two»; the origin's dry run named «main» in the Russian pack's words; s22 F — «dev two» /
+//  «main» in the Russian pack on two deployed workspaces; mutant «the name removed» red exactly on its case; report testcases/reports/2026-09-25_ow4-call-names-session.md]
+export function introduce(phrase, cfg) {
+  if (!cfg.session) return phrase;
+  const intro = T(cfg).call.from(spokenSession(cfg.session, cfg)), head = cfg.callName + ', ';
+  if (!phrase.startsWith(head)) return intro + '. ' + phrase;
+  const rest = phrase.slice(head.length);
+  return head + intro + '. ' + rest.charAt(0).toUpperCase() + rest.slice(1);
+}
+// OW4 (2.8, #95): the owner's hands or a quick answer outside a page — the CALL, never a line left in the chat he does not watch while the
+// agent works; `dryRun` prints the phrase and the banner and makes no sound
+export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
+  const cfg = cfgOf(root);
+  const phrase = introduce(cfg.callName + ', ' + String(text).trim(), cfg);
+  if (dryRun) { log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase); return phrase; }
+  signalCall(root, phrase, { log });
+  return phrase;
+}
+
 // ── The call phrase — a PURE function (its content is judged by the selftest, not by ear) ─────
-export function callPhrase(ctx, cfg) {
+export function callPhrase(ctx, cfg) { return introduce(callPhraseBare(ctx, cfg), cfg); } // OW4: the session named in every call
+function callPhraseBare(ctx, cfg) {
   const t = T(cfg), o = cfg.callName, p = cfg.spokenProjectName; // the voice says the spoken form
   if (ctx.notice) return t.call.notice(o, p, ctx.title);
   if (ctx.batch) {
@@ -11108,7 +11164,7 @@ export function callPhrase(ctx, cfg) {
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
   const isQuiet = quiet === null ? inQuietHours(new Date(), cfg.quietFrom, cfg.quietTo) : quiet;
-  log('CALL: ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it
+  log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
   const phrase = rawPhrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(); // no markup in speech
   if (isQuiet) { log('Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
   const voice = () => {
@@ -11851,7 +11907,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   const langNote = t.fallbackFrom ? '<span class="langnote">' + esc(t.head.langFallback(t.fallbackFrom)) + '</span>' : '';
 
   return '<!doctype html>\n<html lang="' + esc(cfg.language) + '"><head><meta charset="utf-8">' +
-    '<title>' + esc(cfg.projectName) + ' · ' + esc(title) + '</title>' +
+    '<title>' + esc(cfg.projectName) + ' · ' + esc(title) + (cfg.session ? ' · ' + esc(cfg.session) : '') + '</title>' + // OW4: which workspace's window
     '<link rel="icon" href="data:,"><style>' + css + '</style></head><body>' +
     '<header><span class="project">' + esc(cfg.projectName) + '</span>' + heading + langNote + '</header>' + // P9
     '<div id="banner"></div><div id="tabnote"></div><main>' + main +
@@ -12751,6 +12807,28 @@ export async function selftest(log = console.log) {
   ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
     'call phrase: the owner\'s name, the project, the class and both numbers');
   ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }, cfg).includes('notices'), 'call phrase: no notices — no mention of them');
+  { // OW4 (2.8, origin issues #95 · #98): the calling session is named — derived from the workspace, spoken in the deployment language
+    const ws = (name, dotGit) => { const d = join(root, 'ws', name); mkdirSync(d, { recursive: true }); if (dotGit === 'file') writeFileSync(join(d, '.git'), 'gitdir: x\n');
+      else if (dotGit) { mkdirSync(join(d, '.git', dotGit === 'main+' ? 'worktrees/probe-team-dev2' : 'objects'), { recursive: true }); } return d; };
+    ok(sessionName(ws('probe-team-dev2', 'file'), {}) === 'dev2' && sessionName(ws('probe', 'main+'), {}) === 'main' && sessionName(ws('solo', 'main'), {}) === null
+      && sessionName(ws('none', null), {}) === null && sessionName(ws('solo2', 'main'), { KAIF_SESSION_NAME: 'reviewer' }) === 'reviewer',
+      'session name: a linked workspace <project>-team-dev2 → dev2 · the main copy with others → main · one workspace → none · KAIF_SESSION_NAME wins (OW4, #98)');
+    const ru = { ...cfg, language: 'ru' }, sp = T(ru).spoken;
+    ok(spokenSession('dev2', cfg) === 'dev two' && spokenSession('dev12', cfg) === 'dev twelve' && spokenSession('dev2', ru) === new Map(sp.words).get('dev') + ' ' + sp.ones[2]
+      && spokenSession('main', ru) === new Map(sp.words).get('main') && spokenSession('qa-lead', cfg) === 'qa lead',
+      'session name, spoken: dev2 → "dev two" · dev12 → "dev twelve" · the Russian pack\'s words and numbers (OW4, #98)');
+    const named = { ...cfg, session: 'dev2' };
+    ok(callPhrase({ notice: true, title: 'Report' }, named).startsWith('Jane Owner aka JO, this is dev two. A Probe Project notice')
+      && callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice'),
+      'call phrase: «<owner>, this is dev two. …» when the session is named; unchanged when there is one workspace (OW4, #98)');
+    ok(pageShell(named, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T · dev2</title>')
+      && pageShell(cfg, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T</title>'),
+      'page window title: « · dev2» when the session is named (OW4, #98)');
+    const dl = []; const dp = callDoor(root, 'the test phone needs unlocking', { dryRun: true, log: (l) => dl.push(l) });
+    ok(dp === 'Jane Owner aka JO, the test phone needs unlocking' && dl.length === 1 && /^CALL \(dry run, no sound\): Jane Owner aka JO, the test phone/.test(dl[0]),
+      'call door --dry-run: the phrase and the banner line printed, no sound; one workspace — no session named (OW4, #95)');
+    rmSync(join(root, 'ws'), { recursive: true, force: true });
+  }
 
   { // OW6 (2.8, the KAIF owner's word — answers are saved one at a time in every project). (1) The decision MERGES the records of one
   // page (its rev = the revision the previous record left); a record of another revision starts a new decision; the archive keeps each.
@@ -12832,7 +12910,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
   // LP (2.7, #66; the core's bug-33 rule): an unknown flag REFUSES before any page, sound or call. The 2.6 generator let
   // `--close` fall through to the show — a page and a voice call for a flag nobody meant.
-  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word'];
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word', '--call', '--search'];
   const unknown = args.filter((a, i) => a.startsWith('--') && !KNOWN_FLAGS.includes(a) && !valueFlags.includes(args[i - 1]));
   if (unknown.length) {
     console.error('✖ unknown flag' + (unknown.length > 1 ? 's' : '') + ': ' + unknown.join(' ') + ' — refusing BEFORE any page, sound or call (bug 33: a silently ignored flag shows something you did not ask for). Known flags: ' + KNOWN_FLAGS.join(' '));
@@ -12858,6 +12936,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' --queue [--include-stale] | --queue --list | --enqueue <doc.md> [--notice] | --selftest\n' +
       '       ' + CLI_NAME + ' --mark-shown <doc.md> [--transport chat]\n' +
       '       ' + CLI_NAME + ' --wait [<doc.md>]      (the waiter: exit 0 on the next recorded answer, 2 when the contour ended without one)\n' +
+      '       ' + CLI_NAME + ' --call "<what is needed>" [--dry-run]   (call the owner — hands or a quick answer; names the calling session)\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
       '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
       'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
@@ -12867,6 +12946,12 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const cfg = cfgOf(root);
   if (!cfg.markerFound) console.log('note: no .kaif/kaif.json here — defaults in use (project "' + cfg.projectName + '", owner "' + cfg.ownerName + '", language ' + cfg.language + ').');
   if (args.includes('--selftest')) { selftest().then(() => process.exit(0)); return; }
+  if (args.includes('--call')) { // OW4 (2.8, #95 · #98): the owner's hands or a quick answer — the CALL, naming the calling session
+    const text = opt('--call');
+    if (!text) usage();
+    callDoor(root, text, { dryRun: args.includes('--dry-run') });
+    return; // the voice runs in a child process; this one ends when it does
+  }
   if (args.includes('--wait')) { // OW6 (2.8): the waiter — started by the agent next to a live page; ends on the next recorded answer
     waitForRecord(root, docPath || null).then((code) => { process.exitCode = code; });
     return;
@@ -13128,8 +13213,13 @@ const EN = {
       (nWait ? ': questions without an answer ' + nWait : '') + '. The page is open.',
     proofread: (o, p, title) => o + ', ' + p + ' asks for proofreading: "' + title + '". The page is open.',
     mockup: (o, p, title) => o + ', ' + p + ' asks you to look at a mockup: "' + title + '". The page is open.',
+    from: (s) => 'this is ' + s, // OW4 (2.8, #98): «<owner>, this is <session>. …»
     parts: { docs: (n) => 'documents ' + n, questions: (n) => 'questions without an answer ' + n, notices: (n) => 'unread notices ' + n },
   },
+  // OW4 (2.8, #98): how the voice says a session's name — known words and numbers; an unknown word stays as written
+  spoken: { words: [], // pairs [written, spoken] — a dictionary, not a schema: the pack's array is taken whole
+    ones: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'],
+    tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'] },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
@@ -13230,8 +13320,18 @@ const RU = {
       (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.',
     proofread: (o, p, title) => o + ', ' + p + ' просит вычитку: «' + title + '». Страница открыта.',
     mockup: (o, p, title) => o + ', ' + p + ' просит отсмотреть макет: «' + title + '». Страница открыта.',
+    from: (s) => 'это ' + s, // OW4 (2.8, #98): «<владелец>, это <сессия>. …»
     parts: { docs: (n) => 'документов ' + n, questions: (n) => 'вопросов без ответа ' + n, notices: (n) => 'сообщений непрочитанных ' + n },
   },
+  // OW4 (2.8, #98): как голос произносит имя сессии — латиницу и цифры синтезатор читает плохо («dev2» → «дев два»)
+  spoken: { words: [['main', 'мейн'], ['dev', 'дев'], ['master', 'мастер'], ['test', 'тест'], ['tester', 'тестер'], ['qa', 'кью эй'], ['prod', 'прод'],
+    ['stage', 'стейдж'], ['staging', 'стейджинг'], ['review', 'ревью'], ['reviewer', 'ревьюер'], ['docs', 'докс'], ['doc', 'док'], ['feature', 'фича'],
+    ['fix', 'фикс'], ['hotfix', 'хотфикс'], ['ops', 'опс'], ['lead', 'лид'], ['manager', 'менеджер'], ['design', 'дизайн'], ['designer', 'дизайнер'],
+    ['ui', 'ю ай'], ['api', 'эй пи ай'], ['backend', 'бэкенд'], ['frontend', 'фронтенд'], ['bug', 'баг'], ['release', 'релиз'], ['team', 'тим'],
+    ['agent', 'агент'], ['writer', 'райтер'], ['analyst', 'аналитик']],
+    ones: ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать', 'тринадцать',
+      'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'],
+    tens: ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'] },
   list: { waits: (d) => 'ждёт ' + d + ' дн.', shown: (date, ago, t) => 'показан: ' + date + ' — ' + ago + ' дн. назад (' + t + ')',
     never: 'НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует', empty: 'Очередь владельца пуста — ждущих документов нет.',
     gate: (n) => 'ГЕЙТ (I42): ни разу не показанных — ' + n + '. Напечатать очередь ≠ донести вопрос; показ — действие агента.',
@@ -17811,10 +17911,11 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 
 ## 6. The call — sound first, voice by language
 
-Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen
-by the deployment language (`.kaif/kaif.json` → `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine
-not installed") and the contour drops to beeps + banner rather than speaking noise. The rich engine is a MACHINE resource reached through the environment
-(`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window may cross midnight.
+Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen by the deployment language (`.kaif/kaif.json` →
+`language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops to beeps + banner rather than speaking noise. The
+rich engine is a MACHINE resource reached through the environment (`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window
+may cross midnight. **The call names the calling session** when the project has more than one workspace («<owner>, this is <session>. …», `CALL · <session>:`, the window title; `KAIF_SESSION_NAME`,
+else the workspace directory) — and `review.mjs --call "<what is needed>" [--dry-run]` carries a request for the owner's hands outside a page (2.8, #95 · #98).
 
 ## 7. Faces and flags (the shipped generator)
 
@@ -17826,13 +17927,13 @@ not installed") and the contour drops to beeps + banner rather than speaking noi
 | mockup review (an image + comments) | `… <image> --mockup` | `kind: "mockup"` |
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
+| call the owner — hands or a quick answer (2.8) | `… --call "<what is needed>" [--dry-run]` | the phrase names the calling session; `--dry-run` — printed, no sound |
 | search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended |
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
-Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name),
-`contour.ownerName` (default: the owner row of AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice
-addresses the owner and names the project; defaults `ownerName` / `projectName`), `contour.decisionsDir` (default `interviews/decisions`),
-`contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
+Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of
+AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults `ownerName` / `projectName`),
+`contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute
 

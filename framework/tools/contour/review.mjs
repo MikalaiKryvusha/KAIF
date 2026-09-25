@@ -50,6 +50,7 @@ import {
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
   archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
+  sessionName, // OW4 (2.8, #95 · #98): the calling session's name
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
@@ -105,7 +106,7 @@ const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
 // the 2.6 generator passed `--close` through to the show and raised the page — with the owner's voice call behind it.
-const KNOWN_FLAGS = ['--search', '--wait', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
+const KNOWN_FLAGS = ['--search', '--wait', '--call', '--dry-run', '--no-serve', '--no-open', '--silent', '--timeout', '--check', '--notice', '--proofread', '--mockup',
   '--queue', '--list', '--include-stale', '--enqueue', '--selftest', '--mark-shown', '--transport', '--mark-implemented',
   '--where', '--close', '--force', '--owner-word'];
 const EXIT_UNKNOWN_FLAG = 1;          // same code as the core and the loader (bugs/33): a usage error, never a show
@@ -124,8 +125,39 @@ const relDoc = (root, docPath) => relative(root, resolve(root, docPath)).replace
 const decisionsAbs = (root, cfg = cfgOf(root)) => resolve(root, cfg.decisionsDir);
 const esc = (s) => String(s).replace(/</g, '&lt;');
 
+// OW4 (2.8, #98): the session's name as the voice says it — the language pack's words and numbers ("dev2" → "dev two"; the Russian
+// pack has its own word for "dev" and "main"); an unknown word stays as written
+export function spokenSession(name, cfg) {
+  const sp = T(cfg).spoken || {}, ones = sp.ones || [], tens = sp.tens || [], words = new Map(sp.words || []);
+  const num = (n) => (n < 20 && ones[n] ? ones[n]
+    : n < 100 && tens[Math.floor(n / 10)] ? tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '')
+      : String(n).split('').map((d) => ones[Number(d)] || d).join(' '));
+  return String(name).split(/[-_\s.]+/u).filter(Boolean).flatMap((part) => part.match(/\d+|\D+/gu) || [])
+    .map((tok) => (/^\d+$/u.test(tok) ? num(Number(tok)) : (words.get(tok.toLowerCase()) || tok))).join(' ');
+}
+// OW4 (2.8, #98): «<owner>, this is <session>. …» — the calling session right after the owner's name, in every call; no session, no change
+// [TESTED: 2026-09-25 20:15–20:24 · selftest «this is dev two»; the origin's dry run named «main» in the Russian pack's words; s22 F — «dev two» /
+//  «main» in the Russian pack on two deployed workspaces; mutant «the name removed» red exactly on its case; report testcases/reports/2026-09-25_ow4-call-names-session.md]
+export function introduce(phrase, cfg) {
+  if (!cfg.session) return phrase;
+  const intro = T(cfg).call.from(spokenSession(cfg.session, cfg)), head = cfg.callName + ', ';
+  if (!phrase.startsWith(head)) return intro + '. ' + phrase;
+  const rest = phrase.slice(head.length);
+  return head + intro + '. ' + rest.charAt(0).toUpperCase() + rest.slice(1);
+}
+// OW4 (2.8, #95): the owner's hands or a quick answer outside a page — the CALL, never a line left in the chat he does not watch while the
+// agent works; `dryRun` prints the phrase and the banner and makes no sound
+export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
+  const cfg = cfgOf(root);
+  const phrase = introduce(cfg.callName + ', ' + String(text).trim(), cfg);
+  if (dryRun) { log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase); return phrase; }
+  signalCall(root, phrase, { log });
+  return phrase;
+}
+
 // ── The call phrase — a PURE function (its content is judged by the selftest, not by ear) ─────
-export function callPhrase(ctx, cfg) {
+export function callPhrase(ctx, cfg) { return introduce(callPhraseBare(ctx, cfg), cfg); } // OW4: the session named in every call
+function callPhraseBare(ctx, cfg) {
   const t = T(cfg), o = cfg.callName, p = cfg.spokenProjectName; // the voice says the spoken form
   if (ctx.notice) return t.call.notice(o, p, ctx.title);
   if (ctx.batch) {
@@ -146,7 +178,7 @@ export function callPhrase(ctx, cfg) {
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
   const isQuiet = quiet === null ? inQuietHours(new Date(), cfg.quietFrom, cfg.quietTo) : quiet;
-  log('CALL: ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it
+  log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
   const phrase = rawPhrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(); // no markup in speech
   if (isQuiet) { log('Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
   const voice = () => {
@@ -889,7 +921,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   const langNote = t.fallbackFrom ? '<span class="langnote">' + esc(t.head.langFallback(t.fallbackFrom)) + '</span>' : '';
 
   return '<!doctype html>\n<html lang="' + esc(cfg.language) + '"><head><meta charset="utf-8">' +
-    '<title>' + esc(cfg.projectName) + ' · ' + esc(title) + '</title>' +
+    '<title>' + esc(cfg.projectName) + ' · ' + esc(title) + (cfg.session ? ' · ' + esc(cfg.session) : '') + '</title>' + // OW4: which workspace's window
     '<link rel="icon" href="data:,"><style>' + css + '</style></head><body>' +
     '<header><span class="project">' + esc(cfg.projectName) + '</span>' + heading + langNote + '</header>' + // P9
     '<div id="banner"></div><div id="tabnote"></div><main>' + main +
@@ -1789,6 +1821,28 @@ export async function selftest(log = console.log) {
   ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
     'call phrase: the owner\'s name, the project, the class and both numbers');
   ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }, cfg).includes('notices'), 'call phrase: no notices — no mention of them');
+  { // OW4 (2.8, origin issues #95 · #98): the calling session is named — derived from the workspace, spoken in the deployment language
+    const ws = (name, dotGit) => { const d = join(root, 'ws', name); mkdirSync(d, { recursive: true }); if (dotGit === 'file') writeFileSync(join(d, '.git'), 'gitdir: x\n');
+      else if (dotGit) { mkdirSync(join(d, '.git', dotGit === 'main+' ? 'worktrees/probe-team-dev2' : 'objects'), { recursive: true }); } return d; };
+    ok(sessionName(ws('probe-team-dev2', 'file'), {}) === 'dev2' && sessionName(ws('probe', 'main+'), {}) === 'main' && sessionName(ws('solo', 'main'), {}) === null
+      && sessionName(ws('none', null), {}) === null && sessionName(ws('solo2', 'main'), { KAIF_SESSION_NAME: 'reviewer' }) === 'reviewer',
+      'session name: a linked workspace <project>-team-dev2 → dev2 · the main copy with others → main · one workspace → none · KAIF_SESSION_NAME wins (OW4, #98)');
+    const ru = { ...cfg, language: 'ru' }, sp = T(ru).spoken;
+    ok(spokenSession('dev2', cfg) === 'dev two' && spokenSession('dev12', cfg) === 'dev twelve' && spokenSession('dev2', ru) === new Map(sp.words).get('dev') + ' ' + sp.ones[2]
+      && spokenSession('main', ru) === new Map(sp.words).get('main') && spokenSession('qa-lead', cfg) === 'qa lead',
+      'session name, spoken: dev2 → "dev two" · dev12 → "dev twelve" · the Russian pack\'s words and numbers (OW4, #98)');
+    const named = { ...cfg, session: 'dev2' };
+    ok(callPhrase({ notice: true, title: 'Report' }, named).startsWith('Jane Owner aka JO, this is dev two. A Probe Project notice')
+      && callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice'),
+      'call phrase: «<owner>, this is dev two. …» when the session is named; unchanged when there is one workspace (OW4, #98)');
+    ok(pageShell(named, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T · dev2</title>')
+      && pageShell(cfg, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T</title>'),
+      'page window title: « · dev2» when the session is named (OW4, #98)');
+    const dl = []; const dp = callDoor(root, 'the test phone needs unlocking', { dryRun: true, log: (l) => dl.push(l) });
+    ok(dp === 'Jane Owner aka JO, the test phone needs unlocking' && dl.length === 1 && /^CALL \(dry run, no sound\): Jane Owner aka JO, the test phone/.test(dl[0]),
+      'call door --dry-run: the phrase and the banner line printed, no sound; one workspace — no session named (OW4, #95)');
+    rmSync(join(root, 'ws'), { recursive: true, force: true });
+  }
 
   { // OW6 (2.8, the KAIF owner's word — answers are saved one at a time in every project). (1) The decision MERGES the records of one
   // page (its rev = the revision the previous record left); a record of another revision starts a new decision; the archive keeps each.
@@ -1870,7 +1924,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
   // LP (2.7, #66; the core's bug-33 rule): an unknown flag REFUSES before any page, sound or call. The 2.6 generator let
   // `--close` fall through to the show — a page and a voice call for a flag nobody meant.
-  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word'];
+  const valueFlags = ['--timeout', '--transport', '--mark-shown', '--mark-implemented', '--where', '--owner-word', '--call', '--search'];
   const unknown = args.filter((a, i) => a.startsWith('--') && !KNOWN_FLAGS.includes(a) && !valueFlags.includes(args[i - 1]));
   if (unknown.length) {
     console.error('✖ unknown flag' + (unknown.length > 1 ? 's' : '') + ': ' + unknown.join(' ') + ' — refusing BEFORE any page, sound or call (bug 33: a silently ignored flag shows something you did not ask for). Known flags: ' + KNOWN_FLAGS.join(' '));
@@ -1896,6 +1950,7 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
       '       ' + CLI_NAME + ' --queue [--include-stale] | --queue --list | --enqueue <doc.md> [--notice] | --selftest\n' +
       '       ' + CLI_NAME + ' --mark-shown <doc.md> [--transport chat]\n' +
       '       ' + CLI_NAME + ' --wait [<doc.md>]      (the waiter: exit 0 on the next recorded answer, 2 when the contour ended without one)\n' +
+      '       ' + CLI_NAME + ' --call "<what is needed>" [--dry-run]   (call the owner — hands or a quick answer; names the calling session)\n' +
       '       ' + CLI_NAME + ' --mark-implemented <doc.md> <Q> --where <commit|file>   (the fourth fact, I44: the decision landed — never raise it again)\n' +
       '       ' + CLI_NAME + ' <doc.md> --close [--force --owner-word "<quote>"]   (the ONLY way to end a live page: prints port · pid · title, refuses while the owner is typing or a draft is unsaved — exit 4)\n' +
       'Exit codes: 0 recorded · 2 closed without an answer · 130 interrupted · 3 pre-flight refused (fix the form) · 4 --close refused · 1 usage / unknown flag.\n' +
@@ -1905,6 +1960,12 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
   const cfg = cfgOf(root);
   if (!cfg.markerFound) console.log('note: no .kaif/kaif.json here — defaults in use (project "' + cfg.projectName + '", owner "' + cfg.ownerName + '", language ' + cfg.language + ').');
   if (args.includes('--selftest')) { selftest().then(() => process.exit(0)); return; }
+  if (args.includes('--call')) { // OW4 (2.8, #95 · #98): the owner's hands or a quick answer — the CALL, naming the calling session
+    const text = opt('--call');
+    if (!text) usage();
+    callDoor(root, text, { dryRun: args.includes('--dry-run') });
+    return; // the voice runs in a child process; this one ends when it does
+  }
   if (args.includes('--wait')) { // OW6 (2.8): the waiter — started by the agent next to a live page; ends on the next recorded answer
     waitForRecord(root, docPath || null).then((code) => { process.exitCode = code; });
     return;

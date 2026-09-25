@@ -66,6 +66,24 @@ export function ownerFromIdentityTable(root) {
  * The contour configuration of a project root. Every field has a derived default; `.kaif/kaif.json`
  * may override any of them under `contour: { … }`. Nothing here asks a human.
  */
+// OW4 (2.8, origin issues #95 · #98): the CALLING SESSION's name — with several workspaces of one project the owner hears which window
+// calls. Derived, never typed per call: KAIF_SESSION_NAME wins; a linked workspace (its .git is a FILE) is named by its directory
+// (`<project>-team-<role>` → `<role>`, the /team-deployment naming invariant); the main copy is "main" when other workspaces exist (its
+// .git/worktrees/ lists them); one workspace → no name (nothing to tell apart). Read from the file system — no git program is started.
+// [TESTED: 2026-09-25 20:15–20:24 · selftest: a linked workspace → its role, the main copy with others → main, one workspace → none, the env
+//  var wins; on the origin (8 worktrees) → «main»; s22 F on two deployed workspaces; mutant «the workspace not read» red exactly on its case;
+//  report testcases/reports/2026-09-25_ow4-call-names-session.md]
+export function sessionName(root, env = process.env) {
+  const own = String(env.KAIF_SESSION_NAME || '').trim();
+  if (own) return own;
+  const dotGit = resolve(root, '.git');
+  let st;
+  try { st = statSync(dotGit); } catch { return null; }
+  if (st.isFile()) { const base = basename(resolve(root)); const m = base.match(/-team-(.+)$/u); return m ? m[1] : base; }
+  if (!st.isDirectory()) return null;
+  try { return readdirSync(resolve(dotGit, 'worktrees')).length > 0 ? 'main' : null; } catch { return null; }
+}
+
 export function loadContourConfig(root) {
   const marker = readJson(resolve(root, KAIF_JSON)) || {};
   const c = (marker.contour && typeof marker.contour === 'object') ? marker.contour : {};
@@ -81,6 +99,7 @@ export function loadContourConfig(root) {
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
     closeQuietMs: Number(c.closeQuietMs) > 0 ? Number(c.closeQuietMs) : null, // LP (2.7, #66): `--close` refuses while the owner typed less than this ago (default in the generator: 180 s)
     markerFound: existsSync(resolve(root, KAIF_JSON)),
+    session: sessionName(root), // OW4 (2.8): the calling session — named in every call and in the page window's title
   };
 }
 

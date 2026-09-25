@@ -26,7 +26,7 @@
 //  на копии HTML (радиокнопки вырезаны) роняет selfCheck отгружаемого модуля — ассерт «КРАСНАЯ на копии»;
 //  2026-09-12 · IW: «all checks green» стоя, на ядре 2.6 (KAIF_DIST) три ассерта IW красные — отчёт
 //  testcases/reports/2026-09-12_polygon-2.7-IW.md]
-import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync, cpSync } from 'node:fs';
 import { execFileSync, execSync, spawn } from 'node:child_process';
 import { createServer as createNetServer } from 'node:net';
 import { join, resolve, dirname } from 'node:path';
@@ -270,6 +270,24 @@ ok(r.code === 0 && /interview_055_prior\.md:5: .*ВИТРИНА/.test(r.out) && 
    's22 E: --search «Витрина или репозиторий?» → код 0, находка с ЗАГЛАВНОЙ кириллицей названа файлом и строкой, готова строка аттестации (OW5, #74)', 'exit ' + r.code + ': ' + r.out.slice(-400));
 rmSync(join(P, 'interviews', 'interview_055_prior.md'), { force: true });
 rmSync(join(P, AQ_DOC), { force: true });
+
+// ================================================================ F: зов называет зовущую сессию (OW4, тикеты #95 · #98)
+console.log('\n=== s22 F: два рабочих места одного проекта — зов из каждого называет своё, одно рабочее место — никого ===');
+{
+  const W1 = join(ROOT, 'callws'), W2 = join(ROOT, 'callws-team-dev2');
+  for (const w of [W1, W2]) cpSync(join(P, '.kaif'), join(w, '.kaif'), { recursive: true });
+  mkdirSync(join(W1, '.git', 'worktrees', 'callws-team-dev2'), { recursive: true }); // the main copy: .git is a directory listing the other workspace
+  writeFileSync(join(W2, '.git'), 'gitdir: ../callws/.git/worktrees/callws-team-dev2\n');  // the linked workspace: .git is a file
+  const r1 = runGen(W1, ['--call', 'нужен пароль от тестового телефона', '--dry-run']);
+  ok(r1.code === 0 && /CALL · main \(dry run, no sound\): .+, это мейн\. Нужен пароль от тестового телефона/.test(r1.out),
+     's22 F: --call --dry-run из основной копии (её .git/worktrees называет другое место) — «…, это мейн.», баннер «CALL · main» (OW4, #98)', 'exit ' + r1.code + ': ' + r1.out.slice(-200));
+  const r2 = runGen(W2, ['--call', 'нужен пароль от тестового телефона', '--dry-run']);
+  ok(r2.code === 0 && /CALL · dev2 \(dry run, no sound\): .+, это дев два\. Нужен пароль от тестового телефона/.test(r2.out),
+     's22 F: --call --dry-run из рабочего места «callws-team-dev2» — «…, это дев два.», баннер «CALL · dev2» (OW4, #98)', 'exit ' + r2.code + ': ' + r2.out.slice(-200));
+  const r0 = runGen(P, ['--call', 'нужен пароль от тестового телефона', '--dry-run']);
+  ok(r0.code === 0 && /^CALL \(dry run, no sound\): .+, нужен пароль от тестового телефона/m.test(r0.out) && !/это (мейн|дев)/.test(r0.out),
+     's22 F: развёртывание с одним рабочим местом — зов без имени сессии (называть некого), звука нет (OW4)', 'exit ' + r0.code + ': ' + r0.out.slice(-200));
+}
 
 // ================================================================ C: маршрут обновления (критерий 4)
 console.log('\n=== s22 C: «старый релиз» без контура + свой tools/review.mjs → update → контур приехал, свой инструмент нетронут ===');

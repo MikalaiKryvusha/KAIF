@@ -190,6 +190,13 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   browser refuses, the page honestly says "please close me" — never a silent "hangs as it was".
 - **I28. The voice call by name is the DEFAULT level,** not an option for the brave: a voice built
   but switched off by a setting exists only on paper.
+- **I28b. The call names the caller** (2.8, origin issue #98: a field owner with three windows of one project could not tell which
+  one called). With more than one workspace of the project (a `/team-deployment` team, parallel worktrees) every call — the voice,
+  the console banner `CALL · <session>:`, the page window's title — names the calling session right after the owner: «<owner>, this
+  is <session>. …». The name is derived, never typed per call: `KAIF_SESSION_NAME`, else the workspace directory
+  (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name; spoken by the language pack
+  (`dev2` → «dev two»). A request for the owner's hands or a quick answer outside a page goes by the same call —
+  `review.mjs --call "<what is needed>"` (`--dry-run` prints it without sound) — never as a line left in the chat (origin issue #95).
 - **I29. One document — one window.** A lock with pid and address; a second launch prints the live
   address and exits. Two windows are two calls AND two different drafts — the port is part of the
   web origin, so a draft written in one window is invisible to the other.
