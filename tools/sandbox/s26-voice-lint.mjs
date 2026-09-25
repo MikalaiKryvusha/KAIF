@@ -46,10 +46,10 @@
 //  передачи; приватная копия портрета — без пункта; строка без метки при --genre); на dist v2.7 — «27 of 75: раздел (4) — 8 из 8, раздел (5) — 12 из 13 (передача «после замены проходит» на ядре без неё зелёная по построению, её красный — M11), 7 прежних — выбор разделов»; мутанты voice-mutants.mjs — 17 из 17
 //  на адресатах (M14–M17 новые); ТЕСТ ИЗМЕНЁН: ассерт чужого портрета ждёт новую строку лога «not derived from it (another owner's portrait or a
 //  private copy)» — класс без меток теперь включает приватную копию; отчёт testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
-import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
-import { execSync } from 'node:child_process';
-import { join, resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync, readdirSync } from 'node:fs';
+import { execSync, spawnSync } from 'node:child_process';
+import { join, resolve, dirname, basename } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { failed, must, coreRunner } from '../lib/sandbox-run.mjs';
 import { createHash } from 'node:crypto';
@@ -385,6 +385,33 @@ ok(itemOf(PH) === '' && readFileSync(join(PH, 'AUTHOR_STYLOMETRY.md'), 'utf8') =
 const PC = deployC('ov-current', SNAP);
 const upC = must(runC, PC, `update --source ${REL9} --baseline ${RELOLD}`);
 ok(itemOf(PC) === '' && /already carries this release's snapshot/.test(upC.out), 's26 update: портрет уже равен слепку релиза — без пункта', itemOf(PC) || upC.out.slice(-500));
+
+// ---------------------------------------------------------------- (6) 2.8: модули поставки подключаются без побочного запуска (OW8)
+// Эпик OW 2.8, шаг OW8 (plans/119); критерий 24 plans/117, тикет истока #101: инструмент проекта (поле — оценщик стилометрии) берёт у линтера
+// голоса ту же грамматику портрета — импорт модуля печатал usage и запускал проверку всего проекта. Каждый модуль поставки с экспортом
+// импортируется из ПУСТОГО каталога и печатает только «imported»; инструмент проекта, импортировавший parsePortrait и lintText, печатает
+// только свою строку; команда линтера из терминала — прежняя сводка.
+console.log('\n=== s26: модули поставки импортируются молча (OW8, #101) ===');
+const TOOLS = join(S, '.kaif', 'tools');
+const withExports = (dir) => (existsSync(dir) ? readdirSync(dir).filter((f) => /\.mjs$/.test(f)).map((f) => join(dir, f)) : [])
+  .filter((p) => /^export\s/m.test(readFileSync(p, 'utf8')));
+const MODS = [...withExports(TOOLS), ...withExports(join(TOOLS, 'contour'))];
+const EMPTY = join(ROOT, 'ow8-empty'); mkdirSync(EMPTY, { recursive: true });
+ok(MODS.length >= 10, 's26 модулей поставки с экспортом — не меньше десяти (семь линтеров и три файла контура)', String(MODS.length));
+for (const p of MODS) {
+  const im = spawnSync(process.execPath, ['--input-type=module', '-e', `import(${JSON.stringify(pathToFileURL(p).href)}).then(() => console.log('imported'))`], { cwd: EMPTY, encoding: 'utf8' });
+  ok(im.status === 0 && (im.stdout + im.stderr).trim() === 'imported', 's26 импорт модуля поставки молчит: ' + basename(p) + ' — только «imported», код 0 (OW8, #101)', 'exit ' + im.status + ': ' + (im.stdout + im.stderr).slice(0, 300));
+}
+writeFileSync(join(EMPTY, 'essay-check.mjs'), [
+  `import { parsePortrait, lintText } from ${JSON.stringify(pathToFileURL(DEPLOYED_LINT).href)};`,
+  `const portrait = parsePortrait(${JSON.stringify(readFileSync(join(S, 'AUTHOR_STYLOMETRY.md'), 'utf8'))});`,
+  "const findings = lintText('essay.md', 'Он снова вышел к морю, то есть к себе.', portrait.rules || portrait);",
+  "console.log('essay-check: ' + (Array.isArray(findings) ? findings.length : 0) + ' finding(s)');",
+].join('\n'));
+const tool = spawnSync(process.execPath, [join(EMPTY, 'essay-check.mjs')], { cwd: EMPTY, encoding: 'utf8' });
+const toolLines = (tool.stdout + tool.stderr).split(/\r?\n/).filter((l) => l.trim());
+ok(tool.status === 0 && toolLines.length === 1 && /^essay-check: \d+ finding\(s\)$/.test(toolLines[0]),
+   's26 инструмент проекта берёт у линтера голоса parsePortrait и lintText — в выводе только его строка, ни usage, ни проверки проекта (OW8, #101)', (tool.stdout + tool.stderr).slice(0, 400));
 
 if (failures) { console.error(`\n❌ s26: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s26 voice-lint: all ${asserts} checks green`);

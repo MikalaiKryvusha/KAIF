@@ -13052,6 +13052,11 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdtemp
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -13322,7 +13327,9 @@ function cmdSelftest() {
   log(`✅ selftest OK — ${n} cases (RU + EN; both answers on every fixture; baseline proven)`);
 }
 
-({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => { console.error(`✖ unknown command: ${CMD} (check [paths…] [--write-baseline [--adopt-new]] [--baseline <file>] | selftest)`); process.exit(1); }))();
+if (IS_MAIN) {
+  ({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => { console.error(`✖ unknown command: ${CMD} (check [paths…] [--write-baseline [--adopt-new]] [--baseline <file>] | selftest)`); process.exit(1); }))();
+}
 ``````
 
 > **FILE: `.kaif/tools/kaif-canon-lint.mjs`** — optional tool module — verbatim
@@ -13535,6 +13542,11 @@ function cmdSelftest() {
 //  report: testcases/reports/2026-09-24_ck57-experience-fold.md]
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const EXIT_SKIPPED = 3;
@@ -14091,10 +14103,12 @@ function selftest() {
 }
 
 // ---------------------------------------------------------------------------
-if (argv.includes('--shrink')) shrinkCmd();
-else if (argv[0] === 'check' || argv.length === 0) check();
-else if (argv[0] === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] [--write-baseline] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
+if (IS_MAIN) {
+  if (argv.includes('--shrink')) shrinkCmd();
+  else if (argv[0] === 'check' || argv.length === 0) check();
+  else if (argv[0] === 'selftest') selftest();
+  else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] [--write-baseline] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
+}
 ``````
 
 > **FILE: `.kaif/tools/kaif-guard-lint.mjs`** — optional tool module — verbatim
@@ -14137,6 +14151,11 @@ else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [jo
 //  both named, exit 0 on the clean block with "NOT YET" visible, exit 3 (SKIPPED) on a marker-less tree]
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -14263,9 +14282,11 @@ function selftest() {
   console.log(`✅ guard-lint selftest OK — ${cases.length} cases, every rule red on its fixture and silent on the clean block`);
 }
 
-if (CMD === 'check') check();
-else if (CMD === 'selftest') selftest();
-else { console.error(`usage: node .kaif/tools/kaif-guard-lint.mjs check [paths…] | selftest`); process.exit(1); }
+if (IS_MAIN) {
+  if (CMD === 'check') check();
+  else if (CMD === 'selftest') selftest();
+  else { console.error(`usage: node .kaif/tools/kaif-guard-lint.mjs check [paths…] | selftest`); process.exit(1); }
+}
 ``````
 
 > **FILE: `.kaif/tools/kaif-provenance.mjs`** — optional tool module — verbatim
@@ -14594,6 +14615,11 @@ function cmdAccept() {
 //  tripped `order` — `order` now judges rows 2+; sandbox suite s23 on a deployed copy: install · check #53 → 1 · fixed → 0 ·
 //  foreign → 3 · usage → 1 · bundle meta 2.6 entries]
 import { readFileSync, existsSync } from 'node:fs';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -14782,9 +14808,11 @@ function selftest() {
   console.log(`✅ ranking-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only, the #53 fixture red, the clean answer green`);
 }
 
-if (CMD === 'check') check(PATHS);
-else if (CMD === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…] | selftest'); process.exit(1); }
+if (IS_MAIN) {
+  if (CMD === 'check') check(PATHS);
+  else if (CMD === 'selftest') selftest();
+  else { console.error('usage: node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…] | selftest'); process.exit(1); }
+}
 ``````
 
 > **FILE: `.kaif/tools/kaif-requirements-lint.mjs`** — optional tool module — verbatim
@@ -15007,6 +15035,11 @@ function cmdSelftest() {
 //  list of criteria without blank lines» in both languages, red on a copy without the break (2 of 35 — exactly the new case)]
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -15216,9 +15249,11 @@ function selftest() {
   console.log(`✅ scenario-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(FIX).length} languages, every rule red on its mutation only and silent on the clean set`);
 }
 
-if (CMD === 'check') check(PATHS.length ? PATHS : DEFAULT_PATHS.filter((p) => existsSync(p)));
-else if (CMD === 'selftest') selftest();
-else { console.error(`usage: node .kaif/tools/kaif-scenario-lint.mjs check [paths…] | selftest`); process.exit(1); }
+if (IS_MAIN) {
+  if (CMD === 'check') check(PATHS.length ? PATHS : DEFAULT_PATHS.filter((p) => existsSync(p)));
+  else if (CMD === 'selftest') selftest();
+  else { console.error(`usage: node .kaif/tools/kaif-scenario-lint.mjs check [paths…] | selftest`); process.exit(1); }
+}
 ``````
 
 > **FILE: `.kaif/tools/kaif-testrun-lint.mjs`** — optional tool module — verbatim
@@ -15273,6 +15308,11 @@ else { console.error(`usage: node .kaif/tools/kaif-scenario-lint.mjs check [path
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -15541,9 +15581,11 @@ function selftest() {
   console.log(`✅ testrun-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean report`);
 }
 
-if (CMD === 'check') check(ARG);
-else if (CMD === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | selftest'); process.exit(1); }
+if (IS_MAIN) {
+  if (CMD === 'check') check(ARG);
+  else if (CMD === 'selftest') selftest();
+  else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | selftest'); process.exit(1); }
+}
 ``````
 
 > **FILE: `.kaif/tools/kaif-voice-lint.mjs`** — optional tool module — verbatim
@@ -15658,6 +15700,11 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'no
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -16231,10 +16278,12 @@ function selftest() {
   console.log(`✅ voice-lint selftest OK — ${cases} cases, ${Object.keys(FIX).length} languages: a hit is named with line, fragment and hint; code and comments are invisible; exceptions silence or print; a prose §8 is SKIPPED, never green; a text written before the first load or more than an hour after the last one is written past the portrait`);
 }
 
-if (CMD === 'check') check();
-else if (CMD === 'load') load();
-else if (CMD === 'selftest') selftest();
-else usage(`unknown command "${CMD}"`);
+if (IS_MAIN) {
+  if (CMD === 'check') check();
+  else if (CMD === 'load') load();
+  else if (CMD === 'selftest') selftest();
+  else usage(`unknown command "${CMD}"`);
+}
 ``````
 
 > **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)

@@ -84,6 +84,11 @@
 //  report: testcases/reports/2026-09-24_ck57-experience-fold.md]
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const EXIT_SKIPPED = 3;
@@ -640,7 +645,9 @@ function selftest() {
 }
 
 // ---------------------------------------------------------------------------
-if (argv.includes('--shrink')) shrinkCmd();
-else if (argv[0] === 'check' || argv.length === 0) check();
-else if (argv[0] === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] [--write-baseline] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
+if (IS_MAIN) {
+  if (argv.includes('--shrink')) shrinkCmd();
+  else if (argv[0] === 'check' || argv.length === 0) check();
+  else if (argv[0] === 'selftest') selftest();
+  else { console.error('usage: node .kaif/tools/kaif-experience-lint.mjs check [journal] [--baseline <file>] [--verbose] [--write-baseline] | --shrink EXP-NNNN [journal] [--yes] | selftest'); process.exit(1); }
+}

@@ -1,13 +1,13 @@
 // tools/sandbox/probes/voice-mutants.mjs — a PROBE (not a polygon suite): the adversarial proof of suite s26's writing-selection
 // asserts (2.8, epic CK, step CK5.9 (b) — a bare `kaif-voice-lint load` prints the portrait's writing sections, `--all` the whole,
-// the summary names every section left out with a ready ASCII `--sections` regex; 2.8 epic VO — the genre labels and §1). Sixteen mutants of the PREDICATES of the new
+// the summary names every section left out with a ready ASCII `--sections` regex; 2.8 epic VO — the genre labels and §1). Eighteen mutants of the PREDICATES of the new
 // behaviour are applied to the module's FILE block inside a COPY of dist/KAIF-CORE-BUNDLE.md in the OS temp dir (never to the tree,
 // EXP-0077); s26 runs against the copy through the KAIF_DIST seam (its sections (2) and (3) judge the DEPLOYED module), and the red
 // assert lines are compared with the addressees named here BEFORE the run (EXP-0059): mutant M → exactly these asserts go red, and
 // only they. A mutant whose anchor does not match EXACTLY ONCE is a refusal, never a green (origin bug 122); a suite that did not
 // reach its verdict line proves nothing (EXP-0158) and is BAD.
 // Run it after touching `load` of framework/tools/kaif-voice-lint.mjs or s26:   node tools/sandbox/probes/voice-mutants.mjs
-// Needs a FRESH dist (rebuild first); runs the suite once per mutant (sixteen) — run it ALONE, not beside the polygon (origin bug 109).
+// Needs a FRESH dist (rebuild first); runs the suite once per mutant (eighteen) — run it ALONE, not beside the polygon (origin bug 109).
 // Raises no window and no sound. `--list` prints the red asserts of every mutant without judging (to re-name addressees).
 // [TESTED: 2026-09-25 17:19 +03:00 · alone, on a fresh dist: all SEVENTEEN red exactly on their named addressees — VO4: M14 (the private repository name a marker
 //  again — in the bundle meta), M15/M16 (a merge above the snapshot unseen by the checkpoint / the recognition), M17 (an unlabelled row silent under a
@@ -58,6 +58,8 @@ const OV_MERGE_ABOVE = 's26 checkpoint owner-voice-core на слиянии НА
 const OV_HANDOVER_MERGE = 's26 передача: слияние НАД слепком';
 const GENRE_UNLABELLED = 's26 check --genre essay: строка без метки жанра срабатывает';
 const GENRE_ESSAY_COUNT = 's26 check --genre essay: строки [работа] и [документ] молчат на эссе';
+const OW8_IMPORT = 's26 импорт модуля поставки молчит: kaif-voice-lint.mjs';
+const OW8_TOOL = 's26 инструмент проекта берёт у линтера голоса parsePortrait и lintText';
 
 const MUTANTS = [
   { name: 'M1 a bare load prints the whole portrait (the writing selection never runs)',
@@ -114,7 +116,11 @@ const MUTANTS = [
     expect: [OV_HANDOVER_MERGE] },
   { name: 'M17 a row without a genre label goes silent under --genre (only labelled rows judge a genre)',
     from: '  if (!genre || !rule.labels || !rule.labels.length) return true;', to: '  if (!genre) return true;\n  if (!rule.labels || !rule.labels.length) return false;',
-    expect: [GENRE_UNLABELLED, GENRE_ESSAY_COUNT] },   // the silent unlabelled row also changes the count of silent rows (2 → 3)
+    expect: [GENRE_UNLABELLED, GENRE_ESSAY_COUNT] },
+  // 2.8, epic OW, OW8 (criterion 24, #101): the run guard of the voice module removed — an import runs its CLI again
+  { name: 'M18 the run guard of the voice module removed (an import prints usage / runs the check again — origin #101)',
+    from: "if (IS_MAIN) {\n  if (CMD === 'check') check();\n  else if (CMD === 'load') load();", to: "if (true) {\n  if (CMD === 'check') check();\n  else if (CMD === 'load') load();",
+    expect: [OW8_IMPORT, OW8_TOOL] },   // the silent unlabelled row also changes the count of silent rows (2 → 3)
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-voice-mutants-'));

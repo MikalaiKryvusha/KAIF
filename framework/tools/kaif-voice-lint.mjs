@@ -107,6 +107,11 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'no
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -680,7 +685,9 @@ function selftest() {
   console.log(`✅ voice-lint selftest OK — ${cases} cases, ${Object.keys(FIX).length} languages: a hit is named with line, fragment and hint; code and comments are invisible; exceptions silence or print; a prose §8 is SKIPPED, never green; a text written before the first load or more than an hour after the last one is written past the portrait`);
 }
 
-if (CMD === 'check') check();
-else if (CMD === 'load') load();
-else if (CMD === 'selftest') selftest();
-else usage(`unknown command "${CMD}"`);
+if (IS_MAIN) {
+  if (CMD === 'check') check();
+  else if (CMD === 'load') load();
+  else if (CMD === 'selftest') selftest();
+  else usage(`unknown command "${CMD}"`);
+}

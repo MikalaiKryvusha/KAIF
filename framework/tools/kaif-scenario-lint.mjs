@@ -45,6 +45,11 @@
 //  list of criteria without blank lines» in both languages, red on a copy without the break (2 of 35 — exactly the new case)]
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -254,6 +259,8 @@ function selftest() {
   console.log(`✅ scenario-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(FIX).length} languages, every rule red on its mutation only and silent on the clean set`);
 }
 
-if (CMD === 'check') check(PATHS.length ? PATHS : DEFAULT_PATHS.filter((p) => existsSync(p)));
-else if (CMD === 'selftest') selftest();
-else { console.error(`usage: node .kaif/tools/kaif-scenario-lint.mjs check [paths…] | selftest`); process.exit(1); }
+if (IS_MAIN) {
+  if (CMD === 'check') check(PATHS.length ? PATHS : DEFAULT_PATHS.filter((p) => existsSync(p)));
+  else if (CMD === 'selftest') selftest();
+  else { console.error(`usage: node .kaif/tools/kaif-scenario-lint.mjs check [paths…] | selftest`); process.exit(1); }
+}

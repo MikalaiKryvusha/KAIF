@@ -74,6 +74,11 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, mkdtemp
 import { createHash } from 'node:crypto';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -344,4 +349,6 @@ function cmdSelftest() {
   log(`✅ selftest OK — ${n} cases (RU + EN; both answers on every fixture; baseline proven)`);
 }
 
-({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => { console.error(`✖ unknown command: ${CMD} (check [paths…] [--write-baseline [--adopt-new]] [--baseline <file>] | selftest)`); process.exit(1); }))();
+if (IS_MAIN) {
+  ({ check: cmdCheck, selftest: cmdSelftest }[CMD] || (() => { console.error(`✖ unknown command: ${CMD} (check [paths…] [--write-baseline [--adopt-new]] [--baseline <file>] | selftest)`); process.exit(1); }))();
+}

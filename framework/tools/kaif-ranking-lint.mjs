@@ -36,6 +36,11 @@
 //  tripped `order` — `order` now judges rows 2+; sandbox suite s23 on a deployed copy: install · check #53 → 1 · fixed → 0 ·
 //  foreign → 3 · usage → 1 · bundle meta 2.6 entries]
 import { readFileSync, existsSync } from 'node:fs';
+// OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
+// module stays silent and never exits the importer (the same guard as the shipped contour's review.mjs).
+import { pathToFileURL as __kaifToUrl } from 'node:url';
+import { resolve as __kaifResolve } from 'node:path';
+const IS_MAIN = import.meta.url === __kaifToUrl(__kaifResolve(process.argv[1] || '')).href;
 
 const argv = process.argv.slice(2);
 const CMD = argv[0] || 'check';
@@ -224,6 +229,8 @@ function selftest() {
   console.log(`✅ ranking-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only, the #53 fixture red, the clean answer green`);
 }
 
-if (CMD === 'check') check(PATHS);
-else if (CMD === 'selftest') selftest();
-else { console.error('usage: node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…] | selftest'); process.exit(1); }
+if (IS_MAIN) {
+  if (CMD === 'check') check(PATHS);
+  else if (CMD === 'selftest') selftest();
+  else { console.error('usage: node .kaif/tools/kaif-ranking-lint.mjs check <draft.md> [more.md…] | selftest'); process.exit(1); }
+}
