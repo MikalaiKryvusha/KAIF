@@ -9,7 +9,8 @@
 > in `KAIF_FRAMEWORK.md` (and, for the shipped linter, in `.kaif/kaif.json` → `voicePortrait`) — the
 > machinery never renames an owner-class file. **Load, do not consult:** before the first word of any
 > text the owner reads as his own, `node .kaif/tools/kaif-voice-lint.mjs load` prints the filled
-> portrait into the agent's working context and leaves a witness; `check` refuses a text written before
+> portrait's writing sections (§0 · §2 · §2-C · §5 · §6 · §7 — keep their numbers; `--all` prints the
+> whole) into the agent's working context and leaves a witness; `check` refuses a text written before
 > that load (the owner's word: write BY the stylometry, with it in the working cache).
 
 > **Status: a BINDING instruction** for any agent writing <the owner's target artifact>. It acts

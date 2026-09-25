@@ -46,9 +46,10 @@ wrote, fixes it, and only then counts the text as written and brings it to the o
 Three steps, in this order — and the report of the unit names each:
 
 1. **Write BY the portrait — with it in your working context.** Before the first word:
-   `node .kaif/tools/kaif-voice-lint.mjs load` (or `load --sections <regex>` for the modules the unit
-   needs — the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6) prints
-   `AUTHOR_STYLOMETRY.md` INTO YOUR WORKING CONTEXT and leaves the witness `.kaif/voice-marker.json`;
+   `node .kaif/tools/kaif-voice-lint.mjs load` prints the WRITING sections of `AUTHOR_STYLOMETRY.md` — the
+   bans §0, the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6, the checklist
+   §7 — INTO YOUR WORKING CONTEXT, names every other section with its weight and a ready `--sections`
+   command (load one the unit needs; `--all` loads the whole portrait) and leaves the witness `.kaif/voice-marker.json`;
    write by it while it is there — the owner's word: write BY the stylometry, WITH IT IN THE WORKING
    CACHE — the lexicon's turn of phrase, not a synonym; the skeleton of the section the owner uses; the
    register of the artifact. A draft written "natively" and re-voiced afterwards is the class this
@@ -75,7 +76,7 @@ A rule that yields an artifact names the command that produces it — this is th
 machine half of step 2 above (the semantic half is the clean-instance pass §7B):
 
 ```
-node .kaif/tools/kaif-voice-lint.mjs load [--sections <regex>]     # step 1: the portrait into your context + the witness
+node .kaif/tools/kaif-voice-lint.mjs load [--all | --sections <regex>]   # step 1: the portrait into your context + the witness
 node .kaif/tools/kaif-voice-lint.mjs check <file…> [--warn]        # step 2, the machine half
 ```
 
@@ -89,8 +90,10 @@ node .kaif/tools/kaif-voice-lint.mjs check <file…> [--warn]        # step 2, t
   witness, with a witness for another portrait, last written BEFORE the first load, or written MORE
   THAN AN HOUR after the last load before it (the hour rule of context refresh: the portrait had left
   the cache — reload before every unit) — "written past the portrait", exit 1, never muted by
-  `--warn`; it warns when the portrait changed since the load. `load --sections <regex>` that matches
-  no section loads nothing and writes no witness. The witness is a marker with the marker class's
+  `--warn`; it warns when the portrait changed since the load. A bare `load` prints the writing sections
+  (§0 · §2 · §5 · §6 · §7 with their subsections, §2-C among them) and its price in tokens, and names
+  the rest — a portrait with none of them numbered is loaded whole, said aloud; `--all` loads the whole;
+  `load --sections <regex>` that matches no section loads nothing and writes no witness. The witness is a marker with the marker class's
   boundary: it proves the load ran, not that the print was read — the judge reads the named modules
   against the text.
 - **What it prints:** every hit as `file:line — «fragment» → hint (exception: …)` and exits 1; a

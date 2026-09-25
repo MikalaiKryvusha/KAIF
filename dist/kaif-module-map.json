@@ -98,7 +98,7 @@
       {
         "signature": "### Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "da98a517bbb18f7a81b7fccd1dad242eef96ce72b162f719d5b0cb6b680af2f2",
+        "sha256": "158fa1541171f1fc2be8c8870833d58a3a85c0653808a007fff7d6c900414bcd",
         "lines": [
           312,
           426
@@ -1528,7 +1528,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "0ce0a6ebc32be3e5b4af47f6301325bc935ffdd9187ee551f0ea8bb1ff8bb388",
+        "sha256": "eb7ba962c6e8c8c584f535f831f41aad45e38e311a92a5d241af155ea95b1613",
         "lines": [
           531,
           574
@@ -3843,19 +3843,19 @@
       {
         "signature": "## The writing contract — by the portrait, independently checked, then the owner",
         "class": "static",
-        "sha256": "7c88bb83d5aa9df070f92bf19da6a32415dc66fc5cc24b4ab19efd48d349ee1e",
+        "sha256": "1d618b6ba175274e75d90c4380c3feccb2c520ba6f6fac52c23d28b93d5fe039",
         "lines": [
           37,
-          71
+          72
         ]
       },
       {
         "signature": "## Mode `check` — the machine half of the independent check",
         "class": "static",
-        "sha256": "fee582ef98adc7a9e03a518d6eb5daf5716d35e43eb1c7a0bade531a13be7e90",
+        "sha256": "9d53a21334f0e5d896ff30323456d5e2cb95ba696bc450dcac96e99b13ef6954",
         "lines": [
-          72,
-          116
+          73,
+          119
         ]
       },
       {
@@ -3863,8 +3863,8 @@
         "class": "static",
         "sha256": "4d9e40b5283a24c1d010838fc0116174e6e3da711c6e3af309d9dd7de2c85cdc",
         "lines": [
-          117,
-          155
+          120,
+          158
         ]
       },
       {
@@ -3872,8 +3872,8 @@
         "class": "static",
         "sha256": "cfd646ea4662f0b75078166bf17b0112d606afd7324334cb09d8ede9341aecb6",
         "lines": [
-          156,
-          201
+          159,
+          204
         ]
       },
       {
@@ -3881,8 +3881,8 @@
         "class": "static",
         "sha256": "791a8edca44a8f1458a9a2cc86ae916a6cb7f3d12ff8824371ac6e18a4c04330",
         "lines": [
-          202,
-          209
+          205,
+          212
         ]
       },
       {
@@ -3890,8 +3890,8 @@
         "class": "static",
         "sha256": "363f3912473697663b050ccedd5e54c0a13d725887dfeb2286ee57f2dc3f7aa3",
         "lines": [
-          210,
-          217
+          213,
+          220
         ]
       }
     ],
@@ -5691,10 +5691,10 @@
       {
         "signature": "# The Owner's Voice Portrait — <OWNER> (\"the stylistic LoRA\" of <PROJECT_NAME>)",
         "class": "adaptive",
-        "sha256": "ab5e36fff266c03f8caf8ae33afb58e364a7584e8f94c6dd97b5e7bf66d1c049",
+        "sha256": "f50e3cec8ed88e5f16deb909dacc0b0a7ac95721e1284942bff01594b6e71af9",
         "lines": [
           1,
-          25
+          26
         ]
       },
       {
@@ -5702,8 +5702,8 @@
         "class": "static",
         "sha256": "e9fb1022a522dac20023a8191f7768692bb728ae3926ea79f607d4eb39e2f89f",
         "lines": [
-          26,
-          43
+          27,
+          44
         ]
       },
       {
@@ -5711,8 +5711,8 @@
         "class": "static",
         "sha256": "a8c2cb076aff67a3f2f570b0c1ea27aad7bc6cf006656521db05557d7b281d32",
         "lines": [
-          44,
-          59
+          45,
+          60
         ]
       },
       {
@@ -5720,8 +5720,8 @@
         "class": "static",
         "sha256": "58ab91cd1e2b3bf63428c288fd5ba8f0a183329fa9598f6327694bf69a878a42",
         "lines": [
-          60,
-          76
+          61,
+          77
         ]
       },
       {
@@ -5729,8 +5729,8 @@
         "class": "static",
         "sha256": "bf198c58fd4b9358a1dae6741d9bf93cc55947e8f89e636c5e51638a3749f194",
         "lines": [
-          77,
-          81
+          78,
+          82
         ]
       },
       {
@@ -5738,8 +5738,8 @@
         "class": "static",
         "sha256": "4e525debae8a16f69b4cad6b9042d1ce1fd251560c1e7987b2ce58ef46433898",
         "lines": [
-          82,
-          86
+          83,
+          87
         ]
       },
       {
@@ -5747,8 +5747,8 @@
         "class": "static",
         "sha256": "e32db1ad9c47e79f7b3e989c44bcaedc7d8b9e818d6bb1f00a1a1f800613efaa",
         "lines": [
-          87,
-          91
+          88,
+          92
         ]
       },
       {
@@ -5756,8 +5756,8 @@
         "class": "static",
         "sha256": "ac23e5f5d8ad8f3dcc1cb8aad468e2caae1e42c55b96a330aa26665a966dec43",
         "lines": [
-          92,
-          100
+          93,
+          101
         ]
       },
       {
@@ -5765,8 +5765,8 @@
         "class": "static",
         "sha256": "f63517ff34d57bd2506ca261c15eeaa18e14402d7ec94651ca4cc2cdddf1fbc0",
         "lines": [
-          101,
-          106
+          102,
+          107
         ]
       },
       {
@@ -5774,8 +5774,8 @@
         "class": "static",
         "sha256": "3ab4ac295ac8e9a7f4d3567d0d24c50bf783228a78f1bd848a2091afe5550819",
         "lines": [
-          107,
-          117
+          108,
+          118
         ]
       },
       {
@@ -5783,8 +5783,8 @@
         "class": "static",
         "sha256": "3569f490205dab22972b1af5eb5b7eddd2e8365c641c402bc9a9d5dd74071a1d",
         "lines": [
-          118,
-          141
+          119,
+          142
         ]
       },
       {
@@ -5792,8 +5792,8 @@
         "class": "static",
         "sha256": "7b78eec1abbd72a50d754025201ebaf858dcccebd84f776ed97df7340d6be063",
         "lines": [
-          142,
-          159
+          143,
+          160
         ]
       },
       {
@@ -5801,8 +5801,8 @@
         "class": "static",
         "sha256": "08a98e34df84b5cfd12e4807e3081aa0c21b72f021f8aa6e66ceadad75e0bc52",
         "lines": [
-          160,
-          170
+          161,
+          171
         ]
       }
     ],

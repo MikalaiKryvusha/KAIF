@@ -21,6 +21,13 @@
 //  40 зелёных; первый прогон свода поймал дефект модуля (счёт строк включал пустой хвост файла: «9 line(s)» на 8-строчном
 //  листе), судья эпика — свидетель, отказывавший один раз на дерево, `--warn`, гасивший свидетеля, и пустой `--sections`,
 //  писавший полного свидетеля, — всё починено до коммита; отчёт прогона истока — testcases/reports/2026-09-12_polygon-2.7-VC.md]
+// (3) 2.8, эпик CK, шаг CK5.9 (б) — голая загрузка печатает разделы для письма (РАЗВЁРНУТЫЙ модуль из dist): тело равно нарезке,
+//     итог называет строки и цену в токенах, каждый оставленный раздел назван, его готовая команда грузит ровно его, `--all` —
+//     целиком, `--all` с `--sections` — usage; скелет поставки грузится разделами для письма.
+// [TESTED: 2026-09-25 · «all 54 checks green»; на dist v2.7 швом KAIF_DIST — «7 of 54 check(s) failed», ровно новые ассерты;
+//  шесть мутантов tools/sandbox/probes/voice-mutants.mjs красны ровно на адресатах; ТЕСТ ИЗМЕНЁН: ассерт голой загрузки раздела (1)
+//  требует теперь строки «no writing section … the whole of it is loaded» — у его фикстуры пронумерованы только §8 и §9, и без этой
+//  строки он проходил бы по чужой причине; отчёт — testcases/reports/2026-09-25_ck59b-portrait-writing-sections.md]
 import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
@@ -84,7 +91,9 @@ for (const lang of ['en', 'ru']) {
   ok(r.code === 1 && /never muted by --warn/.test(r.out), `s26 ${lang}: --warn НЕ гасит свидетеля (exit 1)`, r.out);
   r = runLint('load', P);
   ok(r.code === 0 && H1[lang].test(r.out) && /is now in your working context; witness \.kaif\/voice-marker\.json at /.test(r.out), `s26 ${lang}: load печатает портрет в контекст и оставляет свидетеля`, r.out);
-  ok(existsSync(join(P, '.kaif', 'voice-marker.json')) && /"sections": "all"/.test(readFileSync(join(P, '.kaif', 'voice-marker.json'), 'utf8')), `s26 ${lang}: свидетель .kaif/voice-marker.json записан (sections: all)`);
+  // 2.8 (CK5.9 б): голая загрузка — уже не «весь портрет», а разделы для письма; у этой фикстуры пронумерованы только §8 и §9,
+  // поэтому она идёт запасным путём «целиком» — и ассерт требует, чтобы это было СКАЗАНО, иначе он проходил бы по чужой причине.
+  ok(existsSync(join(P, '.kaif', 'voice-marker.json')) && /"sections": "all"/.test(readFileSync(join(P, '.kaif', 'voice-marker.json'), 'utf8')) && /no writing section \(.*\) is numbered in this portrait, so the whole of it is loaded/.test(r.out), `s26 ${lang}: свидетель записан; портрет без разделов для письма грузится целиком, и это сказано вслух (sections: all)`, r.out.slice(-400));
   writeFileSync(join(P, 'sheet', 'steps.md'), STEPS[lang]);            // написаны ПОСЛЕ загрузки — по портрету
   writeFileSync(join(P, 'clean.md'), CLEAN[lang]);
   writeFileSync(join(P, 'fenced.md'), FENCED[lang]);
@@ -166,6 +175,9 @@ if (tpl) writeFileSync(join(S, 'AUTHOR_STYLOMETRY.md'), tpl);
 else ok(false, 's26 копия скелета в портрет — скелета в развёрнутой копии нет, копировать нечего');
 r = existsSync(DEPLOYED_LINT) ? runLint('load', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
 ok(r.code === 0 && /is now in your working context/.test(r.out), 's26 развёрнутый load — портрет (копия скелета) в контексте, свидетель записан', r.out);
+const bodyOf = (out) => out.split('\n✅ voice-lint load')[0].replace(/\s*$/, '');
+ok(r.code === 0 && /sections: writing/.test(r.out) && !/^## 8\. Machine heuristics/m.test(bodyOf(r.out)) && /^## 2-C\. The collocation lexicon/m.test(bodyOf(r.out)) && /«Corpus registry»/.test(r.out),
+   's26 развёрнутый load скелета (2.8): разделы для письма со словником §2-C и без §8, реестр корпусов назван среди оставленных', r.out.slice(-700));
 writeFileSync(join(S, 'a.md'), STEPS.en);
 r = existsSync(DEPLOYED_LINT) ? runLint('check a.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
 ok(r.code === 3 && /holds no rule — placeholders are not rules/.test(r.out), 's26 незаполненная копия скелета — развёрнутый линтер SKIPPED (exit 3): плейсхолдеры — не правила', r.out);
@@ -174,6 +186,50 @@ if (tpl) writeFileSync(join(S, 'AUTHOR_STYLOMETRY.md'), tpl.replace(/^\| `<secon
 r = existsSync(DEPLOYED_LINT) ? runLint('check a.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
 ok(r.code === 1 && /a\.md:7 — «Remember that» → state the rule; the reader is not reminded/.test(r.out), 's26 одна заполненная строка §8 в копии — попадание названо с подсказкой (exit 1)', r.out);
 ok(/changed since it was last loaded/.test(r.out), 's26 портрет изменился после загрузки — предупреждение «reload» напечатано', r.out);
+
+// ---------------------------------------------------------------- (3) 2.8: голая загрузка — разделы для письма (развёрнутая копия)
+// Эпик CK 2.8, шаг CK5.9 (б); тикет #99 п. 3 — полевой портрет весил ~170k токенов и грузился целиком на каждую единицу. Судится
+// РАЗВЁРНУТЫЙ модуль из dist: шов KAIF_DIST доводит до него и ядро 2.7 (красный), и мутанты tools/sandbox/probes/voice-mutants.mjs.
+// Фикстура — форма полевых портретов: ненумерованные модули «Правила: …» (два с десятибуквенным вторым словом — готовой команде
+// нужен якорь конца), словник «2-С» с КИРИЛЛИЧЕСКОЙ буквой, полевой подраздел пар «6Б», реестр корпусов без номера.
+console.log('\n=== s26: голая загрузка — разделы для письма, --all, готовые команды разделов ===');
+const W = join(ROOT, 'writing');
+mkdirSync(W, { recursive: true });
+const WP_HEAD = ['# Портрет голоса — тестовый, с разделами', 'связующая записка', ''];
+const WP = [   // [заголовок, тело, раздел для письма?]
+  ['Реестр корпусов', 'строки', false], ['0. Шесть запретов', 'запрет', true], ['1. Как читать', 'чтение', false],
+  ['2. Портрет — регистр РАЗБОР', 'правило', true], ['Правила: Пунктуация и ритм', 'пунктуация', false],
+  ['Правила: Морфология и грамматика', 'морфология', false], ['2-С. Словник', 'оборот', true],
+  ['5. Анти-портрет', 'маркер', true], ['6. Пары ДО/ПОСЛЕ', 'пара', true], ['6Б. ДО/ПОСЛЕ, регистр ЛОР', 'пара лора', true],
+  ['7. Чек-лист', 'проверка', true], ['8. Машинные эвристики', 'таблица', false], ['9. Журнал портрета', 'строка', false],
+];
+const cutOf = (keep) => WP_HEAD.concat(...WP.filter(keep).map(([t, b]) => ['## ' + t, b])).join('\n');
+const WHOLE = cutOf(() => true), WRITING_CUT = cutOf(([, , w]) => w);
+writeFileSync(join(W, 'AUTHOR_STYLOMETRY.md'), WHOLE + '\n');
+// токены — те же две ставки, что у строки цены входа ядра, посчитанные здесь независимо
+const tokS = (s) => { let a = 0, o = 0; for (const ch of s) { if (ch.charCodeAt(0) < 128) a++; else o++; } return a / 2.5 + o / 1.9; };
+const kS = (t) => (t < 1000 ? `~${Math.round(t)}` : `~${Math.round(t / 1000)}k`);
+const deployed = (args) => (existsSync(DEPLOYED_LINT) ? runLint(args, W, DEPLOYED_LINT) : { code: -1, out: 'module absent' });
+const markerW = () => { try { return JSON.parse(readFileSync(join(W, '.kaif', 'voice-marker.json'), 'utf8')); } catch { return {}; } };
+r = deployed('load');
+ok(r.code === 0 && bodyOf(r.out) === WRITING_CUT, 's26 голая загрузка печатает голову и разделы для письма §0 · §2 · §2-С · §5 · §6 · §6Б · §7, без реестра, §1, §8, §9 и модулей «Правила»', r.out.slice(-700));
+ok(r.out.includes(`(17 of 29 line(s), sections: writing — the head and §0 · §2 · §2-С · §5 · §6 · §6Б · §7; ${kS(tokS(WRITING_CUT))} of ${kS(tokS(WHOLE))} tokens)`) && markerW().sections === 'writing' && markerW().lines === 17,
+   's26 итог голой загрузки называет строки, разделы и цену в токенах (17 из 29 строк); свидетель sections writing', r.out.slice(-700));
+const leftLines = r.out.split(/\r?\n/).filter((l) => /tokens  «.*» — --sections "/.test(l));
+ok(/ℹ not loaded — 6 section\(s\)/.test(r.out) && /load --all/.test(r.out) && leftLines.length === 6 && WP.filter(([, , w]) => !w).every(([t]) => leftLines.some((l) => l.includes(`«${t}»`))),
+   's26 итог называет каждый оставленный раздел с весом и командой и называет --all для всего портрета', r.out.slice(-900));
+let exact = 0;
+for (const l of leftLines) {
+  const m = /«(.*)» — --sections "([^"]*)"/.exec(l);
+  const one = m && /^[\x20-\x7e]+$/.test(m[2]) ? deployed(`load --sections "${m[2]}"`) : { code: -1, out: '' };
+  const got = bodyOf(one.out).split('\n').filter((x) => x.startsWith('## ')).map((x) => x.slice(3));
+  if (one.code === 0 && got.length === 1 && got[0] === m[1]) exact++;
+}
+ok(leftLines.length === 6 && exact === 6, `s26 каждая напечатанная команда раздела ASCII и грузит ровно свой раздел, оба модуля «Правила» тоже (${exact} of ${leftLines.length})`);
+r = deployed('load --all');
+ok(r.code === 0 && bodyOf(r.out) === WHOLE && markerW().sections === 'all' && /\(29 line\(s\), sections: all; /.test(r.out), 's26 load --all печатает весь портрет, 29 строк; свидетель sections all', r.out.slice(-500));
+r = deployed('load --all --sections "^8"');
+ok(r.code === 2 && /--all and --sections exclude each other/.test(r.out), 's26 load --all вместе с --sections: usage (exit 2), ничего не загружено', r.out);
 
 if (failures) { console.error(`\n❌ s26: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s26 voice-lint: all ${asserts} checks green`);

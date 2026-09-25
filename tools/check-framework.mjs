@@ -245,6 +245,33 @@ function selfProofTemplateCeiling() {
   return fails;
 }
 
+// 5k. One price of a token, two copies (2.8, epic CK, step CK5.9 (b)): `kaif-voice-lint load` prints what a portrait costs at the
+//     rates the core's `check` prints the entry cost with, and a deployed tool module cannot import the core — so the module carries
+//     a COPY of the two rates, and this guard judges the pair by VALUE (both files name both constants, the numbers agree).
+// @guard token-rates-pair
+// THREAT:         the core's entry-cost rates are recalibrated (a second measurement) and `load` goes on pricing the portrait at the
+//                 old rates — two tools of one delivery tell a field agent two prices for the same characters
+// PROVED-AGAINST: `--selftest` — equal rates → silent; the module's non-ASCII rate changed → named with both pairs of numbers; a
+//                 rate constant missing from the module → named
+// GAP:            the VALUES only — how each file counts characters (for…of, code unit < 128) is the same by reading, not by this guard
+// ON-REAL-PATH:   NOT YET — the path is the first recalibration of the core's rates
+const TOKEN_RATE_NAMES = ['ASCII_CHARS_PER_TOKEN', 'OTHER_CHARS_PER_TOKEN'];
+function tokenRatesDisagree(coreText, voiceText) {
+  const rates = (body) => TOKEN_RATE_NAMES.map((k) => (new RegExp(`\\b${k} = ([0-9.]+)`).exec(body) || [])[1] || '?');
+  const core = rates(coreText), voice = rates(voiceText);
+  if (core.every((v, i) => v !== '?' && v === voice[i])) return [];
+  return [`token rates (CK 2.8): framework/tools/kaif-voice-lint.mjs prices ${voice.join(' / ')} characters per token (ASCII / other), the core's entry-cost line framework/installer/KAIF-CORE.mjs ${core.join(' / ')} — one price, two copies: make them agree`];
+}
+function selfProofTokenRates() {
+  const fails = [];
+  const core = 'const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9, MODEL_WINDOW_TOKENS = 1000000;';
+  if (tokenRatesDisagree(core, 'const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9;').length) fails.push('равные ставки названы расхождением');
+  const moved = tokenRatesDisagree(core, 'const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 2.1;');
+  if (moved.length !== 1 || !moved[0].includes('2.5 / 2.1') || !moved[0].includes('2.5 / 1.9')) fails.push(`сдвинутая ставка модуля не названа с обеими парами чисел: ${moved.join(' | ') || 'молчание'}`);
+  if (!tokenRatesDisagree(core, 'const OTHER_CHARS_PER_TOKEN = 1.9;').some((e) => e.includes('? / 1.9'))) fails.push('пропавшая константа ставки в модуле НЕ названа');
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -465,6 +492,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of cFails) console.error('✖ selfproof 5j (CK 2.8): ' + f);
   if (cFails.length) { console.error(`\n❌ check-framework --selftest: гард 5j — ${cFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5j: шаблон в 1200 строк при бюджете 1200 назван с потолком; шаблон на потолке молчит; пропавший шаблон и неполная таблица названы');
+  const tFails = selfProofTokenRates();
+  for (const f of tFails) console.error('✖ selfproof 5k (CK 2.8): ' + f);
+  if (tFails.length) { console.error(`\n❌ check-framework --selftest: гард 5k — ${tFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5k: ставка токенов модуля голоса, сдвинутая от ставки ядра, названа обеими парами чисел; пропавшая константа названа; равные ставки молчат');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -583,6 +614,9 @@ errors.push(...danglingWhyKeys(readFileSync(join(ROOT, 'framework', 'KAIF_REFERE
 errors.push(...templatesOverCeiling(readBudgets(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8')),
   (doc) => { const p = join(ROOT, 'framework', doc); if (!existsSync(p)) return null;
     const l = readFileSync(p, 'utf8').split(/\r?\n/); if (l[l.length - 1] === '') l.pop(); return l.length; }));
+// 5k. The voice module's token rates equal the core's — declared with its self-proof near the top.
+errors.push(...tokenRatesDisagree(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8'),
+  readFileSync(join(ROOT, 'framework', 'tools', 'kaif-voice-lint.mjs'), 'utf8')));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the

@@ -355,9 +355,9 @@ THE TEXT IS WRITTEN BY THE OWNER'S PORTRAIT, THEN CHECKED INDEPENDENTLY BY THE S
 ONLY THEN IT IS WRITTEN AND GOES TO THE OWNER.**
 Three steps, in this order, and the report names each:
 1. **Write BY the portrait — with it in your working context.** Before the first word,
-   `node .kaif/tools/kaif-voice-lint.mjs load` prints `AUTHOR_STYLOMETRY.md` into your context (`--sections
-   <regex>` for the modules the unit needs — the rules §2, the lexicon §2-C, the anti-portrait §5, the
-   before/after pairs §6) and leaves the witness `.kaif/voice-marker.json`; write by it while it is there. A draft written "natively" and
+   `node .kaif/tools/kaif-voice-lint.mjs load` prints the writing sections of `AUTHOR_STYLOMETRY.md` into your context — the
+   bans §0, the rules §2, the lexicon §2-C, the anti-portrait §5, the before/after pairs §6, the checklist §7; it names the rest
+   with their `--sections` commands, `--all` loads the whole — and leaves the witness `.kaif/voice-marker.json`; write by it while it is there. A draft written "natively" and
    re-voiced afterwards is the class this obligation closes, not its execution — `check` refuses a text with
    no load witness, last written before the first load, or written more than an hour after the last load (the
    hour rule of context refresh: the portrait had left the cache) — "written past the portrait".
