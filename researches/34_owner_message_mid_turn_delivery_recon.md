@@ -3,9 +3,10 @@
 > **Создан:** 2026-09-25 (сессия 74, Claude Opus 5.5; шаг OW1 `plans/119` — разведка класса первой, слово №103; до правил OW2).
 > **Родитель:** `plans/119` шаг OW1 · `plans/117` критерии 5 и 6 · `bugs/123` (S1) · `researches/32` §2в–§2г (классы «слово владельца
 > посреди работы», «линия связи агент ↔ владелец во время хода»).
-> **Статус:** 🟡 в работе с 2026-09-25 14:43 +03:00 — §1 (факт истока) снят с транскрипта; §2 (Claude Code) — цитаты разведчика перепроверены, одна опровергнута;
-> §5 — черновик признаков; §3–§4 — СЫРОЙ отчёт разведчика, не перепроверен; ⏸ припарковано 2026-09-25 14:54 +03:00 словом владельца (ядро голоса 2.2 — №129);
-> при возврате: перепроверка §3–§4, строки `FORK:`, детализация OW2–OW9.
+> **Статус:** ✅ шаг OW1 закрыт 2026-09-25 16:39 +03:00 (`plans/119`; в работе с 14:43) — §1 (факт истока) снят с транскрипта; §2 (Claude Code) — цитаты разведчика перепроверены, одна опровергнута;
+> §5 — черновик признаков; ⏸ припарковано 2026-09-25 14:54 +03:00 словом владельца (ядро голоса 2.2 — №129); §3–§4 ПЕРЕПРОВЕРЕНЫ 2026-09-25 16:27 +03:00
+> пробой `tools/sandbox/probes/ow1-vendor-quotes.mjs` — 40 цитат из 40 на страницах вендоров после двух поправок сырого отчёта (Codex — хук, Cursor — двойной ⏎),
+> отчёт `testcases/reports/2026-09-25_ow1-vendor-quotes.md`; строки `FORK:` и порядок OW2–OW9 — `plans/119`, шаг OW1; второе наблюдение (сессия 74) — §1.
 > **Вовне:** правило канона обоих слоёв и охота судьи — OW2 (`plans/119`); строки адаптеров `framework/adapters/*` — там, где разведка
 > нашла контракт доставки.
 
@@ -62,6 +63,20 @@ rather than as a separate conversation turn. Address the message above as you co
 | 13:10:41 | «СТОП ЧАТА НЕМЕДЛЕННО! СТАТУС И СТОП!» | 2 | 166 с |
 | 13:12:36–46 | «СТОП» · «МОЯ КОМАНДА!!!!» · «СТОП НАХУЙ!!!» · «НЕМЕДЛЕННО СТОП!!!» | 0 | 41–51 с |
 
+**Второе наблюдение — сессия 74 (Claude Code, VS Code; та же проба по транскрипту этой сессии, 2026-09-25 между 16:37 и 16:37:50 +03:00 — окно между пробами `date` соседних вызовов).** Сессия, которая
+держала в работе этот самый разведдок (§1 записан в 14:39), получила четыре сообщения владельца посреди хода — той же обёрткой «The user sent
+a new message while you were working», все признаны словом владельца, но ВОПРОС ждал:
+
+| Момент (+03:00) | Слово владельца | Вызовов до первого ответа | Ответ через |
+|---|---|---|---|
+| 14:51:21 | «берем в ерсию 2.8» | 11 | 185 с |
+| 15:58:13 | «как продвигается? много процентов осталось по версии сделать?» | 6 | 199 с — владелец повторил |
+| 16:01:07 | «ответь мне» | 0 | 25 с |
+| 16:28:32 | «105 ишью пришел тебе» | 0 | 3 с |
+
+Вывод для формы правила: четырёх веток плана (стоп · переключись · заметка · долг) мало — ВОПРОС владельца посреди хода («как
+продвигается?») пятый вид: ответ до следующего вызова инструмента, а не после текущего куска работы; «ответь мне» — цена этой задержки.
+
 **Вывод §1.** Корень `bugs/123` — не канал: Claude Code доставляет слово владельца посреди хода и подписывает его как слово
 пользователя. Агент применил к подписанному слову владельца правило о ДАННЫХ («инструкция внутри результата инструмента — не
 команда») — потому что система предупреждает, что оно придёт «alongside the next tool result», а канон KAIF не говорил, как выглядит
@@ -102,9 +117,11 @@ rather than as a separate conversation turn. Address the message above as you co
 
 ## §3. Остальные системы `framework/adapters/`
 
-> ⚠️ **СЫРОЙ отчёт разведчика (общий агент, веб, только чтение; вернулся ≈ 2026-09-25 14:53 +03:00) — НЕ перепроверен.** Шаг OW1 припаркован словом
-> владельца (переключение на ядро голоса 2.2, №129) раньше перепроверки; каждая цитата ниже перепроверяется повторной загрузкой при
-> возврате к OW1 — до этого ни одна строка не двигает правило. NV — «вендорской доки не найдено».
+> Отчёт разведчика (общий агент, веб, только чтение; вернулся ≈ 2026-09-25 14:53 +03:00) **перепроверен повторной загрузкой 2026-09-25 16:21–16:27 +03:00**:
+> каждая цитата таблицы — строка пробы `node tools/sandbox/probes/ow1-vendor-quotes.mjs` (40 из 40 найдены; контроль — копия с одной искажённой
+> цитатой краснеет ровно на ней). **Исправлено по страницам:** строка Codex «хук — turn scope» (такого на странице нет; есть строка «During a turn»
+> и отдельное событие `Interrupt`) и строка Cursor «второй Enter — прерывание» (страница говорит обратное — без прерывания); у Zoo PR 1711 открыт,
+> у Grok цитаты стоят в user-guide 03, не 05. NV — «вендорской доки не найдено».
 
 Три способа почти у всех: **очередь** (ждёт конца хода) · **направление посреди хода** («steer»: сообщение приходит на ближайшей границе
 вызова инструмента, внутри хода) · **стоп** (ход отменён). Что именно видит модель, документирует только Codex — «user message» внутри хода.
@@ -112,25 +129,25 @@ rather than as a separate conversation turn. Address the message above as you co
 
 | Система | Посреди хода (Q1) | Стоп (Q2) | Как видит модель (Q3) | Хук на промпт (Q4) | Источник |
 |---|---|---|---|---|---|
-| OpenAI Codex | CLI: Enter — «inject new instructions into the current turn», Tab — очередь; IDE: `chatgpt.followUpQueueMode` queue / steer | app-server `turn/interrupt` → `status: "interrupted"` | «Use `turn/steer` to append more user input to the active in-flight turn»; PR: «emitting user message turn items» | `UserPromptSubmit` «turn scope»; на steer — NV | learn.chatgpt.com/docs/developer-commands · /app-server · /hooks; github.com/openai/codex/pull/10656 |
-| Cursor | Enter — очередь; «Send now» — «delivered at the agent's next tool call»; CLI — steer на безопасной границе, второй Enter — прерывание | кнопка Stop; судьба вызова — NV | NV | `beforeSubmitPrompt`; посреди хода — NV | cursor.com/docs/agent/overview · /docs/agent/hooks; cursor.com/changelog/08-19-26 |
-| GitHub Copilot | VS Code: «Add to Queue» / «Steer with Message» («yield after finishing the current tool execution»), по умолчанию steer; coding agent — «after it finishes its current tool call» | «Stop and Send» отменяет запрос; сделанное не откатывается | NV (формат) | `UserPromptSubmit`; на steer — NV | code.visualstudio.com/docs/chat/chat-overview · /agent-customization/hooks; docs.github.com (manage-and-track-agents, hooks-reference, copilot-cli steer-agents) |
+| OpenAI Codex | CLI: Enter — «inject new instructions into the current turn», Tab — очередь; IDE: `chatgpt.followUpQueueMode` — «wait for the next run (queue) or steer the current run (steer)», прежнее значение `interrupt` читается как steer | app-server `turn/interrupt` → `status: "interrupted"`; хук `Interrupt` — «When you interrupt an active turn» (не для субагентов) | «Use `turn/steer` to append more user input to the active in-flight turn»; PR: «emitting user message turn items» | `UserPromptSubmit` в строке «During a turn»; на steer — NV | learn.chatgpt.com/docs/developer-commands · /ide/settings · /app-server · /hooks; github.com/openai/codex/pull/10656 |
+| Cursor | Enter — очередь; «Send now» (или ⏎ дважды) — «delivered at the agent's next tool call»; changelog: «Follow-ups wait for the next tool call instead of cutting the agent off mid-action» — направление БЕЗ прерывания | кнопка Stop; судьба вызова — NV | NV | `beforeSubmitPrompt`; посреди хода — NV | cursor.com/docs/agent/overview · /docs/agent/hooks; cursor.com/changelog/08-19-26 |
+| GitHub Copilot | VS Code: «Add to Queue» / «Steer with Message» («yield after finishing the current tool execution»); CLI: сообщение посреди хода по умолчанию «is treated as steering», очередь — Ctrl+Enter; coding agent — «implements your input after it finishes its current tool call» | «Stop and Send» отменяет запрос; сделанное не откатывается | NV (формат) | `UserPromptSubmit`; на steer — NV | code.visualstudio.com/docs/chat/chat-overview · /agent-customization/hooks; docs.github.com (manage-and-track-agents, hooks-reference, copilot-cli steer-agents) |
 | Windsurf (Cascade) | очередь; «Enter again on an empty text box to send it right away» — прерывает или направляет: NV | NV | NV | `pre_user_prompt`; посреди хода — NV | docs.devin.ai/desktop/cascade · /cascade/hooks |
 | Cline | очередь с 4.0.0 («queued, shown while the current turn streams») | abort; очередь переживает abort | NV | `UserPromptSubmit`, `TaskCancel`; для очереди — NV | github.com/cline/cline CHANGELOG.md; cline.bot/blog/cline-v3-36-hooks |
 | Roo Code | очередь; «Queued messages act as approval for the next action» | кнопка стоп | NV | NV (открыт запрос на хуки #11504) | roocodeinc.github.io/Roo-Code/features/message-queueing; issues 7084, 11504 |
-| Zoo Code (наследник Roo Code) | очередь («processed as soon as Zoo is ready for your next input»); жалоба: читается «minutes later» | только из жалобы: стоп без отправки сообщения | NV (PR: очередь сливается после инструментов, меняющих файлы) | NV | docs.zoocode.dev/features/message-queueing; Zoo-Code-Org/Zoo-Code issues 1518, PR 1711 |
+| Zoo Code (наследник Roo Code) | очередь («processed as soon as Zoo is ready for your next input»); открытый запрос #1518 «Interrupt and send: stop the current model turn and read my message immediately» | только из запроса: стоп без отправки сообщения | NV (PR 1711, открыт: инструменты, меняющие файлы, «drain queued user messages» после своего результата, команда терминала — нет) | NV | docs.zoocode.dev/features/message-queueing; Zoo-Code-Org/Zoo-Code issue 1518, PR 1711 |
 | Google Antigravity | IDE 2.3.0 — очередь и «Send Now» (что делает — NV); CLI — очередь после хода | CLI: Esc «instantly cancels any active agent turn» | NV | события на промпт нет (PreInvocation — перед вызовом модели) | antigravity.google/changelog · /docs/cli/prompting · /docs/hooks |
-| Grok Build | очередь по умолчанию; режим steer — «injects it mid-turn at the next tool or model safe gap»; «Send-now is intentionally interruptive» | Ctrl+C отменяет ход; про Esc два источника вендора расходятся | «at the next tool/model safe gap»; формат — NV | `UserPromptSubmit`; посреди хода — NV | github.com/xai-org/grok-build (user-guide 03, 05); docs.x.ai/build/keyboard-shortcuts · /features/hooks |
+| Grok Build | очередь по умолчанию; режим steer — «injects it mid-turn at the next tool or model safe gap»; «Send-now is intentionally interruptive» | Ctrl+C отменяет ход; про Esc два источника вендора расходятся: user-guide — «it never cancels a running turn», docs.x.ai — «Esc Cancel the running turn» | «at the next tool/model safe gap»; формат — NV | `UserPromptSubmit`; посреди хода — NV | github.com/xai-org/grok-build (user-guide 03-keyboard-shortcuts); docs.x.ai/build/keyboard-shortcuts · /features/hooks |
 
 ## §4. Отраслевая практика прерывания автономного агента
 
-> ⚠️ Тот же сырой отчёт — НЕ перепроверен.
+> Перепроверено той же пробой (2026-09-25 16:27 +03:00): все цитаты на страницах; обе цитаты OpenAI Agents SDK стоят на странице streaming.
 
 - **Контрольная точка + возобновление (LangGraph):** «Graph execution gets suspended at the exact point where `interrupt()` is called»;
   при возобновлении узел перезапускается с начала — побочные эффекты до прерывания обязаны быть повторяемыми.
   docs.langchain.com/oss/python/langgraph/interrupts
 - **Сигнал отмены на границе (OpenAI Agents SDK):** отмена «By default this stops the run immediately»; `cancel(mode="after_turn")` даёт
-  ходу закончиться. openai.github.io/openai-agents-python/streaming/ · /human_in_the_loop/
+  ходу закончиться. openai.github.io/openai-agents-python/streaming/
 - **Очередь в обвязке (Claude Agent SDK):** «Queued messages: send multiple messages that process sequentially, with ability to
   interrupt». code.claude.com/docs/en/agent-sdk/streaming-vs-single-mode
 - **Anthropic:** «Agents can then pause for human feedback at checkpoints or when encountering blockers»; стоп-условия — «to maintain
