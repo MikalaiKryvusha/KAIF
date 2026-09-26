@@ -333,6 +333,51 @@ function selfProofTemplatesOwnScan() {
   return fails;
 }
 
+// 5n. The deployment-record label of every language face is known to the scan (2.8, court RL D-F2): the stale-claims scan treats a
+//     dated row under the record label as the record itself (a claim), not a journal line — but it knew only the English and Russian
+//     labels, and in the eight other faces a dated "KAIF-Version | 2.7 | ..." row stayed silent. The list lives in the core as data
+//     (`RECORD_LABELS`, escapes); this guard holds it EQUAL to the labels the packs' KAIF_FRAMEWORK.md templates actually write.
+// @guard record-labels
+// THREAT:         a language pack renames its record label (or a new pack arrives) and the scan stops seeing the record row of
+//                 that face — the deployment record claims an old version and the update task never names it (court RL 2.8, D-F2)
+// PROVED-AGAINST: `--selftest` — equal list and packs → silent; a pack label missing from the list → that pack named; a list entry
+//                 no pack writes → named; a core without the list → named; and the real core against the real packs at every build
+// GAP:            the scan's behaviour on the row is s29's (C14); this guard only holds the list equal to the packs
+// ON-REAL-PATH:   NOT YET — the path is the next pack edit or a new language pack
+const recordLabelOf = (md) => {
+  const row = md.split(/\r?\n/).find((l) => /^\|.*\|\s*`<X\.Y>`\s*\|/.test(l));
+  return row ? row.split('|')[1].replace(/[*_`]/g, '').trim().toLowerCase() : null;
+};
+function recordLabelsDrift(coreSrc, packs) {   // packs: { '<lang>': <KAIF_FRAMEWORK.md text> }
+  const m = coreSrc.match(/const RECORD_LABELS = \[([^\]]*)\];/);
+  if (!m) return ['guard 5n: the core carries no RECORD_LABELS list — the record row of the language faces is unknown to the scan'];
+  let list;
+  try { list = JSON.parse('[' + m[1].replace(/'/g, '"') + ']'); } catch (e) { return ['guard 5n: RECORD_LABELS is not readable: ' + e.message]; }
+  const errs = [];
+  const seen = new Set();
+  for (const [lang, md] of Object.entries(packs)) {
+    const label = recordLabelOf(md);
+    if (!label) { errs.push(`guard 5n: [${lang}] KAIF_FRAMEWORK.md has no "<X.Y>" record row`); continue; }
+    seen.add(label);
+    if (!list.includes(label)) errs.push(`guard 5n: [${lang}] the record label "${label}" is not in RECORD_LABELS of the core — a dated record row of this face is silent in the stale-claims scan`);
+  }
+  for (const l of list) if (!seen.has(l)) errs.push(`guard 5n: RECORD_LABELS carries "${l}", which no pack writes — remove it or restore the pack`);
+  return errs;
+}
+const recordLabelPacks = () => Object.fromEntries([['en', join(ROOT, 'framework', 'KAIF_FRAMEWORK.md')],
+  ...readdirSync(join(ROOT, 'framework', 'templates', 'languages')).map((l) => [l, join(ROOT, 'framework', 'templates', 'languages', l, 'KAIF_FRAMEWORK.md')])]
+  .filter(([, p]) => existsSync(p)).map(([l, p]) => [l, readFileSync(p, 'utf8')]));
+function selfProofRecordLabels() {
+  const fails = [];
+  const core = (labels) => `const RECORD_LABELS = [${labels.map((l) => "'" + l + "'").join(', ')}];`;
+  const pack = (label) => `| Field | Value |\n|---|---|\n| **${label}** | \`<X.Y>\` |\n`;
+  if (recordLabelsDrift(core(['kaif version', 'kaif-version']), { en: pack('KAIF version'), de: pack('KAIF-Version') }).length) fails.push('равные список и пакеты названы расхождением');
+  if (!recordLabelsDrift(core(['kaif version']), { en: pack('KAIF version'), de: pack('KAIF-Version') }).some((e) => e.includes('[de]'))) fails.push('подпись пакета вне списка НЕ названа');
+  if (!recordLabelsDrift(core(['kaif version', 'ghost']), { en: pack('KAIF version') }).some((e) => e.includes('ghost'))) fails.push('лишняя подпись списка НЕ названа');
+  if (!recordLabelsDrift('const a = 1;', { en: pack('KAIF version') }).some((e) => e.includes('no RECORD_LABELS'))) fails.push('ядро без списка НЕ названо');
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -565,6 +610,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of mFails) console.error('✖ selfproof 5m (SC 2.8): ' + f);
   if (mFails.length) { console.error(`\n❌ check-framework --selftest: гард 5m — ${mFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5m: строка поставки, заявляющая старую версию, названа; перенесённая атрибуция, строка таблицы с маркером внутри и фразы-триггеры пакета молчат; лицо языкового пакета со старым заявлением названо ([ru])');
+  const nFails = selfProofRecordLabels();
+  for (const f of nFails) console.error('✖ selfproof 5n (RL 2.8): ' + f);
+  if (nFails.length) { console.error(`\n❌ check-framework --selftest: гард 5n — ${nFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5n: подпись строки записи языкового пакета вне списка ядра названа поимённо; лишняя подпись и ядро без списка названы; равные — молчат');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -689,6 +738,8 @@ errors.push(...tokenRatesDisagree(readFileSync(join(ROOT, 'framework', 'installe
 // 5l. Every copy of the one tree walker equals the core's block — declared with its self-proof near the top.
 errors.push(...walkerDrift(readFileSync(join(ROOT, WALKER_CORE), 'utf8'),
   Object.fromEntries(WALKER_COPIES.map((p) => [p, existsSync(join(ROOT, p)) ? readFileSync(join(ROOT, p), 'utf8') : null]))));
+// 5n. The record label of every language face is known to the scan — declared with its self-proof near the top.
+errors.push(...recordLabelsDrift(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8'), recordLabelPacks()));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the

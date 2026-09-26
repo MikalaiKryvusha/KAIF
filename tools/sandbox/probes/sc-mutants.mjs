@@ -5,6 +5,8 @@
 // section proves nothing (budget-mutants, CK5.6).
 // Run it after touching the KAIF-WALK block or the scan of framework/installer/KAIF-CORE.mjs, or s29 (fresh dist first):
 //   node tools/sandbox/probes/sc-mutants.mjs          — ALONE, not beside the polygon (origin bug 109); no window, no sound.
+// [TESTED: 2026-09-26 08:59:59 → 09:04:39 +03:00 · nineteen mutants red exactly on their named addressees (M19 — the record label of the
+//  other language faces, C14; M6 · M14 addressees widened by C14); report testcases/reports/2026-09-26_rl2-record-labels-all-faces.md]
 // [TESTED: 2026-09-26 02:44:27 +03:00 · twelve mutants (SC1 M1–M5 · SC2 M6–M12) red exactly on their named addressees; report
 //  testcases/reports/2026-09-26_sc2-claim-is-a-pair.md]
 // [TESTED: 2026-09-26 01:43:34 +03:00 · five mutants red exactly on their named addressees (2 · 1 · 1 · 1 · 2) on the first run;
@@ -44,8 +46,9 @@ const MUTANTS = [
   // ── SC2 (criterion 17): the claim is judged as a pair ──
   { name: 'M6 any dated line is skipped again (#75 — the deployment record dated inside a parenthesis goes unnamed)', suite: S, tag: '❌ ',
     from: "      if (!recordRow && /\\b\\d{4}-\\d{2}/.test(isProse ? scan.replace(/(?<!\\])\\([^)]*\\)/g, '') : line.replace(/\\s(?:\\/\\/|#).*$/, ''))) continue;", to: "      if (/\\b\\d{4}-\\d{2}/.test(line)) continue;",
-    // SC4 part B: the record rows (C8 · C9) and the dated script pin (C10) fall silent with every dated line again
-    expect: ['C1 (#75)', 'C8 (F3)', 'C9 (F3)', 'C10 (F3)'] },
+    // SC4 part B: the record rows (C8 · C9) and the dated script pin (C10) fall silent with every dated line again;
+    // RL2 (D-F2): the record rows of the eight other language faces (C14) with them
+    expect: ['C1 (#75)', 'C8 (F3)', 'C9 (F3)', 'C10 (F3)', 'C14 (D-F2)'] },
   { name: 'M7 a script pin needs the framework word within 16 characters again (#91)', suite: S, tag: '❌ ',
     from: ' || (namesKaif ? older.find((v) => scriptPin(v, scan, readsMarker)) : undefined)', to: '',
     // SC4 part B: every script pin of C10 and C12 is named by the same predicate
@@ -69,7 +72,7 @@ const MUTANTS = [
   // ── SC4 part B (the judge of epic SC): each new rule broken once ──
   { name: 'M14 the record row is a journal again when a cell carries a date (F3 — the real field row stays silent)', suite: S, tag: '❌ ',
     from: "      const recordRow = isProse && /^\\s*\\|/.test(line) && RECORD_LABEL.test(line.split('|')[1].replace(/[*_`]/g, '').trim());", to: '      const recordRow = false;',
-    expect: ['C8 (F3)', 'C9 (F3)'] },
+    expect: ['C8 (F3)', 'C9 (F3)', 'C14 (D-F2)'] },
   { name: 'M15 a trailing comment\'s date silences a script pin again (F3)', suite: S, tag: '❌ ',
     from: " : line.replace(/\\s(?:\\/\\/|#).*$/, ''))) continue;", to: ' : line)) continue;',
     expect: ['C10 (F3)'] },
@@ -82,6 +85,11 @@ const MUTANTS = [
   { name: 'M18 a product name before the version is no longer read (F6)', suite: S, tag: '❌ ',
     from: '  const productBefore = (before) => {', to: '  const productBefore = (before) => { return false;',
     expect: ['C13 (F6)'] },
+  // ── RL2 (court RL 2.8, D-F2): the record label of the other language faces ──
+  { name: 'M19 the record label is known only in English and Russian again (D-F2 — a dated record row of eight faces is silent)', suite: S, tag: '❌ ',
+    from: '  const RECORD_LABEL = { test: (label) => RECORD_LABEL_FORMS.test(label) || RECORD_LABELS.includes(label.toLowerCase()) };',
+    to: '  const RECORD_LABEL = { test: (label) => RECORD_LABEL_FORMS.test(label) };',
+    expect: ['C14 (D-F2)'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-sc-mutants-'));

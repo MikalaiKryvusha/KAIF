@@ -1222,7 +1222,13 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
     const lit = `['"\`]v?${v.replace(/\./g, '\\.')}['"\`]`;
     return (PIN_ID.test(text) && new RegExp(lit).test(text)) || (readsMarker && new RegExp(`\\.version\\s*(?:[!=]==?|,)\\s*${lit}`).test(text));
   };
-  const RECORD_LABEL = /^(?:kaif|каиф)[\s:]+(?:version|версия)(?!\p{L})|^(?:version|версия)[\s:]+(?:kaif|каиф)(?!\p{L})/iu;   // \b is ASCII-only — never after Cyrillic
+  const RECORD_LABEL_FORMS = /^(?:kaif|каиф)[\s:]+(?:version|версия)(?!\p{L})|^(?:version|версия)[\s:]+(?:kaif|каиф)(?!\p{L})/iu;   // \b is ASCII-only — never after Cyrillic
+  // D-F2 (court RL 2.8): the record row's label in EVERY language face of the delivery — the KAIF_FRAMEWORK.md templates of the ten
+  // packs name it their own way ("KAIF-Version", "Version de KAIF", ...); a dated row under any of them is the record itself, not a
+  // journal. Taken from the packs and written as escapes (no non-ASCII in the delivery's code); guard 5n of `tools/check-framework.mjs`
+  // holds this list equal to the packs. `RECORD_LABEL.test` keeps its name and call — one predicate, the forms and the list together.
+  const RECORD_LABELS = ['kaif version', 'kaif \u0938\u0902\u0938\u094d\u0915\u0930\u0923', 'kaif \u30d0\u30fc\u30b8\u30e7\u30f3', 'kaif \u7248\u672c', 'kaif-version', 'version de kaif', 'versi\u00f3n de kaif', 'vers\u00e3o do kaif', '\u0432\u0435\u0440\u0441\u0438\u044f kaif', '\u0625\u0635\u062f\u0627\u0631 kaif'];
+  const RECORD_LABEL = { test: (label) => RECORD_LABEL_FORMS.test(label) || RECORD_LABELS.includes(label.toLowerCase()) };
   const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
   const byFile = new Map();  // directory before the walk reached the only real public claim (field report Г4)
   // 2.8 (epic SC; origin #77): the files are the ones git sees (kaifWalk) — nested copies once took the whole cap and one

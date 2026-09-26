@@ -237,6 +237,11 @@ writeFileSync(join(TC, 'tools', 'kaif-framework.mjs'), "// KAIF gate of the proj
 writeFileSync(join(TC, 'tools', 'kaif-marker.mjs'), "// reads .kaif/kaif.json\nconst marker = readJson('.kaif/kaif.json');\nassert.equal(marker.version, '2.3');\n");   // F4
 writeFileSync(join(TC, 'tools', 'kaif-need.sh'), '# KAIF gate\nKAIF_REQUIRED="2.3"\n');                                            // F4
 writeFileSync(join(TC, 'PRODUCT.md'), '# Product\n\nAcme Space 2.0 — KAIF-project of the team.\n\nThe Acme 2.0 KAIF plugin ships today.\n\nПродукт 2.0 на KAIF собран.\n');   // F6
+// D-F2 (court RL 2.8): the record row under the label of each of the eight OTHER language faces, dated in another cell — the labels the
+// packs' KAIF_FRAMEWORK.md templates write; before the fix only the English and Russian labels were known and these rows stayed silent
+const C14 = ['KAIF-Version', 'Versión de KAIF', 'Version de KAIF', 'Versão do KAIF', 'KAIF 版本', 'KAIF バージョン', 'KAIF संस्करण', 'إصدار KAIF']
+  .map((label) => `| **${label}** | 2.7 | 2026-09-18 |`);
+writeFileSync(join(TC, 'RECORD_FACES.md'), `# Record\n\n| Field | Value | Date |\n|---|---|---|\n${C14.join('\n')}\n`);
 r = run(TC, `update --source ${SRC99}`);
 ok(r.code === 0, 'C update →9.9 exit 0', r.out.slice(-300));
 item = staleItem(TC);
@@ -258,6 +263,8 @@ ok(/tools\/kaif-framework\.mjs:2/.test(item) && /tools\/kaif-marker\.mjs:3/.test
   'C12 (F4): FRAMEWORK_VERSION · `.version` против старой версии в скрипте, читающем kaif.json · KAIF_REQUIRED — названы', cLines(/kaif-(framework|marker|need)/));
 // (the codename in reverse order stays named — that is C5's own assert, not repeated here: one predicate, one addressee)
 ok(!item.includes('PRODUCT.md'), 'C13 (F6): «Acme Space 2.0 — KAIF-…», «The Acme 2.0 KAIF plugin», «2.0 на KAIF» — версия продукта, не заявление', cLines(/PRODUCT/));
+const c14Named = C14.filter((row, i) => item.includes(`RECORD_FACES.md:${i + 5} — ${row}`)).length;
+ok(c14Named === C14.length, `C14 (D-F2): строка записи о развёртывании под подписью каждого из восьми других языков (de · es · fr · pt · zh · ja · hi · ar) с датой в другой ячейке названа — ${c14Named} из ${C14.length}`, cLines(/RECORD_FACES/));
 
 console.log(failures ? `\n❌ s29: ${failures} red` : '\n✅ s29: all green');
 process.exit(failures ? 1 : 0);
