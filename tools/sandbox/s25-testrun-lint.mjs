@@ -282,6 +282,16 @@ r = runBug('ru.md', ['# Кнопка «Оплатить» не отвечает 
 ok(r.code === 0 && /ru\.md: four sections, three lines, the steps a path/.test(r.out), 's25 отчёт тестировщика по-русски — `bug` зелёный', r.out);
 r = runLint('bug testcases/bugs/absent.md', S, DEPLOYED_LINT);
 ok(r.code === 1 && /no such report: testcases\/bugs\/absent\.md/.test(r.out), 's25 `bug` на несуществующем файле — отказ с именем, не «OK»', r.out);
+// суд TB3: F1 — любая форма «не воспроизвелось» (одна фраза на язык пропускала «не воспроизводится» без охоты — провал тикета #105);
+// F7 — каталог вместо отчёта: отказ с именем, не трасса стека EISDIR; F2 — шаблон тест-кейсов больше не несёт старую форму шага 6
+r = runBug('ru-form.md', notRepro([HUNT_ROWS[0]]).replace('**Status:** not reproduced after the variants below', '**Статус:** не воспроизводится'));
+ok(r.code === 1 && /ru-form\.md — hunt-too-short: .*lists 1 variant\(s\)/.test(r.out),
+  's25 «Статус: не воспроизводится» с одним вариантом — `bug` красный «меньше трёх» (форма, которую первая редакция пропускала)', r.out);
+r = runLint('bug testcases/bugs', S, DEPLOYED_LINT);
+ok(r.code === 1 && /testcases\/bugs is not a file/.test(r.out) && !/\n\s+at .*\.mjs:\d+|EISDIR/.test(r.out), 's25 `bug <каталог>` — отказ с именем, не трасса стека EISDIR', r.out);
+const TC_TPL = existsSync(join(S, '.kaif', '_testcases-template.md')) ? readFileSync(join(S, '.kaif', '_testcases-template.md'), 'utf8') : '';
+ok(/template C of `\/report-bug`/.test(TC_TPL) && !/steps to reproduce · expected vs\s+actual · severity\/priority/.test(TC_TPL),
+  's25 развёрнутый шаблон тест-кейсов ведёт к шагам 6–7 и шаблону C, прежней формы шага 6 в нём нет', TC_TPL.slice(-400));
 
 // --------------------------------- (4) ось «конституция сохранила обязательства шаблона» (эпик FR, plans/113)
 // Тикет #68: сгенерированная конституция сохранила 5 правил §2 из 9 шаблонных — четыре правила

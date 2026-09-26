@@ -56,6 +56,8 @@ const FIX = {
   'hunt-3': [withStatus(fillC()) + HUNT([1, 2, 3].map((i) => ROW(i, 'not reproduced'))), 0],
   'hunt-none': [withStatus(fillC()), 1],
   'found-on-2nd': [fillC() + HUNT([ROW(1, 'not reproduced'), ROW(2, 'reproduced')]), 0],
+  // TB3 F1: «не воспроизводится» with one variant — the first edition knew one phrase per language and passed it
+  'ru-form-1': [fillC().replace(/^(\*\*Build:\*\*[^\n]*)$/m, '$1\n**Статус:** не воспроизводится') + HUNT([ROW(1, 'не воспроизводится')]), 1],
 };
 const run = (bin, args) => {
   try { return { code: 0, out: execFileSync(process.execPath, [bin, ...args], { cwd: root, stdio: 'pipe' }).toString() }; }
@@ -68,16 +70,36 @@ const MUTANTS = [
   { name: 'M1 missing-section never fires', from: "{ id: 'missing-section', test: (b) => b.missing.length > 0,", to: "{ id: 'missing-section', test: (b) => false,",
     red: ['en bug: mutation missing-section', 'ru bug: mutation missing-section'], flips: ['no-expected'] },
   { name: 'M2 the hunt minimum lowered to 2', from: 'export const HUNT_MIN = 3;', to: 'export const HUNT_MIN = 2;',
-    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short'], flips: ['hunt-2'] },
-  { name: 'M3 the hunt header row counted', from: "const huntText = stripScaffold(fields.hunt || '');", to: "const huntText = fields.hunt || '';",
-    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short'], flips: ['hunt-2'] },
-  { name: 'M4 the first edition of the lines rule', from: String.raw`const missingLines = kw.lines.filter((label) => !/[\p{L}\p{N}]/u.test(lineValue(label) || ''));`,
+    // TB3: the hunt with two real variants and one empty outcome also passes at a minimum of two
+    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'], flips: ['hunt-2'] },
+  { name: 'M3 the hunt header row counted', from: 'const huntText = stripScaffold(rawHunt);', to: 'const huntText = rawHunt;',
+    // TB3: the header counted lifts the hunt with an empty outcome to three as well
+    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'], flips: ['hunt-2'] },
+  { name: 'M4 the first edition of the lines rule', from: String.raw`const missingLines = kw.lines.filter((label, i) => !/[\p{L}\p{N}]/u.test(lineValue(kw.match.lines[i]) || ''));`,
     to: String.raw`const missingLines = kw.lines.filter((label) => !new RegExp(` + '`' + String.raw`\\*\\*` + '${label}' + String.raw`:?\\*\\*:?\\s*[^\\s*<]` + '`' + ", 'iu').test(bare));",
     red: ['en bug: the lines row with placeholders only', 'ru bug: the lines row with placeholders only'], flips: [] , unfilledKeepsSections: true },
   { name: 'M5 steps-not-a-path off', from: "test: (b) => b.has('steps') && !NUMBERED_ITEM.test(b.text('steps')),", to: 'test: (b) => false,',
     red: ['en bug: mutation steps-not-a-path', 'ru bug: mutation steps-not-a-path'], flips: ['no-steps'] },
-  { name: 'M6 «not reproduced» never read', from: 'const notRepro = Object.values(BUG_KEYWORDS).some(', to: 'const notRepro = false && Object.values(BUG_KEYWORDS).some(',
-    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short'], flips: ['hunt-2', 'hunt-none'] },
+  { name: 'M6 «not reproduced» never read', from: 'const notRepro = status ?', to: 'const notRepro = false; const _unread = status ?',
+    // TB3: every selftest case of the verdict (the three forms per language and the hole in the hunt) depends on the same read
+    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', 'en bug: «Could not reproduce»', 'en bug: «cannot reproduce»', 'en bug: «not reproducible»',
+      'ru bug: «не воспроизводится»', 'ru bug: «не удалось воспроизвести»', 'ru bug: «не воспроизведено»', 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'],
+    flips: ['hunt-2', 'hunt-none', 'ru-form-1'] },
+  { name: 'M8 one phrase per language again (TB3 F1 — «не воспроизводится», «Could not reproduce» pass without a hunt)',
+    from: "const NOT_REPRO = new RegExp(`(?<![\\\\p{L}])(?:${Object.values(BUG_KEYWORDS).flatMap((k) => k.notReproduced).join('|')})`, 'iu');",
+    to: "const NOT_REPRO = /(?<![\\p{L}])(?:not reproduced|не воспроизвел)/iu;",
+    red: ['en bug: «Could not reproduce»', 'en bug: «cannot reproduce»', 'en bug: «not reproducible»', 'ru bug: «не воспроизводится»', 'ru bug: «не удалось воспроизвести»', 'ru bug: «не воспроизведено»'],
+    flips: ['ru-form-1'] },
+  { name: 'M9 the Status line no longer decides (TB3 F1 — a reproduced report reddens on «not reproduced on iOS»)',
+    from: 'const notRepro = status ? NOT_REPRO.test(status[1]) : ', to: 'const notRepro = ',
+    red: ['en bug: the Status line says reproduced', 'ru bug: the Status line says reproduced'], flips: [] },
+  { name: 'M10 a hunt row with an empty outcome counts again (TB3 F4)',
+    from: '(realTable && /^\\s*\\|/.test(l) && outcome(l))', to: '(realTable && /^\\s*\\|/.test(l))',
+    red: ['en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'], flips: [] },
+  { name: 'M11 only «## Title» headings again (TB3 F5 — «## 3 Expected results» and an H3 hunt were missing sections)',
+    from: 'const m = !fence && /^#{2,3}\\s+(?:\\d+[.)]?\\s+)?(.+?)\\s*$/.exec(l);\n    if (m) { const hit = roleOfBug(m[1]);',
+    to: 'const m = !fence && /^##\\s+(?:\\d+[.)]\\s*)?(.+?)\\s*$/.exec(l);\n    if (m) { const hit = roleOfBug(m[1]);',
+    red: ['en bug: «## 3 Expected results»', 'ru bug: «## 3 Expected results»'], flips: [] },
   { name: "M7 the hunt's own rows read as the verdict", from: "if (cur !== 'hunt' && !fence) outside += l + '\\n';", to: "if (!fence) outside += l + '\\n';",
     red: ['en bug: REPRODUCED after two tries', 'ru bug: REPRODUCED after two tries'], flips: ['found-on-2nd'] },
 ];

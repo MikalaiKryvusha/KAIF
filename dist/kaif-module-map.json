@@ -617,7 +617,7 @@
       {
         "signature": "## The testing activities — the chain that makes \"tested\" mean something",
         "class": "static",
-        "sha256": "3c81e48a397c3450351383ca3a7582157914f7a8f529381167f2e1d8a58b03da",
+        "sha256": "28541472d47c725f2aade340240d53a63d045cea4d9de8e92398098cef9253b6",
         "lines": [
           44,
           83
@@ -5900,7 +5900,7 @@
       {
         "signature": "## 6. Verdict",
         "class": "static",
-        "sha256": "34d2d418ecbaef556e6f81047a6a77c4975bfc641c5f0f8aec995fe588cf1c1b",
+        "sha256": "a3dfd3b5889b655db69a139ca19ce22789e712586c27c32e3203de0049617181",
         "lines": [
           56,
           62

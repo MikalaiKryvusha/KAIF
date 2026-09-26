@@ -189,27 +189,35 @@ export function lint(name, src) {
 //  answers); four field deployments updated by their own 2.7 core — `bug` on two of them read; 7 mutants on their addressees;
 //  report testcases/reports/2026-09-26_tb1-tester-report-and-hunt.md]
 export const BUG_KEYWORDS = {
-  en: { sections: ['Description', 'Steps to reproduce', 'Expected result', 'Actual result'], hunt: 'Reproduction hunt', lines: ['Build', 'Environment', 'Evidence'], notReproduced: 'not reproduced' },
-  ru: { sections: ['Описание', 'Шаги воспроизведения', 'Ожидаемый результат', 'Фактический результат'], hunt: 'Охота за шагами', lines: ['Сборка', 'Окружение', 'Улики'], notReproduced: 'не воспроизвел' },
+  en: { sections: ['Description', 'Steps to reproduce', 'Expected result', 'Actual result'], hunt: 'Reproduction hunt', lines: ['Build', 'Environment', 'Evidence'],
+        match: { sections: ['description', 'steps to reproduce|reproduction steps', 'expected results?|expected behaviou?r', 'actual results?|actual behaviou?r'], hunt: 'reproduction hunt', lines: ['build', 'environment', 'evidence'] },
+        notReproduced: ['not reproduced', 'not reproducible', 'non-reproducible', `(?:could|can|did|was)(?:n['’]t| not) reproduce`, 'cannot reproduce', 'unable to reproduce', 'failed to reproduce'] },
+  ru: { sections: ['Описание', 'Шаги воспроизведения', 'Ожидаемый результат', 'Фактический результат'], hunt: 'Охота за шагами', lines: ['Сборка', 'Окружение', 'Улики'],
+        match: { sections: ['описание', 'шаги воспроизведения', `ожидаем\\p{L}* результат\\p{L}*`, `фактическ\\p{L}* результат\\p{L}*`], hunt: 'охота за (?:шагами|воспроизведением)', lines: ['сборка', 'окружение|среда', 'улики|доказательства|свидетельства'] },
+        notReproduced: ['не\\s+воспроизв', 'не\\s+удал\\p{L}*\\s+воспроизвести', 'воспроизвести\\s+не\\s+удал'] },
 };
 export const BUG_ROLES = ['description', 'steps', 'expected', 'actual'];
 export const HUNT_MIN = 3;
 const NUMBERED_ITEM = /^\s*\d+[.)]\s+\S/m;
+// every form of the verdict «did not reproduce», both languages (TB3 F1: one phrase per language let «не воспроизводится» and «Could not
+// reproduce» pass without a hunt — the very failure of issue #105)
+const NOT_REPRO = new RegExp(`(?<![\\p{L}])(?:${Object.values(BUG_KEYWORDS).flatMap((k) => k.notReproduced).join('|')})`, 'iu');
+const STATUS_LINE = /\*\*(?:status|статус):?\*\*:?([^\n]*)/iu;
 export function parseBug(src) {
   const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
   const fields = {};
   let lang = null, cur = null, fence = false, outside = '';   // `outside` — the text beyond the hunt: its rows legally carry «not reproduced»
   const roleOfBug = (title) => {
     for (const [lg, kw] of Object.entries(BUG_KEYWORDS)) {
-      const i = kw.sections.findIndex((k) => new RegExp(`^${k}(?![\\p{L}])`, 'iu').test(title));
+      const i = kw.match.sections.findIndex((k) => new RegExp(`^(?:${k})(?![\\p{L}])`, 'iu').test(title));
       if (i >= 0) return { lang: lg, role: BUG_ROLES[i] };
-      if (new RegExp(`^${kw.hunt}(?![\\p{L}])`, 'iu').test(title)) return { lang: lg, role: 'hunt' };
+      if (new RegExp(`^(?:${kw.match.hunt})(?![\\p{L}])`, 'iu').test(title)) return { lang: lg, role: 'hunt' };
     }
     return null;
   };
   for (const l of lines) {
     if (/^\s*```/.test(l)) { fence = !fence; if (cur) fields[cur] += l + '\n'; continue; }
-    const m = !fence && /^##\s+(?:\d+[.)]\s*)?(.+?)\s*$/.exec(l);
+    const m = !fence && /^#{2,3}\s+(?:\d+[.)]?\s+)?(.+?)\s*$/.exec(l);
     if (m) { const hit = roleOfBug(m[1]); if (hit) { lang = lang || hit.lang; cur = hit.role; fields[cur] = fields[cur] || ''; } else cur = null; continue; }
     if (cur) fields[cur] += l + '\n';
     if (cur !== 'hunt' && !fence) outside += l + '\n';
@@ -222,11 +230,17 @@ export function parseBug(src) {
   // A line counts only when its VALUE — up to the next " · **Label" or the line end — carries a letter or a digit: with the
   // placeholders stripped, the unfilled template's "**Build:**  · **Environment:** …" would otherwise pass on the "·" alone.
   const bare = body.replace(PLACEHOLDER, '');
-  const lineValue = (label) => (new RegExp(`\\*\\*${label}:?\\*\\*:?([^\\n]*?)(?=\\s+·\\s+\\*\\*|\\r?\\n|$)`, 'iu').exec(bare) || [])[1];
-  const missingLines = kw.lines.filter((label) => !/[\p{L}\p{N}]/u.test(lineValue(label) || ''));
-  const notRepro = Object.values(BUG_KEYWORDS).some((k) => new RegExp(`(?<![\\p{L}])${k.notReproduced}`, 'iu').test(outside));
-  const huntText = stripScaffold(fields.hunt || '');
-  const variants = huntText.split(/\r?\n/).filter((l) => (/^\s*\|/.test(l) && /\p{L}/u.test(l)) || /^\s*(?:[-*+]|\d+[.)])\s+\S/.test(l)).length;
+  const lineValue = (label) => (new RegExp(`\\*\\*(?:${label}):?\\*\\*:?([^\\n]*?)(?=\\s+·\\s+\\*\\*|\\r?\\n|$)`, 'iu').exec(bare) || [])[1];
+  const missingLines = kw.lines.filter((label, i) => !/[\p{L}\p{N}]/u.test(lineValue(kw.match.lines[i]) || ''));
+  const status = STATUS_LINE.exec(outside.replace(PLACEHOLDER, ''));
+  const notRepro = status ? NOT_REPRO.test(status[1]) : NOT_REPRO.test(outside.replace(/`[^`\n]*`/g, ''));
+  // a variant is a first-level list item, or a row of a REAL table (a separator row under its header) whose last cell — the outcome —
+  // says something (TB3 F4: nested sub-items, a header without a separator and rows with an empty outcome were counted)
+  const rawHunt = fields.hunt || '';
+  const realTable = rawHunt.split(/\r?\n/).some((l) => SEPARATOR_ROW.test(l));
+  const huntText = stripScaffold(rawHunt);
+  const outcome = (l) => { const cells = l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim()); return cells.length >= 2 && /[\p{L}\p{N}]/u.test(cells[cells.length - 1]); };
+  const variants = huntText.split(/\r?\n/).filter((l) => (realTable && /^\s*\|/.test(l) && outcome(l)) || /^(?:[-*+]|\d+[.)])\s+\S/.test(l)).length;
   return { lang, kw, fields, missing, empty, missingLines, notRepro, variants,
            has: (role) => role in fields && hasContent(fields[role]), text: (role) => stripScaffold(fields[role] || '') };
 }
@@ -249,6 +263,7 @@ export function lintBug(src) {
 }
 function bugCheck(file) {
   if (!file || !existsSync(file)) { console.error(`✖ testrun-lint bug: no such report: ${file || '(none named)'} — usage: kaif-testrun-lint.mjs bug <report.md>`); process.exit(1); }
+  if (!statSync(file).isFile()) { console.error(`✖ testrun-lint bug: ${file} is not a file — name ONE report: kaif-testrun-lint.mjs bug <report.md>`); process.exit(1); }
   const found = lintBug(readFileSync(file, 'utf8'));
   for (const x of found) console.log(`✖ ${file.replace(/\\/g, '/')} — ${x.id}: ${x.msg}`);
   if (found.length) { console.log(`✖ testrun-lint bug: ${found.length} finding(s) — a report the developer cannot act on goes back to the tester`); process.exit(1); }
@@ -410,7 +425,7 @@ function selftest() {
   };
   const renderBug = (lang, over = {}, huntRows = null, notRepro = false) => {
     const f = { ...BUG[lang], ...over }; const k = BUG_KEYWORDS[lang].sections;
-    let out = `${f.title}\n\n${f.lines}\n${notRepro ? f.status + '\n' : ''}\n`;
+    let out = `${f.title}\n\n${f.lines}\n${notRepro || over.status ? f.status + '\n' : ''}\n`;
     ['description', 'steps', 'expected', 'actual'].forEach((role, i) => { if (f[role] !== null) out += `## ${k[i]}\n\n${f[role]}\n\n`; });
     if (huntRows) out += `## ${BUG_KEYWORDS[lang].hunt}\n\n${f.head}\n${huntRows.join('\n')}\n`;
     return out;
@@ -429,6 +444,24 @@ function selftest() {
       const got = lintBug(BUG_MUT[id](lang)).map((x) => x.id);
       say(got.length === 1 && got[0] === id, `${lang} bug: mutation ${id} → exactly [${id}] (got [${got.join(',')}])`);
     }
+    // TB3 F1: every form of the verdict reddens a one-variant hunt; the Status line decides when present; inline code is no verdict
+    const FORMS = { en: ['Could not reproduce', 'cannot reproduce', 'not reproducible'], ru: ['не воспроизводится', 'не удалось воспроизвести', 'не воспроизведено'] };
+    for (const form of FORMS[lang]) {
+      const one = lintBug(renderBug(lang, { status: `**${lang === 'en' ? 'Status' : 'Статус'}:** ${form}` }, [BUG[lang].row(1, form)], true)).map((x) => x.id);
+      say(one.length === 1 && one[0] === 'hunt-too-short', `${lang} bug: «${form}» with one variant → exactly [hunt-too-short] (got [${one.join(',')}])`);
+    }
+    const bodyWord = lintBug(renderBug(lang, { status: `**${lang === 'en' ? 'Status' : 'Статус'}:** ${lang === 'en' ? 'reproduced on Android' : 'воспроизводится на Android'}`, actual: lang === 'en' ? 'Nothing happens (it was not reproduced on iOS).' : 'Ничего не происходит (на iOS не воспроизводится).' }, null, true)).map((x) => x.id);
+    say(bodyWord.length === 0, `${lang} bug: the Status line says reproduced — a «not reproduced» in the body is no verdict (got [${bodyWord.join(',')}])`);
+    const inCode = lintBug(renderBug(lang, { actual: lang === 'en' ? 'The log prints `not reproduced`.' : 'Лог печатает `не воспроизведено`.' })).map((x) => x.id);
+    say(inCode.length === 0, `${lang} bug: «not reproduced» inside inline code — no verdict (got [${inCode.join(',')}])`);
+    // TB3 F4: a row with an empty outcome and a nested sub-item are no variants
+    const holes = lintBug(renderBug(lang, {}, [BUG[lang].row(1, 'not reproduced'), BUG[lang].row(2, 'not reproduced'), `| 3 | ${lang === 'en' ? 'network: offline' : 'сеть: офлайн'} |  |`], true)).map((x) => x.id);
+    say(holes.length === 1 && holes[0] === 'hunt-too-short', `${lang} bug: a hunt row with an empty outcome is not a variant → [hunt-too-short] (got [${holes.join(',')}])`);
+    // TB3 F5: plural headings, a number without its dot and an H3 hunt are the same sections
+    const heads = lintBug(renderBug(lang, {}, [1, 2, 3].map((i) => BUG[lang].row(i, 'not reproduced')), true)
+      .replace(/^## (Expected result|Ожидаемый результат)$/m, (h, t) => (lang === 'en' ? '## 3 Expected results' : '## 3 Ожидаемые результаты'))
+      .replace(/^## (Reproduction hunt|Охота за шагами)$/m, (h, t) => `### ${t}`)).map((x) => x.id);
+    say(heads.length === 0, `${lang} bug: «## 3 Expected results» and an H3 hunt — the same sections (got [${heads.join(',')}])`);
     // The unfilled template's lines row — labels with placeholders only — names all three lines, never passes on the separators.
     const bareLines = lintBug(renderBug(lang, { lines: BUG_KEYWORDS[lang].lines.map((l) => `**${l}:** <${l.toLowerCase()}>`).join(' · ') }));
     say(bareLines.length === 1 && bareLines[0].id === 'missing-line' && BUG_KEYWORDS[lang].lines.every((l) => bareLines[0].msg.includes(`**${l}:**`)),

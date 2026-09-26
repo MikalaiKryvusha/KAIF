@@ -1801,10 +1801,10 @@ step with its exit condition:
    down. *Exit:* the steps reproduce it, or the report says "not reproduced" and lists at least
    three variants tried, each with its outcome — one attempt is never a verdict.
 7. **File defects in the defined shape** — the tester's report a developer reads: **Description ·
-   Steps to reproduce · Expected result · Actual result**, plus **Build · Environment · Evidence**;
-   the steps are the user's path in the product, never state assembled through a back door
-   (template C of `/report-bug`; `node .kaif/tools/kaif-testrun-lint.mjs bug <report>` checks the
-   sections and the hunt) — then hand off to `BUG_FIXING_FRAMEWORK.md` (one document per defect).
+   Steps to reproduce · Expected result · Actual result**, plus **Build · Environment · Evidence** and the
+   severity/priority the tracker takes; the steps are the user's path in the product, never state assembled
+   through a back door (template C of `/report-bug`; `node .kaif/tools/kaif-testrun-lint.mjs bug <report>`
+   checks the sections and the hunt) — then hand off to `BUG_FIXING_FRAMEWORK.md` (one document per defect).
 
 ## Test-status markers — the trust contract
 
