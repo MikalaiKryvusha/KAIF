@@ -47,9 +47,9 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
 3. **File AND deliver — one step, one motion:** write `bugs/KAIF/NN_*.md` by template A/B below
    (create the directory on first use) and, on `tracking: origin`, run the delivery in the SAME
    motion, ahead of the work that found the defect — there is no separate "deliver" step to
-   postpone, because filing IS delivering (KAIF 2.7, epic SD; origin issue #65: a ticket waited
+   postpone, because filing IS delivering (KAIF 2.7, epic SD) — origin issue #65: a ticket waited
    forty minutes and one direct question of the owner for a second "send" — the broad "confirm
-   outward actions" reflex beat the carve-out that lived as prose):
+   outward actions" reflex beat the carve-out that lived as prose:
    `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`
    It files the origin issue signed by the agent under the KAIF owner's STANDING AUTHORIZATION
    (origin issue #15 — the owner's word: "this is CANON"; the `AGENT_GUIDE.md` authorization

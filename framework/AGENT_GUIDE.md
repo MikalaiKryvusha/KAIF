@@ -930,8 +930,8 @@ the moment of sending, and that is said plainly:** before sending a reply, grep 
 at" next to an artifact extension — a hit means the show was replaced by a link. No machine can do it: the text being checked is your
 reply, it never lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named: questions to the
 owner are guarded by the questions-guard axis "a question that dispatches into a document". **And a page the owner looks at
-is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66;
-`/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
+is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46):
+a neighbour's word, a `pkill`, a guess are not evidence.
 
 **A comparison, a sequence in time or a fork of outcomes is explained with a PICTURE** (2.8, origin issue #104 — a field owner found a
 page with frames, a time line and an outcome tree a hundred times clearer than text; the words are quoted in the issue). COMPARISON

@@ -281,6 +281,15 @@ r = run('check');
 ok(r.code === 0 && /⚠ KAIF field report with no readable delivery state: reports\/KAIF_UPDATES\/FIXTURE_KAIF_2\.8_UPDATE_REPORT\.md — no `\*\*Delivered upstream:\*\*` line/.test(r.out)
    && r.out.includes('open the report with an H1 and `**Delivered upstream:** NOT YET`, then run node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/FIXTURE_KAIF_2.8_UPDATE_REPORT.md'),
    's17/CH1: полевой отчёт 2.8 без строки доставки — назван «no readable delivery state» с формой строки и командой', r.out.slice(-400));
+// RL2 2.8 (court C-F1): a report whose file name does not date it is judged by its own delivery line (the line arrived with 2.8); one with
+// neither the canonical name nor the line stays silent (a local report of an older canon)
+const FR_ODD = 'reports/KAIF_UPDATES/fixture-update-notes.md', FR_ODD_OLD = 'reports/KAIF_UPDATES/old-local-notes.md';
+writeFileSync(join(S, FR_ODD), '# FIXTURE — an update report under a free name\n\n**Delivered upstream:** NOT YET — written this update\n\n## 1. Chronology\n\nfixture\n');
+writeFileSync(join(S, FR_ODD_OLD), '# FIXTURE — old local notes\n\n## 1. Chronology\n\nlocal\n');
+r = run('check');
+ok(r.code === 0 && r.out.includes('⚠ undelivered KAIF field report: reports/KAIF_UPDATES/fixture-update-notes.md') && !/old-local-notes/.test(r.out),
+   's17/CH1 (C-F1): отчёт с неканоническим именем и NOT YET назван check по своей строке доставки; файл без имени и без строки молчит', r.out.slice(-500));
+rmSync(join(S, FR_ODD)); rmSync(join(S, FR_ODD_OLD));
 writeFileSync(join(S, FR), '# FIXTURE — KAIF 2.8 update report\n\n**Delivered upstream:** NOT YET — written this update\n\n## 1. Chronology\n\nfixture\n');
 writeTicket(); setTracking('anonymous');
 r = run('check');

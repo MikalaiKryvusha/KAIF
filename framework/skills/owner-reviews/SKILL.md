@@ -206,11 +206,11 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
 - **I31. Process termination is the answer-delivery channel.** The agent starts the contour as a
   TRACKED background task and subscribes to its termination; a bare `&` is not tracked by the
   harness and no notification ever comes.
-  **The launch is a COMMAND the agent copies, never a paragraph it interprets** (KAIF 2.7, origin
+  **The launch is a COMMAND the agent copies, never a paragraph it interprets** (KAIF 2.7) — origin
   issue #64: an agent launched the contour in the foreground with `--timeout 60` — the shell's
   timeout killed it and the owner's window with it; a second launch took a fresh port and orphaned
   the draft; a third handed the URL to `Start-Process` — a tab in the owner's working browser; three
-  invariants in a row, nothing went red; the owner lost the answer he was typing):
+  invariants in a row, nothing went red; the owner lost the answer he was typing:
 
   | Agent system | Ready launch |
   |---|---|

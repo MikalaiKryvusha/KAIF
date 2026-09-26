@@ -12,7 +12,8 @@ import { splitModules, joinModules } from '../module-map-lib.mjs';
 import { must, coreRunner } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const DIST = join(REPO, 'dist');
+// шов KAIF_DIST (как у s22 · s29): красное доказательство нового случая — против сборки ДО починки (RL2 2.8, C-F1)
+const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
 // текущая версия репо — из dist, не из головы (хардкод «1.6» ломал полигон на бампе 2.0)
 const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 // Корень прогона УНИКАЛЕН по построению (bugs/59): каталог с фиксированным именем в общем
@@ -209,6 +210,10 @@ writeFileSync(join(S12, 'reports', 'KAIF_UPDATES', 'SBX_KAIF_9.9_UPDATE_REPORT.m
   '# Field report: KAIF update sandbox\n\n## 5. Final state and judge verdict\nVERIFIED\n');
 r = run(S12, 'checkpoint field-report');
 ok(r.code === 0 && /field report on disk/.test(r.out), 'S12-M3 checkpoint field-report С файлом под 9.9 — записан', r.out);
+// RL2 2.8 (court C-F1): on the update route the task came from the outgoing core, whose item never said "deliver" — the checkpoint runs on
+// the DELIVERED core and states it: on tracking: origin an undelivered report is named with the delivery command; the tick is recorded anyway
+ok(/the field report is not delivered to KAIF yet/.test(r.out) && /run node \.kaif\/kaif-core\.mjs report reports\/KAIF_UPDATES\/SBX_KAIF_9\.9_UPDATE_REPORT\.md/.test(r.out),
+   'S12-M3 (C-F1): отчёт без строки доставки на tracking: origin — отметка называет доставку готовой командой report и всё равно записана', r.out.slice(-400));
 for (const id of taskIds) {
   const extra = id === 'judge' ? ' --verdict "VERIFIED: sandbox pass, gates observed green"' : '';
   r = run(S12, `checkpoint ${id}${extra}`);

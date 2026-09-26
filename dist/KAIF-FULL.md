@@ -1075,8 +1075,8 @@ the moment of sending, and that is said plainly:** before sending a reply, grep 
 at" next to an artifact extension — a hit means the show was replaced by a link. No machine can do it: the text being checked is your
 reply, it never lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named: questions to the
 owner are guarded by the questions-guard axis "a question that dispatches into a document". **And a page the owner looks at
-is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66;
-`/owner-reviews` I46): a neighbour's word, a `pkill`, a guess are not evidence.
+is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46):
+a neighbour's word, a `pkill`, a guess are not evidence.
 
 **A comparison, a sequence in time or a fork of outcomes is explained with a PICTURE** (2.8, origin issue #104 — a field owner found a
 page with frames, a time line and an outcome tree a hundred times clearer than text; the words are quoted in the issue). COMPARISON
@@ -4678,9 +4678,9 @@ contour in `AGENT_GUIDE.md` governs the local fix; this branch governs the REPOR
 3. **File AND deliver — one step, one motion:** write `bugs/KAIF/NN_*.md` by template A/B below
    (create the directory on first use) and, on `tracking: origin`, run the delivery in the SAME
    motion, ahead of the work that found the defect — there is no separate "deliver" step to
-   postpone, because filing IS delivering (KAIF 2.7, epic SD; origin issue #65: a ticket waited
+   postpone, because filing IS delivering (KAIF 2.7, epic SD) — origin issue #65: a ticket waited
    forty minutes and one direct question of the owner for a second "send" — the broad "confirm
-   outward actions" reflex beat the carve-out that lived as prose):
+   outward actions" reflex beat the carve-out that lived as prose:
    `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md`
    It files the origin issue signed by the agent under the KAIF owner's STANDING AUTHORIZATION
    (origin issue #15 — the owner's word: "this is CANON"; the `AGENT_GUIDE.md` authorization
@@ -7405,11 +7405,11 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
 - **I31. Process termination is the answer-delivery channel.** The agent starts the contour as a
   TRACKED background task and subscribes to its termination; a bare `&` is not tracked by the
   harness and no notification ever comes.
-  **The launch is a COMMAND the agent copies, never a paragraph it interprets** (KAIF 2.7, origin
+  **The launch is a COMMAND the agent copies, never a paragraph it interprets** (KAIF 2.7) — origin
   issue #64: an agent launched the contour in the foreground with `--timeout 60` — the shell's
   timeout killed it and the owner's window with it; a second launch took a fresh port and orphaned
   the draft; a third handed the URL to `Start-Process` — a tab in the owner's working browser; three
-  invariants in a row, nothing went red; the owner lost the answer he was typing):
+  invariants in a row, nothing went red; the owner lost the answer he was typing:
 
   | Agent system | Ready launch |
   |---|---|

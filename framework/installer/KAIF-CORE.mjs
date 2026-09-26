@@ -3713,14 +3713,19 @@ function cmdCheck() {
         }
       }
     }
-    // the field reports of 2.8+ — the version is read from the report's own file name (<PROJECT>_KAIF_<X.Y>_<UPDATE|INSTALL>_REPORT.md),
-    // the same one reading of the delivery line (deliveryState) as the tickets above
+    // the field reports of 2.8+ — the version is read from the report's own file name (<PROJECT>_KAIF_<X.Y>_<UPDATE|INSTALL>_REPORT.md) or,
+    // when the name does not date it, the report's own delivery line makes it a 2.8+ signal (C-F1); the same one reading of the delivery
+    // line (deliveryState) as the tickets above
     if (jm.tracking === 'origin' && existsSync(FIELD_REPORTS)) {
       for (const f of readdirSync(FIELD_REPORTS).sort()) {
+        if (!/\.md$/i.test(f)) continue;
         const v = f.match(/_KAIF_(\d+)\.(\d+)_(?:UPDATE|INSTALL)_REPORT\.md$/i);
-        if (!v || Number(v[1]) * 1000 + Number(v[2]) < FIELD_REPORT_SINCE[0] * 1000 + FIELD_REPORT_SINCE[1]) continue;
+        if (v && Number(v[1]) * 1000 + Number(v[2]) < FIELD_REPORT_SINCE[0] * 1000 + FIELD_REPORT_SINCE[1]) continue;
         const p = FIELD_REPORTS + '/' + f;
         const ds = deliveryState(readFileSync(p, 'utf8'));
+        // (court RL C-F1) a report its file name does not date is judged by its own delivery line: the line arrived with 2.8, so a report
+        // that carries it is a 2.8+ signal whatever the file is called; one with neither the canonical name nor the line stays silent
+        if (!v && ds.state === 'missing') continue;
         if (ds.state === 'not-yet')
           console.error(`⚠ undelivered KAIF field report: ${p} — a field report is a KAIF signal, delivered in the same move as it is written (origin issues #15, #78; no owner's approval is awaited): node .kaif/kaif-core.mjs report ${p}`);
         else if (ds.state !== 'delivered' && ds.state !== 'resolved')
@@ -4154,6 +4159,17 @@ function cmdCheckpoint() {
     if (!r.found.length)
       die(`checkpoint field-report REFUSED: no *_KAIF_${r.ver || '<version>'}_${r.kind}_REPORT.md in ${r.dir}/ — write the field report first (its sections are in the task item; genre canon: reports/README.md)`);
     log(`✔ field report on disk: ${join(r.dir, r.found[0])} (executed by the checkpoint itself)`);
+    // 2.8 (court RL C-F1): on the update route the task was written by the OUTGOING core, whose field-report item never said "deliver"
+    // (the delivery sentence arrived with 2.8, epic CH) — this checkpoint runs on the DELIVERED core, so it states the delivery itself.
+    // A warning, never a refusal: an update without a network must still finish; the `check` axis names the report again (FORK B, plans/125).
+    try {
+      if (readJson(KAIF_JSON).tracking === 'origin') {
+        const rp = `${r.dir.replace(/\\/g, '/')}/${r.found[0]}`;
+        const ds = deliveryState(readFileSync(rp, 'utf8'));
+        if (ds.state !== 'delivered' && ds.state !== 'resolved')
+          console.error(`⚠ the field report is not delivered to KAIF yet — a field report is a KAIF signal, delivered in the same move (the KAIF owner's standing authorization, origin issues #15 · #78; no owner's approval is awaited): ${ds.state === 'missing' ? 'open it with an H1 and `**Delivered upstream:** NOT YET` right under it, then run ' : 'run '}node .kaif/kaif-core.mjs report ${rp}`);
+      }
+    } catch { /* an unreadable marker or report — the check axis names it */ }
   }
   let verdictLine = null;
   if (id === 'judge') {

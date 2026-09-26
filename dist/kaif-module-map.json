@@ -269,7 +269,7 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "2f865786705079089508b0099bf5aaa496b950e506ad6218ace7642f1d36aecb",
+        "sha256": "6178ec6ee9d65889d2acf3e953e6c93f8feb99a38dc7fb9086de8d66589e1620",
         "lines": [
           860,
           1052
@@ -3742,7 +3742,7 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "31b9f312892e57ce636e0b1098e0d16021d17d8f80f7ed49fac9161e3762fa07",
+        "sha256": "dffa7a8c3c71633cc12843c3695e94bb079f1f4f7ddbf4bd17714334eb4d0eb2",
         "lines": [
           52,
           367
@@ -4361,7 +4361,7 @@
       {
         "signature": "## Branch first — a defect of the FRAMEWORK itself, not the project",
         "class": "static",
-        "sha256": "a68caa9ed525039ceee59395b8f8d4ce937b6a44a24730f4924e5fae0bf533c2",
+        "sha256": "1f5a5692cee2a1298c734b8206b9021c93987dc79ba294b55d5d174a66b37634",
         "lines": [
           30,
           81
