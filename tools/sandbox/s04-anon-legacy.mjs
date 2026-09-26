@@ -514,6 +514,15 @@ console.log('\n=== S17 (#107): сборка между релизами — ма
      'S17 (#107): заметки 9.8 в задании помечены «вероятно, уже на месте»', t17.slice(t17.indexOf('9.8'), t17.indexOf('9.8') + 300));
   ok(m17b.version === '9.8' && !('prerelease' in m17b) && m17b.build === 'b'.repeat(12),
      'S17 (#107): после обновления до релиза маркер без prerelease, отпечаток — релизной сборки', JSON.stringify(m17b));
+  // (б2) лёгкий судья #107, K-F2: поле prerelease, оставшееся в маркере НЕ новее его версии (дописано руками, перенесено ядром, которое
+  // поля не знает), ложного происхождения на следующем обновлении не даёт
+  { const mk = markerOf(S17); mk.prerelease = mk.version; writeFileSync(join(S17, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n'); }
+  rmSync(join(S17, 'KAIF_UPDATE_TASK.md'), { force: true });   // the previous interval's task, discarded consciously (the core refuses otherwise)
+  r = run(S17, `update --source ${SRC}`);
+  const t17b2 = existsSync(join(S17, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(S17, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
+  ok(r.code === 0 && !t17b2.includes('- **prerelease-origin**') && !('prerelease' in markerOf(S17)),
+     'S17 (#107, K-F2): prerelease не новее версии маркера — следующее обновление происхождения не называет, поле снято',
+     'code ' + r.code + ' · ' + r.out.slice(-300));
   // (в) тот же путь маршрутом bootstrap (install поверх развёртывания)
   const S17c = join(ROOT, 's17c'); mkdirSync(S17c); seed(S17c, SRC_P);
   must(run, S17c, 'install');

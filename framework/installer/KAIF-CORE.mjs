@@ -1083,8 +1083,10 @@ function recordBuild(marker, meta) {
   return marker;
 }
 /** The pre-release a deployment came from, when this update reaches that version → { of, build } or null. */
-const prereleaseOrigin = (prev, toVersion) => (prev && prev.prerelease && !gt(prev.prerelease, toVersion)
-  ? { of: String(prev.prerelease), build: prev.build || null } : null);
+// (light judge of #107, K-F2) only a pre-release NEWER than the marker's version counts: a field left behind — written by hand and then
+// carried by a core that does not know it — never names a false origin on a later update
+const prereleaseOrigin = (prev, toVersion) => (prev && prev.prerelease && gt(String(prev.prerelease), prev.version || '0')
+  && !gt(prev.prerelease, toVersion) ? { of: String(prev.prerelease), build: prev.build || null } : null);
 
 // The withdrawn-phrases item of an update task (2.8, epic CH; court RL 2.8 C-F2) — one builder for the task and for the hand-over
 // at `checkpoint recheck` (light re-judge RL 2.8, J-F2: on the `update` route the task is written by the outgoing 2.7 core, which has

@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.7-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.8-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Contours](https://img.shields.io/badge/Contours-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Principles](https://img.shields.io/badge/Principles-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -34,10 +34,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.7_GitHub_LOGO.webp" alt="KAIF 2.7 Audited KAIF — a team medallion of eight roles inside the ouroboros ring" width="560">
+  <img src="assets/KAIF_2.8_GitHub_LOGO.webp" alt="KAIF 2.8 Noble KAIF — a copper medallion: the eye in a triangle inside a laurel wreath, ringed by the ouroboros" width="560">
 </p>
 
-<p align="center"><strong>Version 2.7 — Audited KAIF</strong> · 2026-09-18</p>
+<p align="center"><strong>Version 2.8 — Noble KAIF</strong> · 2026-09-26</p>
 
 > KAIF has become a team. A team of AI agents, each taking on the role of an expert professional,
 > builds your project on the git worktree technology. In several VS Code windows at once, like a
@@ -469,6 +469,7 @@ Table 5 — Versions
 | v2.5 | Experienced KAIF | 2026-09-04 | Rules move to the point of decision: the KAIF-defect carve-out stands inside the authorization gate, an engineering fork is closed by the fourth door and a forced `FORK:` line, every guard declares the threat it was proven against, the guarded loop writes its boundary. Delivery is counted by one owner metric in every session close, defects get a severity ladder, the re-read core gets line budgets. A KAIF ticket is delivered by a machinery command. The team skill adopts a live team, gives the board four states and ships CI with the team. The update keeps an anchored block whole, prints its verdicts with numbers and holds a rehearsal binding, writes the stale-claims item unconditionally and scans the project's scripts. An acceptance criterion can be written in the owner's language as a four-line scenario — Situation · Action · Result · Check — with an optional linter that guards its form. |
 | v2.6 | Mindful KAIF | 2026-09-06 | The agent works on the owner's terms: a question to the owner is priority one and its showing is a recorded fact, every question and option is a scenario of what the owner will see in the customer's language, the delivery vector is derived from a registry of systems and never asked, the update rehearsal reaches the bootstrap route, the interactive contour ships as a spec plus a generator of three faces, a fresh remark is recorded and not ranked, "done" about production comes after the owner's real world, and the delivery names no donor projects. |
 | v2.7 | Audited KAIF | 2026-09-18 | The agent's records become checkable: the owner's word is a quote and the agent's word is signed, a question to the owner is asked after a search through his prior answers, "test" means a functional run and every executed run leaves a report, the owner's text is written by his voice portrait, the owner's page keeps his answer, a falsehood is corrected where it stands, a lesson repeated twice goes red, and the size budget of the documents the agent re-reads at the start of a session counts the lines the project wrote. |
+| v2.8 | Noble KAIF | 2026-09-26 | KAIF becomes lighter and hears the owner: the agent answers the owner's word while it works and keeps working, the owner's answered decisions come before the plan, the owner's question page saves answers one at a time, the update loses nothing silently, the scanners see the project as git sees it, the canon keeps every rule and hands the stories behind its rules to the reference `KAIF_REFERENCE.md`, and a tester's bug report gets a required shape, with "not reproduced" written only after a hunt of at least three variants. |
 
 ### 8.2. Repository layout
 
@@ -552,7 +553,7 @@ pleasant work!
 </p>
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-2.7-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.8-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Контуры](https://img.shields.io/badge/Контуров-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Принципы](https://img.shields.io/badge/Принципов-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -571,10 +572,10 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.7_GitHub_LOGO.webp" alt="KAIF 2.7 Audited KAIF — медальон команды из восьми ролей в кольце уробороса" width="560">
+  <img src="assets/KAIF_2.8_GitHub_LOGO.webp" alt="KAIF 2.8 Noble KAIF — медный медальон: глаз в треугольнике внутри лаврового венка, в кольце уробороса" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.7 — Audited KAIF</strong> · 18.09.2026</p>
+<p align="center"><strong>Версия 2.8 — Noble KAIF</strong> · 26.09.2026</p>
 
 > KAIF стал командным. Команда ИИ-агентов, каждый из которых принимает на себя роль
 > профессионала-эксперта, разрабатывает ваш проект по технологии git worktree. В нескольких окнах
@@ -1003,6 +1004,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.5 | Experienced KAIF | 04.09.2026 | Правила переезжают в точку решения: исключение для дефектов KAIF стоит внутри гейта авторизации, инженерную развилку закрывает четвёртая дверь и принудительная строка `FORK:`, каждый страж объявляет угрозу, против которой доказан, защищённый цикл записывает свою границу. Доставка считается одной метрикой владельца в каждом закрытии сессии, у дефектов есть лестница тяжести, у перечитываемого ядра — бюджеты строк. Тикет о KAIF доставляет команда машинерии. Командный навык принимает живую команду, даёт доске четыре состояния и везёт CI вместе с командой. Обновление держит якорный блок целым, печатает вердикты с числами и связывает себя репетицией, пишет пункт `stale-claims` безусловно и сканирует скрипты проекта. Критерий приёмки можно записать на языке владельца четырёхстрочным сценарием — Ситуация · Действие · Результат · Проверка — с опциональным линтером его формы. |
 | v2.6 | Mindful KAIF | 06.09.2026 | Агент работает по меркам владельца: вопрос владельцу — приоритет номер один, а его показ — записанный факт; каждый вопрос и вариант — сценарий того, что владелец увидит, на языке заказчика; вектор доставки выводится из реестра систем и не спрашивается; репетиция обновления дошла до bootstrap-маршрута; интерактивный контур входит в поставку — контракт и генератор трёх лиц; свежая реплика записывается, но не ранжируется; «готово» о продакшене — после реального мира владельца; поставка не называет проекты-доноры. |
 | v2.7 | Audited KAIF | 18.09.2026 | Записи агента становятся проверяемыми: слово владельца цитируется, слово агента подписывается; вопрос владельцу задаётся после поиска по его прежним ответам; «тест» — это функциональный прогон, и каждый прогон оставляет отчёт; текст владельца пишется по портрету его голоса; страница владельца сохраняет его ответ; ложь исправляется там, где оставлена; урок, повторившийся дважды, краснеет; бюджет документов, которые агент перечитывает в начале сессии, считается по строкам, которые написал сам проект. |
+| v2.8 | Noble KAIF | 26.09.2026 | KAIF становится легче и слышит владельца: агент отвечает на слово владельца, пока работает, и работает дальше; отвеченные решения владельца идут раньше плана; страница вопросов владельца записывает ответы по одному; обновление ничего не теряет молча; сканеры видят проект так, как его видит git; канон держит каждое правило, истории правил переехали в пояснительную записку `KAIF_REFERENCE.md`; баг-репорт тестировщика получил обязательную форму, и «не воспроизвелось» пишется только после охоты за шагами. |
 
 ### 8.2. Структура репозитория
 

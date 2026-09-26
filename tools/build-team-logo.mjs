@@ -39,7 +39,12 @@ import { renderTitle } from './build-logo-title.mjs';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // Исходник по слову владельца в чате 2026-08-28 ~12:19 +03:00: «сделал логотип v2, и там есть
 // версия увеличенная через ультрамикс - её бери».
-const ART_SRC = join(ROOT, 'assets', 'KAIF 2.4 - Teamed Up KAIF v2 logo_upscayl_3x_ultramix-balanced-4x.png');
+// 2.8: `--art <file>` — another art of the owner (KAIF 2.8 — Noble KAIF, his word in chat 2026-09-26 08:43 +03:00: «логотип готов,
+// который raw2 и апскейл ультрамиксом сделал - вот апскейл вариант бери в работу, делай вебп»); its size and content box are MEASURED
+// from the file (identify + the same 12% threshold bbox), never typed in; without the flag — the 2.4 art and its probed numbers below.
+const artIdx = process.argv.indexOf('--art');
+const ART_SRC = artIdx >= 0 && process.argv[artIdx + 1] ? join(process.cwd(), process.argv[artIdx + 1])
+  : join(ROOT, 'assets', 'KAIF 2.4 - Teamed Up KAIF v2 logo_upscayl_3x_ultramix-balanced-4x.png');
 // Подпись — `--title "KAIF X.Y — Name"` (2.5, решение №89: «логотип оставляем от 2.4 версии, только
 // меняем текст-подпись»); без флага — подпись 2.4 (решение №82). Имя выходного файла — от версии
 // в подписи, как в build-logo-title: артефакт с версией в имени не перезаписывает соседнюю версию.
@@ -58,9 +63,16 @@ const PLATE_ART_W = 1542;       // арт-зона плиты: bbox 1542x1571+67
 const PLATE_ART_SIDE = 679;     //   боковое поле (слева и справа симметрично)
 const PLATE_ART_TOP = 164;      //   верхнее поле
 // ── Арт v2 (пробы 2026-08-28: identify + threshold-bbox 3609x3555+74+43) ─────────────────────
-const ART_FILE_W = 3762, ART_FILE_H = 3762; // размер ФАЙЛА владельца
-const ART_BOX_X = 74, ART_BOX_Y = 43;       // где в файле живёт содержимое…
-const ART_BOX_W = 3609, ART_BOX_H = 3555;   // …и каков его габарит
+const mgArt = (args) => execFileSync('magick', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+const measured = artIdx >= 0 ? (() => { // 2.8: the art given by --art is measured, not typed
+  const [fw, fh] = mgArt(['identify', '-format', '%w %h', ART_SRC]).trim().split(/\s+/).map(Number);
+  const bb = mgArt([ART_SRC, '-alpha', 'off', '-threshold', '12%', '-format', '%@', 'info:']).trim().match(/^(\d+)x(\d+)\+(\d+)\+(\d+)$/);
+  if (!bb) { console.error('✖ the content box of ' + ART_SRC + ' is not readable'); process.exit(1); }
+  return { fw, fh, bw: +bb[1], bh: +bb[2], bx: +bb[3], by: +bb[4] };
+})() : null;
+const ART_FILE_W = measured ? measured.fw : 3762, ART_FILE_H = measured ? measured.fh : 3762; // размер ФАЙЛА владельца
+const ART_BOX_X = measured ? measured.bx : 74, ART_BOX_Y = measured ? measured.by : 43;       // где в файле живёт содержимое…
+const ART_BOX_W = measured ? measured.bw : 3609, ART_BOX_H = measured ? measured.bh : 3555;   // …и каков его габарит
 // ── Ручки вкуса — калибровка владельца поверх пропорций 2.3 (показ, чат 2026-08-28) ──────────
 // После выбора варианта B владелец дал три поправки, каждая — своя ручка; значения подобраны
 // показом и меняются ТОЛЬКО его словом:

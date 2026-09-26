@@ -420,15 +420,17 @@ export function witness(marker, portrait, portraitSha, fileMtimeMs) {
 const sha256 = (s) => createHash('sha256').update(s).digest('hex');
 // An untouched template is not a text anyone wrote (2.8, origin #107 — a field agent ran check over the owner documents right after the
 // install, and GOAL.md, never edited, was named "written past the portrait" because the install wrote it before the first load): a file
-// byte-equal to what the deploy wrote — the sha the machinery recorded in .kaif/deploy-manifest.json → `shas` — gets a warning naming
-// it, never the witness finding. Its lines are still judged by the table. → true | false
-export function untouchedTemplate(relPath, bytes, deployShas) {
-  const want = deployShas && deployShas[String(relPath).replace(/\\/g, '/').replace(/^\.\//, '')];
-  return !!want && sha256(bytes) === want;
+// whose text equals the TEMPLATE this release shipped for its path — `.kaif/deploy-manifest.json` → `templateShas`, the release's truth,
+// EOL-normalized the way the core computes it — gets a warning naming it, never the witness finding; its lines are still judged by the
+// table. (light judge of #107, K-F1: the first cut compared with `shas`, the DISK snapshot every update, update-verify and adopt-current
+// refresh, so after any update an agent's own text read as "an untouched template" and exited 0.) → true | false
+export function untouchedTemplate(relPath, bytes, templateShas) {
+  const want = templateShas && templateShas[String(relPath).replace(/\\/g, '/').replace(/^\.\//, '')];
+  return !!want && sha256(String(bytes).replace(/\r\n/g, '\n')) === want;
 }
 const DEPLOY_MANIFEST = join('.kaif', 'deploy-manifest.json');
-function readDeployShas() {
-  try { return JSON.parse(readFileSync(DEPLOY_MANIFEST, 'utf8').replace(/^\uFEFF/, '')).shas || null; } catch { return null; }
+function readTemplateShas() {
+  try { return JSON.parse(readFileSync(DEPLOY_MANIFEST, 'utf8').replace(/^\uFEFF/, '')).templateShas || null; } catch { return null; }
 }
 function readMarker() {
   try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8')); } catch { return null; }
@@ -519,7 +521,7 @@ function check() {
   if (!genre && labelled) console.log(`ℹ ${labelled} rule(s) of ${portrait} §8 carry a genre label — without --genre every rule judges every text; name the text's genre: --genre ${GENRES.join('|')}`);
   const stops = rules.filter((r) => r.cls === 'stop').length;
   const positives = rules.length - stops;
-  const marker = readMarker(), pSha = sha256(portraitText), deployShas = readDeployShas();
+  const marker = readMarker(), pSha = sha256(portraitText), templateShas = readTemplateShas();
   const names = FILES.map((f) => f.replace(/\\/g, '/'));
   let nHits = 0, nWitness = 0, nW = 0, judged = 0, silenced = 0;
   // The witness of the whole run first: no witness at all (or one for another portrait) is said ONCE,
@@ -533,8 +535,8 @@ function check() {
     for (const w of r.warnings) { nW++; console.log(`⚠ ${w.file} — ${w.msg}`); }
     if (perFile) {
       const wv = witness(marker, portrait, pSha, statSync(f).mtimeMs);
-      if (wv.findings.length && untouchedTemplate(relative(process.cwd(), resolve(f)), readFileSync(f), deployShas)) {
-        nW++; console.log(`⚠ ${names[i]} — byte-equal to what the deploy wrote (${DEPLOY_MANIFEST.replace(/\\/g, '/')}): an untouched template, not a text written past the portrait — the load witness does not judge it (its lines are judged above); write the owner's text BY the portrait over it`);
+      if (wv.findings.length && untouchedTemplate(relative(process.cwd(), resolve(f)), readFileSync(f, 'utf8'), templateShas)) {
+        nW++; console.log(`⚠ ${names[i]} — equal to the template this release shipped (${DEPLOY_MANIFEST.replace(/\\/g, '/')} → templateShas): an untouched template, not a text written past the portrait — the load witness does not judge it (its lines are judged above); write the owner's text BY the portrait over it`);
       } else for (const x of wv.findings) { nWitness++; console.log(`✖ ${names[i]} — ${x}`); }
       if (i === 0) for (const x of wv.warnings) { nW++; console.log(`⚠ ${x}`); }
     }
@@ -653,10 +655,12 @@ function selftest() {
   say(witness(mk([T, T + 80 * MIN]), P, 'abc', T + 90 * MIN).findings.length === 0, 'witness: a re-load 10 min before the write → clean (the load history counts)');
   say(witness(mk([T]), P, 'other', T + MIN).warnings.some((w) => /changed since it was last loaded/.test(w)), 'witness: the portrait changed since the load → warning "reload"');
   say(loadsOf({ firstAt: new Date(T).toISOString(), at: new Date(T + MIN).toISOString() }).length === 2, 'witness: a pre-history marker (firstAt/at only) is still read');
-  // 2.8, origin #107: a file byte-equal to what the deploy wrote is an untouched template — named, never "written past the portrait"
+  // 2.8, origin #107: a file equal to the release's template (templateShas, EOL-normalized) is an untouched template — named, never
+  // "written past the portrait"
   const TPL = Buffer.from('# Goal\n\n<the owner writes the goal here>\n'), TPLSHA = sha256(TPL);
-  say(untouchedTemplate('GOAL.md', TPL, { 'GOAL.md': TPLSHA }) && untouchedTemplate('.\\GOAL.md', TPL, { 'GOAL.md': TPLSHA }),
-    'untouched template: byte-equal to the deploy sha (either path spelling) → recognised');
+  say(untouchedTemplate('GOAL.md', TPL, { 'GOAL.md': TPLSHA }) && untouchedTemplate('.\\GOAL.md', TPL, { 'GOAL.md': TPLSHA })
+    && untouchedTemplate('GOAL.md', Buffer.from('# Goal\r\n\r\n<the owner writes the goal here>\r\n'), { 'GOAL.md': TPLSHA }),
+    'untouched template: equal to the template sha (either path spelling, CRLF on disk) → recognised');
   say(!untouchedTemplate('GOAL.md', Buffer.from('# Goal\n\nThe owner wrote this.\n'), { 'GOAL.md': TPLSHA }) && !untouchedTemplate('STATUS.md', TPL, { 'GOAL.md': TPLSHA })
     && !untouchedTemplate('GOAL.md', TPL, null), 'untouched template: an edited file, another path or no deploy manifest → not a template (the witness judges it)');
   const sec = sectionsMatching(FIX.en.portrait, /^8\./);

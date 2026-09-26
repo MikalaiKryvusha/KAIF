@@ -208,15 +208,26 @@ ok(/changed since it was last loaded/.test(r.out), 's26 портрет изме�
 // 2.8, тикет origin #107: GOAL.md установка записала ДО первой загрузки портрета, и агент его не трогал — это шаблон, а не текст,
 // написанный мимо портрета; правленный файл с тем же старым временем записи по-прежнему судится свидетелем
 {
+  const TPL_RE = /GOAL\.md — equal to the template this release shipped/;
   r = existsSync(DEPLOYED_LINT) ? runLint('check GOAL.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
-  ok(/GOAL\.md — byte-equal to what the deploy wrote/.test(r.out) && !/GOAL\.md — written past the portrait/.test(r.out),
-     's26 (#107): нетронутый шаблон GOAL.md назван шаблоном («byte-equal to what the deploy wrote»), не «written past the portrait»', r.out.slice(-500));
+  ok(TPL_RE.test(r.out) && !/GOAL\.md — written past the portrait/.test(r.out),
+     's26 (#107): нетронутый шаблон GOAL.md назван шаблоном («equal to the template this release shipped»), не «written past the portrait»', r.out.slice(-500));
   const GE = join(S, 'GOAL.md'), goalAt = statSync(GE).mtime;
   writeFileSync(join(S, 'GOAL-edited.md'), readFileSync(GE, 'utf8') + '\nThe owner wants a faster build.\n');
   utimesSync(join(S, 'GOAL-edited.md'), goalAt, goalAt);
   r = existsSync(DEPLOYED_LINT) ? runLint('check GOAL-edited.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
-  ok(r.code === 1 && /GOAL-edited\.md — written past the portrait/.test(r.out) && !/byte-equal to what the deploy wrote/.test(r.out),
+  ok(r.code === 1 && /GOAL-edited\.md — written past the portrait/.test(r.out) && !/equal to the template this release shipped/.test(r.out),
      's26 (#107) контроль: правленный файл со старым временем записи — «written past the portrait» (свидетель не ослаблен)', r.out.slice(-500));
+  // лёгкий судья #107, K-F1: правка САМОГО GOAL.md, затем снимок диска освежён (`adopt-current` пишет shas заново, как update и
+  // update-verify) — первая редакция сверяла со снимком и называла текст агента «нетронутым шаблоном» с кодом 0
+  const goalText = readFileSync(GE, 'utf8');
+  writeFileSync(GE, goalText + '\nThe agent wrote this before the portrait was loaded.\n');
+  utimesSync(GE, goalAt, goalAt);
+  const ad = runCore('adopt-current');
+  r = existsSync(DEPLOYED_LINT) ? runLint('check GOAL.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
+  ok(ad.code === 0 && r.code === 1 && /GOAL\.md — written past the portrait/.test(r.out) && !TPL_RE.test(r.out),
+     's26 (#107, K-F1): правленный GOAL.md после освежения снимка (adopt-current) — «written past the portrait», не «шаблон»', (ad.out + r.out).slice(-600));
+  writeFileSync(GE, goalText); utimesSync(GE, goalAt, goalAt);
 }
 
 // ---------------------------------------------------------------- (3) 2.8: голая загрузка — разделы для письма (развёрнутая копия)

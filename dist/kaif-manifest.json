@@ -1,17 +1,17 @@
 {
   "framework": "KAIF",
-  "version": "2.7",
-  "released": "2026-09-18",
-  "codename": "Audited KAIF",
+  "version": "2.8",
+  "released": "2026-09-26",
+  "codename": "Noble KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "dceba7524a74f8eacb423e8a5d0a7d4782b91d380c98695969fead33f85d54ca",
-    "KAIF-CORE-BUNDLE.md": "2cf2ce6697d7a61284ab984a171dc9a6c255fdd94c90651c19d045039c2e335f"
+    "KAIF-CORE.mjs": "d424900c5f5fe25608290c2a99c73864d146ef07e0c5c70613d3ac5e756710cd",
+    "KAIF-CORE-BUNDLE.md": "938e920dd5bf4b8803d935895fdcdc7c139a25eeafd7eae81f7abf9be66d2151"
   },
   "sourceTree": {
-    "sha256": "64ac16df3c95a6cbdf4ad211f2f1fa187f1114b4e8863483e27a6bbc6547228d",
+    "sha256": "106b97d7715cc97f0f02cf307aff93ee06301f14bdeb13d27f52e435bd68d5e2",
     "files": 209
   },
-  "prerelease": "2.8",
+  "prerelease": null,
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
     "KAIF-CORE.mjs": "installer machinery; lives on as .kaif/kaif-core.mjs",
