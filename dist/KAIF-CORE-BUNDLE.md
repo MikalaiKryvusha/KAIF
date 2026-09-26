@@ -17952,7 +17952,7 @@ const LEADING_RESUME = /^\s*(?:(?:run|do|execute|start|\u0432\u044b\u043f\u043e\
 //                 rule "The owner's word mid-turn" is the base, this branch only its amplifier
 // ON-REAL-PATH:   NOT YET \u2014 the wired command answered the owner's real bug-123 wording with the stop order; a stop typed mid-turn
 //                 through the live harness is not observed yet
-const LEADING_STOP = /^\s*(?:stop|\u0441\u0442\u043e\u043f)(?![\p{L}\p{N}_])/iu;
+const LEADING_STOP = /^\s*(?:stop|\u0441\u0442\u043e\u043f)(?![\p{L}\p{N}_-])/iu;   // a hyphen joins a compound (a stop-words sentence is prose, court RL1 B-F6)
 
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
