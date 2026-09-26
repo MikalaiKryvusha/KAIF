@@ -188,5 +188,15 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_039_kaif_2.8_commits_signed_probe.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
+  },
+  "interviews/interview_040_kaif_2.8_release_gate_and_name.md": {
+    "questions": 2,
+    "parsedOptions": 8,
+    "candidateLines": 8
   }
 }
