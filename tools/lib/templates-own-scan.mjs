@@ -6,6 +6,8 @@
 // all of them — so the build refuses them. A correct historical line is reworded or takes <!-- KAIF-VERSION-OK: reason -->.
 // EVERY FACE (SC4 F14): a deployment in language L carries templates/languages/L/<path> in place of the English <path>; each face is
 // scanned, and a line only a pack face names is labelled `[L] ` (the English face's lines are not repeated per language).
+// [TESTED: 2026-09-26 04:49:47 +03:00 · SC4 F14 — every face: --selftest five answers (a pack face's old claim named [ru], its trigger
+//  phrases silent); sc3-guard-mutants control 0 · M1 3 · M2 1; report testcases/reports/2026-09-26_sc4-scan-precision.md]
 // [TESTED: 2026-09-26 03:02:57 +03:00 · the build's 5m silent on the built templates; --selftest four answers; probe sc3-guard-mutants
 //  (control 0 · wrapped-parenthesis rule removed → 3 real template lines · planted line → 1); the build on that mutant — exit 1
 //  (03:03:13); report testcases/reports/2026-09-26_sc3-templates-silent-under-own-scan.md]

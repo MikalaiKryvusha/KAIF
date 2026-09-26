@@ -3180,7 +3180,7 @@ calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 ### 10.8 Predicting a pass
 
 The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git -c core.autocrlf=false archive` — the flag keeps the
-committed line endings, 2.8, origin issue #81), re-init git in the copy, run the REAL update or bootstrap there and read its diff.
+committed line endings unless a `.gitattributes` `eol` pins them, 2.8, origin issue #81), re-init git in the copy, run the REAL update or bootstrap there and read its diff.
 This is not a model of the pass but the pass itself — field-proven byte-identical to the subsequent live run, up to line endings on
 a Windows tree with `core.autocrlf=true`. A rehearsal record and a copy's receipt carry the fingerprint of the core that wrote them
 (2.8, finding N17): the automatic record of another core is named, ignored and removed; a `--rehearsal` receipt that another core
@@ -7067,7 +7067,7 @@ diverged places. Your cognitive work is that task, not the migration.
      in `.kaif/update-rehearsal.json`: the next `update` over this tree freezes any file whose live
      verdict differs from what you read here (task item `verdict-mismatch`, both number sets).
    - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
-     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings;
+     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings, unless a `.gitattributes` `eol` pins them;
      on a Windows tree with `core.autocrlf=true` a plain export rewrites them, 2.8, origin issue #81), `git init` there, run the
      REAL update/bootstrap in the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field the
      live pass matched the sandbox byte for byte, up to line endings on a `core.autocrlf=true` tree (compare there with

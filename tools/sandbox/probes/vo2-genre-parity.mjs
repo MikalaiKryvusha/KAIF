@@ -4,9 +4,11 @@
 // §8 row and each of the six genres both must say the same thing — the row judges this genre, or it is silent.
 // usage: node tools/sandbox/probes/vo2-genre-parity.mjs [<portrait>] [<voice-check.mjs>] [<kaif-voice-lint.mjs under test>]
 //        (defaults: AUTHOR_STYLOMETRY.md of this repo; d:/work/krinik_voice/tools/voice-check.mjs)
-// NOTE: importing the shipped module runs its CLI (origin ticket #101 — step OW8 of plans/119 adds the direct-run guard); until then
-// the probe imports a COPY of it in the OS temp dir with the trailing command dispatch cut off, and says so. (A first form faked
-// argv to `selftest`: a mutant whose selftest failed exited the probe before its verdict — DIED, not a proof, EXP-0158.)
+// NOTE: the shipped module is imported directly — since step OW8 of plans/119 (origin ticket #101) it runs its CLI only as a program.
+// (Before OW8 the probe imported a copy with the command dispatch cut off; a first form faked argv to `selftest` and a failing mutant
+// exited the probe before its verdict — DIED, not a proof, EXP-0158.)
+// [TESTED: 2026-09-26 06:09 +03:00 · direct import (court RL1 A-F1): 126 verdicts, 0 disagreements, exit 0; the red on a mutant copy
+//  was not re-run after the import change]
 // [TESTED: 2026-09-25 15:39 +03:00 · session 74: the origin's snapshot of core 2.2 — 21 rows (16 labelled) × 6 genres = 126 verdicts, 0 disagreements;
 //  red proved on a COPY of the module with the labels ignored (the M7 predicate) — 20 disagreements (15 [работа] rows × essay + the
 //  [документ] row × 5 other genres), exit 1; the first two red runs were the probe's own defects (the module path read after argv was
@@ -24,15 +26,10 @@ const modulePath = resolve(process.argv[4] || join(REPO, 'framework', 'tools', '
 if (!existsSync(refPath)) { console.log(`reference tool not found: ${refPath} — the parity cannot be judged (exit 2)`); process.exit(2); }
 
 const ref = await import(pathToFileURL(refPath).href);
-const DISPATCH = "\nif (CMD === 'check') check();";
-const src = readFileSync(modulePath, 'utf8');
-if (src.split(DISPATCH).length !== 2) { console.log(`the command dispatch of ${modulePath} not found once — cannot import it quietly (exit 2)`); process.exit(2); }
-const tmp = mkdtempSync(join(tmpdir(), 'kaif-genre-parity-'));
-const quiet = join(tmp, 'kaif-voice-lint.quiet.mjs');
-writeFileSync(quiet, src.slice(0, src.indexOf(DISPATCH)) + '\n');
-let ours;
-try { ours = await import(pathToFileURL(quiet).href); } finally { rmSync(tmp, { recursive: true, force: true }); }
-console.log(`module under test: ${modulePath} — imported as a copy without its command dispatch (#101, OW8)`);
+// since OW8 (origin ticket #101) the shipped module runs its command only when run as a program — an import is quiet, so the module
+// (or a mutant copy of it) is imported directly (court RL1 A-F1: the copy-and-cut form no longer found its needle and refused, exit 2)
+const ours = await import(pathToFileURL(modulePath).href);
+console.log(`module under test: ${modulePath} — imported directly (quiet since OW8, #101)`);
 
 const text = readFileSync(portraitPath, 'utf8');
 const theirs = ref.parseCore(text);

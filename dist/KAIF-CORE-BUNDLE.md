@@ -3532,7 +3532,7 @@ calls nothing; the `KAIF_GH` seam lets a polygon stand in for `gh`).
 ### 10.8 Predicting a pass
 
 The cheapest *exact* prediction is a **sandbox copy**: export the tree (`git -c core.autocrlf=false archive` — the flag keeps the
-committed line endings, 2.8, origin issue #81), re-init git in the copy, run the REAL update or bootstrap there and read its diff.
+committed line endings unless a `.gitattributes` `eol` pins them, 2.8, origin issue #81), re-init git in the copy, run the REAL update or bootstrap there and read its diff.
 This is not a model of the pass but the pass itself — field-proven byte-identical to the subsequent live run, up to line endings on
 a Windows tree with `core.autocrlf=true`. A rehearsal record and a copy's receipt carry the fingerprint of the core that wrote them
 (2.8, finding N17): the automatic record of another core is named, ignored and removed; a `--rehearsal` receipt that another core
@@ -6757,7 +6757,7 @@ diverged places. Your cognitive work is that task, not the migration.
      in `.kaif/update-rehearsal.json`: the next `update` over this tree freezes any file whose live
      verdict differs from what you read here (task item `verdict-mismatch`, both number sets).
    - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
-     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings;
+     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings, unless a `.gitattributes` `eol` pins them;
      on a Windows tree with `core.autocrlf=true` a plain export rewrites them, 2.8, origin issue #81), `git init` there, run the
      REAL update/bootstrap in the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field the
      live pass matched the sandbox byte for byte, up to line endings on a `core.autocrlf=true` tree (compare there with
@@ -13758,6 +13758,8 @@ import { spawnSync } from 'node:child_process';
 // [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
+//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
@@ -14156,6 +14158,8 @@ import { spawnSync } from 'node:child_process';
 // [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
+//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
@@ -15035,6 +15039,8 @@ import { spawnSync } from 'node:child_process';
 // [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
+//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
@@ -15312,6 +15318,8 @@ import { spawnSync } from 'node:child_process';
 // [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
+//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
@@ -15902,6 +15910,8 @@ import { spawnSync } from 'node:child_process';
 // [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
+//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
@@ -16180,6 +16190,8 @@ import { spawnSync } from 'node:child_process';
 // [TESTED: 2026-09-26 01:42:55 +03:00 · s29 W1 (git, 20 worktrees, two broken links) · W2 (no git) · W3 (the FAILED branch on the block
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
+// [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
+//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
@@ -16660,7 +16672,7 @@ export function lint(name, src) {
 // developer. Four H2 sections, three bold lines, the steps a numbered list (the user's path, one action per item), and — when the
 // report says the defect did NOT reproduce — a reproduction hunt of at least three variants with their outcomes. Same engine, rules
 // as data, keywords per language; `bug <report>` judges one file.
-// [TESTED: 2026-09-26 · selftest 67 cases; s25 section 5 on the deployed copy (a report built from the delivered template C, six
+// [TESTED: 2026-09-26 · selftest 95 cases after the TB3 and court RL1 fixes (67 at TB1); s25 section 5 on the deployed copy (a report built from the delivered template C, six
 //  answers); four field deployments updated by their own 2.7 core — `bug` on two of them read; 7 mutants on their addressees;
 //  report testcases/reports/2026-09-26_tb1-tester-report-and-hunt.md]
 export const BUG_KEYWORDS = {

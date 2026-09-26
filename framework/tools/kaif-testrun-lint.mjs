@@ -185,7 +185,7 @@ export function lint(name, src) {
 // developer. Four H2 sections, three bold lines, the steps a numbered list (the user's path, one action per item), and — when the
 // report says the defect did NOT reproduce — a reproduction hunt of at least three variants with their outcomes. Same engine, rules
 // as data, keywords per language; `bug <report>` judges one file.
-// [TESTED: 2026-09-26 · selftest 67 cases; s25 section 5 on the deployed copy (a report built from the delivered template C, six
+// [TESTED: 2026-09-26 · selftest 95 cases after the TB3 and court RL1 fixes (67 at TB1); s25 section 5 on the deployed copy (a report built from the delivered template C, six
 //  answers); four field deployments updated by their own 2.7 core — `bug` on two of them read; 7 mutants on their addressees;
 //  report testcases/reports/2026-09-26_tb1-tester-report-and-hunt.md]
 export const BUG_KEYWORDS = {

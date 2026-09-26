@@ -5,6 +5,8 @@
 // proves nothing (budget-mutants, CK5.6).
 // Run it after touching the UP blocks of framework/installer/KAIF-CORE.mjs or s18/s21/s27 (fresh dist first):
 //   node tools/sandbox/probes/up-mutants.mjs          — ALONE, not beside the polygon (origin bug 109); no window, no sound.
+// [TESTED: 2026-09-26 05:30:18 → 05:40:43 +03:00 · twenty mutants (UP7 added M14–M19) red exactly on their named addressees — re-run by
+//  the version court RL1, cluster C; report testcases/reports/2026-09-26_up7-rejudge-caveats.md]
 // [TESTED: 2026-09-26 02:20:15 +03:00 · UP6: fourteen mutants (M1–M5 · J3 · M6–M13) red exactly on their named addressees; the first
 //  run of the fourteen was BAD 2 by MY predictions (J3 cannot redden E2 — E2 judges the line, not the count; M7 lets the flag judge
 //  the field route too, so E2 is legitimately red) — addressees corrected with the reasons; report testcases/reports/2026-09-26_up6-judge-fixes.md]

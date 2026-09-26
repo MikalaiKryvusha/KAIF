@@ -1447,7 +1447,7 @@
       {
         "signature": "### 10.8 Predicting a pass",
         "class": "static",
-        "sha256": "299db6bfdb8ebcf4d7945cccb8310adefc23a39a1f3ef8ed8920db0020d7b021",
+        "sha256": "d8ebe520d31ce767348793780a6a95b3fcfe3b205f363370e11f70486112a397",
         "lines": [
           447,
           467
@@ -3592,7 +3592,7 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "1c2dc550c99f649e1f00de254213ba36cac068f861b634e84f629ef13c912a29",
+        "sha256": "6a2238d1080badaad52d5ac66905f4c88063262304df9eb5ba5eeb9b6a967588",
         "lines": [
           25,
           112
