@@ -139,5 +139,10 @@ export async function headlessPage(url, { profileDir, extraArgs = [], exe = find
     const r = await cdp.send('Page.captureScreenshot', { format: 'png', ...(clip ? { clip, captureBeyondViewport: true } : {}) }, sessionId);
     return r.data;
   };
-  return { proc, evaluate, close, closeGracefully, screenshot, exe };
+  // bugs/125 (2.8): a script run in EVERY new document of this page before its own scripts — models what the browser does on each
+  // load (a probe counts loads in sessionStorage and fires `focus` after `load`, as a focused tab does). [TESTED: 2026-09-26 08:32–08:43 ·
+  // the probe contour-index-focus-loop.mjs and s22 (8) counted the loads of the queue page with it: 90 and 80 on the build before the fix,
+  // 1 → 2 after it; report testcases/reports/2026-09-26_contour-queue-reload-and-badge-dates.md]
+  const addInitScript = (source) => cdp.send('Page.addScriptToEvaluateOnNewDocument', { source }, sessionId);
+  return { proc, evaluate, close, closeGracefully, screenshot, exe, addInitScript };
 }

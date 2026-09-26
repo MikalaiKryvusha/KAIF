@@ -600,6 +600,70 @@ if (!exe) {
   try { await page4.closeGracefully(); } catch { /* the window is already gone */ }
   rmSync(join(D, 'interviews', 'decisions', 'interview_068_partial.lock'), { force: true });
   } // (7)
+
+  { // (8) bugs/125 (2.8): the queue ENTRY page opened as a TAB (the owner's case, 2026-09-26 07:52) — a focused tab fires `focus` after each
+  //     load; the page used to reload on EVERY focus and looped (90 loads in 3 s on the probe), and the contour ended as "page closed".
+  //     Now focus asks the pulse and the page reloads only when the queue changed: no change → one load; one document answered in
+  //     another window → exactly one more load, one card fewer; the contour lives. On the dist before the fix — red.
+  const qd = (n) => ['# Interview #' + n + ' — очередь вкладкой', '', '> Topic: проба', "> Status: **🟡 awaiting the owner's answers**", '',
+    '### Q1. Вопрос?', '', '- **A)** первый', '- **B)** второй', '', '**Answer:**', ''].join('\n');
+  const DOC_Q1 = 'interviews/interview_069_queue_tab.md';
+  writeFileSync(join(D, DOC_Q1), qd('069'));
+  writeFileSync(join(D, 'interviews', 'interview_070_queue_tab.md'), qd('070'));
+  const gen5 = spawnGen(D, ['--queue', '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '60000' });
+  const url5 = await gen5.url;
+  const tab5 = await headlessPage(url5, { profileDir: join(ROOT, 'queue-tab-profile'), extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+  const rd = async (js) => { for (let i = 0; i < 40; i++) { try { return await tab5.evaluate(js); } catch { await wait(75); } } return null; };
+  await tab5.addInitScript("try{sessionStorage.setItem('loads',String((+sessionStorage.getItem('loads')||0)+1))}catch(e){}"
+    + "window.addEventListener('load',function(){setTimeout(function(){window.dispatchEvent(new Event('focus'))},30)});");
+  await rd("sessionStorage.setItem('loads','0');setTimeout(function(){location.reload()},10);1");
+  await wait(3000);
+  const loadsA = await rd("+sessionStorage.getItem('loads')");
+  const cardsA = await rd("document.querySelectorAll('a.card').length");
+  ok(loadsA === 1 && cardsA >= 2, 's22 D: список очереди ВКЛАДКОЙ, фокус после каждой загрузки, очередь не менялась → одна загрузка за 3 с, без петли (bugs/125)',
+     'loads ' + loadsA + ', cards ' + cardsA);
+  const core5 = await import(pathToFileURL(join(D, '.kaif', 'tools', 'contour', 'core.mjs')).href);
+  const dec5 = await (await fetch(url5 + 'decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ doc: DOC_Q1, answers: { Q1: { choice: 'A' } }, comment: '', rev: core5.bodyHash(readFileSync(join(D, DOC_Q1), 'utf8')) }) })).json();
+  await rd("window.dispatchEvent(new Event('focus'));1");
+  await wait(3000);
+  const loadsB = await rd("+sessionStorage.getItem('loads')");
+  const cardsB = await rd("document.querySelectorAll('a.card').length");
+  ok(dec5.ok === true && loadsB === 2 && cardsB === cardsA - 1 && gen5.exit() === null,
+     's22 D: документ отвечен в другом окне, владелец вернулся на список → список обновился ОДИН раз, карточкой меньше, контур жив (bugs/125)',
+     'decide ' + dec5.ok + ', loads ' + loadsB + ', cards ' + cardsA + ' → ' + cardsB + ', gen ' + gen5.exit());
+  await tab5.closeGracefully();
+  try { await fetch(url5 + 'closed', { method: 'POST', body: 'index:unsaved' }); } catch { /* already ended */ }
+  for (let i = 0; i < 40 && gen5.exit() === null; i++) await wait(200);
+  if (gen5.exit() === null) gen5.child.kill();
+  rmSync(join(D, 'interviews', 'decisions', '_queue.lock'), { force: true });
+  } // (8)
+}
+
+// (9) 2.8: the «shown» and «applied» badges print the LOCAL day of a stored UTC moment — the first ten characters of a UTC moment are
+//     yesterday between midnight and the zone's offset (a night answer at 01:30 +03:00 read as the day before; on the dist before the fix
+//     — red). Judged only east of UTC: elsewhere the shift cannot show, and that is said out loud, not green.
+if (new Date().getTimezoneOffset() >= 0) {
+  console.log('s22 (9): SKIPPED — this zone is at or west of UTC; the night-date shift cannot show here — said out loud, not green');
+} else {
+  const rv9 = await import(pathToFileURL(join(D, '.kaif', 'tools', 'contour', 'review.mjs')).href);
+  const DOC9 = 'interviews/interview_071_badge_date.md';
+  writeFileSync(join(D, DOC9), ['# Interview #071 — значки даты', '', '> Topic: проба', "> Status: **🟡 awaiting the owner's answers**", '',
+    '### Q1. Вопрос?', '', '- **A)** первый', '- **B)** второй', '', '**Answer:**', '', '### Q2. Второй?', '', '- **A)** да', '- **B)** нет', '', '**Answer:**', ''].join('\n'));
+  const night9 = new Date(2026, 8, 26, 1, 30).toISOString();   // 01:30 LOCAL on 2026-09-26
+  const decDir9 = join(D, 'interviews', 'decisions');
+  const readJ = (f) => (existsSync(join(decDir9, f)) ? JSON.parse(readFileSync(join(decDir9, f), 'utf8')) : {});
+  const shown9 = readJ('shown.json'), impl9 = readJ('implemented.json');
+  writeFileSync(join(decDir9, 'shown.json'), JSON.stringify({ ...shown9, [DOC9]: { at: night9, transport: 'page' } }, null, 2));
+  writeFileSync(join(decDir9, 'implemented.json'), JSON.stringify({ ...impl9, [DOC9]: { Q1: { at: night9, where: 'badge-where-071' } } }, null, 2));
+  const listed9 = rv9.listQueue(D, { now: new Date(2026, 8, 26, 9, 0) });
+  const line9 = (Array.isArray(listed9) ? listed9 : [].concat(listed9.lines || [])).join('\n').split('\n').filter((l) => l.includes(DOC9)).join('\n');
+  const badge9 = (rv9.buildPage(D, DOC9).html.match(/badge-where-071[^<]{0,120}/) || [''])[0];
+  ok(line9.includes('2026-09-26') && !line9.includes('2026-09-25') && badge9.includes('2026-09-26') && !badge9.includes('2026-09-25'),
+     's22 (9): отметки «показан» и «внесено» в 01:30 по местному → в очереди и на странице дата 2026-09-26, не вчерашняя 2026-09-25 (2.8)',
+     'queue «' + line9.slice(0, 160) + '» badge «' + badge9.slice(0, 120) + '»');
+  writeFileSync(join(decDir9, 'shown.json'), JSON.stringify(shown9, null, 2));
+  writeFileSync(join(decDir9, 'implemented.json'), JSON.stringify(impl9, null, 2));
 }
 
 // ================================================================ итог

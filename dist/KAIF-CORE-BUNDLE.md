@@ -11460,6 +11460,13 @@ export function pendingNotices(root) {
     .map((i) => ({ doc: i.doc, addedAt: i.addedAt }));
 }
 
+// bugs/125 (2.8): the revision of the QUEUE — what the entry page shows (documents with their unanswered counts, notices). The entry page
+// asks for it on focus and reloads only when it changed: a reload that finds the same revision cannot start another one (the page used
+// to reload on EVERY focus, and a focused tab fires focus after each load — an endless reload that ended the contour as "page closed").
+export function queueRev(docs, notices) {
+  return bodyHash(JSON.stringify([docs.map((d) => [d.doc, d.unanswered]), notices.map((n) => n.doc)]));
+}
+
 // Every document with unanswered QUESTIONS: a scan of interviews/ (living documents in place) + the queue.
 export function pendingDocs(root) {
   const noticeDocs = new Set(readQueue(root).filter(isNoticeItem).map((i) => i.doc));
@@ -11580,6 +11587,16 @@ export function awaitingApplication(root, now = new Date()) {
     .sort((a, b) => b.days - a.days || a.doc.localeCompare(b.doc));
 }
 
+// The LOCAL calendar day of a stored moment — receipts keep UTC ISO; a badge is read by a person in his own zone, and the first ten
+// characters of a UTC moment are YESTERDAY between midnight and the zone's offset (the shown and applied badges read a night answer as
+// the day before — probe tools/sandbox/probes/contour-badge-date.mjs, 2.8). An unparsable value keeps its old form.
+export function localDay(at) {
+  const d = new Date(at);
+  if (Number.isNaN(d.getTime())) return String(at).slice(0, 10);
+  const p = (n) => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
 export function listQueue(root, { now = new Date(), includeStale = false } = {}) {
   const t = T(cfgOf(root));
   const shown = readShown(root);
@@ -11591,7 +11608,7 @@ export function listQueue(root, { now = new Date(), includeStale = false } = {})
   docs.sort((a, b) => (a.shown ? 1 : 0) - (b.shown ? 1 : 0) || (b.shownDays ?? 0) - (a.shownDays ?? 0) || a.doc.localeCompare(b.doc));
   const never = docs.filter((d) => !d.shown);
   const lines = docs.map((d) => (d.shown ? '🟡 ' : '⛔ ') + d.doc + ' — ' + t.list.waits(d.waitDays) +
-    (d.shown ? ' · ' + t.list.shown(d.shown.at.slice(0, 10), d.shownDays, d.shown.transport) : ' · ' + t.list.never));
+    (d.shown ? ' · ' + t.list.shown(localDay(d.shown.at), d.shownDays, d.shown.transport) : ' · ' + t.list.never));
   if (!docs.length) lines.push(t.list.empty);
   if (never.length) {
     lines.push('🔴 ' + t.list.gate(never.length));
@@ -11652,8 +11669,8 @@ export function buildPage(root, docPath) {
     bodyHtml: proseOf(q), recommended: q.recommended,
     options: q.options.map((o) => ({ letter: o.letter, html: renderMd(o.text), recommended: o.letter === q.recommended })),
     existing: [...q.answers.filter((a) => a.text).map((a) => a.text.replace(/<!--[\s\S]*?-->/g, '').trim()).filter(Boolean),
-      ...(implMap[q.id] ? [implMap[q.id].withdrawn ? t.impl.withdrawnBadge(implMap[q.id].why, String(implMap[q.id].at).slice(0, 10))
-        : t.impl.badge(implMap[q.id].where, String(implMap[q.id].at).slice(0, 10))] : [])],
+      ...(implMap[q.id] ? [implMap[q.id].withdrawn ? t.impl.withdrawnBadge(implMap[q.id].why, localDay(implMap[q.id].at))
+        : t.impl.badge(implMap[q.id].where, localDay(implMap[q.id].at))] : [])],
   }));
   const docHash = bodyHash(md);
   // question blocks are CUT from the prose render — the cards below are the only form of questions
@@ -11812,7 +11829,7 @@ export function buildIndexPage(root, docs, notices = []) {
   const html = pageShell(cfg, {
     title: t.head.accumulated + ': ' + counts, kind: t.kind.queue,
     heading: '<span class="kind">' + t.kind.queue + '</span><span>' + t.head.accumulated + ': ' + esc(counts) + '</span>',
-    main, questions: [], index: true, face: 'interview',
+    main, questions: [], index: true, face: 'interview', qrev: queueRev(docs, notices), // bugs/125: what this list was built from
   });
   return { html, questions: [], total, notices: notices.length };
 }
@@ -11879,13 +11896,14 @@ function aCard(a, t) {
 }
 
 function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [], batch = false, notices = [], noticeDoc = null,
-  index = false, face = 'interview', faceDoc = null, paragraphs = [], rev = null }) {
+  index = false, face = 'interview', faceDoc = null, paragraphs = [], rev = null, qrev = null }) {
   const t = T(cfg);
   const qjson = JSON.stringify(questions).replace(/</g, '\\u003c');
   const singleDoc = batch ? null : ((questions[0] && questions[0].doc) || (artifacts[0] && artifacts[0].doc) || noticeDoc || faceDoc || null);
   const cfgJson = JSON.stringify({
     batch, index, face, aliveMs: ALIVE_INTERVAL_MS, closeMs: AUTOCLOSE_DELAY_MS, reserveMs: AUTOCLOSE_RESERVE_MS,
     rev, doc: singleDoc, // OW6 (2.8): the revision this page was built from — every save carries it, the pulse compares it
+    qrev, // bugs/125 (2.8): the queue revision the ENTRY page was built from — on focus it reloads only when the pulse names another
     notices, paragraphs,
     artifacts: artifacts.map((a) => ({ doc: a.doc, id: a.id, exists: a.exists, sha256: a.sha256 })),
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
@@ -12080,7 +12098,9 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
     "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none';return r.json().catch(function(){return null})})",
     // OW6 (2.8): the pulse names the document's revision on disk — another one than this page was built from → saving off, the new revision offered
-    " .then(function(j){if(j&&j.rev&&CFG.rev&&j.rev!==CFG.rev&&!saving&&!saved)newRevision(TX.rewritten)})",
+    // bugs/125 (2.8): the entry page rebuilds itself only when the QUEUE changed (a document answered in another window) — never on focus alone
+    " .then(function(j){if(CFG.index&&j&&j.qrev&&CFG.qrev&&j.qrev!==CFG.qrev){location.reload();return}",
+    "  if(j&&j.rev&&CFG.rev&&j.rev!==CFG.rev&&!saving&&!saved)newRevision(TX.rewritten)})",
     " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
     "  if(!(lsOk&&inApp)){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
     "  if(!submittedLocally)enableButtons(true)})}",
@@ -12088,7 +12108,8 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // I14/DEF6: closing the page is an EVENT for the server (fast path — the beacon names the window role)
     "window.addEventListener('pagehide',function(){if(closeTimer)clearTimeout(closeTimer);",
     " try{navigator.sendBeacon('/closed',(CFG.index?'index':'doc')+':'+(saved?'saved':'unsaved'))}catch(e){}});",
-    "if(CFG.index)window.addEventListener('focus',function(){location.reload()});",
+    // bugs/125 (2.8): focus asks the pulse (above) — a reload on EVERY focus looped in a tab, which fires focus after each load
+    "if(CFG.index)window.addEventListener('focus',pulse);",
     // spec §2: the page SELF-CHECK — radio groups == questions with options; a mismatch is LOUD, never silent
     "var selfBroken=false;(function(){if(CFG.face!=='interview'||CFG.index)return;var rs=document.querySelectorAll('input[type=radio]');var names={};",
     " for(var i=0;i<rs.length;i++)if(rs[i].name.indexOf('choice:')===0)names[rs[i].name]=1;var n=Object.keys(names).length;",
@@ -12318,7 +12339,8 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
           inputState = { lastInputAt: sinceInput >= 0 ? Date.now() - sinceInput : inputState.lastInputAt, draftFields: Number.isFinite(draftFields) ? draftFields : 0, saved: savedFlag };
           writeLock();
         }
-        ok({ ok: true, rev: pulseRev(q.get('doc')) }); // OW6: the page compares its revision with the document on disk
+        // OW6: the page compares its revision with the document on disk; bugs/125: the entry page compares the queue's
+        ok({ ok: true, rev: pulseRev(q.get('doc')), qrev: batch ? queueRev(forOwner(), pendingNotices(root)) : null });
       } else if (req.method === 'POST' && req.url === '/tab') { // I26 (#64): the page says it is a TAB, not the app window
         if (!tabReported) {
           tabReported = true;
