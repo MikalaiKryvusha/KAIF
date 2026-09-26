@@ -564,7 +564,7 @@ if (process.argv.includes('--selftest')) {
   const mFails = selfProofTemplatesOwnScan();
   for (const f of mFails) console.error('✖ selfproof 5m (SC 2.8): ' + f);
   if (mFails.length) { console.error(`\n❌ check-framework --selftest: гард 5m — ${mFails.length} провалов`); process.exit(1); }
-  console.log('✅ гард 5m: строка поставки, заявляющая старую версию, названа; перенесённая атрибуция, строка таблицы с маркером внутри и исходник языкового пакета молчат');
+  console.log('✅ гард 5m: строка поставки, заявляющая старую версию, названа; перенесённая атрибуция, строка таблицы с маркером внутри и фразы-триггеры пакета молчат; лицо языкового пакета со старым заявлением названо ([ru])');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }

@@ -1438,7 +1438,7 @@
       {
         "signature": "### 10.7 Commands",
         "class": "static",
-        "sha256": "c9fe41f04502d3d9a9b8bc6ffb7db468729719fe6f3191000c9084d78f1ccb7a",
+        "sha256": "9e35c3fc02c67268c3b8ddefc9170955f0fa1194b07d8c125f559dbda9348c60",
         "lines": [
           419,
           446
@@ -1708,7 +1708,7 @@
       {
         "signature": "### `AGENT_GUIDE.md` → The owner's word mid-turn — the system signs its author",
         "class": "static",
-        "sha256": "a716f1f2b4d3dc34ff80f0360bb324ba47e26549c51e5c2afe14206430bcb05f",
+        "sha256": "be86f8795496fba6d2bc08ed5f3545613c113de6c2349d1bbbb88e49659ea1b7",
         "lines": [
           807,
           822
@@ -2664,7 +2664,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "31460b24914c9d5f5e03904ca74f9c21db15c5bec3e77e14030bf0af79a5c0ec",
+        "sha256": "59f8831f9066da1ccb8065c41cac1a67c443024ad2b2df143d854d69fb67c882",
         "lines": [
           1,
           18

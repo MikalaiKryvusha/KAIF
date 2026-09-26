@@ -191,16 +191,19 @@ export function lint(name, src) {
 export const BUG_KEYWORDS = {
   en: { sections: ['Description', 'Steps to reproduce', 'Expected result', 'Actual result'], hunt: 'Reproduction hunt', lines: ['Build', 'Environment', 'Evidence'],
         match: { sections: ['description', 'steps to reproduce|reproduction steps', 'expected results?|expected behaviou?r', 'actual results?|actual behaviou?r'], hunt: 'reproduction hunt', lines: ['build', 'environment', 'evidence'] },
-        notReproduced: ['not reproduced', 'not reproducible', 'non-reproducible', `(?:could|can|did|was)(?:n['’]t| not) reproduce`, 'cannot reproduce', 'unable to reproduce', 'failed to reproduce'] },
+        // a negation, up to two words, then the stem (court RL1 D-F1: «Cannot be reproduced», «Doesn't reproduce», «No repro», «Not able to
+        // reproduce» passed the first list of phrases) — and the adjective forms
+        notReproduced: [`(?:not|never|no|cannot|can['’]t|couldn['’]t|doesn['’]t|don['’]t|didn['’]t|won['’]t|wasn['’]t|isn['’]t|unable\\s+to|failed\\s+to)(?:\\s+\\p{L}+){0,2}?\\s+repro`, '(?:ir|un|non-?)reproduc'] },
   ru: { sections: ['Описание', 'Шаги воспроизведения', 'Ожидаемый результат', 'Фактический результат'], hunt: 'Охота за шагами', lines: ['Сборка', 'Окружение', 'Улики'],
         match: { sections: ['описание', 'шаги воспроизведения', `ожидаем\\p{L}* результат\\p{L}*`, `фактическ\\p{L}* результат\\p{L}*`], hunt: 'охота за (?:шагами|воспроизведением)', lines: ['сборка', 'окружение|среда', 'улики|доказательства|свидетельства'] },
-        notReproduced: ['не\\s+воспроизв', 'не\\s+удал\\p{L}*\\s+воспроизвести', 'воспроизвести\\s+не\\s+удал'] },
+        // «не», up to two words, then the stem (не удаётся · не смог · не получилось воспроизвести); the reverse order; the adjective; «не повторяется»
+        notReproduced: ['не(?:\\s+\\p{L}+){0,2}?\\s+воспроизв', 'воспроизв\\p{L}*\\s+не\\s', 'невоспроизв', 'не\\s+повтор'] },
 };
 export const BUG_ROLES = ['description', 'steps', 'expected', 'actual'];
 export const HUNT_MIN = 3;
 const NUMBERED_ITEM = /^\s*\d+[.)]\s+\S/m;
-// every form of the verdict «did not reproduce», both languages (TB3 F1: one phrase per language let «не воспроизводится» and «Could not
-// reproduce» pass without a hunt — the very failure of issue #105)
+// the verdict «did not reproduce» in both languages, by negation-around-the-stem patterns (TB3 F1: one phrase per language let «не
+// воспроизводится» pass; court RL1 D-F1: a longer list of phrases still let 14 of 18 forms pass — the very failure of issue #105)
 const NOT_REPRO = new RegExp(`(?<![\\p{L}])(?:${Object.values(BUG_KEYWORDS).flatMap((k) => k.notReproduced).join('|')})`, 'iu');
 const STATUS_LINE = /\*\*(?:status|статус):?\*\*:?([^\n]*)/iu;
 export function parseBug(src) {
@@ -445,7 +448,9 @@ function selftest() {
       say(got.length === 1 && got[0] === id, `${lang} bug: mutation ${id} → exactly [${id}] (got [${got.join(',')}])`);
     }
     // TB3 F1: every form of the verdict reddens a one-variant hunt; the Status line decides when present; inline code is no verdict
-    const FORMS = { en: ['Could not reproduce', 'cannot reproduce', 'not reproducible'], ru: ['не воспроизводится', 'не удалось воспроизвести', 'не воспроизведено'] };
+    // court RL1 D-F1: the eighteen forms of the judge (fourteen of them passed the first edition with one variant)
+    const FORMS = { en: ['Could not reproduce', 'cannot reproduce', 'not reproducible', 'Cannot be reproduced', 'Could not be reproduced', 'Does not reproduce', "Doesn't reproduce", 'No repro', "Can't repro", 'Not reproducing', 'Not able to reproduce'],
+      ru: ['не воспроизводится', 'не удалось воспроизвести', 'не воспроизведено', 'не удаётся воспроизвести', 'не смог воспроизвести', 'не получилось воспроизвести', 'воспроизвести не получилось', 'невоспроизводимо', 'не повторяется'] };
     for (const form of FORMS[lang]) {
       const one = lintBug(renderBug(lang, { status: `**${lang === 'en' ? 'Status' : 'Статус'}:** ${form}` }, [BUG[lang].row(1, form)], true)).map((x) => x.id);
       say(one.length === 1 && one[0] === 'hunt-too-short', `${lang} bug: «${form}» with one variant → exactly [hunt-too-short] (got [${one.join(',')}])`);

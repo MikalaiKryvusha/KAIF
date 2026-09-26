@@ -188,7 +188,7 @@ function budgetOverflow(say) {
   // decision forbids the agent). `.kaif/kaif.json` → "archives": { "<core document>": "<digest path>" } or { "digest": …, "owner":
   // "<where his word lives>" } — declared only by the owner, like canonArtifacts. The budget is then judged on the DIGEST and the
   // archive's size is printed as information, never a stop; a digest that is missing or does not name its archive leaves the archive
-  // judged as before (researches/33 §7 (г)). The judge hunts an archive declared without the owner's word.
+  // judged as before (researches/33 §7, fourth item). The judge hunts an archive declared without the owner's word.
   // [TESTED: 2026-09-25 01:12 +03:00 · suite s16 section (7) green; red on the 2.7 core 5 of its 6 asserts (the sixth — an undeclared
   //  archive warns — is the old behaviour); mutants M13–M15 of tools/sandbox/probes/budget-mutants.mjs red exactly on their addressees;
   //  report testcases/reports/2026-09-25_ck53-owner-archive.md]
@@ -200,7 +200,7 @@ function budgetOverflow(say) {
     return typeof a === 'string' ? { digest: a, owner: '' } : { digest: String(a.digest || ''), owner: String(a.owner || '') };
   };
   const fileLines = (p) => readFileSync(p, 'utf8').replace(/\r?\n$/, '').split(/\r?\n/).length;
-  // The deployed template's length per budgeted document (2.8, epic CK, fork (в) of researches/33 §7: a file translated wholesale is
+  // The deployed template's length per budgeted document (2.8, epic CK, the third fork of researches/33 §7: a file translated wholesale is
   // measured in the SAME lines, and the room for it is the template's reserve — the warning names that room and where local sections go).
   // A manifest written before 2.8 has no `templateLines`: the warning then keeps its 2.7 wording, never an invented number.
   // [TESTED: 2026-09-25 01:30 +03:00 · s16 section (5): the warning of a file translated wholesale names the template's length (equal to
@@ -1189,7 +1189,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   const PAIR_VERSION_WORDS = new Set(['v', 'ver', 'version', 'versions', 'release', 'версия', 'версии', 'версию', 'версией', 'релиз', 'релиза']);
   // `reverse` (the version BEFORE the word): a capitalized word right before KAIF is the release's codename — «2.7 «Audited KAIF»» is a
   // claim (the SC2 field run lost a real README line to the forward rule) — so there only a conjunction blocks
-  // (SC4 F6) in reverse order a LOWERCASE word breaks the pair too — «2.0 на KAIF» is the product's version, the codename is capitalized;
+  // (SC4 F6) in reverse order a LOWERCASE word breaks the pair too — «2.0 on KAIF» is the product's version, the codename is capitalized;
   // «version 2.7 of KAIF» keeps its one linking word
   const pairGap = (gap, reverse = false) => !/[&+]/.test(gap) && (gap.match(/\p{L}+/gu) || []).every((w) => !PAIR_CONJUNCTIONS.has(w.toLowerCase())
     && (PAIR_VERSION_WORDS.has(w.toLowerCase()) || (reverse ? /^\p{Lu}/u.test(w) || w === 'of' : !/^\p{Lu}/u.test(w))));

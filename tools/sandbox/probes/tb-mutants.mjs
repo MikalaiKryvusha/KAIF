@@ -25,6 +25,11 @@ const SRC = readFileSync(join(REPO, 'framework', 'tools', 'kaif-testrun-lint.mjs
 const SKILL = readFileSync(join(REPO, 'framework', 'skills', 'report-bug', 'SKILL.md'), 'utf8').replace(/\r\n/g, '\n');
 const TPL_C = (/### Template C[\s\S]*?```markdown\n([\s\S]*?)```/.exec(SKILL) || [])[1] || '';
 const root = mkdtempSync(join(tmpdir(), 'kaif-tb-mutants-'));
+// the forms of the verdict the module's selftest carries (court RL1 D-F1) — every one is red when the verdict is not read (M6) or read by
+// one phrase per language (M8)
+const FORMS = { en: ['Could not reproduce', 'cannot reproduce', 'not reproducible', 'Cannot be reproduced', 'Could not be reproduced', 'Does not reproduce', "Doesn't reproduce", 'No repro', "Can't repro", 'Not reproducing', 'Not able to reproduce'],
+  ru: ['не воспроизводится', 'не удалось воспроизвести', 'не воспроизведено', 'не удаётся воспроизвести', 'не смог воспроизвести', 'не получилось воспроизвести', 'воспроизвести не получилось', 'невоспроизводимо', 'не повторяется'] };
+const FORM_CASES = [...FORMS.en.map((f) => `en bug: «${f}»`), ...FORMS.ru.map((f) => `ru bug: «${f}»`)];
 let bad = 0;
 
 // The fixtures — the shapes s25 walks on the deployed copy, built from the SAME template C.
@@ -82,13 +87,12 @@ const MUTANTS = [
     red: ['en bug: mutation steps-not-a-path', 'ru bug: mutation steps-not-a-path'], flips: ['no-steps'] },
   { name: 'M6 «not reproduced» never read', from: 'const notRepro = status ?', to: 'const notRepro = false; const _unread = status ?',
     // TB3: every selftest case of the verdict (the three forms per language and the hole in the hunt) depends on the same read
-    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', 'en bug: «Could not reproduce»', 'en bug: «cannot reproduce»', 'en bug: «not reproducible»',
-      'ru bug: «не воспроизводится»', 'ru bug: «не удалось воспроизвести»', 'ru bug: «не воспроизведено»', 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'],
+    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', ...FORM_CASES, 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'],
     flips: ['hunt-2', 'hunt-none', 'ru-form-1'] },
   { name: 'M8 one phrase per language again (TB3 F1 — «не воспроизводится», «Could not reproduce» pass without a hunt)',
     from: "const NOT_REPRO = new RegExp(`(?<![\\\\p{L}])(?:${Object.values(BUG_KEYWORDS).flatMap((k) => k.notReproduced).join('|')})`, 'iu');",
     to: "const NOT_REPRO = /(?<![\\p{L}])(?:not reproduced|не воспроизвел)/iu;",
-    red: ['en bug: «Could not reproduce»', 'en bug: «cannot reproduce»', 'en bug: «not reproducible»', 'ru bug: «не воспроизводится»', 'ru bug: «не удалось воспроизвести»', 'ru bug: «не воспроизведено»'],
+    red: FORM_CASES,
     flips: ['ru-form-1'] },
   { name: 'M9 the Status line no longer decides (TB3 F1 — a reproduced report reddens on «not reproduced on iOS»)',
     from: 'const notRepro = status ? NOT_REPRO.test(status[1]) : ', to: 'const notRepro = ',

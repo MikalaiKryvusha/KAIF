@@ -287,6 +287,10 @@ ok(r.code === 1 && /no such report: testcases\/bugs\/absent\.md/.test(r.out), 's
 r = runBug('ru-form.md', notRepro([HUNT_ROWS[0]]).replace('**Status:** not reproduced after the variants below', '**Статус:** не воспроизводится'));
 ok(r.code === 1 && /ru-form\.md — hunt-too-short: .*lists 1 variant\(s\)/.test(r.out),
   's25 «Статус: не воспроизводится» с одним вариантом — `bug` красный «меньше трёх» (форма, которую первая редакция пропускала)', r.out);
+// суд RL1, D-F1: список фраз пропускал 14 форм из 18 — «не удаётся воспроизвести» с одним вариантом проходил и на полевых копиях
+r = runBug('ru-form-2.md', notRepro([HUNT_ROWS[0]]).replace('**Status:** not reproduced after the variants below', '**Статус:** не удаётся воспроизвести'));
+ok(r.code === 1 && /ru-form-2\.md — hunt-too-short: .*lists 1 variant\(s\)/.test(r.out),
+  's25 «Статус: не удаётся воспроизвести» с одним вариантом — `bug` красный «меньше трёх» (суд RL1, D-F1)', r.out);
 r = runLint('bug testcases/bugs', S, DEPLOYED_LINT);
 ok(r.code === 1 && /testcases\/bugs is not a file/.test(r.out) && !/\n\s+at .*\.mjs:\d+|EISDIR/.test(r.out), 's25 `bug <каталог>` — отказ с именем, не трасса стека EISDIR', r.out);
 const TC_TPL = existsSync(join(S, '.kaif', '_testcases-template.md')) ? readFileSync(join(S, '.kaif', '_testcases-template.md'), 'utf8') : '';

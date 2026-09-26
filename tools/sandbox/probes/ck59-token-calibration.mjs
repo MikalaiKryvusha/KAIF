@@ -8,7 +8,7 @@
 // токен, символ не-ASCII ≈ 1,892 символа на токен. Одна точка калибровки — строка, которая на ней стоит, печатает «≈».
 // [TESTED: 2026-09-25 11:41 +03:00 · сессия 74, по находке 7 судьи CK6 (отметки статуса не было): переисполнено на той же версии
 //  файла поля (`git show 93a92e7:MASTER_PLAN.md` в его репозитории, только чтение) → «bytes 140597 · chars 84449 · ascii 29203 ·
-//  cyrillic 53830 · other 1416», «bytes/token 3.439 · chars/token 2.066», «non-ascii chars/token 1.892» — ровно числа замера выше]
+//  cyrillic 53830 · other 1416», «bytes/token 3.439 · chars/token 2.066», «non-ascii chars/token 1.892» — ровно числа замера выше; отчёт testcases/reports/2026-09-25_ck6-epic-judge-fixes.md, прогон 1]
 import { readFileSync } from 'node:fs';
 
 const ASCII_CHARS_PER_TOKEN = 2.5;   // страница модели: 1M токенов ≈ 2,5M символов

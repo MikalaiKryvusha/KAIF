@@ -60,10 +60,11 @@
 //                 судья CK2 насчитал ≈ 19 % таких на выборке 330 строк ДО расширения словарей; остаток после расширения закрывает
 //                 только смысловой аудит, читающий оба текста целиком (CK3.3); сходство слов — эвристика (число, изменённое
 //                 внутри правила, приходит changed, а не kept, — и печатается участок расхождения)
-// ON-REAL-PATH:   NOT YET — первый реальный путь — CK3 (`--diff v2.7` после сжатия шаблонов)
+// ON-REAL-PATH:   2026-09-24 — CK3 (`--diff v2.7` после сжатия шаблонов, testcases/reports/2026-09-24_ck3-guide-slice.md) и каждый срез
+//                 канона с тех пор (исправлено 2026-09-26 06:01 +03:00 по суду RL1, A-F4: стояло «NOT YET»)
 //
-// [NOT-TESTED] — Гигиена: селфтест и мутанты на копии v2.7 (отчёт testcases/reports/2026-09-24_ck2-canon-inventory.md);
-//                Функциональный прогон: NONE — функциональный путь — `--diff v2.7` по сжатому шаблону в CK3.
+// [TESTED: 2026-09-24 — Гигиена: селфтест и мутанты на копии v2.7 (отчёт testcases/reports/2026-09-24_ck2-canon-inventory.md);
+//                Функциональный прогон: `--diff v2.7` по сжатому шаблону в CK3 (testcases/reports/2026-09-24_ck3-guide-slice.md)]
 import { execFileSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
