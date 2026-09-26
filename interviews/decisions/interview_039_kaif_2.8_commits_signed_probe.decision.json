@@ -1,0 +1,17 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_039_kaif_2.8_commits_signed_probe.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-09-26T04:52:39.064Z",
+  "atHuman": "26 сентября 2026, 07:52 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    }
+  },
+  "rev": "b37fb2c5cc79197372a9b5b14f7d390cb1ddfe16a8f7cf9c0510cb72db2191e1",
+  "revAfter": "e665faf53c560cdecaaf3efb428eb2f728c92628a69053fb18a9284157e8d529"
+}

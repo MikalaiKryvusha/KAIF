@@ -45,7 +45,7 @@
   - Проверка. `git log --format='%an' 7bc3266..HEAD | sort | uniq -c` печатает «31 probe» и более поздние коммиты с вашим именем.
 - **D)** Свой вариант — впишите.
 
-**Answer:**
+**Answer:** A) <!-- owner-review: by Mikalai Kryvusha (KOT KRINIK) · 26 сентября 2026, 07:52 (+03:00) -->
 
 ## Links
 
