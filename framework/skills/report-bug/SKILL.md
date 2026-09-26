@@ -136,6 +136,36 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 <observable verification that the change worked; which framework invariant it serves>
 ```
 
+### Template C — tester's bug report (a defect of THE PRODUCT, for its developer)
+
+The report a tester hands to the product's developer (2.8; origin issue #105 — the owner-QA: this is how a tester describes a bug).
+File it where the product's tracker takes it; BEFORE sending, check it:
+`node .kaif/tools/kaif-testrun-lint.mjs bug <report.md>` (four sections, three lines, the steps a path, the hunt).
+When the defect did not reproduce on the first attempt, hunt first (`TESTING_FRAMEWORK.md` → "Hunt the reproduction").
+
+```markdown
+# <one line: what is broken, where>
+
+**Build:** <version · commit · build number> · **Environment:** <OS · device · browser · stage | production · account: fresh | accumulated> · **Evidence:** <recording · screenshot · log excerpt — paths>
+
+## Description
+<what the user runs into, in one or two sentences>
+
+## Steps to reproduce
+1. <the user's path in the product, one action per item — never state assembled through a back door>
+2. <…>
+
+## Expected result
+<what should happen — cite the requirement, the spec or the owner's word>
+
+## Actual result
+<what happens — the exact text, screen or log line>
+```
+
+When it did NOT reproduce, the report says so on its own line — `**Status:** not reproduced after the variants below` — and carries
+`## Reproduction hunt`: a table `| # | variant (axis: value) | outcome |`, at least three rows (data and state · position · timing and
+races · entry point · fresh vs accumulated account · stage vs production · network).
+
 ## What to do
 
 1. **Determine the next number.** `ls bugs/` → max two-digit `NN` + 1. Filename:

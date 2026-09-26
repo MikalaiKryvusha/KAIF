@@ -11,9 +11,10 @@
 //   W2 (no git) — the same tree without git (20 plain copies): the fallback walk skips the copies by name and names the link.
 //   W3 (the block itself, the FAILED branch) — the KAIF-WALK block of the delivered core, run with an injected file system: an
 //      unreadable directory (fallback walk) and git's "could not open directory … Permission denied" are FAILED and the
-//      walk's line says "the scan is INCOMPLETE, not clean"; git's "No such file" is SKIPPED. A real permission denial is not
-//      reproducible on the origin's machine (the owner's account passes an `icacls` deny — probe 2026-09-26), so this branch
-//      is proved on the block, the end-to-end path on the broken links.
+//      walk's line says "the scan is INCOMPLETE, not clean"; git's "No such file" is SKIPPED. A real permission denial IS
+//      reproducible on the origin's machine from a PowerShell parent (`icacls <dir> /deny <user>:(OI)(CI)(RD)` → readdirSync
+//      EPERM); processes started from Git Bash carry SeBackupPrivilege enabled and read through the deny. (Corrected 2026-09-26 03:53 +03:00
+//      after the SC4 judge: this line said "not reproducible — the owner's account passes an icacls deny".)
 //
 // Red proof: `KAIF_DIST=<dist v2.7> node tools/sandbox/s29-scanners.mjs` — the 2.7 core walks the copies and stops at the link;
 // mutants — tools/sandbox/probes/sc-mutants.mjs.

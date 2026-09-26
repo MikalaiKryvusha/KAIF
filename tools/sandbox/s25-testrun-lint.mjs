@@ -21,6 +21,11 @@
 //     удалённый `## 7.` → назван по номеру · маркер `<!-- constitution-ok: … -->` снимает ровно своё · конституции нет →
 //     тишина. Красный доказан на ядре 2.6 (KAIF_DIST) и шестью мутантами блока на КОПИИ dist (скретчпад `fr-mutants.mjs`,
 //     отчёт прогона): три ассерта «молчит»/«зелёный» на 2.6 зелены ПО ПОСТРОЕНИЮ — их держат мутанты, а не 2.6.
+// (5) эпик TB 2.8 (plans/124; тикет #105): развёрнутые канон тестирования (шаги 6–7), шаблон C `/report-bug` и `bug <отчёт>` —
+//     отчёт из приехавшего шаблона C: незаполненный 1 · заполненный 0 · без раздела 1 с именем · шаги прозой 1 · охота 2 → 1, 3 → 0,
+//     без охоты 1 · по-русски 0 · нет файла 1. [TESTED: 2026-09-26 03:56:17 +03:00 · «all 74 checks green»; на 2.7 (KAIF_DIST)
+//     «21 of 74» — все 11 проверок TB поимённо; первый прогон ≈ 03:55 — 1 красный, дефект линтера (разделитель «·» как значение
+//     строки) — починен; отчёт testcases/reports/2026-09-26_tb1-tester-report-and-hunt.md]
 // [TESTED: 2026-09-18 · отдельный прогон на свежем dist — «✅ s25 testrun-lint: all 45 checks green» (счёт печатает
 //  сам свод; до FR — 37 при полном наборе, до CL — 27); КРАСНЫЙ доказан:
 //  `KAIF_DIST=<git show v2.6:dist/…> node tools/sandbox/s25-testrun-lint.mjs` → «❌ s25: 16 of 45 check(s) failed» —
@@ -61,7 +66,7 @@ cpSync(join(REPO, 'framework', 'templates', '_testrun-report-template.md'), join
 console.log('\n=== s25: отчёт прогона — линтер формы ===');
 let r = runLint('selftest');
 ok(r.code === 0 && /selftest OK/.test(r.out), 's25 selftest — каждое правило красное ровно на своей мутации, EN + RU', r.out);
-ok(/8 rules × 2 languages/.test(r.out), 's25 selftest — восемь правил × два языка сосчитаны (восьмое — pass-without-functional-run, эпик CL)', r.out);
+ok(/8 run-report rules and 5 bug-report rules × 2 languages/.test(r.out), 's25 selftest — восемь правил отчёта прогона и пять правил отчёта тестировщика × два языка сосчитаны (восьмое — pass-without-functional-run, эпик CL; пять — эпик TB)', r.out);
 ok(/✓ en: "Functional run: NONE" under pass → exactly \[pass-without-functional-run\]/.test(r.out) && /✓ ru: "Functional run: NONE" under partial → clean/.test(r.out),
    's25 selftest — «NONE» под pass красный этим правилом, «NONE» под partial чистый (починено, не протестировано — честно)', r.out);
 ok(/✓ the shipped template, unfilled → exactly \[empty-field\] naming all seven fields/.test(r.out) && /✓ the template with only Runs filled → \[empty-field\] naming the other six/.test(r.out),
@@ -200,6 +205,83 @@ writeFileSync(join(S, 'testcases', 'reports', '2026-09-12_hygiene-pass.md'),
 r = runLint('check', S, DEPLOYED_LINT);
 ok(r.code === 1 && /2026-09-12_hygiene-pass\.md — pass-without-functional-run: Verdict says pass while Checks carries no "Functional run:" line/.test(r.out),
    's25 развёрнутый линтер — «одна гигиена, вердикт pass» красный правилом pass-without-functional-run с именем строки (эпик CL, #62)', r.out);
+
+// ---------------------------------- (5) отчёт тестировщика и охота за шагами (эпик TB 2.8, plans/124; тикет origin #105)
+// Слово владельца-QA (#105): баг-репорт тестировщика — Описание · Шаги воспроизведения · Ожидаемый · Фактический, шаги — путь
+// пользователя; «не воспроизвелось» — только после охоты за шагами. Свод судит РАЗВЁРНУТУЮ копию (та же, что выше): канон
+// тестирования несёт шаги 6–7, навык /report-bug — шаблон C, и развёрнутый линтер `bug <отчёт>` отвечает оба ответа —
+// на отчёте, собранном ИЗ приехавшего шаблона (шаблон и линтер обязаны говорить одними заголовками). Красный: ядро 2.7
+// (KAIF_DIST) — шагов, шаблона и команды нет; мутанты правил — tools/sandbox/probes/tb-mutants.mjs.
+console.log('\n=== s25: развёрнутая копия — отчёт тестировщика и охота за шагами (TB) ===');
+const TF_TEXT = existsSync(join(S, 'TESTING_FRAMEWORK.md')) ? readFileSync(join(S, 'TESTING_FRAMEWORK.md'), 'utf8') : '';
+ok(/^6\. \*\*Hunt the reproduction\*\*/m.test(TF_TEXT) && /lists at least\s+three variants tried/.test(TF_TEXT) &&
+   /^7\. \*\*File defects in the defined shape\*\*/m.test(TF_TEXT) && /kaif-testrun-lint\.mjs bug <report>/.test(TF_TEXT),
+   's25 развёрнутый канон тестирования — шаг 6 «Hunt the reproduction» (не меньше трёх вариантов) и шаг 7 с командой `bug`', TF_TEXT.slice(0, 200));
+const RB_TEXT = existsSync(join(S, '.claude', 'skills', 'report-bug', 'SKILL.md')) ? readFileSync(join(S, '.claude', 'skills', 'report-bug', 'SKILL.md'), 'utf8') : '';
+const TPL_C = (/### Template C[\s\S]*?```markdown\r?\n([\s\S]*?)```/.exec(RB_TEXT) || [])[1] || '';
+ok(/^## Description$/m.test(TPL_C) && /^## Steps to reproduce$/m.test(TPL_C) && /^## Expected result$/m.test(TPL_C) &&
+   /^## Actual result$/m.test(TPL_C) && /\*\*Build:\*\*/.test(TPL_C) && /\*\*Evidence:\*\*/.test(TPL_C),
+   's25 развёрнутый /report-bug — шаблон C: четыре раздела и строки Build · Environment · Evidence', RB_TEXT.slice(0, 200));
+const BUGS_DIR = join(S, 'testcases', 'bugs');
+mkdirSync(BUGS_DIR, { recursive: true });
+const runBug = (name, text) => { writeFileSync(join(BUGS_DIR, name), text); return runLint(`bug testcases/bugs/${name}`, S, DEPLOYED_LINT); };
+// незаполненная копия шаблона C — плейсхолдеры не содержание: четыре пустых раздела и три строки названы
+r = runBug('unfilled.md', TPL_C);
+ok(r.code === 1 && /empty-section: empty section\(s\): Description, Steps to reproduce, Expected result, Actual result/.test(r.out) &&
+   /missing-line: missing line\(s\): \*\*Build:\*\* · \*\*Environment:\*\* · \*\*Evidence:\*\*/.test(r.out),
+   's25 незаполненная копия шаблона C — `bug` красный: четыре раздела пусты, три строки названы', r.out);
+// заполненная копия шаблона C: тело каждого раздела заменяется по его заголовку — заголовки берутся ИЗ шаблона
+const FILL = {
+  'Description': 'In the cart, a second tap on «Pay» does nothing once the first payment was cancelled.',
+  'Steps to reproduce': '1. Open the cart with one item.\n2. Tap «Pay», then cancel on the payment screen.\n3. Tap «Pay» again.',
+  'Expected result': 'The payment screen opens again (requirement CART-12).',
+  'Actual result': 'Nothing happens; the console shows `TypeError: order is null`.',
+};
+const fillC = (tpl, over = {}) => {
+  const fill = { ...FILL, ...over };
+  let out = tpl.replace(/^# <[^\n]*$/m, '# The Pay button does not answer a second tap')
+    .replace(/^\*\*Build:\*\*[^\n]*$/m, '**Build:** 2.8.1 (a1b2c3d) · **Environment:** Android 14, Chrome 129, stage, a fresh account · **Evidence:** `cart-pay-2nd-tap.mp4`');
+  for (const [head, body] of Object.entries(fill)) {
+    const re = new RegExp(`^## ${head}\\r?\\n[\\s\\S]*?(?=^## |(?![\\s\\S]))`, 'm');
+    out = body === null ? out.replace(re, '') : out.replace(re, `## ${head}\n${body}\n\n`);
+  }
+  return out;
+};
+const FILLED = fillC(TPL_C);
+r = runBug('filled.md', FILLED);
+ok(r.code === 0 && /testrun-lint bug OK — testcases\/bugs\/filled\.md: four sections, three lines, the steps a path$/m.test(r.out),
+   's25 отчёт по шаблону C, заполненный, — `bug` зелёный (четыре раздела, три строки, шаги — путь)', r.out + FILLED.slice(0, 300));
+r = runBug('no-expected.md', fillC(TPL_C, { 'Expected result': null }));
+ok(r.code === 1 && /no-expected\.md — missing-section: missing section\(s\): Expected result — a tester's report is/.test(r.out) && !/empty-section|missing-line/.test(r.out),
+   's25 отчёт без «## Expected result» — `bug` красный и называет пропавший раздел, ничего сверх', r.out);
+// форма тикета #105: «точных шагов не помню» — шаги прозой, одна попытка
+r = runBug('no-steps.md', fillC(TPL_C, { 'Steps to reproduce': 'I do not remember the exact steps, but it happened after a cancel.' }));
+ok(r.code === 1 && /steps-not-a-path: Steps to reproduce is not a numbered list/.test(r.out),
+   's25 шаги прозой («точных шагов не помню» — форма #105) — `bug` красный: шаги не путь пользователя', r.out);
+// охота: «не воспроизвелось» с двумя вариантами — красный «меньше трёх»; с тремя — зелёный и счёт вслух; без охоты — 0 вариантов
+const HUNT_HEAD = '## Reproduction hunt\n\n| # | variant (axis: value) | outcome |\n|---|---|---|\n';
+const HUNT_ROWS = ['| 1 | data and state: an empty cart, then one item | not reproduced |',
+  '| 2 | timing and races: the second tap within 300 ms | not reproduced |', '| 3 | account: accumulated, 40 past orders | not reproduced |'];
+const notRepro = (rows) => FILLED.replace(/^(\*\*Build:\*\*[^\n]*)$/m, '$1\n**Status:** not reproduced after the variants below') +
+  (rows === null ? '' : `\n${HUNT_HEAD}${rows.join('\n')}\n`);
+r = runBug('hunt-2.md', notRepro(HUNT_ROWS.slice(0, 2)));
+ok(r.code === 1 && /hunt-2\.md — hunt-too-short: .*lists 2 variant\(s\) — fewer than 3 tried/.test(r.out),
+   's25 «не воспроизвелось» с двумя вариантами охоты — `bug` красный «меньше трёх»', r.out);
+r = runBug('hunt-3.md', notRepro(HUNT_ROWS));
+ok(r.code === 0 && /hunt-3\.md: four sections, three lines, the steps a path, a hunt of 3 variants/.test(r.out),
+   's25 «не воспроизвелось» с тремя вариантами — `bug` зелёный, счёт вариантов вслух', r.out);
+r = runBug('hunt-none.md', notRepro(null));
+ok(r.code === 1 && /hunt-too-short: .*lists 0 variant\(s\)/.test(r.out),
+   's25 «не воспроизвелось» без раздела охоты — `bug` красный: ноль вариантов', r.out);
+// язык проекта: тот же отчёт по-русски — зелёный (ключевые слова обоих языков поставки)
+r = runBug('ru.md', ['# Кнопка «Оплатить» не отвечает на второе нажатие', '',
+  '**Сборка:** 2.8.1 (a1b2c3d) · **Окружение:** Android 14, стейдж, свежая учётная запись · **Улики:** запись экрана `pay.mp4`', '',
+  '## Описание', 'Второе нажатие «Оплатить» после отмены ничего не делает.', '',
+  '## Шаги воспроизведения', '1. Открыть корзину с одним товаром.', '2. Нажать «Оплатить» и отменить.', '3. Нажать «Оплатить» снова.', '',
+  '## Ожидаемый результат', 'Экран оплаты открывается снова.', '', '## Фактический результат', 'Ничего не происходит.', ''].join('\n'));
+ok(r.code === 0 && /ru\.md: four sections, three lines, the steps a path/.test(r.out), 's25 отчёт тестировщика по-русски — `bug` зелёный', r.out);
+r = runLint('bug testcases/bugs/absent.md', S, DEPLOYED_LINT);
+ok(r.code === 1 && /no such report: testcases\/bugs\/absent\.md/.test(r.out), 's25 `bug` на несуществующем файле — отказ с именем, не «OK»', r.out);
 
 // --------------------------------- (4) ось «конституция сохранила обязательства шаблона» (эпик FR, plans/113)
 // Тикет #68: сгенерированная конституция сохранила 5 правил §2 из 9 шаблонных — четыре правила

@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.7",
   "released": "2026-09-18",
-  "moduleCount": 835,
+  "moduleCount": 836,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -617,10 +617,10 @@
       {
         "signature": "## The testing activities — the chain that makes \"tested\" mean something",
         "class": "static",
-        "sha256": "34509bee939efb8ef6d0e398edb05a47373a9acfdc1ef0e5b30f364b358457f0",
+        "sha256": "3c81e48a397c3450351383ca3a7582157914f7a8f529381167f2e1d8a58b03da",
         "lines": [
           44,
-          76
+          83
         ]
       },
       {
@@ -628,8 +628,8 @@
         "class": "static",
         "sha256": "dafe75ef2a65809e0e8e54a1235d85ed87ea0ffac734dc44bd81838ff0c4a7a8",
         "lines": [
-          77,
-          112
+          84,
+          119
         ]
       },
       {
@@ -637,8 +637,8 @@
         "class": "static",
         "sha256": "68e7c8fdac96d97b08cf17851e0ea66d828c340f26281611a1e17328f6ec2c1a",
         "lines": [
-          113,
-          132
+          120,
+          139
         ]
       },
       {
@@ -646,8 +646,8 @@
         "class": "static",
         "sha256": "fc232dd2e2ed6e50b7589ef1f3802b926349986a668700c22e64c12e7a469ee1",
         "lines": [
-          133,
-          161
+          140,
+          168
         ]
       },
       {
@@ -655,8 +655,8 @@
         "class": "static",
         "sha256": "957dc18756e31a76b916d97bcdaedfa14a5bc8f7cf367e0034a4685bb281f474",
         "lines": [
-          162,
-          213
+          169,
+          220
         ]
       },
       {
@@ -664,8 +664,8 @@
         "class": "static",
         "sha256": "892562f7c7c1a4739ed79a6c5242be280bc7e5b0f950b140370f0a3a43aa282f",
         "lines": [
-          214,
-          235
+          221,
+          242
         ]
       },
       {
@@ -673,17 +673,17 @@
         "class": "static",
         "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
         "lines": [
-          236,
-          244
+          243,
+          251
         ]
       },
       {
         "signature": "## How this composes with the rest of KAIF",
         "class": "static",
-        "sha256": "606886b42f9e7cc389a89463aef4a89dc3770c0664d56f1fc38f8502a97aaa76",
+        "sha256": "bd4cd41d3d9d56edd0bd6b5988a56d7e056caa4344ebf717935ce3acd00826d2",
         "lines": [
-          245,
-          270
+          252,
+          271
         ]
       }
     ],
@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "1454e8fed0feb0632492208a001f3ead6261eb608571bf603acad43b1ba19c9f",
+        "sha256": "c0c43777e4e1e2500b0207d06564a371a8a330e63280baf76bf1a682e97a48fb",
         "lines": [
           562,
           618
@@ -4386,12 +4386,21 @@
         ]
       },
       {
+        "signature": "### Template C — tester's bug report (a defect of THE PRODUCT, for its developer)",
+        "class": "static",
+        "sha256": "334b33b1d0d39c4f7e5f97fa2ba420b9adfbe1d1f68488989bad03f7558158eb",
+        "lines": [
+          139,
+          168
+        ]
+      },
+      {
         "signature": "## What to do",
         "class": "adaptive",
         "sha256": "8a2f6e0c48555f32889af83279cddcb90cf1996b348134f96210bb37c94e9990",
         "lines": [
-          139,
-          197
+          169,
+          227
         ]
       },
       {
@@ -4399,8 +4408,8 @@
         "class": "static",
         "sha256": "cc9cd26c93d2bde53041a566ba46133ed7bc717fb1ab6b8585da808d5a37330c",
         "lines": [
-          198,
-          201
+          228,
+          231
         ]
       }
     ],

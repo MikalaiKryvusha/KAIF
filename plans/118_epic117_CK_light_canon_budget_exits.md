@@ -259,6 +259,13 @@ OW2 (эпик OW, `plans/119`; место под правило «слово в�
 - «A fact never probed is written `— not probed yet —`» → `framework/templates/_house-rules-template.md` §4 «Environment dossier» — дословно (файл, где живёт таблица досье, прежде отсылал за ними назад в руководство — пару лучше убрать); в руководстве остался указатель «How to collect»
 - «**The same word mid-sentence stays prose** ("keep reading resume.log") — position decides.» → изменён по критерию 5 `plans/117` (находки D-F4 суда 2.7 и Q-R7 разведки 2.8): граница «ЛЮБОЕ первое слово семейства» сужена — повелительный глагол перед словом остаётся приказом, существительное заголовком с двоеточием — проза; тот же пункт 2 того же раздела `framework/AGENT_GUIDE.md`
 
+TB1 (эпик TB, `plans/124`; место под шаги 6–7 «Hunt the reproduction» и «File defects in the defined shape» — канон тестирования поставки
+стоит на потолке 270) — раздел «How this composes with the rest of KAIF» обоих слоёв:
+- «**The guard-declaration block as a guard**» → буллет «**Its guards**» того же раздела `framework/TESTING_FRAMEWORK.md` — слит с соседним (модуль `kaif-guard-lint`, гейт 5; устройство модуля — записка §14)
+- «**The run-report form as a guard**» → тот же буллет «**Its guards**» `framework/TESTING_FRAMEWORK.md` (модуль `kaif-testrun-lint`: семь полей отчёта прогона; `bug` — отчёт тестировщика), дополнен
+- «**Блок объявления стража как страж**» → буллет «**Его стражи**» того же раздела корневого `TESTING_FRAMEWORK.md` — слит с соседним
+- «**Форма отчёта прогона как страж**» → тот же буллет «**Его стражи**» корневого `TESTING_FRAMEWORK.md`, дополнен
+
 ### CK4 — файл домашних правил и правило владельца правилом (≈ 0,5 чата; детализировано на закрытии CK3, ≈ 2026-09-24 21:56 +03:00)
 
 Входы сверены (сессия 71): имя раздела заметок — «Notes from the human» в шаблоне и в ядре (`KAIF-CORE.mjs:863` пункт портрета,

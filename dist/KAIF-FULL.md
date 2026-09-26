@@ -1795,9 +1795,16 @@ step with its exit condition:
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
-6. **File defects in the defined shape.** Steps to reproduce · expected vs actual ·
-   severity/priority · environment · evidence — then hand off to `BUG_FIXING_FRAMEWORK.md`
-   (one document per defect; skill `/report-bug`).
+6. **Hunt the reproduction** when a defect or a reported phenomenon does not reproduce on the
+   first attempt: vary it over named axes — data and state · position · timing and races · entry
+   point · fresh vs accumulated account · stage vs production · network — and write every attempt
+   down. *Exit:* the steps reproduce it, or the report says "not reproduced" and lists at least
+   three variants tried, each with its outcome — one attempt is never a verdict.
+7. **File defects in the defined shape** — the tester's report a developer reads: **Description ·
+   Steps to reproduce · Expected result · Actual result**, plus **Build · Environment · Evidence**;
+   the steps are the user's path in the product, never state assembled through a back door
+   (template C of `/report-bug`; `node .kaif/tools/kaif-testrun-lint.mjs bug <report>` checks the
+   sections and the hunt) — then hand off to `BUG_FIXING_FRAMEWORK.md` (one document per defect).
 
 ## Test-status markers — the trust contract
 
@@ -1972,18 +1979,12 @@ a verification and never flips a marker; the owner's recorded verdict is.
 - **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
   against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
   basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
-- **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
-  says WHAT must carry a status and how trust propagates.
+- **fable-method** — Step 5 (verify by observation) is HOW one check is done; this framework says WHAT carries a status.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
-- **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
-  (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
-  `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
-- **The run-report form as a guard** — the optional tool module `kaif-testrun-lint` (`.kaif/tools/`)
-  judges the seven fields and the date catalog of "An executed run produces its report"; advisory,
-  `SKIPPED=3` when the test-doc home has no `reports/`.
+- **Its guards** — optional tool modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14): `kaif-guard-lint` (gate 5's
+  declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` — the tester's report); advisory.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
-- **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
-  fraud table; principle 6 lives there.
+- **Spheres** (`.kaif/spheres/`) — the sphere's evidence, its meaning of "verified by observation", its fraud table (principle 6).
 - **The harness** — invest in tooling that makes verification observable and deterministic
   (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
 - **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that
@@ -3303,7 +3304,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
 | `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or on its own line the address of the commit that holds the owner's words verbatim (`commit <hash>`, since 2.8 — the owner's standing rule enters the rulebook as a rule, his words stay at the source), or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
-| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
+| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. Second genre (2.8, epic TB; origin issue #105): `bug <report>` judges one tester's bug report (template C of `/report-bug`) — four sections (Description · Steps to reproduce · Expected result · Actual result; Russian keywords too), three lines (Build · Environment · Evidence) each with a value, the steps a numbered list (the user's path), and a report that says "not reproduced" carries a reproduction hunt of at least three variants; exit 1 names each finding. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--all | --sections <regex>] [--genre <genre>]` / `check <files…> [--genre <genre>] [--warn]` / `selftest`; since 2.8 — epic VO, origin issue #102 — a §8 row whose hint opens with a genre label `[work]`·`[document]`·`[prose]` (or the same three words in the portrait's language — the Russian mirrors ship in the module) judges only its genres, the same names and rule as the owner's core storage tool; the writing sections of a bare `load` include §1, `--genre essay` adds §3): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache; since 2.8 — epic CK, origin issue #99, a field portrait of ~170k tokens loaded whole for every unit — a bare `load` prints the WRITING sections, §0 · §1 · §2 · §5 · §6 · §7 with their subsections, §2-C among them, and their price in tokens at the rates of the entry-cost line of `check`, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole; a portrait with none of them numbered is printed whole, said aloud); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 | `kaif-experience-lint.mjs` | The recurrence deadline of `EXPERIENCE.md` — "Two strikes → a mechanism, never a third reminder" (2.7, epic EL; origin issue #69 — a field audit of one project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, five lessons written 6–17 times in different words) as an advisory linter (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`): the field `class: <slug>` on its own line under the entry heading is the UNIT of recurrence, and the SECOND failure entry (`❌` or `❌→✅`) of one class with no `mechanized:` is a finding that names the class and BOTH entries by id. Two fates clear it, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty declaration is itself a finding; declared classes are printed on the summary line and that list only shrinks). It also carries the field rules of the origin's own guard (exactly one of `mechanized:` / `none-cheap: <why>` / `subject-lesson`; a trap by form may not answer `subject-lesson`) against an inherited-debt baseline the caller passes, warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and addresses are not checked at all for a journal outside a project tree — said aloud) and when a slug is outside the journal's class list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · repro … · full text: git log -p -S "<id>"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and "not judged" never reads as "clean". Keywords are a per-language table; ids are not assumed numeric (a field journal writes `EXP-NEW-<slug>`). |
@@ -4762,6 +4763,36 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 ## Expected effect and its check
 <observable verification that the change worked; which framework invariant it serves>
 ```
+
+### Template C — tester's bug report (a defect of THE PRODUCT, for its developer)
+
+The report a tester hands to the product's developer (2.8; origin issue #105 — the owner-QA: this is how a tester describes a bug).
+File it where the product's tracker takes it; BEFORE sending, check it:
+`node .kaif/tools/kaif-testrun-lint.mjs bug <report.md>` (four sections, three lines, the steps a path, the hunt).
+When the defect did not reproduce on the first attempt, hunt first (`TESTING_FRAMEWORK.md` → "Hunt the reproduction").
+
+```markdown
+# <one line: what is broken, where>
+
+**Build:** <version · commit · build number> · **Environment:** <OS · device · browser · stage | production · account: fresh | accumulated> · **Evidence:** <recording · screenshot · log excerpt — paths>
+
+## Description
+<what the user runs into, in one or two sentences>
+
+## Steps to reproduce
+1. <the user's path in the product, one action per item — never state assembled through a back door>
+2. <…>
+
+## Expected result
+<what should happen — cite the requirement, the spec or the owner's word>
+
+## Actual result
+<what happens — the exact text, screen or log line>
+```
+
+When it did NOT reproduce, the report says so on its own line — `**Status:** not reproduced after the variants below` — and carries
+`## Reproduction hunt`: a table `| # | variant (axis: value) | outcome |`, at least three rows (data and state · position · timing and
+races · entry point · fresh vs accumulated account · stage vs production · network).
 
 ## What to do
 

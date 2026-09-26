@@ -28,6 +28,9 @@
 //
 // Commands:
 //   node .kaif/tools/kaif-testrun-lint.mjs check [home]   # home: .kaif/kaif.json → testdocs, default testcases/
+//   node .kaif/tools/kaif-testrun-lint.mjs bug <report>   # 2.8: the tester's bug report — Description · Steps to reproduce ·
+//                                                         # Expected result · Actual result + Build · Environment · Evidence; a
+//                                                         # «not reproduced» report needs a hunt of ≥ 3 variants (template C, /report-bug)
 //   node .kaif/tools/kaif-testrun-lint.mjs selftest       # PROVE every rule on in-memory fixtures (EN + RU):
 //                                                         # mutation N reddens rule N and only N, the clean
 //                                                         # report yields 0; the shipped template, unfilled, reddens
@@ -177,6 +180,82 @@ export function lint(name, src) {
 }
 
 // ---------------------------------------------------------------------------
+// The SECOND genre (2.8, epic TB; origin issue #105 — the owner-QA: the tester's bug report is Description · Steps to reproduce ·
+// Expected result · Actual result, and exact steps are «an important part of the QA activity»): the report a tester hands to a
+// developer. Four H2 sections, three bold lines, the steps a numbered list (the user's path, one action per item), and — when the
+// report says the defect did NOT reproduce — a reproduction hunt of at least three variants with their outcomes. Same engine, rules
+// as data, keywords per language; `bug <report>` judges one file.
+// [TESTED: 2026-09-26 · selftest 67 cases; s25 section 5 on the deployed copy (a report built from the delivered template C, six
+//  answers); four field deployments updated by their own 2.7 core — `bug` on two of them read; 7 mutants on their addressees;
+//  report testcases/reports/2026-09-26_tb1-tester-report-and-hunt.md]
+export const BUG_KEYWORDS = {
+  en: { sections: ['Description', 'Steps to reproduce', 'Expected result', 'Actual result'], hunt: 'Reproduction hunt', lines: ['Build', 'Environment', 'Evidence'], notReproduced: 'not reproduced' },
+  ru: { sections: ['Описание', 'Шаги воспроизведения', 'Ожидаемый результат', 'Фактический результат'], hunt: 'Охота за шагами', lines: ['Сборка', 'Окружение', 'Улики'], notReproduced: 'не воспроизвел' },
+};
+export const BUG_ROLES = ['description', 'steps', 'expected', 'actual'];
+export const HUNT_MIN = 3;
+const NUMBERED_ITEM = /^\s*\d+[.)]\s+\S/m;
+export function parseBug(src) {
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
+  const fields = {};
+  let lang = null, cur = null, fence = false, outside = '';   // `outside` — the text beyond the hunt: its rows legally carry «not reproduced»
+  const roleOfBug = (title) => {
+    for (const [lg, kw] of Object.entries(BUG_KEYWORDS)) {
+      const i = kw.sections.findIndex((k) => new RegExp(`^${k}(?![\\p{L}])`, 'iu').test(title));
+      if (i >= 0) return { lang: lg, role: BUG_ROLES[i] };
+      if (new RegExp(`^${kw.hunt}(?![\\p{L}])`, 'iu').test(title)) return { lang: lg, role: 'hunt' };
+    }
+    return null;
+  };
+  for (const l of lines) {
+    if (/^\s*```/.test(l)) { fence = !fence; if (cur) fields[cur] += l + '\n'; continue; }
+    const m = !fence && /^##\s+(?:\d+[.)]\s*)?(.+?)\s*$/.exec(l);
+    if (m) { const hit = roleOfBug(m[1]); if (hit) { lang = lang || hit.lang; cur = hit.role; fields[cur] = fields[cur] || ''; } else cur = null; continue; }
+    if (cur) fields[cur] += l + '\n';
+    if (cur !== 'hunt' && !fence) outside += l + '\n';
+  }
+  lang = lang || 'en';
+  const kw = BUG_KEYWORDS[lang];
+  const body = src.replace(/```[\s\S]*?```/g, '');
+  const missing = BUG_ROLES.filter((r) => !(r in fields)).map((r) => kw.sections[BUG_ROLES.indexOf(r)]);
+  const empty = BUG_ROLES.filter((r) => r in fields && !hasContent(fields[r])).map((r) => kw.sections[BUG_ROLES.indexOf(r)]);
+  // A line counts only when its VALUE — up to the next " · **Label" or the line end — carries a letter or a digit: with the
+  // placeholders stripped, the unfilled template's "**Build:**  · **Environment:** …" would otherwise pass on the "·" alone.
+  const bare = body.replace(PLACEHOLDER, '');
+  const lineValue = (label) => (new RegExp(`\\*\\*${label}:?\\*\\*:?([^\\n]*?)(?=\\s+·\\s+\\*\\*|\\r?\\n|$)`, 'iu').exec(bare) || [])[1];
+  const missingLines = kw.lines.filter((label) => !/[\p{L}\p{N}]/u.test(lineValue(label) || ''));
+  const notRepro = Object.values(BUG_KEYWORDS).some((k) => new RegExp(`(?<![\\p{L}])${k.notReproduced}`, 'iu').test(outside));
+  const huntText = stripScaffold(fields.hunt || '');
+  const variants = huntText.split(/\r?\n/).filter((l) => (/^\s*\|/.test(l) && /\p{L}/u.test(l)) || /^\s*(?:[-*+]|\d+[.)])\s+\S/.test(l)).length;
+  return { lang, kw, fields, missing, empty, missingLines, notRepro, variants,
+           has: (role) => role in fields && hasContent(fields[role]), text: (role) => stripScaffold(fields[role] || '') };
+}
+export const BUG_RULES = [
+  { id: 'missing-section', test: (b) => b.missing.length > 0,
+    msg: (b) => `missing section(s): ${b.missing.join(', ')} — a tester's report is ${b.kw.sections.join(' · ')}` },
+  { id: 'empty-section', test: (b) => b.empty.length > 0,
+    msg: (b) => `empty section(s): ${b.empty.join(', ')} — placeholders are not content` },
+  { id: 'missing-line', test: (b) => b.missingLines.length > 0,
+    msg: (b) => `missing line(s): ${b.missingLines.map((l) => `**${l}:**`).join(' · ')} — the developer needs the build, the environment and the evidence` },
+  { id: 'steps-not-a-path', test: (b) => b.has('steps') && !NUMBERED_ITEM.test(b.text('steps')),
+    msg: (b) => `${b.kw.sections[1]} is not a numbered list — the steps are the user's path in the product, one action per item` },
+  { id: 'hunt-too-short', test: (b) => b.notRepro && b.variants < HUNT_MIN,
+    msg: (b) => `the report says the defect did not reproduce, and «${b.kw.hunt}» lists ${b.variants} variant(s) — fewer than ${HUNT_MIN} tried: one attempt is never a verdict (TESTING_FRAMEWORK.md → Hunt the reproduction)` },
+];
+export const BUG_RULE_IDS = BUG_RULES.map((r) => r.id);
+export function lintBug(src) {
+  const b = parseBug(src);
+  return BUG_RULES.filter((rule) => rule.test(b)).map((rule) => ({ id: rule.id, msg: rule.msg(b) }));
+}
+function bugCheck(file) {
+  if (!file || !existsSync(file)) { console.error(`✖ testrun-lint bug: no such report: ${file || '(none named)'} — usage: kaif-testrun-lint.mjs bug <report.md>`); process.exit(1); }
+  const found = lintBug(readFileSync(file, 'utf8'));
+  for (const x of found) console.log(`✖ ${file.replace(/\\/g, '/')} — ${x.id}: ${x.msg}`);
+  if (found.length) { console.log(`✖ testrun-lint bug: ${found.length} finding(s) — a report the developer cannot act on goes back to the tester`); process.exit(1); }
+  console.log(`✅ testrun-lint bug OK — ${file.replace(/\\/g, '/')}: four sections, three lines, the steps a path${parseBug(readFileSync(file, 'utf8')).notRepro ? `, a hunt of ${parseBug(readFileSync(file, 'utf8')).variants} variants` : ''}`);
+}
+
+// ---------------------------------------------------------------------------
 function homeOf(arg) {
   if (arg) return arg;
   try {
@@ -316,12 +395,56 @@ function selftest() {
         KEYWORDS.en.filter((k) => k !== 'Runs').every((k) => six[0].msg.includes(k)),
       `the template with only Runs filled → [empty-field] naming the other six (got [${six.map((x) => x.id).join(',')}])`);
   } else console.log('  · the shipped template is not beside the module — its unfilled-copy proof skipped (not a failure)');
+  // The second genre (2.8, TB): the tester's bug report — clean → 0; each rule red on its own mutation only; the hunt rule at 2 and 3.
+  const BUG = {
+    en: { title: '# The Pay button does not answer a second tap', lines: '**Build:** 2.8.1 (a1b2c3d) · **Environment:** Android 14, Chrome 129, stage, a fresh account · **Evidence:** screen recording `cart-pay-2nd-tap.mp4`',
+          description: 'In the cart, a second tap on «Pay» does nothing once the first payment was cancelled.',
+          steps: '1. Open the cart with one item.\n2. Tap «Pay», then cancel on the payment screen.\n3. Tap «Pay» again.',
+          expected: 'The payment screen opens again (requirement CART-12).', actual: 'Nothing happens; the console shows `TypeError: order is null`.',
+          status: '**Status:** not reproduced after the variants below', row: (i, out) => `| ${i} | position: the cart scrolled to item ${i} | ${out} |`, head: '| # | variant | outcome |\n|---|---|---|' },
+    ru: { title: '# Кнопка «Оплатить» не отвечает на второе нажатие', lines: '**Сборка:** 2.8.1 (a1b2c3d) · **Окружение:** Android 14, Chrome 129, стейдж, свежая учётная запись · **Улики:** запись экрана `cart-pay-2nd-tap.mp4`',
+          description: 'В корзине второе нажатие «Оплатить» ничего не делает, если первую оплату отменили.',
+          steps: '1. Открыть корзину с одним товаром.\n2. Нажать «Оплатить», на экране оплаты — отмена.\n3. Нажать «Оплатить» снова.',
+          expected: 'Экран оплаты открывается снова (требование CART-12).', actual: 'Ничего не происходит; в консоли `TypeError: order is null`.',
+          status: '**Статус:** не воспроизвелось на вариантах ниже', row: (i, out) => `| ${i} | позиция: корзина прокручена до товара ${i} | ${out} |`, head: '| # | вариант | исход |\n|---|---|---|' },
+  };
+  const renderBug = (lang, over = {}, huntRows = null, notRepro = false) => {
+    const f = { ...BUG[lang], ...over }; const k = BUG_KEYWORDS[lang].sections;
+    let out = `${f.title}\n\n${f.lines}\n${notRepro ? f.status + '\n' : ''}\n`;
+    ['description', 'steps', 'expected', 'actual'].forEach((role, i) => { if (f[role] !== null) out += `## ${k[i]}\n\n${f[role]}\n\n`; });
+    if (huntRows) out += `## ${BUG_KEYWORDS[lang].hunt}\n\n${f.head}\n${huntRows.join('\n')}\n`;
+    return out;
+  };
+  const BUG_MUT = {
+    'missing-section': (lang) => renderBug(lang, { expected: null }),
+    'empty-section': (lang) => renderBug(lang, { actual: '<what happens — the exact text, screen, log line>' }),
+    'missing-line': (lang) => renderBug(lang, { lines: BUG[lang].lines.replace(/ · \*\*[^*]+:\*\* [^·]+$/, '') }),
+    'steps-not-a-path': (lang) => renderBug(lang, { steps: lang === 'en' ? 'Tap Pay twice after a cancel.' : 'Дважды нажать «Оплатить» после отмены.' }),
+    'hunt-too-short': (lang) => renderBug(lang, {}, [BUG[lang].row(1, 'not reproduced'), BUG[lang].row(2, 'not reproduced')], true),
+  };
+  for (const lang of Object.keys(BUG)) {
+    const clean = lintBug(renderBug(lang)).map((x) => x.id);
+    say(clean.length === 0, `${lang} bug: the clean tester's report — 0 findings (got [${clean.join(',')}])`);
+    for (const id of BUG_RULE_IDS) {
+      const got = lintBug(BUG_MUT[id](lang)).map((x) => x.id);
+      say(got.length === 1 && got[0] === id, `${lang} bug: mutation ${id} → exactly [${id}] (got [${got.join(',')}])`);
+    }
+    // The unfilled template's lines row — labels with placeholders only — names all three lines, never passes on the separators.
+    const bareLines = lintBug(renderBug(lang, { lines: BUG_KEYWORDS[lang].lines.map((l) => `**${l}:** <${l.toLowerCase()}>`).join(' · ') }));
+    say(bareLines.length === 1 && bareLines[0].id === 'missing-line' && BUG_KEYWORDS[lang].lines.every((l) => bareLines[0].msg.includes(`**${l}:**`)),
+      `${lang} bug: the lines row with placeholders only → exactly [missing-line] naming all three (got [${bareLines.map((x) => x.id).join(',')}])`);
+    const three = lintBug(renderBug(lang, {}, [1, 2, 3].map((i) => BUG[lang].row(i, 'not reproduced')), true)).map((x) => x.id);
+    say(three.length === 0, `${lang} bug: not reproduced with a hunt of three variants → clean (got [${three.join(',')}])`);
+    const found = lintBug(renderBug(lang, {}, [BUG[lang].row(1, 'not reproduced'), BUG[lang].row(2, 'reproduced')], false)).map((x) => x.id);
+    say(found.length === 0, `${lang} bug: REPRODUCED after two tries — the hunt's own «not reproduced» rows are not the verdict (got [${found.join(',')}])`);
+  }
   if (failed) { console.error(`✖ testrun-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
-  console.log(`✅ testrun-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean report`);
+  console.log(`✅ testrun-lint selftest OK — ${cases} cases, ${RULE_IDS.length} run-report rules and ${BUG_RULE_IDS.length} bug-report rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean report`);
 }
 
 if (IS_MAIN) {
   if (CMD === 'check') check(ARG);
   else if (CMD === 'selftest') selftest();
-  else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | selftest'); process.exit(1); }
+  else if (CMD === 'bug') bugCheck(ARG);
+  else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | bug <report.md> | selftest'); process.exit(1); }
 }

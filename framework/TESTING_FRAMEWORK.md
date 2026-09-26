@@ -70,9 +70,16 @@ step with its exit condition:
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
-6. **File defects in the defined shape.** Steps to reproduce · expected vs actual ·
-   severity/priority · environment · evidence — then hand off to `BUG_FIXING_FRAMEWORK.md`
-   (one document per defect; skill `/report-bug`).
+6. **Hunt the reproduction** when a defect or a reported phenomenon does not reproduce on the
+   first attempt: vary it over named axes — data and state · position · timing and races · entry
+   point · fresh vs accumulated account · stage vs production · network — and write every attempt
+   down. *Exit:* the steps reproduce it, or the report says "not reproduced" and lists at least
+   three variants tried, each with its outcome — one attempt is never a verdict.
+7. **File defects in the defined shape** — the tester's report a developer reads: **Description ·
+   Steps to reproduce · Expected result · Actual result**, plus **Build · Environment · Evidence**;
+   the steps are the user's path in the product, never state assembled through a back door
+   (template C of `/report-bug`; `node .kaif/tools/kaif-testrun-lint.mjs bug <report>` checks the
+   sections and the hunt) — then hand off to `BUG_FIXING_FRAMEWORK.md` (one document per defect).
 
 ## Test-status markers — the trust contract
 
@@ -247,18 +254,12 @@ a verification and never flips a marker; the owner's recorded verdict is.
 - **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
   against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
   basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
-- **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
-  says WHAT must carry a status and how trust propagates.
+- **fable-method** — Step 5 (verify by observation) is HOW one check is done; this framework says WHAT carries a status.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
-- **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
-  (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
-  `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
-- **The run-report form as a guard** — the optional tool module `kaif-testrun-lint` (`.kaif/tools/`)
-  judges the seven fields and the date catalog of "An executed run produces its report"; advisory,
-  `SKIPPED=3` when the test-doc home has no `reports/`.
+- **Its guards** — optional tool modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14): `kaif-guard-lint` (gate 5's
+  declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` — the tester's report); advisory.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
-- **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
-  fraud table; principle 6 lives there.
+- **Spheres** (`.kaif/spheres/`) — the sphere's evidence, its meaning of "verified by observation", its fraud table (principle 6).
 - **The harness** — invest in tooling that makes verification observable and deterministic
   (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
 - **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that

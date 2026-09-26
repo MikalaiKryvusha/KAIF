@@ -111,6 +111,7 @@
       "A NEW HOOK MAKES THE AGENT ANSWER THE OWNER'S WORD MID-TURN (2.8, epic OW; origin bug 123 — an answer to the owner's mid-turn question was composed in the reasoning and never emitted, 18 tool calls later): `.kaif/hooks/pretool-owner-word.mjs` (event `PreToolUse`, Claude Code) refuses ONE tool call after the owner's message typed mid-turn that has no TEXT answer yet in the transcript; the reason quotes the owner's words and orders: answer as text by its kind, continue the work, repeat the answer in the final text of the turn (a text between tool calls can be recorded as reasoning and never reach the chat). It never stops the work: one refusal per message. What to do: the refresh-hooks module is opt-in — merge the `PreToolUse` entry of `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` by your owner's word.",
       "THE UPDATE LOSES NOTHING SILENTLY (2.8, epic UP; origin issues #72 · #73 · #81 · #92): a section you renamed IN ADVANCE to the heading the release declares gets the upstream delta (untouched body — replaced; edited — the delta in the task), and the log no longer says «arrives as new»; a module the previous update proposed and nobody merged is offered again (its receipt), never read as your deletion; `update-verify` checks EVERY section new in the release on disk — the release ships the list (`sectionsNew` in the bundle meta), so it works whatever core ran the update — and reds, naming the section, when one never arrived (a translated file: named for a hand check); a hand fill that carries `<` and `>` (`-PackDir <pack>`) is derived; the sandbox copy is exported with `git -c core.autocrlf=false archive`; a rehearsal record binds only the core that wrote it (the automatic record of another core is named, ignored and removed; a named receipt another core signed is refused); a file is judged «translated» by its own text, not by the deployment's flag, so an English file on a translated deployment is checked like any other; `diff --source <x> --render <file>` prints a file as `install` of <x> writes it in YOUR language with your fills — the oracle of a hand merge (render the old source and the new one, compare both with the disk). WHEN: on the `update` route this update is run by your outgoing 2.7 core, so on it only `update-verify` (the new core) applies — the new-section check and the per-file judgement — and the rest works from your next update on; on the loader route (`node KAIF-LOADER.mjs …`, the bootstrap /kaif-update step 2 recommends) the 2.8 core runs the whole pass, and it also removes a rehearsal record the 2.7 core wrote (a named receipt of another core is refused before anything is written). What to do: after `update-verify`, merge any section it names.",
       "THE SCANNERS SEE THE PROJECT AS GIT SEES IT (2.8, epic SC; origin issue #77 — twenty nested `.claude/worktrees/*` copies took the whole cap of the stale-claims scan and hid the real README; one broken link of a browser profile ended the walk and the scan printed «no lines found»; `kaif-provenance check` died on the same link with a stack trace): ONE tree walker for the core and the six tool modules that walk the tree (provenance · canon-lint · requirements-lint · guard-lint · attribution-lint · scenario-lint) — the files are the ones `git ls-files --cached --others --exclude-standard` lists (without git: a walk that skips .git, node_modules and `.claude/worktrees`); a nested repository is not your project; a broken link is SKIPPED WITH A NAME (`walk: skipped N unreadable path(s) — …`), never a crash; a directory the walk could not read is FAILED — the stale-claims item says the scan could NOT see the whole tree instead of «no lines found», and a module's check exits 1. The same scan judges a version CLAIM as a pair (origin issues #75 · #91): the framework's word and a version that belongs to it — no conjunction between them, and in «KAIF … 2.7» no other name (a codename before the word, «2.7 «Audited KAIF»», is the release's own); a date only inside a parenthesis no longer hides the line («Version KAIF 2.1 (released 2026-07-31)» in the deployment record is named); a script pin is named in the code's own vocabulary (`const EXPECTED_VERSION = '2.4';` in a script that names the framework); a parenthesis wrapped onto the next line is stripped on both lines; NEW command `node .kaif/kaif-core.mjs stale-claims` re-runs the scan read-only (the interval defaults to your last update). Nothing to do; a local walker you patched for this can be dropped.",
+      "A TESTER'S BUG REPORT HAS A SHAPE, AND \"NOT REPRODUCED\" IS EARNED BY A HUNT (2.8, epic TB; origin issue #105 — the owner-QA's word: this is how a tester describes a bug): TESTING_FRAMEWORK gains step 6 \"Hunt the reproduction\" — a defect that did not reproduce on the first attempt is varied over named axes (data and state · position · timing and races · entry point · fresh vs accumulated account · stage vs production · network), and a report says \"not reproduced\" only with at least three variants tried, each with its outcome; step 7 names the shape a developer reads — Description · Steps to reproduce · Expected result · Actual result, plus Build · Environment · Evidence, the steps the user's path in the product. /report-bug carries it as template C, and `node .kaif/tools/kaif-testrun-lint.mjs bug <report>` checks one report: a missing or empty section, a missing line, steps that are not a numbered path, a \"not reproduced\" with fewer than three variants — each named, exit 1.",
       "A WITHDRAWN FEATURE NO LONGER LEAVES YOUR TEXTS STANDING (2.8, epic CH): a deprecation that retires a feature now names the phrases to search (`search`, with its version `since`) — the update task lists them with the fate of each hit by its signature (an order signed by the agent is removed as the agent's decision; one signed by the owner goes to the owner as one question); a question the withdrawal made moot is withdrawn with `node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why \"<reason>\"` (open questions only — never an answer on the owner's behalf); a KAIF ticket the origin resolved without an issue reads `**Delivered upstream:** resolved in origin <version>` — silent in `check`. What to do: run the search the task item names, if it names one.",
       "THE FIELD REPORT OF AN UPDATE IS DELIVERED TO KAIF IN THE SAME MOVE AS IT IS WRITTEN (2.8, epic CH; origin issue #78 — the reports README said a report stays local until the owner approves it, against the KAIF owner's standing authorization for signals, origin issue #15): the field-report item of the update and install tasks now asks for an H1 and the line `**Delivered upstream:** NOT YET` and, on tracking: origin, `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md`; `check` names a 2.8+ field report that was not sent (older reports stay silent — they were local by the canon of their time); `/kaif-update` step 5 adds: a public correction to a delivered ticket only after re-measuring the judge's finding, the update judge in a clean context. What to do: deliver this update's own report with that command.",
       "CONTOUR PAGES ARE READABLE WITHOUT THE BROWSER'S ZOOM (2.8, origin issue #106 — a field owner asked three times in one evening and named the size): the shipped page renders at 1.7x the browser base through `html { zoom }` (the whole page, as Ctrl+Plus does — raising font-size alone turns the radio circles into dots), the Save button at 1.5x (its own zoom 1.5 / 1.7), and the narrow-window breakpoint is multiplied by the same scale (media queries do not see CSS zoom): `PAGE_SCALE` · `SAVE_SCALE` in `.kaif/tools/contour/review.mjs`, one clause in `.kaif/INTERACTIVE_CONTOUR_SPEC.md` §4. What to do: nothing for the shipped contour; a project's OWN contour page (a home generator) takes the same pair of constants — the zoom and the breakpoint travel together.",
@@ -180,6 +181,7 @@
       "The closing gate of the size budgets is a RATCHET (2.8, epic CK; origin issue #84 — a field STATUS of 447 lines against 200, shrinking since the last closing, stopped every closing like a fresh overflow): `node .kaif/kaif-core.mjs check --gate-budgets` now reads and rewrites `.kaif/budget-baseline.json` on every run — commit that file with the closing. The first gate of the version records the debt above budget and passes; after that a document above budget passes only while its own lines SHRINK, and growth, a standstill or a new overflow stop the closing; a document back under budget leaves the file. An unreadable base stops the gate (restore it from git) — it is never a free pass.",
       "The owner's page no longer closes on a save (2.8, epic OW; the KAIF owner's word: answers are saved one at a time in every project): the page lives until its last question, the agent is woken by a waiter (`--wait`), and a save from a tab of an older revision of the document is refused with the text kept on the page. Tell the owner once: he may answer one question, leave the window open and come back to the rest.",
       "When the agent needs the owner's hands or a quick answer it CALLS (2.8, epic OW; origin issues #95 · #98): sound → banner → voice, naming the calling session when the project has several workspaces; quiet hours still hold. A request left only in the chat is a finding of the judge.",
+      "A defect that did not reproduce is not a verdict (2.8, epic TB; origin issue #105): before writing \"not reproduced\", hunt the reproduction over the named axes (TESTING_FRAMEWORK.md step 6) and list at least three variants tried with their outcomes; a defect report for the product's developer takes template C of /report-bug (Description · Steps to reproduce · Expected result · Actual result, plus Build · Environment · Evidence), and `node .kaif/tools/kaif-testrun-lint.mjs bug <report>` checks it before it is sent.",
       "An owner's verbatim ARCHIVE has a legal path through the size gate (2.8, epic CK; origin issue #84 — a field owner decided his GOAL.md is the append-only archive of his words, and the gate's only cure, \"move content out\", was exactly what his decision forbids): `.kaif/kaif.json` → `\"archives\": { \"GOAL.md\": { \"digest\": \"<digest file>\", \"owner\": \"<where his word lives>\" } }` (the short form `\"GOAL.md\": \"<digest file>\"` works too and is reminded to name the owner's word). The budget is then judged on the digest — the operative text, which must name its archive — and the archive's size is printed as information, never a stop; a missing digest, or one that does not name its archive, leaves the archive judged as before. Declare an archive only on the owner's word, like `canonArtifacts`."
     ],
     "2.7": [
@@ -461,6 +463,9 @@
   "sectionsNew": {
     "prev": "v2.7",
     "files": {
+      ".claude/skills/report-bug/SKILL.md": [
+        "### Template C — tester's bug report (a defect of THE PRODUCT, for its developer)"
+      ],
       ".kaif/KAIF_REFERENCE.md": [
         "## 17. Why the canon says so (informative)",
         "### `TESTING_FRAMEWORK.md` → What the word \"test\" means — a functional run on the real product, by the user's path",
@@ -2152,9 +2157,16 @@ step with its exit condition:
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
-6. **File defects in the defined shape.** Steps to reproduce · expected vs actual ·
-   severity/priority · environment · evidence — then hand off to `BUG_FIXING_FRAMEWORK.md`
-   (one document per defect; skill `/report-bug`).
+6. **Hunt the reproduction** when a defect or a reported phenomenon does not reproduce on the
+   first attempt: vary it over named axes — data and state · position · timing and races · entry
+   point · fresh vs accumulated account · stage vs production · network — and write every attempt
+   down. *Exit:* the steps reproduce it, or the report says "not reproduced" and lists at least
+   three variants tried, each with its outcome — one attempt is never a verdict.
+7. **File defects in the defined shape** — the tester's report a developer reads: **Description ·
+   Steps to reproduce · Expected result · Actual result**, plus **Build · Environment · Evidence**;
+   the steps are the user's path in the product, never state assembled through a back door
+   (template C of `/report-bug`; `node .kaif/tools/kaif-testrun-lint.mjs bug <report>` checks the
+   sections and the hunt) — then hand off to `BUG_FIXING_FRAMEWORK.md` (one document per defect).
 
 ## Test-status markers — the trust contract
 
@@ -2329,18 +2341,12 @@ a verification and never flips a marker; the owner's recorded verdict is.
 - **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
   against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
   basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
-- **fable-method** — Step 5 (verify by observation) is HOW a single check is performed; this framework
-  says WHAT must carry a status and how trust propagates.
+- **fable-method** — Step 5 (verify by observation) is HOW one check is done; this framework says WHAT carries a status.
 - **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
-- **The guard-declaration block as a guard** — the optional tool module `kaif-guard-lint`
-  (`.kaif/tools/`) runs gate 5's second half mechanically over explicit `@guard` / `@forensic` /
-  `@fork` markers; advisory, `SKIPPED=3` when a tree declares nothing.
-- **The run-report form as a guard** — the optional tool module `kaif-testrun-lint` (`.kaif/tools/`)
-  judges the seven fields and the date catalog of "An executed run produces its report"; advisory,
-  `SKIPPED=3` when the test-doc home has no `reports/`.
+- **Its guards** — optional tool modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14): `kaif-guard-lint` (gate 5's
+  declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` — the tester's report); advisory.
 - **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
-- **Spheres** (`.kaif/spheres/`) — define the sphere's evidence, verification-by-observation meaning, and
-  fraud table; principle 6 lives there.
+- **Spheres** (`.kaif/spheres/`) — the sphere's evidence, its meaning of "verified by observation", its fraud table (principle 6).
 - **The harness** — invest in tooling that makes verification observable and deterministic
   (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
 - **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that
@@ -3650,7 +3656,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
 | `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or on its own line the address of the commit that holds the owner's words verbatim (`commit <hash>`, since 2.8 — the owner's standing rule enters the rulebook as a rule, his words stay at the source), or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
-| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. |
+| `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. Second genre (2.8, epic TB; origin issue #105): `bug <report>` judges one tester's bug report (template C of `/report-bug`) — four sections (Description · Steps to reproduce · Expected result · Actual result; Russian keywords too), three lines (Build · Environment · Evidence) each with a value, the steps a numbered list (the user's path), and a report that says "not reproduced" carries a reproduction hunt of at least three variants; exit 1 names each finding. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--all | --sections <regex>] [--genre <genre>]` / `check <files…> [--genre <genre>] [--warn]` / `selftest`; since 2.8 — epic VO, origin issue #102 — a §8 row whose hint opens with a genre label `[work]`·`[document]`·`[prose]` (or the same three words in the portrait's language — the Russian mirrors ship in the module) judges only its genres, the same names and rule as the owner's core storage tool; the writing sections of a bare `load` include §1, `--genre essay` adds §3): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache; since 2.8 — epic CK, origin issue #99, a field portrait of ~170k tokens loaded whole for every unit — a bare `load` prints the WRITING sections, §0 · §1 · §2 · §5 · §6 · §7 with their subsections, §2-C among them, and their price in tokens at the rates of the entry-cost line of `check`, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole; a portrait with none of them numbered is printed whole, said aloud); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
 | `kaif-experience-lint.mjs` | The recurrence deadline of `EXPERIENCE.md` — "Two strikes → a mechanism, never a third reminder" (2.7, epic EL; origin issue #69 — a field audit of one project's whole journal: 7 of 120 failure entries mechanized, 14 of 15 failure classes recurred AFTER their lesson was written, five lessons written 6–17 times in different words) as an advisory linter (`check [journal] [--baseline <file>]` / `--shrink EXP-NNNN [journal] [--yes]` / `selftest`): the field `class: <slug>` on its own line under the entry heading is the UNIT of recurrence, and the SECOND failure entry (`❌` or `❌→✅`) of one class with no `mechanized:` is a finding that names the class and BOTH entries by id. Two fates clear it, both written: `mechanized: <the tool>` in the entry, or the price of the WHOLE class re-checked and declared beside the list — `<!-- class-ok: <slug> — <why it is not cheaply possible> -->` (an empty declaration is itself a finding; declared classes are printed on the summary line and that list only shrinks). It also carries the field rules of the origin's own guard (exactly one of `mechanized:` / `none-cheap: <why>` / `subject-lesson`; a trap by form may not answer `subject-lesson`) against an inherited-debt baseline the caller passes, warns when `mechanized:` names a command or path the project does not contain (a path the project IGNORES is not dangling, and addresses are not checked at all for a journal outside a project tree — said aloud) and when a slug is outside the journal's class list; `--shrink` collapses a MECHANIZED entry to its class line plus one pointer line (`Lesson → guard: … · repro … · full text: git log -p -S "<id>"`), showing by default and writing only with `--yes`; `SKIPPED=3` when not one entry carries `class:` — recurrence cannot be counted, and "not judged" never reads as "clean". Keywords are a per-language table; ids are not assumed numeric (a field journal writes `EXP-NEW-<slug>`). |
@@ -8663,6 +8669,36 @@ proven in production — projects, hours, sources. The owner of KAIF decides the
 ## Expected effect and its check
 <observable verification that the change worked; which framework invariant it serves>
 ```
+
+### Template C — tester's bug report (a defect of THE PRODUCT, for its developer)
+
+The report a tester hands to the product's developer (2.8; origin issue #105 — the owner-QA: this is how a tester describes a bug).
+File it where the product's tracker takes it; BEFORE sending, check it:
+`node .kaif/tools/kaif-testrun-lint.mjs bug <report.md>` (four sections, three lines, the steps a path, the hunt).
+When the defect did not reproduce on the first attempt, hunt first (`TESTING_FRAMEWORK.md` → "Hunt the reproduction").
+
+```markdown
+# <one line: what is broken, where>
+
+**Build:** <version · commit · build number> · **Environment:** <OS · device · browser · stage | production · account: fresh | accumulated> · **Evidence:** <recording · screenshot · log excerpt — paths>
+
+## Description
+<what the user runs into, in one or two sentences>
+
+## Steps to reproduce
+1. <the user's path in the product, one action per item — never state assembled through a back door>
+2. <…>
+
+## Expected result
+<what should happen — cite the requirement, the spec or the owner's word>
+
+## Actual result
+<what happens — the exact text, screen or log line>
+```
+
+When it did NOT reproduce, the report says so on its own line — `**Status:** not reproduced after the variants below` — and carries
+`## Reproduction hunt`: a table `| # | variant (axis: value) | outcome |`, at least three rows (data and state · position · timing and
+races · entry point · fresh vs accumulated account · stage vs production · network).
 
 ## What to do
 
@@ -16379,6 +16415,9 @@ if (IS_MAIN) {
 //
 // Commands:
 //   node .kaif/tools/kaif-testrun-lint.mjs check [home]   # home: .kaif/kaif.json → testdocs, default testcases/
+//   node .kaif/tools/kaif-testrun-lint.mjs bug <report>   # 2.8: the tester's bug report — Description · Steps to reproduce ·
+//                                                         # Expected result · Actual result + Build · Environment · Evidence; a
+//                                                         # «not reproduced» report needs a hunt of ≥ 3 variants (template C, /report-bug)
 //   node .kaif/tools/kaif-testrun-lint.mjs selftest       # PROVE every rule on in-memory fixtures (EN + RU):
 //                                                         # mutation N reddens rule N and only N, the clean
 //                                                         # report yields 0; the shipped template, unfilled, reddens
@@ -16528,6 +16567,82 @@ export function lint(name, src) {
 }
 
 // ---------------------------------------------------------------------------
+// The SECOND genre (2.8, epic TB; origin issue #105 — the owner-QA: the tester's bug report is Description · Steps to reproduce ·
+// Expected result · Actual result, and exact steps are «an important part of the QA activity»): the report a tester hands to a
+// developer. Four H2 sections, three bold lines, the steps a numbered list (the user's path, one action per item), and — when the
+// report says the defect did NOT reproduce — a reproduction hunt of at least three variants with their outcomes. Same engine, rules
+// as data, keywords per language; `bug <report>` judges one file.
+// [TESTED: 2026-09-26 · selftest 67 cases; s25 section 5 on the deployed copy (a report built from the delivered template C, six
+//  answers); four field deployments updated by their own 2.7 core — `bug` on two of them read; 7 mutants on their addressees;
+//  report testcases/reports/2026-09-26_tb1-tester-report-and-hunt.md]
+export const BUG_KEYWORDS = {
+  en: { sections: ['Description', 'Steps to reproduce', 'Expected result', 'Actual result'], hunt: 'Reproduction hunt', lines: ['Build', 'Environment', 'Evidence'], notReproduced: 'not reproduced' },
+  ru: { sections: ['Описание', 'Шаги воспроизведения', 'Ожидаемый результат', 'Фактический результат'], hunt: 'Охота за шагами', lines: ['Сборка', 'Окружение', 'Улики'], notReproduced: 'не воспроизвел' },
+};
+export const BUG_ROLES = ['description', 'steps', 'expected', 'actual'];
+export const HUNT_MIN = 3;
+const NUMBERED_ITEM = /^\s*\d+[.)]\s+\S/m;
+export function parseBug(src) {
+  const lines = src.replace(/^\uFEFF/, '').split(/\r?\n/);
+  const fields = {};
+  let lang = null, cur = null, fence = false, outside = '';   // `outside` — the text beyond the hunt: its rows legally carry «not reproduced»
+  const roleOfBug = (title) => {
+    for (const [lg, kw] of Object.entries(BUG_KEYWORDS)) {
+      const i = kw.sections.findIndex((k) => new RegExp(`^${k}(?![\\p{L}])`, 'iu').test(title));
+      if (i >= 0) return { lang: lg, role: BUG_ROLES[i] };
+      if (new RegExp(`^${kw.hunt}(?![\\p{L}])`, 'iu').test(title)) return { lang: lg, role: 'hunt' };
+    }
+    return null;
+  };
+  for (const l of lines) {
+    if (/^\s*```/.test(l)) { fence = !fence; if (cur) fields[cur] += l + '\n'; continue; }
+    const m = !fence && /^##\s+(?:\d+[.)]\s*)?(.+?)\s*$/.exec(l);
+    if (m) { const hit = roleOfBug(m[1]); if (hit) { lang = lang || hit.lang; cur = hit.role; fields[cur] = fields[cur] || ''; } else cur = null; continue; }
+    if (cur) fields[cur] += l + '\n';
+    if (cur !== 'hunt' && !fence) outside += l + '\n';
+  }
+  lang = lang || 'en';
+  const kw = BUG_KEYWORDS[lang];
+  const body = src.replace(/```[\s\S]*?```/g, '');
+  const missing = BUG_ROLES.filter((r) => !(r in fields)).map((r) => kw.sections[BUG_ROLES.indexOf(r)]);
+  const empty = BUG_ROLES.filter((r) => r in fields && !hasContent(fields[r])).map((r) => kw.sections[BUG_ROLES.indexOf(r)]);
+  // A line counts only when its VALUE — up to the next " · **Label" or the line end — carries a letter or a digit: with the
+  // placeholders stripped, the unfilled template's "**Build:**  · **Environment:** …" would otherwise pass on the "·" alone.
+  const bare = body.replace(PLACEHOLDER, '');
+  const lineValue = (label) => (new RegExp(`\\*\\*${label}:?\\*\\*:?([^\\n]*?)(?=\\s+·\\s+\\*\\*|\\r?\\n|$)`, 'iu').exec(bare) || [])[1];
+  const missingLines = kw.lines.filter((label) => !/[\p{L}\p{N}]/u.test(lineValue(label) || ''));
+  const notRepro = Object.values(BUG_KEYWORDS).some((k) => new RegExp(`(?<![\\p{L}])${k.notReproduced}`, 'iu').test(outside));
+  const huntText = stripScaffold(fields.hunt || '');
+  const variants = huntText.split(/\r?\n/).filter((l) => (/^\s*\|/.test(l) && /\p{L}/u.test(l)) || /^\s*(?:[-*+]|\d+[.)])\s+\S/.test(l)).length;
+  return { lang, kw, fields, missing, empty, missingLines, notRepro, variants,
+           has: (role) => role in fields && hasContent(fields[role]), text: (role) => stripScaffold(fields[role] || '') };
+}
+export const BUG_RULES = [
+  { id: 'missing-section', test: (b) => b.missing.length > 0,
+    msg: (b) => `missing section(s): ${b.missing.join(', ')} — a tester's report is ${b.kw.sections.join(' · ')}` },
+  { id: 'empty-section', test: (b) => b.empty.length > 0,
+    msg: (b) => `empty section(s): ${b.empty.join(', ')} — placeholders are not content` },
+  { id: 'missing-line', test: (b) => b.missingLines.length > 0,
+    msg: (b) => `missing line(s): ${b.missingLines.map((l) => `**${l}:**`).join(' · ')} — the developer needs the build, the environment and the evidence` },
+  { id: 'steps-not-a-path', test: (b) => b.has('steps') && !NUMBERED_ITEM.test(b.text('steps')),
+    msg: (b) => `${b.kw.sections[1]} is not a numbered list — the steps are the user's path in the product, one action per item` },
+  { id: 'hunt-too-short', test: (b) => b.notRepro && b.variants < HUNT_MIN,
+    msg: (b) => `the report says the defect did not reproduce, and «${b.kw.hunt}» lists ${b.variants} variant(s) — fewer than ${HUNT_MIN} tried: one attempt is never a verdict (TESTING_FRAMEWORK.md → Hunt the reproduction)` },
+];
+export const BUG_RULE_IDS = BUG_RULES.map((r) => r.id);
+export function lintBug(src) {
+  const b = parseBug(src);
+  return BUG_RULES.filter((rule) => rule.test(b)).map((rule) => ({ id: rule.id, msg: rule.msg(b) }));
+}
+function bugCheck(file) {
+  if (!file || !existsSync(file)) { console.error(`✖ testrun-lint bug: no such report: ${file || '(none named)'} — usage: kaif-testrun-lint.mjs bug <report.md>`); process.exit(1); }
+  const found = lintBug(readFileSync(file, 'utf8'));
+  for (const x of found) console.log(`✖ ${file.replace(/\\/g, '/')} — ${x.id}: ${x.msg}`);
+  if (found.length) { console.log(`✖ testrun-lint bug: ${found.length} finding(s) — a report the developer cannot act on goes back to the tester`); process.exit(1); }
+  console.log(`✅ testrun-lint bug OK — ${file.replace(/\\/g, '/')}: four sections, three lines, the steps a path${parseBug(readFileSync(file, 'utf8')).notRepro ? `, a hunt of ${parseBug(readFileSync(file, 'utf8')).variants} variants` : ''}`);
+}
+
+// ---------------------------------------------------------------------------
 function homeOf(arg) {
   if (arg) return arg;
   try {
@@ -16667,14 +16782,58 @@ function selftest() {
         KEYWORDS.en.filter((k) => k !== 'Runs').every((k) => six[0].msg.includes(k)),
       `the template with only Runs filled → [empty-field] naming the other six (got [${six.map((x) => x.id).join(',')}])`);
   } else console.log('  · the shipped template is not beside the module — its unfilled-copy proof skipped (not a failure)');
+  // The second genre (2.8, TB): the tester's bug report — clean → 0; each rule red on its own mutation only; the hunt rule at 2 and 3.
+  const BUG = {
+    en: { title: '# The Pay button does not answer a second tap', lines: '**Build:** 2.8.1 (a1b2c3d) · **Environment:** Android 14, Chrome 129, stage, a fresh account · **Evidence:** screen recording `cart-pay-2nd-tap.mp4`',
+          description: 'In the cart, a second tap on «Pay» does nothing once the first payment was cancelled.',
+          steps: '1. Open the cart with one item.\n2. Tap «Pay», then cancel on the payment screen.\n3. Tap «Pay» again.',
+          expected: 'The payment screen opens again (requirement CART-12).', actual: 'Nothing happens; the console shows `TypeError: order is null`.',
+          status: '**Status:** not reproduced after the variants below', row: (i, out) => `| ${i} | position: the cart scrolled to item ${i} | ${out} |`, head: '| # | variant | outcome |\n|---|---|---|' },
+    ru: { title: '# Кнопка «Оплатить» не отвечает на второе нажатие', lines: '**Сборка:** 2.8.1 (a1b2c3d) · **Окружение:** Android 14, Chrome 129, стейдж, свежая учётная запись · **Улики:** запись экрана `cart-pay-2nd-tap.mp4`',
+          description: 'В корзине второе нажатие «Оплатить» ничего не делает, если первую оплату отменили.',
+          steps: '1. Открыть корзину с одним товаром.\n2. Нажать «Оплатить», на экране оплаты — отмена.\n3. Нажать «Оплатить» снова.',
+          expected: 'Экран оплаты открывается снова (требование CART-12).', actual: 'Ничего не происходит; в консоли `TypeError: order is null`.',
+          status: '**Статус:** не воспроизвелось на вариантах ниже', row: (i, out) => `| ${i} | позиция: корзина прокручена до товара ${i} | ${out} |`, head: '| # | вариант | исход |\n|---|---|---|' },
+  };
+  const renderBug = (lang, over = {}, huntRows = null, notRepro = false) => {
+    const f = { ...BUG[lang], ...over }; const k = BUG_KEYWORDS[lang].sections;
+    let out = `${f.title}\n\n${f.lines}\n${notRepro ? f.status + '\n' : ''}\n`;
+    ['description', 'steps', 'expected', 'actual'].forEach((role, i) => { if (f[role] !== null) out += `## ${k[i]}\n\n${f[role]}\n\n`; });
+    if (huntRows) out += `## ${BUG_KEYWORDS[lang].hunt}\n\n${f.head}\n${huntRows.join('\n')}\n`;
+    return out;
+  };
+  const BUG_MUT = {
+    'missing-section': (lang) => renderBug(lang, { expected: null }),
+    'empty-section': (lang) => renderBug(lang, { actual: '<what happens — the exact text, screen, log line>' }),
+    'missing-line': (lang) => renderBug(lang, { lines: BUG[lang].lines.replace(/ · \*\*[^*]+:\*\* [^·]+$/, '') }),
+    'steps-not-a-path': (lang) => renderBug(lang, { steps: lang === 'en' ? 'Tap Pay twice after a cancel.' : 'Дважды нажать «Оплатить» после отмены.' }),
+    'hunt-too-short': (lang) => renderBug(lang, {}, [BUG[lang].row(1, 'not reproduced'), BUG[lang].row(2, 'not reproduced')], true),
+  };
+  for (const lang of Object.keys(BUG)) {
+    const clean = lintBug(renderBug(lang)).map((x) => x.id);
+    say(clean.length === 0, `${lang} bug: the clean tester's report — 0 findings (got [${clean.join(',')}])`);
+    for (const id of BUG_RULE_IDS) {
+      const got = lintBug(BUG_MUT[id](lang)).map((x) => x.id);
+      say(got.length === 1 && got[0] === id, `${lang} bug: mutation ${id} → exactly [${id}] (got [${got.join(',')}])`);
+    }
+    // The unfilled template's lines row — labels with placeholders only — names all three lines, never passes on the separators.
+    const bareLines = lintBug(renderBug(lang, { lines: BUG_KEYWORDS[lang].lines.map((l) => `**${l}:** <${l.toLowerCase()}>`).join(' · ') }));
+    say(bareLines.length === 1 && bareLines[0].id === 'missing-line' && BUG_KEYWORDS[lang].lines.every((l) => bareLines[0].msg.includes(`**${l}:**`)),
+      `${lang} bug: the lines row with placeholders only → exactly [missing-line] naming all three (got [${bareLines.map((x) => x.id).join(',')}])`);
+    const three = lintBug(renderBug(lang, {}, [1, 2, 3].map((i) => BUG[lang].row(i, 'not reproduced')), true)).map((x) => x.id);
+    say(three.length === 0, `${lang} bug: not reproduced with a hunt of three variants → clean (got [${three.join(',')}])`);
+    const found = lintBug(renderBug(lang, {}, [BUG[lang].row(1, 'not reproduced'), BUG[lang].row(2, 'reproduced')], false)).map((x) => x.id);
+    say(found.length === 0, `${lang} bug: REPRODUCED after two tries — the hunt's own «not reproduced» rows are not the verdict (got [${found.join(',')}])`);
+  }
   if (failed) { console.error(`✖ testrun-lint selftest: ${failed} of ${cases} case(s) FAILED`); process.exit(1); }
-  console.log(`✅ testrun-lint selftest OK — ${cases} cases, ${RULE_IDS.length} rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean report`);
+  console.log(`✅ testrun-lint selftest OK — ${cases} cases, ${RULE_IDS.length} run-report rules and ${BUG_RULE_IDS.length} bug-report rules × ${Object.keys(CLEAN).length} languages, every rule red on its mutation only and silent on the clean report`);
 }
 
 if (IS_MAIN) {
   if (CMD === 'check') check(ARG);
   else if (CMD === 'selftest') selftest();
-  else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | selftest'); process.exit(1); }
+  else if (CMD === 'bug') bugCheck(ARG);
+  else { console.error('usage: node .kaif/tools/kaif-testrun-lint.mjs check [home] | bug <report.md> | selftest'); process.exit(1); }
 }
 ``````
 
