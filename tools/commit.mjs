@@ -61,6 +61,11 @@ const privateNamesGateNeeded = (stagedNameStatus) => stagedNameStatus.length > 0
 // [TESTED: 2026-09-25 17:07 +03:00 · --selftest (четыре случая 1d); функциональный прогон tools/sandbox/probes/commit-1d-leak-run.mjs — фраза в новом
 //  файле и в сообщении — стоп, HEAD на месте, чистый коммит проходит, текста фразы в выводе нет; отчёт testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
 const leakGateAction = (status) => (status === 0 ? 'pass' : status === 3 ? 'skip' : 'stop');
+// Преполёт 0 (bugs/124): личность — тестовая, когда её адрес в зарезервированном домене. Функция чистая — её доказывает `--selftest`.
+// [TESTED: 2026-09-26 03:00:57 +03:00 · `--selftest` — четыре случая (форма подмены, два тестовых домена, личность владельца и похожие
+//  настоящие домены); живьём — локальная `user.email=probe@example.invalid` отказала коммит (код 1, version.json не тронут); bugs/124]
+const RESERVED_ID = /@(?:[^\s>@]+\.)?(?:invalid|example|test|localhost)>?$|@example\.(?:com|org|net)>?$/i;
+const testIdentity = (ident) => RESERVED_ID.test(String(ident).trim());
 
 const strayArgs = (argv) => {
   const stray = [];
@@ -110,6 +115,11 @@ if (process.argv.includes('--selftest')) {
   T('1d: приватного ядра нет на машине (SKIPPED=3) — коммит идёт, строка печатается', leakGateAction(3) === 'skip');
   T('1d: утечка (1) — стоп', leakGateAction(1) === 'stop');
   T('1d: ось не исполнилась (2, иное) — стоп, приёмка личного падает закрыто', leakGateAction(2) === 'stop' && leakGateAction(null) === 'stop');
+  // Преполёт 0 (bugs/124): тестовая личность — зарезервированный домен; настоящая — нет (оба ответа)
+  T('0: «probe <probe@example.invalid>» — тестовая (форма подмены bugs/124)', testIdentity('probe <probe@example.invalid>') === true);
+  T('0: «sbx <sbx@test>» и «x <x@example.com>» — тестовые', testIdentity('sbx <sbx@test>') && testIdentity('x <x@example.com>'));
+  T('0: личность владельца — не тестовая', testIdentity('Mikalai Kryvusha <kotkrinik@yandex.ru>') === false);
+  T('0: похожий, но настоящий домен («examples.com», «testing.io») — не тестовый', !testIdentity('a <a@examples.com>') && !testIdentity('b <b@testing.io>'));
   for (const f of fails) console.error('✖ selftest commit-gate: ' + f);
   if (fails.length) { console.error(`\n❌ commit --selftest: ${fails.length} провалов (bugs/79)`); process.exit(1); }
   console.log('✅ commit --selftest: гейт неожиданного файла краснеет на чужом новом файле и молчит на ' +
@@ -191,6 +201,25 @@ for (let i = 0; i < process.argv.length - 1; i++) {
     for (const p of unexpected) console.error('   ?? ' + p);
     console.error('   Молчаливый `git add -A` уводил такие файлы в origin под чужим сообщением (bugs/79).');
     console.error('   Верные ходы: --only <путь> (каждый своим флагом) · --with-new (взять все) · оставить в дереве.');
+    process.exit(1);
+  }
+}
+
+// ПРЕПОЛЁТ 0: чьим именем коммит уйдёт в историю (сессия 74, bugs/124 — 31 коммит ушёл в origin как «probe <probe@example.invalid>»:
+// проба 1d писала личность через `git config` внутри СВЯЗАННОГО worktree, а он делит .git/config с репозиторием, и подмена жила
+// девять часов молча). Коммит, который уйдёт в origin, не подписывается тестовой личностью — адресом зарезервированного домена
+// (RFC 2606/6761: .invalid · .example · .test · .localhost · example.com/org/net); с `--no-push` (пробы в песочнице) страж молчит.
+// Проверка стоит ДО поднятия номера сборки: отказ не оставляет правки version.json.
+if (!process.argv.includes('--no-push')) {
+  const ids = ['GIT_AUTHOR_IDENT', 'GIT_COMMITTER_IDENT'].map((k) => {
+    try { return execFileSync('git', ['var', k], { cwd: ROOT, encoding: 'utf8' }).trim().replace(/ \d+ [+-]\d{4}$/, ''); } catch { return ''; }
+  });
+  const bad = ids.filter(testIdentity);
+  if (bad.length) {
+    let where = '';
+    try { where = execFileSync('git', ['config', '--show-origin', '--get', 'user.email'], { cwd: ROOT, encoding: 'utf8' }).trim(); } catch { /* from the environment */ }
+    console.error(`✋ преполёт 0: коммит ушёл бы в origin под ТЕСТОВОЙ личностью: ${[...new Set(bad)].join(' · ')}${where ? ` (источник: ${where})` : ' (источник: переменные GIT_AUTHOR_* / GIT_COMMITTER_*)'}`);
+    console.error('   Так 31 коммит ушёл под «probe» (bugs/124). Сними подмену: git config --local --unset user.name && git config --local --unset user.email');
     process.exit(1);
   }
 }

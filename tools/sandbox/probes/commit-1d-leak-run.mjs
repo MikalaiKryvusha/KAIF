@@ -10,6 +10,8 @@
 // The tool's output is checked to carry no span text (the axis names a span by sha). The worktree is removed at the end.
 // usage: node tools/sandbox/probes/commit-1d-leak-run.mjs      Needs the owner's private voice core on this machine — without it the
 // axis is SKIPPED by design and the probe says so (exit 2).
+// [TESTED: 2026-09-26 03:00:05 +03:00 · the identity now travels in the environment of the probe's own calls (bugs/124): A and B refused,
+//  C committed — and after the run `git config --local --list` of the repository carries no user.* (0)]
 // [TESTED: 2026-09-25 17:07 +03:00 · session 74: A — refused by 1d, HEAD unchanged; B — refused; C — committed; no span text in the output;
 //  report testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
 import { readFileSync, writeFileSync, mkdirSync, cpSync, mkdtempSync, rmSync, existsSync } from 'node:fs';
@@ -22,13 +24,15 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const tmp = mkdtempSync(join(tmpdir(), 'kaif-leak-1d-'));
 const wt = join(tmp, 'wt');
 const gitR = (...a) => execFileSync('git', a, { cwd: REPO, encoding: 'utf8' }).trim();
-const git = (...a) => execFileSync('git', a, { cwd: wt, encoding: 'utf8' }).trim();
-const node = (args) => { try { return { code: 0, out: execFileSync(process.execPath, args, { cwd: wt, encoding: 'utf8', stdio: 'pipe', maxBuffer: 1 << 26 }) }; } catch (e) { return { code: e.status, out: String(e.stdout || '') + String(e.stderr || '') }; } };
+// the probe's identity lives in the ENVIRONMENT of its own calls (bugs/124): a linked worktree shares .git/config with the repository,
+// and `git config user.*` here once rewrote the owner's identity — 31 commits went to origin as «probe» before a judge noticed
+const ID_ENV = { ...process.env, GIT_AUTHOR_NAME: 'probe', GIT_AUTHOR_EMAIL: 'probe@example.invalid', GIT_COMMITTER_NAME: 'probe', GIT_COMMITTER_EMAIL: 'probe@example.invalid' };
+const git = (...a) => execFileSync('git', a, { cwd: wt, encoding: 'utf8', env: ID_ENV }).trim();
+const node = (args) => { try { return { code: 0, out: execFileSync(process.execPath, args, { cwd: wt, encoding: 'utf8', stdio: 'pipe', maxBuffer: 1 << 26, env: ID_ENV }) }; } catch (e) { return { code: e.status, out: String(e.stdout || '') + String(e.stderr || '') }; } };
 let bad = 0;
 const say = (good, text) => { if (!good) bad++; console.log(`${good ? 'OK ' : 'BAD'} ${text}`); };
 try {
   gitR('worktree', 'add', '--detach', '--quiet', wt, 'HEAD');
-  git('config', 'user.email', 'probe@example.invalid'); git('config', 'user.name', 'probe');
   for (const f of ['tools/commit.mjs', 'tools/stylometry-snapshot.mjs']) cpSync(join(REPO, f), join(wt, f));
   if (existsSync(join(REPO, '.kaif', 'private-names.json'))) cpSync(join(REPO, '.kaif', 'private-names.json'), join(wt, '.kaif', 'private-names.json'));
   git('add', 'tools/commit.mjs', 'tools/stylometry-snapshot.mjs');
