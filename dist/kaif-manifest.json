@@ -4,11 +4,11 @@
   "released": "2026-09-18",
   "codename": "Audited KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "97c56aa44f8fff399447306ab3558d17de25601c16a79d2c567e7b0d2b729b55",
-    "KAIF-CORE-BUNDLE.md": "d0130a0f32bd880992bc5650bab495d3a8c12e0d9737e74af3e78002501dde00"
+    "KAIF-CORE.mjs": "cd7b40881cbfd47fddfdb271013986d3b918e1a7d4f32fb282458aba4a229d61",
+    "KAIF-CORE-BUNDLE.md": "0ff49518d8b046b35a8adfe03165e602961019910c852eb1c1591ff9483c9c9f"
   },
   "sourceTree": {
-    "sha256": "0cc77323413e091edbe663d322bfc629501ac76be6d6a837b95bc89961c13c6d",
+    "sha256": "e7b0a315a01c5aaf5dcc0e3d24e2a939e8f63da586e3ae9726086db3ff716fe7",
     "files": 209
   },
   "assets": {

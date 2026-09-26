@@ -52,7 +52,7 @@ import { spawnSync } from 'node:child_process';
 //  with an injected file system); red on v2.7 (6); five mutants on their addressees; four field trees walked read-only;
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
 // [TESTED: 2026-09-26 04:22 +03:00 · SC4 part A: the read side (readWalked) and a nested copy judged below the root — s29 W4a–W4f,
-//  red on the dist of 19ca496; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
+//  red on the dist of 4b06b28; sc-mutants M13; report testcases/reports/2026-09-26_sc4-read-side-fixes.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
   // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by

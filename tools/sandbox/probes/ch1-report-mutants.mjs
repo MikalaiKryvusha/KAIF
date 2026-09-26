@@ -9,7 +9,7 @@
 // [TESTED: 2026-09-26 01:06 +03:00 · FOUR mutants after the CH epic judge (F1: CH4 changed the predicate M3 was anchored to — the probe said BAD 1 of 3;
 //  M3 re-anchored, M4 «resolved state dropped» added) — red exactly on their named addressees (2 · 1 · 1 · 3), no death; report
 //  testcases/reports/2026-09-26_ch5-judge-fixes.md.
-//  2026-09-25 23:52:09 +03:00 · three mutants (2 · 1 · 1) — true until CH4 (876caae); report testcases/reports/2026-09-25_ch1-field-report-delivered.md]
+//  2026-09-25 23:52:09 +03:00 · three mutants (2 · 1 · 1) — true until CH4 (5e43a32); report testcases/reports/2026-09-25_ch1-field-report-delivered.md]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';

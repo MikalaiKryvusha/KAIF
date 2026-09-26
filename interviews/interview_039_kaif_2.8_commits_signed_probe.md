@@ -4,8 +4,10 @@
 > автором «probe <probe@example.invalid>» вместо вас. Причина найдена и устранена, дальше коммиты снова идут от вашего имени и
 > проверяются стражем. Осталось решить судьбу уже опубликованных 31 коммита — это ваша история, поэтому решение ваше.
 > Source of the idea: находка повторного судьи эпика «обновление ничего не теряет молча» вне предмета суда, ≈ 2026-09-26 02:55 +03:00;
-> разбор — `bugs/124_repo_identity_rewritten_by_probe_worktree.md`.
-> Status: ⏳ ЖДЁТ ОТВЕТА (заведено ночью, владелец спит; поднять страницей на первом шаге следующего чата).
+> разбор — `bugs/124_DONE_repo_identity_rewritten_by_probe_worktree.md`.
+> Status: ✅ ANSWERS RECEIVED 2026-09-26 07:52 +03:00 (страницей контура, by Mikalai Kryvusha (KOT KRINIK)): **Q1 = A** — решение №134:
+> история переписана (48 коммитов диапазона, 31 «probe» → владелец) и отправлена 08:10:26 +03:00 (`0d694c6 → f396998`); `bugs/124` закрыт
+> DONE; внесено 2026-09-26 08:20 +03:00 (сессия 75). Прежде: ⏳ ЖДЁТ ОТВЕТА (заведено ночью, поднято страницей первым шагом сессии 75).
 > Created 2026-09-26 03:12 +03:00 (сессия 74, Claude Opus 5.5).
 
 ## Context / what I already found
@@ -49,5 +51,5 @@
 
 ## Links
 
-`bugs/124_repo_identity_rewritten_by_probe_worktree.md` · `tools/commit.mjs` (преполёт 0) · `STATUS.md` → «ДОЛГИ НА ВЛАДЕЛЬЦЕ» ·
+`bugs/124_DONE_repo_identity_rewritten_by_probe_worktree.md` · `tools/commit.mjs` (преполёт 0) · `STATUS.md` → «ДОЛГИ НА ВЛАДЕЛЬЦЕ» ·
 `interviews/interview_012_*.md` (решение №54)

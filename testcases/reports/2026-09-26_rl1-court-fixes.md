@@ -1,6 +1,6 @@
 # Отчёт прогона — эпик RL 2.8, шаг RL1: суд версии и починки его дешёвых находок
 
-**Создан:** 2026-09-26 06:01 +03:00 · **Прогон вёл:** Claude Opus 5.5 (1M context), сессия 74 (ночной цикл) · **Версия/сборка:** HEAD `acc4738` + рабочее дерево
+**Создан:** 2026-09-26 06:01 +03:00 · **Прогон вёл:** Claude Opus 5.5 (1M context), сессия 74 (ночной цикл) · **Версия/сборка:** HEAD `5ec7995` + рабочее дерево
 
 ## 1. Работа
 
@@ -10,7 +10,7 @@
 
 ## 2. Контур
 
-Исток KAIF, Windows 11, Git Bash, Node v24. Судьи — каждый в своём клоне на `05a907d`. Сборка до починки D-F1 — `dist` коммита `606df41`
+Исток KAIF, Windows 11, Git Bash, Node v24. Судьи — каждый в своём клоне на `fef29d5`. Сборка до починки D-F1 — `dist` коммита `a6c8732`
 (шов `KAIF_DIST`).
 
 ## 3. Прогоны
@@ -20,7 +20,7 @@
 | 1 | ≈ 2026-09-26 05:29 → 05:52 | пять судей-субагентов фоном | B · C · E — VERIFIED WITH CAVEATS; D — REFUTED (D-F1); A — VERIFIED WITH CAVEATS 23 = 21·2·0; блокеров выпуска ноль |
 | 2 | ≈ 2026-09-26 05:50 | `node framework/tools/kaif-testrun-lint.mjs selftest` | «✅ … 95 cases» (все 18 форм судьи D) |
 | 3 | 2026-09-26 05:50:54 | `node tools/sandbox/probes/tb-mutants.mjs` | «✅ tb-mutants: control green, 11 mutants red exactly on their named addressees» (M6 — 24 красных) |
-| 4 | 2026-09-26 05:52:50 | `node tools/sandbox/s25-testrun-lint.mjs` и `KAIF_DIST=<dist 606df41> …` | «all 78 checks green»; на `dist` до починки — «4 of 78» поимённо, среди них «Статус: не удаётся воспроизвести» |
+| 4 | 2026-09-26 05:52:50 | `node tools/sandbox/s25-testrun-lint.mjs` и `KAIF_DIST=<dist a6c8732> …` | «all 78 checks green»; на `dist` до починки — «4 of 78» поимённо, среди них «Статус: не удаётся воспроизвести» |
 | 5 | 2026-09-26 05:54:02 | сборка · `--check` интервью №040 · страж вопросов · `verify-contour --etalon-only` · инвентарь канона | сборка 0; проверка OK; страж 0; «84 зелёных, 0 красных»; lost 0 |
 | 6 | 2026-09-26 05:56:02 → 06:01:29 | `npm run test:core` (рядом работал судья кластера A в своём клоне) | «sandbox suite: all 28 suites green» |
 | 7 | 2026-09-26 06:02:07 → 06:07:17 | `npm run test:core` (в одиночку, после починок кластера A — шапка `/fable-judge`, `canon-inventory`) | «sandbox suite: all 28 suites green» |

@@ -38,7 +38,7 @@
 ### CH0 — нулёвка: актуализация входов (≈ 0,1 чата)
 
 - [x] Сверить каждый вход с HEAD по подписи строки (проба по образцу `tools/sandbox/probes/ow0-inputs.mjs`); строка на вход — «совпало /
-      сдвинулось → новый адрес». Входы, снятые грепом при письме плана (сессия 74, HEAD `de01658`):
+      сдвинулось → новый адрес». Входы, снятые грепом при письме плана (сессия 74, HEAD `85190ad`):
       `framework/readmes/reports.md` — «stays LOCAL» 1 вхождение · `framework/skills/kaif-update/SKILL.md` пункт `field-report` (стр. 89,
       101) — слова «доставить» нет · `kaif-core report` отказывает файлу без H1 и строки `**Delivered upstream:**`
       (`framework/installer/KAIF-CORE.mjs` ≈ стр. 3628) — полевой отчёт этой строки не несёт · `KAIF_REFERENCE.md` §10 `report` — только

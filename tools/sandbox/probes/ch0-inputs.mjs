@@ -3,7 +3,7 @@
 // with every edit, a signature does not). Mode `count` judges a claimed number of hits (a recon line «grep … → N», 0 included: the
 // epic adds what is ABSENT today, and the probe re-proves the absence at the moment the epic starts).
 // usage: node tools/sandbox/probes/ch0-inputs.mjs          (read-only; prints a markdown table; exit 1 when an input is ABSENT)
-// [TESTED: 2026-09-25 22:37:18 +03:00 · session 74: 17 inputs located at HEAD 433b89b — matched 13 · moved 1 · present 3; ABSENT proved on a
+// [TESTED: 2026-09-25 22:37:18 +03:00 · session 74: 17 inputs located at HEAD fd7d022 — matched 13 · moved 1 · present 3; ABSENT proved on a
 //  COPY with input 1's signature spoiled (22:37:26 — ABSENT, exit 1; the copy removed); report testcases/reports/2026-09-25_ch0-inputs.md]
 import { readFileSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';

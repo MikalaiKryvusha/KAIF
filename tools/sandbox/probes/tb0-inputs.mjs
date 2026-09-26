@@ -1,7 +1,7 @@
 // tools/sandbox/probes/tb0-inputs.mjs — a PROBE (not a polygon suite): step TB0 of plans/124 (2.8, epic TB) — every input the epic builds
 // on, located at HEAD by SIGNATURE (the method of up0/sc0-inputs). The ticket (origin #105) cites the canon by section, not by line.
 // usage: node tools/sandbox/probes/tb0-inputs.mjs          (read-only; prints a markdown table; exit 1 when an input is ABSENT)
-// [TESTED: 2026-09-26 03:30:34 +03:00 · 7 inputs located at HEAD d8db68a; red on a spoiled copy (03:30:47, exit 1; the copy removed);
+// [TESTED: 2026-09-26 03:30:34 +03:00 · 7 inputs located at HEAD 25d67fb; red on a spoiled copy (03:30:47, exit 1; the copy removed);
 //  report testcases/reports/2026-09-26_tb0-inputs.md]
 import { readFileSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';

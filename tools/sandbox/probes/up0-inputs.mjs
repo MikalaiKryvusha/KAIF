@@ -2,7 +2,7 @@
 // on, re-located at HEAD by SIGNATURE (the method of ow0-inputs / ch0-inputs). The recon (researches/32 §2а) cited line addresses at
 // 6af0dad; a signature survives edits. Mode `count` re-proves a claimed number of hits.
 // usage: node tools/sandbox/probes/up0-inputs.mjs          (read-only; prints a markdown table; exit 1 when an input is ABSENT)
-// [TESTED: 2026-09-26 00:39:54 +03:00 · 10 inputs located at HEAD 876caae (3 matched · 6 moved · 1 present); ABSENT proved on a spoiled copy
+// [TESTED: 2026-09-26 00:39:54 +03:00 · 10 inputs located at HEAD 5e43a32 (3 matched · 6 moved · 1 present); ABSENT proved on a spoiled copy
 //  (00:40:01, exit 1; the copy removed); report testcases/reports/2026-09-26_up0-inputs.md]
 import { readFileSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';

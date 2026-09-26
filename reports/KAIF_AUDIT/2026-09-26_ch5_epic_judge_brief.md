@@ -9,10 +9,10 @@
 
 | Шаг | Коммит | Критерий `plans/117` | Отчёт прогона |
 |---|---|---|---|
-| CH0 | `c6a4ed7` | — (нулёвка) | `testcases/reports/2026-09-25_ch0-inputs.md` |
-| CH1 | `093efc1` | 10 — полевой отчёт уходит в KAIF сам | `testcases/reports/2026-09-25_ch1-field-report-delivered.md` |
-| CH2 | `f5335d8` | 11 — обязательные строки владельцу на его языке | `testcases/reports/2026-09-26_ch2-owner-language-lines.md` |
-| CH3 | `9f54e42` | 12 — время и названный час — с часов | `testcases/reports/2026-09-26_ch3-time-from-the-clock.md` |
+| CH0 | `e90311e` | — (нулёвка) | `testcases/reports/2026-09-25_ch0-inputs.md` |
+| CH1 | `19a06c5` | 10 — полевой отчёт уходит в KAIF сам | `testcases/reports/2026-09-25_ch1-field-report-delivered.md` |
+| CH2 | `154066c` | 11 — обязательные строки владельцу на его языке | `testcases/reports/2026-09-26_ch2-owner-language-lines.md` |
+| CH3 | `7d72041` | 12 — время и названный час — с часов | `testcases/reports/2026-09-26_ch3-time-from-the-clock.md` |
 | CH4 | (последний коммит эпика — `git log --oneline -1` на момент суда) | 13 — снятие функции не оставляет стоять тексты | `testcases/reports/2026-09-26_ch4-withdrawal-leaves-no-standing-texts.md` |
 
 Сценарии критериев 10–13 — в `plans/117` (строка «Проверка» каждого — первая команда суда). Операционный план — `plans/121`.

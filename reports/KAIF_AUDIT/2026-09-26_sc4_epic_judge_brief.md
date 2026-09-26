@@ -9,9 +9,9 @@
 
 | Шаг | Коммит | Критерий `plans/117` | Отчёт прогона |
 |---|---|---|---|
-| SC0 | `3a04e9b` | — (нулёвка) | `testcases/reports/2026-09-26_sc0-inputs.md` |
-| SC1 | `902e321` | 16 — обход не врёт «чисто» | `testcases/reports/2026-09-26_sc1-one-safe-walker.md` |
-| SC2 | `193bff1` | 17 — заявление судится парой | `testcases/reports/2026-09-26_sc2-claim-is-a-pair.md` |
+| SC0 | `0d50f18` | — (нулёвка) | `testcases/reports/2026-09-26_sc0-inputs.md` |
+| SC1 | `721e791` | 16 — обход не врёт «чисто» | `testcases/reports/2026-09-26_sc1-one-safe-walker.md` |
+| SC2 | `9de0953` | 17 — заявление судится парой | `testcases/reports/2026-09-26_sc2-claim-is-a-pair.md` |
 | SC3 | последний коммит эпика | 18 — шаблоны не краснят свой сканер | `testcases/reports/2026-09-26_sc3-templates-silent-under-own-scan.md` |
 
 Между SC2 и SC3 — коммит починки `bugs/124` (личность git): суди его одной строкой реестра (п. 12). План — `plans/123`.
