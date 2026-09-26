@@ -4305,10 +4305,10 @@
       {
         "signature": "## Step 6.9. PUBLICATION GATE — open the rendered page and read the first screen WITH YOUR EYES",
         "class": "static",
-        "sha256": "10fb165fc5c806066346365bf1d5ad3b8a822dffdd9083264d198449e0692aab",
+        "sha256": "0f6841edf22f40479a824ff3a102f12153e39bc7f04132490e489804c7db0017",
         "lines": [
           181,
-          198
+          199
         ]
       },
       {
@@ -4316,8 +4316,8 @@
         "class": "static",
         "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
         "lines": [
-          199,
-          206
+          200,
+          207
         ]
       },
       {
@@ -4325,8 +4325,8 @@
         "class": "static",
         "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
         "lines": [
-          207,
-          214
+          208,
+          215
         ]
       }
     ],
