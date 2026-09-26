@@ -258,6 +258,20 @@ ok(rG.code === 0, 'G update →9.9: exit 0', rG.out.slice(-300));
 ok(rG.out.includes(`renamed: ${SKILL} :: ${OLD_SIG} → ${NEW_SIG} (upstream delta in the task (i18n: translated)`) && !rG.out.includes(`→ ${NEW_SIG} (replaced)`)
    && readFileSync(fileG, 'utf8') === beforeG,
   'G (Q-R4): лог — «upstream delta in the task (i18n: translated)», не «(replaced)»; файл побайтно прежний', rG.out.split('\n').filter((l) => /renamed:/.test(l)).join(' | ').slice(0, 300));
+// G2 (суд UP6b, C1): на переведённом файле, где раздела, который переименовывает апстрим, нет вовсе, лог не обещает «the section arrives as
+// new» — в переведённый файл ничего не вставляется, новый модуль — в задании
+const TG2 = join(ROOT, 'g2'); mkdirSync(TG2); seed(TG2);
+must(run, TG2, 'install --lang ru');
+{ const mk = JSON.parse(readFileSync(join(TG2, '.kaif', 'kaif.json'), 'utf8')); mk.i18n = 'translated'; writeFileSync(join(TG2, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n'); }
+const fileG2 = join(TG2, SKILL);
+const modsG2 = splitModules(readFileSync(fileG2, 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== OLD_SIG);
+for (const m of modsG2) if (m.signature !== '<preamble>' && !/^# /.test(m.signature)) m.lines = [m.lines[0], '', 'Раздел переведён владельцем на русский язык целиком.'];
+writeFileSync(fileG2, joinModules(modsG2));   // translated, and the module upstream renames is gone from the disk
+const beforeG2 = readFileSync(fileG2, 'utf8');
+const rG2 = run(TG2, `update --source ${SRC}`);
+ok(rG2.code === 0 && rG2.out.includes(`rename anchor not found on disk: ${SKILL} :: ${OLD_SIG} (upstream renamed it to ${NEW_SIG}; nothing inserted — the file is translated`)
+   && !rG2.out.includes('the section arrives as new') && readFileSync(fileG2, 'utf8') === beforeG2,
+  'G2 (C1): переведённый файл без переименуемого раздела — лог «nothing inserted», не «arrives as new»; файл побайтно прежний', rG2.out.split('\n').filter((l) => /rename/.test(l)).join(' | ').slice(0, 300));
 
 // ── D: живая карта 2.7 объявлена в сборщике ───────────────────────────────────────────────────
 console.log('\n=== D: пара 2.7 объявлена данными (не угадывается) ===');

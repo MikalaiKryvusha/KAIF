@@ -169,6 +169,7 @@ try {
   const manifest = JSON.parse((await fetchOne('kaif-manifest.json')).toString('utf8'));
   mkdirSync(INSTALL_DIR, { recursive: true });
 
+  const fetched = [];
   for (const name of ARTIFACTS) {
     const buf = await fetchOne(name);
     const want = manifest.sha256 && manifest.sha256[name];
@@ -179,6 +180,26 @@ try {
       `  a push the set can be temporarily skewed (bug 04). FIX: retry in a few minutes, or pin an immutable\n` +
       `  source to a commit:  node KAIF-LOADER.mjs --source ${SOURCES.main.replace('/main/', '/<full-commit-sha>/')} [your flags]\n` +
       `  NEVER bypass the checksum — this gate is what keeps a broken set from being installed.`);
+    fetched.push([name, buf]);
+  }
+  // 2.8 (court UP6b, C3): a named --rehearsal receipt is judged BEFORE anything is written — the core used to refuse it only after this
+  // loader had swapped .kaif/kaif-core.mjs, leaving a new core under the old marker (the class the flag whitelist above closes). The
+  // same three rules as the core's: it exists and is JSON; it rehearsed THIS interval (the deployed marker's version → this manifest's);
+  // a receipt SIGNED by a core must be signed by the core just downloaded (an unsigned one passes — the core warns).
+  const rehearsal = val('--rehearsal');
+  if (rehearsal) {
+    let rc = null;
+    try { rc = JSON.parse(readFileSync(rehearsal, 'utf8')); } catch { dieSoft(`--rehearsal ${rehearsal}: no such readable JSON receipt — nothing was written`); }
+    let from = null;
+    try { from = JSON.parse(readFileSync('.kaif/kaif.json', 'utf8')).version; } catch { /* no deployment: the core refuses the flag itself */ }
+    if (from && (String(rc.from) !== String(from) || String(rc.to) !== String(manifest.version)))
+      dieSoft(`--rehearsal ${rehearsal}: it rehearsed ${rc.from} → ${rc.to}, and this run is ${from} → ${manifest.version} — nothing was written`);
+    const core = fetched.find(([n]) => n === 'KAIF-CORE.mjs');
+    const coreSig = core ? createHash('sha256').update(core[1].toString('utf8').replace(/\r\n/g, '\n'), 'utf8').digest('hex') : null;
+    if (rc.core && coreSig && rc.core !== coreSig)
+      dieSoft(`--rehearsal ${rehearsal}: written by another core (${String(rc.core).slice(0, 12)}…, this core ${coreSig.slice(0, 12)}…) — re-run the rehearsal with this core; nothing was written`);
+  }
+  for (const [name, buf] of fetched) {
     const dest = name === 'KAIF-CORE.mjs' ? CORE_DEST : join(INSTALL_DIR, name);
     writeFileSync(dest, buf);
     log(`+ ${dest} (${buf.length} bytes, sha256 ok)`);

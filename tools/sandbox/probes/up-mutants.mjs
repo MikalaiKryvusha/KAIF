@@ -40,7 +40,7 @@ const MUTANTS = [
   // ── UP6 (court 2026-09-26): one mutant per fix ──
   { name: 'J3 update-verify names the missing section but does not COUNT it (court F6 — the red was never guarded)', suite: 's21-update-route.mjs', tag: '❌ ',
     from: "          missing++;\n        }\n      }\n    }\n  } catch { /* an unreadable receipt is named by its own gate */ }", to: "        }\n      }\n    }\n  } catch { /* an unreadable receipt is named by its own gate */ }",
-    expect: ['N1 (#92): раздела, нового в 9.9, на диске нет', 'E: раздела, нового с 2.7, на диске нет'] },   // E2 asserts the line, not the count
+    expect: ['N1 (#92): раздела, нового в 9.9, на диске нет', 'E: раздела, нового с 2.7, на диске нет', 'E2 (F7)'] },   // E2 judges the count too since C9
   { name: 'M6 a rename on a translated file logs «replaced» again (R1 — Q-R4)', suite: 's27-rename-map.mjs', tag: '❌ ',
     from: "(dryRun ? 'upstream delta in the task (i18n: translated) — nothing replaced on disk' : 'replaced')", to: "'replaced'",
     expect: ['G (Q-R4)'] },
@@ -49,7 +49,7 @@ const MUTANTS = [
     expect: ['N3 (R2)', 'E2 (F7)'] },   // the flag decides EVERY file here — the field route of E2 included
   { name: 'M8 the render oracle is gone (R3 — no deployed form of a file for a hand merge)', suite: 's21-update-route.mjs', tag: '❌ ',
     from: "  const renderPath = val('--render');\n", to: '  const renderPath = null;\n',
-    expect: ['N4 (R3)', 'N4: рендер файла, которого выпуск не везёт'] },
+    expect: ['N4 (R3)', 'N4: рендер файла, которого выпуск не везёт', 'N4b (C4)'] },
   { name: 'M9 an ignored automatic record of another core stays on disk (F4)', suite: 's21-update-route.mjs', tag: '❌ ',
     from: '      try { unlinkSync(path); } catch { /* already gone */ }\n      log(`⚠ rehearsal record', to: '      log(`⚠ rehearsal record',
     expect: ['A2b (F4)'] },
@@ -66,6 +66,25 @@ const MUTANTS = [
   { name: 'M13 the field route falls back to the deployment flag again (F7 — an English file reads as translated)', suite: 's21-update-route.mjs', tag: '❌ ',
     from: '    if (!deployTranslated || !okOnDisk(p)) return false;\n', to: '    if (deployTranslated) return true;\n    if (!okOnDisk(p)) return false;\n',
     expect: ['E2 (F7)'] },
+  // ── UP7 (the UP6 re-judge's caveats): one mutant per fix ──
+  { name: 'M14 the rename log promises «arrives as new» on a translated file again (C1)', suite: 's27-rename-map.mjs', tag: '❌ ',
+    from: "${fileTranslated ? 'nothing inserted — the file is translated, the new module is in the task' : 'the section arrives as new'}", to: 'the section arrives as new',
+    expect: ['G2 (C1)'] },
+  { name: 'M15 no file is ever judged translated (C2 — a translated file reddens and its promised lines are demanded)', suite: 's21-update-route.mjs', tag: '❌ ',
+    from: '  const fileTranslated = (p) => {\n    if (trKnown) return trList.has(p);\n', to: '  const fileTranslated = (p) => {\n    return false;\n',
+    expect: ['N5 (C2', 'N6 (C2'] },
+  { name: 'M16 the render drops the hand fills again (C4)', suite: 's21-update-route.mjs', tag: '❌ ',
+    from: "    if (!f.path.endsWith('.mjs') && Object.keys(handFills).length) text = fillPlaceholders(text, handFills, new Set());\n", to: '',
+    expect: ['N4b (C4)'] },
+  { name: 'M17 the LOADER writes the core before judging a named receipt again (C3)', suite: 's21-update-route.mjs', tag: '❌ ', loader: true,
+    from: '  const rehearsal = val(\'--rehearsal\');\n  if (rehearsal) {', to: '  const rehearsal = null;\n  if (rehearsal) {',
+    expect: ['A5b (C3)'] },
+  { name: 'M18 a NAMED receipt for another interval is only ignored again (C6)', suite: 's21-update-route.mjs', tag: '❌ ',
+    from: '    if (explicit) die(`--rehearsal ${explicit}: it rehearsed ${r.from} → ${r.to}, and this update is ${from} → ${to} — name the receipt of THIS interval, or re-run the rehearsal`);\n', to: '',
+    expect: ['A6 (C6): названная запись'] },
+  { name: 'M19 `--render` without `--source` falls into the plain audit again (C7)', suite: 's21-update-route.mjs', tag: '❌ ',
+    from: "  if (!src && val('--render')) die(", to: "  if (false) die(",
+    expect: ['N4c (C7)'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-up-mutants-'));
@@ -74,16 +93,17 @@ for (const m of MUTANTS) {
   const dist = join(root, 'dist');
   rmSync(dist, { recursive: true, force: true });
   cpSync(join(REPO, 'dist'), dist, { recursive: true });
-  const p = join(dist, 'KAIF-CORE.mjs');
-  const src = readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
+  // a loader mutant mutates a COPY of the source loader (the suites read it from framework/installer through KAIF_LOADER)
+  const p = m.loader ? join(root, 'KAIF-LOADER.mjs') : join(dist, 'KAIF-CORE.mjs');
+  const src = readFileSync(m.loader ? join(REPO, 'framework', 'installer', 'KAIF-LOADER.mjs') : p, 'utf8').replace(/\r\n/g, '\n');
   const pairs = m.edits || [[m.from, m.to]];   // a mutant may carry several [from, to] pairs — each must match exactly once
   const miss = pairs.map(([f]) => src.split(f).length - 1).find((h) => h !== 1);
   if (miss !== undefined) { bad++; console.log(`BAD ${m.name}\n    an anchor matched ${miss} time(s) — the mutant did NOT apply`); continue; }
   writeFileSync(p, pairs.reduce((t, [f, to]) => t.replace(f, () => to), src), 'utf8');
   // the copy's manifest pins the core by sha256 — re-pin it to the mutated core, or every install/update of the copy refuses (CK5.6)
-  { const mp = join(dist, 'kaif-manifest.json'); const man = JSON.parse(readFileSync(mp, 'utf8')); man.sha256['KAIF-CORE.mjs'] = createHash('sha256').update(readFileSync(p)).digest('hex'); writeFileSync(mp, JSON.stringify(man, null, 2) + String.fromCharCode(10)); }
+  if (!m.loader) { const mp = join(dist, 'kaif-manifest.json'); const man = JSON.parse(readFileSync(mp, 'utf8')); man.sha256['KAIF-CORE.mjs'] = createHash('sha256').update(readFileSync(p)).digest('hex'); writeFileSync(mp, JSON.stringify(man, null, 2) + String.fromCharCode(10)); }
   let out = '';
-  try { out = execFileSync(process.execPath, [suite(m.suite)], { cwd: REPO, env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe', maxBuffer: 1 << 27 }).toString(); }
+  try { out = execFileSync(process.execPath, [suite(m.suite)], { cwd: REPO, env: { ...process.env, KAIF_DIST: dist, ...(m.loader ? { KAIF_LOADER: p } : {}) }, stdio: 'pipe', maxBuffer: 1 << 27 }).toString(); }
   catch (e) { out = String(e.stdout || '') + String(e.stderr || ''); }
   const red = out.split(/\r?\n/).filter((l) => l.startsWith(m.tag) && !/^❌ s\d+[^:]*: \d+ (red|из)|ПРОВАЛОВ|failure\(s\)/.test(l));   // each suite's own closing line is not an assert
   const died = out.includes('УСТАНОВОЧНЫЙ ШАГ УПАЛ') || /\n\s+at .*\.mjs:\d+:\d+\)?\n/.test(out) && !red.length;

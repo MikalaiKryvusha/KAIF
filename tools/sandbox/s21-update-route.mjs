@@ -332,7 +332,7 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     ok(r.code === 0, 'E2 update 2.7 → 9.9 (ядро 2.7, переведённое развёртывание) exit 0', r.out.slice(-300));
     if (pE && sE) writeFileSync(join(TE2, pE), joinModules(splitModules(readFileSync(join(TE2, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
     const vE2 = run(TE2, 'update-verify');
-    ok(r.code === 0 && !!pE && vE2.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE) && !vE2.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + pE),
+    ok(r.code === 0 && !!pE && issuesOf(vE2.out) === vEIssues + 1 && vE2.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE) && !vE2.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + pE),
        'E2 (F7): переведённое развёртывание, квитанция ядра 2.7 — английский файл без нового раздела КРАСНЫЙ, не «проверь руками»', vE2.out.split('\n').filter((l) => /section|✖|⚠/.test(l)).join(' | ').slice(0, 400));
   }
 }
@@ -406,6 +406,78 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
   const man8 = JSON.parse(readFileSync(join(TB8, '.kaif', 'deploy-manifest.json'), 'utf8'));
   ok(r.code === 0 && !((man8.fills || {})['<BUILD_COMMAND>'] || '').includes('<TEST_HARNESS>'),
      'B8 (F15): «заполнение», несущее известный токен слота, НЕ записано заполнением', JSON.stringify(man8.fills || {}).slice(0, 200));
+}
+
+// N4b (суд UP6b, C4): рендер несёт РУЧНЫЕ заполнения развёртывания так же, как их вписывает обновление — без них рендер показывал
+// `<BUILD_COMMAND>` там, где обновление пишет `npm run build`
+{
+  const TN4b = join(ROOT, 'up-n4b'); mkdirSync(TN4b); seed(TN4b);
+  must(run, TN4b, 'install');
+  const AL = join(TN4b, AUTOLOOP);
+  writeFileSync(AL, readFileSync(AL, 'utf8').split('<BUILD_COMMAND>').join('npm run build'));   // the owner fills the slot by hand
+  r = run(TN4b, `update --source ${SRC99} --baseline ${OLD}`);   // the update learns the fill (deploy manifest `fills`) and writes it into 9.9
+  ok(r.code === 0, 'N4b update →9.9 (с ручным заполнением) exit 0', r.out.slice(-300));
+  let out = '';
+  try { out = execFileSync(process.execPath, [join(TN4b, '.kaif', 'kaif-core.mjs'), 'diff', '--source', SRC99, '--render', AUTOLOOP, '--baseline', join(ROOT, 'no-network-baseline')], { cwd: TN4b, stdio: ['ignore', 'pipe', 'pipe'] }).toString(); } catch (e) { out = 'FAILED ' + String(e.stderr || '').slice(0, 200); }
+  ok(out.includes('npm run build') && !out.includes('<BUILD_COMMAND>') && out.replace(/\r\n/g, '\n') === readFileSync(AL, 'utf8').replace(/\r\n/g, '\n'),
+     'N4b (C4): рендер несёт ручное заполнение и побайтно равен тому, что записало обновление', out.split('\n').filter((l) => /BUILD|npm run build/.test(l)).join(' | ').slice(0, 300));
+  // N4c (C7): `--render` без `--source` — отказ с именем, не молчаливый аудит
+  const noSrc = run(TN4b, `diff --render ${AUTOLOOP}`);
+  ok(noSrc.code !== 0 && /name the source/.test(noSrc.out), 'N4c (C7): --render без --source — отказ с подсказкой', noSrc.out.slice(-200));
+}
+
+// N5 · N6 (суд UP6b, C2): ПЕРЕВЕДЁННЫЙ файл на переведённом развёртывании только НАЗВАН — его обещанные строки не судятся, а новый раздел
+// в нём — «проверь руками», не красный: и по списку квитанции (N5), и на пути поля, где квитанция списка не несёт и файл судится сам (N6)
+for (const [label, fieldRoute] of [['N5', false], ['N6', true]]) {
+  const T = join(ROOT, 'up-' + label.toLowerCase()); mkdirSync(T); seed(T);
+  must(run, T, 'install --lang ru');
+  const mk = JSON.parse(readFileSync(join(T, '.kaif', 'kaif.json'), 'utf8')); mk.i18n = 'translated';
+  writeFileSync(join(T, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n');
+  const ALp = join(T, AUTOLOOP);
+  const mods = splitModules(readFileSync(ALp, 'utf8').replace(/\r\n/g, '\n'));
+  for (const m of mods) if (m.signature !== '<preamble>' && !/^# /.test(m.signature)) m.lines = [m.lines[0], '', 'Раздел переведён владельцем на русский язык целиком.'];
+  writeFileSync(ALp, joinModules(mods));   // /autoloop translated: every body in the owner's script
+  r = run(T, `update --source ${SRC99N} --baseline ${OLD}`);
+  ok(r.code === 0, `${label} update →9.9 (переведённый /autoloop, новый раздел) exit 0`, r.out.slice(-300));
+  if (fieldRoute) {   // the outgoing core's receipt: no translatedFiles — the file is judged by itself
+    const rp = join(T, '.kaif', 'last-update.json'); const rc = JSON.parse(readFileSync(rp, 'utf8')); delete rc.translatedFiles;
+    writeFileSync(rp, JSON.stringify(rc, null, 2) + '\n');
+  }
+  const v = run(T, 'update-verify');
+  ok(!v.out.includes('a section of this release did not arrive: ' + AUTOLOOP) && v.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + AUTOLOOP)
+     && !v.out.includes('promised upstream line not found on disk (unmerged?): ' + AUTOLOOP),
+     `${label} (C2${fieldRoute ? ', путь поля — файл судится сам' : ', список квитанции'}): переведённый файл НАЗВАН для ручной сверки, не красный; его обещанные строки не судятся`,
+     v.out.split('\n').filter((l) => /autoloop/.test(l)).join(' | ').slice(0, 400));
+}
+
+// A5b (суд UP6b, C3): через ЗАГРУЗЧИК — чужая подписанная запись отказана ДО записи ядра: ядро на диске побайтно прежнее
+{
+  const TA5b = join(ROOT, 'a5b'); mkdirSync(TA5b); seed(TA5b);
+  must(run, TA5b, 'install');
+  const coreBefore = sha256(readFileSync(join(TA5b, '.kaif', 'kaif-core.mjs')));
+  const RC = join(ROOT, 'a5b-foreign.json');
+  writeFileSync(RC, JSON.stringify({ from: FROM, to: '9.9', source: 'sandbox', core: 'e'.repeat(64), verdicts: {} }, null, 2) + '\n');
+  r = runLoader(TA5b, `--source ${SRC99M} --baseline ${OLD} --rehearsal ${RC}`);
+  ok(r.code !== 0 && /written by another core/.test(r.out) && sha256(readFileSync(join(TA5b, '.kaif', 'kaif-core.mjs'))) === coreBefore && marker(TA5b).version === FROM,
+     'A5b (C3): загрузчик отказал чужую подписанную запись ДО записи ядра — ядро побайтно прежнее, маркер прежний', r.out.slice(-300));
+}
+
+// A6 (суд UP6b, C6): НАЗВАННАЯ запись другого интервала — отказ (не молчаливый пропуск); нечитаемая АВТО-запись убрана с диска
+{
+  const TA6 = join(ROOT, 'a6'); mkdirSync(TA6); seed(TA6);
+  must(run, TA6, 'install');
+  const RC = join(ROOT, 'a6-other-interval.json');
+  writeFileSync(RC, JSON.stringify({ from: '1.0', to: '1.1', source: 'sandbox', verdicts: {} }, null, 2) + '\n');
+  r = run(TA6, `update --source ${SRC99} --baseline ${OLD} --rehearsal ${RC}`);
+  ok(r.code !== 0 && /it rehearsed 1\.0 → 1\.1/.test(r.out), 'A6 (C6): названная запись другого интервала — отказ с обоими интервалами', r.out.slice(-300));
+}
+{   // A6b — its own fixture: a cascade of A6 (an update that went through) must not decide it
+  const TA6b = join(ROOT, 'a6b'); mkdirSync(TA6b); seed(TA6b);
+  must(run, TA6b, 'install');
+  const REH = join(TA6b, '.kaif', 'update-rehearsal.json');
+  writeFileSync(REH, '{ not json');
+  r = run(TA6b, `update --source ${SRC99} --baseline ${OLD}`);
+  ok(r.code === 0 && /not readable JSON — rehearsal ignored and removed/.test(r.out) && !existsSync(REH), 'A6b (C6): нечитаемая авто-запись названа и убрана с диска', r.out.slice(-300));
 }
 
 const TB2 = join(ROOT, 'b2'); mkdirSync(TB2); seed(TB2);

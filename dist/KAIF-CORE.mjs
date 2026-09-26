@@ -2104,8 +2104,9 @@ function classifyAndApply(deploy, old, values, unresolved, cur, base = null, reh
       // The rename is SAID, always — an update that silently swaps a heading leaves the owner unable
       // to tell a rename from a delete-plus-add (2.7, epic HO; origin #57).
       for (const r of (res && res.renamed) || []) log(`↻ renamed: ${f.path} :: ${r.from} → ${r.to} (${r.outcome})`);
-      for (const r of (res && res.renameMissing) || []) log(`⚠ rename anchor not found on disk: ${f.path} :: ${r.from} (upstream renamed it to ${r.to}; the section arrives as new)`);
-      for (const r of (res && res.renameBroken) || []) log(`⚠ rename declaration broken: ${f.path} :: ${r.from} → ${r.to} — the incoming template carries no such heading; this section may arrive DOUBLED (your old one kept + a new one inserted) — fold it by hand and report the declaration upstream (bugs/114)`);
+      // a file merged WITHOUT writes (i18n translated) gets nothing inserted — both lines say what the disk got (court UP6b, C1)
+      for (const r of (res && res.renameMissing) || []) log(`⚠ rename anchor not found on disk: ${f.path} :: ${r.from} (upstream renamed it to ${r.to}; ${fileTranslated ? 'nothing inserted — the file is translated, the new module is in the task' : 'the section arrives as new'})`);
+      for (const r of (res && res.renameBroken) || []) log(`⚠ rename declaration broken: ${f.path} :: ${r.from} → ${r.to} — the incoming template carries no such heading; ${fileTranslated ? 'nothing is inserted into a translated file — merge it by hand from the task' : 'this section may arrive DOUBLED (your old one kept + a new one inserted)'} — fold it by hand and report the declaration upstream (bugs/114)`);
       if (res && res.translatedWholesale) {
         // headings translated — merging would double the document (bug 20/K1); hands off. The
         // task item now carries the REAL old→new template delta instead of "fold the news in
@@ -2362,8 +2363,14 @@ function loadRehearsal(from, to) {
   const path = explicit || REHEARSAL;
   if (!existsSync(path)) { if (explicit) die(`--rehearsal: no such file: ${explicit}`); return null; }
   let r;
-  try { r = readJson(path); } catch { if (explicit) die(`--rehearsal: not readable JSON: ${explicit}`); log(`⚠ ${path} is not readable JSON — rehearsal ignored`); return null; }
-  if (String(r.from) !== String(from) || String(r.to) !== String(to)) { log(`⚠ rehearsal record ${path} is for ${r.from} → ${r.to}; this update is ${from} → ${to} — ignored`); return null; }
+  // an unreadable AUTOMATIC record binds nothing and is removed like a foreign one; a receipt the owner NAMED for another interval is
+  // the wrong file — refused, never silently ignored (court UP6b, C6); an automatic record for another interval may be a rehearsal of a
+  // different planned update and stays
+  try { r = readJson(path); } catch { if (explicit) die(`--rehearsal: not readable JSON: ${explicit}`); try { unlinkSync(path); } catch { /* already gone */ } log(`⚠ ${path} is not readable JSON — rehearsal ignored and removed`); return null; }
+  if (String(r.from) !== String(from) || String(r.to) !== String(to)) {
+    if (explicit) die(`--rehearsal ${explicit}: it rehearsed ${r.from} → ${r.to}, and this update is ${from} → ${to} — name the receipt of THIS interval, or re-run the rehearsal`);
+    log(`⚠ rehearsal record ${path} is for ${r.from} → ${r.to}; this update is ${from} → ${to} — ignored`); return null;
+  }
   // 2.8 (N17): another core's record (or an unsigned one, written before 2.8) is named and ignored; an explicit --rehearsal the owner
   // named that another core SIGNED refuses; an unsigned explicit one (a pre-2.8 copy's receipt) is applied with a warning — he named it.
   if (!r.core || (SELF_SHA && r.core !== SELF_SHA)) {
@@ -4170,6 +4177,7 @@ async function cmdDiff() {
   if (!okOnDisk(DEPLOY_MANIFEST)) die('no deploy manifest — deploy KAIF first');
   const m = readJson(DEPLOY_MANIFEST);
   const src = val('--source');
+  if (!src && val('--render')) die('--render prints a file as install of a SOURCE writes it — name the source: diff --source <dir|url> --render <file>');   // court UP6b, C7
   if (!src) {
     if (!m.templateShas)
       die('this deployment carries a v1 manifest (no template provenance) — the audit would report a hollow green. Run the next `update` (it upgrades the manifest to v2), then `diff` works.');
@@ -4210,9 +4218,14 @@ async function cmdDiff() {
   const renderPath = val('--render');
   if (renderPath) {
     const want = renderPath.replace(/\\/g, '/').replace(/^\.\//, '');
+    if (isSkippedAnon(want)) die(`--render ${renderPath}: this deployment is anonymous and install never writes this origin-tied skill here`);
     const f = otherDeploy.find((x) => x.path === want);
     if (!f) die(`--render ${renderPath}: the ${man2.version} bundle does not ship this file (name it by its deployed path — AGENT_GUIDE.md, .claude/skills/<name>/SKILL.md, .kaif/KAIF_REFERENCE.md)`);
     let text = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, new Set());
+    // the deployment's HAND fills fold in exactly as the update folds them (`withFills`) — without them the render showed
+    // `<BUILD_COMMAND>` where the update writes `npm run build` (court UP6b, C4)
+    const handFills = m.fills || {};
+    if (!f.path.endsWith('.mjs') && Object.keys(handFills).length) text = fillPlaceholders(text, handFills, new Set());
     if (ANON && !f.path.endsWith('.mjs')) text = anonymize(text);
     process.stdout.write(text);
     return;
