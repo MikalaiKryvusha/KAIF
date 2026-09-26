@@ -948,7 +948,7 @@ header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("reco
 continuing the current task") and return to the interrupted work. Do not drop the current task for the
 note, and do not hold it in your head until the session ends — a session's head is the worst storage
 there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
-vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
+vision-level → `/fix-vision`; an explicit "switch to this" → the `PARKED:` line first, then switch. **A recorded note is ranked by
 the metric, not by its date**: until `/fix-vision` puts it into GOAL/MASTER_PLAN it
 sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
 row 1 is what moves the main phase's acceptance metric or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
@@ -2989,7 +2989,8 @@ the block's destination path is exact.
 `released`, `templateNotes` (current release), `templateNotesByVersion` (per-release news, printed
 as the UNION of the update interval), `deprecations` (artifacts retired by this release, §10.5),
 `moduleClasses` (manual class overrides), `policyChanges` (§10.6), `renamesByVersion` (headings
-renamed by a release — §9.3).
+renamed by a release — §9.3), `build` (2.8: `sourceTree` — the fingerprint of the sources the bundle was built from; `prerelease` —
+the newer version whose notes a build between releases already carries, else null; the marker records both, §12.1).
 
 ## 9. The module map
 
@@ -3238,6 +3239,7 @@ the owner's name is not a leak.
 |---|---|
 | `framework` | Always `"KAIF"`. |
 | `version`, `released` | Deployed version and its release date. |
+| `build`, `prerelease` | Written by `install` and both update routes (2.8, origin #107): `build` — the first 12 hex digits of the source-tree fingerprint of the bundle; `prerelease` — present only when the bundle is a build between releases that already carries the notes of that newer version (a release build clears it); the update that reaches that version names it in the task item `prerelease-origin`. |
 | `tracking` | `"origin"` (the default, §11.3) or `"anonymous"`. |
 | `origin` | The origin URL (absent on anonymous). |
 | `sphere` | The project's sphere; its library shall exist at `.kaif/spheres/<sphere>.md`. |

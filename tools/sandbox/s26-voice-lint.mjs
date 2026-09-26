@@ -46,7 +46,7 @@
 //  передачи; приватная копия портрета — без пункта; строка без метки при --genre); на dist v2.7 — «27 of 75: раздел (4) — 8 из 8, раздел (5) — 12 из 13 (передача «после замены проходит» на ядре без неё зелёная по построению, её красный — M11), 7 прежних — выбор разделов»; мутанты voice-mutants.mjs — 17 из 17
 //  на адресатах (M14–M17 новые); ТЕСТ ИЗМЕНЁН: ассерт чужого портрета ждёт новую строку лога «not derived from it (another owner's portrait or a
 //  private copy)» — класс без меток теперь включает приватную копию; отчёт testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
-import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync, readdirSync } from 'node:fs';
+import { writeFileSync, readFileSync, mkdirSync, cpSync, existsSync, readdirSync, statSync, utimesSync } from 'node:fs';
 import { execSync, spawnSync } from 'node:child_process';
 import { join, resolve, dirname, basename } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -205,6 +205,19 @@ if (tpl) writeFileSync(join(S, 'AUTHOR_STYLOMETRY.md'), tpl.replace(/^\| `<secon
 r = existsSync(DEPLOYED_LINT) ? runLint('check a.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
 ok(r.code === 1 && /a\.md:7 — «Remember that» → state the rule; the reader is not reminded/.test(r.out), 's26 одна заполненная строка §8 в копии — попадание названо с подсказкой (exit 1)', r.out);
 ok(/changed since it was last loaded/.test(r.out), 's26 портрет изменился после загрузки — предупреждение «reload» напечатано', r.out);
+// 2.8, тикет origin #107: GOAL.md установка записала ДО первой загрузки портрета, и агент его не трогал — это шаблон, а не текст,
+// написанный мимо портрета; правленный файл с тем же старым временем записи по-прежнему судится свидетелем
+{
+  r = existsSync(DEPLOYED_LINT) ? runLint('check GOAL.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
+  ok(/GOAL\.md — byte-equal to what the deploy wrote/.test(r.out) && !/GOAL\.md — written past the portrait/.test(r.out),
+     's26 (#107): нетронутый шаблон GOAL.md назван шаблоном («byte-equal to what the deploy wrote»), не «written past the portrait»', r.out.slice(-500));
+  const GE = join(S, 'GOAL.md'), goalAt = statSync(GE).mtime;
+  writeFileSync(join(S, 'GOAL-edited.md'), readFileSync(GE, 'utf8') + '\nThe owner wants a faster build.\n');
+  utimesSync(join(S, 'GOAL-edited.md'), goalAt, goalAt);
+  r = existsSync(DEPLOYED_LINT) ? runLint('check GOAL-edited.md', S, DEPLOYED_LINT) : { code: -1, out: 'module absent' };
+  ok(r.code === 1 && /GOAL-edited\.md — written past the portrait/.test(r.out) && !/byte-equal to what the deploy wrote/.test(r.out),
+     's26 (#107) контроль: правленный файл со старым временем записи — «written past the portrait» (свидетель не ослаблен)', r.out.slice(-500));
+}
 
 // ---------------------------------------------------------------- (3) 2.8: голая загрузка — разделы для письма (развёрнутая копия)
 // Эпик CK 2.8, шаг CK5.9 (б); тикет #99 п. 3 — полевой портрет весил ~170k токенов и грузился целиком на каждую единицу. Судится

@@ -469,5 +469,65 @@ r = run(S16b, 'install --lang ru --mode anonymous');
 ok(/8 owner docs templated/.test(r.out),
    'S16b контроль: чистая установка называет 8 — дисковый счёт не занижает', r.out.slice(-300));
 
+// ------------------------------------------------- S17: тикет origin #107 — установка из сборки между двумя релизами
+// Полевое развёртывание поставили из main истока («почти готовая 2.8»): маркер записал версию прошлого релиза, и ничто не говорило,
+// из какой сборки ставили, — обновление до 2.8 прочло бы дерево как обычную 2.7. Сборка несёт своё удостоверение (meta.build:
+// отпечаток исходников и prerelease — версия, чьи заметки она уже несёт); установка пишет оба поля в маркер, обновление до этой
+// версии называет происхождение пунктом задания и помечает её заметки «вероятно, уже на месте»; релизная сборка снимает prerelease.
+console.log('\n=== S17 (#107): сборка между релизами — маркер несёт prerelease, обновление до этой версии его называет ===');
+{
+  const META_RE = /(^> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\n\n`{6}json\n)([\s\S]*?)(\n`{6})/m;
+  const withMeta = (text, mutate) => {
+    const m = text.match(META_RE);
+    if (!m) throw new Error('S17 fixture: the bundle meta block was not found');
+    const meta = JSON.parse(m[2]); mutate(meta);
+    return text.replace(META_RE, m[1] + JSON.stringify(meta, null, 2) + m[3]);
+  };
+  const mkSrc17 = (name, mutate) => {
+    const d = join(ROOT, 'src-17-' + name); mkdirSync(d);
+    writeFileSync(join(d, 'KAIF-CORE-BUNDLE.md'), withMeta(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8'), mutate));
+    cpSync(join(DIST, 'KAIF-CORE.mjs'), join(d, 'KAIF-CORE.mjs'));
+    const m = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
+    m.version = JSON.parse(readFileSync(join(d, 'KAIF-CORE-BUNDLE.md'), 'utf8').match(META_RE)[2]).version;
+    m.sha256['KAIF-CORE-BUNDLE.md'] = sha256(readFileSync(join(d, 'KAIF-CORE-BUNDLE.md')));
+    writeFileSync(join(d, 'kaif-manifest.json'), JSON.stringify(m, null, 2) + '\n');
+    return d;
+  };
+  const NOTE = 'FIXTURE-PRERELEASE-NOTE-9.8';
+  const addNote = (meta) => { meta.templateNotesByVersion = { ...(meta.templateNotesByVersion || {}), '9.8': [NOTE] }; };
+  const SRC_P = mkSrc17('pre', (meta) => { meta.build = { sourceTree: 'a'.repeat(64), prerelease: '9.8' }; addNote(meta); });
+  const SRC_R = mkSrc17('rel', (meta) => { meta.version = '9.8'; meta.build = { sourceTree: 'b'.repeat(64), prerelease: null }; addNote(meta); });
+  const markerOf = (d) => JSON.parse(readFileSync(join(d, '.kaif', 'kaif.json'), 'utf8').replace(/^\uFEFF/, ''));
+  // (а) установка из предрелизной сборки
+  const S17 = join(ROOT, 's17'); mkdirSync(S17); seed(S17, SRC_P);
+  r = run(S17, 'install');
+  const m17 = r.code === 0 ? markerOf(S17) : {};
+  ok(r.code === 0 && m17.prerelease === '9.8' && m17.build === 'a'.repeat(12) && m17.version === CUR && /PRE-RELEASE of KAIF 9\.8/.test(r.out),
+     'S17 (#107): установка из сборки между релизами — маркер несёт prerelease 9.8 и отпечаток сборки, версия остаётся ' + CUR + ', строка установки это называет', r.out.slice(-500));
+  // (б) обновление маршрутом update до релиза этой версии
+  r = run(S17, `update --source ${SRC_R}`);
+  const t17 = existsSync(join(S17, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(S17, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
+  const m17b = r.code === 0 ? markerOf(S17) : {};
+  ok(r.code === 0 && t17.includes('- **prerelease-origin**') && t17.includes('UNRELEASED build of 9.8') && t17.includes('(source tree ' + 'a'.repeat(12) + ')'),
+     'S17 (#107): обновление до 9.8 называет пунктом задания, что дерево поставлено из невыпущенной сборки 9.8', (r.out + t17).slice(-600));
+  ok(t17.includes('**9.8** (this deployment came from an unreleased build of 9.8') && t17.includes(NOTE),
+     'S17 (#107): заметки 9.8 в задании помечены «вероятно, уже на месте»', t17.slice(t17.indexOf('9.8'), t17.indexOf('9.8') + 300));
+  ok(m17b.version === '9.8' && !('prerelease' in m17b) && m17b.build === 'b'.repeat(12),
+     'S17 (#107): после обновления до релиза маркер без prerelease, отпечаток — релизной сборки', JSON.stringify(m17b));
+  // (в) тот же путь маршрутом bootstrap (install поверх развёртывания)
+  const S17c = join(ROOT, 's17c'); mkdirSync(S17c); seed(S17c, SRC_P);
+  must(run, S17c, 'install');
+  seed(S17c, SRC_R);
+  r = run(S17c, 'install');
+  const t17c = existsSync(join(S17c, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(S17c, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
+  ok(r.code === 0 && t17c.includes('- **prerelease-origin**') && !('prerelease' in markerOf(S17c)),
+     'S17 (#107): маршрут bootstrap — тот же пункт задания, маркер после релиза без prerelease', (r.out + t17c).slice(-600));
+  // (г) контроль: установка из релизной сборки prerelease не пишет и о предрелизе молчит
+  const S17b = join(ROOT, 's17b'); mkdirSync(S17b); seed(S17b, SRC_R);
+  r = run(S17b, 'install');
+  ok(r.code === 0 && !('prerelease' in markerOf(S17b)) && !/PRE-RELEASE/.test(r.out),
+     'S17 (#107) контроль: релизная сборка — маркер без prerelease, строки о предрелизе нет', r.out.slice(-300));
+}
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы 5.5 зелёные'}`);
 process.exit(failures ? 1 : 0);

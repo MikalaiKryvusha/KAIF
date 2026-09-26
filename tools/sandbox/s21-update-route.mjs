@@ -322,6 +322,24 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     vE = run(TE, 'update-verify');
     ok(!!pE && vE.code !== 0 && issuesOf(vE.out) === vEIssues + 1 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
        'E: раздела, нового с 2.7, на диске нет — доставленное ядро КРАСНОЕ поимённо (счёт провалов +1), хотя квитанцию писало старое ядро', vE.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
+    // E3 (лёгкий повторный судья RL 2.8, J-F2): снятие «с 2.7» на НАСТОЯЩЕМ маршруте — задание пишет ядро 2.7, которое пункта
+    // withdrawn-phrases не знает; свежее ядро на отметке recheck передаёт его (интервал — из истории маркера, снятия — из бандла)
+    {
+      const SRC_W = join(ROOT, 'src-now-9.9-w');
+      writeSource(SRC_W, replaceBundleBlock(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8'), 'kaif-bundle-manifest.json', (j) => {
+        const m = JSON.parse(j); m.version = '9.9';
+        m.deprecations = [...(m.deprecations || []), { path: '.kaif/_fixture-27-feature.md', reason: 'the fixture feature is withdrawn', since: '2.7', search: ['FIXTURE-27-PHRASE'] }];
+        return JSON.stringify(m, null, 2);
+      }), '9.9');
+      const TE3 = join(ROOT, 'e27-w'); mkdirSync(join(TE3, '.kaif', 'install'), { recursive: true });
+      writeFileSync(join(TE3, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE3, '.kaif', 'kaif-core.mjs'), c27);
+      must(run, TE3, 'install');
+      r = run(TE3, `update --source ${SRC_W}`);   // run by the 2.7 core deployed above
+      ok(r.code === 0 && !readTask(TE3).includes('- **withdrawn-phrases**'), 'E3 фикстура: задание написало ядро 2.7 — пункта withdrawn-phrases в нём нет', r.out.slice(-300));
+      const k3 = run(TE3, 'checkpoint recheck');
+      ok(k3.out.includes('withdrawn phrases — this task was written by the previous core') && k3.out.includes('FIXTURE-27-PHRASE') && k3.out.includes('(2.7 → 9.9)'),
+         'E3 (J-F2): свежее ядро на recheck называет снятие «с 2.7» с фразой и командой поиска — на маршруте update ядром 2.7', k3.out.slice(-700));
+    }
     // E2 (суд UP6, F7): то же на ПЕРЕВЕДЁННОМ развёртывании — квитанция ядра 2.7 не знает translatedFiles, и английский файл судится сам
     // (шаблон выпуска против текста на диске): недоехавший раздел в нём — КРАСНЫЙ, а не «проверь руками (файл переведён)»
     const TE2 = join(ROOT, 'e27-tr'); mkdirSync(join(TE2, '.kaif', 'install'), { recursive: true });

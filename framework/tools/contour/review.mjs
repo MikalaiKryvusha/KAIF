@@ -1072,7 +1072,11 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
   const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
   const start = new Map(files().map((f) => [f, stamp(f)]));
   const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
-  let lockSeen = existsSync(lock);
+  // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
+  // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
+  const queueLock = docPath ? lockPath(root, '_queue') : null;
+  const live = () => existsSync(lock) || (queueLock !== null && existsSync(queueLock));
+  let lockSeen = live();
   const startedAt = Date.now();
   log('Waiting for the next recorded answer' + (docPath ? ' on ' + relDoc(root, docPath) : ' in the queue') + ' — exit 0 when one is recorded (OW6, I8).');
   return new Promise((done) => {
@@ -1090,7 +1094,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
         done(0);
         return;
       }
-      if (existsSync(lock)) lockSeen = true;
+      if (live()) lockSeen = true;
       else if (lockSeen) {
         clearInterval(tick);
         log('The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
@@ -2006,6 +2010,17 @@ export async function selftest(log = console.log) {
   const waiter3 = waitForRecord(root, MD, { log: () => {}, pollMs: 50, graceMs: 300 });
   const w3 = await Promise.race([waiter3, sl(3000).then(() => 'timeout')]);
   ok(w3 === 2, 'waiter: no live contour seen within its window → exit 2, never an eternal wait (B-F1)');
+  // (4c) light re-judge RL 2.8, J-F1: the document's waiter next to a live QUEUE page (the `_queue` lock only) waits past its window;
+  // when the queue page ends without a record for it → exit 2 «ended without a new record»
+  const QLK = lockPath(root, '_queue');
+  writeFileSync(QLK, '{}\n');
+  let w4 = 'pending';
+  const waiter4 = waitForRecord(root, MD, { log: () => {}, pollMs: 50, graceMs: 300 }).then((c) => { w4 = c; return c; });
+  await sl(700);
+  const waitedPastWindow = w4 === 'pending';
+  rmSync(QLK, { force: true });
+  const w4end = await Promise.race([waiter4, sl(3000).then(() => 'timeout')]);
+  ok(waitedPastWindow && w4end === 2, 'waiter: a document waiter next to a live QUEUE page waits past its window, and ends with 2 when the queue page ends (J-F1)');
   // (5) judge OW10 H11: an answer picked up from the owner's machine for an OLDER revision is recorded as data, never written by numbers
   writeFileSync(join(root, MD), three);
   const recS = recordRecovered(root, MD, { answers: { Q1: { choice: 'B', text: '', comment: '' } }, rev: 'an-older-revision' }, cfg);

@@ -198,5 +198,15 @@
     "questions": 2,
     "parsedOptions": 8,
     "candidateLines": 8
+  },
+  "interviews/interview_041_kaif_2.8_ticket_107_install_from_prerelease.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
+  },
+  "interviews/interview_042_kaif_2.8_showcase_logo_publish.md": {
+    "questions": 3,
+    "parsedOptions": 6,
+    "candidateLines": 6
   }
 }

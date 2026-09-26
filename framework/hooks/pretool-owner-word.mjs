@@ -35,8 +35,9 @@
 //                 lagging refusal record may cost a second refusal
 // ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
 //                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
-//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: six mid-turn
-//                 messages of the owner, seven calls refused in six rounds (one round of two parallel calls), the next call passed
+//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: eight mid-turn
+//                 messages of the owner; six met a gated call (one was not yet in the transcript — the GAP above — and one was covered
+//                 by a newer message), seven calls refused in six rounds (one round of two parallel calls), the next call passed
 //                 3.9–8.1 s after five rounds and 27.7 s after one (a refusal for the owner's next message came in between), no
 //                 message refused twice — the work never stopped (court RL 2.8, B-F3; report
 //                 testcases/reports/2026-09-26_rl2-remaining-seven-findings.md)

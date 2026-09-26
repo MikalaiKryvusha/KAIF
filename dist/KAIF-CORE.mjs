@@ -1004,7 +1004,8 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // OWNER's — a lowercase package/folder name seeded into H1 headings misnames the project.
   if (!canonicalName() && values['<PROJECT_NAME>'])
     items.push(['project-name', `<PROJECT_NAME> was auto-filled with "${values['<PROJECT_NAME>']}" from a technical identifier (package.json/folder name) — a lowercase tech id is NOT the project's canonical name, and identity is the OWNER's, never the machinery's guess. Confirm the canonical name with the owner, record it: \`node .kaif/kaif-core.mjs project-name "<Name>"\` for an ASCII name, or \`--name-file <path>\` for any other script (a name in argv can be mangled by the shell; a mangled one is refused, but a wrong-yet-ASCII one would be recorded) — the marker and future fills heal; then correct any seeded headings carrying the wrong form.`]);
-  if (unresolvedLive.length) items.push(['placeholders', `Fill the remaining placeholders at their REAL locations (each verified on disk at generation time; grep to be sure): ${fmtSlots(unresolvedLive)}`]);
+  // 2.8 (origin #107): a field agent filled the same slots by hand in four skill mirrors too — the checkpoint below re-syncs them
+  if (unresolvedLive.length) items.push(['placeholders', `Fill the remaining placeholders at their REAL locations (each verified on disk at generation time; grep to be sure): ${fmtSlots(unresolvedLive)}. These are the canonical copies — the skill mirrors of the other agent systems re-sync from them at \`checkpoint placeholders\`, so never fill a mirror by hand.`]);
   items.push(['maps', 'Fill PROJECT_STRUCTURE_EXTERNAL_MAP.md and PROJECT_ARCHITECTURE_INTERNAL_MAP.md from your inspection. Keep them SHORT; write in 2-3 small edits, not one giant write.']);
   // Issue #4 (obligation-exists-but-no-deploy-step): the canon routes owner-text writing through
   // the voice portrait "when the project has one" — and no deployment step ever MADE the project
@@ -1012,7 +1013,8 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // intervene twice. The item stands BEFORE goal-plan — the first owner-facing text of the pass —
   // and the ignore decision travels in the same step (ignore-first is already canon: a public
   // repo + a quote-bearing portrait = the owner's private writing published).
-  items.push(['owner-voice', 'Ask the owner whether a voice portrait exists (`AUTHOR_STYLOMETRY.md`; skill /owner-voice). If YES: install it at the project root, wire its machine minute into the build path of EVERY owner-facing text class you find (`node .kaif/tools/kaif-voice-lint.mjs check <files…>` inside the script that builds a sheet, a string table, a README section — a hit stops the build or is answered in the portrait\'s exception column; the portrait\'s §8 must be the TABLE the skeleton shows, greps as prose are SKIPPED), and when the repository is PUBLIC add it to .gitignore in the SAME step — a portrait may quote the owner\'s private writing. If NO: record the canonical line `no voice portrait` (with date) in AGENT_GUIDE.md → "Notes from the human", so no future session re-asks. Either way this item closes BEFORE any owner-facing text (GOAL wording, README) is written.']);
+  // 2.8 (origin #107): an owner with a full private portrait and its public snapshot left the agent guessing which one to install
+  items.push(['owner-voice', 'Ask the owner whether a voice portrait exists (`AUTHOR_STYLOMETRY.md`; skill /owner-voice). If YES: install it at the project root (when the owner keeps two editions — a full private portrait and a public snapshot whose first line names it so — a PUBLIC repository takes the public snapshot, the edition made for publication), wire its machine minute into the build path of EVERY owner-facing text class you find (`node .kaif/tools/kaif-voice-lint.mjs check <files…>` inside the script that builds a sheet, a string table, a README section — a hit stops the build or is answered in the portrait\'s exception column; the portrait\'s §8 must be the TABLE the skeleton shows, greps as prose are SKIPPED), and when the repository is PUBLIC add it to .gitignore in the SAME step — a portrait may quote the owner\'s private writing. If NO: record the canonical line `no voice portrait` (with date) in AGENT_GUIDE.md → "Notes from the human", so no future session re-asks. Either way this item closes BEFORE any owner-facing text (GOAL wording, README) is written.']);
   items.push(['goal-plan', 'If GOAL.md is empty, seed it and ask the owner; derive MASTER_PLAN.md from GOAL.md (skill: /revision).']);
   items.push(['sphere', 'Pick the project\'s sphere (libraries ship in .kaif/spheres/; do NOT author a new document unless none fits) and record it by running `node .kaif/kaif-core.mjs sphere <name>` (e.g. `sphere programming`) — never edit .kaif/kaif.json by hand.']);
   if (needTranslate) items.push(['language', `Translate the owner-facing docs (GOAL.md, KAIF_FRAMEWORK.md, the directory READMEs) into "${LANG}" — no bundled template for this language yet. Keep agent-only docs in English.`]);
@@ -1056,12 +1058,42 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
 // task, so the agent merges MEANING, never reconstructs deltas by hand (the top field gap, П1).
 // Version-interval news (plan 21 §3.4, field gap T2): a 1.2→2.0 jump prints the UNION of every
 // release's notes in (from, to], newest last — single-release notes left long jumpers blind.
-function newsInterval(meta, fromVersion) {
+function newsInterval(meta, fromVersion, prereleaseOf = null) {
   const byVer = meta.templateNotesByVersion;
   if (!byVer) return (meta.templateNotes || []).map((n) => `- ${n}`).join('\n') || '- (no template notes shipped with this version)';
   const vers = Object.keys(byVer).filter((v) => gt(v, fromVersion || '0') && !gt(v, meta.version)).sort((a, b) => (gt(a, b) ? 1 : -1));
   if (!vers.length) return '- (no template notes recorded for this interval)';
-  return vers.map((v) => [`**${v}:**`, ...byVer[v].map((n) => `- ${n}`)].join('\n')).join('\n\n');
+  // the version this tree was installed from BEFORE its release: its notes probably arrived already (2.8, origin #107); a pre-release
+  // build carries the notes of that ONE version, so the versions below it keep their plain heading
+  const head = (v) => (prereleaseOf && v === prereleaseOf
+    ? `**${v}** (this deployment came from an unreleased build of ${prereleaseOf} — these changes are probably in place already: check each against the disk, do only what is missing):`
+    : `**${v}:**`);
+  return vers.map((v) => [head(v), ...byVer[v].map((n) => `- ${n}`)].join('\n')).join('\n\n');
+}
+
+// The build's identity in the deployment marker (2.8, origin #107): a field install from the origin's main between two releases
+// recorded the LAST release's version, and nothing said which build it was, so the next update read the tree as plain <last release>.
+// The bundle meta ships `build` — the source-tree fingerprint and `prerelease`, the version whose notes the build already carries
+// while its version is raised only at that release. `install` and both update routes record both fields (a release build clears
+// `prerelease`); the update to that version names the origin in its task and marks those notes as probably in place.
+function recordBuild(marker, meta) {
+  const b = meta && meta.build;
+  if (b && b.sourceTree) marker.build = String(b.sourceTree).slice(0, 12); else delete marker.build;
+  if (b && b.prerelease) marker.prerelease = String(b.prerelease); else delete marker.prerelease;
+  return marker;
+}
+/** The pre-release a deployment came from, when this update reaches that version → { of, build } or null. */
+const prereleaseOrigin = (prev, toVersion) => (prev && prev.prerelease && !gt(prev.prerelease, toVersion)
+  ? { of: String(prev.prerelease), build: prev.build || null } : null);
+
+// The withdrawn-phrases item of an update task (2.8, epic CH; court RL 2.8 C-F2) — one builder for the task and for the hand-over
+// at `checkpoint recheck` (light re-judge RL 2.8, J-F2: on the `update` route the task is written by the outgoing 2.7 core, which has
+// no such item, so a withdrawal since 2.7 never reached a 2.7 deployment until the fresh core named it). → the item text, or null.
+function withdrawnPhrasesItem(meta, fromVersion) {
+  const withdrawn = (meta.deprecations || []).filter((d) => Array.isArray(d.search) && d.search.length && d.since
+    && !gt(fromVersion || '0', d.since) && !gt(d.since, meta.version));
+  if (!withdrawn.length) return null;
+  return `Upstream WITHDREW a feature your own texts may still build on — search the project's texts (guide, skills, plans, interviews, bugs, house rules) for its phrases and give EVERY hit a fate: ${withdrawn.map((d) => `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.`;
 }
 
 // ── KAIF-WALK:BEGIN — ONE safe tree walker (2.8, epic SC; origin #77 · Q-R1′). The set of files is the one git sees
@@ -1444,7 +1476,7 @@ function ownerVoiceInstruction(ownerVoice) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [], ownerVoice = null } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [], ownerVoice = null, prerelease = null } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   // Checklists and decision tables inside framework files often carry the OWNER's recorded
@@ -1474,9 +1506,8 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // that retires a feature names `search` and `since`; this item lists the phrases of the (from, to] interval with each hit's fate.
   // (court RL 2.8, C-F2) a withdrawal SINCE the release this deployment is on counts too: that release's own update carried no phrase
   // search (the item arrived with 2.8), so its texts were never searched — the comparison used to be strictly newer and skipped it
-  const withdrawn = (meta.deprecations || []).filter((d) => Array.isArray(d.search) && d.search.length && d.since
-    && !gt(fromVersion || '0', d.since) && !gt(d.since, meta.version));
-  if (withdrawn.length) items.push(['withdrawn-phrases', `Upstream WITHDREW a feature your own texts may still build on — search the project's texts (guide, skills, plans, interviews, bugs, house rules) for its phrases and give EVERY hit a fate: ${withdrawn.map((d) => `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.`]);
+  const wItem = withdrawnPhrasesItem(meta, fromVersion);
+  if (wItem) items.push(['withdrawn-phrases', wItem]);
   // P4 (2.5, epic US; #28 R3): the anonymous → origin switch cannot rewrite a file the owner edited,
   // so its text may still assert the OLD mode — name each one for a re-read instead of letting it
   // rot silently.
@@ -1518,7 +1549,9 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // the gate greps its checkpoint. Never mentions the origin: delivery upstream is the skills'
   // business and must not leak into an anonymous deployment's task text.
   items.push(['field-report', `MANDATORY field update report (the framework's feedback loop — written even when the update went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_UPDATE_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers (machinery counters, gates) · 2. Rakes — each with severity, verbatim evidence, cost, repro (an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What was exercised vs NOT (honest list) · 4. Wishes for the next version (by cost, descending) · 5. Final state and the judge verdict quoted verbatim (decision #46). Every number is a command's output; every rake carries verbatim evidence.${fieldReportDelivery()} Then run \`node .kaif/kaif-core.mjs update-verify\`.`]);
-  const news = newsInterval(meta, fromVersion);
+  // 2.8 (origin #107): the tree came from a build of a version before its release — say so before the notes, never present them as news
+  if (prerelease) items.push(['prerelease-origin', `This deployment was installed (or last updated) from an UNRELEASED build of ${prerelease.of}${prerelease.build ? ` (source tree ${prerelease.build})` : ''}: its marker said ${fromVersion || '?'} because a version is raised only at its release. The notes of ${prerelease.of} below describe changes that most likely arrived with that build — check each against the disk and do only what is missing; the per-module diffs of this task are computed from what was really deployed, so they stand as they are.`]);
+  const news = newsInterval(meta, fromVersion, prerelease && prerelease.of);
   const diffSections = [];
   for (const p of modFiles) {
     diffSections.push(`### ${p}`, '');
@@ -2320,7 +2353,9 @@ async function cmdUpdate() {
     if (f.path.endsWith('.md')) moduleShas[f.path] = moduleEntries(f.path, normEol(f.content), meta.moduleClasses);
     if (f.path in DOC_BUDGETS) templateLines[f.path] = textLines(f.content);
   }
-  const marker = { ...cur, version: man.version, released: man.released };
+  const marker = recordBuild({ ...cur, version: man.version, released: man.released }, meta);
+  const prerelease = prereleaseOrigin(cur, man.version);   // 2.8, origin #107
+  if (prerelease) log(`ℹ this deployment came from an unreleased build of ${prerelease.of}${prerelease.build ? ` (source tree ${prerelease.build})` : ''} — the task says so and marks the ${prerelease.of} notes as probably in place`);
   // Seed the canonArtifacts key on updates of older deployments too (bug 34 — see cmdInstall).
   if (!('canonArtifacts' in marker)) marker.canonArtifacts = [];
   // field report D2 (bug 31): pre-2.0 translated deployments carry no i18n key, so the per-file freeze
@@ -2357,7 +2392,7 @@ async function cmdUpdate() {
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
     { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths), verdictMismatches,
-      sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: portraitSync(meta.ownerVoice) });
+      sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: portraitSync(meta.ownerVoice), prerelease });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
   // later — a field report, §4). Survives self-clean; update-verify stamps it when the gates pass.
@@ -3175,6 +3210,11 @@ async function cmdInstall() {
   // but no deployment ever created the key — "the instruction was dead"; an empty declaration
   // is the conscious "no canon yet" state the provenance gate distinguishes from unconfigured).
   if (!('canonArtifacts' in marker)) marker.canonArtifacts = [];
+  // 2.8 (origin #107): the build's identity goes into the marker; a bootstrap update names the pre-release the tree came from
+  const legacyPrerelease = legacyOld ? prereleaseOrigin(legacyOld, meta.version) : null;
+  recordBuild(marker, meta);
+  if (marker.prerelease) log(`ℹ this build is a PRE-RELEASE of KAIF ${marker.prerelease}${marker.build ? ` (source tree ${marker.build})` : ''}: it already carries the ${marker.prerelease} notes, and its version stays ${meta.version} until ${marker.prerelease} is released — recorded in ${KAIF_JSON} as "prerelease": "${marker.prerelease}"; the update to ${marker.prerelease} will say so`);
+  if (legacyPrerelease) log(`ℹ this deployment came from an unreleased build of ${legacyPrerelease.of} — the task says so and marks the ${legacyPrerelease.of} notes as probably in place`);
   // Superseded marker fields: `{...legacyOld}` carries EVERYTHING forward, so renamed fields
   // of past schemas pile up (bug 19.3: agentsSupported from 1.4 living next to agents).
   // `agents` is always written above — the old spellings are safe to drop unconditionally.
@@ -3368,8 +3408,8 @@ async function cmdInstall() {
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
         cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches, modeSwitch,
-                sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice) }
-            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice) });
+                sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice), prerelease: rerun ? null : legacyPrerelease }
+            : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice), prerelease: rerun ? null : legacyPrerelease });
     }
     if (existsSync(TASK_FILE)) {
       // Judge finding (L3): an adaptation IN PROGRESS (recorded checkpoints/verdict) must not
@@ -4061,6 +4101,15 @@ function cmdCheckpoint() {
       let version = null; try { version = readJson(KAIF_JSON).version || null; } catch { version = null; }
       log('ℹ closing gates — this task was written by the previous core, which had no closing-gates item; where the first closing stops, measured now over the merged tree (read-only):');
       for (const l of closingGatesForecast(version)) log('    · ' + l);
+    }
+    // The hand-over of the withdrawn-phrases item (light re-judge RL 2.8, J-F2) — the same two-author route: a task written by a core
+    // older than 2.8 has no such item, so a withdrawal SINCE the deployment's own release (court C-F2) never reached it. The fresh core
+    // reads the deprecations from the bundle this update brought and the interval from the marker's history, and names the item here.
+    if (tag === 'KAIF-UPDATE' && !task.includes('- **withdrawn-phrases**')) {
+      const bw = parseBundle('.kaif/install/KAIF-CORE-BUNDLE.md', true);
+      let from = null; try { const h = readJson(KAIF_JSON).history || []; from = h.length ? h[h.length - 1].from : null; } catch { from = null; }
+      const item = bw && bw.meta && from ? withdrawnPhrasesItem(bw.meta, from) : null;
+      if (item) log(`ℹ withdrawn phrases — this task was written by the previous core, which had no withdrawn-phrases item; do it as part of this update (${from} → ${bw.meta.version}): ${item}`);
     }
     // The hand-over of the owner-voice snapshot sync (2.8, epic VO, VO3) — the same two-author route: a task written by a core older
     // than 2.8 has no owner-voice-core item. The fresh core reads the release pin from the bundle this update brought and REFUSES

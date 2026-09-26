@@ -29,6 +29,9 @@ const M = [
   // court RL 2.8, B-F1: a waiter that never sees a live contour waits forever again
   ['the waiter without a live contour waits forever again', 'review.mjs', '      } else if (Date.now() - startedAt > graceMs) {', '      } else if (false) {',
     ['no live contour seen within its window']],
+  // light re-judge RL 2.8, J-F1: a document waiter next to a live QUEUE page ends at its window again (the queue lock not read)
+  ['the document waiter ignores a live queue page again', 'review.mjs', 'const live = () => existsSync(lock) || (queueLock !== null && existsSync(queueLock));',
+    'const live = () => existsSync(lock);', ['a document waiter next to a live QUEUE page']],
 ];
 let bad = 0;
 for (const [name, file, from, to, exp] of M) {

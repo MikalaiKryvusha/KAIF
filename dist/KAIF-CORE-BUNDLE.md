@@ -8,6 +8,10 @@
   "framework": "KAIF",
   "version": "2.7",
   "released": "2026-09-18",
+  "build": {
+    "sourceTree": "64ac16df3c95a6cbdf4ad211f2f1fa187f1114b4e8863483e27a6bbc6547228d",
+    "prerelease": "2.8"
+  },
   "templateNotes": [
     "THE FIRST WORD OF THE OWNER'S MESSAGE IS AN ORDER (2.7, epic RS; the origin owner's word, 2026-09-18, rendered from Russian: \"when I start a chat and just write the word resume at the top and below it what we do, agents often do not run the resume skill — and that is exactly why I write it there; if I write it, I REQUIRE the agent to run that skill before starting the work\"). The rule in AGENT_GUIDE (both layers, next to \"The form of an obligation\"): a message that OPENS with the resume word (`resume`, `/resume` or its Russian shorthand) runs /resume FIRST, in full, then the task written under it — the same word mid-sentence stays prose (the kick's \"standalone only\" boundary is unchanged; other skills keep their own trigger rules). The /resume description names the aliases and the position in both layers; the ru pack carries the English word and the two Russian shorthands as aliases. The refresh-hooks module gains a FOURTH script, `prompt-resume-word.mjs` (UserPromptSubmit: the prompt's first word → the injected order to run /resume in full; silent on every other prompt), and `settings-fragment.json` shows the wiring — Claude Code only (other systems: prompt field not verified). The judge hunts \"Resume word ignored\". THREE THINGS FOR YOU. (a) The hook file arrives with this update, but hooks stay your opt-in: if you wired the module, add the fourth entry from the fragment to your settings by hand. (b) Your auto-loaded context file (CLAUDE.md / AGENTS.md / .clinerules) was written once at injection and is never edited by the machinery: add the one-line rule from the installer's pointer yourself — \"A message that opens with the word `resume` is an ORDER to run /resume in full before the rest of the message.\" (c) If you smoke the hooks by hand: the module README now gives the smoke PER SHELL — a POSIX block and a Windows PowerShell block, three lines each — because the POSIX redirect and `printf` it used to show are a parse error and a missing command in PowerShell; and all four scripts now drop a leading byte-order mark from the event, which Windows PowerShell 5.1 on a UTF-8 console puts in front of any string piped into a native command (there the smoke of the fourth hook fell silent on a valid event). Re-run the block of YOUR shell after the update.",
     "THE OWNER'S WORD IS A QUOTE, THE AGENT'S WORD IS SIGNED (epic AW; origin issue #55, 🔴🔴🔴 TOP by the owner's word: \"you write some nonsense yourself, then read it back and interpret it as MY word\" — a \"the owner's decision P1: wait\" comment in live code, whose real owner word was \"do as you see fit\", held a run for 119 s while the owner's machine died; 430 of 1083 references to the owner's will in one deployment carried no quote): AGENT_GUIDE (both layers) gains \"Authorship of a decision\" — every recorded decision carries its author ([OWNER] \"<verbatim>\" · date, or the interview address, vs [AI]); \"do as you see fit\" is a MANDATE recorded as [AI] by mandate — \"<his words>\", never as his decision; \"not to be revisited\" belongs to [OWNER] decisions only; the source of truth about the owner's words is the chat and interviews/, everything else is a retelling. The NEW optional tool module .kaif/tools/kaif-attribution-lint.mjs (check [paths…] [--write-baseline] / selftest, SKIPPED=3) counts references to the owner's will with no verbatim quote and no interview address within ±2 lines as debt with a baseline that only shrinks; /fable-judge hunts \"an agent decision worn as the owner's word\".",
@@ -1313,7 +1317,7 @@ header: "tossed by the owner mid-task, <date>"), confirm in one chat line ("reco
 continuing the current task") and return to the interrupted work. Do not drop the current task for the
 note, and do not hold it in your head until the session ends — a session's head is the worst storage
 there is. Classify first: the note CONCERNS the current task → it is a clarification, apply it; it is
-vision-level → `/fix-vision`; it is an explicit "switch to this" → switch. **A recorded note is ranked by
+vision-level → `/fix-vision`; an explicit "switch to this" → the `PARKED:` line first, then switch. **A recorded note is ranked by
 the metric, not by its date**: until `/fix-vision` puts it into GOAL/MASTER_PLAN it
 sits in `/what-next` on the shelf "fresh owner words — not ranked by the metric", never in the step table;
 row 1 is what moves the main phase's acceptance metric or closes a bug/plan — the form is guarded by `kaif-ranking-lint`, and the
@@ -3341,7 +3345,8 @@ the block's destination path is exact.
 `released`, `templateNotes` (current release), `templateNotesByVersion` (per-release news, printed
 as the UNION of the update interval), `deprecations` (artifacts retired by this release, §10.5),
 `moduleClasses` (manual class overrides), `policyChanges` (§10.6), `renamesByVersion` (headings
-renamed by a release — §9.3).
+renamed by a release — §9.3), `build` (2.8: `sourceTree` — the fingerprint of the sources the bundle was built from; `prerelease` —
+the newer version whose notes a build between releases already carries, else null; the marker records both, §12.1).
 
 ## 9. The module map
 
@@ -3590,6 +3595,7 @@ the owner's name is not a leak.
 |---|---|
 | `framework` | Always `"KAIF"`. |
 | `version`, `released` | Deployed version and its release date. |
+| `build`, `prerelease` | Written by `install` and both update routes (2.8, origin #107): `build` — the first 12 hex digits of the source-tree fingerprint of the bundle; `prerelease` — present only when the bundle is a build between releases that already carries the notes of that newer version (a release build clears it); the update that reaches that version names it in the task item `prerelease-origin`. |
 | `tracking` | `"origin"` (the default, §11.3) or `"anonymous"`. |
 | `origin` | The origin URL (absent on anonymous). |
 | `sphere` | The project's sphere; its library shall exist at `.kaif/spheres/<sphere>.md`. |
@@ -12243,7 +12249,11 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
   const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
   const start = new Map(files().map((f) => [f, stamp(f)]));
   const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
-  let lockSeen = existsSync(lock);
+  // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
+  // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
+  const queueLock = docPath ? lockPath(root, '_queue') : null;
+  const live = () => existsSync(lock) || (queueLock !== null && existsSync(queueLock));
+  let lockSeen = live();
   const startedAt = Date.now();
   log('Waiting for the next recorded answer' + (docPath ? ' on ' + relDoc(root, docPath) : ' in the queue') + ' — exit 0 when one is recorded (OW6, I8).');
   return new Promise((done) => {
@@ -12261,7 +12271,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
         done(0);
         return;
       }
-      if (existsSync(lock)) lockSeen = true;
+      if (live()) lockSeen = true;
       else if (lockSeen) {
         clearInterval(tick);
         log('The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
@@ -13177,6 +13187,17 @@ export async function selftest(log = console.log) {
   const waiter3 = waitForRecord(root, MD, { log: () => {}, pollMs: 50, graceMs: 300 });
   const w3 = await Promise.race([waiter3, sl(3000).then(() => 'timeout')]);
   ok(w3 === 2, 'waiter: no live contour seen within its window → exit 2, never an eternal wait (B-F1)');
+  // (4c) light re-judge RL 2.8, J-F1: the document's waiter next to a live QUEUE page (the `_queue` lock only) waits past its window;
+  // when the queue page ends without a record for it → exit 2 «ended without a new record»
+  const QLK = lockPath(root, '_queue');
+  writeFileSync(QLK, '{}\n');
+  let w4 = 'pending';
+  const waiter4 = waitForRecord(root, MD, { log: () => {}, pollMs: 50, graceMs: 300 }).then((c) => { w4 = c; return c; });
+  await sl(700);
+  const waitedPastWindow = w4 === 'pending';
+  rmSync(QLK, { force: true });
+  const w4end = await Promise.race([waiter4, sl(3000).then(() => 'timeout')]);
+  ok(waitedPastWindow && w4end === 2, 'waiter: a document waiter next to a live QUEUE page waits past its window, and ends with 2 when the queue page ends (J-F1)');
   // (5) judge OW10 H11: an answer picked up from the owner's machine for an OLDER revision is recorded as data, never written by numbers
   writeFileSync(join(root, MD), three);
   const recS = recordRecovered(root, MD, { answers: { Q1: { choice: 'B', text: '', comment: '' } }, rev: 'an-older-revision' }, cfg);
@@ -17155,7 +17176,7 @@ if (IS_MAIN) {
 //  functional run on the owner's own prose (7 excerpts of the private prose module, counts only): no genre — 4 hits, all from [работа]
 //  rows; --genre essay — 0, green; --genre ticket — 4; eight real portraits load §1 with every ready regex exact; report testcases/reports/2026-09-25_vo2-genre-labels.md]
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { join, dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 // OW8 (KAIF 2.8, origin issue #101): the command runs only when this file IS the program — imported by a project's own tool, the
@@ -17469,6 +17490,18 @@ export function witness(marker, portrait, portraitSha, fileMtimeMs) {
   return { findings, warnings };
 }
 const sha256 = (s) => createHash('sha256').update(s).digest('hex');
+// An untouched template is not a text anyone wrote (2.8, origin #107 — a field agent ran check over the owner documents right after the
+// install, and GOAL.md, never edited, was named "written past the portrait" because the install wrote it before the first load): a file
+// byte-equal to what the deploy wrote — the sha the machinery recorded in .kaif/deploy-manifest.json → `shas` — gets a warning naming
+// it, never the witness finding. Its lines are still judged by the table. → true | false
+export function untouchedTemplate(relPath, bytes, deployShas) {
+  const want = deployShas && deployShas[String(relPath).replace(/\\/g, '/').replace(/^\.\//, '')];
+  return !!want && sha256(bytes) === want;
+}
+const DEPLOY_MANIFEST = join('.kaif', 'deploy-manifest.json');
+function readDeployShas() {
+  try { return JSON.parse(readFileSync(DEPLOY_MANIFEST, 'utf8').replace(/^\uFEFF/, '')).shas || null; } catch { return null; }
+}
 function readMarker() {
   try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8')); } catch { return null; }
 }
@@ -17558,7 +17591,7 @@ function check() {
   if (!genre && labelled) console.log(`ℹ ${labelled} rule(s) of ${portrait} §8 carry a genre label — without --genre every rule judges every text; name the text's genre: --genre ${GENRES.join('|')}`);
   const stops = rules.filter((r) => r.cls === 'stop').length;
   const positives = rules.length - stops;
-  const marker = readMarker(), pSha = sha256(portraitText);
+  const marker = readMarker(), pSha = sha256(portraitText), deployShas = readDeployShas();
   const names = FILES.map((f) => f.replace(/\\/g, '/'));
   let nHits = 0, nWitness = 0, nW = 0, judged = 0, silenced = 0;
   // The witness of the whole run first: no witness at all (or one for another portrait) is said ONCE,
@@ -17572,7 +17605,9 @@ function check() {
     for (const w of r.warnings) { nW++; console.log(`⚠ ${w.file} — ${w.msg}`); }
     if (perFile) {
       const wv = witness(marker, portrait, pSha, statSync(f).mtimeMs);
-      for (const x of wv.findings) { nWitness++; console.log(`✖ ${names[i]} — ${x}`); }
+      if (wv.findings.length && untouchedTemplate(relative(process.cwd(), resolve(f)), readFileSync(f), deployShas)) {
+        nW++; console.log(`⚠ ${names[i]} — byte-equal to what the deploy wrote (${DEPLOY_MANIFEST.replace(/\\/g, '/')}): an untouched template, not a text written past the portrait — the load witness does not judge it (its lines are judged above); write the owner's text BY the portrait over it`);
+      } else for (const x of wv.findings) { nWitness++; console.log(`✖ ${names[i]} — ${x}`); }
       if (i === 0) for (const x of wv.warnings) { nW++; console.log(`⚠ ${x}`); }
     }
     judged += r.judged; silenced += r.silenced;
@@ -17690,6 +17725,12 @@ function selftest() {
   say(witness(mk([T, T + 80 * MIN]), P, 'abc', T + 90 * MIN).findings.length === 0, 'witness: a re-load 10 min before the write → clean (the load history counts)');
   say(witness(mk([T]), P, 'other', T + MIN).warnings.some((w) => /changed since it was last loaded/.test(w)), 'witness: the portrait changed since the load → warning "reload"');
   say(loadsOf({ firstAt: new Date(T).toISOString(), at: new Date(T + MIN).toISOString() }).length === 2, 'witness: a pre-history marker (firstAt/at only) is still read');
+  // 2.8, origin #107: a file byte-equal to what the deploy wrote is an untouched template — named, never "written past the portrait"
+  const TPL = Buffer.from('# Goal\n\n<the owner writes the goal here>\n'), TPLSHA = sha256(TPL);
+  say(untouchedTemplate('GOAL.md', TPL, { 'GOAL.md': TPLSHA }) && untouchedTemplate('.\\GOAL.md', TPL, { 'GOAL.md': TPLSHA }),
+    'untouched template: byte-equal to the deploy sha (either path spelling) → recognised');
+  say(!untouchedTemplate('GOAL.md', Buffer.from('# Goal\n\nThe owner wrote this.\n'), { 'GOAL.md': TPLSHA }) && !untouchedTemplate('STATUS.md', TPL, { 'GOAL.md': TPLSHA })
+    && !untouchedTemplate('GOAL.md', TPL, null), 'untouched template: an edited file, another path or no deploy manifest → not a template (the witness judges it)');
   const sec = sectionsMatching(FIX.en.portrait, /^8\./);
   say(sec.matched === 1 && /^# The Owner's Voice Portrait/.test(sec.text) && /## 8\. Machine heuristics/.test(sec.text) && !/## 7\./.test(sec.text) && !/## 9\./.test(sec.text), '--sections keeps the head and the matching sections only');
   say(sectionsMatching(FIX.en.portrait, /^zzz/).matched === 0, '--sections that matches nothing reports zero (the caller refuses to load)');
@@ -17784,8 +17825,9 @@ if (IS_MAIN) {
 //                 lagging refusal record may cost a second refusal
 // ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
 //                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
-//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: six mid-turn
-//                 messages of the owner, seven calls refused in six rounds (one round of two parallel calls), the next call passed
+//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: eight mid-turn
+//                 messages of the owner; six met a gated call (one was not yet in the transcript — the GAP above — and one was covered
+//                 by a newer message), seven calls refused in six rounds (one round of two parallel calls), the next call passed
 //                 3.9–8.1 s after five rounds and 27.7 s after one (a refusal for the owner's next message came in between), no
 //                 message refused twice — the work never stopped (court RL 2.8, B-F3; report
 //                 testcases/reports/2026-09-26_rl2-remaining-seven-findings.md)

@@ -58,6 +58,18 @@ function codename() {
   try { return JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8')).codename || ''; } catch { return ''; }
 }
 
+// The build's own identity (2.8, origin #107 — a field install from the origin's main between two releases recorded «2.7» and nothing
+// said WHICH build it was, so the next update would read the tree as plain 2.7): the fingerprint of the sources that fed it and, when
+// the build already carries the template notes of a version newer than version(), that version — the build is its PRE-RELEASE. The
+// version itself is raised only by the release ritual; the core records both fields in the deployment marker and the update names them.
+function buildIdentity() {
+  const newer = Object.keys(TEMPLATE_NOTES_BY_VERSION).filter((v) => {
+    const [a1, a2 = 0] = v.split('.').map(Number), [b1, b2 = 0] = version().split('.').map(Number);
+    return a1 !== b1 ? a1 > b1 : a2 > b2;
+  }).sort((x, y) => { const [a1, a2 = 0] = x.split('.').map(Number), [b1, b2 = 0] = y.split('.').map(Number); return a1 !== b1 ? a1 - b1 : a2 - b2; });
+  return { sourceTree: sourceTreeSha(ROOT).sha256, prerelease: newer[0] || null };
+}
+
 // Skill count, COMPUTED from framework/skills (the bugs/09 class: a hand-written counter rots
 // the moment the set grows — a computed one cannot; "22 in all" shipped in the core until 2.0).
 function skillCount() {
@@ -540,7 +552,7 @@ function bundleBlocks() {
   const ovPath = join(FW, 'module-classes.json');
   const ovRaw = existsSync(ovPath) ? JSON.parse(readFileSync(ovPath, 'utf8').replace(/^\uFEFF/, '')) : {};
   const moduleClasses = Object.fromEntries(Object.entries(ovRaw).filter(([k]) => !k.startsWith('_')));
-  const meta = { framework: 'KAIF', version: version(), released: released(), templateNotes: TEMPLATE_NOTES,
+  const meta = { framework: 'KAIF', version: version(), released: released(), build: buildIdentity(), templateNotes: TEMPLATE_NOTES,
     templateNotesByVersion: TEMPLATE_NOTES_BY_VERSION, deprecations: DEPRECATIONS,
     policyChanges: POLICY_CHANGES_BY_VERSION, renamesByVersion: RENAMES_BY_VERSION, moduleClasses, ownerVoice: ownerVoicePin() };
   const renderMeta = (m) => `> **FILE: \`kaif-bundle-manifest.json\`** — bundle metadata (data for KAIF-CORE, never written to disk)\n\n` +
@@ -685,6 +697,8 @@ writeFileSync(join(DIST, 'kaif-manifest.json'), JSON.stringify({
   // LP (2.7, plans/111 LP4; bugs/116 root in the shipment): the fingerprint of everything that fed this build —
   // the polygon recomputes it and refuses to run against a STALE dist (tools/lib/source-tree-sha.mjs).
   sourceTree: sourceTreeSha(ROOT),
+  // 2.8 (origin #107): a build between releases names the version it pre-releases (null on a release build) — see buildIdentity()
+  prerelease: buildIdentity().prerelease,
   assets: {
     'KAIF.md': 'thin entry point (bootstrap + embedded loader); transient in the target project',
     'KAIF-CORE.mjs': 'installer machinery; lives on as .kaif/kaif-core.mjs',
