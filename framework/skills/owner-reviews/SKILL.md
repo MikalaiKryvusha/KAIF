@@ -18,7 +18,7 @@ stdlib localhost server that lives seconds (serve → record → die), system ut
 voice/sound/notification/browser; the page is self-contained and opens offline. The temptation to
 take a static-site generator or UI framework is large and the win is zero.
 
-**KAIF 2.6 — the contract has a ONE-PAGE executable form: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** (ships
+**Since 2.6 the contract has a ONE-PAGE executable form: `.kaif/INTERACTIVE_CONTOUR_SPEC.md`** (ships
 with the update as a bundle-only page beside the other `.kaif/_*` skeletons; origin issues #19 #38 #47
 #51 — four contours rebuilt per project and broken on their own edge cases, the last one opened WITHOUT
 radio buttons because the options were typed as paragraphs). The page names, in a form a session verifies
@@ -94,7 +94,7 @@ raised in a batch next to a live question.
   the TERMINATION of a process it started — therefore a long-lived server and a wake-up are mutually
   exclusive, and the wake-up wins. Any recorded decision terminates the contour; if anything remains
   unanswered, re-opening the page is the AGENT's duty, never the human's."* The first half stands;
-  the conclusion is REVISED in 2.8 by the KAIF owner's word — answers are saved one at a time in every
+  the conclusion is REVISED in 2.8 by the KAIF owner's word <!-- KAIF-VERSION-OK: the version the conclusion was revised in --> — answers are saved one at a time in every
   project, as on the field page he pointed to: the process that ends is a separate WAITER
   (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one), and
   the page's server lives while anything on it is unanswered and ends with the last answer. Start

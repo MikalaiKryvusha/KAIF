@@ -15,6 +15,7 @@ import { tempRoot } from './lib/temp-root.mjs';
 import { scanText as scanInvisible, label as invisibleLabel } from './lib/invisible-chars.mjs';
 import { readBudgets } from './budget-gate.mjs';
 import { walkerDrift, WALKER_COPIES, CORE_PATH as WALKER_CORE } from './sync-walker.mjs';
+import { templatesOwnScan } from './lib/templates-own-scan.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -296,6 +297,39 @@ function selfProofWalkerCopies() {
   return fails;
 }
 
+// 5m. The shipped templates do not redden their own scan (2.8, epic SC; findings K-R4 · K-R5): every deployed file of the bundle is
+//     scanned by the dist's own `stale-claims` with the NEXT version as the target — a line it names would stand in EVERY deployment's
+//     update task, because a template line is identical in all of them (tools/lib/templates-own-scan.mjs, shared with the probe).
+// @guard templates-own-scan
+// THREAT:         a release ships a template line («Since KAIF 2.8 …», a wrapped «(KAIF 2.6; …» attribution) that the scan it ships
+//                 names in every field deployment on the next update — the field learns to ignore the scan (bugs/35: precision ≈ 19 %)
+// PROVED-AGAINST: `--selftest` — a bundle line claiming an old version → named; a wrapped attribution, a table row carrying the marker
+//                 inside the row and a language-pack source → silent; probe sc3-guard-mutants — the dist core without the wrapped-
+//                 parenthesis rule names the real templates' wrapped attributions (the build refuses)
+// GAP:            the scan's own precision is the scan's (s29 C, sc-mutants); this guard only runs it over the shipped files
+// ON-REAL-PATH:   NOT YET — the path is the first release build after 2.8 whose templates carry a new historical line
+function selfProofTemplatesOwnScan() {
+  const fails = [];
+  const core = join(ROOT, 'dist', 'KAIF-CORE.mjs');
+  if (!existsSync(core)) return ['5m: dist/KAIF-CORE.mjs is absent — the guard cannot be proved before a build'];
+  const FENCE = '``````';
+  const block = (p, body) => `> **FILE: \`${p}\`**\n\n${FENCE}md\n${body}\n${FENCE}\n`;
+  const prove = (name, files, want) => {
+    const d = join(tempRoot('own-scan-proof'), 'dist');
+    mkdirSyncTop(d, { recursive: true });
+    cpSync(core, join(d, 'KAIF-CORE.mjs'));
+    writeFileSyncTop(join(d, 'KAIF-CORE-BUNDLE.md'), files.map(([p, b]) => block(p, b)).join('\n'));
+    const r = templatesOwnScan(d, '2.7');
+    if (r.failed) fails.push(`${name}: the scan did not complete — ${r.failed}`);
+    else if (r.lines.length !== want) fails.push(`${name}: named ${r.lines.length}, expected ${want} — ${r.lines.join(' | ').slice(0, 200)}`);
+  };
+  prove('a line claiming an old version', [['README.md', '# X\n\nThis project runs on KAIF 1.0.']], 1);
+  prove('a wrapped attribution', [['NOTES.md', '# X\n\nThe rule arrived (KAIF 2.6; origin issue #52; the\nfield owner asked) and stays.']], 0);
+  prove('a table row with the marker inside', [['T.md', '# X\n\n| a | b |\n|---|---|\n| KAIF | 1.0 <!-- KAIF-VERSION-OK: the row names history --> |']], 0);
+  prove('a language-pack source', [['templates/languages/ru/GOAL.md', '# X\n\nThis project runs on KAIF 1.0.']], 0);
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -524,6 +558,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of lFails) console.error('✖ selfproof 5l (SC 2.8): ' + f);
   if (lFails.length) { console.error(`\n❌ check-framework --selftest: гард 5l — ${lFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5l: копия обходчика, разошедшаяся с блоком ядра, названа; копия без блока и ядро без блока названы; равные копии молчат');
+  const mFails = selfProofTemplatesOwnScan();
+  for (const f of mFails) console.error('✖ selfproof 5m (SC 2.8): ' + f);
+  if (mFails.length) { console.error(`\n❌ check-framework --selftest: гард 5m — ${mFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5m: строка поставки, заявляющая старую версию, названа; перенесённая атрибуция, строка таблицы с маркером внутри и исходник языкового пакета молчат');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -1318,12 +1356,23 @@ if (existsSync(distDir)) {
       }
       if (!errors.some((e) => e.startsWith('module map') || e.startsWith('vendored core')))
         distNote += ` · module map OK (${mm.moduleCount} modules / ${mdBlocks} md files, core pin ok)`;
+      // Guard 5m (2.8, epic SC): the shipped templates do not redden their own scan — declared with its self-proof near the top.
+      try {
+        const manV = JSON.parse(dread('kaif-manifest.json')).version;
+        const own = templatesOwnScan(distDir, manV);
+        if (own.failed) errors.push(`guard 5m (the templates against their own scan): ${own.failed}`);
+        for (const l of own.lines) errors.push(`guard 5m (SC 2.8): a shipped template line would be named in EVERY deployment's next update task — reword it or mark it <!-- KAIF-VERSION-OK: reason --> (a table row: inside the row): ${l}`);
+        if (!own.failed && !own.lines.length) distNote += ` · 5m: the templates are silent under their own scan (${manV} → next)`;
+      } catch (e) { errors.push('guard 5m could not run: ' + String(e.message || e).slice(0, 200)); }
       // Guard 5f (2.7, epic HO): headings that vanished since the PREVIOUS RELEASE without a rename
       // or a deprecation behind them. A warning, never a failure — see the @guard block above.
       try {
         const { execFileSync } = await import('node:child_process');
         const git = (args) => execFileSync('git', args, { cwd: ROOT, stdio: 'pipe' }).toString().trim();
-        const prev = git(['tag', '--list', 'v*', '--sort=-v:refname']).split('\n').map((s) => s.trim()).filter(Boolean)[0];
+        // the newest release tag that is not THIS commit's own — a rebuild of the tagged release would compare it with itself (the twin
+        // of the sectionsNew fix, court UP6 F14)
+        const ownTags = new Set(git(['tag', '--points-at', 'HEAD']).split('\n').map((s) => s.trim()).filter(Boolean));
+        const prev = git(['tag', '--list', 'v*', '--sort=-v:refname']).split('\n').map((s) => s.trim()).filter((t) => t && !ownTags.has(t))[0];
         if (!prev) console.log('ℹ гард 5f (исчезнувшие заголовки): SKIPPED — в репозитории нет тега релиза, сверять не с чем');
         else {
           const oldMap = JSON.parse(git(['show', `${prev}:dist/kaif-module-map.json`]));

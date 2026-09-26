@@ -1235,7 +1235,8 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // a 2.3 field wish (R2): a JUSTIFIED old-version mention re-flagged on EVERY interval,
       // forever ("minutes per update, forever"). The canonical marker `KAIF-VERSION-OK` (an
       // English greppable token, same family as [TESTED]/DONE) on the hit line or the line
-      // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> —
+      // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> — (a TABLE ROW carries it inside the row, in
+      // any cell: the line above a row is another row — 2.8, epic SC, finding K-R5) —
       // and the scan converges to zero instead of re-litigating history each time.
       if (/KAIF-VERSION-OK/i.test(line) || (i > 0 && /KAIF-VERSION-OK/i.test(lines[i - 1]))) continue;
       // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4) // source-kept: two independent field reports
@@ -1458,7 +1459,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const claimHits = staleClaims.filter((h) => !h.startsWith(WALK_NOTE));
   const walkLines = staleClaims.filter((h) => h.startsWith(WALK_NOTE)).map((h) => `\n    · ${h}`).join('');
   if (fromVersion) items.push(['stale-claims', claimHits.length
-    ? `These lines still assert an OLD version (older than ${meta.version}; the one just replaced is ${fromVersion} — a line stuck on an earlier one names it) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\` — and stops re-flagging on every future interval:\n${claimHits.map((h) => `    · ${h}`).join('\n')}${walkLines}`
+    ? `These lines still assert an OLD version (older than ${meta.version}; the one just replaced is ${fromVersion} — a line stuck on an earlier one names it) — after the history migration from the news above, update each or state why it is correct. A line that is correct BY DESIGN (a rule's arrival version, a verbatim quote) gets the permanent justification marker on it or on the line above — \`<!-- KAIF-VERSION-OK: reason -->\`; in a TABLE ROW put it inside the row, in any cell (the line above a row is another row) — and stops re-flagging on every future interval:\n${claimHits.map((h) => `    · ${h}`).join('\n')}${walkLines}`
     : staleClaims.some((h) => h.includes('walk FAILED'))
       ? `the scan for claims of the OLD version (${fromVersion}) could NOT see the whole tree — this is not a clean result: fix what the walk names (a permission, a path), then re-run it (the checkpoint re-runs the scan):${walkLines}`
       : `no lines found — the scan for claims of the OLD version (${fromVersion}) ran over the tree and found nothing to update; recorded so that a silent scanner failure can never pass as a clean result (the checkpoint re-runs the scan)${walkLines}`]);
@@ -4297,7 +4298,7 @@ function cmdStaleClaims() {
   const claims = hits.filter((h) => !h.startsWith('shown ') && !h.startsWith(WALK_NOTE));
   const failed = hits.some((h) => h.startsWith(WALK_NOTE) && h.includes('walk FAILED'));
   for (const h of hits) log('  · ' + h);
-  log(`stale-claims ${from} → ${to}: ${claims.length} line(s) assert an older version${failed ? ' — the walk FAILED: the result is incomplete, not clean' : ''} (read-only; a correct line takes <!-- KAIF-VERSION-OK: reason --> on it or on the line above)`);
+  log(`stale-claims ${from} → ${to}: ${claims.length} line(s) assert an older version${failed ? ' — the walk FAILED: the result is incomplete, not clean' : ''} (read-only; a correct line takes <!-- KAIF-VERSION-OK: reason --> on it or on the line above — in a table row, inside the row)`);
   if (failed) process.exit(1);
 }
 

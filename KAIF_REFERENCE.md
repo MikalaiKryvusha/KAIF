@@ -360,7 +360,8 @@ back survive three green updates, so a line stuck on an earlier version now name
 version change — an empty scan says `no lines found`, so a silent scanner failure can never pass
 as a clean tree, 2.5; the files are the ones git sees — nested `.claude/worktrees` copies are not the project, a broken link is
 skipped with a name, a directory the walk could not read turns the item into «could NOT see the whole tree», 2.8, epic SC,
-origin issue #77; a claim is a PAIR — the framework's word and a version that belongs to it, no conjunction between them and, in the
+origin issue #77; a line correct by design takes `<!-- KAIF-VERSION-OK: reason -->` on it or on the line above, a table row inside
+the row — the line above a row is another row, 2.8, finding K-R5; a claim is a PAIR — the framework's word and a version that belongs to it, no conjunction between them and, in the
 order «KAIF … 2.7», no other name, a codename before the word being the release's own; a date only inside a parenthesis does not make a
 dated record; a script pin is named in the code's vocabulary — a quoted old version assigned to an identifier that names a pin, in a
 script that names the framework; a parenthesis wrapped onto the next line is stripped on both lines — 2.8, origin issues #75 · #91) ·
