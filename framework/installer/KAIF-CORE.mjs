@@ -1076,7 +1076,10 @@ function newsInterval(meta, fromVersion) {
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
-  const nested = (p) => /(^|\/)\.claude\/worktrees(\/|$)/.test(p);
+  // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
+  // an absolute root, lost every file to this test and read as "nothing to scan".
+  let base = '.';
+  const nested = (p) => /(^|\/)\.claude\/worktrees(\/|$)/.test(base === '.' ? p : p.slice(base.length + 1));
   const take = (p) => {
     if (nested(p)) return;
     let st;
@@ -1094,6 +1097,7 @@ function kaifWalk(roots) {
   };
   for (const r0 of roots) {
     const r = walkRoot(r0);
+    base = r;
     let st;
     try { st = statSync(r); } catch (e) {           // an absent root is the caller's business; a root that IS a broken link is named
       const cut = r.lastIndexOf('/');
@@ -1127,6 +1131,13 @@ function walkNotes(tree) {
   if (tree.failed.length) out.push(`${WALK_NOTE}the tree walk FAILED at ${tree.failed.slice(0, 3).join(', ')}${tree.failed.length > 3 ? ` and ${tree.failed.length - 3} more` : ''} — the scan is INCOMPLETE, not clean`);
   if (tree.skipped.length) out.push(`${WALK_NOTE}skipped ${tree.skipped.length} unreadable path(s) — a broken link, or a file git lists that the disk lacks: ${tree.skipped.slice(0, 3).join(', ')}${tree.skipped.length > 3 ? ', …' : ''}`);
   return out;
+}
+// A walked file is READ through the walk too (SC4 F1): an unreadable file — a read deny, a lock another process holds — lands in
+// `failed` (part of the tree the scan did not see) and never throws past its scanner: an EPERM stack trace ended `update` after
+// the marker was written. Returns the text, or null for a file the caller skips; one failure is recorded once.
+function readWalked(tree, p) {
+  try { return readFileSync(p, 'utf8'); }
+  catch (e) { if (!tree.failed.some((f) => f.startsWith(`${p} (`))) tree.failed.push(`${p} (${e.code || e.message})`); return null; }
 }
 // ── KAIF-WALK:END
 
@@ -1171,8 +1182,9 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   // guards still reject a LONGER version number — "21.6", "1.6.3", "1.60" — never a sentence period: "… KAIF 1.6." is a claim).
   const VERSION_TOKEN = /(?<!\d)(?<!\d\.)\d+\.\d+(?!\d|\.\d)/g;
   // 2.8 (epic SC; origin #75 · #91 · N3 · N4): a claim is a PAIR — the framework's word and a version that BELONGS to it. The gap between
-  // them carries no other name and no conjunction: «KAIF и Acme Space 2.0» is the product's version (N3), «KAIF version 2.7» and
-  // «**Версия KAIF** | 1.6» are claims. A capitalized word in the gap is another name unless it is a version word.
+  // them carries no other name and no conjunction: «KAIF and Acme Space 2.0» is the product's version (N3), «KAIF version 2.7» and
+  // «**KAIF version** | 1.6» are claims (the Russian forms alike — the word sets below are data). A capitalized word in the gap is
+  // another name unless it is a version word.
   const PAIR_CONJUNCTIONS = new Set(['и', 'или', 'а', 'с', 'and', 'or', 'with', 'vs', 'plus']);
   const PAIR_VERSION_WORDS = new Set(['v', 'ver', 'version', 'versions', 'release', 'версия', 'версии', 'версию', 'версией', 'релиз', 'релиза']);
   // `reverse` (the version BEFORE the word): a capitalized word right before KAIF is the release's codename — «2.7 «Audited KAIF»» is a
@@ -1180,7 +1192,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   const pairGap = (gap, reverse = false) => !/[&+]/.test(gap) && (gap.match(/\p{L}+/gu) || []).every((w) => !PAIR_CONJUNCTIONS.has(w.toLowerCase())
     && (reverse || !/^\p{Lu}/u.test(w) || PAIR_VERSION_WORDS.has(w.toLowerCase())));
   // judged from EVERY occurrence of the framework word (and of the version) separately — one regex over the line lost an overlapping
-  // pair: in «/kaif-go — с KAIF 2.2» the first match took `/kaif` with the gap «-go — с KAIF » and hid the real pair (SC2 field run)
+  // pair: in «/kaif-go — with KAIF 2.2» the first match took `/kaif` with the gap «-go — with KAIF » and hid the real pair (SC2 field run)
   const pairCache = new Map();
   const isPair = (v, text) => {
     if (!pairCache.has(v)) {
@@ -1219,8 +1231,9 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
     if (/^PROJECT_HISTORY/.test(p)) continue;
     // A file byte-identical to the CURRENT template cannot carry a stale PROJECT claim — its
     // text is upstream's own prose (bug 30: ten hits were fable-judge's "added in KAIF 1.6").
-    if (templateShas && templateShas[p] && fileShaNorm(p) === templateShas[p]) continue;
-    const text = readFileSync(p, 'utf8');
+    const text = readWalked(tree, p);   // unreadable → named by the walk's FAILED line, never a throw (SC4 F1)
+    if (text === null) continue;
+    if (templateShas && templateShas[p] && normSha(text) === templateShas[p]) continue;
     const lines = text.split('\n');
     const namesKaif = !isProse && (/kaif|каиф/i.test(p) || /kaif|каиф/i.test(text));
     for (let i = 0; i < lines.length; i++) {
@@ -2293,7 +2306,11 @@ async function cmdUpdate() {
     values: persistValues(values), fills, marker }, null, 2) + '\n');   // `fills` — the hand-filled slots, derived (2.6, UR2)
 
   const dep = handleDeprecations(meta, old, fills);
-  const staleClaims = scanStaleClaims(cur.version, man.version, templateShas);
+  // The marker and the manifest are already written: a scan that throws must become a named item of the task, never a stack
+  // trace that leaves the journal behind (SC4 F1).
+  let staleClaims;
+  try { staleClaims = scanStaleClaims(cur.version, man.version, templateShas); }
+  catch (e) { staleClaims = [`${WALK_NOTE}the tree walk FAILED — the scan itself stopped (${e.code || e.message}); the scan is INCOMPLETE, not clean — re-run: node .kaif/kaif-core.mjs stale-claims`]; }
   // The task lists only slots that are LITERALLY on disk after the pass (judge finding: the raw
   // `unresolved` set collects every null-valued slot seen in incoming templates — on a fully
   // filled deployment that would put a phantom `placeholders` item into EVERY update task, and
@@ -2582,7 +2599,8 @@ function anonLeakScan() {
   const leaks = [];
   const scanFile = (p) => {
     if (!okOnDisk(p) || !/\.(md|json|txt|mjs|js)$/i.test(p)) return;
-    const t = readFileSync(p, 'utf8');
+    let t;
+    try { t = readFileSync(p, 'utf8'); } catch (e) { leaks.push(`${p} could not be read (${e.code || e.message}) — the scan is incomplete, not clean`); return; }
     for (const tok of active) if (t.includes(tok)) { leaks.push(`${p} → "${tok}"`); break; }
   };
   let manifestPaths = null;

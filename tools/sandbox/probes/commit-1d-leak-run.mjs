@@ -36,7 +36,7 @@ try {
   for (const f of ['tools/commit.mjs', 'tools/stylometry-snapshot.mjs']) cpSync(join(REPO, f), join(wt, f));
   if (existsSync(join(REPO, '.kaif', 'private-names.json'))) cpSync(join(REPO, '.kaif', 'private-names.json'), join(wt, '.kaif', 'private-names.json'));
   git('add', 'tools/commit.mjs', 'tools/stylometry-snapshot.mjs');
-  git('commit', '-q', '-m', 'probe: tools under test');
+  git('commit', '-q', '--allow-empty', '-m', 'probe: tools under test');   // the tools may equal HEAD — never «nothing to commit» (SC4 F12)
   const report = join(tmp, 'spans.txt');
   const g = node(['tools/stylometry-snapshot.mjs', '--check', '--report', report]);
   if (!existsSync(report)) { console.log(`no span report — is the owner's private core on this machine? generator exit ${g.code} (exit 2)`); process.exit(2); }

@@ -15,6 +15,11 @@
 //      reproducible on the origin's machine from a PowerShell parent (`icacls <dir> /deny <user>:(OI)(CI)(RD)` → readdirSync
 //      EPERM); processes started from Git Bash carry SeBackupPrivilege enabled and read through the deny. (Corrected 2026-09-26 03:53 +03:00
 //      after the SC4 judge: this line said "not reproducible — the owner's account passes an icacls deny".)
+//   W4 (the READ side — SC4 F1 · F7 · F8 · F9) — the delivered core and modules as REAL processes, the read deny injected at the fs
+//      boundary by a preload: stale-claims and update name the unreadable file (no stack trace; update exit 0, its item names the
+//      FAILED walk), kaif-provenance check names it, report refuses «INCOMPLETE» instead of «✅ no AI text awaits acceptance»,
+//      guard-lint names it instead of skipping in silence; a project under .claude/worktrees/<agent>/ scanned by an absolute
+//      root is judged, not «SKIPPED — nothing to scan».
 //
 // Red proof: `KAIF_DIST=<dist v2.7> node tools/sandbox/s29-scanners.mjs` — the 2.7 core walks the copies and stops at the link;
 // mutants — tools/sandbox/probes/sc-mutants.mjs.
@@ -23,13 +28,13 @@
 // [TESTED: 2026-09-26 02:44:44 +03:00 · SC2 section C — 20 checks green; on v2.7 C1–C4 red by name (C5–C7 guard rules 2.7 never had —
 //  their red is mutants M10–M12); three of them (C5 codename · C6 overlapping pair · C7 XML is no pin) came from the functional run on
 //  four real trees, which found them as defects of the first cut; report testcases/reports/2026-09-26_sc2-claim-is-a-pair.md]
-import { readFileSync, writeFileSync, mkdirSync, symlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, symlinkSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { must, coreRunner } from '../lib/sandbox-run.mjs';
+import { must, coreRunner, hermeticArgs } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
@@ -68,6 +73,8 @@ const brokenLinks = (dir) => {
   symlinkSync('no-such-note.md', join(dir, 'broken-note.md'), 'file');
 };
 const staleItem = (dir) => {
+  // no task on disk (an update that died before writing it — the pre-fix W4b) is an empty item, never a crash of the suite
+  if (!existsSync(join(dir, 'KAIF_UPDATE_TASK.md'))) return '';
   const ls = readFileSync(join(dir, 'KAIF_UPDATE_TASK.md'), 'utf8').split('\n');
   const i = ls.findIndex((l) => /\*\*stale-claims\*\*/.test(l));
   if (i < 0) return '';
@@ -143,6 +150,66 @@ if (a >= 0 && b > a) {
   w = viaGit('No such file or directory').kaifWalk(['.']);
   ok(w.skipped.length === 1 && w.skipped[0].startsWith('secret') && !w.failed.length, 'W3c: git «No such file» (битая ссылка) — SKIPPED с именем', JSON.stringify(w));
 }
+
+// ---------------------------------------------------------------- W4: the READ side — a real process, an unreadable file (SC4 F1 · F7 · F8 · F9)
+// A read deny is not reproducible from the polygon's shell (Git Bash carries the backup privilege and reads through `icacls /deny`;
+// from PowerShell the deny gives EPERM — probe 2026-09-26 03:52), so the deny is injected at the fs boundary of a REAL process: a
+// preload (`node --import`) makes readFileSync / readdirSync throw EPERM for the named paths, the delivered core and modules run
+// unchanged. Before the fix: `update` ended in an EPERM stack trace after the marker was written, `stale-claims` and the modules threw,
+// `kaif-provenance report` printed «✅ no AI text awaits acceptance», guard-lint skipped the file in silence (SC4 judge, F1 · F7 · F8).
+console.log('\n=== W4 (SC4 F1 · F7 · F8 · F9): нечитаемый файл — настоящий процесс, отказ чтения на границе ФС ===');
+const PRELOAD = join(ROOT, 'deny-preload.mjs');
+writeFileSync(PRELOAD, [
+  "import { createRequire, syncBuiltinESMExports } from 'node:module';",
+  "const fs = createRequire(import.meta.url)('node:fs');",
+  "const names = (process.env.KAIF_TEST_UNREADABLE || '').split(',').filter(Boolean);",
+  "const hit = (p) => { const s = String(p).split(String.fromCharCode(92)).join('/'); return names.some((n) => s === n || s.endsWith('/' + n)); };",
+  "const deny = (p) => Object.assign(new Error(`EPERM: operation not permitted, open '${p}'`), { code: 'EPERM', syscall: 'open', path: String(p) });",
+  "const { readFileSync, readdirSync } = fs;",
+  "fs.readFileSync = function (p, ...a) { if (hit(p)) throw deny(p); return readFileSync.call(this, p, ...a); };",
+  "fs.readdirSync = function (p, ...a) { if (hit(p)) throw deny(p); return readdirSync.call(this, p, ...a); };",
+  'syncBuiltinESMExports();', ''].join('\n'));
+const denied = (cwd, file, args, unreadable) => {
+  try { return { code: 0, out: execFileSync(process.execPath, ['--import', pathToFileURL(PRELOAD).href, file, ...args],
+    { cwd, stdio: 'pipe', env: { ...process.env, KAIF_TEST_UNREADABLE: unreadable } }).toString() }; }
+  catch (e) { return { code: e.status ?? 1, out: String(e.stdout || '') + String(e.stderr || '') }; }
+};
+const STACK = /\n\s+at .*\.mjs:\d+|Node\.js v\d/;
+const W4 = join(ROOT, 'w4'); mkdirSync(W4); seed(W4);
+must(run, W4, 'install');
+mkdirSync(join(W4, 'docs'), { recursive: true });
+writeFileSync(join(W4, 'docs', 'locked.md'), 'This project runs on KAIF 2.6 — the unreadable copy.\n');
+writeFileSync(join(W4, 'docs', 'open.md'), 'This project runs on KAIF 2.6 — the readable copy.\n');
+mkdirSync(join(W4, 'canon'), { recursive: true });
+writeFileSync(join(W4, 'canon', 'lore.md'), '[AI]a line the owner has not accepted[/AI]\n');
+{ const kj = join(W4, '.kaif', 'kaif.json'); const m = JSON.parse(readFileSync(kj, 'utf8')); m.canonArtifacts = ['canon/lore.md']; writeFileSync(kj, JSON.stringify(m, null, 2) + '\n'); }
+git(W4, 'init', '-q'); git(W4, 'config', 'user.email', 'sbx@example.invalid'); git(W4, 'config', 'user.name', 'sbx');
+git(W4, 'config', 'core.autocrlf', 'false'); git(W4, 'add', '-A'); git(W4, 'commit', '-qm', 'fixture');
+const W4CORE = join(W4, '.kaif', 'kaif-core.mjs');
+r = denied(W4, W4CORE, ['stale-claims', '--from', '2.6', '--to', '9.9'], 'docs/locked.md');
+ok(r.code === 1 && r.out.includes('docs/open.md:1') && /walk: the tree walk FAILED at docs\/locked\.md \(EPERM\)/.test(r.out) && !STACK.test(r.out),
+  'W4a: stale-claims — нечитаемый файл назван строкой «walk FAILED … (EPERM)», читаемый назван, код 1, не стектрейс', `exit ${r.code}: ${r.out.slice(-400)}`);
+r = denied(W4, W4CORE, hermeticArgs(ROOT, `update --source ${SRC99}`).split(' ').filter(Boolean), 'docs/locked.md');
+item = staleItem(W4);
+ok(r.code === 0 && !STACK.test(r.out) && /walk FAILED at docs\/locked\.md \(EPERM\)/.test(item) && item.includes('docs/open.md:1'),
+  'W4b: update →9.9 с нечитаемым файлом — код 0, пункт stale-claims называет провал обхода и читаемую строку (прежде — стектрейс после записи маркера)', `exit ${r.code}: ${r.out.slice(-300)} || ${item.slice(0, 300)}`);
+const W4MOD = (m) => join(W4, '.kaif', 'tools', `${m}.mjs`);
+r = denied(W4, W4MOD('kaif-provenance'), ['check'], 'docs/locked.md');
+ok(r.code === 1 && /walk FAILED at docs\/locked\.md \(EPERM\)/.test(r.out) && !STACK.test(r.out),
+  'W4c: kaif-provenance check — нечитаемый файл назван, код 1, не стектрейс', `exit ${r.code}: ${r.out.slice(-300)}`);
+r = denied(W4, W4MOD('kaif-provenance'), ['report'], 'canon/lore.md');
+ok(r.code === 1 && /provenance report INCOMPLETE/.test(r.out) && !/no AI text awaits acceptance/.test(r.out),
+  'W4d: kaif-provenance report — канон не прочитан: отказ «INCOMPLETE», никогда «✅ no AI text awaits acceptance» (F7)', `exit ${r.code}: ${r.out.slice(-300)}`);
+r = denied(W4, W4MOD('kaif-guard-lint'), ['check', 'docs'], 'docs/locked.md');
+ok(r.code === 1 && /walk FAILED at docs\/locked\.md \(EPERM\)/.test(r.out) && !STACK.test(r.out),
+  'W4e: kaif-guard-lint — нечитаемый файл назван, а не пропущен молча, код 1 (F8)', `exit ${r.code}: ${r.out.slice(-300)}`);
+// F9: a project that itself lives under .claude/worktrees/<agent>/, scanned by an ABSOLUTE root — its files are its own
+const W4N = join(ROOT, 'w4n', '.claude', 'worktrees', 'agent', 'proj', 'plans');
+mkdirSync(W4N, { recursive: true });
+writeFileSync(join(W4N, 'plan.md'), '# Plan\n\n## Acceptance criteria\n\nThe system must be fast and user-friendly.\n');
+r = denied(W4, W4MOD('kaif-requirements-lint'), ['check', W4N], '');
+ok(r.code === 1 && /plan\.md:5/.test(r.out) && !/SKIPPED/.test(r.out),
+  'W4f: проект под .claude/worktrees/<агент>/, абсолютный корень — его файлы судятся (находки названы), не «SKIPPED — nothing to scan» (F9)', `exit ${r.code}: ${r.out.slice(-300)}`);
 
 // ---------------------------------------------------------------- C: a version claim is judged as a PAIR (SC2; origin #75 · #91 · N3 · N4)
 console.log('\n=== C (#75 · #91 · N3 · N4): заявление о версии судится парой «KAIF ↔ версия», а не формой строки ===');

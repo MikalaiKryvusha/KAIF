@@ -216,10 +216,21 @@ if (!process.argv.includes('--no-push')) {
   });
   const bad = ids.filter(testIdentity);
   if (bad.length) {
+    // Источник подмены называется ТОЧНО (суд SC4, F11: личность из переменных окружения называла глобальный .gitconfig и советовала
+    // `git config --local --unset` — обе строки ложные для этого источника).
+    const envKeys = ['GIT_AUTHOR_NAME', 'GIT_AUTHOR_EMAIL', 'GIT_COMMITTER_NAME', 'GIT_COMMITTER_EMAIL'].filter((k) => process.env[k]);
+    if (envKeys.length) {
+      console.error(`✋ преполёт 0: коммит ушёл бы в origin под ТЕСТОВОЙ личностью: ${[...new Set(bad)].join(' · ')} (источник: переменные окружения ${envKeys.join(' · ')})`);
+      console.error(`   Так 31 коммит ушёл под «probe» (bugs/124). Сними подмену в этой оболочке: unset ${envKeys.join(' ')}`);
+      process.exit(1);
+    }
     let where = '';
-    try { where = execFileSync('git', ['config', '--show-origin', '--get', 'user.email'], { cwd: ROOT, encoding: 'utf8' }).trim(); } catch { /* from the environment */ }
+    try { where = execFileSync('git', ['config', '--show-origin', '--get', 'user.email'], { cwd: ROOT, encoding: 'utf8' }).trim(); } catch { /* no config value */ }
     console.error(`✋ преполёт 0: коммит ушёл бы в origin под ТЕСТОВОЙ личностью: ${[...new Set(bad)].join(' · ')}${where ? ` (источник: ${where})` : ' (источник: переменные GIT_AUTHOR_* / GIT_COMMITTER_*)'}`);
-    console.error('   Так 31 коммит ушёл под «probe» (bugs/124). Сними подмену: git config --local --unset user.name && git config --local --unset user.email');
+    const scope = /(^|[\\/])\.git[\\/]config(\s|$)/.test(where.split('\t')[0]) ? '--local' : /\.gitconfig/.test(where) ? '--global' : null;
+    console.error(scope
+      ? `   Так 31 коммит ушёл под «probe» (bugs/124). Сними подмену: git config ${scope} --unset user.name && git config ${scope} --unset user.email`
+      : '   Так 31 коммит ушёл под «probe» (bugs/124). Источник назван выше (git config --show-origin) — сними подмену там.');
     process.exit(1);
   }
 }

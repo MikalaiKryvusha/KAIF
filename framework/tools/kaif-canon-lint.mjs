@@ -41,7 +41,10 @@ import { spawnSync } from 'node:child_process';
 //  report testcases/reports/2026-09-26_sc1-one-safe-walker.md]
 function kaifWalk(roots) {
   const files = [], skipped = [], failed = [];
-  const nested = (p) => /(^|\/)\.claude\/worktrees(\/|$)/.test(p);
+  // A nested copy is judged BELOW the walked root (SC4 F9): a project that itself lives under `.claude/worktrees/<agent>/`, walked by
+  // an absolute root, lost every file to this test and read as "nothing to scan".
+  let base = '.';
+  const nested = (p) => /(^|\/)\.claude\/worktrees(\/|$)/.test(base === '.' ? p : p.slice(base.length + 1));
   const take = (p) => {
     if (nested(p)) return;
     let st;
@@ -59,6 +62,7 @@ function kaifWalk(roots) {
   };
   for (const r0 of roots) {
     const r = walkRoot(r0);
+    base = r;
     let st;
     try { st = statSync(r); } catch (e) {           // an absent root is the caller's business; a root that IS a broken link is named
       const cut = r.lastIndexOf('/');
@@ -92,6 +96,13 @@ function walkNotes(tree) {
   if (tree.failed.length) out.push(`${WALK_NOTE}the tree walk FAILED at ${tree.failed.slice(0, 3).join(', ')}${tree.failed.length > 3 ? ` and ${tree.failed.length - 3} more` : ''} — the scan is INCOMPLETE, not clean`);
   if (tree.skipped.length) out.push(`${WALK_NOTE}skipped ${tree.skipped.length} unreadable path(s) — a broken link, or a file git lists that the disk lacks: ${tree.skipped.slice(0, 3).join(', ')}${tree.skipped.length > 3 ? ', …' : ''}`);
   return out;
+}
+// A walked file is READ through the walk too (SC4 F1): an unreadable file — a read deny, a lock another process holds — lands in
+// `failed` (part of the tree the scan did not see) and never throws past its scanner: an EPERM stack trace ended `update` after
+// the marker was written. Returns the text, or null for a file the caller skips; one failure is recorded once.
+function readWalked(tree, p) {
+  try { return readFileSync(p, 'utf8'); }
+  catch (e) { if (!tree.failed.some((f) => f.startsWith(`${p} (`))) tree.failed.push(`${p} (${e.code || e.message})`); return null; }
 }
 // ── KAIF-WALK:END
 
@@ -137,7 +148,8 @@ const inScope = (p, files) => !files || ((files = files.replaceAll('\\', '/')).e
 // CRLF checkouts and PS5.1 Out-File BOMs are the documented Windows profile of real projects:
 // read EOL/BOM-normalized, or required lines false-redden and $-anchored forbidden patterns
 // false-GREEN (the worst failure direction).
-const readLines = (p) => readFileSync(p, 'utf8').replace(/^\uFEFF/, '').split(/\r?\n/);
+// an unreadable file is part of the tree the lint did not see — the walk's FAILED line names it (SC4 F1)
+const readLines = (p) => { const t = readWalked(TREE, p); return t === null ? null : t.replace(/^\uFEFF/, '').split(/\r?\n/); };
 // A broken regex must red the run with a clear message, not a raw stack trace.
 const compileRule = (r) => { try { return new RegExp(r.pattern); } catch (e) { console.error(`✖ invalid regex in forbidden rule: ${r.pattern} — ${e.message}`); return null; } };
 
@@ -150,13 +162,16 @@ function cmdCheck() {
     for (const p of mdFiles) {
       if (!inScope(p, r.files)) continue;
       const lines = readLines(p);
+      if (!lines) continue;
       for (let i = 0; i < lines.length; i++)
         if (re.test(lines[i])) { console.error(`✖ forbidden in ${p}:${i + 1} — ${r.message || r.pattern}`); issues++; }
     }
   }
   for (const r of rules.required || []) {
     if (!r.file || !existsSync(r.file)) { console.error(`✖ required-line file missing: ${r.file} — ${r.message || ''}`); issues++; continue; }
-    if (!readLines(r.file).includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
+    const req = readLines(r.file);
+    if (!req) { issues++; continue; }
+    if (!req.includes(r.line)) { console.error(`✖ guarded line MISSING from ${r.file} — ${r.message || ''}\n    wanted: ${r.line}`); issues++; }
   }
   for (const n of walkNotes(TREE)) console.error((n.includes('walk FAILED') ? '✖ ' : '⚠ ') + n);
   if (TREE.failed.length) issues++;

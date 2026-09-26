@@ -20,12 +20,15 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const suite = (n) => join(REPO, 'tools', 'sandbox', n);
 const S = 's29-scanners.mjs';
 const MUTANTS = [
+  { name: 'M13 the read side throws again (SC4 F1 — an unreadable file ended update in a stack trace after the marker was written)', suite: S, tag: '❌ ',
+    from: '  try { return readFileSync(p, \'utf8\'); }\n  catch (e) {', to: '  try { return readFileSync(p, \'utf8\'); }\n  catch (e) { throw e;',
+    expect: ['W4a: stale-claims', 'W4b: update →9.9 с нечитаемым файлом'] },
   { name: 'M1 the catch swallows a broken link again (#77 · Q-R1′ — a skipped path goes uncounted and unnamed)', suite: S, tag: '❌ ',
     from: "    try { st = statSync(p); } catch (e) { skipped.push(`${p} (${e.code || 'unreadable'})`); return; }\n",
     to: '    try { st = statSync(p); } catch (e) { return; }\n',
     expect: ['W1: пункт называет «skipped 2»', 'W2: пункт называет «skipped 2»'] },
   { name: 'M2 nested copies are walked again (#77 — twenty copies take the cap, the real README is hidden)', suite: S, tag: '❌ ',
-    from: '  const nested = (p) => /(^|\\/)\\.claude\\/worktrees(\\/|$)/.test(p);\n', to: '  const nested = (p) => false;\n',
+    from: "  const nested = (p) => /(^|\\/)\\.claude\\/worktrees(\\/|$)/.test(base === '.' ? p : p.slice(base.length + 1));\n", to: '  const nested = (p) => false;\n',
     expect: ['W2: настоящий README назван'] },
   { name: 'M3 an unreadable directory is swallowed again (#77 — a walk that could not see part of the tree reads as clean)', suite: S, tag: '❌ ',
     from: '    try { ents = readdirSync(dir, { withFileTypes: true }); } catch (e) { failed.push(`${dir} (${e.code || e.message})`); return; }\n',
@@ -36,7 +39,8 @@ const MUTANTS = [
     expect: ['W3b'] },
   { name: 'M5 the scan drops the walk\'s lines (the item says nothing about what it could not see)', suite: S, tag: '❌ ',
     from: '  hits.push(...walkNotes(tree));\n', to: '',
-    expect: ['W1: пункт называет «skipped 2»', 'W2: пункт называет «skipped 2»'] },
+    // W4a/W4b (SC4) judge the same walk line for an unreadable FILE — added to the addressees after the first run of 04:22 named them
+    expect: ['W1: пункт называет «skipped 2»', 'W2: пункт называет «skipped 2»', 'W4a: stale-claims', 'W4b: update →9.9 с нечитаемым файлом'] },
   // ── SC2 (criterion 17): the claim is judged as a pair ──
   { name: 'M6 any dated line is skipped again (#75 — the deployment record dated inside a parenthesis goes unnamed)', suite: S, tag: '❌ ',
     from: "      if (/\\b\\d{4}-\\d{2}/.test(isProse ? scan.replace(/(?<!\\])\\([^)]*\\)/g, '') : line)) continue;", to: "      if (/\\b\\d{4}-\\d{2}/.test(line)) continue;",
