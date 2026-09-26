@@ -7082,7 +7082,7 @@ raised in a batch next to a live question.
   unanswered, re-opening the page is the AGENT's duty, never the human's."* The first half stands;
   the conclusion is REVISED in 2.8 by the KAIF owner's word <!-- KAIF-VERSION-OK: the version the conclusion was revised in --> — answers are saved one at a time in every
   project, as on the field page he pointed to: the process that ends is a separate WAITER
-  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one), and
+  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one or none came up within a minute), and
   the page's server lives while anything on it is unanswered and ends with the last answer. Start
   both as tracked background tasks (I31); on each waiter exit apply the answer and start the waiter
   again while questions are left — re-opening a page the owner still has is never the agent's move.
@@ -7212,7 +7212,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
   **Next to the page — the waiter (2.8, I8):** the same way, `node .kaif/tools/contour/review.mjs --wait <doc>` — it
   ends with exit 0 on each recorded answer (the page stays open while questions are left) and with 2 when
-  the contour ended without one; apply the answer, start the waiter again while questions are left.
+  the contour ended without one or none came up within a minute (2.8, court B-F1: it used to wait forever when the page had closed
+  before it started — start it BEFORE the page); apply the answer, start the waiter again while questions are left.
 
 **The call (I32–I36):**
 
@@ -11227,6 +11228,7 @@ const AUTOCLOSE_RESERVE_MS = 2000;    // DEF2: reserve for a refused close → a
 const SERVER_DEATH_MS = 2500;         // DEF3: server death after the save (the window has time to go)
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 s after the beacon — reload vs close
 const WAIT_POLL_MS = 2000;            // OW6 (2.8): the waiter polls the decision file(s) — the field device the KAIF owner pointed to polls every 2 s
+const WAIT_NO_CONTOUR_MS = 60000;     // B-F1 (2.8): no live contour seen within a minute → exit 2 (a page comes up in seconds; the ritual starts the waiter first)
 const QH_LEN = 12;                    // OW6: hex chars of a question's fingerprint in a draft key (title + body of the question)
 // 2.8, origin issue #106 (a field owner's explicit word, three requests in one evening): owner-facing pages render at 1.7x the browser
 // base — the WHOLE page through CSS zoom, as Ctrl+Plus does (raising font-size alone turned the fixed radio circles into dots and slid
@@ -12226,7 +12228,10 @@ function leftIn(root, rel) {
 // so far and the questions left; exit 2 when the contour it saw ended without one. Patience is infinite (I9). No document → the queue.
 // [TESTED: 2026-09-25 19:37–20:01 · selftest: exit 0 on a partial record, exit 2 when the lock it saw is gone; s22 D (7): a separate
 //  process on the deployed copy printed «Recorded: … — Q1 = A · questions left: 2» and exited 0; report testcases/reports/2026-09-25_ow6-partial-save-revision.md]
-export function waitForRecord(root, docPath = null, { log = console.log, pollMs = WAIT_POLL_MS } = {}) {
+// (court RL 2.8, B-F1) a waiter that never sees a live contour — the page closed before it started, or was never raised — ends with 2
+// after WAIT_NO_CONTOUR_MS instead of waiting forever; the window lets it start BEFORE the page, as the ritual says (the page comes up
+// within seconds). An answer recorded before the waiter started is on disk — `--queue --list` names it.
+export function waitForRecord(root, docPath = null, { log = console.log, pollMs = WAIT_POLL_MS, graceMs = WAIT_NO_CONTOUR_MS } = {}) {
   const cfg = cfgOf(root), dir = decisionsAbs(root, cfg);
   const files = () => (docPath ? [decisionPaths(root, docPath, cfg).decision]
     : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
@@ -12234,6 +12239,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
   const start = new Map(files().map((f) => [f, stamp(f)]));
   const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
   let lockSeen = existsSync(lock);
+  const startedAt = Date.now();
   log('Waiting for the next recorded answer' + (docPath ? ' on ' + relDoc(root, docPath) : ' in the queue') + ' — exit 0 when one is recorded (OW6, I8).');
   return new Promise((done) => {
     const tick = setInterval(() => {
@@ -12254,6 +12260,12 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
       else if (lockSeen) {
         clearInterval(tick);
         log('The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
+        done(2);
+      } else if (Date.now() - startedAt > graceMs) {
+        clearInterval(tick);
+        log('No live contour' + (docPath ? ' for ' + relDoc(root, docPath) : ' for the queue') + ' within ' + Math.round(graceMs / 1000)
+          + ' s — nothing to wait for: the page was never raised, or it ended before the waiter started; an answer already recorded is on disk ('
+          + CLI_NAME + ' --queue --list names it).');
         done(2);
       }
     }, pollMs);
@@ -13156,6 +13168,10 @@ export async function selftest(log = console.log) {
   await sl(200); rmSync(LK, { force: true });
   const w2 = await Promise.race([waiter2, sl(3000).then(() => 'timeout')]);
   ok(w2 === 2, 'waiter: the contour it saw ended without a new record (its lock gone) → exit 2, nothing to apply (OW6)');
+  // (4b) court RL 2.8, B-F1: a waiter that never sees a live contour (the page closed before it started) ends with 2 after its window
+  const waiter3 = waitForRecord(root, MD, { log: () => {}, pollMs: 50, graceMs: 300 });
+  const w3 = await Promise.race([waiter3, sl(3000).then(() => 'timeout')]);
+  ok(w3 === 2, 'waiter: no live contour seen within its window → exit 2, never an eternal wait (B-F1)');
   // (5) judge OW10 H11: an answer picked up from the owner's machine for an OLDER revision is recorded as data, never written by numbers
   writeFileSync(join(root, MD), three);
   const recS = recordRecovered(root, MD, { answers: { Q1: { choice: 'B', text: '', comment: '' } }, rev: 'an-older-revision' }, cfg);
@@ -19108,7 +19124,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.
 - Answers are saved ONE AT A TIME (2.8, the KAIF owner's word): the page LIVES while its document has an unanswered question («Saved. Questions left:
   N», the answered one moves to the settled fold, the other drafts stay); the last answer ends it with exit 0. The agent is woken by a separate WAITER
-  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one; apply the
+  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one or none came up within a minute; apply the
   answer, start it again while questions are left. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence watch (~3 min, two strikes).
 - A save carries the REVISION its page was built from: another revision (the document rewritten under an open tab) → 409, the text stays on the page with
   «Open the new revision»; a repeated save is recognised; a draft key carries its question's fingerprint — a draft never lands on a rewritten question.
@@ -19138,7 +19154,7 @@ else the workspace directory) — and `review.mjs --call "<what is needed>" [--d
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
 | call the owner — hands or a quick answer (2.8) | `… --call "<what is needed>" [--dry-run]` | the phrase names the calling session; `--dry-run` — printed, no sound |
-| search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended |
+| search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended or never came up within a minute |
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of

@@ -96,7 +96,7 @@ raised in a batch next to a live question.
   unanswered, re-opening the page is the AGENT's duty, never the human's."* The first half stands;
   the conclusion is REVISED in 2.8 by the KAIF owner's word <!-- KAIF-VERSION-OK: the version the conclusion was revised in --> — answers are saved one at a time in every
   project, as on the field page he pointed to: the process that ends is a separate WAITER
-  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one), and
+  (`review.mjs --wait <doc>`, exit 0 on each recorded answer, 2 when the contour ended without one or none came up within a minute), and
   the page's server lives while anything on it is unanswered and ends with the last answer. Start
   both as tracked background tasks (I31); on each waiter exit apply the answer and start the waiter
   again while questions are left — re-opening a page the owner still has is never the agent's move.
@@ -226,7 +226,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   restored on load; a taken port is named in the log together with the loss — never a silent fresh port.
   **Next to the page — the waiter (2.8, I8):** the same way, `node .kaif/tools/contour/review.mjs --wait <doc>` — it
   ends with exit 0 on each recorded answer (the page stays open while questions are left) and with 2 when
-  the contour ended without one; apply the answer, start the waiter again while questions are left.
+  the contour ended without one or none came up within a minute (2.8, court B-F1: it used to wait forever when the page had closed
+  before it started — start it BEFORE the page); apply the answer, start the waiter again while questions are left.
 
 **The call (I32–I36):**
 

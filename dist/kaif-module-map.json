@@ -3742,10 +3742,10 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "dffa7a8c3c71633cc12843c3695e94bb079f1f4f7ddbf4bd17714334eb4d0eb2",
+        "sha256": "6da26f6c76f8a60335383d5a195635038421f26b5e47a329a7eaf5ecdaf4306b",
         "lines": [
           52,
-          367
+          368
         ]
       },
       {
@@ -3753,8 +3753,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          368,
-          379
+          369,
+          380
         ]
       },
       {
@@ -3762,8 +3762,8 @@
         "class": "static",
         "sha256": "89329e4df17a11bb38fa7a8d82395186f01e604e4bb58ac5d7835a39cc430250",
         "lines": [
-          380,
-          429
+          381,
+          430
         ]
       },
       {
@@ -3771,8 +3771,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          430,
-          439
+          431,
+          440
         ]
       },
       {
@@ -3780,8 +3780,8 @@
         "class": "static",
         "sha256": "99be6d723cf52bafb9aead06d53919d79656cc54f77d02bc2172cddc56f88c0b",
         "lines": [
-          440,
-          552
+          441,
+          553
         ]
       },
       {
@@ -3789,8 +3789,8 @@
         "class": "static",
         "sha256": "0b9388849b72578dc3226d0d363c54ffed63e371a68e0bab3521c135ac4b7643",
         "lines": [
-          553,
-          586
+          554,
+          587
         ]
       },
       {
@@ -3798,8 +3798,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          587,
-          602
+          588,
+          603
         ]
       },
       {
@@ -3807,8 +3807,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          603,
-          673
+          604,
+          674
         ]
       },
       {
@@ -3816,8 +3816,8 @@
         "class": "static",
         "sha256": "5e2985ee5e5c92b97244766f1cbec12c8858705acfb102ea9ad54a5153358f3c",
         "lines": [
-          674,
-          698
+          675,
+          699
         ]
       },
       {
@@ -3825,8 +3825,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          699,
-          718
+          700,
+          719
         ]
       },
       {
@@ -3834,8 +3834,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          719,
-          730
+          720,
+          731
         ]
       }
     ],
@@ -6113,7 +6113,7 @@
       {
         "signature": "## 5. Process — outcomes, patience, wake-up",
         "class": "static",
-        "sha256": "2052cd61f2d9db9ff9d8b0a15a7b1ff9abcd0a7344cf34940c69d265ed1d45db",
+        "sha256": "21b2e7012f8aed4a65101844f6992a644dd5bbe85bc44090025ce4ef6a32bf1d",
         "lines": [
           68,
           86
@@ -6131,7 +6131,7 @@
       {
         "signature": "## 7. Faces and flags (the shipped generator)",
         "class": "static",
-        "sha256": "5f78793e04300ea0870480a1b3516154e541e297725eeccdb4ab5bf3ed05e0ae",
+        "sha256": "a1a662f1f4018f7e42944914f7e8e31c95c686ddf6ca4eeced60c67a7c3c7e7f",
         "lines": [
           95,
           112

@@ -23,8 +23,12 @@ const M = [
   ['a recovered answer of an older revision written by numbers', 'review.mjs', '  const staleRevision = Boolean(payload.rev) && payload.rev !== docRev(root, doc);',
     '  const staleRevision = false;', ['an answer saved for an OLDER revision is kept as data']],
   ['a close after partial saves says «without an answer»', 'review.mjs', '            savedInRun += nAns;', '', ['a page closed after a partial save']],
-  ['the page does not re-read itself after a partial save', 'review.mjs', "location.reload();return}\",", "status(fmt(TX.left,{n:res.j.left}),'okmsg');return}\",",
+  // the anchor carries the partial-save context: since bugs/125 the entry page's pulse handler ends with the same `location.reload();return}",`
+  ['the page does not re-read itself after a partial save', 'review.mjs', "String(res.j.left))}catch(e){}location.reload();return}\",", "String(res.j.left))}catch(e){}status(fmt(TX.left,{n:res.j.left}),'okmsg');return}\",",
     ['a partial save re-reads the page']],
+  // court RL 2.8, B-F1: a waiter that never sees a live contour waits forever again
+  ['the waiter without a live contour waits forever again', 'review.mjs', '      } else if (Date.now() - startedAt > graceMs) {', '      } else if (false) {',
+    ['no live contour seen within its window']],
 ];
 let bad = 0;
 for (const [name, file, from, to, exp] of M) {

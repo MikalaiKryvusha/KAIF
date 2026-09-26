@@ -1470,8 +1470,10 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // 2.8, epic CH (criterion 13; findings N10 · K12 · K13 · K-R1b): a WITHDRAWN feature leaves the project's own texts standing — a local
   // order built on it (signed by the agent, sometimes worn as the owner's), a question it made moot, a ticket it resolved. A deprecation
   // that retires a feature names `search` and `since`; this item lists the phrases of the (from, to] interval with each hit's fate.
+  // (court RL 2.8, C-F2) a withdrawal SINCE the release this deployment is on counts too: that release's own update carried no phrase
+  // search (the item arrived with 2.8), so its texts were never searched — the comparison used to be strictly newer and skipped it
   const withdrawn = (meta.deprecations || []).filter((d) => Array.isArray(d.search) && d.search.length && d.since
-    && gt(d.since, fromVersion || '0') && !gt(d.since, meta.version));
+    && !gt(fromVersion || '0', d.since) && !gt(d.since, meta.version));
   if (withdrawn.length) items.push(['withdrawn-phrases', `Upstream WITHDREW a feature your own texts may still build on — search the project's texts (guide, skills, plans, interviews, bugs, house rules) for its phrases and give EVERY hit a fate: ${withdrawn.map((d) => `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.`]);
   // P4 (2.5, epic US; #28 R3): the anonymous → origin switch cannot rewrite a file the owner edited,
   // so its text may still assert the OLD mode — name each one for a re-read instead of letting it

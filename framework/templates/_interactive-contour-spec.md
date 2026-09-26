@@ -73,7 +73,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.
 - Answers are saved ONE AT A TIME (2.8, the KAIF owner's word): the page LIVES while its document has an unanswered question («Saved. Questions left:
   N», the answered one moves to the settled fold, the other drafts stay); the last answer ends it with exit 0. The agent is woken by a separate WAITER
-  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one; apply the
+  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one or none came up within a minute; apply the
   answer, start it again while questions are left. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence watch (~3 min, two strikes).
 - A save carries the REVISION its page was built from: another revision (the document rewritten under an open tab) → 409, the text stays on the page with
   «Open the new revision»; a repeated save is recognised; a draft key carries its question's fingerprint — a draft never lands on a rewritten question.
@@ -103,7 +103,7 @@ else the workspace directory) — and `review.mjs --call "<what is needed>" [--d
 | queue page "N accumulated" / queue without a browser | `… --queue` / `… --queue --list` (exit 2 while a waiting document was NEVER shown) | — |
 | self-test (no browser) | `… --selftest` | red on the "options as paragraphs" fixture, green on the canonical forms |
 | call the owner — hands or a quick answer (2.8) | `… --call "<what is needed>" [--dry-run]` | the phrase names the calling session; `--dry-run` — printed, no sound |
-| search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended |
+| search a prior answer / wait for the next one (2.8) | `… --search "<question>"` / `… --wait [<doc.md>]` | hits by file and line + the attestation line / exit 0 on a recorded answer, 2 when the contour ended or never came up within a minute |
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of

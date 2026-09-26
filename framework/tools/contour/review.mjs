@@ -62,6 +62,7 @@ const AUTOCLOSE_RESERVE_MS = 2000;    // DEF2: reserve for a refused close → a
 const SERVER_DEATH_MS = 2500;         // DEF3: server death after the save (the window has time to go)
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 s after the beacon — reload vs close
 const WAIT_POLL_MS = 2000;            // OW6 (2.8): the waiter polls the decision file(s) — the field device the KAIF owner pointed to polls every 2 s
+const WAIT_NO_CONTOUR_MS = 60000;     // B-F1 (2.8): no live contour seen within a minute → exit 2 (a page comes up in seconds; the ritual starts the waiter first)
 const QH_LEN = 12;                    // OW6: hex chars of a question's fingerprint in a draft key (title + body of the question)
 // 2.8, origin issue #106 (a field owner's explicit word, three requests in one evening): owner-facing pages render at 1.7x the browser
 // base — the WHOLE page through CSS zoom, as Ctrl+Plus does (raising font-size alone turned the fixed radio circles into dots and slid
@@ -1061,7 +1062,10 @@ function leftIn(root, rel) {
 // so far and the questions left; exit 2 when the contour it saw ended without one. Patience is infinite (I9). No document → the queue.
 // [TESTED: 2026-09-25 19:37–20:01 · selftest: exit 0 on a partial record, exit 2 when the lock it saw is gone; s22 D (7): a separate
 //  process on the deployed copy printed «Recorded: … — Q1 = A · questions left: 2» and exited 0; report testcases/reports/2026-09-25_ow6-partial-save-revision.md]
-export function waitForRecord(root, docPath = null, { log = console.log, pollMs = WAIT_POLL_MS } = {}) {
+// (court RL 2.8, B-F1) a waiter that never sees a live contour — the page closed before it started, or was never raised — ends with 2
+// after WAIT_NO_CONTOUR_MS instead of waiting forever; the window lets it start BEFORE the page, as the ritual says (the page comes up
+// within seconds). An answer recorded before the waiter started is on disk — `--queue --list` names it.
+export function waitForRecord(root, docPath = null, { log = console.log, pollMs = WAIT_POLL_MS, graceMs = WAIT_NO_CONTOUR_MS } = {}) {
   const cfg = cfgOf(root), dir = decisionsAbs(root, cfg);
   const files = () => (docPath ? [decisionPaths(root, docPath, cfg).decision]
     : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
@@ -1069,6 +1073,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
   const start = new Map(files().map((f) => [f, stamp(f)]));
   const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
   let lockSeen = existsSync(lock);
+  const startedAt = Date.now();
   log('Waiting for the next recorded answer' + (docPath ? ' on ' + relDoc(root, docPath) : ' in the queue') + ' — exit 0 when one is recorded (OW6, I8).');
   return new Promise((done) => {
     const tick = setInterval(() => {
@@ -1089,6 +1094,12 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
       else if (lockSeen) {
         clearInterval(tick);
         log('The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
+        done(2);
+      } else if (Date.now() - startedAt > graceMs) {
+        clearInterval(tick);
+        log('No live contour' + (docPath ? ' for ' + relDoc(root, docPath) : ' for the queue') + ' within ' + Math.round(graceMs / 1000)
+          + ' s — nothing to wait for: the page was never raised, or it ended before the waiter started; an answer already recorded is on disk ('
+          + CLI_NAME + ' --queue --list names it).');
         done(2);
       }
     }, pollMs);
@@ -1991,6 +2002,10 @@ export async function selftest(log = console.log) {
   await sl(200); rmSync(LK, { force: true });
   const w2 = await Promise.race([waiter2, sl(3000).then(() => 'timeout')]);
   ok(w2 === 2, 'waiter: the contour it saw ended without a new record (its lock gone) → exit 2, nothing to apply (OW6)');
+  // (4b) court RL 2.8, B-F1: a waiter that never sees a live contour (the page closed before it started) ends with 2 after its window
+  const waiter3 = waitForRecord(root, MD, { log: () => {}, pollMs: 50, graceMs: 300 });
+  const w3 = await Promise.race([waiter3, sl(3000).then(() => 'timeout')]);
+  ok(w3 === 2, 'waiter: no live contour seen within its window → exit 2, never an eternal wait (B-F1)');
   // (5) judge OW10 H11: an answer picked up from the owner's machine for an OLDER revision is recorded as data, never written by numbers
   writeFileSync(join(root, MD), three);
   const recS = recordRecovered(root, MD, { answers: { Q1: { choice: 'B', text: '', comment: '' } }, rev: 'an-older-revision' }, cfg);

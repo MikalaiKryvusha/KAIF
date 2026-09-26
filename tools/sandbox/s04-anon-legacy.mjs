@@ -285,7 +285,10 @@ const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
 if (!depKeyRe.test(bundleD)) throw new Error('S14d fixture: ключ deprecations не найден в мете бандла');
 bundleD = bundleD.replace(depKeyRe,
   '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test"}, {"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test"},'
-  + ' {"path": ".kaif/_fixture-retired-feature.md", "reason": "the fixture feature is withdrawn", "since": "9.9", "search": ["FIXTURE-RETIRED-PHRASE"]}],');
+  + ' {"path": ".kaif/_fixture-retired-feature.md", "reason": "the fixture feature is withdrawn", "since": "9.9", "search": ["FIXTURE-RETIRED-PHRASE"]},'
+  // RL2 2.8 (court C-F2): a withdrawal SINCE the release this deployment is on — its own update carried no phrase search (the search item
+  // arrived later), so this interval must name it; the comparison used to be strictly newer than the deployment and skipped it
+  + ' {"path": ".kaif/_fixture-same-release-feature.md", "reason": "withdrawn in the deployed release", "since": "' + CUR + '", "search": ["FIXTURE-SAME-RELEASE-PHRASE"]}],');
 // упразднённые файлы не должны ехать в новом бандле (иначе классификация их снова напишет)
 const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
   '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n[\\s\\S]*?\\n' + FENCE + '\\n?', 'm'), '');
@@ -318,6 +321,8 @@ ok(task14d.includes('deprecations') && task14d.includes('help-kaif'),
      'S14d/CH1 (F7): пункт отчёта задания обновления на tracking: ' + tr14d + ' — строка доставки и команда report ' + (tr14d === 'origin' ? 'есть' : 'отсутствуют'), fr14d.slice(0, 300)); }
 // 2.8 CH4 (plans/121, критерий 13): снятая ВОЗМОЖНОСТЬ называет фразы — задание перечисляет их с командой поиска и судьбой по подписи
 const wd14d = task14d.slice(task14d.indexOf('- **withdrawn-phrases**'));
+ok(wd14d.includes('FIXTURE-SAME-RELEASE-PHRASE'),
+   'S14d/CH4 (C-F2): снятие «с версии развёртывания» (since = ' + CUR + ') названо — обновление этой версии поиска фраз не несло', wd14d.slice(0, 300));
 ok(task14d.includes('- **withdrawn-phrases**') && wd14d.includes('FIXTURE-RETIRED-PHRASE') && wd14d.includes('git grep -n -F -e "FIXTURE-RETIRED-PHRASE"')
    && wd14d.includes('[AI]') && wd14d.includes('[OWNER]') && wd14d.includes('--mark-withdrawn') && wd14d.includes('resolved in origin'),
    'S14d/CH4 (критерий 13): задание называет фразу снятой возможности, команду поиска и судьбу находки по подписи ([AI] · [OWNER] · --mark-withdrawn · resolved in origin)', wd14d.slice(0, 400));
