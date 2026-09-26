@@ -304,7 +304,8 @@ function selfProofWalkerCopies() {
 // THREAT:         a release ships a template line («Since KAIF 2.8 …», a wrapped «(KAIF 2.6; …» attribution) that the scan it ships
 //                 names in every field deployment on the next update — the field learns to ignore the scan (bugs/35: precision ≈ 19 %)
 // PROVED-AGAINST: `--selftest` — a bundle line claiming an old version → named; a wrapped attribution, a table row carrying the marker
-//                 inside the row and a language-pack source → silent; probe sc3-guard-mutants — the dist core without the wrapped-
+//                 inside the row and a pack's skill-triggers.json → silent; a language-pack FACE's old claim → named, labelled
+//                 [ru] (SC4 F14: the guard judged only the English face); probe sc3-guard-mutants — the dist core without the wrapped-
 //                 parenthesis rule names the real templates' wrapped attributions (the build refuses)
 // GAP:            the scan's own precision is the scan's (s29 C, sc-mutants); this guard only runs it over the shipped files
 // ON-REAL-PATH:   NOT YET — the path is the first release build after 2.8 whose templates carry a new historical line
@@ -326,7 +327,9 @@ function selfProofTemplatesOwnScan() {
   prove('a line claiming an old version', [['README.md', '# X\n\nThis project runs on KAIF 1.0.']], 1);
   prove('a wrapped attribution', [['NOTES.md', '# X\n\nThe rule arrived (KAIF 2.6; origin issue #52; the\nfield owner asked) and stays.']], 0);
   prove('a table row with the marker inside', [['T.md', '# X\n\n| a | b |\n|---|---|\n| KAIF | 1.0 <!-- KAIF-VERSION-OK: the row names history --> |']], 0);
-  prove('a language-pack source', [['templates/languages/ru/GOAL.md', '# X\n\nThis project runs on KAIF 1.0.']], 0);
+  // SC4 F14: a pack is a FACE — its old claim is named, labelled with its language; its trigger phrases are no deployed file
+  prove('a language-pack face', [['KAIF_FRAMEWORK.md', '# X\n\nThe record.'], ['templates/languages/ru/KAIF_FRAMEWORK.md', '# X\n\nThis project runs on KAIF 1.0.']], 1);
+  prove('a pack\'s skill-triggers.json', [['templates/languages/ru/skill-triggers.json', '{ "note": "KAIF 1.0" }']], 0);
   return fails;
 }
 

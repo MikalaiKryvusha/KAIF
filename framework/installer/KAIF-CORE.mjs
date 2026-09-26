@@ -1189,10 +1189,15 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
   const PAIR_VERSION_WORDS = new Set(['v', 'ver', 'version', 'versions', 'release', 'версия', 'версии', 'версию', 'версией', 'релиз', 'релиза']);
   // `reverse` (the version BEFORE the word): a capitalized word right before KAIF is the release's codename — «2.7 «Audited KAIF»» is a
   // claim (the SC2 field run lost a real README line to the forward rule) — so there only a conjunction blocks
+  // (SC4 F6) in reverse order a LOWERCASE word breaks the pair too — «2.0 на KAIF» is the product's version, the codename is capitalized;
+  // «version 2.7 of KAIF» keeps its one linking word
   const pairGap = (gap, reverse = false) => !/[&+]/.test(gap) && (gap.match(/\p{L}+/gu) || []).every((w) => !PAIR_CONJUNCTIONS.has(w.toLowerCase())
-    && (reverse || !/^\p{Lu}/u.test(w) || PAIR_VERSION_WORDS.has(w.toLowerCase())));
+    && (PAIR_VERSION_WORDS.has(w.toLowerCase()) || (reverse ? /^\p{Lu}/u.test(w) || w === 'of' : !/^\p{Lu}/u.test(w))));
   // judged from EVERY occurrence of the framework word (and of the version) separately — one regex over the line lost an overlapping
   // pair: in «/kaif-go — with KAIF 2.2» the first match took `/kaif` with the gap «-go — with KAIF » and hid the real pair (SC2 field run)
+  // (SC4 F6) a capitalized non-version word RIGHT before a version names a product: «Acme Space 2.0 — KAIF-project», «The Acme 2.0
+  // KAIF plugin» — the version is Acme's, whatever follows it
+  const productBefore = (before) => { const w = (before.match(/(\p{L}+)\s+$/u) || [])[1]; return !!w && /^\p{Lu}/u.test(w) && !PAIR_VERSION_WORDS.has(w.toLowerCase()); };
   const pairCache = new Map();
   const isPair = (v, text) => {
     if (!pairCache.has(v)) {
@@ -1201,14 +1206,21 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
     }
     const { fwd, ver, rev } = pairCache.get(v);
     for (const m of text.matchAll(/kaif|каиф/gi)) { const r = fwd.exec(text.slice(m.index + m[0].length)); if (r && pairGap(r[1])) return true; }
-    for (const m of text.matchAll(ver)) { const r = rev.exec(text.slice(m.index + m[0].length)); if (r && pairGap(r[1], true)) return true; }
+    for (const m of text.matchAll(ver)) { const r = rev.exec(text.slice(m.index + m[0].length)); if (r && pairGap(r[1], true) && !productBefore(text.slice(0, m.index))) return true; }
     return false;
   };
   // a script pin speaks the CODE's vocabulary (#91): a quoted old version assigned to (or compared with) an identifier that NAMES a pin —
   // `EXPECTED_VERSION`, `kaifVersion`, `REQUIRED_KAIF_VERSION`, `pinnedVersion` — in a script that names the framework; a bare `version`
   // is the product's own or an XML attribute (`'<?xml version="1.0"'` was named by the first cut on a real tree)
-  const PIN_ID = /[\w$]*(?:kaif[\w$]*version|(?:expected|required|pinned|min|target)[\w$]*version)[\w$]*['"]?\s*(?:[:=]|[!=]==?)/i;
-  const scriptPin = (v, text) => PIN_ID.test(text) && new RegExp(`['"\`]v?${v.replace(/\./g, '\\.')}['"\`]`).test(text);
+  // (SC4 F4) wider by the field's own spellings — FRAMEWORK_VERSION, KAIF_REQUIRED, kaifMin — and a `.version` compared with (or asserted
+  // against) a quoted old version in a script that reads kaif.json: `assert.equal(marker.version, '2.7')`. The price, stated in plans/123
+  // (FORK SC2, revisited): a project's own variable spelled like the framework's pin is named once and takes the marker.
+  const PIN_ID = /[\w$]*(?:(?:kaif|framework)[\w$]*(?:version|required|min|pin)|(?:expected|required|pinned|min|target)[\w$]*version)[\w$]*['"]?\s*(?:[:=]|[!=]==?)/i;
+  const scriptPin = (v, text, readsMarker = false) => {
+    const lit = `['"\`]v?${v.replace(/\./g, '\\.')}['"\`]`;
+    return (PIN_ID.test(text) && new RegExp(lit).test(text)) || (readsMarker && new RegExp(`\\.version\\s*(?:[!=]==?|,)\\s*${lit}`).test(text));
+  };
+  const RECORD_LABEL = /^(?:kaif|каиф)[\s:]+(?:version|версия)(?!\p{L})|^(?:version|версия)[\s:]+(?:kaif|каиф)(?!\p{L})/iu;   // \b is ASCII-only — never after Cyrillic
   const CAP_FILES = 20;      // cap by FILES, not hits: a hit cap was once exhausted by one
   const byFile = new Map();  // directory before the walk reached the only real public claim (field report Г4)
   // 2.8 (epic SC; origin #77): the files are the ones git sees (kaifWalk) — nested copies once took the whole cap and one
@@ -1236,6 +1248,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
     if (templateShas && templateShas[p] && normSha(text) === templateShas[p]) continue;
     const lines = text.split('\n');
     const namesKaif = !isProse && (/kaif|каиф/i.test(p) || /kaif|каиф/i.test(text));
+    const readsMarker = namesKaif && /kaif\.json/i.test(text);
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (line.includes(toVersion)) continue;
@@ -1251,11 +1264,16 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // right above it records the justification ONCE — <!-- KAIF-VERSION-OK: reason --> — (a TABLE ROW carries it inside the row, in
       // any cell: the line above a row is another row — 2.8, epic SC, finding K-R5) —
       // and the scan converges to zero instead of re-litigating history each time.
-      if (/KAIF-VERSION-OK/i.test(line) || (i > 0 && /KAIF-VERSION-OK/i.test(lines[i - 1]))) continue;
+      // (SC4 F5) the line above a row is ANOTHER row — its marker excuses itself, never the row below it
+      if (/KAIF-VERSION-OK/i.test(line) || (i > 0 && !/^\s*\|/.test(lines[i - 1]) && /KAIF-VERSION-OK/i.test(lines[i - 1]))) continue;
       // a dated record = journal/chronicle/decision row, not a claim (project B Г5, project A гр.4) // source-kept: two independent field reports
       // — judged OUTSIDE parentheses since 2.8 (origin #75): «Version KAIF 2.1 (released 2026-07-31)» in the deployment record is a claim,
       // and it lied four intervals behind the whole-line date rule
-      if (/\b\d{4}-\d{2}/.test(isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : line)) continue;
+      // (SC4 F3) …and a ROW whose label names the framework's version is the record itself, whatever dates its other cells carry
+      // («| **KAIF version** | 2.7 | deployed 2026-09-18 |» stayed silent in a real deployment record); in a script the date is
+      // looked for outside its trailing comment (a pin with a dated comment was silenced)
+      const recordRow = isProse && /^\s*\|/.test(line) && RECORD_LABEL.test(line.split('|')[1].replace(/[*_`]/g, '').trim());
+      if (!recordRow && /\b\d{4}-\d{2}/.test(isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : line.replace(/\s(?:\/\/|#).*$/, ''))) continue;
       if (p === 'STATUS.md' && /предыдущ|previous/i.test(line)) continue;   // history, not a claim
       // Attributions — "(KAIF 1.6)" naming the version a rule arrived with — are history, not
       // staleness (field report Г4: rewriting them would forge it); judge the line with its
@@ -1268,7 +1286,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // a parenthesis WRAPPED onto the next line (N4 · K-R4: «(KAIF 2.6; origin issue #52; the» ⏎ «field owner …) and»): the head of a line
       // up to an unmatched `)` continues a parenthesis from above, and an unclosed `(` runs to the end of its line
       if (isProse) judged = judged.replace(/^[^(]*?\)/, '').replace(/(?<!\])\([^)]*$/, '');
-      const claimed = older.find((v) => isPair(v, judged)) || (namesKaif ? older.find((v) => scriptPin(v, scan)) : undefined);
+      const claimed = older.find((v) => isPair(v, judged)) || (namesKaif ? older.find((v) => scriptPin(v, scan, readsMarker)) : undefined);
       if (!claimed) continue;
       if (!byFile.has(p)) byFile.set(p, []);
       // a token older than the one just replaced is NAMED — the reader must not assume fromVersion

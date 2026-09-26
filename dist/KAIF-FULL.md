@@ -3091,12 +3091,15 @@ back survive three green updates, so a line stuck on an earlier version now name
 `*.mjs/js/ts/sh/ps1/py/yml/toml`, lock files excluded, 2.5; the item is UNCONDITIONAL on a
 version change — an empty scan says `no lines found`, so a silent scanner failure can never pass
 as a clean tree, 2.5; the files are the ones git sees — nested `.claude/worktrees` copies are not the project, a broken link is
-skipped with a name, a directory the walk could not read turns the item into «could NOT see the whole tree», 2.8, epic SC,
+skipped with a name, a directory or a file the walk could not read turns the item into «could NOT see the whole tree», 2.8, epic SC,
 origin issue #77; a line correct by design takes `<!-- KAIF-VERSION-OK: reason -->` on it or on the line above, a table row inside
-the row — the line above a row is another row, 2.8, finding K-R5; a claim is a PAIR — the framework's word and a version that belongs to it, no conjunction between them and, in the
-order «KAIF … 2.7», no other name, a codename before the word being the release's own; a date only inside a parenthesis does not make a
-dated record; a script pin is named in the code's vocabulary — a quoted old version assigned to an identifier that names a pin, in a
-script that names the framework; a parenthesis wrapped onto the next line is stripped on both lines — 2.8, origin issues #75 · #91) ·
+the row — the line above a row is another row, and its marker excuses only itself, 2.8, finding K-R5; a claim is a PAIR — the framework's word and a version that belongs to it, no conjunction between them and, in the
+order «KAIF … 2.7», no other name, a codename before the word being the release's own, while in the reverse order a lowercase word or a
+product name right before the version keeps the version the product's; a date only inside a parenthesis does not make a dated record,
+and a table row whose label names the framework version is the record itself whatever dates its other cells carry; a script pin is
+named in the code's vocabulary — a quoted old version assigned to an identifier that names a pin (`EXPECTED_VERSION`,
+`FRAMEWORK_VERSION`, `KAIF_REQUIRED`), or a `.version` compared with it in a script that reads `kaif.json`, in a script that names the
+framework, a date in its trailing comment silencing nothing; a parenthesis wrapped onto the next line is stripped on both lines — 2.8, origin issues #75 · #91) ·
 language arrivals (NEW files of the release that arrived English on a non-English deployment,
 2.5) · verdict mismatches (files frozen because the recorded rehearsal's wholesale verdict
 differed from this run's — both number sets named, 2.5) · mode switch (on an anonymous →
@@ -3314,8 +3317,8 @@ scenario-lint), and each carries a byte-identical copy of the core's ONE tree wa
 nested worktree copies hid the real file from a scan, and one broken link ended a walk in a stack trace or in a false «clean»): the
 files are the ones `git ls-files --cached --others --exclude-standard` lists (without git — a walk that skips `.git`,
 `node_modules` and `.claude/worktrees`), a nested repository is not the project, a broken link is skipped with a name (`walk:
-skipped N unreadable path(s) — …`), and a directory the walk could not read is FAILED — the check exits 1 instead of reading
-clean. A deployed module cannot import the core (the same reason the voice module copies the token rates), so the origin's build
+skipped N unreadable path(s) — …`), and a directory or a file the walk could not read is FAILED — the check exits 1 instead of
+reading clean, and `kaif-provenance report` refuses instead of saying that nothing awaits acceptance. A deployed module cannot import the core (the same reason the voice module copies the token rates), so the origin's build
 refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:

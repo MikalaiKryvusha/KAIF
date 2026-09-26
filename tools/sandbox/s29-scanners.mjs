@@ -226,6 +226,17 @@ writeFileSync(join(TC, 'RULES.md'), '# Rules\n\nThe rule arrived with this relea
 writeFileSync(join(TC, 'DEPLOYED.md'), '# Deployed\n\nЗдесь развёрнута версия **2.1 «Strong KAIF»**.\n');
 writeFileSync(join(TC, 'SEE.md'), '# See\n\nSee docs/kaif-notes: KAIF 2.2 is deployed here.\n');
 writeFileSync(join(TC, 'tools', 'kaif-sheet.mjs'), "// draws the KAIF sheet\nwriteFileSync(out, '<?xml version=\"1.0\" encoding=\"UTF-8\"?>');\n");
+// SC4 part B (the judge of epic SC: shapes the first cut left silent or named wrongly)
+const C8 = '| **KAIF version** | 2.7 | deployed 2026-09-18 |';                                   // F3: the record row, the date in ANOTHER cell
+const C9 = '| **Версия KAIF** | 2.7 — обновлено с 2.5 2026-09-18 (сессия 12) |';               // F3: the field's own row, the date outside parentheses
+const C11A = '| First deployed | KAIF 1.2 <!-- KAIF-VERSION-OK: history --> |';                // F5: a row that carries its marker
+const C11B = '| KAIF version | 2.7 |';                                                          // F5: …and the row below it, which does not
+writeFileSync(join(TC, 'RECORD.md'), `# Record\n\n| Field | Value |\n|---|---|\n${C8}\n${C9}\n${C11A}\n${C11B}\n`);
+writeFileSync(join(TC, 'tools', 'kaif-pin-dated.mjs'), "// the KAIF gate\nconst EXPECTED_VERSION = '2.3'; // pinned 2026-09-18 after the update\n");   // F3 in a script
+writeFileSync(join(TC, 'tools', 'kaif-framework.mjs'), "// KAIF gate of the project\nexport const FRAMEWORK_VERSION = '2.3';\n");                 // F4
+writeFileSync(join(TC, 'tools', 'kaif-marker.mjs'), "// reads .kaif/kaif.json\nconst marker = readJson('.kaif/kaif.json');\nassert.equal(marker.version, '2.3');\n");   // F4
+writeFileSync(join(TC, 'tools', 'kaif-need.sh'), '# KAIF gate\nKAIF_REQUIRED="2.3"\n');                                            // F4
+writeFileSync(join(TC, 'PRODUCT.md'), '# Product\n\nAcme Space 2.0 — KAIF-project of the team.\n\nThe Acme 2.0 KAIF plugin ships today.\n\nПродукт 2.0 на KAIF собран.\n');   // F6
 r = run(TC, `update --source ${SRC99}`);
 ok(r.code === 0, 'C update →9.9 exit 0', r.out.slice(-300));
 item = staleItem(TC);
@@ -237,6 +248,16 @@ ok(!item.includes('RULES.md'), 'C4 (N4): атрибуция в скобке, п�
 ok(item.includes('DEPLOYED.md:3'), 'C5: «2.1 «Strong KAIF»» — кодовое имя перед словом KAIF не чужое имя: заявление названо', item.split('\n').filter((l) => /DEPLOYED/.test(l)).join(' | ') || item.slice(0, 200));
 ok(item.includes('SEE.md:3'), 'C6: второе слово KAIF в строке судится само (первое, «docs/kaif-notes», его не глотает)', item.split('\n').filter((l) => /SEE\.md/.test(l)).join(' | ') || item.slice(0, 200));
 ok(!item.includes('kaif-sheet.mjs'), 'C7: `version="1.0"` в XML — не пин версии KAIF', item.split('\n').filter((l) => /kaif-sheet/.test(l)).join(' | '));
+
+const cLines = (re) => item.split('\n').filter((l) => re.test(l)).join(' | ') || item.slice(0, 300);
+ok(item.includes('RECORD.md:5 — ' + C8), 'C8 (F3): строка записи о развёртывании «| **KAIF version** | 2.7 | deployed <дата> |» названа — дата в другой ячейке не делает её журналом', cLines(/RECORD/));
+ok(item.includes('RECORD.md:6 — ' + C9), 'C9 (F3): полевая строка «| **Версия KAIF** | 2.7 — обновлено с 2.5 <дата> (…) |» названа', cLines(/RECORD/));
+ok(/tools\/kaif-pin-dated\.mjs:2 — const EXPECTED_VERSION = '2\.3';/.test(item), 'C10 (F3): пин с датой в хвостовом комментарии назван', cLines(/pin-dated/));
+ok(!item.includes('RECORD.md:7') && item.includes('RECORD.md:8 — ' + C11B), 'C11 (F5): маркер строки таблицы прощает её саму и НЕ прощает строку ниже', cLines(/RECORD/));
+ok(/tools\/kaif-framework\.mjs:2/.test(item) && /tools\/kaif-marker\.mjs:3/.test(item) && /tools\/kaif-need\.sh:2/.test(item),
+  'C12 (F4): FRAMEWORK_VERSION · `.version` против старой версии в скрипте, читающем kaif.json · KAIF_REQUIRED — названы', cLines(/kaif-(framework|marker|need)/));
+// (the codename in reverse order stays named — that is C5's own assert, not repeated here: one predicate, one addressee)
+ok(!item.includes('PRODUCT.md'), 'C13 (F6): «Acme Space 2.0 — KAIF-…», «The Acme 2.0 KAIF plugin», «2.0 на KAIF» — версия продукта, не заявление', cLines(/PRODUCT/));
 
 console.log(failures ? `\n❌ s29: ${failures} red` : '\n✅ s29: all green');
 process.exit(failures ? 1 : 0);

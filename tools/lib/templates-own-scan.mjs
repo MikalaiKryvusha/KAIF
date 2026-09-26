@@ -4,6 +4,8 @@
 // inputs, not deployed files) into a temp dir without git, and the dist's OWN core runs its read-only `stale-claims` over it with the
 // NEXT version as the target. Every line it names would be named in EVERY deployment's update task — a template line is identical in
 // all of them — so the build refuses them. A correct historical line is reworded or takes <!-- KAIF-VERSION-OK: reason -->.
+// EVERY FACE (SC4 F14): a deployment in language L carries templates/languages/L/<path> in place of the English <path>; each face is
+// scanned, and a line only a pack face names is labelled `[L] ` (the English face's lines are not repeated per language).
 // [TESTED: 2026-09-26 03:02:57 +03:00 · the build's 5m silent on the built templates; --selftest four answers; probe sc3-guard-mutants
 //  (control 0 · wrapped-parenthesis rule removed → 3 real template lines · planted line → 1); the build on that mutant — exit 1
 //  (03:03:13); report testcases/reports/2026-09-26_sc3-templates-silent-under-own-scan.md]
@@ -20,11 +22,32 @@ export const nextVersion = (version) => { const [a, b] = String(version).split('
 // → { lines: [the named template lines], failed: '' | why the scan itself did not complete }
 export function templatesOwnScan(distDir, version) {
   const bundle = readFileSync(join(distDir, 'KAIF-CORE-BUNDLE.md'), 'utf8');
+  const english = [], packs = new Map();
+  for (const m of bundle.matchAll(BLOCK_RE)) {
+    const [, p, body] = m;
+    if (p === 'kaif-bundle-manifest.json') continue;
+    const lp = /^templates\/languages\/([^/]+)\/(.+)$/.exec(p);
+    if (!lp) { english.push([p, body]); continue; }
+    if (lp[2] === 'skill-triggers.json') continue;   // the owner's trigger phrases — an input of the install, not a deployed file
+    if (!packs.has(lp[1])) packs.set(lp[1], []);
+    packs.get(lp[1]).push([lp[2], body]);
+  }
+  const lines = [], fails = [];
+  const en = scanFace(distDir, version, english);
+  if (en.failed) fails.push(en.failed); else lines.push(...en.lines);
+  for (const [lang, files] of [...packs].sort(([a], [b]) => (a < b ? -1 : 1))) {
+    const face = scanFace(distDir, version, [...english, ...files]);
+    if (face.failed) fails.push(`[${lang}] ${face.failed}`);
+    else for (const l of face.lines) if (!en.lines.includes(l)) lines.push(`[${lang}] ${l}`);
+  }
+  return { lines, failed: fails.join('; ') };
+}
+
+// one face: its files written as a deployment carries them (a later entry of the same path overrides — the pack over the English)
+function scanFace(distDir, version, files) {
   const root = mkdtempSync(join(tmpdir(), 'kaif-own-scan-'));
   try {
-    for (const m of bundle.matchAll(BLOCK_RE)) {
-      const [, p, body] = m;
-      if (p === 'kaif-bundle-manifest.json' || p.startsWith('templates/languages/')) continue;
+    for (const [p, body] of files) {
       mkdirSync(dirname(join(root, p)), { recursive: true });
       writeFileSync(join(root, p), body.replace(/\r\n/g, '\n') + '\n');
     }
