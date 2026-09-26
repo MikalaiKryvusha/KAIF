@@ -989,6 +989,9 @@ errors.push(...scanInvisibleCharacters(ROOT));
       ['is CLOSED only by the command that checks', 'review.mjs <doc> --close` (KAIF 2.7, origin issue #66']],
     ['live page ↔ AGENT_GUIDE: un-showing is a checked action (wrapper)', 'AGENT_GUIDE.md',
       ['ЗАКРЫВАЕТ только команда, которая её проверяет', 'снятие показа — проверенное действие.']],
+    // court RL 2.8, note A: the accepted scenario of the entry cost (origin #99) — the owner sees the line at the chat's closing
+    ['entry cost ↔ /end-chat-soft farewell carries the line (payload)', 'framework/skills/end-chat-soft/SKILL.md',
+      ['It carries the ENTRY COST line `node .kaif/kaif-core.mjs check` printed']],
     ['live page ↔ the machinery ignores the window profile FIRST', 'framework/installer/KAIF-CORE.mjs',
       ["'.kaif/contour-window/',"]],
     ['live page ↔ /fable-judge hunts a page closed past its command', 'framework/skills/fable-judge/SKILL.md',

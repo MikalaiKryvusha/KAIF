@@ -35,7 +35,10 @@
 //                 lagging refusal record may cost a second refusal
 // ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
 //                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
-//                 recorded as reasoning); the one-refusal edition — NOT YET observed live
+//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: six mid-turn
+//                 messages of the owner, seven calls refused in six rounds (one round of two parallel calls), the next call passed
+//                 2–8 s after each round, no message refused twice — the work never stopped (court RL 2.8, B-F3; report
+//                 testcases/reports/2026-09-26_rl2-remaining-seven-findings.md)
 // [TESTED: 2026-09-25 23:35:16 +03:00 · the one-refusal edition: s14 106 green (+2: one refusal delivered → the next call passes; a refusal
 //  for an older message does not cover a newer one), on dist v2.7 19 failures — exactly two new; hooks-mutants 12 of 12 (M12 red exactly on
 //  «one refusal delivered», 23:35:38); on the REAL transcript after the refusals for the 23:33 message: exit 0 — report

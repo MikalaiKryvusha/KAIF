@@ -691,6 +691,8 @@ writeFileSync(join(DIST, 'kaif-manifest.json'), JSON.stringify({
     'KAIF-CORE-BUNDLE.md': 'the COMPLETE deployable set (docs + skills + spheres + optional tool modules + language packs) as FILE: blocks',
     'kaif-manifest.json': 'this file — version, codename, sha256 pins, asset roles',
     'KAIF-FULL.md': 'offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (last-resort synthetic-baseline candidate only)',
+    // court RL 2.8, E-F3: the sixth asset had no role — informative; the machinery splits modules itself, so the loader neither fetches nor pins it
+    'kaif-module-map.json': 'the generated module inventory (signature anchors, classes, sha) — informative: the machinery splits modules itself, so it is neither fetched nor pinned',
   },
 }, null, 2) + '\n');
 

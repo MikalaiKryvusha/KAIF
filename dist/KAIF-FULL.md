@@ -2791,7 +2791,8 @@ the origin's wrapper.
 
 ## 4. Distribution artifacts
 
-Each release attaches five artifacts (their roles are machine-readable in `kaif-manifest.json`):
+Each release attaches six artifacts (their roles are machine-readable in `kaif-manifest.json`; the loader fetches and pins by sha256
+exactly the two it executes — the core and the bundle):
 
 | Artifact | Role |
 |---|---|
@@ -2800,6 +2801,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 | `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, the optional refresh-hooks module, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
 | `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
+| `kaif-module-map.json` | The generated module inventory (§9.1) — informative: the machinery splits modules itself, so it is neither fetched nor pinned. |
 
 ## 5. The document system
 
@@ -4795,7 +4797,8 @@ When the defect did not reproduce on the first attempt, hunt first (`TESTING_FRA
 
 When it did NOT reproduce, the report says so on its own line — `**Status:** not reproduced after the variants below` — and carries
 `## Reproduction hunt`: a table `| # | variant (axis: value) | outcome |`, at least three rows (data and state · position · timing and
-races · entry point · fresh vs accumulated account · stage vs production · network).
+races · entry point · fresh vs accumulated account · stage vs production · network). A report in the owner's language uses that
+language's headings and labels — `node .kaif/tools/kaif-testrun-lint.mjs bug --keywords` prints the ones the check accepts.
 
 ## What to do
 
@@ -6204,6 +6207,8 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+It carries the ENTRY COST line `node .kaif/kaif-core.mjs check` printed (`ℹ entry cost: /resume reads … ~ Nk tokens — X % of …`),
+said in the owner's language: the price of entering the next chat is the owner's to see at every closing (2.8, origin issue #99).
 
 One line of that report is asked BY NAME, because nothing else in the session asks it
 (`AGENT_GUIDE.md` → "a falsehood is corrected where it stands"): **which statement of this session

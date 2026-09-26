@@ -1408,14 +1408,16 @@ const PORTRAIT_FILE = 'AUTHOR_STYLOMETRY.md';
 const lfSha256 = (s) => createHash('sha256').update(String(s).replace(/\r\n/g, '\n'), 'utf8').digest('hex');
 /** The part of a portrait from the snapshot's first line to the end (LF), or null when the line is absent. */
 function snapshotTail(text, head) {
-  const lines = String(text).replace(/\r\n/g, '\n').split('\n');
+  // (court RL 2.8, A-F3) a leading BOM is an encoding mark, not content: with it the first line never equalled the snapshot's head,
+  // and the refusal said the snapshot was missing while it was there
+  const lines = String(text).replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n');
   const at = head ? lines.indexOf(head) : -1;
   return at < 0 ? null : lines.slice(at).join('\n');
 }
 /** A merge left ABOVE the snapshot: the local part — the lines before the snapshot's first line — carries the first line of a public
  *  snapshot (this release's or an earlier layout's, `pin.heads`), so a previous snapshot still sits in the file → that line, or null. */
 function mergedAbove(text, pin) {
-  const lines = String(text).replace(/\r\n/g, '\n').split('\n');
+  const lines = String(text).replace(/^\uFEFF/, '').replace(/\r\n/g, '\n').split('\n');
   const at = pin && pin.head ? lines.indexOf(pin.head) : -1;
   if (at < 0) return null;
   const heads = new Set([pin.head, ...(Array.isArray(pin.heads) ? pin.heads : [])]);

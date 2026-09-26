@@ -3143,7 +3143,8 @@ the origin's wrapper.
 
 ## 4. Distribution artifacts
 
-Each release attaches five artifacts (their roles are machine-readable in `kaif-manifest.json`):
+Each release attaches six artifacts (their roles are machine-readable in `kaif-manifest.json`; the loader fetches and pins by sha256
+exactly the two it executes — the core and the bundle):
 
 | Artifact | Role |
 |---|---|
@@ -3152,6 +3153,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 | `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, the optional refresh-hooks module, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
 | `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
+| `kaif-module-map.json` | The generated module inventory (§9.1) — informative: the machinery splits modules itself, so it is neither fetched nor pinned. |
 
 ## 5. The document system
 
@@ -5160,6 +5162,8 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+It carries the ENTRY COST line `node .kaif/kaif-core.mjs check` printed (`ℹ entry cost: /resume reads … ~ Nk tokens — X % of …`),
+said in the owner's language: the price of entering the next chat is the owner's to see at every closing (2.8, origin issue #99).
 
 One line of that report is asked BY NAME, because nothing else in the session asks it
 (`AGENT_GUIDE.md` → "a falsehood is corrected where it stands"): **which statement of this session
@@ -8703,7 +8707,8 @@ When the defect did not reproduce on the first attempt, hunt first (`TESTING_FRA
 
 When it did NOT reproduce, the report says so on its own line — `**Status:** not reproduced after the variants below` — and carries
 `## Reproduction hunt`: a table `| # | variant (axis: value) | outcome |`, at least three rows (data and state · position · timing and
-races · entry point · fresh vs accumulated account · stage vs production · network).
+races · entry point · fresh vs accumulated account · stage vs production · network). A report in the owner's language uses that
+language's headings and labels — `node .kaif/tools/kaif-testrun-lint.mjs bug --keywords` prints the ones the check accepts.
 
 ## What to do
 
@@ -16746,7 +16751,8 @@ export function parseBug(src) {
   for (const l of lines) {
     if (/^\s*```/.test(l)) { fence = !fence; if (cur) fields[cur] += l + '\n'; continue; }
     const m = !fence && /^#{2,3}\s+(?:\d+[.)]?\s+)?(.+?)\s*$/.exec(l);
-    if (m) { const hit = roleOfBug(m[1]); if (hit) { lang = lang || hit.lang; cur = hit.role; fields[cur] = fields[cur] || ''; } else cur = null; continue; }
+    // (court RL 2.8, D-F6) a bold heading «## **Description**» is the same section
+    if (m) { const hit = roleOfBug(m[1].replace(/^[*_]+\s*|\s*[*_]+$/g, '')); if (hit) { lang = lang || hit.lang; cur = hit.role; fields[cur] = fields[cur] || ''; } else cur = null; continue; }
     if (cur) fields[cur] += l + '\n';
     if (cur !== 'hunt' && !fence) outside += l + '\n';
   }
@@ -16758,17 +16764,27 @@ export function parseBug(src) {
   // A line counts only when its VALUE — up to the next " · **Label" or the line end — carries a letter or a digit: with the
   // placeholders stripped, the unfilled template's "**Build:**  · **Environment:** …" would otherwise pass on the "·" alone.
   const bare = body.replace(PLACEHOLDER, '');
-  const lineValue = (label) => (new RegExp(`\\*\\*(?:${label}):?\\*\\*:?([^\\n]*?)(?=\\s+·\\s+\\*\\*|\\r?\\n|$)`, 'iu').exec(bare) || [])[1];
+  // (court RL 2.8, D-F6) a label alone on its line takes its value from the NEXT line («**Build:**» ⏎ «2.8.1 (a1b2c3d)») — only when
+  // nothing follows the label on its own line, and never a heading or another bold label
+  const lineValue = (label) => {
+    const m = new RegExp(`\\*\\*(?:${label}):?\\*\\*:?([^\\n]*?)(?=\\s+·\\s+\\*\\*|\\r?\\n|$)`, 'iu').exec(bare);
+    if (!m) return undefined;
+    const after = bare.slice(m.index + m[0].length);
+    if (/[\p{L}\p{N}]/u.test(m[1]) || !/^[ \t]*\r?\n/.test(after)) return m[1];
+    const next = after.split(/\r?\n/)[1] || '';
+    return /^\s*(?:#|\*\*[^*\n]+\*\*)/.test(next) ? m[1] : next;
+  };
   const missingLines = kw.lines.filter((label, i) => !/[\p{L}\p{N}]/u.test(lineValue(kw.match.lines[i]) || ''));
   const status = STATUS_LINE.exec(outside.replace(PLACEHOLDER, ''));
   const notRepro = status ? NOT_REPRO.test(status[1]) : NOT_REPRO.test(outside.replace(/`[^`\n]*`/g, ''));
-  // a variant is a first-level list item, or a row of a REAL table (a separator row under its header) whose last cell — the outcome —
-  // says something (TB3 F4: nested sub-items, a header without a separator and rows with an empty outcome were counted)
+  // a variant is a row of a REAL table (a separator row under its header) whose last cell — the outcome — says something (TB3 F4:
+  // nested sub-items, a header without a separator and rows with an empty outcome were counted; court RL 2.8, D-F5: a list item carries
+  // no outcome of its own and was counted — the template's form is the table `| # | variant (axis: value) | outcome |`)
   const rawHunt = fields.hunt || '';
   const realTable = rawHunt.split(/\r?\n/).some((l) => SEPARATOR_ROW.test(l));
   const huntText = stripScaffold(rawHunt);
   const outcome = (l) => { const cells = l.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim()); return cells.length >= 2 && /[\p{L}\p{N}]/u.test(cells[cells.length - 1]); };
-  const variants = huntText.split(/\r?\n/).filter((l) => (realTable && /^\s*\|/.test(l) && outcome(l)) || /^(?:[-*+]|\d+[.)])\s+\S/.test(l)).length;
+  const variants = huntText.split(/\r?\n/).filter((l) => realTable && /^\s*\|/.test(l) && outcome(l)).length;
   return { lang, kw, fields, missing, empty, missingLines, notRepro, variants,
            has: (role) => role in fields && hasContent(fields[role]), text: (role) => stripScaffold(fields[role] || '') };
 }
@@ -16782,7 +16798,7 @@ export const BUG_RULES = [
   { id: 'steps-not-a-path', test: (b) => b.has('steps') && !NUMBERED_ITEM.test(b.text('steps')),
     msg: (b) => `${b.kw.sections[1]} is not a numbered list — the steps are the user's path in the product, one action per item` },
   { id: 'hunt-too-short', test: (b) => b.notRepro && b.variants < HUNT_MIN,
-    msg: (b) => `the report says the defect did not reproduce, and «${b.kw.hunt}» lists ${b.variants} variant(s) — fewer than ${HUNT_MIN} tried: one attempt is never a verdict (TESTING_FRAMEWORK.md → Hunt the reproduction)` },
+    msg: (b) => `the report says the defect did not reproduce, and «${b.kw.hunt}» lists ${b.variants} variant(s) — fewer than ${HUNT_MIN} tried: one attempt is never a verdict (TESTING_FRAMEWORK.md → Hunt the reproduction); a variant is a row of the table | # | variant (axis: value) | outcome | with its outcome filled` },
 ];
 export const BUG_RULE_IDS = BUG_RULES.map((r) => r.id);
 export function lintBug(src) {
@@ -16790,6 +16806,12 @@ export function lintBug(src) {
   return BUG_RULES.filter((rule) => rule.test(b)).map((rule) => ({ id: rule.id, msg: rule.msg(b) }));
 }
 function bugCheck(file) {
+  // (court RL 2.8, D-F6) the words a report may use per language — the template in English cannot carry them, the linter prints them
+  if (file === '--keywords') {
+    for (const [lg, kw] of Object.entries(BUG_KEYWORDS))
+      console.log(`${lg}: sections ${kw.sections.map((s) => `## ${s}`).join(' · ')} · hunt ## ${kw.hunt} · lines ${kw.lines.map((l) => `**${l}:**`).join(' · ')}`);
+    return;
+  }
   if (!file || !existsSync(file)) { console.error(`✖ testrun-lint bug: no such report: ${file || '(none named)'} — usage: kaif-testrun-lint.mjs bug <report.md>`); process.exit(1); }
   if (!statSync(file).isFile()) { console.error(`✖ testrun-lint bug: ${file} is not a file — name ONE report: kaif-testrun-lint.mjs bug <report.md>`); process.exit(1); }
   const found = lintBug(readFileSync(file, 'utf8'));
@@ -16992,6 +17014,17 @@ function selftest() {
       .replace(/^## (Expected result|Ожидаемый результат)$/m, (h, t) => (lang === 'en' ? '## 3 Expected results' : '## 3 Ожидаемые результаты'))
       .replace(/^## (Reproduction hunt|Охота за шагами)$/m, (h, t) => `### ${t}`)).map((x) => x.id);
     say(heads.length === 0, `${lang} bug: «## 3 Expected results» and an H3 hunt — the same sections (got [${heads.join(',')}])`);
+    // court RL 2.8, D-F5: a list of three tries carries no outcome of its own — no variants → [hunt-too-short]
+    const listHunt = lintBug(renderBug(lang, {}, null, true) + `## ${BUG_KEYWORDS[lang].hunt}\n\n- ${lang === 'en' ? 'network: offline' : 'сеть: офлайн'}\n- ${lang === 'en' ? 'position: item 3' : 'позиция: товар 3'}\n- ${lang === 'en' ? 'account: fresh' : 'учётка: свежая'}\n`).map((x) => x.id);
+    say(listHunt.length === 1 && listHunt[0] === 'hunt-too-short', `${lang} bug: a hunt of three LIST items without outcomes → [hunt-too-short] (got [${listHunt.join(',')}])`);
+    // court RL 2.8, D-F6: bold headings are the same sections; a label alone on its line takes the next line as its value; labels
+    // stacked with nothing under them still name all three
+    const boldHeads = lintBug(renderBug(lang).replace(/^## (.+)$/gm, '## **$1**')).map((x) => x.id);
+    say(boldHeads.length === 0, `${lang} bug: «## **${BUG_KEYWORDS[lang].sections[0]}**» — the same sections (got [${boldHeads.join(',')}])`);
+    const nextLine = lintBug(renderBug(lang, { lines: BUG_KEYWORDS[lang].lines.map((l) => `**${l}:**\n${l === BUG_KEYWORDS[lang].lines[0] ? '2.8.1 (a1b2c3d)' : 'Android 14 · stage'}\n`).join('\n') })).map((x) => x.id);
+    say(nextLine.length === 0, `${lang} bug: a label alone on its line, the value on the next → clean (got [${nextLine.join(',')}])`);
+    const stacked = lintBug(renderBug(lang, { lines: BUG_KEYWORDS[lang].lines.map((l) => `**${l}:**`).join('\n') }));
+    say(stacked.length === 1 && stacked[0].id === 'missing-line', `${lang} bug: three labels stacked with no values → exactly [missing-line] (got [${stacked.map((x) => x.id).join(',')}])`);
     // The unfilled template's lines row — labels with placeholders only — names all three lines, never passes on the separators.
     const bareLines = lintBug(renderBug(lang, { lines: BUG_KEYWORDS[lang].lines.map((l) => `**${l}:** <${l.toLowerCase()}>`).join(' · ') }));
     say(bareLines.length === 1 && bareLines[0].id === 'missing-line' && BUG_KEYWORDS[lang].lines.every((l) => bareLines[0].msg.includes(`**${l}:**`)),
@@ -17751,7 +17784,10 @@ if (IS_MAIN) {
 //                 lagging refusal record may cost a second refusal
 // ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
 //                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
-//                 recorded as reasoning); the one-refusal edition — NOT YET observed live
+//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: six mid-turn
+//                 messages of the owner, seven calls refused in six rounds (one round of two parallel calls), the next call passed
+//                 2–8 s after each round, no message refused twice — the work never stopped (court RL 2.8, B-F3; report
+//                 testcases/reports/2026-09-26_rl2-remaining-seven-findings.md)
 // [TESTED: 2026-09-25 23:35:16 +03:00 · the one-refusal edition: s14 106 green (+2: one refusal delivered → the next call passes; a refusal
 //  for an older message does not cover a newer one), on dist v2.7 19 failures — exactly two new; hooks-mutants 12 of 12 (M12 red exactly on
 //  «one refusal delivered», 23:35:38); on the REAL transcript after the refusals for the 23:33 message: exit 0 — report

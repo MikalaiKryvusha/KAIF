@@ -87,7 +87,9 @@ const MUTANTS = [
     red: ['en bug: mutation steps-not-a-path', 'ru bug: mutation steps-not-a-path'], flips: ['no-steps'] },
   { name: 'M6 «not reproduced» never read', from: 'const notRepro = status ?', to: 'const notRepro = false; const _unread = status ?',
     // TB3: every selftest case of the verdict (the three forms per language and the hole in the hunt) depends on the same read
-    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', ...FORM_CASES, 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'],
+    // court RL 2.8, D-F5: the list hunt of three tries is red only through the verdict — unread, it passes
+    red: ['en bug: mutation hunt-too-short', 'ru bug: mutation hunt-too-short', ...FORM_CASES, 'en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome',
+      'en bug: a hunt of three LIST items', 'ru bug: a hunt of three LIST items'],
     flips: ['hunt-2', 'hunt-none', 'ru-form-1'] },
   { name: 'M8 one phrase per language again (TB3 F1 — «не воспроизводится», «Could not reproduce» pass without a hunt)',
     from: "const NOT_REPRO = new RegExp(`(?<![\\\\p{L}])(?:${Object.values(BUG_KEYWORDS).flatMap((k) => k.notReproduced).join('|')})`, 'iu');",
@@ -98,14 +100,24 @@ const MUTANTS = [
     from: 'const notRepro = status ? NOT_REPRO.test(status[1]) : ', to: 'const notRepro = ',
     red: ['en bug: the Status line says reproduced', 'ru bug: the Status line says reproduced'], flips: [] },
   { name: 'M10 a hunt row with an empty outcome counts again (TB3 F4)',
-    from: '(realTable && /^\\s*\\|/.test(l) && outcome(l))', to: '(realTable && /^\\s*\\|/.test(l))',
+    // court RL 2.8, D-F5: the list branch is gone — the anchor is the table rule alone
+    from: 'realTable && /^\\s*\\|/.test(l) && outcome(l)).length', to: 'realTable && /^\\s*\\|/.test(l)).length',
     red: ['en bug: a hunt row with an empty outcome', 'ru bug: a hunt row with an empty outcome'], flips: [] },
   { name: 'M11 only «## Title» headings again (TB3 F5 — «## 3 Expected results» and an H3 hunt were missing sections)',
-    from: 'const m = !fence && /^#{2,3}\\s+(?:\\d+[.)]?\\s+)?(.+?)\\s*$/.exec(l);\n    if (m) { const hit = roleOfBug(m[1]);',
-    to: 'const m = !fence && /^##\\s+(?:\\d+[.)]\\s*)?(.+?)\\s*$/.exec(l);\n    if (m) { const hit = roleOfBug(m[1]);',
+    // court RL 2.8, D-F6: the heading line now strips bold before the role — the anchor is the heading regex alone
+    from: 'const m = !fence && /^#{2,3}\\s+(?:\\d+[.)]?\\s+)?(.+?)\\s*$/.exec(l);',
+    to: 'const m = !fence && /^##\\s+(?:\\d+[.)]\\s*)?(.+?)\\s*$/.exec(l);',
     red: ['en bug: «## 3 Expected results»', 'ru bug: «## 3 Expected results»'], flips: [] },
   { name: "M7 the hunt's own rows read as the verdict", from: "if (cur !== 'hunt' && !fence) outside += l + '\\n';", to: "if (!fence) outside += l + '\\n';",
     red: ['en bug: REPRODUCED after two tries', 'ru bug: REPRODUCED after two tries'], flips: ['found-on-2nd'] },
+  // ── court RL 2.8 (D-F5 · D-F6): each new rule broken once ──
+  { name: 'M12 a bold heading is no section again (D-F6)', from: String.raw`roleOfBug(m[1].replace(/^[*_]+\s*|\s*[*_]+$/g, ''))`, to: 'roleOfBug(m[1])',
+    red: ['en bug: «## **Description**»', 'ru bug: «## **Описание**»'], flips: [] },
+  { name: 'M13 the value on the next line is not read again (D-F6)', from: String.raw`return /^\s*(?:#|\*\*[^*\n]+\*\*)/.test(next) ? m[1] : next;`, to: 'return m[1];',
+    red: ['en bug: a label alone on its line', 'ru bug: a label alone on its line'], flips: [] },
+  { name: 'M14 a list item counts as a variant again (D-F5)', from: String.raw`.filter((l) => realTable && /^\s*\|/.test(l) && outcome(l)).length`,
+    to: String.raw`.filter((l) => (realTable && /^\s*\|/.test(l) && outcome(l)) || /^(?:[-*+]|\d+[.)])\s+\S/.test(l)).length`,
+    red: ['en bug: a hunt of three LIST items', 'ru bug: a hunt of three LIST items'], flips: [] },
 ];
 
 const judge = (name, src, m) => {

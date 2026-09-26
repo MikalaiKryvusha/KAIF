@@ -446,9 +446,12 @@ await wait(CLOSE_QUIET_MS + 500); // the page grows older than the threshold
 await fetch(url1 + 'alive?i=500000&d=0&s=1');
 await wait(300);
 r = runGen(D, [DOC, '--close']);
-await wait(1500);
+// суд RL 2.8, B-F4: мигающий красный — фиксированные 1,5 с иногда меньше, чем нужно генератору, чтобы завершиться самому, а провал не
+// печатал вывод генератора; теперь ждём его выхода и снятия замка до 10 с, и провал называет, что генератор сказал
+for (let i = 0; i < 50 && (gen1.exit() === null || existsSync(DLOCK)); i++) await wait(200);
 ok(r.code === 0 && /^closed interviews\/interview_066_probe\.md/m.test(r.out) && gen1.exit() === 2 && /closed by the checked command/.test(gen1.out()) && !existsSync(DLOCK),
-   's22 D: пульс «ввода не было 500 с, записано» → --close закрывает: генератор завершился САМ кодом 2 («closed by the checked command»), замок снят', 'exit ' + r.code + ' gen ' + gen1.exit() + ': ' + r.out.slice(-300));
+   's22 D: пульс «ввода не было 500 с, записано» → --close закрывает: генератор завершился САМ кодом 2 («closed by the checked command»), замок снят',
+   'exit ' + r.code + ' gen ' + gen1.exit() + ' lock ' + existsSync(DLOCK) + ': ' + r.out.slice(-300) + ' | generator: ' + gen1.out().slice(-400));
 // (5) LP3 / критерий 19: ответ переживает смерть сервера — headless-страница на ПРОФИЛЕ ПРОЕКТА печатает ответ, сервер убит,
 //     «Записать» → локальная запись; браузер убит; `--queue --list` забирает ответ безоконно на том же порту → decision.json
 const exe = findBrowser();

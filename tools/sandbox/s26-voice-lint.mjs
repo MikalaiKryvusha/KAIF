@@ -337,6 +337,12 @@ ok(r.code !== 0 && /the release pins/.test(r.out), 's26 checkpoint owner-voice-c
 writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), LOCAL + SNAP);
 r = runC(PA, 'checkpoint owner-voice-core');
 ok(r.code === 0 && /equals the release snapshot byte for byte/.test(r.out), 's26 checkpoint owner-voice-core после замены (преамбула + слепок байт в байт) — принят', r.out.slice(-400));
+// суд RL 2.8, A-F3: слепок, сохранённый с меткой кодировки (BOM) в начале файла, — тот же слепок: прежде первая строка с BOM не равнялась
+// первой строке слепка, и отказ говорил «строки слепка нет», хотя она была
+writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), String.fromCharCode(0xFEFF) + SNAP);
+r = runC(PA, 'checkpoint owner-voice-core');
+ok(r.code === 0 && /equals the release snapshot byte for byte/.test(r.out), 's26 checkpoint owner-voice-core (A-F3): слепок с BOM в начале файла — принят, не «строки нет»', r.out.slice(-400));
+writeFileSync(join(PA, 'AUTHOR_STYLOMETRY.md'), LOCAL + SNAP);
 // (д) слияние НАД слепком (форма судьи VO4): прежний портрет целиком оставлен выше слепка релиза — хвост от первой строки слепка равен
 // пину, но локальная часть несёт первую строку публичного слепка прежней раскладки — это слияние, а не замена.
 const OLD1X = LOCAL + HEAD_1X + '\n\n| **Версия ядра** | **krinik-stylometry 1.2** (объявлена ядром) |\n\nстарое правило\n';

@@ -164,7 +164,8 @@ When the defect did not reproduce on the first attempt, hunt first (`TESTING_FRA
 
 When it did NOT reproduce, the report says so on its own line — `**Status:** not reproduced after the variants below` — and carries
 `## Reproduction hunt`: a table `| # | variant (axis: value) | outcome |`, at least three rows (data and state · position · timing and
-races · entry point · fresh vs accumulated account · stage vs production · network).
+races · entry point · fresh vs accumulated account · stage vs production · network). A report in the owner's language uses that
+language's headings and labels — `node .kaif/tools/kaif-testrun-lint.mjs bug --keywords` prints the ones the check accepts.
 
 ## What to do
 

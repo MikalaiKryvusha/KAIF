@@ -59,7 +59,8 @@ the origin's wrapper.
 
 ## 4. Distribution artifacts
 
-Each release attaches five artifacts (their roles are machine-readable in `kaif-manifest.json`):
+Each release attaches six artifacts (their roles are machine-readable in `kaif-manifest.json`; the loader fetches and pins by sha256
+exactly the two it executes — the core and the bundle):
 
 | Artifact | Role |
 |---|---|
@@ -68,6 +69,7 @@ Each release attaches five artifacts (their roles are machine-readable in `kaif-
 | `KAIF-CORE-BUNDLE.md` | The COMPLETE deployable set: documents, skills, spheres, optional tool modules, the optional refresh-hooks module, language packs. |
 | `kaif-manifest.json` | Version, codename, sha256 pins of the fetched pair, asset roles. |
 | `KAIF-FULL.md` | The offline fallback core — a SUBSET (no language packs/spheres/references); not an authoritative diff baseline (only a last-resort candidate for a synthetic one, §10.4). |
+| `kaif-module-map.json` | The generated module inventory (§9.1) — informative: the machinery splits modules itself, so it is neither fetched nor pinned. |
 
 ## 5. The document system
 

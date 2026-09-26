@@ -122,6 +122,8 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+It carries the ENTRY COST line `node .kaif/kaif-core.mjs check` printed (`ℹ entry cost: /resume reads … ~ Nk tokens — X % of …`),
+said in the owner's language: the price of entering the next chat is the owner's to see at every closing (2.8, origin issue #99).
 
 One line of that report is asked BY NAME, because nothing else in the session asks it
 (`AGENT_GUIDE.md` → "a falsehood is corrected where it stands"): **which statement of this session
