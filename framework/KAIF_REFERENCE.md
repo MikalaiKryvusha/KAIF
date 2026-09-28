@@ -594,7 +594,7 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Five scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
@@ -602,9 +602,11 @@ session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `re
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
-typed mid-turn has no TEXT answer after it in the transcript → ONE tool call is refused, the reason quotes the owner's words; Claude
-Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
-on `Stop`, and the gate has none — it refuses one call per owner's message and the work goes on; injections are orders, never
+typed mid-turn has no TEXT answer after it in the transcript → ONE tool call is refused, the reason quotes the owner's words; before refusing it re-reads the lagging transcript (2.9); Claude
+Code only), `stop-owner-answer.mjs` (2.9, epic OA, event `Stop`: an owner's mid-turn message of this turn, and the final response —
+`last_assistant_message`, handed over without the transcript — does not open an answer with its first words → ONE soft block, the
+reason quotes the owner's words; an answer ending with a last line `⏩ <next step>` → the hook resumes the work; Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
+on the STATUS guard, and the two owner-word hooks have none — it refuses one call per owner's message and the work goes on; injections are orders, never
 document bodies. Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the

@@ -15,16 +15,17 @@ lacking them.
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
-| `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | ONCE per owner's message: the first tool call after it with no text answer yet is refused, the next passes — the work goes on (the origin owner's word, 2026-09-25); a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, continue, repeat the answer in the turn's final text |
+| `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | ONCE per owner's message: the first tool call after it with no text answer yet is refused, the next passes — the work goes on (the origin owner's word, 2026-09-25); a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, continue, repeat the answer in the turn's final text; before refusing it re-reads the transcript twice, 200 ms apart — the vendor writes it asynchronously (2.9, epic OA) |
+| `stop-owner-answer.mjs` (2.9, epic OA) | `Stop` | an owner's message typed mid-turn in THIS turn, and the turn's final response (`last_assistant_message`) does not open an answer to it with its first words (normalised whole words) | **once per stop** — `stop_hook_active` (a continuation) is silent, so it never loops | soft block: the reason quotes the owner's words — answer them now in a response of its own (no tool call after it); a response that answers and ends with a last line `⏩ <next step>` → block «continue» — the work goes on without the owner's next word |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
-exists where repeating would be noise (`Stop` fires at most once per session) and is absent ON
+exists where repeating would be noise (`stop-status-guard.mjs` fires at most once per session) and is absent ON
 PURPOSE where repeating is the point — a reminder that goes away unobeyed teaches that it can be
 ignored, so the timer repeats until the marker is re-stamped, and every message that opens with
 the resume word is a separate order; injections are ORDERS to re-read, never document bodies
 (the output cap is 10 000 characters, and pasting docs would spend the context the refresh
-restores); `Stop` is the only blocking hook. A hook never breaks the session: on any internal
+restores); the blocking hooks are the two `Stop` ones and the owner-word call gate, each at most once per trigger. A hook never breaks the session: on any internal
 error it exits 0 silently.
 
 ## Opt-in — an explicit owner step
@@ -97,6 +98,14 @@ APIs were still moving through beta across the industry when this table was writ
 session transcript (`transcript_path`), which the vendor says «is written asynchronously and may lag»: one call may pass before a fresh
 message is visible, one reminder may repeat right after an answer. The other systems' samples do not wire it — their transcript shape was
 not read: **not verified**.
+
+**The sixth hook — `stop-owner-answer.mjs` (2.9, epic OA) — is wired for Claude Code only** (`Stop` in `settings-fragment.json`). It reads
+the final response from `last_assistant_message`, which the vendor hands to `Stop` without the transcript; a client without that field is
+not judged. It checks FORM — the owner's first words open the answer — and never meaning: the judge reads the answer. Why a response of its own: in the
+origin (2026-09-28) an answer written before a tool call was recorded as reasoning and never reached the chat, while a response ending
+without a tool call did; its last line `⏩ <next step>` asks the hook to resume the work (the vendor's 8-continuation cap bounds it, and it is
+honoured only in a turn the owner wrote into). The other systems'
+samples do not wire it: **not verified**.
 
 **The fourth hook — `prompt-resume-word.mjs` (2.7, epic RS) — is wired for Claude Code only.** It
 needs the prompt TEXT in the event (`prompt`), and only the Claude Code contract was read to carry

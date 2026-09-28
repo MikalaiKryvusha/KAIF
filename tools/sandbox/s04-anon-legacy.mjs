@@ -518,7 +518,10 @@ console.log('\n=== S17 (#107): сборка между релизами — ма
   // поля не знает), ложного происхождения на следующем обновлении не даёт
   { const mk = markerOf(S17); mk.prerelease = mk.version; writeFileSync(join(S17, '.kaif', 'kaif.json'), JSON.stringify(mk, null, 2) + '\n'); }
   rmSync(join(S17, 'KAIF_UPDATE_TASK.md'), { force: true });   // the previous interval's task, discarded consciously (the core refuses otherwise)
-  r = run(S17, `update --source ${SRC}`);
+  // The source is a RELEASE build of its own (9.9), not the current dist: between releases the dist is itself a pre-release (2.9, epic OA —
+  // the first payload change after v2.8 made it one) and legitimately writes its own `prerelease`; the case judges the LEFTOVER field.
+  const SRC_R2 = mkSrc17('rel2', (meta) => { meta.version = '9.9'; meta.build = { sourceTree: 'c'.repeat(64), prerelease: null }; });
+  r = run(S17, `update --source ${SRC_R2}`);
   const t17b2 = existsSync(join(S17, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(S17, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
   ok(r.code === 0 && !t17b2.includes('- **prerelease-origin**') && !('prerelease' in markerOf(S17)),
      'S17 (#107, K-F2): prerelease не новее версии маркера — следующее обновление происхождения не называет, поле снято',

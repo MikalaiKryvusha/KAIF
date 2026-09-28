@@ -27,9 +27,10 @@
 //                 owner's words; only reasoning and calls after it (the 19:32 shape) → 2; a text after it → 0; a peer → 0; a subagent
 //                 call → 0; no transcript → 0; one refusal delivered → the next call passes; a refusal for an older message does not
 //                 cover a newer one; red on v2.7 (no such hook); hooks-mutants M11 (reasoning counted as an answer), M12 (the refusal
-//                 repeated forever — the stop the owner rejected)
-// GAP:            the transcript lags — one call may pass before the message is visible (the next call is gated), one reminder may repeat
-//                 right after an answer; a text that does NOT answer passes (the judge reads it — AGENT_GUIDE, the mid-turn rule); agent
+//                 repeated forever — the stop the owner rejected); 2.9 (epic OA): an answer that lands in the transcript 150 ms after
+//                 the call → the re-read passes it (red on v2.8; mutant M13 — the re-read dropped)
+// GAP:            the transcript lags — one call may pass before the message is visible (the next call is gated); a reminder right after
+//                 an answer is refused only if the answer lands later than the two re-reads (2 × 200 ms, 2.9); a text that does NOT answer passes (the judge reads it — AGENT_GUIDE, the mid-turn rule); agent
 //                 systems without a PreToolUse event; parallel calls of one message are refused together (one round); an answer
 //                 written between calls may still land as reasoning — the order makes the final text of the turn carry it; a
 //                 lagging refusal record may cost a second refusal
@@ -52,6 +53,9 @@ import { readFileSync, openSync, readSync, fstatSync, closeSync } from 'node:fs'
 
 const TAIL_BYTES = 4 * 1024 * 1024;  // the tail of the transcript that is read — a mid-turn message is recent by construction
 const QUOTE_CHARS = 300;             // how much of the owner's message is quoted back to the agent
+const RE_READS = 2;                  // re-reads of a lagging transcript before a refusal (2.9, epic OA)
+const RE_READ_MS = 200;              // the pause before each re-read — the whole wait stays far below the hook's 10 s timeout
+const PAUSE = new Int32Array(new SharedArrayBuffer(4)); // a synchronous sleep for the re-read (Atomics.wait on a private cell)
 
 function readTail(path) {
   const fd = openSync(path, 'r');
@@ -73,28 +77,40 @@ try {
   try { input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}'); } catch { process.exit(0); } // BOM: origin bug 119
   if (input.agent_id) process.exit(0);           // a subagent's call — the owner is answered by the main thread
   if (!input.transcript_path) process.exit(0);
-  const recs = readTail(String(input.transcript_path)).split('\n').map((l) => { try { return JSON.parse(l); } catch { return null; } });
-  let owner = -1, words = '', at = '';
-  for (let i = recs.length - 1; i >= 0; i--) {  // the LATEST owner's message typed mid-turn
-    const r = recs[i];
-    if (!r || r.type !== 'attachment' || !r.attachment || r.attachment.type !== 'queued_command') continue;
-    const who = (r.attachment.origin && r.attachment.origin.kind) || r.attachment.commandMode || '';
-    if (who !== 'human') continue;
-    owner = i; words = flat(r.attachment.prompt).replace(/\s+/g, ' ').trim(); at = r.timestamp || '';
-    break;
-  }
-  if (owner < 0) process.exit(0);
-  for (let k = owner + 1; k < recs.length; k++) { // answered = an assistant TEXT block after it (reasoning is not delivered)
-    const x = recs[k];
-    if (refusedHere(x)) process.exit(0); // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)
-    const c = x && x.type === 'assistant' && x.message && Array.isArray(x.message.content) ? x.message.content : [];
-    if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) process.exit(0);
-  }
+  // null = pass; otherwise the latest owner's mid-turn message with no text answer and no refusal after it
+  const scan = () => {
+    const recs = readTail(String(input.transcript_path)).split('\n').map((l) => { try { return JSON.parse(l); } catch { return null; } });
+    let owner = -1, words = '', at = '';
+    for (let i = recs.length - 1; i >= 0; i--) {  // the LATEST owner's message typed mid-turn
+      const r = recs[i];
+      if (!r || r.type !== 'attachment' || !r.attachment || r.attachment.type !== 'queued_command') continue;
+      const who = (r.attachment.origin && r.attachment.origin.kind) || r.attachment.commandMode || '';
+      if (who !== 'human') continue;
+      owner = i; words = flat(r.attachment.prompt).replace(/\s+/g, ' ').trim(); at = r.timestamp || '';
+      break;
+    }
+    if (owner < 0) return null;
+    for (let k = owner + 1; k < recs.length; k++) { // answered = an assistant TEXT block after it (reasoning is not delivered)
+      const x = recs[k];
+      if (refusedHere(x)) return null; // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)
+      const c = x && x.type === 'assistant' && x.message && Array.isArray(x.message.content) ? x.message.content : [];
+      if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) return null;
+    }
+    return { words, at };
+  };
+  // The vendor writes the transcript asynchronously — «may lag the in-memory conversation» (researches/36): an answer written in the
+  // same message as this call can land a moment later (origin session 76, 2026-09-28 17:12:40Z — refused with the answer already
+  // written; field: KAGO R13). Re-read before refusing (2.9, epic OA).
+  let hit = scan();
+  for (let n = 0; hit && n < RE_READS; n++) { Atomics.wait(PAUSE, 0, 0, RE_READ_MS); hit = scan(); }
+  if (!hit) process.exit(0);
+  const { words, at } = hit;
   process.stderr.write(GATE_MARK + (at ? ' (' + at + ')' : '') + ' and there is no TEXT answer after it yet: «'
-    + words.slice(0, QUOTE_CHARS) + (words.length > QUOTE_CHARS ? '…' : '') + '». Answer it NOW AS TEXT in the chat, by its kind: a question →'
-    + ' the answer; «stop» → stop in this turn and say where; «switch to Y» → a PARKED: line first, then Y; a note → record it. Then CONTINUE'
-    + ' the work — this gate refuses only this one call for this message. A text between tool calls may be recorded as reasoning and never'
-    + ' reach the chat: repeat the answer in the final text of the turn, which is delivered. (AGENT_GUIDE → «The owner\'s word mid-turn»;'
-    + ' origin bug 123.)\n');
+    + words.slice(0, QUOTE_CHARS) + (words.length > QUOTE_CHARS ? '…' : '') + '». Answer it NOW AS TEXT in a response of its own — no tool call after it: a text between tool calls may be recorded as'
+    + ' reasoning and never reach the chat. Open it with the message\'s first words in «…», by its kind: a question → the answer; «stop» →'
+    + ' stop in this turn and say where; «switch to Y» → a PARKED: line first, then Y; a note → record it. If work remains, make its last'
+    + ' line «\u23E9 <next step>» — the end-of-response hook (stop-owner-answer) resumes the work; where it is not wired, CONTINUE after'
+    + ' the answer and repeat it in the final text of the turn. This gate refuses only this one call for this message. (AGENT_GUIDE →'
+    + ' «The owner\'s word mid-turn»; origin bug 123.)\n');
   process.exit(2);
 } catch { process.exit(0); }

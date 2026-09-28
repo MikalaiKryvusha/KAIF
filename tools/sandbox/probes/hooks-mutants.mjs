@@ -6,7 +6,7 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite once per mutant (twelve today) — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (twenty-one today) — run it ALONE, not beside the polygon (origin bug 109).
 // [TESTED: 2026-09-25 22:08:57 +03:00 · ELEVEN mutants after the owner-word gate (M11 reasoning counted as an answer): «11 mutants red
 //  exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
 // [TESTED: 2026-09-25 17:43 +03:00 · TEN mutants after OW2 (M8 the imperative before the word dropped · M9 the heading exclusion dropped · M10 the stop
@@ -51,7 +51,7 @@ const MUTANTS = [
   { name: 'M3 README: the POSIX redirect offered to the PowerShell reader again (bug 121 #1)',
     dest: '.kaif/hooks/README.md',
     fn: (b) => b.replace("'' | node .kaif/hooks/prompt-refresh-timer.mjs", 'node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null'),
-    expect: ['s14 проба README [powershell] строка 1:'] },
+    expect: ['s14 проба README [powershell] строка 1:'], platform: 'win32' }, // the suite runs the powershell block only on Windows
   { name: 'M4 resume-word: the byte-order-mark strip removed from ONE hook (bug 119 #3)',
     dest: '.kaif/hooks/prompt-resume-word.mjs',
     fn: (b) => b.replace("readFileSync(0, 'utf8').replace(/^" + BOM_ESCAPE + "/, '')", "readFileSync(0, 'utf8')"),
@@ -93,18 +93,57 @@ const MUTANTS = [
   // owner's message has reasoning after it and no text
   { name: 'M11 owner-word: reasoning counted as an answer (the 19:32 threat — an answer composed and never emitted passes)',
     dest: '.kaif/hooks/pretool-owner-word.mjs',
-    fn: (b) => b.replace("if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) process.exit(0);", 'if (c.length > 0) process.exit(0);'),
+    fn: (b) => b.replace("if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) return null;", 'if (c.length > 0) return null;'),
     expect: ['s14 owner-word: сообщение владельца посреди хода без ТЕКСТА', 's14 owner-word: после сообщения — только размышления', 's14 owner-word: старое сообщение отвечено, новое — нет', 's14 owner-word: отказ по старому сообщению не покрывает новое'] },
   // the owner's word 2026-09-25 23:28 +03:00 — answer by the gate and do not stop the work: a gate that refuses forever is the stop he rejected
   { name: 'M12 owner-word: the one refusal per message dropped (every call refused until a text shows — the stop the owner rejected)',
     dest: '.kaif/hooks/pretool-owner-word.mjs',
-    fn: (b) => b.replace("    if (refusedHere(x)) process.exit(0); // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)\n", ''),
+    fn: (b) => b.replace("      if (refusedHere(x)) return null; // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)\n", ''),
     expect: ['s14 owner-word: один отказ по сообщению доставлен'] },
+  // 2.9, epic OA (bug 123 — field recurrence on 2.8, 108 calls; researches/36): the re-read of a lagging transcript and the end-of-turn check.
+  { name: 'M13 owner-word: the re-read of a lagging transcript dropped (an answer written in the same message as the call is refused again)',
+    dest: '.kaif/hooks/pretool-owner-word.mjs',
+    fn: (b) => b.replace('const RE_READS = 2;', 'const RE_READS = 0;'),
+    expect: ['s14 owner-word: ответ ложится в запись через 150 мс'] },
+  { name: 'M14 stop-owner-answer: the vendor loop guard dropped (a continuation blocks again — the loop the 8-cap would end)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace('if (missing.length && input.stop_hook_active !== true) {', 'if (missing.length) {'),
+    expect: ['s14 stop-owner-answer: stop_hook_active'] },
+  { name: 'M15 stop-owner-answer: the turn boundary dropped (a word of a PREVIOUS turn is judged in this one)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace('for (let i = recs.length - 1; i >= 0; i--) if (opensTurn(recs[i])) { start = i; break; }', ''),
+    expect: ['s14 stop-owner-answer: слово владельца ПРОШЛОГО хода'] },
+  { name: 'M16 stop-owner-answer: the whole-word match dropped («го» found inside «говорю»)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace("said.includes(' ' + k.join(' ') + ' ')", "said.includes(k.join(' '))"),
+    expect: ['s14 stop-owner-answer: «го» внутри «говорю»'] },
+  { name: 'M17 stop-owner-answer: a peer counted as the owner (another session\'s message demands an answer)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace("    if (who !== 'human') continue;\n", ''),
+    expect: ['s14 stop-owner-answer: сообщение соседней сессии'] },
+  { name: 'M18 stop-owner-answer: the answer check always passes (the 108-call recurrence ends the turn unanswered)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace('if (missing.length && input.stop_hook_active !== true) {', 'if (false) {'),
+    expect: ['s14 stop-owner-answer: слово владельца посреди хода, итоговый ответ его не открывает', 's14 stop-owner-answer: «го» внутри «говорю»', 's14 stop-owner-answer: два слова владельца', 's14 stop-owner-answer: после отзыва другого стража'] },
+  { name: 'M19 stop-owner-answer: another hook\'s feedback opens a turn again (the live 18:24 miss — the owner\'s words fall into «the previous turn»)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace(' && !!(r.promptSource || r.origin);', ';'),
+    expect: ['s14 stop-owner-answer: отзыв ДРУГОГО стража', 's14 stop-owner-answer: после отзыва другого стража'] },
+  { name: 'M20 stop-owner-answer: the continue mark ignored (the owner had to write «go» — 2026-09-28 18:25)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace('if (!missing.length && lastLine.startsWith(CONTINUE_MARK))', 'if (false)'),
+    expect: ['s14 stop-owner-answer: ответ открыт словами владельца и последняя строка', 's14 stop-owner-answer: отзыв ДРУГОГО стража'] },
+  { name: 'M21 stop-owner-answer: the continue mark honoured without an owner\'s word (the agent could keep itself going)',
+    dest: '.kaif/hooks/stop-owner-answer.mjs',
+    fn: (b) => b.replace('  if (!owner.length) process.exit(0);\n', ''),
+    expect: ['s14 stop-owner-answer: «⏩» без слова владельца'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));
-let bad = 0;
+let bad = 0, skipped = 0;
 for (const m of MUTANTS) {
+  // a mutant whose addressee the suite runs on one platform only is NOT proven elsewhere — named, never counted as red (2.9, epic OA)
+  if (m.platform && m.platform !== process.platform) { skipped++; console.log(`SKIP ${m.name}\n    its addressee runs on ${m.platform} only — not provable on ${process.platform}`); continue; }
   const dist = join(root, 'dist');
   rmSync(dist, { recursive: true, force: true });
   cpSync(join(REPO, 'dist'), dist, { recursive: true });
@@ -122,5 +161,6 @@ for (const m of MUTANTS) {
   for (const r of red) console.log('      ' + r.slice(0, 170));
 }
 rmSync(root, { recursive: true, force: true });
-console.log(bad ? `\n❌ mutant proof FAILED: ${bad} of ${MUTANTS.length}` : `\n✅ ${MUTANTS.length} mutants red exactly on their named addressees, and only on them`);
+const proven = MUTANTS.length - skipped;
+console.log(bad ? `\n❌ mutant proof FAILED: ${bad} of ${proven}` : `\n✅ ${proven} mutants red exactly on their named addressees, and only on them` + (skipped ? ` · ${skipped} not provable on this platform (named above)` : ''));
 process.exit(bad ? 1 : 0);

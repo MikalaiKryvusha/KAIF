@@ -650,7 +650,9 @@ function selftest() {
   say(witness(null, P, 'abc', T + MIN).findings.length === 1 && /no load witness/.test(witness(null, P, 'abc', T + MIN).findings[0]), 'witness: no marker → finding "no load witness"');
   say(/another portrait/.test((witness(mk([T], 'abc', 'voice/OTHER.md'), P, 'abc', T + MIN).findings[0] || '')), 'witness: a marker for another portrait → finding');
   say(witness(mk([T]), P, 'abc', T + MIN).findings.length === 0 && witness(mk([T]), P, 'abc', T + MIN).warnings.length === 0, 'witness: loaded, then written within the hour → clean');
-  say(/the file was last written at 2026-09-12T13:59/.test(witness(mk([T]), P, 'abc', T - MIN).findings[0] || ''), 'witness: written BEFORE the first load → finding, both moments in the local zone');
+  // the expected moment is computed in THIS machine's zone (2.9: a literal «13:59» held only at +03:00 — red in a UTC container and in any
+  // field project west or east of the origin)
+  say((witness(mk([T]), P, 'abc', T - MIN).findings[0] || '').includes('the file was last written at ' + localIso(new Date(T - MIN)).slice(0, 16)), 'witness: written BEFORE the first load → finding, both moments in the local zone');
   say(/(\d+) min earlier/.test(witness(mk([T]), P, 'abc', T + 90 * MIN).findings[0] || ''), 'witness: written 90 min after the last load → finding (the hour rule)');
   say(witness(mk([T, T + 80 * MIN]), P, 'abc', T + 90 * MIN).findings.length === 0, 'witness: a re-load 10 min before the write → clean (the load history counts)');
   say(witness(mk([T]), P, 'other', T + MIN).warnings.some((w) => /changed since it was last loaded/.test(w)), 'witness: the portrait changed since the load → warning "reload"');

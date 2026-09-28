@@ -5,13 +5,13 @@
   "codename": "Noble KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "d424900c5f5fe25608290c2a99c73864d146ef07e0c5c70613d3ac5e756710cd",
-    "KAIF-CORE-BUNDLE.md": "938e920dd5bf4b8803d935895fdcdc7c139a25eeafd7eae81f7abf9be66d2151"
+    "KAIF-CORE-BUNDLE.md": "9ad8a3ec4a367120206bdbe54fdc91de8395ebb3bca687e2efec962f362fe184"
   },
   "sourceTree": {
-    "sha256": "106b97d7715cc97f0f02cf307aff93ee06301f14bdeb13d27f52e435bd68d5e2",
-    "files": 209
+    "sha256": "e0f5acf1f725ab0db13c805d7ec8b93906c86f5900f93f1764131110ee588521",
+    "files": 210
   },
-  "prerelease": null,
+  "prerelease": "2.9",
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
     "KAIF-CORE.mjs": "installer machinery; lives on as .kaif/kaif-core.mjs",

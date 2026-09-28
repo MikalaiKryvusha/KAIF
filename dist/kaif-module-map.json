@@ -224,7 +224,7 @@
       {
         "signature": "### The owner's word mid-turn — the system signs its author",
         "class": "static",
-        "sha256": "684390114c3fff3a514e77727920fc2e14c9d44ef4c605bbefebf967592d02db",
+        "sha256": "d34b3717bae6c07e60730804951f3c50c1368fa1dc3b50f7e698279f074ec808",
         "lines": [
           635,
           652
@@ -1546,10 +1546,10 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "94294f5cd446a7c60ad2e3eb4e0bd78ca53407c4f3410587e2fc058e0761da78",
+        "sha256": "31a6ec36451cf468d71d5a76608ebf301623434d71367aa6f6886b9b611db3be",
         "lines": [
           569,
-          625
+          627
         ]
       },
       {
@@ -1557,8 +1557,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          626,
-          638
+          628,
+          640
         ]
       },
       {
@@ -1566,8 +1566,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          639,
-          647
+          641,
+          649
         ]
       },
       {
@@ -1575,8 +1575,8 @@
         "class": "static",
         "sha256": "e02e472145f7b7ed7a2f50c53ae73153a828aeec2a2d10b322ca5d5d4f3f9c90",
         "lines": [
-          648,
-          657
+          650,
+          659
         ]
       },
       {
@@ -1584,8 +1584,8 @@
         "class": "static",
         "sha256": "f1eb8b5d60d8e38a8e60b31792c2ced224d501b19b99f62b87776329103acbc0",
         "lines": [
-          658,
-          665
+          660,
+          667
         ]
       },
       {
@@ -1593,8 +1593,8 @@
         "class": "static",
         "sha256": "1612157c91aec3d625dcfd4dbfefefaeb4f25456a3098e6cd773affa55c070cd",
         "lines": [
-          666,
-          671
+          668,
+          673
         ]
       },
       {
@@ -1602,8 +1602,8 @@
         "class": "static",
         "sha256": "e8d18b25f1903d2591db789e71d65a3c492e61499ba70de3ed06a0dcc8c87e6f",
         "lines": [
-          672,
-          678
+          674,
+          680
         ]
       },
       {
@@ -1611,8 +1611,8 @@
         "class": "static",
         "sha256": "4ea74ff13ff4bf7be4d99944266790a9007da65691fb793101c90a8b2e57524c",
         "lines": [
-          679,
-          687
+          681,
+          689
         ]
       },
       {
@@ -1620,8 +1620,8 @@
         "class": "static",
         "sha256": "5628af9f9f9b91cc5fd9315ae553830d2d661f28191eb3006afd2408ba66b743",
         "lines": [
-          688,
-          694
+          690,
+          696
         ]
       },
       {
@@ -1629,8 +1629,8 @@
         "class": "static",
         "sha256": "f72d4db874c50f6139cf6ba4173a868ed48c33f933bc5692a5f5b495b94953bc",
         "lines": [
-          695,
-          704
+          697,
+          706
         ]
       },
       {
@@ -1638,8 +1638,8 @@
         "class": "static",
         "sha256": "826946b97cc4b1cfe8b0436ef94df455e5f4fd36a1a47631942879c479647aaf",
         "lines": [
-          705,
-          710
+          707,
+          712
         ]
       },
       {
@@ -1647,8 +1647,8 @@
         "class": "static",
         "sha256": "978a252ba4a8e44c79b42a7690f1137152355d50489cab33544504ac67429dfe",
         "lines": [
-          711,
-          738
+          713,
+          740
         ]
       },
       {
@@ -1656,8 +1656,8 @@
         "class": "static",
         "sha256": "fef4a9cd8b9166636f67870d0b6b3d29651a72afda1a2c921083073ee9877f5f",
         "lines": [
-          739,
-          777
+          741,
+          779
         ]
       },
       {
@@ -1665,8 +1665,8 @@
         "class": "static",
         "sha256": "1d6c9d864f839f77a25d160c64894f35bc8d0301f32360b99dce13f54cc1d287",
         "lines": [
-          778,
-          782
+          780,
+          784
         ]
       },
       {
@@ -1674,8 +1674,8 @@
         "class": "static",
         "sha256": "c1515f210fed3042b01d558d2e8c80b9b697a3f267b2e2bb4bbb1c22394e7a64",
         "lines": [
-          783,
-          787
+          785,
+          789
         ]
       },
       {
@@ -1683,8 +1683,8 @@
         "class": "static",
         "sha256": "7af7735e7828f03a80677aeb4da3b1b00e561dcc78be863fcbdfa48054175514",
         "lines": [
-          788,
-          798
+          790,
+          800
         ]
       },
       {
@@ -1692,8 +1692,8 @@
         "class": "static",
         "sha256": "6623e80c05377f674c5de22ca1dce0ecf413fd3a33f455e1581302aee8022622",
         "lines": [
-          799,
-          803
+          801,
+          805
         ]
       },
       {
@@ -1701,8 +1701,8 @@
         "class": "static",
         "sha256": "15b64e071993fe1280a6ed93d597b4d71fc45a3e86552aec746f5c3b71b95f35",
         "lines": [
-          804,
-          810
+          806,
+          812
         ]
       },
       {
@@ -1710,8 +1710,8 @@
         "class": "static",
         "sha256": "be86f8795496fba6d2bc08ed5f3545613c113de6c2349d1bbbb88e49659ea1b7",
         "lines": [
-          811,
-          826
+          813,
+          828
         ]
       },
       {
@@ -1719,8 +1719,8 @@
         "class": "static",
         "sha256": "780561c508848fd6231edb22a7c2b6af355bac3ee5042d1a5a4bdfed68dfc78c",
         "lines": [
-          827,
-          840
+          829,
+          842
         ]
       },
       {
@@ -1728,8 +1728,8 @@
         "class": "static",
         "sha256": "37270bdb49877ebc54fb99fbe8468b16bddd65c83b0d5c03ab93afd9eab883ef",
         "lines": [
-          841,
-          849
+          843,
+          851
         ]
       },
       {
@@ -1737,8 +1737,8 @@
         "class": "static",
         "sha256": "7d820b1348ae7940cf42356abce337e503eb4981a0fed1147198271570212f99",
         "lines": [
-          850,
-          856
+          852,
+          858
         ]
       },
       {
@@ -1746,8 +1746,8 @@
         "class": "static",
         "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
         "lines": [
-          857,
-          863
+          859,
+          865
         ]
       },
       {
@@ -1755,8 +1755,8 @@
         "class": "static",
         "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
         "lines": [
-          864,
-          869
+          866,
+          871
         ]
       },
       {
@@ -1764,8 +1764,8 @@
         "class": "static",
         "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
         "lines": [
-          870,
-          874
+          872,
+          876
         ]
       },
       {
@@ -1773,8 +1773,8 @@
         "class": "static",
         "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
         "lines": [
-          875,
-          880
+          877,
+          882
         ]
       },
       {
@@ -1782,8 +1782,8 @@
         "class": "static",
         "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
         "lines": [
-          881,
-          887
+          883,
+          889
         ]
       },
       {
@@ -1791,8 +1791,8 @@
         "class": "static",
         "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
         "lines": [
-          888,
-          893
+          890,
+          895
         ]
       },
       {
@@ -1800,8 +1800,8 @@
         "class": "static",
         "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
         "lines": [
-          894,
-          898
+          896,
+          900
         ]
       }
     ],
@@ -5070,6 +5070,172 @@
         ]
       }
     ],
+    ".kaif/spheres/_index.md": [
+      {
+        "signature": "# KAIF spheres — universal adaptivity across domains",
+        "class": "static",
+        "sha256": "5a0756af269a2a7113a4a3d9c5d1466d75ec78a8637e618a07e597a8862b3aef",
+        "lines": [
+          1,
+          21
+        ]
+      },
+      {
+        "signature": "## How sphere adaptation works (at deploy time)",
+        "class": "static",
+        "sha256": "352a24ede2a97d1d392f62e01b349a72496d843338f443dff3d7adc399cf2cdc",
+        "lines": [
+          22,
+          33
+        ]
+      },
+      {
+        "signature": "## Sphere libraries",
+        "class": "static",
+        "sha256": "821927c2d53861b5154834ab6d905ab96219635979f68d08e34de4cb31449788",
+        "lines": [
+          34,
+          46
+        ]
+      },
+      {
+        "signature": "## Generic fallback",
+        "class": "static",
+        "sha256": "425d3bdbcea1b67ab6413a918a778016aecbd04342fac1da5f9436b16877b55e",
+        "lines": [
+          47,
+          52
+        ]
+      }
+    ],
+    ".kaif/spheres/_template.md": [
+      {
+        "signature": "# Sphere: <SPHERE NAME>",
+        "class": "static",
+        "sha256": "186e563c82b3f61a30e009d8d9090ebfd1401fb218a2413b4a48ba25f7c6b118",
+        "lines": [
+          1,
+          10
+        ]
+      },
+      {
+        "signature": "## Thesis intro (what working in this sphere is like)",
+        "class": "static",
+        "sha256": "f4a0ab95f1be3e6a78f3b7fa4da7feceb5c31488ff60eb8cc1b06285c71f1283",
+        "lines": [
+          11,
+          15
+        ]
+      },
+      {
+        "signature": "## KAIF entity mapping (how base concepts read in this sphere)",
+        "class": "static",
+        "sha256": "a946ab8eaf81faf977c7ade764100ea6ad1717dd3952ae3fadb9473be8c4844b",
+        "lines": [
+          16,
+          26
+        ]
+      },
+      {
+        "signature": "## Key terms (brief glossary)",
+        "class": "static",
+        "sha256": "4767f41c38fced3ebb8fee1c30002c4d4d06d71fdb36882032154dbd97c9e11f",
+        "lines": [
+          27,
+          32
+        ]
+      },
+      {
+        "signature": "## Minimum evidence set (binding — open these before acting, every time)",
+        "class": "static",
+        "sha256": "db24c4aadfbfbf8fac05790599d03bb60d82df5796083bb91bcb04283f99f960",
+        "lines": [
+          33,
+          38
+        ]
+      },
+      {
+        "signature": "## Authority order",
+        "class": "static",
+        "sha256": "62f72cc81800c601dc34dd81e30552b8bec9e7112b287b678e95b994365c73fa",
+        "lines": [
+          39,
+          43
+        ]
+      },
+      {
+        "signature": "## Verification by observation",
+        "class": "static",
+        "sha256": "97d511c5f565b0c83b375706f33a3ca80dd5c0cdcff9d82ddcbbb2365f5d8f75",
+        "lines": [
+          44,
+          48
+        ]
+      },
+      {
+        "signature": "## Outward write channels → retraction command",
+        "class": "static",
+        "sha256": "cb727be6ab65fcbc9ec16bf05e7273512bd475da470b126fc875332cd1a77a02",
+        "lines": [
+          49,
+          62
+        ]
+      },
+      {
+        "signature": "## Fraud table (for `fable-judge`)",
+        "class": "static",
+        "sha256": "18dfbdaf0f2be7f48a8d0f5b6c10dd1cd5621db8322857ddb2f51cd6805e9d7b",
+        "lines": [
+          63,
+          70
+        ]
+      },
+      {
+        "signature": "## Done, by example",
+        "class": "static",
+        "sha256": "b38bafc90a678cfbc271b570a0778b5b2b6a66441e7d71824d8454de6e95f383",
+        "lines": [
+          71,
+          75
+        ]
+      },
+      {
+        "signature": "## Owner's voice (KAIF 2.1)",
+        "class": "static",
+        "sha256": "a268eeb3798558f3380112405a8f537f5cc120652d03a3bf181c7a191cf4c602",
+        "lines": [
+          76,
+          82
+        ]
+      },
+      {
+        "signature": "## Craft recipes (KAIF 2.1 — prostheses for weak sessions)",
+        "class": "static",
+        "sha256": "73e927af0d05b25b0a0011ad76908d279979766808c28cb8b7df53ae201e3dda",
+        "lines": [
+          83,
+          91
+        ]
+      },
+      {
+        "signature": "## Adaptation notes",
+        "class": "static",
+        "sha256": "1ca80ba97c73090d6f30121cd65291ebc958fe0450df99bf56a5a3bc4dd54439",
+        "lines": [
+          92,
+          96
+        ]
+      },
+      {
+        "signature": "## Sources (for spheres authored on demand)",
+        "class": "static",
+        "sha256": "01ccdd9f770f6c93a9621bc1b08cdd76ecbbfb3edc7f24c8e4f7a162494f7503",
+        "lines": [
+          97,
+          102
+        ]
+      }
+    ],
     ".kaif/spheres/business.md": [
       {
         "signature": "# Sphere: Business / Project management / Finance",
@@ -5519,172 +5685,6 @@
         ]
       }
     ],
-    ".kaif/spheres/_index.md": [
-      {
-        "signature": "# KAIF spheres — universal adaptivity across domains",
-        "class": "static",
-        "sha256": "5a0756af269a2a7113a4a3d9c5d1466d75ec78a8637e618a07e597a8862b3aef",
-        "lines": [
-          1,
-          21
-        ]
-      },
-      {
-        "signature": "## How sphere adaptation works (at deploy time)",
-        "class": "static",
-        "sha256": "352a24ede2a97d1d392f62e01b349a72496d843338f443dff3d7adc399cf2cdc",
-        "lines": [
-          22,
-          33
-        ]
-      },
-      {
-        "signature": "## Sphere libraries",
-        "class": "static",
-        "sha256": "821927c2d53861b5154834ab6d905ab96219635979f68d08e34de4cb31449788",
-        "lines": [
-          34,
-          46
-        ]
-      },
-      {
-        "signature": "## Generic fallback",
-        "class": "static",
-        "sha256": "425d3bdbcea1b67ab6413a918a778016aecbd04342fac1da5f9436b16877b55e",
-        "lines": [
-          47,
-          52
-        ]
-      }
-    ],
-    ".kaif/spheres/_template.md": [
-      {
-        "signature": "# Sphere: <SPHERE NAME>",
-        "class": "static",
-        "sha256": "186e563c82b3f61a30e009d8d9090ebfd1401fb218a2413b4a48ba25f7c6b118",
-        "lines": [
-          1,
-          10
-        ]
-      },
-      {
-        "signature": "## Thesis intro (what working in this sphere is like)",
-        "class": "static",
-        "sha256": "f4a0ab95f1be3e6a78f3b7fa4da7feceb5c31488ff60eb8cc1b06285c71f1283",
-        "lines": [
-          11,
-          15
-        ]
-      },
-      {
-        "signature": "## KAIF entity mapping (how base concepts read in this sphere)",
-        "class": "static",
-        "sha256": "a946ab8eaf81faf977c7ade764100ea6ad1717dd3952ae3fadb9473be8c4844b",
-        "lines": [
-          16,
-          26
-        ]
-      },
-      {
-        "signature": "## Key terms (brief glossary)",
-        "class": "static",
-        "sha256": "4767f41c38fced3ebb8fee1c30002c4d4d06d71fdb36882032154dbd97c9e11f",
-        "lines": [
-          27,
-          32
-        ]
-      },
-      {
-        "signature": "## Minimum evidence set (binding — open these before acting, every time)",
-        "class": "static",
-        "sha256": "db24c4aadfbfbf8fac05790599d03bb60d82df5796083bb91bcb04283f99f960",
-        "lines": [
-          33,
-          38
-        ]
-      },
-      {
-        "signature": "## Authority order",
-        "class": "static",
-        "sha256": "62f72cc81800c601dc34dd81e30552b8bec9e7112b287b678e95b994365c73fa",
-        "lines": [
-          39,
-          43
-        ]
-      },
-      {
-        "signature": "## Verification by observation",
-        "class": "static",
-        "sha256": "97d511c5f565b0c83b375706f33a3ca80dd5c0cdcff9d82ddcbbb2365f5d8f75",
-        "lines": [
-          44,
-          48
-        ]
-      },
-      {
-        "signature": "## Outward write channels → retraction command",
-        "class": "static",
-        "sha256": "cb727be6ab65fcbc9ec16bf05e7273512bd475da470b126fc875332cd1a77a02",
-        "lines": [
-          49,
-          62
-        ]
-      },
-      {
-        "signature": "## Fraud table (for `fable-judge`)",
-        "class": "static",
-        "sha256": "18dfbdaf0f2be7f48a8d0f5b6c10dd1cd5621db8322857ddb2f51cd6805e9d7b",
-        "lines": [
-          63,
-          70
-        ]
-      },
-      {
-        "signature": "## Done, by example",
-        "class": "static",
-        "sha256": "b38bafc90a678cfbc271b570a0778b5b2b6a66441e7d71824d8454de6e95f383",
-        "lines": [
-          71,
-          75
-        ]
-      },
-      {
-        "signature": "## Owner's voice (KAIF 2.1)",
-        "class": "static",
-        "sha256": "a268eeb3798558f3380112405a8f537f5cc120652d03a3bf181c7a191cf4c602",
-        "lines": [
-          76,
-          82
-        ]
-      },
-      {
-        "signature": "## Craft recipes (KAIF 2.1 — prostheses for weak sessions)",
-        "class": "static",
-        "sha256": "73e927af0d05b25b0a0011ad76908d279979766808c28cb8b7df53ae201e3dda",
-        "lines": [
-          83,
-          91
-        ]
-      },
-      {
-        "signature": "## Adaptation notes",
-        "class": "static",
-        "sha256": "1ca80ba97c73090d6f30121cd65291ebc958fe0450df99bf56a5a3bc4dd54439",
-        "lines": [
-          92,
-          96
-        ]
-      },
-      {
-        "signature": "## Sources (for spheres authored on demand)",
-        "class": "static",
-        "sha256": "01ccdd9f770f6c93a9621bc1b08cdd76ecbbfb3edc7f24c8e4f7a162494f7503",
-        "lines": [
-          97,
-          102
-        ]
-      }
-    ],
     ".kaif/hooks/README.md": [
       {
         "signature": "# .kaif/hooks — the optional refresh-hooks module",
@@ -5698,10 +5698,10 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "d385464baa6a57eebd9a10339d6db273b6aa0e0d8bcedd4a7fe7685086fc0cc5",
+        "sha256": "c97ec68de8ef3a5b198435b54bf8fda5643c2c7adbbbfdf364f3133d7670f9e5",
         "lines": [
           10,
-          29
+          30
         ]
       },
       {
@@ -5709,17 +5709,17 @@
         "class": "static",
         "sha256": "31fc9296cefaa7e6e4f457ac9907d7d36dc29debd50c608e1de2e2d45965bb93",
         "lines": [
-          30,
-          70
+          31,
+          71
         ]
       },
       {
         "signature": "## Other agent systems",
         "class": "static",
-        "sha256": "e2b8be6943be30ff3b386c0508cc9ff52b477002fa17f94bd815253a95847354",
+        "sha256": "83f5bf10548e5ec98f07f9d99661135268e258ce468ee228e0dd5940e67fae2c",
         "lines": [
-          71,
-          134
+          72,
+          143
         ]
       }
     ],
@@ -6147,17 +6147,6 @@
         ]
       }
     ],
-    "templates/languages/ar/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — العيوب والصعوبات والأعطال",
-        "class": "static",
-        "sha256": "34cb050f7cac7c753f3cd9d1090fda0d37eeaed10d0f0511a9ad3b1f5011a425",
-        "lines": [
-          1,
-          22
-        ]
-      }
-    ],
     "templates/languages/ar/GOAL.md": [
       {
         "signature": "# <PROJECT_NAME> — GOAL (الرؤية)",
@@ -6211,39 +6200,6 @@
         "lines": [
           31,
           41
-        ]
-      }
-    ],
-    "templates/languages/ar/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — مهام من الوكيل إلى الإنسان",
-        "class": "static",
-        "sha256": "25a75e3ad50f3e6bfb1901b3dfbec761e6d28a5c30de8b0b8f4bc375da0251d6",
-        "lines": [
-          1,
-          22
-        ]
-      }
-    ],
-    "templates/languages/ar/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — مقترحات الميزات والتحسينات",
-        "class": "static",
-        "sha256": "24ad083335244dfba690541a819da8a5811588f69989e042784659f33ca12e19",
-        "lines": [
-          1,
-          16
-        ]
-      }
-    ],
-    "templates/languages/ar/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — قرارات مستوى المالك",
-        "class": "static",
-        "sha256": "e22174accc8ac3db53bf6c37b43c387ad354884fb5a125b588cdf55c340d4a8c",
-        "lines": [
-          1,
-          14
         ]
       }
     ],
@@ -6312,6 +6268,50 @@
         ]
       }
     ],
+    "templates/languages/ar/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — العيوب والصعوبات والأعطال",
+        "class": "static",
+        "sha256": "34cb050f7cac7c753f3cd9d1090fda0d37eeaed10d0f0511a9ad3b1f5011a425",
+        "lines": [
+          1,
+          22
+        ]
+      }
+    ],
+    "templates/languages/ar/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — مهام من الوكيل إلى الإنسان",
+        "class": "static",
+        "sha256": "25a75e3ad50f3e6bfb1901b3dfbec761e6d28a5c30de8b0b8f4bc375da0251d6",
+        "lines": [
+          1,
+          22
+        ]
+      }
+    ],
+    "templates/languages/ar/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — مقترحات الميزات والتحسينات",
+        "class": "static",
+        "sha256": "24ad083335244dfba690541a819da8a5811588f69989e042784659f33ca12e19",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
+    "templates/languages/ar/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — قرارات مستوى المالك",
+        "class": "static",
+        "sha256": "e22174accc8ac3db53bf6c37b43c387ad354884fb5a125b588cdf55c340d4a8c",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
     "templates/languages/ar/plans/README.md": [
       {
         "signature": "# `plans/` — خطط مفصّلة خطوة بخطوة",
@@ -6331,17 +6331,6 @@
         "lines": [
           1,
           15
-        ]
-      }
-    ],
-    "templates/languages/de/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — Defekte, Schwierigkeiten, Brüche",
-        "class": "static",
-        "sha256": "81c728390a604d2c6894060861aee82319acc401f6532d77e7a69bb36314373c",
-        "lines": [
-          1,
-          25
         ]
       }
     ],
@@ -6398,39 +6387,6 @@
         "lines": [
           33,
           45
-        ]
-      }
-    ],
-    "templates/languages/de/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — Aufgaben vom Agenten an den Menschen",
-        "class": "static",
-        "sha256": "c473d3f462cd650495a882510c7c9c2b3f447f15cec7ee6cc4c9973978f3449b",
-        "lines": [
-          1,
-          26
-        ]
-      }
-    ],
-    "templates/languages/de/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — Feature- und Verbesserungsvorschläge",
-        "class": "static",
-        "sha256": "fbc87b9203f56b35078332941ce8c5c540e11bf96eaaf2834b0882828061f913",
-        "lines": [
-          1,
-          19
-        ]
-      }
-    ],
-    "templates/languages/de/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — Entscheidungen auf Eigentümer-Ebene",
-        "class": "static",
-        "sha256": "5774040e1d99b057d9f848700377694dbfa8e72dac71d6024703222c2a831f2d",
-        "lines": [
-          1,
-          17
         ]
       }
     ],
@@ -6499,6 +6455,50 @@
         ]
       }
     ],
+    "templates/languages/de/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — Defekte, Schwierigkeiten, Brüche",
+        "class": "static",
+        "sha256": "81c728390a604d2c6894060861aee82319acc401f6532d77e7a69bb36314373c",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/de/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — Aufgaben vom Agenten an den Menschen",
+        "class": "static",
+        "sha256": "c473d3f462cd650495a882510c7c9c2b3f447f15cec7ee6cc4c9973978f3449b",
+        "lines": [
+          1,
+          26
+        ]
+      }
+    ],
+    "templates/languages/de/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — Feature- und Verbesserungsvorschläge",
+        "class": "static",
+        "sha256": "fbc87b9203f56b35078332941ce8c5c540e11bf96eaaf2834b0882828061f913",
+        "lines": [
+          1,
+          19
+        ]
+      }
+    ],
+    "templates/languages/de/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — Entscheidungen auf Eigentümer-Ebene",
+        "class": "static",
+        "sha256": "5774040e1d99b057d9f848700377694dbfa8e72dac71d6024703222c2a831f2d",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
     "templates/languages/de/plans/README.md": [
       {
         "signature": "# `plans/` — detaillierte Schritt-für-Schritt-Pläne",
@@ -6518,17 +6518,6 @@
         "lines": [
           1,
           18
-        ]
-      }
-    ],
-    "templates/languages/es/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — defectos, dificultades, roturas",
-        "class": "static",
-        "sha256": "4c41e79f2484ccef4f555a8218de04b0eda48a33f636a8e072d503de1345e379",
-        "lines": [
-          1,
-          25
         ]
       }
     ],
@@ -6585,39 +6574,6 @@
         "lines": [
           33,
           44
-        ]
-      }
-    ],
-    "templates/languages/es/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — tareas del agente para el humano",
-        "class": "static",
-        "sha256": "2892824b50b3ea42d31e7ee6556ecb977798b433f2dc0861b52705141324762b",
-        "lines": [
-          1,
-          25
-        ]
-      }
-    ],
-    "templates/languages/es/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — propuestas de features y mejoras",
-        "class": "static",
-        "sha256": "2db58c5c42a61ce7a67c21fc2003bd866ab7d1358100d927d9bda8bc6976ad96",
-        "lines": [
-          1,
-          19
-        ]
-      }
-    ],
-    "templates/languages/es/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — decisiones del nivel del propietario",
-        "class": "static",
-        "sha256": "f0e2eaa767df4d4668e86a7dd85255f1e76a0c3911188ca85177a4a252978b9b",
-        "lines": [
-          1,
-          16
         ]
       }
     ],
@@ -6686,6 +6642,50 @@
         ]
       }
     ],
+    "templates/languages/es/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — defectos, dificultades, roturas",
+        "class": "static",
+        "sha256": "4c41e79f2484ccef4f555a8218de04b0eda48a33f636a8e072d503de1345e379",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/es/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tareas del agente para el humano",
+        "class": "static",
+        "sha256": "2892824b50b3ea42d31e7ee6556ecb977798b433f2dc0861b52705141324762b",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/es/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — propuestas de features y mejoras",
+        "class": "static",
+        "sha256": "2db58c5c42a61ce7a67c21fc2003bd866ab7d1358100d927d9bda8bc6976ad96",
+        "lines": [
+          1,
+          19
+        ]
+      }
+    ],
+    "templates/languages/es/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — decisiones del nivel del propietario",
+        "class": "static",
+        "sha256": "f0e2eaa767df4d4668e86a7dd85255f1e76a0c3911188ca85177a4a252978b9b",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
     "templates/languages/es/plans/README.md": [
       {
         "signature": "# `plans/` — planes detallados paso a paso",
@@ -6705,17 +6705,6 @@
         "lines": [
           1,
           18
-        ]
-      }
-    ],
-    "templates/languages/fr/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — défauts, difficultés, casses",
-        "class": "static",
-        "sha256": "2bebd0dab2e97a420b86b6e4811485f18cba53ae6757daecce4df592a2ae5757",
-        "lines": [
-          1,
-          25
         ]
       }
     ],
@@ -6772,39 +6761,6 @@
         "lines": [
           34,
           45
-        ]
-      }
-    ],
-    "templates/languages/fr/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — tâches de l'agent pour l'humain",
-        "class": "static",
-        "sha256": "b9eb5fbc819daec1f0e7b8ced54d4fca92a66630a90b15caec553be70ea63828",
-        "lines": [
-          1,
-          26
-        ]
-      }
-    ],
-    "templates/languages/fr/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — propositions de fonctionnalités et d'améliorations",
-        "class": "static",
-        "sha256": "96b24a5bd6d7f5a248d63b343d2b2d8261421e8a5d887830917ce681e555cab2",
-        "lines": [
-          1,
-          19
-        ]
-      }
-    ],
-    "templates/languages/fr/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — décisions du niveau du propriétaire",
-        "class": "static",
-        "sha256": "f078144c07d0b5d582c888622d9e09461340f1e805fc670871a1f8f5b00e9c17",
-        "lines": [
-          1,
-          18
         ]
       }
     ],
@@ -6873,6 +6829,50 @@
         ]
       }
     ],
+    "templates/languages/fr/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — défauts, difficultés, casses",
+        "class": "static",
+        "sha256": "2bebd0dab2e97a420b86b6e4811485f18cba53ae6757daecce4df592a2ae5757",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/fr/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tâches de l'agent pour l'humain",
+        "class": "static",
+        "sha256": "b9eb5fbc819daec1f0e7b8ced54d4fca92a66630a90b15caec553be70ea63828",
+        "lines": [
+          1,
+          26
+        ]
+      }
+    ],
+    "templates/languages/fr/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — propositions de fonctionnalités et d'améliorations",
+        "class": "static",
+        "sha256": "96b24a5bd6d7f5a248d63b343d2b2d8261421e8a5d887830917ce681e555cab2",
+        "lines": [
+          1,
+          19
+        ]
+      }
+    ],
+    "templates/languages/fr/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — décisions du niveau du propriétaire",
+        "class": "static",
+        "sha256": "f078144c07d0b5d582c888622d9e09461340f1e805fc670871a1f8f5b00e9c17",
+        "lines": [
+          1,
+          18
+        ]
+      }
+    ],
     "templates/languages/fr/plans/README.md": [
       {
         "signature": "# `plans/` — plans détaillés pas à pas",
@@ -6892,17 +6892,6 @@
         "lines": [
           1,
           18
-        ]
-      }
-    ],
-    "templates/languages/hi/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — दोष, कठिनाइयाँ, टूट-फूट",
-        "class": "static",
-        "sha256": "7c30d0772884298e2ea6337c379f88fcf206d7f294d55edf7cc72f34995709af",
-        "lines": [
-          1,
-          22
         ]
       }
     ],
@@ -6959,39 +6948,6 @@
         "lines": [
           33,
           43
-        ]
-      }
-    ],
-    "templates/languages/hi/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — एजेंट की ओर से मानव के लिए कार्य",
-        "class": "static",
-        "sha256": "b511c16235637aa80a017c51be3a33b1b732a6c92bd9cd7658cd72b03c4c5839",
-        "lines": [
-          1,
-          23
-        ]
-      }
-    ],
-    "templates/languages/hi/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — फ़ीचर और सुधार प्रस्ताव",
-        "class": "static",
-        "sha256": "2f51d76e2ba697a264f1f19eff1ce611adb68712aae3e62c1b2eddfb6ec0e85f",
-        "lines": [
-          1,
-          18
-        ]
-      }
-    ],
-    "templates/languages/hi/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — स्वामी-स्तर के निर्णय",
-        "class": "static",
-        "sha256": "02ea0f6bf0fa230beb9530bdbfcb42cab2ed63c055991207e0335ddf8d185482",
-        "lines": [
-          1,
-          15
         ]
       }
     ],
@@ -7060,6 +7016,50 @@
         ]
       }
     ],
+    "templates/languages/hi/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — दोष, कठिनाइयाँ, टूट-फूट",
+        "class": "static",
+        "sha256": "7c30d0772884298e2ea6337c379f88fcf206d7f294d55edf7cc72f34995709af",
+        "lines": [
+          1,
+          22
+        ]
+      }
+    ],
+    "templates/languages/hi/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — एजेंट की ओर से मानव के लिए कार्य",
+        "class": "static",
+        "sha256": "b511c16235637aa80a017c51be3a33b1b732a6c92bd9cd7658cd72b03c4c5839",
+        "lines": [
+          1,
+          23
+        ]
+      }
+    ],
+    "templates/languages/hi/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — फ़ीचर और सुधार प्रस्ताव",
+        "class": "static",
+        "sha256": "2f51d76e2ba697a264f1f19eff1ce611adb68712aae3e62c1b2eddfb6ec0e85f",
+        "lines": [
+          1,
+          18
+        ]
+      }
+    ],
+    "templates/languages/hi/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — स्वामी-स्तर के निर्णय",
+        "class": "static",
+        "sha256": "02ea0f6bf0fa230beb9530bdbfcb42cab2ed63c055991207e0335ddf8d185482",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
     "templates/languages/hi/plans/README.md": [
       {
         "signature": "# `plans/` — विस्तृत चरण-दर-चरण योजनाएँ",
@@ -7079,17 +7079,6 @@
         "lines": [
           1,
           15
-        ]
-      }
-    ],
-    "templates/languages/ja/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — 欠陥、困難、破損",
-        "class": "static",
-        "sha256": "e3eafed10c0b6083d4fda413948987a642bcd0d95af0e30dc22a4af1dc3c8e38",
-        "lines": [
-          1,
-          22
         ]
       }
     ],
@@ -7146,39 +7135,6 @@
         "lines": [
           34,
           45
-        ]
-      }
-    ],
-    "templates/languages/ja/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — エージェントから人間への宿題",
-        "class": "static",
-        "sha256": "9e842116550fc529cce4a7eb6729f2f7e858f16aad3a2b42cb169d9df2afa53b",
-        "lines": [
-          1,
-          25
-        ]
-      }
-    ],
-    "templates/languages/ja/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — 機能と改善の提案",
-        "class": "static",
-        "sha256": "baa869371746640aadcefc83f5262a1114631a80419e4071ea6c31b1cecb97ad",
-        "lines": [
-          1,
-          18
-        ]
-      }
-    ],
-    "templates/languages/ja/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — オーナーレベルの決定",
-        "class": "static",
-        "sha256": "23d1dd562c605a3db49836f82388b05a544223e0e776d225f7882e1543a74890",
-        "lines": [
-          1,
-          17
         ]
       }
     ],
@@ -7247,6 +7203,50 @@
         ]
       }
     ],
+    "templates/languages/ja/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — 欠陥、困難、破損",
+        "class": "static",
+        "sha256": "e3eafed10c0b6083d4fda413948987a642bcd0d95af0e30dc22a4af1dc3c8e38",
+        "lines": [
+          1,
+          22
+        ]
+      }
+    ],
+    "templates/languages/ja/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — エージェントから人間への宿題",
+        "class": "static",
+        "sha256": "9e842116550fc529cce4a7eb6729f2f7e858f16aad3a2b42cb169d9df2afa53b",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/ja/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — 機能と改善の提案",
+        "class": "static",
+        "sha256": "baa869371746640aadcefc83f5262a1114631a80419e4071ea6c31b1cecb97ad",
+        "lines": [
+          1,
+          18
+        ]
+      }
+    ],
+    "templates/languages/ja/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — オーナーレベルの決定",
+        "class": "static",
+        "sha256": "23d1dd562c605a3db49836f82388b05a544223e0e776d225f7882e1543a74890",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
     "templates/languages/ja/plans/README.md": [
       {
         "signature": "# `plans/` — 詳細なステップバイステップの計画",
@@ -7266,17 +7266,6 @@
         "lines": [
           1,
           15
-        ]
-      }
-    ],
-    "templates/languages/pt/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — defeitos, dificuldades, quebras",
-        "class": "static",
-        "sha256": "46ef174582d116917728037ee615e84d60fd92c3179c0534c79e369ac08c017b",
-        "lines": [
-          1,
-          25
         ]
       }
     ],
@@ -7333,39 +7322,6 @@
         "lines": [
           33,
           44
-        ]
-      }
-    ],
-    "templates/languages/pt/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — tarefas do agente para o humano",
-        "class": "static",
-        "sha256": "f8912211584fa9db4630eb75ddea13893e1d6c30fd3362c3e354f32e6865daf6",
-        "lines": [
-          1,
-          25
-        ]
-      }
-    ],
-    "templates/languages/pt/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — propostas de features e melhorias",
-        "class": "static",
-        "sha256": "30d03042ca22e0e76e4d7393977f76469938cb087349fcfeb05947c93f3bcb96",
-        "lines": [
-          1,
-          19
-        ]
-      }
-    ],
-    "templates/languages/pt/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — decisões do nível do proprietário",
-        "class": "static",
-        "sha256": "6729a27a889db355d8948e3cf5309a0b668e4b7c09a530469261ef248794771a",
-        "lines": [
-          1,
-          16
         ]
       }
     ],
@@ -7434,6 +7390,50 @@
         ]
       }
     ],
+    "templates/languages/pt/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — defeitos, dificuldades, quebras",
+        "class": "static",
+        "sha256": "46ef174582d116917728037ee615e84d60fd92c3179c0534c79e369ac08c017b",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/pt/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — tarefas do agente para o humano",
+        "class": "static",
+        "sha256": "f8912211584fa9db4630eb75ddea13893e1d6c30fd3362c3e354f32e6865daf6",
+        "lines": [
+          1,
+          25
+        ]
+      }
+    ],
+    "templates/languages/pt/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — propostas de features e melhorias",
+        "class": "static",
+        "sha256": "30d03042ca22e0e76e4d7393977f76469938cb087349fcfeb05947c93f3bcb96",
+        "lines": [
+          1,
+          19
+        ]
+      }
+    ],
+    "templates/languages/pt/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — decisões do nível do proprietário",
+        "class": "static",
+        "sha256": "6729a27a889db355d8948e3cf5309a0b668e4b7c09a530469261ef248794771a",
+        "lines": [
+          1,
+          16
+        ]
+      }
+    ],
     "templates/languages/pt/plans/README.md": [
       {
         "signature": "# `plans/` — planos detalhados passo a passo",
@@ -7453,17 +7453,6 @@
         "lines": [
           1,
           18
-        ]
-      }
-    ],
-    "templates/languages/ru/bugs/README.md": [
-      {
-        "signature": "# `bugs/` — дефекты, трудности, поломки",
-        "class": "static",
-        "sha256": "5ab0d5535b1821cbdb3e9151dc5d76ae2baad9fda6f31f1a81ed9ee7904e1759",
-        "lines": [
-          1,
-          23
         ]
       }
     ],
@@ -7520,39 +7509,6 @@
         "lines": [
           33,
           44
-        ]
-      }
-    ],
-    "templates/languages/ru/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` — задания от агента человеку",
-        "class": "static",
-        "sha256": "d80a4ea909fbe9882b7ca01fd16388b70b6feb535d98ab6f3fe51307334984cd",
-        "lines": [
-          1,
-          24
-        ]
-      }
-    ],
-    "templates/languages/ru/ideas/README.md": [
-      {
-        "signature": "# `ideas/` — идеи, фичи, предложения по улучшению",
-        "class": "static",
-        "sha256": "3b347bdae725aa12b8c6b7583a098a3f17086d09ad79575d6105eb72387d6298",
-        "lines": [
-          1,
-          17
-        ]
-      }
-    ],
-    "templates/languages/ru/interviews/README.md": [
-      {
-        "signature": "# `interviews/` — решения уровня владельца",
-        "class": "static",
-        "sha256": "9824c90f7bd44a87b7a6b3b75c2b30212dbdc751527450968ba857eee96c5269",
-        "lines": [
-          1,
-          14
         ]
       }
     ],
@@ -7621,6 +7577,50 @@
         ]
       }
     ],
+    "templates/languages/ru/bugs/README.md": [
+      {
+        "signature": "# `bugs/` — дефекты, трудности, поломки",
+        "class": "static",
+        "sha256": "5ab0d5535b1821cbdb3e9151dc5d76ae2baad9fda6f31f1a81ed9ee7904e1759",
+        "lines": [
+          1,
+          23
+        ]
+      }
+    ],
+    "templates/languages/ru/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` — задания от агента человеку",
+        "class": "static",
+        "sha256": "d80a4ea909fbe9882b7ca01fd16388b70b6feb535d98ab6f3fe51307334984cd",
+        "lines": [
+          1,
+          24
+        ]
+      }
+    ],
+    "templates/languages/ru/ideas/README.md": [
+      {
+        "signature": "# `ideas/` — идеи, фичи, предложения по улучшению",
+        "class": "static",
+        "sha256": "3b347bdae725aa12b8c6b7583a098a3f17086d09ad79575d6105eb72387d6298",
+        "lines": [
+          1,
+          17
+        ]
+      }
+    ],
+    "templates/languages/ru/interviews/README.md": [
+      {
+        "signature": "# `interviews/` — решения уровня владельца",
+        "class": "static",
+        "sha256": "9824c90f7bd44a87b7a6b3b75c2b30212dbdc751527450968ba857eee96c5269",
+        "lines": [
+          1,
+          14
+        ]
+      }
+    ],
     "templates/languages/ru/plans/README.md": [
       {
         "signature": "# `plans/` — детальные пошаговые планы",
@@ -7640,17 +7640,6 @@
         "lines": [
           1,
           16
-        ]
-      }
-    ],
-    "templates/languages/zh-Hans/bugs/README.md": [
-      {
-        "signature": "# `bugs/` —— 缺陷、困难、故障",
-        "class": "static",
-        "sha256": "12cb69c9c2570ea02e3b5b973169d6cd2c59a8fa12e4dba9b64efff59d91a5a7",
-        "lines": [
-          1,
-          19
         ]
       }
     ],
@@ -7707,39 +7696,6 @@
         "lines": [
           31,
           41
-        ]
-      }
-    ],
-    "templates/languages/zh-Hans/homeworks/README.md": [
-      {
-        "signature": "# `homeworks/` —— 代理布置给人类的任务",
-        "class": "static",
-        "sha256": "7e86bf31b6ea94056dcec08c6a80abd664c6a279ccc1e9240ea1b2af134bd599",
-        "lines": [
-          1,
-          20
-        ]
-      }
-    ],
-    "templates/languages/zh-Hans/ideas/README.md": [
-      {
-        "signature": "# `ideas/` —— 功能与改进提案",
-        "class": "static",
-        "sha256": "163c8bb8cb922fbb0a2c42540f4b4c3942ccb1d57df4f5f6285dcd36d8cde656",
-        "lines": [
-          1,
-          15
-        ]
-      }
-    ],
-    "templates/languages/zh-Hans/interviews/README.md": [
-      {
-        "signature": "# `interviews/` —— 所有者级别的决策",
-        "class": "static",
-        "sha256": "95adc7331a210f908aa0b76677494283a4205ae122e39dcd8832be6166cf0a7c",
-        "lines": [
-          1,
-          14
         ]
       }
     ],
@@ -7805,6 +7761,50 @@
         "lines": [
           61,
           73
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/bugs/README.md": [
+      {
+        "signature": "# `bugs/` —— 缺陷、困难、故障",
+        "class": "static",
+        "sha256": "12cb69c9c2570ea02e3b5b973169d6cd2c59a8fa12e4dba9b64efff59d91a5a7",
+        "lines": [
+          1,
+          19
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/homeworks/README.md": [
+      {
+        "signature": "# `homeworks/` —— 代理布置给人类的任务",
+        "class": "static",
+        "sha256": "7e86bf31b6ea94056dcec08c6a80abd664c6a279ccc1e9240ea1b2af134bd599",
+        "lines": [
+          1,
+          20
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/ideas/README.md": [
+      {
+        "signature": "# `ideas/` —— 功能与改进提案",
+        "class": "static",
+        "sha256": "163c8bb8cb922fbb0a2c42540f4b4c3942ccb1d57df4f5f6285dcd36d8cde656",
+        "lines": [
+          1,
+          15
+        ]
+      }
+    ],
+    "templates/languages/zh-Hans/interviews/README.md": [
+      {
+        "signature": "# `interviews/` —— 所有者级别的决策",
+        "class": "static",
+        "sha256": "95adc7331a210f908aa0b76677494283a4205ae122e39dcd8832be6166cf0a7c",
+        "lines": [
+          1,
+          14
         ]
       }
     ],

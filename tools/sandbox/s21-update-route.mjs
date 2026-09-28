@@ -295,36 +295,42 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
 // дереве молчит о разделах, новых с 2.7; раздел, которого проход старого ядра не принёс, — КРАСНЫЙ поимённо (квитанция старого ядра
 // о нём не знает — список несёт мета бандла, `sectionsNew`). Нет git или тега → случай назван пропущенным (не зелёный молча).
 {
-  const gitShow = (p) => { try { return execFileSync('git', ['show', 'v2.7:' + p], { cwd: REPO, stdio: 'pipe', maxBuffer: 1 << 27 }); } catch { return null; } };
-  const b27 = gitShow('dist/KAIF-CORE-BUNDLE.md'), c27 = gitShow('dist/KAIF-CORE.mjs');
+  // 2.9 (epic OA, polygon run in the cloud): the previous release is the latest release tag that is not HEAD's own — the 2.8 cycle
+  // hard-coded v2.7 because it WAS the previous release then; after v2.8 shipped the case judged the wrong core (red on an honest tree).
+  const gitLines = (...a) => { try { return execFileSync('git', a, { cwd: REPO, stdio: 'pipe' }).toString().split('\n').map((x) => x.trim()).filter(Boolean); } catch { return []; } };
+  const ownTags = new Set(gitLines('tag', '--points-at', 'HEAD'));
+  const wantPrev = gitLines('tag', '--list', 'v*', '--sort=-v:refname').filter((t) => /^v\d+\.\d+$/.test(t) && !ownTags.has(t))[0];
+  const prevVer = wantPrev ? wantPrev.slice(1) : null;
+  const gitShowAt = (tag, p) => { try { return execFileSync('git', ['show', tag + ':' + p], { cwd: REPO, stdio: 'pipe', maxBuffer: 1 << 27 }); } catch { return null; } };
+  const b27 = wantPrev ? gitShowAt(wantPrev, 'dist/KAIF-CORE-BUNDLE.md') : null, c27 = wantPrev ? gitShowAt(wantPrev, 'dist/KAIF-CORE.mjs') : null;
   const metaNow = JSON.parse(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8').match(blockRe('kaif-bundle-manifest.json'))[2]);
   const sn = metaNow.sectionsNew || { files: {} };
   const snPaths = Object.keys(sn.files || {});
-  if (!b27 || !c27) console.log('⏭ E: SKIPPED — git или тег v2.7 недоступны (артефакты релиза не извлечь)');
+  if (!b27 || !c27) console.log('⏭ E: SKIPPED — git или тег предыдущего выпуска недоступны (артефакты релиза не извлечь)');
   else {
-    const gitLines = (...a) => { try { return execFileSync('git', a, { cwd: REPO, stdio: 'pipe' }).toString().split('\n').map((x) => x.trim()).filter(Boolean); } catch { return []; } };
-    const ownTags = new Set(gitLines('tag', '--points-at', 'HEAD'));
-    const wantPrev = gitLines('tag', '--list', 'v*', '--sort=-v:refname').filter((t) => /^v\d+\.\d+$/.test(t) && !ownTags.has(t))[0];
-    ok(sn.prev === wantPrev && snPaths.length > 0, 'E фикстура: мета бандла несёт sectionsNew против старшего тега выпуска, не своего (' + wantPrev + ', ' + snPaths.length + ' файл(ов))', JSON.stringify(sn).slice(0, 200));
+    ok(sn.prev === wantPrev, 'E фикстура: мета бандла несёт sectionsNew против старшего тега выпуска, не своего (' + wantPrev + ', ' + snPaths.length + ' файл(ов))', JSON.stringify(sn).slice(0, 200));
     const TE = join(ROOT, 'e27'); mkdirSync(join(TE, '.kaif', 'install'), { recursive: true });
     writeFileSync(join(TE, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE, '.kaif', 'kaif-core.mjs'), c27);
     must(run, TE, 'install');
     const SRC_NOW = join(ROOT, 'src-now-9.9'); writeSource(SRC_NOW, replaceBundleBlock(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8'), 'kaif-bundle-manifest.json', (j) => { const m = JSON.parse(j); m.version = '9.9'; return JSON.stringify(m, null, 2); }), '9.9');
     r = run(TE, `update --source ${SRC_NOW}`);   // run by the 2.7 core deployed above
     const rcE = existsSync(join(TE, '.kaif', 'last-update.json')) ? JSON.parse(readFileSync(join(TE, '.kaif', 'last-update.json'), 'utf8')) : {};
-    ok(r.code === 0 && rcE.from === '2.7' && !rcE.newModules, 'E: update 2.7 → 9.9 провело ЯДРО 2.7 (его квитанция без newModules)', r.out.slice(-300));
+    ok(r.code === 0 && rcE.from === prevVer, 'E: update ' + prevVer + ' → 9.9 провело ЯДРО прошлого выпуска (' + wantPrev + ')', r.out.slice(-300));
     let vE = run(TE, 'update-verify');
     const vEIssues = issuesOf(vE.out);
-    ok(!/section of this release did not arrive/.test(vE.out), 'E: доставленное ядро в update-verify молчит о разделах, новых с 2.7, — проход старого ядра их принёс', vE.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
+    ok(!/section of this release did not arrive/.test(vE.out), 'E: доставленное ядро в update-verify молчит о разделах, новых с ' + prevVer + ', — проход ядра прошлого выпуска их принёс', vE.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
     const pE = snPaths.find((p) => existsSync(join(TE, p)) && /\.claude\/skills\//.test(p)) || snPaths.find((p) => existsSync(join(TE, p)));
     const sE = pE ? sn.files[pE][0] : null;
     if (pE && sE) writeFileSync(join(TE, pE), joinModules(splitModules(readFileSync(join(TE, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
     vE = run(TE, 'update-verify');
-    ok(!!pE && vE.code !== 0 && issuesOf(vE.out) === vEIssues + 1 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
+    if (!snPaths.length) console.log('⏭ E: половина «раздела нет на диске» — SKIPPED: в этой сборке нет ни одного раздела, нового с ' + wantPrev + ' (sectionsNew пуст) — доказывать нечего; случай оживёт с первым новым разделом');
+    else ok(!!pE && vE.code !== 0 && issuesOf(vE.out) === vEIssues + 1 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
        'E: раздела, нового с 2.7, на диске нет — доставленное ядро КРАСНОЕ поимённо (счёт провалов +1), хотя квитанцию писало старое ядро', vE.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
     // E3 (лёгкий повторный судья RL 2.8, J-F2): снятие «с 2.7» на НАСТОЯЩЕМ маршруте — задание пишет ядро 2.7, которое пункта
-    // withdrawn-phrases не знает; свежее ядро на отметке recheck передаёт его (интервал — из истории маркера, снятия — из бандла)
-    {
+    // withdrawn-phrases не знает; свежее ядро на отметке recheck передаёт его (интервал — из истории маркера, снятия — из бандла).
+    // Ядро здесь намеренно v2.7 — оно и есть «ядро без пункта», какой бы выпуск ни был предыдущим.
+    const b27w = gitShowAt('v2.7', 'dist/KAIF-CORE-BUNDLE.md'), c27w = gitShowAt('v2.7', 'dist/KAIF-CORE.mjs');
+    if (b27w && c27w) {
       const SRC_W = join(ROOT, 'src-now-9.9-w');
       writeSource(SRC_W, replaceBundleBlock(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8'), 'kaif-bundle-manifest.json', (j) => {
         const m = JSON.parse(j); m.version = '9.9';
@@ -332,7 +338,7 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
         return JSON.stringify(m, null, 2);
       }), '9.9');
       const TE3 = join(ROOT, 'e27-w'); mkdirSync(join(TE3, '.kaif', 'install'), { recursive: true });
-      writeFileSync(join(TE3, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE3, '.kaif', 'kaif-core.mjs'), c27);
+      writeFileSync(join(TE3, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27w); writeFileSync(join(TE3, '.kaif', 'kaif-core.mjs'), c27w);
       must(run, TE3, 'install');
       r = run(TE3, `update --source ${SRC_W}`);   // run by the 2.7 core deployed above
       ok(r.code === 0 && !readTask(TE3).includes('- **withdrawn-phrases**'), 'E3 фикстура: задание написало ядро 2.7 — пункта withdrawn-phrases в нём нет', r.out.slice(-300));
@@ -350,7 +356,8 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     ok(r.code === 0, 'E2 update 2.7 → 9.9 (ядро 2.7, переведённое развёртывание) exit 0', r.out.slice(-300));
     if (pE && sE) writeFileSync(join(TE2, pE), joinModules(splitModules(readFileSync(join(TE2, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
     const vE2 = run(TE2, 'update-verify');
-    ok(r.code === 0 && !!pE && issuesOf(vE2.out) === vEIssues + 1 && vE2.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE) && !vE2.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + pE),
+    if (!snPaths.length) console.log('⏭ E2: SKIPPED — нового раздела с ' + wantPrev + ' в этой сборке нет, недоехавший раздел изобразить нечем');
+    else ok(r.code === 0 && !!pE && issuesOf(vE2.out) === vEIssues + 1 && vE2.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE) && !vE2.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + pE),
        'E2 (F7): переведённое развёртывание, квитанция ядра 2.7 — английский файл без нового раздела КРАСНЫЙ, не «проверь руками»', vE2.out.split('\n').filter((l) => /section|✖|⚠/.test(l)).join(' | ').slice(0, 400));
   }
 }

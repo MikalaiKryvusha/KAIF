@@ -51,6 +51,12 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/stop-status-guard.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/stop-owner-answer.mjs"],
+            "timeout": 10
           }
         ]
       }

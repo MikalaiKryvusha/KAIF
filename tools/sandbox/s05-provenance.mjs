@@ -109,7 +109,7 @@ r = run('report');
 ok(r.code === 0 && /inline\.md — 2 block/.test(r.out), 's05 report видит обе однострочные пары', r.out);
 
 // 8) accept однострочных пар: путь нормализован, реестр несёт СОДЕРЖИМОЕ, теги сняты чисто
-r = run('accept rules\\inline.md');
+r = run('accept "rules\\inline.md"'); // quoted: sh eats an unquoted backslash (Linux, 2.9 — the polygon in the cloud); cmd keeps it either way
 ok(r.code === 0 && /accepted 2 block/.test(r.out), 's05 accept однострочных пар отработал', r.out);
 const reg2 = JSON.parse(readFileSync(join(ROOT, '.kaif', 'provenance-accepted.json'), 'utf8'));
 const last2 = reg2.accepted.slice(-2);
