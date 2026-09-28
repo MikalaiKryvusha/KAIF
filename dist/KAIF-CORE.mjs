@@ -2279,7 +2279,7 @@ async function cmdUpdate() {
   if (!(chan in SOURCES)) die(`unknown channel: ${chan} — known: ${Object.keys(SOURCES).join(' | ')}`);
   const base = val('--source') ? resolveSourceBase(val('--source')) : SOURCES[chan];   // bare repo URL → release assets (issue #10)
   log(`update: checking ${base}`);
-  const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8'));
+  const man = JSON.parse((await fetchArtifact(base, 'kaif-manifest.json')).toString('utf8').replace(/^\uFEFF/, ''));
   if (man.version === cur.version) { log(`✅ already up to date (KAIF ${cur.version})`); return; }
   // Fail-closed on an unfinished previous update (bug 25, judge two-hop repro: clobbering the
   // task silently discarded un-merged module diffs of a translated file — forever, without a
@@ -4318,7 +4318,7 @@ async function cmdDiff() {
     try { const j = readJson(KAIF_JSON); if (j.language) LANG = checkedLang(j.language, 'the deploy marker'); } catch { /* default stands */ }
   }
   const srcBase = resolveSourceBase(src);   // bare github.com/<o>/<r> → its latest-release assets (issue #10)
-  const man2 = JSON.parse((await fetchArtifact(srcBase, 'kaif-manifest.json')).toString('utf8'));
+  const man2 = JSON.parse((await fetchArtifact(srcBase, 'kaif-manifest.json')).toString('utf8').replace(/^\uFEFF/, ''));
   mkdirSync('.kaif/install', { recursive: true });
   const tmp = '.kaif/install/DIFF-BUNDLE.md';
   writeFileSync(tmp, await fetchArtifact(srcBase, 'KAIF-CORE-BUNDLE.md'));
@@ -4437,7 +4437,7 @@ function cmdVerifyFinal() {
 
 function cmdVersion() {
   if (!okOnDisk(KAIF_JSON)) die('no .kaif/kaif.json — KAIF is not deployed here');
-  const j = JSON.parse(readFileSync(KAIF_JSON, 'utf8'));
+  const j = readJson(KAIF_JSON);
   log(`KAIF ${j.version} (released ${j.released}) · tracking: ${j.tracking} · lang: ${j.language} · agents: ${(j.agents || []).join(',')}`);
 }
 

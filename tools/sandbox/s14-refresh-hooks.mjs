@@ -231,6 +231,66 @@ tw = bomTwins('stop-status-guard.mjs', { hook_event_name: 'Stop', cwd: G, sessio
                                        { hook_event_name: 'Stop', cwd: G, session_id: sid + '-bom-b' }); // cooldown раз/сессию → два id
 ok(parseHook(tw.clean).decision === 'block' && tw.bom === tw.clean, 's14 BOM страж STATUS: `cwd` и `session_id` события с BOM прочитаны — тот же мягкий блок, побайтно', tw.bom.slice(0, 160));
 
+// ---------------------------------------------------------------- 2.9, эпик HK: корень проекта, а не `cwd` события (#94, bugs/119 №1–№2, bugs/120)
+// Агент сделал `cd src` — `cwd` события уехал в подкаталог, а маркер и STATUS.md живут в корне: таймер отвечал каждому промпту «no refresh
+// witness» при свежем маркере корня, страж STATUS молчал (#94 — два поля, две ОС). Корень теперь — ближайший предок `cwd` с `.kaif/kaif.json`;
+// приказы называют маркер и STATUS.md полным путём. Метка маркера из будущего — не свидетель (bugs/119 №2); приказ старта сессии и причина
+// стража говорят то, что наблюдено (bugs/120). На ядре v2.8 красны все случаи раздела, кроме одного контрольного (помечен).
+console.log('\n=== s14: корень проекта из подпапки, метка из будущего, слова приказов по наблюдению (эпик HK 2.9) ===');
+const DEEP = join(S, 'src', 'deep'); mkdirSync(DEEP, { recursive: true });
+const fullMarker = join(S, '.kaif', 'refresh-marker.json');
+const ctxOf = (o) => parseHook(o).hookSpecificOutput?.additionalContext || '';
+writeFileSync(marker, JSON.stringify({ at: new Date().toISOString(), docs: [], trigger: 'hour' }));
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: DEEP });
+ok(out === '', 's14 HK таймер: событие из `src/deep` при свежем маркере корня — ТИШИНА, как из корня (#94)', out.slice(0, 160));
+writeFileSync(marker, JSON.stringify({ at: new Date(Date.now() - 2 * 3600 * 1000).toISOString(), docs: [], trigger: 'hour' }));
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: DEEP });
+ok(/last refresh 1\d\d min ago/.test(out), 's14 HK таймер: из `src/deep` протухший маркер корня (2 ч) — приказ называет возраст, не «no refresh witness»', out.slice(0, 160));
+ok(ctxOf(out).includes(fullMarker), 's14 HK таймер: приказ называет маркер ПОЛНЫМ путём в корне — агент штампует его там, где хук читает', ctxOf(out).slice(0, 220));
+writeFileSync(marker, JSON.stringify({ at: new Date(Date.now() + 30 * 60 * 1000).toISOString(), docs: [], trigger: 'hour' }));
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
+ok(/in the future/.test(out) && /UserPromptSubmit/.test(out),
+   's14 HK таймер: `at` на 30 мин в будущем при свежем mtime — приказ «in the future», не тишина (bugs/119 №2)', out.slice(0, 160));
+// контрольный (зелёный и на v2.8): допуск назван константой и не равен нулю — `at` на 30 с впереди ещё свидетель
+writeFileSync(marker, JSON.stringify({ at: new Date(Date.now() + 30 * 1000).toISOString(), docs: [], trigger: 'hour' }));
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
+ok(out === '', 's14 HK таймер (контроль): `at` на 30 с впереди — в допуске, ТИШИНА', out.slice(0, 160));
+const resumeDeep = runHook(S, 'prompt-resume-word.mjs', { hook_event_name: 'UserPromptSubmit', cwd: DEEP, prompt: 'resume\nплан дня' });
+ok(isResumeOrder(resumeDeep) && ctxOf(resumeDeep).includes(fullMarker),
+   's14 HK resume-word: приказ из `src/deep` называет маркер корня полным путём', ctxOf(resumeDeep).slice(-260));
+const startCtx = (source) => ctxOf(runHook(S, 'session-start-refresh.mjs',
+  source === undefined ? { hook_event_name: 'SessionStart', cwd: DEEP } : { hook_event_name: 'SessionStart', source, cwd: DEEP }));
+for (const source of ['startup', 'resume', undefined]) {
+  const c = startCtx(source);
+  ok(/\(re\)started/.test(c) && /"trigger": "ritual:session-start"/.test(c) && !/compacted/.test(c) && !/"trigger": "compaction"/.test(c),
+     `s14 HK SessionStart ${source || 'без поля source'}: «(re)started» и trigger "ritual:session-start" — не «compacted» (bugs/120 №1)`, c.slice(0, 200));
+}
+const compactCtx = startCtx('compact');
+ok(/compacted/.test(compactCtx) && /"trigger": "compaction"/.test(compactCtx) && compactCtx.includes(fullMarker),
+   's14 HK SessionStart compact из `src/deep`: «compacted», trigger "compaction", маркер корня полным путём', compactCtx.slice(0, 220));
+// страж STATUS: фикстура-проект с маркером развёртывания, событие из подкаталога; затем коммит — чистое дерево и свежий коммит,
+// ДРУГАЯ сессия того же проекта (cooldown ключён по session_id, bugs/119 «обратный ассерт»)
+const G2 = join(ROOT, 'git-root-fx'); seedHooks(G2);
+writeFileSync(join(G2, '.kaif', 'kaif.json'), '{}');       // маркер развёртывания — его каталог и есть корень
+mkdirSync(join(G2, 'src', 'deep'), { recursive: true });
+const git2 = (...a) => execFileSync('git', a, { cwd: G2, stdio: 'pipe' });
+git2('init', '-q'); git2('config', 'user.email', 'sbx@sbx'); git2('config', 'user.name', 'sbx');
+writeFileSync(join(G2, 'STATUS.md'), '# status'); writeFileSync(join(G2, 'src', 'deep', 'a.txt'), 'a');
+git2('add', '.'); git2('commit', '-qm', 'seed');
+utimesSync(join(G2, 'STATUS.md'), oldSec, oldSec);          // STATUS «не тронут» 5 часов
+writeFileSync(join(G2, 'work.txt'), 'w');                   // незакоммиченная правка
+out = runHook(G2, 'stop-status-guard.mjs', { hook_event_name: 'Stop', cwd: join(G2, 'src', 'deep'), session_id: sid + '-hk-a' });
+js = parseHook(out);
+ok(js.decision === 'block' && (js.reason || '').includes(join(G2, 'STATUS.md')),
+   's14 HK страж STATUS: событие из `src/deep` — тот же мягкий блок, что из корня; STATUS.md назван полным путём (#94)', out.slice(0, 220));
+ok(/uncommitted changes/.test(js.reason || '') && !/this session changed the tree/.test(js.reason || ''),
+   's14 HK страж STATUS: причина называет наблюдение — незакоммиченные правки, не «this session changed the tree» (bugs/120 №2)', (js.reason || '').slice(0, 200));
+git2('add', '.'); git2('commit', '-qm', 'work');
+out = runHook(G2, 'stop-status-guard.mjs', { hook_event_name: 'Stop', cwd: G2, session_id: sid + '-hk-b' });
+js = parseHook(out);
+ok(js.decision === 'block' && /a commit landed within the last 3 h/.test(js.reason || ''),
+   's14 HK страж STATUS: чистое дерево и свежий коммит, другая сессия — блок, причина называет коммит (bugs/120 №2)', out.slice(0, 220));
+
 // ---------------------------------------------------------------- ось «инструкция исполнима адресатом» (bugs/121 F9)
 // README модуля — единственный документ, по которому ЧЕЛОВЕК подключает хуки, и его командные строки не
 // исполнял никто: проба была записана POSIX-синтаксисом (`< /dev/null`, `printf`), а на оболочке владельца
@@ -326,31 +386,62 @@ const commandsOf = (node, acc = []) => {
   return acc;
 };
 const sampleTxt = (f) => commandsOf(readJson(join(S, '.kaif', 'hooks', f))).join('\n');
-// система → [файл образца, требуемый флаг формы, скрипты которые ОБЯЗАНЫ быть, скрипты которых быть НЕ ДОЛЖНО]
+// система → [файл образца, форма вывода]. ВОЗМОЖНОСТИ систем (какой хук образец обязан нести, какого — нет) здесь больше не копия:
+// единственный источник — таблица README модуля «System × Canon after compaction · Hourly timer · STATUS guard», разобранная ниже
+// (bugs/118 №3, 2.9 HK: три рукописные копии без связи — мутант ячейки ❌ → ✅ проходил сборку, пары и свод зелёными).
 const SAMPLES = [
-  // prompt-resume-word.mjs (2.7) — ТОЛЬКО Claude Code: поле prompt чужих событий с доки не снято,
-  // образцы его не обещают (README модуля: «prompt field not verified»)
-  ['Codex', 'sample-codex-hooks.json', null,
-   ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs'], ['stop-status-guard.mjs', 'prompt-resume-word.mjs']],
-  ['Cursor', 'sample-cursor-hooks.json', '--emit cursor',
-   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs', 'prompt-resume-word.mjs']],
-  ['Copilot', 'sample-copilot-hooks.json', '--emit copilot',
-   ['session-start-refresh.mjs'], ['prompt-refresh-timer.mjs', 'stop-status-guard.mjs', 'prompt-resume-word.mjs']],
-  ['Antigravity', 'sample-antigravity-hooks.json', '--emit antigravity',
-   ['prompt-refresh-timer.mjs'], ['session-start-refresh.mjs', 'stop-status-guard.mjs', 'prompt-resume-word.mjs']],
+  ['Codex', 'sample-codex-hooks.json', null],   // Codex читает форму Claude Code дословно — флага формы у него быть НЕ должно
+  ['Cursor', 'sample-cursor-hooks.json', 'cursor'],
+  ['Copilot', 'sample-copilot-hooks.json', 'copilot'],
+  ['Antigravity', 'sample-antigravity-hooks.json', 'antigravity'],
 ];
-for (const [sys, file, emit, must, mustNot] of SAMPLES) {
-  ok(readJson(join(S, '.kaif', 'hooks', file)) !== null, `s14/O5 ${sys}: образец ${file} — валидный JSON`);
+// Хуки только Claude Code: поле prompt и запись сессии чужих событий с доки не сняты — образцы их не обещают (README модуля)
+const CLAUDE_ONLY = ['prompt-resume-word.mjs', 'pretool-owner-word.mjs', 'stop-owner-answer.mjs'];
+// bugs/118 №2 (2.9 HK): форма вывода судится ТОКЕНАМИ команды, а не подстрокой — у каждой команды, зовущей скрипт модуля, ровно один
+// `--emit` ровно с этим значением (`--emit cursorX` и лишний `--emit cursor` ПЕРЕД требуемым проходили `includes`).
+const emitsOf = (cmd) => { const t = cmd.split(/\s+/); return t.flatMap((w, i) => (w === '--emit' ? [t[i + 1] ?? ''] : [])); };
+for (const [sys, file, shape] of SAMPLES) {
+  const json = readJson(join(S, '.kaif', 'hooks', file));
+  ok(json !== null, `s14/O5 ${sys}: образец ${file} — валидный JSON`);
   const txt = sampleTxt(file);
-  ok(must.every((m) => txt.includes(`.kaif/hooks/${m}`)),
-     `s14/O5 ${sys}: образец адресует развёрнутые скрипты (${must.join(', ')})`);
-  ok(mustNot.every((m) => !txt.includes(`.kaif/hooks/${m}`)),
-     `s14/O5 ${sys}: образец НЕ обещает хук, который система не тянет (${mustNot.join(', ')})`);
-  if (emit) ok(txt.includes(emit), `s14/O5 ${sys}: образец называет форму вывода явно (${emit})`);
+  ok(CLAUDE_ONLY.every((m) => !txt.includes(`.kaif/hooks/${m}`)),
+     `s14/O5 ${sys}: образец НЕ обещает хуки только Claude Code (${CLAUDE_ONLY.join(', ')})`);
+  const calls = commandsOf(json).filter((c) => /\.kaif\/hooks\/[\w-]+\.mjs/.test(c));
+  const bad = calls.filter((c) => { const e = emitsOf(c); return shape ? !(e.length === 1 && e[0] === shape) : e.length !== 0; });
+  ok(calls.length > 0 && bad.length === 0,
+     `s14/O5 ${sys}: каждая команда образца ${shape ? `несёт ровно один --emit ${shape}` : 'без --emit (контракт референса)'} (bugs/118 №2)`, bad.join(' · ') || 'команд нет');
 }
-// Codex — единственный, кто читает форму Claude Code дословно: флага формы у него быть НЕ должно
-ok(!sampleTxt('sample-codex-hooks.json').includes('--emit'),
-   's14/O5 Codex: флага формы нет — контракт совпадает с референсом дословно');
+// Таблица возможностей README → что образец обязан и не должен нести. Ячейка ✅ — скрипт колонки в образце есть, ❌ — его нет; строка с
+// образцом, пропавшая из таблицы, и ячейка без ✅/❌ — красные. Разбор по неэкранированной `|` (в ячейках бывает `\|`).
+const CAP_COLUMNS = [['Canon after compaction', 'session-start-refresh.mjs'], ['Hourly timer', 'prompt-refresh-timer.mjs'], ['STATUS guard', 'stop-status-guard.mjs']];
+const tableCells = (line) => line.split(/(?<!\\)\|/).slice(1, -1).map((c) => c.trim());
+const capRows = (() => {
+  const lines = readmeTxt.split(/\r?\n/);
+  const h = lines.findIndex((l) => /^\|\s*System\s*\|\s*Sample\s*\|/.test(l));
+  if (h < 0) return [];
+  const head = tableCells(lines[h]);
+  const rows = [];
+  for (let i = h + 2; i < lines.length && lines[i].startsWith('|'); i++) {
+    const cells = tableCells(lines[i]);
+    rows.push(Object.fromEntries(head.map((k, j) => [k, cells[j] || ''])));
+  }
+  return rows;
+})();
+const sampleOfRow = (r) => (String(r.Sample || '').match(/`([\w.-]+\.json)`/) || [])[1];
+const SAMPLE_FILES = ['settings-fragment.json', ...SAMPLES.map((s) => s[1])];
+const tableRows = capRows.filter((r) => SAMPLE_FILES.includes(sampleOfRow(r)));
+ok(tableRows.length === SAMPLE_FILES.length,
+   `s14/O5 таблица README: строка на каждый образец модуля (${tableRows.length} из ${SAMPLE_FILES.length}; bugs/118 №3)`);
+for (const r of tableRows) {
+  const file = sampleOfRow(r);
+  const txt = file === 'settings-fragment.json' ? fragTxt : sampleTxt(file);
+  const diff = CAP_COLUMNS.flatMap(([col, script]) => {
+    const cell = String(r[col] || ''); const has = txt.includes(`.kaif/hooks/${script}`);
+    const want = cell.startsWith('✅') ? true : cell.startsWith('❌') ? false : null;
+    return want === has ? [] : [`«${col}» = ${cell.slice(0, 40) || '<пусто>'}, а ${script} в образце ${has ? 'есть' : 'нет'}`];
+  });
+  ok(diff.length === 0, `s14/O5 таблица README ↔ ${file}: три ячейки возможностей совпадают с тем, что образец несёт (bugs/118 №3)`, diff.join(' · '));
+}
 
 // ------------------------------------------------- ОСЬ ИМЁН СОБЫТИЙ (bugs/66 №4)
 // Критерий 3 плана 60 — «имена событий совпадают с подтверждённым контрактом» — не стерёг НИКТО.

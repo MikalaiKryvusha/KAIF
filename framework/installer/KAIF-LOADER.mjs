@@ -94,7 +94,7 @@ async function fetchOne(name) {
 // ---------------------------------------------------------------------------- main
 try {
   log(`KAIF-LOADER: fetching installer from ${SOURCE}`);
-  const manifest = JSON.parse((await fetchOne('kaif-manifest.json')).toString('utf8'));
+  const manifest = JSON.parse((await fetchOne('kaif-manifest.json')).toString('utf8').replace(/^\uFEFF/, ''));
   mkdirSync(INSTALL_DIR, { recursive: true });
 
   const fetched = [];
@@ -117,9 +117,9 @@ try {
   const rehearsal = val('--rehearsal');
   if (rehearsal) {
     let rc = null;
-    try { rc = JSON.parse(readFileSync(rehearsal, 'utf8')); } catch { dieSoft(`--rehearsal ${rehearsal}: no such readable JSON receipt — nothing was written`); }
+    try { rc = JSON.parse(readFileSync(rehearsal, 'utf8').replace(/^\uFEFF/, '')); } catch { dieSoft(`--rehearsal ${rehearsal}: no such readable JSON receipt — nothing was written`); }
     let from = null;
-    try { from = JSON.parse(readFileSync('.kaif/kaif.json', 'utf8')).version; } catch { /* no deployment: the core refuses the flag itself */ }
+    try { from = JSON.parse(readFileSync('.kaif/kaif.json', 'utf8').replace(/^\uFEFF/, '')).version; } catch { /* no deployment: the core refuses the flag itself */ }
     if (from && (String(rc.from) !== String(from) || String(rc.to) !== String(manifest.version)))
       dieSoft(`--rehearsal ${rehearsal}: it rehearsed ${rc.from} → ${rc.to}, and this run is ${from} → ${manifest.version} — nothing was written`);
     const core = fetched.find(([n]) => n === 'KAIF-CORE.mjs');

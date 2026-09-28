@@ -378,6 +378,54 @@ function selfProofRecordLabels() {
   return fails;
 }
 
+// 5o. Every JSON the payload reads from a file, stdin or the network drops a leading byte-order mark ON THE SAME LINE (2.9, epic HK;
+//     origin bug 119, TWINS (в)): Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` put EF BB BF in front of what they write,
+//     and `JSON.parse` throws on it — the reader's `catch` then falls back to a default in silence (a marker read as absent, a
+//     deployment as not there). Accepted forms: the escape of U+FEFF in a `replace` on the line, or a strip helper (`stripBom(`);
+//     a whole-file reader that strips inside (`readJson(` of the core) is no `JSON.parse` at the call site and is not scanned.
+// @guard json-reads-strip-bom
+// THREAT:         a field tool reads `.kaif/kaif.json`, a refresh marker or a baseline written by a Windows editor — the parse
+//                 throws, the reader falls back silently, and the tool reports a state that is not the owner's (bug 119, nine sites)
+// PROVED-AGAINST: `--selftest` — a read without the strip → named with file and line; the escape on the line, `stripBom(` and a
+//                 fetched manifest with the strip → silent; the real payload at every build; the v2.8 payload names 21 lines
+// GAP:            a JSON read split over two lines, or through a variable read on an earlier line, is not seen — the scan is
+//                 line-local by design (the form it enforces is "strip where you read")
+// ON-REAL-PATH:   NOT YET — the path is a field file with a BOM read by a shipped tool
+const BOM_ESCAPE_TEXT = String.fromCharCode(92) + 'uFEFF';   // the six characters of the escape, never the mark itself (bug 122)
+const JSON_READ_RE = /JSON\.parse\(\s*(?:\(?\s*await\s+)?[^;]*?(?:readFileSync|readFile|fetchArtifact|fetchOne)\s*\(/;
+function unstrippedJsonReads(files) {   // files: { '<path>': <source text> }
+  const errs = [];
+  for (const [p, src] of Object.entries(files))
+    src.split(/\r?\n/).forEach((l, i) => {
+      if (JSON_READ_RE.test(l) && !l.includes(BOM_ESCAPE_TEXT) && !l.includes('stripBom('))
+        errs.push(`guard 5o: ${p}:${i + 1} parses JSON it reads without dropping a leading byte-order mark — add ` +
+          `.replace(/^${BOM_ESCAPE_TEXT}/, '') to what is read (or the module's stripBom) on this line: ${l.trim().slice(0, 90)}`);
+    });
+  return errs;
+}
+const payloadModules = (dir, acc = {}) => {
+  for (const n of readdirSync(dir)) {
+    const p = join(dir, n);
+    if (statSyncTop(p).isDirectory()) payloadModules(p, acc);
+    else if (n.endsWith('.mjs')) acc[relative(ROOT, p).split('\\').join('/')] = readFileSync(p, 'utf8');
+  }
+  return acc;
+};
+function selfProofJsonReads() {
+  const fails = [];
+  const strip = `.replace(/^${BOM_ESCAPE_TEXT}/, '')`;
+  const bare = unstrippedJsonReads({ 'a.mjs': "const x = 1;\nconst j = JSON.parse(readFileSync(MARKER, 'utf8'));" });
+  if (!(bare.length === 1 && bare[0].includes('a.mjs:2'))) fails.push('чтение без снятия BOM НЕ названо файлом и строкой: ' + bare.join(' | '));
+  const net = unstrippedJsonReads({ 'b.mjs': "const m = JSON.parse((await fetchOne('kaif-manifest.json')).toString('utf8'));" });
+  if (net.length !== 1) fails.push('манифест из сети без снятия BOM НЕ назван');
+  const good = unstrippedJsonReads({
+    'c.mjs': `const j = JSON.parse(readFileSync(MARKER, 'utf8')${strip});\nconst k = JSON.parse(stripBom(readFileSync(p, 'utf8')));\n` +
+      `const m = JSON.parse((await fetchOne('kaif-manifest.json')).toString('utf8')${strip});\nconst z = JSON.parse(text);`,
+  });
+  if (good.length) fails.push('верные формы названы: ' + good.join(' | '));
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -614,6 +662,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of nFails) console.error('✖ selfproof 5n (RL 2.8): ' + f);
   if (nFails.length) { console.error(`\n❌ check-framework --selftest: гард 5n — ${nFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5n: подпись строки записи языкового пакета вне списка ядра названа поимённо; лишняя подпись и ядро без списка названы; равные — молчат');
+  const oFails = selfProofJsonReads();
+  for (const f of oFails) console.error('✖ selfproof 5o (HK 2.9): ' + f);
+  if (oFails.length) { console.error(`\n❌ check-framework --selftest: гард 5o — ${oFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5o: JSON, прочитанный из файла или сети без снятия BOM, назван файлом и строкой; снятие в строке, stripBom и разбор текста молчат');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -740,6 +792,8 @@ errors.push(...walkerDrift(readFileSync(join(ROOT, WALKER_CORE), 'utf8'),
   Object.fromEntries(WALKER_COPIES.map((p) => [p, existsSync(join(ROOT, p)) ? readFileSync(join(ROOT, p), 'utf8') : null]))));
 // 5n. The record label of every language face is known to the scan — declared with its self-proof near the top.
 errors.push(...recordLabelsDrift(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8'), recordLabelPacks()));
+// 5o. Every JSON the payload reads strips a leading byte-order mark on the line — declared with its self-proof near the top.
+errors.push(...unstrippedJsonReads(payloadModules(join(ROOT, 'framework'))));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the

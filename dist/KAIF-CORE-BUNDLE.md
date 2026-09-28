@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "e0f5acf1f725ab0db13c805d7ec8b93906c86f5900f93f1764131110ee588521",
+    "sourceTree": "4edfda4fd3bcb2756831f8e95f7a311ed9292dbbe08deff1c1c677c93da48223",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -102,7 +102,8 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.9": [
-      "THE OWNER'S WORD MID-TURN GETS AN ANSWER HE CAN SEE (2.9, epic OA; origin bug 123 — on 2.8 one project's first text about the owner's mid-turn word came 108 tool calls later: an answer written between tool calls may never reach the chat, the final message does): a sixth refresh hook, `.kaif/hooks/stop-owner-answer.mjs` (event `Stop`, Claude Code only), reads the turn's FINAL message — the vendor hands it over as `last_assistant_message`, without the transcript — and asks ONCE for the answer when a response ends without opening an answer to each owner's mid-turn message of that turn with the message's first words; a response that answers and ends with a last line `⏩ <next step>` is resumed by the hook — the work goes on without the owner's next word. `pretool-owner-word.mjs` re-reads the lagging transcript before it refuses a call. \"The owner's word mid-turn\" now says: answer in a response of its own (no tool call after it — a text between tool calls may be recorded as reasoning and never reach the chat), open it with the owner's first words. Wire the new `Stop` entry of `.kaif/hooks/settings-fragment.json`."
+      "THE OWNER'S WORD MID-TURN GETS AN ANSWER HE CAN SEE (2.9, epic OA; origin bug 123 — on 2.8 one project's first text about the owner's mid-turn word came 108 tool calls later: an answer written between tool calls may never reach the chat, the final message does): a sixth refresh hook, `.kaif/hooks/stop-owner-answer.mjs` (event `Stop`, Claude Code only), reads the turn's FINAL message — the vendor hands it over as `last_assistant_message`, without the transcript — and asks ONCE for the answer when a response ends without opening an answer to each owner's mid-turn message of that turn with the message's first words; a response that answers and ends with a last line `⏩ <next step>` is resumed by the hook — the work goes on without the owner's next word. `pretool-owner-word.mjs` re-reads the lagging transcript before it refuses a call. \"The owner's word mid-turn\" now says: answer in a response of its own (no tool call after it — a text between tool calls may be recorded as reasoning and never reach the chat), open it with the owner's first words. Wire the new `Stop` entry of `.kaif/hooks/settings-fragment.json`.",
+      "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`)."
     ],
     "2.8": [
       "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is shorter than the 300 lines of 2.7: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules.",
@@ -3657,8 +3658,8 @@ mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context
 agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
-`stop-status-guard.mjs` (work happened while `STATUS.md` went stale → one soft block per
-session), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
+`stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
+session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
@@ -3667,7 +3668,8 @@ Code only), `stop-owner-answer.mjs` (2.9, epic OA, event `Stop`: an owner's mid-
 `last_assistant_message`, handed over without the transcript — does not open an answer with its first words → ONE soft block, the
 reason quotes the owner's words; an answer ending with a last line `⏩ <next step>` → the hook resumes the work; Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
 on the STATUS guard, and the two owner-word hooks have none — it refuses one call per owner's message and the work goes on; injections are orders, never
-document bodies. Activation
+document bodies. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
+folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
 is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
 `settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
 complete contour on its own.
@@ -11560,7 +11562,7 @@ export function implementedGate(root) {
 //  field clone at its S1-era state names the #86 decision «answered 17 d ago»; report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
 export function answeredAgeDays(root, rel, now = new Date()) {
   let at = NaN;
-  try { at = Date.parse(JSON.parse(readFileSync(decisionPaths(root, rel).decision, 'utf8')).at); } catch { at = NaN; }
+  try { at = Date.parse(JSON.parse(stripBom(readFileSync(decisionPaths(root, rel).decision, 'utf8'))).at); } catch { at = NaN; }
   return Number.isNaN(at) ? queueDocAgeDays(root, rel, now) : Math.max(0, Math.floor((now.getTime() - at) / DAY_MS));
 }
 export function awaitingApplication(root, now = new Date()) {
@@ -12182,7 +12184,7 @@ function checkLock(root, key) {
   const p = lockPath(root, key);
   if (!existsSync(p)) return null;
   let lock;
-  try { lock = JSON.parse(readFileSync(p, 'utf8')); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
+  try { lock = JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
   try { process.kill(lock.pid, 0); return lock; }                          // alive → the live address (I29)
   catch (e) {
     if (e.code === 'EPERM') return lock;                                   // alive under another user → still live
@@ -12236,7 +12238,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
         if (s === null || start.get(f) === s) continue;
         clearInterval(tick);
         let d = {};
-        try { d = JSON.parse(readFileSync(f, 'utf8')); } catch { /* a record being written — named by its file below */ }
+        try { d = JSON.parse(stripBom(readFileSync(f, 'utf8'))); } catch { /* a record being written — named by its file below */ }
         const rel = d.document || relDoc(root, f);
         const answers = Object.entries(d.answers || {}).map(([q, a]) => q + ' = ' + (a.choice || (a.text ? 'text' : 'comment'))).join(', ');
         log('Recorded: ' + rel + (answers ? ' — ' + answers : '') + ' · questions left: ' + leftIn(root, rel)
@@ -12905,7 +12907,7 @@ export async function selftest(log = console.log) {
   writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
   ok(ownerDocs(root).some((d) => d.doc === IMPL) && listQueue(root).implGate.length === 0, 'an open question is owed to the owner before the implemented mark');
   recordImplemented(root, IMPL, 'Q1', 'commit abc123');
-  const implMap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+  const implMap = JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8')));
   ok(implMap[IMPL] && implMap[IMPL].Q1.where === 'commit abc123' && /^\d{4}-/.test(implMap[IMPL].Q1.at), 'implemented.json carries the fact with its address and its moment (I44)');
   const lq = listQueue(root);
   ok(!ownerDocs(root).some((d) => d.doc === IMPL) && lq.exitCode === 2 && lq.lines.some((l) => l.includes(IMPL) && /Q1/.test(l) && /implemented, but open/.test(l)),
@@ -12918,12 +12920,12 @@ export async function selftest(log = console.log) {
     const WD = 'interviews/interview_096_withdrawn.md';
     writeFileSync(join(root, WD), '# Interview #096\n\n> Status: awaiting\n\n### Q1. Print the delivery line?\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n\n### Q2. Keep it?\n\n- **A)** yes\n- **B)** no\n\n**Answer:** A\n');
     const w1 = markWithdrawn(root, WD, 'Q1', 'the delivery line is withdrawn in 2.7');
-    const wmap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+    const wmap = JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8')));
     ok(w1.code === 0 && wmap[WD] && wmap[WD].Q1.withdrawn === true && wmap[WD].Q1.why === 'the delivery line is withdrawn in 2.7' && !ownerDocs(root).some((d) => d.doc === WD),
       'a question a withdrawal made moot: --mark-withdrawn records withdrawn: true with the reason, and the queue no longer raises it (2.8, criterion 13)');
     ok(buildPage(root, WD).html.includes('withdrawn — the delivery line is withdrawn in 2.7') && !buildPage(root, WD).html.includes('implemented → withdrawn'),'the page renders a withdrawn question as «withdrawn — <reason>», never as implemented');
     const w2 = markWithdrawn(root, WD, 'Q2', 'moot');
-    ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'))[WD].Q2,
+    ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8')))[WD].Q2,
       'an ANSWERED question is refused (exit 1, nothing recorded) — a withdrawal is never an answer over the owner\'s word');
     rmSync(join(root, WD), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
     // judge CH5 F2: the Russian pack carries its own form of each new text — a missing key falls back to English on an owner's page
@@ -13013,7 +13015,7 @@ export async function selftest(log = console.log) {
   ok(threw, 'mockup face refuses a non-image loudly');
   // bugs/113: "Done" with no remarks is a RECORDED decision on the mockup and proofreading faces (never a refusal)
   const nr = recordDecision(root, PNG, { kind: 'mockup', comment: '', comments: {}, noRemarks: true }, cfgOf(root));
-  ok(nr.noRemarks === true && JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'mock.decision.json'), 'utf8')).noRemarks === true,
+  ok(nr.noRemarks === true && JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'mock.decision.json'), 'utf8'))).noRemarks === true,
     'mockup face: Done with empty fields records noRemarks: true (bugs/113)');
   ok(mp.html.includes(texts('en').ph.noRemarks) && mp.html.includes("p.noRemarks=true") && !mp.html.includes("CFG.face==='mockup'&&!(p.comment"),
     'mockup page carries the no-remarks hint and the client gate no longer refuses an empty mockup/proofreading record (bugs/113)');
@@ -13095,7 +13097,7 @@ export async function selftest(log = console.log) {
   const three = '# Interview #008\n\n> Status: awaiting\n\n' + MQ(1) + '\n' + MQ(2) + '\n' + MQ(3);
   const MD = 'interviews/interview_008_merge.md';
   writeFileSync(join(root, MD), three);
-  const decOf = (d) => JSON.parse(readFileSync(decisionPaths(root, d, cfg).decision, 'utf8'));
+  const decOf = (d) => JSON.parse(stripBom(readFileSync(decisionPaths(root, d, cfg).decision, 'utf8')));
   const rec1 = recordDecision(root, MD, { answers: { Q1: { choice: 'A' } }, rev: bodyHash(three) }, cfg);
   const rec2 = recordDecision(root, MD, { answers: { Q2: { choice: 'B' } }, rev: decOf(MD).revAfter }, cfg);
   const d2 = decOf(MD);
@@ -14573,7 +14575,7 @@ export function declaredClasses(text) {
 function danglingOf(value, root, tree) {
   const missing = [];
   let pkg = null;
-  try { pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')); } catch { /* no package.json — npm scripts are not checked */ }
+  try { pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8').replace(/^\uFEFF/, '')); } catch { /* no package.json — npm scripts are not checked */ }
   for (const m of value.matchAll(NPM_RUN))
     if (pkg && pkg.scripts && !(m[1] in pkg.scripts)) missing.push(`npm run ${m[1]}`);
   // A path the project deliberately IGNORES is expected to be absent from a checkout — a runtime
@@ -14713,9 +14715,9 @@ const positional = () => {
 
 // An explicit `--baseline <file>` must exist; without the flag the project's own file next to the journal is read when present.
 function loadBaseline(path, fallback) {
-  if (!path) return fallback && existsSync(fallback) ? new Set(JSON.parse(readFileSync(fallback, 'utf8')).ids || []) : new Set();
+  if (!path) return fallback && existsSync(fallback) ? new Set(JSON.parse(readFileSync(fallback, 'utf8').replace(/^\uFEFF/, '')).ids || []) : new Set();
   if (!existsSync(path)) { console.error(`\u2716 experience-lint: no baseline at ${path}`); process.exit(1); }
-  return new Set(JSON.parse(readFileSync(path, 'utf8')).ids || []);
+  return new Set(JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, '')).ids || []);
 }
 
 // `check --write-baseline`: the first capture records every entry id of the journal; a later one only SHRINKS the line \u2014 it keeps
@@ -14727,7 +14729,7 @@ function loadBaseline(path, fallback) {
 //  "inherited field debt 122" — testcases/reports/2026-09-25_ck57b-experience-baseline.md]
 function writeBaseline(text, path) {
   const ids = parseEntries(text).map((e) => e.id);
-  const prev = existsSync(path) ? new Set(JSON.parse(readFileSync(path, 'utf8')).ids || []) : null;
+  const prev = existsSync(path) ? new Set(JSON.parse(readFileSync(path, 'utf8').replace(/^\uFEFF/, '')).ids || []) : null;
   const kept = prev ? ids.filter((id) => prev.has(id)) : ids;
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, JSON.stringify({
@@ -16818,7 +16820,7 @@ function bugCheck(file) {
 function homeOf(arg) {
   if (arg) return arg;
   try {
-    const j = JSON.parse(readFileSync(MARKER, 'utf8'));
+    const j = JSON.parse(readFileSync(MARKER, 'utf8').replace(/^\uFEFF/, ''));
     if (typeof j.testdocs === 'string' && j.testdocs.trim()) return j.testdocs.trim();
   } catch { /* no marker or unreadable — the default home stands */ }
   return DEFAULT_HOME;
@@ -17478,13 +17480,13 @@ function readTemplateShas() {
   try { return JSON.parse(readFileSync(DEPLOY_MANIFEST, 'utf8').replace(/^\uFEFF/, '')).templateShas || null; } catch { return null; }
 }
 function readMarker() {
-  try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8')); } catch { return null; }
+  try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8').replace(/^\uFEFF/, '')); } catch { return null; }
 }
 
 // ---------------------------------------------------------------------------
 function portraitPath() {
   try {
-    const j = JSON.parse(readFileSync(MARKER, 'utf8'));
+    const j = JSON.parse(readFileSync(MARKER, 'utf8').replace(/^\uFEFF/, ''));
     if (typeof j.voicePortrait === 'string' && j.voicePortrait.trim()) return j.voicePortrait.trim();
   } catch { /* no marker or unreadable — the default name stands */ }
   return DEFAULT_PORTRAIT;
@@ -17782,7 +17784,7 @@ lacking them.
 |---|---|---|---|---|
 | `session-start-refresh.mjs` | `SessionStart`, matcher `compact\|clear` | none — compaction is itself rare | one order per compaction or clear | injects the ORDER to re-read the re-read core + stamp the witness |
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
-| `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
+| `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
 | `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | ONCE per owner's message: the first tool call after it with no text answer yet is refused, the next passes — the work goes on (the origin owner's word, 2026-09-25); a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, continue, repeat the answer in the turn's final text; before refusing it re-reads the transcript twice, 200 ms apart — the vendor writes it asynchronously (2.9, epic OA) |
 | `stop-owner-answer.mjs` (2.9, epic OA) | `Stop` | an owner's message typed mid-turn in THIS turn, and the turn's final response (`last_assistant_message`) does not open an answer to it with its first words (normalised whole words) | **once per stop** — `stop_hook_active` (a continuation) is silent, so it never loops | soft block: the reason quotes the owner's words — answer them now in a response of its own (no tool call after it); a response that answers and ends with a last line `⏩ <next step>` → block «continue» — the work goes on without the owner's next word |
@@ -17796,6 +17798,16 @@ the resume word is a separate order; injections are ORDERS to re-read, never doc
 (the output cap is 10 000 characters, and pasting docs would spend the context the refresh
 restores); the blocking hooks are the two `Stop` ones and the owner-word call gate, each at most once per trigger. A hook never breaks the session: on any internal
 error it exits 0 silently.
+
+**The hooks judge the project, not the folder the agent went into** (2.9, epic HK; origin ticket #94). The event's `cwd` follows
+every `cd` of the agent, so the refresh marker, `STATUS.md` and git are read in the PROJECT ROOT — the nearest folder above `cwd`
+(itself included) that holds `.kaif/kaif.json`; with none, `cwd` itself. Every order names the marker by its full path, so the agent
+stamps it where the hook reads it. A marker whose `at` lies more than two minutes in the future is no witness — the timer speaks.
+The session-start order follows the event's `source`: `compact` → "compacted" and trigger `compaction`, `clear` → "cleared" and
+`ritual:/clear`, a start, a resume or no source → "(re)started" and `ritual:session-start`. The root search runs only once the
+script is started: the Claude Code fragment names it through `${CLAUDE_PROJECT_DIR}`; the other systems' samples start it by the
+relative path `node .kaif/hooks/…`, and whether those systems launch a hook from the project root or from the agent's current
+folder is NOT verified — a launch from a subfolder would not find the script at all.
 
 ## Opt-in — an explicit owner step
 
@@ -18074,12 +18086,36 @@ try {
 // Cursor (`beforeSubmitPrompt` → only `continue`/`user_message`) and GitHub Copilot
 // (`additionalContext` is not permitted on `userPromptSubmitted`) cannot carry this hook at
 // all — they ship the session-start hook only, and .kaif/hooks/README.md says so per system.
-import { readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+//
+// 2.9, epic HK (origin ticket #94, bugs 119 no. 1-2): the marker is read in the PROJECT ROOT, not in the event's `cwd` — one `cd src`
+// by the agent moved `cwd` and the timer answered every prompt with "no refresh witness" while the root marker was fresh; the order
+// names the marker by its FULL path, so the agent stamps it where this hook reads it. A marker `at` later than now is no witness: a
+// zone slip stamped "…Z" over local digits lies hours ahead, and a future `at` used to silence the timer until that moment came.
+// [TESTED: 2026-09-28 · suite s14: an event from <root>/src/deep reads like one from the root (fresh marker - silent, 2 h - the
+//  order with the age), the order names the marker by its full path, an `at` 30 min ahead with a fresh mtime gives the order, 30 s
+//  ahead stays silent; red on the v2.8 core; mutants M22-M23; on the live origin tree an event from tools/sandbox with the root
+//  marker 21 min old - silent, where the v2.8 timer printed "no refresh witness found"; report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
+import { readFileSync, statSync, existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
 
 const OUTPUT_CAP = 10000;           // Claude Code caps hook output strings at 10 000 characters
 const DEFAULT_INTERVAL_MIN = 60;    // the canon's "refresh at least once an hour"
 const MARKER = '.kaif/refresh-marker.json';
+const DEPLOYMENT = join('.kaif', 'kaif.json');  // the deployment marker: its directory IS the project root
+const FUTURE_TOLERANCE_MIN = 2;     // an `at` further ahead than this is no witness (two processes of one machine share a clock;
+                                    // a zone slip is whole hours, so two minutes separates the two without false alarms)
+
+// The project root, not the event's `cwd`: the nearest ancestor of `cwd` (itself included) that holds the deployment marker;
+// none → `cwd` itself, as before. Twins — the same function in stop-status-guard.mjs, session-start-refresh.mjs and
+// prompt-resume-word.mjs (the module keeps self-contained scripts; suite s14 feeds each an event from a subfolder).
+function projectRoot(cwd) {
+  for (let d = resolve(cwd); ;) {
+    if (existsSync(join(d, DEPLOYMENT))) return d;
+    const up = dirname(d);
+    if (up === d) return cwd;
+    d = up;
+  }
+}
 
 // Same order, different envelope per system — see the PORTABILITY note above.
 const ENVELOPES = {
@@ -18102,7 +18138,7 @@ try {
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — fall back to process.cwd() */ }
 
-  const markerPath = join(cwd, MARKER);
+  const markerPath = join(projectRoot(cwd), MARKER);
   // Age of the last refresh: the marker's own `at` field is the truth; a malformed field falls
   // back to the file mtime; a missing file means "never refreshed" → infinitely stale.
   let ageMin = Infinity;
@@ -18115,11 +18151,13 @@ try {
     ageMin = (Date.now() - at) / 60000;
   } catch { /* no marker at all — stays Infinity */ }
 
-  if (ageMin > intervalMin) {
-    const ageLabel = ageMin === Infinity ? 'no refresh witness found this session' : `last refresh ${Math.round(ageMin)} min ago`;
+  const future = ageMin < -FUTURE_TOLERANCE_MIN;
+  if (future || ageMin > intervalMin) {
+    const ageLabel = future ? `the marker "at" lies ${Math.ceil(-ageMin)} min in the future - no witness`
+      : ageMin === Infinity ? 'no refresh witness found this session' : `last refresh ${Math.round(ageMin)} min ago`;
     const order =
       `KAIF context refresh (timer: ${ageLabel}, interval ${intervalMin} min). Before starting on this prompt: ` +
-      `re-read the re-read core (AGENT_GUIDE.md → "Context refresh"), re-stamp .kaif/refresh-marker.json ` +
+      `re-read the re-read core (AGENT_GUIDE.md → "Context refresh"), re-stamp ${markerPath} ` +
       `{ "at": "<ISO>", "docs": [...], "trigger": "hour" } and put the acceptance quote in the chat — one concrete ` +
       `line from what you re-read, relevant to the task. This reminder repeats until the marker is actually refreshed.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
@@ -18182,9 +18220,25 @@ process.exit(0);
 // UserPromptSubmit, but whether ITS event carries the prompt text was not read in its live
 // documentation — so no Codex sample wires this hook (README table: "prompt field not verified").
 // A wrong guess would fail invisibly; an explicit gap stays visible.
-import { readFileSync } from 'node:fs';
+// 2.9, epic HK (origin ticket #94): the /resume order names the refresh marker by its FULL path in the project root — an agent that
+// ran `cd src` stamped `src/.kaif/refresh-marker.json`, where no hook reads it.
+// [TESTED: 2026-09-28 · suite s14: the order from <root>/src/deep names the root marker by its full path; red on v2.8; mutant M26;
+//  report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
 
 const OUTPUT_CAP = 10000; // Claude Code caps hook output strings at 10 000 characters
+const DEPLOYMENT = join('.kaif', 'kaif.json');  // the deployment marker: its directory IS the project root
+
+// The project root, not the event's `cwd` — twin of prompt-refresh-timer.mjs (the reasoning is there).
+function projectRoot(cwd) {
+  for (let d = resolve(cwd); ;) {
+    if (existsSync(join(d, DEPLOYMENT))) return d;
+    const up = dirname(d);
+    if (up === d) return cwd;
+    d = up;
+  }
+}
 
 // The leading word: optional slash, then `resume` (English — the owner's word under every language
 // pack) or the Russian shorthand family ("rezyum", "rezyume", "rezyumiruy" — spelled here as Unicode
@@ -18223,6 +18277,7 @@ try {
   const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
 
   let prompt = null;
+  let cwd = process.cwd();
   try {
     // A leading U+FEFF is dropped before the parse: Windows PowerShell 5.1 on a UTF-8 console puts
     // the three bytes in front of ANY string piped into a native command, so the hand-run smoke of
@@ -18230,6 +18285,7 @@ try {
     // parser "MAY ignore the presence of a byte order mark rather than treating it as an error".
     const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (typeof input.prompt === 'string') prompt = input.prompt;
+    if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — no text, no predicate, no output */ }
 
   if (prompt !== null && LEADING_STOP.test(prompt)) {
@@ -18248,7 +18304,7 @@ try {
       `skill IN FULL: (1) read every canon document of its step 1 — the full set, not a slice; (2) run the ` +
       `owner's queue (step 1b) and raise what was never shown; (3) say the creed and the prayer aloud; ` +
       `(4) announce in one paragraph what you read, what you chose and what you do next; (5) stamp ` +
-      `.kaif/refresh-marker.json with trigger "ritual:/resume" and put the acceptance quote in the chat. ` +
+      `${join(projectRoot(cwd), '.kaif', 'refresh-marker.json')} with trigger "ritual:/resume" and put the acceptance quote in the chat. ` +
       `Only then take the task written under the word. The same word mid-sentence would be prose; at the ` +
       `top of the message it is this order.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
@@ -18409,9 +18465,32 @@ process.exit(0);
 // Systems whose session-start event cannot inject at all (Windsurf, Cline) get no sample: see
 // .kaif/hooks/README.md. Unknown shape → treated as `claude`, never as silence.
 // [TESTED: 2026-08-07 · polygon s14: stdin JSON piped in → stdout order names the re-read core, the marker and the quote; length under the cap]
-import { readFileSync } from 'node:fs';
+//
+// 2.9, epic HK (origin bugs 120 no. 1, 119 no. 1, ticket #94): the order says what HAPPENED, by the event's `source` — `compact` →
+// "compacted" and trigger `compaction`, `clear` → "cleared" and `ritual:/clear`; `startup`, `resume`, any other value and an event
+// without the field → "(re)started" and `ritual:session-start` (the canon's trigger list is closed, its `ritual:` prefix is the open
+// door). Before, every source but `clear` was told "the context was just compacted" — a lie on each session start of the systems whose
+// sample wires no matcher (Cursor, Copilot). The marker is named by its FULL path in the project root.
+// [TESTED: 2026-09-28 · suite s14: startup, resume and an event without `source` - "(re)started" and ritual:session-start, compact
+//  from <root>/src/deep - "compacted", compaction and the root marker by its full path; red on v2.8; mutants M24-M25; report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
+import { readFileSync, existsSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
 
 const OUTPUT_CAP = 10000; // Claude Code caps hook output strings at 10 000 characters
+const DEPLOYMENT = join('.kaif', 'kaif.json');  // the deployment marker: its directory IS the project root
+// source → [what happened, the trigger the agent stamps]; anything else → SESSION_START
+const WORDING = { compact: ['The context was just compacted', 'compaction'], clear: ['The context was just cleared', 'ritual:/clear'] };
+const SESSION_START = ['The session just (re)started', 'ritual:session-start'];
+
+// The project root, not the event's `cwd` — twin of prompt-refresh-timer.mjs (the reasoning is there).
+function projectRoot(cwd) {
+  for (let d = resolve(cwd); ;) {
+    if (existsSync(join(d, DEPLOYMENT))) return d;
+    const up = dirname(d);
+    if (up === d) return cwd;
+    d = up;
+  }
+}
 
 // One order string, four envelopes. Keeping this table next to the writer (rather than in a
 // shared lib) keeps the module at three self-contained scripts — a fourth file would have to be
@@ -18427,23 +18506,26 @@ try {
   const ei = argv.indexOf('--emit');
   const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
 
-  let source = 'compact';
+  let source = '';   // unreadable event or no `source` field → the neutral wording: an unknown event is not a compaction (bug 120)
+  let cwd = process.cwd();
   try {
     // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
     // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it). Unstripped, a
     // `clear` event fell back to the default and ordered the WRONG trigger stamp — origin bug 119.
     const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     if (input.source) source = String(input.source);
-  } catch { /* unreadable stdin — keep the default source label; the order still stands */ }
+    if (input.cwd) cwd = String(input.cwd);
+  } catch { /* unreadable stdin — the neutral wording; the order still stands */ }
 
-  // The trigger value the agent must stamp follows the ACTUAL event: a marker stamped
-  // "compaction" after a /clear would misreport why the refresh happened.
-  const trigger = source === 'clear' ? 'ritual:/clear' : 'compaction';
+  // The words and the trigger value follow the ACTUAL event: a marker stamped "compaction" after a
+  // /clear or on a plain session start would misreport why the refresh happened.
+  const [happened, trigger] = Object.prototype.hasOwnProperty.call(WORDING, source) ? WORDING[source] : SESSION_START;
+  const markerPath = join(projectRoot(cwd), '.kaif', 'refresh-marker.json');
   const order =
-    `KAIF context refresh (SessionStart:${source}). The context was just ${source === 'clear' ? 'cleared' : 'compacted'}: ` +
+    `KAIF context refresh (SessionStart${source ? ':' + source : ''}). ${happened}: ` +
     `what this session now remembers of the canon is a retelling, not the canon. BEFORE task work: ` +
     `(1) re-read the re-read core (tier 1 of the document taxonomy — see AGENT_GUIDE.md → "Context refresh"); ` +
-    `(2) stamp .kaif/refresh-marker.json { "at": "<ISO>", "docs": [...], "trigger": "${trigger}" }; ` +
+    `(2) stamp ${markerPath} { "at": "<ISO>", "docs": [...], "trigger": "${trigger}" }; ` +
     `(3) put the acceptance quote in the chat — one concrete line from what you re-read, relevant to the current task. ` +
     `A marker without the quote is fraud of the false-[TESTED] class (/fable-judge hunts it).`;
 
@@ -18642,11 +18724,11 @@ try {
 // hook of the module — and even it blocks softly: once per session, with a reason that asks
 // for an update or an explicit "nothing changed", never a hard wall.
 //
-// What it does: STATUS.md is the handover between sessions — a session that changed the tree but
-// never touched STATUS hands the next session a stale summary. When the agent is about to
-// finish its turn, this hook checks: did this session do work (dirty worktree or a recent
-// commit) while STATUS.md stayed untouched longer than the staleness window? If yes — one soft
-// block with the reminder.
+// What it does: STATUS.md is the handover between sessions — a tree that changed while STATUS
+// stayed untouched hands the next session a stale summary. When the agent is about to finish its
+// turn, this hook checks what it can OBSERVE: is the worktree dirty or did a commit land within the
+// staleness window, while STATUS.md stayed untouched longer than that window? If yes — one soft
+// block with the reminder, naming what it saw (it cannot tell whose work that was — 2.9, bug 120).
 //
 // Predicate (anti-noise): (dirty git worktree OR last commit within STALE_HOURS) AND
 // STATUS.md mtime older than STALE_HOURS. Cooldown: once per session — a state file keyed by
@@ -18657,13 +18739,32 @@ try {
 // top-level {"decision": "block", "reason": "…"}. A hook must never break the session: any
 // internal error → exit 0 silently.
 // [TESTED: 2026-08-07 · polygon s14: dirty tree + old STATUS → block JSON once; same session again → silent (cooldown); fresh STATUS → silent; no git → silent]
+//
+// 2.9, epic HK (origin ticket #94, bugs 119 no. 1 and 120 no. 2): STATUS.md and git are read in the PROJECT ROOT, not in the event's
+// `cwd` — from a subfolder the guard fell silent, indistinguishable from an unwired module. The reason names what was OBSERVED (the
+// worktree's uncommitted changes, or a recent commit) — "this session changed the tree" claimed work of a session the guard never
+// watched, on a tree that could have been dirty for days — and names STATUS.md by its full path.
+// [TESTED: 2026-09-28 · suite s14: an event from <root>/src/deep gives the same soft block as the root, STATUS.md by its full path;
+//  the reason says "the worktree has uncommitted changes" or "a commit landed within the last 3 h"; another session of the same
+//  project is blocked again; red on v2.8; mutants M27-M28; report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
 import { readFileSync, writeFileSync, statSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { join } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 
 const STALE_HOURS = 3;        // STATUS older than this while work happened → remind
 const STATUS_FILE = 'STATUS.md';
+const DEPLOYMENT = join('.kaif', 'kaif.json');  // the deployment marker: its directory IS the project root
+
+// The project root, not the event's `cwd` — twin of prompt-refresh-timer.mjs (the reasoning is there).
+function projectRoot(cwd) {
+  for (let d = resolve(cwd); ;) {
+    if (existsSync(join(d, DEPLOYMENT))) return d;
+    const up = dirname(d);
+    if (up === d) return cwd;
+    d = up;
+  }
+}
 
 try {
   let cwd = process.cwd();
@@ -18682,29 +18783,30 @@ try {
   const cooldownPath = join(tmpdir(), `kaif-status-guard-${sessionId.replace(/[^\w.-]/g, '_')}`);
   if (existsSync(cooldownPath)) process.exit(0);
 
-  const statusPath = join(cwd, STATUS_FILE);
+  const root = projectRoot(cwd);
+  const statusPath = join(root, STATUS_FILE);
   if (!existsSync(statusPath)) process.exit(0);   // no STATUS.md — nothing to guard
   const statusAgeH = (Date.now() - statSync(statusPath).mtimeMs) / 3600000;
   if (statusAgeH <= STALE_HOURS) process.exit(0); // STATUS is fresh — silence is the normal state
 
   // Did this session actually do work? Dirty worktree or a commit within the window.
   // Any git failure (not a repo, git missing) → silent: never redden what we cannot observe.
-  const git = (args) => execFileSync('git', args, { cwd, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
-  let workHappened = false;
+  const git = (args) => execFileSync('git', args, { cwd: root, stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim();
+  let observed = '';   // what the guard SAW — the reason says exactly this, never more (bug 120)
   try {
-    if (git(['status', '--porcelain'])) workHappened = true;
+    if (git(['status', '--porcelain'])) observed = 'the worktree has uncommitted changes';
     else {
       const lastCommitSec = Number(git(['log', '-1', '--format=%ct']));
-      if (lastCommitSec && (Date.now() / 1000 - lastCommitSec) / 3600 < STALE_HOURS) workHappened = true;
+      if (lastCommitSec && (Date.now() / 1000 - lastCommitSec) / 3600 < STALE_HOURS) observed = `a commit landed within the last ${STALE_HOURS} h`;
     }
   } catch { process.exit(0); }
-  if (!workHappened) process.exit(0);
+  if (!observed) process.exit(0);
 
   writeFileSync(cooldownPath, new Date().toISOString());
   process.stdout.write(JSON.stringify({
     decision: 'block',
-    reason: `KAIF STATUS guard (fires once per session): this session changed the tree, but ${STATUS_FILE} was last ` +
-      `touched ~${Math.round(statusAgeH)} h ago. Update ${STATUS_FILE} with the current state — or state explicitly ` +
+    reason: `KAIF STATUS guard (fires once per session): ${observed}, but ${STATUS_FILE} was last ` +
+      `touched ~${Math.round(statusAgeH)} h ago. Update ${statusPath} with the current state — or state explicitly ` +
       `in the chat why nothing in it changed — then finish.`,
   }));
 } catch { /* a hook must never take the session down with it */ }

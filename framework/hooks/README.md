@@ -13,7 +13,7 @@ lacking them.
 |---|---|---|---|---|
 | `session-start-refresh.mjs` | `SessionStart`, matcher `compact\|clear` | none — compaction is itself rare | one order per compaction or clear | injects the ORDER to re-read the re-read core + stamp the witness |
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
-| `stop-status-guard.mjs` | `Stop` | session did work AND STATUS.md untouched > 3 h | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
+| `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
 | `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | ONCE per owner's message: the first tool call after it with no text answer yet is refused, the next passes — the work goes on (the origin owner's word, 2026-09-25); a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, continue, repeat the answer in the turn's final text; before refusing it re-reads the transcript twice, 200 ms apart — the vendor writes it asynchronously (2.9, epic OA) |
 | `stop-owner-answer.mjs` (2.9, epic OA) | `Stop` | an owner's message typed mid-turn in THIS turn, and the turn's final response (`last_assistant_message`) does not open an answer to it with its first words (normalised whole words) | **once per stop** — `stop_hook_active` (a continuation) is silent, so it never loops | soft block: the reason quotes the owner's words — answer them now in a response of its own (no tool call after it); a response that answers and ends with a last line `⏩ <next step>` → block «continue» — the work goes on without the owner's next word |
@@ -27,6 +27,16 @@ the resume word is a separate order; injections are ORDERS to re-read, never doc
 (the output cap is 10 000 characters, and pasting docs would spend the context the refresh
 restores); the blocking hooks are the two `Stop` ones and the owner-word call gate, each at most once per trigger. A hook never breaks the session: on any internal
 error it exits 0 silently.
+
+**The hooks judge the project, not the folder the agent went into** (2.9, epic HK; origin ticket #94). The event's `cwd` follows
+every `cd` of the agent, so the refresh marker, `STATUS.md` and git are read in the PROJECT ROOT — the nearest folder above `cwd`
+(itself included) that holds `.kaif/kaif.json`; with none, `cwd` itself. Every order names the marker by its full path, so the agent
+stamps it where the hook reads it. A marker whose `at` lies more than two minutes in the future is no witness — the timer speaks.
+The session-start order follows the event's `source`: `compact` → "compacted" and trigger `compaction`, `clear` → "cleared" and
+`ritual:/clear`, a start, a resume or no source → "(re)started" and `ritual:session-start`. The root search runs only once the
+script is started: the Claude Code fragment names it through `${CLAUDE_PROJECT_DIR}`; the other systems' samples start it by the
+relative path `node .kaif/hooks/…`, and whether those systems launch a hook from the project root or from the agent's current
+folder is NOT verified — a launch from a subfolder would not find the script at all.
 
 ## Opt-in — an explicit owner step
 

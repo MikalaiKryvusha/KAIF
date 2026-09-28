@@ -6,7 +6,7 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite once per mutant (twenty-one today) — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (thirty-one today) — run it ALONE, not beside the polygon (origin bug 109).
 // [TESTED: 2026-09-25 22:08:57 +03:00 · ELEVEN mutants after the owner-word gate (M11 reasoning counted as an answer): «11 mutants red
 //  exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
 // [TESTED: 2026-09-25 17:43 +03:00 · TEN mutants after OW2 (M8 the imperative before the word dropped · M9 the heading exclusion dropped · M10 the stop
@@ -137,6 +137,47 @@ const MUTANTS = [
     dest: '.kaif/hooks/stop-owner-answer.mjs',
     fn: (b) => b.replace('  if (!owner.length) process.exit(0);\n', ''),
     expect: ['s14 stop-owner-answer: «⏩» без слова владельца'] },
+  // 2.9, epic HK — the project root, the future stamp, the honest words, the suite judging the truth (ticket #94, bugs 118-120)
+  { name: 'M22 timer: the marker read in the event cwd again (ticket #94 — "no refresh witness" after one `cd src`)',
+    dest: '.kaif/hooks/prompt-refresh-timer.mjs',
+    fn: (b) => b.replace('const markerPath = join(projectRoot(cwd), MARKER);', 'const markerPath = join(cwd, MARKER);'),
+    expect: ['s14 HK таймер: событие из `src/deep`', 's14 HK таймер: из `src/deep` протухший', 's14 HK таймер: приказ называет маркер ПОЛНЫМ путём'] },
+  { name: 'M23 timer: a marker stamped in the future trusted again (bug 119 no. 2 — silence until that moment)',
+    dest: '.kaif/hooks/prompt-refresh-timer.mjs',
+    fn: (b) => b.replace('const future = ageMin < -FUTURE_TOLERANCE_MIN;', 'const future = false;'),
+    expect: ['s14 HK таймер: `at` на 30 мин в будущем'] },
+  { name: 'M24 session-start: every source but clear told "compacted" again (bug 120 no. 1)',
+    dest: '.kaif/hooks/session-start-refresh.mjs',
+    fn: (b) => b.replace('Object.prototype.hasOwnProperty.call(WORDING, source) ? WORDING[source] : SESSION_START', 'WORDING[source] || WORDING.compact'),
+    expect: ['s14 HK SessionStart startup', 's14 HK SessionStart resume', 's14 HK SessionStart без поля source'] },
+  { name: 'M25 session-start: the root search dropped — the marker named under the event cwd',
+    dest: '.kaif/hooks/session-start-refresh.mjs',
+    fn: (b) => b.replace('if (existsSync(join(d, DEPLOYMENT))) return d;', 'if (false) return d;'),
+    expect: ['s14 HK SessionStart compact из `src/deep`'] },
+  { name: 'M26 resume-word: the root search dropped — the /resume order names a marker no hook reads',
+    dest: '.kaif/hooks/prompt-resume-word.mjs',
+    fn: (b) => b.replace('if (existsSync(join(d, DEPLOYMENT))) return d;', 'if (false) return d;'),
+    expect: ['s14 HK resume-word'] },
+  { name: 'M27 STATUS guard: STATUS.md and git read in the event cwd again (ticket #94 — the guard silent from a subfolder)',
+    dest: '.kaif/hooks/stop-status-guard.mjs',
+    fn: (b) => b.replace('const root = projectRoot(cwd);', 'const root = cwd;'),
+    expect: ['s14 HK страж STATUS: событие из `src/deep`', 's14 HK страж STATUS: причина называет наблюдение'] },
+  { name: 'M28 STATUS guard: the reason claims the session\'s work again (bug 120 no. 2)',
+    dest: '.kaif/hooks/stop-status-guard.mjs',
+    fn: (b) => b.replace("observed = 'the worktree has uncommitted changes'", "observed = 'this session changed the tree'"),
+    expect: ['s14 HK страж STATUS: причина называет наблюдение'] },
+  { name: 'M29 README: the Cursor "Hourly timer" cell flipped to a tick the sample does not carry (bug 118 no. 3)',
+    dest: '.kaif/hooks/README.md',
+    fn: (b) => b.replace('| ❌ `beforeSubmitPrompt` cannot inject agent context |', '| ✅ `beforeSubmitPrompt` cannot inject agent context |'),
+    expect: ['s14/O5 таблица README ↔ sample-cursor-hooks.json'] },
+  { name: 'M30 Cursor sample: a shape the script does not have (`--emit cursorX`) passed the substring check (bug 118 no. 2)',
+    dest: '.kaif/hooks/sample-cursor-hooks.json',
+    fn: (b) => b.split('--emit cursor').join('--emit cursorX'),
+    expect: ['s14/O5 Cursor: каждая команда образца'] },
+  { name: 'M31 Cursor sample: an extra `--emit` in front of the required one (the first flag wins) (bug 118 no. 2)',
+    dest: '.kaif/hooks/sample-cursor-hooks.json',
+    fn: (b) => b.split('--emit cursor').join('--emit copilot --emit cursor'),
+    expect: ['s14/O5 Cursor: каждая команда образца'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));

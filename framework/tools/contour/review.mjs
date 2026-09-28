@@ -410,7 +410,7 @@ export function implementedGate(root) {
 //  field clone at its S1-era state names the #86 decision «answered 17 d ago»; report testcases/reports/2026-09-25_ow3-ow7-owner-debt-foreign-queue.md]
 export function answeredAgeDays(root, rel, now = new Date()) {
   let at = NaN;
-  try { at = Date.parse(JSON.parse(readFileSync(decisionPaths(root, rel).decision, 'utf8')).at); } catch { at = NaN; }
+  try { at = Date.parse(JSON.parse(stripBom(readFileSync(decisionPaths(root, rel).decision, 'utf8'))).at); } catch { at = NaN; }
   return Number.isNaN(at) ? queueDocAgeDays(root, rel, now) : Math.max(0, Math.floor((now.getTime() - at) / DAY_MS));
 }
 export function awaitingApplication(root, now = new Date()) {
@@ -1032,7 +1032,7 @@ function checkLock(root, key) {
   const p = lockPath(root, key);
   if (!existsSync(p)) return null;
   let lock;
-  try { lock = JSON.parse(readFileSync(p, 'utf8')); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
+  try { lock = JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
   try { process.kill(lock.pid, 0); return lock; }                          // alive → the live address (I29)
   catch (e) {
     if (e.code === 'EPERM') return lock;                                   // alive under another user → still live
@@ -1086,7 +1086,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
         if (s === null || start.get(f) === s) continue;
         clearInterval(tick);
         let d = {};
-        try { d = JSON.parse(readFileSync(f, 'utf8')); } catch { /* a record being written — named by its file below */ }
+        try { d = JSON.parse(stripBom(readFileSync(f, 'utf8'))); } catch { /* a record being written — named by its file below */ }
         const rel = d.document || relDoc(root, f);
         const answers = Object.entries(d.answers || {}).map(([q, a]) => q + ' = ' + (a.choice || (a.text ? 'text' : 'comment'))).join(', ');
         log('Recorded: ' + rel + (answers ? ' — ' + answers : '') + ' · questions left: ' + leftIn(root, rel)
@@ -1755,7 +1755,7 @@ export async function selftest(log = console.log) {
   writeFileSync(join(root, IMPL), '# Interview #097\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
   ok(ownerDocs(root).some((d) => d.doc === IMPL) && listQueue(root).implGate.length === 0, 'an open question is owed to the owner before the implemented mark');
   recordImplemented(root, IMPL, 'Q1', 'commit abc123');
-  const implMap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+  const implMap = JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8')));
   ok(implMap[IMPL] && implMap[IMPL].Q1.where === 'commit abc123' && /^\d{4}-/.test(implMap[IMPL].Q1.at), 'implemented.json carries the fact with its address and its moment (I44)');
   const lq = listQueue(root);
   ok(!ownerDocs(root).some((d) => d.doc === IMPL) && lq.exitCode === 2 && lq.lines.some((l) => l.includes(IMPL) && /Q1/.test(l) && /implemented, but open/.test(l)),
@@ -1768,12 +1768,12 @@ export async function selftest(log = console.log) {
     const WD = 'interviews/interview_096_withdrawn.md';
     writeFileSync(join(root, WD), '# Interview #096\n\n> Status: awaiting\n\n### Q1. Print the delivery line?\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n\n### Q2. Keep it?\n\n- **A)** yes\n- **B)** no\n\n**Answer:** A\n');
     const w1 = markWithdrawn(root, WD, 'Q1', 'the delivery line is withdrawn in 2.7');
-    const wmap = JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'));
+    const wmap = JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8')));
     ok(w1.code === 0 && wmap[WD] && wmap[WD].Q1.withdrawn === true && wmap[WD].Q1.why === 'the delivery line is withdrawn in 2.7' && !ownerDocs(root).some((d) => d.doc === WD),
       'a question a withdrawal made moot: --mark-withdrawn records withdrawn: true with the reason, and the queue no longer raises it (2.8, criterion 13)');
     ok(buildPage(root, WD).html.includes('withdrawn — the delivery line is withdrawn in 2.7') && !buildPage(root, WD).html.includes('implemented → withdrawn'),'the page renders a withdrawn question as «withdrawn — <reason>», never as implemented');
     const w2 = markWithdrawn(root, WD, 'Q2', 'moot');
-    ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8'))[WD].Q2,
+    ok(w2.code === 1 && /ANSWERED/.test(w2.line) && !JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'implemented.json'), 'utf8')))[WD].Q2,
       'an ANSWERED question is refused (exit 1, nothing recorded) — a withdrawal is never an answer over the owner\'s word');
     rmSync(join(root, WD), { force: true }); rmSync(join(root, 'interviews', 'decisions', 'implemented.json'), { force: true });
     // judge CH5 F2: the Russian pack carries its own form of each new text — a missing key falls back to English on an owner's page
@@ -1863,7 +1863,7 @@ export async function selftest(log = console.log) {
   ok(threw, 'mockup face refuses a non-image loudly');
   // bugs/113: "Done" with no remarks is a RECORDED decision on the mockup and proofreading faces (never a refusal)
   const nr = recordDecision(root, PNG, { kind: 'mockup', comment: '', comments: {}, noRemarks: true }, cfgOf(root));
-  ok(nr.noRemarks === true && JSON.parse(readFileSync(join(root, 'interviews', 'decisions', 'mock.decision.json'), 'utf8')).noRemarks === true,
+  ok(nr.noRemarks === true && JSON.parse(stripBom(readFileSync(join(root, 'interviews', 'decisions', 'mock.decision.json'), 'utf8'))).noRemarks === true,
     'mockup face: Done with empty fields records noRemarks: true (bugs/113)');
   ok(mp.html.includes(texts('en').ph.noRemarks) && mp.html.includes("p.noRemarks=true") && !mp.html.includes("CFG.face==='mockup'&&!(p.comment"),
     'mockup page carries the no-remarks hint and the client gate no longer refuses an empty mockup/proofreading record (bugs/113)');
@@ -1945,7 +1945,7 @@ export async function selftest(log = console.log) {
   const three = '# Interview #008\n\n> Status: awaiting\n\n' + MQ(1) + '\n' + MQ(2) + '\n' + MQ(3);
   const MD = 'interviews/interview_008_merge.md';
   writeFileSync(join(root, MD), three);
-  const decOf = (d) => JSON.parse(readFileSync(decisionPaths(root, d, cfg).decision, 'utf8'));
+  const decOf = (d) => JSON.parse(stripBom(readFileSync(decisionPaths(root, d, cfg).decision, 'utf8')));
   const rec1 = recordDecision(root, MD, { answers: { Q1: { choice: 'A' } }, rev: bodyHash(three) }, cfg);
   const rec2 = recordDecision(root, MD, { answers: { Q2: { choice: 'B' } }, rev: decOf(MD).revAfter }, cfg);
   const d2 = decOf(MD);

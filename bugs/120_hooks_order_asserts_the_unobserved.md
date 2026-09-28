@@ -1,6 +1,11 @@
 # Bug 120 — Впрыснутый приказ утверждает агенту ненаблюдённое: «the context was just compacted» на старте сессии и «this session changed the tree» без наблюдения сессии (2 вхождения)
 
-**Status:** 🔴 OPEN — найдено ревизией кода 2026-09-18 09:14 +03:00 (прогон 2 `/code-revision`, зона `framework/hooks/`);
+**Status:** 🔧 оба вхождения починены 2026-09-28 22:18 +03:00 (сессия 76, эпик HK 2.9, `plans/128` HK2): №1 — приказ старта сессии по `source`:
+`compact` → «compacted» и `compaction`, `clear` → «cleared» и `ritual:/clear`, `startup` · `resume` · без поля → «(re)started» и
+`ritual:session-start` (решение `[ИИ]`: закрытый список триггеров канона не растёт — открыт префикс `ritual:`; в «Fix accepted when»
+стояло `session-start`); №2 — причина стража называет наблюдение («the worktree has uncommitted changes» / «a commit landed within the
+last 3 h»). `s14`: три ассерта старта и два ассерта причины, красные на v2.8; мутанты M24, M28; отчёт `testcases/reports/2026-09-28_hk-hooks-project-root.md`. DONE — после первого
+обновления поля до 2.9 с образцом Cursor/Copilot (старт сессии без «compacted»). Было: 🔴 OPEN — найдено ревизией кода 2026-09-18 09:14 +03:00 (прогон 2 `/code-revision`, зона `framework/hooks/`);
 правок в зоне НЕ делалось, фикс — отдельной задачей.
 **Severity:** S2 — механический контур канона подаёт агенту как ФАКТ то, чего не наблюдал, и тем же
 неверным словом приказывает проштамповать машинную улику (`trigger: "compaction"`), которую потом читают

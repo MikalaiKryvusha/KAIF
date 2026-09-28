@@ -433,13 +433,13 @@ function readTemplateShas() {
   try { return JSON.parse(readFileSync(DEPLOY_MANIFEST, 'utf8').replace(/^\uFEFF/, '')).templateShas || null; } catch { return null; }
 }
 function readMarker() {
-  try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8')); } catch { return null; }
+  try { return JSON.parse(readFileSync(VOICE_MARKER, 'utf8').replace(/^\uFEFF/, '')); } catch { return null; }
 }
 
 // ---------------------------------------------------------------------------
 function portraitPath() {
   try {
-    const j = JSON.parse(readFileSync(MARKER, 'utf8'));
+    const j = JSON.parse(readFileSync(MARKER, 'utf8').replace(/^\uFEFF/, ''));
     if (typeof j.voicePortrait === 'string' && j.voicePortrait.trim()) return j.voicePortrait.trim();
   } catch { /* no marker or unreadable — the default name stands */ }
   return DEFAULT_PORTRAIT;
