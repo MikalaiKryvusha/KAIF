@@ -36,8 +36,8 @@
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync } from 'node:fs';
-import { tmpdir, platform } from 'node:os';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, readlinkSync } from 'node:fs';
+import { tmpdir, platform, hostname } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
@@ -63,6 +63,8 @@ const SERVER_DEATH_MS = 2500;         // DEF3: server death after the save (the 
 const BEACON_RELOAD_GRACE_MS = 3000;  // DEF6/T3: ~3 s after the beacon — reload vs close
 const WAIT_POLL_MS = 2000;            // OW6 (2.8): the waiter polls the decision file(s) — the field device the KAIF owner pointed to polls every 2 s
 const WAIT_NO_CONTOUR_MS = 60000;     // B-F1 (2.8): no live contour seen within a minute → exit 2 (a page comes up in seconds; the ritual starts the waiter first)
+const CLICK_OF_PRESS_MS = 800;        // CP (2.9, #128): a click this soon after a taken pointerdown on the same label is that press's own click
+const WORDS_QUOTE_CHARS = 160;      // CP (2.9, #128 c.2): how much of the owner's text and comments the waiter's line and the log quote
 const QH_LEN = 12;                    // OW6: hex chars of a question's fingerprint in a draft key (title + body of the question)
 // 2.8, origin issue #106 (a field owner's explicit word, three requests in one evening): owner-facing pages render at 1.7x the browser
 // base — the WHOLE page through CSS zoom, as Ctrl+Plus does (raising font-size alone turned the fixed radio circles into dots and slid
@@ -837,10 +839,16 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "  var ot=document.createElement('textarea');ot.rows=Math.min(12,orph.length*2+1);ot.value=orph.join(String.fromCharCode(10));od.appendChild(op);od.appendChild(ot);",
     "  var mn=document.querySelector('main');if(mn)mn.insertBefore(od,mn.firstChild)}",
     " if(n>0)status(fmt(TX.draft,{n:n}),'okmsg')}",
-    // P3: a radio cleared by a second click; activation taken over on pointerdown (no native double click)
+    // P3: a radio cleared by a second click; activation taken over on pointerdown. 2.9, epic CP (origin ticket #128 — the owner, twice:
+    // "the radio buttons do not clear on a second tap"): preventDefault on pointerdown does NOT cancel the click the same press
+    // produces, and that click re-checked what pointerdown had cleared. The capture listener below swallows exactly that click (same
+    // label, within CLICK_OF_PRESS_MS); a keyboard click comes without a pointerdown and stays native.
+    "var pdAt=0,pdLab=null;",
+    "document.addEventListener('click',function(e){if(!pdLab||Date.now()-pdAt>" + CLICK_OF_PRESS_MS + ")return;",
+    " var lab=e.target&&e.target.closest?e.target.closest('label.opt'):null;if(lab!==pdLab)return;pdLab=null;e.preventDefault()},true);",
     "document.addEventListener('pointerdown',function(e){var lab=e.target&&e.target.closest?e.target.closest('label.opt'):null;",
     " if(!lab)return;var inp=lab.querySelector('input[type=radio]');if(!inp||inp.disabled)return;",
-    " e.preventDefault();var was=inp.checked;",
+    " e.preventDefault();var was=inp.checked;pdAt=Date.now();pdLab=lab;",
     " if(e.target===inp){inp.checked=!was}else if(!was){inp.checked=true}",
     " lastInput=Date.now();saveDraft(inp);pulseSoon()});",
     "document.addEventListener('input',function(e){if(e.target&&e.target.hasAttribute&&e.target.hasAttribute('data-draft')){lastInput=Date.now();saveDraft(e.target);pulseSoon()}});",
@@ -1027,6 +1035,16 @@ function checkProfileAccount(root, log = console.log, attempt = 0) {
 }
 
 // ── The lock "one document — one window" (I29) ────────────────────────────────────────────────
+// CP (2.9, origin #128 comment 2): the waiter's line and the server log name the WHOLE decision — the choice, the owner's text, his
+// comment on the question and on the document. Before, a choice hid the text and both comments ("Q2 = A"), and a defect the owner
+// had written into them went unread until a judge found it.
+function decisionWords(d) {
+  const q = (t) => { const one = String(t).replace(/\s+/g, ' ').trim(); return '«' + one.slice(0, WORDS_QUOTE_CHARS) + (one.length > WORDS_QUOTE_CHARS ? '…' : '') + '»'; };
+  const parts = Object.entries(d.answers || {}).map(([k, a]) =>
+    k + ' = ' + ([a.choice, a.text ? 'text ' + q(a.text) : '', a.comment ? 'comment ' + q(a.comment) : ''].filter(Boolean).join(' + ') || '—'));
+  if (d.comment) parts.push('document comment ' + q(d.comment));
+  return parts.join(', ');
+}
 const lockPath = (root, key) => join(decisionsAbs(root), key.replace(/\.[^.]+$/u, '') + '.lock');
 function checkLock(root, key) {
   const p = lockPath(root, key);
@@ -1088,7 +1106,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
         let d = {};
         try { d = JSON.parse(stripBom(readFileSync(f, 'utf8'))); } catch { /* a record being written — named by its file below */ }
         const rel = d.document || relDoc(root, f);
-        const answers = Object.entries(d.answers || {}).map(([q, a]) => q + ' = ' + (a.choice || (a.text ? 'text' : 'comment'))).join(', ');
+        const answers = decisionWords(d);
         log('Recorded: ' + rel + (answers ? ' — ' + answers : '') + ' · questions left: ' + leftIn(root, rel)
           + ' — apply it; while questions are left, start --wait again (the page stays open).');
         done(0);
@@ -1261,7 +1279,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             const artWord = arts.length ? ', outbound decided ' + arts.length + ' (approved ' + nApproved + ')' : '';
             ok({ ok: true, written: doc + ' + decision.json + archive (' + nAns + ' answer(s)' + artWord + ')', more: rest, doc, left, rev: docRev(root, doc) });
             outcome = 'decision recorded';
-            const answersWord = Object.entries(record.answers || {}).map(([q, a]) => q + ' = ' + (a.choice || (a.text ? 'text' : 'comment'))).join(', ');
+            const answersWord = decisionWords(record);
             if (arts.length) log('Outbound decision: ' + arts.map(([id, a]) => id + ' — ' + a.status).join(', ') + '. Sending is a separate agent step through a gate that calls the same checkApproval.');
             if (rest > 0) { // the batch does NOT end on the first document (origin bugs/52)
               log('Recorded: ' + doc + ' (' + answersWord + ', by ' + record.by + '). Documents left in the queue: ' + rest + ' — the page STAYS open, the contour waits.');
@@ -1446,12 +1464,16 @@ export async function closeContour(root, docPath, { force = false, ownerWord = n
 // PROJECT profile. A headless run of the same browser on the same profile and the SAME port (the origin is host:port)
 // reads it back and posts it here; the agent records it as the owner's decision and says so. Runs only when the
 // project profile exists (a window once ran) — a sandbox tree never has one, so no browser is ever launched there.
-const BROWSER_EXES = IS_WIN
+// 2.9, epic CP: ONE browser list — the origin's test tools import it from here (they kept two copies of their own). `KAIF_BROWSER`
+// names the machine's browser first (a stand whose Chromium lives off the standard paths); the Linux list knows the Playwright
+// Chromium of a cloud container. Under root (a container) Chromium refuses to start with its sandbox — the flag goes only there.
+export const BROWSER_EXES = [...(process.env.KAIF_BROWSER ? [process.env.KAIF_BROWSER] : []), ...(IS_WIN
   ? ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
      'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe']
   : IS_MAC ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
-    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge'];
-const findBrowser = () => BROWSER_EXES.find((p) => existsSync(p)) || null;
+    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge', '/opt/pw-browsers/chromium'])];
+export const findBrowser = () => BROWSER_EXES.find((p) => existsSync(p)) || null;
+export const sandboxArgs = () => (typeof process.getuid === 'function' && process.getuid() === 0 ? ['--no-sandbox'] : []);
 function recordRecovered(root, doc, payload, cfg) {
   const face = payload.face || 'interview';
   if (payload.read) { const r = recordDecision(root, doc, { kind: KIND_NOTICE, comment: payload.comment, recovered: true }, cfg); markNoticeRead(root, doc); return r; }
@@ -1522,7 +1544,7 @@ function recoverOne(root, key, lock, exe, log, result) {
     };
     server.on('error', (e) => { log('recovery: port ' + port + ' of the dead window is taken (' + e.code + ') — the local save keeps its origin and cannot be read on another port; nothing picked up for ' + doc); done(); });
     server.listen(port, '127.0.0.1', () => {
-      child = spawn(exe, ['--headless=new', ...profileArgs(root), '--disable-gpu', 'http://127.0.0.1:' + port + '/recover'], { stdio: 'ignore' });
+      child = spawn(exe, ['--headless=new', ...sandboxArgs(), ...profileArgs(root), '--disable-gpu', 'http://127.0.0.1:' + port + '/recover'], { stdio: 'ignore' });
       child.on('error', (e) => { log('recovery: could not start the headless browser ' + exe + ': ' + e.message); finish(); });
       timer = setTimeout(() => { log('recovery: the headless browser did not answer within ' + (RECOVER_TIMEOUT_MS / 1000) + ' s — nothing picked up for ' + doc); finish(); }, RECOVER_TIMEOUT_MS);
     });
@@ -1542,7 +1564,7 @@ function recoverOne(root, key, lock, exe, log, result) {
     }
   });
 }
-/** Is a browser running on the project profile right now? Windows Chromium keeps `lockfile` open with no sharing; elsewhere `SingletonLock` marks it (not verified there — said in the returned reason). */
+/** Is a browser running on the project profile right now? Windows Chromium keeps `lockfile` open with no sharing; elsewhere `SingletonLock` marks it (its host and pid are checked since 2.9; before, «not verified» — said in the returned reason). */
 function profileHeld(root) {
   const d = profileDir(root);
   if (IS_WIN) {
@@ -1550,7 +1572,16 @@ function profileHeld(root) {
     if (!existsSync(lf)) return null;
     try { closeSync(openSync(lf, 'r+')); return null; } catch (e) { return 'lockfile busy: ' + e.code; } // opens → a leftover of a dead browser
   }
-  try { lstatSync(join(d, 'SingletonLock')); return 'SingletonLock present (platform not verified)'; } catch { return null; }
+  // POSIX Chromium: `SingletonLock` is a SYMLINK to "<hostname>-<pid>", and Chromium itself treats a lock of THIS host whose pid is
+  // gone as a leftover. 2.9, epic CP: a hard-killed browser leaves the link (observed in a Linux container: "vm-32293" stayed after
+  // kill -9), and recovery waited for a window that no longer existed. A live pid, another host or an unreadable link → held.
+  let target;
+  try { lstatSync(join(d, 'SingletonLock')); } catch { return null; }
+  try { target = readlinkSync(join(d, 'SingletonLock')); } catch { return 'SingletonLock present, not a link'; }
+  const m = /^(.*)-(\d+)$/.exec(target);
+  if (!m || m[1] !== hostname()) return 'SingletonLock of ' + target + ' (another host or unreadable)';
+  try { process.kill(Number(m[2]), 0); return 'SingletonLock held by live pid ' + m[2]; }
+  catch (e) { return e.code === 'EPERM' ? 'SingletonLock held by pid ' + m[2] + ' of another user' : null; } // ESRCH → a dead browser's leftover
 }
 export function recoverFromWindow(root, { log = console.log } = {}) {
   const result = { recovered: [], drafts: [] };
@@ -1615,6 +1646,10 @@ export function checkDoc(root, docPath, log = console.log) {
 export async function selftest(log = console.log) {
   let n = 0, bad = 0;
   const ok = (cond, name) => { n++; if (!cond) { bad++; log('  x ' + name); } else log('  v ' + name); };
+  // CP (2.9, #128 comment 2): the waiter's line names the whole decision — a choice no longer hides the owner's text and comments
+  const words = decisionWords({ answers: { Q1: { choice: 'A' }, Q2: { choice: 'B', text: 'take B,\n  but later', comment: 'the radio does not clear' }, Q3: { text: 'free' } }, comment: 'bug on the page' });
+  ok(words === 'Q1 = A, Q2 = B + text «take B, but later» + comment «the radio does not clear», Q3 = text «free», document comment «bug on the page»',
+    'CP #128: the waiter\'s line names choice · text · comment · document comment (a choice alone stays "Q1 = A")');
   const root = mkdtempSync(join(tmpdir(), 'kaif-contour-'));
   mkdirSync(join(root, '.kaif'), { recursive: true });
   mkdirSync(join(root, 'interviews'), { recursive: true });

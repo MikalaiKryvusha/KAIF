@@ -7599,9 +7599,13 @@ Accepting a contour = walking this roster.
   by a second click (a native radio cannot return to "none").
   Field-corrected mechanics (pilot 2026-08-07 — the mousedown/click scheme still let the label
   duplicate the click, and the second click "cleared and instantly re-selected"): take the
-  activation over on `pointerdown` with `preventDefault` — the native label duplicate ceases to
-  exist by construction; a click on the FIELD toggles (the second click CLEARS), a click on the
-  label text selects but never clears; disabled inputs are skipped.
+  activation over on `pointerdown` with `preventDefault`, AND swallow the one `click` the same press
+  still produces (a capture listener, same label, within ~800 ms) — `preventDefault` on `pointerdown`
+  does NOT cancel that click, and it re-checked the radio: the owner met it in two projects (2.9, KAIF
+  issue #128); a keyboard click comes without a `pointerdown` and stays native. A click on the FIELD
+  toggles (the second click CLEARS), a click on the label text selects but never clears; disabled
+  inputs are skipped. Prove it with a REAL press (CDP mouse pressed+released, a touch tap) — a
+  synthetic `pointerdown` from page JS is half a press and passes where the owner's tap fails.
 - **P4** — no "who answers" question on a one-owner project; the server still stamps `by` —
   remove the QUESTION, not the RECORD, or the archive is unreadable months later.
 - **P5** — both OS themes via `prefers-color-scheme`, colors as variables, contrast measured in

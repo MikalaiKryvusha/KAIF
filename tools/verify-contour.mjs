@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, readdirSync
 import { join, resolve, dirname } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { tempRoot } from './lib/temp-root.mjs';
-import { headlessPage } from './lib/cdp-mini.mjs'; // RL D-F2 (2.7): QA7 models the owner's --app window
+import { headlessPage, findBrowser, sandboxArgs } from './lib/cdp-mini.mjs'; // RL D-F2 (2.7): QA7 models the owner's --app window
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   normalize, bodyHash, parseQuestions, recordDecision, readDecision, checkApproval,
@@ -31,10 +31,6 @@ import { serveContour, enqueue, readQueue, pendingNotices, buildPage } from './r
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const ETALON_PATH = join(ROOT, 'tools', 'verify-contour.etalon.json');
-const BROWSERS = [ // DEF8-порядок; пути стандартные, поверх — PATH
-  'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe',
-  'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-];
 const STEP_TIMEOUT_MS = 10000;   // C9: жёсткий срок каждого шага CDP
 const SELFTEST_TIMEOUT_MS = 60000; // OW6 (2.8): селфтест генератора поднимает ЖИВОЙ сервер (частичная запись, 409, сторож) — срок стережёт зависание, не скорость
 const LAUNCH_TIMEOUT_MS = 15000; // C9: срок старта браузера
@@ -107,11 +103,13 @@ class CDP {
 }
 
 async function launchBrowser({ headless = true, url = 'about:blank', app = false, profileDir }) {
-  const exe = BROWSERS.find((p) => existsSync(p));
+  // 2.9 CP0: один список браузеров — tools/lib/cdp-mini.mjs (DEF8 на Windows, Linux-стенды, KAIF_BROWSER); своя копия снята
+  const exe = findBrowser();
   if (!exe) throw new Error('браузер не найден по стандартным путям (DEF8)');
   const args = ['--remote-debugging-port=0', '--user-data-dir=' + profileDir, '--no-first-run',
     '--no-default-browser-check', '--disable-sync', '--disable-extensions'];
   if (headless) args.push('--headless=new');
+  args.push(...sandboxArgs());
   args.push(app ? '--app=' + url : url);
   const proc = spawn(exe, args, { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise((res, rej) => {
@@ -129,6 +127,23 @@ async function launchBrowser({ headless = true, url = 'about:blank', app = false
 }
 
 // Сессия вкладки: attach + enable доменов + сборщики консоли и сети
+// CP1 (2.9, #128): a REAL press at the centre of the element the expression names — mouse pressed+released, or a touch tap (touch
+// emulation must be on); then a pause long enough for the browser to deliver the click it synthesises from the press.
+const PRESS_SETTLE_MS = 150;        // the click follows the release within a frame; the tap's click comes after the gesture
+const TAP_SETTLE_MS = 400;
+async function realPress(cdp, page, js, how) {
+  // the element is scrolled to the middle first: a press at coordinates outside the viewport lands on nothing
+  const { x, y } = await page.evaluate('(function(){var el=(' + js + ');el.scrollIntoView({block:"center",inline:"center"});var r=el.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}})()');
+  if (how === 'touch') {
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] }, page.sessionId);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }, page.sessionId);
+    await sleep(TAP_SETTLE_MS);
+  } else {
+    for (const type of ['mousePressed', 'mouseReleased']) await cdp.send('Input.dispatchMouseEvent', { type, x, y, button: 'left', clickCount: 1 }, page.sessionId);
+    await sleep(PRESS_SETTLE_MS);
+  }
+}
+
 async function attachPage(cdp, url) {
   const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
   const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
@@ -331,26 +346,37 @@ async function main() {
       }
     }
 
-    block('5. Выбор: клик · второй клик снимает · третий ставит · сосед гасит (C10-блок 5)');
+    // 2.9, CP1 (origin #128 — the owner, in two projects: "the radio buttons do not clear on a second tap"): the block pressed with a
+    // SYNTHETIC pointerdown from page JS — half of a press, no click follows — and passed while the owner's real tap failed. Now every
+    // press is REAL, through CDP: mouse pressed+released (the browser makes pointerdown · mousedown · pointerup · mouseup · click) and a
+    // touch tap with touch emulation on; the keyboard space stays the native radio. Red on the v2.8 page (the click re-checks).
+    block('5. Выбор НАСТОЯЩИМ нажатием: клик · второй снимает · третий ставит · сосед гасит · клик по тексту не снимает — мышью и касанием; пробел родной (C10-блок 5; #128)');
     {
       const page = await attachPage(browser.cdp, pageUrl);
-      const sel = await page.evaluate([
-        "(function(){var rs=document.querySelectorAll('input[name=\"choice:interviews/interview_101_fixture.md:Q1\"]');",
-        " function pd(el){el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true}))}",
-        " var out=[];pd(rs[0]);out.push(rs[0].checked);",                     // клик выделяет
-        " pd(rs[0]);out.push(!rs[0].checked);",                               // второй снимает (P3)
-        " pd(rs[0]);out.push(rs[0].checked);",                                // третий снова ставит
-        " pd(rs[1]);out.push(rs[1].checked&&!rs[0].checked);",                // сосед гасит прежний
-        " pd(rs[0]);var div=rs[0].closest('label').querySelector('div');",    // текст-клик по выбранному
-        " pd(div);out.push(rs[0].checked);",                                  // не снимает (skipped)
-        " try{localStorage.clear()}catch(e){}",                               // тест-черновик не должен утечь в блок 6
-        " return out})()",
-      ].join(''));
-      check('клик выделяет', sel[0] === true);
-      check('второй клик СНИМАЕТ выбор (P3, полевой баг пилота 008)', sel[1] === true);
-      check('третий клик снова выделяет', sel[2] === true);
-      check('сосед гасит прежний', sel[3] === true);
-      check('клик по ТЕКСТУ выбирает, но не снимает (label-target skipped)', sel[4] === true);
+      const R = (i) => "document.querySelectorAll('input[name=\"choice:interviews/interview_101_fixture.md:Q1\"]')[" + i + ']';
+      const TEXT0 = R(0) + ".closest('label').querySelector('div')";
+      const on = (i) => page.evaluate(R(i) + '.checked');
+      for (const how of ['мышь', 'касание']) {
+        if (how === 'касание') await browser.cdp.send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 1 }, page.sessionId);
+        await page.evaluate(R(0) + '.checked=false;' + R(1) + '.checked=false');
+        const press = (js) => realPress(browser.cdp, page, js, how === 'касание' ? 'touch' : 'mouse');
+        await press(R(0)); const s0 = await on(0);
+        await press(R(0)); const s1 = !(await on(0));
+        await press(R(0)); const s2 = await on(0);
+        await press(R(1)); const s3 = (await on(1)) && !(await on(0));
+        await press(R(0)); await press(TEXT0); const s4 = await on(0);
+        check(how + ': нажатие выделяет', s0 === true);
+        check(how + ': второе нажатие СНИМАЕТ выбор (P3; #128 — настоящее нажатие, не синтетический pointerdown)', s1 === true);
+        check(how + ': третье нажатие снова выделяет', s2 === true);
+        check(how + ': сосед гасит прежний', s3 === true);
+        check(how + ': нажатие по ТЕКСТУ выбирает, но не снимает (label-target skipped)', s4 === true);
+      }
+      // клавиатура: пробел на радио — родное поведение (выбирает, второй пробел выбор не снимает) — захват click его не трогает
+      await page.evaluate(R(0) + '.checked=false;' + R(1) + '.checked=false;' + R(0) + '.focus()');
+      const key = async () => { for (const type of ['keyDown', 'keyUp']) await browser.cdp.send('Input.dispatchKeyEvent', { type, key: ' ', code: 'Space', windowsVirtualKeyCode: 32 }, page.sessionId); await sleep(PRESS_SETTLE_MS); };
+      await key(); const k0 = await on(0); await key(); const k1 = await on(0);
+      check('клавиатура: пробел выделяет, второй пробел выбор не снимает (родное радио)', k0 === true && k1 === true);
+      await page.evaluate('try{localStorage.clear()}catch(e){}');   // тест-черновик не должен утечь в блок 6
       await browser.cdp.send('Target.closeTarget', { targetId: page.targetId });
     }
 

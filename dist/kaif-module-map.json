@@ -3760,10 +3760,10 @@
       {
         "signature": "## Page elements by name (P1–P9) — one style across projects",
         "class": "static",
-        "sha256": "89329e4df17a11bb38fa7a8d82395186f01e604e4bb58ac5d7835a39cc430250",
+        "sha256": "c4849554ef6c4800df34af0d508e3df8d6ab09b2b3ca5466145966c2a6ba7940",
         "lines": [
           381,
-          430
+          434
         ]
       },
       {
@@ -3771,8 +3771,8 @@
         "class": "static",
         "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
         "lines": [
-          431,
-          440
+          435,
+          444
         ]
       },
       {
@@ -3780,8 +3780,8 @@
         "class": "static",
         "sha256": "99be6d723cf52bafb9aead06d53919d79656cc54f77d02bc2172cddc56f88c0b",
         "lines": [
-          441,
-          553
+          445,
+          557
         ]
       },
       {
@@ -3789,8 +3789,8 @@
         "class": "static",
         "sha256": "0b9388849b72578dc3226d0d363c54ffed63e371a68e0bab3521c135ac4b7643",
         "lines": [
-          554,
-          587
+          558,
+          591
         ]
       },
       {
@@ -3798,8 +3798,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          588,
-          603
+          592,
+          607
         ]
       },
       {
@@ -3807,8 +3807,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          604,
-          674
+          608,
+          678
         ]
       },
       {
@@ -3816,8 +3816,8 @@
         "class": "static",
         "sha256": "5e2985ee5e5c92b97244766f1cbec12c8858705acfb102ea9ad54a5153358f3c",
         "lines": [
-          675,
-          699
+          679,
+          703
         ]
       },
       {
@@ -3825,8 +3825,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          700,
-          719
+          704,
+          723
         ]
       },
       {
@@ -3834,8 +3834,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          720,
-          731
+          724,
+          735
         ]
       }
     ],

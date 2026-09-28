@@ -35,9 +35,10 @@
 // GAP:            the check is FORM, not meaning — a response that repeats the owner's first words and says nothing is passed (the
 //                 judge reads it); a continuation caused by another Stop hook sets `stop_hook_active` and the «answer» block is skipped
 //                 for that stop; clients without `last_assistant_message` are not judged; agent systems without a Stop event
-// ON-REAL-PATH:   NOT YET — replayed on the REAL transcript of origin session 76 (its first turn: three owner's mid-turn messages, a final
-//                 response answering them by number, not by their words) → block naming all three; the live path waits for the
-//                 owner's next mid-turn word in a session with the hook wired (origin `.claude/settings.json`, 2026-09-28)
+// ON-REAL-PATH:   OBSERVED 2026-09-28 on the origin's live path (Claude Code 2.1.283, hook wired in `.claude/settings.json`): the owner's
+//                 mid-turn word 22:57:37 +03:00 → an answer as TEXT in a response of its own, no tool call before it, last line «⏩ …» →
+//                 22:59:32 this hook blocked «continue the work: …» → the work went on without the owner's next word (report
+//                 testcases/reports/2026-09-28_oa-owner-answer-end-of-turn.md, run 13; before: replayed on the real transcript only)
 // [NOT-TESTED] on the live path — s14 and hooks-mutants are hygiene; run report testcases/reports/2026-09-28_oa-owner-answer-end-of-turn.md
 import { readFileSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 

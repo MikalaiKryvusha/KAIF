@@ -16,12 +16,11 @@ import { platform } from 'node:os';
 const IS_WIN = platform() === 'win32';
 export const STEP_TIMEOUT_MS = 10000;   // C9: a hard deadline per CDP call — a hung call is red, never an eternal wait
 export const LAUNCH_TIMEOUT_MS = 15000; // C9: the browser must print its DevTools endpoint within this
-export const BROWSER_EXES = IS_WIN
-  ? ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
-     'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe']
-  : platform() === 'darwin' ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
-    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge'];
-export const findBrowser = () => BROWSER_EXES.find((p) => existsSync(p)) || null;
+// 2.9, epic CP: ONE browser list — the shipped contour's (framework/tools/contour/review.mjs: DEF8 order on Windows, Linux stands,
+// `KAIF_BROWSER`). This lib and verify-contour kept two copies of their own; a copy that lacks the stand's browser made the contour's
+// own answer-recovery and the suites disagree about which browser exists.
+import { BROWSER_EXES, findBrowser, sandboxArgs } from '../../framework/tools/contour/review.mjs';
+export { BROWSER_EXES, findBrowser, sandboxArgs };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 class CDP {
@@ -76,7 +75,7 @@ export async function headlessPage(url, { profileDir, extraArgs = [], exe = find
   // screen; default — a TAB opened next to about:blank (display-mode: browser). RL D-F2 (2.7): the page promises "the
   // agent will pick it up" only in the app window, so a suite modelling the owner's window must open one.
   const args = ['--remote-debugging-port=0', '--user-data-dir=' + profileDir, '--no-first-run', '--no-default-browser-check',
-    '--disable-gpu', '--headless=new', ...extraArgs, app ? '--app=' + url : 'about:blank'];
+    '--disable-gpu', '--headless=new', ...sandboxArgs(), ...extraArgs, app ? '--app=' + url : 'about:blank'];
   const proc = spawn(exe, args, { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise((res, rej) => {
     let buf = '';
@@ -144,5 +143,8 @@ export async function headlessPage(url, { profileDir, extraArgs = [], exe = find
   // the probe contour-index-focus-loop.mjs and s22 (8) counted the loads of the queue page with it: 90 and 80 on the build before the fix,
   // 1 → 2 after it; report testcases/reports/2026-09-26_contour-queue-reload-and-badge-dates.md]
   const addInitScript = (source) => cdp.send('Page.addScriptToEvaluateOnNewDocument', { source }, sessionId);
-  return { proc, evaluate, close, closeGracefully, screenshot, exe, addInitScript };
+  // 2.9 CP1 (origin #128): a REAL press — Input.dispatchMouseEvent / dispatchTouchEvent through the page's own session; a synthetic
+  // pointerdown from page JS is half of a press (no click follows), and the P3 check passed on that half while the owner's tap failed.
+  const send = (method, params = {}) => cdp.send(method, params, sessionId);
+  return { proc, evaluate, close, closeGracefully, screenshot, exe, addInitScript, send };
 }
