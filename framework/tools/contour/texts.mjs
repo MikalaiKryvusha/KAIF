@@ -31,6 +31,11 @@ export const PARSER = {
   questionPrefixes: 'Q|В',
   // a heading that LOOKS like a question but is not in the form above (QL1, origin #56): `### Question 3` · `### Вопрос 3`
   questionWords: 'Question|Вопрос',
+  // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
+  // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
+  // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
+  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!ниже)|above(?!\\p{L})|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
   // a counter-question is NOT an answer (contract C4 rule 2)

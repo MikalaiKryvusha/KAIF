@@ -269,7 +269,7 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "6178ec6ee9d65889d2acf3e953e6c93f8feb99a38dc7fb9086de8d66589e1620",
+        "sha256": "54f9a8d2a5203f7c2e841468a655cfd6a4f433dccc472165ac33b914dbe9d882",
         "lines": [
           860,
           1052
@@ -6086,10 +6086,10 @@
       {
         "signature": "## 2. Pre-flight — runs before any page opens (exit 3 = refuse to open)",
         "class": "static",
-        "sha256": "53424a52df8e1c2b1f6dff8438a4fa44a44465e44f07a7812da189492a4835a7",
+        "sha256": "098e97cff954431be5aa2827f0c71b08b03b336886f9776da0dd170ff3052cde",
         "lines": [
           19,
-          36
+          37
         ]
       },
       {
@@ -6097,8 +6097,8 @@
         "class": "static",
         "sha256": "e670f80a31ab16b00e9dc8ab15e33f62358de906ed916600401291e3f03564c2",
         "lines": [
-          37,
-          49
+          38,
+          50
         ]
       },
       {
@@ -6106,8 +6106,8 @@
         "class": "static",
         "sha256": "cdbf7ab57f67b14ab3a7461d30cffd5af63b0b0866f8e69e0914f4e2892f2ec5",
         "lines": [
-          50,
-          67
+          51,
+          68
         ]
       },
       {
@@ -6115,8 +6115,8 @@
         "class": "static",
         "sha256": "21b2e7012f8aed4a65101844f6992a644dd5bbe85bc44090025ce4ef6a32bf1d",
         "lines": [
-          68,
-          86
+          69,
+          87
         ]
       },
       {
@@ -6124,8 +6124,8 @@
         "class": "static",
         "sha256": "6caba76aabf3838f743333a6be1c9a0e1c4b03509e8b989d8375cd3fe036c6b1",
         "lines": [
-          87,
-          94
+          88,
+          95
         ]
       },
       {
@@ -6133,8 +6133,8 @@
         "class": "static",
         "sha256": "a1a662f1f4018f7e42944914f7e8e31c95c686ddf6ca4eeced60c67a7c3c7e7f",
         "lines": [
-          95,
-          112
+          96,
+          113
         ]
       },
       {
@@ -6142,8 +6142,8 @@
         "class": "static",
         "sha256": "cf78f3e9fe91bffba8dda7b8ca06d4492bf29a2cb76ee192da334e851f56725b",
         "lines": [
-          113,
-          120
+          114,
+          121
         ]
       }
     ],

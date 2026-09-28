@@ -45,7 +45,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
@@ -707,7 +707,7 @@ function qCard(q, t) {
     (q.answered ? 'disabled' + (o.letter === chosenLetter ? ' checked' : '') : 'data-draft') +
     ' name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
     '<div>' + (o.recommended ? '<span class="tag rec">' + t.tag.rec + '</span> ' : '') + o.html + '</div></label>').join('');
-  const existing = q.existing.map((x) => '<p><strong>' + t.tag.answered + ':</strong> ' + esc(x) + '</p>').join('');
+  const existing = q.existing.map((x) => '<p><strong>' + t.tag.answered + ':</strong> ' + renderInline(x) + '</p>').join(''); // CP (#123): his markup, not raw stars
   const inputs = q.answered
     ? '<p class="addcomment"><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="' + esc(t.ph.addComment) + '"></textarea></p>'
     : '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="' + esc(t.ph.own) + '"></p>' +
@@ -1650,6 +1650,37 @@ export async function selftest(log = console.log) {
   const words = decisionWords({ answers: { Q1: { choice: 'A' }, Q2: { choice: 'B', text: 'take B,\n  but later', comment: 'the radio does not clear' }, Q3: { text: 'free' } }, comment: 'bug on the page' });
   ok(words === 'Q1 = A, Q2 = B + text «take B, but later» + comment «the radio does not clear», Q3 = text «free», document comment «bug on the page»',
     'CP #128: the waiter\'s line names choice · text · comment · document comment (a choice alone stays "Q1 = A")');
+  // CP (2.9, #123): a hard-wrapped paragraph, list item and quote render as ONE block each; bold across the wrap is bold, not raw "**"
+  ok(renderMd('a **b\nc** d') === '<p>a <strong>b\nc</strong> d</p>' && !renderMd('- **A)** text **bold across\n  the wrap** end').includes('**')
+    && renderMd('> one\n> two') === '<blockquote>\n<p>one\ntwo</p>\n</blockquote>' && renderMd('**P (rename kaif-*) → W**') === '<p><strong>P (rename kaif-*) → W</strong></p>'
+    && renderInline('B — one file, **no cuts**') === 'B — one file, <strong>no cuts</strong>',
+    'CP #123: paragraph, list item and quote are joined before inline markup; a single star inside bold is text; the owner\'s answer keeps its markup');
+  // CP (2.9, #123 · #127 p. 5): the owner's answer is its whole paragraph; an HTML comment under an empty label is not an answer
+  const aDoc = (ans) => '# Interview #001\n\n> Status: awaiting\n\n### Q1. Pick?\n\n- **A)** one\n- **B)** two\n\n' + ans + '\n';
+  const wrapped = parseQuestions(aDoc('**Answer:** B) — take it, on one condition: first\nthe order of steps.'))[0];
+  const commented = parseQuestions(aDoc('**Answer:**\n<!-- write here -->'))[0];
+  ok(wrapped.answers[0].text === 'B) — take it, on one condition: first\nthe order of steps.' && commented.answered === false,
+    'CP #123/#127: a wrapped answer is read whole; a comment under an empty label leaves the question LIVE');
+  { // CP (2.9, #124): the third axis of the door — a live question sends the owner nowhere for its own content
+    const rDoc = (date, stem, ans = '') => '# Interview #001\n\n> **Created:** ' + date + '\n> **Status:** awaiting\n\n### Q1. Which formula do we take?\n\n' + stem
+      + '\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** one\n- **B)** two\n\n**Answer:**' + ans + '\n';
+    const n = (date, stem, ans) => preflight(rDoc(date, stem, ans)).filter((p) => /OUTSIDE itself|ref-ok/.test(p)).length;
+    ok(n(REFERENCES_SINCE, 'The formula — see above.') === 1 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 — \u0441\u043c. \u0432\u044b\u0448\u0435.') === 1 && n(REFERENCES_SINCE, 'As §3 says.') === 1
+      && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 — \u0441\u043c. \u0432\u044b\u0448\u0435. <!-- ref-ok: -->') === 1,
+      'CP #124: «see above» · «\u0441\u043c. \u0432\u044b\u0448\u0435» · «§3» in a live question refuse the door; a ref-ok marker without a reason refuses too');
+    ok(n(REFERENCES_SINCE, 'The formula — see above. <!-- ref-ok: the formula is quoted in full below -->') === 0 && n(REFERENCES_SINCE, '\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b — \u0441\u043c. \u043d\u0438\u0436\u0435.') === 0
+      && n(REFERENCES_SINCE, 'The formula — see above.', ' A') === 0 && n('2026-09-20', 'The formula — see above.') === 0
+      && n(REFERENCES_SINCE, '**Answer target:** plans/24 §B8') === 0,
+      'CP #124: a reasoned ref-ok, a forward «\u0441\u043c. \u043d\u0438\u0436\u0435», an answered question, a document older than the axis and the addressee line stay silent');
+  }
+  { // the legal wrapped option form (spec §1, the /interview template) passes the page self-check instead of refusing to open
+    const wr = mkdtempSync(join(tmpdir(), 'kaif-contour-wrap-'));
+    mkdirSync(join(wr, 'interviews'), { recursive: true });
+    writeFileSync(join(wr, 'interviews', 'interview_001_wrap.md'), '# Interview #001\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A) (recommended)** **Title that wraps\n  onto the next line.**\n- **B)** The other one.\n\n**Answer:**\n');
+    const refused = gateForOpen(wr, 'interviews/interview_001_wrap.md');
+    rmSync(wr, { recursive: true, force: true });
+    ok(refused === null, 'CP #123: a wrapped option label opens — the page self-check no longer refuses it for raw ** (' + (refused || []).join(' ').slice(0, 80) + ')');
+  }
   const root = mkdtempSync(join(tmpdir(), 'kaif-contour-'));
   mkdirSync(join(root, '.kaif'), { recursive: true });
   mkdirSync(join(root, 'interviews'), { recursive: true });

@@ -1074,7 +1074,7 @@ hidden, and a draft written natively and shown "for a look" is the class itself.
 the moment of sending, and that is said plainly:** before sending a reply, grep it for "double-click / opens offline / see file / lies
 at" next to an artifact extension — a hit means the show was replaced by a link. No machine can do it: the text being checked is your
 reply, it never lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named: questions to the
-owner are guarded by the questions-guard axis "a question that dispatches into a document". **And a page the owner looks at
+owner that send him outside themselves are refused by the contour's door (`review.mjs <doc> --check`, exit 3; 2.9). **And a page the owner looks at
 is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46):
 a neighbour's word, a `pkill`, a guess are not evidence.
 
@@ -1090,7 +1090,7 @@ write ONE line to it in the chat; the four-line scenario is its caption, never t
 covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
 variants — is QUOTED INTO the question as a table, a list, or a citation, however long that makes
 it. A reference alongside the quoted content is legitimate: it confirms rather than dispatches.
-A reference INSTEAD of the content is the defect, and it is guarded mechanically.
+A reference INSTEAD of the content is the defect, and the contour's door refuses it (`--check`, exit 3; 2.9, KAIF issue #124).
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them

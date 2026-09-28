@@ -33,6 +33,7 @@ no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: i
 `<!-- archaeology: search "<the heading's words>" → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
 Without it the door exits 3 and PRINTS the ready command; `N > 0` with `read: none` or `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
 Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
+**Third axis — the question is SELF-CONTAINED (2.9, origin issue #124).** A live question's heading and stem (the lines before its first option or answer field; the addressee and origin lines excluded) refuse the door with exit 3 on a BACKWARD or SIDEWAYS reference — the parser's `refBack`: «see above», «in the section», «§3» and their Russian mirrors; a forward reference («options below») is legal; `<!-- ref-ok: <reason> -->` on the line exempts it, an empty reason does not; documents dated before 2026-09-28 stay silent.
 
 ## 3. Records — three files, derived names, never overwritten
 

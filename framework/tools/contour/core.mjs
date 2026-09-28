@@ -269,17 +269,22 @@ function finishQuestion(q, docClosed) {
     targetOpen = false;
     const a = line.match(ANSWER_LABEL_RE);
     if (a && !COUNTER_LABEL_RE.test(line)) {
-      let text = (a.groups.rest || '').trim();
-      if (!text) { // the answer text may sit on the first non-empty line below the label
-        for (let k = j + 1; k < q.body.length; k++) {
-          const nl = q.body[k].trim();
-          if (!nl) continue;
-          if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k]) ||
-              isOptionLine(q.body[k]) || COMMENT_LABEL_RE.test(q.body[k])) break; // an owner's comment is NOT the answer
-          text = nl; break;
-        }
+      // 2.9, epic CP (origin #123, #127 p. 5): the answer is a PARAGRAPH — the label's rest and every line below it up to a blank line
+      // or the next label (an owner who wraps his answer was read by its first line only); an HTML comment is cut before the answer
+      // is judged — a comment under an empty label ("<!-- write here -->") made a live question look answered.
+      const noComment = (t) => t.replace(/<!--[\s\S]*?-->/g, '').trim();
+      // a label bolded TOGETHER with the answer ("**Answer: A — the choice.** more") leaves the rest with one unpaired "**" — dropped
+      const rest0 = noComment(a.groups.rest || '');
+      const rest = /^\s*\*\*/.test(line) && !/:\*\*/.test(line) && (rest0.match(/\*\*/g) || []).length % 2 === 1 ? rest0.replace('**', '') : rest0;
+      const parts = [rest].filter(Boolean);
+      for (let k = j + 1; k < q.body.length; k++) {
+        const raw = q.body[k];
+        if (ANSWER_LABEL_RE.test(raw) || TARGET_LABEL_RE.test(raw) || isOptionLine(raw) || COMMENT_LABEL_RE.test(raw)) break; // an owner's comment is NOT the answer
+        const nl = noComment(raw);
+        if (!raw.trim()) { if (parts.length) break; continue; } // a blank line ends the answer — or precedes it
+        if (nl) parts.push(nl);
       }
-      q.answers.push({ line: j, text, followUp: Boolean(a.groups.mod) });
+      q.answers.push({ line: j, text: parts.join('\n'), followUp: Boolean(a.groups.mod) });
     }
   }
   for (const o of q.options) {
@@ -479,6 +484,40 @@ function archaeologyProblems(md) {
  * question and the fix (the #51 defect: options typed as paragraphs `**A. …**` are NOT options).
  * Answered questions are exempt (they render grey, no radios needed); a declared free field is legal.
  */
+// ── 2.9, epic CP (origin issue #124): the THIRD axis of the door — the question is SELF-CONTAINED ────────────────
+// The canon says "the subject of the decision lives INSIDE the question; a reference INSTEAD of the content is a defect, guarded
+// mechanically" — and the shipped door did not guard it (the executor lived only in the origin's wrapper; a field owner's standing rule,
+// quoted verbatim in the issue: write the proposal right in the question, he will not scroll a long document for "that formula"). Every LIVE question's
+// heading and stem (the lines before its first option or answer field) is read: a backward or sideways reference refuses the door;
+// the addressee and origin lines carry legal addresses and are skipped, HTML comments are cut; the declared exception is
+// <!-- ref-ok: <reason> --> on the line (an empty reason is itself a violation). Judged FORWARD by the header date, like archaeology.
+export const REFERENCES_SINCE = '2026-09-28';        // the day the axis was shipped; older documents stay silent
+const REF_BACK_RE = new RegExp(PARSER.refBack, 'iu');
+const REF_OK_RE = /<!--\s*ref-ok:\s*([\s\S]*?)\s*-->/u;
+const ORIGIN_LABEL_RE = new RegExp('^\\s*[>*\\s]*(?:' + PARSER.originLabels + ')\\s*:', 'iu');
+export function referenceProblems(md) {
+  const date = headerDate(md);
+  if (!date || date < REFERENCES_SINCE) return [];
+  const out = [];
+  for (const q of parseQuestions(md)) {
+    if (q.answered || q.freeField) continue;
+    const answerAt = q.answers.length ? q.answers[0].line : q.body.length;
+    const end = q.firstOptionLine >= 0 ? Math.min(q.firstOptionLine, answerAt) : answerAt;
+    const lines = [q.title, ...q.body.slice(0, end)];
+    for (const line of lines) {
+      if (TARGET_LABEL_RE.test(line) || ORIGIN_LABEL_RE.test(line)) continue;
+      const ok = REF_OK_RE.exec(line);
+      if (ok) { if (!ok[1].trim()) out.push(q.id + ': a <!-- ref-ok: --> marker without a reason declares nothing — name why the reference stays: ' + line.trim().slice(0, 80)); continue; }
+      const clean = line.replace(/<!--[\s\S]*?-->/g, '');
+      if (REF_BACK_RE.test(clean))
+        out.push(q.id + ': the question sends the owner OUTSIDE itself for its own content — «' + clean.trim().slice(0, 90) + '». Put the content'
+          + ' right in the question (the formula, the list, the numbers — a reference may stand NEXT to it, never instead of it);'
+          + ' declared exception on the line: <!-- ref-ok: <reason> -->');
+    }
+  }
+  return out;
+}
+
 export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
@@ -491,6 +530,7 @@ export function preflight(md) {
   // AQ (2.7, origin issue #70): the SECOND axis of the same door — the question's archaeology. A free
   // field exempts the FORM, never the claim: a free-form question to the owner is a claim too.
   problems.push(...archaeologyProblems(md));
+  problems.push(...referenceProblems(md));   // CP (2.9, #124): the third axis — the question is self-contained
   return problems;
 }
 
@@ -524,16 +564,28 @@ export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, 
 function inline(s) {
   return s
     .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // a single star INSIDE bold is text ("kaif-*" in a bold phase list — origin #123, interview 018 of the origin): only a pair closes
+    .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
+// 2.9, epic CP (origin #123): the owner's own answer shown on the page keeps its own markup (bold, code) — escaped first, then inline
+export const renderInline = (s) => inline(escapeHtml(s));
 export function renderMd(md) {
   const src = normalize(md).split('\n');
   const out = [];
   let inFence = false, fenceBuf = [], listOpen = false, quoteOpen = false, tableBuf = [];
-  const closeList = () => { if (listOpen) { out.push('</ul>'); listOpen = false; } };
-  const closeQuote = () => { if (quoteOpen) { out.push('</blockquote>'); quoteOpen = false; } };
+  // 2.9, epic CP (origin #123): the unit of markdown is the PARAGRAPH, not the line — a hard-wrapped paragraph came out as one <p> per
+  // line and a bold span across the wrap stayed raw "**", which also made the page's own self-check refuse a legal wrapped option.
+  // Lines of a paragraph, of a list item (its continuation lines — CommonMark "lazy continuation") and of a quote paragraph are
+  // collected and joined with a newline before inline markup; a blank line, a heading, a rule, a table and a fence end them.
+  let para = [], item = null, qpara = [];
+  const flushPara = () => { if (para.length) { out.push('<p>' + inline(escapeHtml(para.join('\n'))) + '</p>'); para = []; } };
+  const flushItem = () => { if (item) { out.push('<li>' + inline(escapeHtml(item.join('\n'))) + '</li>'); item = null; } };
+  const flushQuotePara = () => { if (qpara.length) { out.push('<p>' + inline(escapeHtml(qpara.join('\n'))) + '</p>'); qpara = []; } };
+  const closeList = () => { flushItem(); if (listOpen) { out.push('</ul>'); listOpen = false; } };
+  const closeQuote = () => { flushQuotePara(); if (quoteOpen) { out.push('</blockquote>'); quoteOpen = false; } };
+  const closeAll = () => { flushPara(); closeList(); closeQuote(); };
   const flushTable = () => {
     if (!tableBuf.length) return;
     const rows = tableBuf.map((r) => r.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim()));
@@ -548,26 +600,28 @@ export function renderMd(md) {
   };
   for (const raw of src) {
     if (/^\s*```/.test(raw)) {
+      if (!inFence) closeAll();
       if (inFence) { out.push('<pre><code>' + escapeHtml(fenceBuf.join('\n')) + '</code></pre>'); fenceBuf = []; }
       inFence = !inFence;
       continue;
     }
     if (inFence) { fenceBuf.push(raw); continue; } // inside fenced, comments are content (I24)
     const line = raw.replace(/<!--[\s\S]*?-->/g, '').replace(/[ \t]+$/, ''); // I24: comments outside code are cut
-    if (/^\s*\|.*\|\s*$/.test(line)) { closeList(); closeQuote(); tableBuf.push(line); continue; }
+    if (/^\s*\|.*\|\s*$/.test(line)) { closeAll(); tableBuf.push(line); continue; }
     flushTable();
     const h = line.match(/^(#{1,6})\s+(.*)$/);
-    if (h) { closeList(); closeQuote(); out.push('<h' + h[1].length + '>' + inline(escapeHtml(h[2])) + '</h' + h[1].length + '>'); continue; }
-    if (/^---+\s*$/.test(line)) { closeList(); closeQuote(); out.push('<hr>'); continue; }
+    if (h) { closeAll(); out.push('<h' + h[1].length + '>' + inline(escapeHtml(h[2])) + '</h' + h[1].length + '>'); continue; }
+    if (/^---+\s*$/.test(line)) { closeAll(); out.push('<hr>'); continue; }
     const q = line.match(/^>\s?(.*)$/);
-    if (q) { closeList(); if (!quoteOpen) { out.push('<blockquote>'); quoteOpen = true; } out.push('<p>' + inline(escapeHtml(q[1])) + '</p>'); continue; }
+    if (q) { flushPara(); closeList(); if (!quoteOpen) { out.push('<blockquote>'); quoteOpen = true; } if (q[1].trim()) qpara.push(q[1]); else flushQuotePara(); continue; }
     closeQuote();
     const li = line.match(/^\s*[-*+]\s+(.*)$/);
-    if (li) { if (!listOpen) { out.push('<ul>'); listOpen = true; } out.push('<li>' + inline(escapeHtml(li[1])) + '</li>'); continue; }
+    if (li) { flushPara(); flushItem(); if (!listOpen) { out.push('<ul>'); listOpen = true; } item = [li[1]]; continue; }
+    if (item && line.trim()) { item.push(line.trim()); continue; } // a continuation line of the list item
     closeList();
-    if (line.trim()) out.push('<p>' + inline(escapeHtml(line)) + '</p>');
+    if (line.trim()) para.push(line); else flushPara();
   }
-  flushTable(); closeList(); closeQuote();
+  flushTable(); closeAll();
   return out.join('\n');
 }
 

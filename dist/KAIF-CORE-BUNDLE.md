@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "68a23e64dd41bdd1ad0023e7653e31086cf4a585d678adba35043183a7a862bf",
+    "sourceTree": "587d11f9d93ea2e39b731f1ca4a18de8fd96ea968754b9467d8c7a850c7c1d36",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -1415,7 +1415,7 @@ hidden, and a draft written natively and shown "for a look" is the class itself.
 the moment of sending, and that is said plainly:** before sending a reply, grep it for "double-click / opens offline / see file / lies
 at" next to an artifact extension — a hit means the show was replaced by a link. No machine can do it: the text being checked is your
 reply, it never lands on disk, and no repository tool can see it. Exactly one mechanical half exists and it is named: questions to the
-owner are guarded by the questions-guard axis "a question that dispatches into a document". **And a page the owner looks at
+owner that send him outside themselves are refused by the contour's door (`review.mjs <doc> --check`, exit 3; 2.9). **And a page the owner looks at
 is CLOSED only by the command that checks it** — `node .kaif/tools/contour/review.mjs <doc> --close` (KAIF 2.7, origin issue #66; `/owner-reviews` I46):
 a neighbour's word, a `pkill`, a guess are not evidence.
 
@@ -1431,7 +1431,7 @@ write ONE line to it in the chat; the four-line scenario is its caption, never t
 covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
 variants — is QUOTED INTO the question as a table, a list, or a citation, however long that makes
 it. A reference alongside the quoted content is legitimate: it confirms rather than dispatches.
-A reference INSTEAD of the content is the defect, and it is guarded mechanically.
+A reference INSTEAD of the content is the defect, and the contour's door refuses it (`--check`, exit 3; 2.9, KAIF issue #124).
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
@@ -10699,17 +10699,22 @@ function finishQuestion(q, docClosed) {
     targetOpen = false;
     const a = line.match(ANSWER_LABEL_RE);
     if (a && !COUNTER_LABEL_RE.test(line)) {
-      let text = (a.groups.rest || '').trim();
-      if (!text) { // the answer text may sit on the first non-empty line below the label
-        for (let k = j + 1; k < q.body.length; k++) {
-          const nl = q.body[k].trim();
-          if (!nl) continue;
-          if (ANSWER_LABEL_RE.test(q.body[k]) || TARGET_LABEL_RE.test(q.body[k]) ||
-              isOptionLine(q.body[k]) || COMMENT_LABEL_RE.test(q.body[k])) break; // an owner's comment is NOT the answer
-          text = nl; break;
-        }
+      // 2.9, epic CP (origin #123, #127 p. 5): the answer is a PARAGRAPH — the label's rest and every line below it up to a blank line
+      // or the next label (an owner who wraps his answer was read by its first line only); an HTML comment is cut before the answer
+      // is judged — a comment under an empty label ("<!-- write here -->") made a live question look answered.
+      const noComment = (t) => t.replace(/<!--[\s\S]*?-->/g, '').trim();
+      // a label bolded TOGETHER with the answer ("**Answer: A — the choice.** more") leaves the rest with one unpaired "**" — dropped
+      const rest0 = noComment(a.groups.rest || '');
+      const rest = /^\s*\*\*/.test(line) && !/:\*\*/.test(line) && (rest0.match(/\*\*/g) || []).length % 2 === 1 ? rest0.replace('**', '') : rest0;
+      const parts = [rest].filter(Boolean);
+      for (let k = j + 1; k < q.body.length; k++) {
+        const raw = q.body[k];
+        if (ANSWER_LABEL_RE.test(raw) || TARGET_LABEL_RE.test(raw) || isOptionLine(raw) || COMMENT_LABEL_RE.test(raw)) break; // an owner's comment is NOT the answer
+        const nl = noComment(raw);
+        if (!raw.trim()) { if (parts.length) break; continue; } // a blank line ends the answer — or precedes it
+        if (nl) parts.push(nl);
       }
-      q.answers.push({ line: j, text, followUp: Boolean(a.groups.mod) });
+      q.answers.push({ line: j, text: parts.join('\n'), followUp: Boolean(a.groups.mod) });
     }
   }
   for (const o of q.options) {
@@ -10909,6 +10914,40 @@ function archaeologyProblems(md) {
  * question and the fix (the #51 defect: options typed as paragraphs `**A. …**` are NOT options).
  * Answered questions are exempt (they render grey, no radios needed); a declared free field is legal.
  */
+// ── 2.9, epic CP (origin issue #124): the THIRD axis of the door — the question is SELF-CONTAINED ────────────────
+// The canon says "the subject of the decision lives INSIDE the question; a reference INSTEAD of the content is a defect, guarded
+// mechanically" — and the shipped door did not guard it (the executor lived only in the origin's wrapper; a field owner's standing rule,
+// quoted verbatim in the issue: write the proposal right in the question, he will not scroll a long document for "that formula"). Every LIVE question's
+// heading and stem (the lines before its first option or answer field) is read: a backward or sideways reference refuses the door;
+// the addressee and origin lines carry legal addresses and are skipped, HTML comments are cut; the declared exception is
+// <!-- ref-ok: <reason> --> on the line (an empty reason is itself a violation). Judged FORWARD by the header date, like archaeology.
+export const REFERENCES_SINCE = '2026-09-28';        // the day the axis was shipped; older documents stay silent
+const REF_BACK_RE = new RegExp(PARSER.refBack, 'iu');
+const REF_OK_RE = /<!--\s*ref-ok:\s*([\s\S]*?)\s*-->/u;
+const ORIGIN_LABEL_RE = new RegExp('^\\s*[>*\\s]*(?:' + PARSER.originLabels + ')\\s*:', 'iu');
+export function referenceProblems(md) {
+  const date = headerDate(md);
+  if (!date || date < REFERENCES_SINCE) return [];
+  const out = [];
+  for (const q of parseQuestions(md)) {
+    if (q.answered || q.freeField) continue;
+    const answerAt = q.answers.length ? q.answers[0].line : q.body.length;
+    const end = q.firstOptionLine >= 0 ? Math.min(q.firstOptionLine, answerAt) : answerAt;
+    const lines = [q.title, ...q.body.slice(0, end)];
+    for (const line of lines) {
+      if (TARGET_LABEL_RE.test(line) || ORIGIN_LABEL_RE.test(line)) continue;
+      const ok = REF_OK_RE.exec(line);
+      if (ok) { if (!ok[1].trim()) out.push(q.id + ': a <!-- ref-ok: --> marker without a reason declares nothing — name why the reference stays: ' + line.trim().slice(0, 80)); continue; }
+      const clean = line.replace(/<!--[\s\S]*?-->/g, '');
+      if (REF_BACK_RE.test(clean))
+        out.push(q.id + ': the question sends the owner OUTSIDE itself for its own content — «' + clean.trim().slice(0, 90) + '». Put the content'
+          + ' right in the question (the formula, the list, the numbers — a reference may stand NEXT to it, never instead of it);'
+          + ' declared exception on the line: <!-- ref-ok: <reason> -->');
+    }
+  }
+  return out;
+}
+
 export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
@@ -10921,6 +10960,7 @@ export function preflight(md) {
   // AQ (2.7, origin issue #70): the SECOND axis of the same door — the question's archaeology. A free
   // field exempts the FORM, never the claim: a free-form question to the owner is a claim too.
   problems.push(...archaeologyProblems(md));
+  problems.push(...referenceProblems(md));   // CP (2.9, #124): the third axis — the question is self-contained
   return problems;
 }
 
@@ -10954,16 +10994,28 @@ export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, 
 function inline(s) {
   return s
     .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
-    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // a single star INSIDE bold is text ("kaif-*" in a bold phase list — origin #123, interview 018 of the origin): only a pair closes
+    .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
+// 2.9, epic CP (origin #123): the owner's own answer shown on the page keeps its own markup (bold, code) — escaped first, then inline
+export const renderInline = (s) => inline(escapeHtml(s));
 export function renderMd(md) {
   const src = normalize(md).split('\n');
   const out = [];
   let inFence = false, fenceBuf = [], listOpen = false, quoteOpen = false, tableBuf = [];
-  const closeList = () => { if (listOpen) { out.push('</ul>'); listOpen = false; } };
-  const closeQuote = () => { if (quoteOpen) { out.push('</blockquote>'); quoteOpen = false; } };
+  // 2.9, epic CP (origin #123): the unit of markdown is the PARAGRAPH, not the line — a hard-wrapped paragraph came out as one <p> per
+  // line and a bold span across the wrap stayed raw "**", which also made the page's own self-check refuse a legal wrapped option.
+  // Lines of a paragraph, of a list item (its continuation lines — CommonMark "lazy continuation") and of a quote paragraph are
+  // collected and joined with a newline before inline markup; a blank line, a heading, a rule, a table and a fence end them.
+  let para = [], item = null, qpara = [];
+  const flushPara = () => { if (para.length) { out.push('<p>' + inline(escapeHtml(para.join('\n'))) + '</p>'); para = []; } };
+  const flushItem = () => { if (item) { out.push('<li>' + inline(escapeHtml(item.join('\n'))) + '</li>'); item = null; } };
+  const flushQuotePara = () => { if (qpara.length) { out.push('<p>' + inline(escapeHtml(qpara.join('\n'))) + '</p>'); qpara = []; } };
+  const closeList = () => { flushItem(); if (listOpen) { out.push('</ul>'); listOpen = false; } };
+  const closeQuote = () => { flushQuotePara(); if (quoteOpen) { out.push('</blockquote>'); quoteOpen = false; } };
+  const closeAll = () => { flushPara(); closeList(); closeQuote(); };
   const flushTable = () => {
     if (!tableBuf.length) return;
     const rows = tableBuf.map((r) => r.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map((c) => c.trim()));
@@ -10978,26 +11030,28 @@ export function renderMd(md) {
   };
   for (const raw of src) {
     if (/^\s*```/.test(raw)) {
+      if (!inFence) closeAll();
       if (inFence) { out.push('<pre><code>' + escapeHtml(fenceBuf.join('\n')) + '</code></pre>'); fenceBuf = []; }
       inFence = !inFence;
       continue;
     }
     if (inFence) { fenceBuf.push(raw); continue; } // inside fenced, comments are content (I24)
     const line = raw.replace(/<!--[\s\S]*?-->/g, '').replace(/[ \t]+$/, ''); // I24: comments outside code are cut
-    if (/^\s*\|.*\|\s*$/.test(line)) { closeList(); closeQuote(); tableBuf.push(line); continue; }
+    if (/^\s*\|.*\|\s*$/.test(line)) { closeAll(); tableBuf.push(line); continue; }
     flushTable();
     const h = line.match(/^(#{1,6})\s+(.*)$/);
-    if (h) { closeList(); closeQuote(); out.push('<h' + h[1].length + '>' + inline(escapeHtml(h[2])) + '</h' + h[1].length + '>'); continue; }
-    if (/^---+\s*$/.test(line)) { closeList(); closeQuote(); out.push('<hr>'); continue; }
+    if (h) { closeAll(); out.push('<h' + h[1].length + '>' + inline(escapeHtml(h[2])) + '</h' + h[1].length + '>'); continue; }
+    if (/^---+\s*$/.test(line)) { closeAll(); out.push('<hr>'); continue; }
     const q = line.match(/^>\s?(.*)$/);
-    if (q) { closeList(); if (!quoteOpen) { out.push('<blockquote>'); quoteOpen = true; } out.push('<p>' + inline(escapeHtml(q[1])) + '</p>'); continue; }
+    if (q) { flushPara(); closeList(); if (!quoteOpen) { out.push('<blockquote>'); quoteOpen = true; } if (q[1].trim()) qpara.push(q[1]); else flushQuotePara(); continue; }
     closeQuote();
     const li = line.match(/^\s*[-*+]\s+(.*)$/);
-    if (li) { if (!listOpen) { out.push('<ul>'); listOpen = true; } out.push('<li>' + inline(escapeHtml(li[1])) + '</li>'); continue; }
+    if (li) { flushPara(); flushItem(); if (!listOpen) { out.push('<ul>'); listOpen = true; } item = [li[1]]; continue; }
+    if (item && line.trim()) { item.push(line.trim()); continue; } // a continuation line of the list item
     closeList();
-    if (line.trim()) out.push('<p>' + inline(escapeHtml(line)) + '</p>');
+    if (line.trim()) para.push(line); else flushPara();
   }
-  flushTable(); closeList(); closeQuote();
+  flushTable(); closeAll();
   return out.join('\n');
 }
 
@@ -11201,7 +11255,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, renderMd, splitParagraphs, recordDecision, preflight, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
@@ -11863,7 +11917,7 @@ function qCard(q, t) {
     (q.answered ? 'disabled' + (o.letter === chosenLetter ? ' checked' : '') : 'data-draft') +
     ' name="choice:' + esc(q.doc) + ':' + q.id + '" value="' + o.letter + '">' +
     '<div>' + (o.recommended ? '<span class="tag rec">' + t.tag.rec + '</span> ' : '') + o.html + '</div></label>').join('');
-  const existing = q.existing.map((x) => '<p><strong>' + t.tag.answered + ':</strong> ' + esc(x) + '</p>').join('');
+  const existing = q.existing.map((x) => '<p><strong>' + t.tag.answered + ':</strong> ' + renderInline(x) + '</p>').join(''); // CP (#123): his markup, not raw stars
   const inputs = q.answered
     ? '<p class="addcomment"><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="' + esc(t.ph.addComment) + '"></textarea></p>'
     : '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="' + esc(t.ph.own) + '"></p>' +
@@ -12806,6 +12860,37 @@ export async function selftest(log = console.log) {
   const words = decisionWords({ answers: { Q1: { choice: 'A' }, Q2: { choice: 'B', text: 'take B,\n  but later', comment: 'the radio does not clear' }, Q3: { text: 'free' } }, comment: 'bug on the page' });
   ok(words === 'Q1 = A, Q2 = B + text «take B, but later» + comment «the radio does not clear», Q3 = text «free», document comment «bug on the page»',
     'CP #128: the waiter\'s line names choice · text · comment · document comment (a choice alone stays "Q1 = A")');
+  // CP (2.9, #123): a hard-wrapped paragraph, list item and quote render as ONE block each; bold across the wrap is bold, not raw "**"
+  ok(renderMd('a **b\nc** d') === '<p>a <strong>b\nc</strong> d</p>' && !renderMd('- **A)** text **bold across\n  the wrap** end').includes('**')
+    && renderMd('> one\n> two') === '<blockquote>\n<p>one\ntwo</p>\n</blockquote>' && renderMd('**P (rename kaif-*) → W**') === '<p><strong>P (rename kaif-*) → W</strong></p>'
+    && renderInline('B — one file, **no cuts**') === 'B — one file, <strong>no cuts</strong>',
+    'CP #123: paragraph, list item and quote are joined before inline markup; a single star inside bold is text; the owner\'s answer keeps its markup');
+  // CP (2.9, #123 · #127 p. 5): the owner's answer is its whole paragraph; an HTML comment under an empty label is not an answer
+  const aDoc = (ans) => '# Interview #001\n\n> Status: awaiting\n\n### Q1. Pick?\n\n- **A)** one\n- **B)** two\n\n' + ans + '\n';
+  const wrapped = parseQuestions(aDoc('**Answer:** B) — take it, on one condition: first\nthe order of steps.'))[0];
+  const commented = parseQuestions(aDoc('**Answer:**\n<!-- write here -->'))[0];
+  ok(wrapped.answers[0].text === 'B) — take it, on one condition: first\nthe order of steps.' && commented.answered === false,
+    'CP #123/#127: a wrapped answer is read whole; a comment under an empty label leaves the question LIVE');
+  { // CP (2.9, #124): the third axis of the door — a live question sends the owner nowhere for its own content
+    const rDoc = (date, stem, ans = '') => '# Interview #001\n\n> **Created:** ' + date + '\n> **Status:** awaiting\n\n### Q1. Which formula do we take?\n\n' + stem
+      + '\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** one\n- **B)** two\n\n**Answer:**' + ans + '\n';
+    const n = (date, stem, ans) => preflight(rDoc(date, stem, ans)).filter((p) => /OUTSIDE itself|ref-ok/.test(p)).length;
+    ok(n(REFERENCES_SINCE, 'The formula — see above.') === 1 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 — \u0441\u043c. \u0432\u044b\u0448\u0435.') === 1 && n(REFERENCES_SINCE, 'As §3 says.') === 1
+      && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 — \u0441\u043c. \u0432\u044b\u0448\u0435. <!-- ref-ok: -->') === 1,
+      'CP #124: «see above» · «\u0441\u043c. \u0432\u044b\u0448\u0435» · «§3» in a live question refuse the door; a ref-ok marker without a reason refuses too');
+    ok(n(REFERENCES_SINCE, 'The formula — see above. <!-- ref-ok: the formula is quoted in full below -->') === 0 && n(REFERENCES_SINCE, '\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b — \u0441\u043c. \u043d\u0438\u0436\u0435.') === 0
+      && n(REFERENCES_SINCE, 'The formula — see above.', ' A') === 0 && n('2026-09-20', 'The formula — see above.') === 0
+      && n(REFERENCES_SINCE, '**Answer target:** plans/24 §B8') === 0,
+      'CP #124: a reasoned ref-ok, a forward «\u0441\u043c. \u043d\u0438\u0436\u0435», an answered question, a document older than the axis and the addressee line stay silent');
+  }
+  { // the legal wrapped option form (spec §1, the /interview template) passes the page self-check instead of refusing to open
+    const wr = mkdtempSync(join(tmpdir(), 'kaif-contour-wrap-'));
+    mkdirSync(join(wr, 'interviews'), { recursive: true });
+    writeFileSync(join(wr, 'interviews', 'interview_001_wrap.md'), '# Interview #001\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A) (recommended)** **Title that wraps\n  onto the next line.**\n- **B)** The other one.\n\n**Answer:**\n');
+    const refused = gateForOpen(wr, 'interviews/interview_001_wrap.md');
+    rmSync(wr, { recursive: true, force: true });
+    ok(refused === null, 'CP #123: a wrapped option label opens — the page self-check no longer refuses it for raw ** (' + (refused || []).join(' ').slice(0, 80) + ')');
+  }
   const root = mkdtempSync(join(tmpdir(), 'kaif-contour-'));
   mkdirSync(join(root, '.kaif'), { recursive: true });
   mkdirSync(join(root, 'interviews'), { recursive: true });
@@ -13446,6 +13531,11 @@ export const PARSER = {
   questionPrefixes: 'Q|В',
   // a heading that LOOKS like a question but is not in the form above (QL1, origin #56): `### Question 3` · `### Вопрос 3`
   questionWords: 'Question|Вопрос',
+  // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
+  // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
+  // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
+  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!ниже)|above(?!\\p{L})|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
   // a counter-question is NOT an answer (contract C4 rule 2)
@@ -19422,6 +19512,7 @@ no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: i
 `<!-- archaeology: search "<the heading's words>" → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
 Without it the door exits 3 and PRINTS the ready command; `N > 0` with `read: none` or `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
 Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
+**Third axis — the question is SELF-CONTAINED (2.9, origin issue #124).** A live question's heading and stem (the lines before its first option or answer field; the addressee and origin lines excluded) refuse the door with exit 3 on a BACKWARD or SIDEWAYS reference — the parser's `refBack`: «see above», «in the section», «§3» and their Russian mirrors; a forward reference («options below») is legal; `<!-- ref-ok: <reason> -->` on the line exempts it, an empty reason does not; documents dated before 2026-09-28 stay silent.
 
 ## 3. Records — three files, derived names, never overwritten
 
