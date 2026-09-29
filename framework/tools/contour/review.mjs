@@ -73,6 +73,14 @@ const QH_LEN = 12;                    // OW6: hex chars of a question's fingerpr
 export const PAGE_SCALE = 1.7;
 export const SAVE_SCALE = 1.5;
 const NARROW_PX = 560;                // the narrow-window breakpoint at scale 1 (rendered as NARROW_PX * PAGE_SCALE)
+// CP6 (2.9, origin issue #125): the floating Save column. The header and the banner keep FAB_COLUMN_PX free on the right; the button
+// floats FAB_EDGE_PX from the edge; the status pill under it is at most the column minus the edge and a gap wide — so it wraps
+// INSIDE the column and never lies over the document title (it used to grow to 60vw and covered the title in a 1100x900 window).
+// One source for the three: the pill's width is derived, never a second literal that drifts from the header's padding.
+const FAB_COLUMN_PX = 230, FAB_EDGE_PX = 16;            // regular window
+const FAB_COLUMN_NARROW_PX = 170, FAB_EDGE_NARROW_PX = 8; // narrow window (NARROW_PX)
+const FAB_GAP_PX = 4;                                    // air between the pill and the title column
+const pillMaxPx = (column, edge) => column - edge - FAB_GAP_PX;
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -763,7 +771,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   html { zoom:${PAGE_SCALE} } /* #106: the whole page at PAGE_SCALE, like Ctrl+Plus */
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
   /* The header SCROLLS WITH THE PAGE — the owner's word (2026-09-05): not sticky. Only the emergency banner may pin. */
-  header { position:static; background:var(--card); border-bottom:1px solid var(--line); padding:10px 230px 10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
+  header { position:static; background:var(--card); border-bottom:1px solid var(--line); padding:10px ${FAB_COLUMN_PX}px 10px 20px; display:flex; gap:12px; align-items:baseline; z-index:5; flex-wrap:wrap }
   header .project { font-weight:700; color:var(--accent) } .kind { color:var(--muted) } .langnote { font-size:12px; color:var(--muted) }
   main { max-width:900px; margin:0 auto; padding:16px 20px 40px }
   .doc { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px 22px; overflow-x:auto }
@@ -801,17 +809,17 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
      BOTTOM edge is unreachable when the window is taller than the screen (remote desktop, phone) — the owner typed
      the answers and could not press the button. The FAB is fixed at the top right, visible at any scroll and any
      height; the status is a pill under it on its own background, gone when empty. A bottom bar is FORBIDDEN (spec §4). */
-  .fab { position:fixed; top:12px; right:16px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
+  .fab { position:fixed; top:12px; right:${FAB_EDGE_PX}px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
   .fab #save { zoom:${+(SAVE_SCALE / PAGE_SCALE).toFixed(3)} } /* #106: the primary Save button renders at SAVE_SCALE of the base */
-  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:13px; text-align:right } .fab #status:empty { display:none }
-  @media (max-width:${Math.round(NARROW_PX * PAGE_SCALE)}px) { .fab { top:8px; right:8px } .fab button { padding:8px 14px } header, #banner { padding-right:170px } }
+  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:15px; padding:4px 12px; font-size:13px; text-align:right; max-width:${pillMaxPx(FAB_COLUMN_PX, FAB_EDGE_PX)}px } .fab #status:empty { display:none }
+  @media (max-width:${Math.round(NARROW_PX * PAGE_SCALE)}px) { .fab { top:8px; right:${FAB_EDGE_NARROW_PX}px } .fab button { padding:8px 14px } .fab #status { max-width:${pillMaxPx(FAB_COLUMN_NARROW_PX, FAB_EDGE_NARROW_PX)}px } header, #banner { padding-right:${FAB_COLUMN_NARROW_PX}px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
   button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent) }
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
-  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px 230px 8px 20px; font-weight:600; z-index:6 } /* OW6: room for the floating Save button, as the header has */
+  #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px ${FAB_COLUMN_PX}px 8px 20px; font-weight:600; z-index:6 } /* OW6: room for the floating Save button, as the header has */
   /* I26 (#64): the page found itself in a TAB, not in the contour's own window — a yellow note, never the red banner:
      the answer still goes through; what is at risk is the draft (it lives in this tab) and the auto-close. */
   #tabnote { display:none; background:#fde68a; color:#1d1d1f; padding:8px 20px; font-weight:600; border-bottom:1px solid #f59e0b }`;
@@ -1077,7 +1085,8 @@ function leftIn(root, rel) {
 // OW6 (2.8; the KAIF owner's word — answers are saved one at a time in every project; the field device he pointed to wakes its agent
 // by a separate waiter): the WAITER — the process the agent starts to be woken by the next recorded answer while the page stays open
 // (I8: the agent learns of an event by the END of a process it started). Exit 0 on a new record — it names the document, the answers
-// so far and the questions left; exit 2 when the contour it saw ended without one. Patience is infinite (I9). No document → the queue.
+// so far and the questions left; exit 2 when the contour it saw ended without one — its lock gone, or (CP6, 2.9, #125) its server's
+// process dead while the lock stays. Patience is infinite (I9). No document → the queue.
 // [TESTED: 2026-09-25 19:37–20:01 · selftest: exit 0 on a partial record, exit 2 when the lock it saw is gone; s22 D (7): a separate
 //  process on the deployed copy printed «Recorded: … — Q1 = A · questions left: 2» and exited 0; report testcases/reports/2026-09-25_ow6-partial-save-revision.md]
 // (court RL 2.8, B-F1) a waiter that never sees a live contour — the page closed before it started, or was never raised — ends with 2
@@ -1093,7 +1102,23 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
   // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
   // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
   const queueLock = docPath ? lockPath(root, '_queue') : null;
-  const live = () => existsSync(lock) || (queueLock !== null && existsSync(queueLock));
+  // CP6 (2.9, origin issue #125): a KILLED server leaves its lock on purpose (I29 — the next run reuses its port), so the lock's
+  // existence is not life: its pid is judged too. Read-only (checkLock removes an unreadable lock — a waiter must never delete what
+  // the server may be writing); a lock that cannot be judged (being written, no pid) counts as live, as before.
+  // [TESTED: 2026-09-29 · selftest (4d) a SIGKILLed server's lock → exit 2 with the line, (4e) a dead lock at the start keeps the window —
+  //  both red on the v2.8 rule (mutant «lock exists = live»); verify-contour QA7: the real page server killed with SIGKILL, the waiter
+  //  started as a separate process exited 2 with «server is gone … --queue --list»; report testcases/reports/2026-09-28_cp-question-page.md]
+  const lockState = (p) => {
+    if (!existsSync(p)) return 'none';
+    let held; try { held = JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { return 'live'; }
+    if (!Number.isInteger(held && held.pid) || held.pid <= 0) return 'live';
+    try { process.kill(held.pid, 0); return 'live'; } catch (e) { return e.code === 'EPERM' ? 'live' : 'dead'; }
+  };
+  const states = () => [lockState(lock), queueLock !== null ? lockState(queueLock) : 'none'];
+  const live = () => states().includes('live');
+  const gone = () => { const s = states(); return !s.includes('live') && s.includes('dead'); };
+  const goneLine = () => 'The page\'s server is gone (its process is not running; the lock stays for the next run, I29) — nothing was recorded '
+    + 'through it; an answer the owner saved in the window is kept on this computer: run ' + CLI_NAME + ' --queue --list to pick it up.';
   let lockSeen = live();
   const startedAt = Date.now();
   log('Waiting for the next recorded answer' + (docPath ? ' on ' + relDoc(root, docPath) : ' in the queue') + ' — exit 0 when one is recorded (OW6, I8).');
@@ -1115,10 +1140,12 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
       if (live()) lockSeen = true;
       else if (lockSeen) {
         clearInterval(tick);
-        log('The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
+        log(gone() ? goneLine() : 'The contour ended without a new record — nothing to apply (the page was closed or the contour stopped).');
         done(2);
       } else if (Date.now() - startedAt > graceMs) {
+        // a lock of a dead server found at the start is an old crash, not this page: the window still lets a new page come up on it
         clearInterval(tick);
+        if (gone()) { log(goneLine()); done(2); return; }
         log('No live contour' + (docPath ? ' for ' + relDoc(root, docPath) : ' for the queue') + ' within ' + Math.round(graceMs / 1000)
           + ' s — nothing to wait for: the page was never raised, or it ended before the waiter started; an answer already recorded is on disk ('
           + CLI_NAME + ' --queue --list names it).');
@@ -1888,6 +1915,15 @@ export async function selftest(log = console.log) {
   // QL4 (#60): the Save control is a floating top-right button; the self-check reddens on a bottom bar and on raw markdown in a label
   ok(/\.fab \{[^}]*position:fixed[^}]*top:12px[^}]*right:16px/.test(plainPage.html) && !/bottom:0/.test(plainPage.html) && plainPage.html.includes('<div class="fab"><button id="save"'),
     'the Save button floats at the top right (position:fixed; top; right) and no bottom bar exists on the page');
+  { // CP6 (2.9, origin issue #125): the status pill wraps INSIDE the button's column — its width plus the edge and the gap never exceeds
+    // the room the header keeps free on the right, in the regular and in the narrow window (the layout itself — verify-contour QA7)
+    const px = (re) => Number((plainPage.html.match(re) || [])[1]);
+    const pill = px(/\.fab #status \{ background:[^}]*max-width:(\d+)px/), head = px(/header \{[^}]*padding:10px (\d+)px/), edge = px(/\.fab \{[^}]*right:(\d+)px/);
+    const narrow = /@media[^{]*\{ \.fab \{ top:8px; right:(\d+)px \}[^@]*?\.fab #status \{ max-width:(\d+)px \}[^@]*?padding-right:(\d+)px/.exec(plainPage.html);
+    ok(pill > 0 && head > 0 && pill + edge + FAB_GAP_PX <= head && narrow && Number(narrow[2]) + Number(narrow[1]) + FAB_GAP_PX <= Number(narrow[3]),
+      'the status pill is no wider than the button column the header keeps free — regular and narrow window (CP6, #125; got pill '
+      + pill + ' + edge ' + edge + ' vs header ' + head + (narrow ? '; narrow ' + narrow.slice(1).join('/') : '; narrow rule missing') + ')');
+  }
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.fab { position:static;') }).ok, 'self-check goes RED when the button stops floating (mutation on a copy)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.bar { position:fixed; bottom:0;') }).ok, 'self-check goes RED on a bar pinned to the bottom edge (the #60 page)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('<label class="opt"><input', '<label class="opt">**leak**<input') }).ok, 'self-check goes RED when an option label carries raw markdown');
@@ -2114,6 +2150,31 @@ export async function selftest(log = console.log) {
   rmSync(QLK, { force: true });
   const w4end = await Promise.race([waiter4, sl(3000).then(() => 'timeout')]);
   ok(waitedPastWindow && w4end === 2, 'waiter: a document waiter next to a live QUEUE page waits past its window, and ends with 2 when the queue page ends (J-F1)');
+  // (4d) CP6 (2.9, origin issue #125): the page's server is KILLED and its lock STAYS (I29) — the waiter judges the lock's pid: it waits
+  // while the process lives, and ends with 2 and the «server is gone → --queue --list» line once it is dead (v2.8 waited forever)
+  const srv = spawn(process.execPath, ['-e', 'setTimeout(() => {}, 60000)'], { stdio: 'ignore' });
+  const srvExit = new Promise((r) => srv.once('exit', r));
+  writeFileSync(LK, JSON.stringify({ pid: srv.pid, url: 'http://127.0.0.1:1/' }) + '\n');
+  const wlog5 = [];
+  let w5 = 'pending';
+  const waiter5 = waitForRecord(root, MD, { log: (l) => wlog5.push(String(l)), pollMs: 50, graceMs: 300 }).then((c) => { w5 = c; return c; });
+  await sl(500);
+  const waitedWhileAlive = w5 === 'pending';
+  srv.kill('SIGKILL'); await srvExit;
+  const w5end = await Promise.race([waiter5, sl(3000).then(() => 'timeout')]);
+  ok(waitedWhileAlive && w5end === 2 && existsSync(LK) && wlog5.some((l) => /server is gone/.test(l) && /--queue --list/.test(l)),
+    'waiter: the page\'s server killed, its lock kept → exit 2 «the page\'s server is gone … --queue --list»; while it lived — waiting (CP6, #125)');
+  // (4e) CP6: a lock of a DEAD server found at the start is an old crash — the waiter still gives a new page its window, then ends with 2
+  // and the same line (never an eternal wait on a lock that nobody holds)
+  let w6 = 'pending';
+  const wlog6 = [];
+  const waiter6 = waitForRecord(root, MD, { log: (l) => wlog6.push(String(l)), pollMs: 50, graceMs: 400 }).then((c) => { w6 = c; return c; });
+  await sl(150);
+  const gaveWindow = w6 === 'pending';
+  const w6end = await Promise.race([waiter6, sl(3000).then(() => 'timeout')]);
+  ok(gaveWindow && w6end === 2 && wlog6.some((l) => /server is gone/.test(l)),
+    'waiter: a dead server\'s lock at the start — the window is kept for a new page, then exit 2 «server is gone» (CP6)');
+  rmSync(LK, { force: true });
   // (5) judge OW10 H11: an answer picked up from the owner's machine for an OLDER revision is recorded as data, never written by numbers
   writeFileSync(join(root, MD), three);
   const recS = recordRecovered(root, MD, { answers: { Q1: { choice: 'B', text: '', comment: '' } }, rev: 'an-older-revision' }, cfg);

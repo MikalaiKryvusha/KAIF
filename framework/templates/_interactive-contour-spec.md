@@ -53,7 +53,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal. **Readable without the browser's zoom** (2.8, origin issue #106 — a field owner's explicit word): the page renders at 1.7× the browser base through `html { zoom }` — the whole page, as Ctrl+Plus does (raising font-size alone turns the radio circles into dots), the Save button at 1.5× (its own zoom 1.5 / 1.7), and every width breakpoint is multiplied by the same scale (media queries do not see CSS zoom).
 - **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window height; the status is a pill
-  under it. **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
+  under it, no wider than the button's column the header keeps free (2.9, origin issue #125 — a wide pill covered the document title). **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
   owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency banner ("server silent") may stay pinned.
 - Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save returns the text onto the page with Copy and Retry; a draft lives in `localStorage` and is restored on load ("picked up N fields"). No path may leave the Save button disabled with no
@@ -73,7 +73,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 - Patience is infinite by default (`--timeout 0`); a finite timeout is an automation flag and means tolerated silence.
 - Answers are saved ONE AT A TIME (2.8, the KAIF owner's word): the page LIVES while its document has an unanswered question («Saved. Questions left:
   N», the answered one moves to the settled fold, the other drafts stay); the last answer ends it with exit 0. The agent is woken by a separate WAITER
-  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one or none came up within a minute; apply the
+  started next to the page as a tracked task — `review.mjs --wait <doc>`: exit 0 on each recorded answer, 2 when the contour ended without one — its lock gone, or its server's process dead while the lock stays (2.9, #125: `--queue --list` then picks up an answer saved in the window) — or none came up within a minute; apply the
   answer, start it again while questions are left. The page dying is an event too: `sendBeacon('/closed')` on `pagehide` plus a silence watch (~3 min, two strikes).
 - A save carries the REVISION its page was built from: another revision (the document rewritten under an open tab) → 409, the text stays on the page with
   «Open the new revision»; a repeated save is recognised; a draft key carries its question's fingerprint — a draft never lands on a rewritten question.

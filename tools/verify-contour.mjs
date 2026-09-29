@@ -762,27 +762,56 @@ async function main() {
     }
 
     block('QA7. Мёртвый сервер headless: пять эталонных true');
+    let LAYOUT_JS = null; // CP6: пересечение пилюли статуса с шапкой — общая проба окна и вкладки
+    const shotDir = tempRoot('verify-qa7-shot');
+    const saveFrame = async (pg, name, what) => {
+      const shot = join(shotDir, name);
+      try { writeFileSync(shot, Buffer.from(await pg.screenshot(), 'base64')); console.log('  кадр ' + what + ': ' + shot + ' (зелёный прогон уберёт его вместе с корнем; KAIF_TMP_KEEP=1 — оставить)'); }
+      catch (e) { console.log('  кадр ' + what + ' не снят: ' + e.message); }
+    };
     try {
       makeFixtureRoot(fixtureRoot); // свежая фикстура В ТОМ ЖЕ корне: Q1 снова не отвечен
                                     // (блок 6 уже записал ответ в старую)
+      // CP6 (2.9, тикет #125): заголовок документа ДЛИННЫЙ, как у полевого «Интервью №990 — Проверка готовой страницы…», — только
+      // такой доходит до колонки кнопки, и только над ним видно, закрывает ли его пилюля статуса (короткий заголовок зеленел бы
+      // по построению)
+      const QA7_DOC = join(fixtureRoot, 'interviews', 'interview_101_fixture.md');
+      writeFileSync(QA7_DOC, readFileSync(QA7_DOC, 'utf8').replace('# Interview #101 — фикстура QA-прогона',
+        '# Interview #101 — фикстура QA-прогона: проверка готовой страницы в окне приложения после смерти её сервера'));
       // Отдельный ПРОЦЕСС сервера — убиваем его внезапно, страница остаётся в браузере
-      const child = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), 'interviews/interview_101_fixture.md',
-        '--no-open', '--silent'], { cwd: fixtureRoot, stdio: ['ignore', 'pipe', 'ignore'] });
-      const url3 = await new Promise((res, rej) => {
-        let buf = '';
-        const t = setTimeout(() => rej(new Error('child не поднялся')), LAUNCH_TIMEOUT_MS);
-        child.stdout.on('data', (d) => {
-          buf += d;
-          const m = buf.match(/(http:\/\/127\.0\.0\.1:\d+\/)/);
-          if (m) { clearTimeout(t); res(m[1]); }
+      const spawnQa7Server = async () => {
+        const srv = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), 'interviews/interview_101_fixture.md',
+          '--no-open', '--silent'], { cwd: fixtureRoot, stdio: ['ignore', 'pipe', 'ignore'] });
+        const u = await new Promise((res, rej) => {
+          let buf = '';
+          const t = setTimeout(() => rej(new Error('child не поднялся')), LAUNCH_TIMEOUT_MS);
+          srv.stdout.on('data', (d) => {
+            buf += d;
+            const m = buf.match(/(http:\/\/127\.0\.0\.1:\d+\/)/);
+            if (m) { clearTimeout(t); res(m[1]); }
+          });
         });
-      });
+        return { srv, u };
+      };
+      const { srv: child, u: url3 } = await spawnQa7Server();
       // RL D-F2 (суд версии 2.7): местная запись при мёртвом сервере — свойство ОКНА контура (--app на профиле проекта,
       // display-mode: standalone); вкладка теперь честно показывает кольцо спасения (свод s22 D, случай вкладки). Блок
       // моделирует окно владельца — безоконное окно --app на своём профиле; прежде он цеплял ВКЛАДКУ и тем стерёг дефект.
+      // окно 1100×900 — размер окна приложения из тикета #125, где пилюля закрыла заголовок
       const page = await headlessPage(url3, { profileDir: tempRoot('verify-qa7-window'), app: true,
-        extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
+        extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun', '--window-size=1100,900'] });
+      // CP6 (2.9, тикет #125): сторож агента, поднятый рядом со страницей, — отдельным процессом, как в ритуале
+      const waiter = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), '--wait', 'interviews/interview_101_fixture.md'],
+        { cwd: fixtureRoot, stdio: ['ignore', 'pipe', 'pipe'] });
+      let waiterOut = ''; waiter.stdout.on('data', (d) => { waiterOut += d; }); waiter.stderr.on('data', (d) => { waiterOut += d; });
+      const waiterExit = new Promise((res) => waiter.once('exit', (c) => res(c)));
+      await sleep(1500);
       child.kill('SIGKILL'); // сервер умирает ВНЕЗАПНО, унося RAM-состояние
+      const waiterCode = await Promise.race([waiterExit, sleep(10000).then(() => 'не вышел за 10 с')]);
+      if (waiterCode === 'не вышел за 10 с') { try { waiter.kill(); } catch { /* уже нет */ } }
+      check('сторож узнал о смерти сервера: код 2 и строка «server is gone … --queue --list» (замок остался — I29) = true',
+        waiterCode === 2 && /server is gone/.test(waiterOut) && /--queue --list/.test(waiterOut),
+        'код ' + waiterCode + ': ' + waiterOut.trim().slice(-300));
       await sleep(500);
       await page.evaluate([ // действия человека: набрал ответ, нажал «Записать»
         "(function(){",
@@ -825,7 +854,49 @@ async function main() {
       check('кнопка записи погашена — второй клик не нужен = true', dom.saveEnabled === false);
       check('черновик подхвачен (localStorage) = true', dom.draftPersisted === true);
       check('статус честный («сохранён на этом компьютере») = true', dom.statusHonest === true);
+      // CP6 (2.9, тикет #125): пилюля статуса не закрывает шапку документа — прямоугольник пилюли не пересекает ни одного
+      // элемента шапки (имя проекта · вид · заголовок · пометка языка); кадр окна — в след прогона, его читают глазами
+      LAYOUT_JS = "(function(){var s=document.querySelector('#status').getBoundingClientRect();"
+        + "var over=[].slice.call(document.querySelectorAll('header > *')).filter(function(e){var r=e.getBoundingClientRect();"
+        + "return r.width>0&&r.height>0&&!(r.right<=s.left||r.left>=s.right||r.bottom<=s.top||r.top>=s.bottom)})"
+        + ".map(function(e){return (e.className||e.tagName)+': '+e.textContent.slice(0,50)});"
+        + "return {pill:[s.left,s.top,s.right,s.bottom].map(Math.round),w:innerWidth,h:innerHeight,over:over}})()";
+      const lay = await page.evaluate(LAYOUT_JS);
+      await saveFrame(page, 'qa7-server-gone-saved-locally.png', 'окна');
+      check('пилюля «сохранён на этом компьютере» не закрывает шапку документа (окно ' + lay.w + '×' + lay.h + ') = true',
+        lay.over.length === 0, 'пилюля ' + JSON.stringify(lay.pill) + ' пересекает: ' + lay.over.join(' | '));
       await page.closeGracefully();
+      // QA7б (CP6, 2.9; оговорка (а) ideas/31 п. 31 — вкладка при мёртвом сервере глазами не наблюдалась): страница ВКЛАДКОЙ на чужом
+      // профиле, сервер убит, «Записать» → честная строка «ответ НЕ уйдёт», кольцо спасения с текстом, ни слова «сохранён на этом
+      // компьютере»; пилюля не закрывает шапку; кадр вкладки — в след прогона. Глаз владельца этим не заменяется.
+      const { srv: child2, u: url4 } = await spawnQa7Server();
+      const tab = await headlessPage(url4, { profileDir: tempRoot('verify-qa7-tab'),
+        extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun', '--window-size=1100,900'] });
+      child2.kill('SIGKILL');
+      await sleep(500);
+      await tab.evaluate([
+        "(function(){",
+        " var txt=document.getElementsByName('text:interviews/interview_101_fixture.md:Q1')[0];",
+        " txt.value='ответ из вкладки в мёртвый сервер';txt.dispatchEvent(new Event('input',{bubbles:true}));",
+        " pulse();document.querySelector('#save').click();return true})()",
+      ].join(''));
+      const TAB_JS = "(function(){return {status:document.querySelector('#status').textContent||'',banner:document.querySelector('#banner').textContent||'',"
+        + "ring:document.querySelector('#rescue').style.display,ringText:(document.querySelector('#rescuetext')||{}).value||''}})()";
+      let tb = null;
+      const t1 = Date.now();
+      while (Date.now() - t1 < DEAD_SERVER_DEADLINE_MS) {
+        tb = await tab.evaluate(TAB_JS);
+        if (tb.ring === 'block' && /НЕ уйдёт/.test(tb.status)) break;
+        await sleep(500);
+      }
+      check('вкладка при мёртвом сервере: «ответ НЕ уйдёт», кольцо спасения с текстом ответа, ни слова «сохранён на этом компьютере» = true',
+        tb.ring === 'block' && /НЕ уйдёт/.test(tb.status) && tb.ringText.includes('ответ из вкладки в мёртвый сервер') && !/сохранён на этом компьютере/.test(tb.status + tb.banner),
+        JSON.stringify(tb).slice(0, 300));
+      const layTab = await tab.evaluate(LAYOUT_JS);
+      await saveFrame(tab, 'qa7b-tab-server-gone.png', 'вкладки');
+      check('вкладка: пилюля статуса не закрывает шапку документа (окно ' + layTab.w + '×' + layTab.h + ') = true',
+        layTab.over.length === 0, 'пилюля ' + JSON.stringify(layTab.pill) + ' пересекает: ' + layTab.over.join(' | '));
+      await tab.closeGracefully();
     } catch (e) {
       check('QA7 исполнился', false, e.message); // причина падения — в строку, не в маску
     }
