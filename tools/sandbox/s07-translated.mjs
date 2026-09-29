@@ -284,6 +284,7 @@ writeFileSync(join(T8, 'AGENT_GUIDE.md'),
   readFileSync(join(T8, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 const taskIds = [...new Set([...readFileSync(join(T8, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
+must(run, T8, 'wire-hooks');   // 2.9, SW2 (#115): the `wire-hooks` item is done by its command before its tick
 for (const id of taskIds) run(T8, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
 // K6/bugs/24: задание ПЕРЕСОХРАНЕНО с CRLF (Windows-редактор) уже С чекпоинтами — $-якоря
 // гейта обязаны узнавать записанные чекпоинты и после этого (класс ndim: «нет фронтматтера» ×15)
@@ -305,6 +306,7 @@ writeFileSync(join(T8b, 'AGENT_GUIDE.md'),
   readFileSync(join(T8b, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 const idsB = [...new Set([...readFileSync(join(T8b, 'KAIF_ADAPTATION_TASK.md'), 'utf8')
   .matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
+must(run, T8b, 'wire-hooks');   // 2.9, SW2 (#115): the `wire-hooks` item is done by its command before its tick
 for (const id of idsB) run(T8b, `checkpoint ${id}${id === 'judge' ? ' --verdict "sandbox: mechanical tick"' : ''}`);
 r = run(T8b, 'verify-final');
 ok(r.code !== 0 && r.out.includes("<YOUR AGENT'S noreply EMAIL>"),

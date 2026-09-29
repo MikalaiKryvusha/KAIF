@@ -214,6 +214,8 @@ ok(r.code === 0 && /field report on disk/.test(r.out), 'S12-M3 checkpoint field-
 // the DELIVERED core and states it: on tracking: origin an undelivered report is named with the delivery command; the tick is recorded anyway
 ok(/the field report is not delivered to KAIF yet/.test(r.out) && /run node \.kaif\/kaif-core\.mjs report reports\/KAIF_UPDATES\/SBX_KAIF_9\.9_UPDATE_REPORT\.md/.test(r.out),
    'S12-M3 (C-F1): отчёт без строки доставки на tracking: origin — отметка называет доставку готовой командой report и всё равно записана', r.out.slice(-400));
+// 2.9, SW2 (#115): the task's `wire-hooks` item is DONE the way the agent does it — the command first, then its tick (the tick executes its gate)
+must(run, S12, 'wire-hooks');
 for (const id of taskIds) {
   const extra = id === 'judge' ? ' --verdict "VERIFIED: sandbox pass, gates observed green"' : '';
   r = run(S12, `checkpoint ${id}${extra}`);

@@ -32,8 +32,8 @@ and additive; with no hooks everything still works on prose.
 - **KAIF SHIPS one hook module, and Claude Code is its reference host: `.kaif/hooks/` (refresh-hooks,
   since 2.2).** Three hooks by the live vendor contract — an order to re-read after compaction, a
   marker-age timer per prompt, a soft `STATUS.md` guard once per session — plus
-  `settings-fragment.json` to merge into your own `.claude/settings.json`. Wiring is the owner's
-  explicit opt-in: the machinery never edits someone else's settings file. Module README:
+  `settings-fragment.json`, which the install and update tasks wire into `.claude/settings.json` (`wire-hooks`, 2.9 — additive,
+  the owner's entries kept; `"hooks": "off"` in `.kaif/kaif.json` opts out). Module README:
   `.kaif/hooks/README.md`.
 - Other load-bearing rules are worth enforcing but **do NOT ship** — write them yourself if you want
   them: `rebuild-after-edit` (`PostToolUse` on template edits → run the build), `no-context-self-stop`
@@ -47,5 +47,5 @@ and additive; with no hooks everything still works on prose.
 - [x] `CLAUDE.md` → points at `AGENT_GUIDE.md`
 - [x] skills in `.claude/skills/<name>/SKILL.md`
 - [x] `AGENTS.md` fallback (optional alongside `CLAUDE.md`)
-- [ ] (optional) enforcement: merge `.kaif/hooks/settings-fragment.json` into `.claude/settings.json`
+- [ ] enforcement: `node .kaif/kaif-core.mjs wire-hooks` merges `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` (the install and update tasks run it; `"hooks": "off"` opts out)
 - [x] `.kaif/kaif.json` → `agent: "claude-code"`

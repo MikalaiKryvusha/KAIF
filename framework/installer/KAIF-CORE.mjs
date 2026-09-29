@@ -137,9 +137,16 @@ const UPDATE_TASK = 'KAIF_UPDATE_TASK.md';
 // its ONLY address, while standing rules and reference tables are not closed history) every address names its FILE and the
 // command that creates it: the house-rules file is copied from the shipped skeleton on first use. Plain single-quoted strings on
 // purpose: the origin's budget door (tools/budget-gate.mjs → readBudgets) and the build's ceiling guard read this table as TEXT.
-const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';
+// Since 2.9 (epic SW, origin issue #113) the table names the FILE only: the command that creates it is added at PRINT time, and only
+// while the file is absent — printed over a filled HOUSE_RULES.md, an obeyed «cp» overwrote the owner's rules with the empty skeleton
+// (a field near-miss, 241 lines). Every printer of an address goes through overflowAddress().
+// [TESTED: 2026-09-29 21:28 +03:00 · suite s16 (4b): with HOUSE_RULES.md present neither the warning nor the door prints «cp»; without it both do,
+//  as before; red on v2.8 and on mutant M-SW4 (budget-mutants) — testcases/reports/2026-09-29_sw-delivered-wired.md]
+const HOUSE_RULES_CREATE = ' (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md)';
+const overflowAddress = (to) => (okOnDisk('HOUSE_RULES.md') ? to : String(to).replace('HOUSE_RULES.md', 'HOUSE_RULES.md' + HOUSE_RULES_CREATE));
+const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';
 const DOC_BUDGETS = {
-  'STATUS.md': { budget: 200, overflowTo: 'the chronicle PROJECT_HISTORY.md (move closed history VERBATIM — the /end-chat-soft bonsai trim) · HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for standing rules and reference tables' },
+  'STATUS.md': { budget: 200, overflowTo: 'the chronicle PROJECT_HISTORY.md (move closed history VERBATIM — the /end-chat-soft bonsai trim) · HOUSE_RULES.md for standing rules and reference tables' },
   'GOAL.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
   'MASTER_PLAN.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
   'PROJECT_STRUCTURE_EXTERNAL_MAP.md': { budget: 300, overflowTo: MOVE_OUT_ADDRESS },
@@ -219,7 +226,7 @@ function budgetOverflow(say) {
         say(`ℹ ${doc}: a declared archive of the owner (${fileLines(doc)} lines — information, never a stop); its digest ${arch.digest} carries the budget: ${dl} of ~${budget}${arch.owner ? '' : ` — the declaration names no owner's word: write "archives": { "${doc}": { "digest": "${arch.digest}", "owner": "<where his word lives>" } }`}`);
         if (dl <= budget) continue;
         overBudget.push({ doc, own: dl, budget, overflowTo });
-        say(`⚠ ${doc}: own lines ${dl} of budget ~${budget} (the digest ${arch.digest} of a declared archive — the operative text, every line counts) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
+        say(`⚠ ${doc}: own lines ${dl} of budget ~${budget} (the digest ${arch.digest} of a declared archive — the operative text, every line counts) — move content OUT to ${overflowAddress(overflowTo)}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
         continue;
       }
       say(`ℹ ${doc}: declared an archive, but its digest ${arch.digest ? `${arch.digest} ${okOnDisk(arch.digest) ? `does not name ${doc}` : 'is missing'}` : 'is not named'} — the archive is judged as a document until the digest exists and points to it`);
@@ -231,7 +238,7 @@ function budgetOverflow(say) {
       : basis === 'owner-seeded' ? `${total} lines on disk, all of them yours — this is an owner-seeded document whose shipped skeleton the project wrote over, so there is no arrived canon to subtract`
       : basis === 'translated' ? `${total} lines on disk, translated wholesale — arrived canon cannot be told from your own lines, so every line counts as yours${typeof templateLines[doc] === 'number' ? `; the shipped template is ${templateLines[doc]} lines, which leaves ≈ ${Math.max(0, budget - templateLines[doc])} for your translation's growth and your own adaptation — local sections belong in HOUSE_RULES.md` : ''}`
       : `${total} lines on disk, no deployed module cut for this file — every line counts as yours`;
-    say(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowTo}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
+    say(`⚠ ${doc}: own lines ${own} of budget ~${budget} (${how}) — move content OUT to ${overflowAddress(overflowTo)}, rather than raise the budget (AGENT_GUIDE → Document taxonomy, tier 1)`);
   }
   return overBudget;
 }
@@ -250,13 +257,14 @@ function budgetOverflow(say) {
 //  tools/sandbox/probes/budget-mutants.mjs red on their addressees; functional run — clones of four field deployments on 2.7, both
 //  routes, forecast = real gate 24 of 24 (tools/sandbox/probes/ck56-field-forecast.mjs) — testcases/reports/2026-09-25_ck56-closing-gates-forecast.md]
 const CLOSING_LINTS = [
-  ['lesson journal', '.kaif/tools/kaif-experience-lint.mjs'],
-  ['decision attribution', '.kaif/tools/kaif-attribution-lint.mjs'],
+  ['lesson journal', '.kaif/tools/kaif-experience-lint.mjs', null],   // its baseline never silences a repeated class — no baseline step
+  ['decision attribution', '.kaif/tools/kaif-attribution-lint.mjs', '.kaif/attribution-lint.baseline.json'],
 ];
 const CLOSING_LINT_TIMEOUT_MS = 120000;   // method constant: a lint over a large field tree takes seconds; a hung one must not hang the update
 const CLOSING_LINT_SHOWN = 3;             // method constant: finding lines quoted per stopping lint — its last line always carries the count
-function closingGatesForecast(version) {
+function closingGatesForecast(version, out = {}) {
   const lines = [];
+  out.unbaselined = [];
   const door = '`node .kaif/kaif-core.mjs check --gate-budgets`';
   let base = null, unreadable = false;
   if (existsSync(BUDGET_BASELINE)) { try { base = readJson(BUDGET_BASELINE); } catch { unreadable = true; } }
@@ -265,9 +273,9 @@ function closingGatesForecast(version) {
     const { verdicts } = budgetRatchet(budgetOverflow(() => {}), base, version);
     if (!verdicts.length) lines.push(`budget door (${door}) — open: every re-read core document is within its budget in own lines`);
     for (const v of verdicts)
-      lines.push(`budget door (${door}) — ${v.doc}: own lines ${v.own} of budget ${v.budget} — ${v.pass ? 'passes' : 'STOPS'}: ${v.why}; the overflow moves to ${v.overflowTo}`);
+      lines.push(`budget door (${door}) — ${v.doc}: own lines ${v.own} of budget ${v.budget} — ${v.pass ? 'passes' : 'STOPS'}: ${v.why}; the overflow moves to ${overflowAddress(v.overflowTo)}`);
   }
-  for (const [name, mod] of CLOSING_LINTS) {
+  for (const [name, mod, baseFile] of CLOSING_LINTS) {
     const cmd = `\`node ${mod} check\``;
     if (!okOnDisk(mod)) { lines.push(`${name} (${cmd}) — not deployed here: the closing has nothing to run for it`); continue; }
     const r = spawnSync(process.execPath, [mod, 'check'], { encoding: 'utf8', timeout: CLOSING_LINT_TIMEOUT_MS });
@@ -276,11 +284,23 @@ function closingGatesForecast(version) {
     else if (r.status === 1 && reds.length) {
       const shown = reds.length > CLOSING_LINT_SHOWN + 1 ? [...reds.slice(0, CLOSING_LINT_SHOWN), `… ${reds.length - CLOSING_LINT_SHOWN - 1} more`, reds[reds.length - 1]] : reds;
       lines.push(`${name} (${cmd}) — STOPS: ${shown.join(' | ')}`);
+      if (baseFile && !existsSync(baseFile)) out.unbaselined.push([name, mod, baseFile]);
     }
     else if (r.status === 3) lines.push(`${name} (${cmd}) — not judged (exit 3, SKIPPED): the closing says so aloud and does not stop on it`);
     else lines.push(`${name} (${cmd}) — gave no verdict (exit ${r.status === null ? 'none — timed out' : r.status}): run it yourself before the closing`);
   }
   return lines;
+}
+// SW2 (2.9, origin issue #115): a lint that arrives with NO baseline stops the first closing on the project's INHERITED debt, and the
+// field put that debt to the owner as a question. The module itself prescribes the cure — record the debt ONCE; the task makes that a
+// step, no question: what KAIF delivers is accepted. Only where the forecast saw the lint STOP and no baseline exists yet, and only for
+// a lint whose baseline IS the cure: the lesson journal's baseline never silences a repeated class, so it gets no such step.
+// [TESTED: 2026-09-29 21:28 +03:00 · suite s16 (10): the lint-baselines item names the attribution lint only; its tick refuses without the
+//  baseline and records with it; red on v2.8 and on mutants M-SW2 · M22; the lesson journal gets no step (the first edition named it, and the
+//  suite refuted it) — testcases/reports/2026-09-29_sw-delivered-wired.md]
+function lintBaselineItem(unbaselined) {
+  if (!unbaselined.length) return null;
+  return ['lint-baselines', `Record the project's INHERITED debt of ${unbaselined.map(([n]) => n).join(' and ')} ONCE, as the module prescribes — now, without asking the project owner (KAIF 2.9: what KAIF delivers is accepted): ${unbaselined.map(([, mod]) => `\`node ${mod} check --write-baseline\``).join(' · ')}. The lint arrived with no baseline (${unbaselined.map(([, , b]) => b).join(' · ')} absent), so the first closing would stop on lines written before this update; from here the baseline only shrinks and the closing stops on a NEW finding alone. Name the recorded counts in the field report.`];
 }
 
 const log = (s) => console.log(s);
@@ -462,23 +482,53 @@ function lineDiff(oldText, newText) {
 // exactly that). The lines stay useful after self-clean — updates recur.
 // [TESTED: 2026-08-07 · npm run test:core all 13 suites green — S1 (entries present right after
 // install) + S4 (idempotent on update), re-run with the refresh-marker entry added]
+// SW5 (2.9, origin issues #130 · #126, ideas/31 p. 5): the ROOT transients are ANCHORED (`/KAIF.md`) — an unanchored `KAIF.md` matched
+// `.clinerules/kaif.md` and `.roo/rules/kaif.md` on a case-insensitive git (core.ignorecase=true, the git-for-Windows default) and any
+// `sub/KAIF.md` everywhere, so a clone lost the deployed pointers; a bare line an older core wrote is rewritten IN PLACE to its anchored
+// form — the owner's own lines and negations keep their order (appending `KAIF.md` at the end used to override the owner's
+// `!.clinerules/kaif.md`) — and the file keeps its own line ends (K-R11). The contour's renders and its call phrase
+// (`.kaif/.contour-tmp/`) and its window locks (`<decisionsDir>/*.lock`) join the set: they rode sweeping commits.
+// [TESTED: 2026-09-29 21:46 +03:00 · suite s01 S9 on a git with core.ignorecase=true: the anchor, a bare line rewritten in place with the owner's
+//  negation and CRLF kept, the contour's render and lock out of git status; red on v2.8; the functional run 2.8 → 2.9 — testcases/reports/2026-09-29_sw-delivered-wired.md, runs 11–13]
+const IGNORE_ROOT_TRANSIENTS = ['KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK, 'KAIF_UPDATE_TASK.superseded.md', 'KAIF_ADAPTATION_TASK.superseded.md'];
+function contourDecisionsDir() {
+  try {
+    const c = readJson(KAIF_JSON).contour;
+    if (c && typeof c.decisionsDir === 'string' && c.decisionsDir.trim()) return c.decisionsDir.trim().replace(/\\/g, '/').replace(/^(\.\/)+|\/+$/g, '');
+  } catch { /* no marker yet — the contour's default */ }
+  return 'interviews/decisions';
+}
+function ignoreFirstWanted() {
+  return ['.kaif/install/', ...IGNORE_ROOT_TRANSIENTS.map((n) => '/' + n),
+    '.kaif/backup-*/',        // pre-update backups are rollback material, never history (field ask)
+    UPDATE_JOURNAL,           // the crash journal is transient run state; it must be VISIBLE, not committed
+    '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
+    '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
+    '.kaif/refresh-marker.json',  // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
+    '.kaif/voice-marker.json',    // the voice-portrait load witness — the same class (2.7, epic VC: `kaif-voice-lint load`)
+    '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66)
+    '.kaif/.contour-tmp/',        // the contour's renders and the call phrase (2.9, #126) — a sweeping commit took a page of questions along
+    contourDecisionsDir() + '/*.lock', // the contour's window locks (2.9, #126) — a killed server's lock stays on purpose (I29)
+    '.kaif/update-rehearsal.json']; // the preview's recorded wholesale verdicts — consumed by the next update (2.5, P1)
+}
 function ensureIgnoreFirst() {
-  const wanted = ['.kaif/install/', 'KAIF.md', 'KAIF-LOADER.mjs', TASK_FILE, UPDATE_TASK,
-                  'KAIF_UPDATE_TASK.superseded.md', 'KAIF_ADAPTATION_TASK.superseded.md',
-                  '.kaif/backup-*/',        // pre-update backups are rollback material, never history (field ask)
-                  UPDATE_JOURNAL,           // the crash journal is transient run state; it must be VISIBLE, not committed
-                  '.kaif/heartbeat.log',    // the guarded loop's pulse is runtime state, not history
-                  '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
-                  '.kaif/refresh-marker.json',  // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
-                  '.kaif/voice-marker.json',    // the voice-portrait load witness — the same class (2.7, epic VC: `kaif-voice-lint load`)
-                  '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66): the draft and a locally saved answer live here; ignore-first BEFORE the first window
-                  '.kaif/update-rehearsal.json']; // the preview's recorded wholesale verdicts — consumed by the next update (2.5, P1)
-  let text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
-  const have = new Set(text.split(/\r?\n/).map((s) => s.trim()));
-  const add = wanted.filter((w) => !have.has(w) && !have.has(w.replace(/\/$/, '')));
-  if (!add.length) return;
-  writeFileSync('.gitignore', text.replace(/\s*$/, text ? '\n' : '') + add.join('\n') + '\n');
-  log(`+ .gitignore: ignore-first for ${add.join(', ')}`);
+  const wanted = ignoreFirstWanted();
+  const text = existsSync('.gitignore') ? readFileSync('.gitignore', 'utf8') : '';
+  const eol = text.includes('\r\n') ? '\r\n' : '\n';
+  const lines = text.length ? text.split(/\r?\n/) : [];
+  const anchored = [];
+  for (let i = 0; i < lines.length; i++) {
+    const s = lines[i].trim();
+    if (IGNORE_ROOT_TRANSIENTS.includes(s)) { lines[i] = '/' + s; anchored.push('/' + s); }
+  }
+  const norm = (s) => s.trim().replace(/^\//, '').replace(/\/$/, '');
+  const have = new Set(lines.map(norm));
+  const add = wanted.filter((w) => !have.has(norm(w)));
+  if (!add.length && !anchored.length) return;
+  const body = lines.join(eol).replace(/\s*$/, '');
+  writeFileSync('.gitignore', (body ? body + eol : '') + (add.length ? add.join(eol) + eol : ''));
+  if (anchored.length) log(`⟳ .gitignore: anchored to the project root — ${anchored.join(', ')} (an unanchored line hid a same-named file in any folder, #130)`);
+  if (add.length) log(`+ .gitignore: ignore-first for ${add.join(', ')}`);
 }
 
 // ---------------------------------------------------------------------------- bundle parsing
@@ -1024,6 +1074,7 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // lives in reports/README.md; a full template body here would bloat the task (the field rake:
   // a 352-line task with 80 useful). The item names the origin ONLY on tracking: origin — fieldReportDelivery() (2.8, epic CH,
   // origin #78: there the report is delivered in the same move); an anonymous deployment's task never reaches for the origin.
+  if (wantsWireHooks()) items.push(wireHooksItem());
   items.push(['field-report', `MANDATORY field install report (the framework's feedback loop — written even when the install went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_INSTALL_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers · 2. Friction and rakes (verbatim evidence; an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What confused a cold agent (top 3) · 4. Final state and judge verdict (run a /fable-judge pass over the install; every number is a command's output).${fieldReportDelivery()}`]);
   items.push(['verify', 'Run `node .kaif/kaif-core.mjs verify-final` — it checks these checkpoints and self-cleans the installer. Then commit `chore: deploy KAIF`.']);
 
@@ -1373,9 +1424,9 @@ function handleDeprecations(meta, old, fills = null) {
   return out;
 }
 
-// Policy changes in the (from, to] interval (Reference §10.6): a rule change is OWNER territory
-// and never merges silently as an ordinary diff (field: the 1.6 language-policy change dissolved
-// into a diff and the owner learned about it on an audit).
+// Policy changes in the (from, to] interval (Reference §10.6): a rule change never merges silently as an ordinary diff (field: the
+// 1.6 language-policy change dissolved into a diff and the owner learned about it on an audit) — it is NAMED; since 2.9 (issue #114)
+// it is accepted with the version, not put to the project owner as a question.
 function policyInterval(meta, fromVersion) {
   const byVer = meta.policyChanges;
   if (!byVer) return [];
@@ -1485,7 +1536,11 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // state (ticked boxes, decision rows) — a merge that "cleans them up" erases his record.
   const OWNER_LINES = "Careful: checklists/tables in these files may carry the OWNER'S recorded state (ticked boxes, decision rows) — fold the template changes around them, never reset them.";
   const items = [];
-  if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version — these are the OWNER'S decisions, never merge them silently; put each in front of the owner and record the choice:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
+  // SW (2.9, origin issue #114 — the KAIF owner's word in his field project: what KAIF delivers with an update is accepted without
+  // questions): the rules below were decided by the author of the release and are ACCEPTED with the version — never a round of
+  // questions to the project owner (three field interviews in a row answered "accept all"); what stays is the naming, so no rule is
+  // merged SILENTLY, and one narrow question: a rule that collides with a decision the project owner recorded himself.
+  if (policy.length) items.push(['policy-changes', `⚠ This interval CHANGES RULES of your previous version. The author of KAIF shipped them with this release, and they are ACCEPTED with the version — no question to the project owner about them (the KAIF owner's rule, 2.9). Never merge them silently: name each in the field report and in the farewell. A question to the owner is legal ONLY where a rule collides with a decision he recorded himself (an [OWNER] line), with the address of that decision in it:\n${policy.map((p) => `    · ${p}`).join('\n')}`]);
   if (modFiles.length) items.push(['merge-modules', `These MODULES need your merge — fold each diff below into your version (for ordinary files the rest was updated mechanically; for i18n-translated files NOTHING was applied — the diffs are the whole delivery; the file as YOUR language deploys it, the oracle of that hand merge: \`node .kaif/kaif-core.mjs diff --source <the receipt's source> --render <file>\`, and the same with the previous release as the source gives the base): ${modFiles.map((p) => `${p} (${divergedModules[p].length})`).join(' · ')}. ${OWNER_LINES}`]);
   // A translated-wholesale file names its upstream path and a READY diff command against the
   // origin's tags (2.5, epic US; field wish plans/73 U2 p.1, asked twice): for i18n deployments
@@ -1542,7 +1597,11 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // The closing gates, forecast (2.8, epic CK, step CK5.6 — see closingGatesForecast): UNCONDITIONAL, like stale-claims, so that
   // "nothing stops the first closing" is a printed verdict and never an absent item.
   if (ownerVoice) items.push(['owner-voice-core', ownerVoiceInstruction(ownerVoice)]);
-  items.push(['closing-gates', `The closing ritual (/end-chat-soft) runs these gates. Their verdicts over the tree as it stands NOW, after the mechanical pass (measured read-only — nothing was written); the merges ahead can move the numbers, and the checkpoint measures again. Where a line says STOPS, act before the first closing — move the content to the address the line names, fix the finding, or record the inherited debt with the command the lint names; a line that passes with debt recorded tells you what the NEXT closing will demand:\n${closingGatesForecast(meta.version).map((l) => `    · ${l}`).join('\n')}`]);
+  if (wantsWireHooks()) items.push(wireHooksItem());
+  const gates = {}, forecast = closingGatesForecast(meta.version, gates);
+  const baselineItem = lintBaselineItem(gates.unbaselined);
+  if (baselineItem) items.push(baselineItem);
+  items.push(['closing-gates', `The closing ritual (/end-chat-soft) runs these gates. Their verdicts over the tree as it stands NOW, after the mechanical pass (measured read-only — nothing was written); the merges ahead can move the numbers, and the checkpoint measures again. Where a line says STOPS, act before the first closing — move the content to the address the line names, fix the finding, or record the inherited debt with the command the lint names; a line that passes with debt recorded tells you what the NEXT closing will demand:\n${forecast.map((l) => `    · ${l}`).join('\n')}`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
   // Epic M (feedback loop): the update report is MANDATORY, even for a smooth pass (deviations
@@ -3507,8 +3566,38 @@ function cmdCheck() {
         if (typeof d !== 'string' || !d) schemaIssues.push(`archives["${k}"] names no digest`);
       }
     }
+    // `hooks` (2.9, epic SW): optional; the only legal value is "off" — the owner's opt-out of the wiring of the delivered hooks
+    if ('hooks' in j && j.hooks !== 'off') schemaIssues.push(`hooks is ${JSON.stringify(j.hooks)} — the only legal value is "off" (drop the key to have the delivered hooks wired)`);
     for (const s of schemaIssues) { console.error(`✖ marker schema: ${s} (Reference §12.1)`); missing++; }
   } catch { console.error('✖ marker unreadable as JSON'); missing++; }
+  // SW (2.9, origin issue #115): a DELIVERED hook that is not wired is named — a warning, never a failure (the hooks are the mechanical
+  // half of rules the markdown carries in full); the fix is one command, the opt-out one marker key
+  try {
+    const hw = hookWiringState();
+    if (hw.state === 'missing') console.error(`⚠ ${missingScripts(hw).length} delivered hook(s) not wired in ${HOOK_SETTINGS}: ${missingScripts(hw).join(' · ')} — run \`node .kaif/kaif-core.mjs wire-hooks\` (the owner opts out with "hooks": "off" in .kaif/kaif.json)`);
+    else if (hw.state === 'unreadable') console.error(`⚠ ${hw.file}: ${hw.error} — the delivered hooks cannot be wired into it; fix the file, then run \`node .kaif/kaif-core.mjs wire-hooks\``);
+  } catch (e) { console.error(`⚠ the hook wiring could not be read (${e.message}) — run \`node .kaif/kaif-core.mjs wire-hooks\` to see why`); }
+  // SW5 (2.9, origin issue #130): a DEPLOYED artifact that git ignores is lost by every clone — `.clinerules/kaif.md` under an unanchored
+  // `KAIF.md` on a case-insensitive git made a fresh clone's `check` red. Judged against the repository's own ignore rules (and its
+  // core.ignorecase); a line KAIF wrote itself is a failure (the next update anchors it), the owner's own rule a warning with the cure.
+  // [TESTED: 2026-09-29 21:46 +03:00 · suite s01 S9: KAIF's own line → ✖ with the cure, the owner's rule → ⚠ with `!<file>`; red on v2.8 — testcases/reports/2026-09-29_sw-delivered-wired.md]
+  try {
+    const inRepo = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' });
+    if (inRepo.status === 0 && String(inRepo.stdout).trim() === 'true') {
+      const deployed = [...new Set([...paths, ...agents])].filter((p) => okOnDisk(p));
+      const r = spawnSync('git', ['check-ignore', '--no-index', '-v', '--stdin'], { input: deployed.join('\n') + '\n', encoding: 'utf8' });
+      const kaifLines = new Set(ignoreFirstWanted().map((w) => w.replace(/^\//, '')));
+      for (const l of String(r.stdout || '').split(/\r?\n/).filter(Boolean)) {
+        const m = /^(.*?):(\d+):(.*?)\t(.*)$/.exec(l);
+        if (!m || m[3].startsWith('!')) continue;               // a negation that matched keeps the file — not ignored
+        const [, src, ln, pat, file] = m;
+        if (kaifLines.has(pat.replace(/^\//, ''))) {
+          console.error(`✖ deployed artifact is git-ignored by KAIF's own line ${src}:${ln} «${pat}»: ${file} — a clone would lose it; \`checkpoint recheck\` of an update task or the next \`update\` anchors the line to the root (or write \`/${pat.replace(/^\//, '')}\` there now)`);
+          missing++;
+        } else console.error(`⚠ deployed artifact is git-ignored by ${src}:${ln} «${pat}»: ${file} — a clone of this project will not have it; add \`!${file}\` after that line if it should travel`);
+      }
+    }
+  } catch { /* no git here — nothing to judge */ }
   // Two-headed deployed docs (bug 31; field: project D's /pause and /kaif-remove, project C's doubled // source-kept: two independent field projects
   // PHILOSOPHY): a broken merge that ever leaves a SECOND H1 in a framework-owned .md means two
   // documents living in one file — and both `check` and `update-verify` were green on it.
@@ -3865,7 +3954,7 @@ function cmdCheck() {
     const body = JSON.stringify({ _note: `The budget ratchet of the closing gate (KAIF 2.8): own lines of each re-read-core document that stood ABOVE its budget at the last closing. Rewritten by \`node .kaif/kaif-core.mjs check --gate-budgets\` — commit it with the closing, never edit it by hand.`, version: next.version, docs: next.docs }, null, 2) + '\n';
     if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);
     for (const v of verdicts)
-      console.error(`${v.pass ? '↳' : '✖'} ${v.doc}: own lines ${v.own} of budget ${v.budget} → ${v.overflowTo} — ${v.why}`);
+      console.error(`${v.pass ? '↳' : '✖'} ${v.doc}: own lines ${v.own} of budget ${v.budget} → ${overflowAddress(v.overflowTo)} — ${v.why}`);
     const stops = verdicts.filter((v) => !v.pass);
     if (stops.length)
       die(`--gate-budgets: ${stops.length} document(s) of the re-read core are over their budget in the project's OWN lines and did not shrink — move the content out to the address named on each line, then run this again (raising a budget is not the cure; origin issue #71)`);
@@ -4095,6 +4184,12 @@ function cmdCheckpoint() {
     // The mirror re-sync used to live only in update-verify, leaving five agent systems on
     // contradicting skills for the whole merge window (bug 34, field report Г11) — close it here.
     resyncCopies();
+    // SW5 (2.9, #130 · #126) — the same hand-over for ignore-first: `update` ran the DEPLOYED core's set (a 2.8 core leaves the bare
+    // `KAIF.md` line and no `.kaif/.contour-tmp/`), so this tick — the FRESH core, in the task of every version — brings the set to its
+    // own form before `check` judges it (the functional run over an update 2.8 → 2.9 found the route: check red, a render in git status).
+    // [TESTED: 2026-09-29 21:46 +03:00 · suite s01 S9, the route over an older core (red on a mutant without this line), and the functional run,
+    //  run 12 — testcases/reports/2026-09-29_sw-delivered-wired.md]
+    ensureIgnoreFirst();
     // The hand-over of the closing-gates forecast (2.8, epic CK, step CK5.6): `update` writes its task with the core that was
     // DEPLOYED when it ran (the fresh core is swapped in at the end — /kaif-update, the route note), so a task written by a core older
     // than 2.8 has no closing-gates item. This tick runs the FRESH core, and `recheck` stands in the task of every version — so the
@@ -4227,6 +4322,23 @@ function cmdCheckpoint() {
     } catch { /* an unreadable marker or report — the check axis names it */ }
   }
   let verdictLine = null;
+  if (id === 'wire-hooks') {
+    // SW (2.9, origin issue #115): the item EXECUTES its gate — wired, opted out ("hooks": "off"), or no system here that reads
+    // .claude/settings.json → recorded; hooks NOT wired → only with the words of the refusal, never silently (the harness may refuse
+    // the write, and that refusal is not worked around — origin research 37)
+    const hw = hookWiringState();
+    if (!['wired', 'off', 'no-system'].includes(hw.state)) {
+      const { firstLine: v } = readOwnerText(val('--verdict'), val('--verdict-file'), 'verdict');
+      const why = hw.state === 'missing' ? missingScripts(hw).join(' · ') : hw.state === 'unreadable' ? `${hw.file}: ${hw.error}` : `${HOOK_FRAGMENT} missing`;
+      if (!v) die(`the delivered hooks are NOT wired (${why}) — run \`node .kaif/kaif-core.mjs wire-hooks\`; if your harness REFUSED that write, do not work around it: record its words — \`checkpoint wire-hooks --verdict "<the refusal>"\` — and give the owner that one command in the farewell and in the field report`);
+      verdictLine = `${tag}: wire-hooks NOT wired (${why}): ${v}`;
+    }
+  }
+  if (id === 'lint-baselines') {
+    // SW2 (2.9, origin issue #115): the item EXECUTES its gate — every lint the task named has its baseline on disk now
+    const absent = CLOSING_LINTS.filter(([, mod, b]) => b && task.includes(`node ${mod} check --write-baseline`) && !existsSync(b));
+    if (absent.length) die(`no baseline yet: ${absent.map(([, mod, b]) => `${b} — run \`node ${mod} check --write-baseline\``).join(' · ')}`);
+  }
   if (id === 'judge') {
     // Same door as project-name (bugs/75): the warning and the file variant belong to the CLASS
     // of human text, not to one command that happened to be written first.
@@ -4244,7 +4356,7 @@ function cmdCheckpoint() {
     // A judge tick that exists WITHOUT its verdict (e.g. hand-written — the exact bug-17 move)
     // must still be repairable by the very command the failing gate recommends (review-caught
     // deadlock: "already recorded" used to discard the verdict and the gate stayed red forever).
-    if (verdictLine && !new RegExp(`^${tag}: judge verdict: `, 'm').test(task)) {
+    if (id === 'judge' && verdictLine && !new RegExp(`^${tag}: judge verdict: `, 'm').test(task)) {
       writeFileSync(file, task.replace(/\s*$/, '\n') + verdictLine + '\n');
       log('✔ verdict recorded for the already-ticked judge checkpoint');
       return;
@@ -4460,6 +4572,109 @@ function cmdModules() {
 // ONE spec drives the dispatcher, the argv validation and the help text. Flags map to
 // "takes a value?"; `pos` is the number of allowed positional arguments after the command.
 // MUTATING commands are marked — a bare run and unknown input never reach them.
+// ── SW (2.9, origin issues #115 · #114; origin research 37): the delivered refresh hooks are WIRED, not left for an opt-in ──────────
+// The KAIF owner's rule (his word in two field projects, #115): what KAIF delivers is wired — no question to the project owner. The
+// write belongs to the AGENT and is OPEN to its harness: `wire-hooks` is a command that says what it does, the install and update
+// tasks tell the agent to run it, and the harness judges it (Claude Code protects `.claude/` in every mode but bypass, and its
+// classifier calls hook changes in `.claude/settings*.json` the user's decision) — never hidden inside `update`, which would be the
+// "shell indirection" the vendor calls a bypass. A refusal is not worked around: the task records it and the owner gets one command.
+// Additive: the owner's entries and their order stay; a script already wired for the event (in the project file OR in the personal
+// settings.local.json) is left alone; a repeat run changes nothing. The owner opts out with "hooks": "off" in .kaif/kaif.json.
+// [TESTED: 2026-09-29 21:41 +03:00 · suite s14 SW2 (the owner's hook kept, a repeat, off/on, BOM + CRLF, a broken file, settings.local.json,
+//  no Claude Code, the tick); red on v2.8; mutants W1–W8 (hooks-mutants), each red on its own case; the functional run 2.8 → 2.9 — testcases/reports/2026-09-29_sw-delivered-wired.md,
+//  runs 11–12. A live refusal of the harness on the write of .claude/settings.json is NOT observed — only the vendor's rules (origin research 37)]
+const HOOK_FRAGMENT = '.kaif/hooks/settings-fragment.json';
+const HOOK_SETTINGS = '.claude/settings.json';
+const HOOK_SETTINGS_LOCAL = '.claude/settings.local.json';
+// the system whose hook contract was read (.kaif/hooks/README.md capability table); Grok Build reads the same file, but its injection is
+// not verified — a Grok-only deployment is not wired, one with Claude Code shares the wired file
+const HOOK_SYSTEMS = ['claude-code'];
+const HOOK_SCRIPT_RE = /[\\/]hooks[\\/]([\w.-]+\.mjs)/;
+const hookScriptOf = (h) => { const m = HOOK_SCRIPT_RE.exec([h && h.command, ...(h && Array.isArray(h.args) ? h.args : [])].join(' ')); return m ? m[1] : null; };
+// the hook scripts a settings object already runs for one event
+function hookScriptsIn(settings, event) {
+  const set = new Set();
+  const groups = settings && settings.hooks && Array.isArray(settings.hooks[event]) ? settings.hooks[event] : [];
+  for (const g of groups) for (const h of (g && Array.isArray(g.hooks) ? g.hooks : [])) { const s = hookScriptOf(h); if (s) set.add(s); }
+  return set;
+}
+// a settings file as { raw, obj } — raw null when absent; `error` when it cannot be merged into without guessing its shape
+function readHookSettings(p) {
+  if (!existsSync(p)) return { raw: null, obj: {} };
+  const raw = readFileSync(p, 'utf8');
+  let obj;
+  try { obj = JSON.parse(raw.replace(/^\uFEFF/, '')); } catch (e) { return { raw, error: 'not parseable JSON (' + e.message + ')' }; }
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return { raw, error: 'the top level is not a JSON object' };
+  if ('hooks' in obj && (!obj.hooks || typeof obj.hooks !== 'object' || Array.isArray(obj.hooks))) return { raw, error: '"hooks" is not an object' };
+  for (const [ev, g] of Object.entries(obj.hooks || {})) if (!Array.isArray(g)) return { raw, error: `"hooks.${ev}" is not an array` };
+  return { raw, obj };
+}
+// Where wiring stands here — read-only; shared by `wire-hooks`, `check` and the wire-hooks checkpoint
+function hookWiringState() {
+  let marker = {};
+  try { marker = readJson(KAIF_JSON); } catch { /* no marker — the agent list of the run stands */ }
+  if (marker.hooks === 'off') return { state: 'off' };
+  const agents = Array.isArray(marker.agents) && marker.agents.length ? marker.agents : AGENTS;
+  if (!agents.some((a) => HOOK_SYSTEMS.includes(a))) return { state: 'no-system', agents };
+  if (!okOnDisk(HOOK_FRAGMENT)) return { state: 'no-fragment' };
+  const fragment = readJson(HOOK_FRAGMENT);
+  const project = readHookSettings(HOOK_SETTINGS), local = readHookSettings(HOOK_SETTINGS_LOCAL);
+  for (const [file, s] of [[HOOK_SETTINGS, project], [HOOK_SETTINGS_LOCAL, local]]) if (s.error) return { state: 'unreadable', file, error: s.error };
+  const missing = [];
+  let total = 0;
+  for (const [event, groups] of Object.entries(fragment.hooks || {})) {
+    const have = new Set([...hookScriptsIn(project.obj, event), ...hookScriptsIn(local.obj, event)]);
+    for (const g of groups) {
+      const want = (g.hooks || []).filter((h) => hookScriptOf(h));
+      total += want.length;
+      const miss = want.filter((h) => !have.has(hookScriptOf(h)));
+      if (miss.length) missing.push({ event, group: { ...g, hooks: miss } });
+    }
+  }
+  return { state: missing.length ? 'missing' : 'wired', missing, total, project };
+}
+const missingScripts = (st) => st.missing.flatMap(({ event, group }) => group.hooks.map((h) => `${event} → ${hookScriptOf(h)}`));
+// SW (2.9, origin issues #115 · #114): the task item that wires the delivered hooks — the same text in the install and the update task
+const wireHooksItem = () => ['wire-hooks', 'Wire the delivered refresh hooks: run `node .kaif/kaif-core.mjs wire-hooks` now, WITHOUT asking the owner (KAIF 2.9: what KAIF delivers is wired; the owner opts out with `"hooks": "off"` in .kaif/kaif.json). The write is yours and open to your harness: if it asks, that prompt is the owner\'s click; if it REFUSES, do not work around it (never a script that writes the file for you) — record its words with `node .kaif/kaif-core.mjs checkpoint wire-hooks --verdict "<the refusal>"` and give the owner that one command in the farewell and in the field report. Name what was wired in the field report.'];
+const wantsWireHooks = () => { try { if (readJson(KAIF_JSON).hooks === 'off') return false; } catch { /* no marker yet — the run\'s agent list decides */ } return AGENTS.some((a) => HOOK_SYSTEMS.includes(a)); };
+
+function cmdWireHooks() {
+  const st = hookWiringState();
+  if (st.state === 'off') { log('= "hooks": "off" in .kaif/kaif.json — the owner opted out; ' + HOOK_SETTINGS + ' untouched'); return; }
+  if (st.state === 'no-system') { log(`= no agent system of this deployment reads ${HOOK_SETTINGS} (agents: ${st.agents.join(', ')}) — nothing to wire`); return; }
+  if (st.state === 'no-fragment') die(`${HOOK_FRAGMENT} not found — the refresh-hooks module is not deployed here (run \`node .kaif/kaif-core.mjs check\`)`);
+  if (st.state === 'unreadable') {
+    console.error(`⚠ ${st.file}: ${st.error} — hooks NOT wired and the file is untouched: fix it, or merge ${HOOK_FRAGMENT} into it by hand`);
+    process.exit(1);
+  }
+  if (st.state === 'wired') { log(`= all ${st.total} KAIF hooks already wired — ${HOOK_SETTINGS} untouched`); return; }
+  const { raw } = st.project;
+  const orig = raw == null ? {} : JSON.parse(raw.replace(/^\uFEFF/, ''));
+  const next = JSON.parse(JSON.stringify(orig));
+  const createdEvents = [];
+  if (!next.hooks) next.hooks = {};
+  for (const { event, group } of st.missing) {
+    if (!next.hooks[event]) { next.hooks[event] = []; createdEvents.push(event); }
+    next.hooks[event].push(group);
+  }
+  // the file's own indent, line ends and byte-order mark; a new file is ours to format
+  const indentM = raw == null ? null : /\n([ \t]+)"/.exec(raw);
+  const indent = indentM ? (indentM[1].includes('\t') ? '\t' : indentM[1].length) : 2;
+  let text = JSON.stringify(next, null, indent) + '\n';
+  if (raw != null && raw.includes('\r\n')) text = text.replace(/\n/g, '\r\n');
+  if (raw != null && raw.startsWith('\uFEFF')) text = '\uFEFF' + text;
+  // PROOF before the write (the package.json precedent, issue #16): the result minus the additions is the owner's file, value for value
+  const back = JSON.parse(text.replace(/^\uFEFF/, ''));
+  for (let i = st.missing.length - 1; i >= 0; i--) back.hooks[st.missing[i].event].pop();
+  for (const ev of createdEvents) delete back.hooks[ev];
+  if (!orig.hooks) delete back.hooks;
+  if (JSON.stringify(back) !== JSON.stringify(orig)) die(`the merged ${HOOK_SETTINGS} would change the owner's own entries — refusing; merge ${HOOK_FRAGMENT} by hand`);
+  mkdirSync(dirname(HOOK_SETTINGS), { recursive: true });
+  writeFileSync(HOOK_SETTINGS, text);
+  for (const s of missingScripts(st)) log(`+ ${HOOK_SETTINGS}: wired ${s}`);
+  log(`  ${st.missing.reduce((n, m) => n + m.group.hooks.length, 0)} of ${st.total} KAIF hooks added; ${raw == null ? 'a new file' : 'the owner\'s entries kept'}${raw != null && JSON.stringify(orig, null, indent) + '\n' !== raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n') ? ' (the file was re-serialized with its own indent — values unchanged, proven before the write)' : ''}; opt out: "hooks": "off" in .kaif/kaif.json`);
+}
+
 const COMMANDS = {
   help:            { fn: cmdHelp,         desc: 'this list (also the bare-run and --help default)', flags: {}, pos: 0 },
   version:         { fn: cmdVersion,      desc: 'report the deployed version from .kaif/kaif.json', flags: {}, pos: 0 },
@@ -4477,6 +4692,7 @@ const COMMANDS = {
   report:          { fn: cmdReport,       mutating: true, desc: 'deliver a KAIF-defect ticket to the origin via gh (standing authorization, issue #15) and write the URL into it; --dry-run calls nothing', flags: { '--dry-run': false }, pos: 1 },
   'project-name':  { fn: cmdProjectName,  mutating: true, desc: "record the project's CANONICAL name (identity is the owner's; heals the marker and the fill map)", flags: { '--name-file': true }, pos: 1 },
   sync:            { fn: cmdSync,         mutating: true, desc: 're-sync per-system skill mirrors from .claude/skills/', flags: {}, pos: 0 },
+  'wire-hooks':    { fn: cmdWireHooks,    mutating: true, desc: 'wire the delivered refresh hooks into .claude/settings.json — additive, the owner\'s entries kept, a repeat run changes nothing; "hooks": "off" in .kaif/kaif.json opts out (2.9, issue #115)', flags: {}, pos: 0 },
   'adopt-current': { fn: cmdAdoptCurrent, mutating: true, desc: 'rebuild the snapshot after a manual migration', flags: {}, pos: 0 },
 };
 

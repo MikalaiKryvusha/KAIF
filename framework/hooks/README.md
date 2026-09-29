@@ -38,16 +38,21 @@ script is started: the Claude Code fragment names it through `${CLAUDE_PROJECT_D
 relative path `node .kaif/hooks/…`, and whether those systems launch a hook from the project root or from the agent's current
 folder is NOT verified — a launch from a subfolder would not find the script at all.
 
-## Opt-in — an explicit owner step
+## Wiring — the task wires it, the owner can opt out
 
-**KAIF never edits your `settings.json`.** Wiring hooks changes how your agent system behaves
-on every prompt — that is the project owner's decision, exactly like `.gitattributes` or CI
-config. To enable:
+**On Claude Code the hooks are wired for you** (2.9, epic SW; origin issue #115 — the KAIF owner's rule: what KAIF delivers is
+wired, with no question to the project owner). The install and update tasks tell the agent to run
+`node .kaif/kaif-core.mjs wire-hooks`: it merges the `hooks` object of `settings-fragment.json` into `.claude/settings.json`
+additively — the owner's own entries and their order stay, a script already wired for its event (there or in
+`.claude/settings.local.json`) is left alone, a repeat run changes nothing, an unparseable file is left untouched with a warning.
+The write is the agent's and OPEN to its harness, never hidden inside `update`: Claude Code protects `.claude/` and may ask the owner
+or refuse; a refusal is recorded in the task, and the owner gets the same one command. `node .kaif/kaif-core.mjs check` names a
+delivered hook that is not wired. To opt out: `"hooks": "off"` in `.kaif/kaif.json` — nothing is written then (entries wired
+earlier are removed by hand). The other systems below — and Claude Code by hand — are wired this way:
 
-1. Open `.kaif/hooks/settings-fragment.json` — it carries the ready `hooks` object.
-2. Merge that object into `.claude/settings.json` (shared with the team, committed) or
-   `.claude/settings.local.json` (personal), with the owner's consent recorded where your
-   project records decisions.
+1. Open the sample of your system — `.kaif/hooks/settings-fragment.json` for Claude Code, `sample-*.json` for the others.
+2. Merge its `hooks` object into that system's config — for Claude Code `.claude/settings.json` (shared with the team, committed)
+   or `.claude/settings.local.json` (personal).
 3. Reload the session (hook configs are read at session start), then smoke the scripts by hand
    from the project root, with no `.kaif/refresh-marker.json` present. Use the block of YOUR
    shell — a redirect or a `printf` that one shell understands is a parse error in another.

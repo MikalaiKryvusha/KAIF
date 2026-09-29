@@ -46,7 +46,7 @@
 // `testcases/reports/2026-09-18_canon-budget.md`).
 // [TESTED: 2026-09-18 · зелёный в составе полигона; числа — цитата из собственной итоговой строки
 //  свода (EXP-0025/EXP-0127), красные на 2.6 и на мутантах — в отчёте прогона]
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, unlinkSync, rmSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -219,6 +219,30 @@ ok(r.code === 0 && /own lines \d+ of budget ~/.test(r.out),
 r = run('check --no-such-flag');
 ok(r.code === 1 && /unknown flag for check: --no-such-flag/.test(r.out) && /refusing to run check/.test(r.out),
    's16 критерий 4: незнакомый флаг `check` по-прежнему ОТКАЗЫВАЕТ поимённо (bugs/33 не сломан)', r.out.slice(-400));
+
+// ================================================================ (4б) SW4 (2.9, тикет #113): подсказка не затирает заполненный файл
+// Три поля: строка адреса выноса печатала «(no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md)» КОНСТАНТОЙ — и над
+// заполненным HOUSE_RULES.md; послушная сессия затёрла бы правила владельца пустым скелетом (near-miss на 241 строке). Ассерты выше —
+// случай «файла нет» (свежая установка его не создаёт), они верны и остаются; здесь — «файл есть»: ни предупреждение, ни дверь
+// команды копии не несут, адрес называет существующий файл. База храповика двери сохраняется и возвращается: секция (6) судит её.
+console.log('\n=== s16 SW4: HOUSE_RULES.md есть — строки адреса не советуют скопировать скелет поверх него ===');
+{
+  const HR4 = join(S, 'HOUSE_RULES.md');
+  const BASE4 = join(S, '.kaif', 'budget-baseline.json');
+  const base4 = existsSync(BASE4) ? readFileSync(BASE4) : null;
+  writeFileSync(HR4, '# House rules\n\n' + Array.from({ length: 90 }, (_, i) => `- Правило владельца №${i + 1}: заполненная строка.`).join('\n') + '\n');
+  // каждый результат судится ДО следующей команды (страж немых команд, bugs/61)
+  const chk4 = run('check');
+  ok(/AGENT_GUIDE\.md: own lines[^\n]*move content OUT to HOUSE_RULES\.md for local rules, routes and tools/.test(chk4.out) && !/no file yet: cp/.test(chk4.out),
+     's16 SW4 (#113): HOUSE_RULES.md есть → предупреждение `check` называет файл без «no file yet: cp …»', chk4.out);
+  const gate4 = run('check --gate-budgets');
+  ok(/[✖↳] AGENT_GUIDE\.md: own lines \d+ of budget 1200 → HOUSE_RULES\.md for local rules/.test(gate4.out) && /[✖↳] STATUS\.md: own lines[^\n]*· HOUSE_RULES\.md for standing rules/.test(gate4.out) && !/no file yet: cp/.test(gate4.out),
+     's16 SW4 (#113): HOUSE_RULES.md есть → дверь закрытия называет файл без команды копии — у AGENT_GUIDE и у STATUS', gate4.out);
+  if (base4) writeFileSync(BASE4, base4); else rmSync(BASE4, { force: true });
+  const hr4 = readFileSync(HR4, 'utf8');
+  rmSync(HR4, { force: true });
+  ok(hr4.split('\n').length === 93, 's16 SW4: фикстура — заполненный HOUSE_RULES.md на 90 правил, прогон его не тронул', String(hr4.split('\n').length));
+}
 
 // ================================================================ (6) храповик убывающего долга (2.8, эпик CK, шаг CK5.2)
 // Тикет истока #84: STATUS поля 447 строк при 200, убывающий с прошлого закрытия, останавливал каждое закрытие как свежее
@@ -581,6 +605,27 @@ ok(handU2.code === 0 && /ℹ closing gates — this task was written by the prev
 const handU = runU(U, 'checkpoint recheck');
 ok(handU.code === 0 && !/ℹ closing gates — this task was written by the previous core/.test(handU.out),
    's16 задание обновления (CK5.6): у задания с пунктом closing-gates отметка recheck прогноз не повторяет', handU.out.slice(-600));
+// SW2 (2.9, тикет #115): линт авторства, приехавший БЕЗ базы, останавливал первое закрытие на унаследованном долге, и поле несло этот
+// долг владельцу вопросом. Задание делает запись базы ШАГОМ — без вопроса; отметка исполняет свой гейт (база на диске). Журнал опыта
+// шага не получает: его база по контракту не глушит повтор класса (первая редакция шага называла и его — этот свод её и опроверг).
+// Раздел стоит в конце (10): запись базы раньше перекрасила бы проверку «прогноз сбылся — оба линта останавливают» выше.
+const baseItemU = (taskU.match(/^- \*\*lint-baselines\*\* — [^\n]*/m) || [''])[0];
+ok(/`node \.kaif\/tools\/kaif-attribution-lint\.mjs check --write-baseline`/.test(baseItemU) && !/kaif-experience-lint/.test(baseItemU)
+   && /without asking the project owner/.test(baseItemU) && (taskU.indexOf('- **closing-gates**') < 0 || taskU.indexOf('- **lint-baselines**') < taskU.indexOf('- **closing-gates**')),
+   's16 задание обновления (SW2): линт авторства без базы — пункт lint-baselines велит записать его долг без вопроса владельцу, до closing-gates; журнал опыта не назван', baseItemU.slice(0, 600) || 'пункта нет');
+const baseRefused = runU(U, 'checkpoint lint-baselines');
+ok(baseRefused.code !== 0 && /no baseline yet: \.kaif\/attribution-lint\.baseline\.json — run `node \.kaif\/tools\/kaif-attribution-lint\.mjs check --write-baseline`/.test(baseRefused.out),
+   's16 задание обновления (SW2): отметка lint-baselines без базы — отказ, названы файл и команда', baseRefused.out.slice(-400));
+const writeBase = (mod) => {
+  try { return { code: 0, out: execSync(`node ${join('.kaif', 'tools', mod)} check --write-baseline 2>&1`, { cwd: U, stdio: 'pipe' }).toString() }; }
+  catch (e) { return failed(e, { root: ROOT, cwd: U, args: `${mod} check --write-baseline` }); }
+};
+const wbA = writeBase('kaif-attribution-lint.mjs');
+const baseTick = runU(U, 'checkpoint lint-baselines');
+ok(wbA.code === 0 && baseTick.code === 0 && /^KAIF-UPDATE: lint-baselines done$/m.test(readFileSync(join(U, 'KAIF_UPDATE_TASK.md'), 'utf8')),
+   's16 задание обновления (SW2): после записи базы линта авторства отметка lint-baselines записана', `${wbA.out.slice(-150)} | ${baseTick.out.slice(-200)}`);
+ok(!/^- \*\*lint-baselines\*\*/m.test(readFileSync(T2, 'utf8')),
+   's16 задание обновления (SW2): контроль — на чистом дереве пункта lint-baselines нет');
 
 if (failures) { console.error(`\n❌ s16: ${failures} of ${asserts} check(s) failed`); process.exit(1); }
 console.log(`\n✅ s16 doc-budgets: all ${asserts} checks green`);

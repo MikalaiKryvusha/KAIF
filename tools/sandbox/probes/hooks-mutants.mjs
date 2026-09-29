@@ -178,6 +178,33 @@ const MUTANTS = [
     dest: '.kaif/hooks/sample-cursor-hooks.json',
     fn: (b) => b.split('--emit cursor').join('--emit copilot --emit cursor'),
     expect: ['s14/O5 Cursor: каждая команда образца'] },
+  // 2.9, epic SW, step SW2 (origin issue #115): `wire-hooks` lives in the CORE, not in a bundle block — these mutate the dist core
+  // copy (`core: true`, from → to, one exact anchor), and s14 section SW2 names each one before the run.
+  { name: 'W1 wire-hooks: the owner\'s opt-out ignored ("hooks": "off" wired anyway)', core: true,
+    from: "  if (marker.hooks === 'off') return { state: 'off' };", to: '',
+    expect: ['s14 SW2: "hooks": "off"'] },
+  { name: 'W2 wire-hooks: the personal settings.local.json not read (a hook wired there is wired twice)', core: true,
+    from: 'const have = new Set([...hookScriptsIn(project.obj, event), ...hookScriptsIn(local.obj, event)]);', to: 'const have = new Set([...hookScriptsIn(project.obj, event)]);',
+    expect: ['s14 SW2: хуки уже в settings.local.json'] },
+  { name: 'W3 wire-hooks: the byte-order mark of the owner\'s file dropped on write', core: true,
+    from: "  if (raw != null && raw.startsWith('" + BOM_ESCAPE + "')) text = '" + BOM_ESCAPE + "' + text;\n", to: '',
+    expect: ['s14 SW2: файл с BOM и CRLF'] },
+  { name: 'W4 check: a delivered hook that is not wired goes unnamed', core: true,
+    from: "    if (hw.state === 'missing') console.error(", to: '    if (false) console.error(',
+    expect: ['s14 SW2: поставленные хуки не подключены'] },
+  { name: 'W5 checkpoint: the wire-hooks gate dropped (a tick with nothing wired and no refusal recorded)', core: true,
+    from: "  if (id === 'wire-hooks') {", to: '  if (false) {',
+    expect: ['s14 SW2: `checkpoint wire-hooks` без подключения', 's14 SW2: отказ харнесса'] },
+  { name: 'W6 wire-hooks: a deployment without Claude Code wired anyway', core: true,
+    from: "  if (!agents.some((a) => HOOK_SYSTEMS.includes(a))) return { state: 'no-system', agents };\n", to: '',
+    expect: ['s14 SW2: развёртывание только под Codex'] },
+  { name: 'W7 wire-hooks: the owner\'s indent replaced by two spaces', core: true,
+    from: "  const indent = indentM ? (indentM[1].includes('\\t') ? '\\t' : indentM[1].length) : 2;", to: '  const indent = 2;',
+    expect: ['s14 SW2: wire-hooks — чужой PreToolUse'] },
+  { name: 'W8 wire-hooks: an unparseable settings file read as empty (the owner\'s file overwritten)', core: true,
+    from: "  try { obj = JSON.parse(raw.replace(/^" + BOM_ESCAPE + "/, '')); } catch (e) { return { raw, error: 'not parseable JSON (' + e.message + ')' }; }",
+    to: "  try { obj = JSON.parse(raw.replace(/^" + BOM_ESCAPE + "/, '')); } catch (e) { obj = {}; }",
+    expect: ['s14 SW2: settings.json с комментарием'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));
@@ -188,8 +215,14 @@ for (const m of MUTANTS) {
   const dist = join(root, 'dist');
   rmSync(dist, { recursive: true, force: true });
   cpSync(join(REPO, 'dist'), dist, { recursive: true });
-  const p = join(dist, 'KAIF-CORE-BUNDLE.md');
-  writeFileSync(p, mutateBlock(readFileSync(p, 'utf8'), m.dest, m.fn));
+  if (m.core) {   // the dist core copy — one exact anchor, or the mutant is refused as not applied
+    const c = join(dist, 'KAIF-CORE.mjs'), src = readFileSync(c, 'utf8'), hits = src.split(m.from).length - 1;
+    if (hits !== 1) { bad++; console.log(`BAD ${m.name}\n    anchor matched ${hits} time(s) — the mutant did NOT apply; re-anchor it to the current core`); continue; }
+    writeFileSync(c, src.replace(m.from, m.to));
+  } else {
+    const p = join(dist, 'KAIF-CORE-BUNDLE.md');
+    writeFileSync(p, mutateBlock(readFileSync(p, 'utf8'), m.dest, m.fn));
+  }
   let out = '';
   try { out = execFileSync(process.execPath, [join(REPO, 'tools', 'sandbox', 's14-refresh-hooks.mjs')], { env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe' }).toString(); }
   catch (e) { out = String(e.stdout || '') + String(e.stderr || ''); }

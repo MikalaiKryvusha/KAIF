@@ -63,6 +63,6 @@ value is undocumented, and matching field names are not a matching contract.
 
 - [ ] `AGENTS.md` → points at `AGENT_GUIDE.md`
 - [ ] skills kept in canonical `.claude/skills/` (no guessed translation until the path is verified)
-- [ ] optional: `.agents/hooks.json` from `.kaif/hooks/sample-antigravity-hooks.json` — owner opt-in
+- [ ] `.agents/hooks.json` from `.kaif/hooks/sample-antigravity-hooks.json` — wired by the agent by hand, no question to the owner (2.9); `"hooks": "off"` in `.kaif/kaif.json` opts out
 - [ ] `.kaif/kaif.json` → `agent: "google-antigravity"`
 - [ ] if migrating from Gemini CLI: confirm nothing still points at the retired CLI

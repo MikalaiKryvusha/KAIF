@@ -715,6 +715,108 @@ console.log('\n=== s14: хук stop-owner-answer — итоговый ответ
   ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: клиент без last_assistant_message → тишина (судить нечего)', t.out.slice(0, 160));
 }
 
+// ---------------------------------------------------------------- SW2: поставленное ПОДКЛЮЧЕНО (2.9, тикет #115)
+// Слово владельца KAIF в поле: всё, что KAIF приносит в поставке, подключать без вопроса владельцу проекта. Команда
+// машинерии `wire-hooks` вливает фрагмент в .claude/settings.json АДДИТИВНО: записи владельца и их порядок живы, повтор —
+// побайтно тот же файл, отступ · CRLF · BOM файла сохранены, битый файл не тронут (выход 1), ключ "hooks": "off" — ничего
+// не пишется, хук, уже подключённый в settings.local.json, не дублируется; `check` называет поставленный, но не подключённый
+// хук (предупреждение, выход 0), схема маркера знает ключ; чекпоинт `wire-hooks` исполняет свой гейт. Каждый случай — на
+// СВОЕЙ копии развёрнутого S (до того, как свод ниже снимет модуль). Красный — на сборке 2.8 (шов KAIF_DIST): команды нет.
+console.log('\n=== s14: SW2 — поставленные хуки подключает wire-hooks (2.9, #115) ===');
+// stdout и stderr вместе: предупреждения `check` идут в stderr при выходе 0, а `run` выше читает только stdout успеха
+const runAll = (cwd, args) => {
+  const p = spawnSync(process.execPath, [join(cwd, '.kaif', 'kaif-core.mjs'), ...args], { cwd, encoding: 'utf8' });
+  return { code: p.status, out: `${p.stdout || ''}${p.stderr || ''}` };
+};
+const BOM_CHAR = String.fromCharCode(0xfeff);
+const scriptOfCmd = (h) => ([h.command, ...(h.args || [])].join(' ').match(/hooks[\\/]([\w.-]+\.mjs)/) || [])[1];
+const scriptsOf = (hooksObj) => Object.entries(hooksObj || {}).flatMap(([ev, groups]) =>
+  (Array.isArray(groups) ? groups : []).flatMap((g) => (g.hooks || []).map((h) => `${ev}:${scriptOfCmd(h)}`)).filter((s) => !s.endsWith(':undefined')));
+const FRAG = readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {};
+const WANT = scriptsOf(FRAG.hooks).sort();
+ok(WANT.length === 6, 's14 SW2: фрагмент несёт шесть хуков — эталон для случаев ниже', WANT.join(' · '));
+let wcase = 0;
+const wcopy = (settings, local) => {
+  const d = join(ROOT, `wire-${++wcase}`);
+  cpSync(S, d, { recursive: true });
+  mkdirSync(join(d, '.claude'), { recursive: true });
+  if (settings != null) writeFileSync(join(d, '.claude', 'settings.json'), settings);
+  if (local != null) writeFileSync(join(d, '.claude', 'settings.local.json'), local);
+  return d;
+};
+const setMarker = (d, patch) => {
+  const p = join(d, '.kaif', 'kaif.json');
+  writeFileSync(p, JSON.stringify({ ...readJson(p), ...patch }, null, 2) + '\n');
+};
+const settingsOf = (d) => { try { return readFileSync(join(d, '.claude', 'settings.json'), 'utf8'); } catch { return null; } };
+// Файл владельца: свой PreToolUse-страж, права, отступ в четыре пробела — всё это обязано пережить вливание
+const OWNER_OBJ = { permissions: { allow: ['Bash(ls:*)'] }, hooks: { PreToolUse: [{ matcher: 'Bash', hooks: [{ type: 'command', command: 'echo owner-guard' }] }] } };
+const OWNER_SETTINGS = JSON.stringify(OWNER_OBJ, null, 4) + '\n';
+
+// (1) не подключено → `check` называет, выход 0
+let W = wcopy(null, null), wr = runAll(W, ['check']);
+ok(wr.code === 0 && new RegExp(`${WANT.length} delivered hook\\(s\\) not wired`).test(wr.out) && /wire-hooks/.test(wr.out),
+   's14 SW2: поставленные хуки не подключены → `check` называет их числом и командой, выход 0 (предупреждение, не отказ)', wr.out.slice(-300));
+
+// (2) файл владельца с чужим хуком → свои записи живы и первыми, наши шесть добавлены, отступ файла сохранён
+W = wcopy(OWNER_SETTINGS, null); wr = runAll(W, ['wire-hooks']);
+let wj = null; try { wj = JSON.parse(settingsOf(W)); } catch { /* ассерт ниже честно красный */ }
+ok(wr.code === 0 && wj && JSON.stringify(wj.permissions) === JSON.stringify(OWNER_OBJ.permissions)
+   && JSON.stringify(wj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
+   && WANT.every((s) => scriptsOf(wj.hooks).includes(s)) && /\n {4}"permissions"/.test(settingsOf(W) || ''),
+   's14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, шесть хуков KAIF добавлены, отступ 4 сохранён', `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
+const wiredOnce = settingsOf(W);
+wr = runAll(W, ['wire-hooks']);
+ok(wr.code === 0 && settingsOf(W) === wiredOnce && /already wired/.test(wr.out),
+   's14 SW2: повторный wire-hooks — побайтно тот же файл («already wired»)', wr.out.slice(-200));
+wr = runAll(W, ['check']);
+ok(wr.code === 0 && !/not wired/.test(wr.out), 's14 SW2: после вливания `check` молчит о подключении', wr.out.slice(-300));
+
+// (3) чекпоинт задания исполняет гейт: не подключено → отказ с командой; подключено → записан
+W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks']);
+ok(wr.code !== 0 && /NOT wired/.test(wr.out) && /--verdict/.test(wr.out),
+   's14 SW2: `checkpoint wire-hooks` без подключения — отказ, названы команда и запись отказа харнесса', wr.out.slice(-300));
+wr = runAll(W, ['wire-hooks']);   // результат судится до следующей команды (страж немых команд, bugs/61)
+ok(wr.code === 0 && /6 of 6 KAIF hooks added/.test(wr.out), 's14 SW2: wire-hooks на свежей копии — шесть из шести добавлены', wr.out.slice(-200));
+const wck = runAll(W, ['checkpoint', 'wire-hooks']);
+ok(wck.code === 0 && /wire-hooks done/.test(readFileSync(join(W, 'KAIF_ADAPTATION_TASK.md'), 'utf8')),
+   's14 SW2: после wire-hooks чекпоинт записан в задании установки', wck.out.slice(-200));
+// отказ харнесса не обходится — записывается его словами (researches/37): чекпоинт с --verdict пишет строку «NOT wired»
+W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks', '--verdict', 'harness refused the write']);
+ok(wr.code === 0 && /wire-hooks NOT wired \(.*\): harness refused the write/.test(readFileSync(join(W, 'KAIF_ADAPTATION_TASK.md'), 'utf8')),
+   's14 SW2: отказ харнесса — `checkpoint wire-hooks --verdict` записывает «NOT wired» с его словами', wr.out.slice(-200));
+
+// (4) ключ отказа владельца: файл побайтно нетронут, `check` молчит; чужое значение ключа — находка схемы
+W = wcopy(OWNER_SETTINGS, null); setMarker(W, { hooks: 'off' }); wr = runAll(W, ['wire-hooks']);
+const wchk = runAll(W, ['check']);
+ok(wr.code === 0 && settingsOf(W) === OWNER_SETTINGS && /opted out/.test(wr.out) && !/not wired/.test(wchk.out),
+   's14 SW2: "hooks": "off" — settings.json побайтно нетронут, `check` о подключении молчит', `${wr.out.slice(-200)} | ${wchk.out.slice(-200)}`);
+setMarker(W, { hooks: 'on' }); wr = runAll(W, ['check']);
+ok(wr.code !== 0 && /marker schema: hooks is "on"/.test(wr.out), 's14 SW2: "hooks": "on" — находка схемы маркера (законно только "off")', wr.out.slice(-300));
+
+// (5) BOM и CRLF файла владельца переживают вливание
+W = wcopy(BOM_CHAR + OWNER_SETTINGS.replace(/\n/g, '\r\n'), null); wr = runAll(W, ['wire-hooks']);
+const wraw = settingsOf(W) || '';
+let wbom = null; try { wbom = JSON.parse(wraw.slice(1)); } catch { /* ассерт ниже */ }
+ok(wr.code === 0 && wraw.startsWith(BOM_CHAR) && !/[^\r]\n/.test(wraw) && wbom && WANT.every((s) => scriptsOf(wbom.hooks).includes(s)),
+   's14 SW2: файл с BOM и CRLF — влито, BOM и концы строк CRLF сохранены', `${wr.out.slice(-200)} | ${JSON.stringify(wraw.slice(0, 40))}`);
+
+// (6) файл, который нельзя разобрать без догадки (комментарий), — не тронут, выход 1, причина названа
+const BROKEN = '{\n  // my notes\n  "permissions": {}\n}\n';
+W = wcopy(BROKEN, null); wr = runAll(W, ['wire-hooks']);
+ok(wr.code === 1 && settingsOf(W) === BROKEN && /not parseable JSON/.test(wr.out),
+   's14 SW2: settings.json с комментарием — выход 1, файл побайтно нетронут, причина названа', wr.out.slice(-300));
+
+// (7) хуки уже подключены в личном settings.local.json → проектный файл не создаётся, дубля нет
+W = wcopy(null, JSON.stringify({ hooks: FRAG.hooks }, null, 2) + '\n'); wr = runAll(W, ['wire-hooks']);
+ok(wr.code === 0 && settingsOf(W) === null && /already wired/.test(wr.out),
+   's14 SW2: хуки уже в settings.local.json — settings.json не создан, дубля нет', wr.out.slice(-200));
+
+// (8) среди систем развёртывания нет той, что читает .claude/settings.json → писать нечего
+W = wcopy(null, null); setMarker(W, { agents: ['codex'] }); wr = runAll(W, ['wire-hooks']);
+ok(wr.code === 0 && settingsOf(W) === null && /nothing to wire/.test(wr.out),
+   's14 SW2: развёртывание только под Codex — settings.json не создан («nothing to wire»)', wr.out.slice(-200));
+
 console.log('\n=== s14: деплой без ПОДКЛЮЧЕНИЯ хуков — инвариант §9.10 ===');
 ok(!existsSync(join(S, '.claude', 'settings.json')) && !existsSync(join(S, '.claude', 'settings.local.json')),
    's14 без подключения: settings.json в песочнице НЕТ — хуки развёрнуты, но не активированы');

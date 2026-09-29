@@ -59,6 +59,7 @@ const MUTANTS = [
              'та же строка у STATUS',
              'итог гейта называет ЧИСЛО документов',
              'гейт называет верный ход',
+             's16 SW4 (#113): HOUSE_RULES.md есть → дверь закрытия',   // 2.9, SW4: the fixture with the file present runs the door too
              'первое закрытие без базы ЗАПИСЫВАЕТ',
              'база хранит ровно те',
              'СТОЯНИЕ выше бюджета',
@@ -162,9 +163,22 @@ const MUTANTS = [
     expect: ['переведённый целиком: строка называет длину шаблона'] },
   // M17 — the move-out address names its FILE and the command that creates it (2.8, epic CK, step CK5.5).
   { name: 'M17 the move-out address names no file again (the 2.7 wording)',
-    from: "const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md (no file yet: cp .kaif/_house-rules-template.md HOUSE_RULES.md) for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';",
+    // 2.9, epic SW (#113): the table names the file only; the command that creates it is added at print time (overflowAddress)
+    from: "const MOVE_OUT_ADDRESS = 'HOUSE_RULES.md for local rules, routes and tools · the chronicle PROJECT_HISTORY.md · researches/';",
     to: "const MOVE_OUT_ADDRESS = 'the chronicle PROJECT_HISTORY.md · researches/ · a house-rules file';",
-    expect: ['адрес выноса для документа НЕ-STATUS', 'гейт печатает строку'] },
+    expect: ['адрес выноса для документа НЕ-STATUS', 'гейт печатает строку',
+             's16 SW4 (#113): HOUSE_RULES.md есть → предупреждение', 's16 SW4 (#113): HOUSE_RULES.md есть → дверь закрытия'] },   // 2.9: the SW4 fixture reads the same address
+  // M-SW4 — the command that creates the house-rules file is printed only while the file is absent (2.9, epic SW; origin issue #113:
+  // printed over a filled HOUSE_RULES.md, an obeyed «cp» overwrote the owner's rules with the empty skeleton).
+  { name: 'M-SW4 the copy command is printed even over an existing HOUSE_RULES.md (the 2.8 constant)',
+    from: "const overflowAddress = (to) => (okOnDisk('HOUSE_RULES.md') ? to :",
+    to: "const overflowAddress = (to) => (false ? to :",
+    expect: ['s16 SW4 (#113): HOUSE_RULES.md есть → предупреждение', 's16 SW4 (#113): HOUSE_RULES.md есть → дверь закрытия'] },
+  // M-SW2 — a lint that arrived with no baseline gets its step in the update task (2.9, epic SW; origin issue #115)
+  { name: 'M-SW2 the update task names no lint-baselines step',
+    from: '  if (!unbaselined.length) return null;',
+    to: '  return null;',
+    expect: ['SW2): линт авторства без базы', 'SW2): отметка lint-baselines без базы', 'SW2): после записи базы линта авторства'] },
   // M19/M20 — the entry cost of a chat in tokens (2.8, epic CK, step CK5.9 (a); origin issue #99): a wrong window changes the
   // share only; a line that never prints reddens both cases.
   { name: 'M19 the entry-cost share is taken of a 200k window while the line says 1M',
@@ -190,7 +204,9 @@ const MUTANTS = [
   { name: 'M22 a lint that stops (exit 1) is read as "no verdict"',
     from: '    else if (r.status === 1 && reds.length) {',
     to: '    else if (r.status === 99 && reds.length) {',
-    expect: ['журнал опыта с повтором класса', 'находка авторства без базы'] },
+    // 2.9, SW2: a stop read as "no verdict" also loses the lint-baselines step it would have asked for
+    expect: ['журнал опыта с повтором класса', 'находка авторства без базы',
+             'SW2): линт авторства без базы', 'SW2): отметка lint-baselines без базы', 'SW2): после записи базы линта авторства'] },
   { name: 'M23 every budget verdict of the forecast reads "passes"',
     from: "${v.pass ? 'passes' : 'STOPS'}",
     to: "${'passes'}",

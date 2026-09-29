@@ -213,7 +213,7 @@ false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 The markdown ritual is complete on its own. On agent systems with lifecycle hooks the optional
 **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it — re-read after
 compaction, a marker-age timer, a once-per-session STATUS guard, `/resume` on a leading `resume` —
-by the owner's explicit opt-in; a deployment without hooks never reddens.
+wired by the install and update tasks (`wire-hooks`, 2.9; `"hooks": "off"` opts out); a deployment without hooks never reddens.
 
 ### Environment dossier — the agent knows its machine from its own notes
 

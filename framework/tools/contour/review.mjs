@@ -36,7 +36,7 @@
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, readlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, readlinkSync, symlinkSync } from 'node:fs';
 import { tmpdir, platform, hostname } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { randomBytes } from 'node:crypto';
@@ -81,10 +81,11 @@ const FAB_COLUMN_PX = 230, FAB_EDGE_PX = 16;            // regular window
 const FAB_COLUMN_NARROW_PX = 170, FAB_EDGE_NARROW_PX = 8; // narrow window (NARROW_PX)
 const FAB_GAP_PX = 4;                                    // air between the pill and the title column
 const pillMaxPx = (column, edge) => column - edge - FAB_GAP_PX;
-// CP (2.9, #125 — the light judge's finding F1): a narrow pill wraps a long message into six lines that fall past the header onto the
-// document's own title. So a status longer than PILL_MAX_CHARS goes to the BAR above the page (in the flow, it keeps the Save column
-// free — nothing lies over it), and the pill carries a short label; a pill of up to two lines ends above the first line of the page.
-const PILL_MAX_CHARS = 48;
+// CP (2.9, #125 — the light judges' findings F1 and N1): a narrow pill wraps a long message into lines that fall past the header onto
+// the document's own title. So the pill holds at most PILL_LINES lines (CSS line-clamp) — a pill of two lines ends above the first
+// line of the page — and a status that does not fit them, MEASURED on the page (a count of characters is a proxy that differs per
+// font, language and window), goes to the BAR above the page (in the flow, it keeps the Save column free), the pill a short label.
+const PILL_LINES = 2;
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -759,7 +760,6 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     artifacts: artifacts.map((a) => ({ doc: a.doc, id: a.id, exists: a.exists, sha256: a.sha256 })),
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
-    pillMax: PILL_MAX_CHARS, // CP (2.9, #125): a longer status goes to the bar, the pill gets a short label
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
       needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, serverGoneLocal: t.st.serverGoneLocal, savedLocally: t.st.savedLocally, closeYourself: t.st.closeYourself,
       savedLocallyShort: t.st.savedLocallyShort, pillOk: t.st.pillOk, pillErr: t.st.pillErr,
@@ -819,7 +819,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .fab { position:fixed; top:12px; right:${FAB_EDGE_PX}px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
   .fab #save { zoom:${+(SAVE_SCALE / PAGE_SCALE).toFixed(3)} } /* #106: the primary Save button renders at SAVE_SCALE of the base */
-  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:15px; padding:4px 12px; font-size:13px; text-align:right; max-width:${pillMaxPx(FAB_COLUMN_PX, FAB_EDGE_PX)}px } .fab #status:empty { display:none }
+  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:15px; padding:4px 12px; font-size:13px; text-align:right; max-width:${pillMaxPx(FAB_COLUMN_PX, FAB_EDGE_PX)}px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:${PILL_LINES}; overflow:hidden } .fab #status:empty { display:none }
   @media (max-width:${Math.round(NARROW_PX * PAGE_SCALE)}px) { .fab { top:8px; right:${FAB_EDGE_NARROW_PX}px } .fab button { padding:8px 14px } .fab #status { max-width:${pillMaxPx(FAB_COLUMN_NARROW_PX, FAB_EDGE_NARROW_PX)}px } header, #banner { padding-right:${FAB_COLUMN_NARROW_PX}px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
@@ -837,11 +837,16 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var CFG=" + cfgJson + ";var QS=" + qjson + ";",
     "var $=function(s){return document.querySelector(s)};var TX=CFG.txt;",
     "function fmt(s,o){for(var k in o)s=s.replace('{'+k+'}',o[k]);return s}",
-    // CP (2.9, #125): a long message → the bar (green for good news, red for trouble), the pill a short label; a later short status
-    // clears only a GOOD bar — an error bar stays until its own path clears it
-    "function status(msg,cls,short){var s=$('#status');var b=$('#banner');var long=!!msg&&msg.length>CFG.pillMax;",
-    " s.textContent=long?(short||(cls==='err'?TX.pillErr:TX.pillOk)):msg;s.className=cls||'';",
-    " if(long){b.textContent=msg;b.className=cls==='err'?'':'ok';b.style.display='block'}else if(b.className==='ok'){b.style.display='none';b.className=''}}",
+    // CP (2.9, #125; the light judges' F1 and N1): a status that does not fit the pill's lines → the bar (green `ok` for good news, red
+    // `err` for trouble), the pill a short label. The bar has FOUR owners, each named by its class and each clearing only its own: a
+    // status (`ok`/`err` — cleared by the next status that fits the pill), the pulse (`gone` — cleared by an alive pulse, which puts
+    // back the status bar it covered), a new revision (`rev`) and the self-check (`broken`) — those two stay until the page reloads and
+    // are never covered. N1: the pulse used to hide every bar not classed ok, and the pill kept pointing at a bar that was gone.
+    "var barMsg=null,barCls='';function barFree(){var c=$('#banner').className;return c!=='rev'&&c!=='broken'}",
+    "function showBar(){var b=$('#banner');b.textContent=barMsg;b.className=barCls;b.style.display='block'}",
+    "function status(msg,cls,short){var s=$('#status');var b=$('#banner');s.className=cls||'';s.textContent=msg||'';",
+    " if(msg&&s.scrollHeight>s.clientHeight+1){s.textContent=short||(cls==='err'?TX.pillErr:TX.pillOk);barMsg=msg;barCls=cls==='err'?'err':'ok';if(barFree())showBar()}",
+    " else{barMsg=null;if(b.className==='ok'||b.className==='err'){b.style.display='none';b.className=''}}}",
     // I12: the browser draft — every field in localStorage, restored with a note
     "var DK=CFG.draftKey+':';",
     // OW6 (2.8): a draft key carries the FINGERPRINT of its question — in a new revision of the document a draft comes back only onto
@@ -927,7 +932,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " for(var k=0;k<ks.length;k++){if(ks[k].indexOf(DK)!==0)continue;var nm=ks[k].slice(DK.length).split('#')[0];",
     "  if(p.comment&&nm==='doccomment:'+p.doc)localStorage.removeItem(ks[k]);",
     "  for(var j=0;j<ids.length;j++)if(nm==='choice:'+p.doc+':'+ids[j]||nm==='text:'+p.doc+':'+ids[j]||nm==='comment:'+p.doc+':'+ids[j])localStorage.removeItem(ks[k])}}catch(e){}}",
-    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent='';var bt=document.createElement('button');bt.type='button';",
+    "function newRevision(msg){var b=$('#banner');b.className='rev';b.style.display='block';b.textContent='';var bt=document.createElement('button');bt.type='button';",
     " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.style.marginRight='10px';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);b.appendChild(document.createTextNode(msg));",
     " var sv=document.querySelectorAll('#save,.savedoc,#retry');for(var i=0;i<sv.length;i++)sv[i].disabled=true}",
     "function staleSave(p){rescue(p,TX.stale);status('','');newRevision(TX.stale)}", // the banner and the ring carry the message — the pill never covers the button
@@ -946,7 +951,8 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // question moves to the settled fold, the other drafts come back) and says how many are left
     "  if(res.j.rev)CFG.rev=res.j.rev;",
     "  if(CFG.face==='interview'&&res.j.left>0){clearSaved(p);try{sessionStorage.setItem(DK+'__left',String(res.j.left))}catch(e){}location.reload();return}",
-    "  saved=true;status(fmt(TX.saved,{w:res.j.written}),'okmsg');",
+    // the light re-judge of epic CP (QA7v): a ring left by an earlier refused save goes with the answer recorded — as on the local path
+    "  saved=true;$('#rescue').style.display='none';status(fmt(TX.saved,{w:res.j.written}),'okmsg');",
     "  try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));",
     "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: auto-close is an ATTEMPT; a refusal → an honest request; cancelled by pagehide
@@ -960,12 +966,13 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " try{document.execCommand('copy');status(TX.copied,'okmsg')}catch(e){status(TX.copyManually,'err')}});",
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
     // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
-    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally&&$('#banner').className!=='ok')$('#banner').style.display='none';return r.json().catch(function(){return null})})",
+    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;var b=$('#banner');if(b.className==='gone'){if(barMsg)showBar();else{b.style.display='none';b.className=''}}return r.json().catch(function(){return null})})",
     // OW6 (2.8): the pulse names the document's revision on disk — another one than this page was built from → saving off, the new revision offered
     // bugs/125 (2.8): the entry page rebuilds itself only when the QUEUE changed (a document answered in another window) — never on focus alone
     " .then(function(j){if(CFG.index&&j&&j.qrev&&CFG.qrev&&j.qrev!==CFG.qrev){location.reload();return}",
     "  if(j&&j.rev&&CFG.rev&&j.rev!==CFG.rev&&!saving&&!saved)newRevision(TX.rewritten)})",
-    " .catch(function(){var b=$('#banner');if(submittedLocally)return;b.className='';b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
+    // after the LAST answer the server ends by design (I8) — a dead pulse then is no news, never «the answer will NOT be sent»
+    " .catch(function(){var b=$('#banner');if(submittedLocally||saved||!barFree())return;b.className='gone';b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
     "  if(!(lsOk&&inApp)){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
     "  if(!submittedLocally)enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
@@ -977,7 +984,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // spec §2: the page SELF-CHECK — radio groups == questions with options; a mismatch is LOUD, never silent
     "var selfBroken=false;(function(){if(CFG.face!=='interview'||CFG.index)return;var rs=document.querySelectorAll('input[type=radio]');var names={};",
     " for(var i=0;i<rs.length;i++)if(rs[i].name.indexOf('choice:')===0)names[rs[i].name]=1;var n=Object.keys(names).length;",
-    " if(n!==CFG.expectRadioGroups){selfBroken=true;var b=$('#banner');b.style.display='block';b.textContent=fmt(TX.selfcheck,{r:n,q:CFG.expectRadioGroups});enableButtons(false)}})();",
+    " if(n!==CFG.expectRadioGroups){selfBroken=true;var b=$('#banner');b.className='broken';b.style.display='block';b.textContent=fmt(TX.selfcheck,{r:n,q:CFG.expectRadioGroups});enableButtons(false)}})();",
     // I26 (origin issue #64): the page knows whether it lives in the contour's own --app window or in a TAB of the
     // owner's working browser — `display-mode: standalone` is true only in the app window (measured on Chrome, headed
     // and headless; locationbar.visible is true everywhere and useless). A tab → a yellow note to the owner + one
@@ -1014,8 +1021,22 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
 // flags and are NOT verified — said so in the run report, never promised.
 const profileDir = (root) => resolve(root, WINDOW_PROFILE_DIR);
 const profileArgs = (root) => ['--user-data-dir=' + profileDir(root), ...PROFILE_QUIET_FLAGS];
+// N3 of the light re-judge of epic CP (2.9): on Linux the FIRST instance of a Chromium runs in the foreground until its window closes —
+// the launcher's deadline (spawnSync, BEEP_DEADLINE_MS) killed it at 8 s, and the window died with it: `KAIF_BROWSER` and every browser of
+// the list printed "no browser found". A Linux launch is DETACHED: the browser runs in the background with its output dropped, and the
+// launch counts when it is still alive after LAUNCH_ALIVE_S or has exited 0 (a second instance hands the address to the first one and
+// exits 0). The command and its arguments ride as positional parameters of `sh -c` — never pasted into the shell text; the shell is
+// named by its POSIX path, so a launch does not depend on a PATH that holds no `sh` (the quiet environment of the origin's suites).
+// [TESTED: 2026-09-29 21:23 +03:00 · selftest N3: a stub browser that stays in the foreground survives the launch, «KAIF_BROWSER --app» in
+//  ~1 s, in a normal and in an empty PATH; red on `tryCmd` (none, 8026 ms) — testcases/reports/2026-09-28_cp-question-page.md, runs 53–57.
+//  A real Chromium on the owner's Linux desktop is NOT observed]
+const LAUNCH_ALIVE_S = 1;
+const POSIX_SH = '/bin/sh';
+const DETACHED_SH = 'command -v "$0" >/dev/null 2>&1 || exit 127; "$0" "$@" >/dev/null 2>&1 & p=$!; sleep ' + LAUNCH_ALIVE_S
+  + '; if kill -0 "$p" 2>/dev/null; then exit 0; fi; wait "$p"';
 function openWindow(url, log = console.log, root = process.cwd()) {
   const tryCmd = (cmd, args) => { try { return spawnSync(cmd, args, { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
+  const tryDetached = (cmd, args) => { try { return spawnSync(POSIX_SH, ['-c', DETACHED_SH, cmd, ...args], { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
   const prof = profileArgs(root);
   // light judge of epic CP, F7: the machine's own browser (`KAIF_BROWSER`, the first entry of the one browser list) raises the window too —
   // before, only the answer recovery honoured it
@@ -1031,10 +1052,10 @@ function openWindow(url, log = console.log, root = process.cwd()) {
     if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'chrome --app';
     if (tryCmd('open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   } else {
-    if (own && tryCmd(own, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
+    if (own && tryDetached(own, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
     for (const exe of ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'])
-      if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
-    if (tryCmd('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
+      if (tryDetached(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
+    if (tryDetached('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   }
   log('NO WINDOW OPENED — open it yourself: ' + url + ' (no browser found on this machine; the page is served until you answer or close it).');
   return 'none';
@@ -1720,6 +1741,9 @@ export async function selftest(log = console.log) {
     ok(n(REFERENCES_SINCE, '\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80% \u2014 \u0431\u0435\u0440\u0451\u043c B.') === 0 && n(REFERENCES_SINCE, 'B \u0432\u044b\u0448\u0435, \u0447\u0435\u043c A, \u043f\u043e \u0446\u0435\u043d\u0435.') === 0 && n(REFERENCES_SINCE, 'Load above 80% takes B.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u2014 \u0441\u043c. \u0442\u0430\u0431\u043b\u0438\u0446\u0443 \u043d\u0438\u0436\u0435.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0446\u0435\u043b\u0438\u043a\u043e\u043c: x = 2y; \u0441\u043c. \u0442\u0430\u043a\u0436\u0435 plans/12.') === 0
       && n(REFERENCES_SINCE, '\u041a\u0430\u043a \u0443\u043a\u0430\u0437\u0430\u043d\u043e \u0432\u044b\u0448\u0435, \u0431\u0435\u0440\u0451\u043c B.') === 1 && n(REFERENCES_SINCE, 'As listed above, B wins.') === 1,
       'CP F3 (light judge): a comparison ("load above 80%", "B is higher than A"), a forward "see the table below" and a "see also" next to the content stay silent; "as listed above" still refuses');
+    ok(['\u0422\u0430\u043a \u043a\u0430\u043a \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%, \u0431\u0435\u0440\u0451\u043c B.', '\u0423\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%.', 'As load goes above 80%, B wins.', '\u0426\u0435\u043d\u0430 \u0432\u044b\u0448\u0435 \u043d\u0430 5% \u2014 \u0431\u0435\u0440\u0451\u043c B.'].every((s) => n(REFERENCES_SINCE, s) === 0)
+      && ['\u0411\u0435\u0440\u0451\u043c \u0444\u043e\u0440\u043c\u0443\u043b\u0443 \u0432\u044b\u0448\u0435?', '\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435.', 'Pick from the list above.', 'The above decides.'].every((s) => n(REFERENCES_SINCE, s) === 1),
+      'CP N2 (light re-judge): "above" is a comparison only before a number or "than" (through "as" or a participle too); a noun form ("the formula above", "the list above") refuses');
   }
   { // CP (2.9, #109 · #121 R3): an explicit closing word at the start of the status closes the document, whatever the explanation after it says
     const st = (v) => docStatus('# I\n\n> **Status:** ' + v + '\n');
@@ -1730,6 +1754,9 @@ export async function selftest(log = console.log) {
       'CP #109: a negation still outranks a bare tick (bugs/70); a noun that starts like a closing word is no closing word');
     ok(st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1; Q2 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'waiting' && st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0412\u041e\u041f\u0420\u041e\u0421 \u0421\u041d\u042f\u0422 \u0410\u0413\u0415\u041d\u0422\u041e\u041c, \u0410 \u041d\u0415 \u041e\u0422\u0412\u0415\u0427\u0415\u041d \u0412\u041b\u0410\u0414\u0415\u041b\u042c\u0426\u0415\u041c') === 'closed',
       'CP F5 (light judge): a partial status (closed Q1; Q2 awaits an answer) waits — an explicit waiting marker outranks the closing word; a negation alone does not');
+    ok(st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0431\u043e\u043b\u044c\u0448\u0435 \u043d\u0435 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'closed' && st('CLOSED — no longer awaiting the owner') === 'closed'
+      && st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1, Q2 \u2014 \u0435\u0449\u0451 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d') === 'waiting' && st('CLOSED Q1; Q2 not yet answered') === 'waiting',
+      'CP F5 (light re-judge): a NEGATED waiting marker ("no longer awaiting") leaves the document closed; a not-yet mark after the closing word waits');
   }
   { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
     const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
@@ -1742,6 +1769,8 @@ export async function selftest(log = console.log) {
     ok(preflight(para('**C.** three')).some((p) => /letters authored 3, recognised 2/.test(p) && p.includes('**C.** three'))
       && !preflight(para('**B** costs more than A.')).some((p) => /letters authored/.test(p)),
       'CP F4 (light judge): a paragraph option «**C.** three» next to two list options is named «letters authored 3, recognised 2»; prose opening with a bold letter («**B** costs more») is not an option');
+    ok(preflight(para('**C** ' + String.fromCharCode(0x2014) + ' three')).some((p) => /letters authored 3, recognised 2/.test(p)),
+      'CP F4 (light re-judge): a paragraph option with the list form\'s dash («**C** — three») is named too');
     ok(parseQuestions('# I\n\n> **Status:** awaiting\n\n### Q1. Pick?\n\n**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n')[0].recommended === 'B',
       'CP ideas/31 p. 28: «**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B» — the letter is read after the label closes its own bold');
     const ru = mkdtempSync(join(tmpdir(), 'kaif-contour-ru-'));
@@ -1958,6 +1987,12 @@ export async function selftest(log = console.log) {
       'the status pill is no wider than the button column the header keeps free — regular and narrow window (CP6, #125; got pill '
       + pill + ' + edge ' + edge + ' vs header ' + head + (narrow ? '; narrow ' + narrow.slice(1).join('/') : '; narrow rule missing') + ')');
   }
+  // CP, the light re-judge's N1 (the layout and the pulse — verify-contour QA7v in a live browser): the pill holds at most two lines,
+  // a status that does not fit goes to the bar; an alive pulse clears only the dead pulse's bar and puts back the status bar it covered
+  ok(new RegExp('\\.fab #status \\{[^}]*-webkit-line-clamp:' + PILL_LINES + '; overflow:hidden').test(plainPage.html) && PILL_LINES === 2,
+    'N1/F1: the status pill holds at most two lines (line-clamp) — a status that does not fit them goes to the bar, measured on the page');
+  ok(plainPage.html.includes("if(b.className==='gone'){if(barMsg)showBar();") && plainPage.html.includes("if(submittedLocally||saved||!barFree())return;b.className='gone'"),
+    'N1: an alive pulse clears only the dead pulse\'s bar and restores the status bar; after the last saved answer a dead pulse says nothing');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.fab { position:static;') }).ok, 'self-check goes RED when the button stops floating (mutation on a copy)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.bar { position:fixed; bottom:0;') }).ok, 'self-check goes RED on a bar pinned to the bottom edge (the #60 page)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('<label class="opt"><input', '<label class="opt">**leak**<input') }).ok, 'self-check goes RED when an option label carries raw markdown');
@@ -2231,6 +2266,30 @@ export async function selftest(log = console.log) {
     'a page closed after a partial save: exit 2 and «closed after 1 saved answer(s) — recorded, nothing lost» (OW6, judge OW10 H6)');
   rmSync(join(root, MD), { force: true });
   } // OW6
+
+  if (!IS_WIN && !IS_MAC) { // CP, the light re-judge's N3: a browser that stays in the FOREGROUND (a first Chromium) survives the launch
+    const stubDir = join(root, 'stub-browser'); mkdirSync(stubDir, { recursive: true });
+    const stub = join(stubDir, 'browser.sh');
+    writeFileSync(stub, '#!/bin/sh\necho $$ > "' + join(stubDir, 'pid') + '"\necho "$@" > "' + join(stubDir, 'args') + '"\nexec sleep 30\n', { mode: 0o755 });
+    // silence: PATH is only the stub's folder (with `sleep` linked in — found on PATH or in /bin, /usr/bin: a suite's quiet PATH holds
+    // nothing) — a failing launch cannot reach a real browser of the list
+    const sleepAt = [...(process.env.PATH || '').split(':').filter(Boolean), '/bin', '/usr/bin'].map((d) => join(d, 'sleep')).find((x) => existsSync(x));
+    if (sleepAt) symlinkSync(sleepAt, join(stubDir, 'sleep'));
+    const prevB = process.env.KAIF_BROWSER, prevPath = process.env.PATH; process.env.KAIF_BROWSER = stub; process.env.PATH = stubDir;
+    const t0 = Date.now(); let launched = null;
+    try { launched = openWindow('http://127.0.0.1:9/', () => {}, root); } finally {
+      if (prevB === undefined) delete process.env.KAIF_BROWSER; else process.env.KAIF_BROWSER = prevB;
+      process.env.PATH = prevPath;
+    }
+    const took = Date.now() - t0;
+    let pid = 0; try { pid = Number(readFileSync(join(stubDir, 'pid'), 'utf8').trim()); } catch { /* the stub never ran */ }
+    let alive = false; try { if (pid > 0) { process.kill(pid, 0); alive = true; } } catch { /* gone */ }
+    const argsSeen = existsSync(join(stubDir, 'args')) ? readFileSync(join(stubDir, 'args'), 'utf8') : '';
+    try { if (pid > 0) process.kill(pid, 'SIGKILL'); } catch { /* already gone */ }
+    ok(launched === 'KAIF_BROWSER --app' && alive && argsSeen.includes('--app=http://127.0.0.1:9/') && took < BEEP_DEADLINE_MS,
+      'N3 (Linux): KAIF_BROWSER that stays in the foreground — «KAIF_BROWSER --app» within the deadline and the browser still alive (got '
+      + launched + ', alive ' + alive + ', ' + took + ' ms)');
+  }
 
   rmSync(root, { recursive: true, force: true });
   log(bad ? 'SELFTEST RED: ' + bad + ' of ' + n : 'contour selftest green: ' + n + ' checks (pre-flight red on the "options as paragraphs" fixture, three faces, records, showing)');

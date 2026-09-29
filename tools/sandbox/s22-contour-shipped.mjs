@@ -344,6 +344,12 @@ ok(!/ask the (project )?owner/i.test(pol26 + tn26) || /never ask/i.test(pol26 + 
 ok(/contour/i.test(tn26), 's22 C: template-notes 2.6 называют контур', tn26.slice(0, 200));
 const task = existsSync(join(U, 'KAIF_UPDATE_TASK.md')) ? readFileSync(join(U, 'KAIF_UPDATE_TASK.md'), 'utf8') : '';
 ok(/contour/i.test(task), 's22 C: задание обновления 2.5 → 9.9 называет контур (интервал policy-changes захватил 2.6)', task.slice(0, 300));
+// SW3 (2.9, тикет #114 — слово владельца KAIF в его полевом проекте: «Что каиф с обновлением поставляет - то и принимают без вопросов»):
+// пункт правил интервала сообщает их принятыми вместе с версией и велит назвать в отчёте, без вопроса владельцу проекта; ядро v2.8
+// велело «put each in front of the owner and record the choice» — три полевых интервью подряд с ответом «принять всё»
+const polItem = (task.match(/- \*\*policy-changes\*\* — [^\n]*/) || [''])[0];
+ok(polItem !== '' && /ACCEPTED with the version/.test(polItem) && /name each in the field report/.test(polItem) && !/ask the owner|in front of the owner|record the choice/i.test(polItem),
+   's22 C: пункт policy-changes — правила «приняты вместе с версией» и названы в отчёте; ни «ask the owner», ни «put each in front of the owner» (SW3, #114)', polItem.slice(0, 300));
 
 // ================================================================ D: эпик LP 2.7 (plans/111; тикет #66) — живая страница
 // Тикет #66 (Unliminium; слово владельца проекта: «закрылся контур и я не дал на него ответы, а я ПИСАЛ В ЭТОТ МОМЕНТ»)

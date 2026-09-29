@@ -21,6 +21,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
+import { createServer } from 'node:http';
 import { tempRoot } from './lib/temp-root.mjs';
 import { headlessPage, findBrowser, sandboxArgs } from './lib/cdp-mini.mjs'; // RL D-F2 (2.7): QA7 models the owner's --app window
 import { pathToFileURL, fileURLToPath } from 'node:url';
@@ -902,6 +903,58 @@ async function main() {
       check('вкладка: пилюля не закрывает ни шапку, ни заголовок и текст документа (окно ' + layTab.w + '×' + layTab.h + ', длинный заголовок) = true',
         layTab.over.length === 0, 'пилюля ' + JSON.stringify(layTab.pill) + ' пересекает: ' + layTab.over.join(' | '));
       await tab.closeGracefully();
+      // QA7в (2.9, эпик CP — находка N1 повторного лёгкого судьи CP): у полосы над страницей четыре хозяина, и каждый снимает только
+      // свою. Прежде живой пульс гасил любую полосу, кроме зелёной: после отказа записи с длинной причиной красная полоса исчезала на
+      // следующем пульсе, пилюля продолжала говорить «см. полосу сверху», а сама пилюля в три строки ложилась на заголовок документа.
+      // Страница — настоящая (buildPage), сервер — заглушка, которой прогон переключает ответы; окно --app 1100×900, короткий заголовок.
+      const qvRoot = tempRoot('verify-qa7v');
+      mkdirSync(join(qvRoot, '.kaif'), { recursive: true }); mkdirSync(join(qvRoot, 'interviews'), { recursive: true });
+      writeFileSync(join(qvRoot, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: '2.9', language: 'ru', projectName: 'Проба' }) + '\n');
+      const QV_DOC = 'interviews/interview_990_stub.md';
+      writeFileSync(join(qvRoot, QV_DOC), '# Интервью №990 — выбор\n\n> **Статус:** 🟡 ждёт ответа\n\nКороткий абзац контекста.\n\n'
+        + '### Q1. Что берём?\n\n- **A)** один\n- **B)** два\n\n**Ответ:**\n');
+      const qvHtml = buildPage(qvRoot, QV_DOC).html;
+      const QV_REASON = 'документ сейчас пишет другой процесс — повторите через минуту, ответ остался на странице';
+      let qvMode = { alive: true, decide: 'refuse' };
+      const qvSrv = createServer((req, res) => {
+        if (req.url === '/') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); return res.end(qvHtml); }
+        if (req.url.startsWith('/alive')) { if (!qvMode.alive) return req.socket.destroy(); res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end('{}'); }
+        if (req.url.startsWith('/decide')) {
+          const body = qvMode.decide === 'ok' ? { ok: true, written: 'interviews/decisions/interview_990_stub.decision.json', left: 0 } : { ok: false, reason: QV_REASON };
+          res.writeHead(qvMode.decide === 'ok' ? 200 : 400, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify(body));
+        }
+        res.writeHead(200); res.end('');
+      });
+      await new Promise((r) => qvSrv.listen(0, '127.0.0.1', r));
+      const qv = await headlessPage('http://127.0.0.1:' + qvSrv.address().port + '/', { profileDir: tempRoot('verify-qa7v-window'), app: true,
+        extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun', '--window-size=1100,900'] });
+      try {
+        await sleep(500);
+        await qv.evaluate("document.querySelector('#save').click(),1"); await sleep(300); // ничего не выбрано — «Нечего записывать…»
+        const qvNothing = await qv.evaluate(LAYOUT_JS);
+        check('«нечего записывать»: пилюля не выше двух строк и не закрывает заголовок документа (окно ' + qvNothing.w + '×' + qvNothing.h + ') = true',
+          qvNothing.over.length === 0 && /Нечего записывать/.test(qvNothing.pillText + qvNothing.bar),
+          'пилюля ' + JSON.stringify(qvNothing.pill) + ' «' + qvNothing.pillText + '» пересекает: ' + qvNothing.over.join(' | '));
+        await qv.evaluate("(function(){var r=document.querySelector('input[type=radio]');r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#save').click();return 1})()");
+        await sleep(800);
+        const qvRefused = await qv.evaluate(LAYOUT_JS);
+        await qv.evaluate('pulse(),1'); await sleep(800); // один живой пульс
+        const qvPulsed = await qv.evaluate(LAYOUT_JS);
+        await saveFrame(qv, 'qa7v-refused-save-after-pulse.png', 'отказа записи после пульса');
+        check('отказ записи: причина — в красной полосе, и живой пульс её НЕ гасит; пилюля — короткая метка и ничего не закрывает = true',
+          qvRefused.barClass === 'err' && qvRefused.bar.includes(QV_REASON) && qvPulsed.barClass === 'err' && qvPulsed.bar.includes(QV_REASON)
+            && qvPulsed.pillText === 'Внимание — см. полосу сверху' && qvPulsed.over.length === 0,
+          'до пульса [' + qvRefused.barClass + '] «' + qvRefused.bar.slice(0, 60) + '» · после [' + qvPulsed.barClass + '] «' + qvPulsed.bar.slice(0, 60)
+            + '» · пилюля «' + qvPulsed.pillText + '» пересекает: ' + qvPulsed.over.join(' | '));
+        // последний ответ записан — сервер заканчивается по замыслу (I8): мёртвый пульс после этого — не новость, никогда «ответ НЕ уйдёт»
+        qvMode = { alive: true, decide: 'ok' };
+        await qv.evaluate("document.querySelector('#save').click(),1"); await sleep(400);
+        qvMode.alive = false; // окно закрывается само через CFG.closeMs (2 с) — проба укладывается раньше
+        await qv.evaluate('pulse(),1'); await sleep(500);
+        const qvDone = await qv.evaluate("(function(){var b=document.querySelector('#banner');return {bar:b.style.display==='block'?b.textContent:'',ring:document.querySelector('#rescue').style.display,pill:document.querySelector('#status').textContent}})()");
+        check('после записанного последнего ответа мёртвый пульс молчит: ни «НЕ уйдёт», ни кольца спасения = true',
+          !/НЕ уйдёт/.test(qvDone.bar) && qvDone.ring !== 'block' && /Записано/.test(qvDone.pill + qvDone.bar), JSON.stringify(qvDone).slice(0, 300));
+      } finally { await qv.closeGracefully(); qvSrv.close(); }
     } catch (e) {
       check('QA7 исполнился', false, e.message); // причина падения — в строку, не в маску
     }

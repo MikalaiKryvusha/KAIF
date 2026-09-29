@@ -34,10 +34,10 @@ export const PARSER = {
   // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
   // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
   // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
-  // Light judge of epic CP, F3: «выше» / "above" count only as a REFERENCE — after «см./как/указано/описано…» or "see/as/listed…", or
-  // «выше в документе/по тексту», "the above" — a comparison («нагрузка выше 80%», "above 80%") is no reference; «см. <…> ниже» (forward)
-  // and «см. также» / "see also" (a reference NEXT to the content) stay legal.
-  refBack: '(?<!\\p{L})(?:(?:см\\.?|смотр\\p{L}*|как|указан\\p{L}*|описан\\p{L}*|приведен\\p{L}*|приведён\\p{L}*|перечислен\\p{L}*|назван\\p{L}*|предложен\\p{L}*|обсужд\\p{L}*)\\s+(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?выше(?!\\p{L})|выше\\s+(?:в\\s+документе|в\\s+тексте|по\\s+тексту)|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|(?:see|as|listed|described|mentioned|shown|stated|given|named|proposed|discussed)\\s+(?:\\S+\\s+){0,3}?above(?!\\p{L})|the\\s+above(?!\\p{L})|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  // The light judges of epic CP, F3 and N2: «выше» / "above" is a REFERENCE unless a comparison follows it — a number or «чем» / "than"
+  // («нагрузка выше 80%», «B выше, чем A», "above 80%" stay legal; «формула выше», «в таблице выше», "the list above", «как указано выше»
+  // refuse); «см. <…> ниже» (forward) and «см. также» / "see also" (a reference NEXT to the content) stay legal.
+  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})(?!\\s*,?\\s*(?:чем(?!\\p{L})|[\\d~≈<>]|на\\s+\\d|в\\s+\\d))|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|above(?!\\p{L})(?!\\s*(?:than(?!\\p{L})|[\\d~<>]|by\\s+\\d))|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
   originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
@@ -57,6 +57,11 @@ export const PARSER = {
   statusClosedWord: '^\\s*(?:[✅⛔➡🟢]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?)(?!\\p{L})',
   statusClosed: '✅|🟢|STATUS:\\s*DONE|ANSWERS\\s+RECEIVED|ОТВЕЧЕНО',
   statusWaiting: '🟡|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
+  // (the light re-judge of epic CP, F5) on a line that opens with a closing word the document waits only for an UNNEGATED waiting marker
+  // («больше не ждёт ответа», "no longer awaiting" close) or a NOT-YET mark («Q2 — ещё не отвечен»); a bare «не отвечен» still closes —
+  // a question withdrawn by the agent is written that way.
+  statusWaitingNegation: '(?:(?<!\\p{L})не|\\bnot|\\bno\\s+longer|\\bno)',
+  statusPending: '(?<!\\p{L})(?:ещ[её]|пока)\\s+не(?!\\p{L})|\\bnot\\s+yet\\b|\\bno\\b[^.]{0,40}\\byet\\b',
   // negation outranks the tick (bugs/70): «пока НЕ отвечено», "no answers yet", "not answered"
   statusNegation: '(?<!\\p{L})не\\s*отвечен|неотвечен|(?<!\\p{L})пока\\s+не(?!\\p{L})|(?<!\\p{L})ещё\\s+не(?!\\p{L})|\\bno\\b[^.]{0,40}\\byet\\b|\\bnot\\b[^.]{0,40}\\banswer',
   // the declared free field of a question with no options (naming / taste questions)
@@ -138,7 +143,7 @@ const EN = {
     savedLocally: 'The server is unreachable — your answer is saved on this computer (in the project folder); the agent will pick it up. You can close the window.',
     // CP (2.9, origin issue #125): a long message goes to the bar above the page (it keeps the Save column free); the pill under the
     // button carries a short label only — a pill six lines tall covered the document's title
-    savedLocallyShort: 'Saved on this computer', pillOk: 'Done — details in the bar above', pillErr: 'Attention — details in the bar above',
+    savedLocallyShort: 'Saved on this computer', pillOk: 'Details in the bar above', pillErr: 'Attention — see the bar above',
     closeYourself: 'The browser refused to close the window — please close it yourself',
     // OW6 (2.8): answers are saved one at a time — the page stays; a save against another revision of the document is refused
     left: (n) => 'Saved. Questions left: ' + n + ' — the page stays open; answer the rest now or later.',
@@ -252,7 +257,7 @@ const RU = {
     savedLocally: 'Сервер недоступен — ответ сохранён на этом компьютере (в папке проекта); агент его заберёт. Окно можно закрыть.',
     // CP (2.9, тикет #125): длинное сообщение — в полосу над страницей (она оставляет колонку кнопки свободной); в пилюле под кнопкой —
     // только короткая метка: пилюля в шесть строк закрывала заголовок документа
-    savedLocallyShort: 'Сохранено на этом компьютере', pillOk: 'Готово — подробности в полосе сверху', pillErr: 'Внимание — подробности в полосе сверху',
+    savedLocallyShort: 'Сохранено на этом компьютере', pillOk: 'Подробнее — в полосе сверху', pillErr: 'Внимание — см. полосу сверху',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     // OW6 (2.8): ответы записываются по одному — страница остаётся; запись по другой редакции документа отказывается
     left: (n) => 'Записано. Осталось вопросов: ' + n + ' — страница остаётся открытой; на остальные можно ответить сейчас или позже.',

@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "a1d731028c3ff7ded0b5eef3c3960845714cd595129e1b2904329da9209a748c",
+    "sourceTree": "ffefe762454316e5095722f81555b545437d592e143ba21f6d73bf5b453a92af",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -104,7 +104,8 @@
     "2.9": [
       "THE OWNER'S WORD MID-TURN GETS AN ANSWER HE CAN SEE (2.9, epic OA; origin bug 123 — on 2.8 one project's first text about the owner's mid-turn word came 108 tool calls later: an answer written between tool calls may never reach the chat, the final message does): a sixth refresh hook, `.kaif/hooks/stop-owner-answer.mjs` (event `Stop`, Claude Code only), reads the turn's FINAL message — the vendor hands it over as `last_assistant_message`, without the transcript — and asks ONCE for the answer when a response ends without opening an answer to each owner's mid-turn message of that turn with the message's first words; a response that answers and ends with a last line `⏩ <next step>` is resumed by the hook — the work goes on without the owner's next word. `pretool-owner-word.mjs` re-reads the lagging transcript before it refuses a call. \"The owner's word mid-turn\" now says: answer in a response of its own (no tool call after it — a text between tool calls may be recorded as reasoning and never reach the chat), open it with the owner's first words. Wire the new `Stop` entry of `.kaif/hooks/settings-fragment.json`.",
       "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
-      "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a long status message rides the bar above the page (green for good news) and the pill under the Save button carries a short label — a six-line pill used to cover the document's title; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; on Linux and macOS an answer saved after the browser was killed is recovered (a stale profile lock is judged by host and pid). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner."
+      "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a status that does not fit two lines of the pill under the Save button rides the bar above the page (green for good news, red for trouble) and the pill carries a short label — a six-line pill used to cover the document's title; each bar is cleared only by its own owner, so a refused save keeps its reason in view through the page's pulse, and after the last answer is recorded a dead server is no alarm; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; on Linux and macOS an answer saved after the browser was killed is recovered (a stale profile lock is judged by host and pid). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner.",
+      "WHAT KAIF DELIVERS IS WIRED AND ACCEPTED AT ONCE (2.9, epic SW; origin tickets #115 · #114 · #113 · #130 · #126 — the KAIF owner's word in his field projects, rendered from Russian: what KAIF delivers with an update is accepted without questions; everything KAIF brings in the delivery is wired, and agents should not ask about it): (1) NEW command `node .kaif/kaif-core.mjs wire-hooks` merges `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` additively — the owner's entries and their order stay, a script already wired for its event (there or in `.claude/settings.local.json`) is left alone, a repeat run changes nothing, the file keeps its indent, line ends and byte-order mark, an unparseable file is left untouched (exit 1); the install and update tasks carry the item `wire-hooks` — the agent runs it WITHOUT asking the owner, the write is open to its harness and a refusal is recorded by `checkpoint wire-hooks --verdict`, never worked around; `\"hooks\": \"off\"` in `.kaif/kaif.json` opts out, and `check` names a delivered hook that is not wired (a warning); the samples of the other systems are merged by the agent by hand, no question. (2) The update task's `policy-changes` item no longer puts the rules of a release to the owner: they are ACCEPTED with the version and NAMED in the field report and the farewell; a question is legal only where a rule collides with a decision he recorded himself. (3) The decision-attribution lint that arrives with no baseline gets the item `lint-baselines`: the project's inherited debt is recorded once with `check --write-baseline`, no question, and the closing stops on a NEW finding only (the lesson journal gets no such step — its baseline never silences a repeated class). (4) The overflow address of the size budgets names `HOUSE_RULES.md` without «cp … HOUSE_RULES.md» when the file exists — an obeyed hint no longer overwrites a filled house-rules file with the empty skeleton. (5) Ignore-first anchors the root transients (`/KAIF.md`, `/KAIF-LOADER.mjs`, the task files): a bare line an older core wrote is rewritten IN PLACE (your own lines and negations keep their order, the file keeps its line ends) — on a case-insensitive git the bare `KAIF.md` hid `.clinerules/kaif.md` and `.roo/rules/kaif.md`; the contour's renders and call phrase (`.kaif/.contour-tmp/`) and its window locks (`<decisionsDir>/*.lock`) join the set; `check` names a deployed artifact that git ignores — KAIF's own line is a failure the next update cures, your own rule a warning with the `!<file>` line that lets it travel."
     ],
     "2.8": [
       "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is shorter than the 300 lines of 2.7: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules.",
@@ -190,6 +191,11 @@
     }
   ],
   "policyChanges": {
+    "2.9": [
+      "The rule changes of a release are ACCEPTED with the version — this list included (2.9, epic SW; origin issue #114 — the KAIF owner's word in his field project, rendered from Russian: what KAIF delivers with an update is accepted without questions; three field interviews in a row answered \"accept all\"): do not put these lines to the project owner as questions, even where the task of an older core tells you to; name each in the field report and in the farewell. A question to the owner is legal ONLY where a rule collides with a decision he recorded himself (an [OWNER] line), with the address of that decision in the question.",
+      "The delivered refresh hooks are WIRED, not left for an opt-in (2.9, epic SW; origin issue #115 — the KAIF owner's word, rendered from Russian: everything KAIF brings in the delivery — wire it, and agents should not ask about it): run `node .kaif/kaif-core.mjs wire-hooks` now, without asking the owner — it merges `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` additively (his own entries and their order stay, a repeat run changes nothing, an unparseable file is left untouched with a warning). The write is yours and open to your harness: if it refuses, do not work around it — name the refusal and that one command in the farewell. The owner opts out with `\"hooks\": \"off\"` in `.kaif/kaif.json`; `check` names a delivered hook that is not wired; the other systems' samples (`.kaif/hooks/sample-*.json`) are merged by the agent by hand, no question.",
+      "The decision-attribution lint that arrived without a baseline has the project's INHERITED debt recorded once, no question (2.9, epic SW; origin issue #115): where `node .kaif/tools/kaif-attribution-lint.mjs check` stops on lines written before this update and `.kaif/attribution-lint.baseline.json` does not exist, run the same command with `--write-baseline`; from there the closing stops on a NEW finding only."
+    ],
     "2.8": [
       "The field report of every update and install is SENT to KAIF without asking the owner (2.8, epic CH; origin issue #78 — a field owner, rendered from Russian: sending to KAIF is always allowed and required): on tracking: origin the agent delivers `reports/KAIF_UPDATES/*_REPORT.md` with `node .kaif/kaif-core.mjs report` in the same move as it writes it, under the KAIF owner's standing authorization (origin issue #15) — the same carve-out a KAIF-defect ticket uses; a detached deployment (tracking: anonymous) keeps its report in the project. On the update FROM 2.7 the task is still written by the outgoing core, and its field-report item does not say \"deliver\": the delivered core says it — `checkpoint field-report` prints the delivery command, and `check` names an undelivered report (also one whose file name does not date it, by its own delivery line).",
       "The closing gate of the size budgets is a RATCHET (2.8, epic CK; origin issue #84 — a field STATUS of 447 lines against 200, shrinking since the last closing, stopped every closing like a fresh overflow): `node .kaif/kaif-core.mjs check --gate-budgets` now reads and rewrites `.kaif/budget-baseline.json` on every run — commit that file with the closing. The first gate of the version records the debt above budget and passes; after that a document above budget passes only while its own lines SHRINK, and growth, a standstill or a new overflow stop the closing; a document back under budget leaves the file. An unreadable base stops the gate (restore it from git) — it is never a free pass.",
@@ -276,6 +282,12 @@
         [
           "## 3. Records — three files, derived names, never overwritten",
           "## 3. Records — three files, derived names; a record is replaced only by a NEW revision of the document (the table below)"
+        ]
+      ],
+      ".kaif/hooks/README.md": [
+        [
+          "## Opt-in — an explicit owner step",
+          "## Wiring — the task wires it, the owner can opt out"
         ]
       ]
     }
@@ -708,7 +720,7 @@ false-`[TESTED]` class: `/fable-judge` hunts it (the refresh-witness hunt).
 The markdown ritual is complete on its own. On agent systems with lifecycle hooks the optional
 **refresh-hooks module** (`.kaif/hooks/`, wiring in its README) reinforces it — re-read after
 compaction, a marker-age timer, a once-per-session STATUS guard, `/resume` on a leading `resume` —
-by the owner's explicit opt-in; a deployment without hooks never reddens.
+wired by the install and update tasks (`wire-hooks`, 2.9; `"hooks": "off"` opts out); a deployment without hooks never reddens.
 
 ### Environment dossier — the agent knows its machine from its own notes
 
@@ -3487,7 +3499,10 @@ resting state, silent in `check`.
 
 A release that CHANGES A RULE of the previous version (not merely its wording) declares it in the
 meta block's `policyChanges`, keyed by version. The update task prints them in a separate
-"decisions for the OWNER" section: a policy change is never merged silently as an ordinary diff.
+section: a policy change is never merged silently as an ordinary diff. Since 2.9 (epic SW; origin issue #114 — the KAIF owner's
+word: what KAIF delivers with an update is accepted without questions) the rules are ACCEPTED with the version: the agent names
+each in the field report and the farewell and asks the project owner only where a rule collides with a decision he recorded
+himself (an `[OWNER]` line, its address in the question).
 
 ### 10.7 Commands
 
@@ -3679,9 +3694,10 @@ reason quotes the owner's words; an answer ending with a last line `⏩ <next st
 on the STATUS guard, and the two owner-word hooks have none — it refuses one call per owner's message and the work goes on; injections are orders, never
 document bodies. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
 folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
-is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
-`settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
-complete contour on its own.
+(2.9, epic SW; origin issue #115): the install and update tasks tell the agent to run `node .kaif/kaif-core.mjs wire-hooks`,
+which merges the fragment into `.claude/settings.json` additively — the owner's entries kept, a repeat run changes nothing,
+`"hooks": "off"` in `.kaif/kaif.json` opts out; the write is the agent's and open to its harness, never hidden inside `update`
+(`.kaif/hooks/README.md`) — and a deployment without hooks never reddens: the markdown ritual is the complete contour on its own.
 
 **Portability across agent systems** (phase O5; contracts read in each vendor's live docs on
 2026-08-07). The predicate and the order text are system-independent; only the JSON envelope of
@@ -5435,6 +5451,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30). Since 2.8 (origin issue #96) the same in `/end-chat-soft`, `/dayloop`, `/nightloop` and `/autoloop` when the owner named an end time: a close with no `BOUNDARY:` line whose `now` came from a clock probe in the same call, a verdict about the named hour ("time is up", "did not make it") with no probe behind it, and any stamp of a moment written without a probe in the same call — a field session stamped 1–5 minutes ahead of the clock and said at 11:50 it had missed 12:00.
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives (a metric, a phase, a count — read from the plan, the code or a run, never from a question).
+   - **Rule merged silently (KAIF 2.9).** An update whose task carried a `policy-changes` item and whose field report or farewell does not NAME each changed rule — or an agent that put those rules to the project owner as questions — is a finding: since 2.9 (origin issue #114) the rules the author of KAIF shipped are accepted with the version and named, and the project owner is asked only where a rule collides with a decision he recorded himself (an `[OWNER]` line, its address in the question).
    - **Confusion delivered as verdict (KAIF 2.6).** An owner-facing text — a report line, an interview body, a chat message quoted in the record — that declares the OWNER's proposal impossible ("breaks the model", "cannot", "impossible", "contradicts", or their equivalents in the owner's language) with no `Recon:` block (query · found · measurement; a localized wrapper names it in the owner's language) near it is a finding: the agent's confusion was delivered as a verdict instead of triggering the order the owner set — a web search for what he most likely meant → a measurement over his own data → a question in `interviews/` (`AGENT_GUIDE.md` → the confusion rule; `/interview` step 3b; origin issue #50). Owner-ordered work rolled back because a guard went red and reported as a line instead of a fork in `interviews/` with the guard's output quoted is the same finding — and so is a guard disarmed to make the proposal fit (field: "role-playing game and RPG at once" read as a third tag, the edit rolled back, "not done" delivered; the Cyrillic spelling of RPG was the Russian half of the pair, and 90 live records already carried it).
    - **Recency ranked over metric (KAIF 2.6).** A `/what-next` answer or a session report whose FIRST step cites the owner's word of the same day (or of the last 48 h) while no `METRIC:`/`MAIN PHASE:` lines open it and the row carries `moves: —` with an empty `closes` — is a finding: the newest pain was ranked by its date — recency over metric — not by the metric (`/what-next` step 3; `AGENT_GUIDE.md` → owner's drive-by notes; origin issue #53). A shelf line "fresh owner words — not ranked by the metric" missing while such words exist in the conversation is the same finding; `.kaif/tools/kaif-ranking-lint.mjs check` over the draft is the re-run.
    - **Done without the real world (KAIF 2.6).** A claim of "done" — a report line, a session close, a ticket closure — about anything ALREADY IN PRODUCTION (a live site, a saved profile, a deployed framework tree carrying the owner's own edits) that carries no `REAL WORLD:` difference line (accumulated · data and machine · path — `TESTING_FRAMEWORK.md` → "The agent's stand is not the owner's real world"), or whose line has an item with the outcome "not verified there", is a finding of the false-completion family: the agent verified on a clean stand it built from nothing, and the owner's accumulated state — an old session, a saved profile, the cache of the previous build, his own edits — is where it breaks (origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is already in production). The only legal wait is the owner's word about a check that changes his state — named on the line, "done" not said. A green smoke on a fresh browser or a clean checkout is evidence about the stand, never about his world.
@@ -10601,6 +10618,14 @@ const STATUS_CLOSED_RE = new RegExp(PARSER.statusClosed, 'iu');
 const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
 const STATUS_CLOSED_WORD_RE = new RegExp(PARSER.statusClosedWord, 'iu');   // CP (2.9, #109 · #121 R3)
+const STATUS_PENDING_RE = new RegExp(PARSER.statusPending, 'iu');           // the light re-judge of epic CP, F5
+const WAITING_NEGATED_RE = new RegExp(PARSER.statusWaitingNegation + '\\s+$', 'iu');
+// a waiting marker counts unless a negation stands right before it («no longer awaiting» — the document is closed)
+function waitsUnnegated(line) {
+  const re = new RegExp(PARSER.statusWaiting, 'giu');
+  for (let m; (m = re.exec(line));) if (!WAITING_NEGATED_RE.test(line.slice(Math.max(0, m.index - 24), m.index))) return true;
+  return false;
+}
 
 // OW3 (2.8, origin issue #86): the whole STATUS BLOCK — the status line and the quote lines that continue it — says the answers await
 // application. A field marks it on a continuation line under a ticked "answered" (its S1: an 11-day-old decision stayed invisible);
@@ -10619,9 +10644,10 @@ export function docStatus(md) {
   const m = head.match(STATUS_LINE_RE);
   if (!m) return 'none';                                 // no status line — the document is LIVE
   const line = m[1];
-  // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit WAITING marker on the same line: a
-  // partial status «closed Q1; Q2 awaits an answer» still waits (light judge of epic CP, F5)
-  if (STATUS_CLOSED_WORD_RE.test(line)) return STATUS_WAITING_RE.test(line) ? 'waiting' : 'closed';
+  // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit, unnegated WAITING marker or a NOT-YET
+  // mark on the same line: a partial status «closed Q1; Q2 awaits an answer / is not yet answered» still waits (the light judges of epic
+  // CP, F5 and its re-judge); «closed — no longer awaiting an answer» closes
+  if (STATUS_CLOSED_WORD_RE.test(line)) return waitsUnnegated(line) || STATUS_PENDING_RE.test(line) ? 'waiting' : 'closed';
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
   if (STATUS_CLOSED_RE.test(line)) return 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
@@ -10648,8 +10674,9 @@ export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])(?:\\)|[
 const AUTHORED_LETTER_RE = new RegExp('^\\s*-\\s+\\*\\*\\s*([' + L + '])(?![\\p{L}\\d])', 'u');
 // (light judge of epic CP, F4) an option written as a PARAGRAPH — `**C.** three`, the #51 form, no list dash — is a letter authored
 // too: two list options plus a paragraph C used to show A and B and lose C in silence. Only a letter with its mark (. ) :) counts, so
-// prose that merely opens with a bold letter ("**B** costs more") is not taken for an option.
-const AUTHORED_PARA_LETTER_RE = new RegExp('^\\s*\\*\\*\\s*([' + L + '])\\s*[.):]', 'u');
+// prose that merely opens with a bold letter ("**B** costs more") is not taken for an option. The re-judge: the list form's dash
+// (`**C** — three`, the bold closed before a dash) is a mark too.
+const AUTHORED_PARA_LETTER_RE = new RegExp('^\\s*\\*\\*\\s*([' + L + '])\\s*(?:[.):]|\\*\\*\\s*[\\u2014\\u2013-](?=\\s))', 'u');
 const authoredLetter = (l) => AUTHORED_LETTER_RE.test(l) || AUTHORED_PARA_LETTER_RE.test(l);
 // SECOND legal form — a TABLE ROW `| **A** | … |` (bugs/51 of the origin): a one-letter cell (bold
 // optional, dot/bracket optional, a bracketed note on either side of the bold) + at least one
@@ -11283,7 +11310,7 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, readlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, readlinkSync, symlinkSync } from 'node:fs';
 import { tmpdir, platform, hostname } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { randomBytes } from 'node:crypto';
@@ -11328,10 +11355,11 @@ const FAB_COLUMN_PX = 230, FAB_EDGE_PX = 16;            // regular window
 const FAB_COLUMN_NARROW_PX = 170, FAB_EDGE_NARROW_PX = 8; // narrow window (NARROW_PX)
 const FAB_GAP_PX = 4;                                    // air between the pill and the title column
 const pillMaxPx = (column, edge) => column - edge - FAB_GAP_PX;
-// CP (2.9, #125 — the light judge's finding F1): a narrow pill wraps a long message into six lines that fall past the header onto the
-// document's own title. So a status longer than PILL_MAX_CHARS goes to the BAR above the page (in the flow, it keeps the Save column
-// free — nothing lies over it), and the pill carries a short label; a pill of up to two lines ends above the first line of the page.
-const PILL_MAX_CHARS = 48;
+// CP (2.9, #125 — the light judges' findings F1 and N1): a narrow pill wraps a long message into lines that fall past the header onto
+// the document's own title. So the pill holds at most PILL_LINES lines (CSS line-clamp) — a pill of two lines ends above the first
+// line of the page — and a status that does not fit them, MEASURED on the page (a count of characters is a proxy that differs per
+// font, language and window), goes to the BAR above the page (in the flow, it keeps the Save column free), the pill a short label.
+const PILL_LINES = 2;
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -12006,7 +12034,6 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     artifacts: artifacts.map((a) => ({ doc: a.doc, id: a.id, exists: a.exists, sha256: a.sha256 })),
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
-    pillMax: PILL_MAX_CHARS, // CP (2.9, #125): a longer status goes to the bar, the pill gets a short label
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
       needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, serverGoneLocal: t.st.serverGoneLocal, savedLocally: t.st.savedLocally, closeYourself: t.st.closeYourself,
       savedLocallyShort: t.st.savedLocallyShort, pillOk: t.st.pillOk, pillErr: t.st.pillErr,
@@ -12066,7 +12093,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .fab { position:fixed; top:12px; right:${FAB_EDGE_PX}px; z-index:50; display:flex; flex-direction:column; align-items:flex-end; gap:6px; max-width:60vw }
   .fab button { border-radius:999px; box-shadow:0 4px 14px rgba(0,0,0,.28); padding:10px 20px }
   .fab #save { zoom:${+(SAVE_SCALE / PAGE_SCALE).toFixed(3)} } /* #106: the primary Save button renders at SAVE_SCALE of the base */
-  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:15px; padding:4px 12px; font-size:13px; text-align:right; max-width:${pillMaxPx(FAB_COLUMN_PX, FAB_EDGE_PX)}px } .fab #status:empty { display:none }
+  .fab #status { background:var(--card); border:1px solid var(--line); border-radius:15px; padding:4px 12px; font-size:13px; text-align:right; max-width:${pillMaxPx(FAB_COLUMN_PX, FAB_EDGE_PX)}px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:${PILL_LINES}; overflow:hidden } .fab #status:empty { display:none }
   @media (max-width:${Math.round(NARROW_PX * PAGE_SCALE)}px) { .fab { top:8px; right:${FAB_EDGE_NARROW_PX}px } .fab button { padding:8px 14px } .fab #status { max-width:${pillMaxPx(FAB_COLUMN_NARROW_PX, FAB_EDGE_NARROW_PX)}px } header, #banner { padding-right:${FAB_COLUMN_NARROW_PX}px } }
   .muted{opacity:.7;font-size:.95em;margin:4px 0 0} /* bugs/113: the no-remarks hint under the field */
   button { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 18px; font:inherit; cursor:pointer } button:disabled { opacity:.5; cursor:default }
@@ -12084,11 +12111,16 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var CFG=" + cfgJson + ";var QS=" + qjson + ";",
     "var $=function(s){return document.querySelector(s)};var TX=CFG.txt;",
     "function fmt(s,o){for(var k in o)s=s.replace('{'+k+'}',o[k]);return s}",
-    // CP (2.9, #125): a long message → the bar (green for good news, red for trouble), the pill a short label; a later short status
-    // clears only a GOOD bar — an error bar stays until its own path clears it
-    "function status(msg,cls,short){var s=$('#status');var b=$('#banner');var long=!!msg&&msg.length>CFG.pillMax;",
-    " s.textContent=long?(short||(cls==='err'?TX.pillErr:TX.pillOk)):msg;s.className=cls||'';",
-    " if(long){b.textContent=msg;b.className=cls==='err'?'':'ok';b.style.display='block'}else if(b.className==='ok'){b.style.display='none';b.className=''}}",
+    // CP (2.9, #125; the light judges' F1 and N1): a status that does not fit the pill's lines → the bar (green `ok` for good news, red
+    // `err` for trouble), the pill a short label. The bar has FOUR owners, each named by its class and each clearing only its own: a
+    // status (`ok`/`err` — cleared by the next status that fits the pill), the pulse (`gone` — cleared by an alive pulse, which puts
+    // back the status bar it covered), a new revision (`rev`) and the self-check (`broken`) — those two stay until the page reloads and
+    // are never covered. N1: the pulse used to hide every bar not classed ok, and the pill kept pointing at a bar that was gone.
+    "var barMsg=null,barCls='';function barFree(){var c=$('#banner').className;return c!=='rev'&&c!=='broken'}",
+    "function showBar(){var b=$('#banner');b.textContent=barMsg;b.className=barCls;b.style.display='block'}",
+    "function status(msg,cls,short){var s=$('#status');var b=$('#banner');s.className=cls||'';s.textContent=msg||'';",
+    " if(msg&&s.scrollHeight>s.clientHeight+1){s.textContent=short||(cls==='err'?TX.pillErr:TX.pillOk);barMsg=msg;barCls=cls==='err'?'err':'ok';if(barFree())showBar()}",
+    " else{barMsg=null;if(b.className==='ok'||b.className==='err'){b.style.display='none';b.className=''}}}",
     // I12: the browser draft — every field in localStorage, restored with a note
     "var DK=CFG.draftKey+':';",
     // OW6 (2.8): a draft key carries the FINGERPRINT of its question — in a new revision of the document a draft comes back only onto
@@ -12174,7 +12206,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " for(var k=0;k<ks.length;k++){if(ks[k].indexOf(DK)!==0)continue;var nm=ks[k].slice(DK.length).split('#')[0];",
     "  if(p.comment&&nm==='doccomment:'+p.doc)localStorage.removeItem(ks[k]);",
     "  for(var j=0;j<ids.length;j++)if(nm==='choice:'+p.doc+':'+ids[j]||nm==='text:'+p.doc+':'+ids[j]||nm==='comment:'+p.doc+':'+ids[j])localStorage.removeItem(ks[k])}}catch(e){}}",
-    "function newRevision(msg){var b=$('#banner');b.style.display='block';b.textContent='';var bt=document.createElement('button');bt.type='button';",
+    "function newRevision(msg){var b=$('#banner');b.className='rev';b.style.display='block';b.textContent='';var bt=document.createElement('button');bt.type='button';",
     " bt.style.background='#fff';bt.style.color='#1d1d1f';bt.style.marginRight='10px';bt.textContent=TX.reloadRev;bt.onclick=function(){location.reload()};b.appendChild(bt);b.appendChild(document.createTextNode(msg));",
     " var sv=document.querySelectorAll('#save,.savedoc,#retry');for(var i=0;i<sv.length;i++)sv[i].disabled=true}",
     "function staleSave(p){rescue(p,TX.stale);status('','');newRevision(TX.stale)}", // the banner and the ring carry the message — the pill never covers the button
@@ -12193,7 +12225,8 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // question moves to the settled fold, the other drafts come back) and says how many are left
     "  if(res.j.rev)CFG.rev=res.j.rev;",
     "  if(CFG.face==='interview'&&res.j.left>0){clearSaved(p);try{sessionStorage.setItem(DK+'__left',String(res.j.left))}catch(e){}location.reload();return}",
-    "  saved=true;status(fmt(TX.saved,{w:res.j.written}),'okmsg');",
+    // the light re-judge of epic CP (QA7v): a ring left by an earlier refused save goes with the answer recorded — as on the local path
+    "  saved=true;$('#rescue').style.display='none';status(fmt(TX.saved,{w:res.j.written}),'okmsg');",
     "  try{var ks=[];for(var i=0;i<localStorage.length;i++)ks.push(localStorage.key(i));",
     "   for(var k=0;k<ks.length;k++)if(ks[k].indexOf(DK)===0)localStorage.removeItem(ks[k])}catch(e){}",
     // I27/DEF2: auto-close is an ATTEMPT; a refusal → an honest request; cancelled by pagehide
@@ -12207,12 +12240,13 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " try{document.execCommand('copy');status(TX.copied,'okmsg')}catch(e){status(TX.copyManually,'err')}});",
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
     // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
-    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally&&$('#banner').className!=='ok')$('#banner').style.display='none';return r.json().catch(function(){return null})})",
+    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;var b=$('#banner');if(b.className==='gone'){if(barMsg)showBar();else{b.style.display='none';b.className=''}}return r.json().catch(function(){return null})})",
     // OW6 (2.8): the pulse names the document's revision on disk — another one than this page was built from → saving off, the new revision offered
     // bugs/125 (2.8): the entry page rebuilds itself only when the QUEUE changed (a document answered in another window) — never on focus alone
     " .then(function(j){if(CFG.index&&j&&j.qrev&&CFG.qrev&&j.qrev!==CFG.qrev){location.reload();return}",
     "  if(j&&j.rev&&CFG.rev&&j.rev!==CFG.rev&&!saving&&!saved)newRevision(TX.rewritten)})",
-    " .catch(function(){var b=$('#banner');if(submittedLocally)return;b.className='';b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
+    // after the LAST answer the server ends by design (I8) — a dead pulse then is no news, never «the answer will NOT be sent»
+    " .catch(function(){var b=$('#banner');if(submittedLocally||saved||!barFree())return;b.className='gone';b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
     "  if(!(lsOk&&inApp)){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
     "  if(!submittedLocally)enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
@@ -12224,7 +12258,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     // spec §2: the page SELF-CHECK — radio groups == questions with options; a mismatch is LOUD, never silent
     "var selfBroken=false;(function(){if(CFG.face!=='interview'||CFG.index)return;var rs=document.querySelectorAll('input[type=radio]');var names={};",
     " for(var i=0;i<rs.length;i++)if(rs[i].name.indexOf('choice:')===0)names[rs[i].name]=1;var n=Object.keys(names).length;",
-    " if(n!==CFG.expectRadioGroups){selfBroken=true;var b=$('#banner');b.style.display='block';b.textContent=fmt(TX.selfcheck,{r:n,q:CFG.expectRadioGroups});enableButtons(false)}})();",
+    " if(n!==CFG.expectRadioGroups){selfBroken=true;var b=$('#banner');b.className='broken';b.style.display='block';b.textContent=fmt(TX.selfcheck,{r:n,q:CFG.expectRadioGroups});enableButtons(false)}})();",
     // I26 (origin issue #64): the page knows whether it lives in the contour's own --app window or in a TAB of the
     // owner's working browser — `display-mode: standalone` is true only in the app window (measured on Chrome, headed
     // and headless; locationbar.visible is true everywhere and useless). A tab → a yellow note to the owner + one
@@ -12261,8 +12295,22 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
 // flags and are NOT verified — said so in the run report, never promised.
 const profileDir = (root) => resolve(root, WINDOW_PROFILE_DIR);
 const profileArgs = (root) => ['--user-data-dir=' + profileDir(root), ...PROFILE_QUIET_FLAGS];
+// N3 of the light re-judge of epic CP (2.9): on Linux the FIRST instance of a Chromium runs in the foreground until its window closes —
+// the launcher's deadline (spawnSync, BEEP_DEADLINE_MS) killed it at 8 s, and the window died with it: `KAIF_BROWSER` and every browser of
+// the list printed "no browser found". A Linux launch is DETACHED: the browser runs in the background with its output dropped, and the
+// launch counts when it is still alive after LAUNCH_ALIVE_S or has exited 0 (a second instance hands the address to the first one and
+// exits 0). The command and its arguments ride as positional parameters of `sh -c` — never pasted into the shell text; the shell is
+// named by its POSIX path, so a launch does not depend on a PATH that holds no `sh` (the quiet environment of the origin's suites).
+// [TESTED: 2026-09-29 21:23 +03:00 · selftest N3: a stub browser that stays in the foreground survives the launch, «KAIF_BROWSER --app» in
+//  ~1 s, in a normal and in an empty PATH; red on `tryCmd` (none, 8026 ms) — testcases/reports/2026-09-28_cp-question-page.md, runs 53–57.
+//  A real Chromium on the owner's Linux desktop is NOT observed]
+const LAUNCH_ALIVE_S = 1;
+const POSIX_SH = '/bin/sh';
+const DETACHED_SH = 'command -v "$0" >/dev/null 2>&1 || exit 127; "$0" "$@" >/dev/null 2>&1 & p=$!; sleep ' + LAUNCH_ALIVE_S
+  + '; if kill -0 "$p" 2>/dev/null; then exit 0; fi; wait "$p"';
 function openWindow(url, log = console.log, root = process.cwd()) {
   const tryCmd = (cmd, args) => { try { return spawnSync(cmd, args, { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
+  const tryDetached = (cmd, args) => { try { return spawnSync(POSIX_SH, ['-c', DETACHED_SH, cmd, ...args], { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
   const prof = profileArgs(root);
   // light judge of epic CP, F7: the machine's own browser (`KAIF_BROWSER`, the first entry of the one browser list) raises the window too —
   // before, only the answer recovery honoured it
@@ -12278,10 +12326,10 @@ function openWindow(url, log = console.log, root = process.cwd()) {
     if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'chrome --app';
     if (tryCmd('open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   } else {
-    if (own && tryCmd(own, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
+    if (own && tryDetached(own, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
     for (const exe of ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'])
-      if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
-    if (tryCmd('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
+      if (tryDetached(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
+    if (tryDetached('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   }
   log('NO WINDOW OPENED — open it yourself: ' + url + ' (no browser found on this machine; the page is served until you answer or close it).');
   return 'none';
@@ -12967,6 +13015,9 @@ export async function selftest(log = console.log) {
     ok(n(REFERENCES_SINCE, '\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80% \u2014 \u0431\u0435\u0440\u0451\u043c B.') === 0 && n(REFERENCES_SINCE, 'B \u0432\u044b\u0448\u0435, \u0447\u0435\u043c A, \u043f\u043e \u0446\u0435\u043d\u0435.') === 0 && n(REFERENCES_SINCE, 'Load above 80% takes B.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u2014 \u0441\u043c. \u0442\u0430\u0431\u043b\u0438\u0446\u0443 \u043d\u0438\u0436\u0435.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0446\u0435\u043b\u0438\u043a\u043e\u043c: x = 2y; \u0441\u043c. \u0442\u0430\u043a\u0436\u0435 plans/12.') === 0
       && n(REFERENCES_SINCE, '\u041a\u0430\u043a \u0443\u043a\u0430\u0437\u0430\u043d\u043e \u0432\u044b\u0448\u0435, \u0431\u0435\u0440\u0451\u043c B.') === 1 && n(REFERENCES_SINCE, 'As listed above, B wins.') === 1,
       'CP F3 (light judge): a comparison ("load above 80%", "B is higher than A"), a forward "see the table below" and a "see also" next to the content stay silent; "as listed above" still refuses');
+    ok(['\u0422\u0430\u043a \u043a\u0430\u043a \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%, \u0431\u0435\u0440\u0451\u043c B.', '\u0423\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%.', 'As load goes above 80%, B wins.', '\u0426\u0435\u043d\u0430 \u0432\u044b\u0448\u0435 \u043d\u0430 5% \u2014 \u0431\u0435\u0440\u0451\u043c B.'].every((s) => n(REFERENCES_SINCE, s) === 0)
+      && ['\u0411\u0435\u0440\u0451\u043c \u0444\u043e\u0440\u043c\u0443\u043b\u0443 \u0432\u044b\u0448\u0435?', '\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435.', 'Pick from the list above.', 'The above decides.'].every((s) => n(REFERENCES_SINCE, s) === 1),
+      'CP N2 (light re-judge): "above" is a comparison only before a number or "than" (through "as" or a participle too); a noun form ("the formula above", "the list above") refuses');
   }
   { // CP (2.9, #109 · #121 R3): an explicit closing word at the start of the status closes the document, whatever the explanation after it says
     const st = (v) => docStatus('# I\n\n> **Status:** ' + v + '\n');
@@ -12977,6 +13028,9 @@ export async function selftest(log = console.log) {
       'CP #109: a negation still outranks a bare tick (bugs/70); a noun that starts like a closing word is no closing word');
     ok(st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1; Q2 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'waiting' && st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0412\u041e\u041f\u0420\u041e\u0421 \u0421\u041d\u042f\u0422 \u0410\u0413\u0415\u041d\u0422\u041e\u041c, \u0410 \u041d\u0415 \u041e\u0422\u0412\u0415\u0427\u0415\u041d \u0412\u041b\u0410\u0414\u0415\u041b\u042c\u0426\u0415\u041c') === 'closed',
       'CP F5 (light judge): a partial status (closed Q1; Q2 awaits an answer) waits — an explicit waiting marker outranks the closing word; a negation alone does not');
+    ok(st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0431\u043e\u043b\u044c\u0448\u0435 \u043d\u0435 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'closed' && st('CLOSED — no longer awaiting the owner') === 'closed'
+      && st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1, Q2 \u2014 \u0435\u0449\u0451 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d') === 'waiting' && st('CLOSED Q1; Q2 not yet answered') === 'waiting',
+      'CP F5 (light re-judge): a NEGATED waiting marker ("no longer awaiting") leaves the document closed; a not-yet mark after the closing word waits');
   }
   { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
     const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
@@ -12989,6 +13043,8 @@ export async function selftest(log = console.log) {
     ok(preflight(para('**C.** three')).some((p) => /letters authored 3, recognised 2/.test(p) && p.includes('**C.** three'))
       && !preflight(para('**B** costs more than A.')).some((p) => /letters authored/.test(p)),
       'CP F4 (light judge): a paragraph option «**C.** three» next to two list options is named «letters authored 3, recognised 2»; prose opening with a bold letter («**B** costs more») is not an option');
+    ok(preflight(para('**C** ' + String.fromCharCode(0x2014) + ' three')).some((p) => /letters authored 3, recognised 2/.test(p)),
+      'CP F4 (light re-judge): a paragraph option with the list form\'s dash («**C** — three») is named too');
     ok(parseQuestions('# I\n\n> **Status:** awaiting\n\n### Q1. Pick?\n\n**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n')[0].recommended === 'B',
       'CP ideas/31 p. 28: «**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B» — the letter is read after the label closes its own bold');
     const ru = mkdtempSync(join(tmpdir(), 'kaif-contour-ru-'));
@@ -13205,6 +13261,12 @@ export async function selftest(log = console.log) {
       'the status pill is no wider than the button column the header keeps free — regular and narrow window (CP6, #125; got pill '
       + pill + ' + edge ' + edge + ' vs header ' + head + (narrow ? '; narrow ' + narrow.slice(1).join('/') : '; narrow rule missing') + ')');
   }
+  // CP, the light re-judge's N1 (the layout and the pulse — verify-contour QA7v in a live browser): the pill holds at most two lines,
+  // a status that does not fit goes to the bar; an alive pulse clears only the dead pulse's bar and puts back the status bar it covered
+  ok(new RegExp('\\.fab #status \\{[^}]*-webkit-line-clamp:' + PILL_LINES + '; overflow:hidden').test(plainPage.html) && PILL_LINES === 2,
+    'N1/F1: the status pill holds at most two lines (line-clamp) — a status that does not fit them goes to the bar, measured on the page');
+  ok(plainPage.html.includes("if(b.className==='gone'){if(barMsg)showBar();") && plainPage.html.includes("if(submittedLocally||saved||!barFree())return;b.className='gone'"),
+    'N1: an alive pulse clears only the dead pulse\'s bar and restores the status bar; after the last saved answer a dead pulse says nothing');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.fab { position:static;') }).ok, 'self-check goes RED when the button stops floating (mutation on a copy)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('.fab { position:fixed;', '.bar { position:fixed; bottom:0;') }).ok, 'self-check goes RED on a bar pinned to the bottom edge (the #60 page)');
   ok(!selfCheck({ ...plainPage, html: plainPage.html.replace('<label class="opt"><input', '<label class="opt">**leak**<input') }).ok, 'self-check goes RED when an option label carries raw markdown');
@@ -13479,6 +13541,30 @@ export async function selftest(log = console.log) {
   rmSync(join(root, MD), { force: true });
   } // OW6
 
+  if (!IS_WIN && !IS_MAC) { // CP, the light re-judge's N3: a browser that stays in the FOREGROUND (a first Chromium) survives the launch
+    const stubDir = join(root, 'stub-browser'); mkdirSync(stubDir, { recursive: true });
+    const stub = join(stubDir, 'browser.sh');
+    writeFileSync(stub, '#!/bin/sh\necho $$ > "' + join(stubDir, 'pid') + '"\necho "$@" > "' + join(stubDir, 'args') + '"\nexec sleep 30\n', { mode: 0o755 });
+    // silence: PATH is only the stub's folder (with `sleep` linked in — found on PATH or in /bin, /usr/bin: a suite's quiet PATH holds
+    // nothing) — a failing launch cannot reach a real browser of the list
+    const sleepAt = [...(process.env.PATH || '').split(':').filter(Boolean), '/bin', '/usr/bin'].map((d) => join(d, 'sleep')).find((x) => existsSync(x));
+    if (sleepAt) symlinkSync(sleepAt, join(stubDir, 'sleep'));
+    const prevB = process.env.KAIF_BROWSER, prevPath = process.env.PATH; process.env.KAIF_BROWSER = stub; process.env.PATH = stubDir;
+    const t0 = Date.now(); let launched = null;
+    try { launched = openWindow('http://127.0.0.1:9/', () => {}, root); } finally {
+      if (prevB === undefined) delete process.env.KAIF_BROWSER; else process.env.KAIF_BROWSER = prevB;
+      process.env.PATH = prevPath;
+    }
+    const took = Date.now() - t0;
+    let pid = 0; try { pid = Number(readFileSync(join(stubDir, 'pid'), 'utf8').trim()); } catch { /* the stub never ran */ }
+    let alive = false; try { if (pid > 0) { process.kill(pid, 0); alive = true; } } catch { /* gone */ }
+    const argsSeen = existsSync(join(stubDir, 'args')) ? readFileSync(join(stubDir, 'args'), 'utf8') : '';
+    try { if (pid > 0) process.kill(pid, 'SIGKILL'); } catch { /* already gone */ }
+    ok(launched === 'KAIF_BROWSER --app' && alive && argsSeen.includes('--app=http://127.0.0.1:9/') && took < BEEP_DEADLINE_MS,
+      'N3 (Linux): KAIF_BROWSER that stays in the foreground — «KAIF_BROWSER --app» within the deadline and the browser still alive (got '
+      + launched + ', alive ' + alive + ', ' + took + ' ms)');
+  }
+
   rmSync(root, { recursive: true, force: true });
   log(bad ? 'SELFTEST RED: ' + bad + ' of ' + n : 'contour selftest green: ' + n + ' checks (pre-flight red on the "options as paragraphs" fixture, three faces, records, showing)');
   if (bad) process.exit(1);
@@ -13693,10 +13779,10 @@ export const PARSER = {
   // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
   // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
   // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
-  // Light judge of epic CP, F3: «выше» / "above" count only as a REFERENCE — after «см./как/указано/описано…» or "see/as/listed…", or
-  // «выше в документе/по тексту», "the above" — a comparison («нагрузка выше 80%», "above 80%") is no reference; «см. <…> ниже» (forward)
-  // and «см. также» / "see also" (a reference NEXT to the content) stay legal.
-  refBack: '(?<!\\p{L})(?:(?:см\\.?|смотр\\p{L}*|как|указан\\p{L}*|описан\\p{L}*|приведен\\p{L}*|приведён\\p{L}*|перечислен\\p{L}*|назван\\p{L}*|предложен\\p{L}*|обсужд\\p{L}*)\\s+(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?выше(?!\\p{L})|выше\\s+(?:в\\s+документе|в\\s+тексте|по\\s+тексту)|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|(?:see|as|listed|described|mentioned|shown|stated|given|named|proposed|discussed)\\s+(?:\\S+\\s+){0,3}?above(?!\\p{L})|the\\s+above(?!\\p{L})|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  // The light judges of epic CP, F3 and N2: «выше» / "above" is a REFERENCE unless a comparison follows it — a number or «чем» / "than"
+  // («нагрузка выше 80%», «B выше, чем A», "above 80%" stay legal; «формула выше», «в таблице выше», "the list above", «как указано выше»
+  // refuse); «см. <…> ниже» (forward) and «см. также» / "see also" (a reference NEXT to the content) stay legal.
+  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})(?!\\s*,?\\s*(?:чем(?!\\p{L})|[\\d~≈<>]|на\\s+\\d|в\\s+\\d))|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|above(?!\\p{L})(?!\\s*(?:than(?!\\p{L})|[\\d~<>]|by\\s+\\d))|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
   originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
@@ -13716,6 +13802,11 @@ export const PARSER = {
   statusClosedWord: '^\\s*(?:[✅⛔➡🟢]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?)(?!\\p{L})',
   statusClosed: '✅|🟢|STATUS:\\s*DONE|ANSWERS\\s+RECEIVED|ОТВЕЧЕНО',
   statusWaiting: '🟡|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
+  // (the light re-judge of epic CP, F5) on a line that opens with a closing word the document waits only for an UNNEGATED waiting marker
+  // («больше не ждёт ответа», "no longer awaiting" close) or a NOT-YET mark («Q2 — ещё не отвечен»); a bare «не отвечен» still closes —
+  // a question withdrawn by the agent is written that way.
+  statusWaitingNegation: '(?:(?<!\\p{L})не|\\bnot|\\bno\\s+longer|\\bno)',
+  statusPending: '(?<!\\p{L})(?:ещ[её]|пока)\\s+не(?!\\p{L})|\\bnot\\s+yet\\b|\\bno\\b[^.]{0,40}\\byet\\b',
   // negation outranks the tick (bugs/70): «пока НЕ отвечено», "no answers yet", "not answered"
   statusNegation: '(?<!\\p{L})не\\s*отвечен|неотвечен|(?<!\\p{L})пока\\s+не(?!\\p{L})|(?<!\\p{L})ещё\\s+не(?!\\p{L})|\\bno\\b[^.]{0,40}\\byet\\b|\\bnot\\b[^.]{0,40}\\banswer',
   // the declared free field of a question with no options (naming / taste questions)
@@ -13797,7 +13888,7 @@ const EN = {
     savedLocally: 'The server is unreachable — your answer is saved on this computer (in the project folder); the agent will pick it up. You can close the window.',
     // CP (2.9, origin issue #125): a long message goes to the bar above the page (it keeps the Save column free); the pill under the
     // button carries a short label only — a pill six lines tall covered the document's title
-    savedLocallyShort: 'Saved on this computer', pillOk: 'Done — details in the bar above', pillErr: 'Attention — details in the bar above',
+    savedLocallyShort: 'Saved on this computer', pillOk: 'Details in the bar above', pillErr: 'Attention — see the bar above',
     closeYourself: 'The browser refused to close the window — please close it yourself',
     // OW6 (2.8): answers are saved one at a time — the page stays; a save against another revision of the document is refused
     left: (n) => 'Saved. Questions left: ' + n + ' — the page stays open; answer the rest now or later.',
@@ -13911,7 +14002,7 @@ const RU = {
     savedLocally: 'Сервер недоступен — ответ сохранён на этом компьютере (в папке проекта); агент его заберёт. Окно можно закрыть.',
     // CP (2.9, тикет #125): длинное сообщение — в полосу над страницей (она оставляет колонку кнопки свободной); в пилюле под кнопкой —
     // только короткая метка: пилюля в шесть строк закрывала заголовок документа
-    savedLocallyShort: 'Сохранено на этом компьютере', pillOk: 'Готово — подробности в полосе сверху', pillErr: 'Внимание — подробности в полосе сверху',
+    savedLocallyShort: 'Сохранено на этом компьютере', pillOk: 'Подробнее — в полосе сверху', pillErr: 'Внимание — см. полосу сверху',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     // OW6 (2.8): ответы записываются по одному — страница остаётся; запись по другой редакции документа отказывается
     left: (n) => 'Записано. Осталось вопросов: ' + n + ' — страница остаётся открытой; на остальные можно ответить сейчас или позже.',
@@ -18067,7 +18158,7 @@ if (IS_MAIN) {
 }
 ``````
 
-> **FILE: `.kaif/hooks/README.md`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/README.md`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````md
 # .kaif/hooks — the optional refresh-hooks module
@@ -18110,16 +18201,21 @@ script is started: the Claude Code fragment names it through `${CLAUDE_PROJECT_D
 relative path `node .kaif/hooks/…`, and whether those systems launch a hook from the project root or from the agent's current
 folder is NOT verified — a launch from a subfolder would not find the script at all.
 
-## Opt-in — an explicit owner step
+## Wiring — the task wires it, the owner can opt out
 
-**KAIF never edits your `settings.json`.** Wiring hooks changes how your agent system behaves
-on every prompt — that is the project owner's decision, exactly like `.gitattributes` or CI
-config. To enable:
+**On Claude Code the hooks are wired for you** (2.9, epic SW; origin issue #115 — the KAIF owner's rule: what KAIF delivers is
+wired, with no question to the project owner). The install and update tasks tell the agent to run
+`node .kaif/kaif-core.mjs wire-hooks`: it merges the `hooks` object of `settings-fragment.json` into `.claude/settings.json`
+additively — the owner's own entries and their order stay, a script already wired for its event (there or in
+`.claude/settings.local.json`) is left alone, a repeat run changes nothing, an unparseable file is left untouched with a warning.
+The write is the agent's and OPEN to its harness, never hidden inside `update`: Claude Code protects `.claude/` and may ask the owner
+or refuse; a refusal is recorded in the task, and the owner gets the same one command. `node .kaif/kaif-core.mjs check` names a
+delivered hook that is not wired. To opt out: `"hooks": "off"` in `.kaif/kaif.json` — nothing is written then (entries wired
+earlier are removed by hand). The other systems below — and Claude Code by hand — are wired this way:
 
-1. Open `.kaif/hooks/settings-fragment.json` — it carries the ready `hooks` object.
-2. Merge that object into `.claude/settings.json` (shared with the team, committed) or
-   `.claude/settings.local.json` (personal), with the owner's consent recorded where your
-   project records decisions.
+1. Open the sample of your system — `.kaif/hooks/settings-fragment.json` for Claude Code, `sample-*.json` for the others.
+2. Merge its `hooks` object into that system's config — for Claude Code `.claude/settings.json` (shared with the team, committed)
+   or `.claude/settings.local.json` (personal).
 3. Reload the session (hook configs are read at session start), then smoke the scripts by hand
    from the project root, with no `.kaif/refresh-marker.json` present. Use the block of YOUR
    shell — a redirect or a `printf` that one shell understands is a parse error in another.
@@ -18224,7 +18320,7 @@ ritual is the honest answer, not a lesser one. If it does, add a shape to the `E
 the relevant script and a sample next to these.
 ``````
 
-> **FILE: `.kaif/hooks/pretool-owner-word.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/pretool-owner-word.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
 #!/usr/bin/env node
@@ -18345,7 +18441,7 @@ try {
 } catch { process.exit(0); }
 ``````
 
-> **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
 #!/usr/bin/env node
@@ -18469,7 +18565,7 @@ try {
 process.exit(0);
 ``````
 
-> **FILE: `.kaif/hooks/prompt-resume-word.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/prompt-resume-word.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
 #!/usr/bin/env node
@@ -18616,11 +18712,11 @@ try {
 process.exit(0);
 ``````
 
-> **FILE: `.kaif/hooks/sample-antigravity-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/sample-antigravity-hooks.json`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````json
 {
-  "_readme": "SAMPLE Google Antigravity CLI hooks config for the optional KAIF refresh-hooks module. Destination: .agents/hooks.json in the workspace (or ~/.gemini/config/hooks.json for a personal one). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_readme": "SAMPLE Google Antigravity CLI hooks config for the optional KAIF refresh-hooks module. Destination: .agents/hooks.json in the workspace (or ~/.gemini/config/hooks.json for a personal one). Not wired by the machinery: this system starts the script by a relative path, verified only from the project root. Since 2.9 the AGENT wires it by hand, without asking the project owner (what KAIF delivers is wired, issue #115): merge the `hooks` object below into the destination additively, then run the smoke of .kaif/hooks/README.md step 3; `\"hooks\": \"off\"` in .kaif/kaif.json opts out. Contract live-fetched 2026-08-07.",
   "_note_on_the_platform": "Antigravity CLI is Google's successor to Gemini CLI, which stopped serving requests on 2026-06-18. A project still wired to Gemini CLI has no hook contour at all — this file is where it moves to.",
   "_one_hook_of_three": "Antigravity has NO session-start and NO context-compaction event (its docs say per-session events are expected later), so the 'canon after compaction' hook cannot exist here at all. What Antigravity does have is PreInvocation — fired before every model call — which is an even tighter fit for the hourly timer than a per-prompt event: it also covers turns the human never typed.",
   "_stop_guard_deliberately_absent": "Antigravity's Stop event returns {\"decision\", \"reason\"} — the same FIELD NAMES our stop-status-guard.mjs prints. But the documented value vocabulary is 'continue' or other, and whether it accepts our blocking value is NOT verified. Same field names are not the same contract, so the guard is left out rather than shipped on a resemblance.",
@@ -18637,11 +18733,11 @@ process.exit(0);
 }
 ``````
 
-> **FILE: `.kaif/hooks/sample-codex-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/sample-codex-hooks.json`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````json
 {
-  "_readme": "SAMPLE OpenAI Codex hooks config for the optional KAIF refresh-hooks module. Destination: <repo>/.codex/hooks.json (per-project) or ~/.codex/hooks.json (per-profile). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_readme": "SAMPLE OpenAI Codex hooks config for the optional KAIF refresh-hooks module. Destination: <repo>/.codex/hooks.json (per-project) or ~/.codex/hooks.json (per-profile). Not wired by the machinery: this system starts the script by a relative path, verified only from the project root. Since 2.9 the AGENT wires it by hand, without asking the project owner (what KAIF delivers is wired, issue #115): merge the `hooks` object below into the destination additively, then run the smoke of .kaif/hooks/README.md step 3; `\"hooks\": \"off\"` in .kaif/kaif.json opts out. Contract live-fetched 2026-08-07.",
   "_why_no_emit_flag": "Codex reads the SAME output fields as Claude Code ({\"hookSpecificOutput\": {\"additionalContext\": ...}}) and the SAME snake_case stdin fields, so the scripts run in their default shape — no --emit needed. Its config nesting (event -> matcher group -> \"hooks\" handlers) is identical too; only the file and the entry fields differ (`command` is one string; no `args` array).",
   "_two_matcher_groups_on_purpose": "Codex matches SessionStart on `source` with values startup|resume|clear|compact. Whether its matcher accepts regex alternation (\"compact|clear\") is NOT verified in the docs, so this sample uses two single-value groups — certainly valid, and it costs three lines.",
   "_not_covered": "The Stop guard is absent on purpose: Codex documents blocking via exit code 2 + stderr, and the output shape our stop-status-guard.mjs prints (decision/reason) is NOT verified for Codex. Shipping it would be a guess. The two hooks below are the verified ones.",
@@ -18687,11 +18783,11 @@ process.exit(0);
 }
 ``````
 
-> **FILE: `.kaif/hooks/sample-copilot-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/sample-copilot-hooks.json`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````json
 {
-  "_readme": "SAMPLE GitHub Copilot hooks config for the optional KAIF refresh-hooks module. Destination: .github/hooks/kaif-refresh.json (repository level) or ~/.copilot/hooks/kaif-refresh.json (user level). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_readme": "SAMPLE GitHub Copilot hooks config for the optional KAIF refresh-hooks module. Destination: .github/hooks/kaif-refresh.json (repository level) or ~/.copilot/hooks/kaif-refresh.json (user level). Not wired by the machinery: this system starts the script by a relative path, verified only from the project root. Since 2.9 the AGENT wires it by hand, without asking the project owner (what KAIF delivers is wired, issue #115): merge the `hooks` object below into the destination additively, then run the smoke of .kaif/hooks/README.md step 3; `\"hooks\": \"off\"` in .kaif/kaif.json opts out. Contract live-fetched 2026-08-07.",
   "_one_hook_of_three": "Copilot HAS all three matching events (sessionStart, userPromptSubmitted, preCompact, agentStop) — but `additionalContext` injection is permitted only on postToolUse, postToolUseFailure, notification, sessionStart and subagentStart. It is NOT permitted on userPromptSubmitted or agentStop, so the timer and the STATUS guard cannot be carried here. Ship what the contract allows; say so where it does not.",
   "_emit_shape": "Copilot's output field is top-level camelCase: {\"additionalContext\": \"...\"} — hence --emit copilot.",
   "_naming_conventions": "Copilot accepts BOTH camelCase event names with camelCase payload fields AND PascalCase event names with snake_case fields (the Claude Code convention). This sample uses the camelCase form, which is Copilot's own.",
@@ -18710,11 +18806,11 @@ process.exit(0);
 }
 ``````
 
-> **FILE: `.kaif/hooks/sample-cursor-hooks.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/sample-cursor-hooks.json`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````json
 {
-  "_readme": "SAMPLE Cursor hooks config for the optional KAIF refresh-hooks module. Destination: <project-root>/.cursor/hooks.json (a ~/.cursor/hooks.json user-level file works the same way). NEVER applied automatically — wiring hooks is the project owner's explicit opt-in (see .kaif/hooks/README.md). Contract live-fetched 2026-08-07.",
+  "_readme": "SAMPLE Cursor hooks config for the optional KAIF refresh-hooks module. Destination: <project-root>/.cursor/hooks.json (a ~/.cursor/hooks.json user-level file works the same way). Not wired by the machinery: this system starts the script by a relative path, verified only from the project root. Since 2.9 the AGENT wires it by hand, without asking the project owner (what KAIF delivers is wired, issue #115): merge the `hooks` object below into the destination additively, then run the smoke of .kaif/hooks/README.md step 3; `\"hooks\": \"off\"` in .kaif/kaif.json opts out. Contract live-fetched 2026-08-07.",
   "_one_hook_of_three": "Only the session-start hook is shippable on Cursor, and that is a property of Cursor's contract, not a gap in the module: `beforeSubmitPrompt` returns only {continue, user_message} — it can block a prompt or message the HUMAN, but cannot inject context for the AGENT, so the hourly timer has nowhere to land. `preCompact` is documented as observational (it 'cannot block or modify compaction') and likewise carries no agent context. `stop` returns `followup_message`, which Cursor AUTO-SUBMITS as the next prompt — that is a different behaviour from our soft STATUS block, so shipping it there would be a guess about intent, not a port.",
   "_emit_shape": "Cursor's sessionStart output is FLAT snake_case: {\"additional_context\": \"...\"} — hence --emit cursor. The predicate and the order text are identical to every other system.",
   "_paths": "Cursor exposes CLAUDE_PROJECT_DIR as an explicit compatibility alias alongside CURSOR_PROJECT_DIR, so an absolute ${CLAUDE_PROJECT_DIR}/.kaif/hooks/... path also works if a relative one does not suit your setup.",
@@ -18731,7 +18827,7 @@ process.exit(0);
 }
 ``````
 
-> **FILE: `.kaif/hooks/session-start-refresh.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/session-start-refresh.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
 #!/usr/bin/env node
@@ -18838,11 +18934,11 @@ try {
 process.exit(0);
 ``````
 
-> **FILE: `.kaif/hooks/settings-fragment.json`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/settings-fragment.json`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````json
 {
-  "_readme": "SAMPLE Claude Code hooks config for the optional KAIF refresh-hooks module (.kaif/hooks/README.md explains it). This file is NEVER applied automatically: KAIF does not edit your settings.json — wiring the hooks is an explicit opt-in step done by the project owner (or by the agent with the owner's quoted consent). Merge the `hooks` object below into .claude/settings.json (project) or settings.local.json (personal).",
+  "_readme": "SAMPLE Claude Code hooks config for the optional KAIF refresh-hooks module (.kaif/hooks/README.md explains it). Since 2.9 the install and update tasks wire it: `node .kaif/kaif-core.mjs wire-hooks` merges the `hooks` object below into .claude/settings.json additively (the owner's entries kept, a repeat run changes nothing); `\"hooks\": \"off\"` in .kaif/kaif.json opts out. By hand: merge the `hooks` object into .claude/settings.json (project) or settings.local.json (personal).",
   "hooks": {
     "SessionStart": [
       {
@@ -18909,7 +19005,7 @@ process.exit(0);
 }
 ``````
 
-> **FILE: `.kaif/hooks/stop-owner-answer.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/stop-owner-answer.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
 #!/usr/bin/env node
@@ -19017,7 +19113,7 @@ try {
 } catch { process.exit(0); }
 ``````
 
-> **FILE: `.kaif/hooks/stop-status-guard.mjs`** — optional refresh-hooks module — verbatim; activation is an explicit owner opt-in (.kaif/hooks/README.md)
+> **FILE: `.kaif/hooks/stop-status-guard.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
 #!/usr/bin/env node
@@ -19704,7 +19800,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   collapsed archive (`<details class="archive">`) — nothing removed. Three legal outcomes: answer · remark · «read, no remarks» (§5).
 - A radio button per option under every question, a free-text field, one **Save** button, a visible "saved" signal. **Readable without the browser's zoom** (2.8, origin issue #106 — a field owner's explicit word): the page renders at 1.7× the browser base through `html { zoom }` — the whole page, as Ctrl+Plus does (raising font-size alone turns the radio circles into dots), the Save button at 1.5× (its own zoom 1.5 / 1.7), and every width breakpoint is multiplied by the same scale (media queries do not see CSS zoom).
 - **The Save control is a FLOATING button at the top right** (`.fab { position:fixed; top; right }`), visible at any scroll and window height; the status is a pill
-  under it, no wider than the button's column the header keeps free (2.9, origin issue #125 — a wide pill covered the document title). **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
+  under it, no wider than the button's column the header keeps free and at most two lines tall — a status that does not fit them rides the bar above the page, and each bar is cleared only by its own owner (2.9, origin issue #125 — a wide pill covered the document title). **A bar pinned to the bottom edge is FORBIDDEN** — a window taller than the screen (remote desktop, phone) hides it (2.7, origin issue #60, the
   owner's word: a FAB at the top right). The render self-check judges it (`.fab` fixed, no `bottom:0`, no raw `**` in labels) and refuses a failing page with exit 3.
 - **The header scrolls with the page** (`header { position: static }`) — the owner's word; only the emergency banner ("server silent") may stay pinned.
 - Refusing the owner's work is LOUD: every request that carries the owner's text sits in try/catch; a failed save returns the text onto the page with Copy and Retry; a draft lives in `localStorage` and is restored on load ("picked up N fields"). No path may leave the Save button disabled with no

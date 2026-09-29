@@ -426,6 +426,63 @@ function selfProofJsonReads() {
   return fails;
 }
 
+// 5p. Every `.kaif/…` path a shipped tool module or hook NAMES is classified (2.9, epic SW; origin issue #126, ideas/31 p. 5): the
+//     core's ignore-first set covers it (session state, renders, locks — never history), or this table declares it a record the
+//     project commits. The contour wrote its renders and the call phrase into `.kaif/.contour-tmp/` for three versions and a field's
+//     sweeping commit took a page of questions along: nothing asked where a new runtime path belongs, and now the build does.
+// @guard module-paths-classified
+// THREAT:         a module starts writing a new file under .kaif/ that the core's ignore-first set does not name — a sweeping commit
+//                 of a field project takes a render, a lock or a session marker along (#126)
+// PROVED-AGAINST: `--selftest` — a new literal `.kaif/new-state.json` in a module → named with file and line; one covered by the
+//                 ignore set (a file in an ignored folder too) or declared in the table → silent; a core without ignoreFirstWanted()
+//                 → named; the real payload at every build
+// GAP:            a path assembled from parts (`join('.kaif', name)`) is not seen — the scan reads literals (the lesson journal's
+//                 baseline is such a path; it is a committed record); the core itself is not scanned — its own writes are the set
+// ON-REAL-PATH:   NOT YET — the path is the next module that writes under .kaif/
+const COMMITTED_KAIF_PATHS = {
+  '.kaif/kaif.json': 'the deployment marker',
+  '.kaif/kaif-core.mjs': 'the deployed machinery',
+  '.kaif/tools/': 'the deployed tool modules',
+  '.kaif/hooks/': 'the deployed refresh hooks',
+  '.kaif/deploy-manifest.json': 'the deployment record',
+  '.kaif/provenance-accepted.json': "the owner's acceptance registry",
+  '.kaif/canon-lint-rules.json': "the project's canon rules",
+  '.kaif/attribution-lint.baseline.json': 'the recorded attribution debt (it only shrinks)',
+};
+const KAIF_PATH_LIT_RE = /['"`](\.kaif\/[\w.*/-]+)/g;
+function ignoreFirstEntries(coreSrc) {
+  const m = /function ignoreFirstWanted\(\) \{([\s\S]*?)\n\}/.exec(coreSrc);
+  if (!m) return null;
+  const code = m[1].split('\n').map((l) => l.replace(/\/\/.*$/, '')).join('\n');   // comments carry apostrophes («the owner's»)
+  return [...code.matchAll(/'([^']+)'/g)].map((x) => x[1]).filter((s) => s.startsWith('.kaif/'));
+}
+function unclassifiedModulePaths(files, coreSrc) {   // files: { '<path>': <source text> }
+  const ignored = ignoreFirstEntries(coreSrc);
+  if (!ignored) return ['guard 5p: the core carries no ignoreFirstWanted() — the ignore-first set of a module path cannot be read'];
+  const bare = (s) => s.replace(/\/+$/, '');
+  const under = (p, e) => bare(p) === bare(e) || p.startsWith(bare(e) + '/');
+  const errs = [];
+  for (const [f, src] of Object.entries(files))
+    src.split(/\r?\n/).forEach((l, i) => {
+      for (const m of l.matchAll(KAIF_PATH_LIT_RE))
+        if (!ignored.some((e) => under(m[1], e)) && !Object.keys(COMMITTED_KAIF_PATHS).some((c) => under(m[1], c)))
+          errs.push(`guard 5p: ${f}:${i + 1} names ${m[1]}, which is neither in the core's ignore-first set nor a declared committed record — ` +
+            `add it to ignoreFirstWanted() of framework/installer/KAIF-CORE.mjs if it is session state, or to COMMITTED_KAIF_PATHS of this guard with why it travels`);
+    });
+  return errs;
+}
+function selfProofModulePaths() {
+  const fails = [];
+  const core = "function ignoreFirstWanted() {\n  return ['.kaif/install/', // the owner's page\n    '.kaif/.contour-tmp/', // the preview's renders\n    '.kaif/refresh-marker.json'];\n}\n";
+  const fresh = unclassifiedModulePaths({ 'framework/tools/x.mjs': "const a = 1;\nwriteFileSync('.kaif/new-state.json', s);" }, core);
+  if (!(fresh.length === 1 && fresh[0].includes('framework/tools/x.mjs:2') && fresh[0].includes('.kaif/new-state.json'))) fails.push('новый путь записи модуля НЕ назван файлом и строкой: ' + fresh.join(' | '));
+  const quiet = unclassifiedModulePaths({ 'framework/tools/y.mjs': "const TMP = '.kaif/.contour-tmp';\nconst P = `.kaif/.contour-tmp/call-phrase.txt`;\nread('.kaif/kaif.json');\nconst M = \".kaif/refresh-marker.json\";" }, core);
+  if (quiet.length) fails.push('покрытые пути названы: ' + quiet.join(' | '));
+  const noSet = unclassifiedModulePaths({}, 'const x = 1;');
+  if (!(noSet.length === 1 && /no ignoreFirstWanted/.test(noSet[0]))) fails.push('ядро без ignoreFirstWanted() НЕ названо');
+  return fails;
+}
+
 // A bilingual document is checked HALF BY HALF (bugs/65 №2). "The token occurs somewhere in the
 // file" is a proxy: the pairs registry below literally promises BOTH halves, yet deleting the name
 // from the Russian half alone left the lint green — a reader of that half is routed nowhere. Which
@@ -666,6 +723,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of oFails) console.error('✖ selfproof 5o (HK 2.9): ' + f);
   if (oFails.length) { console.error(`\n❌ check-framework --selftest: гард 5o — ${oFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5o: JSON, прочитанный из файла или сети без снятия BOM, назван файлом и строкой; снятие в строке, stripBom и разбор текста молчат');
+  const pFails = selfProofModulePaths();
+  for (const f of pFails) console.error('✖ selfproof 5p (SW 2.9): ' + f);
+  if (pFails.length) { console.error(`\n❌ check-framework --selftest: гард 5p — ${pFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5p: новый путь .kaif/ модуля вне набора ignore-first и вне таблицы коммитимого назван файлом и строкой; покрытые пути молчат; ядро без набора названо');
   const wFails = selfProofWhyKeys();
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
@@ -794,6 +855,9 @@ errors.push(...walkerDrift(readFileSync(join(ROOT, WALKER_CORE), 'utf8'),
 errors.push(...recordLabelsDrift(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8'), recordLabelPacks()));
 // 5o. Every JSON the payload reads strips a leading byte-order mark on the line — declared with its self-proof near the top.
 errors.push(...unstrippedJsonReads(payloadModules(join(ROOT, 'framework'))));
+// 5p. Every .kaif/ path a shipped tool module or hook names is classified — declared with its self-proof near the top.
+errors.push(...unclassifiedModulePaths({ ...payloadModules(join(ROOT, 'framework', 'tools')), ...payloadModules(join(ROOT, 'framework', 'hooks')) },
+  readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8')));
 
 // 5d. The owner's script in EN payload bodies — the scan itself lives at the top of this file
 //     (constants, walk and `--selftest` together), because its coverage is COMPUTED and the

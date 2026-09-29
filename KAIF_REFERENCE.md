@@ -418,7 +418,10 @@ resting state, silent in `check`.
 
 A release that CHANGES A RULE of the previous version (not merely its wording) declares it in the
 meta block's `policyChanges`, keyed by version. The update task prints them in a separate
-"decisions for the OWNER" section: a policy change is never merged silently as an ordinary diff.
+section: a policy change is never merged silently as an ordinary diff. Since 2.9 (epic SW; origin issue #114 — the KAIF owner's
+word: what KAIF delivers with an update is accepted without questions) the rules are ACCEPTED with the version: the agent names
+each in the field report and the farewell and asks the project owner only where a rule collides with a decision he recorded
+himself (an `[OWNER]` line, its address in the question).
 
 ### 10.7 Commands
 
@@ -610,9 +613,10 @@ reason quotes the owner's words; an answer ending with a last line `⏩ <next st
 on the STATUS guard, and the two owner-word hooks have none — it refuses one call per owner's message and the work goes on; injections are orders, never
 document bodies. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
 folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
-is an explicit owner opt-in (`.kaif/hooks/README.md`): the machinery never edits the project's
-`settings.json`, and a deployment without hooks never reddens — the markdown ritual is the
-complete contour on its own.
+(2.9, epic SW; origin issue #115): the install and update tasks tell the agent to run `node .kaif/kaif-core.mjs wire-hooks`,
+which merges the fragment into `.claude/settings.json` additively — the owner's entries kept, a repeat run changes nothing,
+`"hooks": "off"` in `.kaif/kaif.json` opts out; the write is the agent's and open to its harness, never hidden inside `update`
+(`.kaif/hooks/README.md`) — and a deployment without hooks never reddens: the markdown ritual is the complete contour on its own.
 
 **Portability across agent systems** (phase O5; contracts read in each vendor's live docs on
 2026-08-07). The predicate and the order text are system-independent; only the JSON envelope of

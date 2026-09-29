@@ -159,6 +159,14 @@ const STATUS_CLOSED_RE = new RegExp(PARSER.statusClosed, 'iu');
 const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
 const STATUS_CLOSED_WORD_RE = new RegExp(PARSER.statusClosedWord, 'iu');   // CP (2.9, #109 · #121 R3)
+const STATUS_PENDING_RE = new RegExp(PARSER.statusPending, 'iu');           // the light re-judge of epic CP, F5
+const WAITING_NEGATED_RE = new RegExp(PARSER.statusWaitingNegation + '\\s+$', 'iu');
+// a waiting marker counts unless a negation stands right before it («no longer awaiting» — the document is closed)
+function waitsUnnegated(line) {
+  const re = new RegExp(PARSER.statusWaiting, 'giu');
+  for (let m; (m = re.exec(line));) if (!WAITING_NEGATED_RE.test(line.slice(Math.max(0, m.index - 24), m.index))) return true;
+  return false;
+}
 
 // OW3 (2.8, origin issue #86): the whole STATUS BLOCK — the status line and the quote lines that continue it — says the answers await
 // application. A field marks it on a continuation line under a ticked "answered" (its S1: an 11-day-old decision stayed invisible);
@@ -177,9 +185,10 @@ export function docStatus(md) {
   const m = head.match(STATUS_LINE_RE);
   if (!m) return 'none';                                 // no status line — the document is LIVE
   const line = m[1];
-  // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit WAITING marker on the same line: a
-  // partial status «closed Q1; Q2 awaits an answer» still waits (light judge of epic CP, F5)
-  if (STATUS_CLOSED_WORD_RE.test(line)) return STATUS_WAITING_RE.test(line) ? 'waiting' : 'closed';
+  // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit, unnegated WAITING marker or a NOT-YET
+  // mark on the same line: a partial status «closed Q1; Q2 awaits an answer / is not yet answered» still waits (the light judges of epic
+  // CP, F5 and its re-judge); «closed — no longer awaiting an answer» closes
+  if (STATUS_CLOSED_WORD_RE.test(line)) return waitsUnnegated(line) || STATUS_PENDING_RE.test(line) ? 'waiting' : 'closed';
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
   if (STATUS_CLOSED_RE.test(line)) return 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
@@ -206,8 +215,9 @@ export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])(?:\\)|[
 const AUTHORED_LETTER_RE = new RegExp('^\\s*-\\s+\\*\\*\\s*([' + L + '])(?![\\p{L}\\d])', 'u');
 // (light judge of epic CP, F4) an option written as a PARAGRAPH — `**C.** three`, the #51 form, no list dash — is a letter authored
 // too: two list options plus a paragraph C used to show A and B and lose C in silence. Only a letter with its mark (. ) :) counts, so
-// prose that merely opens with a bold letter ("**B** costs more") is not taken for an option.
-const AUTHORED_PARA_LETTER_RE = new RegExp('^\\s*\\*\\*\\s*([' + L + '])\\s*[.):]', 'u');
+// prose that merely opens with a bold letter ("**B** costs more") is not taken for an option. The re-judge: the list form's dash
+// (`**C** — three`, the bold closed before a dash) is a mark too.
+const AUTHORED_PARA_LETTER_RE = new RegExp('^\\s*\\*\\*\\s*([' + L + '])\\s*(?:[.):]|\\*\\*\\s*[\\u2014\\u2013-](?=\\s))', 'u');
 const authoredLetter = (l) => AUTHORED_LETTER_RE.test(l) || AUTHORED_PARA_LETTER_RE.test(l);
 // SECOND legal form — a TABLE ROW `| **A** | … |` (bugs/51 of the origin): a one-letter cell (bold
 // optional, dot/bracket optional, a bracketed note on either side of the bold) + at least one

@@ -3,7 +3,7 @@
 // · S3 легаси: наследование agents, честный контекст, повторный прогон · S4 update:
 // ignore-first + честный лог ядра. Каждый ассерт печатает ✅/❌; ненулевой exit при провале.
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, rmSync, existsSync, cpSync, readdirSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { execSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { join, resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,7 +11,8 @@ import { tempRoot } from '../lib/temp-root.mjs';
 import { must, failed, hermeticArgs } from '../lib/sandbox-run.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const DIST = join(REPO, 'dist');
+// KAIF_DIST — шов для доказательства красного (соглашение s14/s22): свод против ЧУЖОЙ сборки (2.9, SW5 — красный на 2.8)
+const DIST = process.env.KAIF_DIST ? resolve(process.env.KAIF_DIST) : join(REPO, 'dist');
 // текущая версия репо — ЧИТАЕТСЯ из dist, не хардкодится: захардкоженная «1.6» ломала
 // полигон на релизном бампе 2.0 при нуле продуктовых дефектов
 const CUR = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
@@ -407,6 +408,69 @@ ok(only1.length === 0 && only2.length === 0,
 ok(twinDiffs.length === 0,
    `S8 twin-run: все ${snap1.size} файлов побайтно равны — установка детерминирована`,
    'разошлись: ' + twinDiffs.slice(0, 5).join(', '));
+
+// ---------------------------------------------------------------- S9: SW5 — служебное KAIF не уезжает в коммит (2.9, #130 · #126)
+// Два поля. #130: голая строка `KAIF.md` набора ignore-first на git без различия регистра (core.ignorecase=true — умолчание git для
+// Windows) прятала `.clinerules/kaif.md` и `.roo/rules/kaif.md`, и `check` свежего клона краснел. #126 (ideas/31 п. 5): рендеры
+// контура, фраза зова (`.kaif/.contour-tmp/`) и замки окна (`<decisionsDir>/*.lock`) уезжали подметающим коммитом. Теперь корневые
+// транзиенты — якорем `/KAIF.md`, старая голая строка переписывается НА МЕСТЕ (строки и отрицания владельца живы, концы строк
+// файла тоже), и `check` судит развёрнутое правилами самого репозитория. Фикстура — git с core.ignorecase=true в СВОЁМ конфиге
+// (репозиторий песочницы, не исток). Красный — на сборке 2.8 (шов KAIF_DIST).
+console.log('\n=== S9: SW5 — служебное KAIF не уезжает в коммит, развёрнутое не прячется от git ===');
+const git9 = (cwd, ...a) => { const p = spawnSync('git', a, { cwd, encoding: 'utf8' }); return { code: p.status, out: `${p.stdout || ''}${p.stderr || ''}` }; };
+const runAll9 = (cwd, rawArgs) => {
+  const p = spawnSync(process.execPath, [join(cwd, '.kaif', 'kaif-core.mjs'), ...hermeticArgs(ROOT, rawArgs).split(' ')], { cwd, encoding: 'utf8' });
+  return { code: p.status, out: `${p.stdout || ''}${p.stderr || ''}` };
+};
+const ignored9 = (cwd, rel) => git9(cwd, 'check-ignore', '-q', rel).code === 0;
+const S9 = join(ROOT, 's9-ignore'); mkdirSync(S9); seedBundle(S9);
+const init9 = git9(S9, 'init', '-q'), cfg9 = git9(S9, 'config', 'core.ignorecase', 'true');
+r = run(S9, 'install');
+ok(init9.code === 0 && cfg9.code === 0 && r.code === 0, 'S9 фикстура: git с core.ignorecase=true, установка exit 0', `${init9.out}${cfg9.out}${r.out.slice(-300)}`);
+const gi9 = existsSync(join(S9, '.gitignore')) ? readFileSync(join(S9, '.gitignore'), 'utf8') : '';
+const giLines9 = gi9.split(/\r?\n/);
+ok(giLines9.includes('/KAIF.md') && giLines9.includes('/KAIF-LOADER.mjs') && !giLines9.includes('KAIF.md') && giLines9.includes('.kaif/.contour-tmp/') && giLines9.includes('interviews/decisions/*.lock'),
+   'S9 SW5: набор ignore-first — корневые транзиенты якорем, рендеры контура и замки окна в наборе', gi9);
+for (const f of ['KAIF.md', 'sub/KAIF.md', '.kaif/.contour-tmp/page.html', '.kaif/.contour-tmp/call-phrase.txt', 'interviews/decisions/interview_001.lock']) {
+  mkdirSync(dirname(join(S9, f)), { recursive: true }); writeFileSync(join(S9, f), 'x\n');
+}
+ok(existsSync(join(S9, '.clinerules', 'kaif.md')) && existsSync(join(S9, '.roo', 'rules', 'kaif.md'))
+   && !ignored9(S9, '.clinerules/kaif.md') && !ignored9(S9, '.roo/rules/kaif.md') && !ignored9(S9, 'sub/KAIF.md') && ignored9(S9, 'KAIF.md'),
+   'S9 SW5 (#130): на core.ignorecase=true развёрнутые .clinerules/kaif.md и .roo/rules/kaif.md видны git, sub/KAIF.md тоже; корневой KAIF.md игнорится');
+const st9 = git9(S9, 'status', '--porcelain', '--untracked-files=all');
+ok(st9.code === 0 && !/contour-tmp|\.lock|(^|\s)KAIF\.md/m.test(st9.out) && /\.clinerules\/kaif\.md/.test(st9.out) && /sub\/KAIF\.md/.test(st9.out),
+   'S9 SW5 (#126): рендер и фраза зова контура, замок окна, корневой KAIF.md — не в `git status`; развёрнутые указатели и чужой sub/KAIF.md — в нём', st9.out.slice(0, 600));
+r = runAll9(S9, 'check');
+ok(r.code === 0 && !/git-ignored/.test(r.out), 'S9 SW5: свежая установка — `check` зелёный, ничего развёрнутого git не прячет', r.out.slice(-400));
+// Старое развёртывание: .gitignore, записанный прежним ядром (голые строки), с правками владельца вокруг, концы строк CRLF.
+const OLD_GI9 = ['node_modules/', 'KAIF.md', '!.clinerules/kaif.md', 'KAIF-LOADER.mjs', 'dist/', ''].join('\r\n');
+writeFileSync(join(S9, '.gitignore'), OLD_GI9);
+r = runAll9(S9, 'check');
+ok(r.code !== 0 && /✖ deployed artifact is git-ignored by KAIF's own line \.gitignore:2 «KAIF\.md»: \.roo\/rules\/kaif\.md/.test(r.out) && !/\.clinerules\/kaif\.md — a clone/.test(r.out),
+   'S9 SW5: голая строка прежнего ядра прячет .roo/rules/kaif.md → `check` краснеет с файлом, строкой и лекарством; отрицание владельца уважено', r.out.slice(-500));
+const u9 = runAll9(S9, `update --source ${join(ROOT, 'src-9.9')}`);
+const gi9b = readFileSync(join(S9, '.gitignore'), 'utf8');
+const lines9b = gi9b.split('\r\n');
+ok(u9.code === 0 && /anchored to the project root — \/KAIF\.md, \/KAIF-LOADER\.mjs/.test(u9.out)
+   && JSON.stringify(lines9b.slice(0, 5)) === JSON.stringify(['node_modules/', '/KAIF.md', '!.clinerules/kaif.md', '/KAIF-LOADER.mjs', 'dist/'])
+   && lines9b.filter((l) => /^\/?KAIF\.md$/.test(l)).length === 1 && !/[^\r]\n/.test(gi9b),
+   'S9 SW5: update якорит голые строки НА МЕСТЕ — порядок и отрицание владельца живы, строка одна, концы строк CRLF сохранены', `${u9.out.slice(-300)} | ${JSON.stringify(gi9b.slice(0, 200))}`);
+r = runAll9(S9, 'check');
+ok(!/git-ignored/.test(r.out) && !ignored9(S9, '.roo/rules/kaif.md'), 'S9 SW5: после update ничего развёрнутого git не прячет', r.out.slice(-400));
+// Маршрут со СТАРЫМ ядром (EXP-0157; найден функциональным прогоном SW6): `update` 2.8 → 2.9 исполняет развёрнутое ядро 2.8, и его
+// ignore-first оставляет голые строки без новых — отметка recheck задания (её исполняет уже свежее ядро) приводит набор к своему виду
+// до суда `check`. Состояние после старого ядра моделируется его .gitignore поверх обновлённого дерева.
+writeFileSync(join(S9, '.gitignore'), OLD_GI9);
+const rc9 = runAll9(S9, 'checkpoint recheck');
+const lines9c = readFileSync(join(S9, '.gitignore'), 'utf8').split('\r\n');
+ok(rc9.code === 0 && lines9c.includes('/KAIF.md') && !lines9c.includes('KAIF.md') && lines9c.includes('.kaif/.contour-tmp/') && lines9c.includes('!.clinerules/kaif.md')
+   && !ignored9(S9, '.roo/rules/kaif.md') && ignored9(S9, '.kaif/.contour-tmp/page.html'),
+   'S9 SW5: маршрут со старым ядром — отметка recheck свежего ядра якорит набор и дописывает новые строки до суда `check`', `${rc9.out.slice(-300)} | ${JSON.stringify(lines9c.slice(0, 8))}`);
+// Правило САМОГО владельца, прячущее развёрнутое, — предупреждение с лекарством, не отказ
+appendFileSync(join(S9, '.gitignore'), '.roo/\r\n');
+r = runAll9(S9, 'check');
+ok(r.code === 0 && /⚠ deployed artifact is git-ignored by \.gitignore:\d+ «\.roo\/»: \.roo\/rules\/kaif\.md — [^\n]*add `!\.roo\/rules\/kaif\.md`/.test(r.out),
+   'S9 SW5: правило владельца прячет развёрнутое → ⚠ с отрицанием-лекарством, выход 0', r.out.slice(-500));
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
 process.exit(failures ? 1 : 0);
