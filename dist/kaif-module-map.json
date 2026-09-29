@@ -6086,19 +6086,19 @@
       {
         "signature": "## 2. Pre-flight — runs before any page opens (exit 3 = refuse to open)",
         "class": "static",
-        "sha256": "098e97cff954431be5aa2827f0c71b08b03b336886f9776da0dd170ff3052cde",
+        "sha256": "ee8f1e0d33ebd818bfe7390b1dc3138d2a2542e2044714a195da4ff313d8b4a5",
         "lines": [
           19,
-          37
+          36
         ]
       },
       {
-        "signature": "## 3. Records — three files, derived names, never overwritten",
+        "signature": "## 3. Records — three files, derived names; a record is replaced only by a NEW revision of the document (the table below)",
         "class": "static",
-        "sha256": "e670f80a31ab16b00e9dc8ab15e33f62358de906ed916600401291e3f03564c2",
+        "sha256": "a2c75806179d88331910c2575e64f88c94556dcb9ff80ffe92be22d93fecb098",
         "lines": [
-          38,
-          50
+          37,
+          49
         ]
       },
       {
@@ -6106,8 +6106,8 @@
         "class": "static",
         "sha256": "cdbf7ab57f67b14ab3a7461d30cffd5af63b0b0866f8e69e0914f4e2892f2ec5",
         "lines": [
-          51,
-          68
+          50,
+          67
         ]
       },
       {
@@ -6115,8 +6115,8 @@
         "class": "static",
         "sha256": "21b2e7012f8aed4a65101844f6992a644dd5bbe85bc44090025ce4ef6a32bf1d",
         "lines": [
-          69,
-          87
+          68,
+          86
         ]
       },
       {
@@ -6124,8 +6124,8 @@
         "class": "static",
         "sha256": "6caba76aabf3838f743333a6be1c9a0e1c4b03509e8b989d8375cd3fe036c6b1",
         "lines": [
-          88,
-          95
+          87,
+          94
         ]
       },
       {
@@ -6133,8 +6133,8 @@
         "class": "static",
         "sha256": "a1a662f1f4018f7e42944914f7e8e31c95c686ddf6ca4eeced60c67a7c3c7e7f",
         "lines": [
-          96,
-          113
+          95,
+          112
         ]
       },
       {
@@ -6142,8 +6142,8 @@
         "class": "static",
         "sha256": "cf78f3e9fe91bffba8dda7b8ca06d4492bf29a2cb76ee192da334e851f56725b",
         "lines": [
-          114,
-          121
+          113,
+          120
         ]
       }
     ],

@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "587d11f9d93ea2e39b731f1ca4a18de8fd96ea968754b9467d8c7a850c7c1d36",
+    "sourceTree": "d834379e6de35fce84c7bb95134ecf5afc436797db175a40ee160d863518e3c1",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -267,6 +267,14 @@
         [
           "## Step 0 — scope, cadence, and the ground before the hunt",
           "## Step 0 — baseline, scope, budget, and the ground before the hunt"
+        ]
+      ]
+    },
+    "2.9": {
+      ".kaif/INTERACTIVE_CONTOUR_SPEC.md": [
+        [
+          "## 3. Records — three files, derived names, never overwritten",
+          "## 3. Records — three files, derived names; a record is replaced only by a NEW revision of the document (the table below)"
         ]
       ]
     }
@@ -10588,6 +10596,7 @@ const STATUS_LINE_RE = new RegExp('^\\s*>?\\s*\\*{0,2}(?:' + PARSER.statusLabels
 const STATUS_CLOSED_RE = new RegExp(PARSER.statusClosed, 'iu');
 const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
+const STATUS_CLOSED_WORD_RE = new RegExp(PARSER.statusClosedWord, 'iu');   // CP (2.9, #109 · #121 R3)
 
 // OW3 (2.8, origin issue #86): the whole STATUS BLOCK — the status line and the quote lines that continue it — says the answers await
 // application. A field marks it on a continuation line under a ticked "answered" (its S1: an 11-day-old decision stayed invisible);
@@ -10606,6 +10615,7 @@ export function docStatus(md) {
   const m = head.match(STATUS_LINE_RE);
   if (!m) return 'none';                                 // no status line — the document is LIVE
   const line = m[1];
+  if (STATUS_CLOSED_WORD_RE.test(line)) return 'closed'; // an explicit closing word FIRST outranks an explanation after it (#109)
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
   if (STATUS_CLOSED_RE.test(line)) return 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
@@ -10620,9 +10630,16 @@ const ANSWER_LABEL_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.answerLabels + ')
 const COUNTER_LABEL_RE = new RegExp(PARSER.counterQuestion, 'iu');      // rule 2: a counter-question is NOT an answer
 const COMMENT_LABEL_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.commentLabels + ')', 'iu');
 const TARGET_LABEL_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.targetLabels + ')\\s*:?\\*{0,2}\\s*(.*)$', 'iu');
-const RECOMMEND_RE = new RegExp('(?:' + PARSER.recommendLabels + ')\\s*[:—–-]?\\s*\\*{0,2}([' + L + '])(?![\\p{L}\\d])', 'u');
-// FIRST legal option form — a list item `- **A)** …` (a note in brackets after the letter is legal)
-export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])\\)', 'u');
+// CP (2.9, origin ideas/31 p. 28): the label may close its own bold before the letter — «**Agent's recommendation:** A» was read as none
+const RECOMMEND_RE = new RegExp('(?:' + PARSER.recommendLabels + ')(?:\\s|[:—–-]|\\*){0,6}([' + L + '])(?![\\p{L}\\d])', 'u');
+// FIRST legal option form — a list item `- **A)** …` (a note in brackets after the letter is legal). 2.9, epic CP (origin issue #127): the
+// list form speaks the TABLE form's dictionary — `- **A:**`, `- **A.**`, `- **A (note):**` and a bold letter alone `- **A** — …` are options too. A field project's live corpus
+// was written that way: 169 of 1941 options recognised, 47 of 107 interviews invisible. The donor contours' recon recorded the fate in
+// advance ("a richer letter rule — at the first mismatch of the count", origin researches/17 §4 p. 4); #127 is that mismatch.
+export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])(?:\\)|[:.](?![\\p{L}\\d])|\\s*\\([^)]*\\)\\s*[:.)]?|(?=\\*\\*))', 'u');
+// A list item that OPENS with a bold single letter — what the author meant as an option, whether or not the form is recognised. The
+// door counts these against the parsed options: a letter the parse did not see is named, never lost in silence (#127).
+const AUTHORED_LETTER_RE = new RegExp('^\\s*-\\s+\\*\\*\\s*([' + L + '])(?![\\p{L}\\d])', 'u');
 // SECOND legal form — a TABLE ROW `| **A** | … |` (bugs/51 of the origin): a one-letter cell (bold
 // optional, dot/bracket optional, a bracketed note on either side of the bold) + at least one
 // content cell to the right. A header row and the `---` separator do not match and drop out.
@@ -10952,6 +10969,12 @@ export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
     if (q.answered || q.freeField) continue;
+    const authored = q.body.filter((l) => AUTHORED_LETTER_RE.test(l)).length;   // CP (2.9, #127): a letter written but not parsed is named
+    const parsedList = q.options.filter((o) => !o.row).length;
+    if (authored > parsedList)
+      problems.push(q.id + ': letters authored ' + authored + ', recognised ' + parsedList + ' — an option the page would not show; write it'
+        + ' - **A)** · - **A:** · - **A.** · - **A (note):** (or a table row | **A** | … |): '
+        + q.body.filter((l) => AUTHORED_LETTER_RE.test(l) && !OPTION_START_RE.test(l)).map((l) => l.trim().slice(0, 40)).join(' | '));
     if (q.options.length < MIN_OPTIONS)
       problems.push(q.id + ': ' + q.options.length + ' option(s) in list form and no declared free field' +
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +
@@ -11134,7 +11157,10 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
         lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + answerText + ' ' + prov;
       } else { // the owner's answer is UNTOUCHABLE: new text only as a dated follow-up (I2)
         const lastAns = q.answers[q.answers.length - 1];
-        const insertAt = lastAns ? qStart + lastAns.line + 1 : qStart + q.body.length;
+        // CP (2.9, #127 p. 3): a follow-up goes to the END of the question's block — below an applied-mark line ("Applied: …") — never
+        // right under the answer line, which also cut a multi-line answer in two; trailing blank lines of the block stay last.
+        let endAt = q.body.length; while (endAt > 0 && !q.body[endAt - 1].trim()) endAt--;
+        const insertAt = lastAns ? qStart + endAt : qStart + q.body.length;
         lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + answerText + ' ' + prov);
       }
     }
@@ -11255,7 +11281,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
@@ -11683,7 +11709,7 @@ const docKind = (root, rel, meta) => {
 };
 const ANSWER_LINE_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.answerLabels + ')\\s*(?:\\([^)]*\\))?\\s*:', 'iu');
 const TARGET_LINE_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.targetLabels + ')\\s*:', 'iu');
-const OPTION_LINE_RE = new RegExp('^\\s*-\\s+\\*\\*[' + PARSER.letters + ']\\)', 'u');
+const OPTION_LINE_RE = OPTION_START_RE; // CP (2.9, #127): one option regex for the parse and the card prose — the copy is gone
 const QSECTION_RE = new RegExp('^#{1,3}\\s+(?:' + PARSER.questionsSectionHeadings + ')(?![\\p{L}\\d])', 'iu');
 
 export function buildPage(root, docPath) {
@@ -12883,6 +12909,33 @@ export async function selftest(log = console.log) {
       && n(REFERENCES_SINCE, '**Answer target:** plans/24 §B8') === 0,
       'CP #124: a reasoned ref-ok, a forward «\u0441\u043c. \u043d\u0438\u0436\u0435», an answered question, a document older than the axis and the addressee line stay silent');
   }
+  { // CP (2.9, #109 · #121 R3): an explicit closing word at the start of the status closes the document, whatever the explanation after it says
+    const st = (v) => docStatus('# I\n\n> **Status:** ' + v + '\n');
+    ok(st('\u26d4 \u0421\u041d\u042f\u0422\u041e 2026-08-28 \u0440\u0435\u0448\u0435\u043d\u0438\u0435\u043c \u2116058') === 'closed' && st('\u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e \u0432 2.10') === 'closed'
+      && st('\u2705 **\u0417\u0410\u041a\u0420\u042b\u0422\u041e 2026-08-30 — \u0412\u041e\u041f\u0420\u041e\u0421 \u0421\u041d\u042f\u0422 \u0410\u0413\u0415\u041d\u0422\u041e\u041c, \u0410 \u041d\u0415 \u041e\u0422\u0412\u0415\u0427\u0415\u041d \u0412\u041b\u0410\u0414\u0415\u041b\u042c\u0426\u0415\u041c.**') === 'closed' && st('\u26d4 WITHDRAWN 2026-08-28') === 'closed',
+      'CP #109/#121 R3: \u0421\u041d\u042f\u0422\u041e · \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e · \u0417\u0410\u041a\u0420\u042b\u0422\u041e with a negation after it · WITHDRAWN — the document is closed, not in the owner queue');
+    ok(st('\u2705 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b — \u043f\u043e\u043a\u0430 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e \u0434\u0432\u0430') === 'waiting' && st('\u0441\u043d\u044f\u0442\u0438\u0435 \u0444\u043b\u0430\u0433\u0430 — \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'waiting',
+      'CP #109: a negation still outranks a bare tick (bugs/70); a noun that starts like a closing word is no closing word');
+  }
+  { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
+    const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
+    const count = (md) => parseQuestions(md).reduce((n, q) => n + q.options.length, 0);
+    ok(count(q3((l) => l + ':')) === 12 && count(q3((l) => l + '.')) === 12 && count(q3((l) => l + ' (\u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u044e):')) === 12 && count(q3((l) => l + ')')) === 12,
+      'CP #127: 3 questions × 4 options in the forms A: · A. · A (note): · A) — 12 options each');
+    ok(count(q3((l) => l)) === 12 && preflight(q3((l) => l + ' ' + String.fromCharCode(0x2014))).some((p) => /letters authored 4, recognised 0/.test(p)),
+      'CP #127: a bold letter alone (- **A** …) is an option like the table form | **A** |; an unknown shape (- **A —** …) is named «letters authored 4, recognised 0», never lost in silence');
+    ok(parseQuestions('# I\n\n> **Status:** awaiting\n\n### Q1. Pick?\n\n**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n')[0].recommended === 'B',
+      'CP ideas/31 p. 28: «**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B» — the letter is read after the label closes its own bold');
+    const ru = mkdtempSync(join(tmpdir(), 'kaif-contour-ru-'));
+    mkdirSync(join(ru, '.kaif'), { recursive: true }); mkdirSync(join(ru, 'interviews'), { recursive: true });
+    writeFileSync(join(ru, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: '2.9', language: 'ru', projectName: '\u041f\u0440\u043e\u0431\u0430' }) + '\n');
+    writeFileSync(join(ru, 'interviews', 'interview_001_ru.md'), '# \u0418\u043d\u0442\u0435\u0440\u0432\u044c\u044e #001\n\n> **\u0421\u0442\u0430\u0442\u0443\u0441:** \u2705 \u041e\u0422\u0412\u0415\u0427\u0415\u041d\u041e\n\n### Q1. \u0411\u0435\u0440\u0451\u043c?\n\n- **A)** \u0434\u0430\n- **B)** \u043d\u0435\u0442\n\n**\u041e\u0442\u0432\u0435\u0442:** A\n\n\u2705 \u0412\u043d\u0435\u0441\u0435\u043d\u043e: plans/12 \u0448\u0430\u0433 3 (\u043a\u043e\u043c\u043c\u0438\u0442 abc123).\n');
+    recordDecision(ru, 'interviews/interview_001_ru.md', { answers: { Q1: { choice: 'B', text: '\u043f\u0435\u0440\u0435\u0434\u0443\u043c\u0430\u043b', comment: '' } } }, loadContourConfig(ru), new Date(2026, 8, 28, 10, 0));
+    const ruDoc = readFileSync(join(ru, 'interviews', 'interview_001_ru.md'), 'utf8');
+    rmSync(ru, { recursive: true, force: true });
+    ok(ruDoc.indexOf('**\u041e\u0442\u0432\u0435\u0442 (\u0434\u043e\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435, ') > ruDoc.indexOf('\u0412\u043d\u0435\u0441\u0435\u043d\u043e:') && !ruDoc.includes('Answer (\u0434\u043e\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435'),
+      'CP #127: a follow-up in a Russian document is labelled in Russian and lands BELOW the applied-mark line');
+  }
   { // the legal wrapped option form (spec §1, the /interview template) passes the page self-check instead of refusing to open
     const wr = mkdtempSync(join(tmpdir(), 'kaif-contour-wrap-'));
     mkdirSync(join(wr, 'interviews'), { recursive: true });
@@ -13548,6 +13601,10 @@ export const PARSER = {
   recommendLabels: 'Рекомендация\\s+агента|Agent\'?s?\\s+recommendation',
   // status line of the document head (`> Status:` / `> **Статус:**`)
   statusLabels: 'Status|Статус',
+  // 2.9, epic CP (origin #109, #121 R3): an EXPLICIT closing word at the START of the status value (after an optional mark and bold) closes
+  // the document even when an explanation after it carries a negation («✅ ЗАКРЫТО — ВОПРОС СНЯТ АГЕНТОМ, А НЕ ОТВЕЧЕН ВЛАДЕЛЬЦЕМ»); the
+  // project's own closed words — «перенесено», «СНЯТО», WITHDRAWN — were read as a LIVE document and stood in the owner's queue
+  statusClosedWord: '^\\s*(?:[✅⛔➡🟢]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?)(?!\\p{L})',
   statusClosed: '✅|🟢|STATUS:\\s*DONE|ANSWERS\\s+RECEIVED|ОТВЕЧЕНО',
   statusWaiting: '🟡|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
   // negation outranks the tick (bugs/70): «пока НЕ отвечено», "no answers yet", "not answered"
@@ -13701,7 +13758,7 @@ const RU = {
   months: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
   wb: {
-    followUp: (atHuman) => 'Answer (дополнение, ' + atHuman + '):',
+    followUp: (atHuman) => 'Ответ (дополнение, ' + atHuman + '):', // CP (2.9, #127 p. 2): the label in the document's language
     ownerComment: (atHuman) => 'Комментарий владельца (' + atHuman + '):',
     proofread: (atHuman) => 'Замечания владельца по вычитке (' + atHuman + '):',
     recovered: 'забран с компьютера владельца', // LP (#66): комментарий провенанса называет, что ответ пришёл из локальной записи
@@ -19511,10 +19568,9 @@ no server, no sound, no call, no showing recorded. `--no-open` is NOT a check: i
 **Second axis of the same door — ARCHAEOLOGY (2.7, origin issue #70: 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days after his answer).** A LIVE question of a document whose header date is on or after `2026-09-18` opens only WITH the attestation of the search that was actually run, standing between its heading and its FIRST option; the door searches itself for a question in ANY transport, a chat question too (2.8, origin issues #74 · #82: `review.mjs --search "<the question>"` — no shell and no locale decide whether a capital Cyrillic letter is found; the printed grep carries `LC_ALL=C.UTF-8`):
 `<!-- archaeology: search "<the heading's words>" → N hits · read: <files | none> · prior: <none | "<the prior answer>" + address> -->`
 Without it the door exits 3 and PRINTS the ready command; `N > 0` with `read: none` or `prior: none` is refused too (legal: `prior: unrelated — <why>`), while `N = 0` is an honest attestation — the axis promises the agent SEARCHED and said with what, never that it found.
-Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`.
-**Third axis — the question is SELF-CONTAINED (2.9, origin issue #124).** A live question's heading and stem (the lines before its first option or answer field; the addressee and origin lines excluded) refuse the door with exit 3 on a BACKWARD or SIDEWAYS reference — the parser's `refBack`: «see above», «in the section», «§3» and their Russian mirrors; a forward reference («options below») is legal; `<!-- ref-ok: <reason> -->` on the line exempts it, an empty reason does not; documents dated before 2026-09-28 stay silent.
+Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->`, and every document dated before that day (the field's history is never repainted). `--check` says which of the two it did: `archaeology: N of M live questions attested` / `archaeology: not judged — header date … is before …`. **Third axis — the question is SELF-CONTAINED (2.9, origin issue #124).** A live question's heading and stem (the lines before its first option or answer field; the addressee and origin lines excluded) refuse the door with exit 3 on a BACKWARD or SIDEWAYS reference — the parser's `refBack`: «see above», «in the section», «§3» and their Russian mirrors; a forward reference («options below») is legal; `<!-- ref-ok: <reason> -->` on the line exempts it, an empty reason does not; documents dated before 2026-09-28 stay silent.
 
-## 3. Records — three files, derived names, never overwritten
+## 3. Records — three files, derived names; a record is replaced only by a NEW revision of the document (the table below)
 
 | Fact | Where | Shape |
 |---|---|---|

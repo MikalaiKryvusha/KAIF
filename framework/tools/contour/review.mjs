@@ -45,7 +45,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
@@ -473,7 +473,7 @@ const docKind = (root, rel, meta) => {
 };
 const ANSWER_LINE_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.answerLabels + ')\\s*(?:\\([^)]*\\))?\\s*:', 'iu');
 const TARGET_LINE_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.targetLabels + ')\\s*:', 'iu');
-const OPTION_LINE_RE = new RegExp('^\\s*-\\s+\\*\\*[' + PARSER.letters + ']\\)', 'u');
+const OPTION_LINE_RE = OPTION_START_RE; // CP (2.9, #127): one option regex for the parse and the card prose — the copy is gone
 const QSECTION_RE = new RegExp('^#{1,3}\\s+(?:' + PARSER.questionsSectionHeadings + ')(?![\\p{L}\\d])', 'iu');
 
 export function buildPage(root, docPath) {
@@ -1672,6 +1672,33 @@ export async function selftest(log = console.log) {
       && n(REFERENCES_SINCE, 'The formula — see above.', ' A') === 0 && n('2026-09-20', 'The formula — see above.') === 0
       && n(REFERENCES_SINCE, '**Answer target:** plans/24 §B8') === 0,
       'CP #124: a reasoned ref-ok, a forward «\u0441\u043c. \u043d\u0438\u0436\u0435», an answered question, a document older than the axis and the addressee line stay silent');
+  }
+  { // CP (2.9, #109 · #121 R3): an explicit closing word at the start of the status closes the document, whatever the explanation after it says
+    const st = (v) => docStatus('# I\n\n> **Status:** ' + v + '\n');
+    ok(st('\u26d4 \u0421\u041d\u042f\u0422\u041e 2026-08-28 \u0440\u0435\u0448\u0435\u043d\u0438\u0435\u043c \u2116058') === 'closed' && st('\u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e \u0432 2.10') === 'closed'
+      && st('\u2705 **\u0417\u0410\u041a\u0420\u042b\u0422\u041e 2026-08-30 — \u0412\u041e\u041f\u0420\u041e\u0421 \u0421\u041d\u042f\u0422 \u0410\u0413\u0415\u041d\u0422\u041e\u041c, \u0410 \u041d\u0415 \u041e\u0422\u0412\u0415\u0427\u0415\u041d \u0412\u041b\u0410\u0414\u0415\u041b\u042c\u0426\u0415\u041c.**') === 'closed' && st('\u26d4 WITHDRAWN 2026-08-28') === 'closed',
+      'CP #109/#121 R3: \u0421\u041d\u042f\u0422\u041e · \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e · \u0417\u0410\u041a\u0420\u042b\u0422\u041e with a negation after it · WITHDRAWN — the document is closed, not in the owner queue');
+    ok(st('\u2705 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b — \u043f\u043e\u043a\u0430 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e \u0434\u0432\u0430') === 'waiting' && st('\u0441\u043d\u044f\u0442\u0438\u0435 \u0444\u043b\u0430\u0433\u0430 — \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'waiting',
+      'CP #109: a negation still outranks a bare tick (bugs/70); a noun that starts like a closing word is no closing word');
+  }
+  { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
+    const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
+    const count = (md) => parseQuestions(md).reduce((n, q) => n + q.options.length, 0);
+    ok(count(q3((l) => l + ':')) === 12 && count(q3((l) => l + '.')) === 12 && count(q3((l) => l + ' (\u0440\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0443\u044e):')) === 12 && count(q3((l) => l + ')')) === 12,
+      'CP #127: 3 questions × 4 options in the forms A: · A. · A (note): · A) — 12 options each');
+    ok(count(q3((l) => l)) === 12 && preflight(q3((l) => l + ' ' + String.fromCharCode(0x2014))).some((p) => /letters authored 4, recognised 0/.test(p)),
+      'CP #127: a bold letter alone (- **A** …) is an option like the table form | **A** |; an unknown shape (- **A —** …) is named «letters authored 4, recognised 0», never lost in silence');
+    ok(parseQuestions('# I\n\n> **Status:** awaiting\n\n### Q1. Pick?\n\n**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n')[0].recommended === 'B',
+      'CP ideas/31 p. 28: «**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B» — the letter is read after the label closes its own bold');
+    const ru = mkdtempSync(join(tmpdir(), 'kaif-contour-ru-'));
+    mkdirSync(join(ru, '.kaif'), { recursive: true }); mkdirSync(join(ru, 'interviews'), { recursive: true });
+    writeFileSync(join(ru, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: '2.9', language: 'ru', projectName: '\u041f\u0440\u043e\u0431\u0430' }) + '\n');
+    writeFileSync(join(ru, 'interviews', 'interview_001_ru.md'), '# \u0418\u043d\u0442\u0435\u0440\u0432\u044c\u044e #001\n\n> **\u0421\u0442\u0430\u0442\u0443\u0441:** \u2705 \u041e\u0422\u0412\u0415\u0427\u0415\u041d\u041e\n\n### Q1. \u0411\u0435\u0440\u0451\u043c?\n\n- **A)** \u0434\u0430\n- **B)** \u043d\u0435\u0442\n\n**\u041e\u0442\u0432\u0435\u0442:** A\n\n\u2705 \u0412\u043d\u0435\u0441\u0435\u043d\u043e: plans/12 \u0448\u0430\u0433 3 (\u043a\u043e\u043c\u043c\u0438\u0442 abc123).\n');
+    recordDecision(ru, 'interviews/interview_001_ru.md', { answers: { Q1: { choice: 'B', text: '\u043f\u0435\u0440\u0435\u0434\u0443\u043c\u0430\u043b', comment: '' } } }, loadContourConfig(ru), new Date(2026, 8, 28, 10, 0));
+    const ruDoc = readFileSync(join(ru, 'interviews', 'interview_001_ru.md'), 'utf8');
+    rmSync(ru, { recursive: true, force: true });
+    ok(ruDoc.indexOf('**\u041e\u0442\u0432\u0435\u0442 (\u0434\u043e\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435, ') > ruDoc.indexOf('\u0412\u043d\u0435\u0441\u0435\u043d\u043e:') && !ruDoc.includes('Answer (\u0434\u043e\u043f\u043e\u043b\u043d\u0435\u043d\u0438\u0435'),
+      'CP #127: a follow-up in a Russian document is labelled in Russian and lands BELOW the applied-mark line');
   }
   { // the legal wrapped option form (spec §1, the /interview template) passes the page self-check instead of refusing to open
     const wr = mkdtempSync(join(tmpdir(), 'kaif-contour-wrap-'));

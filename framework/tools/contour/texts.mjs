@@ -48,6 +48,10 @@ export const PARSER = {
   recommendLabels: 'Рекомендация\\s+агента|Agent\'?s?\\s+recommendation',
   // status line of the document head (`> Status:` / `> **Статус:**`)
   statusLabels: 'Status|Статус',
+  // 2.9, epic CP (origin #109, #121 R3): an EXPLICIT closing word at the START of the status value (after an optional mark and bold) closes
+  // the document even when an explanation after it carries a negation («✅ ЗАКРЫТО — ВОПРОС СНЯТ АГЕНТОМ, А НЕ ОТВЕЧЕН ВЛАДЕЛЬЦЕМ»); the
+  // project's own closed words — «перенесено», «СНЯТО», WITHDRAWN — were read as a LIVE document and stood in the owner's queue
+  statusClosedWord: '^\\s*(?:[✅⛔➡🟢]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?)(?!\\p{L})',
   statusClosed: '✅|🟢|STATUS:\\s*DONE|ANSWERS\\s+RECEIVED|ОТВЕЧЕНО',
   statusWaiting: '🟡|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
   // negation outranks the tick (bugs/70): «пока НЕ отвечено», "no answers yet", "not answered"
@@ -201,7 +205,7 @@ const RU = {
   months: ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'],
   wb: {
-    followUp: (atHuman) => 'Answer (дополнение, ' + atHuman + '):',
+    followUp: (atHuman) => 'Ответ (дополнение, ' + atHuman + '):', // CP (2.9, #127 p. 2): the label in the document's language
     ownerComment: (atHuman) => 'Комментарий владельца (' + atHuman + '):',
     proofread: (atHuman) => 'Замечания владельца по вычитке (' + atHuman + '):',
     recovered: 'забран с компьютера владельца', // LP (#66): комментарий провенанса называет, что ответ пришёл из локальной записи

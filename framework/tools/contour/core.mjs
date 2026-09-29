@@ -158,6 +158,7 @@ const STATUS_LINE_RE = new RegExp('^\\s*>?\\s*\\*{0,2}(?:' + PARSER.statusLabels
 const STATUS_CLOSED_RE = new RegExp(PARSER.statusClosed, 'iu');
 const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
+const STATUS_CLOSED_WORD_RE = new RegExp(PARSER.statusClosedWord, 'iu');   // CP (2.9, #109 · #121 R3)
 
 // OW3 (2.8, origin issue #86): the whole STATUS BLOCK — the status line and the quote lines that continue it — says the answers await
 // application. A field marks it on a continuation line under a ticked "answered" (its S1: an 11-day-old decision stayed invisible);
@@ -176,6 +177,7 @@ export function docStatus(md) {
   const m = head.match(STATUS_LINE_RE);
   if (!m) return 'none';                                 // no status line — the document is LIVE
   const line = m[1];
+  if (STATUS_CLOSED_WORD_RE.test(line)) return 'closed'; // an explicit closing word FIRST outranks an explanation after it (#109)
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
   if (STATUS_CLOSED_RE.test(line)) return 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
@@ -190,9 +192,16 @@ const ANSWER_LABEL_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.answerLabels + ')
 const COUNTER_LABEL_RE = new RegExp(PARSER.counterQuestion, 'iu');      // rule 2: a counter-question is NOT an answer
 const COMMENT_LABEL_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.commentLabels + ')', 'iu');
 const TARGET_LABEL_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.targetLabels + ')\\s*:?\\*{0,2}\\s*(.*)$', 'iu');
-const RECOMMEND_RE = new RegExp('(?:' + PARSER.recommendLabels + ')\\s*[:—–-]?\\s*\\*{0,2}([' + L + '])(?![\\p{L}\\d])', 'u');
-// FIRST legal option form — a list item `- **A)** …` (a note in brackets after the letter is legal)
-export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])\\)', 'u');
+// CP (2.9, origin ideas/31 p. 28): the label may close its own bold before the letter — «**Agent's recommendation:** A» was read as none
+const RECOMMEND_RE = new RegExp('(?:' + PARSER.recommendLabels + ')(?:\\s|[:—–-]|\\*){0,6}([' + L + '])(?![\\p{L}\\d])', 'u');
+// FIRST legal option form — a list item `- **A)** …` (a note in brackets after the letter is legal). 2.9, epic CP (origin issue #127): the
+// list form speaks the TABLE form's dictionary — `- **A:**`, `- **A.**`, `- **A (note):**` and a bold letter alone `- **A** — …` are options too. A field project's live corpus
+// was written that way: 169 of 1941 options recognised, 47 of 107 interviews invisible. The donor contours' recon recorded the fate in
+// advance ("a richer letter rule — at the first mismatch of the count", origin researches/17 §4 p. 4); #127 is that mismatch.
+export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])(?:\\)|[:.](?![\\p{L}\\d])|\\s*\\([^)]*\\)\\s*[:.)]?|(?=\\*\\*))', 'u');
+// A list item that OPENS with a bold single letter — what the author meant as an option, whether or not the form is recognised. The
+// door counts these against the parsed options: a letter the parse did not see is named, never lost in silence (#127).
+const AUTHORED_LETTER_RE = new RegExp('^\\s*-\\s+\\*\\*\\s*([' + L + '])(?![\\p{L}\\d])', 'u');
 // SECOND legal form — a TABLE ROW `| **A** | … |` (bugs/51 of the origin): a one-letter cell (bold
 // optional, dot/bracket optional, a bracketed note on either side of the bold) + at least one
 // content cell to the right. A header row and the `---` separator do not match and drop out.
@@ -522,6 +531,12 @@ export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
     if (q.answered || q.freeField) continue;
+    const authored = q.body.filter((l) => AUTHORED_LETTER_RE.test(l)).length;   // CP (2.9, #127): a letter written but not parsed is named
+    const parsedList = q.options.filter((o) => !o.row).length;
+    if (authored > parsedList)
+      problems.push(q.id + ': letters authored ' + authored + ', recognised ' + parsedList + ' — an option the page would not show; write it'
+        + ' - **A)** · - **A:** · - **A.** · - **A (note):** (or a table row | **A** | … |): '
+        + q.body.filter((l) => AUTHORED_LETTER_RE.test(l) && !OPTION_START_RE.test(l)).map((l) => l.trim().slice(0, 40)).join(' | '));
     if (q.options.length < MIN_OPTIONS)
       problems.push(q.id + ': ' + q.options.length + ' option(s) in list form and no declared free field' +
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +
@@ -704,7 +719,10 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
         lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + answerText + ' ' + prov;
       } else { // the owner's answer is UNTOUCHABLE: new text only as a dated follow-up (I2)
         const lastAns = q.answers[q.answers.length - 1];
-        const insertAt = lastAns ? qStart + lastAns.line + 1 : qStart + q.body.length;
+        // CP (2.9, #127 p. 3): a follow-up goes to the END of the question's block — below an applied-mark line ("Applied: …") — never
+        // right under the answer line, which also cut a multi-line answer in two; trailing blank lines of the block stay last.
+        let endAt = q.body.length; while (endAt > 0 && !q.body[endAt - 1].trim()) endAt--;
+        const insertAt = lastAns ? qStart + endAt : qStart + q.body.length;
         lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + answerText + ' ' + prov);
       }
     }

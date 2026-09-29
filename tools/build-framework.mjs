@@ -414,6 +414,13 @@ const RENAMES_BY_VERSION = {
       ['## Step 0 — scope, cadence, and the ground before the hunt', '## Step 0 — baseline, scope, budget, and the ground before the hunt'],
     ],
   },
+  '2.9': {
+    // 2.9, epic CP (step CP5; ticket #127) — the §3 heading now agrees with its own table row: a record
+    // is replaced only by a NEW revision of the document (the same section, renamed — guard 5f named it).
+    '.kaif/INTERACTIVE_CONTOUR_SPEC.md': [
+      ['## 3. Records — three files, derived names, never overwritten', '## 3. Records — three files, derived names; a record is replaced only by a NEW revision of the document (the table below)'],
+    ],
+  },
 };
 
 // POLICY changes, by version (Reference §10.6; field gap 04-§6: 1.6 changed the language POLICY

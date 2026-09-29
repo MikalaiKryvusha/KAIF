@@ -54,7 +54,9 @@ const SILENCE_DEATH_BUDGET_MS = 8000;
 // закрытия — «**A (Рекомендация)**». Требование «ровно одна буква в жирном» держало узость приметы
 // и одновременно её слепоту; скобка после буквы узость не отдаёт — «**Antigravity**» по-прежнему
 // меткой не является, потому что после буквы там буквы, а не скобка и не закрытие жирного.
-const OPTION_LIST_LINE_RE = /^\s*-\s+\*\*[A-ZА-Я]\)/u;
+// 2.9, CP5 (#127): the list line speaks the table line's dictionary — a letter with a bracket, a colon, a dot, a note in brackets, or
+// the bold letter alone («- **Б** — …», the origin's own interviews 002 and 003, invisible to the parse until 2.9)
+const OPTION_LIST_LINE_RE = /^\s*-\s+\*\*[A-ZА-Я](?:[):.]|\s*\([^)]*\)|\*\*)/u;
 const OPTION_TABLE_LINE_RE = /^\s*\|\s*(?:\*\*[A-ZА-Я](?:\s*\([^)]*\))?\*\*|[A-ZА-Я][.)])[^|]*\|.+$/u;
 const OPTION_LINE_RE = new RegExp(OPTION_LIST_LINE_RE.source + '|' + OPTION_TABLE_LINE_RE.source, 'u');
 
@@ -402,7 +404,7 @@ async function main() {
       recordDecision(fixtureRoot, fxDoc, { answers: { Q2: { choice: 'A', text: 'передумал' } } });
       const md3 = readFileSync(join(fixtureRoot, fxDoc), 'utf8');
       check('follow-up — ОТДЕЛЬНЫМ датированным полем, оригинал цел',
-        md3.includes('**Answer (дополнение,') && md3.includes('слово владельца дословно'));
+        md3.includes('**Ответ (дополнение,') && !md3.includes('Answer (дополнение') && md3.includes('слово владельца дословно')); // CP5 (#127 p. 2): the label in the document's language
       await browser.cdp.send('Target.closeTarget', { targetId: page.targetId }).catch(() => {});
     }
 
@@ -1049,7 +1051,8 @@ function etalonBlock() {
     for (const q of buildPage(ROOT, file).questions) {
       for (const o of q.options) {
         const plain = o.html.replace(/<[^>]+>/g, ' ');
-        if (!new RegExp('(^|[^\\p{L}])' + o.letter + '[.)]', 'u').test(plain))
+        // CP5 (#127): the letter is named when it stands as a word at the label's head — «А)», «А.», «А:», «А (note)», «А —»
+        if (!new RegExp('(^|[^\\p{L}])' + o.letter + '(?=[.):\\s]|$)', 'u').test(plain.trim()))
           unnamed.push(file + ':' + q.id + ':' + o.letter);
       }
     }
@@ -1063,10 +1066,15 @@ function liveOptionCounts() {
   const dir = join(ROOT, 'interviews');
   for (const f of readdirSync(dir).filter((x) => /^interview_\d+.*\.md$/.test(x)).sort()) {
     const md = readFileSync(join(dir, f), 'utf8');
-    let candidateLines = 0, inFence = false;
+    // CP5 (2.9): candidates are counted only inside QUESTION blocks — a heading «Q<n>.» / «В<n>.» up to the next heading — by this
+    // file's own reading of headings, not the parser's. With the list dictionary widened (#127), lettered prose lists OUTSIDE questions
+    // («what happens after answer A / B») became candidates and the independent count ran ahead of what any page shows.
+    let candidateLines = 0, inFence = false, inQuestion = false;
     for (const line of normalize(md).split('\n')) {
       if (/^\s*```/.test(line)) { inFence = !inFence; continue; }
-      if (!inFence && OPTION_LINE_RE.test(line)) candidateLines++;
+      if (inFence) continue;
+      if (/^#{1,6}\s/.test(line)) { inQuestion = /^#{2,4}\s+(?:Q|В)\d+[.)]/u.test(line); continue; }
+      if (inQuestion && OPTION_LINE_RE.test(line)) candidateLines++;
     }
     const qs = parseQuestions(md);
     out['interviews/' + f] = {
