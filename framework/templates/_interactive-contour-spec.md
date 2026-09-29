@@ -9,9 +9,9 @@ This page has a BUDGET (120 lines, judged by the origin's suite s22): a new arti
 - **md is the source, HTML is derived. Always.** The page is rendered from the document; nothing is hand-edited.
 - A question is a heading `### Q<n>. <text>`; its answer field is a line starting with `**Answer:**` (the Russian alias of the
   label is legal). An answer already written by the owner is NEVER overwritten — a new text lands as a dated follow-up field.
-- **Options are recognised in exactly two forms** — anything else renders WITHOUT radio buttons:
+- **Options are recognised in two carriers with one letter vocabulary** (2.9, origin issue #127) — anything else renders WITHOUT radio buttons:
   - a table row per option: `| **A** | what it means | price and risk |`
-  - a list item per option: `- **A)** what it means` (a parenthesised note after the letter is legal)
+  - a list item per option: `- **A)**` · `- **A:**` · `- **A.**` · `- **A (note):**` · a bold letter alone `- **A** — …`; a letter the parse does not read — a list item or a paragraph `**C.** …` — is NAMED by the door (`letters authored N, recognised M`, exit 3), never dropped
 - A question with NO options is legal only when it DECLARES a free field (a `D) your own answer` option, or the marker
   `<!-- questions-guard:no-scenario <reason> -->` for a naming/taste question). Paragraph headings like `**A. …**` are NOT options — the #51 defect.
 - Every question and every option is a four-line scenario (Situation · Action · Result · Check) in the owner's language; the technical note stands UNDER the scenario, never instead of it.
@@ -20,7 +20,7 @@ This page has a BUDGET (120 lines, judged by the origin's suite s22): a new arti
 
 ```
 for each question Q<n>:
-  options(Q<n>) = table rows | **X** |  ∪  list items - **X)**
+  options(Q<n>) = table rows | **X** |  ∪  list items - **X)** · - **X:** · - **X.** · - **X (note):** · - **X**   (letters authored > options → exit 3)
   if count(options) < 2 and no declared free field:
     print "Q<n>: 0 options in list form and no declared free field — the page would open without radio
            buttons; fix the form: - **A)** …"   →  exit 3

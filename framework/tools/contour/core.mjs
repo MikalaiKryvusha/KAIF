@@ -177,7 +177,9 @@ export function docStatus(md) {
   const m = head.match(STATUS_LINE_RE);
   if (!m) return 'none';                                 // no status line — the document is LIVE
   const line = m[1];
-  if (STATUS_CLOSED_WORD_RE.test(line)) return 'closed'; // an explicit closing word FIRST outranks an explanation after it (#109)
+  // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit WAITING marker on the same line: a
+  // partial status «closed Q1; Q2 awaits an answer» still waits (light judge of epic CP, F5)
+  if (STATUS_CLOSED_WORD_RE.test(line)) return STATUS_WAITING_RE.test(line) ? 'waiting' : 'closed';
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
   if (STATUS_CLOSED_RE.test(line)) return 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
@@ -202,6 +204,11 @@ export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])(?:\\)|[
 // A list item that OPENS with a bold single letter — what the author meant as an option, whether or not the form is recognised. The
 // door counts these against the parsed options: a letter the parse did not see is named, never lost in silence (#127).
 const AUTHORED_LETTER_RE = new RegExp('^\\s*-\\s+\\*\\*\\s*([' + L + '])(?![\\p{L}\\d])', 'u');
+// (light judge of epic CP, F4) an option written as a PARAGRAPH — `**C.** three`, the #51 form, no list dash — is a letter authored
+// too: two list options plus a paragraph C used to show A and B and lose C in silence. Only a letter with its mark (. ) :) counts, so
+// prose that merely opens with a bold letter ("**B** costs more") is not taken for an option.
+const AUTHORED_PARA_LETTER_RE = new RegExp('^\\s*\\*\\*\\s*([' + L + '])\\s*[.):]', 'u');
+const authoredLetter = (l) => AUTHORED_LETTER_RE.test(l) || AUTHORED_PARA_LETTER_RE.test(l);
 // SECOND legal form — a TABLE ROW `| **A** | … |` (bugs/51 of the origin): a one-letter cell (bold
 // optional, dot/bracket optional, a bracketed note on either side of the bold) + at least one
 // content cell to the right. A header row and the `---` separator do not match and drop out.
@@ -531,12 +538,12 @@ export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
     if (q.answered || q.freeField) continue;
-    const authored = q.body.filter((l) => AUTHORED_LETTER_RE.test(l)).length;   // CP (2.9, #127): a letter written but not parsed is named
+    const authored = q.body.filter(authoredLetter).length;   // CP (2.9, #127): a letter written but not parsed is named
     const parsedList = q.options.filter((o) => !o.row).length;
     if (authored > parsedList)
       problems.push(q.id + ': letters authored ' + authored + ', recognised ' + parsedList + ' — an option the page would not show; write it'
         + ' - **A)** · - **A:** · - **A.** · - **A (note):** (or a table row | **A** | … |): '
-        + q.body.filter((l) => AUTHORED_LETTER_RE.test(l) && !OPTION_START_RE.test(l)).map((l) => l.trim().slice(0, 40)).join(' | '));
+        + q.body.filter((l) => authoredLetter(l) && !OPTION_START_RE.test(l)).map((l) => l.trim().slice(0, 40)).join(' | '));
     if (q.options.length < MIN_OPTIONS)
       problems.push(q.id + ': ' + q.options.length + ' option(s) in list form and no declared free field' +
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +

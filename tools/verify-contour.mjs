@@ -772,12 +772,11 @@ async function main() {
     try {
       makeFixtureRoot(fixtureRoot); // свежая фикстура В ТОМ ЖЕ корне: Q1 снова не отвечен
                                     // (блок 6 уже записал ответ в старую)
-      // CP6 (2.9, тикет #125): заголовок документа ДЛИННЫЙ, как у полевого «Интервью №990 — Проверка готовой страницы…», — только
-      // такой доходит до колонки кнопки, и только над ним видно, закрывает ли его пилюля статуса (короткий заголовок зеленел бы
-      // по построению)
+      // CP6 (2.9, тикет #125) + находка F1 лёгкого судьи CP: пилюлю судят над ОБОИМИ заголовками — окно приложения с КОРОТКИМ
+      // заголовком фикстуры (шапка в одну строку, и шестистрочная пилюля ложилась на заголовок документа в теле страницы — этого
+      // не видел прежний прогон с одним длинным), вкладка ниже (QA7б) — с ДЛИННЫМ, как у полевого «Интервью №990 — Проверка
+      // готовой страницы…» (такой доходит до колонки кнопки в самой шапке)
       const QA7_DOC = join(fixtureRoot, 'interviews', 'interview_101_fixture.md');
-      writeFileSync(QA7_DOC, readFileSync(QA7_DOC, 'utf8').replace('# Interview #101 — фикстура QA-прогона',
-        '# Interview #101 — фикстура QA-прогона: проверка готовой страницы в окне приложения после смерти её сервера'));
       // Отдельный ПРОЦЕСС сервера — убиваем его внезапно, страница остаётся в браузере
       const spawnQa7Server = async () => {
         const srv = spawn(process.execPath, [join(ROOT, 'tools/review.mjs'), 'interviews/interview_101_fixture.md',
@@ -857,18 +856,24 @@ async function main() {
       // CP6 (2.9, тикет #125): пилюля статуса не закрывает шапку документа — прямоугольник пилюли не пересекает ни одного
       // элемента шапки (имя проекта · вид · заголовок · пометка языка); кадр окна — в след прогона, его читают глазами
       LAYOUT_JS = "(function(){var s=document.querySelector('#status').getBoundingClientRect();"
-        + "var over=[].slice.call(document.querySelectorAll('header > *')).filter(function(e){var r=e.getBoundingClientRect();"
+        + "var over=[].slice.call(document.querySelectorAll('header > *, main h1, main h2, main h3, main p')).filter(function(e){var r=e.getBoundingClientRect();"
         + "return r.width>0&&r.height>0&&!(r.right<=s.left||r.left>=s.right||r.bottom<=s.top||r.top>=s.bottom)})"
         + ".map(function(e){return (e.className||e.tagName)+': '+e.textContent.slice(0,50)});"
-        + "return {pill:[s.left,s.top,s.right,s.bottom].map(Math.round),w:innerWidth,h:innerHeight,over:over}})()";
+        + "var b=document.querySelector('#banner');return {pill:[s.left,s.top,s.right,s.bottom].map(Math.round),w:innerWidth,h:innerHeight,over:over,"
+        + "pillText:document.querySelector('#status').textContent,bar:b.style.display==='block'?b.textContent:'',barClass:b.className}})()";
       const lay = await page.evaluate(LAYOUT_JS);
       await saveFrame(page, 'qa7-server-gone-saved-locally.png', 'окна');
-      check('пилюля «сохранён на этом компьютере» не закрывает шапку документа (окно ' + lay.w + '×' + lay.h + ') = true',
+      check('пилюля не закрывает ни шапку, ни заголовок и текст документа (окно ' + lay.w + '×' + lay.h + ', короткий заголовок) = true',
         lay.over.length === 0, 'пилюля ' + JSON.stringify(lay.pill) + ' пересекает: ' + lay.over.join(' | '));
+      check('полное «сохранён на этом компьютере» — в зелёной полосе над страницей, в пилюле короткая метка = true',
+        /сохранён на этом компьютере/.test(lay.bar) && lay.barClass === 'ok' && lay.pillText === 'Сохранено на этом компьютере',
+        'пилюля «' + lay.pillText + '» · полоса [' + lay.barClass + '] «' + lay.bar.slice(0, 80) + '»');
       await page.closeGracefully();
       // QA7б (CP6, 2.9; оговорка (а) ideas/31 п. 31 — вкладка при мёртвом сервере глазами не наблюдалась): страница ВКЛАДКОЙ на чужом
       // профиле, сервер убит, «Записать» → честная строка «ответ НЕ уйдёт», кольцо спасения с текстом, ни слова «сохранён на этом
       // компьютере»; пилюля не закрывает шапку; кадр вкладки — в след прогона. Глаз владельца этим не заменяется.
+      writeFileSync(QA7_DOC, readFileSync(QA7_DOC, 'utf8').replace('# Interview #101 — фикстура QA-прогона',
+        '# Interview #101 — фикстура QA-прогона: проверка готовой страницы в окне приложения после смерти её сервера'));
       const { srv: child2, u: url4 } = await spawnQa7Server();
       const tab = await headlessPage(url4, { profileDir: tempRoot('verify-qa7-tab'),
         extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun', '--window-size=1100,900'] });
@@ -886,15 +891,15 @@ async function main() {
       const t1 = Date.now();
       while (Date.now() - t1 < DEAD_SERVER_DEADLINE_MS) {
         tb = await tab.evaluate(TAB_JS);
-        if (tb.ring === 'block' && /НЕ уйдёт/.test(tb.status)) break;
+        if (tb.ring === 'block' && /НЕ уйдёт/.test(tb.banner)) break;
         await sleep(500);
       }
       check('вкладка при мёртвом сервере: «ответ НЕ уйдёт», кольцо спасения с текстом ответа, ни слова «сохранён на этом компьютере» = true',
-        tb.ring === 'block' && /НЕ уйдёт/.test(tb.status) && tb.ringText.includes('ответ из вкладки в мёртвый сервер') && !/сохранён на этом компьютере/.test(tb.status + tb.banner),
+        tb.ring === 'block' && /НЕ уйдёт/.test(tb.banner) && tb.status.length <= 48 && tb.ringText.includes('ответ из вкладки в мёртвый сервер') && !/сохранён на этом компьютере/.test(tb.status + tb.banner),
         JSON.stringify(tb).slice(0, 300));
       const layTab = await tab.evaluate(LAYOUT_JS);
       await saveFrame(tab, 'qa7b-tab-server-gone.png', 'вкладки');
-      check('вкладка: пилюля статуса не закрывает шапку документа (окно ' + layTab.w + '×' + layTab.h + ') = true',
+      check('вкладка: пилюля не закрывает ни шапку, ни заголовок и текст документа (окно ' + layTab.w + '×' + layTab.h + ', длинный заголовок) = true',
         layTab.over.length === 0, 'пилюля ' + JSON.stringify(layTab.pill) + ' пересекает: ' + layTab.over.join(' | '));
       await tab.closeGracefully();
     } catch (e) {

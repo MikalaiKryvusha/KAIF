@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "b2d3910e7c9b1307972d555fa5c4d3e40e9c2f5483b8c918e2579abe320eb233",
+    "sourceTree": "a1d731028c3ff7ded0b5eef3c3960845714cd595129e1b2904329da9209a748c",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -103,7 +103,8 @@
     ],
     "2.9": [
       "THE OWNER'S WORD MID-TURN GETS AN ANSWER HE CAN SEE (2.9, epic OA; origin bug 123 — on 2.8 one project's first text about the owner's mid-turn word came 108 tool calls later: an answer written between tool calls may never reach the chat, the final message does): a sixth refresh hook, `.kaif/hooks/stop-owner-answer.mjs` (event `Stop`, Claude Code only), reads the turn's FINAL message — the vendor hands it over as `last_assistant_message`, without the transcript — and asks ONCE for the answer when a response ends without opening an answer to each owner's mid-turn message of that turn with the message's first words; a response that answers and ends with a last line `⏩ <next step>` is resumed by the hook — the work goes on without the owner's next word. `pretool-owner-word.mjs` re-reads the lagging transcript before it refuses a call. \"The owner's word mid-turn\" now says: answer in a response of its own (no tool call after it — a text between tool calls may be recorded as reasoning and never reach the chat), open it with the owner's first words. Wire the new `Stop` entry of `.kaif/hooks/settings-fragment.json`.",
-      "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`)."
+      "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
+      "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a long status message rides the bar above the page (green for good news) and the pill under the Save button carries a short label — a six-line pill used to cover the document's title; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; on Linux and macOS an answer saved after the browser was killed is recovered (a stale profile lock is judged by host and pid). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner."
     ],
     "2.8": [
       "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is shorter than the 300 lines of 2.7: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules.",
@@ -7332,7 +7333,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   the owner's word on interview 032: "no choice, no 'save as' — everything works for the user as it did! JS
   itself writes the file to the computer, into the project folder".) The app window runs on
   `.kaif/contour-window/` (ignore-first before the first window; the three sign-in-off flags; `account_info`
-  checked after launch — EXP-0134), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
+  checked after launch — EXP-0134; a browser off the standard paths is named by the environment variable `KAIF_BROWSER` — it raises the
+  window and runs the answer recovery, 2.9), so the draft is on the owner's disk IN THE PROJECT; Save with the server gone
   stores the answer there — IndexedDB is the PRIMARY carrier (measured: on disk half a second after the write even when the
   browser is then killed; `localStorage` needs about six, so it only keeps a copy and the typed DRAFT) — and
   the page says "saved on this computer, the agent will pick it up", no dialog. The agent picks it up at the
@@ -7364,7 +7366,8 @@ Accepting a contour = walking this roster.
   state (waiting / answered): one detail carries two meanings — separates and informs.
 - **P2** — explicit state tags on every question: answered / unanswered / awaits you.
 - **P3** — fork options are RADIO INPUTS, ALWAYS: one radio per parsed option row (the canon's
-  two forms — a table row `| **A** | … |` or a list item `- **A)** …`) plus the free-variant
+  two carriers — a table row `| **A** | … |` or a list item `- **A)** …` with the table's letter vocabulary `A)` · `A:` · `A.` · `A (note):` · a bold
+  letter, 2.9 — a letter the door cannot read is named, exit 3) plus the free-variant
   field; options shown as prose are a question NOT shown — the field keeps re-paying this
   (agents render the A/B/C/D options as plain text and the human has nothing to click). Selection clearable
   by a second click (a native radio cannot return to "none").
@@ -10616,7 +10619,9 @@ export function docStatus(md) {
   const m = head.match(STATUS_LINE_RE);
   if (!m) return 'none';                                 // no status line — the document is LIVE
   const line = m[1];
-  if (STATUS_CLOSED_WORD_RE.test(line)) return 'closed'; // an explicit closing word FIRST outranks an explanation after it (#109)
+  // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit WAITING marker on the same line: a
+  // partial status «closed Q1; Q2 awaits an answer» still waits (light judge of epic CP, F5)
+  if (STATUS_CLOSED_WORD_RE.test(line)) return STATUS_WAITING_RE.test(line) ? 'waiting' : 'closed';
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
   if (STATUS_CLOSED_RE.test(line)) return 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
@@ -10641,6 +10646,11 @@ export const OPTION_START_RE = new RegExp('^\\s*-\\s+\\*\\*([' + L + '])(?:\\)|[
 // A list item that OPENS with a bold single letter — what the author meant as an option, whether or not the form is recognised. The
 // door counts these against the parsed options: a letter the parse did not see is named, never lost in silence (#127).
 const AUTHORED_LETTER_RE = new RegExp('^\\s*-\\s+\\*\\*\\s*([' + L + '])(?![\\p{L}\\d])', 'u');
+// (light judge of epic CP, F4) an option written as a PARAGRAPH — `**C.** three`, the #51 form, no list dash — is a letter authored
+// too: two list options plus a paragraph C used to show A and B and lose C in silence. Only a letter with its mark (. ) :) counts, so
+// prose that merely opens with a bold letter ("**B** costs more") is not taken for an option.
+const AUTHORED_PARA_LETTER_RE = new RegExp('^\\s*\\*\\*\\s*([' + L + '])\\s*[.):]', 'u');
+const authoredLetter = (l) => AUTHORED_LETTER_RE.test(l) || AUTHORED_PARA_LETTER_RE.test(l);
 // SECOND legal form — a TABLE ROW `| **A** | … |` (bugs/51 of the origin): a one-letter cell (bold
 // optional, dot/bracket optional, a bracketed note on either side of the bold) + at least one
 // content cell to the right. A header row and the `---` separator do not match and drop out.
@@ -10970,12 +10980,12 @@ export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
     if (q.answered || q.freeField) continue;
-    const authored = q.body.filter((l) => AUTHORED_LETTER_RE.test(l)).length;   // CP (2.9, #127): a letter written but not parsed is named
+    const authored = q.body.filter(authoredLetter).length;   // CP (2.9, #127): a letter written but not parsed is named
     const parsedList = q.options.filter((o) => !o.row).length;
     if (authored > parsedList)
       problems.push(q.id + ': letters authored ' + authored + ', recognised ' + parsedList + ' — an option the page would not show; write it'
         + ' - **A)** · - **A:** · - **A.** · - **A (note):** (or a table row | **A** | … |): '
-        + q.body.filter((l) => AUTHORED_LETTER_RE.test(l) && !OPTION_START_RE.test(l)).map((l) => l.trim().slice(0, 40)).join(' | '));
+        + q.body.filter((l) => authoredLetter(l) && !OPTION_START_RE.test(l)).map((l) => l.trim().slice(0, 40)).join(' | '));
     if (q.options.length < MIN_OPTIONS)
       problems.push(q.id + ': ' + q.options.length + ' option(s) in list form and no declared free field' +
         ' — the page would open without radio buttons; fix the form: - **A)** … (or a table row | **A** | … |),' +
@@ -11318,6 +11328,10 @@ const FAB_COLUMN_PX = 230, FAB_EDGE_PX = 16;            // regular window
 const FAB_COLUMN_NARROW_PX = 170, FAB_EDGE_NARROW_PX = 8; // narrow window (NARROW_PX)
 const FAB_GAP_PX = 4;                                    // air between the pill and the title column
 const pillMaxPx = (column, edge) => column - edge - FAB_GAP_PX;
+// CP (2.9, #125 — the light judge's finding F1): a narrow pill wraps a long message into six lines that fall past the header onto the
+// document's own title. So a status longer than PILL_MAX_CHARS goes to the BAR above the page (in the flow, it keeps the Save column
+// free — nothing lies over it), and the pill carries a short label; a pill of up to two lines ends above the first line of the page.
+const PILL_MAX_CHARS = 48;
 // Silence-watch thresholds may be TIGHTENED by the environment — and only tightened.
 const stricterMs = (envName, canon) => {
   const v = Number(process.env[envName]);
@@ -11799,7 +11813,7 @@ export function buildPage(root, docPath) {
       settled.map((q) => qCard(q, t)).join('\n') + '</details>' + docCommentBlock(rel, t)
     : '<div class="doc">' + body + '</div>' + artSection + qSection + docCommentBlock(rel, t);
   const html = pageShell(cfg, {
-    title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + esc(title) + '</span>' + summary + formNote,
+    title, kind, heading: '<span class="kind">' + esc(kind) + '</span><span>' + renderInline(title) + '</span>' + summary + formNote,
     main: mainHtml,
     questions, artifacts, face: 'interview', rev: docHash,
   });
@@ -11814,7 +11828,7 @@ export function buildNoticePage(root, docPath) {
   const title = docTitle(md, docPath);
   const html = pageShell(cfg, {
     title, kind: t.kind.notice,
-    heading: '<span class="kind">' + t.kind.notice + '</span><span>' + esc(title) + '</span> <span class="tag notice">' + t.tag.noAnswerNote + '</span>',
+    heading: '<span class="kind">' + t.kind.notice + '</span><span>' + renderInline(title) + '</span> <span class="tag notice">' + t.tag.noAnswerNote + '</span>',
     main: '<div class="doc">' + renderMd(md) + '</div>' + noticeCommentBlock(rel, t),
     questions: [], notices: [rel], noticeDoc: rel, face: 'notice', rev: bodyHash(md),
   });
@@ -11834,7 +11848,7 @@ export function buildProofreadPage(root, docPath) {
     '<p><textarea data-draft data-doc="' + esc(rel) + '" name="para:' + esc(rel) + ':' + p.id + '" rows="2" placeholder="' + esc(t.ph.paragraph) + '"></textarea></p></section>').join('\n');
   const html = pageShell(cfg, {
     title, kind: t.kind.proofread,
-    heading: '<span class="kind">' + t.kind.proofread + '</span><span>' + esc(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
+    heading: '<span class="kind">' + t.kind.proofread + '</span><span>' + renderInline(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
     main: '<h2>' + t.head.paragraphs + ' (' + paras.length + ')</h2>' + cards + docCommentBlock(rel, t) + '<p class="muted">' + esc(t.ph.noRemarks) + '</p>',
     questions: [], face: 'proofread', faceDoc: rel, paragraphs: paras.map((p) => p.id), rev: bodyHash(md),
   });
@@ -11854,7 +11868,7 @@ export function buildMockupPage(root, imagePath) {
   const title = basename(imagePath);
   const html = pageShell(cfg, {
     title, kind: t.kind.mockup,
-    heading: '<span class="kind">' + t.kind.mockup + '</span><span>' + esc(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
+    heading: '<span class="kind">' + t.kind.mockup + '</span><span>' + renderInline(title) + '</span> <span class="tag you">' + t.tag.you + '</span>',
     main: '<h2>' + t.head.mockup + '</h2><div class="mock"><img src="' + src + '" alt="' + esc(title) + '"></div>' +
       '<p><textarea data-draft data-doc="' + esc(rel) + '" name="doccomment:' + esc(rel) + '" rows="5" placeholder="' + esc(t.ph.mockup) + '"></textarea></p>' + '<p class="muted">' + esc(t.ph.noRemarks) + '</p>',
     questions: [], face: 'mockup', faceDoc: rel, rev: bodyHash(data.toString('base64')),
@@ -11871,7 +11885,7 @@ export function buildQueuePage(root, docs, notices = pendingNotices(root)) {
   });
   const total = groups.reduce((s, g) => s + g.pending.length, 0);
   const questionsMain = groups.map((g) =>
-    '<section class="group"><h2>' + esc(g.title) + ' <small class="kind">' + esc(g.doc) + '</small></h2>' +
+    '<section class="group"><h2>' + renderInline(g.title) + ' <small class="kind">' + esc(g.doc) + '</small></h2>' +
     (g.pending.map((q) => qCard(q, t)).join('\n') || '<p>' + t.head.noPending + '</p>') + docCommentBlock(g.doc, t) +
     '<p><button type="button" class="savedoc" data-doc="' + esc(g.doc) + '">' + t.btn.saveDoc + '</button></p></section>').join('\n<hr>\n');
   const noticesMain = notices.length
@@ -11959,7 +11973,8 @@ function qCard(q, t) {
       '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="' + esc(t.ph.comment) + '"></textarea></p>';
   const meta = q.target ? '<div class="qmeta">' + esc(q.target).replace(/`/g, '') + '</div>' : '';
   return '<section class="qcard' + (q.answered ? ' done' : '') + '">' +
-    '<div><strong>' + q.id + '.</strong> ' + esc(q.title) + ' ' + tag + '</div>' +
+    // light judge of epic CP, F6: a title carries the owner's markup too ("Take **B** or `C`?") — rendered, not shown raw
+    '<div><strong>' + q.id + '.</strong> ' + renderInline(q.title) + ' ' + tag + '</div>' +
     (q.bodyHtml ? '<div class="qbody">' + q.bodyHtml + '</div>' : '') + meta + existing + opts + inputs + '</section>';
 }
 
@@ -11991,19 +12006,21 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     artifacts: artifacts.map((a) => ({ doc: a.doc, id: a.id, exists: a.exists, sha256: a.sha256 })),
     expectRadioGroups: questions.filter((q) => q.options && q.options.length > 0).length, // spec §2 self-check
     draftKey: 'owner-review:' + (singleDoc || (index ? 'index' : title)), // per DOCUMENT, never per batch
+    pillMax: PILL_MAX_CHARS, // CP (2.9, #125): a longer status goes to the bar, the pill gets a short label
     txt: { draft: t.st.draft(0).replace('0', '{n}'), saving: t.st.saving, saved: t.st.saved('{w}'), nothing: t.st.nothing,
       needArt: t.st.needArt, err: t.st.err('{m}'), serverGone: t.st.serverGone, serverGoneLocal: t.st.serverGoneLocal, savedLocally: t.st.savedLocally, closeYourself: t.st.closeYourself,
+      savedLocallyShort: t.st.savedLocallyShort, pillOk: t.st.pillOk, pillErr: t.st.pillErr,
       copied: t.st.copied, copyManually: t.st.copyManually, selfcheck: t.st.selfcheck('{r}', '{q}'), tabnote: t.st.tabnote,
       left: t.st.left('{n}'), stale: t.st.stale, rewritten: t.st.rewritten, orphan: t.st.orphan, reloadRev: t.btn.reloadRev }, // OW6
   }).replace(/</g, '\\u003c');
   // P5: both themes via prefers-color-scheme; colours are variables; contrast is built into the pairs.
   const css = `
   :root { --bg:#f7f7f5; --card:#ffffff; --ink:#1d1d1f; --muted:#6b6b70; --line:#d9d9de;
-    --wait:#d97706; --done:#16a34a; --you:#2563eb; --danger:#dc2626; --accent:#2563eb;
+    --wait:#d97706; --done:#16a34a; --you:#2563eb; --danger:#dc2626; --accent:#2563eb; --okbar:#15803d;
     --tagink:#0b1020; --tagwait:#fbbf24; --tagdone:#4ade80; --tagyou:#93c5fd; --tagrec:#86efac; --recbg:rgba(22,163,74,.10); }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#17171a; --card:#212126; --ink:#ececf0; --muted:#a0a0a8; --line:#3a3a42;
-      --wait:#f59e0b; --done:#22c55e; --you:#60a5fa; --danger:#f87171; --accent:#60a5fa;
+      --wait:#f59e0b; --done:#22c55e; --you:#60a5fa; --danger:#f87171; --accent:#60a5fa; --okbar:#15803d;
       --tagink:#0b1020; --tagwait:#f59e0b; --tagdone:#22c55e; --tagyou:#60a5fa; } }
   html { zoom:${PAGE_SCALE} } /* #106: the whole page at PAGE_SCALE, like Ctrl+Plus */
   * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 system-ui, "Segoe UI", sans-serif; }
@@ -12057,6 +12074,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .err { color:var(--danger); font-weight:600 } .okmsg { color:var(--done); font-weight:600 }
   #rescue { display:none; border:2px solid var(--danger); border-radius:10px; padding:12px; margin:14px 0 }
   #banner { display:none; position:sticky; top:0; background:var(--danger); color:#fff; padding:8px ${FAB_COLUMN_PX}px 8px 20px; font-weight:600; z-index:6 } /* OW6: room for the floating Save button, as the header has */
+  #banner.ok { background:var(--okbar) } /* CP (2.9, #125): a long GOOD message — the answer saved on this computer — rides the bar too */
   /* I26 (#64): the page found itself in a TAB, not in the contour's own window — a yellow note, never the red banner:
      the answer still goes through; what is at risk is the draft (it lives in this tab) and the auto-close. */
   #tabnote { display:none; background:#fde68a; color:#1d1d1f; padding:8px 20px; font-weight:600; border-bottom:1px solid #f59e0b }`;
@@ -12066,7 +12084,11 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     "var CFG=" + cfgJson + ";var QS=" + qjson + ";",
     "var $=function(s){return document.querySelector(s)};var TX=CFG.txt;",
     "function fmt(s,o){for(var k in o)s=s.replace('{'+k+'}',o[k]);return s}",
-    "function status(msg,cls){var s=$('#status');s.textContent=msg;s.className=cls||''}",
+    // CP (2.9, #125): a long message → the bar (green for good news, red for trouble), the pill a short label; a later short status
+    // clears only a GOOD bar — an error bar stays until its own path clears it
+    "function status(msg,cls,short){var s=$('#status');var b=$('#banner');var long=!!msg&&msg.length>CFG.pillMax;",
+    " s.textContent=long?(short||(cls==='err'?TX.pillErr:TX.pillOk)):msg;s.className=cls||'';",
+    " if(long){b.textContent=msg;b.className=cls==='err'?'':'ok';b.style.display='block'}else if(b.className==='ok'){b.style.display='none';b.className=''}}",
     // I12: the browser draft — every field in localStorage, restored with a note
     "var DK=CFG.draftKey+':';",
     // OW6 (2.8): a draft key carries the FINGERPRINT of its question — in a new revision of the document a draft comes back only onto
@@ -12142,7 +12164,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " r.onerror=function(){cb(false)}}catch(e){cb(false)}}",
     "function saveLocally(p,e){var js=JSON.stringify(p);var ls=false;if(lsOk){try{localStorage.setItem(DK+'__submitted',js);ls=true}catch(e2){}}",
     " idbPut(DK+'__submitted',js,function(okIdb){if(!okIdb&&!ls){rescue(p,String(e));return}",
-    "  submittedLocally=true;saved=true;status(TX.savedLocally,'okmsg');$('#banner').style.display='none';$('#rescue').style.display='none';enableButtons(false)})}",
+    "  submittedLocally=true;saved=true;$('#rescue').style.display='none';status(TX.savedLocally,'okmsg',TX.savedLocallyShort);enableButtons(false)})}",
     "function isNotice(doc){var n=CFG.notices||[];for(var i=0;i<n.length;i++)if(n[i]===doc)return true;return false}",
     "function hasArtifacts(doc){var A=CFG.artifacts||[];for(var i=0;i<A.length;i++)if(A[i].doc===doc&&A[i].exists)return true;return false}",
     "function hasComments(p){for(var k in (p.comments||{}))return true;return false}",
@@ -12185,12 +12207,12 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
     " try{document.execCommand('copy');status(TX.copied,'okmsg')}catch(e){status(TX.copyManually,'err')}});",
     // I13/DEF4: page→server pulse — the human learns of a dead server AT ONCE and out loud
     // LP (#66): the pulse carries the input state — i: ms since the last keystroke (-1 = none), d: draft fields, s: saved
-    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally)$('#banner').style.display='none';return r.json().catch(function(){return null})})",
+    "function pulse(){fetch('/alive?i='+(lastInput?Date.now()-lastInput:-1)+'&d='+draftCount()+'&s='+(saved?1:0)+'&doc='+encodeURIComponent(CFG.doc||'')).then(function(r){if(!r.ok)throw 0;if(!selfBroken&&!submittedLocally&&$('#banner').className!=='ok')$('#banner').style.display='none';return r.json().catch(function(){return null})})",
     // OW6 (2.8): the pulse names the document's revision on disk — another one than this page was built from → saving off, the new revision offered
     // bugs/125 (2.8): the entry page rebuilds itself only when the QUEUE changed (a document answered in another window) — never on focus alone
     " .then(function(j){if(CFG.index&&j&&j.qrev&&CFG.qrev&&j.qrev!==CFG.qrev){location.reload();return}",
     "  if(j&&j.rev&&CFG.rev&&j.rev!==CFG.rev&&!saving&&!saved)newRevision(TX.rewritten)})",
-    " .catch(function(){var b=$('#banner');if(submittedLocally){b.style.display='none';return}b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
+    " .catch(function(){var b=$('#banner');if(submittedLocally)return;b.className='';b.style.display='block';b.textContent=(lsOk&&inApp)?TX.serverGoneLocal:TX.serverGone;",
     "  if(!(lsOk&&inApp)){var r=$('#rescue');r.style.display='block';if(lastPayload)$('#rescuetext').value=JSON.stringify(lastPayload,null,2)}",
     "  if(!submittedLocally)enableButtons(true)})}",
     "setInterval(pulse,CFG.aliveMs);pulse();",
@@ -12242,15 +12264,21 @@ const profileArgs = (root) => ['--user-data-dir=' + profileDir(root), ...PROFILE
 function openWindow(url, log = console.log, root = process.cwd()) {
   const tryCmd = (cmd, args) => { try { return spawnSync(cmd, args, { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
   const prof = profileArgs(root);
+  // light judge of epic CP, F7: the machine's own browser (`KAIF_BROWSER`, the first entry of the one browser list) raises the window too —
+  // before, only the answer recovery honoured it
+  const own = process.env.KAIF_BROWSER;
   if (IS_WIN) {
     const tryApp = (exe) => tryCmd('cmd.exe', ['/c', 'start', '', exe, '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof]);
+    if (own && tryApp(own)) return 'KAIF_BROWSER --app';
     if (tryApp('msedge')) return 'edge --app';
     if (tryApp('chrome')) return 'chrome --app';
     if (tryCmd('cmd.exe', ['/c', 'start', '', url])) { log('Could not raise an app window — opened a plain tab in the default browser (no project profile: a draft there cannot be recovered by the agent); please close it yourself (DEF8).'); return 'tab'; }
   } else if (IS_MAC) {
+    if (own && tryCmd('open', ['-na', own, '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
     if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'chrome --app';
     if (tryCmd('open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   } else {
+    if (own && tryCmd(own, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
     for (const exe of ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'])
       if (tryCmd(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
     if (tryCmd('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
@@ -12936,6 +12964,9 @@ export async function selftest(log = console.log) {
       && n(REFERENCES_SINCE, 'The formula — see above.', ' A') === 0 && n('2026-09-20', 'The formula — see above.') === 0
       && n(REFERENCES_SINCE, '**Answer target:** plans/24 §B8') === 0,
       'CP #124: a reasoned ref-ok, a forward «\u0441\u043c. \u043d\u0438\u0436\u0435», an answered question, a document older than the axis and the addressee line stay silent');
+    ok(n(REFERENCES_SINCE, '\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80% \u2014 \u0431\u0435\u0440\u0451\u043c B.') === 0 && n(REFERENCES_SINCE, 'B \u0432\u044b\u0448\u0435, \u0447\u0435\u043c A, \u043f\u043e \u0446\u0435\u043d\u0435.') === 0 && n(REFERENCES_SINCE, 'Load above 80% takes B.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u2014 \u0441\u043c. \u0442\u0430\u0431\u043b\u0438\u0446\u0443 \u043d\u0438\u0436\u0435.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0446\u0435\u043b\u0438\u043a\u043e\u043c: x = 2y; \u0441\u043c. \u0442\u0430\u043a\u0436\u0435 plans/12.') === 0
+      && n(REFERENCES_SINCE, '\u041a\u0430\u043a \u0443\u043a\u0430\u0437\u0430\u043d\u043e \u0432\u044b\u0448\u0435, \u0431\u0435\u0440\u0451\u043c B.') === 1 && n(REFERENCES_SINCE, 'As listed above, B wins.') === 1,
+      'CP F3 (light judge): a comparison ("load above 80%", "B is higher than A"), a forward "see the table below" and a "see also" next to the content stay silent; "as listed above" still refuses');
   }
   { // CP (2.9, #109 · #121 R3): an explicit closing word at the start of the status closes the document, whatever the explanation after it says
     const st = (v) => docStatus('# I\n\n> **Status:** ' + v + '\n');
@@ -12944,6 +12975,8 @@ export async function selftest(log = console.log) {
       'CP #109/#121 R3: \u0421\u041d\u042f\u0422\u041e · \u043f\u0435\u0440\u0435\u043d\u0435\u0441\u0435\u043d\u043e · \u0417\u0410\u041a\u0420\u042b\u0422\u041e with a negation after it · WITHDRAWN — the document is closed, not in the owner queue');
     ok(st('\u2705 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b — \u043f\u043e\u043a\u0430 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e \u0434\u0432\u0430') === 'waiting' && st('\u0441\u043d\u044f\u0442\u0438\u0435 \u0444\u043b\u0430\u0433\u0430 — \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'waiting',
       'CP #109: a negation still outranks a bare tick (bugs/70); a noun that starts like a closing word is no closing word');
+    ok(st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1; Q2 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'waiting' && st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0412\u041e\u041f\u0420\u041e\u0421 \u0421\u041d\u042f\u0422 \u0410\u0413\u0415\u041d\u0422\u041e\u041c, \u0410 \u041d\u0415 \u041e\u0422\u0412\u0415\u0427\u0415\u041d \u0412\u041b\u0410\u0414\u0415\u041b\u042c\u0426\u0415\u041c') === 'closed',
+      'CP F5 (light judge): a partial status (closed Q1; Q2 awaits an answer) waits — an explicit waiting marker outranks the closing word; a negation alone does not');
   }
   { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
     const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
@@ -12952,6 +12985,10 @@ export async function selftest(log = console.log) {
       'CP #127: 3 questions × 4 options in the forms A: · A. · A (note): · A) — 12 options each');
     ok(count(q3((l) => l)) === 12 && preflight(q3((l) => l + ' ' + String.fromCharCode(0x2014))).some((p) => /letters authored 4, recognised 0/.test(p)),
       'CP #127: a bold letter alone (- **A** …) is an option like the table form | **A** |; an unknown shape (- **A —** …) is named «letters authored 4, recognised 0», never lost in silence');
+    const para = (extra) => '# I\n\n> **Status:** awaiting\n\n### Q1. Pick?\n\n- **A)** one\n- **B)** two\n\n' + extra + '\n\n**Answer:**\n';
+    ok(preflight(para('**C.** three')).some((p) => /letters authored 3, recognised 2/.test(p) && p.includes('**C.** three'))
+      && !preflight(para('**B** costs more than A.')).some((p) => /letters authored/.test(p)),
+      'CP F4 (light judge): a paragraph option «**C.** three» next to two list options is named «letters authored 3, recognised 2»; prose opening with a bold letter («**B** costs more») is not an option');
     ok(parseQuestions('# I\n\n> **Status:** awaiting\n\n### Q1. Pick?\n\n**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n')[0].recommended === 'B',
       'CP ideas/31 p. 28: «**\u0420\u0435\u043a\u043e\u043c\u0435\u043d\u0434\u0430\u0446\u0438\u044f \u0430\u0433\u0435\u043d\u0442\u0430:** B» — the letter is read after the label closes its own bold');
     const ru = mkdtempSync(join(tmpdir(), 'kaif-contour-ru-'));
@@ -13017,7 +13054,14 @@ export async function selftest(log = console.log) {
   const BAD = 'interviews/interview_051_paragraphs.md';
   writeFileSync(join(root, BAD), '# Interview #051 — the field defect\n\n> Status: awaiting the owner\n\n### Q1. Which one?\n\n**A. First option** — typed as a paragraph, not a list item.\n\n**B. Second option** — also a paragraph.\n\n**Answer:**\n');
   const pre = preflight(readFileSync(join(root, BAD), 'utf8'));
-  ok(pre.length === 1 && /^Q1: 0 option/.test(pre[0]) && pre[0].includes('- **A)**'), 'pre-flight is RED on the "options as paragraphs" fixture (#051): Q1 named, the fix form printed (exit 3)');
+  // light judge of epic CP, F4: the paragraph letters are named too — two lines of the door, the letters it saw and the fix form
+  ok(pre.length === 2 && pre.some((p) => /^Q1: letters authored 2, recognised 0/.test(p) && p.includes('**A. First option**')) && pre.some((p) => /^Q1: 0 option/.test(p) && p.includes('- **A)**')),
+    'pre-flight is RED on the "options as paragraphs" fixture (#051): Q1 named, the paragraph letters named, the fix form printed (exit 3)');
+  writeFileSync(join(root, 'interviews', 'interview_990_title.md'), '# I\n\n> **Status:** awaiting\n\n### Q1. Take **B** or `C`?\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
+  const titled = buildPage(root, 'interviews/interview_990_title.md').html;
+  rmSync(join(root, 'interviews', 'interview_990_title.md'), { force: true });
+  ok(titled.includes('<strong>Q1.</strong> Take <strong>B</strong> or <code>C</code>? <span class="tag'),
+    'CP F6 (light judge): a question title carries the owner\'s markup rendered — no raw ** or backticks on the card');
   const gate = gateForOpen(root, BAD);
   ok(Array.isArray(gate) && gate[0].includes('exit 3'), 'the open gate refuses the #051 fixture before any page');
   const GOOD = 'interviews/interview_052_canonical.md';
@@ -13649,7 +13693,10 @@ export const PARSER = {
   // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
   // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
   // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
-  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!ниже)|above(?!\\p{L})|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  // Light judge of epic CP, F3: «выше» / "above" count only as a REFERENCE — after «см./как/указано/описано…» or "see/as/listed…", or
+  // «выше в документе/по тексту», "the above" — a comparison («нагрузка выше 80%», "above 80%") is no reference; «см. <…> ниже» (forward)
+  // and «см. также» / "see also" (a reference NEXT to the content) stay legal.
+  refBack: '(?<!\\p{L})(?:(?:см\\.?|смотр\\p{L}*|как|указан\\p{L}*|описан\\p{L}*|приведен\\p{L}*|приведён\\p{L}*|перечислен\\p{L}*|назван\\p{L}*|предложен\\p{L}*|обсужд\\p{L}*)\\s+(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?выше(?!\\p{L})|выше\\s+(?:в\\s+документе|в\\s+тексте|по\\s+тексту)|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|(?:see|as|listed|described|mentioned|shown|stated|given|named|proposed|discussed)\\s+(?:\\S+\\s+){0,3}?above(?!\\p{L})|the\\s+above(?!\\p{L})|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
   originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
@@ -13748,6 +13795,9 @@ const EN = {
     // LP (2.7, origin issue #66): with the window's own profile in the project the answer survives the server — no dialog, no choice
     serverGoneLocal: 'The contour server is unreachable — keep writing and press Save as usual: the answer is saved on this computer, in the project folder, and the agent will pick it up.',
     savedLocally: 'The server is unreachable — your answer is saved on this computer (in the project folder); the agent will pick it up. You can close the window.',
+    // CP (2.9, origin issue #125): a long message goes to the bar above the page (it keeps the Save column free); the pill under the
+    // button carries a short label only — a pill six lines tall covered the document's title
+    savedLocallyShort: 'Saved on this computer', pillOk: 'Done — details in the bar above', pillErr: 'Attention — details in the bar above',
     closeYourself: 'The browser refused to close the window — please close it yourself',
     // OW6 (2.8): answers are saved one at a time — the page stays; a save against another revision of the document is refused
     left: (n) => 'Saved. Questions left: ' + n + ' — the page stays open; answer the rest now or later.',
@@ -13859,6 +13909,9 @@ const RU = {
     // LP (2.7, #66): окно на своём профиле в папке проекта — ответ переживает сервер; ни диалога, ни выбора (слово владельца Q2 = D)
     serverGoneLocal: 'Сервер контура недоступен — пишите дальше и нажмите «Записать» как обычно: ответ сохранится на этом компьютере, в папке проекта, и агент его заберёт.',
     savedLocally: 'Сервер недоступен — ответ сохранён на этом компьютере (в папке проекта); агент его заберёт. Окно можно закрыть.',
+    // CP (2.9, тикет #125): длинное сообщение — в полосу над страницей (она оставляет колонку кнопки свободной); в пилюле под кнопкой —
+    // только короткая метка: пилюля в шесть строк закрывала заголовок документа
+    savedLocallyShort: 'Сохранено на этом компьютере', pillOk: 'Готово — подробности в полосе сверху', pillErr: 'Внимание — подробности в полосе сверху',
     closeYourself: 'Браузер не дал закрыть окно — закройте его, пожалуйста, сами',
     // OW6 (2.8): ответы записываются по одному — страница остаётся; запись по другой редакции документа отказывается
     left: (n) => 'Записано. Осталось вопросов: ' + n + ' — страница остаётся открытой; на остальные можно ответить сейчас или позже.',
@@ -19607,9 +19660,9 @@ This page has a BUDGET (120 lines, judged by the origin's suite s22): a new arti
 - **md is the source, HTML is derived. Always.** The page is rendered from the document; nothing is hand-edited.
 - A question is a heading `### Q<n>. <text>`; its answer field is a line starting with `**Answer:**` (the Russian alias of the
   label is legal). An answer already written by the owner is NEVER overwritten — a new text lands as a dated follow-up field.
-- **Options are recognised in exactly two forms** — anything else renders WITHOUT radio buttons:
+- **Options are recognised in two carriers with one letter vocabulary** (2.9, origin issue #127) — anything else renders WITHOUT radio buttons:
   - a table row per option: `| **A** | what it means | price and risk |`
-  - a list item per option: `- **A)** what it means` (a parenthesised note after the letter is legal)
+  - a list item per option: `- **A)**` · `- **A:**` · `- **A.**` · `- **A (note):**` · a bold letter alone `- **A** — …`; a letter the parse does not read — a list item or a paragraph `**C.** …` — is NAMED by the door (`letters authored N, recognised M`, exit 3), never dropped
 - A question with NO options is legal only when it DECLARES a free field (a `D) your own answer` option, or the marker
   `<!-- questions-guard:no-scenario <reason> -->` for a naming/taste question). Paragraph headings like `**A. …**` are NOT options — the #51 defect.
 - Every question and every option is a four-line scenario (Situation · Action · Result · Check) in the owner's language; the technical note stands UNDER the scenario, never instead of it.
@@ -19618,7 +19671,7 @@ This page has a BUDGET (120 lines, judged by the origin's suite s22): a new arti
 
 ```
 for each question Q<n>:
-  options(Q<n>) = table rows | **X** |  ∪  list items - **X)**
+  options(Q<n>) = table rows | **X** |  ∪  list items - **X)** · - **X:** · - **X.** · - **X (note):** · - **X**   (letters authored > options → exit 3)
   if count(options) < 2 and no declared free field:
     print "Q<n>: 0 options in list form and no declared free field — the page would open without radio
            buttons; fix the form: - **A)** …"   →  exit 3

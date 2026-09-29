@@ -469,8 +469,10 @@ if (!exe) {
   ok(typed === TEXT, 's22 D: headless-страница на профиле проекта — текст введён в поле Q1 (событие input → черновик в localStorage)', String(typed).slice(0, 80));
   gen2.child.kill(); await wait(1000); // сервер мёртв — как в тикете #66
   ok(gen2.exit() !== null && existsSync(DLOCK), 's22 D: сервер убит, замок остался (stale — порт помнит origin)', 'gen ' + gen2.exit());
-  const st = await page.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(r){setTimeout(function(){r(document.querySelector('#status').textContent+'|'+(localStorage.getItem('owner-review:" + DOC + ":__submitted')?'submitted':'none'))},700)})})()");
-  ok(/сохранён на этом компьютере/.test(st) && /\|submitted$/.test(st),
+  const st = await page.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(r){setTimeout(function(){r(document.querySelector('#status').textContent+'|'+document.querySelector('#banner').textContent+'|'+document.querySelector('#banner').className+'|'+(localStorage.getItem('owner-review:" + DOC + ":__submitted')?'submitted':'none'))},700)})})()");
+  // CP (2.9, #125 — находка F1 судьи CP): полный текст «сохранён на этом компьютере» — в зелёной полосе над страницей, в пилюле —
+  // короткая метка «Сохранено на этом компьютере» (пилюля в шесть строк закрывала заголовок документа); ассерт читал пилюлю
+  ok(/^Сохранено на этом компьютере\|[^|]*сохранён на этом компьютере[^|]*\|ok\|submitted$/.test(st),
      's22 D: «Записать» при мёртвом сервере → «сохранён на этом компьютере», ответ лежит в localStorage профиля проекта (__submitted), без диалога (LP3, критерий 19)', st);
   // (5а) the browser STILL holds the profile (the owner's window is open): recovery is DEFERRED — a second Chromium on a held
   // profile would hand its page to the live window, i.e. onto the owner's screen (judge Н5)
@@ -508,11 +510,12 @@ if (!exe) {
   await tab.evaluate("(function(){var t=document.getElementsByName('text:" + DOC_TAB + ":Q1')[0];t.value=" + JSON.stringify(TEXT3) + ";t.dispatchEvent(new Event('input',{bubbles:true}));return t.value})()");
   gen3.child.kill(); await wait(1000);
   const st3 = await tab.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(res){var t0=Date.now();(function poll(){var ring=document.querySelector('#rescue');" +
-    "if((ring.style.display==='block'&&document.querySelector('#rescuetext').value)||/сохранён/.test(document.querySelector('#status').textContent)||Date.now()-t0>7000){res(JSON.stringify({status:document.querySelector('#status').textContent,banner:document.querySelector('#banner').textContent," +
+    "if((ring.style.display==='block'&&document.querySelector('#rescuetext').value)||/сохранен/i.test(document.querySelector('#status').textContent)||Date.now()-t0>7000){res(JSON.stringify({status:document.querySelector('#status').textContent,banner:document.querySelector('#banner').textContent," +
     "ring:ring.style.display,ringText:document.querySelector('#rescuetext').value,submitted:!!localStorage.getItem('owner-review:" + DOC_TAB + ":__submitted'),saveEnabled:!document.querySelector('#save').disabled," +
     "tabnote:document.querySelector('#tabnote').style.display}))}else setTimeout(poll,200)})()})})()");
   const s3 = JSON.parse(st3);
-  ok(!/сохранён на этом компьютере|заберёт/.test(s3.status + s3.banner) && /НЕ уйдёт/.test(s3.status) && s3.ring === 'block' && s3.ringText.includes(TEXT3) && !s3.submitted && s3.saveEnabled && s3.tabnote === 'block',
+  // CP (2.9, #125, F1 судьи CP): длинная строка ошибки — в красной полосе, пилюля — короткая метка (≤ 48 знаков); прежде «НЕ уйдёт» читалось из пилюли
+  ok(!/сохранён на этом компьютере|заберёт/.test(s3.status + s3.banner) && /НЕ уйдёт/.test(s3.banner) && s3.status.length <= 48 && s3.ring === 'block' && s3.ringText.includes(TEXT3) && !s3.submitted && s3.saveEnabled && s3.tabnote === 'block',
      's22 D: ВКЛАДКА на чужом профиле, сервер убит, «Записать» → «ответ НЕ уйдёт», кольцо спасения с текстом ответа, кнопки живы, __submitted нет, жёлтая полоса вкладки — ни слова «сохранён на этом компьютере»/«заберёт» (RL D-F2)', st3.slice(0, 500));
   await tab.closeGracefully();
   rmSync(join(D, 'interviews', 'decisions', 'interview_067_probe.lock'), { force: true });
@@ -542,7 +545,9 @@ if (!exe) {
   const until = async (expr, ms = 12000) => { const t0 = Date.now(); for (;;) { try { const v = await ev(expr); if (v) return v; } catch { /* the page is navigating */ } if (Date.now() - t0 > ms) return null; await wait(200); } };
   const pick = (q, v) => ev("(function(){var r=document.getElementsByName('choice:" + DOC_P + ":" + q + "');for(var i=0;i<r.length;i++)if(r[i].value==='" + v + "'){r[i].checked=true;saveDraft(r[i]);return true}return false})()");
   const clickSave = () => ev("(function(){document.querySelector('#save').click();return true})()");
-  const statusOf = (re) => until("(function(){var s=document.querySelector('#status');return s&&" + re + ".test(s.textContent)?s.textContent:''})()");
+  // CP (2.9, #125, F1 судьи CP): длинная строка статуса («Записано. Осталось вопросов: N — …») живёт в полосе над страницей, в пилюле —
+  // короткая метка; читаются оба носителя (прежде — только пилюля, куда длинный текст больше не кладётся)
+  const statusOf = (re) => until("(function(){var s=document.querySelector('#status'),b=document.querySelector('#banner');var v=(s?s.textContent:'')+(b&&b.style.display==='block'?' | '+b.textContent:'');return " + re + ".test(v)?v:''})()");
   // the owner's profile carries a draft of the OLD form (a key without the question's fingerprint — a page before 2.8): it is shown as a
   // draft of a previous revision with its text and never placed onto a question by number (on v2.7 it lands in Q2 — red)
   await ev("(function(){localStorage.setItem(CFG.draftKey+':text:" + DOC_P + ":Q2','старый черновик без отпечатка');location.reload();return true})()");

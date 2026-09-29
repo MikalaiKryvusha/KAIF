@@ -45,6 +45,9 @@ POSIX-ветка проверки занятости профиля судила
 (`review.mjs`: `KAIF_BROWSER`, Chromium контейнера, флаг `--no-sandbox` только под root), инструменты истока берут его оттуда.
 `TWINS: searched "SingletonLock|lockfile" in framework/ tools/ — found 1 judge of profile liveness (profileHeld); the page lock of the
 contour (checkLock) judges its own pid already.`
+Correction (light judge of epic CP, F7, 2026-09-29): the search above missed a second reader of the page lock that judged by the lock's
+EXISTENCE only — the waiter `waitForRecord` (it never learned that a killed server's lock stays, I29); fixed by CP6 (`efb8a7a`, origin
+issue #125): the waiter judges the lock's pid by its own read-only probe.
 
 ## Decisions made without the owner
 
