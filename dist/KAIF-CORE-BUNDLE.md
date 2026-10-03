@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "a56f77e9c03b1035967e3b14e77d5e9e3e3dbaef3f95964506c28b13a470512e",
+    "sourceTree": "c3306604cea54204fd3c6e714658e12c9b3e2de0a22d1325b10eff0e51caa3b0",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -7363,7 +7363,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   Only the app window promises the pick-up — the page OBSERVES it (`display-mode: standalone`); a page in a
   TAB lives in a browser profile the agent never reads, so there Save with the server gone takes I11's path:
   the rescue ring with the answer text, Copy and Retry, and no word about the agent (2.7, court finding D-F2).
-  Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified — say so.
+  Verified on Edge/Windows; Chrome and macOS take the same flags and are NOT verified — say so. Linux is not supported: the window is not
+  raised there, the contour prints the URL.
 
 ## The named class: "handling the human's work"
 
@@ -11280,7 +11281,7 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 //  11/11 on a fresh install from the bundle (#051 → exit 3 naming Q1 and `- **A)**`, canonical doc → --no-serve exit 0
 //  + RENDER IS NOT YET A SHOW, --mark-shown writes shown.json); suite s22 (fresh install · pre-flight · three faces ·
 //  shown fact · update route with the project's own tools/review.mjs untouched); polygon `all 22 suites green`.
-//  NOT observed yet: a live browser window (origin's verify-contour — step IC5), the macOS/Linux fallbacks]
+//  NOT observed yet: a live browser window (origin's verify-contour — step IC5), the macOS fallback]
 //
 //   node .kaif/tools/contour/review.mjs <doc.md>                 # interview: radio per option, free field, Save
 //   node .kaif/tools/contour/review.mjs <doc.md> --notice        # something to TELL — "OK, read" is the outcome
@@ -11310,8 +11311,8 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, readlinkSync, symlinkSync } from 'node:fs';
-import { tmpdir, platform, hostname } from 'node:os';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync } from 'node:fs';
+import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
@@ -12291,26 +12292,14 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
 // else an honest "open it yourself: URL" — the contour never pretends a window opened. ───────
 // LP (2.7, #66): the app window runs on its OWN profile inside the project (`.kaif/contour-window/`, ignore-first) with
 // the three EXP-0134 flags — the draft and a locally saved answer then live on the owner's disk IN THE PROJECT, and the
-// agent can read them back headless on the same profile. Verified on Edge (Windows); Chrome/macOS/Linux take the same
+// agent can read them back headless on the same profile. Verified on Edge (Windows); Chrome/macOS take the same
 // flags and are NOT verified — said so in the run report, never promised.
+// Linux is NOT supported (2.9, the owner's word 2026-10-03 — remove the contour's Linux code entirely): no launch is attempted
+// there, the contour prints the honest NO WINDOW line with the URL and serves the page as everywhere else.
 const profileDir = (root) => resolve(root, WINDOW_PROFILE_DIR);
 const profileArgs = (root) => ['--user-data-dir=' + profileDir(root), ...PROFILE_QUIET_FLAGS];
-// N3 of the light re-judge of epic CP (2.9): on Linux the FIRST instance of a Chromium runs in the foreground until its window closes —
-// the launcher's deadline (spawnSync, BEEP_DEADLINE_MS) killed it at 8 s, and the window died with it: `KAIF_BROWSER` and every browser of
-// the list printed "no browser found". A Linux launch is DETACHED: the browser runs in the background with its output dropped, and the
-// launch counts when it is still alive after LAUNCH_ALIVE_S or has exited 0 (a second instance hands the address to the first one and
-// exits 0). The command and its arguments ride as positional parameters of `sh -c` — never pasted into the shell text; the shell is
-// named by its POSIX path, so a launch does not depend on a PATH that holds no `sh` (the quiet environment of the origin's suites).
-// [TESTED: 2026-09-29 21:23 +03:00 · selftest N3: a stub browser that stays in the foreground survives the launch, «KAIF_BROWSER --app» in
-//  ~1 s, in a normal and in an empty PATH; red on `tryCmd` (none, 8026 ms) — testcases/reports/2026-09-28_cp-question-page.md, runs 53–57.
-//  A real Chromium on the owner's Linux desktop is NOT observed]
-const LAUNCH_ALIVE_S = 1;
-const POSIX_SH = '/bin/sh';
-const DETACHED_SH = 'command -v "$0" >/dev/null 2>&1 || exit 127; "$0" "$@" >/dev/null 2>&1 & p=$!; sleep ' + LAUNCH_ALIVE_S
-  + '; if kill -0 "$p" 2>/dev/null; then exit 0; fi; wait "$p"';
 function openWindow(url, log = console.log, root = process.cwd()) {
   const tryCmd = (cmd, args) => { try { return spawnSync(cmd, args, { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
-  const tryDetached = (cmd, args) => { try { return spawnSync(POSIX_SH, ['-c', DETACHED_SH, cmd, ...args], { stdio: 'ignore', timeout: BEEP_DEADLINE_MS }).status === 0; } catch { return false; } };
   const prof = profileArgs(root);
   // light judge of epic CP, F7: the machine's own browser (`KAIF_BROWSER`, the first entry of the one browser list) raises the window too —
   // before, only the answer recovery honoured it
@@ -12326,10 +12315,8 @@ function openWindow(url, log = console.log, root = process.cwd()) {
     if (tryCmd('open', ['-na', 'Google Chrome', '--args', '--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'chrome --app';
     if (tryCmd('open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
   } else {
-    if (own && tryDetached(own, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return 'KAIF_BROWSER --app';
-    for (const exe of ['google-chrome', 'chromium', 'chromium-browser', 'microsoft-edge'])
-      if (tryDetached(exe, ['--app=' + url, '--window-size=' + WINDOW_SIZE, ...prof])) return exe + ' --app';
-    if (tryDetached('xdg-open', [url])) { log('Could not raise an app window — opened the default browser; please close it yourself (DEF8).'); return 'browser'; }
+    log('NO WINDOW OPENED — open it yourself: ' + url + ' (this platform is not supported by the contour window — Windows and macOS only; the page is served until you answer or close it).');
+    return 'none';
   }
   log('NO WINDOW OPENED — open it yourself: ' + url + ' (no browser found on this machine; the page is served until you answer or close it).');
   return 'none';
@@ -12805,15 +12792,14 @@ export async function closeContour(root, docPath, { force = false, ownerWord = n
 // reads it back and posts it here; the agent records it as the owner's decision and says so. Runs only when the
 // project profile exists (a window once ran) — a sandbox tree never has one, so no browser is ever launched there.
 // 2.9, epic CP: ONE browser list — the origin's test tools import it from here (they kept two copies of their own). `KAIF_BROWSER`
-// names the machine's browser first (a stand whose Chromium lives off the standard paths); the Linux list knows the Playwright
-// Chromium of a cloud container. Under root (a container) Chromium refuses to start with its sandbox — the flag goes only there.
+// names the machine's browser first (a stand whose Chromium lives off the standard paths). Linux has no list — not supported (owner's
+// word 2026-10-03).
 export const BROWSER_EXES = [...(process.env.KAIF_BROWSER ? [process.env.KAIF_BROWSER] : []), ...(IS_WIN
   ? ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe',
      'C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe']
   : IS_MAC ? ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge']
-    : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/microsoft-edge', '/opt/pw-browsers/chromium'])];
+    : [])];
 export const findBrowser = () => BROWSER_EXES.find((p) => existsSync(p)) || null;
-export const sandboxArgs = () => (typeof process.getuid === 'function' && process.getuid() === 0 ? ['--no-sandbox'] : []);
 function recordRecovered(root, doc, payload, cfg) {
   const face = payload.face || 'interview';
   if (payload.read) { const r = recordDecision(root, doc, { kind: KIND_NOTICE, comment: payload.comment, recovered: true }, cfg); markNoticeRead(root, doc); return r; }
@@ -12884,7 +12870,7 @@ function recoverOne(root, key, lock, exe, log, result) {
     };
     server.on('error', (e) => { log('recovery: port ' + port + ' of the dead window is taken (' + e.code + ') — the local save keeps its origin and cannot be read on another port; nothing picked up for ' + doc); done(); });
     server.listen(port, '127.0.0.1', () => {
-      child = spawn(exe, ['--headless=new', ...sandboxArgs(), ...profileArgs(root), '--disable-gpu', 'http://127.0.0.1:' + port + '/recover'], { stdio: 'ignore' });
+      child = spawn(exe, ['--headless=new', ...profileArgs(root), '--disable-gpu', 'http://127.0.0.1:' + port + '/recover'], { stdio: 'ignore' });
       child.on('error', (e) => { log('recovery: could not start the headless browser ' + exe + ': ' + e.message); finish(); });
       timer = setTimeout(() => { log('recovery: the headless browser did not answer within ' + (RECOVER_TIMEOUT_MS / 1000) + ' s — nothing picked up for ' + doc); finish(); }, RECOVER_TIMEOUT_MS);
     });
@@ -12904,7 +12890,7 @@ function recoverOne(root, key, lock, exe, log, result) {
     }
   });
 }
-/** Is a browser running on the project profile right now? Windows Chromium keeps `lockfile` open with no sharing; elsewhere `SingletonLock` marks it (its host and pid are checked since 2.9; before, «not verified» — said in the returned reason). */
+/** Is a browser running on the project profile right now? Windows Chromium keeps `lockfile` open with no sharing; on macOS `SingletonLock` marks it (not verified — said in the returned reason). */
 function profileHeld(root) {
   const d = profileDir(root);
   if (IS_WIN) {
@@ -12912,16 +12898,7 @@ function profileHeld(root) {
     if (!existsSync(lf)) return null;
     try { closeSync(openSync(lf, 'r+')); return null; } catch (e) { return 'lockfile busy: ' + e.code; } // opens → a leftover of a dead browser
   }
-  // POSIX Chromium: `SingletonLock` is a SYMLINK to "<hostname>-<pid>", and Chromium itself treats a lock of THIS host whose pid is
-  // gone as a leftover. 2.9, epic CP: a hard-killed browser leaves the link (observed in a Linux container: "vm-32293" stayed after
-  // kill -9), and recovery waited for a window that no longer existed. A live pid, another host or an unreadable link → held.
-  let target;
-  try { lstatSync(join(d, 'SingletonLock')); } catch { return null; }
-  try { target = readlinkSync(join(d, 'SingletonLock')); } catch { return 'SingletonLock present, not a link'; }
-  const m = /^(.*)-(\d+)$/.exec(target);
-  if (!m || m[1] !== hostname()) return 'SingletonLock of ' + target + ' (another host or unreadable)';
-  try { process.kill(Number(m[2]), 0); return 'SingletonLock held by live pid ' + m[2]; }
-  catch (e) { return e.code === 'EPERM' ? 'SingletonLock held by pid ' + m[2] + ' of another user' : null; } // ESRCH → a dead browser's leftover
+  try { lstatSync(join(d, 'SingletonLock')); return 'SingletonLock present (platform not verified)'; } catch { return null; }
 }
 export function recoverFromWindow(root, { log = console.log } = {}) {
   const result = { recovered: [], drafts: [] };
@@ -13540,30 +13517,6 @@ export async function selftest(log = console.log) {
     'a page closed after a partial save: exit 2 and «closed after 1 saved answer(s) — recorded, nothing lost» (OW6, judge OW10 H6)');
   rmSync(join(root, MD), { force: true });
   } // OW6
-
-  if (!IS_WIN && !IS_MAC) { // CP, the light re-judge's N3: a browser that stays in the FOREGROUND (a first Chromium) survives the launch
-    const stubDir = join(root, 'stub-browser'); mkdirSync(stubDir, { recursive: true });
-    const stub = join(stubDir, 'browser.sh');
-    writeFileSync(stub, '#!/bin/sh\necho $$ > "' + join(stubDir, 'pid') + '"\necho "$@" > "' + join(stubDir, 'args') + '"\nexec sleep 30\n', { mode: 0o755 });
-    // silence: PATH is only the stub's folder (with `sleep` linked in — found on PATH or in /bin, /usr/bin: a suite's quiet PATH holds
-    // nothing) — a failing launch cannot reach a real browser of the list
-    const sleepAt = [...(process.env.PATH || '').split(':').filter(Boolean), '/bin', '/usr/bin'].map((d) => join(d, 'sleep')).find((x) => existsSync(x));
-    if (sleepAt) symlinkSync(sleepAt, join(stubDir, 'sleep'));
-    const prevB = process.env.KAIF_BROWSER, prevPath = process.env.PATH; process.env.KAIF_BROWSER = stub; process.env.PATH = stubDir;
-    const t0 = Date.now(); let launched = null;
-    try { launched = openWindow('http://127.0.0.1:9/', () => {}, root); } finally {
-      if (prevB === undefined) delete process.env.KAIF_BROWSER; else process.env.KAIF_BROWSER = prevB;
-      process.env.PATH = prevPath;
-    }
-    const took = Date.now() - t0;
-    let pid = 0; try { pid = Number(readFileSync(join(stubDir, 'pid'), 'utf8').trim()); } catch { /* the stub never ran */ }
-    let alive = false; try { if (pid > 0) { process.kill(pid, 0); alive = true; } } catch { /* gone */ }
-    const argsSeen = existsSync(join(stubDir, 'args')) ? readFileSync(join(stubDir, 'args'), 'utf8') : '';
-    try { if (pid > 0) process.kill(pid, 'SIGKILL'); } catch { /* already gone */ }
-    ok(launched === 'KAIF_BROWSER --app' && alive && argsSeen.includes('--app=http://127.0.0.1:9/') && took < BEEP_DEADLINE_MS,
-      'N3 (Linux): KAIF_BROWSER that stays in the foreground — «KAIF_BROWSER --app» within the deadline and the browser still alive (got '
-      + launched + ', alive ' + alive + ', ' + took + ' ms)');
-  }
 
   rmSync(root, { recursive: true, force: true });
   log(bad ? 'SELFTEST RED: ' + bad + ' of ' + n : 'contour selftest green: ' + n + ' checks (pre-flight red on the "options as paragraphs" fixture, three faces, records, showing)');
@@ -19073,7 +19026,15 @@ const words = (s) => String(s).toLowerCase().normalize('NFD').replace(/\p{M}/gu,
 // hand-back, a notification carry `promptSource`/`origin`). A Stop hook's own feedback is a string user record WITHOUT a source — it
 // continues the turn, it does not open one (origin session 76, 2026-09-28 18:24: the boundary moved onto another hook's feedback, the
 // owner's words fell into «the previous turn» and the continue mark was ignored)
-const opensTurn = (r) => !!r && r.type === 'user' && !!r.message && typeof r.message.content === 'string' && !!(r.promptSource || r.origin);
+// The prompt's content is a STRING in the terminal client and an ARRAY of text blocks in the IDE client (origin session 77, 2026-10-03,
+// VS Code, entrypoint «sdk»: every owner prompt was an array — the boundary was never found, the whole session read as one turn, earlier
+// words were demanded again, and under a continuation the turn ended silently: the owner had to ask why the agent stood). A tool result
+// is an array too and carries no source (117 of 117 in that record) — the source alone tells them apart.
+const opensTurn = (r) => !!r && r.type === 'user' && !!r.message && !!(r.promptSource || r.origin)
+  && (typeof r.message.content === 'string' || (Array.isArray(r.message.content) && r.message.content.some((b) => b && b.type === 'text')));
+// the assistant's TEXT of one record (reasoning and tool calls are not an answer the owner saw)
+const textOf = (r) => (r && r.type === 'assistant' && r.message && Array.isArray(r.message.content)
+  ? r.message.content.filter((b) => b && b.type === 'text').map((b) => b.text || '').join('\n') : '');
 const block = (reason) => { process.stdout.write(JSON.stringify({ decision: 'block', reason }) + '\n'); process.exit(0); };
 
 try {
@@ -19085,18 +19046,29 @@ try {
   const recs = readTail(String(input.transcript_path)).split('\n').map((l) => { try { return JSON.parse(l); } catch { return null; } });
   let start = -1;
   for (let i = recs.length - 1; i >= 0; i--) if (opensTurn(recs[i])) { start = i; break; }
-  const owner = [];
+  const owner = [], spoken = []; // the owner's words with their place · the agent's texts with theirs
   for (let i = start + 1; i < recs.length; i++) {
     const r = recs[i];
+    const said = textOf(r);
+    if (said) { spoken.push({ i, said }); continue; }
     if (!r || r.type !== 'attachment' || !r.attachment || r.attachment.type !== 'queued_command') continue;
     const who = (r.attachment.origin && r.attachment.origin.kind) || r.attachment.commandMode || '';
     if (who !== 'human') continue;
     const text = flat(r.attachment.prompt).replace(/\s+/g, ' ').trim();
-    if (text) owner.push(text);
+    if (text) owner.push({ i, text });
   }
   if (!owner.length) process.exit(0);
-  const said = ' ' + words(input.last_assistant_message).join(' ') + ' ';
-  const missing = owner.filter((t) => { const k = words(t).slice(0, KEY_WORDS); return k.length && !said.includes(' ' + k.join(' ') + ' '); });
+  // a word is answered by ANY response of this turn after it — an earlier response that answered it and asked to go on («⏩») counts
+  // (origin session 77: the answer stood two responses back, the hook demanded it again in the last one, and under a continuation
+  // the turn ended without the «continue»); the last response may not be in the transcript yet (the vendor writes it late) — it is
+  // read from the event
+  const answered = (o) => {
+    const k = words(o.text).slice(0, KEY_WORDS);
+    if (!k.length) return true;
+    const said = ' ' + [...spoken.filter((s) => s.i > o.i).map((s) => s.said), input.last_assistant_message].map((s) => words(s).join(' ')).join(' ') + ' ';
+    return said.includes(' ' + k.join(' ') + ' ');
+  };
+  const missing = owner.filter((o) => !answered(o)).map((o) => o.text);
   if (missing.length && input.stop_hook_active !== true) {
     const quoted = missing.map((t) => '«' + t.slice(0, QUOTE_CHARS) + (t.length > QUOTE_CHARS ? '…' : '') + '»').join(' · ');
     block('KAIF: the owner wrote while you were working and this response does not answer it yet: ' + quoted + '. A text between tool calls'

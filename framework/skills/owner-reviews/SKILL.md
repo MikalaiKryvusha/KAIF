@@ -366,7 +366,8 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   Only the app window promises the pick-up — the page OBSERVES it (`display-mode: standalone`); a page in a
   TAB lives in a browser profile the agent never reads, so there Save with the server gone takes I11's path:
   the rescue ring with the answer text, Copy and Retry, and no word about the agent (2.7, court finding D-F2).
-  Verified on Edge/Windows; Chrome, macOS and Linux take the same flags and are NOT verified — say so.
+  Verified on Edge/Windows; Chrome and macOS take the same flags and are NOT verified — say so. Linux is not supported: the window is not
+  raised there, the contour prints the URL.
 
 ## The named class: "handling the human's work"
 

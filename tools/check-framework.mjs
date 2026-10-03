@@ -866,6 +866,15 @@ errors.push(...unclassifiedModulePaths({ ...payloadModules(join(ROOT, 'framework
 errors.push(...scanPayloadCyrillic(join(ROOT, 'framework')));
 // 5h. Invisible characters inside source bodies of framework/ and tools/ (bugs/122) — declared at the top, invoked here.
 errors.push(...scanInvisibleCharacters(ROOT));
+// 5q. The shipped contour does not support Linux (2.9, owner's word 2026-10-03, MASTER_PLAN №141 — the cloud session's Linux code
+//     removed entirely): a Linux launch or stand token back in framework/tools/contour/ is a refusal, named by file and line.
+//     [TESTED: 2026-10-03 · red on the contour of 2dede5f (xdg-open, /usr/bin/, /opt/pw-browsers, getuid/--no-sandbox), green after removal]
+for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter((n) => n.endsWith('.mjs'))) {
+  readFileSync(join(ROOT, 'framework', 'tools', 'contour', f), 'utf8').split(/\r?\n/).forEach((line, i) => {
+    const hit = /xdg-open|\/usr\/bin\/(?!env )|\/opt\/pw-browsers|--no-sandbox|getuid/.exec(line); // the shebang is not a stand
+    if (hit) errors.push(`5q: framework/tools/contour/${f}:${i + 1} carries «${hit[0]}» — the contour does not support Linux (№141); remove it`);
+  });
+}
 
 // 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
 //     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]

@@ -713,6 +713,25 @@ console.log('\n=== s14: хук stop-owner-answer — итоговый ответ
      's14 stop-owner-answer: после отзыва другого стража неотвеченное слово владельца всё ещё требует ответа', t.out.slice(0, 200));
   t = stop('no-last-message', turn, undefined);
   ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: клиент без last_assistant_message → тишина (судить нечего)', t.out.slice(0, 160));
+  // 2.9, сессия 77 (VS Code, entrypoint «sdk»): промпт владельца в записи — МАССИВ текстовых блоков, не строка. Хук не находил начала хода,
+  // вся сессия была одним ходом: прошлые слова требовались снова, а под продолжением ход молча кончался — владелец спросил «ты чего стоишь?».
+  const promptArr = (text) => J({ type: 'user', timestamp: '2026-10-03T05:30:00.000Z', promptSource: 'sdk', origin: { kind: 'human' },
+    message: { role: 'user', content: [{ type: 'text', text }] } });
+  const said = (text) => asst({ type: 'text', text });
+  t = stop('ide-prompt-array', [promptArr('делаем 2.9'), mid('сколько осталось?'), asst(think, tool), promptArr('ты чего стоишь?'), asst(think, tool)], 'Готово.');
+  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: промпт IDE (массив блоков) открывает ход — слово ПРОШЛОГО хода не судится → тишина', t.out.slice(0, 200));
+  t = stop('ide-tool-result-not-turn', [promptArr('делаем'), mid('сколько осталось?'), asst(think, tool),
+    J({ type: 'user', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'x', content: 'ok' }] } })], 'Готово.');
+  ok(t.js.decision === 'block' && /сколько осталось\?/.test(t.js.reason || ''), 's14 stop-owner-answer: результат инструмента (массив без источника) — не начало хода', t.out.slice(0, 200));
+  // слово, на которое ответил ПРОШЛЫЙ ответ этого хода («⏩» → продолжение), засчитано: последний ответ отвечает только на новое слово
+  t = stop('answered-earlier', [prompt('го'), mid('переделываем на Windows'), said('«Переделываем на Windows» — принял.\n\n⏩ сборка'),
+    feedback('KAIF: the owner has your answer — continue the work: сборка'), mid('чего не работаешь?'), asst(think, tool)],
+    '«Чего не работаешь?» — работаю: коммит.\n\n⏩ коммит и push', { stop_hook_active: true });
+  ok(t.js.decision === 'block' && /continue the work: коммит и push/.test(t.js.reason || ''),
+     's14 stop-owner-answer: слово, отвеченное прошлым ответом хода, засчитано — «⏩» продолжает работу и под stop_hook_active', t.out.slice(0, 200));
+  t = stop('answered-earlier-missing-new', [prompt('го'), mid('переделываем на Windows'), said('«Переделываем на Windows» — принял.'), mid('чего не работаешь?'), asst(think, tool)], 'Коммит сделан.');
+  ok(t.js.decision === 'block' && /чего не работаешь\?/.test(t.js.reason || '') && !/переделываем/.test(t.js.reason || ''),
+     's14 stop-owner-answer: новое слово без ответа требуется, отвеченное раньше — не требуется снова', t.out.slice(0, 200));
 }
 
 // ---------------------------------------------------------------- SW2: поставленное ПОДКЛЮЧЕНО (2.9, тикет #115)

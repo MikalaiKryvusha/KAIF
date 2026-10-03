@@ -63,7 +63,15 @@ const words = (s) => String(s).toLowerCase().normalize('NFD').replace(/\p{M}/gu,
 // hand-back, a notification carry `promptSource`/`origin`). A Stop hook's own feedback is a string user record WITHOUT a source — it
 // continues the turn, it does not open one (origin session 76, 2026-09-28 18:24: the boundary moved onto another hook's feedback, the
 // owner's words fell into «the previous turn» and the continue mark was ignored)
-const opensTurn = (r) => !!r && r.type === 'user' && !!r.message && typeof r.message.content === 'string' && !!(r.promptSource || r.origin);
+// The prompt's content is a STRING in the terminal client and an ARRAY of text blocks in the IDE client (origin session 77, 2026-10-03,
+// VS Code, entrypoint «sdk»: every owner prompt was an array — the boundary was never found, the whole session read as one turn, earlier
+// words were demanded again, and under a continuation the turn ended silently: the owner had to ask why the agent stood). A tool result
+// is an array too and carries no source (117 of 117 in that record) — the source alone tells them apart.
+const opensTurn = (r) => !!r && r.type === 'user' && !!r.message && !!(r.promptSource || r.origin)
+  && (typeof r.message.content === 'string' || (Array.isArray(r.message.content) && r.message.content.some((b) => b && b.type === 'text')));
+// the assistant's TEXT of one record (reasoning and tool calls are not an answer the owner saw)
+const textOf = (r) => (r && r.type === 'assistant' && r.message && Array.isArray(r.message.content)
+  ? r.message.content.filter((b) => b && b.type === 'text').map((b) => b.text || '').join('\n') : '');
 const block = (reason) => { process.stdout.write(JSON.stringify({ decision: 'block', reason }) + '\n'); process.exit(0); };
 
 try {
@@ -75,18 +83,29 @@ try {
   const recs = readTail(String(input.transcript_path)).split('\n').map((l) => { try { return JSON.parse(l); } catch { return null; } });
   let start = -1;
   for (let i = recs.length - 1; i >= 0; i--) if (opensTurn(recs[i])) { start = i; break; }
-  const owner = [];
+  const owner = [], spoken = []; // the owner's words with their place · the agent's texts with theirs
   for (let i = start + 1; i < recs.length; i++) {
     const r = recs[i];
+    const said = textOf(r);
+    if (said) { spoken.push({ i, said }); continue; }
     if (!r || r.type !== 'attachment' || !r.attachment || r.attachment.type !== 'queued_command') continue;
     const who = (r.attachment.origin && r.attachment.origin.kind) || r.attachment.commandMode || '';
     if (who !== 'human') continue;
     const text = flat(r.attachment.prompt).replace(/\s+/g, ' ').trim();
-    if (text) owner.push(text);
+    if (text) owner.push({ i, text });
   }
   if (!owner.length) process.exit(0);
-  const said = ' ' + words(input.last_assistant_message).join(' ') + ' ';
-  const missing = owner.filter((t) => { const k = words(t).slice(0, KEY_WORDS); return k.length && !said.includes(' ' + k.join(' ') + ' '); });
+  // a word is answered by ANY response of this turn after it — an earlier response that answered it and asked to go on («⏩») counts
+  // (origin session 77: the answer stood two responses back, the hook demanded it again in the last one, and under a continuation
+  // the turn ended without the «continue»); the last response may not be in the transcript yet (the vendor writes it late) — it is
+  // read from the event
+  const answered = (o) => {
+    const k = words(o.text).slice(0, KEY_WORDS);
+    if (!k.length) return true;
+    const said = ' ' + [...spoken.filter((s) => s.i > o.i).map((s) => s.said), input.last_assistant_message].map((s) => words(s).join(' ')).join(' ') + ' ';
+    return said.includes(' ' + k.join(' ') + ' ');
+  };
+  const missing = owner.filter((o) => !answered(o)).map((o) => o.text);
   if (missing.length && input.stop_hook_active !== true) {
     const quoted = missing.map((t) => '«' + t.slice(0, QUOTE_CHARS) + (t.length > QUOTE_CHARS ? '…' : '') + '»').join(' · ');
     block('KAIF: the owner wrote while you were working and this response does not answer it yet: ' + quoted + '. A text between tool calls'

@@ -31,7 +31,10 @@ const recs = readFileSync(file, 'utf8').split('\n').map((l) => { try { return JS
 const flat = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(flat).join('') : v && typeof v === 'object' ? flat(v.text ?? v.content ?? '') : '');
 const senderOf = (a) => (a.origin && a.origin.kind) || a.commandMode || 'unknown';
 
-const opensTurn = (r) => r && r.type === 'user' && typeof r.message?.content === 'string' && !!(r.promptSource || r.origin);
+// a prompt is a STRING in the terminal client and an ARRAY of text blocks in the IDE client (session 77, VS Code — bugs/127); the source
+// tells a prompt from a hook's feedback and from a tool result
+const opensTurn = (r) => r && r.type === 'user' && !!(r.promptSource || r.origin)
+  && (typeof r.message?.content === 'string' || (Array.isArray(r.message?.content) && r.message.content.some((b) => b && b.type === 'text')));
 const EARLY_MAX_CALLS = 1;   // criterion 1 of plans/126: the answer stands no later than the first call after the message
 
 // What the agent did after record i: tool calls until its first non-empty text block, when that text came, and the OUTCOME in the turn.

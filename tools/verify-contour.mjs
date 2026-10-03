@@ -23,7 +23,7 @@ import { join, resolve, dirname } from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { tempRoot } from './lib/temp-root.mjs';
-import { headlessPage, findBrowser, sandboxArgs } from './lib/cdp-mini.mjs'; // RL D-F2 (2.7): QA7 models the owner's --app window
+import { headlessPage, findBrowser } from './lib/cdp-mini.mjs'; // RL D-F2 (2.7): QA7 models the owner's --app window
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   normalize, bodyHash, parseQuestions, recordDecision, readDecision, checkApproval,
@@ -106,13 +106,12 @@ class CDP {
 }
 
 async function launchBrowser({ headless = true, url = 'about:blank', app = false, profileDir }) {
-  // 2.9 CP0: один список браузеров — tools/lib/cdp-mini.mjs (DEF8 на Windows, Linux-стенды, KAIF_BROWSER); своя копия снята
+  // 2.9 CP0: один список браузеров — tools/lib/cdp-mini.mjs (DEF8 на Windows, macOS, KAIF_BROWSER; Linux не поддерживается — слово владельца 2026-10-03); своя копия снята
   const exe = findBrowser();
   if (!exe) throw new Error('браузер не найден по стандартным путям (DEF8)');
   const args = ['--remote-debugging-port=0', '--user-data-dir=' + profileDir, '--no-first-run',
     '--no-default-browser-check', '--disable-sync', '--disable-extensions'];
   if (headless) args.push('--headless=new');
-  args.push(...sandboxArgs());
   args.push(app ? '--app=' + url : url);
   const proc = spawn(exe, args, { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise((res, rej) => {

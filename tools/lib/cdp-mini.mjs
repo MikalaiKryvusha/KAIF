@@ -16,11 +16,11 @@ import { platform } from 'node:os';
 const IS_WIN = platform() === 'win32';
 export const STEP_TIMEOUT_MS = 10000;   // C9: a hard deadline per CDP call — a hung call is red, never an eternal wait
 export const LAUNCH_TIMEOUT_MS = 15000; // C9: the browser must print its DevTools endpoint within this
-// 2.9, epic CP: ONE browser list — the shipped contour's (framework/tools/contour/review.mjs: DEF8 order on Windows, Linux stands,
-// `KAIF_BROWSER`). This lib and verify-contour kept two copies of their own; a copy that lacks the stand's browser made the contour's
+// 2.9, epic CP: ONE browser list — the shipped contour's (framework/tools/contour/review.mjs: DEF8 order on Windows, macOS,
+// `KAIF_BROWSER`; Linux is not supported — owner's word 2026-10-03). This lib and verify-contour kept two copies of their own; a copy that lacks the stand's browser made the contour's
 // own answer-recovery and the suites disagree about which browser exists.
-import { BROWSER_EXES, findBrowser, sandboxArgs } from '../../framework/tools/contour/review.mjs';
-export { BROWSER_EXES, findBrowser, sandboxArgs };
+import { BROWSER_EXES, findBrowser } from '../../framework/tools/contour/review.mjs';
+export { BROWSER_EXES, findBrowser };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 class CDP {
@@ -75,7 +75,7 @@ export async function headlessPage(url, { profileDir, extraArgs = [], exe = find
   // screen; default — a TAB opened next to about:blank (display-mode: browser). RL D-F2 (2.7): the page promises "the
   // agent will pick it up" only in the app window, so a suite modelling the owner's window must open one.
   const args = ['--remote-debugging-port=0', '--user-data-dir=' + profileDir, '--no-first-run', '--no-default-browser-check',
-    '--disable-gpu', '--headless=new', ...sandboxArgs(), ...extraArgs, app ? '--app=' + url : 'about:blank'];
+    '--disable-gpu', '--headless=new', ...extraArgs, app ? '--app=' + url : 'about:blank'];
   const proc = spawn(exe, args, { stdio: ['ignore', 'ignore', 'pipe'] });
   const wsUrl = await new Promise((res, rej) => {
     let buf = '';
