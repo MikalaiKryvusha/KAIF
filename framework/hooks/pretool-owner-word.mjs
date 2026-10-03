@@ -100,7 +100,7 @@ try {
   };
   // The vendor writes the transcript asynchronously — «may lag the in-memory conversation» (researches/36): an answer written in the
   // same message as this call can land a moment later (origin session 76, 2026-09-28 17:12:40Z — refused with the answer already
-  // written; field: KAGO R13). Re-read before refusing (2.9, epic OA).
+  // written; seen in a field deployment too, its report R13). Re-read before refusing (2.9, epic OA).
   let hit = scan();
   for (let n = 0; hit && n < RE_READS; n++) { Atomics.wait(PAUSE, 0, 0, RE_READ_MS); hit = scan(); }
   if (!hit) process.exit(0);

@@ -5,10 +5,10 @@
   "codename": "Noble KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "38b833f141153cad4a874eb0594610b0a3669c9db6b267bd91fc2d7e3ffed994",
-    "KAIF-CORE-BUNDLE.md": "6da2aac2b46832f5eda99f4cf87631f2bd11696f73db8dbd7ae642cd43468172"
+    "KAIF-CORE-BUNDLE.md": "bc2e9032e880719961ca9e30986c8833ca582881c775e0604f676ddac6040704"
   },
   "sourceTree": {
-    "sha256": "ffefe762454316e5095722f81555b545437d592e143ba21f6d73bf5b453a92af",
+    "sha256": "a56f77e9c03b1035967e3b14e77d5e9e3e3dbaef3f95964506c28b13a470512e",
     "files": 210
   },
   "prerelease": "2.9",
