@@ -34,12 +34,15 @@
 //                 a two-letter word inside a longer one is not an answer; red on v2.8 (no such hook); hooks-mutants M14–M19
 // GAP:            the check is FORM, not meaning — a response that repeats the owner's first words and says nothing is passed (the
 //                 judge reads it); a continuation caused by another Stop hook sets `stop_hook_active` and the «answer» block is skipped
-//                 for that stop; clients without `last_assistant_message` are not judged; agent systems without a Stop event
+//                 for that stop; clients without `last_assistant_message` are not judged; agent systems without a Stop event;
+//                 the words are compared as written — an owner's typo in them is matched only by an answer that copies it
 // ON-REAL-PATH:   OBSERVED 2026-09-28 on the origin's live path (Claude Code 2.1.283, hook wired in `.claude/settings.json`): the owner's
 //                 mid-turn word 22:57:37 +03:00 → an answer as TEXT in a response of its own, no tool call before it, last line «⏩ …» →
 //                 22:59:32 this hook blocked «continue the work: …» → the work went on without the owner's next word (report
-//                 testcases/reports/2026-09-28_oa-owner-answer-end-of-turn.md, run 13; before: replayed on the real transcript only)
-// [NOT-TESTED] on the live path — s14 and hooks-mutants are hygiene; run report testcases/reports/2026-09-28_oa-owner-answer-end-of-turn.md
+//                 testcases/reports/2026-09-28_oa-owner-answer-end-of-turn.md, run 13); OBSERVED again 2026-10-03 09:00–09:10 +03:00 in
+//                 the IDE client (VS Code, Windows) after the turn-boundary fix — three owner words, three «continue», no «go» needed
+//                 (testcases/reports/2026-10-03_pr132-merge-linux-removal-stop-hook.md, run 14)
+// [TESTED: 2026-10-03 · live path in two clients (the reports above) + s14 157/157 + hooks-mutants 41/41]
 import { readFileSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 
 const TAIL_BYTES = 4 * 1024 * 1024; // the tail of the transcript that is read — the current turn is recent by construction

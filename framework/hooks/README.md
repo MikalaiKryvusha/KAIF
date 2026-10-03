@@ -94,16 +94,18 @@ sample is visible to a human reading it.
 
 Contracts below were read in each vendor's live documentation on **2026-08-07**. Treat any row
 older than a few weeks as a hypothesis and re-read the vendor doc before relying on it — hook
-APIs were still moving through beta across the industry when this table was written.
+APIs were still moving through beta across the industry when this table was written. The end-of-turn cells of Codex, Copilot and Grok
+Build were re-read on **2026-09-29** from the vendors' own GitHub repositories, pinned by commit (their documentation sites were not
+reachable from that session): each of them can now return the agent to work from its end-of-turn event — the samples do not wire it yet.
 
 | System | Sample | Canon after compaction | Hourly timer | STATUS guard |
 |---|---|---|---|---|
 | **Claude Code** | `settings-fragment.json` | ✅ | ✅ | ✅ |
-| **OpenAI Codex** | `sample-codex-hooks.json` | ✅ same field names, matcher on `source` | ✅ | ❌ output shape of `Stop` not verified |
+| **OpenAI Codex** | `sample-codex-hooks.json` | ✅ same field names, matcher on `source` | ✅ | ❌ not wired — `Stop` returns `{"decision":"block","reason"}` (2026-09-29); continuation cap not found |
 | **Cursor** | `sample-cursor-hooks.json` | ✅ `additional_context` | ❌ `beforeSubmitPrompt` cannot inject agent context | ❌ `stop` auto-submits a followup prompt instead |
 | **Google Antigravity** | `sample-antigravity-hooks.json` | ❌ no session/compaction event exists | ✅ `PreInvocation` → `injectSteps` | ❌ field names match, blocking value not verified |
-| **GitHub Copilot** | `sample-copilot-hooks.json` | ✅ `additionalContext` on `sessionStart` | ❌ injection not permitted on `userPromptSubmitted` | ❌ not permitted on `agentStop` |
-| **Grok Build** | *(none needed)* | ⚠️ reads `.claude/settings.json`; **injection not verified** | ⚠️ same path, same gap | ⚠️ same path, same gap |
+| **GitHub Copilot** | `sample-copilot-hooks.json` | ✅ `additionalContext` on `sessionStart` | ❌ injection not permitted on `userPromptSubmitted` | ❌ not wired — `agentStop` returns `{"decision":"block","reason"}`, 8 in a row (2026-09-29) |
+| **Grok Build** | *(none needed)* | ⚠️ reads `.claude/settings.json`; **injection not verified** | ⚠️ same path, same gap | ⚠️ same path; `Stop` can block (8 per turn), its last-message field is `lastAssistantMessage` and no transcript path (2026-09-29) |
 | **Meta Muse Code** | *(none yet)* | ❌ `PreCompact`/`PostCompact` exist, context-injection output not documented | ❌ prompt/LLM-call events exist, same injection gap | ❌ output contract of `Stop` not documented |
 | **Windsurf / Cascade** | *(not supported)* | ❌ | ❌ | ❌ hooks cannot inject context at all — exit codes only |
 | **Cline** | *(not supported)* | ❌ | ❌ | ❌ hooks are SDK plugins (TS/JS objects), not config-invoked commands |
