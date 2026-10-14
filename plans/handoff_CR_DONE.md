@@ -25,7 +25,7 @@
 | `reports/KAIF_AUDIT/2026-09-18_hooks_order-asserts-the-unobserved.md` | НОВЫЙ. Семейство 3, карточки F7–F8 | — |
 | `reports/KAIF_AUDIT/2026-09-18_hooks_opt-in-doc-promises-otherwise.md` | НОВЫЙ. Семейство 4, карточки F9–F11 | — |
 | `reports/KAIF_AUDIT/2026-08-08_guards-machinery-suites_SUMMARY.md` | ДОПИСАН раздел «Дописано 2026-09-18 08:41 +03:00 — effective-FP этого прогона замерен»: таблица пяти находок, вердикт **0 из 5**, отметка, что пп. 1–3 «что сменить» остаются открытыми (жанр append-only соблюдён — ничего не переписано) | `git diff` по файлу: только добавления |
-| `bugs/118_hooks_guards_judge_a_copy_of_truth.md` | НОВЫЙ класс-док (S2), 3 вхождения, `TWINS:`, `Fix accepted when` сценарием, `Hygiene:`/`Functional run:` | `node tools/doc-header-lint.mjs` |
+| `bugs/118_DONE_hooks_guards_judge_a_copy_of_truth.md` | НОВЫЙ класс-док (S2), 3 вхождения, `TWINS:`, `Fix accepted when` сценарием, `Hygiene:`/`Functional run:` | `node tools/doc-header-lint.mjs` |
 | `bugs/119_hooks_state_from_unchecked_input.md` | НОВЫЙ класс-док (S2), 3 вхождения + связанная дыра покрытия от опровергнутой находки | — |
 | `bugs/120_hooks_order_asserts_the_unobserved.md` | НОВЫЙ класс-док (S2), 2 вхождения | — |
 | `bugs/121_hooks_optin_doc_promises_otherwise.md` | НОВЫЙ класс-док (S2), 3 вхождения | — |
@@ -127,7 +127,7 @@
 
 ## 5. Баг-документы прогона
 
-- `bugs/118_hooks_guards_judge_a_copy_of_truth.md` — S2, 3 вхождения (F1 Act · F2 Attend · F3 Attend).
+- `bugs/118_DONE_hooks_guards_judge_a_copy_of_truth.md` — S2, 3 вхождения (F1 Act · F2 Attend · F3 Attend).
 - `bugs/119_hooks_state_from_unchecked_input.md` — S2, 3 вхождения (F4 · F5 · F6, все Attend) + связанная
   дыра покрытия от опровергнутой находки.
 - `bugs/120_hooks_order_asserts_the_unobserved.md` — S2, 2 вхождения (F7 Attend · F8 Track).

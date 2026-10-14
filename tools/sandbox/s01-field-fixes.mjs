@@ -466,6 +466,11 @@ const lines9c = readFileSync(join(S9, '.gitignore'), 'utf8').split('\r\n');
 ok(rc9.code === 0 && lines9c.includes('/KAIF.md') && !lines9c.includes('KAIF.md') && lines9c.includes('.kaif/.contour-tmp/') && lines9c.includes('!.clinerules/kaif.md')
    && !ignored9(S9, '.roo/rules/kaif.md') && ignored9(S9, '.kaif/.contour-tmp/page.html'),
    'S9 SW5: маршрут со старым ядром — отметка recheck свежего ядра якорит набор и дописывает новые строки до суда `check`', `${rc9.out.slice(-300)} | ${JSON.stringify(lines9c.slice(0, 8))}`);
+// J-SW2 (2026-10-14, функциональный прогон пути поля 2.8 → 2.9 — проба sw-field-route.mjs): задание старого ядра пункта wire-hooks не
+// несёт, `check` называет неподключённые хуки в STDERR при выходе 0 — отметка recheck печатала только его stdout и говорила «check ran
+// green». Здесь хуки поставлены (Claude Code среди систем) и не подключены: recheck обязан донести эту строку.
+ok(rc9.code === 0 && /delivered hook\(s\) not wired/.test(rc9.out) && /check ran green/.test(rc9.out),
+   'S9 SW2: отметка recheck называет поставленные, но не подключённые хуки — предупреждение `check` из stderr не теряется', rc9.out.slice(-400));
 // Правило САМОГО владельца, прячущее развёрнутое, — предупреждение с лекарством, не отказ
 appendFileSync(join(S9, '.gitignore'), '.roo/\r\n');
 r = runAll9(S9, 'check');

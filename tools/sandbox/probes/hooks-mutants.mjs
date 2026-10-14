@@ -6,7 +6,8 @@
 // ASCII escape of a byte-order mark, while the bundle carried the REAL invisible character an edit tool had decoded.
 // Run it after touching framework/hooks/* or s14:   node tools/sandbox/probes/hooks-mutants.mjs
 // Raises no window and no sound (s14 starts hidden shells with a closed stdin); needs a FRESH dist (rebuild first);
-// runs the suite once per mutant (thirty-one today) — run it ALONE, not beside the polygon (origin bug 109).
+// runs the suite once per mutant (the closing line prints how many — a count written here went stale: it said thirty-one at
+// forty-one) — run it ALONE, not beside the polygon (origin bug 109).
 // [TESTED: 2026-09-25 22:08:57 +03:00 · ELEVEN mutants after the owner-word gate (M11 reasoning counted as an answer): «11 mutants red
 //  exactly on their named addressees, and only on them»; report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
 // [TESTED: 2026-09-25 17:43 +03:00 · TEN mutants after OW2 (M8 the imperative before the word dropped · M9 the heading exclusion dropped · M10 the stop
@@ -18,6 +19,7 @@
 //  suite had passed 87/87): red 2 · 1 · 1 · 1 · 1, green 86/87 of 88 — the same report, run 16]
 import { readFileSync, writeFileSync, cpSync, rmSync, mkdtempSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -217,6 +219,17 @@ const MUTANTS = [
     from: "  try { obj = JSON.parse(raw.replace(/^" + BOM_ESCAPE + "/, '')); } catch (e) { return { raw, error: 'not parseable JSON (' + e.message + ')' }; }",
     to: "  try { obj = JSON.parse(raw.replace(/^" + BOM_ESCAPE + "/, '')); } catch (e) { obj = {}; }",
     expect: ['s14 SW2: settings.json с комментарием'] },
+  // 2.9, epic SW judge J-SW2 (the functional run of the field route 2.8 → 2.9, 2026-10-14): `checkpoint recheck` printed check's STDOUT
+  // only, and `check` names unwired hooks on STDERR — the mutant restores the stdout-only form. Its addressee lives in s01 S9 (the case
+  // needs an UPDATE task, which carries the recheck item; s14 copies carry the install task) — `suite` names the suite to run.
+  { name: 'W9 checkpoint recheck: check\'s stderr dropped on a green run (the unwired hooks go unnamed)', core: true, suite: 's01-field-fixes.mjs',
+    from: '    if (chk.stderr) process.stderr.write(chk.stderr);\n', to: '',
+    expect: ['S9 SW2: отметка recheck называет поставленные'] },
+  // the same functional run over clones of five real v2.8 deployments: an owner's file in the shipped sample's style (arrays of strings on
+  // one line) was rewritten whole by a bare JSON.stringify — the mutant drops the fold-back
+  { name: 'W10 wire-hooks: the owner\'s one-line arrays unfolded (six rewritten hunks around one added hook)', core: true,
+    from: '  if (!inline.size) return text;\n', to: '  return text;\n',
+    expect: ['s14 SW2: файл в форме образца'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));
@@ -231,16 +244,23 @@ for (const m of MUTANTS) {
     const c = join(dist, 'KAIF-CORE.mjs'), src = readFileSync(c, 'utf8'), hits = src.split(m.from).length - 1;
     if (hits !== 1) { bad++; console.log(`BAD ${m.name}\n    anchor matched ${hits} time(s) — the mutant did NOT apply; re-anchor it to the current core`); continue; }
     writeFileSync(c, src.replace(m.from, m.to));
+    // the manifest pins the core by sha256 — a build that SHIPS this core pins it too; without the re-pin a suite that installs through the
+    // loader (s01) reds on «core tampered», not on the mutant (W9's first run: 10 red of 1 named — S4 · S7 · S9)
+    const mp = join(dist, 'kaif-manifest.json'), man = JSON.parse(readFileSync(mp, 'utf8'));
+    man.sha256['KAIF-CORE.mjs'] = createHash('sha256').update(readFileSync(c)).digest('hex');
+    writeFileSync(mp, JSON.stringify(man, null, 2) + '\n');
   } else {
     const p = join(dist, 'KAIF-CORE-BUNDLE.md');
     writeFileSync(p, mutateBlock(readFileSync(p, 'utf8'), m.dest, m.fn));
   }
   let out = '';
-  try { out = execFileSync(process.execPath, [join(REPO, 'tools', 'sandbox', 's14-refresh-hooks.mjs')], { env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe' }).toString(); }
+  const suite = m.suite || 's14-refresh-hooks.mjs';
+  try { out = execFileSync(process.execPath, [join(REPO, 'tools', 'sandbox', suite)], { env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe' }).toString(); }
   catch (e) { out = String(e.stdout || '') + String(e.stderr || ''); }
   const lines = out.split(/\r?\n/);
-  const red = lines.filter((l) => l.startsWith('❌ s14'));
-  const green = lines.filter((l) => l.startsWith('✅ s14')).length;
+  // s14 names every case «s14 …»; another suite's red line is any «❌ » but its closing tally (a died setup step is red too — EXP-0158)
+  const red = m.suite ? lines.filter((l) => l.startsWith('❌ ') && !/^❌ ПРОВАЛОВ/.test(l)) : lines.filter((l) => l.startsWith('❌ s14'));
+  const green = lines.filter((l) => (m.suite ? l.startsWith('✅ ') : l.startsWith('✅ s14'))).length;
   const verdict = red.length === m.expect.length && m.expect.every((e) => red.some((r) => r.includes(e)));
   if (!verdict) bad++;
   console.log(`${verdict ? 'OK ' : 'BAD'} ${m.name}\n    red ${red.length} (named before the run: ${m.expect.length}) · green ${green}`);

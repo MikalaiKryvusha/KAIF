@@ -4216,15 +4216,17 @@ function cmdCheckpoint() {
       const ov = b && b.meta ? portraitSync(b.meta.ownerVoice) : null;
       if (ov) die(`checkpoint recheck REFUSED — this task was written by the previous core, which had no owner-voice-core item; the release requires it: ${ownerVoiceInstruction(ov)} After the replacement re-run \`node .kaif/kaif-core.mjs checkpoint recheck\`.`);
     }
-    // execFileSync + process.execPath: no shell (paths with $/backticks survive on POSIX),
+    // spawnSync + process.execPath: no shell (paths with $/backticks survive on POSIX),
     // no PATH lookup (the same node binary that runs this process runs the check).
-    try {
-      const out = execFileSync(process.execPath, [process.argv[1], 'check'], { stdio: 'pipe' });
-      if (out && out.length) process.stdout.write(out.toString()); // surface check's warnings too
-    } catch (e) {
-      console.error((e.stdout || '').toString() + (e.stderr || '').toString());
-      die('checkpoint recheck REFUSED: `check` failed — fix the issues above, then re-run');
-    }
+    // BOTH streams are surfaced: `check` writes its warnings to STDERR and exits 0, and a green run used to print its stdout only —
+    // on the update route of an older core `recheck` said «check ran green» over six delivered hooks that were not wired, the line
+    // `check` itself prints (2.9, epic SW, J-SW2: the functional run of the field route 2.8 → 2.9, probe sw-field-route.mjs).
+    // [TESTED: 2026-10-14 11:26 · s01 S9 SW2 «recheck names the delivered hooks that are not wired»; red on the mutant W9 of hooks-mutants
+    //  and on the build 41c6c7d (the field-route probe, 6 of 6 subjects); report testcases/reports/2026-10-14_sw-field-route.md]
+    const chk = spawnSync(process.execPath, [process.argv[1], 'check'], { encoding: 'utf8', maxBuffer: 1 << 26 });
+    if (chk.stdout) process.stdout.write(chk.stdout);
+    if (chk.stderr) process.stderr.write(chk.stderr);
+    if (chk.status !== 0) die('checkpoint recheck REFUSED: `check` failed' + (chk.error ? ` (${chk.error.message})` : '') + ' — fix the issues above, then re-run');
     log('✔ check ran green (executed by the checkpoint itself)');
   }
   if (id === 'placeholders') {
@@ -4657,10 +4659,13 @@ function cmdWireHooks() {
     if (!next.hooks[event]) { next.hooks[event] = []; createdEvents.push(event); }
     next.hooks[event].push(group);
   }
-  // the file's own indent, line ends and byte-order mark; a new file is ours to format
+  // the file's own indent, line ends, byte-order mark and one-line arrays (keepArrayStyle below); a new file is ours to format
   const indentM = raw == null ? null : /\n([ \t]+)"/.exec(raw);
   const indent = indentM ? (indentM[1].includes('\t') ? '\t' : indentM[1].length) : 2;
-  let text = JSON.stringify(next, null, indent) + '\n';
+  const added = new Set();
+  const collect = (v) => { if (Array.isArray(v)) { if (v.length && v.every((x) => typeof x === 'string')) added.add(JSON.stringify(v)); v.forEach(collect); } else if (v && typeof v === 'object') Object.values(v).forEach(collect); };
+  for (const m of st.missing) collect(m.group);
+  let text = keepArrayStyle(JSON.stringify(next, null, indent), raw, added) + '\n';
   if (raw != null && raw.includes('\r\n')) text = text.replace(/\n/g, '\r\n');
   if (raw != null && raw.startsWith('\uFEFF')) text = '\uFEFF' + text;
   // PROOF before the write (the package.json precedent, issue #16): the result minus the additions is the owner's file, value for value
@@ -4672,7 +4677,32 @@ function cmdWireHooks() {
   mkdirSync(dirname(HOOK_SETTINGS), { recursive: true });
   writeFileSync(HOOK_SETTINGS, text);
   for (const s of missingScripts(st)) log(`+ ${HOOK_SETTINGS}: wired ${s}`);
-  log(`  ${st.missing.reduce((n, m) => n + m.group.hooks.length, 0)} of ${st.total} KAIF hooks added; ${raw == null ? 'a new file' : 'the owner\'s entries kept'}${raw != null && JSON.stringify(orig, null, indent) + '\n' !== raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n') ? ' (the file was re-serialized with its own indent — values unchanged, proven before the write)' : ''}; opt out: "hooks": "off" in .kaif/kaif.json`);
+  log(`  ${st.missing.reduce((n, m) => n + m.group.hooks.length, 0)} of ${st.total} KAIF hooks added; ${raw == null ? 'a new file' : 'the owner\'s entries kept'}${raw != null && keepArrayStyle(JSON.stringify(orig, null, indent), raw, new Set()) + '\n' !== raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n') ? ' (the file was re-serialized with its own indent — values unchanged, proven before the write)' : ''}; opt out: "hooks": "off" in .kaif/kaif.json`);
+}
+
+// The owner's array style in the file `wire-hooks` writes (2.9, epic SW judge J-SW2 — the functional run over clones of five real v2.8
+// deployments): the shipped sample writes arrays of strings on one line (`"args": ["…"]`), owners copied it, and a bare JSON.stringify
+// unfolded every such array — six rewritten hunks in the owner's diff around ONE added hook (values unchanged). An unfolded array of strings
+// folds back to the owner's own spelling when his file holds that very array on one line; an array KAIF adds (`added`, compact JSON) folds
+// to one line only when the file writes some array of strings on one line; every other line stays as JSON.stringify writes it — a file of
+// mixed style keeps its unfolded arrays unfolded. The proof before the write (values, not text) is not touched by this.
+// [TESTED: 2026-10-14 11:26 · s14 SW2 (2b) «a file in the sample's style — a pure addition»; red on the mutant W10 of hooks-mutants and on
+//  the build 41c6c7d (two of five live deployments); report testcases/reports/2026-10-14_sw-field-route.md]
+const INLINE_STR_ARRAY_RE = /\[ *"(?:[^"\\\n]|\\.)*"(?: *, *"(?:[^"\\\n]|\\.)*")* *\]/g;
+const UNFOLDED_STR_ARRAY_RE = /\[\n[ \t]*("(?:[^"\\\n]|\\.)*"(?:,\n[ \t]*"(?:[^"\\\n]|\\.)*")*)\n[ \t]*\]/g;
+function keepArrayStyle(text, raw, added) {
+  if (raw == null) return text;
+  const inline = new Map();
+  for (const m of raw.replace(/\r\n/g, '\n').match(INLINE_STR_ARRAY_RE) || []) {
+    try { const k = JSON.stringify(JSON.parse(m)); if (!inline.has(k)) inline.set(k, m); } catch { /* not a JSON array of strings — the owner's text stays his */ }
+  }
+  if (!inline.size) return text;
+  return text.replace(UNFOLDED_STR_ARRAY_RE, (all, body) => {
+    let k; try { k = JSON.stringify(JSON.parse('[' + body + ']')); } catch { return all; }
+    if (inline.has(k)) return inline.get(k);
+    if (added.has(k)) return '[' + body.split(/,\n[ \t]*/).join(', ') + ']';
+    return all;
+  });
 }
 
 const COMMANDS = {

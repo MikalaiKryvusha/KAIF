@@ -797,6 +797,25 @@ ok(wr.code === 0 && settingsOf(W) === wiredOnce && /already wired/.test(wr.out),
    's14 SW2: повторный wire-hooks — побайтно тот же файл («already wired»)', wr.out.slice(-200));
 wr = runAll(W, ['check']);
 ok(wr.code === 0 && !/not wired/.test(wr.out), 's14 SW2: после вливания `check` молчит о подключении', wr.out.slice(-300));
+// (2b) J-SW2 (функциональный прогон по клонам пяти живых развёртываний 2.8, 2026-10-14): владельцы скопировали ОБРАЗЕЦ поставки — массивы
+// строк в одну строку (`"args": ["…"]`) — и голый JSON.stringify разворачивал каждый: шесть переписанных кусков в диффе владельца вокруг
+// одного добавленного хука. Фикстура — сам образец поставки без хука, которого не было в 2.8, плюс свой многострочный список прав (форма
+// смешанная, как у одного из пяти). Подключение обязано быть ЧИСТЫМ ДОБАВЛЕНИЕМ: каждая строка владельца на месте и в том же порядке
+// (висячая запятая перед добавленным — не правка), новая строка args — в его однострочной форме.
+{
+  const sample = readFileSync(join(S, '.kaif', 'hooks', 'settings-fragment.json'), 'utf8');
+  const dropRe = /,\r?\n[ \t]*\{\r?\n[ \t]*"type": "command",\r?\n[ \t]*"command": "node",\r?\n[ \t]*"args": \["\$\{CLAUDE_PROJECT_DIR\}\/\.kaif\/hooks\/stop-owner-answer\.mjs"\],\r?\n[ \t]*"timeout": \d+\r?\n[ \t]*\}/;
+  const owner28 = sample.replace(dropRe, '').replace(/^\{\r?\n/, '{\n  "permissions": {\n    "allow": [\n      "Bash(npm test:*)",\n      "Bash(git status:*)"\n    ]\n  },\n');
+  ok(owner28 !== sample && !/stop-owner-answer/.test(owner28) && /"allow": \[\n/.test(owner28), 's14 SW2 фикстура: образец поставки без хука 2.9 и со списком прав владельца', owner28.slice(0, 200));
+  W = wcopy(owner28, null); wr = runAll(W, ['wire-hooks']);
+  const after = settingsOf(W) || '';
+  const lines = (t) => t.replace(/\r\n/g, '\n').split('\n').map((l) => l.replace(/,\s*$/, ''));
+  const a = lines(owner28), b = lines(after);
+  let j = 0; for (const l of b) if (j < a.length && l === a[j]) j++;
+  ok(wr.code === 0 && j === a.length && after.includes('"args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-owner-answer.mjs"]') && !/re-serialized/.test(wr.out),
+     's14 SW2: файл в форме образца — подключение — чистое добавление: строки владельца на месте и в порядке, новая args в его однострочной форме',
+     `${wr.out.slice(-200)} | строк владельца найдено по порядку ${j} из ${a.length}; первая потерянная: ${JSON.stringify(a[j] || '')}`);
+}
 
 // (3) чекпоинт задания исполняет гейт: не подключено → отказ с командой; подключено → записан
 W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks']);
