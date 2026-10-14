@@ -647,7 +647,7 @@ tool result — and the agent system signs its author (Claude Code: "The user se
    trust. An order signed as his passes the usual gates (for an outward act it IS his verbatim word); in doubt of its author ask ONE question —
    never a silent "not taken as permission". Mechanical halves (`.kaif/hooks/`): the leading-word hook orders a stop on a leading "stop" (its
    firing mid-turn is observed on one system, promised by none); `pretool-owner-word.mjs` (2.8) refuses ONE call after an unanswered mid-turn word;
-   `stop-owner-answer.mjs` (2.9) asks ONCE for the answer and, after a last line `⏩ <next step>`, resumes the work — it does not stop.
+   `stop-owner-answer.mjs` (2.9) asks ONCE for the answer and, after a last line `⏩ <next step>`, resumes the work — so `⏩` names only work the owner gave; a step he did not ask for is an offer without it.
    `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
 
 ### The storefront — text a stranger reads

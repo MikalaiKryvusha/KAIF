@@ -316,6 +316,13 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     r = run(TE, `update --source ${SRC_NOW}`);   // run by the 2.7 core deployed above
     const rcE = existsSync(join(TE, '.kaif', 'last-update.json')) ? JSON.parse(readFileSync(join(TE, '.kaif', 'last-update.json'), 'utf8')) : {};
     ok(r.code === 0 && rcE.from === prevVer, 'E: update ' + prevVer + ' → 9.9 провело ЯДРО прошлого выпуска (' + wantPrev + ')', r.out.slice(-300));
+    // 2.9 (№143 — the owner: the fix of the entry skill must reach the projects that update to 2.9): the update run by the previous
+    // release's core leaves the NEW /resume Step 2 (the owner's message sets the scope) and the new order of the resume-word hook on disk.
+    const rdE = (p) => { try { return readFileSync(join(TE, p), 'utf8'); } catch { return ''; } };
+    ok(rdE('.claude/skills/resume/SKILL.md').includes("**The owner's message sets the scope**"),
+       'E (№143): после update ' + prevVer + ' → 9.9 развёрнутый /resume несёт правило «объём задаёт сообщение владельца»', rdE('.claude/skills/resume/SKILL.md').slice(0, 120));
+    ok(rdE('.kaif/hooks/prompt-resume-word.mjs').includes('it sets the scope'),
+       'E (№143): после update ' + prevVer + ' → 9.9 хук слова resume говорит, что объём задаёт текст под словом', rdE('.kaif/hooks/prompt-resume-word.mjs').length + ' символов');
     let vE = run(TE, 'update-verify');
     const vEIssues = issuesOf(vE.out);
     ok(!/section of this release did not arrive/.test(vE.out), 'E: доставленное ядро в update-verify молчит о разделах, новых с ' + prevVer + ', — проход ядра прошлого выпуска их принёс', vE.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));

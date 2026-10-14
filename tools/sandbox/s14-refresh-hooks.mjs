@@ -151,6 +151,13 @@ ok(isResumeOrder(resumeHook('/resume')), 's14 resume-word: «/resume» — пр�
 ok(resumeHook('делаем эпик LP') === '', 's14 resume-word: промпт без слова — ТИШИНА', resumeHook('делаем эпик LP').slice(0, 120));
 ok(resumeHook('продолжай читать resume.log и скажи, что видишь') === '', 's14 resume-word: слово не первым (проза, граница пинка) — ТИШИНА');
 ok(resumeHook(undefined) === '', 's14 resume-word: событие без поля prompt — ТИШИНА (предикат по тексту не угадывается)');
+// 2.9 (№143 — владелец: «неправильно навык тебе говорит»; сессия ответила на «сколько осталось?» и сама взялась за следующий пункт плана):
+// приказ называет объём — текст под словом; на вопрос — ответ, выбранное ПРЕДЛАГАЕТСЯ, без строки «⏩»; работу начинает только голое resume.
+{
+  const c = parseHook(resumeHook('выполни RESUME\nсколько осталось делать до выпуска?')).hookSpecificOutput?.additionalContext || '';
+  ok(/it sets the scope/.test(c) && /a question is answered/.test(c) && /OFFERED, never taken/.test(c) && /no "⏩" line/.test(c) && /only a bare "resume"/.test(c),
+     's14 resume-word (№143): приказ говорит, что объём задаёт текст под словом — на вопрос ответ без работы сверх него, без «⏩»', c.slice(-420));
+}
 // [TESTED: 2026-09-25 17:43 +03:00 · +7 случаев OW2 — 95 проверок зелёные; на dist v2.7 — «ПРОВАЛОВ: 5», ровно пять новых поведений («resume:» и «стопка» — прежнее
 //  поведение, зелёные по построению); мутанты M8–M10 tools/sandbox/probes/hooks-mutants.mjs — на адресатах; отчёт testcases/reports/2026-09-25_ow2-owner-word-mid-turn.md]
 // 2.8, эпик OW, шаг OW2 (критерий 5 plans/117; находки D-F4 суда 2.7 и Q-R7 разведки 2.8): повелительный глагол перед словом — всё

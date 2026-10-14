@@ -51,6 +51,12 @@
 // ran `cd src` stamped `src/.kaif/refresh-marker.json`, where no hook reads it.
 // [TESTED: 2026-09-28 · suite s14: the order from <root>/src/deep names the root marker by its full path; red on v2.8; mutant M26;
 //  report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
+// 2.9 (decision #143 — the KAIF owner, rendered from Russian: "the entry skill tells you wrong"; a session answered "how much is
+// left?" and then started the plan's next item by itself): the order says what is under the word SETS THE SCOPE — a question is
+// answered and the turn ends with the pick offered, no "⏩" line; a task is done; only a bare "resume" starts the chosen direction.
+// [TESTED: 2026-10-14 09:31 · s14 «resume-word (№143)» green on HEAD and red on the v2.8 dist; s21 E (№143): the update run by the
+//  2.8 core leaves this order on disk (red on v2.8); probe tools/sandbox/probes/resume-scope-red.mjs; report
+//  testcases/reports/2026-10-14_resume-scope-143.md (origin repository); the owner's own next "resume + question" is not observed yet]
 import { readFileSync, existsSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
@@ -132,7 +138,9 @@ try {
       `owner's queue (step 1b) and raise what was never shown; (3) say the creed and the prayer aloud; ` +
       `(4) announce in one paragraph what you read, what you chose and what you do next; (5) stamp ` +
       `${join(projectRoot(cwd), '.kaif', 'refresh-marker.json')} with trigger "ritual:/resume" and put the acceptance quote in the chat. ` +
-      `Only then take the task written under the word. The same word mid-sentence would be prose; at the ` +
+      `Only then read what the owner wrote under the word — it sets the scope (the skill's Step 2): a question is ` +
+      `answered and the turn ends with your pick OFFERED, never taken, and no "⏩" line; a task is done; only a bare ` +
+      `"resume" lets you start the direction you chose. The same word mid-sentence would be prose; at the ` +
       `top of the message it is this order.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');

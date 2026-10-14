@@ -224,7 +224,7 @@
       {
         "signature": "### The owner's word mid-turn — the system signs its author",
         "class": "static",
-        "sha256": "d34b3717bae6c07e60730804951f3c50c1368fa1dc3b50f7e698279f074ec808",
+        "sha256": "d8f0063f6188c95713cfc8510680300731810bf2b3e816b436dcf1154f3349b0",
         "lines": [
           635,
           652
@@ -4186,10 +4186,10 @@
       {
         "signature": "## What to do",
         "class": "static",
-        "sha256": "0c678693aa088bcef466e947b998bd2db5a4ecf62da9034f6216c94eed25ad3d",
+        "sha256": "c25da70685ea95b39eb499fe01f7587a7da5bca85a661006da5f8d653b65fc7c",
         "lines": [
           11,
-          58
+          59
         ]
       },
       {
@@ -4197,8 +4197,8 @@
         "class": "static",
         "sha256": "3728a89fb383a71183a9489e08109cb0372005f873e34498015831147c1dfb41",
         "lines": [
-          59,
-          63
+          60,
+          64
         ]
       }
     ],
@@ -4417,7 +4417,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "8d2b76c18bb4d4f2e0b3fd2ffc29f42cb6b27820d9d26cca8af2352b4a47fa0d",
+        "sha256": "13dce098129a0a0d1566d92fefb8fbbabddf075eaa23e9332b14dd6816a309cb",
         "lines": [
           1,
           5
@@ -4426,7 +4426,7 @@
       {
         "signature": "# /resume — pick up where we left off",
         "class": "static",
-        "sha256": "1f45d03ab63947ecf2e2d662e69de27f3ce63ef626f49c2408ba1b3b6d6a4e58",
+        "sha256": "1a8014534794718e7c53746acce7b5520d0a7b40f50e66ad1f11ecf07a8e5349",
         "lines": [
           6,
           14
@@ -4453,19 +4453,19 @@
       {
         "signature": "## Step 2. Synthesize — choose the one main thing",
         "class": "static",
-        "sha256": "4566376f8b3f48c55d70ad12de0e081ce4ab398e07a31dac462952b887bde2d0",
+        "sha256": "336eea074a0be540b387dfc04268c4b01c76fc6f2c90e9e67929bbfdaa132824",
         "lines": [
           66,
-          84
+          91
         ]
       },
       {
         "signature": "## Step 3. Work",
         "class": "static",
-        "sha256": "145c5c387ea213935bc7900033ebeeec8bbdca49fc7d8ba6d207d365e09859b4",
+        "sha256": "d5d3b385c0f180bd4702555c36f9770443d080ef8c11af6697ea24aef8bf8a02",
         "lines": [
-          85,
-          91
+          92,
+          98
         ]
       },
       {
@@ -4473,8 +4473,8 @@
         "class": "static",
         "sha256": "70349f3f6138dedff3a6c122a82143408699b741ae0a21d72f397ed502ba8bd1",
         "lines": [
-          92,
-          96
+          99,
+          103
         ]
       }
     ],

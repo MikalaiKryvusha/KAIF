@@ -876,6 +876,24 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
   });
 }
 
+// 5r. The owner's message under the word sets the scope (2.9, decision #143 — the KAIF owner: "the entry skill tells you wrong"; a
+//     session answered "how much is left?" and then started the plan's next item by itself): the shipped /resume carries the scope
+//     rule and no longer carries the bare "If the plan is clear — start right after the short announcement" as its only exit; the
+//     shipped /refresh-context names the same scope for an owner's call. A refusal names the file and the missing line.
+//     [TESTED: 2026-10-14 09:31 · probe tools/sandbox/probes/resume-scope-red.mjs: a copy of the tree — 0 lines «5r:»; the same copy
+//      with the v2.8 /resume and /refresh-context — exactly 6; green on HEAD; report testcases/reports/2026-10-14_resume-scope-143.md]
+{
+  const flat = (p) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g, '\n').replace(/\s+/g, ' ');
+  const resumeSkill = flat('framework/skills/resume/SKILL.md'), refreshSkill = flat('framework/skills/refresh-context/SKILL.md');
+  for (const need of ["**The owner's message sets the scope**", '**a question** (', 'is OFFERED as the next step, never taken; no `⏩` line',
+    '**nothing under the word** (a bare `resume`)'])
+    if (!resumeSkill.includes(need)) errors.push(`5r: framework/skills/resume/SKILL.md lacks «${need}» — the owner's message under the word sets the scope (#143)`);
+  if (/Wait for confirmation only if the task is \*\*destructive\*\* or \*\*large and non-obvious\*\*\. If the plan is clear — start right after/.test(resumeSkill))
+    errors.push('5r: framework/skills/resume/SKILL.md starts work after the announcement whatever the owner wrote under the word (#143) — the v2.8 Step 2');
+  if (!refreshSkill.includes('Called by the owner with a question or a task in the same message — they set the scope'))
+    errors.push('5r: framework/skills/refresh-context/SKILL.md lacks the scope of an owner\'s call (#143)');
+}
+
 // 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
 //     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]
 //     The BUNDLE lint (bugs/38): the truth↔mirror pairs registry, applied to the bundle itself.
