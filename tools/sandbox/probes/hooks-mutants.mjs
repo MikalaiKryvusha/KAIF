@@ -80,7 +80,8 @@ const MUTANTS = [
   { name: 'M8 resume-word: the imperative before the word dropped ("execute resume" silent again — recon Q-R7)',
     dest: '.kaif/hooks/prompt-resume-word.mjs',
     fn: (b) => b.replace('(?:(?:run|do|execute|start|\\u0432\\u044b\\u043f\\u043e\\u043b\\u043d\\u0438|\\u0437\\u0430\\u043f\\u0443\\u0441\\u0442\\u0438|\\u0441\\u0434\\u0435\\u043b\\u0430\\u0439|\\u043d\\u0430\\u0447\\u043d\\u0438)\\s+)?', ''),
-    expect: ['s14 resume-word: «выполни resume»'] },
+    // 2.9 (№143, session 78): the scope case opens with the owner's real "выполни RESUME" — the same predicate, a lawful red (EXP-0169)
+    expect: ['s14 resume-word: «выполни resume»', 's14 resume-word (№143)'] },
   { name: 'M9 resume-word: the heading exclusion dropped (the Russian noun with a colon fires again — court D-F4)',
     dest: '.kaif/hooks/prompt-resume-word.mjs',
     fn: (b) => b.replace('(?!\\s*:)', ''),
