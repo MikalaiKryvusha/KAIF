@@ -894,6 +894,32 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
     errors.push('5r: framework/skills/refresh-context/SKILL.md lacks the scope of an owner\'s call (#143)');
 }
 
+// 5s. A shipped text never sends a reader to a MOVED table (2.9, epic UT, origin issue #119 — a field judge: /experience still put a
+//     dangerous-action lesson «in the row of that action in the tool registry (`AGENT_GUIDE.md` → Tools)», while 2.8 (epic CK) moved the
+//     rows of four guide sections to HOUSE_RULES.md; the guide keeps the rule and one pointer line). A line of framework/ that points at
+//     one of those four guide sections, with a registry/table/row word in its ±1-line window and no `HOUSE_RULES.md` there, is a
+//     refusal named by file and line. Out of scope: headings (the «why» entries of the reference are keyed by them) and the house-rules
+//     skeleton itself (it IS the destination; its pointers name the rule that stayed in the guide).
+//     [TESTED: 2026-10-14 11:54 · red on the tree of c5e25c2 — exactly one line «5s:», framework/skills/experience/SKILL.md:32 (named before
+//      the run); green after the fix; the other pointers into the four sections stay silent — /refresh-context (HOUSE_RULES.md in its
+//      window), TESTING_FRAMEWORK (no table word), the reference headings, the house-rules skeleton]
+{
+  const MOVED = /AGENT_GUIDE\.md`? *→ *"?(Tools|Test harness|Environment dossier|Push)\b/;
+  const TABLE_WORD = /\b(registry|rows?|table)\b/i;
+  const mdFiles = readdirSync(join(ROOT, 'framework'), { recursive: true }).map((p) => String(p).replace(/\\/g, '/'))
+    .filter((p) => p.endsWith('.md') && !p.startsWith('templates/languages/') && !p.endsWith('_house-rules-template.md'));
+  for (const rel of mdFiles) {
+    const lines = readFileSync(join(ROOT, 'framework', rel), 'utf8').split(/\r?\n/);
+    lines.forEach((line, i) => {
+      const m = MOVED.exec(line);
+      if (!m || /^\s*#/.test(line)) return;
+      const win = lines.slice(Math.max(0, i - 1), i + 2).join(' ');
+      if (TABLE_WORD.test(win) && !win.includes('HOUSE_RULES.md'))
+        errors.push(`5s: framework/${rel}:${i + 1} sends the reader to \`AGENT_GUIDE.md\` → ${m[1]} for a table row — 2.8 moved the rows to HOUSE_RULES.md (#119); point at its section instead`);
+    });
+  }
+}
+
 // 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
 //     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]
 //     The BUNDLE lint (bugs/38): the truth↔mirror pairs registry, applied to the bundle itself.

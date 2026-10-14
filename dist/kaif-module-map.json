@@ -2561,7 +2561,7 @@
       {
         "signature": "## Mode A — CAPTURE a lesson (\"add this to experience\")",
         "class": "static",
-        "sha256": "632fe0cca5f292631299ccf9383e2cec6217a3049f262a68866b06398e33d787",
+        "sha256": "e1c516263ab1c70a577b5f596dfb7eb471fcb367fc00302daa4c64aa82895953",
         "lines": [
           15,
           84

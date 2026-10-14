@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "7bbda136bb81eba48e2e6dbe8c2199f5b200eb65194fadb1ea1a04f6c922a153",
+    "sourceTree": "a63c651356bc00c4be7440ab0ddb8f2b5d272cfdf3f24174e3c500d5e9e2d5a1",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -5231,7 +5231,7 @@ non-obvious gotcha). **Capture proactively — don't wait to be asked.**
    (defect detail belongs in `bugs/`; `EXPERIENCE.md` is "what to do / not do next time").
    A lesson about a dangerous ACTION (a command that destroys state: a test runner that wipes a
    directory, a reset, a force-push) also lives IN THE ROW OF THAT ACTION in the project's tool
-   registry (`AGENT_GUIDE.md` → Tools) — where sessions look when they RUN it; the journal entry
+   registry (`HOUSE_RULES.md` → "Tools of this project") — where sessions look when they RUN it; the journal entry
    duplicates it with an `#action:<command>` tag, it never replaces it (sessions grep by what they
    FIX and get burned by what they RUN).
 2. **Write one entry** at the **top** of the `## Entries` section, in the canonical format:
