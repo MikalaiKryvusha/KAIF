@@ -74,6 +74,20 @@ const TAG_CORE_SHA = sha(readFileSync(join(OLD, 'KAIF-CORE.mjs')));
 const FRAGMENT = JSON.parse(readFileSync(join(REPO, 'framework', 'hooks', 'settings-fragment.json'), 'utf8')).hooks;
 const scriptOf = (h) => { const m = /([\w.-]+\.mjs)/.exec([h && h.command, ...(h && Array.isArray(h.args) ? h.args : [])].join(' ')); return m ? m[1] : null; };
 const KAIF_SCRIPTS = Object.entries(FRAGMENT).flatMap(([ev, gs]) => gs.flatMap((g) => g.hooks.map((h) => `${ev} → ${scriptOf(h)}`)));
+// 2.9, epic WH (origin ticket #144): the hooks KAIF retired — the route must REMOVE their wiring; written here, not read from the core
+const RETIRED = ['pretool-owner-word.mjs', 'stop-owner-answer.mjs'];
+const retiredOf = (o) => Object.entries((o && o.hooks) || {}).flatMap(([ev, gs]) => (gs || []).flatMap((g) => (g.hooks || []).filter((h) => RETIRED.includes(scriptOf(h))).map((h) => `${ev} → ${scriptOf(h)}`)));
+function withoutRetired(o) {
+  const n = JSON.parse(JSON.stringify(o));
+  for (const ev of Object.keys(n.hooks || {})) {
+    const gs = n.hooks[ev] || [];
+    const kept = gs.flatMap((g) => { if (!(g.hooks || []).some((h) => RETIRED.includes(scriptOf(h)))) return [g]; const hs = g.hooks.filter((h) => !RETIRED.includes(scriptOf(h))); return hs.length ? [{ ...g, hooks: hs }] : []; });
+    if (kept.length) n.hooks[ev] = kept; else if (gs.length) delete n.hooks[ev];
+  }
+  return n;
+}
+// a line of a retired entry: its script name or the bare JSON skeleton of a hook entry
+const RETIRED_LINE_RE = new RegExp(`(${RETIRED.map((r) => r.replace(/[.]/g, '[.]')).join('|')})|^\\s*(\\{|\\}|\\[|\\]|"hooks": \\[|"(PreToolUse|Stop)": \\[|"type": "command"|"command": "node"|"timeout": \\d+|"args": \\[)\\s*$`);
 
 // ---- subject 1: the fixture project — v2.8 installed by its own core, the owner's own settings, committed
 function fixture() {
@@ -146,11 +160,13 @@ function walk({ P, label, sub }) {
   info(`the rule line in the task: ${askLine.slice(0, 160)}…`);
 
   const c0 = core(P, ['check']);
-  const names0 = /delivered hook\(s\) not wired/.test(c0.all);
-  say(names0, `${label}: \`check\` (fresh core) before wiring names the delivered hooks that are not wired — exit ${c0.code}`);
+  // 2.9 WH: the wiring WORK is named — a delivered hook not wired, or a retired one still wired (a live 2.8 tree has all four wired)
+  const WORK_RE = /delivered hook\(s\) not wired|hook\(s\) KAIF retired in 2\.9/;
+  const names0 = WORK_RE.test(c0.all);
+  say(names0, `${label}: \`check\` (fresh core) before wiring names the wiring work (not wired · retired still wired) — exit ${c0.code}`);
   const r0 = core(P, ['checkpoint', 'recheck']);
-  say(/delivered hook\(s\) not wired/.test(r0.all), `${label}: \`checkpoint recheck\` before wiring names the delivered hooks that are not wired — exit ${r0.code}`);
-  if (!/delivered hook\(s\) not wired/.test(r0.all)) info('recheck said: ' + tail(r0.all, 4));
+  say(WORK_RE.test(r0.all), `${label}: \`checkpoint recheck\` before wiring names the wiring work (not wired · retired still wired) — exit ${r0.code}`);
+  if (!WORK_RE.test(r0.all)) info('recheck said: ' + tail(r0.all, 4));
 
   const w1 = core(P, ['wire-hooks']);
   say(w1.code === 0, `${label}: \`wire-hooks\` — exit ${w1.code}`);
@@ -164,12 +180,18 @@ function walk({ P, label, sub }) {
   const wiredLocal = new Set(Object.entries(local.hooks || {}).flatMap(([ev, gs]) => (gs || []).flatMap((g) => (g.hooks || []).map((h) => `${ev} → ${scriptOf(h)}`))));
   const missing = KAIF_SCRIPTS.filter((k) => !wired.has(k) && !wiredLocal.has(k));
   say(missing.length === 0, `${label}: all ${KAIF_SCRIPTS.length} KAIF hooks of the fragment are wired (settings.json or settings.local.json)${missing.length ? ' — missing: ' + missing.join(' · ') : ''}`);
+  const left = retiredOf(s1);
+  say(left.length === 0, `${label}: no entry of a retired hook is left in settings.json (2.9 WH)${left.length ? ' — left: ' + left.join(' · ') : ''}`);
+  const gone = RETIRED.filter((f) => existsSync(join(P, '.kaif', 'hooks', f)));
+  if (gone.length) info(`a retired hook script is still on disk: ${gone.join(' · ')} — kept by the update only when it carries the owner's edits (the task names it)`);
   if (set0) {
     let s0 = null; try { s0 = JSON.parse(set0.toString().replace(/^\uFEFF/, '')); } catch { s0 = null; }
     if (s0) {
       const otherKeys = Object.keys(s0).filter((k) => k !== 'hooks');
       say(otherKeys.every((k) => JSON.stringify(s0[k]) === JSON.stringify(s1[k])), `${label}: the owner's other keys are unchanged (${otherKeys.join(', ') || 'none'})`);
-      const ownFirst = Object.entries(s0.hooks || {}).every(([ev, gs]) => JSON.stringify((s1.hooks[ev] || []).slice(0, gs.length)) === JSON.stringify(gs));
+      const retired0 = retiredOf(s0), base0 = withoutRetired(s0);
+      if (retired0.length) info(`retired hooks wired before: ${retired0.join(' · ')} — wire-hooks must remove them`);
+      const ownFirst = Object.entries(base0.hooks || {}).every(([ev, gs]) => JSON.stringify((s1.hooks[ev] || []).slice(0, gs.length)) === JSON.stringify(gs));
       say(ownFirst, `${label}: the owner's own hook groups stay, first in their events (${Object.keys(s0.hooks || {}).join(', ') || 'none of his own'})`);
       const crlf0 = /\r\n/.test(set0.toString()), crlf1 = /\r\n/.test(set1.toString()), lf1 = /(^|[^\r])\n/.test(set1.toString());
       say(crlf0 ? crlf1 && !lf1 : !crlf1, `${label}: the line ends are kept (${crlf0 ? 'CRLF' : 'LF'})`);
@@ -180,8 +202,16 @@ function walk({ P, label, sub }) {
       // the first run found two of five field files rewritten whole (their one-line arrays — the shipped sample's style — unfolded)
       const lines = (t) => t.toString().replace(/\r\n/g, '\n').split('\n').map((l) => l.replace(/,\s*$/, ''));
       const a = lines(set0), b = lines(set1);
-      let j = 0; for (const l of b) if (j < a.length && l === a[j]) j++;
-      say(j === a.length, `${label}: wiring is a pure addition to the owner's file — his ${a.length} lines stay, in order (a trailing comma aside)${j < a.length ? ' — the first one lost: ' + JSON.stringify(a[j]).slice(0, 120) : ''}`);
+      // 2.9 WH: the lines of a retired entry may go — every OTHER line of his file stays, in order
+      // the lines of his file the result keeps — a longest common subsequence (a greedy walk misaligns on a skeleton line: run 1, #2)
+      const dp = Array.from({ length: a.length + 1 }, () => new Int32Array(b.length + 1));
+      for (let x = a.length - 1; x >= 0; x--) for (let y = b.length - 1; y >= 0; y--) dp[x][y] = a[x] === b[y] ? dp[x + 1][y + 1] + 1 : Math.max(dp[x + 1][y], dp[x][y + 1]);
+      const lost = []; let j = 0;
+      for (let x = 0, y = 0; x < a.length;) { if (y < b.length && a[x] === b[y]) { x++; y++; j++; } else if (y < b.length && dp[x][y + 1] >= dp[x + 1][y]) y++; else { lost.push(a[x]); x++; } }
+      j += lost.length;   // every line of his file is accounted for: kept or lost
+      const lostOwn = lost.filter((l) => !RETIRED_LINE_RE.test(l));
+      say(j === a.length && lostOwn.length === 0 && (retired0.length === 0) === (lost.length === 0),
+        `${label}: wiring adds the delivered hooks and removes ONLY the retired entries — his other ${a.length - lost.length} lines stay, in order${retired0.length ? ` (${lost.length} line(s) of ${retired0.length} retired entr${retired0.length === 1 ? 'y' : 'ies'} removed)` : ''}${lostOwn.length ? ' — the first own line lost: ' + JSON.stringify(lostOwn[0]).slice(0, 120) : ''}`);
     }
   } else info('no settings.json before — wire-hooks created it');
   const w2 = core(P, ['wire-hooks']);

@@ -56,8 +56,7 @@ let r = run(S, 'install');
 ok(r.code === 0, 's14 install exit 0', r.out.slice(-400));
 const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'stop-status-guard.mjs',
                     'prompt-resume-word.mjs', // 2.7, эпик RS: первое слово промпта resume → приказ /resume
-                    'pretool-owner-word.mjs', // 2.8, эпик OW: слово владельца посреди хода без ТЕКСТА в ответ → вызов отказан (bugs/123)
-                    'stop-owner-answer.mjs', // 2.9, эпик OA: итоговый ответ хода не открывает ответ на слово владельца → ход возвращён (bugs/123)
+                    // 2.9, эпик WH (тикет #144): pretool-owner-word (2.8) и stop-owner-answer сняты словом владельца — их нет в поставке
                     'settings-fragment.json', 'README.md',
                     // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
                     'sample-codex-hooks.json', 'sample-cursor-hooks.json',
@@ -77,8 +76,12 @@ ok(!!(frag.hooks && frag.hooks.SessionStart && frag.hooks.UserPromptSubmit && fr
 ok(frag.hooks && frag.hooks.SessionStart?.[0]?.matcher === 'compact|clear',
    's14 фрагмент конфига: SessionStart с matcher compact|clear');
 const fragTxt = JSON.stringify(frag);
-ok(HOOK_FILES.slice(0, 5).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)) && frag.hooks && Array.isArray(frag.hooks.PreToolUse),
+ok(HOOK_FILES.slice(0, 4).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)),
    's14 фрагмент конфига: команды указывают на все четыре развёрнутых скрипта (четвёртый — resume-word, 2.7)');
+// 2.9, эпик WH (тикет #144, слово владельца «Убрать это!!!! ИЗ КАИФ НАХУЙ УБРАТ!»): снятых хуков нет ни в образце, ни на диске развёртывания
+ok(!/pretool-owner-word|stop-owner-answer/.test(fragTxt) && !frag.hooks?.PreToolUse
+   && !existsSync(join(S, '.kaif', 'hooks', 'pretool-owner-word.mjs')) && !existsSync(join(S, '.kaif', 'hooks', 'stop-owner-answer.mjs')),
+   's14 WH: снятые хуки (pretool-owner-word · stop-owner-answer) не поставляются и не подключаются образцом', fragTxt.slice(0, 200));
 
 // ---------------------------------------------------------------- поведение: SessionStart
 console.log('\n=== s14: поведение хуков (живой контракт: stdin JSON → stdout JSON) ===');
@@ -152,11 +155,12 @@ ok(resumeHook('делаем эпик LP') === '', 's14 resume-word: промпт
 ok(resumeHook('продолжай читать resume.log и скажи, что видишь') === '', 's14 resume-word: слово не первым (проза, граница пинка) — ТИШИНА');
 ok(resumeHook(undefined) === '', 's14 resume-word: событие без поля prompt — ТИШИНА (предикат по тексту не угадывается)');
 // 2.9 (№143 — владелец: «неправильно навык тебе говорит»; сессия ответила на «сколько осталось?» и сама взялась за следующий пункт плана):
-// приказ называет объём — текст под словом; на вопрос — ответ, выбранное ПРЕДЛАГАЕТСЯ, без строки «⏩»; работу начинает только голое resume.
+// приказ называет объём — текст под словом; на вопрос — ответ, выбранное ПРЕДЛАГАЕТСЯ; работу начинает только голое resume.
+// 2.9 WH (тикет #144): строка «⏩» ушла из канона вместе с хуками, которые её читали, — приказ её больше не называет.
 {
   const c = parseHook(resumeHook('выполни RESUME\nсколько осталось делать до выпуска?')).hookSpecificOutput?.additionalContext || '';
-  ok(/it sets the scope/.test(c) && /a question is answered/.test(c) && /OFFERED, never taken/.test(c) && /no "⏩" line/.test(c) && /only a bare "resume"/.test(c),
-     's14 resume-word (№143): приказ говорит, что объём задаёт текст под словом — на вопрос ответ без работы сверх него, без «⏩»', c.slice(-420));
+  ok(/it sets the scope/.test(c) && /a question is answered/.test(c) && /OFFERED, never taken/.test(c) && !/⏩/.test(c) && /only a bare "resume"/.test(c),
+     's14 resume-word (№143): приказ говорит, что объём задаёт текст под словом — на вопрос ответ без работы сверх него; «⏩» не названа (#144)', c.slice(-420));
 }
 // [TESTED: 2026-09-25 17:43 +03:00 · +7 случаев OW2 — 95 проверок зелёные; на dist v2.7 — «ПРОВАЛОВ: 5», ровно пять новых поведений («resume:» и «стопка» — прежнее
 //  поведение, зелёные по построению); мутанты M8–M10 tools/sandbox/probes/hooks-mutants.mjs — на адресатах; отчёт testcases/reports/2026-09-25_ow2-owner-word-mid-turn.md]
@@ -403,7 +407,7 @@ const SAMPLES = [
   ['Antigravity', 'sample-antigravity-hooks.json', 'antigravity'],
 ];
 // Хуки только Claude Code: поле prompt и запись сессии чужих событий с доки не сняты — образцы их не обещают (README модуля)
-const CLAUDE_ONLY = ['prompt-resume-word.mjs', 'pretool-owner-word.mjs', 'stop-owner-answer.mjs'];
+const CLAUDE_ONLY = ['prompt-resume-word.mjs'];
 // bugs/118 №2 (2.9 HK): форма вывода судится ТОКЕНАМИ команды, а не подстрокой — у каждой команды, зовущей скрипт модуля, ровно один
 // `--emit` ровно с этим значением (`--emit cursorX` и лишний `--emit cursor` ПЕРЕД требуемым проходили `includes`).
 const emitsOf = (cmd) => { const t = cmd.split(/\s+/); return t.flatMap((w, i) => (w === '--emit' ? [t[i + 1] ?? ''] : [])); };
@@ -467,7 +471,7 @@ console.log('\n=== s14/O5: имена событий образцов проти
 const EVENT_CONTRACT = {
   // bugs/118 F1: фрагмент Claude Code — ЕДИНСТВЕННЫЙ конфиг, который владелец мержит себе руками, — в ось
   // не попадал: охват брался по паттерну имени `sample-*.json`. Теперь судится каждый `*.json` модуля.
-  'settings-fragment.json':        ['PreToolUse', 'SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий); PreToolUse — 2.8, живой fetch 2026-09-25 code.claude.com/docs/en/hooks.md («Before a tool call executes. Can block it»)
+  'settings-fragment.json':        ['SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий); PreToolUse (2.8) ушло с хуком pretool-owner-word — 2.9 WH, тикет #144
   'sample-codex-hooks.json':       ['SessionStart', 'UserPromptSubmit'],  // researches/19 §OpenAI Codex
   'sample-cursor-hooks.json':      ['sessionStart'],                      // researches/19 §Cursor
   'sample-copilot-hooks.json':     ['sessionStart'],                      // researches/19 §GitHub Copilot
@@ -569,8 +573,8 @@ for (const f of PAIR_AXIS) {
 }
 {
   const fragPairs = pairsOf(readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {}).map(([s]) => s).sort();
-  ok(JSON.stringify(fragPairs) === JSON.stringify(HOOK_FILES.slice(0, 6).sort()),
-     's14 ось пар: фрагмент подключает ровно шесть развёрнутых скриптов, каждый один раз (пятый — pretool-owner-word, 2.8; шестой — stop-owner-answer, 2.9)', fragPairs.join(', '));
+  ok(JSON.stringify(fragPairs) === JSON.stringify(HOOK_FILES.slice(0, 4).sort()),
+     's14 ось пар: фрагмент подключает ровно четыре развёрнутых скрипта, каждый один раз (2.9 WH: два хука слова владельца сняты)', fragPairs.join(', '));
   // Мутационное доказательство живёт В СВОДЕ (EXP-0016): обмен двух скриптов в разобранной КОПИИ (EXP-0077).
   const p = join(S, '.kaif', 'hooks', 'settings-fragment.json');
   const bytesBefore = (() => { try { return readFileSync(p); } catch { return Buffer.alloc(0); } })();
@@ -611,136 +615,6 @@ ok(junkJs.hookSpecificOutput?.additionalContext?.length > 0,
 //     требующего wiring, — check зелёный (первый check выше уже это доказал; здесь явно).
 // (2) Контраст целостности: УДАЛЕНИЕ файлов модуля — MISSING, ровно как у tool-модулей
 //     (прецедент проверен живьём: rm .kaif/tools/kaif-provenance.mjs → check exit 1 MISSING).
-// 2.8 (эпик OW; bugs/123 и его рецидив 2026-09-25 19:32 — 18 вызовов, ответ составлен в размышлении и не выведен; хук — по слову
-// владельца истока того же вечера): перед каждым вызовом главного потока хук читает запись сессии; последнее сообщение владельца,
-// пришедшее посреди хода, без ТЕКСТОВОГО блока агента после него — вызов отказан (код 2), причина несёт его слова. На v2.7 файла нет —
-// все случаи красны.
-console.log('\n=== s14: хук pretool-owner-word — слово владельца посреди хода без ответа текстом (эпик OW 2.8, bugs/123) ===');
-{
-  const TR = join(ROOT, 'transcripts'); mkdirSync(TR, { recursive: true });
-  const J = (o) => JSON.stringify(o);
-  const mid = (text, kind = 'human') => J({ type: 'attachment', timestamp: '2026-09-25T16:32:07.936Z', attachment: { type: 'queued_command', prompt: text, origin: { kind } } });
-  const asst = (...blocks) => J({ type: 'assistant', timestamp: '2026-09-25T16:32:35.977Z', message: { role: 'assistant', content: blocks } });
-  const think = { type: 'thinking', thinking: '' }, tool = { type: 'tool_use', name: 'Bash', input: {} }, say = (t) => ({ type: 'text', text: t });
-  // the gate's own refusal as the transcript records it (observed live 2026-09-25 23:27): an is_error tool_result carrying its reason
-  const refused = (w) => J({ type: 'user', timestamp: '2026-09-25T16:32:40.000Z', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 't1', is_error: true,
-    content: 'PreToolUse:Bash hook error: [node .kaif/hooks/pretool-owner-word.mjs]: KAIF: the owner wrote while you were working (2026-09-25T16:32:07Z) and there is no TEXT answer after it yet: «' + w + '». …' }] } });
-  const HOOK = join(S, '.kaif', 'hooks', 'pretool-owner-word.mjs');
-  const gate = (name, lines, extra = {}) => {
-    const p = join(TR, name + '.jsonl'); writeFileSync(p, lines.join('\n') + '\n');
-    const r = spawnSync(process.execPath, [HOOK], { input: JSON.stringify({ hook_event_name: 'PreToolUse', cwd: S, tool_name: 'Bash', transcript_path: p, ...extra }), encoding: 'utf8' });
-    return { code: r.status, err: String(r.stderr || '') };
-  };
-  let g = gate('unanswered', [asst(think, tool), mid('ну что, сколько процентов версии 2.8 сделано?'), asst(think, tool)]);
-  ok(g.code === 2 && /сколько процентов версии 2\.8/.test(g.err) && /AS TEXT/.test(g.err) && /CONTINUE/.test(g.err) && /final text of the turn/.test(g.err),
-     's14 owner-word: сообщение владельца посреди хода без ТЕКСТА после него → вызов отказан (код 2), причина несёт его слова, «AS TEXT», «CONTINUE» и «повтори итоговым текстом хода»', 'code ' + g.code + ': ' + g.err.slice(0, 160));
-  g = gate('reasoning-only', [mid('стоп'), asst(think, think, tool), asst(think, think, tool)]);
-  ok(g.code === 2, 's14 owner-word: после сообщения — только размышления и вызовы (форма рецидива 19:32) → отказ', 'code ' + g.code);
-  g = gate('answered', [mid('стоп'), asst(think, say('Остановился: на шаге сборки.'), tool)]);
-  ok(g.code === 0 && g.err === '', 's14 owner-word: ответ ТЕКСТОМ после сообщения → вызов пропущен, тишина', 'code ' + g.code + ': ' + g.err.slice(0, 120));
-  g = gate('newer-unanswered', [mid('старый вопрос'), asst(say('ответ на старый'), tool), mid('новый вопрос'), asst(think, tool)]);
-  ok(g.code === 2 && /новый вопрос/.test(g.err), 's14 owner-word: старое сообщение отвечено, новое — нет → отказ по НОВОМУ (судится последнее)', 'code ' + g.code);
-  g = gate('refused-once', [mid('стоп'), asst(think, tool), refused('стоп'), asst(think, tool)]);
-  ok(g.code === 0, 's14 owner-word: один отказ по сообщению доставлен → следующий вызов проходит, работа не встаёт (слово владельца 23:28)', 'code ' + g.code + ': ' + g.err.slice(0, 120));
-  g = gate('refused-then-new', [mid('первый'), asst(think, tool), refused('первый'), asst(think, tool), mid('второй'), asst(think, tool)]);
-  ok(g.code === 2 && /второй/.test(g.err), 's14 owner-word: отказ по старому сообщению не покрывает новое → отказ по новому', 'code ' + g.code + ': ' + g.err.slice(0, 120));
-  g = gate('peer', [mid('сведения соседней сессии', 'peer'), asst(think, tool)]);
-  ok(g.code === 0, 's14 owner-word: сообщение соседней сессии — не слово владельца → тишина', 'code ' + g.code);
-  g = gate('subagent', [mid('стоп'), asst(think, tool)], { agent_id: 'a1b2' });
-  ok(g.code === 0, 's14 owner-word: вызов субагента (agent_id) пропущен — владельцу отвечает главный поток', 'code ' + g.code);
-  g = gate('quiet', [asst(think, tool), asst(say('работаю'), tool)]);
-  ok(g.code === 0, 's14 owner-word: сообщений посреди хода нет → тишина', 'code ' + g.code);
-  const gm = spawnSync(process.execPath, [HOOK], { input: JSON.stringify({ hook_event_name: 'PreToolUse', cwd: S, transcript_path: join(TR, 'missing.jsonl') }), encoding: 'utf8' });
-  ok(gm.status === 0, 's14 owner-word: записи сессии нет → тишина (хук никогда не ломает сессию)', 'code ' + gm.status);
-  // 2.9, эпик OA (researches/36): запись сессии пишется асинхронно — ответ, написанный в ОДНОМ сообщении с вызовом, ложится в неё чуть
-  // позже, чем хук её читает (сессия 76, 17:12:40Z — отказ при уже написанном ответе; поле — KAGO R13). Здесь ответ дописывается в
-  // запись через 150 мс после старта хука: хук обязан перечитать запись и пропустить вызов. На v2.8 — отказ (код 2).
-  {
-    const p = join(TR, 'lagging.jsonl'); writeFileSync(p, [mid('ты навык резюм выполнил?'), asst(think)].join('\n') + '\n');
-    const child = spawn(process.execPath, [HOOK], { stdio: ['pipe', 'ignore', 'pipe'] });
-    child.stdin.end(JSON.stringify({ hook_event_name: 'PreToolUse', cwd: S, tool_name: 'Skill', transcript_path: p }));
-    setTimeout(() => appendFileSync(p, asst(say('Да, навык выполнен целиком.'), tool) + '\n'), 150);
-    const code = await new Promise((res) => child.on('close', res));
-    ok(code === 0, 's14 owner-word: ответ ложится в запись через 150 мс после вызова (лаг записи) → хук перечитывает и пропускает (2.9, OA)', 'code ' + code);
-  }
-}
-
-// 2.9, эпик OA (bugs/123: рецидив в поле на 2.8 — первый текст через 108 вызовов; researches/36): в конце хода хук сверяет ИТОГОВЫЙ ответ
-// (`last_assistant_message` — его вендор отдаёт без записи сессии) с каждым словом владельца этого хода: ответ обязан открываться его первыми
-// словами; нет — ход возвращается агенту ОДИН раз (`decision: "block"`). На v2.8 файла нет — все случаи красны.
-console.log('\n=== s14: хук stop-owner-answer — итоговый ответ хода отвечает на слово владельца (эпик OA 2.9, bugs/123) ===');
-{
-  const TR = join(ROOT, 'transcripts-stop'); mkdirSync(TR, { recursive: true });
-  const J = (o) => JSON.stringify(o);
-  // a prompt that opens a turn carries its source, as the live record does (origin session 76: `promptSource`, `origin.kind`)
-  const prompt = (text) => J({ type: 'user', timestamp: '2026-09-28T17:46:21.000Z', promptSource: 'sdk', origin: { kind: 'human' }, message: { role: 'user', content: text } });
-  // another Stop hook's feedback as the live record shows it (18:24:00): a string user record WITHOUT a source — it does not open a turn
-  const feedback = (text) => J({ type: 'user', isMeta: true, timestamp: '2026-09-28T18:24:00.341Z', message: { role: 'user', content: 'Stop hook feedback:\n' + text } });
-  const mid = (text, kind = 'human') => J({ type: 'attachment', timestamp: '2026-09-28T17:50:00.000Z', attachment: { type: 'queued_command', prompt: text, origin: { kind } } });
-  const asst = (...blocks) => J({ type: 'assistant', timestamp: '2026-09-28T17:50:10.000Z', message: { role: 'assistant', content: blocks } });
-  const think = { type: 'thinking', thinking: '' }, tool = { type: 'tool_use', name: 'Bash', input: {} };
-  const HOOK = join(S, '.kaif', 'hooks', 'stop-owner-answer.mjs');
-  const stop = (name, lines, last, extra = {}) => {
-    const p = join(TR, name + '.jsonl'); writeFileSync(p, lines.join('\n') + '\n');
-    const r = spawnSync(process.execPath, [HOOK], { input: JSON.stringify({ hook_event_name: 'Stop', cwd: S, transcript_path: p,
-      stop_hook_active: false, last_assistant_message: last, ...extra }), encoding: 'utf8' });
-    return { code: r.status, out: String(r.stdout || ''), js: parseHook(String(r.stdout || '')) };
-  };
-  const turn = [prompt('делаем 2.9'), asst(think, tool), mid('сколько осталось?'), asst(think, tool), asst(think, tool)];
-  let t = stop('unanswered', turn, 'Готово: сборка зелёная, свод прошёл.');
-  ok(t.code === 0 && t.js.decision === 'block' && /сколько осталось\?/.test(t.js.reason || '') && /response of its own/.test(t.js.reason || ''),
-     's14 stop-owner-answer: слово владельца посреди хода, итоговый ответ его не открывает → ход возвращён (block), причина несёт его слова', t.out.slice(0, 160));
-  t = stop('answered', turn, '«Сколько осталось?» — два шага, около получаса. Сборка зелёная.');
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: итоговый ответ открывается словами владельца → тишина', t.out.slice(0, 160));
-  t = stop('active', turn, 'Готово.', { stop_hook_active: true });
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: stop_hook_active (продолжение от стража) → тишина, петли нет', t.out.slice(0, 160));
-  t = stop('peer', [prompt('делаем 2.9'), mid('отчёт субагента', 'peer'), asst(think, tool)], 'Готово.');
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: сообщение соседней сессии — не слово владельца → тишина', t.out.slice(0, 160));
-  t = stop('previous-turn', [prompt('делаем 2.9'), mid('сколько осталось?'), asst(think, tool), prompt('продолжай'), asst(think, tool)], 'Готово.');
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: слово владельца ПРОШЛОГО хода не судится в этом → тишина', t.out.slice(0, 160));
-  t = stop('go-inside-word', [prompt('делаем'), mid('го'), asst(think, tool)], 'Говорю: готово.');
-  ok(t.js.decision === 'block', 's14 stop-owner-answer: «го» внутри «говорю» — не ответ (сверка целыми словами) → ход возвращён', t.out.slice(0, 160));
-  t = stop('go-answered', [prompt('делаем'), mid('го'), asst(think, tool)], '«Го» — принял, продолжаю со сборки.');
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: «Го» открывает ответ → тишина', t.out.slice(0, 160));
-  t = stop('two-one-missing', [prompt('делаем'), mid('стоп'), asst(think, tool), mid('переключись на выпуск'), asst(think, tool)], '«Стоп» — остановился на сборке.');
-  ok(t.js.decision === 'block' && /переключись на выпуск/.test(t.js.reason || '') && !/«стоп»/.test(t.js.reason || ''),
-     's14 stop-owner-answer: два слова владельца, ответ открыт только на одно → возврат, причина называет ТОЛЬКО неотвеченное', t.out.slice(0, 200));
-  // 2.9, OA — the live finding of 2026-09-28 18:22: an answer written before a tool call was recorded as reasoning; a response WITHOUT a
-  // tool call reached the chat. So the agent answers in a response of its own and asks to go on with a last line «⏩ …»; the hook resumes.
-  t = stop('continue', turn, '«Сколько осталось?» — два шага.\n\n⏩ дальше: сборка и полигон');
-  ok(t.js.decision === 'block' && /continue the work: дальше: сборка и полигон/.test(t.js.reason || ''),
-     's14 stop-owner-answer: ответ открыт словами владельца и последняя строка «⏩ …» → работа продолжается (block «continue»)', t.out.slice(0, 200));
-  t = stop('continue-no-owner', [prompt('делаем'), asst(think, tool)], 'Готово.\n\n⏩ дальше: ещё круг');
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: «⏩» без слова владельца в ходе не продлевает работу → тишина', t.out.slice(0, 160));
-  t = stop('continue-after-feedback', [...turn, feedback('[git-check]: uncommitted changes')], '«Сколько осталось?» — два шага.\n\n⏩ дальше: коммит', { stop_hook_active: true });
-  ok(t.js.decision === 'block' && /continue the work: дальше: коммит/.test(t.js.reason || ''),
-     's14 stop-owner-answer: отзыв ДРУГОГО стража — не начало хода: слово владельца в ходе, «⏩» исполняется и при stop_hook_active', t.out.slice(0, 200));
-  t = stop('answer-after-feedback', [...turn, feedback('[git-check]: uncommitted changes')], 'Коммит сделан.');
-  ok(t.js.decision === 'block' && /сколько осталось\?/.test(t.js.reason || ''),
-     's14 stop-owner-answer: после отзыва другого стража неотвеченное слово владельца всё ещё требует ответа', t.out.slice(0, 200));
-  t = stop('no-last-message', turn, undefined);
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: клиент без last_assistant_message → тишина (судить нечего)', t.out.slice(0, 160));
-  // 2.9, сессия 77 (VS Code, entrypoint «sdk»): промпт владельца в записи — МАССИВ текстовых блоков, не строка. Хук не находил начала хода,
-  // вся сессия была одним ходом: прошлые слова требовались снова, а под продолжением ход молча кончался — владелец спросил «ты чего стоишь?».
-  const promptArr = (text) => J({ type: 'user', timestamp: '2026-10-03T05:30:00.000Z', promptSource: 'sdk', origin: { kind: 'human' },
-    message: { role: 'user', content: [{ type: 'text', text }] } });
-  const said = (text) => asst({ type: 'text', text });
-  t = stop('ide-prompt-array', [promptArr('делаем 2.9'), mid('сколько осталось?'), asst(think, tool), promptArr('ты чего стоишь?'), asst(think, tool)], 'Готово.');
-  ok(t.code === 0 && t.out.trim() === '', 's14 stop-owner-answer: промпт IDE (массив блоков) открывает ход — слово ПРОШЛОГО хода не судится → тишина', t.out.slice(0, 200));
-  t = stop('ide-tool-result-not-turn', [promptArr('делаем'), mid('сколько осталось?'), asst(think, tool),
-    J({ type: 'user', message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'x', content: 'ok' }] } })], 'Готово.');
-  ok(t.js.decision === 'block' && /сколько осталось\?/.test(t.js.reason || ''), 's14 stop-owner-answer: результат инструмента (массив без источника) — не начало хода', t.out.slice(0, 200));
-  // слово, на которое ответил ПРОШЛЫЙ ответ этого хода («⏩» → продолжение), засчитано: последний ответ отвечает только на новое слово
-  t = stop('answered-earlier', [prompt('го'), mid('переделываем на Windows'), said('«Переделываем на Windows» — принял.\n\n⏩ сборка'),
-    feedback('KAIF: the owner has your answer — continue the work: сборка'), mid('чего не работаешь?'), asst(think, tool)],
-    '«Чего не работаешь?» — работаю: коммит.\n\n⏩ коммит и push', { stop_hook_active: true });
-  ok(t.js.decision === 'block' && /continue the work: коммит и push/.test(t.js.reason || ''),
-     's14 stop-owner-answer: слово, отвеченное прошлым ответом хода, засчитано — «⏩» продолжает работу и под stop_hook_active', t.out.slice(0, 200));
-  t = stop('answered-earlier-missing-new', [prompt('го'), mid('переделываем на Windows'), said('«Переделываем на Windows» — принял.'), mid('чего не работаешь?'), asst(think, tool)], 'Коммит сделан.');
-  ok(t.js.decision === 'block' && /чего не работаешь\?/.test(t.js.reason || '') && !/переделываем/.test(t.js.reason || ''),
-     's14 stop-owner-answer: новое слово без ответа требуется, отвеченное раньше — не требуется снова', t.out.slice(0, 200));
-}
-
 // ---------------------------------------------------------------- SW2: поставленное ПОДКЛЮЧЕНО (2.9, тикет #115)
 // Слово владельца KAIF в поле: всё, что KAIF приносит в поставке, подключать без вопроса владельцу проекта. Команда
 // машинерии `wire-hooks` вливает фрагмент в .claude/settings.json АДДИТИВНО: записи владельца и их порядок живы, повтор —
@@ -760,7 +634,7 @@ const scriptsOf = (hooksObj) => Object.entries(hooksObj || {}).flatMap(([ev, gro
   (Array.isArray(groups) ? groups : []).flatMap((g) => (g.hooks || []).map((h) => `${ev}:${scriptOfCmd(h)}`)).filter((s) => !s.endsWith(':undefined')));
 const FRAG = readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {};
 const WANT = scriptsOf(FRAG.hooks).sort();
-ok(WANT.length === 6, 's14 SW2: фрагмент несёт шесть хуков — эталон для случаев ниже', WANT.join(' · '));
+ok(WANT.length === 4, 's14 SW2: фрагмент несёт четыре хука — эталон для случаев ниже (2.9 WH: два сняты)', WANT.join(' · '));
 let wcase = 0;
 const wcopy = (settings, local) => {
   const d = join(ROOT, `wire-${++wcase}`);
@@ -784,13 +658,13 @@ let W = wcopy(null, null), wr = runAll(W, ['check']);
 ok(wr.code === 0 && new RegExp(`${WANT.length} delivered hook\\(s\\) not wired`).test(wr.out) && /wire-hooks/.test(wr.out),
    's14 SW2: поставленные хуки не подключены → `check` называет их числом и командой, выход 0 (предупреждение, не отказ)', wr.out.slice(-300));
 
-// (2) файл владельца с чужим хуком → свои записи живы и первыми, наши шесть добавлены, отступ файла сохранён
+// (2) файл владельца с чужим хуком → свои записи живы и первыми, наши четыре добавлены, отступ файла сохранён
 W = wcopy(OWNER_SETTINGS, null); wr = runAll(W, ['wire-hooks']);
 let wj = null; try { wj = JSON.parse(settingsOf(W)); } catch { /* ассерт ниже честно красный */ }
 ok(wr.code === 0 && wj && JSON.stringify(wj.permissions) === JSON.stringify(OWNER_OBJ.permissions)
    && JSON.stringify(wj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
    && WANT.every((s) => scriptsOf(wj.hooks).includes(s)) && /\n {4}"permissions"/.test(settingsOf(W) || ''),
-   's14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, шесть хуков KAIF добавлены, отступ 4 сохранён', `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
+   's14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, четыре хука KAIF добавлены, отступ 4 сохранён', `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
 const wiredOnce = settingsOf(W);
 wr = runAll(W, ['wire-hooks']);
 ok(wr.code === 0 && settingsOf(W) === wiredOnce && /already wired/.test(wr.out),
@@ -798,23 +672,60 @@ ok(wr.code === 0 && settingsOf(W) === wiredOnce && /already wired/.test(wr.out),
 wr = runAll(W, ['check']);
 ok(wr.code === 0 && !/not wired/.test(wr.out), 's14 SW2: после вливания `check` молчит о подключении', wr.out.slice(-300));
 // (2b) J-SW2 (функциональный прогон по клонам пяти живых развёртываний 2.8, 2026-10-14): владельцы скопировали ОБРАЗЕЦ поставки — массивы
-// строк в одну строку (`"args": ["…"]`) — и голый JSON.stringify разворачивал каждый: шесть переписанных кусков в диффе владельца вокруг
-// одного добавленного хука. Фикстура — сам образец поставки без хука, которого не было в 2.8, плюс свой многострочный список прав (форма
-// смешанная, как у одного из пяти). Подключение обязано быть ЧИСТЫМ ДОБАВЛЕНИЕМ: каждая строка владельца на месте и в том же порядке
-// (висячая запятая перед добавленным — не правка), новая строка args — в его однострочной форме.
+// строк в одну строку (`"args": ["…"]`) — и голый JSON.stringify разворачивал каждый. 2.9 WH (тикет #144): на пути поля 2.8 → 2.9 в
+// таком файле стоит снятый хук 2.8 `pretool-owner-word` (событие PreToolUse), у сборок с main — ещё и `stop-owner-answer` в группе Stop
+// рядом со стражем STATUS. Фикстура — сам образец поставки, в который вставлены обе записи в его однострочной форме, плюс свой
+// многострочный список прав (форма смешанная, как у одного из пяти). `wire-hooks` обязан дать ЧИСТОЕ СНЯТИЕ: файл после — побайтно
+// образец с правами владельца (строки владельца на месте и в порядке, массивы в его форме), снятые записи названы поимённо.
+const RETIRED_PRE = '    "PreToolUse": [\n      {\n        "hooks": [\n          {\n            "type": "command",\n            "command": "node",\n'
+  + '            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/pretool-owner-word.mjs"],\n            "timeout": 10\n          }\n        ]\n      }\n    ],\n';
+const RETIRED_STOP = ',\n          {\n            "type": "command",\n            "command": "node",\n'
+  + '            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-owner-answer.mjs"],\n            "timeout": 10\n          }';
 {
-  const sample = readFileSync(join(S, '.kaif', 'hooks', 'settings-fragment.json'), 'utf8');
-  const dropRe = /,\r?\n[ \t]*\{\r?\n[ \t]*"type": "command",\r?\n[ \t]*"command": "node",\r?\n[ \t]*"args": \["\$\{CLAUDE_PROJECT_DIR\}\/\.kaif\/hooks\/stop-owner-answer\.mjs"\],\r?\n[ \t]*"timeout": \d+\r?\n[ \t]*\}/;
-  const owner28 = sample.replace(dropRe, '').replace(/^\{\r?\n/, '{\n  "permissions": {\n    "allow": [\n      "Bash(npm test:*)",\n      "Bash(git status:*)"\n    ]\n  },\n');
-  ok(owner28 !== sample && !/stop-owner-answer/.test(owner28) && /"allow": \[\n/.test(owner28), 's14 SW2 фикстура: образец поставки без хука 2.9 и со списком прав владельца', owner28.slice(0, 200));
-  W = wcopy(owner28, null); wr = runAll(W, ['wire-hooks']);
-  const after = settingsOf(W) || '';
-  const lines = (t) => t.replace(/\r\n/g, '\n').split('\n').map((l) => l.replace(/,\s*$/, ''));
-  const a = lines(owner28), b = lines(after);
-  let j = 0; for (const l of b) if (j < a.length && l === a[j]) j++;
-  ok(wr.code === 0 && j === a.length && after.includes('"args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-owner-answer.mjs"]') && !/re-serialized/.test(wr.out),
-     's14 SW2: файл в форме образца — подключение — чистое добавление: строки владельца на месте и в порядке, новая args в его однострочной форме',
-     `${wr.out.slice(-200)} | строк владельца найдено по порядку ${j} из ${a.length}; первая потерянная: ${JSON.stringify(a[j] || '')}`);
+  const sample = readFileSync(join(S, '.kaif', 'hooks', 'settings-fragment.json'), 'utf8').replace(/\r\n/g, '\n');
+  const withPerms = sample.replace(/^\{\n/, '{\n  "permissions": {\n    "allow": [\n      "Bash(npm test:*)",\n      "Bash(git status:*)"\n    ]\n  },\n');
+  const guardTail = 'stop-status-guard.mjs"],\n            "timeout": 15\n          }';
+  const owner28 = withPerms.replace('    "Stop": [\n', RETIRED_PRE + '    "Stop": [\n').replace(guardTail, guardTail + RETIRED_STOP);
+  ok(/pretool-owner-word/.test(owner28) && /stop-owner-answer/.test(owner28) && JSON.parse(owner28).hooks.Stop[0].hooks.length === 2,
+     's14 WH фикстура: образец поставки + снятые записи 2.8/2.9-pre в его однострочной форме + список прав владельца', owner28.slice(0, 200));
+  W = wcopy(owner28, null); wr = runAll(W, ['check']);
+  ok(wr.code === 0 && /still runs 2 hook\(s\) KAIF retired in 2\.9: PreToolUse → pretool-owner-word\.mjs · Stop → stop-owner-answer\.mjs/.test(wr.out) && /wire-hooks/.test(wr.out),
+     's14 WH: `check` называет подключённые снятые хуки поимённо и команду, выход 0', wr.out.slice(-400));
+  wr = runAll(W, ['checkpoint', 'wire-hooks']);
+  ok(wr.code !== 0 && /retired, still wired: PreToolUse → pretool-owner-word\.mjs/.test(wr.out),
+     's14 WH: `checkpoint wire-hooks` при подключённом снятом хуке — отказ, хук назван', wr.out.slice(-300));
+  wr = runAll(W, ['wire-hooks']);
+  const after = (settingsOf(W) || '').replace(/\r\n/g, '\n');
+  ok(wr.code === 0 && after === withPerms && /removed PreToolUse → pretool-owner-word\.mjs/.test(wr.out) && /removed Stop → stop-owner-answer\.mjs/.test(wr.out)
+     && /2 entries of retired KAIF hooks removed/.test(wr.out) && !/re-serialized/.test(wr.out),
+     's14 WH: wire-hooks — чистое снятие: файл после — побайтно образец с правами владельца, страж STATUS в группе Stop на месте, снятые названы',
+     `${wr.out.slice(-300)} | ${after === withPerms ? '' : 'первая разница с позиции ' + [...after].findIndex((c, i) => c !== withPerms[i])}`);
+  const removedOnce = settingsOf(W);
+  wr = runAll(W, ['wire-hooks']);
+  ok(wr.code === 0 && settingsOf(W) === removedOnce && /already wired/.test(wr.out), 's14 WH: повторный wire-hooks после снятия — побайтно тот же файл', wr.out.slice(-200));
+  wr = runAll(W, ['check']);
+  ok(wr.code === 0 && !/retired/.test(wr.out) && !/not wired/.test(wr.out), 's14 WH: после снятия `check` молчит о проводке', wr.out.slice(-300));
+  // владелец сам держит свой PreToolUse-страж рядом со снятым: его группа остаётся, снимается только запись KAIF
+  const ownerPre = JSON.parse(owner28);
+  ownerPre.hooks.PreToolUse.unshift(OWNER_OBJ.hooks.PreToolUse[0]);
+  W = wcopy(JSON.stringify(ownerPre, null, 2) + '\n', null); wr = runAll(W, ['wire-hooks']);
+  let pj = null; try { pj = JSON.parse(settingsOf(W)); } catch { /* ассерт ниже честно красный */ }
+  ok(wr.code === 0 && pj && pj.hooks.PreToolUse?.length === 1 && JSON.stringify(pj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
+     && !/pretool-owner-word|stop-owner-answer/.test(settingsOf(W) || ''),
+     's14 WH: свой PreToolUse владельца рядом со снятым — его группа на месте, ушла только запись KAIF', `${wr.out.slice(-200)} | ${String(settingsOf(W)).slice(0, 300)}`);
+  // личный settings.local.json KAIF не правит никогда: снятый хук там назван, файл побайтно нетронут
+  const localWithRetired = JSON.stringify({ hooks: { PreToolUse: JSON.parse(owner28).hooks.PreToolUse } }, null, 2) + '\n';
+  W = wcopy(withPerms, localWithRetired); wr = runAll(W, ['wire-hooks']);
+  const localAfter = readFileSync(join(W, '.claude', 'settings.local.json'), 'utf8');
+  const wck2 = runAll(W, ['check']);
+  ok(wr.code === 0 && localAfter === localWithRetired && /settings\.local\.json \(personal, never edited by KAIF\) still runs a hook KAIF retired: PreToolUse → pretool-owner-word\.mjs/.test(wr.out)
+     && /settings\.local\.json still runs 1 hook\(s\) KAIF retired/.test(wck2.out),
+     's14 WH: снятый хук в settings.local.json — назван (wire-hooks и check), личный файл побайтно нетронут', `${wr.out.slice(-300)} | ${wck2.out.slice(-200)}`);
+  // "hooks": "off": KAIF файл не пишет и при снятом хуке — называет его и говорит снять руками
+  W = wcopy(owner28, null); setMarker(W, { hooks: 'off' });
+  wr = runAll(W, ['wire-hooks']); const wck3 = runAll(W, ['check']);
+  ok(wr.code === 0 && settingsOf(W) === owner28 && /remove that entry by hand/.test(wr.out) && /KAIF retired in 2\.9/.test(wck3.out),
+     's14 WH: "hooks": "off" — файл побайтно нетронут, снятые хуки названы с ходом «руками»', `${wr.out.slice(-200)} | ${wck3.out.slice(-200)}`);
 }
 
 // (3) чекпоинт задания исполняет гейт: не подключено → отказ с командой; подключено → записан
@@ -822,7 +733,7 @@ W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wr.code !== 0 && /NOT wired/.test(wr.out) && /--verdict/.test(wr.out),
    's14 SW2: `checkpoint wire-hooks` без подключения — отказ, названы команда и запись отказа харнесса', wr.out.slice(-300));
 wr = runAll(W, ['wire-hooks']);   // результат судится до следующей команды (страж немых команд, bugs/61)
-ok(wr.code === 0 && /6 of 6 KAIF hooks added/.test(wr.out), 's14 SW2: wire-hooks на свежей копии — шесть из шести добавлены', wr.out.slice(-200));
+ok(wr.code === 0 && /4 of 4 KAIF hooks added/.test(wr.out), 's14 SW2: wire-hooks на свежей копии — четыре из четырёх добавлены', wr.out.slice(-200));
 const wck = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wck.code === 0 && /wire-hooks done/.test(readFileSync(join(W, 'KAIF_ADAPTATION_TASK.md'), 'utf8')),
    's14 SW2: после wire-hooks чекпоинт записан в задании установки', wck.out.slice(-200));
@@ -872,5 +783,5 @@ r = run(S, 'check');
 ok(r.code !== 0 && /MISSING or empty: \.kaif\/hooks\//.test(r.out),
    's14 контраст: УДАЛЕНИЕ файлов модуля — честный MISSING (целостность поставки, как у tool-модулей)', r.out.slice(-300));
 
-console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 6 хуков по живому контракту)'}`);
+console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 4 хука по живому контракту · снятые хуки сняты с проводки)'}`);
 process.exit(failures ? 1 : 0);

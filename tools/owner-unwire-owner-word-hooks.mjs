@@ -21,7 +21,7 @@ const file = resolve(fi >= 0 && args[fi + 1] ? args[fi + 1] : '.claude/settings.
 if (!existsSync(file)) { console.error(`✗ ${file} not found — nothing to unwire`); process.exit(1); }
 
 const raw = readFileSync(file, 'utf8');
-const settings = JSON.parse(raw.replace(/^﻿/, ''));
+const settings = JSON.parse(raw.replace(/^\uFEFF/, ''));
 const removed = [];
 const retiredIn = (h) => RETIRED.find((s) => [h && h.command, ...((h && h.args) || [])].join(' ').includes(s));
 for (const [event, groups] of Object.entries(settings.hooks || {})) {

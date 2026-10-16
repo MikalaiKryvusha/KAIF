@@ -32,18 +32,6 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/pretool-owner-word.mjs"],
-            "timeout": 10
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
@@ -52,12 +40,6 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-status-guard.mjs"],
             "timeout": 15
-          },
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-owner-answer.mjs"],
-            "timeout": 10
           }
         ]
       }

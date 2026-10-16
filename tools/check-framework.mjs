@@ -885,7 +885,7 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
 {
   const flat = (p) => readFileSync(join(ROOT, p), 'utf8').replace(/\r\n/g, '\n').replace(/\s+/g, ' ');
   const resumeSkill = flat('framework/skills/resume/SKILL.md'), refreshSkill = flat('framework/skills/refresh-context/SKILL.md');
-  for (const need of ["**The owner's message sets the scope**", '**a question** (', 'is OFFERED as the next step, never taken; no `⏩` line',
+  for (const need of ["**The owner's message sets the scope**", '**a question** (', 'is OFFERED as the next step, never taken',
     '**nothing under the word** (a bare `resume`)'])
     if (!resumeSkill.includes(need)) errors.push(`5r: framework/skills/resume/SKILL.md lacks «${need}» — the owner's message under the word sets the scope (#143)`);
   if (/Wait for confirmation only if the task is \*\*destructive\*\* or \*\*large and non-obvious\*\*\. If the plan is clear — start right after/.test(resumeSkill))

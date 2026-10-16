@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "a63c651356bc00c4be7440ab0ddb8f2b5d272cfdf3f24174e3c500d5e9e2d5a1",
+    "sourceTree": "0d4fbf553a352911b6e661bf99930d938a9d86fe9f4966fa646588327e1708a4",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -102,7 +102,7 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.9": [
-      "THE OWNER'S WORD MID-TURN GETS AN ANSWER HE CAN SEE (2.9, epic OA; origin bug 123 — on 2.8 one project's first text about the owner's mid-turn word came 108 tool calls later: an answer written between tool calls may never reach the chat, the final message does): a sixth refresh hook, `.kaif/hooks/stop-owner-answer.mjs` (event `Stop`, Claude Code only), reads the turn's FINAL message — the vendor hands it over as `last_assistant_message`, without the transcript — and asks ONCE for the answer when a response ends without opening an answer to each owner's mid-turn message of that turn with the message's first words; a response that answers and ends with a last line `⏩ <next step>` is resumed by the hook — the work goes on without the owner's next word. `pretool-owner-word.mjs` re-reads the lagging transcript before it refuses a call. \"The owner's word mid-turn\" now says: answer in a response of its own (no tool call after it — a text between tool calls may be recorded as reasoning and never reach the chat), open it with the owner's first words. Wire the new `Stop` entry of `.kaif/hooks/settings-fragment.json`.",
+      "NO HOOK STOPS THE AGENT ON THE OWNER'S WORD ANY MORE (2.9; origin ticket #144 — the KAIF owner on a field project, rendered from Russian: \"Remove this! Out of KAIF entirely!\" · \"I don't like that you stop on this!\" — five short remarks of the owner were five stops): the hook `.kaif/hooks/pretool-owner-word.mjs` (2.8; refused the next tool call after a mid-turn word) is RETIRED, and its pre-release `Stop` companion with the `⏩ <next step>` line never ships. The update removes an untouched copy of the script; `node .kaif/kaif-core.mjs wire-hooks` now also REMOVES the entries that run a retired hook from `.claude/settings.json` (the owner's other entries and their order stay, the values are proven before the write) — the update task names the item; `check` names an entry still left (in `.claude/settings.local.json` too, which the machinery never edits). \"The owner's word mid-turn\" now says: answer as text, then WORK ON in the same turn — never end the turn just to answer; \"stop\" is still a stop. MIGRATION — agent work: if your own texts (STATUS, house rules, experience) tell the agent to end an answer with `⏩`, drop that rule.",
       "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
       "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a status that does not fit two lines of the pill under the Save button rides the bar above the page (green for good news, red for trouble) and the pill carries a short label — a six-line pill used to cover the document's title; each bar is cleared only by its own owner, so a refused save keeps its reason in view through the page's pulse, and after the last answer is recorded a dead server is no alarm; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; Linux is not supported by the contour window: there no window is raised, the page is served and its address printed (the KAIF owner's word, 2.9). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner.",
       "WHAT KAIF DELIVERS IS WIRED AND ACCEPTED AT ONCE (2.9, epic SW; origin tickets #115 · #114 · #113 · #130 · #126 — the KAIF owner's word in his field projects, rendered from Russian: what KAIF delivers with an update is accepted without questions; everything KAIF brings in the delivery is wired, and agents should not ask about it): (1) NEW command `node .kaif/kaif-core.mjs wire-hooks` merges `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` additively — the owner's entries and their order stay, a script already wired for its event (there or in `.claude/settings.local.json`) is left alone, a repeat run changes nothing, the file keeps its indent, line ends, byte-order mark and the arrays written on one line (the shipped sample writes them so — your diff shows only the added entries), an unparseable file is left untouched (exit 1); the install and update tasks carry the item `wire-hooks` — the agent runs it WITHOUT asking the owner, the write is open to its harness and a refusal is recorded by `checkpoint wire-hooks --verdict`, never worked around; `\"hooks\": \"off\"` in `.kaif/kaif.json` opts out, and `check` names a delivered hook that is not wired (a warning — `checkpoint recheck` prints it too: a green recheck used to print only check's stdout and drop every warning); the samples of the other systems are merged by the agent by hand, no question. (2) The update task's `policy-changes` item no longer puts the rules of a release to the owner: they are ACCEPTED with the version and NAMED in the field report and the farewell; a question is legal only where a rule collides with a decision he recorded himself. (3) The decision-attribution lint that arrives with no baseline gets the item `lint-baselines`: the project's inherited debt is recorded once with `check --write-baseline`, no question, and the closing stops on a NEW finding only (the lesson journal gets no such step — its baseline never silences a repeated class). (4) The overflow address of the size budgets names `HOUSE_RULES.md` without «cp … HOUSE_RULES.md» when the file exists — an obeyed hint no longer overwrites a filled house-rules file with the empty skeleton. (5) Ignore-first anchors the root transients (`/KAIF.md`, `/KAIF-LOADER.mjs`, the task files): a bare line an older core wrote is rewritten IN PLACE (your own lines and negations keep their order, the file keeps its line ends) — on a case-insensitive git the bare `KAIF.md` hid `.clinerules/kaif.md` and `.roo/rules/kaif.md`; the contour's renders and call phrase (`.kaif/.contour-tmp/`) and its window locks (`<decisionsDir>/*.lock`) join the set; `check` names a deployed artifact that git ignores — KAIF's own line is a failure the next update cures, your own rule a warning with the `!<file>` line that lets it travel.",
@@ -189,6 +189,22 @@
         "SYSTEMS_REGISTRY",
         "delivery metric"
       ]
+    },
+    {
+      "path": ".kaif/hooks/pretool-owner-word.mjs",
+      "reason": "retired in 2.9 by the KAIF owner's word (origin ticket #144): it refused the next tool call after the owner's mid-turn word — the owner does not want the agent to stop on his words",
+      "successor": "none — the rule \"The owner's word mid-turn\" in AGENT_GUIDE.md: answer as text, then work on; `node .kaif/kaif-core.mjs wire-hooks` removes its entry from .claude/settings.json",
+      "since": "2.9",
+      "search": [
+        "pretool-owner-word",
+        "stop-owner-answer",
+        "⏩"
+      ]
+    },
+    {
+      "path": ".kaif/hooks/stop-owner-answer.mjs",
+      "reason": "never released (a 2.9 pre-release hook taken from main): it demanded a last line `⏩ <next step>` and resumed the turn — retired by the KAIF owner's word (origin ticket #144)",
+      "successor": "none — `node .kaif/kaif-core.mjs wire-hooks` removes its entry from .claude/settings.json"
     }
   ],
   "policyChanges": {
@@ -361,7 +377,6 @@
     ".kaif/_owner-voice-template.md": "framework/templates/_owner-voice-template.md",
     ".kaif/_testcases-template.md": "framework/templates/_testcases-template.md",
     ".kaif/_testrun-report-template.md": "framework/templates/_testrun-report-template.md",
-    ".kaif/hooks/pretool-owner-word.mjs": "framework/hooks/pretool-owner-word.mjs",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
     ".kaif/hooks/prompt-resume-word.mjs": "framework/hooks/prompt-resume-word.mjs",
     ".kaif/hooks/README.md": "framework/hooks/README.md",
@@ -371,7 +386,6 @@
     ".kaif/hooks/sample-cursor-hooks.json": "framework/hooks/sample-cursor-hooks.json",
     ".kaif/hooks/session-start-refresh.mjs": "framework/hooks/session-start-refresh.mjs",
     ".kaif/hooks/settings-fragment.json": "framework/hooks/settings-fragment.json",
-    ".kaif/hooks/stop-owner-answer.mjs": "framework/hooks/stop-owner-answer.mjs",
     ".kaif/hooks/stop-status-guard.mjs": "framework/hooks/stop-status-guard.mjs",
     ".kaif/INTERACTIVE_CONTOUR_SPEC.md": "framework/templates/_interactive-contour-spec.md",
     ".kaif/KAIF_REFERENCE.md": "framework/KAIF_REFERENCE.md",
@@ -1150,12 +1164,11 @@ tool result — and the agent system signs its author (Claude Code: "The user se
 2. **Answer it by its kind, AS TEXT, opening with its first words in «…»:** a question → the answer; "stop" → stop in this turn and say where
    in one line; "switch to Y" → first a `PARKED:` line (where the task stands, how to resume) at the top of `STATUS.md` → "Where to continue" —
    the carrier that survives compaction and that `/kaif-go` reads first — then Y; a note → the drive-by rule below; an owner's debt (his answer not
-   applied, a bug he marked) → ahead of the plan. Answer in a response of its own — no tool call after it (a text between calls may never reach the chat).
+   applied, a bug he marked) → ahead of the plan. Answer, then WORK ON in the same turn — never end the turn just to answer; the final message repeats the answer.
 3. **The price is asymmetric:** obey a "stop" even in doubt of its author — a forged one costs a minute, an ignored real one cost the owner's
    trust. An order signed as his passes the usual gates (for an outward act it IS his verbatim word); in doubt of its author ask ONE question —
-   never a silent "not taken as permission". Mechanical halves (`.kaif/hooks/`): the leading-word hook orders a stop on a leading "stop" (its
-   firing mid-turn is observed on one system, promised by none); `pretool-owner-word.mjs` (2.8) refuses ONE call after an unanswered mid-turn word;
-   `stop-owner-answer.mjs` (2.9) asks ONCE for the answer and, after a last line `⏩ <next step>`, resumes the work — so `⏩` names only work the owner gave; a step he did not ask for is an offer without it.
+   never a silent "not taken as permission". The mechanical half (`.kaif/hooks/`): the leading-word hook orders a stop on a leading "stop" (its
+   firing mid-turn is observed on one system, promised by none); no hook stops the work on his other words (2.9 retired the two that did — #144).
    `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
 
 ### The storefront — text a stranger reads
@@ -3687,13 +3700,11 @@ agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook co
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
-other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
-typed mid-turn has no TEXT answer after it in the transcript → ONE tool call is refused, the reason quotes the owner's words; before refusing it re-reads the lagging transcript (2.9); Claude
-Code only), `stop-owner-answer.mjs` (2.9, epic OA, event `Stop`: an owner's mid-turn message of this turn, and the final response —
-`last_assistant_message`, handed over without the transcript — does not open an answer with its first words → ONE soft block, the
-reason quotes the owner's words; an answer ending with a last line `⏩ <next step>` → the hook resumes the work; Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
-on the STATUS guard, and the two owner-word hooks have none — it refuses one call per owner's message and the work goes on; injections are orders, never
-document bodies. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
+other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
+KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
+pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last line `⏩ <next step>`); the update retires an untouched copy (§10.5
+deprecations), `wire-hooks` removes their entries from `.claude/settings.json` with the value proof, `check` names one left wired. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
 folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
 (2.9, epic SW; origin issue #115): the install and update tasks tell the agent to run `node .kaif/kaif-core.mjs wire-hooks`,
 which merges the fragment into `.claude/settings.json` additively — the owner's entries kept, a repeat run changes nothing,
@@ -3913,6 +3924,9 @@ after the owner's mid-turn message that has no text answer in the transcript —
 Its first edition refused EVERY call until the answer showed in the record; that session's texts between calls kept landing as
 reasoning, so each mid-turn word stopped the work until the owner wrote again — and the owner's verdict came the same hour: answer by
 the gate, do not stop the work. The gate refuses once per message; its order makes the turn's final text carry the answer.
+The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a `⏩` line, and on one field project five
+short remarks of the owner were five stops — his verdict (origin ticket #144, rendered from Russian): remove it from KAIF entirely,
+"I don't like that you stop on this". Both hooks left the module in 2.9; the rule kept its words — answer as text, then work on.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 
@@ -8328,7 +8342,7 @@ restores it quickly and forms a current backlog.
    doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
    ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
    the loop with it. Called by the owner with a question or a task in the same message — they set the scope
-   (as `/resume` Step 2, decision #143): a question is answered and the picked task is OFFERED, not taken, with no `⏩` line.
+   (as `/resume` Step 2, decision #143): a question is answered and the picked task is OFFERED, not taken.
 
 ## Notes
 - This is a FAST skill (read + list), a couple of minutes. Don't rewrite docs without need.
@@ -8880,7 +8894,7 @@ and then started the next item of the plan by itself: the skill told it wrong �
 the word, then:
 
 - **a question** ("how much is left?", "where are we?", "what is X?") → answer it in the announcement and END the turn:
-  the direction you picked is OFFERED as the next step, never taken; no `⏩` line — it resumes work, and none was asked for;
+  the direction you picked is OFFERED as the next step, never taken — no work was asked for;
 - **a task** → that task is the session's work; your pick from the list above is named in one line;
 - **nothing under the word** (a bare `resume`) → the direction you picked: wait for confirmation only if it is
   **destructive** or **large and non-obvious**; otherwise start right after the short announcement.
@@ -18120,127 +18134,6 @@ if (IS_MAIN) {
 }
 ``````
 
-> **FILE: `.kaif/hooks/pretool-owner-word.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
-
-``````js
-#!/usr/bin/env node
-// pretool-owner-word.mjs — the OWNER'S WORD MID-TURN gate (KAIF 2.8, epic OW; optional refresh-hooks module, deployed to .kaif/hooks/;
-// origin bug 123 and its recurrence of 2026-09-25 19:32 — the origin owner asked for this hook the same evening; the owner's words are kept in the
-// origin). Claude Code event: PreToolUse — the tool calls of the main thread.
-//
-// What it does: a message the owner typed while the agent was working is recorded in the session transcript as `type: "attachment"`,
-// `attachment.type: "queued_command"`, `origin.kind: "human"`. If the LATEST such message has no assistant TEXT block after it and this gate
-// has not refused for it yet, the tool call is BLOCKED (exit 2) ONCE and the reason — the owner's words and what to do — goes to the
-// agent: answer as text, go on working, repeat the answer in the final text of the turn; the next call passes. The first edition
-// refused EVERY call until a text answer showed in the record — and where the agent's texts between calls are recorded as reasoning,
-// each mid-turn word stopped the work until the owner wrote again; the origin owner's verdict (2026-09-25 23:28 +03:00, rendered from
-// Russian): answer by the hook and do not stop the work, keep working. An answer that stayed in the agent's
-// reasoning is not delivered: the recurrence of 19:32 made 18 tool calls with the answer composed and never emitted as text.
-// Silent on: a subagent's call (`agent_id` in the input — the main thread answers the owner), a peer's or a background message, the
-// prompt that opened the turn (it is not a queued command), no transcript, any internal error (a hook never breaks the session).
-// `KAIF_OWNER_WORD_GATE=off` in the environment switches it off.
-//
-// Contract (live-fetched 2026-09-25, https://code.claude.com/docs/en/hooks.md): «exit 2 … `PreToolUse` blocks the tool call»; the
-// blocking message is the stderr text; the input carries `transcript_path`, which «is written asynchronously and may lag the in-memory
-// conversation», and `agent_id` «present only when the hook fires inside a subagent call».
-//
-// @guard owner-word-mid-turn
-// THREAT:         the owner writes while the agent works — «stop», a question, «switch to Y» — and the agent goes on calling tools without
-//                 answering the owner in the chat (bug 123: session 67 worked past «stop»; recurrence 2026-09-25 19:32: 18 calls, the answer
-//                 composed in the reasoning, never emitted)
-// PROVED-AGAINST: s14 — synthetic transcripts in the recorded shapes: a human queued_command with no text after it → exit 2 with the
-//                 owner's words; only reasoning and calls after it (the 19:32 shape) → 2; a text after it → 0; a peer → 0; a subagent
-//                 call → 0; no transcript → 0; one refusal delivered → the next call passes; a refusal for an older message does not
-//                 cover a newer one; red on v2.7 (no such hook); hooks-mutants M11 (reasoning counted as an answer), M12 (the refusal
-//                 repeated forever — the stop the owner rejected); 2.9 (epic OA): an answer that lands in the transcript 150 ms after
-//                 the call → the re-read passes it (red on v2.8; mutant M13 — the re-read dropped)
-// GAP:            the transcript lags — one call may pass before the message is visible (the next call is gated); a reminder right after
-//                 an answer is refused only if the answer lands later than the two re-reads (2 × 200 ms, 2.9); a text that does NOT answer passes (the judge reads it — AGENT_GUIDE, the mid-turn rule); agent
-//                 systems without a PreToolUse event; parallel calls of one message are refused together (one round); an answer
-//                 written between calls may still land as reasoning — the order makes the final text of the turn carry it; a
-//                 lagging refusal record may cost a second refusal
-// ON-REAL-PATH:   2026-09-25 23:13–23:31 +03:00, the origin session — three mid-turn messages of the owner met live tool calls, each call
-//                 refused with the owner's words, the answer given in the final text of the turn (the texts between calls were
-//                 recorded as reasoning); the one-refusal edition — 2026-09-26 07:53–09:25 +03:00, the origin session: eight mid-turn
-//                 messages of the owner; six met a gated call (one was not yet in the transcript — the GAP above — and one was covered
-//                 by a newer message), seven calls refused in six rounds (one round of two parallel calls), the next call passed
-//                 3.9–8.1 s after five rounds and 27.7 s after one (a refusal for the owner's next message came in between), no
-//                 message refused twice — the work never stopped (court RL 2.8, B-F3; report
-//                 testcases/reports/2026-09-26_rl2-remaining-seven-findings.md)
-// [TESTED: 2026-09-25 23:35:16 +03:00 · the one-refusal edition: s14 106 green (+2: one refusal delivered → the next call passes; a refusal
-//  for an older message does not cover a newer one), on dist v2.7 19 failures — exactly two new; hooks-mutants 12 of 12 (M12 red exactly on
-//  «one refusal delivered», 23:35:38); on the REAL transcript after the refusals for the 23:33 message: exit 0 — report
-//  testcases/reports/2026-09-25_ow11-page-scale-and-gate-once.md]
-// [TESTED: 2026-09-25 22:07:30 +03:00 · s14: the eight cases green, on dist v2.7 red by name; hooks-mutants M11 red exactly on its three
-//  addressees (22:08:57); run by hand on the REAL transcript of the origin session: exit 2 quoting the owner's unanswered mid-turn message at 22:05:33,
-//  exit 0 at 22:19:26 once a text answer was in the record — report testcases/reports/2026-09-25_ow10-judge-fixes-owner-word-gate.md]
-import { readFileSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
-
-const TAIL_BYTES = 4 * 1024 * 1024;  // the tail of the transcript that is read — a mid-turn message is recent by construction
-const QUOTE_CHARS = 300;             // how much of the owner's message is quoted back to the agent
-const RE_READS = 2;                  // re-reads of a lagging transcript before a refusal (2.9, epic OA)
-const RE_READ_MS = 200;              // the pause before each re-read — the whole wait stays far below the hook's 10 s timeout
-const PAUSE = new Int32Array(new SharedArrayBuffer(4)); // a synchronous sleep for the re-read (Atomics.wait on a private cell)
-
-function readTail(path) {
-  const fd = openSync(path, 'r');
-  try {
-    const size = fstatSync(fd).size, n = Math.min(size, TAIL_BYTES), buf = Buffer.alloc(n);
-    readSync(fd, buf, 0, n, size - n);
-    return buf.toString('utf8');
-  } finally { closeSync(fd); }
-}
-const GATE_MARK = 'KAIF: the owner wrote while you were working'; // the start of this gate's reason — how its own refusal is recognised
-// a refusal of this gate as the transcript records it: a user record with an is_error tool_result whose text carries the mark
-const refusedHere = (x) => !!x && x.type === 'user' && !!x.message && Array.isArray(x.message.content)
-  && x.message.content.some((b) => b && b.type === 'tool_result' && b.is_error === true && flat(b.content).includes(GATE_MARK));
-const flat = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(flat).join('') : v && typeof v === 'object' ? flat(v.text ?? v.content ?? '') : '');
-
-try {
-  if (String(process.env.KAIF_OWNER_WORD_GATE || '').toLowerCase() === 'off') process.exit(0);
-  let input = {};
-  try { input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}'); } catch { process.exit(0); } // BOM: origin bug 119
-  if (input.agent_id) process.exit(0);           // a subagent's call — the owner is answered by the main thread
-  if (!input.transcript_path) process.exit(0);
-  // null = pass; otherwise the latest owner's mid-turn message with no text answer and no refusal after it
-  const scan = () => {
-    const recs = readTail(String(input.transcript_path)).split('\n').map((l) => { try { return JSON.parse(l); } catch { return null; } });
-    let owner = -1, words = '', at = '';
-    for (let i = recs.length - 1; i >= 0; i--) {  // the LATEST owner's message typed mid-turn
-      const r = recs[i];
-      if (!r || r.type !== 'attachment' || !r.attachment || r.attachment.type !== 'queued_command') continue;
-      const who = (r.attachment.origin && r.attachment.origin.kind) || r.attachment.commandMode || '';
-      if (who !== 'human') continue;
-      owner = i; words = flat(r.attachment.prompt).replace(/\s+/g, ' ').trim(); at = r.timestamp || '';
-      break;
-    }
-    if (owner < 0) return null;
-    for (let k = owner + 1; k < recs.length; k++) { // answered = an assistant TEXT block after it (reasoning is not delivered)
-      const x = recs[k];
-      if (refusedHere(x)) return null; // ONE refusal per message was delivered — the work goes on (the origin owner's word, 2026-09-25)
-      const c = x && x.type === 'assistant' && x.message && Array.isArray(x.message.content) ? x.message.content : [];
-      if (c.some((b) => b.type === 'text' && String(b.text || '').trim())) return null;
-    }
-    return { words, at };
-  };
-  // The vendor writes the transcript asynchronously — «may lag the in-memory conversation» (researches/36): an answer written in the
-  // same message as this call can land a moment later (origin session 76, 2026-09-28 17:12:40Z — refused with the answer already
-  // written; seen in a field deployment too, its report R13). Re-read before refusing (2.9, epic OA).
-  let hit = scan();
-  for (let n = 0; hit && n < RE_READS; n++) { Atomics.wait(PAUSE, 0, 0, RE_READ_MS); hit = scan(); }
-  if (!hit) process.exit(0);
-  const { words, at } = hit;
-  process.stderr.write(GATE_MARK + (at ? ' (' + at + ')' : '') + ' and there is no TEXT answer after it yet: «'
-    + words.slice(0, QUOTE_CHARS) + (words.length > QUOTE_CHARS ? '…' : '') + '». Answer it NOW AS TEXT in a response of its own — no tool call after it: a text between tool calls may be recorded as'
-    + ' reasoning and never reach the chat. Open it with the message\'s first words in «…», by its kind: a question → the answer; «stop» →'
-    + ' stop in this turn and say where; «switch to Y» → a PARKED: line first, then Y; a note → record it. If work remains, make its last'
-    + ' line «\u23E9 <next step>» — the end-of-response hook (stop-owner-answer) resumes the work; where it is not wired, CONTINUE after'
-    + ' the answer and repeat it in the final text of the turn. This gate refuses only this one call for this message. (AGENT_GUIDE →'
-    + ' «The owner\'s word mid-turn»; origin bug 123.)\n');
-  process.exit(2);
-} catch { process.exit(0); }
-``````
-
 > **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
@@ -18423,7 +18316,8 @@ process.exit(0);
 //  report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
 // 2.9 (decision #143 — the KAIF owner, rendered from Russian: "the entry skill tells you wrong"; a session answered "how much is
 // left?" and then started the plan's next item by itself): the order says what is under the word SETS THE SCOPE — a question is
-// answered and the turn ends with the pick offered, no "⏩" line; a task is done; only a bare "resume" starts the chosen direction.
+// answered and the turn ends with the pick offered; a task is done; only a bare "resume" starts the chosen direction.
+// 2.9, ticket #144: the `⏩` line left the canon with the hooks that read it — the order no longer names it.
 // [TESTED: 2026-10-14 09:31 · s14 «resume-word (№143)» green on HEAD and red on the v2.8 dist; s21 E (№143): the update run by the
 //  2.8 core leaves this order on disk (red on v2.8); probe tools/sandbox/probes/resume-scope-red.mjs; report
 //  testcases/reports/2026-10-14_resume-scope-143.md (origin repository); the owner's own next "resume + question" is not observed yet]
@@ -18509,7 +18403,7 @@ try {
       `(4) announce in one paragraph what you read, what you chose and what you do next; (5) stamp ` +
       `${join(projectRoot(cwd), '.kaif', 'refresh-marker.json')} with trigger "ritual:/resume" and put the acceptance quote in the chat. ` +
       `Only then read what the owner wrote under the word — it sets the scope (the skill's Step 2): a question is ` +
-      `answered and the turn ends with your pick OFFERED, never taken, and no "⏩" line; a task is done; only a bare ` +
+      `answered and the turn ends with your pick OFFERED, never taken; a task is done; only a bare ` +
       `"resume" lets you start the direction you chose. The same word mid-sentence would be prose; at the ` +
       `top of the message it is this order.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
@@ -18540,8 +18434,6 @@ lacking them.
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
-| `pretool-owner-word.mjs` (2.8, epic OW) | `PreToolUse` (every tool call of the main thread) | the owner's LATEST message typed mid-turn (`queued_command`, `origin.kind: human` in the transcript) has no assistant TEXT block after it — reasoning is not delivered (origin bug 123, recurrence 2026-09-25) | ONCE per owner's message: the first tool call after it with no text answer yet is refused, the next passes — the work goes on (the origin owner's word, 2026-09-25); a subagent's call (`agent_id`) and a peer's message are silent; `KAIF_OWNER_WORD_GATE=off` switches it off | **blocks** the call (exit 2); the reason quotes the owner's words and says: answer AS TEXT by its kind, continue, repeat the answer in the turn's final text; before refusing it re-reads the transcript twice, 200 ms apart — the vendor writes it asynchronously (2.9, epic OA) |
-| `stop-owner-answer.mjs` (2.9, epic OA) | `Stop` | an owner's message typed mid-turn in THIS turn, and the turn's final response (`last_assistant_message`) does not open an answer to it with its first words (normalised whole words) | **once per stop** — `stop_hook_active` (a continuation) is silent, so it never loops | soft block: the reason quotes the owner's words — answer them now in a response of its own (no tool call after it); a response that answers and ends with a last line `⏩ <next step>` → block «continue» — the work goes on without the owner's next word |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -18550,7 +18442,8 @@ PURPOSE where repeating is the point — a reminder that goes away unobeyed teac
 ignored, so the timer repeats until the marker is re-stamped, and every message that opens with
 the resume word is a separate order; injections are ORDERS to re-read, never document bodies
 (the output cap is 10 000 characters, and pasting docs would spend the context the refresh
-restores); the blocking hooks are the two `Stop` ones and the owner-word call gate, each at most once per trigger. A hook never breaks the session: on any internal
+restores); the one blocking hook is `stop-status-guard.mjs`, at most once per session — no hook of this module stops the agent on
+the owner's word (2.9: the two that did are retired — "Retired in 2.9" below). A hook never breaks the session: on any internal
 error it exits 0 silently.
 
 **The hooks judge the project, not the folder the agent went into** (2.9, epic HK; origin ticket #94). The event's `cwd` follows
@@ -18574,6 +18467,16 @@ The write is the agent's and OPEN to its harness, never hidden inside `update`: 
 or refuse; a refusal is recorded in the task, and the owner gets the same one command. `node .kaif/kaif-core.mjs check` names a
 delivered hook that is not wired. To opt out: `"hooks": "off"` in `.kaif/kaif.json` — nothing is written then (entries wired
 earlier are removed by hand). The other systems below — and Claude Code by hand — are wired this way:
+
+**Retired in 2.9 — the two hooks that stopped the agent on the owner's word** (origin ticket #144; the KAIF owner's verdict on the
+field, rendered from Russian: remove this from KAIF entirely — "I don't like that you stop on this"): `pretool-owner-word.mjs`
+(2.8, `PreToolUse` — refused the next tool call after a mid-turn word) and `stop-owner-answer.mjs` (2.9 pre-release, `Stop` — demanded
+a last line `⏩ <next step>` and resumed the turn) are no longer shipped. The update removes an untouched copy of each; `wire-hooks`
+REMOVES their entries from `.claude/settings.json` (the owner's other entries and their order stay, the values proven before the
+write); `check` names an entry still running one of them — in `.claude/settings.local.json` too, which the machinery never edits —
+with the command. Where the harness refuses that write, the hook no longer stops anyone: its script is gone, `node` exits 1, and
+Claude Code treats any exit code but 2 as a non-blocking error — but it prints a `<hook name> hook error` notice in the transcript
+(on `PreToolUse`, at every tool call; vendor hooks reference, read 2026-10-16), so give the owner the command and let him run it.
 
 1. Open the sample of your system — `.kaif/hooks/settings-fragment.json` for Claude Code, `sample-*.json` for the others.
 2. Merge its `hooks` object into that system's config — for Claude Code `.claude/settings.json` (shared with the team, committed)
@@ -18635,19 +18538,6 @@ reachable from that session): each of them can now return the agent to work from
 | **Windsurf / Cascade** | *(not supported)* | ❌ | ❌ | ❌ hooks cannot inject context at all — exit codes only |
 | **Cline** | *(not supported)* | ❌ | ❌ | ❌ hooks are SDK plugins (TS/JS objects), not config-invoked commands |
 | **Zoo Code** | *(markdown ritual)* | — | — | — no hook mechanism |
-
-**The fifth hook — `pretool-owner-word.mjs` (2.8, epic OW) — is wired for Claude Code only** (`PreToolUse` in `settings-fragment.json`). It reads the
-session transcript (`transcript_path`), which the vendor says «is written asynchronously and may lag»: one call may pass before a fresh
-message is visible, one reminder may repeat right after an answer. The other systems' samples do not wire it — their transcript shape was
-not read: **not verified**.
-
-**The sixth hook — `stop-owner-answer.mjs` (2.9, epic OA) — is wired for Claude Code only** (`Stop` in `settings-fragment.json`). It reads
-the final response from `last_assistant_message`, which the vendor hands to `Stop` without the transcript; a client without that field is
-not judged. It checks FORM — the owner's first words open the answer — and never meaning: the judge reads the answer. Why a response of its own: in the
-origin (2026-09-28) an answer written before a tool call was recorded as reasoning and never reached the chat, while a response ending
-without a tool call did; its last line `⏩ <next step>` asks the hook to resume the work (the vendor's 8-continuation cap bounds it, and it is
-honoured only in a turn the owner wrote into). The other systems'
-samples do not wire it: **not verified**.
 
 **The fourth hook — `prompt-resume-word.mjs` (2.7, epic RS) — is wired for Claude Code only.** It
 needs the prompt TEXT in the event (`prompt`), and only the Claude Code contract was read to carry
@@ -18943,18 +18833,6 @@ process.exit(0);
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/pretool-owner-word.mjs"],
-            "timeout": 10
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
@@ -18963,148 +18841,12 @@ process.exit(0);
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-status-guard.mjs"],
             "timeout": 15
-          },
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-owner-answer.mjs"],
-            "timeout": 10
           }
         ]
       }
     ]
   }
 }
-``````
-
-> **FILE: `.kaif/hooks/stop-owner-answer.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
-
-``````js
-#!/usr/bin/env node
-// stop-owner-answer.mjs — the END-OF-RESPONSE hook that makes an answer to the owner's mid-turn word VISIBLE and then lets the work go
-// on (KAIF 2.9, epic OA; optional refresh-hooks module, deployed to .kaif/hooks/; origin bug 123 and its field recurrence on 2.8 — one
-// project's first text about the owner's word came 108 tool calls later). Claude Code event: Stop.
-//
-// Why at the end of a response: a text written between tool calls is not a guaranteed delivery — the vendor writes the transcript
-// asynchronously («may lag the in-memory conversation»), and in the field and in the origin the answer an agent believed it wrote
-// before a tool call was recorded as reasoning, not as text (origin session 76, twice on one evening). A response that ends WITHOUT a
-// tool call is what the owner sees, and the vendor hands its text to the Stop hook as `last_assistant_message` (researches/36).
-//
-// What it does, for the owner's messages typed while the agent worked in THIS turn (transcript records `type: "attachment"`,
-// `attachment.type: "queued_command"`, `origin.kind: "human"`, after the prompt that opened the turn):
-//   1. the response that ends does not open an answer to each with its first words (normalised whole words — a two-letter word is
-//      not found inside a longer one) → BLOCK once: answer them now in a response of its own; `stop_hook_active` (a continuation
-//      the vendor already runs) is silent here, so this never loops;
-//   2. the response answers them and its last line opens with the continue mark `⏩` («⏩ next: the build») → BLOCK with «continue:
-//      <that line>» — the owner has seen the answer, and the work goes on without his next word (the origin owner's word 2026-09-25
-//      23:28 +03:00: answer and keep working). The mark is honoured only in a turn the owner wrote into; the vendor's
-//      8-consecutive-continuation cap bounds it;
-//   3. anything else → silent: the turn ends. Silent also on no `last_assistant_message` (an older client), a subagent, no transcript,
-//      a peer's or a background message, any internal error. `KAIF_OWNER_WORD_GATE=off` switches it off with the call gate.
-//
-// Contract (live-fetched 2026-09-28 20:56 +03:00, https://code.claude.com/docs/en/hooks.md): «Stop hooks receive `stop_hook_active`,
-// `last_assistant_message` …» · «The `last_assistant_message` field contains the text content of Claude's final response» ·
-// «`"block"` prevents Claude from stopping» · «`reason` — Required when `decision` is `"block"`» · an 8-consecutive-continuation cap.
-//
-// @guard owner-answer-end-of-turn
-// THREAT:         the owner writes while the agent works; the agent's answer stays in its reasoning or in a text that never reached the
-//                 chat, and the turn ends — or the work stops — without the owner seeing an answer (bug 123; field recurrence 2026-09-26
-//                 — 108 calls; origin session 76 — an answer written before a call recorded as reasoning, twice)
-// PROVED-AGAINST: s14 — an owner's mid-turn message and a response without its first words → block «answer»; with them → silent; with
-//                 them and a last line «⏩ …» → block «continue: …»; the mark without an owner's word → silent; stop_hook_active →
-//                 no «answer» block, the mark still honoured; a peer's message → silent; a message of the PREVIOUS turn → silent;
-//                 a two-letter word inside a longer one is not an answer; red on v2.8 (no such hook); hooks-mutants M14–M19
-// GAP:            the check is FORM, not meaning — a response that repeats the owner's first words and says nothing is passed (the
-//                 judge reads it); a continuation caused by another Stop hook sets `stop_hook_active` and the «answer» block is skipped
-//                 for that stop; clients without `last_assistant_message` are not judged; agent systems without a Stop event;
-//                 the words are compared as written — an owner's typo in them is matched only by an answer that copies it
-// ON-REAL-PATH:   OBSERVED 2026-09-28 on the origin's live path (Claude Code 2.1.283, hook wired in `.claude/settings.json`): the owner's
-//                 mid-turn word 22:57:37 +03:00 → an answer as TEXT in a response of its own, no tool call before it, last line «⏩ …» →
-//                 22:59:32 this hook blocked «continue the work: …» → the work went on without the owner's next word (report
-//                 testcases/reports/2026-09-28_oa-owner-answer-end-of-turn.md, run 13); OBSERVED again 2026-10-03 09:00–09:10 +03:00 in
-//                 the IDE client (VS Code, Windows) after the turn-boundary fix — three owner words, three «continue», no «go» needed
-//                 (testcases/reports/2026-10-03_pr132-merge-linux-removal-stop-hook.md, run 14)
-// [TESTED: 2026-10-03 · live path in two clients (the reports above) + s14 157/157 + hooks-mutants 41/41]
-import { readFileSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
-
-const TAIL_BYTES = 4 * 1024 * 1024; // the tail of the transcript that is read — the current turn is recent by construction
-const KEY_WORDS = 3;                // how many of the owner's first words the response must repeat
-const QUOTE_CHARS = 200;            // how much of each owner's message is quoted back in the reason
-const CONTINUE_MARK = '⏩';     // ⏩ — the first character of the last line that asks to go on after the answer
-
-function readTail(path) {
-  const fd = openSync(path, 'r');
-  try {
-    const size = fstatSync(fd).size, n = Math.min(size, TAIL_BYTES), buf = Buffer.alloc(n);
-    readSync(fd, buf, 0, n, size - n);
-    return buf.toString('utf8');
-  } finally { closeSync(fd); }
-}
-const flat = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(flat).join('') : v && typeof v === 'object' ? flat(v.text ?? v.content ?? '') : '');
-// words: lower case, diacritics dropped (NFD — a letter with a diaeresis compares as its base letter), letters and digits only — punctuation,
-// quotes and markdown do not decide whether the words are there
-const words = (s) => String(s).toLowerCase().normalize('NFD').replace(/\p{M}/gu, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim().split(' ').filter(Boolean);
-// the prompt that opened the turn: a user record whose content is a string AND that names its source (the owner's prompt, a peer's
-// hand-back, a notification carry `promptSource`/`origin`). A Stop hook's own feedback is a string user record WITHOUT a source — it
-// continues the turn, it does not open one (origin session 76, 2026-09-28 18:24: the boundary moved onto another hook's feedback, the
-// owner's words fell into «the previous turn» and the continue mark was ignored)
-// The prompt's content is a STRING in the terminal client and an ARRAY of text blocks in the IDE client (origin session 77, 2026-10-03,
-// VS Code, entrypoint «sdk»: every owner prompt was an array — the boundary was never found, the whole session read as one turn, earlier
-// words were demanded again, and under a continuation the turn ended silently: the owner had to ask why the agent stood). A tool result
-// is an array too and carries no source (117 of 117 in that record) — the source alone tells them apart.
-const opensTurn = (r) => !!r && r.type === 'user' && !!r.message && !!(r.promptSource || r.origin)
-  && (typeof r.message.content === 'string' || (Array.isArray(r.message.content) && r.message.content.some((b) => b && b.type === 'text')));
-// the assistant's TEXT of one record (reasoning and tool calls are not an answer the owner saw)
-const textOf = (r) => (r && r.type === 'assistant' && r.message && Array.isArray(r.message.content)
-  ? r.message.content.filter((b) => b && b.type === 'text').map((b) => b.text || '').join('\n') : '');
-const block = (reason) => { process.stdout.write(JSON.stringify({ decision: 'block', reason }) + '\n'); process.exit(0); };
-
-try {
-  if (String(process.env.KAIF_OWNER_WORD_GATE || '').toLowerCase() === 'off') process.exit(0);
-  let input = {};
-  try { input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}'); } catch { process.exit(0); } // BOM: origin bug 119
-  if (input.agent_id) process.exit(0);
-  if (typeof input.last_assistant_message !== 'string' || !input.transcript_path) process.exit(0);
-  const recs = readTail(String(input.transcript_path)).split('\n').map((l) => { try { return JSON.parse(l); } catch { return null; } });
-  let start = -1;
-  for (let i = recs.length - 1; i >= 0; i--) if (opensTurn(recs[i])) { start = i; break; }
-  const owner = [], spoken = []; // the owner's words with their place · the agent's texts with theirs
-  for (let i = start + 1; i < recs.length; i++) {
-    const r = recs[i];
-    const said = textOf(r);
-    if (said) { spoken.push({ i, said }); continue; }
-    if (!r || r.type !== 'attachment' || !r.attachment || r.attachment.type !== 'queued_command') continue;
-    const who = (r.attachment.origin && r.attachment.origin.kind) || r.attachment.commandMode || '';
-    if (who !== 'human') continue;
-    const text = flat(r.attachment.prompt).replace(/\s+/g, ' ').trim();
-    if (text) owner.push({ i, text });
-  }
-  if (!owner.length) process.exit(0);
-  // a word is answered by ANY response of this turn after it — an earlier response that answered it and asked to go on («⏩») counts
-  // (origin session 77: the answer stood two responses back, the hook demanded it again in the last one, and under a continuation
-  // the turn ended without the «continue»); the last response may not be in the transcript yet (the vendor writes it late) — it is
-  // read from the event
-  const answered = (o) => {
-    const k = words(o.text).slice(0, KEY_WORDS);
-    if (!k.length) return true;
-    const said = ' ' + [...spoken.filter((s) => s.i > o.i).map((s) => s.said), input.last_assistant_message].map((s) => words(s).join(' ')).join(' ') + ' ';
-    return said.includes(' ' + k.join(' ') + ' ');
-  };
-  const missing = owner.filter((o) => !answered(o)).map((o) => o.text);
-  if (missing.length && input.stop_hook_active !== true) {
-    const quoted = missing.map((t) => '«' + t.slice(0, QUOTE_CHARS) + (t.length > QUOTE_CHARS ? '…' : '') + '»').join(' · ');
-    block('KAIF: the owner wrote while you were working and this response does not answer it yet: ' + quoted + '. A text between tool calls'
-      + ' may never reach the chat — a response that ends without a tool call does. Answer now in a response of its own: open the answer'
-      + ' to each message with its first words in «…» (a question → the answer; «stop» → where you stopped; «switch to Y» → the PARKED:'
-      + ' line and Y); if work remains, end that response with a last line «' + CONTINUE_MARK + ' <next step>» and this hook resumes the work.'
-      + ' (AGENT_GUIDE → «The owner\'s word mid-turn»; origin bug 123.)');
-  }
-  const lastLine = String(input.last_assistant_message).trim().split('\n').pop().trim();
-  if (!missing.length && lastLine.startsWith(CONTINUE_MARK))
-    block('KAIF: the owner has your answer — continue the work: ' + lastLine.slice(CONTINUE_MARK.length).trim().slice(0, QUOTE_CHARS)
-      + '. (Another owner\'s word mid-turn → answer it the same way: a response of its own, then a last line «' + CONTINUE_MARK + ' <next step>».)');
-  process.exit(0);
-} catch { process.exit(0); }
 ``````
 
 > **FILE: `.kaif/hooks/stop-status-guard.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)

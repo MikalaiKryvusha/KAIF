@@ -84,7 +84,7 @@ and then started the next item of the plan by itself: the skill told it wrong �
 the word, then:
 
 - **a question** ("how much is left?", "where are we?", "what is X?") → answer it in the announcement and END the turn:
-  the direction you picked is OFFERED as the next step, never taken; no `⏩` line — it resumes work, and none was asked for;
+  the direction you picked is OFFERED as the next step, never taken — no work was asked for;
 - **a task** → that task is the session's work; your pick from the list above is named in one line;
 - **nothing under the word** (a bare `resume`) → the direction you picked: wait for confirmation only if it is
   **destructive** or **large and non-obvious**; otherwise start right after the short announcement.

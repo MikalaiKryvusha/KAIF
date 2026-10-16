@@ -787,12 +787,11 @@ tool result — and the agent system signs its author (Claude Code: "The user se
 2. **Answer it by its kind, AS TEXT, opening with its first words in «…»:** a question → the answer; "stop" → stop in this turn and say where
    in one line; "switch to Y" → first a `PARKED:` line (where the task stands, how to resume) at the top of `STATUS.md` → "Where to continue" —
    the carrier that survives compaction and that `/kaif-go` reads first — then Y; a note → the drive-by rule below; an owner's debt (his answer not
-   applied, a bug he marked) → ahead of the plan. Answer in a response of its own — no tool call after it (a text between calls may never reach the chat).
+   applied, a bug he marked) → ahead of the plan. Answer, then WORK ON in the same turn — never end the turn just to answer; the final message repeats the answer.
 3. **The price is asymmetric:** obey a "stop" even in doubt of its author — a forged one costs a minute, an ignored real one cost the owner's
    trust. An order signed as his passes the usual gates (for an outward act it IS his verbatim word); in doubt of its author ask ONE question —
-   never a silent "not taken as permission". Mechanical halves (`.kaif/hooks/`): the leading-word hook orders a stop on a leading "stop" (its
-   firing mid-turn is observed on one system, promised by none); `pretool-owner-word.mjs` (2.8) refuses ONE call after an unanswered mid-turn word;
-   `stop-owner-answer.mjs` (2.9) asks ONCE for the answer and, after a last line `⏩ <next step>`, resumes the work — so `⏩` names only work the owner gave; a step he did not ask for is an offer without it.
+   never a silent "not taken as permission". The mechanical half (`.kaif/hooks/`): the leading-word hook orders a stop on a leading "stop" (its
+   firing mid-turn is observed on one system, promised by none); no hook stops the work on his other words (2.9 retired the two that did — #144).
    `/fable-judge` hunts "owner's word mid-turn ignored" and "parked and dropped".
 
 ### The storefront — text a stranger reads
@@ -3337,13 +3336,11 @@ agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook co
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
-other systems' prompt field not verified), `pretool-owner-word.mjs` (2.8, epic OW, event `PreToolUse`: the owner's latest message
-typed mid-turn has no TEXT answer after it in the transcript → ONE tool call is refused, the reason quotes the owner's words; before refusing it re-reads the lagging transcript (2.9); Claude
-Code only), `stop-owner-answer.mjs` (2.9, epic OA, event `Stop`: an owner's mid-turn message of this turn, and the final response —
-`last_assistant_message`, handed over without the transcript — does not open an answer with its first words → ONE soft block, the
-reason quotes the owner's words; an answer ending with a last line `⏩ <next step>` → the hook resumes the work; Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one suppression window exists,
-on the STATUS guard, and the two owner-word hooks have none — it refuses one call per owner's message and the work goes on; injections are orders, never
-document bodies. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
+other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
+KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
+pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last line `⏩ <next step>`); the update retires an untouched copy (§10.5
+deprecations), `wire-hooks` removes their entries from `.claude/settings.json` with the value proof, `check` names one left wired. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
 folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
 (2.9, epic SW; origin issue #115): the install and update tasks tell the agent to run `node .kaif/kaif-core.mjs wire-hooks`,
 which merges the fragment into `.claude/settings.json` additively — the owner's entries kept, a repeat run changes nothing,
@@ -3563,6 +3560,9 @@ after the owner's mid-turn message that has no text answer in the transcript —
 Its first edition refused EVERY call until the answer showed in the record; that session's texts between calls kept landing as
 reasoning, so each mid-turn word stopped the work until the owner wrote again — and the owner's verdict came the same hour: answer by
 the gate, do not stop the work. The gate refuses once per message; its order makes the turn's final text carry the answer.
+The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a `⏩` line, and on one field project five
+short remarks of the owner were five stops — his verdict (origin ticket #144, rendered from Russian): remove it from KAIF entirely,
+"I don't like that you stop on this". Both hooks left the module in 2.9; the rule kept its words — answer as text, then work on.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 
@@ -3972,7 +3972,7 @@ and then started the next item of the plan by itself: the skill told it wrong �
 the word, then:
 
 - **a question** ("how much is left?", "where are we?", "what is X?") → answer it in the announcement and END the turn:
-  the direction you picked is OFFERED as the next step, never taken; no `⏩` line — it resumes work, and none was asked for;
+  the direction you picked is OFFERED as the next step, never taken — no work was asked for;
 - **a task** → that task is the session's work; your pick from the list above is named in one line;
 - **nothing under the word** (a bare `resume`) → the direction you picked: wait for confirmation only if it is
   **destructive** or **large and non-obvious**; otherwise start right after the short announcement.
@@ -4452,7 +4452,7 @@ restores it quickly and forms a current backlog.
    doesn't need a human decision. An unplanned item gets planned before code: `/plan-task` for an
    ordinary one, `/plan-epic` when the heaviness test says it's heavy. If you're in a loop — continue
    the loop with it. Called by the owner with a question or a task in the same message — they set the scope
-   (as `/resume` Step 2, decision #143): a question is answered and the picked task is OFFERED, not taken, with no `⏩` line.
+   (as `/resume` Step 2, decision #143): a question is answered and the picked task is OFFERED, not taken.
 
 ## Notes
 - This is a FAST skill (read + list), a couple of minutes. Don't rewrite docs without need.

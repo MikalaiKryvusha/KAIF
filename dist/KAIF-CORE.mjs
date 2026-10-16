@@ -3574,7 +3574,11 @@ function cmdCheck() {
   // half of rules the markdown carries in full); the fix is one command, the opt-out one marker key
   try {
     const hw = hookWiringState();
-    if (hw.state === 'missing') console.error(`⚠ ${missingScripts(hw).length} delivered hook(s) not wired in ${HOOK_SETTINGS}: ${missingScripts(hw).join(' · ')} — run \`node .kaif/kaif-core.mjs wire-hooks\` (the owner opts out with "hooks": "off" in .kaif/kaif.json)`);
+    if (hw.state === 'missing' && hw.missing.length) console.error(`⚠ ${missingScripts(hw).length} delivered hook(s) not wired in ${HOOK_SETTINGS}: ${missingScripts(hw).join(' · ')} — run \`node .kaif/kaif-core.mjs wire-hooks\` (the owner opts out with "hooks": "off" in .kaif/kaif.json)`);
+    // WH (2.9, origin ticket #144): a RETIRED hook still wired is named — in the project file `wire-hooks` removes it; the personal
+    // settings.local.json and an opted-out project are the owner's to edit
+    if ((hw.retired || []).length) console.error(`⚠ ${HOOK_SETTINGS} still runs ${hw.retired.length} hook(s) KAIF retired in 2.9: ${hw.retired.join(' · ')} — ${hw.state === 'off' ? 'remove the entry by hand ("hooks": "off": KAIF does not write the file)' : 'run `node .kaif/kaif-core.mjs wire-hooks` (it removes them; if your harness refuses that write, give the owner that one command)'}`);
+    if ((hw.retiredLocal || []).length) console.error(`⚠ ${HOOK_SETTINGS_LOCAL} still runs ${hw.retiredLocal.length} hook(s) KAIF retired in 2.9: ${hw.retiredLocal.join(' · ')} — remove the entry by hand (KAIF never edits the personal file)`);
     else if (hw.state === 'unreadable') console.error(`⚠ ${hw.file}: ${hw.error} — the delivered hooks cannot be wired into it; fix the file, then run \`node .kaif/kaif-core.mjs wire-hooks\``);
   } catch (e) { console.error(`⚠ the hook wiring could not be read (${e.message}) — run \`node .kaif/kaif-core.mjs wire-hooks\` to see why`); }
   // SW5 (2.9, origin issue #130): a DEPLOYED artifact that git ignores is lost by every clone — `.clinerules/kaif.md` under an unanchored
@@ -4331,7 +4335,7 @@ function cmdCheckpoint() {
     const hw = hookWiringState();
     if (!['wired', 'off', 'no-system'].includes(hw.state)) {
       const { firstLine: v } = readOwnerText(val('--verdict'), val('--verdict-file'), 'verdict');
-      const why = hw.state === 'missing' ? missingScripts(hw).join(' · ') : hw.state === 'unreadable' ? `${hw.file}: ${hw.error}` : `${HOOK_FRAGMENT} missing`;
+      const why = hw.state === 'missing' ? wiringWork(hw).join(' · ') : hw.state === 'unreadable' ? `${hw.file}: ${hw.error}` : `${HOOK_FRAGMENT} missing`;
       if (!v) die(`the delivered hooks are NOT wired (${why}) — run \`node .kaif/kaif-core.mjs wire-hooks\`; if your harness REFUSED that write, do not work around it: record its words — \`checkpoint wire-hooks --verdict "<the refusal>"\` — and give the owner that one command in the farewell and in the field report`);
       verdictLine = `${tag}: wire-hooks NOT wired (${why}): ${v}`;
     }
@@ -4593,6 +4597,41 @@ const HOOK_SETTINGS_LOCAL = '.claude/settings.local.json';
 const HOOK_SYSTEMS = ['claude-code'];
 const HOOK_SCRIPT_RE = /[\\/]hooks[\\/]([\w.-]+\.mjs)/;
 const hookScriptOf = (h) => { const m = HOOK_SCRIPT_RE.exec([h && h.command, ...(h && Array.isArray(h.args) ? h.args : [])].join(' ')); return m ? m[1] : null; };
+// WH (2.9, origin ticket #144 — the KAIF owner's verdict on the field, rendered from Russian: "remove this from KAIF entirely"): hooks
+// KAIF shipped and RETIRED. An update retires their untouched scripts (DEPRECATIONS of the build); `wire-hooks` removes the entries that
+// run them from .claude/settings.json, `check` names one left — in settings.local.json too, which the machinery never edits. Without its
+// script a wired hook only exits 1: Claude Code calls that a non-blocking error, but prints a hook-error notice in the transcript.
+// [TESTED: 2026-10-16 09:52 · s14 «WH» cases green on HEAD, 13 red on the build a81cc95; mutants W11 · W12 of hooks-mutants red on their
+//  addressees (32/32); probe sw-field-route on git clones of five live v2.8 deployments — one retired entry removed on each, the owner's
+//  other lines kept in order (161 OK; 13 BAD on a81cc95); report testcases/reports/2026-10-16_wh-owner-word-hooks-withdrawn.md]
+const RETIRED_HOOKS = ['pretool-owner-word.mjs', 'stop-owner-answer.mjs'];
+const isRetiredHook = (h) => RETIRED_HOOKS.includes(hookScriptOf(h));
+// `event → script` of every entry in a settings object that runs a retired hook
+function retiredIn(settings) {
+  const out = [];
+  for (const [event, groups] of Object.entries((settings && settings.hooks) || {}))
+    for (const g of (Array.isArray(groups) ? groups : [])) for (const h of (g && Array.isArray(g.hooks) ? g.hooks : [])) if (isRetiredHook(h)) out.push(`${event} → ${hookScriptOf(h)}`);
+  return out;
+}
+// a copy of a settings object without the retired entries; a group or an event emptied BY THIS removal goes too (one the owner left
+// empty stays as he wrote it)
+function withoutRetired(settings) {
+  const next = JSON.parse(JSON.stringify(settings));
+  if (!next.hooks || typeof next.hooks !== 'object') return next;
+  for (const event of Object.keys(next.hooks)) {
+    const groups = next.hooks[event];
+    if (!Array.isArray(groups)) continue;
+    const kept = [];
+    for (const g of groups) {
+      if (!g || !Array.isArray(g.hooks) || !g.hooks.some(isRetiredHook)) { kept.push(g); continue; }
+      const hooks = g.hooks.filter((h) => !isRetiredHook(h));
+      if (hooks.length) kept.push({ ...g, hooks });
+    }
+    if (kept.length) next.hooks[event] = kept;
+    else if (groups.length) delete next.hooks[event];
+  }
+  return next;
+}
 // the hook scripts a settings object already runs for one event
 function hookScriptsIn(settings, event) {
   const set = new Set();
@@ -4615,13 +4654,17 @@ function readHookSettings(p) {
 function hookWiringState() {
   let marker = {};
   try { marker = readJson(KAIF_JSON); } catch { /* no marker — the agent list of the run stands */ }
-  if (marker.hooks === 'off') return { state: 'off' };
+  // WH: retired entries are read in every state that can read the files — an opted-out project wired by hand is named too
+  const retiredOf = (p) => { try { const s = readHookSettings(p); return s.error ? [] : retiredIn(s.obj); } catch { return []; } };
+  const retiredLocal = retiredOf(HOOK_SETTINGS_LOCAL);
+  if (marker.hooks === 'off') return { state: 'off', retired: retiredOf(HOOK_SETTINGS), retiredLocal };
   const agents = Array.isArray(marker.agents) && marker.agents.length ? marker.agents : AGENTS;
   if (!agents.some((a) => HOOK_SYSTEMS.includes(a))) return { state: 'no-system', agents };
   if (!okOnDisk(HOOK_FRAGMENT)) return { state: 'no-fragment' };
   const fragment = readJson(HOOK_FRAGMENT);
   const project = readHookSettings(HOOK_SETTINGS), local = readHookSettings(HOOK_SETTINGS_LOCAL);
   for (const [file, s] of [[HOOK_SETTINGS, project], [HOOK_SETTINGS_LOCAL, local]]) if (s.error) return { state: 'unreadable', file, error: s.error };
+  const retired = retiredIn(project.obj);
   const missing = [];
   let total = 0;
   for (const [event, groups] of Object.entries(fragment.hooks || {})) {
@@ -4633,26 +4676,37 @@ function hookWiringState() {
       if (miss.length) missing.push({ event, group: { ...g, hooks: miss } });
     }
   }
-  return { state: missing.length ? 'missing' : 'wired', missing, total, project };
+  // 'missing' = `wire-hooks` has work: a delivered hook to add or a retired one to remove from the project file
+  return { state: missing.length || retired.length ? 'missing' : 'wired', missing, total, project, retired, retiredLocal };
 }
 const missingScripts = (st) => st.missing.flatMap(({ event, group }) => group.hooks.map((h) => `${event} → ${hookScriptOf(h)}`));
+// what `wire-hooks` still has to do, in one line for `check` and the checkpoint
+const wiringWork = (st) => [...missingScripts(st).map((s) => `not wired: ${s}`), ...(st.retired || []).map((s) => `retired, still wired: ${s}`)];
 // SW (2.9, origin issues #115 · #114): the task item that wires the delivered hooks — the same text in the install and the update task
-const wireHooksItem = () => ['wire-hooks', 'Wire the delivered refresh hooks: run `node .kaif/kaif-core.mjs wire-hooks` now, WITHOUT asking the owner (KAIF 2.9: what KAIF delivers is wired; the owner opts out with `"hooks": "off"` in .kaif/kaif.json). The write is yours and open to your harness: if it asks, that prompt is the owner\'s click; if it REFUSES, do not work around it (never a script that writes the file for you) — record its words with `node .kaif/kaif-core.mjs checkpoint wire-hooks --verdict "<the refusal>"` and give the owner that one command in the farewell and in the field report. Name what was wired in the field report.'];
+const wireHooksItem = () => ['wire-hooks', 'Wire the delivered refresh hooks: run `node .kaif/kaif-core.mjs wire-hooks` now, WITHOUT asking the owner (KAIF 2.9: what KAIF delivers is wired; the owner opts out with `"hooks": "off"` in .kaif/kaif.json). The same run REMOVES the entries of hooks KAIF retired (2.9: `pretool-owner-word.mjs`, `stop-owner-answer.mjs` — origin ticket #144). The write is yours and open to your harness: if it asks, that prompt is the owner\'s click; if it REFUSES, do not work around it (never a script that writes the file for you) — record its words with `node .kaif/kaif-core.mjs checkpoint wire-hooks --verdict "<the refusal>"` and give the owner that one command in the farewell and in the field report. Name what was wired in the field report.'];
 const wantsWireHooks = () => { try { if (readJson(KAIF_JSON).hooks === 'off') return false; } catch { /* no marker yet — the run\'s agent list decides */ } return AGENTS.some((a) => HOOK_SYSTEMS.includes(a)); };
 
 function cmdWireHooks() {
   const st = hookWiringState();
-  if (st.state === 'off') { log('= "hooks": "off" in .kaif/kaif.json — the owner opted out; ' + HOOK_SETTINGS + ' untouched'); return; }
+  const localNote = (s) => { if (s.retiredLocal && s.retiredLocal.length) console.error(`⚠ ${HOOK_SETTINGS_LOCAL} (personal, never edited by KAIF) still runs a hook KAIF retired: ${s.retiredLocal.join(' · ')} — remove that entry by hand`); };
+  if (st.state === 'off') {
+    log('= "hooks": "off" in .kaif/kaif.json — the owner opted out; ' + HOOK_SETTINGS + ' untouched');
+    if (st.retired.length) console.error(`⚠ ${HOOK_SETTINGS} still runs a hook KAIF retired: ${st.retired.join(' · ')} — remove that entry by hand (opted out: KAIF does not write the file)`);
+    localNote(st);
+    return;
+  }
   if (st.state === 'no-system') { log(`= no agent system of this deployment reads ${HOOK_SETTINGS} (agents: ${st.agents.join(', ')}) — nothing to wire`); return; }
   if (st.state === 'no-fragment') die(`${HOOK_FRAGMENT} not found — the refresh-hooks module is not deployed here (run \`node .kaif/kaif-core.mjs check\`)`);
   if (st.state === 'unreadable') {
     console.error(`⚠ ${st.file}: ${st.error} — hooks NOT wired and the file is untouched: fix it, or merge ${HOOK_FRAGMENT} into it by hand`);
     process.exit(1);
   }
-  if (st.state === 'wired') { log(`= all ${st.total} KAIF hooks already wired — ${HOOK_SETTINGS} untouched`); return; }
+  if (st.state === 'wired') { log(`= all ${st.total} KAIF hooks already wired — ${HOOK_SETTINGS} untouched`); localNote(st); return; }
   const { raw } = st.project;
   const orig = raw == null ? {} : JSON.parse(raw.replace(/^\uFEFF/, ''));
-  const next = JSON.parse(JSON.stringify(orig));
+  // WH: the retired entries go first; the proof below compares against the owner's file WITHOUT them
+  const base = st.retired.length ? withoutRetired(orig) : orig;
+  const next = JSON.parse(JSON.stringify(base));
   const createdEvents = [];
   if (!next.hooks) next.hooks = {};
   for (const { event, group } of st.missing) {
@@ -4672,12 +4726,17 @@ function cmdWireHooks() {
   const back = JSON.parse(text.replace(/^\uFEFF/, ''));
   for (let i = st.missing.length - 1; i >= 0; i--) back.hooks[st.missing[i].event].pop();
   for (const ev of createdEvents) delete back.hooks[ev];
-  if (!orig.hooks) delete back.hooks;
-  if (JSON.stringify(back) !== JSON.stringify(orig)) die(`the merged ${HOOK_SETTINGS} would change the owner's own entries — refusing; merge ${HOOK_FRAGMENT} by hand`);
+  if (!base.hooks) delete back.hooks;
+  if (JSON.stringify(back) !== JSON.stringify(base)) die(`the merged ${HOOK_SETTINGS} would change the owner's own entries — refusing; merge ${HOOK_FRAGMENT} by hand`);
+  // …and what was removed is exactly the retired entries: nothing else of the owner's file is gone
+  if (st.retired.length && (JSON.stringify(withoutRetired(orig)) !== JSON.stringify(base) || retiredIn(base).length)) die(`the retired hooks could not be removed from ${HOOK_SETTINGS} without touching other entries — refusing; remove ${st.retired.join(' · ')} by hand`);
   mkdirSync(dirname(HOOK_SETTINGS), { recursive: true });
   writeFileSync(HOOK_SETTINGS, text);
+  for (const s of st.retired) log(`- ${HOOK_SETTINGS}: removed ${s} (retired by KAIF 2.9 — origin ticket #144)`);
   for (const s of missingScripts(st)) log(`+ ${HOOK_SETTINGS}: wired ${s}`);
   log(`  ${st.missing.reduce((n, m) => n + m.group.hooks.length, 0)} of ${st.total} KAIF hooks added; ${raw == null ? 'a new file' : 'the owner\'s entries kept'}${raw != null && keepArrayStyle(JSON.stringify(orig, null, indent), raw, new Set()) + '\n' !== raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n') ? ' (the file was re-serialized with its own indent — values unchanged, proven before the write)' : ''}; opt out: "hooks": "off" in .kaif/kaif.json`);
+  if (st.retired.length) log(`  ${st.retired.length} entr${st.retired.length === 1 ? 'y' : 'ies'} of retired KAIF hooks removed — the owner's other entries and their order kept, values proven before the write`);
+  localNote(st);
 }
 
 // The owner's array style in the file `wire-hooks` writes (2.9, epic SW judge J-SW2 — the functional run over clones of five real v2.8
