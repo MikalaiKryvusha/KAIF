@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "3a1f07216c5d64d68343b634660cba659095ed4b0684c6b260aa5f79e26a7869",
+        "sha256": "9c769e1c577368355e726ee514f4f57f8d666f4b8b760f734cd698c70331d9ea",
         "lines": [
           572,
           630
@@ -1708,7 +1708,7 @@
       {
         "signature": "### `AGENT_GUIDE.md` → The owner's word mid-turn — the system signs its author",
         "class": "static",
-        "sha256": "6aa93d6de6b1103cd24b8bcfb3904f9e5b9513f7ce81cfcc6686b310d6e6f509",
+        "sha256": "ae7f2942a0da4771f2b9e93a10dc942fca8321982e8a3c13b428b6dc616bb027",
         "lines": [
           816,
           834
@@ -5707,7 +5707,7 @@
       {
         "signature": "## Wiring — the task wires it, the owner can opt out",
         "class": "static",
-        "sha256": "a98e156878c7b8d80f89e9c1dfbff621c0d66b1c2912b6ed8948001c2fa6a16d",
+        "sha256": "cc8dec6fa61fdbcc80781a776d4ef4a004f930683e2febc9651f631883e210e5",
         "lines": [
           40,
           95

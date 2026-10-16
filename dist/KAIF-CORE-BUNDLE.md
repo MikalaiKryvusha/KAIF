@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "d0495723d01cba44c26644543a7044f905585c0fe2ce1657481002fa1fc7e118",
+    "sourceTree": "02473da4f61b0dcd78730471be841e204a90a12fd18a0e7eb28c450960dea158",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -3704,7 +3704,7 @@ a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifi
 other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
-pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last line `⏩ <next step>`); the update retires an untouched copy (§10.5
+pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5
 deprecations), `wire-hooks` removes their entries from `.claude/settings.json` with the value proof, `check` names one left wired. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
 folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
 (2.9, epic SW; origin issue #115): the install and update tasks tell the agent to run `node .kaif/kaif-core.mjs wire-hooks`,
@@ -3925,7 +3925,7 @@ after the owner's mid-turn message that has no text answer in the transcript —
 Its first edition refused EVERY call until the answer showed in the record; that session's texts between calls kept landing as
 reasoning, so each mid-turn word stopped the work until the owner wrote again — and the owner's verdict came the same hour: answer by
 the gate, do not stop the work. The gate refuses once per message; its order makes the turn's final text carry the answer.
-The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a `⏩` line, and on one field project five
+The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a "next step" arrow line, and on one field project five
 short remarks of the owner were five stops — his verdict (origin ticket #144, rendered from Russian): remove it from KAIF entirely,
 "I don't like that you stop on this". Both hooks left the module in 2.9; the rule kept its words — answer as text, then work on.
 
@@ -18318,7 +18318,7 @@ process.exit(0);
 // 2.9 (decision #143 — the KAIF owner, rendered from Russian: "the entry skill tells you wrong"; a session answered "how much is
 // left?" and then started the plan's next item by itself): the order says what is under the word SETS THE SCOPE — a question is
 // answered and the turn ends with the pick offered; a task is done; only a bare "resume" starts the chosen direction.
-// 2.9, ticket #144: the `⏩` line left the canon with the hooks that read it — the order no longer names it.
+// 2.9, ticket #144: the "next step" arrow line left the canon with the hooks that read it — the order no longer names it.
 // [TESTED: 2026-10-14 09:31 · s14 «resume-word (№143)» green on HEAD and red on the v2.8 dist; s21 E (№143): the update run by the
 //  2.8 core leaves this order on disk (red on v2.8); probe tools/sandbox/probes/resume-scope-red.mjs; report
 //  testcases/reports/2026-10-14_resume-scope-143.md (origin repository); the owner's own next "resume + question" is not observed yet]
@@ -18472,7 +18472,7 @@ earlier are removed by hand). The other systems below — and Claude Code by han
 **Retired in 2.9 — the two hooks that stopped the agent on the owner's word** (origin ticket #144; the KAIF owner's verdict on the
 field, rendered from Russian: remove this from KAIF entirely — "I don't like that you stop on this"): `pretool-owner-word.mjs`
 (2.8, `PreToolUse` — refused the next tool call after a mid-turn word) and `stop-owner-answer.mjs` (2.9 pre-release, `Stop` — demanded
-a last line `⏩ <next step>` and resumed the turn) are no longer shipped. The update removes an untouched copy of each; `wire-hooks`
+a last "next step" arrow line and resumed the turn) are no longer shipped. The update removes an untouched copy of each; `wire-hooks`
 REMOVES their entries from `.claude/settings.json` (the owner's other entries and their order stay, the values proven before the
 write); `check` names an entry still running one of them — in `.claude/settings.local.json` too, which the machinery never edits —
 with the command. Where the harness refuses that write, the hook no longer stops anyone: its script is gone, `node` exits 1, and

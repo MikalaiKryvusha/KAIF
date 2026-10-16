@@ -608,7 +608,7 @@ a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifi
 other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
-pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last line `⏩ <next step>`); the update retires an untouched copy (§10.5
+pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5
 deprecations), `wire-hooks` removes their entries from `.claude/settings.json` with the value proof, `check` names one left wired. The hooks judge the PROJECT ROOT — the nearest folder above the event's `cwd` holding `.kaif/kaif.json` — not the
 folder the agent went into, and every order names the marker by its full path (2.9, epic HK; origin ticket #94). Activation
 (2.9, epic SW; origin issue #115): the install and update tasks tell the agent to run `node .kaif/kaif-core.mjs wire-hooks`,
@@ -829,7 +829,7 @@ after the owner's mid-turn message that has no text answer in the transcript —
 Its first edition refused EVERY call until the answer showed in the record; that session's texts between calls kept landing as
 reasoning, so each mid-turn word stopped the work until the owner wrote again — and the owner's verdict came the same hour: answer by
 the gate, do not stop the work. The gate refuses once per message; its order makes the turn's final text carry the answer.
-The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a `⏩` line, and on one field project five
+The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a "next step" arrow line, and on one field project five
 short remarks of the owner were five stops — his verdict (origin ticket #144, rendered from Russian): remove it from KAIF entirely,
 "I don't like that you stop on this". Both hooks left the module in 2.9; the rule kept its words — answer as text, then work on.
 

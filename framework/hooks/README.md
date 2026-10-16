@@ -52,7 +52,7 @@ earlier are removed by hand). The other systems below — and Claude Code by han
 **Retired in 2.9 — the two hooks that stopped the agent on the owner's word** (origin ticket #144; the KAIF owner's verdict on the
 field, rendered from Russian: remove this from KAIF entirely — "I don't like that you stop on this"): `pretool-owner-word.mjs`
 (2.8, `PreToolUse` — refused the next tool call after a mid-turn word) and `stop-owner-answer.mjs` (2.9 pre-release, `Stop` — demanded
-a last line `⏩ <next step>` and resumed the turn) are no longer shipped. The update removes an untouched copy of each; `wire-hooks`
+a last "next step" arrow line and resumed the turn) are no longer shipped. The update removes an untouched copy of each; `wire-hooks`
 REMOVES their entries from `.claude/settings.json` (the owner's other entries and their order stay, the values proven before the
 write); `check` names an entry still running one of them — in `.claude/settings.local.json` too, which the machinery never edits —
 with the command. Where the harness refuses that write, the hook no longer stops anyone: its script is gone, `node` exits 1, and

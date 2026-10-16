@@ -54,7 +54,7 @@
 // 2.9 (decision #143 — the KAIF owner, rendered from Russian: "the entry skill tells you wrong"; a session answered "how much is
 // left?" and then started the plan's next item by itself): the order says what is under the word SETS THE SCOPE — a question is
 // answered and the turn ends with the pick offered; a task is done; only a bare "resume" starts the chosen direction.
-// 2.9, ticket #144: the `⏩` line left the canon with the hooks that read it — the order no longer names it.
+// 2.9, ticket #144: the "next step" arrow line left the canon with the hooks that read it — the order no longer names it.
 // [TESTED: 2026-10-14 09:31 · s14 «resume-word (№143)» green on HEAD and red on the v2.8 dist; s21 E (№143): the update run by the
 //  2.8 core leaves this order on disk (red on v2.8); probe tools/sandbox/probes/resume-scope-red.mjs; report
 //  testcases/reports/2026-10-14_resume-scope-143.md (origin repository); the owner's own next "resume + question" is not observed yet]
