@@ -945,7 +945,7 @@ write ONE line to it in the chat; the four-line scenario is its caption, never t
 covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
 variants — is QUOTED INTO the question as a table, a list, or a citation. **One fork — one question**, cut to what the owner chooses BY
 (options, price, what he will see); the recon stays above the questions (2.9, issue #142). A reference alongside the quoted content confirms.
-A reference INSTEAD of the content is the defect, and the contour's door refuses it (`--check`, exit 3; 2.9, KAIF issue #124).
+A reference INSTEAD of the content is the defect; the contour's door refuses its back-reference words — "above", "see the section", "§N" (`--check`, exit 3; 2.9, KAIF issue #124); a bare link it cannot judge.
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them

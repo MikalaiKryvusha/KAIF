@@ -24,7 +24,7 @@ const RUN_TIMEOUT_MS = 300000;   // method constant: check-framework reads the w
 const MUTANTS = [
   { id: 'C', what: 'control — the copy as is', edits: [], expect: [] },
   { id: 'M1', what: 'a new ⚠ line in cmdCheck with no pair', expect: ['«⚠ a brand-new axis'],
-    edits: [[CORE, '  warnSphereLibrary();\n  // The size-budget guard', '  warnSphereLibrary();\n  console.error(`⚠ a brand-new axis: ${KAIF_JSON}`);\n  // The size-budget guard']] },
+    edits: [[CORE, '  warnSphereLibrary();\n  // NT3', '  warnSphereLibrary();\n  console.error(`⚠ a brand-new axis: ${KAIF_JSON}`);\n  // NT3']] }, // court RL 2.9, D-F1: the anchor moved with the NT3 block (75a0b93)
   { id: 'M2', what: 'the word «sphere with no library» cut out of the check entry', expect: ['«sphere with no library»'],
     edits: [[REF, 'a sphere with no library under', 'a sphere without its library under']] },
   { id: 'M3', what: 'the sphere warning reworded («has no library at» → «lacks a library at»)', expect: ['«⚠ sphere "', '«has no library at .kaif/spheres/»'],

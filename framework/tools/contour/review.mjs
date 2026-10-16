@@ -47,6 +47,7 @@ import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
+  unescapeStructure, // court RL 2.9, B-F2: the card shows an owner's escaped comment line as he typed it
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
   statusBlockAwaitsApplication, // OW3 (2.8, #86): the field's form — the status block says «awaiting application»
   archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
@@ -502,15 +503,18 @@ export function buildPage(root, docPath) {
   const proseOf = (q) => {
     const keep = [];
     let inOpt = false;
+    // court RL 2.9, E-F3: the continuation lines of an answer paragraph are the answer, shown below as «answered:» — never as prose
+    const answerLines = new Set((q.answers || []).flatMap((a) => a.lines || []));
     for (let j = 0; j < q.body.length; j++) {
       const line = q.body[j];
+      if (answerLines.has(j)) continue;
       if (q.optionTableLines && q.optionTableLines.has(j)) { inOpt = false; continue; }
       if (OPTION_LINE_RE.test(line)) { inOpt = true; continue; }
       if (inOpt && /^\s{2,}\S/.test(line)) continue;
       inOpt = false;
       if (ANSWER_LINE_RE.test(line)) continue;
       if (TARGET_LINE_RE.test(line)) continue;
-      keep.push(line);
+      keep.push(unescapeStructure(line));
     }
     return renderMd(keep.join('\n'));
   };
@@ -2033,6 +2037,27 @@ export async function selftest(log = console.log) {
       && fQ2 && fQ2.options.length === 2 && !fQ2.answered,
       'NT F1: an own answer and a comment whose lines read as structure keep Q2 and read back as typed (questions ' + fQs.length
       + ', Q1 options ' + (fQ1 && fQ1.options.length) + ', answers ' + (fQ1 && fQ1.answers.length) + ', Q2 options ' + (fQ2 && fQ2.options.length) + ')');
+  }
+  { // court RL 2.9, E-F1 · E-F2 · E-F3: a document with NO status line of its own — an answer line «Status: done» must not close it; a
+    // rule `---` as the LAST answer line (the provenance mark follows it) reads back without its escape; the card of the answered
+    // question shows the answer once, below — its continuation lines are not prose
+    const gRoot = mkdtempSync(join(root, '..', 'kaif-contour-e1-'));
+    mkdirSync(join(gRoot, 'interviews'), { recursive: true });
+    const G = 'interviews/interview_055_nostatus.md';
+    writeFileSync(join(gRoot, G), '# Interview #055 — no status line\n\n### Q1. Pick?\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n\n'
+      + '### Q2. Second?\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n');
+    const gTyped = 'my pick\nStatus: ✅ done\n### not a heading\n---';   // «✅ done» closes a document whose head carries it (the judge's form)
+    recordDecision(gRoot, G, { answers: { Q1: { choice: '', text: gTyped, comment: 'see:\n- **A:** a fallback' } } }, cfg, new Date(2026, 8, 5, 22, 4));
+    const gAfter = readFileSync(join(gRoot, G), 'utf8'), gQs = parseQuestions(gAfter);
+    const gHtml = buildPage(gRoot, G).html;
+    rmSync(gRoot, { recursive: true, force: true });
+    const gQ1 = gQs.find((q) => q.id === 'Q1'), gQ2 = gQs.find((q) => q.id === 'Q2');
+    // the page puts LIVE questions first — the card of the answered Q1 is found by its own title, never by its place
+    const q1At = gHtml.indexOf('<strong>Q1.</strong>'), card1 = gHtml.slice(gHtml.lastIndexOf('<section', q1At), gHtml.indexOf('</section>', q1At));
+    const shownOnce = card1.split('not a heading').length - 1 === 1;   // E-F3: the answer below «answered:» — never also as prose
+    ok(docStatus(gAfter) === 'none' && gQ2 && !gQ2.answered && gQ1 && gQ1.answers[0] && gQ1.answers[0].text === gTyped
+      && shownOnce && !/qbody[^<]*<p>[^<]*\\###/.test(gHtml) && !gHtml.includes('\\---') && !gHtml.includes('\\- <strong>') && gHtml.includes('a fallback'),
+      'RL E-F1/F2/F3 · B-F2: an answer line «Status: done» keeps a status-less document open, a last line `---` reads back without its escape, the card shows no escaped answer line (status ' + docStatus(gAfter) + ', Q2 answered ' + (gQ2 && gQ2.answered) + ', read back ' + JSON.stringify(gQ1 && gQ1.answers[0] && gQ1.answers[0].text) + ')');
   }
 
   // I37/I38: the notice class — state machine, page form, batch order

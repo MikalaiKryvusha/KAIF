@@ -232,13 +232,17 @@ const isOptionLine = (line) => OPTION_START_RE.test(line) || OPTION_ROW_RE.test(
 // the owner himself began with a backslash before structure gets one more, so the round trip returns exactly what he typed.
 // [TESTED: 2026-10-16 16:09 +03:00 · contour selftest case «NT F1» (twelve forms + a multi-line comment; Q2 kept, read back as typed);
 //  tools/sandbox/probes/nt1-contour-mutants.mjs M3 (no escape) and M4 (no unescape) red exactly on it]
+// Court RL 2.9, E-F1: a STATUS line is structure too — in a document with no status line of its own, an answer line «Status: done»
+// within the head closed the whole document and hid its open questions; E-F2: the reader judges a line without the provenance mark the
+// writer appends to the last line («\--- <!-- owner-review … -->» used to read back with its backslash).
 const STRUCTURE_LINE_RES = [/^\s*(```|~~~)/, /^#{1,6}\s/, /^---\s*$/, /^\s*\|/, OPTION_START_RE, AUTHORED_LETTER_RE,
-  AUTHORED_PARA_LETTER_RE, ANSWER_LABEL_RE, TARGET_LABEL_RE, COMMENT_LABEL_RE];
+  AUTHORED_PARA_LETTER_RE, ANSWER_LABEL_RE, TARGET_LABEL_RE, COMMENT_LABEL_RE, STATUS_LINE_RE];
 const ESCAPED_RE = /^(\s*)\\/;
 const dropEscape = (l) => l.replace(ESCAPED_RE, (m, indent) => indent);
+const dropMark = (l) => l.replace(/\s*<!--[\s\S]*?-->\s*$/, '');
 const readsAsStructure = (l) => STRUCTURE_LINE_RES.some((re) => re.test(l)) || (ESCAPED_RE.test(l) && readsAsStructure(dropEscape(l)));
 const escapeStructure = (l) => (readsAsStructure(l) ? l.replace(/^\s*/, (indent) => indent + '\\') : l);
-const unescapeStructure = (l) => (ESCAPED_RE.test(l) && readsAsStructure(dropEscape(l)) ? dropEscape(l) : l);
+export const unescapeStructure = (l) => (ESCAPED_RE.test(l) && readsAsStructure(dropMark(dropEscape(l))) ? dropEscape(l) : l);
 // the owner's text as lines of the file: trailing blanks trimmed, every line after the first escaped where it reads as structure; blank
 // lines are dropped (an answer is read back as a paragraph up to a blank line) unless `keepBlank` — a comment is never read back
 export const ownerTextLines = (text, { keepBlank = false } = {}) => {
@@ -326,14 +330,15 @@ function finishQuestion(q, docClosed) {
       const rest0 = noComment(a.groups.rest || '');
       const rest = /^\s*\*\*/.test(line) && !/:\*\*/.test(line) && (rest0.match(/\*\*/g) || []).length % 2 === 1 ? rest0.replace('**', '') : rest0;
       const parts = [rest].filter(Boolean);
+      const lines = [j];   // court RL 2.9, E-F3: the body lines this answer took — the page card leaves them out of the question's prose
       for (let k = j + 1; k < q.body.length; k++) {
         const raw = q.body[k];
         if (ANSWER_LABEL_RE.test(raw) || TARGET_LABEL_RE.test(raw) || isOptionLine(raw) || COMMENT_LABEL_RE.test(raw)) break; // an owner's comment is NOT the answer
         const nl = noComment(unescapeStructure(raw)); // NT F1: a continuation line escaped by the writer reads back as the owner typed it
         if (!raw.trim()) { if (parts.length) break; continue; } // a blank line ends the answer — or precedes it
-        if (nl) parts.push(nl);
+        if (nl) { parts.push(nl); lines.push(k); }
       }
-      q.answers.push({ line: j, text: parts.join('\n'), followUp: Boolean(a.groups.mod) });
+      q.answers.push({ line: j, lines, text: parts.join('\n'), followUp: Boolean(a.groups.mod) });
     }
   }
   for (const o of q.options) {

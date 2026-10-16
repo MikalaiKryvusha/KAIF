@@ -218,5 +218,10 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_045_kaif_2.9_criterion_1_after_hooks.md": {
+    "questions": 1,
+    "parsedOptions": 4,
+    "candidateLines": 4
   }
 }

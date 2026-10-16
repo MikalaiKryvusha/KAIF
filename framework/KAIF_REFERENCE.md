@@ -597,7 +597,7 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per

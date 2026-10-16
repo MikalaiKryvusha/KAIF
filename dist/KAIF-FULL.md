@@ -1090,7 +1090,7 @@ write ONE line to it in the chat; the four-line scenario is its caption, never t
 covers artifacts; a question is not an artifact: "the goals are listed in <doc>" shows nothing. Whatever the owner is deciding ON — the list, the order, the wording, the numbers, the two
 variants — is QUOTED INTO the question as a table, a list, or a citation. **One fork — one question**, cut to what the owner chooses BY
 (options, price, what he will see); the recon stays above the questions (2.9, issue #142). A reference alongside the quoted content confirms.
-A reference INSTEAD of the content is the defect, and the contour's door refuses it (`--check`, exit 3; 2.9, KAIF issue #124).
+A reference INSTEAD of the content is the defect; the contour's door refuses its back-reference words — "above", "see the section", "§N" (`--check`, exit 3; 2.9, KAIF issue #124); a bare link it cannot judge.
 
 **The taste class — a criterion the agent cannot measure.** The canon covers measurable criteria
 (verify by observation, `TESTING_FRAMEWORK.md`) and vision forks (`/interview`) — and between them
@@ -3330,7 +3330,7 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
@@ -5134,7 +5134,7 @@ If it shapes brand/architecture/UX for the long term — interview.
   carries only what the owner chooses BY — the options, their price and what he will see; the recon, the evidence and the history
   stay in the context section above the questions or in the research. Several forks → several short questions, never one long one.
   Short is not a pointer: the SUBJECT of the decision — the list, the order, the wording, the numbers, the two variants — is quoted
-  INTO the question; a link beside it confirms, a link instead of it sends the owner away (the contour door refuses it — `--check`, exit 3).
+  INTO the question; a link beside it confirms, a link instead of it sends the owner away (the contour door refuses its back-reference words — "above", "see the section", "§N" — with `--check`, exit 3; a bare link it cannot judge).
 - **Every question declares its ANSWER TARGET** (contour invariant I18) — the document/section
   blocked by the question, written at question-writing time: the agent knows it exactly then
   (that knowledge is the reason to ask), and by closing time — often another session, days later —

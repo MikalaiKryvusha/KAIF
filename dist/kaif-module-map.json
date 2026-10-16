@@ -269,7 +269,7 @@
       {
         "signature": "## Decisions the agent must NOT make alone — interviews",
         "class": "static",
-        "sha256": "99a04d4074eb412d97c046ac59a7e1fcd6c66b28f453ef99d132163369e7ac45",
+        "sha256": "45906ab1220123ee48e76cdff6d5094672f2fdfee7c323a1930b73469ca82b6a",
         "lines": [
           860,
           1052
@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "167bebebcf84c5311d123e776ed47214640826e3bae04b15efb2845035cbd407",
+        "sha256": "bf8ba4ee5d951829abda1f5a941a7877b2e5e234e1329a05bab224cd5b14e1c3",
         "lines": [
           572,
           630
@@ -3312,7 +3312,7 @@
       {
         "signature": "### Step 3. Rules for good questions",
         "class": "static",
-        "sha256": "e6e84aba6a12ce3827de71ecd57d4bca91e079b0639f21c89a4c63040e5e8f0c",
+        "sha256": "815ff63c874ee0e395839800811097952eea632a56fbedd315927980bf6aee92",
         "lines": [
           76,
           108

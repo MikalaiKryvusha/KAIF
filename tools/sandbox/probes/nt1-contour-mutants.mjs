@@ -5,11 +5,14 @@
 //   M2 — the write-back puts a multi-line answer on the label line as one piece again → «NT1 #139» and «NT F1».
 //   M3 — (light judge of NT, F1) the writer no longer escapes a continuation line that reads as structure → «NT F1».
 //   M4 — (the same) the reader no longer takes the escape off → «NT F1».
+//   M5–M7 — court RL 2.9: a status line is not structure (E-F1) · the reader judges the line WITH its provenance mark (E-F2) · the card
+//   shows the answer's continuation lines as prose (E-F3) · M8 the card shows an escaped comment line with its backslash (B-F2) → «RL E-F1/F2/F3». M2–M4 break that case too (it writes a multi-line answer).
 // Silence: the selftest opens no window and plays no sound; the environment is quiet anyway (no voice tool).
 // usage: node tools/sandbox/probes/nt1-contour-mutants.mjs   ·   ≈ 30 s, alone
 // [TESTED: 2026-10-16 15:27:32 +03:00 · «2 mutants red exactly on their addressee» (quietEnv); first run 15:26:53 with a hand-made quiet env
 //  gave the same — report testcases/reports/2026-10-16_nt-four-field-tickets.md; M2 moved to the new write line and M3 · M4 added for
-//  the NT light judge's F1: 2026-10-16 16:09:13 +03:00 · «4 mutants red exactly on their addressees»]
+//  the NT light judge's F1: 2026-10-16 16:09:13 +03:00 · «4 mutants red exactly on their addressees»; M5–M8 for the court's E-F1/F2/F3 · B-F2:
+//  2026-10-16 16:50:35 +03:00 · «8 mutants red exactly on their addressees» — report testcases/reports/2026-10-16_rl-court-fixes.md]
 import { readFileSync, writeFileSync, mkdtempSync, rmSync, readdirSync, cpSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -26,12 +29,16 @@ const MUTANTS = [
     addressees: ['NT1 #139'] },
   { id: 'M2', file: 'core.mjs',
     from: 'const [first, ...rest] = marked(answerText);',
-    to: "const first = answerText + ' ' + prov, rest = [];", addressees: ['NT1 #139', 'NT F1'] },
+    to: "const first = answerText + ' ' + prov, rest = [];", addressees: ['NT1 #139', 'NT F1', 'RL E-F1/F2/F3'] },
   { id: 'M3', file: 'core.mjs',
     from: "const escapeStructure = (l) => (readsAsStructure(l) ? l.replace(/^\\s*/, (indent) => indent + '\\\\') : l);",
-    to: 'const escapeStructure = (l) => l;', addressees: ['NT F1'] },
+    to: 'const escapeStructure = (l) => l;', addressees: ['NT F1', 'RL E-F1/F2/F3'] },
   { id: 'M4', file: 'core.mjs',
-    from: 'const nl = noComment(unescapeStructure(raw));', to: 'const nl = noComment(raw);', addressees: ['NT F1'] },
+    from: 'const nl = noComment(unescapeStructure(raw));', to: 'const nl = noComment(raw);', addressees: ['NT F1', 'RL E-F1/F2/F3'] },
+  { id: 'M5', file: 'core.mjs', from: 'TARGET_LABEL_RE, COMMENT_LABEL_RE, STATUS_LINE_RE];', to: 'TARGET_LABEL_RE, COMMENT_LABEL_RE];', addressees: ['RL E-F1/F2/F3'] },
+  { id: 'M6', file: 'core.mjs', from: 'readsAsStructure(dropMark(dropEscape(l)))', to: 'readsAsStructure(dropEscape(l))', addressees: ['RL E-F1/F2/F3'] },
+  { id: 'M7', file: 'review.mjs', from: '      if (answerLines.has(j)) continue;\n', to: '', addressees: ['RL E-F1/F2/F3'] },
+  { id: 'M8', file: 'review.mjs', from: 'keep.push(unescapeStructure(line));', to: 'keep.push(line);', addressees: ['RL E-F1/F2/F3'] },
 ];
 const quiet = quietEnv();   // the contour generator in a probe runs only in the quiet environment (bugs/116)
 let bad = 0;
