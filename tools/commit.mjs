@@ -239,9 +239,17 @@ if (!process.argv.includes('--no-push')) {
 // Bump the internal build counter, preserving every other field of version.json.
 // (The version shown anywhere is major.minor only — `build` is an internal counter.)
 const vf = join(ROOT, 'version.json');
-const v = JSON.parse(readFileSync(vf, 'utf8'));
+const vText = readFileSync(vf, 'utf8');   // the bytes before the bump — a refusal below puts them back (session 81: build 743 lost)
+const v = JSON.parse(vText);
 v.build = (v.build || 0) + 1;
 writeFileSync(vf, JSON.stringify(v, null, 2) + '\n');
+// Every refusal AFTER the bump goes through here: the build number goes back — on disk and, if `git add` already took it, in the
+// index — so a stopped commit leaves no raised build behind (the class gate 1b was put before the bump for; session 81: 742 → 744)
+const refuse = () => {
+  writeFileSync(vf, vText);
+  try { execFileSync('git', ['add', '--', 'version.json'], { cwd: ROOT, stdio: 'ignore' }); } catch { /* not staged yet — the disk is enough */ }
+  process.exit(1);
+};
 
 // Со-авторский трейлер несёт ФАКТИЧЕСКОЕ имя работающей модели — решение владельца №54
 // (интервью №012, Q1 = B, 2026-08-08 06:48 +03:00): «по git log видно, кто что делал».
@@ -274,9 +282,12 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
       // Несуществующий путь в намерении — обычная опечатка или уже переименованный файл (после
       // `git mv` старого имени на диске нет, а переименование уже в индексе). Стек-трейс Node
       // здесь ничего не сообщает; git выше уже назвал конкретный pathspec.
-      console.error('✋ `git add` отверг один из путей `--only` (см. строку git выше).');
-      console.error('   Частая причина: файл уже переименован через `git mv` — называй только НОВОЕ имя.');
-      process.exit(1);
+      // Отказ после бампа возвращает номер сборки (`refuse` выше): поднятый version.json без коммита — тот самый
+      // класс, ради которого гейт 1b стоит ДО бампа (сессия 81: 742 → 744).
+      console.error('✋ `git add` отверг один из путей `--only` (см. строку git выше); version.json возвращён как был.');
+      console.error('   Частые причины: файл переименован через `git mv` — называй только НОВОЕ имя; файл удалён через `git rm` —');
+      console.error('   удаление уже в индексе и уедет коммитом, не называй его в `--only`.');
+      refuse();
     }
   } else {
     run('git add -A');
@@ -298,7 +309,7 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
       execFileSync(process.execPath, [join(ROOT, 'tools', 'private-names-guard.mjs')], { cwd: ROOT, stdio: 'inherit' });
     } catch {
       console.error('\n✋ коммит остановлен преполётом 1c: private-names-guard красный — приватное имя едет в поставку, витрину или отчёт суда. Алиасы — .kaif/private-names.json.');
-      process.exit(1);
+      refuse();
     }
   }
   // ПРЕПОЛЁТ 1d (см. leakGateAction выше): индекс и сообщение коммита против фраз, которые слепок схлопнул.
@@ -311,7 +322,7 @@ const run = (c) => execSync(c, { cwd: ROOT, stdio: 'inherit' });
     process.stdout.write((lr.stdout || '') + (lr.stderr || ''));
     if (action === 'stop') {
       console.error('\nкоммит остановлен преполётом 1d: непубличная фраза владельца едет этим коммитом (или ось утечки не исполнилась) — перепиши место описанием, не цитатой (решение №60).');
-      process.exit(1);
+      refuse();
     }
   }
 }
