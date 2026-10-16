@@ -2012,6 +2012,28 @@ export async function selftest(log = console.log) {
       && /\*\*Answer:\*\* first line\nsecond line <!-- owner-review:/.test(mlAfter) && mlQ.answered && mlQ.answers[0].text === 'first line\nsecond line',
       'NT1 #139: the own answer is a textarea; an answer of two lines lands as two lines (no blank inside, the mark at the end) and reads back whole');
   }
+  { // light judge of epic NT, F1 (2.9): a continuation line that reads as STRUCTURE — a fence, a heading, a rule, a table row, an option,
+    // a bold letter, a label — must not be parsed as structure; the same for a multi-line comment (its twin, older than NT1). Each form is
+    // its own continuation line of ONE answer; Q2 below must survive with its two options, and the answer must read back as typed.
+    const fRoot = mkdtempSync(join(root, '..', 'kaif-contour-f1-'));
+    mkdirSync(join(fRoot, 'interviews'), { recursive: true });
+    const F1 = 'interviews/interview_054_structure.md';
+    const q2 = '### Q2. Second?\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n';
+    writeFileSync(join(fRoot, F1), '# Interview #054 — structure\n\n> Status: awaiting\n\n### Q1. Pick?\n\n<!-- archaeology: n/a — selftest -->\n\n'
+      + '- **A)** one\n- **B)** two\n\n**Answer:**\n\n' + q2);
+    const forms = ['```', '### Q2. fake', '---', '| **A** | x |', '- **A)** actually this', '- **C** bold letter', '**C.** paragraph letter',
+      '**Answer:** x', "Owner's comment: y", 'Addressee: z', '  ~~~ indented fence', '\\- **A)** typed with a backslash'];
+    const typed = ['my pick', ...forms].join('\n');
+    recordDecision(fRoot, F1, { answers: { Q1: { choice: '', text: typed, comment: 'see:\n```\ncode\n\n### Q9. fake' } } }, cfg, new Date(2026, 8, 5, 22, 3));
+    const fAfter = readFileSync(join(fRoot, F1), 'utf8'), fQs = parseQuestions(fAfter);
+    rmSync(fRoot, { recursive: true, force: true });
+    const fQ1 = fQs.find((q) => q.id === 'Q1'), fQ2 = fQs.find((q) => q.id === 'Q2');
+    const readBack = typed.split('\n').map((s) => s.trim()).join('\n'); // the reader trims each line of a paragraph (CP), as before NT1
+    ok(fQs.length === 2 && fQ1 && fQ1.options.length === 2 && fQ1.answers.length === 1 && fQ1.answers[0].text === readBack
+      && fQ2 && fQ2.options.length === 2 && !fQ2.answered,
+      'NT F1: an own answer and a comment whose lines read as structure keep Q2 and read back as typed (questions ' + fQs.length
+      + ', Q1 options ' + (fQ1 && fQ1.options.length) + ', answers ' + (fQ1 && fQ1.answers.length) + ', Q2 options ' + (fQ2 && fQ2.options.length) + ')');
+  }
 
   // I37/I38: the notice class — state machine, page form, batch order
   const NOTICE = 'docs/report.md';

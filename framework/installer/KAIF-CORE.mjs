@@ -1609,10 +1609,14 @@ function portraitSync(pin) {
   // NT2 (2.9, origin issue #133 — a field root file of 11 lines only POINTS at the private core, named in the marker's `voicePortrait`; it
   // names the private repository in its clone command, which is a snapshot marker, and the only passing move was to paste a 643-line copy
   // nothing reads): a root file with no snapshot line in it, while the marker names the portrait at ANOTHER path, is a POINTER — no item
-  if (tail === null) {
+  // (light judge of epic NT, F3) a file that carries the first line of an EARLIER layout's snapshot (`pin.heads`) is a portrait, not a
+  // pointer; and a marker that names THIS file — by an absolute path, or in another letter case on Windows — names no other path
+  // [TESTED: 2026-10-16 16:15 +03:00 · s26 «NT F3» ×2 green (100 checks); on the dist of f977156 exactly these two red]
+  const carriesSnapshot = tail !== null || (Array.isArray(pin.heads) && pin.heads.some((h) => snapshotTail(text, h) !== null));
+  if (!carriesSnapshot) {
     let vp = null; try { vp = readJson(KAIF_JSON).voicePortrait; } catch { vp = null; }
-    const norm = (p) => String(p).replace(/\\/g, '/').replace(/^\.\//, '');
-    if (typeof vp === 'string' && vp.trim() && norm(vp.trim()) !== PORTRAIT_FILE) {
+    const samePath = (p) => { const a = resolve(p), b = resolve(PORTRAIT_FILE); return process.platform === 'win32' ? a.toLowerCase() === b.toLowerCase() : a === b; };
+    if (typeof vp === 'string' && vp.trim() && !samePath(vp.trim())) {
       log(`· voice portrait: ${PORTRAIT_FILE} is a POINTER — it carries no line of the release snapshot, and .kaif/kaif.json names the portrait at ${vp.trim()}; left untouched (origin issue #133)`);
       return null;
     }
@@ -3957,9 +3961,18 @@ function cmdCheck() {
   // NT3 (2.9, origin issue #141 — a field closing ritual named no build command: its step was still the template's instruction slot
   // «`<Run the project build …>`», nothing asked to fill it, and a red suite went unnoticed for 18 days): a deployed closing or release skill
   // whose step is still such a slot is named with the step and the cure. A warning, never a failure — the ritual still runs its other steps.
-  // The slot is opened exactly as instructionSlotLines() opens one: «`<» whose code span does not close on the line (a mention stays silent).
-  // [NOT-TESTED]
+  // The slot is opened as instructionSlotLines() opens one: «`<» whose code span does not close on the line (a mention stays silent) —
+  // plus the form the light judge of epic NT found unseen in the release template (F5): the slot that opens MID-line («… skeleton.
+  // `<If the project has a storefront linter…»). A mention closed on its line («(`<PROJECT> X.Y`)», «`<!-- class-ok … -->`») stays
+  // silent in all three templates. The judge's second form, «`<COMMIT_COMMAND>` with …», never reaches a deployment: the install fills
+  // that placeholder from its map (detectValues), so no rule is spent on it.
+  // [TESTED: 2026-10-16 16:15 +03:00 · s25 NT3 (#141) and NT F5 green (81 checks); on the dist of f977156 exactly «NT F5» red]
   const RITUAL_SKILLS = ['end-chat-soft', 'end-chat-force', 'release'];
+  const slotAt = (t) => {
+    if (t.startsWith('`<') && (t.endsWith('>`') || t.indexOf('`', 1) < 0)) return 0;
+    const i = t.lastIndexOf('`<');   // an OPENING backtick (an even count before it) whose span does not close on the line
+    return i > 0 && (t.slice(0, i).split('`').length - 1) % 2 === 0 && t.indexOf('`', i + 1) < 0 ? i : -1;
+  };
   for (const n of RITUAL_SKILLS) {
     const p = `.claude/skills/${n}/SKILL.md`;
     if (!okOnDisk(p)) continue;
@@ -3967,8 +3980,9 @@ function cmdCheck() {
     for (const l of normEol(readFileSync(p, 'utf8')).split('\n')) {
       const t = l.trim();
       if (/^#{1,6} /.test(t)) { step = t.replace(/^#+\s*/, ''); continue; }
-      if (t.startsWith('`<') && (t.endsWith('>`') || t.indexOf('`', 1) < 0))
-        console.error(`⚠ ${p}: the step «${step || '?'}» is still the template's instruction slot «${t.slice(0, 60)}…» — write this project's own command there, or the ritual runs nothing at that step`);
+      const at = slotAt(t);
+      if (at >= 0)
+        console.error(`⚠ ${p}: the step «${step || '?'}» is still the template's instruction slot «${t.slice(at, at + 60)}…» — write this project's own command there, or the ritual runs nothing at that step`);
     }
   }
   // The size-budget guard over the re-read core (STATUS: bugs/37, decision #27 — the 2.1 release

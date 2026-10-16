@@ -225,6 +225,29 @@ const authoredLetter = (l) => AUTHORED_LETTER_RE.test(l) || AUTHORED_PARA_LETTER
 export const OPTION_ROW_RE = new RegExp('^\\s*\\|\\s*\\*{0,2}([' + L + '])[.)]?(?:\\s*\\([^)]*\\))?\\*{0,2}(?:\\s*\\([^)]*\\))?\\s*\\|(.+)$', 'u');
 const FREE_FIELD_RE = new RegExp(PARSER.freeFieldMarker, 'u');
 const isOptionLine = (line) => OPTION_START_RE.test(line) || OPTION_ROW_RE.test(line);
+// Light judge of epic NT, F1, and its twins (2.9): text the owner typed into a multi-line field — the own answer (NT1, #139) and the
+// comments, which were textareas before it — lands as LINES of the file, and a continuation line that reads as structure was read back
+// as structure: a fence swallowed the rest of the file, a heading made a phantom question, a rule, an option, a table row or a label
+// cut the answer. The writer puts a markdown backslash escape before such a line (after its indent) and the reader takes it off; a line
+// the owner himself began with a backslash before structure gets one more, so the round trip returns exactly what he typed.
+// [TESTED: 2026-10-16 16:09 +03:00 · contour selftest case «NT F1» (twelve forms + a multi-line comment; Q2 kept, read back as typed);
+//  tools/sandbox/probes/nt1-contour-mutants.mjs M3 (no escape) and M4 (no unescape) red exactly on it]
+const STRUCTURE_LINE_RES = [/^\s*(```|~~~)/, /^#{1,6}\s/, /^---\s*$/, /^\s*\|/, OPTION_START_RE, AUTHORED_LETTER_RE,
+  AUTHORED_PARA_LETTER_RE, ANSWER_LABEL_RE, TARGET_LABEL_RE, COMMENT_LABEL_RE];
+const ESCAPED_RE = /^(\s*)\\/;
+const dropEscape = (l) => l.replace(ESCAPED_RE, (m, indent) => indent);
+const readsAsStructure = (l) => STRUCTURE_LINE_RES.some((re) => re.test(l)) || (ESCAPED_RE.test(l) && readsAsStructure(dropEscape(l)));
+const escapeStructure = (l) => (readsAsStructure(l) ? l.replace(/^\s*/, (indent) => indent + '\\') : l);
+const unescapeStructure = (l) => (ESCAPED_RE.test(l) && readsAsStructure(dropEscape(l)) ? dropEscape(l) : l);
+// the owner's text as lines of the file: trailing blanks trimmed, every line after the first escaped where it reads as structure; blank
+// lines are dropped (an answer is read back as a paragraph up to a blank line) unless `keepBlank` — a comment is never read back
+export const ownerTextLines = (text, { keepBlank = false } = {}) => {
+  const ls = String(text).split(/\r?\n/).map((s) => s.replace(/\s+$/, ''));
+  while (ls.length && !ls[0].trim()) ls.shift();
+  while (ls.length && !ls[ls.length - 1].trim()) ls.pop();
+  const kept = keepBlank ? ls : ls.filter((s) => s.trim());
+  return kept.length ? kept.map((s, i) => (i ? escapeStructure(s) : s)) : [''];
+};
 
 export function parseQuestions(md) {
   const lines = normalize(md).split('\n');
@@ -306,7 +329,7 @@ function finishQuestion(q, docClosed) {
       for (let k = j + 1; k < q.body.length; k++) {
         const raw = q.body[k];
         if (ANSWER_LABEL_RE.test(raw) || TARGET_LABEL_RE.test(raw) || isOptionLine(raw) || COMMENT_LABEL_RE.test(raw)) break; // an owner's comment is NOT the answer
-        const nl = noComment(raw);
+        const nl = noComment(unescapeStructure(raw)); // NT F1: a continuation line escaped by the writer reads back as the owner typed it
         if (!raw.trim()) { if (parts.length) break; continue; } // a blank line ends the answer — or precedes it
         if (nl) parts.push(nl);
       }
@@ -722,11 +745,14 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
       .map(([qid, ans]) => ({ qid, ans, q: questions.find((x) => x.id === qid) }))
       .filter((e) => e.q)
       .sort((a, b) => b.q.line - a.q.line);
+    // the owner's text as lines of the file with the provenance mark at the end of the last (NT F1 — ownerTextLines above)
+    const marked = (text, opts) => { const ls = ownerTextLines(text, opts); ls[ls.length - 1] += ' ' + prov; return ls; };
     for (const { ans, q } of entries) {
       const answerText = [ans.choice ? ans.choice + ')' : '', ans.text || ''].filter(Boolean).join(' — ').trim();
       const qStart = q.line; // 1-based line of the question heading
       if (ans.comment) { // the comment FIRST (end of block): a splice below the answer line does not shift it
-        lines.splice(qStart + q.body.length, 0, '', '**' + T.wb.ownerComment(atHuman) + '** ' + ans.comment + ' ' + prov, '');
+        const cl = marked(ans.comment, { keepBlank: true });
+        lines.splice(qStart + q.body.length, 0, '', '**' + T.wb.ownerComment(atHuman) + '** ' + cl[0], ...cl.slice(1), '');
         touched = true;
       }
       if (!answerText) continue; // "comment only" is NOT an answer — the question stays open
@@ -735,10 +761,9 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
       // NT1 (2.9, origin issue #139): an answer of several lines is written as several LINES of the file (the file's own line ends), the
       // first on the label, the provenance mark at the end of the last; blank lines are dropped — the answer is read back as a paragraph
       // up to a blank line, and a blank line inside would cut it
-      const [first, ...more] = answerText.split(/\r?\n/).map((s) => s.replace(/\s+$/, '')).filter((s) => s.trim());
-      const rest = more.length ? [...more.slice(0, -1), more[more.length - 1] + ' ' + prov] : [];
+      const [first, ...rest] = marked(answerText);
       if (emptyAns !== undefined) {
-        lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + first + (rest.length ? '' : ' ' + prov);
+        lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + first;
         if (rest.length) lines.splice(qStart + emptyAns.line + 1, 0, ...rest);
       } else { // the owner's answer is UNTOUCHABLE: new text only as a dated follow-up (I2)
         const lastAns = q.answers[q.answers.length - 1];
@@ -746,15 +771,22 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
         // right under the answer line, which also cut a multi-line answer in two; trailing blank lines of the block stay last.
         let endAt = q.body.length; while (endAt > 0 && !q.body[endAt - 1].trim()) endAt--;
         const insertAt = lastAns ? qStart + endAt : qStart + q.body.length;
-        lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + first + (rest.length ? '' : ' ' + prov), ...rest);
+        lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + first, ...rest);
       }
     }
     const tail = [];
     if (record.comments && Object.keys(record.comments).length) { // proofreading: a dated block at the END
       tail.push('**' + T.wb.proofread(atHuman) + '** ' + prov, '');
-      for (const [pid, text] of Object.entries(record.comments)) if (String(text).trim()) tail.push('- **' + pid + '** — ' + String(text).trim());
+      for (const [pid, text] of Object.entries(record.comments)) {
+        if (!String(text).trim()) continue;
+        const pl = ownerTextLines(text, { keepBlank: true });
+        tail.push('- **' + pid + '** — ' + pl[0], ...pl.slice(1));
+      }
     }
-    if (record.comment) tail.push(...(tail.length ? [''] : []), '**' + T.wb.ownerComment(atHuman) + '** ' + record.comment + ' ' + prov);
+    if (record.comment) {
+      const dl = marked(record.comment, { keepBlank: true });
+      tail.push(...(tail.length ? [''] : []), '**' + T.wb.ownerComment(atHuman) + '** ' + dl[0], ...dl.slice(1));
+    }
     if (tail.length) {
       while (lines.length && lines[lines.length - 1] === '') lines.pop();
       lines.push('', '---', '', ...tail, '');

@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "3d2069f3b2efd502bdc2a2f46f9f361862b6e68ef5f3ead5def55d286416d33f",
+    "sourceTree": "a9e7773c43528c0ef360f8ca336a9bcbf17904d43ef6d61ca5b24683da3289e4",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -116,7 +116,8 @@
       "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
       "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a status that does not fit two lines of the pill under the Save button rides the bar above the page (green for good news, red for trouble) and the pill carries a short label — a six-line pill used to cover the document's title; each bar is cleared only by its own owner, so a refused save keeps its reason in view through the page's pulse, and after the last answer is recorded a dead server is no alarm; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; Linux is not supported by the contour window: there no window is raised, the page is served and its address printed (the KAIF owner's word, 2.9). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner.",
       "WHAT KAIF DELIVERS IS WIRED AND ACCEPTED AT ONCE (2.9, epic SW; origin tickets #115 · #114 · #113 · #130 · #126 — the KAIF owner's word in his field projects, rendered from Russian: what KAIF delivers with an update is accepted without questions; everything KAIF brings in the delivery is wired, and agents should not ask about it): (1) NEW command `node .kaif/kaif-core.mjs wire-hooks` merges `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` additively — the owner's entries and their order stay, a script already wired for its event (there or in `.claude/settings.local.json`) is left alone, a repeat run changes nothing, the file keeps its indent, line ends, byte-order mark and the arrays written on one line (the shipped sample writes them so — your diff shows only the added entries), an unparseable file is left untouched (exit 1); the install and update tasks carry the item `wire-hooks` — the agent runs it WITHOUT asking the owner, the write is open to its harness and a refusal is recorded by `checkpoint wire-hooks --verdict`, never worked around; `\"hooks\": \"off\"` in `.kaif/kaif.json` opts out, and `check` names a delivered hook that is not wired (a warning — `checkpoint recheck` prints it too: a green recheck used to print only check's stdout and drop every warning); the samples of the other systems are merged by the agent by hand, no question. (2) The update task's `policy-changes` item no longer puts the rules of a release to the owner: they are ACCEPTED with the version and NAMED in the field report and the farewell; a question is legal only where a rule collides with a decision he recorded himself. (3) The decision-attribution lint that arrives with no baseline gets the item `lint-baselines`: the project's inherited debt is recorded once with `check --write-baseline`, no question, and the closing stops on a NEW finding only (the lesson journal gets no such step — its baseline never silences a repeated class). (4) The overflow address of the size budgets names `HOUSE_RULES.md` without «cp … HOUSE_RULES.md» when the file exists — an obeyed hint no longer overwrites a filled house-rules file with the empty skeleton. (5) Ignore-first anchors the root transients (`/KAIF.md`, `/KAIF-LOADER.mjs`, the task files): a bare line an older core wrote is rewritten IN PLACE (your own lines and negations keep their order, the file keeps its line ends) — on a case-insensitive git the bare `KAIF.md` hid `.clinerules/kaif.md` and `.roo/rules/kaif.md`; the contour's renders and call phrase (`.kaif/.contour-tmp/`) and its window locks (`<decisionsDir>/*.lock`) join the set; `check` names a deployed artifact that git ignores — KAIF's own line is a failure the next update cures, your own rule a warning with the `!<file>` line that lets it travel.",
-      "THE OWNER'S MESSAGE UNDER `resume` SETS THE SCOPE (2.9; decision #143 — the KAIF owner, rendered from Russian: 'the entry skill tells you wrong' — a session answered 'how much is left?' and then started the plan's next item by itself, and the `⏩` line it ended with made the end-of-turn hook resume work nobody asked for): /resume Step 2 now reads what the owner wrote under the word — a QUESTION is answered and the turn ends with the picked direction OFFERED, never taken, and no `⏩` line; a TASK is done; only a bare `resume` starts the direction the skill picked, as before. The order of `.kaif/hooks/prompt-resume-word.mjs` says the same; /refresh-context called by the owner with a question or a task keeps that scope; AGENT_GUIDE → \"The owner's word mid-turn\": `⏩` names only work the owner gave. What to do: nothing to merge where /resume and /refresh-context are the delivered ones — the update replaces them; if your project edited or translated /resume, carry Step 2's three cases into your copy by meaning."
+      "THE OWNER'S MESSAGE UNDER `resume` SETS THE SCOPE (2.9; decision #143 — the KAIF owner, rendered from Russian: 'the entry skill tells you wrong' — a session answered 'how much is left?' and then started the plan's next item by itself, and the `⏩` line it ended with made the end-of-turn hook resume work nobody asked for): /resume Step 2 now reads what the owner wrote under the word — a QUESTION is answered and the turn ends with the picked direction OFFERED, never taken, and no `⏩` line; a TASK is done; only a bare `resume` starts the direction the skill picked, as before. The order of `.kaif/hooks/prompt-resume-word.mjs` says the same; /refresh-context called by the owner with a question or a task keeps that scope; AGENT_GUIDE → \"The owner's word mid-turn\": `⏩` names only work the owner gave. What to do: nothing to merge where /resume and /refresh-context are the delivered ones — the update replaces them; if your project edited or translated /resume, carry Step 2's three cases into your copy by meaning.",
+      "Release codename for this version: KAIF 2.9 — Distilled KAIF"
     ],
     "2.8": [
       "THE CANON GOT LIGHTER, NOT WEAKER (2.8, epic CK; origin issue #93 §2 — a field owner's word: the guide must be a manual \"for a cosmonaut — no room for water and noise, maximum concentrated use\"). Rules stay where they were, under the SAME section headings, as a step, a command or a checkbox with one clause of \"why\"; what moved out is their birth certificate — the ticket that paid for a rule, the field story, the owner's quote, the version tag. (1) NEW informative section `.kaif/KAIF_REFERENCE.md` §17 \"Why the canon says so\": one entry per canon section, keyed \"`<file>` → <heading verbatim>\" — read the entry BEFORE changing or dropping a rule; it carries no rule of its own, so never move a rule of yours there (keep project rules in your guide or house-rules file). (2) `TESTING_FRAMEWORK.md` is shorter than the 300 lines of 2.7: every numbered rule, command and guarded line is unchanged; the field stories behind \"What the word test means\", the activities chain, the run report and gates 5–7 now live in §17. No section was renamed, so the update replaces module bodies only — if you edited a module of this file, merge by MEANING (your edit survives; the removed sentences are history, not rules). If your deployment is translated wholesale (`i18n: translated`), re-render the changed modules from the template instead of keeping the longer translation. (3) `AGENT_GUIDE.md` got the same treatment: the fable-loop call point (the six KAIF obligations), the interviews section and a handful of smaller passages (taxonomy, languages, the form of an obligation, the leading word, the storefront intro) lost their ticket stories and quotes, the rules and every command, marker syntax and hunt name stayed, and the Context router gained ONE row — \"Changing or dropping a rule of the canon → its entry in `.kaif/KAIF_REFERENCE.md` §17\". Same merge advice: headings are unchanged, so a module you edited is merged by meaning, and the lines that vanished are history, not rules.",
@@ -6323,6 +6324,8 @@ If it shapes brand/architecture/UX for the long term — interview.
   each, rendered from Russian: "you write VERY MUCH, I get tired reading and I am afraid to answer these questions"): the question
   carries only what the owner chooses BY — the options, their price and what he will see; the recon, the evidence and the history
   stay in the context section above the questions or in the research. Several forks → several short questions, never one long one.
+  Short is not a pointer: the SUBJECT of the decision — the list, the order, the wording, the numbers, the two variants — is quoted
+  INTO the question; a link beside it confirms, a link instead of it sends the owner away (the contour door refuses it — `--check`, exit 3).
 - **Every question declares its ANSWER TARGET** (contour invariant I18) — the document/section
   blocked by the question, written at question-writing time: the agent knows it exactly then
   (that knowledge is the reason to ask), and by closing time — often another session, days later —
@@ -10751,6 +10754,29 @@ const authoredLetter = (l) => AUTHORED_LETTER_RE.test(l) || AUTHORED_PARA_LETTER
 export const OPTION_ROW_RE = new RegExp('^\\s*\\|\\s*\\*{0,2}([' + L + '])[.)]?(?:\\s*\\([^)]*\\))?\\*{0,2}(?:\\s*\\([^)]*\\))?\\s*\\|(.+)$', 'u');
 const FREE_FIELD_RE = new RegExp(PARSER.freeFieldMarker, 'u');
 const isOptionLine = (line) => OPTION_START_RE.test(line) || OPTION_ROW_RE.test(line);
+// Light judge of epic NT, F1, and its twins (2.9): text the owner typed into a multi-line field — the own answer (NT1, #139) and the
+// comments, which were textareas before it — lands as LINES of the file, and a continuation line that reads as structure was read back
+// as structure: a fence swallowed the rest of the file, a heading made a phantom question, a rule, an option, a table row or a label
+// cut the answer. The writer puts a markdown backslash escape before such a line (after its indent) and the reader takes it off; a line
+// the owner himself began with a backslash before structure gets one more, so the round trip returns exactly what he typed.
+// [TESTED: 2026-10-16 16:09 +03:00 · contour selftest case «NT F1» (twelve forms + a multi-line comment; Q2 kept, read back as typed);
+//  tools/sandbox/probes/nt1-contour-mutants.mjs M3 (no escape) and M4 (no unescape) red exactly on it]
+const STRUCTURE_LINE_RES = [/^\s*(```|~~~)/, /^#{1,6}\s/, /^---\s*$/, /^\s*\|/, OPTION_START_RE, AUTHORED_LETTER_RE,
+  AUTHORED_PARA_LETTER_RE, ANSWER_LABEL_RE, TARGET_LABEL_RE, COMMENT_LABEL_RE];
+const ESCAPED_RE = /^(\s*)\\/;
+const dropEscape = (l) => l.replace(ESCAPED_RE, (m, indent) => indent);
+const readsAsStructure = (l) => STRUCTURE_LINE_RES.some((re) => re.test(l)) || (ESCAPED_RE.test(l) && readsAsStructure(dropEscape(l)));
+const escapeStructure = (l) => (readsAsStructure(l) ? l.replace(/^\s*/, (indent) => indent + '\\') : l);
+const unescapeStructure = (l) => (ESCAPED_RE.test(l) && readsAsStructure(dropEscape(l)) ? dropEscape(l) : l);
+// the owner's text as lines of the file: trailing blanks trimmed, every line after the first escaped where it reads as structure; blank
+// lines are dropped (an answer is read back as a paragraph up to a blank line) unless `keepBlank` — a comment is never read back
+export const ownerTextLines = (text, { keepBlank = false } = {}) => {
+  const ls = String(text).split(/\r?\n/).map((s) => s.replace(/\s+$/, ''));
+  while (ls.length && !ls[0].trim()) ls.shift();
+  while (ls.length && !ls[ls.length - 1].trim()) ls.pop();
+  const kept = keepBlank ? ls : ls.filter((s) => s.trim());
+  return kept.length ? kept.map((s, i) => (i ? escapeStructure(s) : s)) : [''];
+};
 
 export function parseQuestions(md) {
   const lines = normalize(md).split('\n');
@@ -10832,7 +10858,7 @@ function finishQuestion(q, docClosed) {
       for (let k = j + 1; k < q.body.length; k++) {
         const raw = q.body[k];
         if (ANSWER_LABEL_RE.test(raw) || TARGET_LABEL_RE.test(raw) || isOptionLine(raw) || COMMENT_LABEL_RE.test(raw)) break; // an owner's comment is NOT the answer
-        const nl = noComment(raw);
+        const nl = noComment(unescapeStructure(raw)); // NT F1: a continuation line escaped by the writer reads back as the owner typed it
         if (!raw.trim()) { if (parts.length) break; continue; } // a blank line ends the answer — or precedes it
         if (nl) parts.push(nl);
       }
@@ -11248,11 +11274,14 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
       .map(([qid, ans]) => ({ qid, ans, q: questions.find((x) => x.id === qid) }))
       .filter((e) => e.q)
       .sort((a, b) => b.q.line - a.q.line);
+    // the owner's text as lines of the file with the provenance mark at the end of the last (NT F1 — ownerTextLines above)
+    const marked = (text, opts) => { const ls = ownerTextLines(text, opts); ls[ls.length - 1] += ' ' + prov; return ls; };
     for (const { ans, q } of entries) {
       const answerText = [ans.choice ? ans.choice + ')' : '', ans.text || ''].filter(Boolean).join(' — ').trim();
       const qStart = q.line; // 1-based line of the question heading
       if (ans.comment) { // the comment FIRST (end of block): a splice below the answer line does not shift it
-        lines.splice(qStart + q.body.length, 0, '', '**' + T.wb.ownerComment(atHuman) + '** ' + ans.comment + ' ' + prov, '');
+        const cl = marked(ans.comment, { keepBlank: true });
+        lines.splice(qStart + q.body.length, 0, '', '**' + T.wb.ownerComment(atHuman) + '** ' + cl[0], ...cl.slice(1), '');
         touched = true;
       }
       if (!answerText) continue; // "comment only" is NOT an answer — the question stays open
@@ -11261,10 +11290,9 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
       // NT1 (2.9, origin issue #139): an answer of several lines is written as several LINES of the file (the file's own line ends), the
       // first on the label, the provenance mark at the end of the last; blank lines are dropped — the answer is read back as a paragraph
       // up to a blank line, and a blank line inside would cut it
-      const [first, ...more] = answerText.split(/\r?\n/).map((s) => s.replace(/\s+$/, '')).filter((s) => s.trim());
-      const rest = more.length ? [...more.slice(0, -1), more[more.length - 1] + ' ' + prov] : [];
+      const [first, ...rest] = marked(answerText);
       if (emptyAns !== undefined) {
-        lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + first + (rest.length ? '' : ' ' + prov);
+        lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + first;
         if (rest.length) lines.splice(qStart + emptyAns.line + 1, 0, ...rest);
       } else { // the owner's answer is UNTOUCHABLE: new text only as a dated follow-up (I2)
         const lastAns = q.answers[q.answers.length - 1];
@@ -11272,15 +11300,22 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
         // right under the answer line, which also cut a multi-line answer in two; trailing blank lines of the block stay last.
         let endAt = q.body.length; while (endAt > 0 && !q.body[endAt - 1].trim()) endAt--;
         const insertAt = lastAns ? qStart + endAt : qStart + q.body.length;
-        lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + first + (rest.length ? '' : ' ' + prov), ...rest);
+        lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + first, ...rest);
       }
     }
     const tail = [];
     if (record.comments && Object.keys(record.comments).length) { // proofreading: a dated block at the END
       tail.push('**' + T.wb.proofread(atHuman) + '** ' + prov, '');
-      for (const [pid, text] of Object.entries(record.comments)) if (String(text).trim()) tail.push('- **' + pid + '** — ' + String(text).trim());
+      for (const [pid, text] of Object.entries(record.comments)) {
+        if (!String(text).trim()) continue;
+        const pl = ownerTextLines(text, { keepBlank: true });
+        tail.push('- **' + pid + '** — ' + pl[0], ...pl.slice(1));
+      }
     }
-    if (record.comment) tail.push(...(tail.length ? [''] : []), '**' + T.wb.ownerComment(atHuman) + '** ' + record.comment + ' ' + prov);
+    if (record.comment) {
+      const dl = marked(record.comment, { keepBlank: true });
+      tail.push(...(tail.length ? [''] : []), '**' + T.wb.ownerComment(atHuman) + '** ' + dl[0], ...dl.slice(1));
+    }
     if (tail.length) {
       while (lines.length && lines[lines.length - 1] === '') lines.pop();
       lines.push('', '---', '', ...tail, '');
@@ -13358,6 +13393,28 @@ export async function selftest(log = console.log) {
     ok(pageML.includes('<textarea data-draft name="text:' + ML + ':Q1"') && !pageML.includes('<input type="text" data-draft name="text:')
       && /\*\*Answer:\*\* first line\nsecond line <!-- owner-review:/.test(mlAfter) && mlQ.answered && mlQ.answers[0].text === 'first line\nsecond line',
       'NT1 #139: the own answer is a textarea; an answer of two lines lands as two lines (no blank inside, the mark at the end) and reads back whole');
+  }
+  { // light judge of epic NT, F1 (2.9): a continuation line that reads as STRUCTURE — a fence, a heading, a rule, a table row, an option,
+    // a bold letter, a label — must not be parsed as structure; the same for a multi-line comment (its twin, older than NT1). Each form is
+    // its own continuation line of ONE answer; Q2 below must survive with its two options, and the answer must read back as typed.
+    const fRoot = mkdtempSync(join(root, '..', 'kaif-contour-f1-'));
+    mkdirSync(join(fRoot, 'interviews'), { recursive: true });
+    const F1 = 'interviews/interview_054_structure.md';
+    const q2 = '### Q2. Second?\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** yes\n- **B)** no\n\n**Answer:**\n';
+    writeFileSync(join(fRoot, F1), '# Interview #054 — structure\n\n> Status: awaiting\n\n### Q1. Pick?\n\n<!-- archaeology: n/a — selftest -->\n\n'
+      + '- **A)** one\n- **B)** two\n\n**Answer:**\n\n' + q2);
+    const forms = ['```', '### Q2. fake', '---', '| **A** | x |', '- **A)** actually this', '- **C** bold letter', '**C.** paragraph letter',
+      '**Answer:** x', "Owner's comment: y", 'Addressee: z', '  ~~~ indented fence', '\\- **A)** typed with a backslash'];
+    const typed = ['my pick', ...forms].join('\n');
+    recordDecision(fRoot, F1, { answers: { Q1: { choice: '', text: typed, comment: 'see:\n```\ncode\n\n### Q9. fake' } } }, cfg, new Date(2026, 8, 5, 22, 3));
+    const fAfter = readFileSync(join(fRoot, F1), 'utf8'), fQs = parseQuestions(fAfter);
+    rmSync(fRoot, { recursive: true, force: true });
+    const fQ1 = fQs.find((q) => q.id === 'Q1'), fQ2 = fQs.find((q) => q.id === 'Q2');
+    const readBack = typed.split('\n').map((s) => s.trim()).join('\n'); // the reader trims each line of a paragraph (CP), as before NT1
+    ok(fQs.length === 2 && fQ1 && fQ1.options.length === 2 && fQ1.answers.length === 1 && fQ1.answers[0].text === readBack
+      && fQ2 && fQ2.options.length === 2 && !fQ2.answered,
+      'NT F1: an own answer and a comment whose lines read as structure keep Q2 and read back as typed (questions ' + fQs.length
+      + ', Q1 options ' + (fQ1 && fQ1.options.length) + ', answers ' + (fQ1 && fQ1.answers.length) + ', Q2 options ' + (fQ2 && fQ2.options.length) + ')');
   }
 
   // I37/I38: the notice class — state machine, page form, batch order

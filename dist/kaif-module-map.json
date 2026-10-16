@@ -3312,10 +3312,10 @@
       {
         "signature": "### Step 3. Rules for good questions",
         "class": "static",
-        "sha256": "413bac7a183d57318ed3d9d4d2f84f126470c706898d3a3bd7f0d653b11eb7b8",
+        "sha256": "e6e84aba6a12ce3827de71ecd57d4bca91e079b0639f21c89a4c63040e5e8f0c",
         "lines": [
           76,
-          106
+          108
         ]
       },
       {
@@ -3323,8 +3323,8 @@
         "class": "static",
         "sha256": "e3e5fc2a2a115ea3f29718b0a24adfa68dc1f84a3eba503c1b0ac4a3c5502e36",
         "lines": [
-          107,
-          162
+          109,
+          164
         ]
       },
       {
@@ -3332,8 +3332,8 @@
         "class": "static",
         "sha256": "04fd843a09fda10da1c00e730812d12a58e2a12c433bf57a310a27043c4e3693",
         "lines": [
-          163,
-          181
+          165,
+          183
         ]
       },
       {
@@ -3341,8 +3341,8 @@
         "class": "static",
         "sha256": "00be9cbde7ad90367354626af47021b3a3c6a5a8e164ad7c4fb74a086eb99def",
         "lines": [
-          182,
-          195
+          184,
+          197
         ]
       },
       {
@@ -3350,8 +3350,8 @@
         "class": "static",
         "sha256": "0571356eca211e00c7951a495a0ffcc474ef6721ea64167d6337e800d4f5155a",
         "lines": [
-          196,
-          230
+          198,
+          232
         ]
       },
       {
@@ -3359,8 +3359,8 @@
         "class": "static",
         "sha256": "d6862b9574321dc349aadd9227378945dde0e402873d4475f9d2ca67cebb51ee",
         "lines": [
-          231,
-          245
+          233,
+          247
         ]
       },
       {
@@ -3368,8 +3368,8 @@
         "class": "static",
         "sha256": "1a1f00e2ed5c248774c5ad8980d91e28dd91c8e95ad0f687e252df61fa4e2535",
         "lines": [
-          246,
-          277
+          248,
+          279
         ]
       },
       {
@@ -3377,8 +3377,8 @@
         "class": "static",
         "sha256": "b9300ee866ba281c060c9e7140caf7c38d1bbef2c636ae5439c7b062a9802668",
         "lines": [
-          278,
-          282
+          280,
+          284
         ]
       }
     ],

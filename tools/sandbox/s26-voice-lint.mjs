@@ -451,6 +451,15 @@ ok(!/had no owner-voice-core item/.test(r.out), 's26 передача (NT2, #133
 const PR = deployC('ov-pointer-no-marker', POINTER);
 must(runC, PR, `update --source ${REL9} --baseline ${RELOLD}`);
 ok(itemOf(PR) !== '', 's26 update (NT2 контроль): тот же файл без voicePortrait — пункт owner-voice-core стоит, как прежде', itemOf(PR) || 'нет пункта');
+// (з) лёгкий судья NT, F3: (1) корневой файл несёт первую строку слепка ПРЕЖНЕЙ раскладки (`pin.heads`) — это портрет, не указатель, даже
+// когда маркер называет другой путь; (2) маркер называет ЭТОТ ЖЕ файл абсолютным путём в другом регистре (Windows) — другого пути нет
+const setVoicePortrait = (d, vp) => { const m = join(d, '.kaif', 'kaif.json'); writeFileSync(m, JSON.stringify({ ...JSON.parse(readFileSync(m, 'utf8')), voicePortrait: vp }, null, 2) + '\n'); };
+const PS = deployC('ov-old-layout-voiceportrait', OLD1X); setVoicePortrait(PS, 'stylometry/AUTHOR_STYLOMETRY.md');
+must(runC, PS, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PS) !== '', 's26 update (NT F3): портрет прежней раскладки при voicePortrait на другой путь — пункт owner-voice-core стоит (не указатель)', itemOf(PS) || 'нет пункта');
+const PT = deployC('ov-pointer-same-file', POINTER); setVoicePortrait(PT, join(PT, 'author_stylometry.md'));
+must(runC, PT, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PT) !== '', 's26 update (NT F3): voicePortrait называет этот же файл абсолютным путём в другом регистре — пункт стоит, как без voicePortrait', itemOf(PT) || 'нет пункта');
 // (в) портрет уже текущий — без пункта
 const PC = deployC('ov-current', SNAP);
 const upC = must(runC, PC, `update --source ${REL9} --baseline ${RELOLD}`);

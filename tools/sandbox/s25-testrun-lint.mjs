@@ -176,6 +176,14 @@ ok(!/\/resume does not name/.test(r.out) && !/names .* missing on disk/.test(r.o
 // шагом (предупреждение, код 0); вписанная проектом команда — тишина по этому файлу
 ok(/⚠ \.claude\/skills\/end-chat-soft\/SKILL\.md: the step «Step 3\. \(Re\)build \/ regenerate artifacts» is still the template's instruction slot «`<Run the project build/.test(r.out),
    's25 NT3 (#141): свежий деплой — check называет заглушку шага сборки в /end-chat-soft с шагом', (r.out.match(/[^\n]*instruction slot[^\n]*/g) || []).join('\n').slice(0, 600));
+// лёгкий судья NT, F5: слот шаблона /release, открытый ПОСРЕДИ строки (шаг 2, линтер витрины), ось не видела; упоминание «(`<PROJECT> X.Y`)»
+// молчит; вторая форма судьи («`<COMMIT_COMMAND>` with …», шаг 5) до развёртывания не доходит — установка подставляет команду коммита сама
+{
+  const rel0 = readFileSync(join(S, '.claude', 'skills', 'release', 'SKILL.md'), 'utf8');
+  ok(/⚠ \.claude\/skills\/release\/SKILL\.md: the step «Step 2\. Refresh README[^»]*» is still the template's instruction slot «`<If the project has a storefront linter/.test(r.out)
+     && !/instruction slot «`<PROJECT>/.test(r.out) && !rel0.includes('`<COMMIT_COMMAND>`'),
+     's25 NT F5: свежий деплой — check называет слот /release посреди строки, упоминание `<PROJECT>` молчит, заглушки команды коммита в навыке нет', (r.out.match(/[^\n]*release\/SKILL\.md[^\n]*/g) || []).join('\n').slice(0, 800));
+}
 {
   const ECS = join(S, '.claude', 'skills', 'end-chat-soft', 'SKILL.md');
   const ecs0 = readFileSync(ECS, 'utf8');
