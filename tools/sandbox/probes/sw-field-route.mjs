@@ -21,6 +21,9 @@
 // [TESTED: 2026-10-14 11:26:30 · the fixture and git clones of five live v2.8 deployments of the origin machine (Windows 11): 165 OK on
 //  this build; against the build before the fix (KAIF_DIST = dist of 41c6c7d) exactly the 8 BAD predicted before the run — «recheck before
 //  wiring names …» ×6 and «a pure addition» on the two files in the shipped sample's style; report testcases/reports/2026-10-14_sw-field-route.md]
+// [TESTED: 2026-10-16 11:40:52 → 11:41:43 · session 82, UT1: the fixture and git clones of six live v2.8 deployments — 190 OK; the fresh
+//  core's `recheck` names 0 · 13 · 1 · 2 · 0 · 0 · 11 places that still build on a retired feature or a moved section, none in a record;
+//  report testcases/reports/2026-10-16_ut1-withdrawn-places.md]
 import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, existsSync, copyFileSync, rmSync, readdirSync, statSync } from 'node:fs';
 import { spawnSync, execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -167,6 +170,13 @@ function walk({ P, label, sub }) {
   const r0 = core(P, ['checkpoint', 'recheck']);
   say(WORK_RE.test(r0.all), `${label}: \`checkpoint recheck\` before wiring names the wiring work (not wired · retired still wired) — exit ${r0.code}`);
   if (!WORK_RE.test(r0.all)) info('recheck said: ' + tail(r0.all, 4));
+  // UT1 (2.9, criterion 16; session 82): the fresh core names the places of the project's own texts that still build on a feature
+  // retired in the interval — the hooks of #144 for every 2.8 deployment. Prediction, written before the run: untouched guide modules
+  // were replaced mechanically and are not places; places stand where the owner or a translation kept the old text (a Russian guide,
+  // an EXPERIENCE «mechanized:» line), never in the chronicle.
+  const wp = /withdrawn phrases \([^)]*\) — places left now:(?: The machinery found (\d+) place\(s\)[^\n]*\n((?:\s+· [^\n]*\n?)*)| none| The machinery scanned)/.exec(r0.all);
+  say(!!wp && !/PROJECT_HISTORY\.md:|reports\/KAIF_UPDATES\//.test(wp[2] || ''), `${label}: \`checkpoint recheck\` names the places that still build on a retired feature — ${wp ? (wp[1] || 0) + ' place(s)' : 'no withdrawn-phrases line'}`);
+  for (const l of (wp && wp[2] ? wp[2].split('\n').filter(Boolean).slice(0, 12) : [])) info(l.trim().slice(0, 200));
 
   const w1 = core(P, ['wire-hooks']);
   say(w1.code === 0, `${label}: \`wire-hooks\` — exit ${w1.code}`);

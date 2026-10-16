@@ -285,12 +285,21 @@ let bundleD = readFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 // так свод упал в день рождения записи 2.4. Несовпадение — ошибка фикстуры, не молчание.
 const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
 if (!depKeyRe.test(bundleD)) throw new Error('S14d fixture: ключ deprecations не найден в мете бандла');
-bundleD = bundleD.replace(depKeyRe,
-  '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test"}, {"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test"},'
+// UT1 2.9 (критерий 16): НАСТОЯЩАЯ запись отставки `/end-chat` из меты этой сборки едет в фикстурный массив как есть (не копией руками)
+const realDeps = JSON.parse('{' + bundleD.match(depKeyRe)[0].replace(/,$/, '') + '}').deprecations;
+const realEndChat = realDeps.find((d) => d.path === '.claude/skills/end-chat/SKILL.md');
+if (!realEndChat) throw new Error('S14d fixture: записи отставки /end-chat нет в мете этой сборки');
+bundleD = bundleD.replace(depKeyRe, () =>
+  '"deprecations": [' + JSON.stringify(realEndChat) + ','
+  +
+  ' {"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test"}, {"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test"},'
   + ' {"path": ".kaif/_fixture-retired-feature.md", "reason": "the fixture feature is withdrawn", "since": "9.9", "search": ["FIXTURE-RETIRED-PHRASE"]},'
   // RL2 2.8 (court C-F2): a withdrawal SINCE the release this deployment is on — its own update carried no phrase search (the search item
   // arrived later), so this interval must name it; the comparison used to be strictly newer than the deployment and skipped it
-  + ' {"path": ".kaif/_fixture-same-release-feature.md", "reason": "withdrawn in the deployed release", "since": "' + CUR + '", "search": ["FIXTURE-SAME-RELEASE-PHRASE"]}],');
+  + ' {"path": ".kaif/_fixture-same-release-feature.md", "reason": "withdrawn in the deployed release", "since": "' + CUR + '", "search": ["FIXTURE-SAME-RELEASE-PHRASE"]},'
+  // UT1 2.9 (критерий 16): фраза, которую несут и СОБСТВЕННЫЕ тексты поставки (развёрнутые доки и копии навыков) — местом их строки не
+  // называются (строка дословно в бандле); строка проекта — называется
+  + ' {"path": ".kaif/_fixture-upstream-words.md", "reason": "fixture: a phrase upstream\'s own texts carry", "since": "' + CUR + '", "search": ["wire-hooks"]}],');
 // упразднённые файлы не должны ехать в новом бандле (иначе классификация их снова напишет)
 const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
   '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n[\\s\\S]*?\\n' + FENCE + '\\n?', 'm'), '');
@@ -306,6 +315,13 @@ must(run, S14d, 'install');
 // help-kaif правим локально (должен уцелеть и попасть в задачу), what-next не трогаем (должен удалиться)
 const HK = join(S14d, '.claude/skills/help-kaif/SKILL.md');
 writeFileSync(HK, readFileSync(HK, 'utf8') + '\nLOCAL EDIT ON DEPRECATED\n');
+// UT1 2.9 (критерий 16): тексты САМОГО проекта до обновления — два места (строки 1 и 3 плана) и четыре не-места: продолжение фразы
+// дефисом (целое слово), летопись, отчёт прошлого обновления, `.kaif/`
+mkdirSync(join(S14d, 'plans'), { recursive: true }); mkdirSync(join(S14d, 'reports', 'KAIF_UPDATES'), { recursive: true });
+writeFileSync(join(S14d, 'plans', 'fixture_plan.md'), 'Run FIXTURE-RETIRED-PHRASE before each release.\nFIXTURE-RETIRED-PHRASE-EXTRA is another tool.\nCall wire-hooks by hand after every pull.\n');
+writeFileSync(join(S14d, 'PROJECT_HISTORY.md'), (existsSync(join(S14d, 'PROJECT_HISTORY.md')) ? readFileSync(join(S14d, 'PROJECT_HISTORY.md'), 'utf8') : '') + '\n- FIXTURE-RETIRED-PHRASE was retired.\n');
+writeFileSync(join(S14d, 'reports', 'KAIF_UPDATES', 'OLD_UPDATE_REPORT.md'), 'The update used FIXTURE-RETIRED-PHRASE.\n');
+writeFileSync(join(S14d, '.kaif', 'fixture-notes.md'), 'FIXTURE-RETIRED-PHRASE\n');
 r = run(S14d, `update --source ${SRCD}`);
 ok(r.code === 0, 'S14d update с deprecations exit 0', r.out);
 ok(!existsSync(join(S14d, '.claude/skills/what-next/SKILL.md')) && /retired .*what-next/.test(r.out),
@@ -328,6 +344,34 @@ ok(wd14d.includes('FIXTURE-SAME-RELEASE-PHRASE'),
 ok(task14d.includes('- **withdrawn-phrases**') && wd14d.includes('FIXTURE-RETIRED-PHRASE') && wd14d.includes('git grep -n -F -e "FIXTURE-RETIRED-PHRASE"')
    && wd14d.includes('[AI]') && wd14d.includes('[OWNER]') && wd14d.includes('--mark-withdrawn') && wd14d.includes('resolved in origin'),
    'S14d/CH4 (критерий 13): задание называет фразу снятой возможности, команду поиска и судьбу находки по подписи ([AI] · [OWNER] · --mark-withdrawn · resolved in origin)', wd14d.slice(0, 400));
+// UT1 2.9 (критерий 16): места называет МАШИНЕРИЯ — ровно два, строкой «файл:строка «фраза» → преемник»; ни строки поставки, ни записи
+{ const wdItem = wd14d.slice(0, (wd14d.indexOf('\n- **', 5) + 1 || wd14d.length + 1) - 1);
+  const placeLines = wdItem.split('\n').filter((l) => /^\s+· \S+:\d+ «/.test(l));
+  ok(/The machinery found 2 place\(s\)/.test(wdItem) && placeLines.length === 2
+     && placeLines.some((l) => /plans\/fixture_plan\.md:1 «FIXTURE-RETIRED-PHRASE»$/.test(l)) && placeLines.some((l) => /plans\/fixture_plan\.md:3 «wire-hooks»$/.test(l))
+     && /^\s+«FIXTURE-RETIRED-PHRASE» → none$/m.test(wdItem) && /^\s+«wire-hooks» → none$/m.test(wdItem),
+     'S14d/UT1 (критерий 16): пункт задания НАЗЫВАЕТ два места проекта (план, строки 1 и 3) с фразой и преемником', placeLines.join(' | ').slice(0, 500) || wdItem.slice(-400));
+  ok(!placeLines.some((l) => /fixture_plan\.md:2|PROJECT_HISTORY|KAIF_UPDATES|\.kaif\/|AGENT_GUIDE|SKILL\.md/.test(l)),
+     'S14d/UT1: не места — продолжение фразы дефисом, летопись, отчёт прошлого обновления, `.kaif/`, строки, которые дословно несёт поставка', placeLines.join(' | ').slice(0, 500));
+  // правка агента — место 1 убрано; отметка recheck называет то, что ОСТАЛОСЬ
+  writeFileSync(join(S14d, 'plans', 'fixture_plan.md'), 'FIXTURE-RETIRED-PHRASE-EXTRA is another tool.\nCall wire-hooks by hand after every pull.\n');
+  const rc14d = run(S14d, 'checkpoint recheck');
+  ok(/withdrawn phrases \([^)]*\) — places left now: The machinery found 1 place\(s\)/.test(rc14d.out) && /plans\/fixture_plan\.md:2 «wire-hooks»/.test(rc14d.out) && !/fixture_plan\.md:1 /.test(rc14d.out),
+     'S14d/UT1: после правки агента `checkpoint recheck` называет оставшееся место (одно), убранного нет', rc14d.out.slice(-500));
+  // Критерий 16 сценарием: проект 3 раза шлёт за строкой таблицы в раздел руководства, перенесённый 2.8 в HOUSE_RULES.md, и 1 раз — к
+  // отставной команде `/end-chat` (2.4). Интервал прыжка от версии старше 2.4 моделируется записью истории маркера (её читает recheck);
+  // перенос и отставка — НАСТОЯЩИЕ записи меты этой сборки. `/end-chat-soft` — живая команда, не место.
+  // строка 8 — ссылка на САМ раздел (правило в руководстве живо), не за строкой таблицы: не место
+  writeFileSync(join(S14d, 'plans', 'old_links.md'), ['Add the release row to AGENT_GUIDE.md → Tools.', 'The probes are rows of `AGENT_GUIDE.md` → "Environment dossier".',
+    'Every device is a row of AGENT_GUIDE.md → «Испытательный стенд».', 'Close every session with /end-chat.', 'Or /end-chat-soft when the owner asked in advance.', '', '',
+    'Why we test this way: AGENT_GUIDE.md → Test harness.', ''].join('\n'));
+  const mk14d = JSON.parse(readFileSync(join(S14d, '.kaif', 'kaif.json'), 'utf8').replace(/^\uFEFF/, ''));
+  mk14d.history[mk14d.history.length - 1].from = '2.3'; writeFileSync(join(S14d, '.kaif', 'kaif.json'), JSON.stringify(mk14d, null, 2) + '\n');
+  const rc16 = run(S14d, 'checkpoint recheck');
+  const old16 = rc16.out.split('\n').filter((l) => /^\s+· plans\/old_links\.md:\d+ «/.test(l));
+  ok(old16.length === 4 && [1, 2, 3, 4].every((n) => old16.some((l) => l.includes(`old_links.md:${n} «`))) && !old16.some((l) => /old_links\.md:[58] /.test(l))
+     && /«\/end-chat» → \/end-chat-soft/.test(rc16.out) && /«AGENT_GUIDE\.md → Tools» → HOUSE_RULES\.md/.test(rc16.out),
+     'S14d/UT1 критерий 16: три ссылки на перенесённый раздел и одна на /end-chat названы местами с новым домом и преемником; /end-chat-soft и ссылка на сам раздел — не места', old16.join(' | ').slice(0, 500) || rc16.out.slice(-500)); }
 
 // ------------------------------------------------- S14e: bugs/57 — ДВА интервала bootstrap подряд
 // Ветка «задача несёт чек-поинты — не перезаписываем» (bugs/14) была завязана на НАЛИЧИЕ

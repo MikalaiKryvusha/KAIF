@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "1377e01735635dc33a8d5cdd663e2ea24a81abb9e23ac9395119e5b506f74693",
+    "sourceTree": "9c91c7b534871884cd927664ab2948f07708bb20b24427dc61da1f46a31e343b",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -105,6 +105,7 @@
       "NO HOOK STOPS THE AGENT ON THE OWNER'S WORD ANY MORE (2.9; origin ticket #144 — the KAIF owner on a field project, rendered from Russian: \"Remove this! Out of KAIF entirely!\" · \"I don't like that you stop on this!\" — five short remarks of the owner were five stops): the hook `.kaif/hooks/pretool-owner-word.mjs` (2.8; refused the next tool call after a mid-turn word) is RETIRED, and its pre-release `Stop` companion with the `⏩ <next step>` line never ships. The update removes an untouched copy of the script; `node .kaif/kaif-core.mjs wire-hooks` now also REMOVES the entries that run a retired hook from `.claude/settings.json` (the owner's other entries and their order stay, the values are proven before the write) — the update task names the item; `check` names an entry still left (in `.claude/settings.local.json` too, which the machinery never edits). \"The owner's word mid-turn\" now says: answer as text, then WORK ON in the same turn — never end the turn just to answer; \"stop\" is still a stop. MIGRATION — agent work: if your own texts (STATUS, house rules, experience) tell the agent to end an answer with `⏩`, drop that rule.",
       "THE REFRESH TIMER NO LONGER FIRES AT THE OWNER'S FIRST PROMPT AFTER INSTALL (2.9; origin tickets #143 · #145 — two field installs: the timer wired by `wire-hooks` answered the owner's first message with \"no refresh witness found\"; one agent avoided it by re-reading the core during study and stamping the witness): the install task's `study` item now says to re-read the nine re-read-core documents and stamp `.kaif/refresh-marker.json` with the acceptance quote, and its tick EXECUTES the gate — the witness is on disk, names what was re-read and is from this hour; otherwise the tick is refused with the reason (missing · no docs · N min old · stamped in the future).",
       "THE INSTALL SUMMARY NAMES WHAT YOUR PROJECT'S .gitignore HIDES (2.9; origin ticket #145 — a live project's own pre-KAIF `tools/` line hid the 13 shipped modules under `.kaif/tools/`, and only a later `check` said so): the summary printed at the end of `install` now runs the same `git check-ignore` scan as `check` — one line per deployed file git would leave out of the first commit, with the rule that hides it and the cure (`!<file>` after that line, or anchor your own line to the root). Nothing changes where git hides nothing. In a folder that is not a git repository yet (origin ticket #143 — a greenfield install) the summary says to run `git init` and to commit the owner's own files first, as they are, then the deploy commit.",
+      "THE UPDATE NAMES THE PLACES THAT STILL BUILD ON WHAT WAS RETIRED (2.9, epic UT; long field jumps left links to a retired skill and orders around a retired hook standing — the task only told the agent to run `git grep`): the withdrawn-phrases item of the update task now LISTS each place of your own texts — `file:line «phrase»`, the successor once per phrase — and `node .kaif/kaif-core.mjs checkpoint recheck` lists the places LEFT after your edits. Not places: the records (PROJECT_HISTORY.md, reports of past updates in reports/KAIF_UPDATES/), `.kaif/`, the installer's task files, and a line the delivered templates carry verbatim; a phrase counts as a whole word (`/end-chat` is not a place inside `/end-chat-soft`). Every retirement now names its phrases — the 2.4 split of `/end-chat` gained them.",
       "THE VOICE PORTRAIT LOADS INTO A FILE WHEN YOUR CLIENT CUTS LONG OUTPUT (2.9; origin tickets #143 · #145 — a ~60 KB `load` cut by bytes ended inside a UTF-8 character): `node .kaif/tools/kaif-voice-lint.mjs load --out <file>` writes the same selection to a UTF-8 file and leaves the same witness; read that file whole before the first word. Inside the project's git work tree the path must be one git ignores — otherwise the load is refused before anything is written (the copy may be of a private portrait and would ride the next commit).",
       "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
       "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a status that does not fit two lines of the pill under the Save button rides the bar above the page (green for good news, red for trouble) and the pill carries a short label — a six-line pill used to cover the document's title; each bar is cleared only by its own owner, so a refused save keeps its reason in view through the page's pulse, and after the last answer is recorded a dead server is no alarm; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; Linux is not supported by the contour window: there no window is raised, the page is served and its address printed (the KAIF owner's word, 2.9). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner.",
@@ -180,7 +181,11 @@
     {
       "path": ".claude/skills/end-chat/SKILL.md",
       "reason": "split in 2.4 into /end-chat-force (urgent, no ceremonies, explicit debt line) + /end-chat-soft (advance order, full ceremonies at a natural cut)",
-      "successor": "/end-chat-soft (.claude/skills/end-chat-soft/SKILL.md) + /end-chat-force (.claude/skills/end-chat-force/SKILL.md)"
+      "successor": "/end-chat-soft (.claude/skills/end-chat-soft/SKILL.md) + /end-chat-force (.claude/skills/end-chat-force/SKILL.md)",
+      "since": "2.4",
+      "search": [
+        "/end-chat"
+      ]
     },
     {
       "path": ".kaif/_systems-registry-template.md",
@@ -199,15 +204,28 @@
       "successor": "none — the rule \"The owner's word mid-turn\" in AGENT_GUIDE.md: answer as text, then work on; `node .kaif/kaif-core.mjs wire-hooks` removes its entry from .claude/settings.json",
       "since": "2.9",
       "search": [
-        "pretool-owner-word",
-        "stop-owner-answer",
-        "⏩"
+        "pretool-owner-word"
       ]
     },
     {
       "path": ".kaif/hooks/stop-owner-answer.mjs",
       "reason": "never released (a 2.9 pre-release hook taken from main): it demanded a last line `⏩ <next step>` and resumed the turn — retired by the KAIF owner's word (origin ticket #144)",
-      "successor": "none — `node .kaif/kaif-core.mjs wire-hooks` removes its entry from .claude/settings.json"
+      "successor": "none — `node .kaif/kaif-core.mjs wire-hooks` removes its entry from .claude/settings.json; an answer ends with no `⏩` line",
+      "since": "2.9",
+      "search": [
+        "stop-owner-answer",
+        "⏩"
+      ]
+    }
+  ],
+  "moves": [
+    {
+      "since": "2.8",
+      "reason": "the rows of four guide sections moved to HOUSE_RULES.md in 2.8 (epic CK; the guide keeps the rule and a pointer)",
+      "successor": "HOUSE_RULES.md — \"Tools of this project\" · \"Stands, environments and devices\" · \"Environment dossier\" · \"Routes, recipes and conventions\"",
+      "pattern": "AGENT_GUIDE\\.md`? *(?:→|->) *[\"«]?(?:Tools|Test harness|Environment dossier|Push|Инструменты|Испытательный стенд|Досье окружения)(?![\\p{L}\\p{N}_-])",
+      "context": "\\b(?:registry|rows?|table)\\b|реестр|строк|таблиц",
+      "notWith": "HOUSE_RULES.md"
     }
   ],
   "policyChanges": {

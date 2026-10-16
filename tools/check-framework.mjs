@@ -1496,6 +1496,20 @@ if (existsSync(distDir)) {
         errors.push(`templateNotes do not name the current release ("${expectCodenameLine}") — rewrite TEMPLATE_NOTES in tools/build-framework.mjs for THIS release`);
       const foreign = [...notes.matchAll(/KAIF \d+\.\d+ — [^\n(]+/g)].map((m) => m[0].trim()).filter((s) => s !== expectCodenameLine);
       if (foreign.length) errors.push(`templateNotes name a different release's codename: ${foreign.join(' · ')}`);
+      // 5t. Every retirement names the phrases its projects built on (2.9, epic UT1, criterion 16; KAGO R7 · KPOT R2): the update
+      //     task NAMES each place of the project's texts that still builds on a retired artifact — by the deprecation's `search`
+      //     phrases within its `since` interval. An entry without them (the 2.4 `/end-chat` split had none) is invisible to that scan,
+      //     so the build refuses it, named by path.
+      //     [TESTED: 2026-10-16 ≈ 11:24 +03:00 · red on the DEPRECATIONS of fdb33ad — exactly two lines «5t:» (.claude/skills/end-chat/SKILL.md ·
+      //      .kaif/hooks/stop-owner-answer.mjs, named before the run); green after both gained `since` and `search`]
+      for (const d of JSON.parse(metaMatch[1]).deprecations || [])
+        if (!d.since || !Array.isArray(d.search) || !d.search.length)
+          errors.push(`5t: the deprecation of ${d.path} carries no ${!d.since ? '`since`' : '`search`'} — the update task cannot name the project's places that still build on it (epic UT1); add \`since\` and the phrases in DEPRECATIONS, tools/build-framework.mjs`);
+      for (const m of JSON.parse(metaMatch[1]).moves || []) {
+        let ok = !!m.since && typeof m.pattern === 'string' && !!m.successor;
+        try { new RegExp(m.pattern, 'u'); } catch { ok = false; }
+        if (!ok) errors.push(`5t: a MOVES entry (${m.reason || '?'}) lacks \`since\`, \`successor\` or a valid \`pattern\` — the update task cannot name the places that point at the moved section; fix it in MOVES, tools/build-framework.mjs`);
+      }
     }
     for (const [src, label] of [['framework/installer/KAIF-CORE.mjs', 'KAIF-CORE.mjs'],
                                 ['framework/installer/KAIF-LOADER.mjs', 'KAIF-LOADER.mjs']]) {

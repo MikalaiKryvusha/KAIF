@@ -1144,11 +1144,63 @@ const prereleaseOrigin = (prev, toVersion) => (prev && prev.prerelease && gt(Str
 // The withdrawn-phrases item of an update task (2.8, epic CH; court RL 2.8 C-F2) — one builder for the task and for the hand-over
 // at `checkpoint recheck` (light re-judge RL 2.8, J-F2: on the `update` route the task is written by the outgoing 2.7 core, which has
 // no such item, so a withdrawal since 2.7 never reached a 2.7 deployment until the fresh core named it). → the item text, or null.
-function withdrawnPhrasesItem(meta, fromVersion) {
-  const withdrawn = (meta.deprecations || []).filter((d) => Array.isArray(d.search) && d.search.length && d.since
-    && !gt(fromVersion || '0', d.since) && !gt(d.since, meta.version));
+// The retirements (deprecations with `search` phrases) and the MOVES (a section moved to another file — `pattern`, 2.9 UT1) of the
+// interval (from, to] — a withdrawal SINCE the deployment's own release counts (court RL 2.8, C-F2)
+const withdrawnOf = (meta, fromVersion) => [...(meta.deprecations || []).filter((d) => Array.isArray(d.search) && d.search.length),
+  ...(meta.moves || []).filter((m) => typeof m.pattern === 'string' && m.pattern)]
+  .filter((d) => d.since && !gt(fromVersion || '0', d.since) && !gt(d.since, meta.version));
+// UT1 (2.9, criterion 16; two field update reports): the machinery NAMES the places — a `git grep` the agent was told to run found
+// nothing it was not looking for, and two long field jumps left links to a retired skill standing. One line per place of the project's
+// own texts (`.md`/`.mdc` the walk sees) that still carries a retired phrase, with the successor. Not places: the records — the
+// chronicle PROJECT_HISTORY.md and the field reports of past updates (reports/KAIF_UPDATES/) —, `.kaif/`, the installer's own task
+// files and thin core, and a line the delivered bundle carries verbatim (upstream's own text — a retirement note). A phrase is matched
+// as a WHOLE word: `/end-chat` is not a place inside `/end-chat-soft`.
+// [TESTED: 2026-10-16 11:38 +03:00 · suite s04 S14d (UT1): two places named, the non-places silent (a hyphen continuation, the chronicle,
+//  a past update report, `.kaif/`, 12 delivered lines with the phrase), recheck names the one left after an edit, criterion 16 — three
+//  table-row pointers into a moved section and one /end-chat named, a pointer to the section itself not; red on the dist of d5342b3
+//  (3 of 4) and on probes/ut1-mutants.mjs (M1 3 · M2 1); probe sw-field-route over git clones of six live 2.8 deployments — 13 · 1 · 2 ·
+//  0 · 0 · 11 places, none in a record; report testcases/reports/2026-10-16_ut1-withdrawn-places.md]
+const WITHDRAWN_SKIP = /^(\.kaif\/|reports\/KAIF_UPDATES\/|PROJECT_HISTORY\.md$|KAIF\.md$|KAIF_(UPDATE|ADAPTATION)_TASK(\.superseded)?\.md$)/;
+const WITHDRAWN_PLACES_SHOWN = 40;          // the item prints this many places; the rest are counted, with the command that lists all
+const WORD_CHAR = /[\p{L}\p{N}_]/u;
+function phraseRe(p) {
+  const esc = p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`${WORD_CHAR.test(p[0]) ? '(?<![\\p{L}\\p{N}_-])' : ''}${esc}${WORD_CHAR.test(p[p.length - 1]) ? '(?![\\p{L}\\p{N}_-])' : ''}`, 'u');
+}
+function withdrawnPlaces(meta, fromVersion) {
+  const withdrawn = withdrawnOf(meta, fromVersion);
   if (!withdrawn.length) return null;
-  return `Upstream WITHDREW a feature your own texts may still build on — search the project's texts (guide, skills, plans, interviews, bugs, house rules) for its phrases and give EVERY hit a fate: ${withdrawn.map((d) => `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.`;
+  const b = parseBundle(BUNDLE, true);
+  const upstream = new Set();
+  for (const f of (b && b.files) || []) for (const l of f.content.split('\n')) if (l.trim()) upstream.add(l.trim());
+  // a phrase probe prints its phrase; a move probe prints the text it matched on the line
+  // a move probe counts only with its `context` in the ±1-line window and without its `notWith` there, never in the `notWith` file
+  const probes = withdrawn.flatMap((d) => d.pattern ? [{ p: null, re: new RegExp(d.pattern, 'u'), to: d.successor || 'none',
+      ctx: d.context ? new RegExp(d.context, 'iu') : null, notWith: d.notWith || null }]
+    : d.search.map((p) => ({ p, re: phraseRe(p), to: d.successor || 'none' })));
+  const tree = kaifWalk(['.']);
+  const places = [], succ = new Map();
+  for (const f of tree.files) {
+    if (!/\.mdc?$/i.test(f) || WITHDRAWN_SKIP.test(f)) continue;
+    const text = readWalked(tree, f);
+    if (text == null) continue;
+    const lines = text.split(/\r?\n/);
+    lines.forEach((line, i) => {
+      const win = () => lines.slice(Math.max(0, i - 1), i + 2).join(' ');
+      const hit = probes.filter((q) => q.re.test(line) && (!q.notWith || (f !== q.notWith && !win().includes(q.notWith))) && (!q.ctx || q.ctx.test(win())))
+        .map((q) => ({ ...q, p: q.p || line.match(q.re)[0] }));
+      if (hit.length && !upstream.has(line.trim())) { places.push(`${f}:${i + 1} «${hit.map((q) => q.p).join('» · «')}»`); for (const q of hit) succ.set(q.p, q.to); }
+    });
+  }
+  return { places, succ, notes: walkNotes(tree) };
+}
+// The list: one line per place, then the successor ONCE per phrase found (a long successor repeated on every line buried the places)
+const fmtPlaces = (w) => !w ? '' : !w.places.length ? ' The machinery scanned the project\'s texts: no place carries these phrases.'
+  : ` The machinery found ${w.places.length} place(s) (the records — the chronicle, reports of past updates — and lines the delivered templates carry verbatim are not places):\n${w.places.slice(0, WITHDRAWN_PLACES_SHOWN).map((p) => `    · ${p}`).join('\n')}${w.places.length > WITHDRAWN_PLACES_SHOWN ? `\n    · … and ${w.places.length - WITHDRAWN_PLACES_SHOWN} more — \`node .kaif/kaif-core.mjs checkpoint recheck\` lists what is left` : ''}\n${[...w.succ].map(([p, to]) => `    «${p}» → ${to}`).join('\n')}${w.notes.length ? '\n    ' + w.notes.join('\n    ') : ''}\n`;
+function withdrawnPhrasesItem(meta, fromVersion) {
+  const withdrawn = withdrawnOf(meta, fromVersion);
+  if (!withdrawn.length) return null;
+  return `Upstream WITHDREW a feature your own texts may still build on — the places are named below; give EVERY place a fate: ${withdrawn.map((d) => d.pattern ? `${d.reason} (${d.since}) — a place that sends its reader to the old section for a table row is re-pointed to ${d.successor}` : `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.${fmtPlaces(withdrawnPlaces(meta, fromVersion))}`;
 }
 
 // ── KAIF-WALK:BEGIN — ONE safe tree walker (2.8, epic SC; origin #77 · Q-R1′). The set of files is the one git sees
@@ -4233,11 +4285,18 @@ function cmdCheckpoint() {
     // The hand-over of the withdrawn-phrases item (light re-judge RL 2.8, J-F2) — the same two-author route: a task written by a core
     // older than 2.8 has no such item, so a withdrawal SINCE the deployment's own release (court C-F2) never reached it. The fresh core
     // reads the deprecations from the bundle this update brought and the interval from the marker's history, and names the item here.
-    if (tag === 'KAIF-UPDATE' && !task.includes('- **withdrawn-phrases**')) {
+    // UT1 (2.9): a task WITH the item but written by a core before 2.9 lists no places — and even this core's list is the state at
+    // writing; the tick names the places LEFT now, over the merged tree, so the agent sees its own progress (read-only).
+    if (tag === 'KAIF-UPDATE') {
       const bw = parseBundle('.kaif/install/KAIF-CORE-BUNDLE.md', true);
       let from = null; try { const h = readJson(KAIF_JSON).history || []; from = h.length ? h[h.length - 1].from : null; } catch { from = null; }
-      const item = bw && bw.meta && from ? withdrawnPhrasesItem(bw.meta, from) : null;
-      if (item) log(`ℹ withdrawn phrases — this task was written by the previous core, which had no withdrawn-phrases item; do it as part of this update (${from} → ${bw.meta.version}): ${item}`);
+      if (!task.includes('- **withdrawn-phrases**')) {
+        const item = bw && bw.meta && from ? withdrawnPhrasesItem(bw.meta, from) : null;
+        if (item) log(`ℹ withdrawn phrases — this task was written by the previous core, which had no withdrawn-phrases item; do it as part of this update (${from} → ${bw.meta.version}): ${item}`);
+      } else if (bw && bw.meta && from) {
+        const w = withdrawnPlaces(bw.meta, from);
+        if (w) log(`ℹ withdrawn phrases (${from} → ${bw.meta.version}) — places left now:${fmtPlaces(w) || ' none'}`);
+      }
     }
     // The hand-over of the owner-voice snapshot sync (2.8, epic VO, VO3) — the same two-author route: a task written by a core older
     // than 2.8 has no owner-voice-core item. The fresh core reads the release pin from the bundle this update brought and REFUSES
