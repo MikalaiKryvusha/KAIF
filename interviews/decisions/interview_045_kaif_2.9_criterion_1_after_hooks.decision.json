@@ -1,0 +1,17 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_045_kaif_2.9_criterion_1_after_hooks.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-10-16T14:11:04.827Z",
+  "atHuman": "16 октября 2026, 17:11 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "D",
+      "text": "если пользователь явно не просит ИИ агента остановиться, то агент должен\n1) ответить незамедлительно на вопрос пользователя\n2) продолжить делать то, что делал до вопроса пользователя",
+      "comment": ""
+    }
+  },
+  "rev": "c026ec3bc3ac6425551c877c4c2e4bbbff5646a9b08f572e618f53f6ab65e819",
+  "revAfter": "7a9a7fc50a4fa781a70c35216009794d5333687de3ac9cf4bdd1dceac19ef962"
+}

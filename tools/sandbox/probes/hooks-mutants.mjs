@@ -98,7 +98,13 @@ const MUTANTS = [
   { name: 'M22 timer: the marker read in the event cwd again (ticket #94 — "no refresh witness" after one `cd src`)',
     dest: '.kaif/hooks/prompt-refresh-timer.mjs',
     fn: (b) => b.replace('const markerPath = join(projectRoot(cwd), MARKER);', 'const markerPath = join(cwd, MARKER);'),
-    expect: ['s14 HK таймер: событие из `src/deep`', 's14 HK таймер: из `src/deep` протухший', 's14 HK таймер: приказ называет маркер ПОЛНЫМ путём'] },
+    // court A-F3 (2.9): the package case reads the root marker too — the same predicate, a lawful red (EXP-0169)
+    expect: ['s14 HK таймер: событие из `src/deep`', 's14 HK таймер: из `src/deep` протухший', 's14 HK таймер: приказ называет маркер ПОЛНЫМ путём', 's14 HK корень: пакет со своей `.kaif/`'] },
+  // 2.9 court RL, finding A-F3: the root is the folder that holds the deployment marker, not any folder with a `.kaif/`
+  { name: 'M34 timer: any `.kaif/` folder taken for the root (a package with its own `.kaif/` becomes the project root)',
+    dest: '.kaif/hooks/prompt-refresh-timer.mjs',
+    fn: (b) => b.replace("const DEPLOYMENT = join('.kaif', 'kaif.json');", "const DEPLOYMENT = '.kaif';"),
+    expect: ['s14 HK корень: пакет со своей `.kaif/`'] },
   { name: 'M23 timer: a marker stamped in the future trusted again (bug 119 no. 2 — silence until that moment)',
     dest: '.kaif/hooks/prompt-refresh-timer.mjs',
     fn: (b) => b.replace('const future = ageMin < -FUTURE_TOLERANCE_MIN;', 'const future = false;'),

@@ -266,6 +266,12 @@ ok(/in the future/.test(out) && /UserPromptSubmit/.test(out),
 writeFileSync(marker, JSON.stringify({ at: new Date(Date.now() + 30 * 1000).toISOString(), docs: [], trigger: 'hour' }));
 out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: S });
 ok(out === '', 's14 HK таймер (контроль): `at` на 30 с впереди — в допуске, ТИШИНА', out.slice(0, 160));
+// суд RL 2.9, A-F3: корень — ближайшая папка с `.kaif/kaif.json`, а не с любой `.kaif/` (пакет внутри проекта может нести свою `.kaif/` без
+// маркера развёртывания — так корнем стал бы пакет, и таймер кричал бы «no refresh witness» при свежем маркере корня; мутант M34)
+const PKG = join(S, 'src', 'pkg'); mkdirSync(join(PKG, '.kaif'), { recursive: true }); mkdirSync(join(PKG, 'deep'), { recursive: true });
+out = runHook(S, 'prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', cwd: join(PKG, 'deep') });
+ok(out === '', 's14 HK корень: пакет со своей `.kaif/` без kaif.json — не корень, свежий маркер корня читается, ТИШИНА (суд A-F3)', out.slice(0, 160));
+rmSync(PKG, { recursive: true, force: true });
 const resumeDeep = runHook(S, 'prompt-resume-word.mjs', { hook_event_name: 'UserPromptSubmit', cwd: DEEP, prompt: 'resume\nплан дня' });
 ok(isResumeOrder(resumeDeep) && ctxOf(resumeDeep).includes(fullMarker),
    's14 HK resume-word: приказ из `src/deep` называет маркер корня полным путём', ctxOf(resumeDeep).slice(-260));

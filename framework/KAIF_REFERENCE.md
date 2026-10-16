@@ -831,6 +831,9 @@ the gate, do not stop the work. The gate refuses once per message; its order mak
 The field paid for the gate anyway: 2.9's `Stop` companion made every answer end with a "next step" arrow line, and on one field project five
 short remarks of the owner were five stops — his verdict (origin ticket #144, rendered from Russian): remove it from KAIF entirely,
 "I don't like that you stop on this". Both hooks left the module in 2.9; the rule kept its words — answer as text, then work on.
+Without the hooks the 2.9 release court measured the origin's own sessions: of 16 mid-turn words of the owner, 7 were answered before the
+next tool call. The owner's verdict (rendered from Russian): unless the user explicitly asks the agent to stop, the agent answers the
+question at once and goes on with what it was doing before it — so the rule now says AT ONCE, before any further tool call.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 

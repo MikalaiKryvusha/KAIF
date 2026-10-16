@@ -2,7 +2,7 @@
 
 > Topic: суд версии 2.9 опроверг одно условие готовности; хуки, которые его держали, вы сняли решением №144 — нужно решить его судьбу до выпуска.
 > Source of the idea: суд версии `reports/KAIF_AUDIT/2026-10-16_rl_court_2.9_registry.md`, находка A-F1 (кластер A).
-> Status: ⏳ AWAITING ANSWERS
+> Status: ✅ ANSWERS RECEIVED 2026-10-16 17:11 +03:00 (страницей контура, by Mikalai Kryvusha (KOT KRINIK)): **Q1 = D** — «ответить незамедлительно» и «продолжить делать то, что делал», если явно не просили остановиться; внесено — журнал решений `MASTER_PLAN.md` №147, условие 1 `plans/126`, правило «Слово владельца посреди хода» обоих слоёв `AGENT_GUIDE.md`, справочник §17. Прежде: ⏳ AWAITING ANSWERS.
 > Created 2026-10-16 16:54 +03:00 (сессия 85, Claude Opus 5.5).
 
 ## Context / what I already found
