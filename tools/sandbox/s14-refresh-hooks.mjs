@@ -728,6 +728,24 @@ const RETIRED_STOP = ',\n          {\n            "type": "command",\n          
      's14 WH: "hooks": "off" — файл побайтно нетронут, снятые хуки названы с ходом «руками»', `${wr.out.slice(-200)} | ${wck3.out.slice(-200)}`);
 }
 
+// 2.9 (тикеты origin #143 · #145): подключённый таймер освежения стрелял на ПЕРВОМ промпте владельца после установки — свидетеля
+// освежения не писал никто; полевой агент обошёл это, перечитав ядро на пункте study и записав маркер. Пункт теперь говорит это, а его
+// отметка исполняет гейт: маркер на диске, называет перечитанное, моложе часа (интервал самого таймера). Красный — на сборке a81cc95.
+{
+  const MK = (d) => join(d, '.kaif', 'refresh-marker.json');
+  const task = (d) => readFileSync(join(d, 'KAIF_ADAPTATION_TASK.md'), 'utf8');
+  W = wcopy(null, null); rmSync(MK(W), { force: true });
+  ok(/stamp the refresh witness `\.kaif\/refresh-marker\.json`/.test(task(W)), 's14 study: пункт задания установки велит записать свидетеля освежения', task(W).slice(0, 200));
+  wr = runAll(W, ['checkpoint', 'study']);
+  ok(wr.code !== 0 && /refresh-marker\.json is missing/.test(wr.out) && !/study done/.test(task(W)), 's14 study: отметка без маркера освежения — отказ, свидетель назван', wr.out.slice(-300));
+  writeFileSync(MK(W), JSON.stringify({ at: new Date(Date.now() - 90 * 60000).toISOString(), docs: ['STATUS.md'], trigger: 'ritual:install' }) + '\n');
+  wr = runAll(W, ['checkpoint', 'study']);
+  ok(wr.code !== 0 && /is 90 min old/.test(wr.out), 's14 study: маркер полуторачасовой давности — отказ, возраст назван', wr.out.slice(-300));
+  writeFileSync(MK(W), JSON.stringify({ at: new Date().toISOString(), docs: ['STATUS.md', 'AGENT_GUIDE.md'], trigger: 'ritual:install' }) + '\n');
+  wr = runAll(W, ['checkpoint', 'study']);
+  ok(wr.code === 0 && /KAIF-ADAPT: study done/.test(task(W)), 's14 study: свежий маркер с перечитанным — отметка записана', wr.out.slice(-300));
+}
+
 // (3) чекпоинт задания исполняет гейт: не подключено → отказ с командой; подключено → записан
 W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wr.code !== 0 && /NOT wired/.test(wr.out) && /--verdict/.test(wr.out),

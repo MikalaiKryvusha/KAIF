@@ -1049,7 +1049,9 @@ function fieldReportDelivery() {
 function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   const needTranslate = LANG !== 'en' && translated === 0;
   const items = [];
-  items.push(['study', 'Study the project gradually and record findings (what it is, build/test commands, architecture) — this replaces the old KAIF_DEPLOYMENT_PLAN.md.']);
+  // 2.9 (origin tickets #143 · #145): the wired refresh timer fired on the owner's FIRST prompt after install — nothing had stamped the
+  // witness; a field agent avoided it by re-reading the core during study and stamping it. The item says so; its tick EXECUTES the gate.
+  items.push(['study', 'Study the project gradually and record findings (what it is, build/test commands, architecture) — this replaces the old KAIF_DEPLOYMENT_PLAN.md. Then re-read the nine re-read-core documents you deployed (AGENT_GUIDE.md → "Document taxonomy", tier 1) and stamp the refresh witness `.kaif/refresh-marker.json` — `{ "at": "<ISO now>", "docs": [<what you re-read>], "trigger": "ritual:install" }` — with the acceptance quote in the chat (AGENT_GUIDE.md → "Context refresh"): the wired refresh timer counts from it, and the tick of this item checks it.']);
   // Identity before content: the canonical name feeds every later fill, and identity is the
   // OWNER's — a lowercase package/folder name seeded into H1 headings misnames the project.
   if (!canonicalName() && values['<PROJECT_NAME>'])
@@ -4328,6 +4330,19 @@ function cmdCheckpoint() {
     } catch { /* an unreadable marker or report — the check axis names it */ }
   }
   let verdictLine = null;
+  if (id === 'study') {
+    // 2.9 (origin tickets #143 · #145): the item EXECUTES its gate — the refresh witness is on disk, names what was re-read and is from
+    // this hour (the timer's own interval); a stale, empty or unreadable one is not a witness.
+    // [TESTED: 2026-10-16 10:17 · s14 «study» — no marker / 90 min old refused, fresh recorded; red on the build a81cc95; mutant W13 red on
+    //  its addressees (33/33); polygon 28/28 with s03 · s04 · s07 stamping first; report testcases/reports/2026-10-16_study-refresh-witness.md]
+    const STUDY_MARKER = '.kaif/refresh-marker.json', STUDY_MARKER_MAX_MIN = 60, STUDY_MARKER_FUTURE_MIN = 5;
+    let m = null; try { m = readJson(STUDY_MARKER); } catch { m = null; }
+    const age = m && typeof m.at === 'string' ? (Date.now() - Date.parse(m.at)) / 60000 : NaN;
+    const why = !m ? `${STUDY_MARKER} is missing or not JSON` : !Array.isArray(m.docs) || !m.docs.length ? `${STUDY_MARKER} names no re-read document ("docs")`
+      : Number.isNaN(age) ? `${STUDY_MARKER} has no readable "at"` : age > STUDY_MARKER_MAX_MIN ? `${STUDY_MARKER} is ${Math.round(age)} min old`
+      : age < -STUDY_MARKER_FUTURE_MIN ? `${STUDY_MARKER} is stamped in the future` : null;
+    if (why) die(`${why} — re-read the nine re-read-core documents and stamp the refresh witness (the study item says how), then tick again: without it the wired refresh timer fires at the owner's first prompt (origin tickets #143 · #145)`);
+  }
   if (id === 'wire-hooks') {
     // SW (2.9, origin issue #115): the item EXECUTES its gate — wired, opted out ("hooks": "off"), or no system here that reads
     // .claude/settings.json → recorded; hooks NOT wired → only with the words of the refusal, never silently (the harness may refuse

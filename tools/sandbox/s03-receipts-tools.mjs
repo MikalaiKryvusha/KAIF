@@ -216,6 +216,7 @@ ok(/the field report is not delivered to KAIF yet/.test(r.out) && /run node \.ka
    'S12-M3 (C-F1): отчёт без строки доставки на tracking: origin — отметка называет доставку готовой командой report и всё равно записана', r.out.slice(-400));
 // 2.9, SW2 (#115): the task's `wire-hooks` item is DONE the way the agent does it — the command first, then its tick (the tick executes its gate)
 must(run, S12, 'wire-hooks');
+writeFileSync(join(S12, '.kaif', 'refresh-marker.json'), JSON.stringify({ at: new Date().toISOString(), docs: ['STATUS.md'], trigger: 'ritual:install' }) + '\n');   // 2.9 (#143 · #145): the study item stamps the refresh witness before its tick
 for (const id of taskIds) {
   const extra = id === 'judge' ? ' --verdict "VERIFIED: sandbox pass, gates observed green"' : '';
   r = run(S12, `checkpoint ${id}${extra}`);

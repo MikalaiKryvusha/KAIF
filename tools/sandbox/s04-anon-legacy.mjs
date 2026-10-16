@@ -151,6 +151,7 @@ const adaptIds = [...new Set([...readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md
 writeFileSync(join(S13, 'AGENT_GUIDE.md'),
   readFileSync(join(S13, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 must(run, S13, 'wire-hooks');   // 2.9, SW2 (#115): the `wire-hooks` item is done by its command before its tick
+writeFileSync(join(S13, '.kaif', 'refresh-marker.json'), JSON.stringify({ at: new Date().toISOString(), docs: ['STATUS.md'], trigger: 'ritual:install' }) + '\n');   // 2.9 (#143 · #145): the study item stamps the refresh witness before its tick
 for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
 r = run(S13, 'verify-final');
 ok(r.code === 0, 'S13 verify-final exit 0 (полный анонимный install)', r.out);

@@ -182,6 +182,10 @@ const MUTANTS = [
   { name: 'W12 check: a retired hook still wired goes unnamed', core: true,
     from: '    if ((hw.retired || []).length) console.error(', to: '    if (false) console.error(',
     expect: ['s14 WH: `check` называет подключённые снятые', 's14 WH: "hooks": "off"'] },
+  // 2.9 (origin tickets #143 · #145): the study item's tick checks the refresh witness — the wired timer fired at the owner's first prompt
+  { name: 'W13 checkpoint study: the refresh-witness gate dropped (the timer fires at the owner\'s first prompt after install)', core: true,
+    from: "  if (id === 'study') {", to: '  if (false) {',
+    expect: ['s14 study: отметка без маркера освежения', 's14 study: маркер полуторачасовой давности'] },
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));
