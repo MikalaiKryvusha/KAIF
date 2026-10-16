@@ -223,5 +223,10 @@
     "questions": 1,
     "parsedOptions": 4,
     "candidateLines": 4
+  },
+  "interviews/interview_046_kaif_2.9_showcase_logo_publish.md": {
+    "questions": 3,
+    "parsedOptions": 6,
+    "candidateLines": 6
   }
 }
