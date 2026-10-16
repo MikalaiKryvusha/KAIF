@@ -178,7 +178,8 @@ if (!msg) {
   try {
     execFileSync(process.execPath, [guard, ...args], { cwd: ROOT, stdio: 'inherit' });
   } catch {
-    console.error('\n✋ коммит остановлен преполётом revert-guard (bugs/45). Разбери находки выше.');
+    console.error('\n✋ коммит остановлен преполётом revert-guard (bugs/45). Разбери находки выше;');
+    console.error('   откат намеренный — повтори коммит с `--allow-revert <файл>` (по флагу на файл).');
     process.exit(1);
   }
 }
