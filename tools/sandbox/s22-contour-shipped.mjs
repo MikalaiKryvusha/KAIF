@@ -317,7 +317,10 @@ const writeSource = (dir, bundleText, version) => {
 };
 const FROM = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;
 const OLD = join(ROOT, 'baseline-old'); writeSource(OLD, bundleOld, FROM);
-const SRC99 = join(ROOT, 'src-9.9'); writeSource(SRC99, bundle0.replace(/"version": "[^"]+"/, '"version": "9.9"'), '9.9');
+// The synthetic 9.9 carries ONE policy change of its own: the SW3 case below reads the policy-changes item of the task, and the interval
+// (FROM, 9.9] held the 2.9 entries only while the build was 2.8 — the release bump to 2.9 emptied it and the item vanished (session 87)
+const SRC99 = join(ROOT, 'src-9.9'); writeSource(SRC99, bundle0.replace(/"version": "[^"]+"/, '"version": "9.9"')
+  .replace('"policyChanges": {', '"policyChanges": {\n    "9.9": ["SANDBOX policy change of the synthetic 9.9 release (s22 C)"],'), '9.9');
 // Проект «на 2.5 со своим контуром»: установка из старого бандла + собственный tools/review.mjs.
 const U = join(ROOT, 'upd'); seed(U, join(OLD, 'KAIF-CORE-BUNDLE.md'));
 must(run, U, 'install --lang ru');

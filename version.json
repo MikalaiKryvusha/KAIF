@@ -1,9 +1,9 @@
 {
   "name": "KAIF",
   "major": 2,
-  "minor": 8,
-  "codename": "Noble KAIF",
-  "released": "2026-09-26",
+  "minor": 9,
+  "codename": "Distilled KAIF",
+  "released": "2026-10-16",
   "origin": "https://github.com/MikalaiKryvusha/KAIF",
-  "build": 764
+  "build": 765
 }
