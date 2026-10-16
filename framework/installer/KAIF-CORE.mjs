@@ -3071,7 +3071,7 @@ function runFinalGates(taskFile, tag, verb) {
   // 2.8 (court UP6, R2 — the #92 incident: a whole interval's canon missing for 25 days while this gate was green on an i18n
   // deployment): the promised lines are judged PER FILE — only a file that is itself a translation is skipped, never an English one.
   if (task.includes('## Module diffs')) {
-    let curFile = null, inDiff = false, unmergedLines = 0, skipSection = false;
+    let curFile = null, inDiff = false, unmergedLines = 0, editedLines = 0, skipSection = false;
     const perFile = new Map();
     // 2.6 (UR2; origin #48 R2): a promised line that carries a hand-filled slot is on disk in its
     // FILLED form — judge it with the deployment's fills folded in, never tell the agent to paste
@@ -3082,7 +3082,10 @@ function runFinalGates(taskFile, tag, verb) {
     // its lines — a paragraph the merge re-wrapped is the same text (white space collapsed on both sides); a line of an anchored block
     // whose anchor stands on disk is the owner's rendition of that block (anchoredBlocks above), never an unmerged line
     const flat = (s) => String(s).replace(/\s+/g, ' ').trim();
-    const flatOf = new Map(), blocksOf = new Map();
+    const flatOf = new Map(), blocksOf = new Map(), slotsOf = new Map();
+    // UT3 (the real route 2.1 → 2.9 on a field clone): a promised line carries the deployment's VALUES and fills (the creed's <AUTHOR>),
+    // the template blocks and instruction slots do not — the lookups below fold them back into their slots first
+    const slotVals = { ...persistValues(stableValues()), ...fills };
     for (const line of task.split('\n')) {
       const h = line.match(/^### (.+)$/);
       if (h) { curFile = h[1].trim(); continue; }
@@ -3092,17 +3095,24 @@ function runFinalGates(taskFile, tag, verb) {
       if (line.startsWith('```')) { inDiff = line === '```diff'; continue; }
       if (skipSection || (curFile && fileTranslated(curFile))) continue;
       if (inDiff && curFile && line.startsWith('+ ') && line.length > 12 && okOnDisk(curFile)) {
-        if (!perFile.has(curFile)) { perFile.set(curFile, readFileSync(curFile, 'utf8')); flatOf.set(curFile, flat(perFile.get(curFile))); blocksOf.set(curFile, anchoredBlocks(templateOf(curFile) || '')); }
+        if (!perFile.has(curFile)) { perFile.set(curFile, readFileSync(curFile, 'utf8')); flatOf.set(curFile, flat(perFile.get(curFile))); blocksOf.set(curFile, anchoredBlocks(templateOf(curFile) || '')); slotsOf.set(curFile, instructionSlotLines(templateOf(curFile) || '')); }
         const promised = line.slice(2), filled = fillPlaceholders(promised, fills, new Set());
-        const inBlock = blocksOf.get(curFile).find((b) => b.lines.has(promised.trim()));
+        const bare = unfill(promised, slotVals).trim();
+        const inBlock = blocksOf.get(curFile).find((b) => b.lines.has(promised.trim()) || b.lines.has(bare));
         if (inBlock && perFile.get(curFile).includes(inBlock.begin)) continue;
+        if (slotsOf.get(curFile).has(promised.trim()) || slotsOf.get(curFile).has(bare)) continue;   // an instruction slot: the project's own text replaces it
         if (!flatOf.get(curFile).includes(flat(promised)) && !flatOf.get(curFile).includes(flat(filled))) {
+          // UT3 (the field clone of the jump 2.1 → 2.8: of 102 residual lines 94 stood on disk with the project's own edits — «ladder
+          // FIRST», an inserted clause): a line whose words stand on ONE disk line (or two joined) is labelled as edited, never hidden
+          const near = nearestLine(filled, perFile.get(curFile));
+          if (near) { console.error(`⚠ promised upstream line stands on disk with local edits (line ${near.line}, ${near.pct}% of its words): ${curFile} :: ${line.slice(2, 80)}`); editedLines++; continue; }
           console.error(`⚠ promised upstream line not found on disk (unmerged?): ${curFile} :: ${line.slice(2, 80)}`);
           unmergedLines++;
         }
       }
     }
     if (unmergedLines) console.error(`⚠ ${unmergedLines} upstream line(s) from the module diffs are absent on disk — merge them or state why in the judge verdict`);
+    if (editedLines) console.error(`⚠ ${editedLines} upstream line(s) stand on disk with local edits — the project's wording; read each: an edit that drops meaning (a removed «not») is merged by hand`);
   }
   // Mirrors are re-synced from the canon BEFORE the placeholder gate (bug 27, field: the agent
   // fixed the canon, the gate went red on four stale MIRRORS, and the shortest visible path was
@@ -3249,6 +3259,43 @@ function moduleAudit() {
 // [TESTED: 2026-10-16 12:08 +03:00 · suite s21 U3 — the prayer heading and line in the owner's language with the anchor: no «did not
 //  arrive», no «not found»; without the anchor the heading is «did not arrive» again (control); red on the dist of d5342b3; the real
 //  route 2.1 → 2.9 is not walked yet — report testcases/reports/2026-10-16_ut3-long-jump-honest.md]
+// The disk line that carries a promised line WITH LOCAL EDITS: at least NEAR_LINE_SHARE of the promised line's words (letters and
+// digits, any script, case folded; a line of fewer than NEAR_LINE_MIN_WORDS words is never judged near) stand on one disk line or on
+// two consecutive lines joined (a re-wrap). → { line, pct } | null. Only a label: the line is still printed — nothing is hidden.
+// [TESTED: 2026-10-16 13:45 +03:00 · suite s21 U3b (red on c833219) + the field clone of the jump 2.1 → 2.8, probe ut3-long-jump-route —
+//  report testcases/reports/2026-10-16_ut3-real-route.md]
+const NEAR_LINE_SHARE = 0.8, NEAR_LINE_MIN_WORDS = 4;
+function nearestLine(promised, diskText) {
+  const words = (s) => String(s).toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
+  const want = words(promised);
+  if (want.length < NEAR_LINE_MIN_WORDS) return null;
+  const disk = normEol(diskText).split('\n');
+  let best = null;
+  for (let i = 0; i < disk.length; i++) {
+    for (const span of [disk[i], `${disk[i]} ${disk[i + 1] || ''}`]) {
+      const have = new Set(words(span));
+      const share = want.filter((w) => have.has(w)).length / want.length;
+      if (share >= NEAR_LINE_SHARE && (!best || share > best.share)) best = { line: i + 1, share };
+    }
+  }
+  return best ? { line: best.line, pct: Math.round(best.share * 100) } : null;
+}
+// The lines of a template's INSTRUCTION slots — a `` `<…>` `` span over one or more lines ("`<State your branching policy …>`") that the
+// deploying agent replaces with the project's own text. Demanding such a line back is demanding the placeholder: on the field clone of the
+// jump 2.1 → 2.8 eight of the residual «not found» were exactly these. → Set of trimmed lines.
+// [TESTED: 2026-10-16 13:45 +03:00 · suite s21 U3b (red on c833219) + the field clone of the jump 2.1 → 2.8, probe ut3-long-jump-route —
+//  report testcases/reports/2026-10-16_ut3-real-route.md]
+function instructionSlotLines(content) {
+  const out = new Set();
+  let open = false;
+  for (const l of normEol(content).split('\n')) {
+    const t = l.trim();
+    // a slot opens at «`<» whose code span does NOT close on the same line ("`<SLOT>` text" is a mention, not a slot) or closes the line
+    if (!open && t.startsWith('`<') && (t.endsWith('>`') || t.indexOf('`', 1) < 0)) open = true;
+    if (open) { if (t) out.add(t); if (t.endsWith('>`')) open = false; }
+  }
+  return out;
+}
 function anchoredBlocks(content) {
   const out = []; let cur = null;
   for (const l of normEol(String(content)).split('\n')) {

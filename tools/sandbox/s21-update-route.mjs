@@ -459,6 +459,33 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
        && !/a section of this release did not arrive: AGENT_GUIDE\.md/.test(v3u.out),
        'U3 (критерий 18): перенесённая по строкам обещанная строка и строка молитвы на языке владельца — не «not found»; заголовок молитвы ищется якорем — не «did not arrive»',
        v3u.out.split('\n').filter((l) => /promised|did not arrive/.test(l)).join(' | ').slice(0, 500));
+    // U3b (функциональный прогон на клоне полевого прыжка 2.1 → 2.8, проба ut3-long-jump-route.mjs): строка символа веры несёт ЗАПОЛНЕННЫЙ
+    // слот <AUTHOR>, а блок шаблона — нет, поэтому строка блока, стоящего на диске с якорем на языке владельца, читалась «not found»;
+    // строку инструкции-слота шаблона (`<State your branching policy …>`), которую проект заменил своим текстом, ворота требовали назад.
+    // Контроль ниже — обычная невлитая строка (N3 выше) и блок без якоря — краснеют по-прежнему. Красный — на сборке до фикса.
+    const ag2 = readFileSync(AG, 'utf8');
+    const cr = /(<!-- KAIF:CREED:BEGIN -->\r?\n)([\s\S]*?)(<!-- KAIF:CREED:END -->)/.exec(ag2);
+    const crLine = cr ? cr[2].split(/\r?\n/).find((l) => /^> # /.test(l)) : null;
+    const slot = /`<State your branching policy[\s\S]*?>`/.exec(ag2);
+    const slotLine = slot ? slot[0].split(/\r?\n/)[1] : null;
+    ok(!!crLine && !crLine.includes('<AUTHOR>') && !!slotLine,
+       'U3b фикстура: символ веры развёрнут с заполненным автором, слот политики ветвления — многострочный', `${crLine} | ${slotLine}`);
+    if (crLine && slotLine) {
+      writeFileSync(AG, ag2.replace(cr[0], () => `${cr[1]}> # **ВЕРИТЬ В ПРОДУКТ — формулировка владельца.**\n${cr[3]}`)
+        .replace(slot[0], () => 'Работаем только в `main`; откатываемся историей git.')
+        + '\nEvery merged paragraph keeps the meaning of the release, and the OWNER words it his own way.\n');
+      writeFileSync(join(TU3, 'KAIF_UPDATE_TASK.md'), readTask(TU3) + `\n### AGENT_GUIDE.md\n\n\`\`\`diff\n+ ${crLine}\n+ ${slotLine}\n`
+        + '+ Every merged paragraph keeps the meaning of the release, and the owner words it in his own way.\n'
+        + '+ A promised sentence that no merge ever carried into this guide.\n```\n');
+      const v3b = run(TU3, 'update-verify');
+      const prom3b = v3b.out.split('\n').filter((l) => /promised upstream line/.test(l));
+      ok(!prom3b.some((l) => /BELIEVE IN|is: work ONLY/.test(l)),
+         'U3b (критерий 18): строка символа веры с заполненным автором и строка инструкции-слота, заменённого проектом, — не «not found»',
+         v3b.out.split('\n').filter((l) => /promised upstream line/.test(l)).join(' | ').slice(0, 500));
+      ok(prom3b.some((l) => /stands on disk with local edits \(line \d+, \d+% of its words\): AGENT_GUIDE\.md :: Every merged paragraph/.test(l))
+         && prom3b.some((l) => /not found on disk \(unmerged\?\): AGENT_GUIDE\.md :: A promised sentence that no merge/.test(l)),
+         'U3b: строка, стоящая с правкой проекта, помечена «with local edits» с номером строки; невлитая — по-прежнему «not found» (контроль)', prom3b.join(' | ').slice(0, 500));
+    }
     // контроль: блок без якоря (якорь снят вместе с текстом) — раздел снова НЕ дошёл, ворота краснеют
     writeFileSync(AG, readFileSync(AG, 'utf8').replace('<!-- KAIF:PRAYER:BEGIN -->', ''));
     const v3c = run(TU3, 'update-verify');

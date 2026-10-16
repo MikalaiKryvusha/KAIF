@@ -32,8 +32,9 @@ const MUTANTS = [
   { name: 'M3 update-verify stops judging new sections (#92 — a section that never arrived verifies green)', suite: 's21-update-route.mjs', tag: '❌ ',
     from: "          console.error(`✖ a section of this release did not arrive: ${p} :: ${s} — the update delivered it (the previous template never had it, so its absence is not your deletion); merge it from the task, or restore it`);\n          missing++;\n",
     to: '',
-    expect: ['N1 (#92): раздела, нового в 9.9, на диске нет', 'E: раздела, нового с 2.7, на диске нет', 'E2 (F7)'] },
-  { name: 'M4 the previous proposal is dropped again (#92 — an unmerged proposal reads as the owner\'s deletion)', suite: 's21-update-route.mjs', tag: '❌ ',
+    expect: ['N1 (#92): раздела, нового в 9.9, на диске нет', 'E: раздела, нового с 2.7, на диске нет', 'E2 (F7)',
+             'U3 контроль: без якоря заголовок молитвы снова'] },   // 2.9 UT3: the control prints the same «did not arrive» line
+  { name: 'M4the previous proposal is dropped again (#92 — an unmerged proposal reads as the owner\'s deletion)', suite: 's21-update-route.mjs', tag: '❌ ',
     from: "    if (oldEIns && oldEIns.sha256 === normSha(modText(nm)) && prevProposed && prevProposed.has(nm.signature)) {", to: '    if (false) {',
     expect: ['N2 (#92): модуль, предложенный прошлым обновлением'] },
   { name: 'M5 a rehearsal record of another core binds again (N17)', suite: 's18-update-symmetries.mjs', tag: '❌ ',
@@ -90,7 +91,7 @@ const MUTANTS = [
 ];
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-up-mutants-'));
-let bad = 0;
+let bad = 0, skipped = 0;
 for (const m of MUTANTS) {
   const dist = join(root, 'dist');
   rmSync(dist, { recursive: true, force: true });
@@ -109,11 +110,19 @@ for (const m of MUTANTS) {
   catch (e) { out = String(e.stdout || '') + String(e.stderr || ''); }
   const red = out.split(/\r?\n/).filter((l) => l.startsWith(m.tag) && !/^❌ s\d+[^:]*: \d+ (red|из)|ПРОВАЛОВ|failure\(s\)/.test(l));   // each suite's own closing line is not an assert
   const died = out.includes('УСТАНОВОЧНЫЙ ШАГ УПАЛ') || /\n\s+at .*\.mjs:\d+:\d+\)?\n/.test(out) && !red.length;
-  const verdict = !died && red.length === m.expect.length && m.expect.every((e) => red.some((r) => r.includes(e)));
+  // 2.9 (session 83): a case the suite SKIPS on this build («⏭ <id>: … SKIPPED» — e.g. E/E2 need a section new since the baseline release,
+  // and 2.9 has none since v2.8) cannot redden — its addressee is not demanded, it is NAMED; a mutant whose every addressee is skipped
+  // proves nothing here and says so (SKIP), never OK
+  const caseId = (s) => s.split(/[:\s(]/)[0];
+  const skippedIds = new Set(out.split(/\r?\n/).filter((l) => l.startsWith('⏭ ') && /SKIPPED/.test(l)).map((l) => caseId(l.slice(2))));
+  const expect = m.expect.filter((e) => !skippedIds.has(caseId(e))), skippedExp = m.expect.filter((e) => skippedIds.has(caseId(e)));
+  if (!expect.length) { skipped++; console.log(`SKIP ${m.name}\n    every addressee is skipped by the suite on this build (${skippedExp.join(' · ')}) — proves nothing here`); continue; }
+  const verdict = !died && red.length === expect.length && expect.every((e) => red.some((r) => r.includes(e)));
   if (!verdict) bad++;
-  console.log(`${verdict ? 'OK ' : 'BAD'} ${m.name}\n    ${m.suite}: red ${red.length} (named before the run: ${m.expect.length})${died ? ' — the suite DIED: proves nothing' : ''}`);
+  console.log(`${verdict ? 'OK ' : 'BAD'} ${m.name}\n    ${m.suite}: red ${red.length} (named before the run: ${expect.length}${skippedExp.length ? `; skipped by the suite: ${skippedExp.join(' · ')}` : ''})${died ? ' — the suite DIED: proves nothing' : ''}`);
   for (const r of red) console.log('      ' + r.slice(0, 170));
 }
 rmSync(root, { recursive: true, force: true });
-console.log(bad ? `\n❌ mutant proof FAILED: ${bad} of ${MUTANTS.length}` : `\n✅ ${MUTANTS.length} mutants red exactly on their named addressees, and only on them`);
+console.log(bad ? `\n❌ mutant proof FAILED: ${bad} of ${MUTANTS.length}${skipped ? ` (${skipped} SKIP)` : ''}`
+  : `\n✅ ${MUTANTS.length - skipped} mutants red exactly on their named addressees, and only on them${skipped ? ` · ${skipped} SKIP — their cases are skipped by the suite on this build` : ''}`);
 process.exit(bad ? 1 : 0);
