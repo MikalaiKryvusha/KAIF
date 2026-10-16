@@ -34,7 +34,7 @@
 //
 // Exit code 0 = the step is 100% satisfied; non-zero = incomplete (fix and re-run).
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, unlinkSync, mkdtempSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { execSync, execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -840,15 +840,52 @@ function anonymize(content) {
 //   grok-build:  .grok/skills/<n>/SKILL.md (SKILL.md standard; also auto-reads .claude/ + AGENTS.md)
 //   cline:       .cline/skills/<n>/SKILL.md (≥3.48; also reads .claude/skills/) + .clinerules/kaif.md
 //   zoo-code:    .roo/commands/<n>.md (drop `name:`; filename = command) + .roo/rules/kaif.md
+// The pointer carries ONE rule of its own (2.7, epic RS — the origin owner's word): the context
+// file is the first thing a session reads, and the entry ritual was named nowhere in it.
+const RESUME_RULE = 'A message that opens with the word `resume` (or the /resume alias of your language) is an ORDER to run ' +
+  '/resume in full before the rest of the message (`AGENT_GUIDE.md` → "A leading skill word is an order").\n';
 const CONTEXT_POINTER =
   '# Agent rules\n\nThis project is KAIF-wrapped. Before every task read `AGENT_GUIDE.md` (the canon) and ' +
   '`STATUS.md` (current state); think per `PHILOSOPHY.md`; write requirements per `REQUIREMENTS_FRAMEWORK.md`; ' +
   'test per `TESTING_FRAMEWORK.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
-  'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n\n' +
-  // The pointer carries ONE rule of its own (2.7, epic RS — the origin owner's word): the context
-  // file is the first thing a session reads, and the entry ritual was named nowhere in it.
-  'A message that opens with the word `resume` (or the /resume alias of your language) is an ORDER to run ' +
-  '/resume in full before the rest of the message (`AGENT_GUIDE.md` → "A leading skill word is an order").\n';
+  'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n\n' + RESUME_RULE;
+// Zoo Code's own pointer gained the rule in 2.9 (epic UT2, origin ticket #120: it never carried it, and its text never changed)
+const ZOO_POINTER = '# KAIF\n\nRead `AGENT_GUIDE.md` before every task; keep `STATUS.md` current. ' +
+  'Skills live in `.roo/commands/` (one `/command` per KAIF skill).\n\n' + RESUME_RULE;
+// UT2 (2.9, criterion 17; origin ticket #120): a pointer is written ONCE (writeIfNew) and no update ever touched it again — a field jump
+// 2.1 → 2.8 kept the 1.5 text in all four files, the Zoo Code pointer never got the resume rule. The texts every earlier release
+// shipped — sha256 of the EOL-normalized text, taken by script from the release tags v1.5 … v2.8 (2026-10-16, session 82) — are
+// UNTOUCHED pointers: the fresh core replaces them with this release's text; any other text is the owner's — never rewritten, named.
+// [TESTED: 2026-10-16 11:56 +03:00 · suite s21 U2 — a v2.6 deployment from the tag updated by its own 2.6 core: recheck replaces the
+//  three untouched pointers and names the edited CLAUDE.md, update-verify refuses until the owner's line is there, then every pointer
+//  carries the rule; red on the dist of d5342b3 (3 of 3); probe sw-field-route over git clones of six live 2.8 deployments — the one
+//  that jumped from 2.1 got all four replaced, three got the Zoo Code pointer, edited ones untouched; report
+//  testcases/reports/2026-10-16_ut2-pointers-updated.md]
+const POINTER_PAST_SHAS = new Set([
+  'a1317e2b505c344a36428268efafb506063cd89b333eeb9c3b5387661dabc6fe',   // the pointer of v1.5–v2.1
+  '1adcc50531db71683d37d40aee493a295d76171bd30c8eb8b5db7c8bb841d375',   // the pointer of v2.2–v2.6
+  '3018e3139b96d01fe8dda24513b48f4f0347628b60cea5f013776f3a94870e35',   // the pointer of v2.7–v2.8 (= CONTEXT_POINTER of this release)
+  '2a24ad9c5d7aff455a68ff7e7078339fd0bf5801c81837d6b61c77b8d8a23f7f',   // the Zoo Code pointer of v1.5–v2.8
+]);
+// The pointers this deployment's agent systems expect → [[path, this release's text]]
+const pointerTexts = () => [['AGENTS.md', CONTEXT_POINTER], ...(AGENTS.includes('claude-code') ? [['CLAUDE.md', CONTEXT_POINTER]] : []),
+  ...(AGENTS.includes('cline') ? [['.clinerules/kaif.md', CONTEXT_POINTER]] : []), ...(AGENTS.includes('zoo-code') ? [['.roo/rules/kaif.md', ZOO_POINTER]] : [])];
+// Bring the pointers on disk up to this release: an untouched earlier text is REPLACED (its own line ends kept); an edited one without
+// the resume rule is returned for the task to name — the machinery never rewrites the owner's text. `write=false` only reports.
+function syncPointers(write = true) {
+  const replaced = [], needRule = [];
+  for (const [p, want] of pointerTexts()) {
+    if (!okOnDisk(p)) continue;
+    const raw = readFileSync(p, 'utf8'), text = normEol(raw);
+    if (text === want) continue;
+    if (POINTER_PAST_SHAS.has(normSha(text))) {
+      if (write) { writeFileSync(p, raw.includes('\r\n') ? want.replace(/\n/g, '\r\n') : want); log(`↻ replaced ${p} — an untouched pointer of an earlier KAIF, now this release's text (it carries the resume rule)`); }
+      replaced.push(p);
+    } else if (!/\bresume\b/.test(text)) needRule.push(p);
+  }
+  return { replaced, needRule };
+}
+const POINTER_RULE_HINT = (paths) => `${paths.join(' · ')} — the context pointer(s) carry local edits and no resume rule; add this line to each (the owner's text stays as it is): «${RESUME_RULE.trim()}»`;
 
 // Returns true when the template was actually written; false when an existing file was
 // ADOPTED (kept as found). Adoption is provenance the deploy manifest must remember:
@@ -874,8 +911,7 @@ function deployAgentSystems(skillFiles, refFiles) {
   if (AGENTS.includes('zoo-code')) {
     for (const { path, content } of skillFiles)
       writeIfNew(`.roo/commands/${skillName(path)}.md`, content.replace(/^name:[^\n]*\n/m, ''));
-    writeIfNew('.roo/rules/kaif.md', '# KAIF\n\nRead `AGENT_GUIDE.md` before every task; keep `STATUS.md` current. ' +
-      'Skills live in `.roo/commands/` (one `/command` per KAIF skill).\n');
+    writeIfNew('.roo/rules/kaif.md', ZOO_POINTER);
   }
   if (AGENTS.includes('cline')) writeIfNew('.clinerules/kaif.md', CONTEXT_POINTER);
   if (AGENTS.includes('claude-code')) writeIfNew('CLAUDE.md', CONTEXT_POINTER);
@@ -1619,6 +1655,9 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // search (the item arrived with 2.8), so its texts were never searched — the comparison used to be strictly newer and skipped it
   const wItem = withdrawnPhrasesItem(meta, fromVersion);
   if (wItem) items.push(['withdrawn-phrases', wItem]);
+  // UT2 (2.9, criterion 17): a context pointer the owner edited is never rewritten — named, with the one line it lacks
+  const ptrNeed = syncPointers(false).needRule;
+  if (ptrNeed.length) items.push(['pointers', `${POINTER_RULE_HINT(ptrNeed)}. \`update-verify\` refuses while a pointer lacks it.`]);
   // P4 (2.5, epic US; #28 R3): the anonymous → origin switch cannot rewrite a file the owner edited,
   // so its text may still assert the OLD mode — name each one for a re-read instead of letting it
   // rot silently.
@@ -1655,7 +1694,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   const gates = {}, forecast = closingGatesForecast(meta.version, gates);
   const baselineItem = lintBaselineItem(gates.unbaselined);
   if (baselineItem) items.push(baselineItem);
-  items.push(['closing-gates', `The closing ritual (/end-chat-soft) runs these gates. Their verdicts over the tree as it stands NOW, after the mechanical pass (measured read-only — nothing was written); the merges ahead can move the numbers, and the checkpoint measures again. Where a line says STOPS, act before the first closing — move the content to the address the line names, fix the finding, or record the inherited debt with the command the lint names; a line that passes with debt recorded tells you what the NEXT closing will demand:\n${forecast.map((l) => `    · ${l}`).join('\n')}`]);
+  items.push(['closing-gates', `The closing ritual (/end-chat-soft) runs these gates. Their verdicts over the tree as it stands NOW, after the mechanical pass (measured read-only — nothing was written); the merges ahead can move the numbers, and the checkpoint measures again. Where a line says STOPS, act before the first closing — move the content to the address the line names, fix the finding, or record the inherited debt with the command the lint names; a line that passes with debt recorded tells you what the NEXT closing will demand. The budget door \`node .kaif/kaif-core.mjs check --gate-budgets\` runs LAST — after \`update-verify\` has closed this task; run from inside the open task it writes nothing (UT3, 2.9):\n${forecast.map((l) => `    · ${l}`).join('\n')}`]);
   items.push(['recheck', 'Run `node .kaif/kaif-core.mjs check` — the deployed manifest must be 100% green.']);
   items.push(['judge', 'Run a /fable-judge pass over this update (versions in .kaif/kaif.json, nothing owner-authored lost, the merges real) — its verdict is quoted in the field report below and update-verify is not green without it (decision #46).']);
   // Epic M (feedback loop): the update report is MANDATORY, even for a smooth pass (deviations
@@ -2443,6 +2482,7 @@ async function cmdUpdate() {
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
   const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
   deployAgentSystems(skillFiles, refFiles); // writeIfNew semantics: new appear; existing kept (their canonical .claude source got classified above)
+  syncPointers();   // UT2 (2.9, #120): an untouched pointer of an earlier release is replaced; an edited one without the rule — a task item
 
   // swap the core itself + refresh manifests (same shape and guarantees as install's:
   // sha snapshots + adoption provenance in `kept` + the pristine marker snapshot that
@@ -2585,7 +2625,16 @@ function loadRehearsal(from, to) {
 }
 // The auto record is one-shot: consumed by the update it rehearsed (the receipt now carries the
 // live verdicts); an explicit --rehearsal file is the owner's and is left alone.
-function consumeRehearsal(r) { if (r && !r.explicit) { try { unlinkSync(r.path); } catch { /* already gone */ } } }
+// UT3 (2.9, criterion 18; a field update named its receipt with --rehearsal and the automatic record of the rehearsal stayed on disk
+// after the update it rehearsed): with an explicit receipt the automatic record is consumed too, said aloud.
+// [TESTED: 2026-10-16 12:08 +03:00 · suite s21 U3: explicit --rehearsal — the automatic record removed with the log line, the named
+//  receipt intact; red on the dist of d5342b3 — report testcases/reports/2026-10-16_ut3-long-jump-honest.md]
+function consumeRehearsal(r) {
+  if (r && !r.explicit) { try { unlinkSync(r.path); } catch { /* already gone */ } }
+  if (r && r.explicit && existsSync(REHEARSAL) && resolve(r.path) !== resolve(REHEARSAL)) {
+    try { unlinkSync(REHEARSAL); log(`- removed ${REHEARSAL} — the automatic rehearsal record; this update applied the receipt you named (${r.path})`); } catch { /* already gone */ }
+  }
+}
 function writeReceipt(r) {
   const receipt = { ...r, date: localStamp(), core: SELF_SHA };   // the receipt of a sandbox copy is a rehearsal too (--rehearsal) — signed (2.8, N17)
   writeFileSync(LAST_UPDATE, JSON.stringify(receipt, null, 2) + '\n');
@@ -3000,9 +3049,14 @@ function runFinalGates(taskFile, tag, verb) {
       for (const [p, sigSet] of Object.entries(expected)) {
         const sigs = [...sigSet];
         if (!okOnDisk(p)) continue;
-        const onDiskSigs = new Set(splitModules(normEol(readFileSync(p, 'utf8'))).map((m) => m.signature));
+        const diskText = normEol(readFileSync(p, 'utf8'));
+        const onDiskSigs = new Set(splitModules(diskText).map((m) => m.signature));
+        const blocks = anchoredBlocks(templateOf(p) || '');
         for (const s of sigs) {
           if (onDiskSigs.has(s)) continue;
+          // UT3: the heading of an anchored block — the block arrived when its anchor stands on disk (in whatever language)
+          const blk = blocks.find((b) => b.heading === s.trim());
+          if (blk && diskText.includes(blk.begin)) continue;
           if (fileTranslated(p)) { console.error(`⚠ a section new in this release — check it by hand (the file is translated; its English signature cannot be matched): ${p} :: ${s} — the new template as your language deploys it: node .kaif/kaif-core.mjs diff --source <the update's source> --render ${p}`); continue; }
           console.error(`✖ a section of this release did not arrive: ${p} :: ${s} — the update delivered it (the previous template never had it, so its absence is not your deletion); merge it from the task, or restore it`);
           missing++;
@@ -3023,6 +3077,11 @@ function runFinalGates(taskFile, tag, verb) {
     // `<BUILD_COMMAND>` back over `npm run build`.
     let fills = {};
     try { fills = (okOnDisk(DEPLOY_MANIFEST) && readJson(DEPLOY_MANIFEST).fills) || {}; } catch { fills = {}; }
+    // UT3 (2.9, criterion 18; a field update 2.1 → 2.8: 236 false «not found»): a promised line is judged against the file's TEXT, not
+    // its lines — a paragraph the merge re-wrapped is the same text (white space collapsed on both sides); a line of an anchored block
+    // whose anchor stands on disk is the owner's rendition of that block (anchoredBlocks above), never an unmerged line
+    const flat = (s) => String(s).replace(/\s+/g, ' ').trim();
+    const flatOf = new Map(), blocksOf = new Map();
     for (const line of task.split('\n')) {
       const h = line.match(/^### (.+)$/);
       if (h) { curFile = h[1].trim(); continue; }
@@ -3032,8 +3091,11 @@ function runFinalGates(taskFile, tag, verb) {
       if (line.startsWith('```')) { inDiff = line === '```diff'; continue; }
       if (skipSection || (curFile && fileTranslated(curFile))) continue;
       if (inDiff && curFile && line.startsWith('+ ') && line.length > 12 && okOnDisk(curFile)) {
-        if (!perFile.has(curFile)) perFile.set(curFile, readFileSync(curFile, 'utf8'));
-        if (!perFile.get(curFile).includes(line.slice(2)) && !perFile.get(curFile).includes(fillPlaceholders(line.slice(2), fills, new Set()))) {
+        if (!perFile.has(curFile)) { perFile.set(curFile, readFileSync(curFile, 'utf8')); flatOf.set(curFile, flat(perFile.get(curFile))); blocksOf.set(curFile, anchoredBlocks(templateOf(curFile) || '')); }
+        const promised = line.slice(2), filled = fillPlaceholders(promised, fills, new Set());
+        const inBlock = blocksOf.get(curFile).find((b) => b.lines.has(promised.trim()));
+        if (inBlock && perFile.get(curFile).includes(inBlock.begin)) continue;
+        if (!flatOf.get(curFile).includes(flat(promised)) && !flatOf.get(curFile).includes(flat(filled))) {
           console.error(`⚠ promised upstream line not found on disk (unmerged?): ${curFile} :: ${line.slice(2, 80)}`);
           unmergedLines++;
         }
@@ -3179,11 +3241,40 @@ function moduleAudit() {
  } catch (e) { log(`⚠ module audit skipped: ${e.message}`); }
 }
 
+// UT3 (2.9, criterion 18; a field update 2.1 → 2.8 with the prayer in the owner's language): an ANCHORED block of a template
+// (`<!-- KAIF:<NAME>:BEGIN -->` … `<!-- KAIF:<NAME>:END -->`) is addressed by its ANCHOR — its text, heading included, legally stands
+// in the owner's language, so «a section did not arrive: ## 🙏 THE PRAYER BEFORE WORK» over «## 🙏 МОЛИТВА ПЕРЕД РАБОТОЙ» and its lines
+// counted as «promised upstream line not found» were false. → [{ begin, heading, lines }] of one template text.
+// [TESTED: 2026-10-16 12:08 +03:00 · suite s21 U3 — the prayer heading and line in the owner's language with the anchor: no «did not
+//  arrive», no «not found»; without the anchor the heading is «did not arrive» again (control); red on the dist of d5342b3; the real
+//  route 2.1 → 2.9 is not walked yet — report testcases/reports/2026-10-16_ut3-long-jump-honest.md]
+function anchoredBlocks(content) {
+  const out = []; let cur = null;
+  for (const l of normEol(String(content)).split('\n')) {
+    const t = l.trim(), b = /^<!-- KAIF:([A-Z][A-Z0-9-]*):BEGIN -->$/.exec(t);
+    if (b) { cur = { begin: t, end: `<!-- KAIF:${b[1]}:END -->`, heading: null, lines: new Set() }; out.push(cur); continue; }
+    if (!cur) continue;
+    if (t === cur.end) { cur = null; continue; }
+    if (!cur.heading && /^#{1,6} /.test(t)) cur.heading = t;
+    if (t) cur.lines.add(t);
+  }
+  return out;
+}
+// The template text of a deployed path, from the bundle this update brought (null when absent)
+function templateOf(p) {
+  try { const b = okOnDisk(BUNDLE) ? parseBundle(BUNDLE, true) : null; const f = b && b.files.find((x) => x.path === p); return f ? f.content : null; }
+  catch { return null; }
+}
+
 function cmdUpdateVerify() {
   // The update from the previous release is run by the DEPLOYED core, whose ignore list may lack this release's
   // lines (court of 2.7, D-F1: `.kaif/contour-window/` never reached .gitignore on 2.6 -> 2.7); update-verify is
   // run by THIS core on every route, so ignore-first is re-asserted here, before any gate. Idempotent.
   ensureIgnoreFirst();
+  // UT2 (2.9, criterion 17; origin ticket #120): the same two-author route — an update run by the previous core left its pointers as
+  // they were; this core brings the untouched ones up and refuses while an edited one lacks the resume rule, naming file and line
+  const ptr = syncPointers();
+  if (ptr.needRule.length) die(`update-verify REFUSED — ${POINTER_RULE_HINT(ptr.needRule)}; then re-run \`node .kaif/kaif-core.mjs update-verify\``);
   runFinalGates(UPDATE_TASK, 'KAIF-UPDATE', 'update-verify');
   moduleAudit();
   // Stamp the receipt: the proof of a verified update must outlive the self-clean (bug 17).
@@ -3306,6 +3397,7 @@ async function cmdInstall() {
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
   const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
   deployAgentSystems(skillFiles, refFiles);
+  if (legacyOld) syncPointers();   // UT2 (2.9, #120): an update by bootstrap brings untouched pointers of an earlier release up too
 
   // 3) wiring: deploy marker + npm handles (respectful: existing scripts untouched).
   //    On a legacy update the old marker's owner-level fields (sphere, language, tracking)
@@ -4035,7 +4127,12 @@ function cmdCheck() {
     let version = null; try { version = readJson(KAIF_JSON).version || null; } catch { version = null; }
     const { verdicts, next } = budgetRatchet(overBudget, base, version);
     const body = JSON.stringify({ _note: `The budget ratchet of the closing gate (KAIF 2.8): own lines of each re-read-core document that stood ABOVE its budget at the last closing. Rewritten by \`node .kaif/kaif-core.mjs check --gate-budgets\` — commit it with the closing, never edit it by hand.`, version: next.version, docs: next.docs }, null, 2) + '\n';
-    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);
+    // UT3 (2.9, criterion 18; two field updates wrote the base mid-update — the door run from inside an open task recorded the debt of a
+    // half-merged tree, and the next closing judged against it): while an update task is open the door judges and writes NOTHING
+    // [TESTED: 2026-10-16 12:17 +03:00 · suites s21 U3 and s16 (UT3): open task — no base, the line says «run the door LAST»; closed task —
+    //  the base is written; red on the dist of d5342b3 — report testcases/reports/2026-10-16_ut3-long-jump-honest.md]
+    if (okOnDisk(UPDATE_TASK)) log(`ℹ --gate-budgets: ${UPDATE_TASK} is open — the base ${BUDGET_BASELINE} is not written mid-update; run the door LAST, after \`update-verify\` (the closing-gates item says so)`);
+    else if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);
     for (const v of verdicts)
       console.error(`${v.pass ? '↳' : '✖'} ${v.doc}: own lines ${v.own} of budget ${v.budget} → ${overflowAddress(v.overflowTo)} — ${v.why}`);
     const stops = verdicts.filter((v) => !v.pass);
@@ -4285,6 +4382,12 @@ function cmdCheckpoint() {
     // The hand-over of the withdrawn-phrases item (light re-judge RL 2.8, J-F2) — the same two-author route: a task written by a core
     // older than 2.8 has no such item, so a withdrawal SINCE the deployment's own release (court C-F2) never reached it. The fresh core
     // reads the deprecations from the bundle this update brought and the interval from the marker's history, and names the item here.
+    // UT2 (2.9, criterion 17): the update by the previous core never touched the pointers — this tick (the fresh core) replaces the
+    // untouched ones and names an edited one that lacks the resume rule (update-verify refuses until it has it)
+    if (tag === 'KAIF-UPDATE') {
+      const ptr = syncPointers();
+      if (ptr.needRule.length) log(`⚠ pointers — ${POINTER_RULE_HINT(ptr.needRule)}; \`update-verify\` refuses until then`);
+    }
     // UT1 (2.9): a task WITH the item but written by a core before 2.9 lists no places — and even this core's list is the state at
     // writing; the tick names the places LEFT now, over the merged tree, so the agent sees its own progress (read-only).
     if (tag === 'KAIF-UPDATE') {

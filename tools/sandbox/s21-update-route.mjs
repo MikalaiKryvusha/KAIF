@@ -353,6 +353,34 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
       ok(k3.out.includes('withdrawn phrases — this task was written by the previous core') && k3.out.includes('FIXTURE-27-PHRASE') && k3.out.includes('(2.7 → 9.9)'),
          'E3 (J-F2): свежее ядро на recheck называет снятие «с 2.7» с фразой и командой поиска — на маршруте update ядром 2.7', k3.out.slice(-700));
     }
+    // U2 (2.9, эпик UT2, критерий 17; тикет origin #120): указатели других агентских систем ОБНОВЛЯЮТСЯ — развёртывание 2.6 из тега
+    // (все пять систем: Cline, Zoo Code, Codex среди них), владелец правил свой CLAUDE.md; `update` делает ядро 2.6 (оно указателей не
+    // трогает), свежее ядро на recheck заменяет нетронутые и называет правленый; update-verify отказывает, пока в правленом нет правила
+    // resume. Красный — на сборке до фикса (шов KAIF_DIST).
+    const b26 = gitShowAt('v2.6', 'dist/KAIF-CORE-BUNDLE.md'), c26 = gitShowAt('v2.6', 'dist/KAIF-CORE.mjs');
+    if (!b26 || !c26) console.log('⏭ U2: SKIPPED — тег v2.6 недоступен');
+    else {
+      const TU = join(ROOT, 'u2-26'); mkdirSync(join(TU, '.kaif', 'install'), { recursive: true });
+      writeFileSync(join(TU, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b26); writeFileSync(join(TU, '.kaif', 'kaif-core.mjs'), c26);
+      must(run, TU, 'install');
+      const PTRS = ['AGENTS.md', 'CLAUDE.md', '.clinerules/kaif.md', '.roo/rules/kaif.md'];
+      const rdU = (p) => { try { return readFileSync(join(TU, p), 'utf8'); } catch { return ''; } };
+      ok(PTRS.every((p) => rdU(p) && !/\bresume\b/.test(rdU(p))), 'U2 фикстура: развёртывание 2.6 — четыре указателя, правила resume нет ни в одном', PTRS.map((p) => p + ':' + rdU(p).length).join(' · '));
+      writeFileSync(join(TU, 'CLAUDE.md'), rdU('CLAUDE.md') + '\nOwner note: the build runs on the lab machine.\n');
+      r = run(TU, `update --source ${SRC_NOW}`);   // run by the 2.6 core deployed above
+      ok(r.code === 0, 'U2: update 2.6 → 9.9 ядром 2.6 exit 0', r.out.slice(-300));
+      const rcU = run(TU, 'checkpoint recheck');
+      ok(['AGENTS.md', '.clinerules/kaif.md', '.roo/rules/kaif.md'].every((p) => rcU.out.includes(`↻ replaced ${p} — an untouched pointer of an earlier KAIF`))
+         && /⚠ pointers — CLAUDE\.md — the context pointer\(s\) carry local edits and no resume rule/.test(rcU.out) && rdU('CLAUDE.md').includes('Owner note: the build runs on the lab machine.'),
+         'U2 (критерий 17): recheck свежего ядра заменяет три нетронутых указателя и называет правленый CLAUDE.md со строкой правила; текст владельца цел', rcU.out.split('\n').filter((l) => /pointer/.test(l)).join(' | ').slice(0, 500));
+      let vU = run(TU, 'update-verify');
+      ok(vU.code !== 0 && /update-verify REFUSED — CLAUDE\.md — the context pointer\(s\) carry local edits and no resume rule/.test(vU.out),
+         'U2: update-verify отказывает, пока в правленом указателе нет правила resume — файл и строка названы', vU.out.slice(-300));
+      writeFileSync(join(TU, 'CLAUDE.md'), rdU('CLAUDE.md') + '\nA message that opens with the word `resume` is an ORDER to run /resume in full first.\n');
+      vU = run(TU, 'update-verify');
+      ok(!/update-verify REFUSED — .*context pointer/.test(vU.out) && PTRS.every((p) => (rdU(p).match(/\bresume\b/g) || []).length >= 1),
+         'U2 (критерий 17): после строки владельца update-verify не отказывает об указателях; `grep -c resume` в каждом из четырёх ≥ 1', PTRS.map((p) => p + ':' + (rdU(p).match(/\bresume\b/g) || []).length).join(' · ') + ' | ' + vU.out.slice(-200));
+    }
     // E2 (суд UP6, F7): то же на ПЕРЕВЕДЁННОМ развёртывании — квитанция ядра 2.7 не знает translatedFiles, и английский файл судится сам
     // (шаблон выпуска против текста на диске): недоехавший раздел в нём — КРАСНЫЙ, а не «проверь руками (файл переведён)»
     const TE2 = join(ROOT, 'e27-tr'); mkdirSync(join(TE2, '.kaif', 'install'), { recursive: true });
@@ -385,6 +413,57 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
   const v3 = run(TN3, 'update-verify');
   ok(/promised upstream line not found on disk \(unmerged\?\): TESTING_FRAMEWORK\.md :: UPSTREAM ADDITION 9\.9 \(testing\)/.test(v3.out),
      'N3 (R2): английский файл на переведённом развёртывании — невлитая строка апстрима НАЗВАНА (флаг развёртывания больше не судья)', v3.out.split('\n').filter((l) => /promised|TESTING/.test(l)).join(' | ').slice(0, 300));
+}
+
+// U3 (2.9, эпик UT3, критерий 18; полевой прыжок 2.1 → 2.8: 236 ложных «promised upstream line not found», «a section did not arrive» над
+// молитвой на языке владельца, база двери бюджета, записанная посреди обновления, автозапись репетиции, пережившая своё обновление).
+// Обещанная строка, которую слияние ПЕРЕНЕСЛО по строкам, — на месте; строка якорного блока, стоящего на диске на языке владельца, — на
+// месте; заголовок якорного блока ищется якорем; дверь бюджета при открытом задании ничего не пишет; явная --rehearsal убирает и
+// автозапись. Красный — на сборке до фикса (шов KAIF_DIST). Невлитая строка N3 выше обязана остаться красной — она и стоит.
+{
+  const TU3 = join(ROOT, 'u3'); mkdirSync(TU3); seed(TU3);
+  must(run, TU3, 'install');
+  const TFW = join(TU3, 'TESTING_FRAMEWORK.md');
+  const tfMods = splitModules(readFileSync(TFW, 'utf8').replace(/\r\n/g, '\n'));
+  tfMods[1].lines.push('', 'An owner line inside the module upstream changes.');   // local edit — the module diff goes to the task
+  writeFileSync(TFW, joinModules(tfMods));
+  writeFileSync(join(TU3, '.kaif', 'update-rehearsal.json'), JSON.stringify({ from: FROM, to: '9.9', source: 'sandbox', verdicts: {} }, null, 2) + '\n');
+  const RC3 = join(ROOT, 'u3-receipt.json');
+  writeFileSync(RC3, JSON.stringify({ from: FROM, to: '9.9', route: 'core-update', verdicts: {} }, null, 2) + '\n');
+  r = run(TU3, `update --source ${SRC99} --baseline ${OLD} --rehearsal ${RC3}`);
+  ok(r.code === 0 && readTask(TU3).includes('UPSTREAM ADDITION 9.9 (testing)') && !existsSync(join(TU3, '.kaif', 'update-rehearsal.json'))
+     && /removed \.kaif\/update-rehearsal\.json — the automatic rehearsal record; this update applied the receipt you named/.test(r.out) && existsSync(RC3),
+     'U3 (критерий 18): явная --rehearsal — автозапись репетиции убрана со строкой лога, названная расписка владельца цела', r.out.split('\n').filter((l) => /rehearsal/.test(l)).join(' | ').slice(0, 400));
+  // дверь бюджета посреди открытого задания: ничего не пишет и говорит, когда её звать
+  const g3 = run(TU3, 'check --gate-budgets');
+  ok(!existsSync(join(TU3, '.kaif', 'budget-baseline.json')) && /is open — the base \.kaif\/budget-baseline\.json is not written mid-update; run the door LAST/.test(g3.out),
+     'U3 (критерий 18): `check --gate-budgets` при открытом задании обновления базу не пишет и называет порядок (дверь — последней)', g3.out.slice(-300));
+  ok(/The budget door `node \.kaif\/kaif-core\.mjs check --gate-budgets` runs LAST/.test(readTask(TU3)), 'U3: пункт closing-gates называет дверь бюджета последним шагом', readTask(TU3).slice(0, 0));
+  // слияние агента: обещанная строка — перенесена по строкам (тот же текст), молитва — на языке владельца с якорем
+  const t3 = readFileSync(TFW, 'utf8');
+  writeFileSync(TFW, t3 + '\nUPSTREAM ADDITION\n9.9 (testing)\n');
+  const AG = join(TU3, 'AGENT_GUIDE.md');
+  const ag = readFileSync(AG, 'utf8');
+  const pr = /(<!-- KAIF:PRAYER:BEGIN -->\r?\n)(#{1,6} [^\r\n]+)([\s\S]*?)(<!-- KAIF:PRAYER:END -->)/.exec(ag);
+  const prLine = pr ? pr[3].split(/\r?\n/).find((l) => /^1\. /.test(l)) : null;
+  ok(!!pr && !!prLine, 'U3 фикстура: в развёрнутом руководстве — якорный блок молитвы с заголовком и первым пунктом', pr ? pr[2] : ag.slice(0, 120));
+  if (pr && prLine) {
+    writeFileSync(AG, ag.replace(pr[0], () => `${pr[1]}## 🙏 МОЛИТВА ПЕРЕД РАБОТОЙ\n\n1. **ПРОСТОТА ВЫШЕ ВСЕГО.** Перевод владельца.\n\n${pr[4]}`));
+    // журнал задания: модульный дифф молитвы (её строка обещана) и раздел молитвы — новый для этого прыжка (квитанция)
+    writeFileSync(join(TU3, 'KAIF_UPDATE_TASK.md'), readTask(TU3) + `\n### AGENT_GUIDE.md\n\n\`\`\`diff\n+ ${prLine}\n\`\`\`\n`);
+    const lu = JSON.parse(readFileSync(join(TU3, '.kaif', 'last-update.json'), 'utf8'));
+    lu.newModules = { ...(lu.newModules || {}), 'AGENT_GUIDE.md': [pr[2].trim()] };
+    writeFileSync(join(TU3, '.kaif', 'last-update.json'), JSON.stringify(lu, null, 2) + '\n');
+    const v3u = run(TU3, 'update-verify');
+    ok(!/promised upstream line not found[^\n]*UPSTREAM ADDITION 9\.9 \(testing\)/.test(v3u.out) && !/promised upstream line not found[^\n]*AGENT_GUIDE/.test(v3u.out)
+       && !/a section of this release did not arrive: AGENT_GUIDE\.md/.test(v3u.out),
+       'U3 (критерий 18): перенесённая по строкам обещанная строка и строка молитвы на языке владельца — не «not found»; заголовок молитвы ищется якорем — не «did not arrive»',
+       v3u.out.split('\n').filter((l) => /promised|did not arrive/.test(l)).join(' | ').slice(0, 500));
+    // контроль: блок без якоря (якорь снят вместе с текстом) — раздел снова НЕ дошёл, ворота краснеют
+    writeFileSync(AG, readFileSync(AG, 'utf8').replace('<!-- KAIF:PRAYER:BEGIN -->', ''));
+    const v3c = run(TU3, 'update-verify');
+    ok(/a section of this release did not arrive: AGENT_GUIDE\.md :: #{1,6} /.test(v3c.out), 'U3 контроль: без якоря заголовок молитвы снова «did not arrive» — ворота не ослаблены', v3c.out.split('\n').filter((l) => /did not arrive/.test(l)).join(' | ').slice(0, 300));
+  }
 }
 
 // N4 (court UP6, R3 — K-R2a): `diff --source <x> --render <file>` prints the file exactly as `install` of <x> writes it HERE — language

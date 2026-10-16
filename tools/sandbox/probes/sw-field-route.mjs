@@ -177,6 +177,15 @@ function walk({ P, label, sub }) {
   const wp = /withdrawn phrases \([^)]*\) — places left now:(?: The machinery found (\d+) place\(s\)[^\n]*\n((?:\s+· [^\n]*\n?)*)| none| The machinery scanned)/.exec(r0.all);
   say(!!wp && !/PROJECT_HISTORY\.md:|reports\/KAIF_UPDATES\//.test(wp[2] || ''), `${label}: \`checkpoint recheck\` names the places that still build on a retired feature — ${wp ? (wp[1] || 0) + ' place(s)' : 'no withdrawn-phrases line'}`);
   for (const l of (wp && wp[2] ? wp[2].split('\n').filter(Boolean).slice(0, 12) : [])) info(l.trim().slice(0, 200));
+  // UT2 (2.9, criterion 17; session 82): after that tick every context pointer on the clone carries the resume rule, or is NAMED with the
+  // line it lacks — an untouched pointer of an earlier release was replaced, an edited one kept. Prediction, written before the run: a
+  // deployment that jumped from 2.1 gets all four replaced; 2.7–2.8 deployments get the Zoo Code pointer replaced; edited pointers that
+  // already carry the rule stay as they are.
+  const PTRS = ['AGENTS.md', 'CLAUDE.md', '.clinerules/kaif.md', '.roo/rules/kaif.md'].filter((p) => existsSync(join(P, p)));
+  const repl = PTRS.filter((p) => r0.all.includes(`↻ replaced ${p} — an untouched pointer`));
+  const named = /⚠ pointers — ([^\n]*?) — the context pointer/.exec(r0.all);
+  const lacking = PTRS.filter((p) => !/\bresume\b/.test(readFileSync(join(P, p), 'utf8')) && !(named && named[1].split(' · ').includes(p)));
+  say(!lacking.length, `${label}: after recheck every context pointer carries the resume rule or is named — replaced ${repl.length ? repl.join(' · ') : 'none'}${named ? '; named ' + named[1] : ''}${lacking.length ? '; LACKING ' + lacking.join(' · ') : ''}`);
 
   const w1 = core(P, ['wire-hooks']);
   say(w1.code === 0, `${label}: \`wire-hooks\` — exit ${w1.code}`);

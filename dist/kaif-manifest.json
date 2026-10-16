@@ -4,11 +4,11 @@
   "released": "2026-09-26",
   "codename": "Noble KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "7d08a1ec462263efadaa1859958b4d63f9f6de101e1eafbf0c7a4970ce6193e2",
-    "KAIF-CORE-BUNDLE.md": "f9b26c0dbf76e751e32fee2eb16ebffd8def630de27c5f116565a3805884340e"
+    "KAIF-CORE.mjs": "e13f57e7d76f921b281a47b2734adcea75dba007d5b187efdbf4fa03ab6f54df",
+    "KAIF-CORE-BUNDLE.md": "465dc9e9c28c0369b227440f787b0765413c8969fe42a1ba144fc2c94721aa39"
   },
   "sourceTree": {
-    "sha256": "9c91c7b534871884cd927664ab2948f07708bb20b24427dc61da1f46a31e343b",
+    "sha256": "ce811b91d6666891c2a9644bc18acf279059095cea1c47335ee4373299e7734b",
     "files": 208
   },
   "prerelease": "2.9",
