@@ -172,6 +172,21 @@ ok(existsSync(join(S, '.kaif', 'tools', 'kaif-testrun-lint.mjs')), 's25 моду
 r = runCore('check');
 ok(r.code === 0, 's25 свежий деплой — check зелёный', r.out.slice(-400));
 ok(!/\/resume does not name/.test(r.out) && !/names .* missing on disk/.test(r.out), 's25 свежий деплой — про /resume ни слова (все девять названы)', r.out);
+// NT3 (2.9, тикет #141): шаг навыка закрытия, оставшийся слотом-инструкцией шаблона «`<Run the project build …>`», check называет с файлом и
+// шагом (предупреждение, код 0); вписанная проектом команда — тишина по этому файлу
+ok(/⚠ \.claude\/skills\/end-chat-soft\/SKILL\.md: the step «Step 3\. \(Re\)build \/ regenerate artifacts» is still the template's instruction slot «`<Run the project build/.test(r.out),
+   's25 NT3 (#141): свежий деплой — check называет заглушку шага сборки в /end-chat-soft с шагом', (r.out.match(/[^\n]*instruction slot[^\n]*/g) || []).join('\n').slice(0, 600));
+{
+  const ECS = join(S, '.claude', 'skills', 'end-chat-soft', 'SKILL.md');
+  const ecs0 = readFileSync(ECS, 'utf8');
+  // the project fills its two slots of /end-chat-soft with its own commands — every slot line replaced, nothing else touched
+  const lines = ecs0.split(/\r?\n/); const out = []; let open = false;
+  for (const l of lines) { const t = l.trim(); if (!open && t.startsWith('`<') && (t.endsWith('>`') || t.indexOf('`', 1) < 0)) { open = true; out.push('`npm run build && npm test`'); } if (open) { if (t.endsWith('>`') || /\.>` /.test(t)) open = false; continue; } out.push(l); }
+  writeFileSync(ECS, out.join('\n'));
+  r = runCore('check');
+  ok(r.code === 0 && !/end-chat-soft\/SKILL\.md: the step/.test(r.out), 's25 NT3 (#141): шаги заполнены командой проекта — про /end-chat-soft ни слова, код 0', (r.out.match(/[^\n]*instruction slot[^\n]*/g) || []).join('\n').slice(0, 600));
+  writeFileSync(ECS, ecs0);
+}
 // мутация на КОПИИ: из /resume уходит буллет GOAL.md → предупреждение называет его; код остаётся 0
 const RESUME = join(S, '.claude', 'skills', 'resume', 'SKILL.md');
 ok(existsSync(RESUME) && /^- `GOAL\.md`/m.test(readFileSync(RESUME, 'utf8')), 's25 фикстура: развёрнутый /resume несёт буллет `GOAL.md`');

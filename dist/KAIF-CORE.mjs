@@ -1606,6 +1606,17 @@ function portraitSync(pin) {
   const marker = pin.markers.find((m) => text.includes(m));
   if (!marker) { log(`· voice portrait: ${PORTRAIT_FILE} names none of the release snapshot's markers — not derived from it (another owner's portrait or a private copy), left untouched`); return null; }
   const tail = snapshotTail(text, pin.head);
+  // NT2 (2.9, origin issue #133 — a field root file of 11 lines only POINTS at the private core, named in the marker's `voicePortrait`; it
+  // names the private repository in its clone command, which is a snapshot marker, and the only passing move was to paste a 643-line copy
+  // nothing reads): a root file with no snapshot line in it, while the marker names the portrait at ANOTHER path, is a POINTER — no item
+  if (tail === null) {
+    let vp = null; try { vp = readJson(KAIF_JSON).voicePortrait; } catch { vp = null; }
+    const norm = (p) => String(p).replace(/\\/g, '/').replace(/^\.\//, '');
+    if (typeof vp === 'string' && vp.trim() && norm(vp.trim()) !== PORTRAIT_FILE) {
+      log(`· voice portrait: ${PORTRAIT_FILE} is a POINTER — it carries no line of the release snapshot, and .kaif/kaif.json names the portrait at ${vp.trim()}; left untouched (origin issue #133)`);
+      return null;
+    }
+  }
   const merged = mergedAbove(text, pin);
   if (tail !== null && lfSha256(tail) === pin.sha256 && !merged) { log(`✔ voice portrait: ${PORTRAIT_FILE} already carries this release's snapshot (sha ${pin.sha256.slice(0, 12)})`); return null; }
   if (merged) log(`· voice portrait: the local part of ${PORTRAIT_FILE} above the snapshot still carries «${merged}» — a merge, not a replacement`);
@@ -1763,9 +1774,13 @@ async function fetchArtifact(base, name) {
     if (!existsSync(p)) {
       // UT4 (2.9; a field long jump: `diff --source .kaif/install --render <file>` got only the generic forms): the install folder keeps
       // the bundle the loader fetched and is never a source — the refusal names the release this deployment's marker runs
-      let own = null;
-      if (resolve(base) === resolve('.kaif/install')) { try { own = readJson(KAIF_JSON).version || '<X.Y>'; } catch { own = '<X.Y>'; } }
-      dieSoft(`not found in source: ${p}${own ? ` — .kaif/install/ keeps only the bundle the loader fetched and is not a source; the release this deployment's marker runs: ${ORIGIN}/releases/download/v${own}` : ''}\n${SOURCE_FORMS_HINT}`);
+      // the marker's own origin when it names one — a deployment that tracks a fork is sent to the fork's release (judge of UT+PV)
+      let own = null, home = ORIGIN;
+      if (resolve(base) === resolve('.kaif/install')) {
+        try { const j = readJson(KAIF_JSON); own = j.version || '<X.Y>'; if (typeof j.origin === 'string' && /^https?:\/\//.test(j.origin)) home = j.origin.replace(/\/+$/, ''); }
+        catch { own = '<X.Y>'; }
+      }
+      dieSoft(`not found in source: ${p}${own ? ` — .kaif/install/ keeps only the bundle the loader fetched and is not a source; the release this deployment's marker runs: ${home}/releases/download/v${own}` : ''}\n${SOURCE_FORMS_HINT}`);
     }
     return readFileSync(p);
   }
@@ -3788,7 +3803,9 @@ function cmdCheck() {
     paths = deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path);
     agents = expectedAgentArtifacts(deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path)).map((f) => skillName(f.path)));
   } else if (okOnDisk(DEPLOY_MANIFEST)) {
-    ({ paths, agents } = readJson(DEPLOY_MANIFEST));
+    // (2.9, judge of UT+PV) a corrupt manifest is a named refusal, never a Node stack trace
+    try { ({ paths, agents } = readJson(DEPLOY_MANIFEST)); }
+    catch (e) { die(`${DEPLOY_MANIFEST} is unreadable as JSON (${e.message}) — restore it from git: git checkout -- ${DEPLOY_MANIFEST}`); }
   } else die(`neither ${BUNDLE} nor ${DEPLOY_MANIFEST} found — is KAIF deployed here?`);
   let missing = 0;
   for (const p of [...paths, ...agents, KAIF_JSON])
@@ -3937,6 +3954,23 @@ function cmdCheck() {
     }
   } catch { /* unreadable marker — the marker gate flags it separately */ }
   warnSphereLibrary();
+  // NT3 (2.9, origin issue #141 — a field closing ritual named no build command: its step was still the template's instruction slot
+  // «`<Run the project build …>`», nothing asked to fill it, and a red suite went unnoticed for 18 days): a deployed closing or release skill
+  // whose step is still such a slot is named with the step and the cure. A warning, never a failure — the ritual still runs its other steps.
+  // The slot is opened exactly as instructionSlotLines() opens one: «`<» whose code span does not close on the line (a mention stays silent).
+  // [NOT-TESTED]
+  const RITUAL_SKILLS = ['end-chat-soft', 'end-chat-force', 'release'];
+  for (const n of RITUAL_SKILLS) {
+    const p = `.claude/skills/${n}/SKILL.md`;
+    if (!okOnDisk(p)) continue;
+    let step = null;
+    for (const l of normEol(readFileSync(p, 'utf8')).split('\n')) {
+      const t = l.trim();
+      if (/^#{1,6} /.test(t)) { step = t.replace(/^#+\s*/, ''); continue; }
+      if (t.startsWith('`<') && (t.endsWith('>`') || t.indexOf('`', 1) < 0))
+        console.error(`⚠ ${p}: the step «${step || '?'}» is still the template's instruction slot «${t.slice(0, 60)}…» — write this project's own command there, or the ritual runs nothing at that step`);
+    }
+  }
   // The size-budget guard over the re-read core (STATUS: bugs/37, decision #27 — the 2.1 release
   // PROMISED a warning at the ~200-line soft target and shipped prose only, field STATUS files
   // grew to 1647/1928 lines because "there was no one to warn"; the other eight: 2.5, epic CN).

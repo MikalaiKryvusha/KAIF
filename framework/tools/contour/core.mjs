@@ -732,15 +732,21 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
       if (!answerText) continue; // "comment only" is NOT an answer — the question stays open
       const emptyAns = q.answers.find((a) => !a.text);
       touched = true;
+      // NT1 (2.9, origin issue #139): an answer of several lines is written as several LINES of the file (the file's own line ends), the
+      // first on the label, the provenance mark at the end of the last; blank lines are dropped — the answer is read back as a paragraph
+      // up to a blank line, and a blank line inside would cut it
+      const [first, ...more] = answerText.split(/\r?\n/).map((s) => s.replace(/\s+$/, '')).filter((s) => s.trim());
+      const rest = more.length ? [...more.slice(0, -1), more[more.length - 1] + ' ' + prov] : [];
       if (emptyAns !== undefined) {
-        lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + answerText + ' ' + prov;
+        lines[qStart + emptyAns.line] = lines[qStart + emptyAns.line].replace(/\s*$/, '') + ' ' + first + (rest.length ? '' : ' ' + prov);
+        if (rest.length) lines.splice(qStart + emptyAns.line + 1, 0, ...rest);
       } else { // the owner's answer is UNTOUCHABLE: new text only as a dated follow-up (I2)
         const lastAns = q.answers[q.answers.length - 1];
         // CP (2.9, #127 p. 3): a follow-up goes to the END of the question's block — below an applied-mark line ("Applied: …") — never
         // right under the answer line, which also cut a multi-line answer in two; trailing blank lines of the block stay last.
         let endAt = q.body.length; while (endAt > 0 && !q.body[endAt - 1].trim()) endAt--;
         const insertAt = lastAns ? qStart + endAt : qStart + q.body.length;
-        lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + answerText + ' ' + prov);
+        lines.splice(insertAt, 0, '', '**' + T.wb.followUp(atHuman) + '** ' + first + (rest.length ? '' : ' ' + prov), ...rest);
       }
     }
     const tail = [];

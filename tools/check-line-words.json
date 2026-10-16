@@ -1,6 +1,6 @@
 {
   "_note": "Guard 5u (tools/check-framework.mjs, 2.9 epic UT step UT5): every line `check` prints opening with ⚠ / ✖ / ℹ, and every refusal it prints through die() — in the functions of `printers` of framework/installer/KAIF-CORE.mjs — must match a pair: `line` is a fixed fragment of the printed literal, `word` names its axis and must stand in the `check` entry of framework/KAIF_REFERENCE.md §10.7. A new line of `check` → a pair here AND the word in that entry. Read also by tools/sandbox/probes/ut5-field-check-lines.mjs.",
-  "printers": ["cmdCheck", "gitIgnoredDeployed", "budgetOverflow", "warnSphereLibrary"],
+  "printers": ["cmdCheck", "gitIgnoredDeployed", "budgetOverflow", "warnSphereLibrary", "parseBundle", "applyLanguage"],
   "pairs": [
     { "line": "✖ MISSING or empty:", "word": "MISSING or empty" },
     { "line": "✖ marker schema:", "word": "marker schema" },
@@ -31,7 +31,13 @@
     { "line": "declared an archive, but its digest", "word": "verbatim ARCHIVE" },
     { "line": ": own lines ${", "word": "own lines N of budget ~M" },
     { "line": "has no library at .kaif/spheres/", "word": "sphere with no library" },
+    { "line": "is still the template's instruction slot", "word": "an instruction slot of the template" },
     { "line": "nor ${DEPLOY_MANIFEST} found", "word": "neither the bundle nor the deploy manifest" },
+    { "line": "${DEPLOY_MANIFEST} is unreadable as JSON", "word": "a deploy manifest unreadable as JSON" },
+    { "line": "bundle not found:", "word": "a bundle that cannot be read" },
+    { "line": "no FILE: blocks found", "word": "a bundle that cannot be read" },
+    { "line": "bundle manifest block (kaif-bundle-manifest.json) missing", "word": "a bundle that cannot be read" },
+    { "line": "bad JSON in ${f.path}", "word": "a bundle that cannot be read" },
     { "line": "✖ INCOMPLETE:", "word": "INCOMPLETE: N artifacts missing" },
     { "line": "${BUDGET_BASELINE} is unreadable", "word": "an unreadable base stops too" },
     { "line": "document(s) of the re-read core are over their budget", "word": "turns the advice into a DOOR" }

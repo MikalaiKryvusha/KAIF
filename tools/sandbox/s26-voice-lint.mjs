@@ -432,6 +432,25 @@ const PH = deployC('ov-private', PRIVATE);
 const upH = must(runC, PH, `update --source ${REL9} --baseline ${RELOLD}`);
 ok(itemOf(PH) === '' && readFileSync(join(PH, 'AUTHOR_STYLOMETRY.md'), 'utf8') === PRIVATE && /not derived from it/.test(upH.out),
    's26 update: приватная копия портрета (называет приватное хранилище, не слепок) — без пункта, файл байт в байт прежний', itemOf(PH) || upH.out.slice(-500));
+// (ж) NT2 (2.9, тикет #133): корневой файл — УКАЗАТЕЛЬ на приватное ядро (команда клонирования называет приватный репозиторий — это метка
+// слепка), а маркер называет портрет другим путём (voicePortrait) — ни пункта, ни байта; на маршруте передачи recheck свежего ядра не отказывает
+const POINTER = '# Портрет голоса владельца — указатель\n\nКанон голоса — приватное ядро, вне git:\n\n    git clone https://github.com/owner/krinik-stylometry.git stylometry\n\nЧитай `stylometry/AUTHOR_STYLOMETRY.md` (маркер `.kaif/kaif.json` → `voicePortrait`).\n';
+const withVoicePortrait = (d) => { const m = join(d, '.kaif', 'kaif.json'); writeFileSync(m, JSON.stringify({ ...JSON.parse(readFileSync(m, 'utf8')), voicePortrait: 'stylometry/AUTHOR_STYLOMETRY.md' }, null, 2) + '\n'); };
+const PP = deployC('ov-pointer', POINTER); withVoicePortrait(PP);
+const upP = must(runC, PP, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PP) === '' && readFileSync(join(PP, 'AUTHOR_STYLOMETRY.md'), 'utf8') === POINTER && /is a POINTER — it carries no line of the release snapshot/.test(upP.out),
+   's26 update (NT2, #133): указатель на приватное ядро при voicePortrait — без пункта, файл байт в байт прежний, лог называет указатель', itemOf(PP) || upP.out.slice(-500));
+const PQ = deployC('ov-pointer-handover', POINTER); withVoicePortrait(PQ);
+must(runC, PQ, `update --source ${REL9} --baseline ${RELOLD}`);
+// the task of the PREVIOUS core carries no owner-voice-core item (the PD hand-over form above): only the fresh core's recheck judges here
+const TQ = join(PQ, 'KAIF_UPDATE_TASK.md');
+writeFileSync(TQ, readFileSync(TQ, 'utf8').replace(/^- \*\*owner-voice-core\*\* — [^\n]*\n  When done, run: [^\n]*\n/m, ''));
+r = runC(PQ, 'checkpoint recheck');
+ok(!/had no owner-voice-core item/.test(r.out), 's26 передача (NT2, #133): указатель при voicePortrait — recheck свежего ядра не требует слепка', r.out.slice(-500));
+// контроль: тот же указатель БЕЗ voicePortrait — прежнее поведение (метка названа → пункт), граница узнавания не размыта
+const PR = deployC('ov-pointer-no-marker', POINTER);
+must(runC, PR, `update --source ${REL9} --baseline ${RELOLD}`);
+ok(itemOf(PR) !== '', 's26 update (NT2 контроль): тот же файл без voicePortrait — пункт owner-voice-core стоит, как прежде', itemOf(PR) || 'нет пункта');
 // (в) портрет уже текущий — без пункта
 const PC = deployC('ov-current', SNAP);
 const upC = must(runC, PC, `update --source ${REL9} --baseline ${RELOLD}`);

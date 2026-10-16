@@ -342,6 +342,7 @@ export function runCheck(root, paths = []) {
 // before 2.9 carries the text as the value: its keys stay debt for any number of copies (the old reading, so no recorded debt is lost
 // on the first closing after the update), and the next write drops the text.
 const LEGACY = Infinity;
+const LEGACY_VALUE = 'recorded before 2.9';   // what a pre-2.9 text value becomes when a path-limited write carries it over: no text, same reading
 const countOf = (v) => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : LEGACY);
 const fileOfKey = (k) => k.slice(0, k.lastIndexOf(':'));
 const normPath = (p) => String(p).replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
@@ -361,7 +362,9 @@ export function freshFindings(findings, baseline) {
  *  erased the debt of every other file): entries of files outside the scope stay as they are; inside it, the counts of this run. */
 export function nextBaseline(findings, baseline, paths = []) {
   const entries = {};
-  for (const [k, v] of Object.entries((baseline && baseline.entries) || {})) if (!inScope(fileOfKey(k), paths)) entries[k] = v;
+  // an entry outside the scope keeps its debt; a 2.8 text value keeps its reading (debt for any number of copies) but loses the text —
+  // the judge of epic PV: a deployment that only ever writes with a path kept the text of every other file forever
+  for (const [k, v] of Object.entries((baseline && baseline.entries) || {})) if (!inScope(fileOfKey(k), paths)) entries[k] = typeof v === 'number' ? v : LEGACY_VALUE;
   for (const f of findings) entries[f.key] = (typeof entries[f.key] === 'number' ? entries[f.key] : 0) + 1;
   const sorted = Object.fromEntries(Object.keys(entries).sort().map((k) => [k, entries[k]]));   // canonical order: the file is reviewed in diffs
   const count = Object.values(sorted).reduce((n, v) => n + (typeof v === 'number' ? v : 1), 0);
@@ -511,6 +514,10 @@ function cmdSelftest() {
     // and the reading of a 2.8 baseline (text as the value) keeps every copy as debt — no recorded debt is lost on the first closing
     const legacy = { entries: Object.fromEntries(third.map((f) => [f.key, `${f.file}:${f.line} ${f.text}`])) };
     pv('a 2.8 baseline (text values) still reads as debt for every copy', freshFindings(third, legacy).length === 0, freshFindings(third, legacy).length);
+    // the judge of PV: a write limited to a path carries the OTHER files' 2.8 entries over without their text, and with their debt
+    const legacyIdeas = { entries: { 'ideas/02.md:0123456789abcdef': 'ideas/02.md:3 The owner decided to keep it.', ...legacy.entries } };
+    const carried = nextBaseline(runCheck(proot, ['plans']).findings, legacyIdeas, ['plans']);
+    pv('a path-limited write drops the 2.8 text of the entries it carries over', !/decided|keep it/.test(JSON.stringify(carried)) && 'ideas/02.md:0123456789abcdef' in carried.entries && freshFindings([{ key: 'ideas/02.md:0123456789abcdef' }, { key: 'ideas/02.md:0123456789abcdef' }], carried).length === 0, JSON.stringify(carried.entries).slice(0, 200));
   } finally { rmSync(proot, { recursive: true, force: true }); }
 
   if (bad) { console.error(`✖ selftest FAILED — ${bad} of ${n} cases`); process.exit(1); }

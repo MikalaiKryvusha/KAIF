@@ -449,6 +449,29 @@ r = run(D0, 'diff --source .kaif/install');
 const d0Ver = JSON.parse(readFileSync(join(D0, '.kaif', 'kaif.json'), 'utf8')).version;
 ok(r.code !== 0 && /\.kaif\/install\/ keeps only the bundle the loader fetched and is not a source/.test(r.out) &&
    r.out.includes(`releases/download/v${d0Ver}`), 'UT4: --source .kaif/install — отказ называет «не источник» и релиз маркера', r.out.slice(-400));
+// судья UT+PV: развёртывание, которое следит за форком, отказ шлёт к релизу ФОРКА (origin маркера), не к официальному
+const d0Marker = join(D0, '.kaif', 'kaif.json');
+const d0MarkerText = readFileSync(d0Marker, 'utf8');
+writeFileSync(d0Marker, JSON.stringify({ ...JSON.parse(d0MarkerText), origin: 'https://github.com/kaif-polygon/fork-of-kaif' }, null, 2) + '\n');
+r = run(D0, 'diff --source .kaif/install');
+writeFileSync(d0Marker, d0MarkerText);
+ok(r.out.includes(`https://github.com/kaif-polygon/fork-of-kaif/releases/download/v${d0Ver}`),
+   'UT4 (судья): маркер с origin форка — отказ называет релиз форка', r.out.slice(-400));
+// судья UT+PV: `check` над манифестом развёртывания, испорченным в JSON, — названный отказ с лекарством, не трасса стека Node
+const d0Man = join(D0, '.kaif', 'deploy-manifest.json');
+const d0Bundle = join(D0, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md');
+if (existsSync(d0Man)) {
+  // the bundle stays after `install` — `check` reads the manifest only without it (as after verify-final): moved aside, put back byte for byte
+  const d0BundleBytes = existsSync(d0Bundle) ? readFileSync(d0Bundle) : null;
+  if (d0BundleBytes) rmSync(d0Bundle);
+  const d0ManText = readFileSync(d0Man, 'utf8');
+  writeFileSync(d0Man, d0ManText.slice(0, Math.floor(d0ManText.length / 2)));
+  r = run(D0, 'check');
+  writeFileSync(d0Man, d0ManText);
+  if (d0BundleBytes) writeFileSync(d0Bundle, d0BundleBytes);
+  ok(r.code !== 0 && /deploy-manifest\.json is unreadable as JSON/.test(r.out) && /git checkout -- \.kaif\/deploy-manifest\.json/.test(r.out) && !/\n\s+at .*\.mjs:\d+/.test(r.out),
+     'UT4 (судья): check над испорченным манифестом — названный отказ с лекарством, без трассы стека', r.out.slice(-400));
+} else ok(false, 'UT4 (судья): фикстура манифеста — у D0 нет манифеста развёртывания (ветка манифеста не достигается)');
 // 99.3: лоадер — неизвестный канал это ОТКАЗ до любой сети (зеркало G16 для KAIF-LOADER.mjs).
 // Форма с --source: на сломанной версии канал молча игнорируется и локальная ветка падает
 // БЕЗ слов unknown channel (ровно так красный и был доказан) — сети нет в обоих мирах.

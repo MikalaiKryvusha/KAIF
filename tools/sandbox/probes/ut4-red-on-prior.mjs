@@ -7,6 +7,8 @@
 // usage: node tools/sandbox/probes/ut4-red-on-prior.mjs [<rev> = HEAD] [--keep]   ·   run it alone (≈ 1 min)
 // [TESTED: 2026-10-16 14:26:29 → 14:27:00 +03:00 · rev c439b1f — s07 1 · s08 1 · s09 1 red, exactly the named addressees; the same
 //  suites over the working-tree dist green; report testcases/reports/2026-10-16_ut5-check-lines-known.md]
+// [TESTED: 2026-10-16 15:14:24 → 15:14:55 +03:00 · after the fixes of the UT+PV judge — s09 carries three UT4 cases (the install folder ·
+//  a fork's origin · a corrupt deploy manifest): s07 1 · s08 1 · s09 3 red on c439b1f, exactly the addressees]
 import { cpSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -20,7 +22,7 @@ const SUITE_TIMEOUT_MS = 600000;   // method constant: one suite of the polygon 
 const SUITES = [
   { file: 's07-translated.mjs', addressees: ['UT4 (GoD R3)'] },
   { file: 's08-l2-faces.mjs', addressees: ['UT4: kaif-remove'] },
-  { file: 's09-l3-cli-safety.mjs', addressees: ['UT4: --source .kaif/install'] },
+  { file: 's09-l3-cli-safety.mjs', addressees: ['UT4: --source .kaif/install', 'UT4 (судья): маркер с origin форка', 'UT4 (судья): check над испорченным манифестом'] },
 ];
 const ROOT = mkdtempSync(join(tmpdir(), 'kaif-ut4-prior-'));
 const T = join(ROOT, 'tree');

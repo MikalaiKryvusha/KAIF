@@ -211,7 +211,7 @@ function selfProofWhyKeys() {
 // THREAT:         `check` gains, renames or drops a warning and the reference that describes its axes never hears of it — a field agent
 //                 reading §10.7 meets a line it cannot look up (EXP-0156: the language-mix and entry-cost changes of 2.8 sat unknown)
 // PROVED-AGAINST: `--selftest` fixture (a ⚠ line without a pair · a word absent from the entry · a stale pair · no entry · a missing
-//                 printer → each named; the clean fixture silent) and the real tree: on the reference of c439b1f — 17 lines «5u:», one per
+//                 printer → each named; the clean fixture silent) and the real tree: on the reference of c439b1f — 17 lines «5u:» under the first scan (20 under the scan with die(), the judge's re-run), one per
 //                 pair whose axis §10.7 did not carry, named before the run; three mutants of the tree copy
 //                 (tools/sandbox/probes/ut5-check-lines-mutants.mjs — a new line without a pair · a word cut out of the entry · a line
 //                 reworded) red exactly on their addressees, the control silent

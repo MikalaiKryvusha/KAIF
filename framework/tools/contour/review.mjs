@@ -723,7 +723,8 @@ function qCard(q, t) {
   const existing = q.existing.map((x) => '<p><strong>' + t.tag.answered + ':</strong> ' + renderInline(x) + '</p>').join(''); // CP (#123): his markup, not raw stars
   const inputs = q.answered
     ? '<p class="addcomment"><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="' + esc(t.ph.addComment) + '"></textarea></p>'
-    : '<p><input type="text" data-draft name="text:' + esc(q.doc) + ':' + q.id + '" placeholder="' + esc(t.ph.own) + '"></p>' +
+    // NT1 (2.9, origin issue #139): the owner's own answer is a TEXTAREA — Enter starts a new line, a pasted text keeps its lines
+    : '<p><textarea data-draft name="text:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="' + esc(t.ph.own) + '"></textarea></p>' +
       '<p><textarea data-draft name="comment:' + esc(q.doc) + ':' + q.id + '" rows="2" placeholder="' + esc(t.ph.comment) + '"></textarea></p>';
   const meta = q.target ? '<div class="qmeta">' + esc(q.target).replace(/`/g, '') + '</div>' : '';
   return '<section class="qcard' + (q.answered ? ' done' : '') + '">' +
@@ -1996,6 +1997,21 @@ export async function selftest(log = console.log) {
   ok(parseQuestions(after)[0].answered && buildPage(root, GOOD).html.includes('disabled checked'), 'after the record the question is answered and the page shows the chosen radio, disabled');
   const rec2 = recordDecision(root, GOOD, { answers: { Q1: { choice: 'A', text: '', comment: '' } } }, cfg, new Date(2026, 8, 5, 22, 1));
   ok(readFileSync(join(root, GOOD), 'utf8').includes('**Answer (follow-up, 5 September 2026, 22:01') && rec2.at !== rec.at, 'a second answer never overwrites the first — a dated follow-up (I2)');
+  { // NT1 (2.9, origin issue #139): the own-answer field is multi-line, and an answer of two lines (a blank line between) is written as two
+    // lines and read back whole
+    // its own root beside the fixture's: the queue cases below count the fixture's documents and must not see this one
+    const mlRoot = mkdtempSync(join(root, '..', 'kaif-contour-ml-'));
+    mkdirSync(join(mlRoot, 'interviews'), { recursive: true });
+    const ML = 'interviews/interview_053_multiline.md';
+    writeFileSync(join(mlRoot, ML), '# Interview #053 — multiline\n\n> Status: awaiting\n\n### Q1. Pick?\n\n<!-- archaeology: n/a — selftest -->\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
+    const pageML = buildPage(mlRoot, ML).html;
+    recordDecision(mlRoot, ML, { answers: { Q1: { choice: '', text: 'first line\n\nsecond line', comment: '' } } }, cfg, new Date(2026, 8, 5, 22, 2));
+    const mlAfter = readFileSync(join(mlRoot, ML), 'utf8'), mlQ = parseQuestions(mlAfter)[0];
+    rmSync(mlRoot, { recursive: true, force: true });
+    ok(pageML.includes('<textarea data-draft name="text:' + ML + ':Q1"') && !pageML.includes('<input type="text" data-draft name="text:')
+      && /\*\*Answer:\*\* first line\nsecond line <!-- owner-review:/.test(mlAfter) && mlQ.answered && mlQ.answers[0].text === 'first line\nsecond line',
+      'NT1 #139: the own answer is a textarea; an answer of two lines lands as two lines (no blank inside, the mark at the end) and reads back whole');
+  }
 
   // I37/I38: the notice class — state machine, page form, batch order
   const NOTICE = 'docs/report.md';
