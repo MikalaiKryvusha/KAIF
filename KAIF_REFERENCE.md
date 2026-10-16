@@ -862,6 +862,10 @@ explicit direction to deployed agents; the framework's vision belongs to its aut
   two TOP tickets sat "Delivered upstream: NOT YET" for hours under the very sentence that should have released them.
 - **The commit tool names its set out loud** because of a field incident: a tool that staged everything after the agent's
   inspection carried two of the owner's files into the origin under an agent's message minutes after he dropped them into the tree.
+- **One tool call — one action** because of a field ticket (origin #146, KAIF 2.9): Claude Code's auto-mode permission classifier
+  refused `git add`, `git commit` and `git push` joined by `&&` into one command and passed each step on its own; the owner set
+  the rule (origin decision #145) — each git step its own call, and a refusal of a single action is not retried or worked around
+  but told to him.
 
 ### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
 

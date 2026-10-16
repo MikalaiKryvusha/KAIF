@@ -178,8 +178,11 @@ node tools/commit.mjs "docs: README for release X.Y"
 собирает, переименовывает артефакт, коммитит "release: X.Y", ставит тег vX.Y, пушит и запускает gh release create с
 авто-нотами), запусти его. Иначе сделай это явно:>`
 ```bash
-# подними версию (в version.json или твоём манифесте), затем:
-git commit -am "release: X.Y" && git tag vX.Y && git push && git push --tags
+# подними версию (в version.json или твоём манифесте), затем — ОДИН вызов инструмента на строку, без склейки (AGENT_GUIDE.md → Git-процесс):
+git commit -am "release: X.Y"
+git tag vX.Y
+git push
+git push --tags
 gh release create vX.Y --title "<PROJECT> X.Y — <Кодовое имя>" --notes-file <NOTES.md> <ARTIFACT(S) if any>
 ```
 

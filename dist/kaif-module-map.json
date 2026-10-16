@@ -179,10 +179,10 @@
       {
         "signature": "## Git workflow",
         "class": "static",
-        "sha256": "0f91d7842cc285f7fb99034180d2f092e510b9d9a8ac5eab247a3507c77715e4",
+        "sha256": "22262f042accc859208b34c34ab1f2fc5321e64db8bb9d8ecd228c71ec77ad9f",
         "lines": [
           535,
-          566
+          567
         ]
       },
       {
@@ -190,8 +190,8 @@
         "class": "adaptive",
         "sha256": "9823dcb9befc599463605e1357df12260064338aacc0167faf74aeef7588db7d",
         "lines": [
-          567,
-          582
+          568,
+          583
         ]
       },
       {
@@ -199,8 +199,8 @@
         "class": "static",
         "sha256": "61ee7522a8b9834b8b8d74a1935533dff419971b0263d59be246ce577c6e210c",
         "lines": [
-          583,
-          596
+          584,
+          597
         ]
       },
       {
@@ -208,8 +208,8 @@
         "class": "static",
         "sha256": "848a4d8e09aa1d52de062cd94ea590e9283c239cc31326f8729ffb8a833a4be6",
         "lines": [
-          597,
-          614
+          598,
+          615
         ]
       },
       {
@@ -217,8 +217,8 @@
         "class": "static",
         "sha256": "6ee470ca25b4f21d44835d8964397c4e81d0bef89bd572d787802ebcab9fa031",
         "lines": [
-          615,
-          634
+          616,
+          635
         ]
       },
       {
@@ -226,8 +226,8 @@
         "class": "static",
         "sha256": "e67101f6015dd9204a2f2b5702b125b36e971fa3a795672cdae12bc76bcdede9",
         "lines": [
-          635,
-          651
+          636,
+          652
         ]
       },
       {
@@ -235,8 +235,8 @@
         "class": "static",
         "sha256": "ad6abe9241f5b0bd3afc2c505a5616359fb215a78732599bb3f42d7500f57031",
         "lines": [
-          652,
-          758
+          653,
+          759
         ]
       },
       {
@@ -244,8 +244,8 @@
         "class": "static",
         "sha256": "e26ec6f304e4428dd2186a4a5d09e3e27d616fd9152c6f72c084e71ef055baf0",
         "lines": [
-          759,
-          766
+          760,
+          767
         ]
       },
       {
@@ -253,8 +253,8 @@
         "class": "static",
         "sha256": "d7ec9fd48ca89d5864c7aefb8ae3324523b9d902aa07a6b3f58980ac69590e15",
         "lines": [
-          767,
-          774
+          768,
+          775
         ]
       },
       {
@@ -262,8 +262,8 @@
         "class": "static",
         "sha256": "6d409baa0cebe3cabca3d4ecc3d1f5e1dce630aaa59141a93bcbc8753122b322",
         "lines": [
-          775,
-          858
+          776,
+          859
         ]
       },
       {
@@ -271,8 +271,8 @@
         "class": "static",
         "sha256": "54f9a8d2a5203f7c2e841468a655cfd6a4f433dccc472165ac33b914dbe9d882",
         "lines": [
-          859,
-          1051
+          860,
+          1052
         ]
       },
       {
@@ -280,8 +280,8 @@
         "class": "static",
         "sha256": "df729eb6fbda7e11d2ca29dc1e8fa5162596c31ef70c3fc7056942b91b446877",
         "lines": [
-          1052,
-          1066
+          1053,
+          1067
         ]
       },
       {
@@ -289,8 +289,8 @@
         "class": "static",
         "sha256": "a150f5dbf5b41e7ff824ddbd117246ec802c1404ea3d9135a910444e8d9faff5",
         "lines": [
-          1067,
-          1080
+          1068,
+          1081
         ]
       }
     ],
@@ -1735,10 +1735,10 @@
       {
         "signature": "### `AGENT_GUIDE.md` → Git workflow",
         "class": "static",
-        "sha256": "7d820b1348ae7940cf42356abce337e503eb4981a0fed1147198271570212f99",
+        "sha256": "9811ab96edcfd4a192ac5af1654029b54a29e6f971a66d8c56af275a0acbf91d",
         "lines": [
           858,
-          864
+          868
         ]
       },
       {
@@ -1746,8 +1746,8 @@
         "class": "static",
         "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
         "lines": [
-          865,
-          871
+          869,
+          875
         ]
       },
       {
@@ -1755,8 +1755,8 @@
         "class": "static",
         "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
         "lines": [
-          872,
-          877
+          876,
+          881
         ]
       },
       {
@@ -1764,8 +1764,8 @@
         "class": "static",
         "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
         "lines": [
-          878,
-          882
+          882,
+          886
         ]
       },
       {
@@ -1773,8 +1773,8 @@
         "class": "static",
         "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
         "lines": [
-          883,
-          888
+          887,
+          892
         ]
       },
       {
@@ -1782,8 +1782,8 @@
         "class": "static",
         "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
         "lines": [
-          889,
-          895
+          893,
+          899
         ]
       },
       {
@@ -1791,8 +1791,8 @@
         "class": "static",
         "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
         "lines": [
-          896,
-          901
+          900,
+          905
         ]
       },
       {
@@ -1800,8 +1800,8 @@
         "class": "static",
         "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
         "lines": [
-          902,
-          906
+          906,
+          910
         ]
       }
     ],
@@ -2413,10 +2413,10 @@
       {
         "signature": "## Step 2. Commit and push",
         "class": "static",
-        "sha256": "5f547e6e7c0ef1cbe1f753174c92ece484718184b4da19382d7e6366b83dbc24",
+        "sha256": "7594a4a59edb861292332a5ac9a2c9d1f94673762047ad28371816f3415303ae",
         "lines": [
           31,
-          41
+          42
         ]
       },
       {
@@ -2424,8 +2424,8 @@
         "class": "static",
         "sha256": "8e6b9c8752aff9d7d8747839657e4efea4a2153f0dfd6d5bacf90f699dc08225",
         "lines": [
-          42,
-          46
+          43,
+          47
         ]
       },
       {
@@ -2433,8 +2433,8 @@
         "class": "static",
         "sha256": "89d0106b2f868f1034ced6324e7220eda1df9837e067fc79601b16ce83fe7b29",
         "lines": [
-          47,
-          54
+          48,
+          55
         ]
       },
       {
@@ -2442,8 +2442,8 @@
         "class": "static",
         "sha256": "d460cddf3c9477ef17f7b8ecd535bc20de3df7a8c51a226ead43be898506ca8f",
         "lines": [
-          55,
-          61
+          56,
+          62
         ]
       }
     ],
@@ -2514,10 +2514,10 @@
       {
         "signature": "### Step 4. Commit and push (judge first)",
         "class": "adaptive",
-        "sha256": "6bc315e9289e6fb2e7c5f80c593e055d379bf5b9a1710827654a850c0e80ecac",
+        "sha256": "6ea677b93aa18f56528e9b4778063f053a61e2b407611d33f5d5909350da5de7",
         "lines": [
           107,
-          120
+          121
         ]
       },
       {
@@ -2525,8 +2525,8 @@
         "class": "static",
         "sha256": "943f7ab63a9afcef7c3e5e15fe619275a1051a24e4619e5fb8a80e89b155b309",
         "lines": [
-          121,
-          138
+          122,
+          139
         ]
       },
       {
@@ -2534,8 +2534,8 @@
         "class": "static",
         "sha256": "18b2f1a2f80788a20798895b9080090c3d01bdce0905a7c888de1488e543b437",
         "lines": [
-          139,
-          151
+          140,
+          152
         ]
       }
     ],
@@ -4287,10 +4287,10 @@
       {
         "signature": "## Step 6. Publish (after the human's confirmation)",
         "class": "static",
-        "sha256": "3019009c113c500556c6a8203677ae4d418eb3fca0dedfb90b45801ff431101f",
+        "sha256": "416ff0ba662985ef4b3685a37b18326a7c200645800d0c80e61fae1f5791648e",
         "lines": [
           130,
-          161
+          164
         ]
       },
       {
@@ -4298,8 +4298,8 @@
         "class": "static",
         "sha256": "8445434fe3dade7d70beb20108a586a8ea97f789ab7fc71d9b1ee054c03401ee",
         "lines": [
-          162,
-          180
+          165,
+          183
         ]
       },
       {
@@ -4307,8 +4307,8 @@
         "class": "static",
         "sha256": "0f6841edf22f40479a824ff3a102f12153e39bc7f04132490e489804c7db0017",
         "lines": [
-          181,
-          199
+          184,
+          202
         ]
       },
       {
@@ -4316,8 +4316,8 @@
         "class": "static",
         "sha256": "bae10b311a9032e03b6cf9606de251380615321c44190549f98747ae20c9bc60",
         "lines": [
-          200,
-          207
+          203,
+          210
         ]
       },
       {
@@ -4325,8 +4325,8 @@
         "class": "static",
         "sha256": "33b3d1a28548400891716904c58295acadaaffced537a67fdce8c075b2b8f4d6",
         "lines": [
-          208,
-          215
+          211,
+          218
         ]
       }
     ],

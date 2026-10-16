@@ -684,30 +684,31 @@ is: work ONLY in `main`, no feature branches; commit incrementally and often; to
 (git revert / git checkout <hash> -- file), not branches. Pick what fits your project and state it here
 so the agent doesn't improvise.>`
 
-> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's
-> standing authorization for routine commits/pushes per the policy above. Everything beyond it —
-> releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
-> the owner's quoted words (an `AUTH:` line).
-> **One named carve-out, stated HERE because this is the paragraph read before every task:** a
-> ticket about a defect of KAIF ITSELF or an update's field report, filed to the framework's OWN origin, is delivered under the
-> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line —
-> file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
-> list above keeps waiting for the owner's words.
+> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's standing authorization
+> for routine commits/pushes per the policy above. Everything beyond it — releases, deploys, external sends/publishes,
+> force-pushes, deletions of shared data — still requires the owner's quoted words (an `AUTH:` line).
+> **One named carve-out, stated HERE because this is the paragraph read before every task:** a ticket about a defect of
+> KAIF ITSELF or an update's field report, filed to the framework's OWN origin, is delivered under the KAIF owner's
+> STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line — file it and
+> deliver it in the same motion, ahead of the work that found it. Everything else on the list above keeps waiting for
+> the owner's words.
 
 **Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
 
-- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you
-  did not intend to change — STOP and explain it first. This includes diffs *your tools* generated
-  (lock files, manifests, formatters): an agent trusts its tools even more blindly than itself — read
-  those diffs line by line. The rule is only executable if the set you inspect is the set that ships:
-  a commit tool that stages everything (`git add -A`) AFTER your inspection makes the two different
-  sets. So the tool NAMES its set out loud before committing, and a
-  NEW file in the tree stops a sweeping commit rather than riding along — declare the set instead.
+- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you did not intend to
+  change — STOP and explain it first. This includes diffs *your tools* generated (lock files, manifests, formatters): an
+  agent trusts its tools even more blindly than itself — read those diffs line by line. The rule is only executable if
+  the set you inspect is the set that ships: a commit tool that stages everything (`git add -A`) AFTER your inspection
+  makes the two different sets. So the tool NAMES its set out loud before committing, and a NEW file in the tree stops a
+  sweeping commit rather than riding along — declare the set instead.
 - **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
   after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
   caught by the owner is a failure of the framework.
 - **The owner's originals are inviolable.** A document from the owner is committed verbatim BEFORE any
   edit (checklist step 18) — never "improve" an original that isn't safely in history yet.
+- **One tool call — one action.** `git add`, `git commit`, `git push` — each its own tool call, never chained with `&&` or `;`:
+  an auto-mode permission classifier refuses a chain it passes step by step; a chained commit command filled into a skill runs
+  as its steps. Message in `-m`, text the shell mangles in a file (`-F`). A refused single action: no retry, no bypass — tell the owner.
 
 ## Commits
 
@@ -3593,6 +3594,10 @@ explicit direction to deployed agents; the framework's vision belongs to its aut
   two TOP tickets sat "Delivered upstream: NOT YET" for hours under the very sentence that should have released them.
 - **The commit tool names its set out loud** because of a field incident: a tool that staged everything after the agent's
   inspection carried two of the owner's files into the origin under an agent's message minutes after he dropped them into the tree.
+- **One tool call — one action** because of a field ticket (origin #146, KAIF 2.9): Claude Code's auto-mode permission classifier
+  refused `git add`, `git commit` and `git push` joined by `&&` into one command and passed each step on its own; the owner set
+  the rule (origin decision #145) — each git step its own call, and a refusal of a single action is not retried or worked around
+  but told to him.
 
 ### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
 
@@ -5714,8 +5719,11 @@ Commit the README/docs updates so the `release: X.Y` commit is a clean version b
 builds, renames the artifact, commits "release: X.Y", tags vX.Y, pushes, and runs gh release create),
 run it. Otherwise, do it explicitly:>`
 ```bash
-# bump version (in version.json or your manifest), then:
-git commit -am "release: X.Y" && git tag vX.Y && git push && git push --tags
+# bump version (in version.json or your manifest), then — ONE tool call per line, never chained (AGENT_GUIDE.md → Git workflow):
+git commit -am "release: X.Y"
+git tag vX.Y
+git push
+git push --tags
 gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTES.md> <ARTIFACT(S) if any>
 ```
 
@@ -6068,7 +6076,8 @@ move) instead of finishing it — naming survives, rushing corrupts.
 Commit through the project's staging gate and push:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+(AGENT_GUIDE.md → Git workflow).>`
 
 If the build is known-broken, say so IN the commit message (`wip:` prefix) — an honest broken
 state beats a silently lost one. If a push is rejected (non-fast-forward) — `git pull --rebase`,
@@ -6212,7 +6221,8 @@ Run a `/fable-judge` pass over this chat's finished claims before pushing (the c
 precedes every push). Then:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+(AGENT_GUIDE.md → Git workflow).>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
 End the message with your standard co-author trailer, e.g.:
@@ -8884,7 +8894,7 @@ Replace these throughout the guidance docs and skills during unpacking:
 | `<LICENSE>` | The project's license. |
 | `<BUILD_COMMAND>` | The exact command to build the project. |
 | `<TEST_HARNESS>` | How the agent runs/observes/drives the software without a human. |
-| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A && git commit -m "<msg>" && git push`); skills never append the message as an extra argument — they tell you what `<msg>` to use. **If the project has a commit tool with a staging gate, name THAT tool here, never raw `git`.** A sweeping `git add -A` written into a skill is a second commit route that bypasses whatever gate the project built — and the gate then guards one route while work travels the other. This is not hypothetical: a swept commit carried two of the owner's files into origin under the agent's message a minute after he put them in the tree, and the same raw line survived inside a skill long after the gate that was supposed to prevent it existed. |
+| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A, then git commit -m "<msg>", then git push — each its own tool call` — never one chained command: an auto-mode permission classifier refuses the chain); skills never append the message as an extra argument — they tell you what `<msg>` to use. **If the project has a commit tool with a staging gate, name THAT tool here, never raw `git`.** A sweeping `git add -A` written into a skill is a second commit route that bypasses whatever gate the project built — and the gate then guards one route while work travels the other. This is not hypothetical: a swept commit carried two of the owner's files into origin under the agent's message a minute after he put them in the tree, and the same raw line survived inside a skill long after the gate that was supposed to prevent it existed. |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
 | `<OWNER_LANGUAGE>` | The owner's working language (the AGENT_GUIDE language-policy note). |
 

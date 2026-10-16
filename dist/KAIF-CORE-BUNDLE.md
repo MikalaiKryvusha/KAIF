@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "ce811b91d6666891c2a9644bc18acf279059095cea1c47335ee4373299e7734b",
+    "sourceTree": "1428f1d7a58a1853a25a2dd063c5d89af68ca38c855d006c66ab4bef068ffaa4",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -108,6 +108,7 @@
       "THE UPDATE NAMES THE PLACES THAT STILL BUILD ON WHAT WAS RETIRED (2.9, epic UT; long field jumps left links to a retired skill and orders around a retired hook standing — the task only told the agent to run `git grep`): the withdrawn-phrases item of the update task now LISTS each place of your own texts — `file:line «phrase»`, the successor once per phrase — and `node .kaif/kaif-core.mjs checkpoint recheck` lists the places LEFT after your edits. Not places: the records (PROJECT_HISTORY.md, reports of past updates in reports/KAIF_UPDATES/), `.kaif/`, the installer's task files, and a line the delivered templates carry verbatim; a phrase counts as a whole word (`/end-chat` is not a place inside `/end-chat-soft`). Every retirement now names its phrases — the 2.4 split of `/end-chat` gained them.",
       "THE CONTEXT POINTERS OF YOUR AGENT SYSTEMS ARE BROUGHT UP TO DATE (2.9, epic UT; origin ticket #120 — a pointer was written once and no update touched it again: a deployment that jumped from 2.1 kept the 1.5 text in AGENTS.md, CLAUDE.md, .clinerules/kaif.md and .roo/rules/kaif.md, and the Zoo Code pointer never carried the rule about the word `resume`): an untouched pointer of an earlier release is replaced with this release's text (by the update, or by `checkpoint recheck` when the previous core ran the update); a pointer you edited is never rewritten — the task names it with the one line it lacks, and `update-verify` refuses until that line is there.",
       "A LONG UPDATE JUMP IS JUDGED HONESTLY (2.9, epic UT; a field jump 2.1 → 2.8: 236 false «promised upstream line not found» and a refused `update-verify` over the prayer in the owner's language): `update-verify` judges a promised line against the file's text (a paragraph re-wrapped by the merge is the same text); an anchored block (`<!-- KAIF:PRAYER:BEGIN -->` and the like) is found by its anchor, so its heading and lines in your language are not «missing»; `check --gate-budgets` run while an update task is open writes nothing and says to run it LAST, after `update-verify`; an explicit `--rehearsal` receipt also consumes the automatic rehearsal record.",
+      "ONE TOOL CALL — ONE ACTION FOR GIT (2.9; origin ticket #146 — an auto-mode permission classifier refused `git add`, `git commit` and `git push` joined into one command and passed each step alone): the Git workflow section of AGENT_GUIDE.md carries the rule — each git step is its own tool call, the message goes in `-m` and text the shell would mangle in a file (`-F`), a refused single action is neither retried nor bypassed but told to the owner; `/end-chat-soft`, `/end-chat-force` and `/release` name the steps one by one, and the default commit flow of a fresh install is the three steps. A commit command your skills already carry from an earlier install keeps its text — run it as its steps.",
       "THE VOICE PORTRAIT LOADS INTO A FILE WHEN YOUR CLIENT CUTS LONG OUTPUT (2.9; origin tickets #143 · #145 — a ~60 KB `load` cut by bytes ended inside a UTF-8 character): `node .kaif/tools/kaif-voice-lint.mjs load --out <file>` writes the same selection to a UTF-8 file and leaves the same witness; read that file whole before the first word. Inside the project's git work tree the path must be one git ignores — otherwise the load is refused before anything is written (the copy may be of a private portrait and would ride the next commit).",
       "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
       "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a status that does not fit two lines of the pill under the Save button rides the bar above the page (green for good news, red for trouble) and the pill carries a short label — a six-line pill used to cover the document's title; each bar is cleared only by its own owner, so a refused save keeps its reason in view through the page's pulse, and after the last answer is recorded a dead server is no alarm; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; Linux is not supported by the contour window: there no window is raised, the page is served and its address printed (the KAIF owner's word, 2.9). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner.",
@@ -1084,30 +1085,31 @@ is: work ONLY in `main`, no feature branches; commit incrementally and often; to
 (git revert / git checkout <hash> -- file), not branches. Pick what fits your project and state it here
 so the agent doesn't improvise.>`
 
-> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's
-> standing authorization for routine commits/pushes per the policy above. Everything beyond it —
-> releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
-> the owner's quoted words (an `AUTH:` line).
-> **One named carve-out, stated HERE because this is the paragraph read before every task:** a
-> ticket about a defect of KAIF ITSELF or an update's field report, filed to the framework's OWN origin, is delivered under the
-> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line —
-> file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
-> list above keeps waiting for the owner's words.
+> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's standing authorization
+> for routine commits/pushes per the policy above. Everything beyond it — releases, deploys, external sends/publishes,
+> force-pushes, deletions of shared data — still requires the owner's quoted words (an `AUTH:` line).
+> **One named carve-out, stated HERE because this is the paragraph read before every task:** a ticket about a defect of
+> KAIF ITSELF or an update's field report, filed to the framework's OWN origin, is delivered under the KAIF owner's
+> STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line — file it and
+> deliver it in the same motion, ahead of the work that found it. Everything else on the list above keeps waiting for
+> the owner's words.
 
 **Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
 
-- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you
-  did not intend to change — STOP and explain it first. This includes diffs *your tools* generated
-  (lock files, manifests, formatters): an agent trusts its tools even more blindly than itself — read
-  those diffs line by line. The rule is only executable if the set you inspect is the set that ships:
-  a commit tool that stages everything (`git add -A`) AFTER your inspection makes the two different
-  sets. So the tool NAMES its set out loud before committing, and a
-  NEW file in the tree stops a sweeping commit rather than riding along — declare the set instead.
+- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you did not intend to
+  change — STOP and explain it first. This includes diffs *your tools* generated (lock files, manifests, formatters): an
+  agent trusts its tools even more blindly than itself — read those diffs line by line. The rule is only executable if
+  the set you inspect is the set that ships: a commit tool that stages everything (`git add -A`) AFTER your inspection
+  makes the two different sets. So the tool NAMES its set out loud before committing, and a NEW file in the tree stops a
+  sweeping commit rather than riding along — declare the set instead.
 - **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
   after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
   caught by the owner is a failure of the framework.
 - **The owner's originals are inviolable.** A document from the owner is committed verbatim BEFORE any
   edit (checklist step 18) — never "improve" an original that isn't safely in history yet.
+- **One tool call — one action.** `git add`, `git commit`, `git push` — each its own tool call, never chained with `&&` or `;`:
+  an auto-mode permission classifier refuses a chain it passes step by step; a chained commit command filled into a skill runs
+  as its steps. Message in `-m`, text the shell mangles in a file (`-F`). A refused single action: no retry, no bypass — tell the owner.
 
 ## Commits
 
@@ -3980,6 +3982,10 @@ explicit direction to deployed agents; the framework's vision belongs to its aut
   two TOP tickets sat "Delivered upstream: NOT YET" for hours under the very sentence that should have released them.
 - **The commit tool names its set out loud** because of a field incident: a tool that staged everything after the agent's
   inspection carried two of the owner's files into the origin under an agent's message minutes after he dropped them into the tree.
+- **One tool call — one action** because of a field ticket (origin #146, KAIF 2.9): Claude Code's auto-mode permission classifier
+  refused `git add`, `git commit` and `git push` joined by `&&` into one command and passed each step on its own; the owner set
+  the rule (origin decision #145) — each git step its own call, and a refusal of a single action is not retried or worked around
+  but told to him.
 
 ### `AGENT_GUIDE.md` → Planning discipline — the task ladder (`/plan-task` · `/plan-epic`)
 
@@ -5052,7 +5058,8 @@ move) instead of finishing it — naming survives, rushing corrupts.
 Commit through the project's staging gate and push:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+(AGENT_GUIDE.md → Git workflow).>`
 
 If the build is known-broken, say so IN the commit message (`wip:` prefix) — an honest broken
 state beats a silently lost one. If a push is rejected (non-fast-forward) — `git pull --rebase`,
@@ -5194,7 +5201,8 @@ Run a `/fable-judge` pass over this chat's finished claims before pushing (the c
 precedes every push). Then:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A && git commit -m "..." && git push.>`
+pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+(AGENT_GUIDE.md → Git workflow).>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
 End the message with your standard co-author trailer, e.g.:
@@ -8513,8 +8521,11 @@ Commit the README/docs updates so the `release: X.Y` commit is a clean version b
 builds, renames the artifact, commits "release: X.Y", tags vX.Y, pushes, and runs gh release create),
 run it. Otherwise, do it explicitly:>`
 ```bash
-# bump version (in version.json or your manifest), then:
-git commit -am "release: X.Y" && git tag vX.Y && git push && git push --tags
+# bump version (in version.json or your manifest), then — ONE tool call per line, never chained (AGENT_GUIDE.md → Git workflow):
+git commit -am "release: X.Y"
+git tag vX.Y
+git push
+git push --tags
 gh release create vX.Y --title "<PROJECT> X.Y — <Codename>" --notes-file <NOTES.md> <ARTIFACT(S) if any>
 ```
 

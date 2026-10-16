@@ -539,30 +539,31 @@ is: work ONLY in `main`, no feature branches; commit incrementally and often; to
 (git revert / git checkout <hash> -- file), not branches. Pick what fits your project and state it here
 so the agent doesn't improvise.>`
 
-> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's
-> standing authorization for routine commits/pushes per the policy above. Everything beyond it —
-> releases, deploys, external sends/publishes, force-pushes, deletions of shared data — still requires
-> the owner's quoted words (an `AUTH:` line).
-> **One named carve-out, stated HERE because this is the paragraph read before every task:** a
-> ticket about a defect of KAIF ITSELF or an update's field report, filed to the framework's OWN origin, is delivered under the
-> KAIF owner's STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line —
-> file it and deliver it in the same motion, ahead of the work that found it. Everything else on the
-> list above keeps waiting for the owner's words.
+> Reconciliation with the fable-method **authorization gate**: this deployed guide IS the owner's standing authorization
+> for routine commits/pushes per the policy above. Everything beyond it — releases, deploys, external sends/publishes,
+> force-pushes, deletions of shared data — still requires the owner's quoted words (an `AUTH:` line).
+> **One named carve-out, stated HERE because this is the paragraph read before every task:** a ticket about a defect of
+> KAIF ITSELF or an update's field report, filed to the framework's OWN origin, is delivered under the KAIF owner's
+> STANDING AUTHORIZATION (`/report-bug`, step 3 "File AND deliver") and does NOT wait for an `AUTH:` line — file it and
+> deliver it in the same motion, ahead of the work that found it. Everything else on the list above keeps waiting for
+> the owner's words.
 
 **Non-negotiable git hygiene (each rule exists because its violation burned a real project):**
 
-- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you
-  did not intend to change — STOP and explain it first. This includes diffs *your tools* generated
-  (lock files, manifests, formatters): an agent trusts its tools even more blindly than itself — read
-  those diffs line by line. The rule is only executable if the set you inspect is the set that ships:
-  a commit tool that stages everything (`git add -A`) AFTER your inspection makes the two different
-  sets. So the tool NAMES its set out loud before committing, and a
-  NEW file in the tree stops a sweeping commit rather than riding along — declare the set instead.
+- **`git diff --stat` before every commit — of the set that is ACTUALLY LEAVING.** Anything in it you did not intend to
+  change — STOP and explain it first. This includes diffs *your tools* generated (lock files, manifests, formatters): an
+  agent trusts its tools even more blindly than itself — read those diffs line by line. The rule is only executable if
+  the set you inspect is the set that ships: a commit tool that stages everything (`git add -A`) AFTER your inspection
+  makes the two different sets. So the tool NAMES its set out loud before committing, and a NEW file in the tree stops a
+  sweeping commit rather than riding along — declare the set instead.
 - **Ignore first, then the tool.** Any new tool, export, dump, key, or binary enters the project ONLY
   after its `.gitignore` line exists. A secret caught by a gate is a success of procedure; a secret
   caught by the owner is a failure of the framework.
 - **The owner's originals are inviolable.** A document from the owner is committed verbatim BEFORE any
   edit (checklist step 18) — never "improve" an original that isn't safely in history yet.
+- **One tool call — one action.** `git add`, `git commit`, `git push` — each its own tool call, never chained with `&&` or `;`:
+  an auto-mode permission classifier refuses a chain it passes step by step; a chained commit command filled into a skill runs
+  as its steps. Message in `-m`, text the shell mangles in a file (`-F`). A refused single action: no retry, no bypass — tell the owner.
 
 ## Commits
 

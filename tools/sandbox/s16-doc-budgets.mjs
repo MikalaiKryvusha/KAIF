@@ -46,7 +46,7 @@
 // `testcases/reports/2026-09-18_canon-budget.md`).
 // [TESTED: 2026-09-18 · зелёный в составе полигона; числа — цитата из собственной итоговой строки
 //  свода (EXP-0025/EXP-0127), красные на 2.6 и на мутантах — в отчёте прогона]
-import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, unlinkSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, cpSync, existsSync, unlinkSync, rmSync, renameSync } from 'node:fs';
 import { execSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -579,7 +579,17 @@ const realAttr = lintIn(U, 'kaif-attribution-lint.mjs');
 ok(realDoor.code === 0 && /↳ STATUS\.md: own lines \d+ of budget 200 → [^\n]*debt recorded/.test(realDoor.out) && realJournal.code === 1 && realAttr.code === 1,
    's16 задание обновления (CK5.6): прогноз сбылся на том же дереве — дверь пропускает с записью долга, оба линта останавливают',
    `door ${realDoor.code} · journal ${realJournal.code} · attribution ${realAttr.code} · ${realDoor.out.slice(-300)}`);
-// Отметка перемеряет по дереву ПОСЛЕ слияний: база уже записана настоящей дверью (9.9), STATUS вырос — отметка называет стоп и записывается.
+// ТЕСТ ИЗМЕНЁН (2.9, UT3, критерий 18): прежде здесь стояло «база уже записана настоящей дверью» — дверью, запущенной ПРИ ОТКРЫТОМ задании;
+// это и был дефект поля (база полуслитого дерева). Теперь дверь при открытом задании базу НЕ пишет — это судится; базу прошлого закрытия
+// пишет дверь при ЗАКРЫТОМ задании (задание отодвинуто и возвращено). Дальше — как прежде: STATUS вырос, отметка называет стоп.
+const UBASE = join(U, '.kaif', 'budget-baseline.json'), UTASK = join(U, 'KAIF_UPDATE_TASK.md');
+ok(!existsSync(UBASE) && /is open — the base \.kaif\/budget-baseline\.json is not written mid-update/.test(realDoor.out),
+   's16 задание обновления (UT3): дверь при открытом задании обновления базу не пишет и говорит, что её место — последней', realDoor.out.slice(-300));
+renameSync(UTASK, UTASK + '.aside');
+const closedDoor = runU(U, 'check --gate-budgets');
+renameSync(UTASK + '.aside', UTASK);
+ok(closedDoor.code === 0 && existsSync(UBASE), 's16 задание обновления (UT3): дверь при закрытом задании пишет базу (модель прошлого закрытия)', closedDoor.out.slice(-300));
+// Отметка перемеряет по дереву ПОСЛЕ слияний: база прошлого закрытия есть, STATUS вырос — отметка называет стоп и записывается.
 writeFileSync(US, readFileSync(US, 'utf8') + 'own status line grown 1\nown status line grown 2\nown status line grown 3\n');
 const tickU = runU(U, 'checkpoint closing-gates');
 ok(tickU.code === 0 && /⚠ closing gates measured again: \d+ line\(s\) still STOP the first closing/.test(tickU.out) &&

@@ -461,6 +461,22 @@ const rn9 = runAll9(S9n, 'install');
 ok(rn9.code === 0 && /⚠ this folder is not a git repository, and the deploy ends with a commit — run `git init` now; commit the owner's own files first/.test(rn9.out),
    'S9 #143: установка в папку без git — сводка называет `git init` и порядок коммитов', rn9.out.slice(-400));
 ok(!/this folder is not a git repository/.test(inst9.out), 'S9 #143: в git-проекте строки о `git init` нет (свежая установка S9)', inst9.out.slice(-200));
+// #146 (2.9, критерий 24, решение №145): классификатор разрешений авторежима отказывал склеенным `git add … && git commit … && git push`
+// и пропускал те же шаги поодиночке. Поставка не предписывает склейку нигде: ни бандл (руководство, навыки закрытия и выпуска), ни
+// значение `<COMMIT_COMMAND>` по умолчанию в ядре, ни навыки, развёрнутые свежей установкой (S9t — git-проект без своего инструмента
+// коммита: навыки циклов получают значение по умолчанию). Красный — на сборке до фикса (шов KAIF_DIST).
+{
+  const CHAIN = /&&\s*git\s+(push|commit|tag)\b/;
+  const scan = (label, text) => text.split('\n').flatMap((l, i) => (CHAIN.test(l) ? [`${label}:${i + 1}`] : []));
+  const hits = [...scan('bundle', readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8')), ...scan('core', readFileSync(join(DIST, 'KAIF-CORE.mjs'), 'utf8'))];
+  const skills9t = join(S9t, '.claude', 'skills');
+  const deployed = existsSync(skills9t) ? readdirSync(skills9t).filter((n) => existsSync(join(skills9t, n, 'SKILL.md'))) : [];
+  for (const n of deployed) hits.push(...scan(`S9t ${n}`, readFileSync(join(skills9t, n, 'SKILL.md'), 'utf8')));
+  const autoloop = deployed.includes('autoloop') ? readFileSync(join(skills9t, 'autoloop', 'SKILL.md'), 'utf8') : '';
+  ok(deployed.length > 30 && hits.length === 0 && /git add -A, then git commit -m "<msg>", then git push — each its own tool call/.test(autoloop),
+     `S9 #146: поставка не склеивает git-шаги — бандл, ядро и ${deployed.length} развёрнутых навыков; /autoloop несёт три шага по умолчанию`,
+     `hits ${hits.slice(0, 8).join(', ')} | skills ${deployed.length}`);
+}
 // Старое развёртывание: .gitignore, записанный прежним ядром (голые строки), с правками владельца вокруг, концы строк CRLF.
 const OLD_GI9 = ['node_modules/', 'KAIF.md', '!.clinerules/kaif.md', 'KAIF-LOADER.mjs', 'dist/', ''].join('\r\n');
 writeFileSync(join(S9, '.gitignore'), OLD_GI9);

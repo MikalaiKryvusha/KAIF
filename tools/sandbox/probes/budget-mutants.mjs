@@ -60,6 +60,7 @@ const MUTANTS = [
              'итог гейта называет ЧИСЛО документов',
              'гейт называет верный ход',
              's16 SW4 (#113): HOUSE_RULES.md есть → дверь закрытия',   // 2.9, SW4: the fixture with the file present runs the door too
+             'дверь при открытом задании обновления базу не пишет', 'дверь при закрытом задании пишет базу',   // 2.9, UT3: no door — no «run the door LAST» line mid-update, no base after it
              'первое закрытие без базы ЗАПИСЫВАЕТ',
              'база хранит ровно те',
              'СТОЯНИЕ выше бюджета',
@@ -134,7 +135,8 @@ const MUTANTS = [
     expect: ['первое закрытие без базы ЗАПИСЫВАЕТ',
              'первое закрытие НОВОЙ версии',
              'объявленный архив с дайджестом проходит дверь',
-             'дверь бюджета названа', 'прогноз сбылся на том же дереве'] },
+             'дверь бюджета названа', 'прогноз сбылся на том же дереве',
+             'дверь при закрытом задании пишет базу'] },   // 2.9, UT3: the last closing is a first gate too
   { name: 'M10 the base never tightens after a shrink',
     from: '    docs[o.doc] = Math.min(before, o.own);',
     to: '    docs[o.doc] = before;',
@@ -214,7 +216,8 @@ const MUTANTS = [
   { name: 'M24 the forecast WRITES the ratchet base (it must only read)',
     from: '    const { verdicts } = budgetRatchet(budgetOverflow(() => {}), base, version);',
     to: '    const { verdicts, next } = budgetRatchet(budgetOverflow(() => {}), base, version); writeFileSync(BUDGET_BASELINE, JSON.stringify({ version: next.version, docs: next.docs }));',
-    expect: ['прогноз только читает', 'прогноз сбылся на том же дереве'] },
+    expect: ['прогноз только читает', 'прогноз сбылся на том же дереве',
+             'дверь при открытом задании обновления базу не пишет', 'дверь при закрытом задании пишет базу'] },   // 2.9, UT3
   { name: 'M25 the closing-gates checkpoint does not measure again',
     from: '    const now = closingGatesForecast(version);',
     to: '    const now = [];',
@@ -229,8 +232,8 @@ const MUTANTS = [
     to: "    if (tag === 'KAIF-UPDATE') {",
     expect: ['прогноз не повторяет'] },
   { name: 'M11 a gate with no debt writes no base file (so the next overflow is "first")',
-    from: "    if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
-    to: "    if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",
+    from: "    else if (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body) writeFileSync(BUDGET_BASELINE, body);",
+    to: "    else if (Object.keys(next.docs).length && (!existsSync(BUDGET_BASELINE) || readFileSync(BUDGET_BASELINE, 'utf8') !== body)) writeFileSync(BUDGET_BASELINE, body);",
     expect: ['зелёный прогон двери записал базу',
              '`check --gate-budgets` на превышении',
              'гейт печатает строку',
