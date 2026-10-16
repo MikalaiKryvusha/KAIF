@@ -201,6 +201,89 @@ function selfProofWhyKeys() {
   return fails;
 }
 
+// 5u. The reference knows every line `check` prints (2.9, epic UT, step UT5; ideas/31 p. 26, EXP-0156 — in 2.8 the `check` entry of
+//     Reference §10.7 learned of not one change of epic CK until a session added the clause by hand; the suites catch a twin among
+//     themselves, the reference nobody). Every string literal opening with ⚠ / ✖ / ℹ in the body of `cmdCheck` and of the helpers that
+//     print for it (CHECK_PRINTERS) must match a pair of CHECK_LINE_WORDS — a fixed fragment of the line → the word that names its
+//     axis — and every pair's word must stand in the `check` entry of §10.7 (from "· `check` (" to " · `version`", whitespace folded,
+//     case kept). A line without a pair, a word the entry lacks and a pair no line uses any more are named one by one.
+// @guard reference-knows-check-lines
+// THREAT:         `check` gains, renames or drops a warning and the reference that describes its axes never hears of it — a field agent
+//                 reading §10.7 meets a line it cannot look up (EXP-0156: the language-mix and entry-cost changes of 2.8 sat unknown)
+// PROVED-AGAINST: `--selftest` fixture (a ⚠ line without a pair · a word absent from the entry · a stale pair · no entry · a missing
+//                 printer → each named; the clean fixture silent) and the real tree: on the reference of c439b1f — 17 lines «5u:», one per
+//                 pair whose axis §10.7 did not carry, named before the run; three mutants of the tree copy
+//                 (tools/sandbox/probes/ut5-check-lines-mutants.mjs — a new line without a pair · a word cut out of the entry · a line
+//                 reworded) red exactly on their addressees, the control silent
+// GAP:            it judges that a WORD of the axis stands in the entry, not that the entry's sentence still describes the line truly; a
+//                 line printed through a variable built elsewhere (neither a literal opening with the symbol nor a die() literal) is
+//                 outside the scan — the door's verdict line `${v.pass ? '↳' : '✖'} <doc>: own lines …` among them (its words are paired
+//                 anyway: the field probe matches it)
+// ON-REAL-PATH:   the build of this repository — every `node tools/build-framework.mjs` runs it
+// the pairs are DATA, one file read by the guard and by the field probe tools/sandbox/probes/ut5-field-check-lines.mjs
+const CHECK_LINE_DATA = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'check-line-words.json'), 'utf8'));
+const CHECK_PRINTERS = CHECK_LINE_DATA.printers;
+const CHECK_LINE_WORDS = CHECK_LINE_DATA.pairs;
+function checkLinesUnknownToReference(coreSrc, refText, pairs = CHECK_LINE_WORDS, printers = CHECK_PRINTERS) {
+  const found = [];
+  const src = coreSrc.replace(/\r\n/g, '\n');
+  // the print sites: the rest of the source line after an opening quote whose first character is the symbol
+  const sites = [];
+  for (const fn of printers) {
+    const at = src.search(new RegExp(`^(?:async )?function ${fn}\\(`, 'm'));
+    if (at < 0) { found.push(`the core has no function ${fn}() — CHECK_PRINTERS names a printer of \`check\` that is gone`); continue; }
+    const end = src.indexOf('\n}\n', at);
+    const body = src.slice(at, end < 0 ? src.length : end);
+    for (const m of body.matchAll(/[`'"]([⚠✖ℹ] [^\n]*)/g)) sites.push({ fn, text: m[1] });
+    // a refusal is printed by die() with the ✖ in front — its literal does not open with the symbol (the functional run on field
+    // clones found the closing «✖ INCOMPLETE: N artifacts missing» outside the first form of this scan)
+    for (const m of body.matchAll(/\bdie(?:Soft)?\(\s*[`'"]([^\n]*)/g)) sites.push({ fn, text: '✖ ' + m[1] });
+  }
+  const ref = refText.replace(/\r\n/g, '\n');
+  const s = ref.indexOf('· `check` (');
+  const e = s < 0 ? -1 : ref.indexOf(' · `version`', s);
+  if (s < 0 || e < 0) return [...found, 'Reference §10.7 carries no `check` entry (from "· `check` (" to " · `version`") — the axes of `check` have no paragraph to be looked up in'];
+  const entry = ref.slice(s, e).replace(/\s+/g, ' ');
+  const used = new Set();
+  for (const site of sites) {
+    const hits = pairs.filter((p) => site.text.includes(p.line));
+    hits.forEach((p) => used.add(p));
+    if (!hits.length) found.push(`${site.fn}() prints «${site.text.slice(0, 90)}» and CHECK_LINE_WORDS has no pair for it — add { line, word } there and the word to the \`check\` entry of Reference §10.7`);
+  }
+  for (const p of pairs) {
+    if (!entry.includes(p.word.replace(/\s+/g, ' ')))
+      found.push(`the line «${p.line}» of \`check\` names its axis «${p.word}», and the \`check\` entry of Reference §10.7 does not carry that word — describe the axis there`);
+    if (!used.has(p)) found.push(`CHECK_LINE_WORDS pairs «${p.line}» with «${p.word}», and no line \`check\` prints carries that fragment — drop the pair or fix its fragment`);
+  }
+  return found;
+}
+function selfProofCheckLines() {
+  const fails = [];
+  const core = 'function cmdCheck() {\n  console.error(`⚠ alpha drift: ${x}`);\n  console.error(\'✖ beta broke\');\n  log(`ℹ gamma cost: ${n}`);\n' +
+    '  if (n) die(`OMEGA stop: ${n} missing`);\n}\n' + 'function helper() {\n  say(`⚠ delta lost: ${p}`);\n}\n';
+  const pairs = [{ line: 'alpha drift', word: 'ALPHA axis' }, { line: 'beta broke', word: 'beta axis' }, { line: 'gamma cost', word: 'gamma axis' },
+    { line: 'delta lost', word: 'delta axis' }, { line: 'OMEGA stop', word: 'omega axis' }];
+  const ref = (w) => `### 10.7 Commands\n\n\`sync\` · \`check\` (${w}, the omega axis) · \`version\` · \`report\`\n`;
+  const clean = checkLinesUnknownToReference(core, ref('the ALPHA axis, the beta axis, the gamma axis and the delta axis'), pairs, ['cmdCheck', 'helper']);
+  if (clean.length) fails.push('чистая фикстура покраснела: ' + clean.join(' | '));
+  const noDiePair = checkLinesUnknownToReference(core, ref('the ALPHA axis, the beta axis, the gamma axis and the delta axis'), pairs.slice(0, 4), ['cmdCheck', 'helper']);
+  if (!(noDiePair.length === 1 && noDiePair[0].includes('«✖ OMEGA stop'))) fails.push('отказ die() без пары НЕ назван одной находкой: ' + noDiePair.join(' | '));
+  const noPair = checkLinesUnknownToReference(core, ref('the ALPHA axis, the beta axis, the gamma axis and the delta axis'), pairs.slice(1), ['cmdCheck', 'helper']);
+  if (!(noPair.length === 1 && noPair[0].includes('«⚠ alpha drift'))) fails.push('строка check без пары НЕ названа одной находкой: ' + noPair.join(' | '));
+  const noWord = checkLinesUnknownToReference(core, ref('the ALPHA axis, the beta axis and the delta axis'), pairs, ['cmdCheck', 'helper']);
+  if (!(noWord.length === 1 && noWord[0].includes('«gamma axis»'))) fails.push('слово, которого нет в записи check, НЕ названо одной находкой: ' + noWord.join(' | '));
+  const caseWord = checkLinesUnknownToReference(core, ref('the alpha axis, the beta axis, the gamma axis and the delta axis'), pairs, ['cmdCheck', 'helper']);
+  if (!caseWord.some((f) => f.includes('«ALPHA axis»'))) fails.push('слово другого регистра засчитано (сверка обязана держать регистр)');
+  const stale = checkLinesUnknownToReference(core, ref('the ALPHA axis, the beta axis, the gamma axis, the delta axis and the eps axis'),
+    [...pairs, { line: 'eps gone', word: 'eps axis' }], ['cmdCheck', 'helper']);
+  if (!(stale.length === 1 && stale[0].includes('«eps gone»'))) fails.push('пара без строки НЕ названа одной находкой: ' + stale.join(' | '));
+  const noEntry = checkLinesUnknownToReference(core, '### 10.7 Commands\n\n`sync` · `version`\n', pairs, ['cmdCheck', 'helper']);
+  if (!noEntry.some((f) => f.includes('carries no `check` entry'))) fails.push('записка без записи check НЕ названа');
+  const noFn = checkLinesUnknownToReference(core, ref('the ALPHA axis, the beta axis, the gamma axis and the delta axis'), pairs, ['cmdCheck', 'helper', 'gone']);
+  if (!noFn.some((f) => f.includes('no function gone()'))) fails.push('пропавший печатник check НЕ назван');
+  return fails;
+}
+
 // 5j. The delivery templates of the re-read core stay under budget × (100 − TEMPLATE_RESERVE_PCT) % (2.8, epic CK, step CK5.1;
 //     plans/117 criterion 1; the reserve — researches/33 §7 (б), revised twice on 2026-09-25). A template ON its budget leaves a
 //     deployment translated wholesale — where the budget gate counts every line as the project's own — no room for the project's
@@ -731,6 +814,10 @@ if (process.argv.includes('--selftest')) {
   for (const f of wFails) console.error('✖ selfproof 5i (CK 2.8): ' + f);
   if (wFails.length) { console.error(`\n❌ check-framework --selftest: гард 5i — ${wFails.length} провалов`); process.exit(1); }
   console.log('✅ гард 5i: висячий ключ §17 записки и ключ на несуществующий файл названы ПОИМЁННО; живой ключ молчит; записка без §17 названа');
+  const uFails = selfProofCheckLines();
+  for (const f of uFails) console.error('✖ selfproof 5u (UT 2.9): ' + f);
+  if (uFails.length) { console.error(`\n❌ check-framework --selftest: гард 5u — ${uFails.length} провалов`); process.exit(1); }
+  console.log('✅ гард 5u: строка check без пары (и отказ die() без пары), слово оси, которого нет в записи check §10.7, пара без строки, записка без записи и пропавший печатник названы поимённо; чистая фикстура молчит');
   const fails = selfProofPayloadCyrillic();
   for (const f of fails) console.error('✖ selfproof 5d: ' + f);
   const halfFails = selfProofHalves();
@@ -919,6 +1006,9 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
     });
   }
 }
+// 5u. The reference knows every line `check` prints — declared with its self-proof near the top (UT5).
+errors.push(...checkLinesUnknownToReference(readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8'),
+  readFileSync(join(ROOT, 'framework', 'KAIF_REFERENCE.md'), 'utf8')).map((f) => '5u: ' + f));
 
 // 5e. [TESTED: 2026-08-07 · proven red against the pre-fix HEAD blobs (23 findings across the
 //     8 KLAS-D10 desync rows) and green after the content fixes — see bugs/38]

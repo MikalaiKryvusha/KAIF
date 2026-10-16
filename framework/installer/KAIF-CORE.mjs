@@ -1620,7 +1620,7 @@ function ownerVoiceInstruction(ownerVoice) {
 }
 
 function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
-  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [], ownerVoice = null, prerelease = null } = opts;
+  const { divergedModules = {}, ownerConvention = [], fromVersion = null, deprecations = [], staleClaims = [], translatedWholesale = [], unresolved = [], sphereSync = null, skeletonDelta = null, nameFallback = null, languageArrivals = [], verdictMismatches = [], modeSwitch = [], ownerVoice = null, prerelease = null, verdicts = {} } = opts;
   const policy = policyInterval(meta, fromVersion);
   const modFiles = Object.keys(divergedModules);
   // Checklists and decision tables inside framework files often carry the OWNER's recorded
@@ -1640,7 +1640,12 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // to the note alone, never to silence.
   const upstreamOf = (p) => (meta.sources && meta.sources[p] && fromVersion)
     ? `; upstream: ${meta.sources[p]} — the same delta from the origin: git diff v${fromVersion} v${meta.version} -- ${meta.sources[p]}` : '';
-  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below${upstreamOf(p)})` : p).join(' · ')}. ${OWNER_LINES}`]);
+  // UT4 (2.9; a field jump 1.2 → 2.8: three canon documents RETOLD in the owner's language, not one template heading in common —
+  // `baseFound 0` — and the item offered only "merge by hand", 42 module diffs into the retelling): such a file names the second road
+  // the field took — take this release's render whole and carry the project's facts over. A hint of the task, not a gate.
+  const zeroBase = (p) => (verdicts[p] && verdicts[p].baseFound === 0)
+    ? `; not one template heading survives (baseFound 0 of ${verdicts[p].baseN}) — a second road: take this release's render whole (\`node .kaif/kaif-core.mjs diff --source <the receipt's source> --render ${p}\` prints it in your language) and carry your project's facts over from the old text, when the delta below is more than you would keep` : '';
+  if (diverged.length) items.push(['merge-diverged', `These framework files carry LOCAL edits and were NOT overwritten — merge the new template's changes into each by hand (real template deltas, where available, are in the Module diffs below): ${diverged.map((p) => translatedWholesale.includes(p) ? `${p} (translated wholesale — its headings are in the owner's language, a by-signature merge is impossible; its template delta ships below${upstreamOf(p)}${zeroBase(p)})` : p).join(' · ')}. ${OWNER_LINES}`]);
   // P1 (2.5, epic US; #27 R1): a file whose wholesale verdict differed between the recorded
   // rehearsal and this run was FROZEN — what the rehearsal showed the owner stays true, and both
   // number sets ride the item: the disagreement is the fingerprint of a classification that
@@ -1755,7 +1760,13 @@ const SOURCE_FORMS_HINT = `  --source must be a base that serves kaif-manifest.j
 async function fetchArtifact(base, name) {
   if (!/^https?:\/\//.test(base)) {
     const p = join(base, name);
-    if (!existsSync(p)) dieSoft(`not found in source: ${p}\n${SOURCE_FORMS_HINT}`);
+    if (!existsSync(p)) {
+      // UT4 (2.9; a field long jump: `diff --source .kaif/install --render <file>` got only the generic forms): the install folder keeps
+      // the bundle the loader fetched and is never a source — the refusal names the release this deployment's marker runs
+      let own = null;
+      if (resolve(base) === resolve('.kaif/install')) { try { own = readJson(KAIF_JSON).version || '<X.Y>'; } catch { own = '<X.Y>'; } }
+      dieSoft(`not found in source: ${p}${own ? ` — .kaif/install/ keeps only the bundle the loader fetched and is not a source; the release this deployment's marker runs: ${ORIGIN}/releases/download/v${own}` : ''}\n${SOURCE_FORMS_HINT}`);
+    }
     return readFileSync(p);
   }
   let res;
@@ -2547,7 +2558,7 @@ async function cmdUpdate() {
     ? deploy.filter((f) => !isSkippedAnon(f.path) && (!oldTpl[f.path] || oldTpl[f.path] !== normSha(f.content))).length : null;
   writeUpdateTask(diverged, { ...meta, version: man.version },
     `${changedCnt !== null ? `the framework changed ${changedCnt} of ${deploy.length} shipped files in this interval; ` : ''}mechanical pass done: ${replaced} files replaced, ${mergedModules} modules merged in-place, ${added} added, ${kept} kept (owner/diverged${nModDiverged ? `; ${nModDiverged} modules await your merge — diffs below` : ''})${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}. Sanity-check with git diff: replaced content must carry NO owner edits`,
-    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths), verdictMismatches,
+    { divergedModules, ownerConvention, fromVersion: cur.version, deprecations: dep.items, staleClaims, translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(addedPaths), verdictMismatches, verdicts,
       sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: portraitSync(meta.ownerVoice), prerelease });
 
   // The permanent receipt (plan 21 §3.4; field: "update-verify passed" was unfalsifiable a day
@@ -3662,7 +3673,7 @@ async function cmdInstall() {
         : cls
           ? `bootstrap update ${legacyOld.version || '?'} → ${meta.version}, classified mechanically: ${cls.replaced} replaced, ${cls.mergedModules} modules merged in-place, ${cls.added} added, ${cls.kept} kept${dep.removed ? `; ${dep.removed} deprecated artifact(s) retired` : ''}${dep.kept ? `; ${dep.kept} deprecated artifact(s) KEPT with local edits — see the deprecations item` : ''}${nMod ? `; ${nMod} module(s) await your merge — diffs below` : ''}`
           : `legacy update ${legacyOld.version || '?'} → ${meta.version}: ${why}, so every kept framework file may carry local edits — merge the template news below into them pointwise`,
-        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches, modeSwitch,
+        cls ? { divergedModules: cls.divergedModules, ownerConvention: cls.ownerConvention, fromVersion: legacyOld.version, deprecations: dep.items, staleClaims, translatedWholesale: cls.translatedWholesale, unresolved: liveUnresolved, languageArrivals: languageArrivalsOf(cls.addedPaths), verdictMismatches: cls.verdictMismatches, verdicts: cls.verdicts, modeSwitch,
                 sphereSync: scopes.sphereSync, skeletonDelta: scopes.skeletonDelta, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice), prerelease: rerun ? null : legacyPrerelease }
             : { fromVersion: legacyOld.version, staleClaims, unresolved: liveUnresolved, nameFallback, ownerVoice: rerun ? null : portraitSync(meta.ownerVoice), prerelease: rerun ? null : legacyPrerelease });
     }

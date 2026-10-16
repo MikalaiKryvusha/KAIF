@@ -212,6 +212,14 @@ const taskB = readFileSync(join(B, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(taskB.includes('PHILOSOPHY.md'), 'F3c (bugs/32): замороженный сетью файл с реальной дельтой шаблона ЧИСЛИТСЯ в задании (не потерян молча)');
 ok(/PHILOSOPHY\.md \(translated wholesale/.test(taskB),
    'F3d (изолятор порога-доли): задание называет PHILOSOPHY «translated wholesale» — сеть сработала на 2 выживших из 21');
+// UT4 (2.9; GoD R3) контроль: у пересказа с ДВУМЯ уцелевшими заголовками (baseFound 2) второго пути «рендер целиком» нет — он только
+// для файла, где не уцелел ни один (s07 T1); иначе подсказка звала бы выбросить слияние, которое ещё работает
+// (запись файла в пункте — до разделителя « · »: пункт — одна строка, соседний kaif-remove пересказан целиком и второй путь у него законен)
+const philEntry = (taskB.match(/PHILOSOPHY\.md \(translated wholesale(?:(?! · )[^\n])*/) || [''])[0];
+ok(philEntry.length > 0 && !/a second road/.test(philEntry),
+   'UT4 контроль: PHILOSOPHY (baseFound 2) — второй путь не назван', philEntry.slice(0, 400));
+ok(/kaif-remove\/SKILL\.md \(translated wholesale(?:(?! · )[^\n])*baseFound 0 of \d+\) — a second road/.test(taskB),
+   'UT4: kaif-remove пересказан целиком (baseFound 0) — второй путь назван в его же записи');
 const krBack = hasAnySig(KR, krSigs);
 ok(krBack.length === 0, `F4a (KCam Г2): kaif-remove переведён целиком — EN-модули не вставлены (вернулось: ${krBack.length})`, krBack.slice(0, 3).join(' · '));
 ok(readFileSync(KR, 'utf8').includes('Русское содержание'), 'F4a: русский текст владельца в kaif-remove цел');

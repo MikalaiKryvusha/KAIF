@@ -116,6 +116,10 @@ ok(statSync(CB).size <= cbLenBefore * 1.5, `K1: файл не разбух (${cb
 ok(!new RegExp('merged \\d+ module\\(s\\) into \\.claude/skills/check-backlog').test(r.out), 'K1: лог не рапортует «merged» на переведённом файле');
 const task1 = readFileSync(join(T1, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/check-backlog\/SKILL\.md/.test(task1) && /translated wholesale/.test(task1), 'K1: задание называет файл «translated wholesale» в diverged');
+// UT4 (2.9; GoD R3 — пересказанный канон, ни одного общего заголовка): у файла с baseFound 0 пункт называет второй путь — принять
+// рендер целиком и перенести факты, с готовой командой рендера ЭТОГО файла; иначе поле сливает руками десятки диффов в пересказ
+ok(/check-backlog\/SKILL\.md \(translated wholesale(?:(?! · )[^\n])*baseFound 0 of \d+\) — a second road: take this release's render whole \(`node \.kaif\/kaif-core\.mjs diff --source <the receipt's source> --render \.claude\/skills\/check-backlog\/SKILL\.md`/.test(task1),
+   'UT4 (GoD R3): пересказанный файл (baseFound 0) — пункт называет второй путь: рендер целиком и перенос фактов', (task1.match(/[^\n]*check-backlog\/SKILL\.md \(translated wholesale[^\n]*/) || [''])[0].slice(0, 600));
 console.log('\n=== T4 (K5): журналы прошлого не считаются протухшими утверждениями ===');
 ok(!task1.includes('researches/15_kaif_20_note.md'), 'K5: researches/ не в stale-claims');
 // The three asserts below judge the stale-claims ITEM — from its bullet to the next bullet or heading. They used to read

@@ -442,6 +442,13 @@ const D6DIR = join(ROOT, 'd6-empty'); mkdirSync(D6DIR);
 r = run(D0, `diff --source ${D6DIR}`);
 ok(r.code !== 0 && /not found in source/.test(r.out) && /--source must be a base that serves/.test(r.out),
    'D6 (issue #10): локальный источник без артефактов — тот же отказ с формами, полностью офлайн', r.out.slice(-300));
+// UT4 (2.9; поле длинного прыжка — `diff --source .kaif/install --render`): каталог установки держит только бандл загрузчика —
+// отказ говорит, что это не источник, и называет релиз маркера готовым адресом
+mkdirSync(join(D0, '.kaif', 'install'), { recursive: true });
+r = run(D0, 'diff --source .kaif/install');
+const d0Ver = JSON.parse(readFileSync(join(D0, '.kaif', 'kaif.json'), 'utf8')).version;
+ok(r.code !== 0 && /\.kaif\/install\/ keeps only the bundle the loader fetched and is not a source/.test(r.out) &&
+   r.out.includes(`releases/download/v${d0Ver}`), 'UT4: --source .kaif/install — отказ называет «не источник» и релиз маркера', r.out.slice(-400));
 // 99.3: лоадер — неизвестный канал это ОТКАЗ до любой сети (зеркало G16 для KAIF-LOADER.mjs).
 // Форма с --source: на сломанной версии канал молча игнорируется и локальная ветка падает
 // БЕЗ слов unknown channel (ровно так красный и был доказан) — сети нет в обоих мирах.
