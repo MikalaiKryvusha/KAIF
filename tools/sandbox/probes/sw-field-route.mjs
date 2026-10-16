@@ -166,10 +166,18 @@ function walk({ P, label, sub }) {
   // 2.9 WH: the wiring WORK is named — a delivered hook not wired, or a retired one still wired (a live 2.8 tree has all four wired)
   const WORK_RE = /delivered hook\(s\) not wired|hook\(s\) KAIF retired in 2\.9/;
   const names0 = WORK_RE.test(c0.all);
-  say(names0, `${label}: \`check\` (fresh core) before wiring names the wiring work (not wired · retired still wired) — exit ${c0.code}`);
+  // (session 84) a deployment installed from a 2.9 pre-release (field installs of session 82) already carries the four hooks and none of
+  // the retired: there is no wiring work, and the right answer is SILENCE — the work is read off the settings as they stood before the update
+  let pre = null; try { pre = set0 ? JSON.parse(set0.toString().replace(/^\uFEFF/, '')) : null; } catch { pre = null; }
+  let preLocal = {}; try { preLocal = JSON.parse((read(join(P, '.claude', 'settings.local.json')) || '{}').toString().replace(/^\uFEFF/, '')); } catch { preLocal = {}; }
+  const wiredOf = (s) => new Set(Object.entries((s && s.hooks) || {}).flatMap(([ev, gs]) => (gs || []).flatMap((g) => (g.hooks || []).map((h) => `${ev} → ${scriptOf(h)}`))));
+  const w0 = wiredOf(pre), w0l = wiredOf(preLocal);
+  const work = KAIF_SCRIPTS.some((k) => !w0.has(k) && !w0l.has(k)) || (pre ? retiredOf(pre).length > 0 : false);
+  if (!work) info('no wiring work before the update: the four hooks are wired and none of the retired — check and recheck must be silent about wiring');
+  say(work ? names0 : !names0, `${label}: \`check\` (fresh core) before wiring ${work ? 'names the wiring work (not wired · retired still wired)' : 'is silent — there is no wiring work'} — exit ${c0.code}`);
   const r0 = core(P, ['checkpoint', 'recheck']);
-  say(WORK_RE.test(r0.all), `${label}: \`checkpoint recheck\` before wiring names the wiring work (not wired · retired still wired) — exit ${r0.code}`);
-  if (!WORK_RE.test(r0.all)) info('recheck said: ' + tail(r0.all, 4));
+  say(work ? WORK_RE.test(r0.all) : !WORK_RE.test(r0.all), `${label}: \`checkpoint recheck\` before wiring ${work ? 'names the wiring work (not wired · retired still wired)' : 'is silent — there is no wiring work'} — exit ${r0.code}`);
+  if (work && !WORK_RE.test(r0.all)) info('recheck said: ' + tail(r0.all, 4));
   // UT1 (2.9, criterion 16; session 82): the fresh core names the places of the project's own texts that still build on a feature
   // retired in the interval — the hooks of #144 for every 2.8 deployment. Prediction, written before the run: untouched guide modules
   // were replaced mechanically and are not places; places stand where the owner or a translation kept the old text (a Russian guide,

@@ -9,7 +9,7 @@
   "version": "2.8",
   "released": "2026-09-26",
   "build": {
-    "sourceTree": "f70739dfa41e7917ef8f1530a723164428404c54fbe37db4efda5ddf2a57724d",
+    "sourceTree": "f7ed40f65f64b56add618f94f6bdf819f803699ab79d91eaf4714efab3ce42f0",
     "prerelease": "2.9"
   },
   "templateNotes": [
@@ -109,6 +109,7 @@
       "THE CONTEXT POINTERS OF YOUR AGENT SYSTEMS ARE BROUGHT UP TO DATE (2.9, epic UT; origin ticket #120 — a pointer was written once and no update touched it again: a deployment that jumped from 2.1 kept the 1.5 text in AGENTS.md, CLAUDE.md, .clinerules/kaif.md and .roo/rules/kaif.md, and the Zoo Code pointer never carried the rule about the word `resume`): an untouched pointer of an earlier release is replaced with this release's text (by the update, or by `checkpoint recheck` when the previous core ran the update); a pointer you edited is never rewritten — the task names it with the one line it lacks, and `update-verify` refuses until that line is there.",
       "A LONG UPDATE JUMP IS JUDGED HONESTLY (2.9, epic UT; a field jump 2.1 → 2.8: 236 false «promised upstream line not found» and a refused `update-verify` over the prayer in the owner's language): `update-verify` judges a promised line against the file's text (a paragraph re-wrapped by the merge is the same text); an anchored block (`<!-- KAIF:PRAYER:BEGIN -->` and the like) is found by its anchor, so its heading and lines in your language are not «missing»; `check --gate-budgets` run while an update task is open writes nothing and says to run it LAST, after `update-verify`; an explicit `--rehearsal` receipt also consumes the automatic rehearsal record; a line of a block that carries your values (the creed with your name) and a line of a template instruction slot your project replaced with its own text are not demanded back; a promised line whose words stand on one line of your file is printed as «stands on disk with local edits (line N)» — your wording, read it: an edit that drops meaning is merged by hand; a framework file retold in your language with not one template heading in common (`baseFound 0`) is named with a second road — take this release's render whole and carry your project's facts over; `diff --source .kaif/install` says the install folder is not a source and names the release your marker runs.",
       "THE REFERENCE DESCRIBES EVERY LINE `check` PRINTS (2.9, epic UT; in 2.8 the `check` entry of `.kaif/KAIF_REFERENCE.md` §10.7 heard of no change of its own epic until a session added it by hand): the entry now names every axis `check` reports — the failures (a file MISSING or empty, the marker schema, a two-headed document, an unpaired anchor block, an artifact git-ignored by KAIF's own line) and the warnings (git-ignored by your own rule, a hook not wired or retired and still wired, mirror drift, a sphere with no library, the /resume list, the signal and field-report delivery, the constitution, the budgets, the language mix, the entry cost); a line `check` prints that you cannot find there is a defect of KAIF — the origin build now refuses such a line.",
+      "THE AUTHORSHIP LINTER KEEPS YOUR PRIVATE TEXT OUT OF THE COMMIT (2.9, epic PV; origin tickets #111 · #112 — a root file git ignores, the owner's private portrait, was read and its line went into the committed baseline): `kaif-attribution-lint` reads the root `*.md` git sees, so an ignored file is never read; `.kaif/attribution-lint.baseline.json` holds a fingerprint and a count per line, never the text (your 2.8 baseline still reads as the same debt; the next `--write-baseline` drops its text); a write limited to paths keeps the debt of every other file; a third copy of a line recorded twice is a NEW finding.",
       "ONE TOOL CALL — ONE ACTION FOR GIT (2.9; origin ticket #146 — an auto-mode permission classifier refused `git add`, `git commit` and `git push` joined into one command and passed each step alone): the Git workflow section of AGENT_GUIDE.md carries the rule — each git step is its own tool call, the message goes in `-m` and text the shell would mangle in a file (`-F`), a refused single action is neither retried nor bypassed but told to the owner; `/end-chat-soft`, `/end-chat-force` and `/release` name the steps one by one, and the default commit flow of a fresh install is the three steps. A commit command your skills already carry from an earlier install keeps its text — run it as its steps.",
       "THE VOICE PORTRAIT LOADS INTO A FILE WHEN YOUR CLIENT CUTS LONG OUTPUT (2.9; origin tickets #143 · #145 — a ~60 KB `load` cut by bytes ended inside a UTF-8 character): `node .kaif/tools/kaif-voice-lint.mjs load --out <file>` writes the same selection to a UTF-8 file and leaves the same witness; read that file whole before the first word. Inside the project's git work tree the path must be one git ignores — otherwise the load is refused before anything is written (the copy may be of a private portrait and would ride the next commit).",
       "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update REPLACES it: take the delivered files as they are, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
@@ -3702,7 +3703,7 @@ Shipped to `.kaif/tools/`, active only when the project opts in:
 | `kaif-requirements-lint.mjs` | The stop-word dictionary of `REQUIREMENTS_FRAMEWORK.md` as an advisory grep guard over requirement sections (`check` / `selftest`); quotes, ❌ examples, code, and `(justified: …)` lines are legal by construction. |
 | `kaif-guard-lint.mjs` | The guard-declaration block of `TESTING_FRAMEWORK.md` gate 5 (second half, 2.5) as an advisory linter (`check` / `selftest`): every `@guard` carries `THREAT` · `PROVED-AGAINST` · `GAP` · `ON-REAL-PATH`, every `@forensic` carries `EXPLAINS` · `DURABLE-AT` (with `close` / `exit` / `trip-only` rejected), every `@fork` carries `OPTIONS` · `COST` · `RECON` · `DECIDED`; fires only on explicit markers, `SKIPPED=3` when a tree carries none. |
 | `kaif-scenario-lint.mjs` | The scenario form of an acceptance criterion (`REQUIREMENTS_FRAMEWORK.md` → "The scenario form", 2.5) as an advisory linter (`check` / `selftest`): a started four-line scenario — Situation · Action · Result · Check, keywords mirrored per language — keeps its shape under seven rules-as-data (order · one action · observable result · no implementation words · third person · a runnable Check · concrete values); an empty owner-written Check is a warning; never demands a scenario, `SKIPPED=3` when a tree carries none. |
-| `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or on its own line the address of the commit that holds the owner's words verbatim (`commit <hash>`, since 2.8 — the owner's standing rule enters the rulebook as a rule, his words stay at the source), or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
+| `kaif-attribution-lint.mjs` | The authorship of a decision (`AGENT_GUIDE.md` → "Authorship of a decision", 2.7, epic AW; origin issue #55 — an agent's own choice recorded as "the owner's decision" held a run while the owner's machine died) as an advisory linter (`check [paths…] [--write-baseline]` / `selftest`): a line that attributes a decision or an order to the owner ("the owner's decision", "the owner decided", their RU forms) must carry a verbatim quote, an interview address or a decision number within ±2 lines, or on its own line the address of the commit that holds the owner's words verbatim (`commit <hash>`, since 2.8 — the owner's standing rule enters the rulebook as a rule, his words stay at the source), or be signed as the agent's own (`[AI]`, the localized pair) — otherwise it is DEBT, counted against a baseline that only shrinks (`.kaif/attribution-lint.baseline.json`; since 2.9 — epic PV, origin issues #111 · #112 — it holds a fingerprint `file:sha16(line)` and a count per line, never the text, and a baseline of 2.8 with text values still reads as debt; the root `*.md` are the ones git sees, so a file git ignores is never read; `--write-baseline` limited to paths rewrites only their entries; a copy of a recorded line beyond its count is NEW); patterns are data per language; quote lines, fenced code, inline code and ❌ examples are invisible; `SKIPPED=3` on a tree with no markdown in scope. |
 | `kaif-testrun-lint.mjs` | The run report of `TESTING_FRAMEWORK.md` → "An executed run produces its report" (2.7, epic TR; origin issue #59 — the owner-QA's word "THERE WAS NO TESTING") as an advisory linter (`check [home]` / `selftest`): every report in `<testdocs>/reports/` is named `<YYYY-MM-DD>_<work>.md` (the date-first name is the index) and carries seven non-empty fields — Work · Contour · Runs (a moment and a command in a code span per run) · Checks (opening with two separate lines, `Hygiene:` and `Functional run:` — a Verdict `pass` whose Checks carry no functional run or say `NONE` reddens: hygiene alone is `partial`; 2.7, epic CL, origin issue #62) · Found (a list or an explicit "none") · Traces · Verdict (pass · fail · blocked · partial); rules as data, keywords per language, placeholders are not content; `SKIPPED=3` when the home has no `reports/` — an unwritten report is invisible to it, and the judge hunts the claim without one. Second genre (2.8, epic TB; origin issue #105): `bug <report>` judges one tester's bug report (template C of `/report-bug`) — four sections (Description · Steps to reproduce · Expected result · Actual result; Russian keywords too), three lines (Build · Environment · Evidence) each with a value, the steps a numbered list (the user's path), and a report that says "not reproduced" carries a reproduction hunt of at least three variants; exit 1 names each finding. |
 | `kaif-voice-lint.mjs` | The machine minute of the owner's voice portrait (`AUTHOR_STYLOMETRY.md` §7A/§8) — the machine half of the INDEPENDENT check that follows writing BY the portrait (`AGENT_GUIDE.md` → the fable loop's fourth KAIF obligation: written by the portrait → checked independently by it → fixed → only then written and brought to the owner; "Showing is an action"; 2.7, epic VC; origin issue #61 — a field agent rewrote a player sheet through seven rounds under the owner's eyes without opening the portrait once) as an advisory tool (`load [--all | --sections <regex>] [--genre <genre>] [--out <file>]` / `check <files…> [--genre <genre>] [--warn]` / `selftest`; since 2.8 — epic VO, origin issue #102 — a §8 row whose hint opens with a genre label `[work]`·`[document]`·`[prose]` (or the same three words in the portrait's language — the Russian mirrors ship in the module) judges only its genres, the same names and rule as the owner's core storage tool; the writing sections of a bare `load` include §1, `--genre essay` adds §3): `load` prints the portrait into the agent's working context BEFORE the first word and leaves the witness `.kaif/voice-marker.json` (the owner's word: write BY the stylometry, with it in the working cache; since 2.8 — epic CK, origin issue #99, a field portrait of ~170k tokens loaded whole for every unit — a bare `load` prints the WRITING sections, §0 · §1 · §2 · §5 · §6 · §7 with their subsections, §2-C among them, and their price in tokens at the rates of the entry-cost line of `check`, and names every other section with its weight and a ready ASCII-only `--sections` regex; `--all` prints the whole; a portrait with none of them numbered is printed whole, said aloud; since 2.9 — origin tickets #143 · #145, a client that caps tool output by bytes cut the print inside a UTF-8 character — `--out <file>` writes the same selection to a UTF-8 file with the same witness, the agent reads that file whole, and a path inside the git work tree that git does not ignore is refused before any write: the copy may be of a private portrait); `check` refuses a text with no witness, with a witness for another portrait, last written before the first load or more than an hour after the last load ("written past the portrait" — never muted by `--warn`) and runs the stop-patterns and required positives of the portrait's §8 TABLE (pattern · class · hint · exception — `\|` is alternation, a bare pattern is case-sensitive, `/…/i` folds case, `\b`/`\w` are Unicode-aware) over the written text before it counts as written; every hit is printed with the portrait's own hint, a row's `/regex/` exception silences a hit on its line and prose is printed beside it; fenced code, inline code and HTML comments are invisible; `--warn` is the calibration mode; `SKIPPED=3` without a portrait, without a §8 table or with placeholder rows only — likeness is never judged, that verdict is the owner's; the portrait path may be named in `.kaif/kaif.json` → `voicePortrait`. |
 | `kaif-ranking-lint.mjs` | The fixed form of a `/what-next` answer (2.6, epic WN; origin issue #53 — a field agent quoted "the newest pain is not a priority claim" and broke it in the same answer) as an advisory linter (`check <draft.md>` / `selftest`): the answer opens with `METRIC:` and `MAIN PHASE:` read from the documents, ranks steps in a `| step | moves | closes | effort |` table where row 1 moves the metric or closes something, keeps the fresh words of the owner on a shelf "not ranked by the metric", and always carries the tech-debt line — seven rules-as-data, RU/EN anchors, SKIPPED (exit 3) on a document that never started an answer. |
@@ -14142,7 +14143,8 @@ export function texts(language) {
 //     never findings themselves), inline code spans, HTML comments, lines carrying ❌ (the canon's own
 //     counter-examples);
 //   · DEBT, not a turnstile: findings already recorded in the baseline (.kaif/attribution-lint.baseline.json,
-//     keys `file:sha16(line)`) are printed as debt and exit 0; only NEW findings exit 1; the baseline is
+//     keys `file:sha16(line)` → the COUNT of such lines, never their text — 2.9, epic PV) are printed as debt and exit 0; only NEW
+//     findings exit 1 (a copy beyond the recorded count is new); a write limited to paths rewrites only their entries; the baseline is
 //     written once on adoption (`--write-baseline`) and ONLY SHRINKS after that: a rewrite that would turn
 //     a NEW finding into debt is REFUSED (exit 1) unless `--adopt-new` is passed explicitly — the count of
 //     adopted lines is printed, never silent; a baselined line that changed or vanished is pruned;
@@ -14417,10 +14419,12 @@ function scopeFiles(root, paths) {
     }
   } else {
     for (const d of DEFAULT_DIRS) files.push(...walkMd(join(root, d), root));
-    for (const n of readdirSync(root)) if (/\.md$/i.test(n) && !TRANSIENTS.has(n)) {
-      const t = kaifWalk([join(root, n)]);   // a file root: taken when it is a file, NAMED when it is a broken link
-      files.push(...t.files); TREE.skipped.push(...t.skipped);
-    }
+    // PV1 (2.9; origin issue #111 — a root file git ignores, the owner's private voice portrait, was read from disk and its line went
+    // into the committed baseline): the root *.md come from the same git-seen walk as the directories — an ignored root file is not
+    // in the set; without git the walk lists the disk, as before
+    const top = kaifWalk([root]);
+    TREE.skipped.push(...top.skipped.filter((s) => !walkRel(root, s).includes('/'))); TREE.failed.push(...top.failed);
+    for (const p of top.files) { const r = walkRel(root, p); if (!r.includes('/') && /\.md$/i.test(r) && !TRANSIENTS.has(r)) files.push(p); }
   }
   return files.map((f) => f.replaceAll('\\', '/')).sort();
 }
@@ -14446,12 +14450,47 @@ export function runCheck(root, paths = []) {
   return { findings, scanned: files.length, walk: walkNotes(TREE), walkFailed: TREE.failed.length > 0 };
 }
 
-function writeBaseline(findings) {
+// The baseline (2.9, epic PV): `entries` maps `file:sha16(line)` to the COUNT of findings with that key — a fingerprint and a number,
+// never the text (origin #121 R7: the text of a line went into a committed file, and nothing ever read it back). A baseline written
+// before 2.9 carries the text as the value: its keys stay debt for any number of copies (the old reading, so no recorded debt is lost
+// on the first closing after the update), and the next write drops the text.
+const LEGACY = Infinity;
+const countOf = (v) => (typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : LEGACY);
+const fileOfKey = (k) => k.slice(0, k.lastIndexOf(':'));
+const normPath = (p) => String(p).replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
+/** Is a baselined file inside the scope of this run (no paths = the whole default scope)? */
+export function inScope(file, paths = []) {
+  if (!paths.length) return true;
+  return paths.map(normPath).some((p) => p === '.' || file === p || file.startsWith(p + '/'));
+}
+/** The findings above what the baseline records, key by key: the (count+1)-th copy of a recorded line is NEW (origin #112 — a third
+ *  identical line used to be swallowed as debt, `new 0 · debt 3`). */
+export function freshFindings(findings, baseline) {
+  const known = (baseline && baseline.entries) || {};
+  const seen = {};
+  return findings.filter((f) => { seen[f.key] = (seen[f.key] || 0) + 1; return !(f.key in known) || seen[f.key] > countOf(known[f.key]); });
+}
+/** The baseline a write leaves (PV3; origin #112 — `check <path> --write-baseline` wrote the scope's findings as the WHOLE baseline and
+ *  erased the debt of every other file): entries of files outside the scope stay as they are; inside it, the counts of this run. */
+export function nextBaseline(findings, baseline, paths = []) {
   const entries = {};
-  for (const f of findings) entries[f.key] = `${f.file}:${f.line} ${f.text.slice(0, 100)}`;
+  for (const [k, v] of Object.entries((baseline && baseline.entries) || {})) if (!inScope(fileOfKey(k), paths)) entries[k] = v;
+  for (const f of findings) entries[f.key] = (typeof entries[f.key] === 'number' ? entries[f.key] : 0) + 1;
+  const sorted = Object.fromEntries(Object.keys(entries).sort().map((k) => [k, entries[k]]));   // canonical order: the file is reviewed in diffs
+  const count = Object.values(sorted).reduce((n, v) => n + (typeof v === 'number' ? v : 1), 0);
+  return { written: new Date().toISOString(), count, entries: sorted };
+}
+/** Recorded entries of the scope that this run no longer finds (fully or in part) — the "rewrite it" hint counts only these. */
+export function prunableEntries(findings, baseline, paths = []) {
+  const now = {};
+  for (const f of findings) now[f.key] = (now[f.key] || 0) + 1;
+  return Object.entries((baseline && baseline.entries) || {})
+    .filter(([k, v]) => inScope(fileOfKey(k), paths) && (now[k] || 0) < (countOf(v) === LEGACY ? 1 : countOf(v))).length;
+}
+function writeBaseline(next) {
   const dir = dirname(BASELINE);
   if (dir && dir !== '.') mkdirSync(dir, { recursive: true });   // a bare file name has no directory to create
-  writeFileSync(BASELINE, JSON.stringify({ written: new Date().toISOString(), count: findings.length, entries }, null, 2) + '\n');
+  writeFileSync(BASELINE, JSON.stringify(next, null, 2) + '\n');
 }
 
 function cmdCheck() {
@@ -14461,8 +14500,7 @@ function cmdCheck() {
   if (walkFailed) { console.error('✖ attribution-lint: the tree walk failed — not scanned is not clean'); process.exit(1); }
   if (!scanned) { log(`⊘ SKIPPED — no markdown in scope (${PATHS.length ? PATHS.join(' ') : DEFAULT_DIRS.join(' ') + ' + root *.md'}): nothing was proven (exit 3).`); process.exit(EXIT_SKIPPED); }
   const baseline = readBaseline(BASELINE);
-  const known = new Set(Object.keys((baseline && baseline.entries) || {}));
-  const fresh = findings.filter((f) => !known.has(f.key));
+  const fresh = freshFindings(findings, baseline);
   if (FLAGS.has('--write-baseline')) {
     // Adoption writes the whole picture once. After that the baseline ONLY SHRINKS: a rewrite that would
     // launder a NEW finding into debt is refused — growth is an explicit, printed act (--adopt-new).
@@ -14471,14 +14509,16 @@ function cmdCheck() {
       console.error(`✖ baseline NOT rewritten: ${fresh.length} NEW finding(s) would become debt — ground them (quote · address · [AI]) or pass --adopt-new to record them on purpose`);
       process.exit(1);
     }
-    writeBaseline(findings);
-    const pruned = baseline ? [...known].filter((k) => !findings.some((f) => f.key === k)).length : 0;
-    log(`baseline written: ${BASELINE} — ${findings.length} finding(s) recorded as debt${baseline ? ` (${fresh.length} adopted as NEW on purpose, ${pruned} pruned)` : ''} (it only shrinks from here; a changed or vanished line is pruned on the next write)`);
+    const pruned = baseline ? prunableEntries(findings, baseline, PATHS) : 0;
+    const next = nextBaseline(findings, baseline, PATHS);
+    writeBaseline(next);
+    const kept = Object.keys(next.entries).filter((k) => !inScope(fileOfKey(k), PATHS)).length;
+    log(`baseline written: ${BASELINE} — ${findings.length} finding(s) recorded as debt${baseline ? ` (${fresh.length} adopted as NEW on purpose, ${pruned} pruned)` : ''}${kept ? `; ${kept} entr${kept === 1 ? 'y' : 'ies'} of files outside ${PATHS.join(' ')} kept as they were` : ''} (it only shrinks from here; a changed or vanished line is pruned on the next write; the file holds fingerprints and counts, never the text)`);
     return;
   }
   const debt = findings.length - fresh.length;
   for (const f of fresh) console.error(`✖ ${f.file}:${f.line} — attribution to the owner without his words: «${f.text.slice(0, 120)}» (no verbatim quote, quote line, interview address or decision number within ±${WINDOW} lines, and no commit address on the line itself; sign it [AI] if it is the agent's, for his standing rule write "[OWNER] <date> · verbatim in commit <hash>", quote him if it is his decision, or mark <!-- attribution-ok: … -->)`);
-  const prunable = baseline ? known.size - debt : 0;
+  const prunable = baseline ? prunableEntries(findings, baseline, PATHS) : 0;
   const tail = baseline ? ` · debt ${debt} (baseline ${BASELINE}${prunable > 0 ? `, ${prunable} entr${prunable === 1 ? 'y' : 'ies'} no longer found — rewrite it` : ''})` : (findings.length ? ' · no baseline yet — adopt with --write-baseline' : '');
   if (fresh.length) { console.error(`✖ attribution-lint: ${fresh.length} NEW finding(s) in ${scanned} file(s)${tail}`); process.exit(1); }
   log(`✅ attribution-lint OK — ${scanned} file(s) scanned, new 0${tail}`);
@@ -14548,6 +14588,43 @@ function cmdSelftest() {
     if (!ok) bad++;
     log(`${ok ? '✅' : '❌'} baseline: the old line is debt, only the new line is NEW — findings ${second.findings.length}, new ${fresh.length}`);
   } finally { rmSync(root, { recursive: true, force: true }); }
+
+  // 2.9, epic PV (criterion 19 of the origin's plan; origin #111 · #112 · #121 R7) — four cases, each red on the 2.8 module
+  const pv = (name, ok, got) => { n++; if (!ok) bad++; log(`${ok ? '✅' : '❌'} PV: ${name}${ok ? '' : ` — got ${got}`}`); };
+  const proot = mkdtempSync(join(tmpdir(), 'kaif-attribution-pv-'));
+  try {
+    // (1) a root file git ignores is not read (#111) — needs git; without it the walk lists the disk, and the case says so
+    const g = spawnSync('git', ['init', '-q'], { cwd: proot, encoding: 'utf8' });
+    writeFileSync(join(proot, '.gitignore'), 'NOTES.md\n');
+    writeFileSync(join(proot, 'NOTES.md'), '# Notes\n\nThe owner decided to keep the recipe of his grandmother here.\n');
+    writeFileSync(join(proot, 'STATUS.md'), '# S\n\nThe owner decided to wait.\n');
+    if (g.status === 0) {
+      const r = runCheck(proot);
+      pv('a root file git ignores is not read (#111)', r.findings.length === 1 && r.findings[0].file === 'STATUS.md', r.findings.map((f) => f.file).join(','));
+    } else log('⊘ PV: a root file git ignores — SKIPPED (no git here: the walk lists the disk)');
+    // (2) the baseline holds fingerprints and counts, never the text (#121 R7)
+    const b1 = nextBaseline(runCheck(proot).findings, null);
+    const raw = JSON.stringify(b1);
+    pv('the baseline holds no text of a finding (#121 R7)', !/decided|wait|recipe/.test(raw) && Object.values(b1.entries).every((v) => typeof v === 'number'), raw.slice(0, 160));
+    // (3) a write limited to a path keeps the debt of the other files (#112)
+    mkdirSync(join(proot, 'plans'), { recursive: true }); mkdirSync(join(proot, 'ideas'), { recursive: true });
+    writeFileSync(join(proot, 'plans', '01.md'), '# P\n\nThe owner decided to drop it.\n');
+    writeFileSync(join(proot, 'ideas', '02.md'), '# I\n\nThe owner decided to keep it.\n');
+    const whole = nextBaseline(runCheck(proot).findings, null);
+    const narrowed = nextBaseline(runCheck(proot, ['plans']).findings, whole, ['plans']);
+    pv('a write limited to plans/ keeps the debt of ideas/ (#112)', Object.keys(narrowed.entries).some((k) => k.startsWith('ideas/02.md:')) && Object.keys(narrowed.entries).some((k) => k.startsWith('plans/01.md:')), Object.keys(narrowed.entries).join(','));
+    // (4) a third identical line beside two recorded is NEW (#112)
+    const twice = '# P\n\nThe owner decided to drop it.\n\n\n\n\nThe owner decided to drop it.\n';
+    writeFileSync(join(proot, 'plans', '01.md'), twice);
+    const rec2 = nextBaseline(runCheck(proot).findings, null);
+    writeFileSync(join(proot, 'plans', '01.md'), twice + '\n\n\n\n\nThe owner decided to drop it.\n');
+    const third = runCheck(proot).findings;
+    const fresh3 = freshFindings(third, rec2);
+    pv('a third identical line beside two recorded is NEW (#112)', fresh3.length === 1 && fresh3[0].file === 'plans/01.md', `${fresh3.length} new of ${third.length}`);
+    // and the reading of a 2.8 baseline (text as the value) keeps every copy as debt — no recorded debt is lost on the first closing
+    const legacy = { entries: Object.fromEntries(third.map((f) => [f.key, `${f.file}:${f.line} ${f.text}`])) };
+    pv('a 2.8 baseline (text values) still reads as debt for every copy', freshFindings(third, legacy).length === 0, freshFindings(third, legacy).length);
+  } finally { rmSync(proot, { recursive: true, force: true }); }
 
   if (bad) { console.error(`✖ selftest FAILED — ${bad} of ${n} cases`); process.exit(1); }
   log(`✅ selftest OK — ${n} cases (RU + EN; both answers on every fixture; baseline proven)`);

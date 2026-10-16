@@ -27,17 +27,17 @@ UT5: гард сборки 5u `tools/check-framework.mjs` (функция `check
 
 | # | Момент | Команда | Исход |
 |---|---|---|---|
-| 1 | 2026-10-16 ≈ 14:11 +03:00 | `node tools/check-framework.mjs --selftest` | 0 · «гард 5u: … названы поимённо; чистая фикстура молчит» |
-| 2 | 2026-10-16 ≈ 14:12 +03:00 | `node tools/check-framework.mjs` (справочник `c439b1f`) | 1 · ровно 17 строк «5u:» — предсказано до прогона (13 слов осей, которых запись не несла) |
-| 3 | 2026-10-16 ≈ 14:13 +03:00 | `node tools/build-framework.mjs` (запись дописана) | 0 · «check-framework OK», строк «5u:» 0 |
+| 1 | ≈ 2026-10-16 14:11 +03:00 | `node tools/check-framework.mjs --selftest` | 0 · «гард 5u: … названы поимённо; чистая фикстура молчит» |
+| 2 | ≈ 2026-10-16 14:12 +03:00 | `node tools/check-framework.mjs` (справочник `c439b1f`) | 1 · ровно 17 строк «5u:» — предсказано до прогона (13 слов осей, которых запись не несла) |
+| 3 | ≈ 2026-10-16 14:13 +03:00 | `node tools/build-framework.mjs` (запись дописана) | 0 · «check-framework OK», строк «5u:» 0 |
 | 4 | 2026-10-16 14:15:01 → 14:15:22 +03:00 | `node tools/sandbox/probes/ut5-check-lines-mutants.mjs` | 0 · «3 mutants red exactly on their named addressees, control silent» |
 | 5 | 2026-10-16 14:16:19 → 14:22:43 +03:00 | `npm run test:core` (в одиночку; дерево UT5 до UT4) | 0 · «sandbox suite: all 28 suites green» |
 | 6 | 2026-10-16 14:23:08 → 14:23:28 +03:00 | `node tools/sandbox/s07-translated.mjs` · `s08-l2-faces.mjs` · `s09-l3-cli-safety.mjs` | 0 · 1 · 0 — красный `s08` — мой ассерт: пункт одна строка, регэксп дотянулся до записи соседнего `kaif-remove` (законный второй путь); сужен до разделителя « · » |
-| 7 | 2026-10-16 ≈ 14:24 +03:00 | те же своды, повтор | 0 · 0 · свод `s08` — и контроль (baseFound 2 — второго пути нет), и `kaif-remove` (baseFound 0 — есть) |
+| 7 | ≈ 2026-10-16 14:24 +03:00 | те же своды, повтор | 0 · 0 · свод `s08` — и контроль (baseFound 2 — второго пути нет), и `kaif-remove` (baseFound 0 — есть) |
 | 8 | 2026-10-16 14:24:45 → 14:25:14 +03:00 | `KAIF_DIST=<скретчпад>/old-c439b1f/dist node tools/sandbox/s07…s09` | 0 · 0 · 0 — НЕ доказательство: у этих сводов нет шва `KAIF_DIST`, они читают `dist/` рядом с собой; написана проба |
 | 9 | 2026-10-16 14:26:29 → 14:27:00 +03:00 | `node tools/sandbox/probes/ut4-red-on-prior.mjs c439b1f` | 0 · `s07` 1 · `s08` 1 · `s09` 1 красный — ровно адресаты, названные до прогона (первый запуск 14:25:57 — отказ `tar`: GNU tar читал `C:\…` как хост, досье §4 — имя архива сделано относительным) |
 | 10 | 2026-10-16 14:27:15 → 14:27:54 +03:00 | `node tools/sandbox/probes/ut5-field-check-lines.mjs <11 развёртываний>` | 1 · 7 BAD — финальную строку `✖ INCOMPLETE: N artifacts missing` печатает `die()`, её литерал вне скана гарда |
-| 11 | 2026-10-16 ≈ 14:29 +03:00 | `node tools/check-framework.mjs --selftest` · `node tools/build-framework.mjs` | 0 · скан берёт литералы `die()`; четыре пары (отказ без бандла и манифеста · `INCOMPLETE` · нечитаемая база двери · дверь), запись дописана |
+| 11 | ≈ 2026-10-16 14:29 +03:00 | `node tools/check-framework.mjs --selftest` · `node tools/build-framework.mjs` | 0 · скан берёт литералы `die()`; четыре пары (отказ без бандла и манифеста · `INCOMPLETE` · нечитаемая база двери · дверь), запись дописана |
 | 12 | 2026-10-16 14:29:29 → 14:29:56 +03:00 | проба поля, как в 10 | 0 · «ALL OK — 38 printed line(s) over 11 deployment(s), each found in the check entry of §10.7» |
 | 13 | 2026-10-16 14:30:14 → 14:30:35 +03:00 | проба мутантов, как в 4 | 0 · «3 mutants red exactly on their named addressees, control silent» |
 | 14 | 2026-10-16 14:30:45 → 14:37:32 +03:00 | `npm run test:core` (в одиночку; окончательное дерево) | 0 · «sandbox suite: all 28 suites green» |

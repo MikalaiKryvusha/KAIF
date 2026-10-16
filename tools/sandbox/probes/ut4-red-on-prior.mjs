@@ -29,11 +29,11 @@ const files = spawnSync('git', ['ls-files', '-z', '--cached', '--others', '--exc
 for (const f of files) { try { mkdirSync(dirname(join(T, f)), { recursive: true }); cpSync(join(REPO, f), join(T, f)); } catch { /* deleted in the working tree */ } }
 const tar = join(T, 'dist.tar');
 const a = spawnSync('git', ['archive', '-o', tar, rev, 'dist'], { cwd: REPO, encoding: 'utf8' });
-if (a.status !== 0) { console.log(`BAD: git archive ${rev} dist failed — ${a.stderr}`); process.exit(1); }
+if (a.status !== 0) { console.log(`BAD: git archive ${rev} dist failed — ${a.stderr}`); rmSync(ROOT, { recursive: true, force: true }); process.exit(1); }
 // a RELATIVE name: GNU tar of Git Bash reads `C:\…` as a remote host (HOUSE_RULES §4, the `tar` row)
 const x = spawnSync('tar', ['-xf', 'dist.tar'], { cwd: T, encoding: 'utf8' });
 rmSync(tar, { force: true });
-if (x.status !== 0) { console.log(`BAD: tar failed — ${x.stderr}`); process.exit(1); }
+if (x.status !== 0) { console.log(`BAD: tar failed — ${x.stderr}`); rmSync(ROOT, { recursive: true, force: true }); process.exit(1); }
 let bad = 0;
 for (const s of SUITES) {
   const r = spawnSync(process.execPath, [join(T, 'tools', 'sandbox', s.file)], { cwd: T, encoding: 'utf8', timeout: SUITE_TIMEOUT_MS });
