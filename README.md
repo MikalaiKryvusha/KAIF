@@ -253,10 +253,9 @@ Table 2 — Knowledge directories
    soft `STATUS.md` guard once per session, and an order to run `/resume` when the owner's message
    opens with the word `resume`. The install and update tasks wire the module with the
    `wire-hooks` command; the owner opts out with the key `"hooks": "off"` in `.kaif/kaif.json`,
-   and a deployment without hooks does not redden any gate. The hook `pretool-owner-word.mjs` of
-   version 2.8 stopped the agent's work on every message the owner sent mid-turn; version 2.9
-   removes it from the delivery: the update deletes its untouched copy and its entry in
-   `.claude/settings.json`.
+   and a deployment without hooks does not redden any gate. When the owner writes a message while
+   the agent works, the agent answers it in the chat at once and goes on with the work it started.
+   The agent stops when the owner asks it to.
 
 ## 4. The skills
 
@@ -493,7 +492,7 @@ Table 5 — Versions
 | v2.6 | Mindful KAIF | 2026-09-06 | The agent works on the owner's terms: a question to the owner is priority one and its showing is a recorded fact, every question and option is a scenario of what the owner will see in the customer's language, the delivery vector is derived from a registry of systems and never asked, the update rehearsal reaches the bootstrap route, the interactive contour ships as a spec plus a generator of three faces, a fresh remark is recorded and not ranked, "done" about production comes after the owner's real world, and the delivery names no donor projects. |
 | v2.7 | Audited KAIF | 2026-09-18 | The agent's records become checkable: the owner's word is a quote and the agent's word is signed, a question to the owner is asked after a search through his prior answers, "test" means a functional run and every executed run leaves a report, the owner's text is written by his voice portrait, the owner's page keeps his answer, a falsehood is corrected where it stands, a lesson repeated twice goes red, and the size budget of the documents the agent re-reads at the start of a session counts the lines the project wrote. |
 | v2.8 | Noble KAIF | 2026-09-26 | KAIF becomes lighter and hears the owner: the agent answers the owner's word while it works and keeps working, the owner's answered decisions come before the plan, the owner's question page saves answers one at a time, the update loses nothing silently, the scanners see the project as git sees it, the canon keeps every rule and hands the stories behind its rules to the reference `KAIF_REFERENCE.md`, and a tester's bug report gets a required shape, with "not reproduced" written only after a hunt of at least three variants. |
-| v2.9 | Distilled KAIF | 2026-10-16 | A new version's delivery is wired and accepted at once: the install and update tasks wire the reminders themselves, the rule changes of a release are accepted without an interview; the hook that stopped the agent on the owner's message mid-turn is removed. The update names the places of the project that refer to removed skills and hooks, brings the pointers of the other agent systems up to date and, in an update across several versions, marks the project's own edits. The owner's question page behaves as he expects; a question to the owner is short; to a question under the word `resume` the agent answers and starts no work beyond it; the attribution linter keeps the owner's private files out of a shared commit; for git one command does one action. |
+| v2.9 | Distilled KAIF | 2026-10-16 | A new version's delivery is wired and accepted at once: the install and update tasks wire the reminders themselves, the rule changes of a release are accepted without an interview; the agent answers a message the owner writes while it works in the chat at once and goes on with the work it started. The update names the places of the project that refer to removed skills and hooks, brings the pointers of the other agent systems up to date and, in an update across several versions, marks the project's own edits. The owner's question page behaves as he expects; a question to the owner is short; to a question under the word `resume` the agent answers and starts no work beyond it; the attribution linter keeps the owner's private files out of a shared commit; for git one command does one action. |
 
 ### 8.2. Repository layout
 
@@ -810,9 +809,9 @@ origin, ни упоминаний автора (привязанные к origin
    `STATUS.md` раз в сессию и приказ исполнить `/resume`, когда сообщение владельца открывается
    словом `resume`. Задания установки и обновления подключают модуль командой `wire-hooks`;
    владелец отказывается от хуков ключом `"hooks": "off"` в `.kaif/kaif.json`, и развёртывание
-   без хуков не краснеет ни на одном гейте. Хук `pretool-owner-word.mjs` из версии 2.8 останавливал
-   работу агента на каждом сообщении владельца посреди хода; в версии 2.9 он удалён из поставки:
-   обновление удаляет его нетронутую копию и убирает его запись из `.claude/settings.json`.
+   без хуков не краснеет ни на одном гейте. Если владелец пишет сообщение посреди работы агента,
+   агент сразу отвечает в чате и продолжает начатую работу. Агент останавливается по просьбе
+   владельца.
 
 ## 4. Навыки
 
@@ -1051,7 +1050,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.6 | Mindful KAIF | 06.09.2026 | Агент работает по меркам владельца: вопрос владельцу — приоритет номер один, а его показ — записанный факт; каждый вопрос и вариант — сценарий того, что владелец увидит, на языке заказчика; вектор доставки выводится из реестра систем и не спрашивается; репетиция обновления дошла до bootstrap-маршрута; интерактивный контур входит в поставку — контракт и генератор трёх лиц; свежая реплика записывается, но не ранжируется; «готово» о продакшене — после реального мира владельца; поставка не называет проекты-доноры. |
 | v2.7 | Audited KAIF | 18.09.2026 | Записи агента становятся проверяемыми: слово владельца цитируется, слово агента подписывается; вопрос владельцу задаётся после поиска по его прежним ответам; «тест» — это функциональный прогон, и каждый прогон оставляет отчёт; текст владельца пишется по портрету его голоса; страница владельца сохраняет его ответ; ложь исправляется там, где оставлена; урок, повторившийся дважды, краснеет; бюджет документов, которые агент перечитывает в начале сессии, считается по строкам, которые написал сам проект. |
 | v2.8 | Noble KAIF | 26.09.2026 | KAIF становится легче и слышит владельца: агент отвечает на слово владельца, пока работает, и работает дальше; отвеченные решения владельца идут раньше плана; страница вопросов владельца записывает ответы по одному; обновление ничего не теряет молча; сканеры видят проект так, как его видит git; канон держит каждое правило, истории правил переехали в пояснительную записку `KAIF_REFERENCE.md`; баг-репорт тестировщика получил обязательную форму, и «не воспроизвелось» пишется только после охоты за шагами. |
-| v2.9 | Distilled KAIF | 16.10.2026 | Поставка новой версии подключается и принимается сразу: задания установки и обновления сами подключают напоминания, правила новой версии принимаются без интервью; хук, который останавливал агента на сообщении владельца посреди хода, удалён. Обновление называет места проекта, которые ссылаются на удалённые навыки и хуки, обновляет указатели других агентских систем и при обновлении через несколько версий помечает собственные правки проекта. Страница вопросов ведёт себя так, как ждёт владелец; вопрос владельцу короткий; на вопрос под словом `resume` агент отвечает и работу сверх ответа не начинает; линтер авторства не уносит личные файлы владельца в общий коммит; для git одна команда делает одно действие. |
+| v2.9 | Distilled KAIF | 16.10.2026 | Поставка новой версии подключается и принимается сразу: задания установки и обновления сами подключают напоминания, правила новой версии принимаются без интервью; на сообщение владельца, написанное посреди работы, агент сразу отвечает в чате и продолжает начатую работу. Обновление называет места проекта, которые ссылаются на удалённые навыки и хуки, обновляет указатели других агентских систем и при обновлении через несколько версий помечает собственные правки проекта. Страница вопросов ведёт себя так, как ждёт владелец; вопрос владельцу короткий; на вопрос под словом `resume` агент отвечает и работу сверх ответа не начинает; линтер авторства не уносит личные файлы владельца в общий коммит; для git одна команда делает одно действие. |
 
 ### 8.2. Структура репозитория
 
