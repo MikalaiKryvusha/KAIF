@@ -3509,12 +3509,54 @@ async function cmdInstall() {
   clearUpdateJournal();   // bootstrap road completed — nothing left to resume
   log(`\n✅ KAIF ${meta.version} deployed mechanically (lang ${LANG}${translatedOnDisk ? ` · ${translatedOnDisk} owner docs templated` : ''}${aliased ? ` · ${aliased} skills trigger-aliased` : ''}, mode ${MODE}, agents ${AGENTS.join(',')}).`);
   for (const s of packNotes) log(s);   // the pack boundary reads as a note on a finished install, never as its verdict (2.7, CB)
+  // #145 §2.3 (2.9): the project's own ignore rules are judged HERE, in the summary the agent reads before its first commit — on a live
+  // project that commit is the one that would silently drop what git ignores; `check` keeps the same scan
+  const ignoredNow = gitIgnoredDeployed([...deploy.filter((f) => !isSkippedAnon(f.path)).map((f) => f.path),
+    ...expectedAgentArtifacts((skillFiles || []).map((f) => skillName(f.path)))]);
+  if (ignoredNow.length) {
+    log(`⚠ ${ignoredNow.length} deployed file(s) are git-ignored by this project's rules — the first commit would leave them out:`);
+    for (const f of ignoredNow) log('  ' + f.line);
+  }
   // Agent clients read their command list ONCE at startup: skills that appeared on disk after that
   // are absent from it, and the first thing the human sees when trying one is "no such command" —
   // which reads as "the install failed". Saying it HERE costs one line and prevents that diagnosis.
+  // #143 §2.1 (2.9): a greenfield folder without git — the deploy ends with a commit, and nothing said what to do; the agent ran `git init`
+  // on its own. The thin KAIF.md does not grow (decision #8), so the machinery says it where the agent reads the outcome.
+  if (!inGitWorkTree()) log(`⚠ this folder is not a git repository, and the deploy ends with a commit — run \`git init\` now; commit the owner's own files first, exactly as they are (his originals are committed before any edit), then the deploy commit.`);
   if (skillFiles && skillFiles.length) log(`➡ Restart your agent client so the ${skillFiles.length} skills appear in its command list (clients read that list at startup — until then a new skill answers "no such command", which is a stale list, not a failed install).`);
   if (legacyOld) log(`➡ ONE cognitive step remains — open ${UPDATE_TASK} and work it, then run: node .kaif/kaif-core.mjs update-verify`);
   else log(`➡ ONE cognitive step remains — open ${TASK_FILE} and work it, then run: node .kaif/kaif-core.mjs verify-final`);
+}
+
+// SW5 (2.9, origin issue #130) · #145 §2.3: a DEPLOYED artifact that git ignores is lost by every clone — `.clinerules/kaif.md` under an
+// unanchored `KAIF.md` on a case-insensitive git made a fresh clone's `check` red; a live project's own pre-KAIF `tools/` line hid the 13
+// shipped modules under `.kaif/tools/`, and only a later `check` said so — the first commit after the install would have dropped them.
+// Judged against the repository's own ignore rules (and its core.ignorecase); one finding per ignored file: `own` — the rule is a line
+// KAIF writes itself. Outside a git work tree there is nothing to judge (empty list).
+// [TESTED: 2026-09-29 21:46 +03:00 · suite s01 S9: KAIF's own line → ✖ with the cure, the owner's rule → ⚠ with `!<file>`; red on v2.8 — testcases/reports/2026-09-29_sw-delivered-wired.md]
+// Is the current folder inside a git work tree? (false also when git itself is absent)
+function inGitWorkTree() {
+  try { const r = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' }); return r.status === 0 && String(r.stdout).trim() === 'true'; }
+  catch { return false; }
+}
+function gitIgnoredDeployed(candidates) {
+  const out = [];
+  try {
+    if (!inGitWorkTree()) return out;
+    const deployed = [...new Set(candidates)].filter((p) => okOnDisk(p));
+    const r = spawnSync('git', ['check-ignore', '--no-index', '-v', '--stdin'], { input: deployed.join('\n') + '\n', encoding: 'utf8' });
+    const kaifLines = new Set(ignoreFirstWanted().map((w) => w.replace(/^\//, '')));
+    for (const l of String(r.stdout || '').split(/\r?\n/).filter(Boolean)) {
+      const m = /^(.*?):(\d+):(.*?)\t(.*)$/.exec(l);
+      if (!m || m[3].startsWith('!')) continue;               // a negation that matched keeps the file — not ignored
+      const [, src, ln, pat, file] = m;
+      const own = kaifLines.has(pat.replace(/^\//, ''));
+      out.push({ own, file, line: own
+        ? `✖ deployed artifact is git-ignored by KAIF's own line ${src}:${ln} «${pat}»: ${file} — a clone would lose it; \`checkpoint recheck\` of an update task or the next \`update\` anchors the line to the root (or write \`/${pat.replace(/^\//, '')}\` there now)`
+        : `⚠ deployed artifact is git-ignored by ${src}:${ln} «${pat}»: ${file} — a clone of this project will not have it; add \`!${file}\` after that line if it should travel` });
+    }
+  } catch { /* no git here — nothing to judge */ }
+  return out;
 }
 
 function validate(deploy, skillFiles, taskFile = TASK_FILE) {
@@ -3583,27 +3625,10 @@ function cmdCheck() {
     if ((hw.retiredLocal || []).length) console.error(`⚠ ${HOOK_SETTINGS_LOCAL} still runs ${hw.retiredLocal.length} hook(s) KAIF retired in 2.9: ${hw.retiredLocal.join(' · ')} — remove the entry by hand (KAIF never edits the personal file)`);
     else if (hw.state === 'unreadable') console.error(`⚠ ${hw.file}: ${hw.error} — the delivered hooks cannot be wired into it; fix the file, then run \`node .kaif/kaif-core.mjs wire-hooks\``);
   } catch (e) { console.error(`⚠ the hook wiring could not be read (${e.message}) — run \`node .kaif/kaif-core.mjs wire-hooks\` to see why`); }
-  // SW5 (2.9, origin issue #130): a DEPLOYED artifact that git ignores is lost by every clone — `.clinerules/kaif.md` under an unanchored
-  // `KAIF.md` on a case-insensitive git made a fresh clone's `check` red. Judged against the repository's own ignore rules (and its
-  // core.ignorecase); a line KAIF wrote itself is a failure (the next update anchors it), the owner's own rule a warning with the cure.
-  // [TESTED: 2026-09-29 21:46 +03:00 · suite s01 S9: KAIF's own line → ✖ with the cure, the owner's rule → ⚠ with `!<file>`; red on v2.8 — testcases/reports/2026-09-29_sw-delivered-wired.md]
-  try {
-    const inRepo = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' });
-    if (inRepo.status === 0 && String(inRepo.stdout).trim() === 'true') {
-      const deployed = [...new Set([...paths, ...agents])].filter((p) => okOnDisk(p));
-      const r = spawnSync('git', ['check-ignore', '--no-index', '-v', '--stdin'], { input: deployed.join('\n') + '\n', encoding: 'utf8' });
-      const kaifLines = new Set(ignoreFirstWanted().map((w) => w.replace(/^\//, '')));
-      for (const l of String(r.stdout || '').split(/\r?\n/).filter(Boolean)) {
-        const m = /^(.*?):(\d+):(.*?)\t(.*)$/.exec(l);
-        if (!m || m[3].startsWith('!')) continue;               // a negation that matched keeps the file — not ignored
-        const [, src, ln, pat, file] = m;
-        if (kaifLines.has(pat.replace(/^\//, ''))) {
-          console.error(`✖ deployed artifact is git-ignored by KAIF's own line ${src}:${ln} «${pat}»: ${file} — a clone would lose it; \`checkpoint recheck\` of an update task or the next \`update\` anchors the line to the root (or write \`/${pat.replace(/^\//, '')}\` there now)`);
-          missing++;
-        } else console.error(`⚠ deployed artifact is git-ignored by ${src}:${ln} «${pat}»: ${file} — a clone of this project will not have it; add \`!${file}\` after that line if it should travel`);
-      }
-    }
-  } catch { /* no git here — nothing to judge */ }
+  // SW5 (2.9, origin issue #130): a DEPLOYED artifact that git ignores is lost by every clone — the scan lives in gitIgnoredDeployed(),
+  // shared with the install summary (#145 §2.3); a line KAIF wrote itself is a failure here (the next update anchors it), the owner's own
+  // rule a warning with the cure.
+  for (const f of gitIgnoredDeployed([...paths, ...agents])) { console.error(f.line); if (f.own) missing++; }
   // Two-headed deployed docs (bug 31; field: project D's /pause and /kaif-remove, project C's doubled // source-kept: two independent field projects
   // PHILOSOPHY): a broken merge that ever leaves a SECOND H1 in a framework-owned .md means two
   // documents living in one file — and both `check` and `update-verify` were green on it.

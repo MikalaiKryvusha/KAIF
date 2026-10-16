@@ -427,6 +427,7 @@ const S9 = join(ROOT, 's9-ignore'); mkdirSync(S9); seedBundle(S9);
 const init9 = git9(S9, 'init', '-q'), cfg9 = git9(S9, 'config', 'core.ignorecase', 'true');
 r = run(S9, 'install');
 ok(init9.code === 0 && cfg9.code === 0 && r.code === 0, 'S9 фикстура: git с core.ignorecase=true, установка exit 0', `${init9.out}${cfg9.out}${r.out.slice(-300)}`);
+const inst9 = r;
 const gi9 = existsSync(join(S9, '.gitignore')) ? readFileSync(join(S9, '.gitignore'), 'utf8') : '';
 const giLines9 = gi9.split(/\r?\n/);
 ok(giLines9.includes('/KAIF.md') && giLines9.includes('/KAIF-LOADER.mjs') && !giLines9.includes('KAIF.md') && giLines9.includes('.kaif/.contour-tmp/') && giLines9.includes('interviews/decisions/*.lock'),
@@ -442,6 +443,24 @@ ok(st9.code === 0 && !/contour-tmp|\.lock|(^|\s)KAIF\.md/m.test(st9.out) && /\.c
    'S9 SW5 (#126): рендер и фраза зова контура, замок окна, корневой KAIF.md — не в `git status`; развёрнутые указатели и чужой sub/KAIF.md — в нём', st9.out.slice(0, 600));
 r = runAll9(S9, 'check');
 ok(r.code === 0 && !/git-ignored/.test(r.out), 'S9 SW5: свежая установка — `check` зелёный, ничего развёрнутого git не прячет', r.out.slice(-400));
+// #145 §2.3 (2.9): живой проект со СВОЕЙ строкой `tools/` до KAIF (полевой — для apktool.jar и jadx/) прятал 13 модулей `.kaif/tools/`,
+// и сказал это только поздний `check` — первый коммит после установки уронил бы их молча. Сводка `install` судит тот же скан сама.
+// Красный — на сборке до фикса (шов KAIF_DIST): сводка этой строки не печатает.
+const S9t = join(ROOT, 's9-own-tools'); mkdirSync(S9t); seedBundle(S9t);
+const init9t = git9(S9t, 'init', '-q'); writeFileSync(join(S9t, '.gitignore'), 'tools/\n');
+const ri9 = runAll9(S9t, 'install');
+ok(init9t.code === 0 && ri9.code === 0 && /⚠ \d+ deployed file\(s\) are git-ignored by this project's rules — the first commit would leave them out/.test(ri9.out)
+   && /⚠ deployed artifact is git-ignored by \.gitignore:1 «tools\/»: \.kaif\/tools\/[\w./-]+ — /.test(ri9.out),
+   'S9 #145: своя строка `tools/` живого проекта прячет `.kaif/tools/` — сводка `install` называет файлы, строку и лекарство', ri9.out.slice(-500));
+ok(inst9.code === 0 && /deployed mechanically/.test(inst9.out) && !/git-ignored/.test(inst9.out),
+   'S9 #145: где git ничего развёрнутого не прячет, сводка установки строк скана не несёт (свежая установка S9)', inst9.out.slice(-200));
+// #143 §2.1 (2.9): папка без git — установка кончается коммитом, и ничто не говорило, что делать; сводка `install` называет `git init`
+// и порядок (оригиналы владельца — первым коммитом). Красный — на сборке до фикса (шов KAIF_DIST).
+const S9n = join(ROOT, 's9-no-git'); mkdirSync(S9n); seedBundle(S9n);
+const rn9 = runAll9(S9n, 'install');
+ok(rn9.code === 0 && /⚠ this folder is not a git repository, and the deploy ends with a commit — run `git init` now; commit the owner's own files first/.test(rn9.out),
+   'S9 #143: установка в папку без git — сводка называет `git init` и порядок коммитов', rn9.out.slice(-400));
+ok(!/this folder is not a git repository/.test(inst9.out), 'S9 #143: в git-проекте строки о `git init` нет (свежая установка S9)', inst9.out.slice(-200));
 // Старое развёртывание: .gitignore, записанный прежним ядром (голые строки), с правками владельца вокруг, концы строк CRLF.
 const OLD_GI9 = ['node_modules/', 'KAIF.md', '!.clinerules/kaif.md', 'KAIF-LOADER.mjs', 'dist/', ''].join('\r\n');
 writeFileSync(join(S9, '.gitignore'), OLD_GI9);

@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "9c769e1c577368355e726ee514f4f57f8d666f4b8b760f734cd698c70331d9ea",
+        "sha256": "997ceff1feb398b5f2b716202d3464b0554056657f08dad855c103df986482f1",
         "lines": [
           572,
           630
@@ -3870,19 +3870,19 @@
       {
         "signature": "## The writing contract — by the portrait, independently checked, then the owner",
         "class": "static",
-        "sha256": "bd3452b51fed9932f9236403fa6f484ef45c553562dda7455dfb5bb4b35d26f8",
+        "sha256": "51c04c011fc5e026c69a807bb55b6ff89719dfbacd09766d429c74e0964cb361",
         "lines": [
           37,
-          72
+          74
         ]
       },
       {
         "signature": "## Mode `check` — the machine half of the independent check",
         "class": "static",
-        "sha256": "52e4121d7826c6c368233609b0710124e4cd5bdacdfc286f5990372fae226d99",
+        "sha256": "973a0b6e4d8ef2dd6cc18191c787bc13fd8f0f6d4f98ccee6d8c07e02888398b",
         "lines": [
-          73,
-          122
+          75,
+          124
         ]
       },
       {
@@ -3890,8 +3890,8 @@
         "class": "static",
         "sha256": "4d9e40b5283a24c1d010838fc0116174e6e3da711c6e3af309d9dd7de2c85cdc",
         "lines": [
-          123,
-          161
+          125,
+          163
         ]
       },
       {
@@ -3899,8 +3899,8 @@
         "class": "static",
         "sha256": "cfd646ea4662f0b75078166bf17b0112d606afd7324334cb09d8ede9341aecb6",
         "lines": [
-          162,
-          207
+          164,
+          209
         ]
       },
       {
@@ -3908,8 +3908,8 @@
         "class": "static",
         "sha256": "791a8edca44a8f1458a9a2cc86ae916a6cb7f3d12ff8824371ac6e18a4c04330",
         "lines": [
-          208,
-          215
+          210,
+          217
         ]
       },
       {
@@ -3917,8 +3917,8 @@
         "class": "static",
         "sha256": "363f3912473697663b050ccedd5e54c0a13d725887dfeb2286ee57f2dc3f7aa3",
         "lines": [
-          216,
-          223
+          218,
+          225
         ]
       }
     ],

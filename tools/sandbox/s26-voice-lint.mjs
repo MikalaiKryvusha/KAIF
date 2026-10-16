@@ -74,7 +74,8 @@ const runLint = (args, cwd, bin = LINT) => {
   try { return { code: 0, out: execSync(`node ${bin} ${args} 2>&1`, { cwd, stdio: 'pipe' }).toString() }; }
   catch (e) { return failed(e, { root: ROOT, cwd, args }); }
 };
-cpSync(join(REPO, 'framework', 'tools', 'kaif-voice-lint.mjs'), LINT);
+// Шов KAIF_VOICE_LINT — модуль линтера, который играет «эту сборку» (красное доказательство против модуля до фикса; как у ck59b-load-field).
+cpSync(process.env.KAIF_VOICE_LINT ? resolve(process.env.KAIF_VOICE_LINT) : join(REPO, 'framework', 'tools', 'kaif-voice-lint.mjs'), LINT);
 cpSync(join(REPO, 'framework', 'templates', '_owner-voice-template.md'), join(ROOT, '.kaif', '_owner-voice-template.md'));
 
 // ---------------------------------------------------------------- (1) модуль: selftest, load, проекты с портретом
@@ -139,6 +140,26 @@ r = runLint('load --sections "^zzz"', EN);
 ok(r.code === 2 && /no H2 section of AUTHOR_STYLOMETRY\.md matches --sections/.test(r.out) && readFileSync(join(EN, '.kaif', 'voice-marker.json'), 'utf8') === markerBefore, 's26 load --sections без совпадений — usage (exit 2), свидетель не изменился', r.out);
 r = runLint('load --sections', EN);
 ok(r.code === 2 && /--sections needs a regex/.test(r.out), 's26 load --sections без значения — usage (exit 2)', r.out);
+// --- load --out (2.9; тикеты origin #143 §2.3 · #145 §2.4): клиент, режущий вывод инструмента по БАЙТАМ, рвал печать ~60 КБ внутри
+// UTF-8 символа — выбор пишется в файл, свидетель — как при печати. Копия может быть ПРИВАТНОГО портрета: путь внутри git-дерева, который
+// git не игнорирует, — отказ до записи (иначе копия уедет следующим коммитом). ROOT свода — вне git-дерева.
+const plainLoad = must(runLint, 'load --sections "^8"', EN);   // эталон печати — установочный шаг (страж немых команд, bugs/61)
+const OUTF = join(ROOT, 'out-load', 'portrait.md');
+r = runLint(`load --sections "^8" --out ${OUTF}`, EN);
+ok(r.code === 0 && existsSync(OUTF) && readFileSync(OUTF, 'utf8') === plainLoad.out.split('\n\n✅ voice-lint load')[0] + '\n'
+   && !/## 8\. Machine heuristics/.test(r.out) && /written to .*portrait\.md \(\d+ bytes, UTF-8\); witness \.kaif\/voice-marker\.json at .*\(4 load\(s\) on record\) — READ THAT FILE WHOLE NOW/.test(r.out),
+   's26 load --out — тот же выбор побайтно в файле (не в выводе), свидетель записан, приказ прочитать файл целиком', r.out.slice(-400));
+const GO = join(ROOT, 'git-out'); mkdirSync(GO, { recursive: true });
+writeFileSync(join(GO, 'AUTHOR_STYLOMETRY.md'), PORTRAIT.en);
+const goInit = spawnSync('git', ['init', '-q'], { cwd: GO, encoding: 'utf8' });
+r = runLint('load --out inside.md', GO);
+ok(goInit.status === 0 && r.code === 2 && /--out inside\.md is inside this git work tree and git does not ignore it/.test(r.out) && !existsSync(join(GO, 'inside.md')) && !existsSync(join(GO, '.kaif', 'voice-marker.json')),
+   's26 load --out внутри git-дерева без ignore — отказ (exit 2): копии нет, свидетеля нет', r.out.slice(-300));
+writeFileSync(join(GO, '.gitignore'), 'inside.md\n');
+r = runLint('load --out inside.md', GO);
+ok(r.code === 0 && existsSync(join(GO, 'inside.md')) && existsSync(join(GO, '.kaif', 'voice-marker.json')), 's26 load --out на путь, который git игнорирует, — записан', r.out.slice(-300));
+r = runLint('load --out', EN);
+ok(r.code === 2 && /--out needs a file path/.test(r.out), 's26 load --out без значения — usage (exit 2)', r.out);
 
 // --- SKIPPED: §8 прозой (грепы в фенсе, таблицы нет) — «не судилось» ≠ «чисто»
 writeFileSync(join(ROOT, 'prose', 'AUTHOR_STYLOMETRY.md'), '# Portrait\n\n## 8. Machine heuristics\n\n≥10 grep patterns … graduate into a project guard.\n\n```\nrg -n "Remember that" rules/\n```\n');
