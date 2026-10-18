@@ -34,10 +34,16 @@ export const PARSER = {
   // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
   // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
   // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
-  // The light judges of epic CP, F3 and N2: «выше» / "above" is a REFERENCE unless a comparison follows it — a number or «чем» / "than"
+  // The light judges of epic CP, F3 and N2 (for «выше» superseded in 2.10 by the reference forms below; "above" keeps this rule): «выше» /
+  // "above" is a REFERENCE unless a comparison follows it — a number or «чем» / "than"
   // («нагрузка выше 80%», «B выше, чем A», "above 80%" stay legal; «формула выше», «в таблице выше», "the list above", «как указано выше»
   // refuse); «см. <…> ниже» (forward) and «см. также» / "see also" (a reference NEXT to the content) stay legal.
-  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})(?!\\s*,?\\s*(?:чем(?!\\p{L})|[\\d~≈<>]|на\\s+\\d|в\\s+\\d))|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|above(?!\\p{L})(?!\\s*(?:than(?!\\p{L})|[\\d~<>]|by\\s+\\d))|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  // 2.10, epic TK, step TK5 (a) (origin #147): Russian «выше» is mostly a COMPARISON («чем выше ум, тем …», «у вора она выше», «цена выше
+  // рыночной») — on a field corpus copy the door refused 22 lines in 16 questions, 19 of them comparisons. So «выше» refuses only in a
+  // REFERENCE form: a document noun or a participle before it («формула выше», «в таблице выше», «как указано выше», «см. выше») or a
+  // participle after it («выше указанный»); recon — researches/38_kaif_2.10_scope_recon/owner-talk.md, #147 (22 → 3 refusals, 23 of 23
+  // synthetic cases, 0 new refusals on 4 427 live lines).
+  refBack: '(?<!\\p{L})(?:(?:(?:таблиц|формул|списк|список|пример|раздел|пункт|абзац|текст|вопрос|схем|рисун|перечн|шапк|документ|строк|вариант)\\p{L}*(?:\\s+\\d+)?|(?:указан|приведен|приведён|сказан|описан|перечислен|отмечен|показан|изложен|упомянут|написан|разобран|обсужден|обсуждён|предложен|назван)\\p{L}*|см\\.)\\s+выше(?!\\p{L})|выше\\s+(?:указан|приведен|приведён|сказан|описан|перечислен|отмечен|показан|изложен|упомянут|написан|разобран|обсужден|обсуждён|предложен|назван)|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|above(?!\\p{L})(?!\\s*(?:than(?!\\p{L})|[\\d~<>]|by\\s+\\d))|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
   originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
@@ -54,13 +60,23 @@ export const PARSER = {
   // 2.9, epic CP (origin #109, #121 R3): an EXPLICIT closing word at the START of the status value (after an optional mark and bold) closes
   // the document even when an explanation after it carries a negation («✅ ЗАКРЫТО — ВОПРОС СНЯТ АГЕНТОМ, А НЕ ОТВЕЧЕН ВЛАДЕЛЬЦЕМ»); the
   // project's own closed words — «перенесено», «СНЯТО», WITHDRAWN — were read as a LIVE document and stood in the owner's queue
-  statusClosedWord: '^\\s*(?:[✅⛔➡🟢]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?)(?!\\p{L})',
+  // 2.10, epic TK (origin #109 comment 3): a document FOLDED or MERGED into another («↪️ СВЁРНУТО в сводное интервью #123», "📦 MERGED into
+  // interview #5") is closed too — 22 such documents of one field project stood in the owner's queue as live
+  statusClosedWord: '^\\s*\\*{0,2}\\s*(?:[✅⛔➡🟢↪📦]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|MERGED|FOLDED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?|СВ[ЕЁ]РНУТ[ОАЫ]?)(?!\\p{L})',
   statusClosed: '✅|🟢|STATUS:\\s*DONE|ANSWERS\\s+RECEIVED|ОТВЕЧЕНО',
-  statusWaiting: '🟡|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
+  statusWaiting: '🟡|⏳|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
+  // 2.10, epic TK (origin #109 comment 1): a waiting mark at the HEAD of the status value decides "waiting" before any word after it —
+  // «🟡 отвечено: Q1 = D …; внесение не подтверждено» was read closed by the word «отвечено», and the owner's real decision hid 17 days.
+  // 🟠 is NOT a waiting mark: a field project writes «🟠 ответы получены …» — answers in, nothing awaits the owner (five such documents)
+  statusWaitingLead: '^\\s*\\*{0,2}\\s*(?:🟡|⏳)',
+  // a PARTIAL head is not closed even under a closing mark («🟢 частично: …», "✅ partially answered"); a count «18 из 27» with the first
+  // number below the second is partial too (core.mjs)
+  statusPartial: '(?<!\\p{L})частичн\\p{L}*|\\bpartial(?:ly)?\\b',
+  statusCount: '(\\d+)\\s+(?:из|of)\\s+(\\d+)',
   // (the light re-judge of epic CP, F5) on a line that opens with a closing word the document waits only for an UNNEGATED waiting marker
   // («больше не ждёт ответа», "no longer awaiting" close) or a NOT-YET mark («Q2 — ещё не отвечен»); a bare «не отвечен» still closes —
   // a question withdrawn by the agent is written that way.
-  statusWaitingNegation: '(?:(?<!\\p{L})не|\\bnot|\\bno\\s+longer|\\bno)',
+  statusWaitingNegation: '(?:(?<!\\p{L})не|\\bnot|\\bno\\s+longer|\\bno|\\bnothing(?:\\s+is)?)',
   statusPending: '(?<!\\p{L})(?:ещ[её]|пока)\\s+не(?!\\p{L})|\\bnot\\s+yet\\b|\\bno\\b[^.]{0,40}\\byet\\b',
   // negation outranks the tick (bugs/70): «пока НЕ отвечено», "no answers yet", "not answered"
   statusNegation: '(?<!\\p{L})не\\s*отвечен|неотвечен|(?<!\\p{L})пока\\s+не(?!\\p{L})|(?<!\\p{L})ещё\\s+не(?!\\p{L})|\\bno\\b[^.]{0,40}\\byet\\b|\\bnot\\b[^.]{0,40}\\banswer',
@@ -132,7 +148,7 @@ const EN = {
     copy: 'Copy', retry: 'Retry saving', approve: '<strong>Approve</strong> — send as is',
     reject: '<strong>Reject</strong> — do not send' },
   art: { goesOut: 'Goes out', missing: (file) => 'File <code>' + file + '</code> not found — nothing to approve. This is a defect, not your choice.',
-    bytes: 'bytes' },
+    bytes: 'bytes', source: 'Source (what goes out, byte for byte)' },
   st: { draft: (n) => 'Draft picked up: ' + n + ' field(s) restored from the browser', saving: 'Saving…',
     saved: (w) => 'Saved: ' + w + '. The window will close by itself…', nothing: 'Nothing to save: no answer, no comment',
     noRemarksWritten: 'no remarks',
@@ -204,6 +220,8 @@ const EN = {
       + (ex ? ' (' + ex + ' exempt: declared n/a)' : ''),
     archaeologyOld: (date, since) => 'archaeology: not judged — header date '
       + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
+    long: (id, n, budget) => 'WARNING: ' + id + ' is ' + n + ' characters, above the budget of ' + budget + ' — the owner tires of long questions'
+      + ' (origin #142): cut it to what he chooses by, or split the fork; the page may still open.',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -246,7 +264,7 @@ const RU = {
     copy: 'Скопировать', retry: 'Повторить запись', approve: '<strong>Одобряю</strong> — отправить как есть',
     reject: '<strong>Отклоняю</strong> — не отправлять' },
   art: { goesOut: 'Уйдёт наружу', missing: (file) => 'Файл <code>' + file + '</code> не найден — одобрять нечего. Это дефект, а не ваш выбор.',
-    bytes: 'байт' },
+    bytes: 'байт', source: 'Исходник (что уйдёт, байт в байт)' },
   st: { draft: (n) => 'Подхвачен черновик: ' + n + ' полей(я) восстановлено из браузера', saving: 'Записываю…',
     saved: (w) => 'Записано: ' + w + '. Окно закроется само…', nothing: 'Нечего записывать: ни ответа, ни комментария',
     noRemarksWritten: 'замечаний нет',
@@ -317,6 +335,8 @@ const RU = {
       + (ex ? ' (вне оси: ' + ex + ' — объявленное n/a)' : ''),
     archaeologyOld: (date, since) => 'археология: не судится — дата шапки '
       + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
+    long: (id, n, budget) => 'ВНИМАНИЕ: в ' + id + ' ' + n + ' знаков — больше бюджета ' + budget + '; длинные вопросы владельца утомляют'
+      + ' (origin #142): сожми до того, по чему он выбирает, или раздели развилку; страница всё равно откроется.',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',

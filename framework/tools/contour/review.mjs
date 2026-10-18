@@ -45,7 +45,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, lengthWarnings, QUESTION_CHARS_BUDGET, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   unescapeStructure, // court RL 2.9, B-F2: the card shows an owner's escaped comment line as he typed it
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
@@ -546,8 +546,15 @@ export function buildPage(root, docPath) {
     const abs = a.body_file ? resolve(root, a.body_file) : null;
     const exists = !!(abs && existsSync(abs));
     const text = exists ? readFileSync(abs, 'utf8') : '';
+    // TK5 (d) (2.10, origin #136): a `format: html` body is shown AS A PAGE — in a frame with no scripts and no same-origin (an empty
+    // `sandbox`), its source one click below; the hash stays over the raw bytes (I3), so the approved text is what goes out
+    const html = /^html$/i.test(a.format || '');
+    const bodyHtml = !exists ? '' : html
+      ? '<iframe class="artframe" sandbox="" referrerpolicy="no-referrer" srcdoc="' + escapeHtml(text) + '"></iframe><details class="artsrc"><summary>'
+        + t.art.source + '</summary><pre>' + escapeHtml(text) + '</pre></details>'
+      : renderMd(text);
     return { doc: rel, id: a.id, target: a.target || '', format: a.format || '', bodyFile: a.body_file || '',
-      exists, sha256: exists ? bodyHash(text) : null, bodyHtml: exists ? renderMd(text) : '', bytes: exists ? Buffer.byteLength(text, 'utf8') : 0 };
+      exists, sha256: exists ? bodyHash(text) : null, bodyHtml, bytes: exists ? Buffer.byteLength(text, 'utf8') : 0 };
   });
   const nAns = questions.filter((q) => q.answered).length;
   const nWait = questions.length - nAns;
@@ -809,6 +816,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .opt input[type=radio] { width:22px; height:22px; flex:0 0 auto; margin-top:0; accent-color:var(--accent); cursor:pointer }
   .opt div p { margin:2px 0 } .qbody p { margin:6px 0 } .qmeta { font-size:13px; color:var(--muted); margin:6px 0 }
   .outbox { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin:10px 0; max-height:60vh; overflow:auto }
+  .artframe { width:100%; height:50vh; border:0; background:#fff } .artsrc pre { white-space:pre-wrap; font-size:.85em }
   .qcard.danger { border-left-color:var(--danger) }
   details.archive { margin:22px 0 } details.archive > summary { cursor:pointer; color:var(--muted); font-weight:600; padding:8px 0 } /* QL3 (#54): the settled below, one fold */
   /* proofreading: paragraph cards with their id in the margin; mockup: the image at page width */
@@ -1681,6 +1689,8 @@ export function checkDoc(root, docPath, log = console.log) {
   if (cf.questions.length) log(arch.judged
     ? t.check.archaeology(arch.attested, arch.live, arch.exempt)
     : t.check.archaeologyOld(arch.headerDate, arch.since));
+  // TK5 (b) (2.10, origin #142): a live question over the length budget is named — a warning, the page may still open
+  for (const w of lengthWarnings(md)) log(t.check.long(w.id, w.chars, w.budget));
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -1722,6 +1732,19 @@ export async function selftest(log = console.log) {
     ok(n(REFERENCES_SINCE, '\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80% \u2014 \u0431\u0435\u0440\u0451\u043c B.') === 0 && n(REFERENCES_SINCE, 'B \u0432\u044b\u0448\u0435, \u0447\u0435\u043c A, \u043f\u043e \u0446\u0435\u043d\u0435.') === 0 && n(REFERENCES_SINCE, 'Load above 80% takes B.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u2014 \u0441\u043c. \u0442\u0430\u0431\u043b\u0438\u0446\u0443 \u043d\u0438\u0436\u0435.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0446\u0435\u043b\u0438\u043a\u043e\u043c: x = 2y; \u0441\u043c. \u0442\u0430\u043a\u0436\u0435 plans/12.') === 0
       && n(REFERENCES_SINCE, '\u041a\u0430\u043a \u0443\u043a\u0430\u0437\u0430\u043d\u043e \u0432\u044b\u0448\u0435, \u0431\u0435\u0440\u0451\u043c B.') === 1 && n(REFERENCES_SINCE, 'As listed above, B wins.') === 1,
       'CP F3 (light judge): a comparison ("load above 80%", "B is higher than A"), a forward "see the table below" and a "see also" next to the content stay silent; "as listed above" still refuses');
+    // 2.10, epic TK, step TK5 (a) (origin #147): the Russian word for "above" refuses only in a reference form; a comparison — correlative,
+    // sentence-final, genitive — is legal
+    ok(n(REFERENCES_SINCE, '— *«\u0427\u0435\u043c \u0432\u044b\u0448\u0435 \u0443\u043c, \u0442\u0435\u043c \u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0435\u0435 \u043f\u0440\u043e\u0438\u0437\u043d\u043e\u0441\u0438\u0442\u0441\u044f \u0441\u0432\u0438\u0442\u043e\u043a»*.') === 0 && n(REFERENCES_SINCE, '\u0411\u0435\u0440\u0441\u0435\u0440\u043a \u0431\u044c\u0451\u0442 \u0433\u0435\u0440\u043e\u044f \u0441 \u0441\u0430\u043c\u043e\u0439 \u0432\u044b\u0441\u043e\u043a\u043e\u0439 \u0430\u0442\u0430\u043a\u043e\u0439, \u0443 \u0432\u043e\u0440\u0430 \u043e\u043d\u0430 \u0432\u044b\u0448\u0435.') === 0
+      && n(REFERENCES_SINCE, '\u0426\u0435\u043d\u0430 \u0432\u044b\u0448\u0435 \u0440\u044b\u043d\u043e\u0447\u043d\u043e\u0439 — \u0431\u0435\u0440\u0451\u043c?') === 0 && n(REFERENCES_SINCE, '\u041f\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0443 \u0432\u044b\u0448\u0435 \u0441\u043f\u0438\u0441\u043a\u0430?') === 0
+      && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0432\u044b\u0448\u0435 \u0434\u0430\u0451\u0442 12.') === 1 && n(REFERENCES_SINCE, '\u0412 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435 \u0442\u0440\u0438 \u0441\u0442\u0440\u043e\u043a\u0438.') === 1
+      && n(REFERENCES_SINCE, '\u0412\u044b\u0448\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u044b\u0439 \u043f\u043e\u0440\u043e\u0433 — \u0431\u0435\u0440\u0451\u043c?') === 1 && n(REFERENCES_SINCE, '\u0423\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u0432\u044b\u0448\u0435 \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 — \u0431\u0435\u0440\u0451\u043c?') === 1,
+      'TK5 #147: «\u0447\u0435\u043c \u0432\u044b\u0448\u0435 …», «\u043e\u043d\u0430 \u0432\u044b\u0448\u0435.», «\u0432\u044b\u0448\u0435 \u0440\u044b\u043d\u043e\u0447\u043d\u043e\u0439», «\u0432\u044b\u0448\u0435 \u0441\u043f\u0438\u0441\u043a\u0430» stay silent; «\u0444\u043e\u0440\u043c\u0443\u043b\u0430 \u0432\u044b\u0448\u0435», «\u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435», «\u0432\u044b\u0448\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u044b\u0439», «\u0443\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u0432\u044b\u0448\u0435» refuse');
+    // TK5 (b) (origin #142): a 3 000-character live question is named, a 700-character one and an answered long one are not; never a refusal
+    const long = 'A long context of the question with no reference back. '.repeat(55), short = 'x'.repeat(650);
+    const lw = (stem, ans) => lengthWarnings(rDoc(REFERENCES_SINCE, stem, ans));
+    ok(lw(long).length === 1 && lw(long)[0].chars > QUESTION_CHARS_BUDGET && lw(short).length === 0 && lw(long, ' A').length === 0
+      && !preflight(rDoc(REFERENCES_SINCE, long)).length,
+      'TK5 #142: a live question over ' + QUESTION_CHARS_BUDGET + ' characters is named; a short one and an answered long one are silent; the door does not refuse it');
     ok(['\u0422\u0430\u043a \u043a\u0430\u043a \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%, \u0431\u0435\u0440\u0451\u043c B.', '\u0423\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%.', 'As load goes above 80%, B wins.', '\u0426\u0435\u043d\u0430 \u0432\u044b\u0448\u0435 \u043d\u0430 5% \u2014 \u0431\u0435\u0440\u0451\u043c B.'].every((s) => n(REFERENCES_SINCE, s) === 0)
       && ['\u0411\u0435\u0440\u0451\u043c \u0444\u043e\u0440\u043c\u0443\u043b\u0443 \u0432\u044b\u0448\u0435?', '\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435.', 'Pick from the list above.', 'The above decides.'].every((s) => n(REFERENCES_SINCE, s) === 1),
       'CP N2 (light re-judge): "above" is a comparison only before a number or "than" (through "as" or a participle too); a noun form ("the formula above", "the list above") refuses');
@@ -1738,6 +1761,18 @@ export async function selftest(log = console.log) {
     ok(st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0431\u043e\u043b\u044c\u0448\u0435 \u043d\u0435 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'closed' && st('CLOSED — no longer awaiting the owner') === 'closed'
       && st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1, Q2 \u2014 \u0435\u0449\u0451 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d') === 'waiting' && st('CLOSED Q1; Q2 not yet answered') === 'waiting',
       'CP F5 (light re-judge): a NEGATED waiting marker ("no longer awaiting") leaves the document closed; a not-yet mark after the closing word waits');
+    // 2.10, epic TK, step TK5 (c) (origin #109 comments 1 and 3): the head of the value decides — a leading waiting mark waits whatever word
+    // follows; a closing mark does not close a partial head; folded and merged documents are closed; history inside a closed line is history
+    const waits = ['🟡 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e: Q1 = D (…), Q2 = A (…); \u0432\u043d\u0435\u0441\u0435\u043d\u0438\u0435 \u043d\u0435 \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u043e (…) ·', '🟠 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e 18 \u0438\u0437 27', '🟡 answers received for Q1; Q2 awaiting',
+      '🟡 Q2 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 · ✅ Q1 \u0432\u043d\u0435\u0441\u0451\u043d', '🟢 \u0447\u0430\u0441\u0442\u0438\u0447\u043d\u043e: Q1 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e, Q2 — \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430', '\u041e\u0442\u0432\u0435\u0447\u0435\u043d\u043e \u0447\u0430\u0441\u0442\u0438\u0447\u043d\u043e (2 \u0438\u0437 5) 🟡', '⏳ \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430',
+      '🟡 not closed yet: Q2 awaiting', '🟡 \u043e\u0442\u0432\u0435\u0442\u044b \u0436\u0434\u0443\u0442 \u0432\u043d\u0435\u0441\u0435\u043d\u0438\u044f: Q1 = D, Q2 = A'];
+    const closes = ['**↪️ \u0421\u0412\u0401\u0420\u041d\u0423\u0422\u041e \u0432 \u0441\u0432\u043e\u0434\u043d\u043e\u0435 \u0438\u043d\u0442\u0435\u0440\u0432\u044c\u044e #123 (2026-10-05)** — \u0432\u043e\u043f\u0440\u043e\u0441\u044b \u0436\u0438\u0432\u0443\u0442 \u0442\u0430\u043c', '📦 MERGED into interview #5', '🟢 CLOSED; nothing awaiting',
+      '✅ CLOSED — nothing is awaiting an answer', '✅ CLOSED 2026-08-30 — withdrawn by the agent.',
+      '✅ ANSWERS RECEIVED 2026-09-28 20:46 (\u0447\u0430\u0442\u043e\u043c). \u041f\u0440\u0435\u0436\u0434\u0435: ⏳ \u0416\u0414\u0401\u0422 \u041e\u0422\u0412\u0415\u0422\u0410', '✅ \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e 2026-09-18 08:14: Q1 = A. \u041f\u0440\u0435\u0436\u043d\u0438\u0439 \u0441\u0442\u0430\u0442\u0443\u0441: ⏳ \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430'];
+    const wrongW = waits.filter((v) => st(v) !== 'waiting'), wrongC = closes.filter((v) => st(v) !== 'closed');
+    if (st('🟠 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b 2026-09-14 22:58 (\u04121 \u0438 \u04122)') === 'waiting') wrongW.push('🟠 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b (must not wait)');
+    ok(!wrongW.length && !wrongC.length, 'TK5 #109: ' + waits.length + ' waiting heads wait and ' + closes.length + ' closed, folded or merged lines close'
+      + (wrongW.length || wrongC.length ? ' — wrong: ' + [...wrongW, ...wrongC].join(' | ') : '') + ' (a closed line carries its history; 🟠 «answers received» is no waiting mark)');
   }
   { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
     const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
@@ -1784,6 +1819,19 @@ export async function selftest(log = console.log) {
     'config is read, never asked: project name from kaif.json, owner from the identity table, canon decisions dir');
   ok(texts('de').fallbackFrom === 'de' && texts('ru').lang === 'ru' && texts('ru').btn.save !== texts('en').btn.save,
     'texts: RU and EN ship, an unknown language falls back to EN and says so');
+  { // TK5 (d) (2.10, origin #136): a `format: html` artifact is shown as a page in a script-less frame; markdown keeps its render; one hash
+    const raw = '<h2>Title</h2><table><tr><td>1</td></tr></table><script>document.title="x"</script>\n';
+    writeFileSync(join(root, 'docs', 'page.html'), raw);
+    writeFileSync(join(root, 'docs', 'note.md'), '**bold** note\n');
+    writeFileSync(join(root, 'docs', 'art.md'), '# Outbound\n\n```owner-review\ntitle: Outbound\nkind: interview\nartifacts:\n  - id: P1\n    target: Wiki\n'
+      + '    format: html\n    body_file: docs/page.html\n  - id: P2\n    target: Chat\n    format: markdown\n    body_file: docs/note.md\n```\n');
+    const [h, m] = buildPage(root, 'docs/art.md').artifacts;
+    const srcdoc = (h.bodyHtml.match(/ srcdoc="([^"]*)"/) || [])[1] || '';
+    const unattr = srcdoc.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    ok(h.bodyHtml.startsWith('<iframe class="artframe" sandbox="" ') && unattr === raw && !h.bodyHtml.includes('<p>&lt;') && !/<script/i.test(h.bodyHtml)
+      && h.bodyHtml.includes('<details class="artsrc">') && h.sha256 === bodyHash(raw) && m.bodyHtml === '<p><strong>bold</strong> note</p>',
+      'TK5 #136: an html artifact is a page in a frame with no scripts and no same-origin, its source one click below, the hash over the raw bytes; markdown still renders');
+  }
 
   // C3: four faces — one hash
   const base = 'Line one\nLine two\n';

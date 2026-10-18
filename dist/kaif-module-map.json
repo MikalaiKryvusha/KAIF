@@ -3769,10 +3769,10 @@
       {
         "signature": "## The name contract (candidate, field-tested on four product routines)",
         "class": "static",
-        "sha256": "12b2d6abe57a516e64c1ff3a1ef205f8023a2efa9a358491afe6f5e24eaf2075",
+        "sha256": "312f6feba4353d40ad090b0c79da84cbd2875c2cf33657dc3519e890ff8536e1",
         "lines": [
           439,
-          448
+          450
         ]
       },
       {
@@ -3780,8 +3780,8 @@
         "class": "static",
         "sha256": "99be6d723cf52bafb9aead06d53919d79656cc54f77d02bc2172cddc56f88c0b",
         "lines": [
-          449,
-          561
+          451,
+          563
         ]
       },
       {
@@ -3789,8 +3789,8 @@
         "class": "static",
         "sha256": "0b9388849b72578dc3226d0d363c54ffed63e371a68e0bab3521c135ac4b7643",
         "lines": [
-          562,
-          595
+          564,
+          597
         ]
       },
       {
@@ -3798,8 +3798,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          596,
-          611
+          598,
+          613
         ]
       },
       {
@@ -3807,8 +3807,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          612,
-          682
+          614,
+          684
         ]
       },
       {
@@ -3816,8 +3816,8 @@
         "class": "static",
         "sha256": "5e2985ee5e5c92b97244766f1cbec12c8858705acfb102ea9ad54a5153358f3c",
         "lines": [
-          683,
-          707
+          685,
+          709
         ]
       },
       {
@@ -3825,8 +3825,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          708,
-          727
+          710,
+          729
         ]
       },
       {
@@ -3834,8 +3834,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          728,
-          739
+          730,
+          741
         ]
       }
     ],

@@ -442,6 +442,8 @@ Metadata block in the document head (fenced YAML): `title` · `kind` (interview 
 …) · `artifacts:` list of approvable bodies, each `{id, target ("Slack · #channel"), format,
 body_file}`. **`body_file` is a LINK, not a copy-paste** — the page shows exactly the bytes that
 will leave, and the hash is computed over them; a pasted copy is a second truth and breaks I3.
+`format: html` is shown AS A PAGE — in a frame with no scripts and no same-origin, its source one click below (2.10, origin #136);
+`markdown` and `text` render as markdown.
 Decision record: `kind, document, by, at, comment` + `artifacts: {<id>: {status, sha256}}` for
 drafts / `answers: {Q1: {choice, text, comment}}` for interviews. `by` is not decoration — it is
 what makes the archive readable months later.

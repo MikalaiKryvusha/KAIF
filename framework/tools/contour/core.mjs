@@ -160,6 +160,15 @@ const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
 const STATUS_CLOSED_WORD_RE = new RegExp(PARSER.statusClosedWord, 'iu');   // CP (2.9, #109 · #121 R3)
 const STATUS_PENDING_RE = new RegExp(PARSER.statusPending, 'iu');           // the light re-judge of epic CP, F5
+const STATUS_WAITING_LEAD_RE = new RegExp(PARSER.statusWaitingLead, 'u');  // 2.10, epic TK (#109 comment 1)
+const STATUS_PARTIAL_RE = new RegExp(PARSER.statusPartial, 'iu');          // 2.10, epic TK (#109 twins)
+const STATUS_HEAD_END_RE = /[:;—–.(]/u;                                   // where the head of a status value ends
+const STATUS_COUNT_RE = new RegExp(PARSER.statusCount, 'iu');
+// "partially" (either language) · a count "18 of 27" whose first number is below the second
+function partialHead(head) {
+  const c = head.match(STATUS_COUNT_RE);
+  return STATUS_PARTIAL_RE.test(head) || !!(c && Number(c[1]) < Number(c[2]));
+}
 const WAITING_NEGATED_RE = new RegExp(PARSER.statusWaitingNegation + '\\s+$', 'iu');
 // a waiting marker counts unless a negation stands right before it («no longer awaiting» — the document is closed)
 function waitsUnnegated(line) {
@@ -188,9 +197,14 @@ export function docStatus(md) {
   // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit, unnegated WAITING marker or a NOT-YET
   // mark on the same line: a partial status «closed Q1; Q2 awaits an answer / is not yet answered» still waits (the light judges of epic
   // CP, F5 and its re-judge); «closed — no longer awaiting an answer» closes
+  // 2.10, epic TK (origin #109 comment 1): a waiting mark at the head of the value outranks every word after it ("🟡 answered …")
+  if (STATUS_WAITING_LEAD_RE.test(line)) return 'waiting';
   if (STATUS_CLOSED_WORD_RE.test(line)) return waitsUnnegated(line) || STATUS_PENDING_RE.test(line) ? 'waiting' : 'closed';
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
-  if (STATUS_CLOSED_RE.test(line)) return 'closed';
+  // a closing mark does not close a PARTIAL head ("🟢 partially: Q1 answered, Q2 awaits an answer", "Answered partially (2 of 5) 🟡");
+  // only the head counts — the value up to its first separator — because a closed line often carries its history ("Before: ⏳ awaiting
+  // an answer", "13:24 — Q2 partially"), and three closed interviews of the origin read "waiting" when the whole line was judged
+  if (STATUS_CLOSED_RE.test(line)) return partialHead(line.split(STATUS_HEAD_END_RE)[0]) ? 'waiting' : 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
   return 'none';
 }
@@ -568,6 +582,23 @@ export function referenceProblems(md) {
           + ' right in the question (the formula, the list, the numbers — a reference may stand NEXT to it, never instead of it);'
           + ' declared exception on the line: <!-- ref-ok: <reason> -->');
     }
+  }
+  return out;
+}
+
+// ── 2.10, epic TK, step TK5 (b) (origin #142): the LENGTH of a live question — a WARNING, never a refusal ──────────────
+// A field owner, rendered from Russian: "you write VERY MUCH, I get tired reading and I am afraid to answer these questions". The 2.9 rule
+// «one fork — one question» is prose; re-written by it, a field interview still carried 952 characters a question, 28 of 33 above the
+// owner's own norm of ~750 (recon researches/38_kaif_2.10_scope_recon/owner-talk.md, #142). Counted as the recon counted: the heading and
+// the lines before the answer field, HTML comments cut. The number is the field's norm — the owner's word revises it.
+export const QUESTION_CHARS_BUDGET = 750;
+export function lengthWarnings(md, budget = QUESTION_CHARS_BUDGET) {
+  const out = [];
+  for (const q of parseQuestions(md)) {
+    if (q.answered || q.freeField) continue;
+    const answerAt = q.answers.length ? q.answers[0].line : q.body.length;
+    const chars = [...[q.title, ...q.body.slice(0, answerAt)].join('\n').replace(/<!--[\s\S]*?-->/g, '').trim()].length;
+    if (chars > budget) out.push({ id: q.id, chars, budget });
   }
   return out;
 }

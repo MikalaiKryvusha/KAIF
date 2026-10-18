@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "a6f33f57a100c177f2c5f5411b8f8e93dfa91d9673542c7a38b3af2d36fd7a77",
+    "sourceTree": "8c3af63f4a5ff57ee4aca7574e1475209d3c2e8265a80aa07887930ee9629f69",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -99,6 +99,7 @@
       "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
+      "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -7506,6 +7507,8 @@ Metadata block in the document head (fenced YAML): `title` · `kind` (interview 
 …) · `artifacts:` list of approvable bodies, each `{id, target ("Slack · #channel"), format,
 body_file}`. **`body_file` is a LINK, not a copy-paste** — the page shows exactly the bytes that
 will leave, and the hash is computed over them; a pasted copy is a second truth and breaks I3.
+`format: html` is shown AS A PAGE — in a frame with no scripts and no same-origin, its source one click below (2.10, origin #136);
+`markdown` and `text` render as markdown.
 Decision record: `kind, document, by, at, comment` + `artifacts: {<id>: {status, sha256}}` for
 drafts / `answers: {Q1: {choice, text, comment}}` for interviews. `by` is not decoration — it is
 what makes the archive readable months later.
@@ -10705,6 +10708,15 @@ const STATUS_WAITING_RE = new RegExp(PARSER.statusWaiting, 'iu');
 const STATUS_NEGATION_RE = new RegExp(PARSER.statusNegation, 'iu');
 const STATUS_CLOSED_WORD_RE = new RegExp(PARSER.statusClosedWord, 'iu');   // CP (2.9, #109 · #121 R3)
 const STATUS_PENDING_RE = new RegExp(PARSER.statusPending, 'iu');           // the light re-judge of epic CP, F5
+const STATUS_WAITING_LEAD_RE = new RegExp(PARSER.statusWaitingLead, 'u');  // 2.10, epic TK (#109 comment 1)
+const STATUS_PARTIAL_RE = new RegExp(PARSER.statusPartial, 'iu');          // 2.10, epic TK (#109 twins)
+const STATUS_HEAD_END_RE = /[:;—–.(]/u;                                   // where the head of a status value ends
+const STATUS_COUNT_RE = new RegExp(PARSER.statusCount, 'iu');
+// "partially" (either language) · a count "18 of 27" whose first number is below the second
+function partialHead(head) {
+  const c = head.match(STATUS_COUNT_RE);
+  return STATUS_PARTIAL_RE.test(head) || !!(c && Number(c[1]) < Number(c[2]));
+}
 const WAITING_NEGATED_RE = new RegExp(PARSER.statusWaitingNegation + '\\s+$', 'iu');
 // a waiting marker counts unless a negation stands right before it («no longer awaiting» — the document is closed)
 function waitsUnnegated(line) {
@@ -10733,9 +10745,14 @@ export function docStatus(md) {
   // an explicit closing word FIRST outranks an explanation after it (#109) — but not an explicit, unnegated WAITING marker or a NOT-YET
   // mark on the same line: a partial status «closed Q1; Q2 awaits an answer / is not yet answered» still waits (the light judges of epic
   // CP, F5 and its re-judge); «closed — no longer awaiting an answer» closes
+  // 2.10, epic TK (origin #109 comment 1): a waiting mark at the head of the value outranks every word after it ("🟡 answered …")
+  if (STATUS_WAITING_LEAD_RE.test(line)) return 'waiting';
   if (STATUS_CLOSED_WORD_RE.test(line)) return waitsUnnegated(line) || STATUS_PENDING_RE.test(line) ? 'waiting' : 'closed';
   if (STATUS_NEGATION_RE.test(line)) return 'waiting';   // negation outranks the tick
-  if (STATUS_CLOSED_RE.test(line)) return 'closed';
+  // a closing mark does not close a PARTIAL head ("🟢 partially: Q1 answered, Q2 awaits an answer", "Answered partially (2 of 5) 🟡");
+  // only the head counts — the value up to its first separator — because a closed line often carries its history ("Before: ⏳ awaiting
+  // an answer", "13:24 — Q2 partially"), and three closed interviews of the origin read "waiting" when the whole line was judged
+  if (STATUS_CLOSED_RE.test(line)) return partialHead(line.split(STATUS_HEAD_END_RE)[0]) ? 'waiting' : 'closed';
   if (STATUS_WAITING_RE.test(line)) return 'waiting';
   return 'none';
 }
@@ -11117,6 +11134,23 @@ export function referenceProblems(md) {
   return out;
 }
 
+// ── 2.10, epic TK, step TK5 (b) (origin #142): the LENGTH of a live question — a WARNING, never a refusal ──────────────
+// A field owner, rendered from Russian: "you write VERY MUCH, I get tired reading and I am afraid to answer these questions". The 2.9 rule
+// «one fork — one question» is prose; re-written by it, a field interview still carried 952 characters a question, 28 of 33 above the
+// owner's own norm of ~750 (recon researches/38_kaif_2.10_scope_recon/owner-talk.md, #142). Counted as the recon counted: the heading and
+// the lines before the answer field, HTML comments cut. The number is the field's norm — the owner's word revises it.
+export const QUESTION_CHARS_BUDGET = 750;
+export function lengthWarnings(md, budget = QUESTION_CHARS_BUDGET) {
+  const out = [];
+  for (const q of parseQuestions(md)) {
+    if (q.answered || q.freeField) continue;
+    const answerAt = q.answers.length ? q.answers[0].line : q.body.length;
+    const chars = [...[q.title, ...q.body.slice(0, answerAt)].join('\n').replace(/<!--[\s\S]*?-->/g, '').trim()].length;
+    if (chars > budget) out.push({ id: q.id, chars, budget });
+  }
+  return out;
+}
+
 export function preflight(md) {
   const problems = [];
   for (const q of parseQuestions(md)) {
@@ -11448,7 +11482,7 @@ import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
-  docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
+  docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, lengthWarnings, QUESTION_CHARS_BUDGET, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
   headerDate, ARCHAEOLOGY_PATHS, // AQ (2.7, #70): the archaeology axis of the same door
   unescapeStructure, // court RL 2.9, B-F2: the card shows an owner's escaped comment line as he typed it
   decisionPaths, // OW3 (2.8, #86): the age of an answer is read from its decision record
@@ -11949,8 +11983,15 @@ export function buildPage(root, docPath) {
     const abs = a.body_file ? resolve(root, a.body_file) : null;
     const exists = !!(abs && existsSync(abs));
     const text = exists ? readFileSync(abs, 'utf8') : '';
+    // TK5 (d) (2.10, origin #136): a `format: html` body is shown AS A PAGE — in a frame with no scripts and no same-origin (an empty
+    // `sandbox`), its source one click below; the hash stays over the raw bytes (I3), so the approved text is what goes out
+    const html = /^html$/i.test(a.format || '');
+    const bodyHtml = !exists ? '' : html
+      ? '<iframe class="artframe" sandbox="" referrerpolicy="no-referrer" srcdoc="' + escapeHtml(text) + '"></iframe><details class="artsrc"><summary>'
+        + t.art.source + '</summary><pre>' + escapeHtml(text) + '</pre></details>'
+      : renderMd(text);
     return { doc: rel, id: a.id, target: a.target || '', format: a.format || '', bodyFile: a.body_file || '',
-      exists, sha256: exists ? bodyHash(text) : null, bodyHtml: exists ? renderMd(text) : '', bytes: exists ? Buffer.byteLength(text, 'utf8') : 0 };
+      exists, sha256: exists ? bodyHash(text) : null, bodyHtml, bytes: exists ? Buffer.byteLength(text, 'utf8') : 0 };
   });
   const nAns = questions.filter((q) => q.answered).length;
   const nWait = questions.length - nAns;
@@ -12212,6 +12253,7 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .opt input[type=radio] { width:22px; height:22px; flex:0 0 auto; margin-top:0; accent-color:var(--accent); cursor:pointer }
   .opt div p { margin:2px 0 } .qbody p { margin:6px 0 } .qmeta { font-size:13px; color:var(--muted); margin:6px 0 }
   .outbox { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin:10px 0; max-height:60vh; overflow:auto }
+  .artframe { width:100%; height:50vh; border:0; background:#fff } .artsrc pre { white-space:pre-wrap; font-size:.85em }
   .qcard.danger { border-left-color:var(--danger) }
   details.archive { margin:22px 0 } details.archive > summary { cursor:pointer; color:var(--muted); font-weight:600; padding:8px 0 } /* QL3 (#54): the settled below, one fold */
   /* proofreading: paragraph cards with their id in the margin; mockup: the image at page width */
@@ -13084,6 +13126,8 @@ export function checkDoc(root, docPath, log = console.log) {
   if (cf.questions.length) log(arch.judged
     ? t.check.archaeology(arch.attested, arch.live, arch.exempt)
     : t.check.archaeologyOld(arch.headerDate, arch.since));
+  // TK5 (b) (2.10, origin #142): a live question over the length budget is named — a warning, the page may still open
+  for (const w of lengthWarnings(md)) log(t.check.long(w.id, w.chars, w.budget));
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -13125,6 +13169,19 @@ export async function selftest(log = console.log) {
     ok(n(REFERENCES_SINCE, '\u041d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80% \u2014 \u0431\u0435\u0440\u0451\u043c B.') === 0 && n(REFERENCES_SINCE, 'B \u0432\u044b\u0448\u0435, \u0447\u0435\u043c A, \u043f\u043e \u0446\u0435\u043d\u0435.') === 0 && n(REFERENCES_SINCE, 'Load above 80% takes B.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u2014 \u0441\u043c. \u0442\u0430\u0431\u043b\u0438\u0446\u0443 \u043d\u0438\u0436\u0435.') === 0 && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0446\u0435\u043b\u0438\u043a\u043e\u043c: x = 2y; \u0441\u043c. \u0442\u0430\u043a\u0436\u0435 plans/12.') === 0
       && n(REFERENCES_SINCE, '\u041a\u0430\u043a \u0443\u043a\u0430\u0437\u0430\u043d\u043e \u0432\u044b\u0448\u0435, \u0431\u0435\u0440\u0451\u043c B.') === 1 && n(REFERENCES_SINCE, 'As listed above, B wins.') === 1,
       'CP F3 (light judge): a comparison ("load above 80%", "B is higher than A"), a forward "see the table below" and a "see also" next to the content stay silent; "as listed above" still refuses');
+    // 2.10, epic TK, step TK5 (a) (origin #147): the Russian word for "above" refuses only in a reference form; a comparison — correlative,
+    // sentence-final, genitive — is legal
+    ok(n(REFERENCES_SINCE, '— *«\u0427\u0435\u043c \u0432\u044b\u0448\u0435 \u0443\u043c, \u0442\u0435\u043c \u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u0435\u0435 \u043f\u0440\u043e\u0438\u0437\u043d\u043e\u0441\u0438\u0442\u0441\u044f \u0441\u0432\u0438\u0442\u043e\u043a»*.') === 0 && n(REFERENCES_SINCE, '\u0411\u0435\u0440\u0441\u0435\u0440\u043a \u0431\u044c\u0451\u0442 \u0433\u0435\u0440\u043e\u044f \u0441 \u0441\u0430\u043c\u043e\u0439 \u0432\u044b\u0441\u043e\u043a\u043e\u0439 \u0430\u0442\u0430\u043a\u043e\u0439, \u0443 \u0432\u043e\u0440\u0430 \u043e\u043d\u0430 \u0432\u044b\u0448\u0435.') === 0
+      && n(REFERENCES_SINCE, '\u0426\u0435\u043d\u0430 \u0432\u044b\u0448\u0435 \u0440\u044b\u043d\u043e\u0447\u043d\u043e\u0439 — \u0431\u0435\u0440\u0451\u043c?') === 0 && n(REFERENCES_SINCE, '\u041f\u043e\u0441\u0442\u0430\u0432\u0438\u0442\u044c \u043a\u043d\u043e\u043f\u043a\u0443 \u0432\u044b\u0448\u0435 \u0441\u043f\u0438\u0441\u043a\u0430?') === 0
+      && n(REFERENCES_SINCE, '\u0424\u043e\u0440\u043c\u0443\u043b\u0430 \u0432\u044b\u0448\u0435 \u0434\u0430\u0451\u0442 12.') === 1 && n(REFERENCES_SINCE, '\u0412 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435 \u0442\u0440\u0438 \u0441\u0442\u0440\u043e\u043a\u0438.') === 1
+      && n(REFERENCES_SINCE, '\u0412\u044b\u0448\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u044b\u0439 \u043f\u043e\u0440\u043e\u0433 — \u0431\u0435\u0440\u0451\u043c?') === 1 && n(REFERENCES_SINCE, '\u0423\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u0432\u044b\u0448\u0435 \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 — \u0431\u0435\u0440\u0451\u043c?') === 1,
+      'TK5 #147: «\u0447\u0435\u043c \u0432\u044b\u0448\u0435 …», «\u043e\u043d\u0430 \u0432\u044b\u0448\u0435.», «\u0432\u044b\u0448\u0435 \u0440\u044b\u043d\u043e\u0447\u043d\u043e\u0439», «\u0432\u044b\u0448\u0435 \u0441\u043f\u0438\u0441\u043a\u0430» stay silent; «\u0444\u043e\u0440\u043c\u0443\u043b\u0430 \u0432\u044b\u0448\u0435», «\u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435», «\u0432\u044b\u0448\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043d\u044b\u0439», «\u0443\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u0432\u044b\u0448\u0435» refuse');
+    // TK5 (b) (origin #142): a 3 000-character live question is named, a 700-character one and an answered long one are not; never a refusal
+    const long = 'A long context of the question with no reference back. '.repeat(55), short = 'x'.repeat(650);
+    const lw = (stem, ans) => lengthWarnings(rDoc(REFERENCES_SINCE, stem, ans));
+    ok(lw(long).length === 1 && lw(long)[0].chars > QUESTION_CHARS_BUDGET && lw(short).length === 0 && lw(long, ' A').length === 0
+      && !preflight(rDoc(REFERENCES_SINCE, long)).length,
+      'TK5 #142: a live question over ' + QUESTION_CHARS_BUDGET + ' characters is named; a short one and an answered long one are silent; the door does not refuse it');
     ok(['\u0422\u0430\u043a \u043a\u0430\u043a \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%, \u0431\u0435\u0440\u0451\u043c B.', '\u0423\u043a\u0430\u0437\u0430\u043d\u043d\u0430\u044f \u043d\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0432\u044b\u0448\u0435 80%.', 'As load goes above 80%, B wins.', '\u0426\u0435\u043d\u0430 \u0432\u044b\u0448\u0435 \u043d\u0430 5% \u2014 \u0431\u0435\u0440\u0451\u043c B.'].every((s) => n(REFERENCES_SINCE, s) === 0)
       && ['\u0411\u0435\u0440\u0451\u043c \u0444\u043e\u0440\u043c\u0443\u043b\u0443 \u0432\u044b\u0448\u0435?', '\u0412\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u0432 \u0442\u0430\u0431\u043b\u0438\u0446\u0435 \u0432\u044b\u0448\u0435.', 'Pick from the list above.', 'The above decides.'].every((s) => n(REFERENCES_SINCE, s) === 1),
       'CP N2 (light re-judge): "above" is a comparison only before a number or "than" (through "as" or a participle too); a noun form ("the formula above", "the list above") refuses');
@@ -13141,6 +13198,18 @@ export async function selftest(log = console.log) {
     ok(st('\u2705 \u0417\u0410\u041a\u0420\u042b\u0422\u041e \u2014 \u0431\u043e\u043b\u044c\u0448\u0435 \u043d\u0435 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430') === 'closed' && st('CLOSED — no longer awaiting the owner') === 'closed'
       && st('\u0417\u0430\u043a\u0440\u044b\u0442 Q1, Q2 \u2014 \u0435\u0449\u0451 \u043d\u0435 \u043e\u0442\u0432\u0435\u0447\u0435\u043d') === 'waiting' && st('CLOSED Q1; Q2 not yet answered') === 'waiting',
       'CP F5 (light re-judge): a NEGATED waiting marker ("no longer awaiting") leaves the document closed; a not-yet mark after the closing word waits');
+    // 2.10, epic TK, step TK5 (c) (origin #109 comments 1 and 3): the head of the value decides — a leading waiting mark waits whatever word
+    // follows; a closing mark does not close a partial head; folded and merged documents are closed; history inside a closed line is history
+    const waits = ['🟡 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e: Q1 = D (…), Q2 = A (…); \u0432\u043d\u0435\u0441\u0435\u043d\u0438\u0435 \u043d\u0435 \u043f\u043e\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043d\u043e (…) ·', '🟠 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e 18 \u0438\u0437 27', '🟡 answers received for Q1; Q2 awaiting',
+      '🟡 Q2 \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 · ✅ Q1 \u0432\u043d\u0435\u0441\u0451\u043d', '🟢 \u0447\u0430\u0441\u0442\u0438\u0447\u043d\u043e: Q1 \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e, Q2 — \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430', '\u041e\u0442\u0432\u0435\u0447\u0435\u043d\u043e \u0447\u0430\u0441\u0442\u0438\u0447\u043d\u043e (2 \u0438\u0437 5) 🟡', '⏳ \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430',
+      '🟡 not closed yet: Q2 awaiting', '🟡 \u043e\u0442\u0432\u0435\u0442\u044b \u0436\u0434\u0443\u0442 \u0432\u043d\u0435\u0441\u0435\u043d\u0438\u044f: Q1 = D, Q2 = A'];
+    const closes = ['**↪️ \u0421\u0412\u0401\u0420\u041d\u0423\u0422\u041e \u0432 \u0441\u0432\u043e\u0434\u043d\u043e\u0435 \u0438\u043d\u0442\u0435\u0440\u0432\u044c\u044e #123 (2026-10-05)** — \u0432\u043e\u043f\u0440\u043e\u0441\u044b \u0436\u0438\u0432\u0443\u0442 \u0442\u0430\u043c', '📦 MERGED into interview #5', '🟢 CLOSED; nothing awaiting',
+      '✅ CLOSED — nothing is awaiting an answer', '✅ CLOSED 2026-08-30 — withdrawn by the agent.',
+      '✅ ANSWERS RECEIVED 2026-09-28 20:46 (\u0447\u0430\u0442\u043e\u043c). \u041f\u0440\u0435\u0436\u0434\u0435: ⏳ \u0416\u0414\u0401\u0422 \u041e\u0422\u0412\u0415\u0422\u0410', '✅ \u043e\u0442\u0432\u0435\u0447\u0435\u043d\u043e 2026-09-18 08:14: Q1 = A. \u041f\u0440\u0435\u0436\u043d\u0438\u0439 \u0441\u0442\u0430\u0442\u0443\u0441: ⏳ \u0436\u0434\u0451\u0442 \u043e\u0442\u0432\u0435\u0442\u0430 \u0432\u043b\u0430\u0434\u0435\u043b\u044c\u0446\u0430'];
+    const wrongW = waits.filter((v) => st(v) !== 'waiting'), wrongC = closes.filter((v) => st(v) !== 'closed');
+    if (st('🟠 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b 2026-09-14 22:58 (\u04121 \u0438 \u04122)') === 'waiting') wrongW.push('🟠 \u043e\u0442\u0432\u0435\u0442\u044b \u043f\u043e\u043b\u0443\u0447\u0435\u043d\u044b (must not wait)');
+    ok(!wrongW.length && !wrongC.length, 'TK5 #109: ' + waits.length + ' waiting heads wait and ' + closes.length + ' closed, folded or merged lines close'
+      + (wrongW.length || wrongC.length ? ' — wrong: ' + [...wrongW, ...wrongC].join(' | ') : '') + ' (a closed line carries its history; 🟠 «answers received» is no waiting mark)');
   }
   { // CP (2.9, #127 · ideas/31 p. 28): the list form speaks the table form's dictionary; a letter written but not parsed is named
     const q3 = (form) => '# I\n\n> **Status:** awaiting\n\n' + [1, 2, 3].map((n) => '### Q' + n + '. Pick ' + n + '?\n\n' + ['A', 'B', 'C', 'D'].map((l) => '- **' + form(l) + '** option ' + l).join('\n') + '\n\n**Answer:**\n').join('\n');
@@ -13187,6 +13256,19 @@ export async function selftest(log = console.log) {
     'config is read, never asked: project name from kaif.json, owner from the identity table, canon decisions dir');
   ok(texts('de').fallbackFrom === 'de' && texts('ru').lang === 'ru' && texts('ru').btn.save !== texts('en').btn.save,
     'texts: RU and EN ship, an unknown language falls back to EN and says so');
+  { // TK5 (d) (2.10, origin #136): a `format: html` artifact is shown as a page in a script-less frame; markdown keeps its render; one hash
+    const raw = '<h2>Title</h2><table><tr><td>1</td></tr></table><script>document.title="x"</script>\n';
+    writeFileSync(join(root, 'docs', 'page.html'), raw);
+    writeFileSync(join(root, 'docs', 'note.md'), '**bold** note\n');
+    writeFileSync(join(root, 'docs', 'art.md'), '# Outbound\n\n```owner-review\ntitle: Outbound\nkind: interview\nartifacts:\n  - id: P1\n    target: Wiki\n'
+      + '    format: html\n    body_file: docs/page.html\n  - id: P2\n    target: Chat\n    format: markdown\n    body_file: docs/note.md\n```\n');
+    const [h, m] = buildPage(root, 'docs/art.md').artifacts;
+    const srcdoc = (h.bodyHtml.match(/ srcdoc="([^"]*)"/) || [])[1] || '';
+    const unattr = srcdoc.replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+    ok(h.bodyHtml.startsWith('<iframe class="artframe" sandbox="" ') && unattr === raw && !h.bodyHtml.includes('<p>&lt;') && !/<script/i.test(h.bodyHtml)
+      && h.bodyHtml.includes('<details class="artsrc">') && h.sha256 === bodyHash(raw) && m.bodyHtml === '<p><strong>bold</strong> note</p>',
+      'TK5 #136: an html artifact is a page in a frame with no scripts and no same-origin, its source one click below, the hash over the raw bytes; markdown still renders');
+  }
 
   // C3: four faces — one hash
   const base = 'Line one\nLine two\n';
@@ -13923,10 +14005,16 @@ export const PARSER = {
   // 2.9, epic CP (origin issue #124): a BACKWARD or SIDEWAYS reference that sends the owner out of the question for its own content.
   // Russian: the field project's pattern, its standing rule for six weeks (issue #124, verbatim), with a forward «см. ниже» left
   // legal; English: its mirror. A forward reference ("options below") is legal by the owner's word in the ticket.
-  // The light judges of epic CP, F3 and N2: «выше» / "above" is a REFERENCE unless a comparison follows it — a number or «чем» / "than"
+  // The light judges of epic CP, F3 and N2 (for «выше» superseded in 2.10 by the reference forms below; "above" keeps this rule): «выше» /
+  // "above" is a REFERENCE unless a comparison follows it — a number or «чем» / "than"
   // («нагрузка выше 80%», «B выше, чем A», "above 80%" stay legal; «формула выше», «в таблице выше», "the list above", «как указано выше»
   // refuse); «см. <…> ниже» (forward) and «см. также» / "see also" (a reference NEXT to the content) stay legal.
-  refBack: '(?<!\\p{L})(?:выше(?!\\p{L})(?!\\s*,?\\s*(?:чем(?!\\p{L})|[\\d~≈<>]|на\\s+\\d|в\\s+\\d))|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|above(?!\\p{L})(?!\\s*(?:than(?!\\p{L})|[\\d~<>]|by\\s+\\d))|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
+  // 2.10, epic TK, step TK5 (a) (origin #147): Russian «выше» is mostly a COMPARISON («чем выше ум, тем …», «у вора она выше», «цена выше
+  // рыночной») — on a field corpus copy the door refused 22 lines in 16 questions, 19 of them comparisons. So «выше» refuses only in a
+  // REFERENCE form: a document noun or a participle before it («формула выше», «в таблице выше», «как указано выше», «см. выше») or a
+  // participle after it («выше указанный»); recon — researches/38_kaif_2.10_scope_recon/owner-talk.md, #147 (22 → 3 refusals, 23 of 23
+  // synthetic cases, 0 new refusals on 4 427 live lines).
+  refBack: '(?<!\\p{L})(?:(?:(?:таблиц|формул|списк|список|пример|раздел|пункт|абзац|текст|вопрос|схем|рисун|перечн|шапк|документ|строк|вариант)\\p{L}*(?:\\s+\\d+)?|(?:указан|приведен|приведён|сказан|описан|перечислен|отмечен|показан|изложен|упомянут|написан|разобран|обсужден|обсуждён|предложен|назван)\\p{L}*|см\\.)\\s+выше(?!\\p{L})|выше\\s+(?:указан|приведен|приведён|сказан|описан|перечислен|отмечен|показан|изложен|упомянут|написан|разобран|обсужден|обсуждён|предложен|назван)|вон\\s+т[оеа]\\p{L}*|в\\s+разделе|в\\s+шапке|см\\.\\s(?!(?:[\\p{L}\\d«»"\'-]+\\s+){0,3}?ниже)(?!также)|above(?!\\p{L})(?!\\s*(?:than(?!\\p{L})|[\\d~<>]|by\\s+\\d))|see\\s+(?:§|the\\s+section|section)|in\\s+the\\s+(?:section|header)|§\\s?\\d)',
   originLabels: 'Origin|Источник|Родитель',
   // the answer field label: `**Answer:**` · `**Ответ:**` · `**Ответ владельца:**`
   answerLabels: 'Answer|Ответ(?:\\s+владельца)?',
@@ -13943,13 +14031,23 @@ export const PARSER = {
   // 2.9, epic CP (origin #109, #121 R3): an EXPLICIT closing word at the START of the status value (after an optional mark and bold) closes
   // the document even when an explanation after it carries a negation («✅ ЗАКРЫТО — ВОПРОС СНЯТ АГЕНТОМ, А НЕ ОТВЕЧЕН ВЛАДЕЛЬЦЕМ»); the
   // project's own closed words — «перенесено», «СНЯТО», WITHDRAWN — were read as a LIVE document and stood in the owner's queue
-  statusClosedWord: '^\\s*(?:[✅⛔➡🟢]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?)(?!\\p{L})',
+  // 2.10, epic TK (origin #109 comment 3): a document FOLDED or MERGED into another («↪️ СВЁРНУТО в сводное интервью #123», "📦 MERGED into
+  // interview #5") is closed too — 22 such documents of one field project stood in the owner's queue as live
+  statusClosedWord: '^\\s*\\*{0,2}\\s*(?:[✅⛔➡🟢↪📦]\\uFE0F?\\s*)?\\*{0,2}\\s*(?:CLOSED|WITHDRAWN|MOVED|MERGED|FOLDED|ЗАКРЫТ[ОАЫ]?|СНЯТ[ОАЫ]?|ПЕРЕНЕС[ЕЁ]Н[ОАЫ]?|СВ[ЕЁ]РНУТ[ОАЫ]?)(?!\\p{L})',
   statusClosed: '✅|🟢|STATUS:\\s*DONE|ANSWERS\\s+RECEIVED|ОТВЕЧЕНО',
-  statusWaiting: '🟡|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
+  statusWaiting: '🟡|⏳|awaiting|ждёт\\s+ответ|ожидает\\s+ответ',
+  // 2.10, epic TK (origin #109 comment 1): a waiting mark at the HEAD of the status value decides "waiting" before any word after it —
+  // «🟡 отвечено: Q1 = D …; внесение не подтверждено» was read closed by the word «отвечено», and the owner's real decision hid 17 days.
+  // 🟠 is NOT a waiting mark: a field project writes «🟠 ответы получены …» — answers in, nothing awaits the owner (five such documents)
+  statusWaitingLead: '^\\s*\\*{0,2}\\s*(?:🟡|⏳)',
+  // a PARTIAL head is not closed even under a closing mark («🟢 частично: …», "✅ partially answered"); a count «18 из 27» with the first
+  // number below the second is partial too (core.mjs)
+  statusPartial: '(?<!\\p{L})частичн\\p{L}*|\\bpartial(?:ly)?\\b',
+  statusCount: '(\\d+)\\s+(?:из|of)\\s+(\\d+)',
   // (the light re-judge of epic CP, F5) on a line that opens with a closing word the document waits only for an UNNEGATED waiting marker
   // («больше не ждёт ответа», "no longer awaiting" close) or a NOT-YET mark («Q2 — ещё не отвечен»); a bare «не отвечен» still closes —
   // a question withdrawn by the agent is written that way.
-  statusWaitingNegation: '(?:(?<!\\p{L})не|\\bnot|\\bno\\s+longer|\\bno)',
+  statusWaitingNegation: '(?:(?<!\\p{L})не|\\bnot|\\bno\\s+longer|\\bno|\\bnothing(?:\\s+is)?)',
   statusPending: '(?<!\\p{L})(?:ещ[её]|пока)\\s+не(?!\\p{L})|\\bnot\\s+yet\\b|\\bno\\b[^.]{0,40}\\byet\\b',
   // negation outranks the tick (bugs/70): «пока НЕ отвечено», "no answers yet", "not answered"
   statusNegation: '(?<!\\p{L})не\\s*отвечен|неотвечен|(?<!\\p{L})пока\\s+не(?!\\p{L})|(?<!\\p{L})ещё\\s+не(?!\\p{L})|\\bno\\b[^.]{0,40}\\byet\\b|\\bnot\\b[^.]{0,40}\\banswer',
@@ -14021,7 +14119,7 @@ const EN = {
     copy: 'Copy', retry: 'Retry saving', approve: '<strong>Approve</strong> — send as is',
     reject: '<strong>Reject</strong> — do not send' },
   art: { goesOut: 'Goes out', missing: (file) => 'File <code>' + file + '</code> not found — nothing to approve. This is a defect, not your choice.',
-    bytes: 'bytes' },
+    bytes: 'bytes', source: 'Source (what goes out, byte for byte)' },
   st: { draft: (n) => 'Draft picked up: ' + n + ' field(s) restored from the browser', saving: 'Saving…',
     saved: (w) => 'Saved: ' + w + '. The window will close by itself…', nothing: 'Nothing to save: no answer, no comment',
     noRemarksWritten: 'no remarks',
@@ -14093,6 +14191,8 @@ const EN = {
       + (ex ? ' (' + ex + ' exempt: declared n/a)' : ''),
     archaeologyOld: (date, since) => 'archaeology: not judged — header date '
       + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
+    long: (id, n, budget) => 'WARNING: ' + id + ' is ' + n + ' characters, above the budget of ' + budget + ' — the owner tires of long questions'
+      + ' (origin #142): cut it to what he chooses by, or split the fork; the page may still open.',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -14135,7 +14235,7 @@ const RU = {
     copy: 'Скопировать', retry: 'Повторить запись', approve: '<strong>Одобряю</strong> — отправить как есть',
     reject: '<strong>Отклоняю</strong> — не отправлять' },
   art: { goesOut: 'Уйдёт наружу', missing: (file) => 'Файл <code>' + file + '</code> не найден — одобрять нечего. Это дефект, а не ваш выбор.',
-    bytes: 'байт' },
+    bytes: 'байт', source: 'Исходник (что уйдёт, байт в байт)' },
   st: { draft: (n) => 'Подхвачен черновик: ' + n + ' полей(я) восстановлено из браузера', saving: 'Записываю…',
     saved: (w) => 'Записано: ' + w + '. Окно закроется само…', nothing: 'Нечего записывать: ни ответа, ни комментария',
     noRemarksWritten: 'замечаний нет',
@@ -14206,6 +14306,8 @@ const RU = {
       + (ex ? ' (вне оси: ' + ex + ' — объявленное n/a)' : ''),
     archaeologyOld: (date, since) => 'археология: не судится — дата шапки '
       + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
+    long: (id, n, budget) => 'ВНИМАНИЕ: в ' + id + ' ' + n + ' знаков — больше бюджета ' + budget + '; длинные вопросы владельца утомляют'
+      + ' (origin #142): сожми до того, по чему он выбирает, или раздели развилку; страница всё равно откроется.',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',
