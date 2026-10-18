@@ -534,7 +534,7 @@
       {
         "signature": "## Instrumentation — build a test harness, don't guess",
         "class": "static",
-        "sha256": "68166e7b4009bb3bf112ffcad526589c7031cddf1be9268b4f6e5889f5c33f65",
+        "sha256": "e5f1d083e303477977940368e640bc53236c338cb193ec128c076293bd6ce619",
         "lines": [
           114,
           134

@@ -208,7 +208,8 @@ for (let i = 0; i < process.argv.length - 1; i++) {
   if (unexpected.length) {
     console.error(`✋ в дереве ${unexpected.length} новых файл(ов) вне намерения коммита:`);
     for (const p of unexpected) console.error('   ?? ' + p);
-    console.error('   Молчаливый `git add -A` уводил такие файлы в origin под чужим сообщением (bugs/79).');    console.error('   Верные ходы: --only <путь> (каждый своим флагом) · --with-new (взять все) · оставить в дереве.');
+    console.error('   Молчаливый `git add -A` уводил такие файлы в origin под чужим сообщением (bugs/79).');
+    console.error('   Верные ходы: --only <путь> (каждый своим флагом) · --with-new (взять все) · оставить в дереве.');
     process.exit(1);
   }
 }
@@ -227,7 +228,7 @@ for (let i = 0; i < process.argv.length - 1; i++) {
   if (flipped.length) {
     console.error(`✋ ${flipped.length} файл(ов) набора стали CRLF, хотя в HEAD — LF (EXP-0170: правка инструментом переписала файл целиком):`);
     for (const p of flipped) console.error('   ' + p);
-    console.error('   Ход: верни LF (`node -e` скриптом-файлом: replace(/\\r\\n/g, "\\n")), пересобери, если это поставка, и повтори коммит.');
+    console.error('   Ход: верни LF скриптом из файла (`node <скрипт>.mjs <путь>`, не однострочником в argv — EXP-0121), пересобери, если это поставка, и повтори коммит.');
     process.exit(1);
   }
 }

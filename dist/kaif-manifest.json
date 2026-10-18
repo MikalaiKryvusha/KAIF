@@ -5,10 +5,10 @@
   "codename": "Distilled KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "e3d627b1e2b30dbf53bf89cfcc109b3526789274923fe0765d2f706b47541829",
-    "KAIF-CORE-BUNDLE.md": "1ae356faadc88334d0b36417507e93d2dcbbfc0b73395d2515fe81eaf84e0980"
+    "KAIF-CORE-BUNDLE.md": "e335dc246b7d0e4d691cf270165524c554a7c5c6b16a327d59f7dea15d090fb3"
   },
   "sourceTree": {
-    "sha256": "72c0430b0ad9f8ec0a7ee9186a29b48f89bc17a986cbc13d275c4bba757f48a7",
+    "sha256": "8c9579359dbc7a4a2f3773180e29eb862195359b4a0aee1d329c0854267a0122",
     "files": 208
   },
   "prerelease": "2.10",

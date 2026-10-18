@@ -128,7 +128,7 @@ Principles:
   size/checksum log) and write it into the bug document.
 - **Grow the harness over time.** Every time you do something manually to reproduce or verify, ask:
   "can I add a command/flag/script so next time it's one step?" Then add it, and write its row into
-  `HOUSE_RULES.md` → "Tools of this project". The harness is a living tool — extend and document it.
+  `HOUSE_RULES.md` → "Stands, environments and devices". The harness is a living tool — extend and document it.
 
 ---
 
