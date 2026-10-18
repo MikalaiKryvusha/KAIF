@@ -2,7 +2,8 @@
 // #147 · #142 · #109 · #136) proved RED, one mutant per change, on a COPY of framework/tools/contour (TESTING_FRAMEWORK gate 5; EXP-0169 —
 // the addressees are named BEFORE the run, and a mutant whose edit did not apply is a failure of the proof, not a green).
 //   control: the copy as is — the shipped selftest has no red line;
-//   M1 «выше» judged the 2.9 way (a reference unless a comparison follows)   → exactly the case «TK5 #147»;
+//   M1 «выше» judged the 2.9 way (a reference unless a comparison follows)   → exactly «TK5 #147» and «TK5 judge hunt 4» (the 2.9 door
+//      refuses the comparisons «выше указанной», «выше среднего» that case keeps silent);
 //   M2 no leading waiting mark in docStatus()                                 → exactly «TK5 #109»;
 //   M3 lengthWarnings() never names a question                               → exactly «TK5 #142»;
 //   M4 an html artifact rendered as markdown                                 → exactly «TK5 #136».
@@ -17,10 +18,10 @@ const SRC = join(process.cwd(), 'framework', 'tools', 'contour');
 const RUN_TIMEOUT_MS = 600000;
 const OLD_REF_BACK = String.raw`refBack: '(?<!\\p{L})(?:выше(?!\\p{L})(?!\\s*,?\\s*(?:чем(?!\\p{L})|[\\d~≈<>]|на\\s+\\d|в\\s+\\d))|вон`;
 const MUTANTS = [
-  { name: 'M1 «выше» the 2.9 way', file: 'texts.mjs', find: /refBack: '\(\?<!\\\\p\{L\}\)\(\?:\(\?:\(\?:таблиц[^\n]*?\|вон/, to: () => OLD_REF_BACK, red: 'TK5 #147' },
-  { name: 'M2 no leading waiting mark', file: 'core.mjs', find: /  if \(STATUS_WAITING_LEAD_RE\.test\(line\)\) return 'waiting';\n/, to: () => '', red: 'TK5 #109' },
-  { name: 'M3 length never named', file: 'core.mjs', find: /if \(chars > budget\) out\.push/, to: () => 'if (false) out.push', red: 'TK5 #142' },
-  { name: 'M4 html as markdown', file: 'review.mjs', find: /const html = \/\^html\$\/i\.test\(a\.format \|\| ''\);/, to: () => 'const html = false;', red: 'TK5 #136' },
+  { name: 'M1 «выше» the 2.9 way', file: 'texts.mjs', find: /refBack: '\(\?<!\\\\p\{L\}\)\(\?:\(\?:\(\?:таблиц[^\n]*?\|вон/, to: () => OLD_REF_BACK, red: ['TK5 #147', 'TK5 judge hunt 4'] },
+  { name: 'M2 no leading waiting mark', file: 'core.mjs', find: /  if \(STATUS_WAITING_LEAD_RE\.test\(line\)\) return 'waiting';\n/, to: () => '', red: ['TK5 #109'] },
+  { name: 'M3 length never named', file: 'core.mjs', find: /if \(chars > budget\) out\.push/, to: () => 'if (false) out.push', red: ['TK5 #142'] },
+  { name: 'M4 html as markdown', file: 'review.mjs', find: /const html = \/\^html\$\/i\.test\(a\.format \|\| ''\);/, to: () => 'const html = false;', red: ['TK5 #136'] },
 ];
 let bad = 0;
 const say = (good, line) => { if (!good) bad++; console.log((good ? 'OK  ' : 'BAD ') + line); };
@@ -44,7 +45,7 @@ for (const m of MUTANTS) {
   if (after === before) { say(false, m.name + ': the edit did not apply'); rmSync(d, { recursive: true, force: true }); continue; }
   writeFileSync(p, after);
   const r = redLines(d);
-  say(!r.died && r.red.length === 1 && r.red[0].includes(m.red), m.name + ': ' + (r.died ? 'DIED' : r.red.length + ' red line(s)') + ' (expected exactly «' + m.red + '»)');
+  say(!r.died && r.red.length === m.red.length && m.red.every((c) => r.red.some((l) => l.includes(c))), m.name + ': ' + (r.died ? 'DIED' : r.red.length + ' red line(s)') + ' (expected exactly «' + m.red.join('» · «') + '»)');
   for (const l of r.red) console.log('    ' + l.slice(0, 200));
   rmSync(d, { recursive: true, force: true });
 }
