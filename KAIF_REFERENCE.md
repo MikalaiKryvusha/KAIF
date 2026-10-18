@@ -835,6 +835,9 @@ short remarks of the owner were five stops — his verdict (origin ticket #144, 
 Without the hooks the 2.9 release court measured the origin's own sessions: of 16 mid-turn words of the owner, 7 were answered before the
 next tool call. The owner's verdict (rendered from Russian): unless the user explicitly asks the agent to stop, the agent answers the
 question at once and goes on with what it was doing before it — so the rule now says AT ONCE, before any further tool call.
+In 2.10 the clause on how the answer opens — it came with the 2.8 gate and outlived the gate in the rule — was dropped at the owner's word
+(origin ticket #156, rendered from Russian: "do not start with my words — this is a KAIF bug that makes me furious"); by his request the rule
+says nothing about the opening, neither a prescription nor a ban, and the build refuses a shipped line that brings the prescription back.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 

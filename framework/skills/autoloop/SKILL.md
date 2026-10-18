@@ -84,7 +84,10 @@ without those resources.
 - The context-refresh rule applies inside the series (`AGENT_GUIDE.md` → Context refresh): more than
   60 minutes since the last refresh, or a HEAVY item next — re-read the core and update the witness
   (`/refresh-context` executes both) before taking the item.
-- If you're waiting on a background operation (a long build) — continue when ready; don't ping the human.
+- Waiting on a background operation (a long build, a test run, a scout) — do NOT end the turn: in the same turn take the next item or
+  step that does not collide with it (a document, a plan, a report, a code read); none — watch it within the turn. Before a named time the
+  turn ends only by "When to STOP the loop" (the KAIF owner, rendered from Russian: "the agent was told to work autonomously — and it stands
+  and does not work!"). Don't ping the human.
 - If you need to "continue on a timer", use the harness's loop mechanism (`ScheduleWakeup`/`/loop`) with
   a reasonable interval, passing this same skill back so the cycle resumes.
 

@@ -5,13 +5,13 @@
   "codename": "Distilled KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "e3d627b1e2b30dbf53bf89cfcc109b3526789274923fe0765d2f706b47541829",
-    "KAIF-CORE-BUNDLE.md": "ce08960380850c96b49b0a5da0f884bb8116ad58c386a0025e506e738c40513f"
+    "KAIF-CORE-BUNDLE.md": "9ea8265e32cd0f0b04cbda425ec3b170edc7f655dfed4f82ac7bec93e2273e97"
   },
   "sourceTree": {
-    "sha256": "1fc046329eb25e4291f33cb192c52a544d2c06b80534cef4df24adf65fe311c2",
+    "sha256": "67fd3b9ae53365ecb058e9df6091150e8ec59c55863434677fe2c30f78ce67eb",
     "files": 208
   },
-  "prerelease": null,
+  "prerelease": "2.10",
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
     "KAIF-CORE.mjs": "installer machinery; lives on as .kaif/kaif-core.mjs",
