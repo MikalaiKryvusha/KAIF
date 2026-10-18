@@ -534,7 +534,7 @@
       {
         "signature": "## Instrumentation — build a test harness, don't guess",
         "class": "static",
-        "sha256": "fd01e1cd2411cbdf9c47393252cb31c97c0668c961dd2c8ed102be6554994aec",
+        "sha256": "68166e7b4009bb3bf112ffcad526589c7031cddf1be9268b4f6e5889f5c33f65",
         "lines": [
           114,
           134
@@ -1922,7 +1922,7 @@
       {
         "signature": "## Step 0. Setup (once at the start)",
         "class": "static",
-        "sha256": "7e04aa55bb588855eeaa6cf6ca2c3d761a925387b9011b75c4daa4c75d7982e8",
+        "sha256": "b44e5856d67827e6585bcb2f69d33b5819c664b1288daecee5d633dba7f7034b",
         "lines": [
           44,
           52
@@ -2099,7 +2099,7 @@
       {
         "signature": "## Step 0 — baseline, scope, budget, and the ground before the hunt",
         "class": "static",
-        "sha256": "556e6ebc48b9d88d94c6381dd2b3afb5349f5964d70439935b7020dda162c7cc",
+        "sha256": "0b4ce6d6fd72f6bfdac89598f48cf3bb63641f096b40bb6f39c028c5df64211d",
         "lines": [
           25,
           64
@@ -4471,7 +4471,7 @@
       {
         "signature": "## Notes",
         "class": "static",
-        "sha256": "70349f3f6138dedff3a6c122a82143408699b741ae0a21d72f397ed502ba8bd1",
+        "sha256": "2db7bd1884b434e14137fa017f0bea1c8668cf2298868336e5e256fd398c243e",
         "lines": [
           99,
           103

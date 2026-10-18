@@ -51,7 +51,7 @@ afterwards.
 6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, the `.kaif/tools/*`
    modules WHOSE SCOPE CROSSES THE ZONE (`check` and `selftest`; a module that reads nothing in the
    zone is not run for it, and the summary names which were run), the project's own guards (the
-   tools table of `AGENT_GUIDE.md`), the pairs registry, and the greps of the paid classes — the
+   tools table of `HOUSE_RULES.md` → "Tools of this project"), the pairs registry, and the greps of the paid classes — the
    `Repro:` lines of the `EXPERIENCE.md` entries tagged with the zone's tags. A repository that
    BUILDS the framework instead of deploying it has no `.kaif/`: the same modules live where its
    tools table says. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A finding is not a

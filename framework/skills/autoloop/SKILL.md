@@ -46,7 +46,7 @@ without those resources.
 1. Read: `STATUS.md` (the "🤖 Autonomous backlog pool" section), `PHILOSOPHY.md`, `AGENT_GUIDE.md`,
    `BUG_FIXING_FRAMEWORK.md`, `EXPERIENCE.md` (recall lessons — grep by tag), the relevant `ideas/*`
    and `bugs/*`.
-2. Check the environment is ready (build toolchain, devices/services — see `AGENT_GUIDE.md`).
+2. Check the environment is ready (build toolchain, devices/services — see `HOUSE_RULES.md` → "Stands, environments and devices").
 3. Assemble/refresh the working pool list from STATUS. Tell the human in one paragraph: what's in the
    pool, which task you start with, and why.
 

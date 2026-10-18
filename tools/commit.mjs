@@ -61,6 +61,10 @@ const privateNamesGateNeeded = (stagedNameStatus) => stagedNameStatus.length > 0
 // [TESTED: 2026-09-25 17:07 +03:00 · --selftest (четыре случая 1d); функциональный прогон tools/sandbox/probes/commit-1d-leak-run.mjs — фраза в новом
 //  файле и в сообщении — стоп, HEAD на месте, чистый коммит проходит, текста фразы в выводе нет; отчёт testcases/reports/2026-09-25_vo4-epic-judge-fixes.md]
 const leakGateAction = (status) => (status === 0 ? 'pass' : status === 3 ? 'skip' : 'stop');
+// Преполёт 1e (сессия 88, EXP-0170 — дважды за одну сессию правка инструментом переписала ВЕСЬ файл на CRLF: оба `/autoloop` по 118 строк,
+// оба `BUG_FIXING_FRAMEWORK.md` по 225–227; ловила только ручная проверка `file`): файл набора, в чьей рабочей копии есть CRLF, а в HEAD — ни
+// одного CR, остановит коммит и назовёт себя. Новый файл (HEAD его не знает) и файл, уже бывший с CR, — молчат. Функция чистая — `--selftest`.
+const eolFlipped = (work, head) => head !== null && !head.includes('\r') && work.includes('\r\n');
 // Преполёт 0 (bugs/124): личность — тестовая, когда её адрес в зарезервированном домене. Функция чистая — её доказывает `--selftest`.
 // [TESTED: 2026-09-26 03:00:57 +03:00 · `--selftest` — четыре случая (форма подмены, два тестовых домена, личность владельца и похожие
 //  настоящие домены); живьём — локальная `user.email=probe@example.invalid` отказала коммит (код 1, version.json не тронут); bugs/124]
@@ -114,6 +118,10 @@ if (process.argv.includes('--selftest')) {
   T('1d: ось утечки зелёная — коммит идёт', leakGateAction(0) === 'pass');
   T('1d: приватного ядра нет на машине (SKIPPED=3) — коммит идёт, строка печатается', leakGateAction(3) === 'skip');
   T('1d: утечка (1) — стоп', leakGateAction(1) === 'stop');
+  T('1e: рабочая копия с CRLF при LF в HEAD — стоп (EXP-0170)', eolFlipped('a\r\nb\r\n', 'a\nb\n') === true);
+  T('1e: оба LF — молчит', eolFlipped('a\nb\n', 'a\nb\n') === false);
+  T('1e: новый файл (HEAD не знает) — молчит', eolFlipped('a\r\n', null) === false);
+  T('1e: файл и в HEAD был с CR — молчит', eolFlipped('a\r\n', 'a\r\n') === false);
   T('1d: ось не исполнилась (2, иное) — стоп, приёмка личного падает закрыто', leakGateAction(2) === 'stop' && leakGateAction(null) === 'stop');
   // Преполёт 0 (bugs/124): тестовая личность — зарезервированный домен; настоящая — нет (оба ответа)
   T('0: «probe <probe@example.invalid>» — тестовая (форма подмены bugs/124)', testIdentity('probe <probe@example.invalid>') === true);
@@ -200,8 +208,26 @@ for (let i = 0; i < process.argv.length - 1; i++) {
   if (unexpected.length) {
     console.error(`✋ в дереве ${unexpected.length} новых файл(ов) вне намерения коммита:`);
     for (const p of unexpected) console.error('   ?? ' + p);
-    console.error('   Молчаливый `git add -A` уводил такие файлы в origin под чужим сообщением (bugs/79).');
-    console.error('   Верные ходы: --only <путь> (каждый своим флагом) · --with-new (взять все) · оставить в дереве.');
+    console.error('   Молчаливый `git add -A` уводил такие файлы в origin под чужим сообщением (bugs/79).');    console.error('   Верные ходы: --only <путь> (каждый своим флагом) · --with-new (взять все) · оставить в дереве.');
+    process.exit(1);
+  }
+}
+
+// ПРЕПОЛЁТ 1e: концы строк набора (EXP-0170) — до первого побочного эффекта, как 1b. Набор — объявленный `--only` или все изменённые
+// отслеживаемые файлы; HEAD-версия читается `git show HEAD:<путь>` (нет в HEAD — новый файл, молчит).
+{
+  const set = only.length ? only : execFileSync('git', ['diff', '--name-only', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).split('\n').filter(Boolean);
+  const flipped = [];
+  for (const p of set) {
+    let work, head = null;
+    try { work = readFileSync(join(ROOT, p), 'utf8'); } catch { continue; }   // удалённый путь — не наша ось
+    try { head = execFileSync('git', ['show', `HEAD:${p}`], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 27, stdio: ['ignore', 'pipe', 'ignore'] }); } catch { /* новый файл */ }
+    if (eolFlipped(work, head)) flipped.push(p);
+  }
+  if (flipped.length) {
+    console.error(`✋ ${flipped.length} файл(ов) набора стали CRLF, хотя в HEAD — LF (EXP-0170: правка инструментом переписала файл целиком):`);
+    for (const p of flipped) console.error('   ' + p);
+    console.error('   Ход: верни LF (`node -e` скриптом-файлом: replace(/\\r\\n/g, "\\n")), пересобери, если это поставка, и повтори коммит.');
     process.exit(1);
   }
 }

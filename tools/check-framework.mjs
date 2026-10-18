@@ -1006,6 +1006,26 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
     });
   }
 }
+// 5w. The same class in the forms guard 5s did not see (version KAIF 2.10, epic HC, step HC3; origin issue #119, second case — a field
+//     judge): «document it in `AGENT_GUIDE.md`» (an order to WRITE project facts back into the guide), «the tools table of
+//     `AGENT_GUIDE.md`», and «devices/services — see `AGENT_GUIDE.md`» point at rows 2.8 moved to HOUSE_RULES.md. A line (with its next
+//     line — the pointer may wrap) of framework/ carrying one of these forms is a refusal named by file and line.
+//     [TESTED: 2026-10-18 · probe tools/sandbox/probes/hc3-moved-pointers-red.mjs: a copy of the tree — 0 lines «5w:»; with the v2.9
+//      BUG_FIXING_FRAMEWORK and the /code-revision, /autoloop, /resume skills — exactly 4, named before the run]
+{
+  const FORMS = [/document (?:it )?in\s+`AGENT_GUIDE\.md`/, /tools table of\s+`AGENT_GUIDE\.md`/, /(?:toolchain|devices|services)[^\n]{0,60}— see `AGENT_GUIDE\.md`/];
+  const mdFiles = readdirSync(join(ROOT, 'framework'), { recursive: true }).map((p) => String(p).replace(/\\/g, '/'))
+    .filter((p) => p.endsWith('.md') && !p.startsWith('templates/languages/'));
+  for (const rel of mdFiles) {
+    const lines = readFileSync(join(ROOT, 'framework', rel), 'utf8').split(/\r?\n/);
+    lines.forEach((line, i) => {
+      const pair = line + ' ' + (lines[i + 1] || '');
+      const hit = FORMS.find((re) => { const m = re.exec(pair); return m && m.index < line.length; });
+      if (hit) errors.push(`5w: framework/${rel}:${i + 1} points at \`AGENT_GUIDE.md\` for rows 2.8 moved to HOUSE_RULES.md (#119) — point at its section instead`);
+    });
+  }
+}
+
 // 5v. No shipped text prescribes how the answer to the owner OPENS (2.10, epic TK, origin ticket #156 — the KAIF owner, rendered from
 //     Russian: "do not start with my words — this is a KAIF bug that makes me furious"; the clause came with the 2.9 owner-word hook and
 //     outlived it in the rule). The owner asked that the instruction be dropped, not inverted, so this lives in the build, not in the

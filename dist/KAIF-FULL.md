@@ -1621,8 +1621,8 @@ Principles:
   distortions, timing), invent an objective check (a known-shape control input, a measurable output, a
   size/checksum log) and write it into the bug document.
 - **Grow the harness over time.** Every time you do something manually to reproduce or verify, ask:
-  "can I add a command/flag/script so next time it's one step?" Then add it, and document it in
-  `AGENT_GUIDE.md`. The harness is a living tool — extend and document it.
+  "can I add a command/flag/script so next time it's one step?" Then add it, and write its row into
+  `HOUSE_RULES.md` → "Tools of this project". The harness is a living tool — extend and document it.
 
 ---
 
@@ -3997,7 +3997,7 @@ Do the work the scope gave — the owner's task, or with a bare `resume` the dir
 
 ## Notes
 
-- Verify the environment before relying on it (build toolchain, devices, services) — see `AGENT_GUIDE.md`.
+- Verify the environment before relying on it (build toolchain, devices, services) — see `HOUSE_RULES.md` → "Stands, environments and devices".
 - Don't re-derive what the docs already state; trust `STATUS.md` and the plans, then verify by doing.
 ``````
 
@@ -4106,7 +4106,7 @@ without those resources.
 1. Read: `STATUS.md` (the "🤖 Autonomous backlog pool" section), `PHILOSOPHY.md`, `AGENT_GUIDE.md`,
    `BUG_FIXING_FRAMEWORK.md`, `EXPERIENCE.md` (recall lessons — grep by tag), the relevant `ideas/*`
    and `bugs/*`.
-2. Check the environment is ready (build toolchain, devices/services — see `AGENT_GUIDE.md`).
+2. Check the environment is ready (build toolchain, devices/services — see `HOUSE_RULES.md` → "Stands, environments and devices").
 3. Assemble/refresh the working pool list from STATUS. Tell the human in one paragraph: what's in the
    pool, which task you start with, and why.
 
@@ -5876,7 +5876,7 @@ afterwards.
 6. **Run the code first** *[mechanical]*: `node .kaif/kaif-core.mjs check`, the `.kaif/tools/*`
    modules WHOSE SCOPE CROSSES THE ZONE (`check` and `selftest`; a module that reads nothing in the
    zone is not run for it, and the summary names which were run), the project's own guards (the
-   tools table of `AGENT_GUIDE.md`), the pairs registry, and the greps of the paid classes — the
+   tools table of `HOUSE_RULES.md` → "Tools of this project"), the pairs registry, and the greps of the paid classes — the
    `Repro:` lines of the `EXPERIENCE.md` entries tagged with the zone's tags. A repository that
    BUILDS the framework instead of deploying it has no `.kaif/`: the same modules live where its
    tools table says. Their output is evidence (`BUG_FIXING_FRAMEWORK.md` → "A finding is not a

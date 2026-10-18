@@ -98,5 +98,5 @@ Do the work the scope gave — the owner's task, or with a bare `resume` the dir
 
 ## Notes
 
-- Verify the environment before relying on it (build toolchain, devices, services) — see `AGENT_GUIDE.md`.
+- Verify the environment before relying on it (build toolchain, devices, services) — see `HOUSE_RULES.md` → "Stands, environments and devices".
 - Don't re-derive what the docs already state; trust `STATUS.md` and the plans, then verify by doing.
