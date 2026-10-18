@@ -1027,15 +1027,22 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
 }
 
 // 5v. No shipped text prescribes how the answer to the owner OPENS (2.10, epic TK, origin ticket #156 — the KAIF owner, rendered from
-//     Russian: "do not start with my words — this is a KAIF bug that makes me furious"; the clause came with the 2.9 owner-word hook and
-//     outlived it in the rule). The owner asked that the instruction be dropped, not inverted, so this lives in the build, not in the
-//     canon: a line of framework/ or of the builder's notes that tells the answer to open with the owner's first words is a refusal.
+//     Russian: "do not give this instruction, just do not mention it … do not say where the AI agent should start, let it decide itself";
+//     the clause came with the 2.9 owner-word hook and outlived it in the rule). The owner asked that the instruction be dropped, not
+//     inverted, so this lives in the build, not in the canon: a line of framework/ or of the builder's notes that tells the answer to
+//     open, start, begin or lead with the owner's words, or to quote his first words, is a refusal. The forms are the 2.9 wording plus
+//     the five rephrasings the TK judge found passing the first regex (researches/38_kaif_2.10_scope_recon/judge-tk.md, hunt 7).
 //     [TESTED: 2026-10-18 · probe tools/sandbox/probes/tk1-opening-red.mjs: a copy of the tree — 0 lines «5v:»; the same copy with the
-//      v2.9 framework/AGENT_GUIDE.md and tools/build-framework.mjs — exactly 2 (guide :643, note «2.9»); green on this tree]
+//      v2.9 framework/AGENT_GUIDE.md and tools/build-framework.mjs — exactly 2 (guide :643, note «2.9»); the copy with the judge's five
+//      rephrasings — exactly 5; green on this tree]
 {
-  const OPENING = /open(?:s|ing)?\s+(?:it\s+)?with\s+(?:its|the owner\\?['’]s|his)\s+(?:own\s+)?first\s+words/i;
+  const OWNERS_WORDS = String.raw`(?:its|the owner\\?['’]s|his)\s+(?:own\s+)?(?:first\s+)?words`;
+  const OPENING = [
+    new RegExp(String.raw`\b(?:open|start|begin|lead)(?:s|ing|ed)?\s+(?:(?:it|the answer|your answer|the reply|your reply|the response)\s+)?with\s+` + OWNERS_WORDS, 'i'),
+    new RegExp(String.raw`\bquote\s+(?:the owner\\?['’]s|his)\s+(?:own\s+)?first\s+words`, 'i'),
+  ];
   const scan = (rel, text) => text.split(/\r?\n/).forEach((line, i) => {
-    if (OPENING.test(line)) errors.push(`5v: ${rel}:${i + 1} prescribes how the answer to the owner opens (#156) — drop the clause, do not invert it`);
+    if (OPENING.some((re) => re.test(line))) errors.push(`5v: ${rel}:${i + 1} prescribes how the answer to the owner opens (#156) — drop the clause, do not invert it`);
   });
   for (const p of readdirSync(join(ROOT, 'framework'), { recursive: true }).map((x) => String(x).replace(/\\/g, '/'))
     .filter((x) => /\.(md|mjs|json)$/.test(x) && !x.startsWith('templates/languages/')))
@@ -1250,6 +1257,9 @@ errors.push(...checkLinesUnknownToReference(readFileSync(join(ROOT, 'framework',
     ['manager stop ↔ the guide names the exception where it signs the author (payload)',
       'framework/AGENT_GUIDE.md',
       ['the one exception — a stop or close from the Manager of a deployed team']],
+    ['manager stop ↔ the guide names the exception where it signs the author (wrapper)',
+      'AGENT_GUIDE.md',
+      ['исключение — стоп и закрытие от Менеджера']],
     ['free seat ↔ the constitution template carries the rule with its exit condition (payload)',
       'framework/skills/team-deployment/references/team-constitution-template.md',
       ['**A free seat asks for work.**', 'ONE message to the Manager', 'idling that the owner had to end is a defect']],

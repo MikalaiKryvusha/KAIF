@@ -1,10 +1,11 @@
-// tools/sandbox/probes/tk4-manager-stop-red.mjs — a PROBE (not a polygon suite): the three «manager stop» pairs of tools/check-framework.mjs
+// tools/sandbox/probes/tk4-manager-stop-red.mjs — a PROBE (not a polygon suite): the four «manager stop» pairs of tools/check-framework.mjs
 // (version KAIF 2.10, epic TK, step TK4, origin ticket #137 — rule 8 of the team constitution gave the Manager the stop signal and rule 9
 // took the force from every message; a worktree seat worked past "close now") proved RED on the v2.9 texts, so their green means something
 // (TESTING_FRAMEWORK gate 5; EXP-0016).
 //   control: a COPY of the tracked tree (assets and PDFs left out) — no `pair "manager stop` line;
-//   mutant:  the same copy with the v2.9 constitution template of both layers and the v2.9 framework/AGENT_GUIDE.md — exactly FIVE lines,
-//            named before the run: two fragments of the payload template, two of the wrapper template, one of the guide.
+//   mutant:  the same copy with the v2.9 constitution template of both layers and the v2.9 guide of both layers — exactly SIX lines,
+//            named before the run: two fragments of the payload template, two of the wrapper template, one of each guide (the wrapper
+//            guide's pair came with step TK6a — the TK judge, hunt 5: item 1 of the root guide was guarded by nothing).
 // usage: node tools/sandbox/probes/tk4-manager-stop-red.mjs        (≈ 20 s; run it alone)
 import { writeFileSync, mkdtempSync, mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { spawnSync, execFileSync } from 'node:child_process';
@@ -13,8 +14,8 @@ import { join, dirname } from 'node:path';
 
 const TAG = 'v2.9';
 const MUTATED = ['framework/skills/team-deployment/references/team-constitution-template.md',
-  '.claude/skills/team-deployment/references/team-constitution-template.md', 'framework/AGENT_GUIDE.md'];
-const EXPECTED = 5;
+  '.claude/skills/team-deployment/references/team-constitution-template.md', 'framework/AGENT_GUIDE.md', 'AGENT_GUIDE.md'];
+const EXPECTED = 6;
 const RUN_TIMEOUT_MS = 300000;
 let bad = 0;
 const say = (good, line) => { if (!good) bad++; console.log((good ? 'OK  ' : 'BAD ') + line); };

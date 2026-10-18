@@ -10,7 +10,9 @@ GitHub Release). Run the routine **in order**; narrate each step in the chat. If
 show the error, do NOT continue blindly.
 
 > ⚠️ **CONFIRMATION REQUIRED.** Before the publish itself, show the human: which version it'll be
-> (current → new), that the tree is clean, that it built. Publish only on their explicit "yes". A release
+> (current → new), that the tree is clean, that it built. Publish only on their explicit "yes"; the work
+> stands until it comes, so the turn's last call is `node .kaif/tools/contour/review.mjs --call "<what you need>"`,
+> then the text (`AGENT_GUIDE.md` → "Decisions the agent must NOT make alone"). A release
 > = a public tag and Release, unpleasant to roll back. **In autonomous mode (`/autoloop`/loops) do NOT
 > publish a release.**
 

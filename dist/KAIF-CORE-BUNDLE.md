@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "8c9579359dbc7a4a2f3773180e29eb862195359b4a0aee1d329c0854267a0122",
+    "sourceTree": "a6f33f57a100c177f2c5f5411b8f8e93dfa91d9673542c7a38b3af2d36fd7a77",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -95,10 +95,10 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.10": [
-      "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not start with my words — this is a KAIF bug that makes me furious\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
+      "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not say where the AI agent should start, let it decide itself\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
       "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
-      "THE MANAGER'S STOP REACHES EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
+      "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -3960,8 +3960,9 @@ Without the hooks the 2.9 release court measured the origin's own sessions: of 1
 next tool call. The owner's verdict (rendered from Russian): unless the user explicitly asks the agent to stop, the agent answers the
 question at once and goes on with what it was doing before it — so the rule now says AT ONCE, before any further tool call.
 In 2.10 the clause on how the answer opens — it came with the 2.8 gate and outlived the gate in the rule — was dropped at the owner's word
-(origin ticket #156, rendered from Russian: "do not start with my words — this is a KAIF bug that makes me furious"); by his request the rule
-says nothing about the opening, neither a prescription nor a ban, and the build refuses a shipped line that brings the prescription back.
+(origin ticket #156, rendered from Russian: "do not say where the AI agent should start, let it decide itself"); by his request the rule
+says nothing about the opening, neither a prescription nor a ban, and the build refuses a shipped line that brings the prescription back — in
+its 2.9 wording or in the rephrasings the 2.10 judge tried against the guard.
 
 ### `AGENT_GUIDE.md` → The storefront — text a stranger reads
 
@@ -8418,7 +8419,9 @@ GitHub Release). Run the routine **in order**; narrate each step in the chat. If
 show the error, do NOT continue blindly.
 
 > ⚠️ **CONFIRMATION REQUIRED.** Before the publish itself, show the human: which version it'll be
-> (current → new), that the tree is clean, that it built. Publish only on their explicit "yes". A release
+> (current → new), that the tree is clean, that it built. Publish only on their explicit "yes"; the work
+> stands until it comes, so the turn's last call is `node .kaif/tools/contour/review.mjs --call "<what you need>"`,
+> then the text (`AGENT_GUIDE.md` → "Decisions the agent must NOT make alone"). A release
 > = a public tag and Release, unpleasant to roll back. **In autonomous mode (`/autoloop`/loops) do NOT
 > publish a release.**
 
